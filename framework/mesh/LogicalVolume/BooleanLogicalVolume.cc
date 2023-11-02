@@ -8,11 +8,10 @@ namespace chi_mesh
 chi::InputParameters BooleanLogicalVolumeArgumentPair();
 
 RegisterChiObject(chi_mesh, BooleanLogicalVolume);
-RegisterSyntaxBlock(chi_mesh,
-                    BooleanLogicalVolumeArgumentPair,
-                    BooleanLogicalVolumeArgumentPair);
+RegisterSyntaxBlock(chi_mesh, BooleanLogicalVolumeArgumentPair, BooleanLogicalVolumeArgumentPair);
 
-chi::InputParameters BooleanLogicalVolume::GetInputParameters()
+chi::InputParameters
+BooleanLogicalVolume::GetInputParameters()
 {
   chi::InputParameters params = LogicalVolume::GetInputParameters();
 
@@ -25,14 +24,12 @@ chi::InputParameters BooleanLogicalVolume::GetInputParameters()
     "Array of combinatorial logic each entry has the following required params "
     "<TT>chi_mesh::BooleanLogicalVolumeArgumentPair</TT>");
 
-  params.LinkParameterToBlock("parts",
-                              "chi_mesh::BooleanLogicalVolumeArgumentPair");
+  params.LinkParameterToBlock("parts", "chi_mesh::BooleanLogicalVolumeArgumentPair");
 
   return params;
 }
 
-BooleanLogicalVolume::BooleanLogicalVolume(
-  const chi::InputParameters& params)
+BooleanLogicalVolume::BooleanLogicalVolume(const chi::InputParameters& params)
   : LogicalVolume(params)
 {
   const auto& input_parts = params.GetParam("parts");
@@ -48,14 +45,15 @@ BooleanLogicalVolume::BooleanLogicalVolume(
     part_params.AssignParameters(part);
 
     const size_t lv_handle = part_params.GetParamValue<size_t>("lv");
-    auto lv_ptr = Chi::GetStackItemPtrAsType<LogicalVolume>(
-      Chi::object_stack, lv_handle, __FUNCTION__);
+    auto lv_ptr =
+      Chi::GetStackItemPtrAsType<LogicalVolume>(Chi::object_stack, lv_handle, __FUNCTION__);
 
     parts.emplace_back(part_params.GetParamValue<bool>("op"), lv_ptr);
   }
 }
 
-chi::InputParameters BooleanLogicalVolumeArgumentPair()
+chi::InputParameters
+BooleanLogicalVolumeArgumentPair()
 {
   chi::InputParameters params;
 
@@ -70,7 +68,8 @@ chi::InputParameters BooleanLogicalVolumeArgumentPair()
   return params;
 }
 
-bool BooleanLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+bool
+BooleanLogicalVolume::Inside(const chi_mesh::Vector3& point) const
 {
   for (const auto& part : parts)
   {

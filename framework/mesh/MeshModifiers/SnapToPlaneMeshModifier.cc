@@ -14,7 +14,8 @@ namespace chi_mesh
 
 RegisterChiObject(chi_mesh, SnapToPlaneMeshModifier);
 
-chi::InputParameters SnapToPlaneMeshModifier::GetInputParameters()
+chi::InputParameters
+SnapToPlaneMeshModifier::GetInputParameters()
 {
   chi::InputParameters params = ChiObject::GetInputParameters();
 
@@ -24,15 +25,13 @@ chi::InputParameters SnapToPlaneMeshModifier::GetInputParameters()
     "edge or aligning vertices that misaligned during meshing.");
   params.SetDocGroup("DocMeshModifiers");
 
-  params.AddRequiredParameterArray(
-    "normal", "The normal of the plane to which the nodes are to be snapped.");
+  params.AddRequiredParameterArray("normal",
+                                   "The normal of the plane to which the nodes are to be snapped.");
 
   params.AddRequiredParameterArray("point", "The anchor point of the plane.");
 
   params.AddOptionalParameter(
-    "boundaries_only",
-    true,
-    "If set to true, only boundary nodes will be snapped.");
+    "boundaries_only", true, "If set to true, only boundary nodes will be snapped.");
 
   params.AddOptionalParameter(
     "check_face_alignment",
@@ -41,15 +40,12 @@ chi::InputParameters SnapToPlaneMeshModifier::GetInputParameters()
     "have their nodes snapped.");
 
   params.AddOptionalParameter(
-    "tolerance",
-    1.0e-5,
-    "Tolerance per dimension within which a face/edge will be aligned");
+    "tolerance", 1.0e-5, "Tolerance per dimension within which a face/edge will be aligned");
 
   return params;
 }
 
-SnapToPlaneMeshModifier::SnapToPlaneMeshModifier(
-  const chi::InputParameters& params)
+SnapToPlaneMeshModifier::SnapToPlaneMeshModifier(const chi::InputParameters& params)
   : MeshModifier(params),
     normal_(params.GetParamVectorValue<double>("normal")),
     point_(params.GetParamVectorValue<double>("point")),
@@ -57,11 +53,11 @@ SnapToPlaneMeshModifier::SnapToPlaneMeshModifier(
     check_face_alignment_(params.GetParamValue<bool>("check_face_alignment")),
     tol_(params.GetParamValue<double>("tolerance"))
 {
-  ChiLogicalErrorIf(Chi::mpi.process_count != 1,
-                    "Cannot only be used in serial");
+  ChiLogicalErrorIf(Chi::mpi.process_count != 1, "Cannot only be used in serial");
 }
 
-void SnapToPlaneMeshModifier::Apply()
+void
+SnapToPlaneMeshModifier::Apply()
 {
   auto& grid = *chi_mesh::GetCurrentHandler().GetGrid();
 
@@ -92,7 +88,7 @@ void SnapToPlaneMeshModifier::Apply()
             }
           }
       } // for face
-    }//for cell
+    }   // for cell
   else
     for (const auto& cell : grid.local_cells)
     {
@@ -107,18 +103,17 @@ void SnapToPlaneMeshModifier::Apply()
           cell_ids_modified.insert(cell.local_id_);
         }
       }
-    }   // for cell
+    } // for cell
 
   // Modifying cells
   for (const uint64_t cell_local_id : cell_ids_modified)
   {
     grid.local_cells[cell_local_id].RecomputeCentroidsAndNormals(grid);
-    //for (const auto& face : grid.local_cells[cell_local_id_].faces_)
-    //  chi::log.Log() << face.normal_.PrintStr();
+    // for (const auto& face : grid.local_cells[cell_local_id_].faces_)
+    //   chi::log.Log() << face.normal_.PrintStr();
   }
 
-  Chi::log.Log0Verbose1() << "Number of cells modified "
-                          << cell_ids_modified.size();
+  Chi::log.Log0Verbose1() << "Number of cells modified " << cell_ids_modified.size();
 }
 
 } // namespace chi_mesh

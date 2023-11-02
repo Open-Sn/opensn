@@ -66,8 +66,9 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const chi_mesh::Cell& cell)
   return mappings;
 }
 
-std::vector<chi_mesh::Vector3> PieceWiseLinearBaseMapping::GetVertexLocations(
-  const chi_mesh::MeshContinuum& grid, const chi_mesh::Cell& cell)
+std::vector<chi_mesh::Vector3>
+PieceWiseLinearBaseMapping::GetVertexLocations(const chi_mesh::MeshContinuum& grid,
+                                               const chi_mesh::Cell& cell)
 {
   std::vector<chi_mesh::Vector3> verts;
   verts.reserve(cell.vertex_ids_.size());

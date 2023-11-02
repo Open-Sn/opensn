@@ -4,12 +4,12 @@
 namespace chi_math
 {
 
-template<class VecType, class SolverType>
+template <class VecType, class SolverType>
 struct NonLinearSolverContext
 {
   virtual ~NonLinearSolverContext() = default;
 };
 
-}//namespace chi_math
+} // namespace chi_math
 
-#endif //CHITECH_CHI_MATH_NL_SOLVER_CONTEXT_H
+#endif // CHITECH_CHI_MATH_NL_SOLVER_CONTEXT_H

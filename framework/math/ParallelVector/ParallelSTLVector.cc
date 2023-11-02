@@ -35,18 +35,18 @@ ParallelSTLVector::ParallelSTLVector(const ParallelSTLVector& other)
 }
 
 ParallelSTLVector::ParallelSTLVector(ParallelSTLVector&& other) noexcept
-  : ParallelVector(std::move(other)),
-    extents_(other.extents_),
-    values_(std::move(other.values_))
+  : ParallelVector(std::move(other)), extents_(other.extents_), values_(std::move(other.values_))
 {
 }
 
-std::unique_ptr<ParallelVector> ParallelSTLVector::MakeCopy() const
+std::unique_ptr<ParallelVector>
+ParallelSTLVector::MakeCopy() const
 {
   return std::make_unique<ParallelSTLVector>(*this);
 }
 
-std::unique_ptr<ParallelVector> ParallelSTLVector::MakeClone() const
+std::unique_ptr<ParallelVector>
+ParallelSTLVector::MakeClone() const
 {
   auto new_vec = std::make_unique<ParallelSTLVector>(*this);
 
@@ -55,83 +55,92 @@ std::unique_ptr<ParallelVector> ParallelSTLVector::MakeClone() const
   return new_vec;
 }
 
-double* ParallelSTLVector::Data() { return values_.data(); }
-const double* ParallelSTLVector::Data() const { return values_.data(); }
+double*
+ParallelSTLVector::Data()
+{
+  return values_.data();
+}
+const double*
+ParallelSTLVector::Data() const
+{
+  return values_.data();
+}
 
-const std::vector<double>& ParallelSTLVector::LocalSTLData() const
+const std::vector<double>&
+ParallelSTLVector::LocalSTLData() const
 {
   return values_;
 }
 
-std::vector<double>& ParallelSTLVector::LocalSTLData() { return values_; }
-
-std::vector<double> ParallelSTLVector::MakeLocalVector()
+std::vector<double>&
+ParallelSTLVector::LocalSTLData()
 {
-  return std::vector<double>(values_.begin(),
-                             values_.begin() + scint(local_size_));
+  return values_;
 }
 
-double ParallelSTLVector::operator[](const int64_t local_id) const
+std::vector<double>
+ParallelSTLVector::MakeLocalVector()
+{
+  return std::vector<double>(values_.begin(), values_.begin() + scint(local_size_));
+}
+
+double
+ParallelSTLVector::operator[](const int64_t local_id) const
 {
   ChiInvalidArgumentIf(local_id < 0 or local_id >= values_.size(),
-                       "Invalid local index provided. " +
-                         std::to_string(local_id) + " vs [0," +
+                       "Invalid local index provided. " + std::to_string(local_id) + " vs [0," +
                          std::to_string(values_.size()) + ")");
 
   return values_[local_id];
 }
 
-double& ParallelSTLVector::operator[](const int64_t local_id)
+double&
+ParallelSTLVector::operator[](const int64_t local_id)
 {
   ChiInvalidArgumentIf(local_id < 0 or local_id >= values_.size(),
-                       "Invalid local index provided. " +
-                         std::to_string(local_id) + " vs [0," +
+                       "Invalid local index provided. " + std::to_string(local_id) + " vs [0," +
                          std::to_string(values_.size()) + ")");
 
   return values_[local_id];
 }
 
-void ParallelSTLVector::Set(const double value)
+void
+ParallelSTLVector::Set(const double value)
 {
   values_.assign(values_.size(), value);
 }
 
-void ParallelSTLVector::Set(const std::vector<double>& local_vector)
+void
+ParallelSTLVector::Set(const std::vector<double>& local_vector)
 {
-  ChiInvalidArgumentIf(local_vector.size() < local_size_,
-                       "Incompatible local vector size.");
+  ChiInvalidArgumentIf(local_vector.size() < local_size_, "Incompatible local vector size.");
 
   // We cannot assign values = local_vector because this might
   // destroy the internals of a ghosted vector
-  std::copy(local_vector.begin(),
-            local_vector.begin() + scint64_t(local_size_),
-            values_.begin());
+  std::copy(local_vector.begin(), local_vector.begin() + scint64_t(local_size_), values_.begin());
 }
 
-void ParallelSTLVector::BlockSet(const std::vector<double>& y,
-                                 int64_t local_offset,
-                                 int64_t num_values)
+void
+ParallelSTLVector::BlockSet(const std::vector<double>& y, int64_t local_offset, int64_t num_values)
 {
   ChiInvalidArgumentIf(y.size() < num_values,
-                       "y.size() < num_values " + std::to_string(y.size()) +
-                         " < " + std::to_string(num_values));
+                       "y.size() < num_values " + std::to_string(y.size()) + " < " +
+                         std::to_string(num_values));
 
   const int64_t local_end = local_offset + num_values;
-  ChiInvalidArgumentIf(
-    local_end > local_size_,
-    "local_offset + num_values=" + std::to_string(local_end) +
-      ", is out of range for destination vector with local size " +
-      std::to_string(local_size_));
+  ChiInvalidArgumentIf(local_end > local_size_,
+                       "local_offset + num_values=" + std::to_string(local_end) +
+                         ", is out of range for destination vector with local size " +
+                         std::to_string(local_size_));
 
   std::copy(y.begin(), y.begin() + num_values, values_.begin() + local_offset);
 }
 
-void ParallelSTLVector::CopyLocalValues(const ParallelVector& y)
+void
+ParallelSTLVector::CopyLocalValues(const ParallelVector& y)
 {
-  ChiLogicalErrorIf(y.LocalSize() != local_size_,
-                    "y.LocalSize() != local_size_");
-  ChiLogicalErrorIf(y.GlobalSize() != global_size_,
-                    "y.GlobalSize() != global_size_");
+  ChiLogicalErrorIf(y.LocalSize() != local_size_, "y.LocalSize() != local_size_");
+  ChiLogicalErrorIf(y.GlobalSize() != global_size_, "y.GlobalSize() != global_size_");
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
@@ -140,13 +149,13 @@ void ParallelSTLVector::CopyLocalValues(const ParallelVector& y)
   std::copy(y_data, y_data + local_size_, values_.begin());
 }
 
-void ParallelSTLVector::CopyLocalValues(Vec y)
+void
+ParallelSTLVector::CopyLocalValues(Vec y)
 {
   PetscInt n;
   VecGetLocalSize(y, &n);
 
-  ChiInvalidArgumentIf(n < local_size_,
-                       "Attempted update with a vector of insufficient size.");
+  ChiInvalidArgumentIf(n < local_size_, "Attempted update with a vector of insufficient size.");
 
   const double* x;
   VecGetArrayRead(y, &x);
@@ -154,10 +163,11 @@ void ParallelSTLVector::CopyLocalValues(Vec y)
   VecRestoreArrayRead(y, &x);
 }
 
-void ParallelSTLVector::BlockCopyLocalValues(const ParallelVector& y,
-                                             int64_t y_offset,
-                                             int64_t local_offset,
-                                             int64_t num_values)
+void
+ParallelSTLVector::BlockCopyLocalValues(const ParallelVector& y,
+                                        int64_t y_offset,
+                                        int64_t local_offset,
+                                        int64_t num_values)
 {
   ChiInvalidArgumentIf(y_offset < 0, "y_offset < 0.");
   ChiInvalidArgumentIf(local_offset < 0, "local_offset < 0.");
@@ -170,25 +180,23 @@ void ParallelSTLVector::BlockCopyLocalValues(const ParallelVector& y,
                          ", is out of range for vector y with local size " +
                          std::to_string(y.LocalSize()));
 
-  ChiInvalidArgumentIf(
-    local_end > local_size_,
-    "local_offset + num_values=" + std::to_string(local_end) +
-      ", is out of range for destination vector with local size " +
-      std::to_string(local_size_));
+  ChiInvalidArgumentIf(local_end > local_size_,
+                       "local_offset + num_values=" + std::to_string(local_end) +
+                         ", is out of range for destination vector with local size " +
+                         std::to_string(local_size_));
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
   const double* y_data = y.Data();
 
-  std::copy(y_data + y_offset,
-            y_data + y_offset + num_values,
-            values_.begin() + local_offset);
+  std::copy(y_data + y_offset, y_data + y_offset + num_values, values_.begin() + local_offset);
 }
 
-void ParallelSTLVector::BlockCopyLocalValues(Vec y,
-                                             int64_t y_offset,
-                                             int64_t local_offset,
-                                             int64_t num_values)
+void
+ParallelSTLVector::BlockCopyLocalValues(Vec y,
+                                        int64_t y_offset,
+                                        int64_t local_offset,
+                                        int64_t num_values)
 {
   ChiInvalidArgumentIf(y_offset < 0, "y_offset < 0.");
   ChiInvalidArgumentIf(local_offset < 0, "local_offset < 0.");
@@ -204,25 +212,21 @@ void ParallelSTLVector::BlockCopyLocalValues(Vec y,
                          ", is out of range for vector y with local size " +
                          std::to_string(y_local_size));
 
-  ChiInvalidArgumentIf(
-    local_end > local_size_,
-    "local_offset + num_values=" + std::to_string(local_end) +
-      ", is out of range for destination vector with local size " +
-      std::to_string(local_size_));
+  ChiInvalidArgumentIf(local_end > local_size_,
+                       "local_offset + num_values=" + std::to_string(local_end) +
+                         ", is out of range for destination vector with local size " +
+                         std::to_string(local_size_));
 
   const double* y_data;
   VecGetArrayRead(y, &y_data);
 
-  std::copy(y_data + y_offset,
-            y_data + y_offset + num_values,
-            values_.begin() + local_offset);
+  std::copy(y_data + y_offset, y_data + y_offset + num_values, values_.begin() + local_offset);
 
   VecRestoreArrayRead(y, &y_data);
 }
 
-void ParallelSTLVector::SetValue(const int64_t global_id,
-                                 const double value,
-                                 const VecOpType op_type)
+void
+ParallelSTLVector::SetValue(const int64_t global_id, const double value, const VecOpType op_type)
 {
   ChiInvalidArgumentIf(global_id < 0 or global_id >= global_size_,
                        "Invalid global index encountered. Global indices "
@@ -232,9 +236,10 @@ void ParallelSTLVector::SetValue(const int64_t global_id,
   op_cache.emplace_back(global_id, value);
 }
 
-void ParallelSTLVector::SetValues(const std::vector<int64_t>& global_ids,
-                                  const std::vector<double>& values,
-                                  const VecOpType op_type)
+void
+ParallelSTLVector::SetValues(const std::vector<int64_t>& global_ids,
+                             const std::vector<double>& values,
+                             const VecOpType op_type)
 {
   ChiInvalidArgumentIf(global_ids.size() != values.size(),
                        "Size mismatch between indices and values.");
@@ -250,12 +255,11 @@ void ParallelSTLVector::SetValues(const std::vector<int64_t>& global_ids,
   }
 }
 
-void ParallelSTLVector::operator+=(const ParallelVector& y)
+void
+ParallelSTLVector::operator+=(const ParallelVector& y)
 {
-  ChiLogicalErrorIf(y.LocalSize() != local_size_,
-                    "y.LocalSize() != local_size_");
-  ChiLogicalErrorIf(y.GlobalSize() != global_size_,
-                    "y.GlobalSize() != global_size_");
+  ChiLogicalErrorIf(y.LocalSize() != local_size_, "y.LocalSize() != local_size_");
+  ChiLogicalErrorIf(y.GlobalSize() != global_size_, "y.GlobalSize() != global_size_");
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
@@ -265,12 +269,11 @@ void ParallelSTLVector::operator+=(const ParallelVector& y)
     values_[i] += y_data[i];
 }
 
-void ParallelSTLVector::PlusAY(const ParallelVector& y, double a)
+void
+ParallelSTLVector::PlusAY(const ParallelVector& y, double a)
 {
-  ChiLogicalErrorIf(y.LocalSize() != local_size_,
-                    "y.LocalSize() != local_size_");
-  ChiLogicalErrorIf(y.GlobalSize() != global_size_,
-                    "y.GlobalSize() != global_size_");
+  ChiLogicalErrorIf(y.LocalSize() != local_size_, "y.LocalSize() != local_size_");
+  ChiLogicalErrorIf(y.GlobalSize() != global_size_, "y.GlobalSize() != global_size_");
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
@@ -287,12 +290,11 @@ void ParallelSTLVector::PlusAY(const ParallelVector& y, double a)
       values_[i] += a * y_data[i];
 }
 
-void ParallelSTLVector::AXPlusY(double a, const ParallelVector& y)
+void
+ParallelSTLVector::AXPlusY(double a, const ParallelVector& y)
 {
-  ChiLogicalErrorIf(y.LocalSize() != local_size_,
-                    "y.LocalSize() != local_size_");
-  ChiLogicalErrorIf(y.GlobalSize() != global_size_,
-                    "y.GlobalSize() != global_size_");
+  ChiLogicalErrorIf(y.LocalSize() != local_size_, "y.LocalSize() != local_size_");
+  ChiLogicalErrorIf(y.GlobalSize() != global_size_, "y.GlobalSize() != global_size_");
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
@@ -302,27 +304,30 @@ void ParallelSTLVector::AXPlusY(double a, const ParallelVector& y)
     values_[i] = a * values_[i] + y_data[i];
 }
 
-void ParallelSTLVector::Scale(double a)
+void
+ParallelSTLVector::Scale(double a)
 {
   for (size_t i = 0; i < local_size_; ++i)
     values_[i] *= a;
 }
 
-void ParallelSTLVector::Shift(double a)
+void
+ParallelSTLVector::Shift(double a)
 {
   for (size_t i = 0; i < local_size_; ++i)
     values_[i] += a;
 }
 
 /**Returns the specified norm of the vector.*/
-double ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
+double
+ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
 {
   switch (norm_type)
   {
     case NormType::L1_NORM:
     {
-      const double local_norm_val = std::accumulate(
-        values_.begin(), values_.begin() + scint(local_size_), 0.0);
+      const double local_norm_val =
+        std::accumulate(values_.begin(), values_.begin() + scint(local_size_), 0.0);
 
       double global_norm_val;
       MPI_Allreduce(&local_norm_val,  // sendbuf
@@ -354,8 +359,8 @@ double ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
     }
     case NormType::LINF_NORM:
     {
-      const double local_norm_val = *std::max_element(
-        values_.begin(), values_.begin() + scint(local_size_));
+      const double local_norm_val =
+        *std::max_element(values_.begin(), values_.begin() + scint(local_size_));
 
       double global_norm_val;
       MPI_Allreduce(&local_norm_val,  // sendbuf
@@ -372,12 +377,13 @@ double ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
   }
 }
 
-void ParallelSTLVector::Assemble()
+void
+ParallelSTLVector::Assemble()
 {
   // Define the local operation mode.
   // 0=Do Nothing, 1=Set, 2=Add, 3=INVALID (mixed set/add ops)
-  const short local_mode = scshort(not set_cache_.empty()) +
-                           scshort(not add_cache_.empty()) * short(2);
+  const short local_mode =
+    scshort(not set_cache_.empty()) + scshort(not add_cache_.empty()) * short(2);
   ChiLogicalErrorIf(local_mode == 3, "Invalid operation mode.");
 
   // Now, determine the global operation mode
@@ -388,16 +394,14 @@ void ParallelSTLVector::Assemble()
   if (global_mode == 0) return;
 
   // Next, ensure that all operation types are compatible
-  ChiLogicalErrorIf(
-    local_mode != 0 and local_mode != global_mode,
-    "The operation on each process must be either 0 (do nothing),"
-    "or the same across all processes.");
+  ChiLogicalErrorIf(local_mode != 0 and local_mode != global_mode,
+                    "The operation on each process must be either 0 (do nothing),"
+                    "or the same across all processes.");
 
   // Now, store the global operation type and get the appropriate cache
   using OpType = VecOpType;
   const auto global_op_type = static_cast<OpType>(global_mode);
-  auto& op_cache =
-    global_op_type == OpType ::SET_VALUE ? set_cache_ : add_cache_;
+  auto& op_cache = global_op_type == OpType ::SET_VALUE ? set_cache_ : add_cache_;
 
   // First, segregate the local and non-local operations
   std::vector<std::pair<int64_t, double>> local_cache;
@@ -456,12 +460,11 @@ void ParallelSTLVector::Assemble()
   {
     const auto packet_size = sizeof(std::pair<int64_t, double>);
 
-    ChiLogicalErrorIf(
-      byte_vector.size() % packet_size != 0,
-      "Unrecognized received operations. Operations are serialized with "
-      "an int64_t and double, but the received packet from process " +
-        std::to_string(pid) + " on process " + std::to_string(location_id_) +
-        " is not an integer multiple of the size of an int64_t and double.");
+    ChiLogicalErrorIf(byte_vector.size() % packet_size != 0,
+                      "Unrecognized received operations. Operations are serialized with "
+                      "an int64_t and double, but the received packet from process " +
+                        std::to_string(pid) + " on process " + std::to_string(location_id_) +
+                        " is not an integer multiple of the size of an int64_t and double.");
 
     const size_t num_ops = byte_vector.size() / packet_size;
     chi_data_types::ByteArray byte_array(byte_vector);
@@ -475,8 +478,8 @@ void ParallelSTLVector::Assemble()
 
       ChiLogicalErrorIf(local_id < 0 or local_id >= local_size_,
                         "A non-local global ID was received by process " +
-                          std::to_string(location_id_) + " by process " +
-                          std::to_string(pid) + " during vector assembly.");
+                          std::to_string(location_id_) + " by process " + std::to_string(pid) +
+                          " during vector assembly.");
 
       // Contribute to the local vector
       if (global_op_type == OpType ::SET_VALUE) values_[local_id] = value;
@@ -489,9 +492,8 @@ void ParallelSTLVector::Assemble()
   op_cache.clear();
 }
 
-std::vector<uint64_t> ParallelSTLVector::DefineExtents(uint64_t local_size,
-                                                       int comm_size,
-                                                       MPI_Comm communicator)
+std::vector<uint64_t>
+ParallelSTLVector::DefineExtents(uint64_t local_size, int comm_size, MPI_Comm communicator)
 {
   // Get the local vector sizes per processor
   std::vector<uint64_t> local_sizes(comm_size, 0);
@@ -515,22 +517,22 @@ std::vector<uint64_t> ParallelSTLVector::DefineExtents(uint64_t local_size,
   return extents;
 }
 
-int ParallelSTLVector::FindOwnerPID(const uint64_t global_id) const
+int
+ParallelSTLVector::FindOwnerPID(const uint64_t global_id) const
 {
-  ChiInvalidArgumentIf(global_id >= global_size_,
-                       "Invalid global id specified.");
+  ChiInvalidArgumentIf(global_id >= global_size_, "Invalid global id specified.");
 
   for (int p = 0; p < process_count_; ++p)
     if (global_id >= extents_[p] and global_id < extents_[p + 1]) return p;
   return -1;
 }
 
-std::string ParallelSTLVector::PrintStr() const
+std::string
+ParallelSTLVector::PrintStr() const
 {
   std::stringstream ss;
   for (size_t i = 0; i < values_.size(); ++i)
-    ss << (i == 0 ? "[" : "") << values_[i]
-       << (i < values_.size() - 1 ? " " : "]");
+    ss << (i == 0 ? "[" : "") << values_[i] << (i < values_.size() - 1 ? " " : "]");
   return ss.str();
 }
 

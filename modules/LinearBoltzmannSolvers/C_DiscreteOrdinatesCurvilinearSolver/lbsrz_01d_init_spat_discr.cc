@@ -13,7 +13,8 @@
 namespace lbs
 {
 
-void DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
+void
+DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
 {
   Chi::log.Log() << "Initializing spatial discretization_.\n";
 
@@ -46,8 +47,7 @@ void DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
     }
   }
 
-  typedef chi_math::spatial_discretization::PieceWiseLinearDiscontinuous
-    SDM_PWLD;
+  typedef chi_math::spatial_discretization::PieceWiseLinearDiscontinuous SDM_PWLD;
   discretization_ = SDM_PWLD::New(*grid_ptr_, qorder, system);
 
   ComputeUnitIntegrals();
@@ -81,13 +81,13 @@ void DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
     }
   }
 
-  discretization_secondary_ =
-    SDM_PWLD::New(*grid_ptr_, qorder, system);
+  discretization_secondary_ = SDM_PWLD::New(*grid_ptr_, qorder, system);
 
   ComputeSecondaryUnitIntegrals();
 }
 
-void DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
+void
+DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
 {
   Chi::log.Log() << "Computing RZ secondary unit integrals.\n";
   const auto& sdm = *discretization_;
@@ -97,8 +97,7 @@ void DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
     chi_math::SpatialDiscretization::CylindricalRZSpatialWeightFunction;
 
   //======================================== Define lambda for cell-wise comps
-  auto ComputeCellUnitIntegrals =
-    [&sdm, &swf](const chi_mesh::Cell& cell)
+  auto ComputeCellUnitIntegrals = [&sdm, &swf](const chi_mesh::Cell& cell)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     //    const size_t cell_num_faces = cell.faces.size();
@@ -135,13 +134,11 @@ void DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
   for (const auto& cell : grid_ptr_->local_cells)
-    secondary_unit_cell_matrices_[cell.local_id_] =
-      ComputeCellUnitIntegrals(cell);
+    secondary_unit_cell_matrices_[cell.local_id_] = ComputeCellUnitIntegrals(cell);
 
   Chi::mpi.Barrier();
-  Chi::log.Log()
-    << "Secondary Cell matrices computed.         Process memory = "
-    << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB";
+  Chi::log.Log() << "Secondary Cell matrices computed.         Process memory = "
+                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB";
 }
 
 } // namespace lbs

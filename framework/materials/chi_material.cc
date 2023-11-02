@@ -7,7 +7,8 @@ namespace chi
 
 RegisterChiObject(chi_objects, Material);
 
-InputParameters Material::GetInputParameters()
+InputParameters
+Material::GetInputParameters()
 {
   InputParameters params = ChiObject::GetInputParameters();
 
@@ -15,8 +16,7 @@ InputParameters Material::GetInputParameters()
     "name", "The text name that will be associated with this material.");
 
   params.AddRequiredParameterArray(
-    "properties",
-    "Expects an array object handles that represents the properties.");
+    "properties", "Expects an array object handles that represents the properties.");
 
   return params;
 }
@@ -26,4 +26,4 @@ Material::Material(const chi::InputParameters& params)
 {
 }
 
-} // namespace chi_objects
+} // namespace chi

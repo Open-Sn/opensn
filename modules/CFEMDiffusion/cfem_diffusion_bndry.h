@@ -5,17 +5,17 @@
 
 namespace cfem_diffusion
 {
-  class Boundary;
-  
-  enum class BoundaryType : int
-  {
-    Reflecting = 1,
-    Dirichlet  = 2,
-    Neumann    = 3,
-    Robin      = 4,
-    Vacuum     = 5
-  };
-}
+class Boundary;
+
+enum class BoundaryType : int
+{
+  Reflecting = 1,
+  Dirichlet = 2,
+  Neumann = 3,
+  Robin = 4,
+  Vacuum = 5
+};
+} // namespace cfem_diffusion
 
 //###################################################################
 /**Parent class for diffusion boundaries*/
@@ -24,9 +24,8 @@ class cfem_diffusion::Boundary
 public:
   BoundaryType type_ = BoundaryType::Dirichlet;
 
-  std::array<double, 3> values_ = {0.,0.,0.};
+  std::array<double, 3> values_ = {0., 0., 0.};
 };
-
 
 // //###################################################################
 // /**Robin boundary condition is a natural (i.w., weak) boundary condition of
@@ -51,4 +50,4 @@ public:
 // <B>Dirichlet</B> boundary condition as this type of boundary condition is
 // strongly imposed in a different implementation.
 
-#endif //CFEM_DIFFUSION_BOUNDARY_H
+#endif // CFEM_DIFFUSION_BOUNDARY_H

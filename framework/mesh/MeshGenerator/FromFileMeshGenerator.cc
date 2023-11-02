@@ -14,7 +14,8 @@ namespace chi_mesh
 
 RegisterChiObject(chi_mesh, FromFileMeshGenerator);
 
-chi::InputParameters FromFileMeshGenerator::GetInputParameters()
+chi::InputParameters
+FromFileMeshGenerator::GetInputParameters()
 {
   chi::InputParameters params = MeshGenerator::GetInputParameters();
 
@@ -37,23 +38,19 @@ chi::InputParameters FromFileMeshGenerator::GetInputParameters()
 FromFileMeshGenerator::FromFileMeshGenerator(const chi::InputParameters& params)
   : MeshGenerator(params),
     filename_(params.GetParamValue<std::string>("filename")),
-    material_id_fieldname_(
-      params.GetParamValue<std::string>("material_id_fieldname")),
-    boundary_id_fieldname_(
-      params.GetParamValue<std::string>("boundary_id_fieldname"))
+    material_id_fieldname_(params.GetParamValue<std::string>("material_id_fieldname")),
+    boundary_id_fieldname_(params.GetParamValue<std::string>("boundary_id_fieldname"))
 {
   const std::filesystem::path filepath(filename_);
   const std::string extension = filepath.extension();
 }
 
 std::unique_ptr<UnpartitionedMesh>
-FromFileMeshGenerator::GenerateUnpartitionedMesh(
-  std::unique_ptr<UnpartitionedMesh> input_umesh)
+FromFileMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
-  ChiInvalidArgumentIf(
-    input_umesh != nullptr,
-    "FromFileMeshGenerator can not be preceded by another"
-    " mesh generator because it cannot process an input mesh");
+  ChiInvalidArgumentIf(input_umesh != nullptr,
+                       "FromFileMeshGenerator can not be preceded by another"
+                       " mesh generator because it cannot process an input mesh");
 
   UnpartitionedMesh::Options options;
   options.file_name = filename_;

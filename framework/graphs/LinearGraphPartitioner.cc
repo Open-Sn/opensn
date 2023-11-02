@@ -12,7 +12,8 @@ namespace chi
 
 RegisterChiObject(chi, LinearGraphPartitioner);
 
-InputParameters LinearGraphPartitioner::GetInputParameters()
+InputParameters
+LinearGraphPartitioner::GetInputParameters()
 {
   InputParameters params = GraphPartitioner::GetInputParameters();
 
@@ -35,21 +36,19 @@ InputParameters LinearGraphPartitioner::GetInputParameters()
 }
 
 LinearGraphPartitioner::LinearGraphPartitioner(const InputParameters& params)
-  : GraphPartitioner(params),
-    all_to_rank_(params.GetParamValue<int>("all_to_rank"))
+  : GraphPartitioner(params), all_to_rank_(params.GetParamValue<int>("all_to_rank"))
 {
 }
 
 /**Given a graph. Returns the partition ids of each row in the graph.*/
-std::vector<int64_t> LinearGraphPartitioner::Partition(
-  const std::vector<std::vector<uint64_t>>& graph,
-  const std::vector<chi_mesh::Vector3>&,
-  const int number_of_parts)
+std::vector<int64_t>
+LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
+                                  const std::vector<chi_mesh::Vector3>&,
+                                  const int number_of_parts)
 {
   Chi::log.Log0Verbose1() << "Partitioning with LinearGraphPartitioner";
 
-  const std::vector<chi::SubSetInfo> sub_sets =
-    chi::MakeSubSets(graph.size(), number_of_parts);
+  const std::vector<chi::SubSetInfo> sub_sets = chi::MakeSubSets(graph.size(), number_of_parts);
 
   std::vector<int64_t> pids(graph.size(), 0);
 

@@ -13,12 +13,11 @@
  *
  * Given a discretization method this solver will assemble the matrix \f$ A \f$
  * using
- * a system of linear equations. The solver can operate on 1D slabs, 2D polygon meshes
- * and 3D polyhedron meshes. Currently two spatial discretization schemes are
- * supported, Piecewise Linear Continous (PWLC) and
- * Piecewise Linear Discontinous (PWLD) using the Modified Interior
- * Penalty (MIP) method. The solver is fully parallel (using
- * PETSc).
+ * a system of linear equations. The solver can operate on 1D slabs, 2D polygon
+ * meshes and 3D polyhedron meshes. Currently two spatial discretization schemes
+ * are supported, Piecewise Linear Continous (PWLC) and Piecewise Linear
+ * Discontinous (PWLD) using the Modified Interior Penalty (MIP) method. The
+ * solver is fully parallel (using PETSc).
  *
  * Boundary conditions are specified by referencing unique boundary id's. i.e.
  * assuming one uses the extruder mesher the template boundary would've been
@@ -26,9 +25,9 @@
  * lateral periphery. The top and bottom boundaries are flat for extruded
  * geometries and therefore are assigned their own id's. In the extruded case
  * the last boundary index is always assigned to the top boundary and
- * second-to-last boundary index is always assigned to the bottom boundary. Boundary
- * types are specified using the ChiLua::chiDiffusionSetProperty function call,
- * using the BOUNDARY_TYPE property index.
+ * second-to-last boundary index is always assigned to the bottom boundary.
+ * Boundary types are specified using the ChiLua::chiDiffusionSetProperty
+ * function call, using the BOUNDARY_TYPE property index.
  *
  * The materials and source values are for now obtained from materials
  * associated with cells. The default property mapping is shown below. If

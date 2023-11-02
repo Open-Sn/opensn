@@ -54,10 +54,10 @@ public:
   int max_num_mess;
 
   AAH_ASynchronousCommunicator(FLUDS& fluds,
-              size_t num_groups,
-              size_t num_angles,
-              int sweep_eager_limit,
-              const chi::ChiMPICommunicatorSet& in_comm_set);
+                               size_t num_groups,
+                               size_t num_angles,
+                               int sweep_eager_limit,
+                               const chi::ChiMPICommunicatorSet& in_comm_set);
   bool DoneSending() const;
   void InitializeDelayedUpstreamData();
   void InitializeLocalAndDownstreamBuffers();

@@ -16,8 +16,7 @@
 namespace chi_unit_sim_tests
 {
 
-chi::ParameterBlock
-chiSimTest04_PWLC(const chi::InputParameters& params);
+chi::ParameterBlock chiSimTest04_PWLC(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*name_in_lua=*/chiSimTest04_PWLC,
@@ -62,27 +61,23 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
-  sdm.BuildSparsityPattern(
-    nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
+  sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(
-    A, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   //============================================= Source lambda
   lua_State* L = chi::Console::GetInstance().GetConsoleState();
-  auto CallLuaXYZFunction =
-    [&L](const std::string& lua_func_name, const chi_mesh::Vector3& xyz)
+  auto CallLuaXYZFunction = [&L](const std::string& lua_func_name, const chi_mesh::Vector3& xyz)
   {
     //============= Load lua function
     lua_getglobal(L, lua_func_name.c_str());
 
     //============= Error check lua function
     if (not lua_isfunction(L, -1))
-      throw std::logic_error(
-        "CallLuaXYZFunction attempted to access lua-function, " +
-        lua_func_name +
-        ", but it seems the function"
-        " could not be retrieved.");
+      throw std::logic_error("CallLuaXYZFunction attempted to access lua-function, " +
+                             lua_func_name +
+                             ", but it seems the function"
+                             " could not be retrieved.");
 
     //============= Push arguments
     lua_pushnumber(L, xyz.x);
@@ -98,9 +93,8 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
       lua_return = lua_tonumber(L, -1);
     }
     else
-      throw std::logic_error(
-        "CallLuaXYZFunction attempted to call lua-function, " + lua_func_name +
-        ", but the call failed." + xyz.PrintStr());
+      throw std::logic_error("CallLuaXYZFunction attempted to call lua-function, " + lua_func_name +
+                             ", but the call failed." + xyz.PrintStr());
 
     lua_pop(L, 1); // pop the double, or error code
 
@@ -126,8 +120,7 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
         double entry_aij = 0.0;
         for (size_t qp : qp_data.QuadraturePointIndices())
         {
-          entry_aij += qp_data.ShapeGrad(i, qp).Dot(qp_data.ShapeGrad(j, qp)) *
-                       qp_data.JxW(qp);
+          entry_aij += qp_data.ShapeGrad(i, qp).Dot(qp_data.ShapeGrad(j, qp)) * qp_data.JxW(qp);
         } // for qp
         Acell[i][j] = entry_aij;
       } // for j
@@ -170,8 +163,7 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
       {
         for (size_t j = 0; j < num_nodes; ++j)
         {
-          if (not node_boundary_flag[j])
-            MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
+          if (not node_boundary_flag[j]) MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
           else
           {
             double bval = CallLuaXYZFunction("MMS_phi", cell_node_xyzs[j]);
@@ -194,13 +186,13 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
 
   //============================================= Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A,                // Matrix
-    "PWLCDiffSolver", // Solver name
-    KSPCG,            // Solver type
-    PCGAMG,           // Preconditioner type
-    1.0e-6,           // Relative residual tolerance
-    1000);            // Max iterations
+  auto petsc_solver =
+    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,                // Matrix
+                                                        "PWLCDiffSolver", // Solver name
+                                                        KSPCG,            // Solver type
+                                                        PCGAMG,           // Preconditioner type
+                                                        1.0e-6, // Relative residual tolerance
+                                                        1000);  // Max iterations
 
   //============================================= Solve
   KSPSolve(petsc_solver.ksp, b, x);
@@ -229,8 +221,7 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
 
   ff->UpdateFieldVector(field);
 
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("CodeTut4_PWLC",
-                                                           {ff});
+  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("CodeTut4_PWLC", {ff});
 
   //============================================= Compute error
   // First get ghosted values
@@ -268,8 +259,8 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
   MPI_Allreduce(&local_error,  // sendbuf
                 &global_error, // recvbuf
                 1,
-                MPI_DOUBLE,      // count+datatype
-                MPI_SUM,         // operation
+                MPI_DOUBLE,     // count+datatype
+                MPI_SUM,        // operation
                 Chi::mpi.comm); // communicator
 
   global_error = std::sqrt(global_error);

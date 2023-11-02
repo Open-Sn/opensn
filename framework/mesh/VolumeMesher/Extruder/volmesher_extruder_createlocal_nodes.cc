@@ -7,16 +7,15 @@
 
 #include "chi_mpi.h"
 
-
 //###################################################################
 /** Creates nodes that are owned locally from the 2D template grid.*/
-void chi_mesh::VolumeMesherExtruder::
-CreateLocalNodes(chi_mesh::MeshContinuum& template_grid,
-                 chi_mesh::MeshContinuum& grid)
+void
+chi_mesh::VolumeMesherExtruder::CreateLocalNodes(chi_mesh::MeshContinuum& template_grid,
+                                                 chi_mesh::MeshContinuum& grid)
 {
   //================================================== For each layer
   std::set<uint64_t> vertex_ids_with_local_scope;
-  for (size_t iz=0; iz<(vertex_layers_.size() - 1); iz++)
+  for (size_t iz = 0; iz < (vertex_layers_.size() - 1); iz++)
   {
     for (const auto& template_cell : template_grid.local_cells)
     {
@@ -36,8 +35,8 @@ CreateLocalNodes(chi_mesh::MeshContinuum& template_grid,
         for (auto tc_vid : template_cell.vertex_ids_)
           vertex_set.insert(tc_vid + (iz + 1) * node_z_index_incr_);
       }
-    }//for template cell
-  }//for layer
+    } // for template cell
+  }   // for layer
 
   //============================================= Now add all nodes
   //                                              that are local or neighboring
@@ -53,8 +52,8 @@ CreateLocalNodes(chi_mesh::MeshContinuum& template_grid,
         grid.vertices.Insert(vid, Vector3(vertex.x, vertex.y, layer_z_level));
 
       ++vid;
-    }//for vertex
-  }//for layer
+    } // for vertex
+  }   // for layer
 
   grid.SetGlobalVertexCount(vid);
 }

@@ -8,7 +8,8 @@
  * Spherical Quadrilaterals", Nuclear Science and Engineering, 185:1,
  * pages 36-52, 2017.
  *
- * \image html "SLDFESQn40.png" "LDFE Spherical Quadrilaterals at a refinement level of n=40" width=800px
+ * \image html "SLDFESQn40.png" "LDFE Spherical Quadrilaterals at a refinement
+ * level of n=40" width=800px
  *
  *
  * # Synopsis
@@ -17,7 +18,8 @@
  * - A cube of side length \f$a=\frac{1}{\sqrt{3}}\f$ is inscribed within
  *   the unit sphere and the origin planes. This cube has three faces
  *   that project onto the unit sphere in the first octant.
- *   \image html "SLDFESQFig2.png" "The inscribed cube with one of the faces subdivided" width=800px
+ *   \image html "SLDFESQFig2.png" "The inscribed cube with one of the faces
+ * subdivided" width=800px
  * - Each face of the cube can be described by a local coordinate system,
  *   \f$\tilde{x}\f$, \f$ \tilde{y}\f$. In this reference frame each face
  *   is identically subdivided into an orthogonal grid. The generated
@@ -55,14 +57,16 @@
  * specify exactly how to generate this spacing but only stated that their
  * spacing minimizes the max/avg and max/min ratio of projected SQ to
  * 1.1 and 1.3 respectively. We found that the application of a weighting
- * function, \f$ \alpha (\cos \beta \frac{\pi}{2} x - \cos \beta \frac{\pi}{2})\f$
- * produces the optimal spacing. See the code for additional clarification.
+ * function, \f$ \alpha (\cos \beta \frac{\pi}{2} x - \cos \beta
+ * \frac{\pi}{2})\f$ produces the optimal spacing. See the code for additional
+ * clarification.
  *
  * ## Placement of the quadrature points
  * Instead of using a multi-variate secant method to place the quadrature
  * points we found that placing the points on the 4 Gauss-Legendre points
- * for a quadrilateral (\f$[\pm \frac{1}{\sqrt{3}},\pm \frac{1}{\sqrt{3}} ]\f$)still produced 4th order convergence and added a
- * lot of speed to the algorithm.
+ * for a quadrilateral (\f$[\pm \frac{1}{\sqrt{3}},\pm \frac{1}{\sqrt{3}}
+ * ]\f$)still produced 4th order convergence and added a lot of speed to the
+ * algorithm.
  *
  * ## Integration of basis functions
  * The determinant of the Jacobian can be hard to derive. It can be done

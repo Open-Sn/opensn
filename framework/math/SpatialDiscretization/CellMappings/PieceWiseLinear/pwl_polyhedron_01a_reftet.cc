@@ -3,9 +3,10 @@
 namespace chi_math::cell_mapping
 {
 
-double PieceWiseLinearPolyhedronMapping::TetShape(uint32_t index,
-                                         const chi_mesh::Vector3& qpoint,
-                                         bool on_surface /*=false*/)
+double
+PieceWiseLinearPolyhedronMapping::TetShape(uint32_t index,
+                                           const chi_mesh::Vector3& qpoint,
+                                           bool on_surface /*=false*/)
 {
   double value = 0.0;
 
@@ -17,7 +18,8 @@ double PieceWiseLinearPolyhedronMapping::TetShape(uint32_t index,
   return value;
 }
 
-double PieceWiseLinearPolyhedronMapping::TetGradShape_x(const uint32_t index)
+double
+PieceWiseLinearPolyhedronMapping::TetGradShape_x(const uint32_t index)
 {
   double value = 0.0;
   if (index == 0) { value = -1.0; }
@@ -28,7 +30,8 @@ double PieceWiseLinearPolyhedronMapping::TetGradShape_x(const uint32_t index)
   return value;
 }
 
-double PieceWiseLinearPolyhedronMapping::TetGradShape_y(const uint32_t index)
+double
+PieceWiseLinearPolyhedronMapping::TetGradShape_y(const uint32_t index)
 {
   double value = 0.0;
   if (index == 0) { value = -1.0; }
@@ -39,7 +42,8 @@ double PieceWiseLinearPolyhedronMapping::TetGradShape_y(const uint32_t index)
   return value;
 }
 
-double PieceWiseLinearPolyhedronMapping::TetGradShape_z(const uint32_t index)
+double
+PieceWiseLinearPolyhedronMapping::TetGradShape_z(const uint32_t index)
 {
   double value = 0.0;
   if (index == 0) { value = -1.0; }

@@ -14,8 +14,9 @@
  * \param solution Vector in to which the solution will be parsed.
  * \param use_initial_guess bool [Default:False] Flag, when set, will
  *                 use the values of the output solution as initial guess.*/
-void lbs::acceleration::DiffusionSolver::Solve(
-  std::vector<double>& solution, bool use_initial_guess /*=false*/)
+void
+lbs::acceleration::DiffusionSolver::Solve(std::vector<double>& solution,
+                                          bool use_initial_guess /*=false*/)
 {
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
   Vec x;
@@ -26,25 +27,20 @@ void lbs::acceleration::DiffusionSolver::Solve(
   else
     KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
 
-  KSPSetTolerances(ksp_,
-                   options.residual_tolerance,
-                   options.residual_tolerance,
-                   1.0e50,
-                   options.max_iters);
+  KSPSetTolerances(
+    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters);
 
   if (options.perform_symmetry_check)
   {
     PetscBool symmetry = PETSC_FALSE;
     MatIsSymmetric(A_, 1.0e-6, &symmetry);
-    if (symmetry == PETSC_FALSE)
-      throw std::logic_error(fname + ":Symmetry check failed");
+    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   if (options.verbose)
   {
     using namespace chi_math::PETScUtils;
-    KSPSetConvergenceTest(
-      ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
+    KSPSetConvergenceTest(ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
 
     KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
 
@@ -77,8 +73,7 @@ void lbs::acceleration::DiffusionSolver::Solve(
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
 
-    Chi::log.Log() << "Convergence Reason: "
-                   << GetPETScConvergedReasonstring(reason);
+    Chi::log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
   }
 
   //============================================= Transfer petsc solution to
@@ -101,8 +96,8 @@ void lbs::acceleration::DiffusionSolver::Solve(
  * \param petsc_solution Vector in to which the solution will be parsed.
  * \param use_initial_guess bool [Default:False] Flag, when set, will
  *                 use the values of the output solution as initial guess.*/
-void lbs::acceleration::DiffusionSolver::Solve(
-  Vec petsc_solution, bool use_initial_guess /*=false*/)
+void
+lbs::acceleration::DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess /*=false*/)
 {
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
   Vec x;
@@ -113,25 +108,20 @@ void lbs::acceleration::DiffusionSolver::Solve(
   else
     KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
 
-  KSPSetTolerances(ksp_,
-                   options.residual_tolerance,
-                   options.residual_tolerance,
-                   1.0e50,
-                   options.max_iters);
+  KSPSetTolerances(
+    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters);
 
   if (options.perform_symmetry_check)
   {
     PetscBool symmetry = PETSC_FALSE;
     MatIsSymmetric(A_, 1.0e-6, &symmetry);
-    if (symmetry == PETSC_FALSE)
-      throw std::logic_error(fname + ":Symmetry check failed");
+    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   if (options.verbose)
   {
     using namespace chi_math::PETScUtils;
-    KSPSetConvergenceTest(
-      ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
+    KSPSetConvergenceTest(ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
 
     KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
 
@@ -156,8 +146,7 @@ void lbs::acceleration::DiffusionSolver::Solve(
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
 
-    Chi::log.Log() << "Convergence Reason: "
-                   << GetPETScConvergedReasonstring(reason);
+    Chi::log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
   }
 
   //============================================= Transfer petsc solution to

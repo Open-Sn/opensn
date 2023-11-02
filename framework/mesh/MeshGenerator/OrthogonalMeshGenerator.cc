@@ -9,7 +9,8 @@ namespace chi_mesh
 
 RegisterChiObject(chi_mesh, OrthogonalMeshGenerator);
 
-chi::InputParameters OrthogonalMeshGenerator::GetInputParameters()
+chi::InputParameters
+OrthogonalMeshGenerator::GetInputParameters()
 {
   chi::InputParameters params = MeshGenerator::GetInputParameters();
 
@@ -23,8 +24,7 @@ chi::InputParameters OrthogonalMeshGenerator::GetInputParameters()
   return params;
 }
 
-OrthogonalMeshGenerator::OrthogonalMeshGenerator(
-  const chi::InputParameters& params)
+OrthogonalMeshGenerator::OrthogonalMeshGenerator(const chi::InputParameters& params)
   : MeshGenerator(params)
 {
   //======================================== Parse the node_sets param
@@ -35,18 +35,16 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(
 
     for (const auto& node_list_block : node_sets_param)
     {
-      ChiInvalidArgumentIf(
-        node_list_block.Type() != chi::ParameterBlockType::ARRAY,
-        "The entries of \"node_sets\" are required to be of type \"Array\".");
+      ChiInvalidArgumentIf(node_list_block.Type() != chi::ParameterBlockType::ARRAY,
+                           "The entries of \"node_sets\" are required to be of type \"Array\".");
 
       node_sets_.push_back(node_list_block.GetVectorValue<double>());
     }
   }
 
   //======================================== Check they were not empty and <=3
-  ChiInvalidArgumentIf(
-    node_sets_.empty(),
-    "No nodes have been provided. At least one node set must be provided");
+  ChiInvalidArgumentIf(node_sets_.empty(),
+                       "No nodes have been provided. At least one node set must be provided");
 
   ChiInvalidArgumentIf(node_sets_.size() > 3,
                        "More than 3 node sets have been provided. The "
@@ -55,11 +53,10 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(
   size_t ns = 0;
   for (const auto& node_set : node_sets_)
   {
-    ChiInvalidArgumentIf(
-      node_set.size() < 2,
-      "Node set " + std::to_string(ns) + " only has " +
-        std::to_string(node_set.size()) +
-        " nodes. A minimum of 2 is required to define a cell.");
+    ChiInvalidArgumentIf(node_set.size() < 2,
+                         "Node set " + std::to_string(ns) + " only has " +
+                           std::to_string(node_set.size()) +
+                           " nodes. A minimum of 2 is required to define a cell.");
     ++ns;
   }
 
@@ -97,21 +94,17 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(
 
 // ##################################################################
 std::unique_ptr<UnpartitionedMesh>
-OrthogonalMeshGenerator::GenerateUnpartitionedMesh(
-  std::unique_ptr<UnpartitionedMesh> input_umesh)
+OrthogonalMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
-  ChiInvalidArgumentIf(
-    input_umesh != nullptr,
-    "OrthogonalMeshGenerator can not be preceded by another"
-    " mesh generator because it cannot process an input mesh");
+  ChiInvalidArgumentIf(input_umesh != nullptr,
+                       "OrthogonalMeshGenerator can not be preceded by another"
+                       " mesh generator because it cannot process an input mesh");
 
-  if (node_sets_.size() == 1)
-    return CreateUnpartitioned1DOrthoMesh(node_sets_[0]);
+  if (node_sets_.size() == 1) return CreateUnpartitioned1DOrthoMesh(node_sets_[0]);
   else if (node_sets_.size() == 2)
     return CreateUnpartitioned2DOrthoMesh(node_sets_[0], node_sets_[1]);
   else if (node_sets_.size() == 3)
-    return CreateUnpartitioned3DOrthoMesh(
-      node_sets_[0], node_sets_[1], node_sets_[2]);
+    return CreateUnpartitioned3DOrthoMesh(node_sets_[0], node_sets_[1], node_sets_[2]);
   else
     throw std::logic_error(
       ""); // This will never get triggered because of the checks in constructor
@@ -119,8 +112,7 @@ OrthogonalMeshGenerator::GenerateUnpartitionedMesh(
 
 // ##################################################################
 std::unique_ptr<UnpartitionedMesh>
-OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(
-  const std::vector<double>& vertices)
+OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double>& vertices)
 {
   auto umesh = std::make_unique<UnpartitionedMesh>();
 
@@ -149,8 +141,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(
   const size_t max_cz = zverts.size() - 2;
   for (size_t c = 0; c < (zverts.size() - 1); ++c)
   {
-    auto cell =
-      new UnpartitionedMesh::LightWeightCell(CellType::SLAB, CellType::SLAB);
+    auto cell = new UnpartitionedMesh::LightWeightCell(CellType::SLAB, CellType::SLAB);
 
     cell->vertex_ids = {c, c + 1};
 
@@ -188,9 +179,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(
 
 // ##################################################################
 std::unique_ptr<UnpartitionedMesh>
-OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(
-  const std::vector<double>& vertices_1d_x,
-  const std::vector<double>& vertices_1d_y)
+OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double>& vertices_1d_x,
+                                                        const std::vector<double>& vertices_1d_y)
 {
   auto umesh = std::make_unique<UnpartitionedMesh>();
 
@@ -218,8 +208,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(
       for (size_t j = 0; j < Nx; ++j)
       {
         vertex_ij_to_i_map[i][j] = k++;
-        umesh->GetVertices().emplace_back(
-          vertices_1d_x[j], vertices_1d_y[i], 0.0);
+        umesh->GetVertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], 0.0);
       } // for j
     }   // for i
   }
@@ -241,8 +230,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(
   {
     for (size_t j = 0; j < (Nx - 1); ++j)
     {
-      auto cell = new UnpartitionedMesh::LightWeightCell(
-        CellType::POLYGON, CellType::QUADRILATERAL);
+      auto cell =
+        new UnpartitionedMesh::LightWeightCell(CellType::POLYGON, CellType::QUADRILATERAL);
 
       // vertex ids:   face ids:
       //                 2
@@ -251,19 +240,16 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(
       //    0---1      x---x
       //                 0
 
-      cell->vertex_ids = {
-        vmap[i][j], vmap[i][j + 1], vmap[i + 1][j + 1], vmap[i + 1][j]};
+      cell->vertex_ids = {vmap[i][j], vmap[i][j + 1], vmap[i + 1][j + 1], vmap[i + 1][j]};
 
       for (int v = 0; v < 4; ++v)
       {
         UnpartitionedMesh::LightWeightFace face;
 
         if (v < 3)
-          face.vertex_ids =
-            std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[v + 1]};
+          face.vertex_ids = std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[v + 1]};
         else
-          face.vertex_ids =
-            std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[0]};
+          face.vertex_ids = std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[0]};
 
         face.neighbor = true;
         // clang-format off
@@ -294,10 +280,9 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(
 
 // ##################################################################
 std::unique_ptr<UnpartitionedMesh>
-OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(
-  const std::vector<double>& vertices_1d_x,
-  const std::vector<double>& vertices_1d_y,
-  const std::vector<double>& vertices_1d_z)
+OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double>& vertices_1d_x,
+                                                        const std::vector<double>& vertices_1d_y,
+                                                        const std::vector<double>& vertices_1d_z)
 {
   auto umesh = std::make_unique<UnpartitionedMesh>();
 
@@ -339,8 +324,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(
         for (size_t k = 0; k < Nz; ++k)
         {
           vertex_ijk_to_i_map[i][j][k] = c++;
-          umesh->GetVertices().emplace_back(
-            vertices_1d_x[j], vertices_1d_y[i], vertices_1d_z[k]);
+          umesh->GetVertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], vertices_1d_z[k]);
         } // for k
       }   // for j
     }     // for i
@@ -370,8 +354,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(
     {
       for (size_t k = 0; k < (Nz - 1); ++k)
       {
-        auto cell = new UnpartitionedMesh::LightWeightCell(
-          CellType::POLYHEDRON, CellType::HEXAHEDRON);
+        auto cell =
+          new UnpartitionedMesh::LightWeightCell(CellType::POLYHEDRON, CellType::HEXAHEDRON);
 
         cell->vertex_ids = std::vector<uint64_t>{vmap[i][j][k],
                                                  vmap[i][j + 1][k],
@@ -399,10 +383,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(
         {
           UnpartitionedMesh::LightWeightFace face;
 
-          face.vertex_ids = std::vector<uint64_t>{vmap[i][j][k],
-                                                  vmap[i][j][k + 1],
-                                                  vmap[i + 1][j][k + 1],
-                                                  vmap[i + 1][j][k]};
+          face.vertex_ids = std::vector<uint64_t>{
+            vmap[i][j][k], vmap[i][j][k + 1], vmap[i + 1][j][k + 1], vmap[i + 1][j][k]};
           face.neighbor = (j == 0) ? 1 /*XMIN*/ : cmap[i][j - 1][k];
           face.has_neighbor = (j != 0);
           cell->faces.push_back(face);
@@ -423,10 +405,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(
         {
           UnpartitionedMesh::LightWeightFace face;
 
-          face.vertex_ids = std::vector<uint64_t>{vmap[i][j][k],
-                                                  vmap[i][j + 1][k],
-                                                  vmap[i][j + 1][k + 1],
-                                                  vmap[i][j][k + 1]};
+          face.vertex_ids = std::vector<uint64_t>{
+            vmap[i][j][k], vmap[i][j + 1][k], vmap[i][j + 1][k + 1], vmap[i][j][k + 1]};
           face.neighbor = (i == 0) ? 3 /*YMIN*/ : cmap[i - 1][j][k];
           face.has_neighbor = (i != 0);
           cell->faces.push_back(face);
@@ -447,10 +427,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(
         {
           UnpartitionedMesh::LightWeightFace face;
 
-          face.vertex_ids = std::vector<uint64_t>{vmap[i][j][k],
-                                                  vmap[i + 1][j][k],
-                                                  vmap[i + 1][j + 1][k],
-                                                  vmap[i][j + 1][k]};
+          face.vertex_ids = std::vector<uint64_t>{
+            vmap[i][j][k], vmap[i + 1][j][k], vmap[i + 1][j + 1][k], vmap[i][j + 1][k]};
           face.neighbor = (k == 0) ? 5 /*ZMIN*/ : cmap[i][j][k - 1];
           face.has_neighbor = (k != 0);
           cell->faces.push_back(face);

@@ -16,9 +16,9 @@
  *      create exactly critical cross sections for a transient initial
  *      condition.
  */
-void chi_physics::MultiGroupXS::
-ExportToChiXSFile(const std::string &file_name,
-                  const double fission_scaling /* = 1.0 */) const
+void
+chi_physics::MultiGroupXS::ExportToChiXSFile(const std::string& file_name,
+                                             const double fission_scaling /* = 1.0 */) const
 {
   Chi::log.Log() << "Exporting transport cross section to file: " << file_name;
 
@@ -30,7 +30,7 @@ ExportToChiXSFile(const std::string &file_name,
   auto Print1DXS = [](std::ofstream& ofile,
                       const std::string& prefix,
                       const std::vector<double>& xs,
-                      double min_value=-1.0)
+                      double min_value = -1.0)
   {
     bool proceed = false;
     if (min_value >= 0.0)
@@ -42,8 +42,7 @@ ExportToChiXSFile(const std::string &file_name,
           break;
         }
 
-      if (not proceed)
-        return;
+      if (not proceed) return;
     }
 
     ofile << "\n";
@@ -51,8 +50,7 @@ ExportToChiXSFile(const std::string &file_name,
     {
       unsigned int g = 0;
       for (auto val : xs)
-        ofile << g++ << " "
-              << val << "\n";
+        ofile << g++ << " " << val << "\n";
     }
     ofile << prefix << "_END\n";
   };
@@ -89,26 +87,23 @@ ExportToChiXSFile(const std::string &file_name,
     fractional_yields.push_back(precursor.fractional_yield);
   }
 
-
-
   ofile << "# Exported cross section from ChiTech\n";
   ofile << "# Date: " << chi::Timer::GetLocalDateTimeString() << "\n";
   ofile << "NUM_GROUPS " << NumGroups() << "\n";
   ofile << "NUM_MOMENTS " << ScatteringOrder() + 1 << "\n";
-  if (NumPrecursors() > 0)
-    ofile << "NUM_PRECURSORS " << NumPrecursors() << "\n";
+  if (NumPrecursors() > 0) ofile << "NUM_PRECURSORS " << NumPrecursors() << "\n";
 
-  //basic cross section data
+  // basic cross section data
   Print1DXS(ofile, "SIGMA_T", SigmaTotal(), 1.0e-20);
   Print1DXS(ofile, "SIGMA_A", SigmaAbsorption(), 1.0e-20);
 
-  //fission data
+  // fission data
   if (not SigmaFission().empty())
   {
     std::vector<double> scaled_sigma_f = SigmaFission();
     if (fission_scaling != 1.0)
     {
-      for (auto& val: scaled_sigma_f)
+      for (auto& val : scaled_sigma_f)
         val *= fission_scaling;
     }
 
@@ -117,65 +112,56 @@ ExportToChiXSFile(const std::string &file_name,
     {
       Print1DXS(ofile, "NU_PROMPT", nu_prompt, 1.0e-20);
       Print1DXS(ofile, "NU_DELAYED", nu_delayed, 1.0e-20);
-//      Print1DXS(ofile, "CHI_PROMPT", chi_prompt, 1.0e-20);
+      //      Print1DXS(ofile, "CHI_PROMPT", chi_prompt, 1.0e-20);
 
       ofile << "\nCHI_DELAYED_BEGIN\n";
       const auto& precursors = Precursors();
       for (unsigned int j = 0; j < NumPrecursors(); ++j)
         for (unsigned int g = 0; g < NumGroups(); ++g)
           ofile << "G_PRECURSOR_VAL"
-                << " " << g
-                << " " << j
-                << " " << precursors[j].emission_spectrum[g]
-                << "\n";
+                << " " << g << " " << j << " " << precursors[j].emission_spectrum[g] << "\n";
       ofile << "CHI_DELAYED_END\n";
 
-      Print1DXS(ofile, "PRECURSOR_DECAY_CONSTANTS",
-                decay_constants, 1.0e-20);
-      Print1DXS(ofile, "PRECURSOR_FRACTIONAL_YIELDS",
-                fractional_yields, 1.0e-20);
-
+      Print1DXS(ofile, "PRECURSOR_DECAY_CONSTANTS", decay_constants, 1.0e-20);
+      Print1DXS(ofile, "PRECURSOR_FRACTIONAL_YIELDS", fractional_yields, 1.0e-20);
     }
     else
     {
       Print1DXS(ofile, "NU", nu, 1.0e-20);
-//      Print1DXS(ofile, "CHI", chi, 1.0e-20);
+      //      Print1DXS(ofile, "CHI", chi, 1.0e-20);
     }
   }
 
-  //inverse speed data
-  if (not InverseVelocity().empty())
-    Print1DXS(ofile, "INV_VELOCITY", InverseVelocity(), 1.0e-20);
+  // inverse speed data
+  if (not InverseVelocity().empty()) Print1DXS(ofile, "INV_VELOCITY", InverseVelocity(), 1.0e-20);
 
-  //transfer matrices
+  // transfer matrices
   if (not TransferMatrices().empty())
   {
     ofile << "\n";
     ofile << "TRANSFER_MOMENTS_BEGIN\n";
     for (size_t ell = 0; ell < TransferMatrices().size(); ++ell)
     {
-      if (ell ==0 ) ofile << "#Zeroth moment (l=0)\n";
-      else          ofile << "#(l=" << ell << ")\n";
+      if (ell == 0) ofile << "#Zeroth moment (l=0)\n";
+      else
+        ofile << "#(l=" << ell << ")\n";
 
       const auto& matrix = TransferMatrix(ell);
 
       for (size_t g = 0; g < matrix.rowI_values_.size(); ++g)
       {
         const auto& col_indices = matrix.rowI_indices_[g];
-        const auto& col_values  = matrix.rowI_values_[g];
+        const auto& col_values = matrix.rowI_values_[g];
 
-        for (size_t k=0; k<col_indices.size(); ++k)
-          ofile << "M_GPRIME_G_VAL "
-                << ell << " "
-                << col_indices[k] << " "
-                << g << " "
+        for (size_t k = 0; k < col_indices.size(); ++k)
+          ofile << "M_GPRIME_G_VAL " << ell << " " << col_indices[k] << " " << g << " "
                 << col_values[k] << "\n";
-      }//for g
+      } // for g
 
       ofile << "\n";
-    }//for ell
+    } // for ell
     ofile << "TRANSFER_MOMENTS_END\n";
-  }//if has transfer matrices
+  } // if has transfer matrices
 
   if (not ProductionMatrix().empty())
   {
@@ -188,14 +174,9 @@ ExportToChiXSFile(const std::string &file_name,
       const auto& prod = F[g];
       for (unsigned int gp = 0; gp < NumGroups(); ++gp)
       {
-        const double value =
-            fission_scaling != 1.0 ?
-            prod[gp] * fission_scaling : prod[gp];
+        const double value = fission_scaling != 1.0 ? prod[gp] * fission_scaling : prod[gp];
 
-        ofile << "G_GPRIME_VAL "
-              << g << " "
-              << gp << " "
-              << value << "\n";
+        ofile << "G_GPRIME_VAL " << g << " " << gp << " " << value << "\n";
       }
     }
   }
@@ -203,5 +184,6 @@ ExportToChiXSFile(const std::string &file_name,
   ofile.close();
 
   Chi::log.Log0Verbose1() << "Done exporting transport "
-                             "cross section to file: " << file_name;
+                             "cross section to file: "
+                          << file_name;
 }

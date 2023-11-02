@@ -15,21 +15,21 @@ RegisterWrapperFunction(/*namespace_in_lua=*/chi,
                         /*syntax_function=*/GetSyntax_ExecutePostProcessors,
                         /*actual_function=*/ExecutePostProcessors);
 
-InputParameters GetSyntax_ExecutePostProcessors()
+InputParameters
+GetSyntax_ExecutePostProcessors()
 {
   InputParameters params;
 
-  params.SetGeneralDescription(
-    "Wrapper function to manually execute post-processors");
+  params.SetGeneralDescription("Wrapper function to manually execute post-processors");
   params.SetDocGroup("doc_PPUtils");
 
-  params.AddRequiredParameterArray(
-    "arg0", "A list of post-processor names or handles.");
+  params.AddRequiredParameterArray("arg0", "A list of post-processor names or handles.");
 
   return params;
 }
 
-ParameterBlock ExecutePostProcessors(const InputParameters& params)
+ParameterBlock
+ExecutePostProcessors(const InputParameters& params)
 {
   const auto& arg_array = params.GetParam("arg0");
 
@@ -70,14 +70,12 @@ ParameterBlock ExecutePostProcessors(const InputParameters& params)
 
     for (const size_t handle : handle_list)
     {
-      auto& pp = Chi::GetStackItem<PostProcessor>(
-        Chi::postprocessor_stack, handle, __FUNCTION__);
+      auto& pp = Chi::GetStackItem<PostProcessor>(Chi::postprocessor_stack, handle, __FUNCTION__);
       pp_list.push_back(&pp);
     }
   }
   else
-    ChiInvalidArgument("The array is of type ARRAY<" +
-                       ParameterBlockTypeName(first_param_type) +
+    ChiInvalidArgument("The array is of type ARRAY<" + ParameterBlockTypeName(first_param_type) +
                        ">. Only ARRAY<STRING> or ARRAY<INTEGER> is allowed.");
 
   Event blank_event("ManualExecutation", 0);

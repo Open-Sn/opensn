@@ -64,14 +64,12 @@ public:
   template <typename T>
   struct IsString
   {
-    static constexpr bool value =
-      std::is_same_v<T, std::string> or std::is_same_v<T, const char*>;
+    static constexpr bool value = std::is_same_v<T, std::string> or std::is_same_v<T, const char*>;
   };
   template <typename T>
   struct IsInteger
   {
-    static constexpr bool value =
-      std::is_integral_v<T> and not std::is_same_v<T, bool>;
+    static constexpr bool value = std::is_integral_v<T> and not std::is_same_v<T, bool>;
   };
 
   // Constructors
@@ -92,8 +90,8 @@ public:
   template <typename T>
   explicit ParameterBlock(const std::string& name, T value) : name_(name)
   {
-    constexpr bool is_supported = IsBool<T>::value or IsFloat<T>::value or
-                                  IsString<T>::value or IsInteger<T>::value;
+    constexpr bool is_supported =
+      IsBool<T>::value or IsFloat<T>::value or IsString<T>::value or IsInteger<T>::value;
 
     static_assert(is_supported, "Value type not supported for parameter block");
 
@@ -120,7 +118,7 @@ public:
   // Accessors
   ParameterBlockType Type() const;
   /**Returns true if the parameter block comprises a single value of any of
-  * the types BOOLEAN, FLOAT, STRING, INTEGER.*/
+   * the types BOOLEAN, FLOAT, STRING, INTEGER.*/
   bool IsScalar() const;
   /**Returns a string version of the type.*/
   std::string TypeName() const;
@@ -130,8 +128,8 @@ public:
   /**Returns the sub-parameters of this block.*/
   const std::vector<ParameterBlock>& Parameters() const;
   /**Returns whether or not the block has a value. If this block has
-* sub-parameters it should not have a value. This is a good way to
-* check if the block is actually a single value.*/
+   * sub-parameters it should not have a value. This is a good way to
+   * check if the block is actually a single value.*/
   bool HasValue() const;
 
   // Mutators
@@ -151,8 +149,7 @@ public:
   /**Checks that the block is of the given type. If it is not it
    * will throw an exception `std::logic_error`.*/
   void RequireBlockTypeIs(ParameterBlockType type) const;
-  void RequireParameterBlockTypeIs(const std::string& param_name,
-                                   ParameterBlockType type) const
+  void RequireParameterBlockTypeIs(const std::string& param_name, ParameterBlockType type) const
   {
     GetParam(param_name).RequireBlockTypeIs(type);
   }
@@ -194,8 +191,7 @@ public:
   T GetValue() const
   {
     if (value_ptr_ == nullptr)
-      throw std::logic_error(error_origin_scope_ +
-                             std::string(__PRETTY_FUNCTION__) +
+      throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
                              ": Value not available for block type " +
                              ParameterBlockTypeName(Type()));
     try
@@ -204,8 +200,7 @@ public:
     }
     catch (const std::exception& exc)
     {
-      throw std::logic_error(error_origin_scope_ + ":" + Name() + " " +
-                             exc.what());
+      throw std::logic_error(error_origin_scope_ + ":" + Name() + " " + exc.what());
     }
   }
 
@@ -220,9 +215,8 @@ public:
     }
     catch (const std::out_of_range& oor)
     {
-      throw std::out_of_range(
-        error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
-        ": Parameter \"" + param_name + "\" not present in block");
+      throw std::out_of_range(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
+                              ": Parameter \"" + param_name + "\" not present in block");
     }
   }
 
@@ -232,8 +226,7 @@ public:
   std::vector<T> GetVectorValue() const
   {
     if (Type() != ParameterBlockType::ARRAY)
-      throw std::logic_error(error_origin_scope_ +
-                             std::string(__PRETTY_FUNCTION__) +
+      throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
                              ": Invalid type requested for parameter of type " +
                              ParameterBlockTypeName(Type()));
 
@@ -246,13 +239,12 @@ public:
     // Check that all other parameters are of the required type
     for (const auto& param : parameters_)
       if (param.Type() != front_param.Type())
-        throw std::logic_error(
-          error_origin_scope_ + " " + std::string(__PRETTY_FUNCTION__) +
-          ": Parameter \"" + name_ +
-          "\", cannot construct vector from block because "
-          "the sub_parameters do not all have the correct type. param->" +
-          ParameterBlockTypeName(param.Type()) + " vs param0->" +
-          ParameterBlockTypeName(front_param.Type()));
+        throw std::logic_error(error_origin_scope_ + " " + std::string(__PRETTY_FUNCTION__) +
+                               ": Parameter \"" + name_ +
+                               "\", cannot construct vector from block because "
+                               "the sub_parameters do not all have the correct type. param->" +
+                               ParameterBlockTypeName(param.Type()) + " vs param0->" +
+                               ParameterBlockTypeName(front_param.Type()));
 
     const size_t num_params = parameters_.size();
     for (size_t k = 0; k < num_params; ++k)
@@ -319,8 +311,7 @@ public:
 
   /**Given a reference to a string, recursively travels the parameter
    * tree and print values into the reference string.*/
-  void RecursiveDumpToString(std::string& outstr,
-                             const std::string& offset = "") const;
+  void RecursiveDumpToString(std::string& outstr, const std::string& offset = "") const;
 
   void RecursiveDumpToJSON(std::string& outstr) const;
 };

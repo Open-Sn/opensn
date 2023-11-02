@@ -9,8 +9,7 @@
 chi_mesh::UnpartitionedMesh::LightWeightCell*
 chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 {
-  const std::string fname =
-    "chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolyhedron";
+  const std::string fname = "chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolyhedron";
 
   CellType sub_type;
   switch (vtk_cell->GetCellType())
@@ -55,12 +54,8 @@ chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
     // need to remap the vertices. We do however need to remap the faces.
     case CellType::HEXAHEDRON:
     {
-      std::vector<std::vector<uint64_t>> face_vids = {{1, 2, 6, 5},
-                                                      {3, 0, 4, 7},
-                                                      {2, 3, 7, 6},
-                                                      {0, 1, 5, 4},
-                                                      {4, 5, 6, 7},
-                                                      {3, 2, 1, 0}};
+      std::vector<std::vector<uint64_t>> face_vids = {
+        {1, 2, 6, 5}, {3, 0, 4, 7}, {2, 3, 7, 6}, {0, 1, 5, 4}, {4, 5, 6, 7}, {3, 2, 1, 0}};
       for (int f = 0; f < 6; ++f)
       {
         LightWeightFace face;
@@ -100,10 +95,7 @@ chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
     // face orientation
     case CellType::TETRAHEDRON:
     {
-      std::vector<std::vector<uint64_t>> face_vids = {{0, 2, 1},
-                                                      {0, 1, 3},
-                                                      {0, 3, 2},
-                                                      {3, 1, 2}};
+      std::vector<std::vector<uint64_t>> face_vids = {{0, 2, 1}, {0, 1, 3}, {0, 3, 2}, {3, 1, 2}};
       for (int f = 0; f < 4; ++f)
       {
         LightWeightFace face;
@@ -147,8 +139,7 @@ chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 chi_mesh::UnpartitionedMesh::LightWeightCell*
 chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolygon(vtkCell* vtk_cell)
 {
-  const std::string fname =
-    "chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolygon";
+  const std::string fname = "chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolygon";
 
   CellType sub_type;
   switch (vtk_cell->GetCellType())
@@ -186,8 +177,7 @@ chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolygon(vtkCell* vtk_cell)
     LightWeightFace face;
 
     auto v0_id = poly_cell->vertex_ids[f];
-    auto v1_id = (f < (num_cfaces - 1)) ? poly_cell->vertex_ids[f + 1]
-                                        : poly_cell->vertex_ids[0];
+    auto v1_id = (f < (num_cfaces - 1)) ? poly_cell->vertex_ids[f + 1] : poly_cell->vertex_ids[0];
 
     face.vertex_ids.reserve(2);
     face.vertex_ids.push_back(v0_id);
@@ -204,8 +194,7 @@ chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolygon(vtkCell* vtk_cell)
 chi_mesh::UnpartitionedMesh::LightWeightCell*
 chi_mesh::UnpartitionedMesh::CreateCellFromVTKLine(vtkCell* vtk_cell)
 {
-  const std::string fname =
-    "chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolygon";
+  const std::string fname = "chi_mesh::UnpartitionedMesh::CreateCellFromVTKPolygon";
 
   CellType sub_type;
   switch (vtk_cell->GetCellType())

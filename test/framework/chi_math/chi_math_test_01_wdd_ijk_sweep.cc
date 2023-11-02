@@ -14,8 +14,7 @@
 namespace chi_unit_tests
 {
 
-chi::ParameterBlock
-chi_math_Test01_WDD_IJK_Sweep(const chi::InputParameters& params);
+chi::ParameterBlock chi_math_Test01_WDD_IJK_Sweep(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*name_in_lua=*/chi_math_Test01_WDD_IJK_Sweep,
@@ -24,13 +23,14 @@ RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
 
 typedef chi_data_types::NDArray<double> IJKArrayDbl;
 
-IJKArrayDbl WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
-                          const std::array<double, 3>& mesh_lengths,
-                          const std::array<double, 6>& bcs,
-                          const IJKArrayDbl& sigma_t,
-                          const IJKArrayDbl& q,
-                          const chi_math::AngularQuadrature& quad,
-                          bool verbose = false)
+IJKArrayDbl
+WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
+               const std::array<double, 3>& mesh_lengths,
+               const std::array<double, 6>& bcs,
+               const IJKArrayDbl& sigma_t,
+               const IJKArrayDbl& q,
+               const chi_math::AngularQuadrature& quad,
+               bool verbose = false)
 {
   const int Nx = static_cast<int>(mesh_divs[0]);
   const int Ny = static_cast<int>(mesh_divs[1]);
@@ -53,8 +53,7 @@ IJKArrayDbl WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   for (const auto& omega_n : quad.omegas_)
   {
     if (Chi::mpi.location_id == 0 and verbose)
-      std::cout << "Sweep angle " << n << " " << omega_n.PrintStr()
-                << std::endl;
+      std::cout << "Sweep angle " << n << " " << omega_n.PrintStr() << std::endl;
 
     //====================================== Determine sweep ordering
     if (omega_n.x > 0.0) iorder = chi_math::Range<int>(0, Nx);
@@ -82,16 +81,13 @@ IJKArrayDbl WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
           double psi_us_z = (omega_n.z > 0.0) ? bcs[4] : bcs[5];
 
           if (omega_n.x > 0.0 and i > 0) psi_us_x = psi_ds_x(i - 1, j, k);
-          if (omega_n.x < 0.0 and i < (Nx - 1))
-            psi_us_x = psi_ds_x(i + 1, j, k);
+          if (omega_n.x < 0.0 and i < (Nx - 1)) psi_us_x = psi_ds_x(i + 1, j, k);
 
           if (omega_n.y > 0.0 and j > 0) psi_us_y = psi_ds_y(i, j - 1, k);
-          if (omega_n.y < 0.0 and j < (Ny - 1))
-            psi_us_y = psi_ds_y(i, j + 1, k);
+          if (omega_n.y < 0.0 and j < (Ny - 1)) psi_us_y = psi_ds_y(i, j + 1, k);
 
           if (omega_n.z > 0.0 and k > 0) psi_us_z = psi_ds_z(i, j, k - 1);
-          if (omega_n.z < 0.0 and k < (Nz - 1))
-            psi_us_z = psi_ds_z(i, j, k + 1);
+          if (omega_n.z < 0.0 and k < (Nz - 1)) psi_us_z = psi_ds_z(i, j, k + 1);
 
           double rhs = q(i, j, k) / (4.0 * M_PI);
           if (Nx > 1) rhs += 2.0 * std::fabs(omega_n.x) * psi_us_x / dx;
@@ -137,8 +133,7 @@ chi_math_Test01_WDD_IJK_Sweep(const chi::InputParameters&)
   pquad->BuildDiscreteToMomentOperator(/*scattering_order=*/0,
                                        /*dimension=*/1);
 
-  auto phi = WDD_IJK_Sweep2(
-    mesh_divisions, mesh_lengths, bcs, sigma_t, q, *pquad, verbose);
+  auto phi = WDD_IJK_Sweep2(mesh_divisions, mesh_lengths, bcs, sigma_t, q, *pquad, verbose);
 
   if (Chi::mpi.location_id == 0 and verbose)
   {

@@ -6,10 +6,9 @@
 namespace lbs
 {
 
-PetscErrorCode GSConvergenceTest(
-  KSP ksp, PetscInt n, PetscReal rnorm,
-  KSPConvergedReason* convergedReason, void*);
+PetscErrorCode
+GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*);
 
-}//namespace lbs
+} // namespace lbs
 
-#endif //CHITECH_WGS_CONVERGENCE_TEST_H
+#endif // CHITECH_WGS_CONVERGENCE_TEST_H

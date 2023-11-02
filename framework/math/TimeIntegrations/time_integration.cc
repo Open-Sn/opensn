@@ -7,18 +7,17 @@
 namespace chi_math
 {
 
-chi::InputParameters TimeIntegration::GetInputParameters()
+chi::InputParameters
+TimeIntegration::GetInputParameters()
 {
   chi::InputParameters params = ChiObject::GetInputParameters();
 
-  params.AddRequiredParameter<int>("method",
-                                   "Integer representing time stepping scheme");
+  params.AddRequiredParameter<int>("method", "Integer representing time stepping scheme");
 
   return params;
 }
 
-TimeIntegration::TimeIntegration(const chi::InputParameters& params)
-  : ChiObject(params)
+TimeIntegration::TimeIntegration(const chi::InputParameters& params) : ChiObject(params)
 {
   const int method_option = params.GetParamValue<int>("method");
   if (method_option == scint(SteppingMethod::EXPLICIT_EULER))
@@ -33,6 +32,10 @@ TimeIntegration::TimeIntegration(const chi::InputParameters& params)
     ChiInvalidArgument("Unsupported Time Integration scheme");
 }
 
-SteppingMethod TimeIntegration::Method() const { return method_; }
+SteppingMethod
+TimeIntegration::Method() const
+{
+  return method_;
+}
 
 } // namespace chi_math

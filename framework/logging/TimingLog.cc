@@ -12,8 +12,7 @@ namespace chi
 {
 
 TimingBlock&
-TimingLog::CreateTimingBlock(const std::string& name,
-                             const std::string& parent_name /*=""*/)
+TimingLog::CreateTimingBlock(const std::string& name, const std::string& parent_name /*=""*/)
 {
   ChiInvalidArgumentIf(timing_blocks_.count(name) != 0,
                        "TimingBlock with name \"" + name +
@@ -28,9 +27,8 @@ TimingLog::CreateTimingBlock(const std::string& name,
     if (name != "ChiTech")
     {
       auto iter = timing_blocks_.find("ChiTech");
-      ChiLogicalErrorIf(
-        iter == timing_blocks_.end(),
-        "Bad error, could not fine the \"ChiTech\" timing block");
+      ChiLogicalErrorIf(iter == timing_blocks_.end(),
+                        "Bad error, could not fine the \"ChiTech\" timing block");
 
       iter->second->AddChild(*saved_pointer);
     }
@@ -50,8 +48,7 @@ TimingLog::CreateTimingBlock(const std::string& name,
 }
 
 TimingBlock&
-TimingLog::CreateOrGetTimingBlock(const std::string& name,
-                                  const std::string& parent_name /*=""*/)
+TimingLog::CreateOrGetTimingBlock(const std::string& name, const std::string& parent_name /*=""*/)
 {
   auto iter = timing_blocks_.find(name);
 
@@ -60,27 +57,31 @@ TimingLog::CreateOrGetTimingBlock(const std::string& name,
   return *iter->second;
 }
 
-TimingBlock& TimingLog::GetTimingBlock(const std::string& name)
+TimingBlock&
+TimingLog::GetTimingBlock(const std::string& name)
 {
   auto iter = timing_blocks_.find(name);
 
   ChiInvalidArgumentIf(iter == timing_blocks_.end(),
-                       "Timing block with name \"" + name +
-                         "\" does not exist.");
+                       "Timing block with name \"" + name + "\" does not exist.");
 
   return *iter->second;
 }
 
 // ##################################################################
 
-TimingBlock::TimingBlock(const std::string& name) : name_(name) {}
+TimingBlock::TimingBlock(const std::string& name) : name_(name)
+{
+}
 
-void TimingBlock::TimeSectionBegin()
+void
+TimingBlock::TimeSectionBegin()
 {
   reference_time_ = Chi::program_timer.GetTime();
 }
 
-void TimingBlock::TimeSectionEnd()
+void
+TimingBlock::TimeSectionEnd()
 {
   const double delta_t = Chi::program_timer.GetTime() - reference_time_;
   total_time_ += delta_t;
@@ -88,28 +89,40 @@ void TimingBlock::TimeSectionEnd()
   last_delta_time_ = delta_t;
 }
 
-size_t TimingBlock::NumberOfOccurences() const { return num_occurences_; }
+size_t
+TimingBlock::NumberOfOccurences() const
+{
+  return num_occurences_;
+}
 
-double TimingBlock::TotalTime() const { return total_time_; }
+double
+TimingBlock::TotalTime() const
+{
+  return total_time_;
+}
 
-double TimingBlock::AverageTime() const
+double
+TimingBlock::AverageTime() const
 {
   if (num_occurences_ == 0) return 0.0;
 
   return total_time_ / static_cast<double>(num_occurences_);
 }
 
-double TimingBlock::LastDelta() const
+double
+TimingBlock::LastDelta() const
 {
   return last_delta_time_;
 }
 
-void TimingBlock::AddChild(const TimingBlock& child_block)
+void
+TimingBlock::AddChild(const TimingBlock& child_block)
 {
   children_.push_back(&child_block);
 }
 
-std::string TimingBlock::MakeGraphString()
+std::string
+TimingBlock::MakeGraphString()
 {
   if (name_ == "ChiTech") TimeSectionEnd();
 
@@ -123,14 +136,10 @@ std::string TimingBlock::MakeGraphString()
   std::vector<size_t> max_col_widths(J, 0);
   for (size_t i = 0; i < I; ++i)
     for (size_t j = 0; j < J; ++j)
-      max_col_widths[j] =
-        std::max(max_col_widths[j], string_matrix[i][j].size());
+      max_col_widths[j] = std::max(max_col_widths[j], string_matrix[i][j].size());
 
-  std::vector<std::string> headers = {"Section Name",
-                                      "#calls",
-                                      "Total time[s]",
-                                      "Average time[s]",
-                                      "% of parent"};
+  std::vector<std::string> headers = {
+    "Section Name", "#calls", "Total time[s]", "Average time[s]", "% of parent"};
 
   for (size_t j = 0; j < J; ++j)
     max_col_widths[j] = std::max(max_col_widths[j], headers[j].size());
@@ -194,10 +203,10 @@ std::string TimingBlock::MakeGraphString()
 }
 
 //  NOLINTBEGIN(misc-no-recursion)
-void TimingBlock::AppendGraphEntry(
-  std::vector<std::vector<std::string>>& string_matrix,
-  const TimingBlock* parent,
-  const std::string& indent) const
+void
+TimingBlock::AppendGraphEntry(std::vector<std::vector<std::string>>& string_matrix,
+                              const TimingBlock* parent,
+                              const std::string& indent) const
 {
   std::vector<std::string> entry;
 
@@ -211,24 +220,21 @@ void TimingBlock::AppendGraphEntry(
   {
     char buffer[20];
     ChiLogicalErrorIf(snprintf(buffer, 20, "%.5g", total_time_ / 1000.0) < 0,
-                      "Failed to convert total_time = " +
-                        std::to_string(total_time_));
+                      "Failed to convert total_time = " + std::to_string(total_time_));
     entry.push_back(buffer);
   }
 
   {
     char buffer[20];
     ChiLogicalErrorIf(snprintf(buffer, 20, "%.5g", AverageTime() / 1000.0) < 0,
-                      "Failed to convert AverageTime = " +
-                        std::to_string(AverageTime()));
+                      "Failed to convert AverageTime = " + std::to_string(AverageTime()));
     entry.push_back(buffer);
   }
 
   {
     char buffer[10];
     ChiLogicalErrorIf(snprintf(buffer, 10, "%.2f%%", relative_time) < 0,
-                      "Failed to convert relative_time = " +
-                        std::to_string(relative_time));
+                      "Failed to convert relative_time = " + std::to_string(relative_time));
     entry.push_back(parent ? buffer : "--");
   }
 

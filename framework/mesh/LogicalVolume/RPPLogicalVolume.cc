@@ -7,7 +7,8 @@ namespace chi_mesh
 
 RegisterChiObject(chi_mesh, RPPLogicalVolume);
 
-chi::InputParameters RPPLogicalVolume::GetInputParameters()
+chi::InputParameters
+RPPLogicalVolume::GetInputParameters()
 {
   chi::InputParameters params = LogicalVolume::GetInputParameters();
 
@@ -20,12 +21,9 @@ chi::InputParameters RPPLogicalVolume::GetInputParameters()
   params.AddOptionalParameter("zmin", 0.0, "Z-min of the volume");
   params.AddOptionalParameter("zmax", 1.0, "Z-max of the volume");
 
-  params.AddOptionalParameter(
-    "infx", false, "Flag, when true, will ignore xmin and xmax.");
-  params.AddOptionalParameter(
-    "infy", false, "Flag, when true, will ignore ymin and ymax.");
-  params.AddOptionalParameter(
-    "infz", false, "Flag, when true, will ignore zmin and zmax.");
+  params.AddOptionalParameter("infx", false, "Flag, when true, will ignore xmin and xmax.");
+  params.AddOptionalParameter("infy", false, "Flag, when true, will ignore ymin and ymax.");
+  params.AddOptionalParameter("infz", false, "Flag, when true, will ignore zmin and zmax.");
 
   return params;
 }
@@ -51,10 +49,10 @@ RPPLogicalVolume::RPPLogicalVolume(const chi::InputParameters& params)
 #define ZMAX 4
 #define ZMIN 5
 
-bool RPPLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+bool
+RPPLogicalVolume::Inside(const chi_mesh::Vector3& point) const
 {
-  constexpr std::array<bool, 6> true_condition = {
-    true, true, true, true, true, true};
+  constexpr std::array<bool, 6> true_condition = {true, true, true, true, true, true};
   std::array<bool, 6> condition = {false, false, false, false, false, false};
 
   if (point.x <= xmax_ or infx_) condition[XMAX] = true;

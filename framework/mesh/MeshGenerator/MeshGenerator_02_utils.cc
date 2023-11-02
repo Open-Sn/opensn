@@ -5,9 +5,8 @@ namespace chi_mesh
 
 // ###################################################################
 /**Broadcasts PIDs to other locations.*/
-void MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids,
-                                  int root,
-                                  MPI_Comm communicator)
+void
+MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm communicator)
 {
   size_t data_count = Chi::mpi.location_id == root ? cell_pids.size() : 0;
 
@@ -32,12 +31,12 @@ void MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids,
 
 // ###################################################################
 /**Determines if a cells needs to be included as a ghost or as a local cell.*/
-bool MeshGenerator::CellHasLocalScope(
-  int location_id,
-  const chi_mesh::UnpartitionedMesh::LightWeightCell& lwcell,
-  uint64_t cell_global_id,
-  const std::vector<std::set<uint64_t>>& vertex_subscriptions,
-  const std::vector<int64_t>& cell_partition_ids) const
+bool
+MeshGenerator::CellHasLocalScope(int location_id,
+                                 const chi_mesh::UnpartitionedMesh::LightWeightCell& lwcell,
+                                 uint64_t cell_global_id,
+                                 const std::vector<std::set<uint64_t>>& vertex_subscriptions,
+                                 const std::vector<int64_t>& cell_partition_ids) const
 {
   if (replicated_) return true;
   // First determine if the cell is a local cell
@@ -59,14 +58,12 @@ bool MeshGenerator::CellHasLocalScope(
 // ###################################################################
 /**Converts a light-weight cell to a real cell.*/
 std::unique_ptr<chi_mesh::Cell>
-MeshGenerator::SetupCell(
-  const UnpartitionedMesh::LightWeightCell& raw_cell,
-  uint64_t global_id,
-  uint64_t partition_id,
-  const VertexListHelper& vertices)
+MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
+                         uint64_t global_id,
+                         uint64_t partition_id,
+                         const VertexListHelper& vertices)
 {
-  auto cell =
-    std::make_unique<chi_mesh::Cell>(raw_cell.type, raw_cell.sub_type);
+  auto cell = std::make_unique<chi_mesh::Cell>(raw_cell.type, raw_cell.sub_type);
   cell->centroid_ = raw_cell.centroid;
   cell->global_id_ = global_id;
   cell->partition_id_ = partition_id;
@@ -93,8 +90,7 @@ MeshGenerator::SetupCell(
       // A slab face is very easy. If it is the first face
       // the normal is -khat. If it is the second face then
       // it is +khat.
-      if (face_counter == 0)
-        newFace.normal_ = chi_mesh::Vector3(0.0, 0.0, -1.0);
+      if (face_counter == 0) newFace.normal_ = chi_mesh::Vector3(0.0, 0.0, -1.0);
       else
         newFace.normal_ = chi_mesh::Vector3(0.0, 0.0, 1.0);
     }

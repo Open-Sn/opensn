@@ -20,6 +20,6 @@ public:
   void Execute() override;
 };
 
-}
+} // namespace lbs
 
 #endif // CHITECH_LBS_STEADY_STATE_H

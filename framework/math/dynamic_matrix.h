@@ -9,18 +9,19 @@
 
 namespace chi_math
 {
-  template<class NumberFormat>
-  class DynamicMatrix;
+template <class NumberFormat>
+class DynamicMatrix;
 }
 
 #include "dynamic_vector.h"
 
 //###################################################################
 /**General dynamic matrix utility.*/
-template<class NumberFormat>
+template <class NumberFormat>
 class chi_math::DynamicMatrix
 {
-  typedef std::pair<size_t,size_t> MatDim;
+  typedef std::pair<size_t, size_t> MatDim;
+
 public:
   std::vector<std::vector<NumberFormat>> elements_;
 
@@ -29,29 +30,28 @@ public:
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
                   "Only floating point number formats are "
-                  "supported for DynamicMatrix." );
+                  "supported for DynamicMatrix.");
   }
 
   /**Constructor with number of entries. Value defaults.*/
-  DynamicMatrix(size_t Nrows, size_t Ncols) :
-      elements_(Nrows, std::vector<NumberFormat>(Ncols))
+  DynamicMatrix(size_t Nrows, size_t Ncols) : elements_(Nrows, std::vector<NumberFormat>(Ncols))
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
                   "Only floating point number formats are "
-                  "supported for DynamicMatrix." );
+                  "supported for DynamicMatrix.");
   }
 
   /**Constructor with number of entries and default value.*/
-  DynamicMatrix(size_t Nrows, size_t Ncols, NumberFormat value) :
-      elements_(Nrows, std::vector<NumberFormat>(Ncols, value))
+  DynamicMatrix(size_t Nrows, size_t Ncols, NumberFormat value)
+    : elements_(Nrows, std::vector<NumberFormat>(Ncols, value))
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
                   "Only floating point number formats are "
-                  "supported for DynamicMatrix." );
+                  "supported for DynamicMatrix.");
   }
 
   /**Copy constructor.*/
-  DynamicMatrix(const DynamicMatrix& other) { elements_ = other.elements_;}
+  DynamicMatrix(const DynamicMatrix& other) { elements_ = other.elements_; }
 
   /**Assignment operator.*/
   DynamicMatrix& operator=(const DynamicMatrix& other)
@@ -61,8 +61,7 @@ public:
   }
 
   /**Move constructor.*/
-  DynamicMatrix(DynamicMatrix&& other) noexcept
-  { elements_ = std::move(other.elements_);}
+  DynamicMatrix(DynamicMatrix&& other) noexcept { elements_ = std::move(other.elements_); }
 
   /**Move assignment operator.*/
   DynamicMatrix& operator=(DynamicMatrix&& other) noexcept
@@ -72,8 +71,7 @@ public:
   }
 
   /**Constructor with vector.*/
-  explicit
-  DynamicMatrix(const std::vector<std::vector<double>>& in) { elements_ = in;}
+  explicit DynamicMatrix(const std::vector<std::vector<double>>& in) { elements_ = in; }
 
   /**Copy constructor with vector.*/
   DynamicMatrix& operator=(const std::vector<std::vector<double>>& in)
@@ -100,17 +98,17 @@ public:
   }
 
   //============================================= Element access
-  std::vector<NumberFormat>& operator[](size_t i) {return elements_[i];}
+  std::vector<NumberFormat>& operator[](size_t i) { return elements_[i]; }
 
-  std::vector<NumberFormat>& at(size_t i) {return elements_.at(i);}
+  std::vector<NumberFormat>& at(size_t i) { return elements_.at(i); }
 
-  std::vector<NumberFormat>& back() {return elements_.back();}
+  std::vector<NumberFormat>& back() { return elements_.back(); }
 
-  std::vector<NumberFormat>& front() {return elements_.front();}
+  std::vector<NumberFormat>& front() { return elements_.front(); }
 
-  std::vector<NumberFormat>* data() {return elements_.data();}
+  std::vector<NumberFormat>* data() { return elements_.data(); }
 
-  void clear() {elements_.clear();}
+  void clear() { elements_.clear(); }
 
   void resize(size_t Nrows, size_t Ncols)
   {
@@ -124,36 +122,29 @@ public:
     elements_.resize(Nrows);
     for (auto& row : elements_)
     {
-      row.resize(Ncols,val);
+      row.resize(Ncols, val);
       for (auto& entry : row)
         entry = val;
     }
   }
 
-  void reserve(size_t Nrows)
-  {
-    elements_.reserve(Nrows);
-  }
+  void reserve(size_t Nrows) { elements_.reserve(Nrows); }
 
-  void push_back(const std::vector<NumberFormat>& val)
-    {elements_.push_back(val);}
-  void pop_back() {elements_.pop_back();}
+  void push_back(const std::vector<NumberFormat>& val) { elements_.push_back(val); }
+  void pop_back() { elements_.pop_back(); }
 
-  bool empty() const noexcept {return elements_.empty();}
+  bool empty() const noexcept { return elements_.empty(); }
 
   //============================================= Iterator access
-  typename std::vector<std::vector<NumberFormat>>::iterator
-    begin() {return elements_.begin();}
+  typename std::vector<std::vector<NumberFormat>>::iterator begin() { return elements_.begin(); }
 
-  typename std::vector<std::vector<NumberFormat>>::iterator
-    end() {return elements_.end();}
+  typename std::vector<std::vector<NumberFormat>>::iterator end() { return elements_.end(); }
 
-  size_t size() const {return elements_.size();}
+  size_t size() const { return elements_.size(); }
 
   MatDim Dimensions() const
   {
-    if (elements_.empty())
-      return {0,0};
+    if (elements_.empty()) return {0, 0};
     else
       return {elements_.size(), elements_[0].size()};
   }
@@ -171,6 +162,7 @@ private:
       throw std::length_error("Mismatched matrix A rows with matrix B cols"
                               " in DynamicMatrix");
   }
+
 public:
   //============================================= Addition
   /**Component-wise addition of two matrices.
@@ -178,23 +170,23 @@ public:
   DynamicMatrix operator+(const DynamicMatrix& rhs) const
   {
     auto dim = Dimensions();
-    bounds_check_rows_cols(dim,rhs.Dimensions());
+    bounds_check_rows_cols(dim, rhs.Dimensions());
     DynamicMatrix<NumberFormat> newVector(dim.first, dim.second, 0.0);
-    for (int i=0; i<dim.first; ++i)
-      for (int j=0; j<dim.second;++j)
+    for (int i = 0; i < dim.first; ++i)
+      for (int j = 0; j < dim.second; ++j)
         newVector.elements_[i][j] = elements_[i][j] + rhs.elements_[i][j];
 
     return newVector;
   }
 
   /**In-place component-wise addition of two vectors.
- * \f$ \vec{x} = \vec{x} + \vec{y} \f$*/
+   * \f$ \vec{x} = \vec{x} + \vec{y} \f$*/
   DynamicMatrix& operator+=(const DynamicMatrix& rhs)
   {
     auto dim = Dimensions();
-    bounds_check_rows_cols(dim,rhs.Dimensions());
-    for (int i=0; i<dim.first; ++i)
-      for (int j=0; j<dim.second;++j)
+    bounds_check_rows_cols(dim, rhs.Dimensions());
+    for (int i = 0; i < dim.first; ++i)
+      for (int j = 0; j < dim.second; ++j)
         elements_[i][j] = elements_[i][j] + rhs.elements_[i][j];
 
     return *this;
@@ -202,27 +194,27 @@ public:
 
   //=========================================== Subtraction
   /**Component-wise subtraction.
- * \f$ \vec{w} = \vec{x} - \vec{y} \f$*/
+   * \f$ \vec{w} = \vec{x} - \vec{y} \f$*/
   DynamicMatrix operator-(const DynamicMatrix& rhs) const
   {
     auto dim = Dimensions();
-    bounds_check_rows_cols(dim,rhs.Dimensions());
+    bounds_check_rows_cols(dim, rhs.Dimensions());
     DynamicMatrix<NumberFormat> newVector(dim.first, dim.second, 0.0);
-    for (int i=0; i<dim.first; ++i)
-      for (int j=0; j<dim.second;++j)
+    for (int i = 0; i < dim.first; ++i)
+      for (int j = 0; j < dim.second; ++j)
         newVector.elements_[i][j] = elements_[i][j] - rhs.elements_[i][j];
 
     return newVector;
   }
 
   /**In-place component-wise subtraction.
- * \f$ \vec{x} = \vec{x} - \vec{y} \f$*/
+   * \f$ \vec{x} = \vec{x} - \vec{y} \f$*/
   DynamicMatrix& operator-=(const DynamicMatrix& rhs)
   {
     auto dim = Dimensions();
-    bounds_check_rows_cols(dim,rhs.Dimensions());
-    for (int i=0; i<dim.first; ++i)
-      for (int j=0; j<dim.second;++j)
+    bounds_check_rows_cols(dim, rhs.Dimensions());
+    for (int i = 0; i < dim.first; ++i)
+      for (int j = 0; j < dim.second; ++j)
         elements_[i][j] = elements_[i][j] - rhs.elements_[i][j];
 
     return *this;
@@ -230,25 +222,25 @@ public:
 
   //=========================================== Multiplication
   /**Vector component-wise multiplication by scalar.
- * \f$ \vec{w} = \vec{x} \alpha \f$*/
+   * \f$ \vec{w} = \vec{x} \alpha \f$*/
   DynamicMatrix operator*(const NumberFormat value) const
   {
     auto dim = Dimensions();
     DynamicMatrix<NumberFormat> newVector(dim.first, dim.second);
-    for (int i=0; i<dim.first; ++i)
-      for (int j=0; j<dim.second;++j)
+    for (int i = 0; i < dim.first; ++i)
+      for (int j = 0; j < dim.second; ++j)
         newVector.elements_[i][j] = elements_[i][j] * value;
 
     return newVector;
   }
 
   /**Vector in-place component-wise multiplication by scalar.
- * \f$ \vec{x} = \vec{x} \alpha \f$*/
+   * \f$ \vec{x} = \vec{x} \alpha \f$*/
   DynamicMatrix& operator*=(const NumberFormat value)
   {
     auto dim = Dimensions();
-    for (int i=0; i<dim.first; ++i)
-      for (int j=0; j<dim.second;++j)
+    for (int i = 0; i < dim.first; ++i)
+      for (int j = 0; j < dim.second; ++j)
         elements_[i][j] *= value;
 
     return *this;
@@ -259,17 +251,17 @@ public:
   {
     auto dimA = Dimensions();
     auto dimB = rhs.Dimensions();
-    bounds_check_colsA_rowsB(dimA,dimB);
+    bounds_check_colsA_rowsB(dimA, dimB);
 
     DynamicMatrix<NumberFormat> newMatrix(dimA.first, dimB.second);
-    unsigned int istar=0;
-    unsigned int jstar=0;
-    for (unsigned int i=0; i<dimA.first; ++i)
+    unsigned int istar = 0;
+    unsigned int jstar = 0;
+    for (unsigned int i = 0; i < dimA.first; ++i)
     {
-      for (unsigned int j=0; j<dimA.first; ++j)
+      for (unsigned int j = 0; j < dimA.first; ++j)
       {
         NumberFormat value = 0.0;
-        for (unsigned int k=0; k<dimA.second; ++k)
+        for (unsigned int k = 0; k < dimA.second; ++k)
           value += elements_[i][k] * rhs.elements_[k][j];
 
         newMatrix[istar][jstar] = value;
@@ -277,7 +269,7 @@ public:
       }
       ++istar;
       jstar = 0;
-    }//for i
+    } // for i
 
     return newMatrix;
   }
@@ -293,11 +285,11 @@ public:
                               " matrix-vector multiplication: DynamicMatrix");
 
     DynamicVector<NumberFormat> newV(dimA.first);
-    unsigned int k=0;
-    for (unsigned int i=0; i<dimA.first; ++i)
+    unsigned int k = 0;
+    for (unsigned int i = 0; i < dimA.first; ++i)
     {
       NumberFormat value = 0.0;
-      for (unsigned int j=0; j<dimA.second; ++j)
+      for (unsigned int j = 0; j < dimA.second; ++j)
         value += elements_[i][j] * V[j];
       newV[k] = value;
       ++k;
@@ -308,25 +300,25 @@ public:
 
   //=========================================== Division
   /**Vector component-wise division by scalar.
- * \f$ w_i = \frac{x_i}{\alpha} \f$*/
+   * \f$ w_i = \frac{x_i}{\alpha} \f$*/
   DynamicMatrix operator/(const NumberFormat value) const
   {
     auto dim = Dimensions();
     DynamicMatrix<NumberFormat> newVector(dim.first, dim.second);
-    for (int i=0; i<dim.first; ++i)
-      for (int j=0; j<dim.second;++j)
+    for (int i = 0; i < dim.first; ++i)
+      for (int j = 0; j < dim.second; ++j)
         newVector.elements_[i][j] = elements_[i][j] / value;
 
     return newVector;
   }
 
   /**Vector in-place component-wise division by scalar.
- * \f$ x_i = \frac{x_i}{\alpha} \f$*/
+   * \f$ x_i = \frac{x_i}{\alpha} \f$*/
   DynamicMatrix& operator/=(const NumberFormat value)
   {
     auto dim = Dimensions();
-    for (int i=0; i<dim.first; ++i)
-      for (int j=0; j<dim.second;++j)
+    for (int i = 0; i < dim.first; ++i)
+      for (int j = 0; j < dim.second; ++j)
         elements_[i][j] /= value;
 
     return *this;
@@ -353,7 +345,7 @@ public:
                               " matrix-vector diagonal assignment: DynamicMatrix");
     }
 
-    for (int i=0; i<dimA.first; ++i)
+    for (int i = 0; i < dimA.first; ++i)
       elements_[i][i] = V[i];
   }
 
@@ -362,7 +354,7 @@ public:
   {
     auto dimA = Dimensions();
 
-    for (int i=0; i<dimA.first; ++i)
+    for (int i = 0; i < dimA.first; ++i)
       elements_[i][i] = val;
   }
 
@@ -372,13 +364,13 @@ public:
     auto dim = Dimensions();
     std::stringstream out;
 
-    for (int i = 0; i<dim.first ; ++i)
+    for (int i = 0; i < dim.first; ++i)
     {
-      for (int j=0; j<(dim.second-1); ++j)
+      for (int j = 0; j < (dim.second - 1); ++j)
         out << elements_[i][j] << " ";
       out << elements_[i][dim.second - 1];
 
-      if (i<(dim.first -1)) out << "\n";
+      if (i < (dim.first - 1)) out << "\n";
     }
 
     return out.str();
@@ -386,17 +378,17 @@ public:
 };
 
 /**Multiplication by a scalar from the left.*/
-template<class NumberFormat>
+template <class NumberFormat>
 chi_math::DynamicMatrix<NumberFormat>
 operator*(const double value, chi_math::DynamicMatrix<NumberFormat>& that)
 {
   auto dim = that.Dimensions();
   chi_math::DynamicMatrix<NumberFormat> newMatrix(dim.first, dim.second);
-  for (int i=0; i<dim.first; ++i)
-    for (int j=0; j<dim.second;++j)
+  for (int i = 0; i < dim.first; ++i)
+    for (int j = 0; j < dim.second; ++j)
       newMatrix.elements_[i][j] = that.elements_[i][j] * value;
 
   return newMatrix;
 }
 
-#endif //CHI_MATH_DYNAMIC_MATRIX_H
+#endif // CHI_MATH_DYNAMIC_MATRIX_H

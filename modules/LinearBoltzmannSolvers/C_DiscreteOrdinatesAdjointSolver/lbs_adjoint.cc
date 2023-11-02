@@ -7,14 +7,14 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-void lbs::TestFunction()
+void
+lbs::TestFunction()
 {
   std::cout << "Test Function!\n";
 }
 
-std::array<double,2> lbs::
-  MakeExpRepFromP1(const std::array<double, 4> &P1_moments,
-                   bool verbose/*=false*/)
+std::array<double, 2>
+lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose /*=false*/)
 {
   //=============================================
   // Custom function to implement the non-linear equations
@@ -39,8 +39,10 @@ std::array<double,2> lbs::
   public:
     /**Constructor. Parameters are the 3 components of the currents
      * normalized with 1/phi.*/
-    explicit CustomF(const std::array<double,3>& input) :
-    J_x(input[0]), J_y(input[1]), J_z(input[2]) {}
+    explicit CustomF(const std::array<double, 3>& input)
+      : J_x(input[0]), J_y(input[1]), J_z(input[2])
+    {
+    }
 
     /**Function evaluation at vector-x.*/
     VecDbl F(const VecDbl& x) const override
@@ -48,13 +50,12 @@ std::array<double,2> lbs::
       assert(x.size() == 2);
       const double a = x[0];
       const double b = x[1];
-      const double FOUR_PI = 4.0*M_PI;
+      const double FOUR_PI = 4.0 * M_PI;
 
       double size_J = chi_math::Vec2Norm({J_x, J_y, J_z});
 
-      return {(FOUR_PI/b)   * exp(a) * sinh(b) - 1.0,
-              (FOUR_PI/b/b) * exp(a) * (b * cosh(b) - sinh(b)) - size_J};
-
+      return {(FOUR_PI / b) * exp(a) * sinh(b) - 1.0,
+              (FOUR_PI / b / b) * exp(a) * (b * cosh(b) - sinh(b)) - size_J};
     }
     /**Jacobian evaluation at vector-x.*/
     MatDbl J(const VecDbl& x) const override
@@ -62,42 +63,48 @@ std::array<double,2> lbs::
       assert(x.size() == 2);
       const double a = x[0];
       const double b = x[1];
-      const double FOUR_PI = 4.0*M_PI;
+      const double FOUR_PI = 4.0 * M_PI;
 
-      return {{(FOUR_PI/b)     * exp(a) * sinh(b),
-               (FOUR_PI/b/b)   * exp(a) * (b * cosh(b) - sinh(b))},
-              {(FOUR_PI/b/b)   * exp(a) * (b * cosh(b) - sinh(b)),
-               (FOUR_PI/b/b/b) * exp(a) * ((b*b + 2) * sinh(b) - 2 * b * cosh(b))}};
+      return {
+        {(FOUR_PI / b) * exp(a) * sinh(b), (FOUR_PI / b / b) * exp(a) * (b * cosh(b) - sinh(b))},
+        {(FOUR_PI / b / b) * exp(a) * (b * cosh(b) - sinh(b)),
+         (FOUR_PI / b / b / b) * exp(a) * ((b * b + 2) * sinh(b) - 2 * b * cosh(b))}};
     }
   };
 
   //======================================== Convert P1 moments to phi and J
-  double phi      = P1_moments[0];
-  double J_x      = P1_moments[1];
-  double J_y      = P1_moments[2];
-  double J_z      = P1_moments[3];
+  double phi = P1_moments[0];
+  double J_x = P1_moments[1];
+  double J_y = P1_moments[2];
+  double J_z = P1_moments[3];
 
   //======================================== Compute initial ratio size_J/phi
   double size_J_i = chi_math::Vec2Norm({J_x, J_y, J_z});
-  double ratio_i  = size_J_i/phi;
+  double ratio_i = size_J_i / phi;
 
   if (phi < 1.0e-10 or ratio_i > 0.9)
-  { J_x *= 0.9 / size_J_i; J_y *= 0.9 / size_J_i; J_z *= 0.9 / size_J_i; }
+  {
+    J_x *= 0.9 / size_J_i;
+    J_y *= 0.9 / size_J_i;
+    J_z *= 0.9 / size_J_i;
+  }
   else
-  { J_x /= phi; J_y /= phi; J_z /= phi; }
+  {
+    J_x /= phi;
+    J_y /= phi;
+    J_z /= phi;
+  }
 
   double size_J_f = chi_math::Vec2Norm({J_x, J_y, J_z});
-  double ratio_f  = size_J_f;
+  double ratio_f = size_J_f;
 
   if (verbose)
   {
     std::stringstream outstr;
-    outstr << "P1 moments initial: " <<P1_moments[0]<<" "
-                                     <<P1_moments[1]<<" "
-                                     <<P1_moments[2]<<" "
-                                     <<P1_moments[3]<<" |J|=";
+    outstr << "P1 moments initial: " << P1_moments[0] << " " << P1_moments[1] << " "
+           << P1_moments[2] << " " << P1_moments[3] << " |J|=";
     outstr << size_J_i << " ratio=" << ratio_i << "\n";
-    outstr << "P1 moments initial: " <<1.0<<" "<<J_x<<" "<<J_y<<" "<<J_z<<" |J|=";
+    outstr << "P1 moments initial: " << 1.0 << " " << J_x << " " << J_y << " " << J_z << " |J|=";
     outstr << size_J_f << " ratio=" << ratio_f << "\n";
 
     Chi::log.Log() << outstr.str();
@@ -105,7 +112,7 @@ std::array<double,2> lbs::
 
   if (size_J_f < 1.0e-10)
   {
-    double a = log(phi/4.0/M_PI);
+    double a = log(phi / 4.0 / M_PI);
     double b = 0.0;
 
     if (verbose) { Chi::log.Log() << "Solution: " << a << " " << b; }
@@ -115,12 +122,11 @@ std::array<double,2> lbs::
   else
   {
     CustomF custom_function({J_x, J_y, J_z});
-    auto solution = chi_math::NewtonIteration(
-      custom_function, //Non-linear function
-      {1.0,0.1},       //Initial guess
-      100,             //Max iterations
-      1.0e-8,          //Tolerance
-      verbose);        //Verbose output?
+    auto solution = chi_math::NewtonIteration(custom_function, // Non-linear function
+                                              {1.0, 0.1},      // Initial guess
+                                              100,             // Max iterations
+                                              1.0e-8,          // Tolerance
+                                              verbose);        // Verbose output?
 
     double a = solution[0];
     double b = solution[1];

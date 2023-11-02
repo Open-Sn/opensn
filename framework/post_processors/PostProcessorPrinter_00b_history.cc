@@ -11,11 +11,11 @@ namespace chi
 {
 
 // ##################################################################
-void PostProcessorPrinter::PrintPPsTimeHistory(
-  const std::string& pps_typename,
-  const std::vector<const PostProcessor*>& pp_list,
-  const Event& event,
-  bool per_column_sizes /*=false*/) const
+void
+PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
+                                          const std::vector<const PostProcessor*>& pp_list,
+                                          const Event& event,
+                                          bool per_column_sizes /*=false*/) const
 {
   if (pp_list.empty()) return;
   //======================================== Establish unique time history sizes
@@ -43,20 +43,17 @@ void PostProcessorPrinter::PrintPPsTimeHistory(
     if (pp_sub_list.empty()) continue;
 
     //+2 top header + bottom header
-    const size_t num_rows =
-      std::min(size_t(time_history_limit_ + 2), timehistsize + 2);
+    const size_t num_rows = std::min(size_t(time_history_limit_ + 2), timehistsize + 2);
     const size_t num_cols = pp_sub_list.size() + 1; //+1 time column
 
-    auto value_matrix =
-      BuildPPHistoryMatrix(timehistsize, time_history_limit_, pp_sub_list);
+    auto value_matrix = BuildPPHistoryMatrix(timehistsize, time_history_limit_, pp_sub_list);
 
     // Find largest column
     size_t max_column_width = 0;
     for (const auto& row : value_matrix)
       for (const auto& entry : row)
         max_column_width = std::max(max_column_width, entry.size());
-    max_column_width =
-      std::max(max_column_width, size_t(15)); // minimum size 15
+    max_column_width = std::max(max_column_width, size_t(15)); // minimum size 15
 
     std::vector<size_t> col_sizes;
     if (not per_column_sizes) col_sizes.assign(num_cols, max_column_width);
@@ -98,8 +95,7 @@ void PostProcessorPrinter::PrintPPsTimeHistory(
     {
       //[0]  |           0.000000 |           1.000000 |       0.000000e+00 |
       // 5 chars for log, 2 for '| ', 1 for ' ', 2 for ' |' at end
-      const size_t projected_total_width =
-        total_width + col_sizes[c] + 5 + 2 + 1 + 2;
+      const size_t projected_total_width = total_width + col_sizes[c] + 5 + 2 + 1 + 2;
       if (projected_total_width > table_column_limit_)
       {
         total_width = col_sizes[c] + 5 + 2 + 1; // the time column
@@ -138,13 +134,14 @@ void PostProcessorPrinter::PrintPPsTimeHistory(
       outstr << PrintPPsSubTimeHistory(sub_matrix);
 
     Chi::log.Log() << "\n"
-                   << pps_typename << " post-processors history at event \""
-                   << event.Name() << "\"\n"
+                   << pps_typename << " post-processors history at event \"" << event.Name()
+                   << "\"\n"
                    << outstr.str();
   } // for each thing in pp_timehist_size_subs
 }
 
-std::string PostProcessorPrinter::PrintPPsSubTimeHistory(
+std::string
+PostProcessorPrinter::PrintPPsSubTimeHistory(
   const std::vector<std::vector<std::string>>& sub_history)
 {
   const size_t num_rows = sub_history.size();

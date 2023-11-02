@@ -4,7 +4,8 @@ namespace chi_mpi_utils
 {
 
 /**Returns the current rank on the specified communicator.*/
-int GetLocationID(MPI_Comm mpi_comm)
+int
+GetLocationID(MPI_Comm mpi_comm)
 {
   int location_id;
   MPI_Comm_rank(mpi_comm, &location_id);
@@ -13,7 +14,8 @@ int GetLocationID(MPI_Comm mpi_comm)
 }
 
 /**Returns the total number of ranks on the specified communicator.*/
-int GetProcessCount(MPI_Comm mpi_comm)
+int
+GetProcessCount(MPI_Comm mpi_comm)
 {
   int process_count;
   MPI_Comm_size(mpi_comm, &process_count);
@@ -22,9 +24,10 @@ int GetProcessCount(MPI_Comm mpi_comm)
 }
 
 /**Given each location's local size (of items), builds a vector (dimension
-* comm-size plus 1) of where each location's global indices start and end.
-* Example: location i starts at extents[i] and ends at extents[i+1]*/
-std::vector<uint64_t> BuildLocationExtents(uint64_t local_size, MPI_Comm comm)
+ * comm-size plus 1) of where each location's global indices start and end.
+ * Example: location i starts at extents[i] and ends at extents[i+1]*/
+std::vector<uint64_t>
+BuildLocationExtents(uint64_t local_size, MPI_Comm comm)
 {
   const int process_count = GetProcessCount(comm);
   // Get the local vector sizes per process
@@ -35,7 +38,7 @@ std::vector<uint64_t> BuildLocationExtents(uint64_t local_size, MPI_Comm comm)
                 local_sizes.data(), // recvbuf
                 1,
                 MPI_UINT64_T, // recvcount + recvtype
-                comm);       // communicator
+                comm);        // communicator
 
   // With the vector sizes per processor, now the offsets for each
   // processor can be defined using a cumulative sum per processor.
@@ -48,4 +51,4 @@ std::vector<uint64_t> BuildLocationExtents(uint64_t local_size, MPI_Comm comm)
 
   return extents;
 }
-}
+} // namespace chi_mpi_utils

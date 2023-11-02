@@ -37,10 +37,9 @@ class PostProcessorPrinter
 public:
   static PostProcessorPrinter& GetInstance();
 
-  PostProcessorPrinter(const PostProcessorPrinter&) =
-    delete; // Deleted copy constructor
-  PostProcessorPrinter operator=(const PostProcessorPrinter&) =
-    delete; // Deleted assignment operator
+  PostProcessorPrinter(const PostProcessorPrinter&) = delete; // Deleted copy constructor
+  PostProcessorPrinter
+  operator=(const PostProcessorPrinter&) = delete; // Deleted assignment operator
 
   void ReceiveEventUpdate(const Event& event);
 
@@ -61,8 +60,7 @@ public:
   void SetCSVFilename(const std::string& csv_filename);
 
   /**A manual means to print a post processor.*/
-  std::string
-  GetPrintedPostProcessors(const std::vector<const PostProcessor*>& pp_list) const;
+  std::string GetPrintedPostProcessors(const std::vector<const PostProcessor*>& pp_list) const;
 
 private:
   PostProcessorPrinter();
@@ -70,18 +68,14 @@ private:
   void PrintPostProcessors(const Event& event) const;
 
   // 00a_latest
-  void
-  PrintPPsLatestValuesOnly(const std::string& pps_typename,
-                           const std::vector<const PostProcessor*>& pp_list,
-                           const Event& event) const;
+  void PrintPPsLatestValuesOnly(const std::string& pps_typename,
+                                const std::vector<const PostProcessor*>& pp_list,
+                                const Event& event) const;
 
+  static std::string PrintPPsHorizontal(
+    const std::vector<std::pair<std::string, std::string>>& scalar_ppnames_and_vals, int);
   static std::string
-  PrintPPsHorizontal(const std::vector<std::pair<std::string, std::string>>&
-                       scalar_ppnames_and_vals,
-                     int);
-  static std::string
-  PrintPPsVertical(const std::vector<std::pair<std::string, std::string>>&
-                     scalar_ppnames_and_vals,
+  PrintPPsVertical(const std::vector<std::pair<std::string, std::string>>& scalar_ppnames_and_vals,
                    int event_code);
 
   // 00b_history
@@ -90,30 +84,24 @@ private:
                            const Event& event,
                            bool per_column_sizes = false) const;
 
-  static std::string PrintPPsSubTimeHistory(
-    const std::vector<std::vector<std::string>>& sub_history);
+  static std::string
+  PrintPPsSubTimeHistory(const std::vector<std::vector<std::string>>& sub_history);
 
   // 01 csv
   void PrintCSVFile(const Event& event) const;
-  static void
-  PrintScalarPPsToCSV(std::ofstream& csvfile,
-                      const std::vector<const PostProcessor*>& pp_list);
-  static void
-  PrintVectorPPsToCSV(std::ofstream& csvfile,
-                      const std::vector<const PostProcessor*>& pp_list);
-  static void
-  PrintArbitraryPPsToCSV(std::ofstream& csvfile,
-                         const std::vector<const PostProcessor*>& pp_list);
+  static void PrintScalarPPsToCSV(std::ofstream& csvfile,
+                                  const std::vector<const PostProcessor*>& pp_list);
+  static void PrintVectorPPsToCSV(std::ofstream& csvfile,
+                                  const std::vector<const PostProcessor*>& pp_list);
+  static void PrintArbitraryPPsToCSV(std::ofstream& csvfile,
+                                     const std::vector<const PostProcessor*>& pp_list);
 
   // utils
-  static std::vector<const PostProcessor*>
-  GetScalarPostProcessorsList(const Event& event);
+  static std::vector<const PostProcessor*> GetScalarPostProcessorsList(const Event& event);
 
-  static std::vector<const PostProcessor*>
-  GetVectorPostProcessorsList(const Event& event);
+  static std::vector<const PostProcessor*> GetVectorPostProcessorsList(const Event& event);
 
-  static std::vector<const PostProcessor*>
-  GetArbitraryPostProcessorsList(const Event& event);
+  static std::vector<const PostProcessor*> GetArbitraryPostProcessorsList(const Event& event);
 
   static std::vector<std::vector<std::string>>
   BuildPPHistoryMatrix(size_t timehistsize,

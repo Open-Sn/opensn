@@ -91,18 +91,16 @@ public:
         break;
       case UnknownType::VECTOR_N:
         if (component_number >= num_components_)
-          throw std::out_of_range("Attempting to access component " +
-                                  std::to_string(component_number) +
-                                  ">=" + std::to_string(num_components_) +
-                                  " for a VECTOR_N unknown.");
+          throw std::out_of_range(
+            "Attempting to access component " + std::to_string(component_number) +
+            ">=" + std::to_string(num_components_) + " for a VECTOR_N unknown.");
         map_value = map_begin_ + component_number;
         break;
       case UnknownType::TENSOR:
         if (component_number >= num_components_)
-          throw std::out_of_range("Attempting to access component " +
-                                  std::to_string(component_number) +
-                                  ">=" + std::to_string(num_components_) +
-                                  " for a TENSOR unknown.");
+          throw std::out_of_range(
+            "Attempting to access component " + std::to_string(component_number) +
+            ">=" + std::to_string(num_components_) + " for a TENSOR unknown.");
         map_value = map_begin_ + component_number;
         break;
       default:
@@ -113,7 +111,7 @@ public:
   }
   unsigned int GetMapEnd() const { return map_begin_ + num_components_ - 1; }
 
-  unsigned int NumComponents() const {return num_components_;}
+  unsigned int NumComponents() const { return num_components_; }
 };
 
 // ###################################################################
@@ -128,33 +126,29 @@ public:
 
   typedef std::pair<UnknownType, unsigned int> UnknownInfo;
   // Constructors
-  explicit UnknownManager(
-    UnknownStorageType in_storage_type = UnknownStorageType::NODAL) noexcept
+  explicit UnknownManager(UnknownStorageType in_storage_type = UnknownStorageType::NODAL) noexcept
     : dof_storage_type_(in_storage_type)
   {
   }
 
-  UnknownManager(
-    std::initializer_list<UnknownInfo> unknown_info_list,
-    UnknownStorageType in_storage_type = UnknownStorageType::NODAL) noexcept
+  UnknownManager(std::initializer_list<UnknownInfo> unknown_info_list,
+                 UnknownStorageType in_storage_type = UnknownStorageType::NODAL) noexcept
     : dof_storage_type_(in_storage_type)
   {
     for (const auto& uk_info : unknown_info_list)
       AddUnknown(uk_info.first, uk_info.second);
   }
 
-  explicit UnknownManager(
-    const std::vector<Unknown>& unknown_info_list,
-    UnknownStorageType in_storage_type = UnknownStorageType::NODAL) noexcept
+  explicit UnknownManager(const std::vector<Unknown>& unknown_info_list,
+                          UnknownStorageType in_storage_type = UnknownStorageType::NODAL) noexcept
     : dof_storage_type_(in_storage_type)
   {
     for (const auto& uk : unknown_info_list)
       AddUnknown(uk.type_, uk.num_components_);
   }
 
-  UnknownManager(
-    std::initializer_list<Unknown> unknowns,
-    UnknownStorageType in_storage_type = UnknownStorageType::NODAL) noexcept
+  UnknownManager(std::initializer_list<Unknown> unknowns,
+                 UnknownStorageType in_storage_type = UnknownStorageType::NODAL) noexcept
     : dof_storage_type_(in_storage_type)
   {
     size_t ukid = 0;
@@ -183,7 +177,7 @@ public:
   }
 
   size_t NumberOfUnknowns() const { return unknowns_.size(); }
-  const Unknown& GetUnknown(size_t id) const {return unknowns_[id];}
+  const Unknown& GetUnknown(size_t id) const { return unknowns_[id]; }
 
   void SetDOFStorageType(const UnknownStorageType in_storage_type)
   {
@@ -196,8 +190,7 @@ public:
 
   unsigned int AddUnknown(UnknownType unk_type, unsigned int dimension = 0);
 
-  unsigned int MapUnknown(unsigned int unknown_id,
-                          unsigned int component = 0) const;
+  unsigned int MapUnknown(unsigned int unknown_id, unsigned int component = 0) const;
 
   unsigned int GetTotalUnknownStructureSize() const;
 
@@ -207,8 +200,7 @@ public:
                                                  unsigned int component,
                                                  int num_conn);
 
-  void SetUnknownTextName(unsigned int unknown_id,
-                          const std::string& in_text_name);
+  void SetUnknownTextName(unsigned int unknown_id, const std::string& in_text_name);
 
   void SetUnknownComponentTextName(unsigned int unknown_id,
                                    unsigned int component,

@@ -9,10 +9,10 @@
 namespace chi
 {
 // ##################################################################
-void PostProcessorPrinter::PrintPPsLatestValuesOnly(
-  const std::string& pps_typename,
-  const std::vector<const PostProcessor*>& pp_list,
-  const Event& event) const
+void
+PostProcessorPrinter::PrintPPsLatestValuesOnly(const std::string& pps_typename,
+                                               const std::vector<const PostProcessor*>& pp_list,
+                                               const Event& event) const
 {
   if (pp_list.empty()) return;
   std::stringstream outstr;
@@ -34,18 +34,16 @@ void PostProcessorPrinter::PrintPPsLatestValuesOnly(
     else if (scalar_pp_table_format_ == ScalarPPTableFormat::VERTICAL)
       outstr << PrintPPsVertical(scalar_ppnames_and_vals, event.Code());
     Chi::log.Log() << "\n"
-                   << pps_typename
-                   << " post-processors latest values at event \""
-                   << event.Name() << "\"\n"
+                   << pps_typename << " post-processors latest values at event \"" << event.Name()
+                   << "\"\n"
                    << outstr.str() << "\n";
   }
 }
 
 // ##################################################################
-std::string PostProcessorPrinter::PrintPPsHorizontal(
-  const std::vector<std::pair<std::string, std::string>>&
-    scalar_ppnames_and_vals,
-  int)
+std::string
+PostProcessorPrinter::PrintPPsHorizontal(
+  const std::vector<std::pair<std::string, std::string>>& scalar_ppnames_and_vals, int)
 {
   std::stringstream outstr;
   const size_t num_pps = scalar_ppnames_and_vals.size();
@@ -112,10 +110,9 @@ std::string PostProcessorPrinter::PrintPPsHorizontal(
 }
 
 // ##################################################################
-std::string PostProcessorPrinter::PrintPPsVertical(
-  const std::vector<std::pair<std::string, std::string>>&
-    scalar_ppnames_and_vals,
-  int event_code)
+std::string
+PostProcessorPrinter::PrintPPsVertical(
+  const std::vector<std::pair<std::string, std::string>>& scalar_ppnames_and_vals, int event_code)
 {
   std::stringstream outstr;
 
@@ -132,11 +129,11 @@ std::string PostProcessorPrinter::PrintPPsVertical(
   max_colsize_name = std::max(max_colsize_name, min_col_size + 5);
   max_colsize_val = std::max(max_colsize_val, min_col_size);
 
-  const std::string hline = "*-" + std::string(max_colsize_name, '-') + "-*-" +
-                            std::string(max_colsize_val, '-') + "-*";
-  const std::string name_header =
-    "| Post-Processor Name" + std::string(max_colsize_name - 19, ' ') +
-    " | Value" + std::string(max_colsize_val - 5, ' ') + " |";
+  const std::string hline =
+    "*-" + std::string(max_colsize_name, '-') + "-*-" + std::string(max_colsize_val, '-') + "-*";
+  const std::string name_header = "| Post-Processor Name" +
+                                  std::string(max_colsize_name - 19, ' ') + " | Value" +
+                                  std::string(max_colsize_val - 5, ' ') + " |";
 
   outstr << hline << "\n";
   outstr << name_header << "\n";
@@ -144,10 +141,8 @@ std::string PostProcessorPrinter::PrintPPsVertical(
   for (size_t p = 0; p < num_pps; ++p)
   {
     const auto& [name, val] = scalar_ppnames_and_vals[p];
-    outstr << "| " << name << "(latest)"
-           << std::string(max_colsize_name - name.size() - 8, ' ');
-    outstr << " | " << std::string(max_colsize_val - val.size(), ' ') << val
-           << " |\n";
+    outstr << "| " << name << "(latest)" << std::string(max_colsize_name - name.size() - 8, ' ');
+    outstr << " | " << std::string(max_colsize_val - val.size(), ' ') << val << " |\n";
   } // for p
   outstr << hline << "\n";
 

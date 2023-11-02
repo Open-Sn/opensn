@@ -12,24 +12,21 @@ RegisterChiObject(lbs, DiscreteOrdinatesAdjointSolver);
 chi::InputParameters
 DiscreteOrdinatesAdjointSolver::GetInputParameters()
 {
-  chi::InputParameters params =
-    DiscreteOrdinatesSolver::GetInputParameters();
+  chi::InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
 
   params.SetGeneralDescription("Adjoint capability");
 
   params.SetClassName("DiscreteOrdinatesAdjointSolver");
   params.SetDocGroup("lbs__LBSSolver");
 
-  params.ChangeExistingParamToOptional("name",
-                                       "DiscreteOrdinatesAdjointSolver");
+  params.ChangeExistingParamToOptional("name", "DiscreteOrdinatesAdjointSolver");
 
   return params;
 }
 
 // ###################################################################
 /**Constructor.*/
-DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(
-  const chi::InputParameters& params)
+DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const chi::InputParameters& params)
   : lbs::DiscreteOrdinatesSolver(params)
 {
   basic_options_.AddOption<std::string>("REFERENCE_RF", std::string());
@@ -37,8 +34,7 @@ DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(
 
 // ###################################################################
 /**Constructor.*/
-lbs::DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(
-  const std::string& solver_name)
+lbs::DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const std::string& solver_name)
   : lbs::DiscreteOrdinatesSolver(solver_name)
 {
   basic_options_.AddOption<std::string>("REFERENCE_RF", std::string());

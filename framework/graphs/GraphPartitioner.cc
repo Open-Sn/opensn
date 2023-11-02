@@ -3,15 +3,15 @@
 namespace chi
 {
 
-InputParameters GraphPartitioner::GetInputParameters()
+InputParameters
+GraphPartitioner::GetInputParameters()
 {
   InputParameters params = ChiObject::GetInputParameters();
 
   return params;
 }
 
-GraphPartitioner::GraphPartitioner(const InputParameters& params)
-  : ChiObject(params)
+GraphPartitioner::GraphPartitioner(const InputParameters& params) : ChiObject(params)
 {
 }
 

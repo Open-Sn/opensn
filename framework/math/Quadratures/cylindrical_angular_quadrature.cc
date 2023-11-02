@@ -7,12 +7,10 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-
-chi_math::CylindricalAngularQuadrature::
-  CylindricalAngularQuadrature(
-    const chi_math::Quadrature& quad_polar,
-    const chi_math::Quadrature& quad_azimu,
-    const bool verbose)
+chi_math::CylindricalAngularQuadrature::CylindricalAngularQuadrature(
+  const chi_math::Quadrature& quad_polar,
+  const chi_math::Quadrature& quad_azimu,
+  const bool verbose)
   : CurvilinearAngularQuadrature()
 {
   const auto np = quad_polar.weights_.size();
@@ -20,23 +18,20 @@ chi_math::CylindricalAngularQuadrature::
   Initialize(quad_polar, quad_azimu_vec, verbose);
 }
 
-
-chi_math::CylindricalAngularQuadrature::
-  CylindricalAngularQuadrature(
-    const chi_math::Quadrature& quad_polar,
-    const std::vector<chi_math::Quadrature>& quad_azimu_vec,
-    const bool verbose)
+chi_math::CylindricalAngularQuadrature::CylindricalAngularQuadrature(
+  const chi_math::Quadrature& quad_polar,
+  const std::vector<chi_math::Quadrature>& quad_azimu_vec,
+  const bool verbose)
   : CurvilinearAngularQuadrature()
 {
   Initialize(quad_polar, quad_azimu_vec, verbose);
 }
 
-
 void
-chi_math::CylindricalAngularQuadrature::
-  Initialize(const chi_math::Quadrature& quad_polar,
-             const std::vector<chi_math::Quadrature>& quad_azimu_vec,
-             const bool verbose)
+chi_math::CylindricalAngularQuadrature::Initialize(
+  const chi_math::Quadrature& quad_polar,
+  const std::vector<chi_math::Quadrature>& quad_azimu_vec,
+  const bool verbose)
 {
   //  copies of input quadratures
   auto polar_quad(quad_polar);
@@ -56,14 +51,14 @@ chi_math::CylindricalAngularQuadrature::
   //  at present, this class does not handle correctly reduced geometries
   if (polar_quad.weights_.size() == 0)
     throw std::invalid_argument("chi_math::CylindricalAngularQuadrature::Initialize : "
-                                "invalid polar quadrature size = "
-                                +std::to_string(polar_quad.weights_.size()));
+                                "invalid polar quadrature size = " +
+                                std::to_string(polar_quad.weights_.size()));
 
   for (const auto& azimu_quad : azimu_quad_vec)
     if (azimu_quad.weights_.size() == 0)
       throw std::invalid_argument("chi_math::CylindricalAngularQuadrature::Initialize : "
-                                  "invalid azimuthal quadrature size = "
-                                  +std::to_string(azimu_quad.weights_.size()));
+                                  "invalid azimuthal quadrature size = " +
+                                  std::to_string(azimu_quad.weights_.size()));
 
   //  --------------------------------------------------------------------------
   //  verifications on polar quadrature
@@ -87,7 +82,7 @@ chi_math::CylindricalAngularQuadrature::
 
   //  defined on range [-1;+1]
   if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps ||
-      std::abs(polar_quad.GetRange().second- polar_quad_span.second) > eps)
+      std::abs(polar_quad.GetRange().second - polar_quad_span.second) > eps)
     polar_quad.SetRange(polar_quad_span);
 
   //  --------------------------------------------------------------------------
@@ -114,18 +109,18 @@ chi_math::CylindricalAngularQuadrature::
 
     //  defined on range [-1;+1]
     if (std::abs(azimu_quad.GetRange().first - azimu_quad_span.first) > eps ||
-        std::abs(azimu_quad.GetRange().second- azimu_quad_span.second) > eps)
+        std::abs(azimu_quad.GetRange().second - azimu_quad_span.second) > eps)
       azimu_quad.SetRange(azimu_quad_span);
 
     //  abscissae sorted in ascending order
     auto lt_qp = [](const chi_math::QuadraturePointXYZ& qp0,
-                    const chi_math::QuadraturePointXYZ& qp1)
-      { return qp0[0] < qp1[0]; };
+                    const chi_math::QuadraturePointXYZ& qp1) { return qp0[0] < qp1[0]; };
     if (!std::is_sorted(azimu_quad.qpoints_.begin(), azimu_quad.qpoints_.end(), lt_qp))
       throw std::invalid_argument("chi_math::CylindricalAngularQuadrature::Initialize : "
                                   "azimuthal quadrature abscissae not in ascending order.");
 
-    //  existence of zero-weight abscissae at the start and at the end of the interval
+    //  existence of zero-weight abscissae at the start and at the end of the
+    //  interval
     if (std::abs(azimu_quad.weights_.front()) > eps &&
         std::abs(azimu_quad.qpoints_.front()[0] - azimu_quad_span.first) > eps)
     {
@@ -164,10 +159,8 @@ chi_math::CylindricalAngularQuadrature::
       const auto azi_com = std::sqrt(1 - azi_abs * azi_abs);
 
       const auto weight = pol_wei * azi_wei;
-      const auto abscissa =
-        QuadraturePointPhiTheta(std::acos(azi_abs), std::acos(pol_abs));
-      const auto omega =
-        chi_mesh::Vector3(pol_com * azi_abs, pol_abs, pol_com * azi_com);
+      const auto abscissa = QuadraturePointPhiTheta(std::acos(azi_abs), std::acos(pol_abs));
+      const auto omega = chi_mesh::Vector3(pol_com * azi_abs, pol_abs, pol_com * azi_com);
 
       weights_.emplace_back(weight);
       abscissae_.emplace_back(abscissa);
@@ -210,19 +203,15 @@ chi_math::CylindricalAngularQuadrature::
     }
     Chi::log.Log() << "curvilinear product quadrature : cylindrical" << std::endl;
     for (size_t k = 0; k < weights_.size(); ++k)
-      Chi::log.Log()
-          << "angle index " << k << ": weight = " << weights_[k]
-          << ", (phi, theta) = (" << abscissae_[k].phi << ", " << abscissae_[k].theta << ")"
-          << ", omega = " << omegas_[k].PrintStr()
-          << ", fac_diamond_difference = " << fac_diamond_difference_[k]
-          << ", fac_streaming_operator = " << fac_streaming_operator_[k]
-          << std::endl;
-    const auto sum_weights =
-      std::accumulate(weights_.begin(), weights_.end(), 0.0);
+      Chi::log.Log() << "angle index " << k << ": weight = " << weights_[k] << ", (phi, theta) = ("
+                     << abscissae_[k].phi << ", " << abscissae_[k].theta << ")"
+                     << ", omega = " << omegas_[k].PrintStr()
+                     << ", fac_diamond_difference = " << fac_diamond_difference_[k]
+                     << ", fac_streaming_operator = " << fac_streaming_operator_[k] << std::endl;
+    const auto sum_weights = std::accumulate(weights_.begin(), weights_.end(), 0.0);
     Chi::log.Log() << "sum(weights) = " << sum_weights << std::endl;
   }
 }
-
 
 void
 chi_math::CylindricalAngularQuadrature::InitializeParameters()
@@ -264,9 +253,9 @@ chi_math::CylindricalAngularQuadrature::InitializeParameters()
   }
 }
 
-
 void
-chi_math::CylindricalAngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimension)
+chi_math::CylindricalAngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order,
+                                                            int dimension)
 {
   if (m_to_ell_em_map_.empty())
   {
@@ -274,8 +263,7 @@ chi_math::CylindricalAngularQuadrature::MakeHarmonicIndices(unsigned int scatter
     {
       for (unsigned int l = 0; l <= scattering_order; ++l)
         for (int m = 0; m <= l; ++m)
-          if ((l + m) % 2 == 0)
-            m_to_ell_em_map_.emplace_back(l, m);
+          if ((l + m) % 2 == 0) m_to_ell_em_map_.emplace_back(l, m);
     }
     else if (dimension == 2)
       for (unsigned int l = 0; l <= scattering_order; ++l)

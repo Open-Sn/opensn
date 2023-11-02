@@ -19,6 +19,6 @@ public:
   virtual ~FieldOperation() = default;
 };
 
-}
+} // namespace chi_physics::field_operations
 
 #endif // CHITECH_FIELD_OPERATION_H

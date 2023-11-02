@@ -23,7 +23,7 @@ struct FFICellIntersection
   double cell_avg_value = 0.0;
 };
 
-}//namespace chi_mesh
+} // namespace chi_mesh
 
 //###################################################################
 /** A slice based interpolation function.
@@ -37,35 +37,31 @@ struct FFICellIntersection
 class chi_mesh::FieldFunctionInterpolationSlice : public chi_mesh::FieldFunctionInterpolation
 {
 protected:
-  chi_mesh::Normal normal_ =chi_mesh::Normal(0.0, 0.0, 1.0);
-  chi_mesh::Normal binorm_ =chi_mesh::Normal(0.0, 1.0, 0.0);
-  chi_mesh::Normal tangent_=chi_mesh::Normal(1.0, 0.0, 0.0);
+  chi_mesh::Normal normal_ = chi_mesh::Normal(0.0, 0.0, 1.0);
+  chi_mesh::Normal binorm_ = chi_mesh::Normal(0.0, 1.0, 0.0);
+  chi_mesh::Normal tangent_ = chi_mesh::Normal(1.0, 0.0, 0.0);
   chi_mesh::Vector3 plane_point_;
 
 private:
-  std::vector<FFICellIntersection>    cell_intersections_;
-public:
-  FieldFunctionInterpolationSlice() :
-    FieldFunctionInterpolation(ff_interpolation::Type::SLICE)
-  {  }
+  std::vector<FFICellIntersection> cell_intersections_;
 
-  chi_mesh::Normal& GetNormal() {return normal_;}
-  chi_mesh::Normal& GetBiNorm() {return binorm_;}
-  chi_mesh::Normal& GetTangent() {return tangent_;}
-  chi_mesh::Vector3& GetPlanePoint() {return plane_point_;}
-  //01
+public:
+  FieldFunctionInterpolationSlice() : FieldFunctionInterpolation(ff_interpolation::Type::SLICE) {}
+
+  chi_mesh::Normal& GetNormal() { return normal_; }
+  chi_mesh::Normal& GetBiNorm() { return binorm_; }
+  chi_mesh::Normal& GetTangent() { return tangent_; }
+  chi_mesh::Vector3& GetPlanePoint() { return plane_point_; }
+  // 01
   void Initialize() override;
 
-  //02
+  // 02
   void Execute() override;
+
 public:
-  //03
-  std::string GetDefaultFileBaseName() const override
-  {return "ZPFFI";}
+  // 03
+  std::string GetDefaultFileBaseName() const override { return "ZPFFI"; }
   void ExportPython(std::string base_name) override;
 };
-
-
-
 
 #endif

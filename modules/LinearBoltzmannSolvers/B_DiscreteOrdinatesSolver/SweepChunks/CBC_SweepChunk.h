@@ -26,8 +26,7 @@ struct CBC_SweepDependencyInterface : public SweepDependencyInterface
   const CellLBSView* cell_transport_view_;
 
   // Set using SetupIncomingFace
-  const chi_mesh::sweep_management::FaceNodalMapping* face_nodal_mapping_ =
-    nullptr;
+  const chi_mesh::sweep_management::FaceNodalMapping* face_nodal_mapping_ = nullptr;
 
   const double* GetUpwindPsi(int face_node_local_idx) const override;
   double* GetDownwindPsi(int face_node_local_idx) const override;

@@ -22,26 +22,25 @@ class SourceFunction
 protected:
   const LBSSolver& lbs_solver_;
 
-  bool apply_fixed_src_         = false;
-  bool apply_wgs_scatter_src_   = false;
-  bool apply_ags_scatter_src_   = false;
-  bool apply_wgs_fission_src_   = false;
-  bool apply_ags_fission_src_   = false;
+  bool apply_fixed_src_ = false;
+  bool apply_wgs_scatter_src_ = false;
+  bool apply_ags_scatter_src_ = false;
+  bool apply_wgs_fission_src_ = false;
+  bool apply_ags_fission_src_ = false;
   bool suppress_wg_scatter_src_ = false;
 
-  size_t gs_i_      = 0;
-  size_t gs_f_      = 0;
+  size_t gs_i_ = 0;
+  size_t gs_f_ = 0;
   size_t first_grp_ = 0;
-  size_t last_grp_  = 0;
+  size_t last_grp_ = 0;
 
-  double        cell_volume_       = 0.0;
-  size_t        g_                 = 0;
+  double cell_volume_ = 0.0;
+  size_t g_ = 0;
   const double* fixed_src_moments_ = nullptr;
   std::vector<double> default_zero_src_;
 
 public:
-  explicit
-  SourceFunction(const LBSSolver& lbs_solver);
+  explicit SourceFunction(const LBSSolver& lbs_solver);
   virtual ~SourceFunction() = default;
 
   virtual void operator()(LBSGroupset& groupset,
@@ -52,10 +51,9 @@ public:
   virtual double AddSourceMoments() const;
 
   typedef std::vector<chi_physics::MultiGroupXS::Precursor> PrecursorList;
-  virtual
-  double AddDelayedFission(const PrecursorList& precursors,
-                           const std::vector<double>& nu_delayed_sigma_f,
-                           const double* phi) const;
+  virtual double AddDelayedFission(const PrecursorList& precursors,
+                                   const std::vector<double>& nu_delayed_sigma_f,
+                                   const double* phi) const;
 
   virtual void AddAdditionalSources(LBSGroupset& groupset,
                                     std::vector<double>& destination_q,
@@ -71,6 +69,6 @@ public:
                        SourceFlags source_flags);
 };
 
-}//namespace lbs
+} // namespace lbs
 
-#endif //CHITECH_LBS_SOURCE_FUNCTION_H
+#endif // CHITECH_LBS_SOURCE_FUNCTION_H

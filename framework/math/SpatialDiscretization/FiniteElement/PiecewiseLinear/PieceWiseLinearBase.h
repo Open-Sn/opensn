@@ -12,7 +12,7 @@ namespace chi_math::spatial_discretization
 {
 
 /**Base class for PieceWiseLinear based discretization.
-* \ingroup doc_SpatialDiscretization*/
+ * \ingroup doc_SpatialDiscretization*/
 class PieceWiseLinearBase : public FiniteElementBase
 {
 protected:

@@ -12,12 +12,12 @@ public:
   EventSubscriber() = default;
 
   /**A method called by publishers to inform the object of events, only if
-  * the object subscribed to the publisher.*/
+   * the object subscribed to the publisher.*/
   virtual void ReceiveEventUpdate(const Event& event);
 
   virtual ~EventSubscriber() = default;
 };
 
-}
+} // namespace chi
 
 #endif // CHITECH_EVENTSUBSCRIBER_H

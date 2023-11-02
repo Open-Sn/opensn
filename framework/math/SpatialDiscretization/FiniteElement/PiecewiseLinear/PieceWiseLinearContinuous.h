@@ -21,10 +21,9 @@ public:
       CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN);
 
   // 03
-  void
-  BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
-                       std::vector<int64_t>& nodal_nnz_off_diag,
-                       const UnknownManager& unknown_manager) const override;
+  void BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
+                            std::vector<int64_t>& nodal_nnz_off_diag,
+                            const UnknownManager& unknown_manager) const override;
 
   // 04 Mappings
   int64_t MapDOF(const chi_mesh::Cell& cell,
@@ -43,16 +42,14 @@ public:
   {
     return MapDOF(cell, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
   }
-  int64_t MapDOFLocal(const chi_mesh::Cell& cell,
-                      unsigned int node) const override
+  int64_t MapDOFLocal(const chi_mesh::Cell& cell, unsigned int node) const override
   {
     return MapDOFLocal(cell, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
   }
 
   size_t GetNumGhostDOFs(const UnknownManager& unknown_manager) const override;
 
-  std::vector<int64_t>
-  GetGhostDOFIndices(const UnknownManager& unknown_manager) const override;
+  std::vector<int64_t> GetGhostDOFIndices(const UnknownManager& unknown_manager) const override;
 
 protected:
   // 02
@@ -64,8 +61,8 @@ protected:
 private:
   // 00
   explicit PieceWiseLinearContinuous(const chi_mesh::MeshContinuum& grid,
-                                      QuadratureOrder q_order,
-                                      CoordinateSystemType cs_type);
+                                     QuadratureOrder q_order,
+                                     CoordinateSystemType cs_type);
 };
 } // namespace chi_math::spatial_discretization
 

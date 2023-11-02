@@ -11,7 +11,8 @@ namespace lbs
 /**This function evaluates the flux moments based k-eigenvalue transport
  * residual of the form
 \f$ r(\phi) = DL^{-1} (\frac{1}{k} F\phi + MS \phi) - \phi \f$.*/
-PetscErrorCode NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
+PetscErrorCode
+NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
   const std::string fname = "lbs::SNESKResidualFunction";
   auto& function_context = *((KResidualFunctionContext*)ctx);
@@ -39,8 +40,7 @@ PetscErrorCode NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     active_set_source_function(groupset,
                                q_moments_local,
                                phi_old_local,
-                               lbs::APPLY_AGS_FISSION_SOURCES |
-                                 lbs::APPLY_WGS_FISSION_SOURCES);
+                               lbs::APPLY_AGS_FISSION_SOURCES | lbs::APPLY_WGS_FISSION_SOURCES);
 
   const double k_eff = lbs_solver.ComputeFissionProduction(phi_old_local);
   chi_math::Scale(q_moments_local, 1.0 / k_eff);
@@ -49,14 +49,12 @@ PetscErrorCode NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   for (auto& groupset : lbs_solver.Groupsets())
   {
     auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
-    const bool supress_wgs =
-      wgs_context.lhs_src_scope_ & lbs::SUPPRESS_WG_SCATTER;
-    active_set_source_function(
-      groupset,
-      q_moments_local,
-      phi_old_local,
-      lbs::APPLY_AGS_SCATTER_SOURCES | lbs::APPLY_WGS_SCATTER_SOURCES |
-        (supress_wgs ? lbs::SUPPRESS_WG_SCATTER : lbs::NO_FLAGS_SET));
+    const bool supress_wgs = wgs_context.lhs_src_scope_ & lbs::SUPPRESS_WG_SCATTER;
+    active_set_source_function(groupset,
+                               q_moments_local,
+                               phi_old_local,
+                               lbs::APPLY_AGS_SCATTER_SOURCES | lbs::APPLY_WGS_SCATTER_SOURCES |
+                                 (supress_wgs ? lbs::SUPPRESS_WG_SCATTER : lbs::NO_FLAGS_SET));
   }
 
   //============================================= Sweep all the groupsets
@@ -70,15 +68,13 @@ PetscErrorCode NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   //============================================= Reassemble PETSc vector
   // We use r as a proxy for delta-phi here since
   // we are anycase going to subtract phi from it.
-  lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(
-    groupset_ids, r, lbs::PhiSTLOption::PHI_NEW);
+  lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(groupset_ids, r, lbs::PhiSTLOption::PHI_NEW);
 
   VecAXPY(r, -1.0, phi);
 
   for (auto& groupset : lbs_solver.Groupsets())
   {
-    if ((groupset.apply_wgdsa_ or groupset.apply_tgdsa_) and
-        lbs_solver.Groupsets().size() > 1)
+    if ((groupset.apply_wgdsa_ or groupset.apply_tgdsa_) and lbs_solver.Groupsets().size() > 1)
       throw std::logic_error(fname + ": Preconditioning currently only supports"
                                      "single groupset simulations.");
 

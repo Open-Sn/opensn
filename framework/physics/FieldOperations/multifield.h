@@ -9,7 +9,7 @@ namespace chi_physics::field_operations
 {
 
 /**A field operation to manipulate a single field on the hand
-* of a number of other fields.*/
+ * of a number of other fields.*/
 class MultiFieldOperation : public FieldOperation
 {
 private:
@@ -24,6 +24,7 @@ private:
   std::vector<std::shared_ptr<const FieldFunction>> dependent_ffs_;
 
   std::shared_ptr<const chi_math::FunctionDimAToDimB> function_ptr_;
+
 public:
   static chi::InputParameters GetInputParameters();
 
@@ -32,6 +33,6 @@ public:
   void Execute() override;
 };
 
-}
+} // namespace chi_physics::field_operations
 
 #endif // CHITECH_FIELD_OPERATIONS_MULTIFIELD_H

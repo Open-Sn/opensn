@@ -15,8 +15,8 @@
  * method. It is also fairly important in terms of memory to only allocate
  * these chunks of memory when actually ready to use them since they form the
  * majority of memory usage.*/
-void chi_mesh::sweep_management::AAH_ASynchronousCommunicator::
-  InitializeLocalAndDownstreamBuffers()
+void
+chi_mesh::sweep_management::AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
 {
   if (!data_initialized)
   {
@@ -37,7 +37,7 @@ void chi_mesh::sweep_management::AAH_ASynchronousCommunicator::
 
     Chi::log.LogEvent(chi::ChiLog::StdTags::MAX_MEMORY_USAGE,
                       chi::ChiLog::EventType::SINGLE_OCCURRENCE,
-                     memory_event_info);
+                      memory_event_info);
 
     data_initialized = true;
   }

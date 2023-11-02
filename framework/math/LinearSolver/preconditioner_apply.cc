@@ -7,10 +7,11 @@
 namespace chi_math
 {
 
-template<>
-int PreconditionerApplication(PC pc, Vec vector, Vec action)
+template <>
+int
+PreconditionerApplication(PC pc, Vec vector, Vec action)
 {
-  PreconditionerContext<PC,Vec>* context;
+  PreconditionerContext<PC, Vec>* context;
   PCShellGetContext(pc, &context);
 
   context->PCApply(pc, vector, action);
@@ -18,4 +19,4 @@ int PreconditionerApplication(PC pc, Vec vector, Vec action)
   return 0;
 }
 
-}//namespace chi_math
+} // namespace chi_math

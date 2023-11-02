@@ -20,15 +20,13 @@ public:
    * is already taken or the parent name is not found then this method
    * throws `std::invalid_argument`. The parent name may be empty, i.e. "",
    * which will revert to the main timing block "ChiTech"*/
-  TimingBlock& CreateTimingBlock(const std::string& name,
-                                 const std::string& parent_name = "");
+  TimingBlock& CreateTimingBlock(const std::string& name, const std::string& parent_name = "");
   /**If the timing block with the given exists, this method returns that block,
    * otherwise it creates a time block and returns a reference to it. If the
    * parent name is not found then this method throws `std::invalid_argument`.
    * The parent name may be empty, i.e. "", which will revert to the main timing
    * block "ChiTech"*/
-  TimingBlock& CreateOrGetTimingBlock(const std::string& name,
-                                      const std::string& parent_name = "");
+  TimingBlock& CreateOrGetTimingBlock(const std::string& name, const std::string& parent_name = "");
   /**Returns a reference to the timing block with the given name. If a timing
    * block with that name does not exist then this method will throw
    * `std::invalid_argument`.*/
@@ -72,7 +70,7 @@ protected:
   /**Adds the supplied timing black as a child.*/
   void AddChild(const TimingBlock& child_block);
   /**Used when building the graph, this is a recursive function that adds
-  * each entry to a matrix.*/
+   * each entry to a matrix.*/
   void AppendGraphEntry(std::vector<std::vector<std::string>>& string_matrix,
                         const TimingBlock* parent,
                         const std::string& indent) const;

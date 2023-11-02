@@ -8,13 +8,14 @@ namespace chi
 {
 
 /**General material base class for a scalar material property that
-* is possibly a function of position (x,y,z), time t, and maybe a set
-* of variables (v).*/
+ * is possibly a function of position (x,y,z), time t, and maybe a set
+ * of variables (v).*/
 class MaterialPropertyScalarFuncXYZTV : public MaterialProperty
 {
 protected:
   const chi_math::FunctionDimAToDimB& function_;
   const std::vector<std::string> dependent_variables_;
+
 public:
   static InputParameters GetInputParameters();
   explicit MaterialPropertyScalarFuncXYZTV(const InputParameters& params);
@@ -22,6 +23,6 @@ public:
   double Evaluate(const std::vector<double>& vars);
 };
 
-}
+} // namespace chi
 
 #endif // CHITECH_MAT_PROP_FUNCXYZTV_H

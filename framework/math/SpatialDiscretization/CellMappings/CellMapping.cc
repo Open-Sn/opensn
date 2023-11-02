@@ -24,33 +24,50 @@ CellMapping::CellMapping(const chi_mesh::MeshContinuum& grid,
   volume_area_function(ref_grid_, cell, volume_, areas_);
 }
 
-const chi_mesh::Cell& CellMapping::ReferenceCell() const { return cell_; }
+const chi_mesh::Cell&
+CellMapping::ReferenceCell() const
+{
+  return cell_;
+}
 
-const chi_mesh::MeshContinuum& CellMapping::ReferenceGrid() const
+const chi_mesh::MeshContinuum&
+CellMapping::ReferenceGrid() const
 {
   return ref_grid_;
 }
 
-size_t CellMapping::NumNodes() const { return num_nodes_; }
+size_t
+CellMapping::NumNodes() const
+{
+  return num_nodes_;
+}
 
-size_t CellMapping::NumFaceNodes(size_t face_index) const
+size_t
+CellMapping::NumFaceNodes(size_t face_index) const
 {
   return face_node_mappings_.at(face_index).size();
 }
 
-const std::vector<std::vector<int>>& CellMapping::GetFaceNodeMappings() const
+const std::vector<std::vector<int>>&
+CellMapping::GetFaceNodeMappings() const
 {
   return face_node_mappings_;
 }
 
-double CellMapping::CellVolume() const { return volume_; }
+double
+CellMapping::CellVolume() const
+{
+  return volume_;
+}
 
-double CellMapping::FaceArea(size_t face_index) const
+double
+CellMapping::FaceArea(size_t face_index) const
 {
   return areas_[face_index];
 }
 
-int CellMapping::MapFaceNode(size_t face_index, size_t face_node_index) const
+int
+CellMapping::MapFaceNode(size_t face_index, size_t face_node_index) const
 {
   try
   {
@@ -58,16 +75,16 @@ int CellMapping::MapFaceNode(size_t face_index, size_t face_node_index) const
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range(
-      "chi_math::CellMapping::MapFaceNode: "
-      "Either face_index or face_node_index is out of range");
+    throw std::out_of_range("chi_math::CellMapping::MapFaceNode: "
+                            "Either face_index or face_node_index is out of range");
   }
 }
 
-void CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
-                                            const chi_mesh::Cell& cell,
-                                            double& volume,
-                                            std::vector<double>& areas)
+void
+CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
+                                       const chi_mesh::Cell& cell,
+                                       double& volume,
+                                       std::vector<double>& areas)
 {
   switch (cell.Type())
   {
@@ -101,8 +118,7 @@ void CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
         const chi_mesh::Vector3 sidev01 = v1 - v0;
         const chi_mesh::Vector3 sidev02 = v2 - v0;
 
-        double sidedetJ =
-          ((sidev01.x) * (sidev02.y) - (sidev02.x) * (sidev01.y));
+        double sidedetJ = ((sidev01.x) * (sidev02.y) - (sidev02.x) * (sidev01.y));
 
         volume += sidedetJ / 2.0;
       } // for face
@@ -153,10 +169,10 @@ void CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
   }
 }
 
-const std::vector<chi_mesh::Vector3>& CellMapping::GetNodeLocations() const
+const std::vector<chi_mesh::Vector3>&
+CellMapping::GetNodeLocations() const
 {
   return node_locations_;
 }
-
 
 } // namespace chi_math

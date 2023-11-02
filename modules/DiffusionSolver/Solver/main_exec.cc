@@ -9,15 +9,14 @@
 
 //###################################################################
 /**Executes the diffusion solver using the PETSc library.*/
-int chi_diffusion::Solver::ExecuteS(bool suppress_assembly,
-                                    bool suppress_solve)
+int
+chi_diffusion::Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
 {
   t_assembly_.Reset();
 
   if (Chi::material_stack.empty())
   {
-    Chi::log.Log0Error()
-      << "No materials added to simulation. Add materials.";
+    Chi::log.Log0Error() << "No materials added to simulation. Add materials.";
     exit(0);
   }
 
@@ -25,8 +24,8 @@ int chi_diffusion::Solver::ExecuteS(bool suppress_assembly,
   VecSet(b_, 0.0);
 
   if (!suppress_assembly)
-    Chi::log.Log() << Chi::program_timer.GetTimeString() << " "
-                       << TextName() << ": Assembling A locally";
+    Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+                   << ": Assembling A locally";
 
   //================================================== Loop over locally owned
   //                                                   cells
@@ -49,66 +48,58 @@ int chi_diffusion::Solver::ExecuteS(bool suppress_assembly,
   }
   else
   {
-    Chi::log.Log()
-      << "Diffusion Solver: Finite Element Discretization "
-         "method not specified.";
+    Chi::log.Log() << "Diffusion Solver: Finite Element Discretization "
+                      "method not specified.";
     Chi::Exit(EXIT_FAILURE);
   }
 
   if (!suppress_assembly)
-    Chi::log.Log() << Chi::program_timer.GetTimeString() << " "
-                       << TextName() << ": Done Assembling A locally";
+    Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+                   << ": Done Assembling A locally";
   MPI_Barrier(Chi::mpi.comm);
 
   //=================================== Call matrix assembly
-  if (verbose_info_ ||
-      Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
-    Chi::log.Log()
-      << Chi::program_timer.GetTimeString() << " "
-      << TextName() << ": Communicating matrix assembly";
+  if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+    Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+                   << ": Communicating matrix assembly";
 
   if (!suppress_assembly)
   {
-    Chi::log.Log() << Chi::program_timer.GetTimeString() << " "
-                       << TextName() << ": Assembling A globally";
+    Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+                   << ": Assembling A globally";
     MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY);
     MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY);
 
     //================================= Matrix symmetry check
-//    PetscBool is_symmetric;
-//    ierr = MatIsSymmetric(A,1.0e-4,&is_symmetric);
-//    if (!is_symmetric)
-//    {
-//      chi::log.Log0Warning()
-//        << "Assembled matrix is not symmetric";
-//    }
+    //    PetscBool is_symmetric;
+    //    ierr = MatIsSymmetric(A,1.0e-4,&is_symmetric);
+    //    if (!is_symmetric)
+    //    {
+    //      chi::log.Log0Warning()
+    //        << "Assembled matrix is not symmetric";
+    //    }
 
     //================================= Matrix diagonal check
-    Chi::log.Log() << Chi::program_timer.GetTimeString() << " "
-                       << TextName() << ": Diagonal check";
+    Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName() << ": Diagonal check";
     PetscBool missing_diagonal;
-    PetscInt  row;
+    PetscInt row;
     MatMissingDiagonal(A_, &missing_diagonal, &row);
     if (missing_diagonal)
-      Chi::log.LogAllError() << Chi::program_timer.GetTimeString() << " "
-                                << TextName() << ": Missing diagonal detected";
+      Chi::log.LogAllError() << Chi::program_timer.GetTimeString() << " " << TextName()
+                             << ": Missing diagonal detected";
 
     //================================= Matrix sparsity info
     MatInfo info;
     ierr_ = MatGetInfo(A_, MAT_GLOBAL_SUM, &info);
 
     Chi::log.Log() << "Number of mallocs used = " << info.mallocs
-                       << "\nNumber of non-zeros allocated = "
-                       << info.nz_allocated
-                       << "\nNumber of non-zeros used = "
-                       << info.nz_used
-                       << "\nNumber of unneeded non-zeros = "
-                       << info.nz_unneeded;
+                   << "\nNumber of non-zeros allocated = " << info.nz_allocated
+                   << "\nNumber of non-zeros used = " << info.nz_used
+                   << "\nNumber of unneeded non-zeros = " << info.nz_unneeded;
   }
-  if (verbose_info_ ||
-      Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
-    Chi::log.Log() << Chi::program_timer.GetTimeString() << " "
-                       << TextName() << ": Assembling x and b";
+  if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+    Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+                   << ": Assembling x and b";
   VecAssemblyBegin(x_);
   VecAssemblyEnd(x_);
   VecAssemblyBegin(b_);
@@ -119,20 +110,16 @@ int chi_diffusion::Solver::ExecuteS(bool suppress_assembly,
   //=================================== Execute solve
   if (suppress_solve)
   {
-    Chi::log.Log()
-      << Chi::program_timer.GetTimeString() << " "
-      << TextName()
-      << ": Setting up solver and preconditioner\n";
+    Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+                   << ": Setting up solver and preconditioner\n";
     PCSetUp(pc_);
     KSPSetUp(ksp_);
   }
   else
   {
-    if (verbose_info_ ||
-        Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
-      Chi::log.Log()
-        << Chi::program_timer.GetTimeString() << " "
-        << TextName() << ": Solving system\n";
+    if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+      Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+                     << ": Solving system\n";
     t_solve_.Reset();
     PCSetUp(pc_);
     KSPSetUp(ksp_);
@@ -140,37 +127,33 @@ int chi_diffusion::Solver::ExecuteS(bool suppress_assembly,
     time_solve_ = t_solve_.GetTime() / 1000.0;
 
     //=================================== Populate field vector
-//    if (fem_method == "PWLD_MIP" or fem_method == "PWLD_MIP_GAGG")
-//    {
-//      const double* x_ref;
-//      VecGetArrayRead(x,&x_ref);
-//
-//      for (int i=0; i < local_dof_count; i++)
-//        pwld_phi_local[i] = x_ref[i];
-//
-//      VecRestoreArrayRead(x,&x_ref);
-//    }
+    //    if (fem_method == "PWLD_MIP" or fem_method == "PWLD_MIP_GAGG")
+    //    {
+    //      const double* x_ref;
+    //      VecGetArrayRead(x,&x_ref);
+    //
+    //      for (int i=0; i < local_dof_count; i++)
+    //        pwld_phi_local[i] = x_ref[i];
+    //
+    //      VecRestoreArrayRead(x,&x_ref);
+    //    }
 
     //=================================== Get convergence reason
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
     if (verbose_info_ || reason != KSP_CONVERGED_RTOL)
-      Chi::log.Log()
-        << "Convergence reason: "
-        << chi_physics::GetPETScConvergedReasonstring(reason);
+      Chi::log.Log() << "Convergence reason: "
+                     << chi_physics::GetPETScConvergedReasonstring(reason);
 
     //=================================== Location wise view
     if (Chi::mpi.location_id == 0)
     {
       int64_t its;
       ierr_ = KSPGetIterationNumber(ksp_, &its);
-      Chi::log.Log()
-          << Chi::program_timer.GetTimeString() << " "
-          << TextName() << "[g=" << gi_ << "-" << gi_ + G_ - 1
-        << "]: Number of iterations =" << its;
+      Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName() << "[g=" << gi_
+                     << "-" << gi_ + G_ - 1 << "]: Number of iterations =" << its;
 
-      if (verbose_info_ ||
-          Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+      if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
       {
         Chi::log.Log() << "Timing:";
         Chi::log.Log() << "Assembling the matrix: " << time_assembly_;
@@ -180,10 +163,9 @@ int chi_diffusion::Solver::ExecuteS(bool suppress_assembly,
 
     UpdateFieldFunctions();
 
-    if (verbose_info_ ||
-        Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+    if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
       Chi::log.Log() << "Diffusion Solver execution completed!\n";
-  }//if not suppressed solve
+  } // if not suppressed solve
 
   return 0;
 }

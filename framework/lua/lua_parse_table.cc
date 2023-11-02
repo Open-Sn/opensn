@@ -6,19 +6,17 @@
 #include "data_types/chi_data_types.h"
 #include "parameters/parameter_block.h"
 
-#define ExceptionLuaNilValue                                                   \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                    \
-                         ": Encountered nil value assigned to key " +          \
-                         key_str_name)
+#define ExceptionLuaNilValue                                                                       \
+  throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                                        \
+                         ": Encountered nil value assigned to key " + key_str_name)
 
-#define ExceptionLuaUnsupportedValue                                           \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                    \
-                         ": Encountered unsupported value type " +             \
-                         lua_typename(L, lua_type(L, -2)) + " for key " +      \
-                         key_str_name)
+#define ExceptionLuaUnsupportedValue                                                               \
+  throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                                        \
+                         ": Encountered unsupported value type " +                                 \
+                         lua_typename(L, lua_type(L, -2)) + " for key " + key_str_name)
 
-#define ExceptionMixStringNumberKeys                                           \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                    \
+#define ExceptionMixStringNumberKeys                                                               \
+  throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                                        \
                          ": Encountered mixed key types (string and number)")
 
 namespace chi_lua
@@ -33,8 +31,10 @@ typedef chi::ParameterBlock ParamBlock;
  * currently active, will be extended with a parameter of this primitive
  * type. If the value is another table, a new `Block`-type will be instantiated
  * and the table recursion will then operate on this new block.*/
-void TableParserAsParameterBlock::RecursivelyParseTableValues(
-  lua_State* L, ParamBlock& block, const std::string& key_str_name)
+void
+TableParserAsParameterBlock::RecursivelyParseTableValues(lua_State* L,
+                                                         ParamBlock& block,
+                                                         const std::string& key_str_name)
 {
   switch (lua_type(L, -1))
   {
@@ -84,8 +84,10 @@ void TableParserAsParameterBlock::RecursivelyParseTableValues(
 //  NOLINTBEGIN(misc-no-recursion)
 /**This function operates on table keys recursively. It has a specific
  * behavior if it detects an array.*/
-void TableParserAsParameterBlock::RecursivelyParseTableKeys(
-  lua_State* L, int t, chi::ParameterBlock& block)
+void
+TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
+                                                       int t,
+                                                       chi::ParameterBlock& block)
 {
   bool number_key_encountered = false;
   bool string_key_encountered = false;
@@ -165,9 +167,8 @@ TableParserAsParameterBlock::ParseTable(lua_State* L, int table_stack_index)
 /**If the `level` parameter is left as default then the zeroth level of
  * the parameter block will have its individual parameters exported as single
  * values, otherwise the block is exported as a table.*/
-void PushParameterBlock(lua_State* L,
-                        const chi::ParameterBlock& block,
-                        int level /*=0*/)
+void
+PushParameterBlock(lua_State* L, const chi::ParameterBlock& block, int level /*=0*/)
 {
   using namespace chi;
 
@@ -216,7 +217,8 @@ void PushParameterBlock(lua_State* L,
 }
 //  NOLINTEND(misc-no-recursion)
 
-chi::ParameterBlock StackItemToParameterBlock(lua_State* L, int index)
+chi::ParameterBlock
+StackItemToParameterBlock(lua_State* L, int index)
 {
   switch (lua_type(L, index))
   {
@@ -226,8 +228,7 @@ chi::ParameterBlock StackItemToParameterBlock(lua_State* L, int index)
       return ParamBlock("", lua_toboolean(L, index));
     case LUA_TNUMBER:
     {
-      if (lua_isinteger(L, index))
-        return ParamBlock("", lua_tointeger(L, index));
+      if (lua_isinteger(L, index)) return ParamBlock("", lua_tointeger(L, index));
       else
         return ParamBlock("", lua_tonumber(L, index));
     }

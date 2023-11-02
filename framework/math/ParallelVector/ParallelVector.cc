@@ -6,8 +6,8 @@ namespace chi_math
 {
 
 ParallelVector::ParallelVector(uint64_t local_size,
-                                       uint64_t global_size,
-                                       const MPI_Comm communicator)
+                               uint64_t global_size,
+                               const MPI_Comm communicator)
   : local_size_(local_size),
     global_size_(global_size),
     location_id_(chi_mpi_utils::GetLocationID(communicator)),

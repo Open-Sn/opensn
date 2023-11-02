@@ -1,5 +1,5 @@
 #include "chi_lua.h"
-#include<iostream>
+#include <iostream>
 #include "../PhysicsMaterial/chi_physicsmaterial.h"
 
 #include "chi_runtime.h"
@@ -30,12 +30,13 @@ materials[1] = chiPhysicsAddMaterial("Test Material");
 
 \ingroup LuaPhysicsMaterials
 \author Jan*/
-int chiPhysicsAddMaterial(lua_State *L)
+int
+chiPhysicsAddMaterial(lua_State* L)
 {
   int numArgs = lua_gettop(L);
 
   auto new_material = std::make_shared<chi_physics::Material>();
-  if (numArgs==1)
+  if (numArgs == 1)
   {
     const char* temp = lua_tostring(L, 1);
     new_material->name_ = std::string(temp);
@@ -43,11 +44,11 @@ int chiPhysicsAddMaterial(lua_State *L)
 
   Chi::material_stack.push_back(new_material);
 
-  const size_t index = Chi::material_stack.size()-1;
-  lua_pushnumber(L,static_cast<lua_Number>(index));
+  const size_t index = Chi::material_stack.size() - 1;
+  lua_pushnumber(L, static_cast<lua_Number>(index));
 
-  Chi::log.Log0Verbose1() << "New material added at index " << index
-                            << " with name \"" << new_material->name_ << "\"";
+  Chi::log.Log0Verbose1() << "New material added at index " << index << " with name \""
+                          << new_material->name_ << "\"";
 
   return 1;
 }

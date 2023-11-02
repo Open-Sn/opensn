@@ -7,8 +7,7 @@
 namespace chi_math
 {
 typedef std::function<double(double)> ScalarScalarFunction;
-typedef std::function<double(double, double, double, double)>
-  ScalarXYZTFunction;
+typedef std::function<double(double, double, double, double)> ScalarXYZTFunction;
 class FunctionDimAToDimB : public ChiObject
 {
 private:
@@ -29,20 +28,12 @@ public:
   virtual double ScalarFunctionSlope1Parameter(double) const;
   virtual double ScalarFunctionCurvature1Parameter(double) const;
 
-  virtual double
-  ScalarFunction4Parameters(double, double, double, double) const;
-  virtual double
-  ScalarFunctionSlope4Parameters(double, double, double, double) const;
-  virtual double
-  ScalarFunctionCurvature4Parameters(double, double, double, double) const;
+  virtual double ScalarFunction4Parameters(double, double, double, double) const;
+  virtual double ScalarFunctionSlope4Parameters(double, double, double, double) const;
+  virtual double ScalarFunctionCurvature4Parameters(double, double, double, double) const;
 
-  virtual std::vector<double>
-  Evaluate(const std::vector<double>& vals) const = 0;
-  virtual std::vector<double>
-  EvaluateSlope(const std::vector<double>& vals) const
-  {
-    return {0.0};
-  }
+  virtual std::vector<double> Evaluate(const std::vector<double>& vals) const = 0;
+  virtual std::vector<double> EvaluateSlope(const std::vector<double>& vals) const { return {0.0}; }
 };
 
 } // namespace chi_math

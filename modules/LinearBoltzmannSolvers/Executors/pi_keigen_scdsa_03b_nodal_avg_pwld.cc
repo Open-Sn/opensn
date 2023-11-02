@@ -9,9 +9,10 @@ namespace lbs
 {
 
 /**This method takes an input vector that is the local version of
-* a PWLD discrete space and then makes it continuous by applying nodal
-* averages.*/
-std::vector<double> XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
+ * a PWLD discrete space and then makes it continuous by applying nodal
+ * averages.*/
+std::vector<double>
+XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
   const std::vector<double>& input,
   const chi_math::SpatialDiscretization& pwld_sdm,
   const chi_math::SpatialDiscretization& pwlc_sdm,
@@ -19,8 +20,7 @@ std::vector<double> XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
   const XXPowerIterationKEigenSCDSA::GhostInfo& ghost_info)
 {
   const auto& vgc = ghost_info.vector_ghost_communicator;
-  const auto& dfem_dof_global2local_map =
-    ghost_info.ghost_global_id_2_local_map;
+  const auto& dfem_dof_global2local_map = ghost_info.ghost_global_id_2_local_map;
 
   auto input_with_ghosts = vgc->MakeGhostedVector(input);
   vgc->CommunicateGhostEntries(input_with_ghosts);
@@ -95,10 +95,8 @@ std::vector<double> XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
           cint64_t dof_cfem_map_globl = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
           if (cfem_dof_global2local_map.count(dof_cfem_map_globl) > 0)
           {
-            cint64_t dof_dfem_map =
-              dfem_dof_global2local_map.at(dof_dfem_map_globl);
-            cint64_t dof_cfem_map =
-              cfem_dof_global2local_map[dof_cfem_map_globl];
+            cint64_t dof_dfem_map = dfem_dof_global2local_map.at(dof_dfem_map_globl);
+            cint64_t dof_cfem_map = cfem_dof_global2local_map[dof_cfem_map_globl];
 
             const double phi_value = input_with_ghosts[dof_dfem_map];
 

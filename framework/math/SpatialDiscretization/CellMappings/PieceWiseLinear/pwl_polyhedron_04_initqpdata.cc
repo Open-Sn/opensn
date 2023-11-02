@@ -50,8 +50,8 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricQuadraturePointData() const
                                        FaceSideGradShape_y(f, s, i),  // y
                                        FaceSideGradShape_z(f, s, i)); // z
         }                                                             // for qp
-      } // for side
-    }   // for face
+      }                                                               // for side
+    }                                                                 // for face
 
     V_shape_value.push_back(node_shape_value);
     V_shape_grad.push_back(node_shape_grad);
@@ -77,12 +77,12 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricQuadraturePointData() const
   V_num_nodes = num_nodes_;
 
   return finite_element::VolumetricQuadraturePointData(V_quadrature_point_indices,
-                                                     V_qpoints_xyz,
-                                                     V_shape_value,
-                                                     V_shape_grad,
-                                                     V_JxW,
-                                                     face_node_mappings_,
-                                                     V_num_nodes);
+                                                       V_qpoints_xyz,
+                                                       V_shape_value,
+                                                       V_shape_grad,
+                                                       V_JxW,
+                                                       face_node_mappings_,
+                                                       V_num_nodes);
 }
 
 finite_element::SurfaceQuadraturePointData
@@ -153,13 +153,13 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceQuadraturePointData(size_t face_ind
   F_num_nodes = face_data_[f].sides.size();
 
   return finite_element::SurfaceQuadraturePointData(F_quadrature_point_indices,
-                                                 F_qpoints_xyz,
-                                                 F_shape_value,
-                                                 F_shape_grad,
-                                                 F_JxW,
-                                                 F_normals,
-                                                 face_node_mappings_,
-                                                 F_num_nodes);
+                                                    F_qpoints_xyz,
+                                                    F_shape_value,
+                                                    F_shape_grad,
+                                                    F_JxW,
+                                                    F_normals,
+                                                    face_node_mappings_,
+                                                    F_num_nodes);
 }
 
 } // namespace chi_math::cell_mapping

@@ -7,23 +7,19 @@
 namespace chi_math::cell_mapping
 {
 
-LagrangeWedgeMapping::LagrangeWedgeMapping(
-  const chi_mesh::MeshContinuum& grid,
-  const chi_mesh::Cell& cell,
-  const Quadrature& volume_quadrature,
-  const Quadrature& surface_quadrature,
-  const Quadrature& aux_surface_quadrature)
-  : LagrangeBaseMapping(grid,
-                        cell,
-                        6,
-                        MakeFaceNodeMapping(cell),
-                        volume_quadrature,
-                        surface_quadrature),
+LagrangeWedgeMapping::LagrangeWedgeMapping(const chi_mesh::MeshContinuum& grid,
+                                           const chi_mesh::Cell& cell,
+                                           const Quadrature& volume_quadrature,
+                                           const Quadrature& surface_quadrature,
+                                           const Quadrature& aux_surface_quadrature)
+  : LagrangeBaseMapping(
+      grid, cell, 6, MakeFaceNodeMapping(cell), volume_quadrature, surface_quadrature),
     aux_surface_quadrature_(aux_surface_quadrature)
 {
 }
 
-double LagrangeWedgeMapping::RefShape(uint32_t i, const Vec3& qpoint) const
+double
+LagrangeWedgeMapping::RefShape(uint32_t i, const Vec3& qpoint) const
 {
   const double x = qpoint.x;
   const double y = qpoint.y;
@@ -42,8 +38,8 @@ double LagrangeWedgeMapping::RefShape(uint32_t i, const Vec3& qpoint) const
   ChiLogicalError("Invalid shapefunction index " + std::to_string(i));
 }
 
-chi_mesh::Vector3 LagrangeWedgeMapping::RefGradShape(uint32_t i,
-                                                     const Vec3& qpoint) const
+chi_mesh::Vector3
+LagrangeWedgeMapping::RefGradShape(uint32_t i, const Vec3& qpoint) const
 {
 
   const double x = qpoint.x;
@@ -93,8 +89,8 @@ LagrangeWedgeMapping::RefJacobian(const Vec3& qpoint) const
 }
 
 std::pair<double, LagrangeBaseMapping::Vec3>
-LagrangeWedgeMapping::RefFaceJacobianDeterminantAndNormal(
-  size_t face_index, const Vec3& qpoint_face) const
+LagrangeWedgeMapping::RefFaceJacobianDeterminantAndNormal(size_t face_index,
+                                                          const Vec3& qpoint_face) const
 {
   if (face_index <= 2)
   {
@@ -152,17 +148,18 @@ LagrangeWedgeMapping::RefFaceJacobianDeterminantAndNormal(
     const auto cross = dx_dxbar.Cross(dx_dybar);
     const double detJ = cross.Norm();
 
-    return {detJ, cross/detJ};
+    return {detJ, cross / detJ};
   }
 }
 
-LagrangeBaseMapping::Vec3 LagrangeWedgeMapping::FaceToElementQPointConversion(
-  size_t face_index, const Vec3& qpoint_face) const
+LagrangeBaseMapping::Vec3
+LagrangeWedgeMapping::FaceToElementQPointConversion(size_t face_index,
+                                                    const Vec3& qpoint_face) const
 {
   if (face_index <= 2)
   {
 
-    const double x = 0.5*(qpoint_face.x + 1.0);
+    const double x = 0.5 * (qpoint_face.x + 1.0);
     const double y = qpoint_face.y + 1.0;
 
     // clang-format off

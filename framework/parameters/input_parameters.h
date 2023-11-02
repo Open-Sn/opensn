@@ -69,10 +69,7 @@ public:
 
   /**Sets a general description of the object that should be included with
    * the object's documentation.*/
-  void SetGeneralDescription(const std::string& description)
-  {
-    general_description_ = description;
-  }
+  void SetGeneralDescription(const std::string& description) { general_description_ = description; }
   std::string GetGeneralDescription() const { return general_description_; }
 
   /**Space separated list of doxygen group names to which this documentation
@@ -80,11 +77,9 @@ public:
   void SetDocGroup(const std::string& doc_group) { doc_group_ = doc_group; }
 
   /**Sets a link to the documentation of a different object.*/
-  void LinkParameterToBlock(const std::string& param_name,
-                            const std::string& block_name);
+  void LinkParameterToBlock(const std::string& param_name, const std::string& block_name);
   /**Gets any linkage information of a parameter.*/
-  std::string
-  GetParameterDocumentationLink(const std::string& param_name) const;
+  std::string GetParameterDocumentationLink(const std::string& param_name) const;
 
   std::string GetParameterDocString(const std::string& param_name);
 
@@ -94,9 +89,7 @@ private:
 
 public:
   template <typename T>
-  void AddOptionalParameter(const std::string& name,
-                            T value,
-                            const std::string& doc_string)
+  void AddOptionalParameter(const std::string& name, T value, const std::string& doc_string)
   {
     AddParameter(name, value);
     parameter_class_tags_[name] = InputParameterTag::OPTIONAL;
@@ -122,19 +115,16 @@ public:
                                  const std::string& doc_string);
 
   template <typename T>
-  void AddRequiredParameter(const std::string& name,
-                            const std::string& doc_string)
+  void AddRequiredParameter(const std::string& name, const std::string& doc_string)
   {
     AddParameter(name, chi_data_types::Varying::DefaultValue<T>());
     parameter_class_tags_[name] = InputParameterTag::REQUIRED;
     parameter_doc_string_[name] = doc_string;
   }
 
-  void AddRequiredParameterBlock(const std::string& name,
-                                 const std::string& doc_string);
+  void AddRequiredParameterBlock(const std::string& name, const std::string& doc_string);
 
-  void AddRequiredParameterArray(const std::string& name,
-                                 const std::string& doc_string);
+  void AddRequiredParameterArray(const std::string& name, const std::string& doc_string);
 
   template <typename T>
   void ChangeExistingParamToOptional(const std::string& name,
@@ -148,8 +138,7 @@ public:
   }
 
   template <typename T>
-  void ChangeExistingParamToRequired(const std::string& name,
-                                     const std::string& doc_string = "")
+  void ChangeExistingParamToRequired(const std::string& name, const std::string& doc_string = "")
   {
     auto& param = GetParam(name);
     param = ParameterBlock(name, chi_data_types::Varying::DefaultValue<T>());
@@ -164,21 +153,14 @@ public:
 
   /**Returns the raw parameter block used at assignment. This can be used
    * to see if a user supplied an optional parameter or not.*/
-  const ParameterBlock& ParametersAtAssignment() const
-  {
-    return param_block_at_assignment_;
-  }
+  const ParameterBlock& ParametersAtAssignment() const { return param_block_at_assignment_; }
 
-  void
-  MarkParamaterDeprecatedWarning(const std::string& param_name,
-                                 const std::string& deprecation_message = "");
-  void
-  MarkParamaterDeprecatedError(const std::string& param_name,
-                               const std::string& deprecation_message = "");
-  void MarkParamaterRenamed(const std::string& param_name,
-                            const std::string& renaming_description);
-  void ConstrainParameterRange(const std::string& param_name,
-                               AllowableRangePtr allowable_range);
+  void MarkParamaterDeprecatedWarning(const std::string& param_name,
+                                      const std::string& deprecation_message = "");
+  void MarkParamaterDeprecatedError(const std::string& param_name,
+                                    const std::string& deprecation_message = "");
+  void MarkParamaterRenamed(const std::string& param_name, const std::string& renaming_description);
+  void ConstrainParameterRange(const std::string& param_name, AllowableRangePtr allowable_range);
   /**\brief Sets a tag for the given parameter that will allow its type to be
    * mismatched upon assignment.*/
   void SetParameterTypeMismatchAllowed(const std::string& param_name);

@@ -47,9 +47,8 @@ class SweepChunk;
 
 class SweepScheduler;
 
-void CommunicateLocationDependencies(
-  const std::vector<int>& location_dependencies,
-  std::vector<std::vector<int>>& global_dependencies);
+void CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
+                                     std::vector<std::vector<int>>& global_dependencies);
 
 void PrintSweepOrdering(SPDS* sweep_order, MeshContinuumPtr vol_continuum);
 

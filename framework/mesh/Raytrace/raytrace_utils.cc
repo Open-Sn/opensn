@@ -32,13 +32,13 @@
  \return Returns true if the line intersects the plane and false otherwise.
 
  \author Jan*/
-bool chi_mesh::
-CheckPlaneLineIntersect(const chi_mesh::Normal& plane_normal,
-                        const chi_mesh::Vector3& plane_point,
-                        const chi_mesh::Vector3& line_point_0,
-                        const chi_mesh::Vector3& line_point_1,
-                        chi_mesh::Vector3& intersection_point,
-                        std::pair<double,double>* weights/*=nullptr*/)
+bool
+chi_mesh::CheckPlaneLineIntersect(const chi_mesh::Normal& plane_normal,
+                                  const chi_mesh::Vector3& plane_point,
+                                  const chi_mesh::Vector3& line_point_0,
+                                  const chi_mesh::Vector3& line_point_1,
+                                  chi_mesh::Vector3& intersection_point,
+                                  std::pair<double, double>* weights /*=nullptr*/)
 {
   chi_mesh::Vector3 v0 = line_point_0 - plane_point;
   chi_mesh::Vector3 v1 = line_point_1 - plane_point;
@@ -52,12 +52,11 @@ CheckPlaneLineIntersect(const chi_mesh::Normal& plane_normal,
   if (sense_0 != sense_1)
   {
     double dotp_total = std::fabs(dotp_0) + std::fabs(dotp_1);
-    double w0 = (std::fabs(dotp_0)/dotp_total);
+    double w0 = (std::fabs(dotp_0) / dotp_total);
     double w1 = 1.0 - w0;
-    intersection_point = line_point_0*w1 + line_point_1*w0;
+    intersection_point = line_point_0 * w1 + line_point_1 * w0;
 
-    if (weights != nullptr)
-      *weights = {w0,w1};
+    if (weights != nullptr) *weights = {w0, w1};
     return true;
   }
 
@@ -74,22 +73,20 @@ CheckPlaneLineIntersect(const chi_mesh::Normal& plane_normal,
  * unchanged.
  *
  * */
-bool chi_mesh::CheckLineIntersectStrip(
-  const chi_mesh::Vector3& strip_point0,
-  const chi_mesh::Vector3& strip_point1,
-  const chi_mesh::Vector3& strip_normal,
-  const chi_mesh::Vector3& line_point0,
-  const chi_mesh::Vector3& line_point1,
-  chi_mesh::Vector3& intersection_point,
-  double* distance_to_intersection)
+bool
+chi_mesh::CheckLineIntersectStrip(const chi_mesh::Vector3& strip_point0,
+                                  const chi_mesh::Vector3& strip_point1,
+                                  const chi_mesh::Vector3& strip_normal,
+                                  const chi_mesh::Vector3& line_point0,
+                                  const chi_mesh::Vector3& line_point1,
+                                  chi_mesh::Vector3& intersection_point,
+                                  double* distance_to_intersection)
 {
   chi_mesh::Vector3 plane_intersection_point;
-  std::pair<double,double> weights;
+  std::pair<double, double> weights;
 
   bool intersects_plane = chi_mesh::CheckPlaneLineIntersect(
-    strip_normal, strip_point0,
-    line_point0, line_point1,
-    plane_intersection_point, &weights);
+    strip_normal, strip_point0, line_point0, line_point1, plane_intersection_point, &weights);
 
   if (!intersects_plane) return false;
 
@@ -97,12 +94,11 @@ bool chi_mesh::CheckLineIntersectStrip(
   chi_mesh::Vector3 ints_vec1 = plane_intersection_point - strip_point0;
   chi_mesh::Vector3 ints_vec2 = plane_intersection_point - strip_point1;
 
-  bool sense1 = edge_vec.Dot(ints_vec1)>=0.0;
-  bool sense2 = edge_vec.Dot(ints_vec2)>=0.0;
+  bool sense1 = edge_vec.Dot(ints_vec1) >= 0.0;
+  bool sense2 = edge_vec.Dot(ints_vec2) >= 0.0;
 
   if (distance_to_intersection != nullptr)
-    *distance_to_intersection =
-      (plane_intersection_point - line_point0).Norm();
+    *distance_to_intersection = (plane_intersection_point - line_point0).Norm();
 
   if (sense1 != sense2)
   {
@@ -120,14 +116,13 @@ bool chi_mesh::CheckLineIntersectStrip(
  *
  * */
 bool
-chi_mesh::CheckLineIntersectTriangle2(
-  const chi_mesh::Vector3& tri_point0,
-  const chi_mesh::Vector3& tri_point1,
-  const chi_mesh::Vector3& tri_point2,
-  const chi_mesh::Vector3& ray_posi,
-  const chi_mesh::Vector3& ray_dir,
-  chi_mesh::Vector3& intersection_point,
-  double* distance_to_intersection)
+chi_mesh::CheckLineIntersectTriangle2(const chi_mesh::Vector3& tri_point0,
+                                      const chi_mesh::Vector3& tri_point1,
+                                      const chi_mesh::Vector3& tri_point2,
+                                      const chi_mesh::Vector3& ray_posi,
+                                      const chi_mesh::Vector3& ray_dir,
+                                      chi_mesh::Vector3& intersection_point,
+                                      double* distance_to_intersection)
 {
   double epsilon = 1.0e-12;
   chi_mesh::Vector3 edge1 = tri_point1 - tri_point0;
@@ -142,53 +137,46 @@ chi_mesh::CheckLineIntersectTriangle2(
   // the dot product of the other leg with this h will be close
   // to zero.
   double a = edge1.Dot(h);
-  if (std::fabs(a) < epsilon)
-    return false;
+  if (std::fabs(a) < epsilon) return false;
 
   chi_mesh::Vector3 s = ray_posi - tri_point0;
 
-  double f = 1.0/a;
+  double f = 1.0 / a;
 
   // If, s projected onto h, is greater than,
   // v01 projected onto h, or negative, there is now way
   // the ray can intersect
-  double u = f*(s.Dot(h));
-  if (u<0.0 or u>1.0)
-    return false;
+  double u = f * (s.Dot(h));
+  if (u < 0.0 or u > 1.0) return false;
 
   chi_mesh::Vector3 q = s.Cross(edge1);
 
   // If, q projected onto omega, is greater than,
   // v01 projected onto h, or negative, there is now way
   // the ray can intersect
-  double v = f*ray_dir.Dot(q);
-  if (v<0.0 or (u+v)>1.0)
-    return false;
+  double v = f * ray_dir.Dot(q);
+  if (v < 0.0 or (u + v) > 1.0) return false;
 
-  double t = f*edge2.Dot(q);
+  double t = f * edge2.Dot(q);
 
-  if (distance_to_intersection != nullptr)
-    *distance_to_intersection = t;
+  if (distance_to_intersection != nullptr) *distance_to_intersection = t;
 
-  if (t > epsilon and t<(1.0/epsilon))
+  if (t > epsilon and t < (1.0 / epsilon))
   {
-    intersection_point = ray_posi + ray_dir*t;
+    intersection_point = ray_posi + ray_dir * t;
     return true;
-  } else
-  {
-    return false;
   }
+  else { return false; }
 }
 
 //###################################################################
 /** Check whether a point lies in a triangle.*/
 bool
-chi_mesh::CheckPointInTriangle(
-  const chi_mesh::Vector3& v0,
-  const chi_mesh::Vector3& v1,
-  const chi_mesh::Vector3& v2,
-  const chi_mesh::Normal& n,
-  const chi_mesh::Vector3& point)
+chi_mesh::CheckPointInTriangle(const chi_mesh::Vector3& v0,
+                               const chi_mesh::Vector3& v1,
+                               const chi_mesh::Vector3& v2,
+                               const chi_mesh::Normal& n,
+                               const chi_mesh::Vector3& point)
 {
   auto v01 = v1 - v0;
   auto v12 = v2 - v1;
@@ -206,11 +194,9 @@ chi_mesh::CheckPointInTriangle(
   bool dp1 = (vc1.Dot(n) >= 0.0);
   bool dp2 = (vc2.Dot(n) >= 0.0);
 
-  if (dp0 and dp1 and dp2)
-    return true;
+  if (dp0 and dp1 and dp2) return true;
   else
     return false;
-
 }
 
 //###################################################################
@@ -222,48 +208,45 @@ chi_mesh::CheckPointInTriangle(
  * (x-x0,y-y0,z-z0) then sign of the result gives the sense to the surface.
  * Therefore, if we encounter differing senses then the plane is indeed
  * intersecting.*/
-bool chi_mesh::
-CheckPlaneTetIntersect(const chi_mesh::Normal& plane_normal,
-                       const chi_mesh::Vector3& plane_point,
-                       const std::vector<chi_mesh::Vector3>& tet_points)
+bool
+chi_mesh::CheckPlaneTetIntersect(const chi_mesh::Normal& plane_normal,
+                                 const chi_mesh::Vector3& plane_point,
+                                 const std::vector<chi_mesh::Vector3>& tet_points)
 {
   bool current_sense = false;
 
   size_t num_points = tet_points.size();
-  for (size_t i=0; i<num_points; i++)
+  for (size_t i = 0; i < num_points; i++)
   {
     chi_mesh::Vector3 v = tet_points[i] - plane_point;
     double dotp = plane_normal.Dot(v);
 
     bool new_sense = (dotp >= 0.0);
 
-    if (i==0)
-      current_sense = new_sense;
+    if (i == 0) current_sense = new_sense;
     else if (new_sense != current_sense)
       return true;
   }
   return false;
 }
 
-
-
 //###################################################################
 /** Populates segment lengths along a ray. Sorted along the direction.*/
-void chi_mesh::PopulateRaySegmentLengths(
-  const chi_mesh::MeshContinuum& grid,
-  const Cell& cell,
-  const chi_mesh::Vector3& line_point0,
-  const chi_mesh::Vector3& line_point1,
-  const chi_mesh::Vector3& omega,
-  std::vector<double> &segment_lengths)
+void
+chi_mesh::PopulateRaySegmentLengths(const chi_mesh::MeshContinuum& grid,
+                                    const Cell& cell,
+                                    const chi_mesh::Vector3& line_point0,
+                                    const chi_mesh::Vector3& line_point1,
+                                    const chi_mesh::Vector3& omega,
+                                    std::vector<double>& segment_lengths)
 {
-  const chi_mesh::Vector3 khat(0,0,1);
+  const chi_mesh::Vector3 khat(0, 0, 1);
   std::set<double> distance_set;
 
   double track_length;
   if (segment_lengths.empty())
   {
-    track_length = (line_point1-line_point0).Norm();
+    track_length = (line_point1 - line_point0).Norm();
     segment_lengths.push_back(track_length);
   }
 
@@ -284,39 +267,37 @@ void chi_mesh::PopulateRaySegmentLengths(
   // segment lengths from the strip defined by v0 to vc.
   if (cell.Type() == chi_mesh::CellType::POLYGON)
   {
-    int f=-1;
-    for (auto& face : cell.faces_) //edges
+    int f = -1;
+    for (auto& face : cell.faces_) // edges
     {
       f++;
       const auto& v0 = grid.vertices[face.vertex_ids_[0]];
       const auto& vc = cell.centroid_;
 
-      auto n0 = (vc-v0).Cross(khat).Normalized();
+      auto n0 = (vc - v0).Cross(khat).Normalized();
 
       chi_mesh::Vertex intersection_point;
       double d = 0.0;
       bool intersects = chi_mesh::CheckLineIntersectStrip(
-        v0, vc, n0,
-        line_point0, line_point1,
-        intersection_point, &d);
+        v0, vc, n0, line_point0, line_point1, intersection_point, &d);
 
       if (intersects)
       {
-//        double d = (intersection_point - line_point0).Norm();
+        //        double d = (intersection_point - line_point0).Norm();
         distance_set.insert(d);
       }
 
-    }//for face
+    } // for face
   }
   else if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
   {
     auto& vcc = cell.centroid_;
 
-    int f=-1;
+    int f = -1;
     for (auto& face : cell.faces_)
     {
       f++;
-      auto& vfc  = face.centroid_;
+      auto& vfc = face.centroid_;
 
       //===================== Face center to vertex segments
       for (auto vi : face.vertex_ids_)
@@ -327,22 +308,20 @@ void chi_mesh::PopulateRaySegmentLengths(
 
         double d = 0.0;
         bool intersects = chi_mesh::CheckLineIntersectTriangle2(
-          vert,vfc,vcc,line_point0,omega,intersection_point,&d);
+          vert, vfc, vcc, line_point0, omega, intersection_point, &d);
 
         if (intersects)
         {
-          if (d < track_length)
-            distance_set.insert(d);
+          if (d < track_length) distance_set.insert(d);
         }
-      }//for edge
+      } // for edge
 
       //===================== Face edge to cell center segments
-      for (int v=0; v<face.vertex_ids_.size(); ++v)
+      for (int v = 0; v < face.vertex_ids_.size(); ++v)
       {
         uint64_t vid_0 = face.vertex_ids_[v];
-        uint64_t vid_1 = (v<(face.vertex_ids_.size() - 1)) ?
-                         face.vertex_ids_[v + 1] :
-                         face.vertex_ids_[0];
+        uint64_t vid_1 =
+          (v < (face.vertex_ids_.size() - 1)) ? face.vertex_ids_[v + 1] : face.vertex_ids_[0];
 
         auto& v0 = grid.vertices[vid_0];
         auto& v1 = grid.vertices[vid_1];
@@ -352,20 +331,19 @@ void chi_mesh::PopulateRaySegmentLengths(
 
         double d = 0.0;
         bool intersects = chi_mesh::CheckLineIntersectTriangle2(
-          v0,v1,v2,line_point0,omega,intersection_point,&d);
+          v0, v1, v2, line_point0, omega, intersection_point, &d);
 
         if (intersects)
         {
-          if (d < track_length)
-            distance_set.insert(d);
+          if (d < track_length) distance_set.insert(d);
         }
-      }//for edge
-    }//for face
+      } // for edge
+    }   // for face
   }
 
   //======================================== Populate segment lengths
-  //if there are N segments intersected then there will always be
-  //N+1 distances.
+  // if there are N segments intersected then there will always be
+  // N+1 distances.
   segment_lengths.clear();
   double last_distance = 0.0;
   for (double dl : distance_set)
@@ -374,5 +352,4 @@ void chi_mesh::PopulateRaySegmentLengths(
     last_distance = dl;
     segment_lengths.push_back(new_seg_length);
   }
-
 }

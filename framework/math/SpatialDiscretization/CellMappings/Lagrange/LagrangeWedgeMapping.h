@@ -7,7 +7,7 @@ namespace chi_math::cell_mapping
 {
 
 /**Lagrange element mapping for a wedge (extruded triangle).
-* \ingroup doc_CellMappings*/
+ * \ingroup doc_CellMappings*/
 class LagrangeWedgeMapping : public LagrangeBaseMapping
 {
 public:
@@ -23,12 +23,10 @@ protected:
 
   MatDbl RefJacobian(const Vec3& qpoint) const override;
 
-  Vec3 FaceToElementQPointConversion(size_t face_index,
-                                     const Vec3& qpoint_face) const override;
+  Vec3 FaceToElementQPointConversion(size_t face_index, const Vec3& qpoint_face) const override;
 
   std::pair<double, Vec3>
-  RefFaceJacobianDeterminantAndNormal(size_t face_index,
-                                      const Vec3& qpoint_face) const override;
+  RefFaceJacobianDeterminantAndNormal(size_t face_index, const Vec3& qpoint_face) const override;
 
   const Quadrature& GetSurfaceQuadrature(size_t face_index) const override;
 

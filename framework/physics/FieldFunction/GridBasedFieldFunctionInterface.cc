@@ -5,15 +5,15 @@
 namespace chi_physics
 {
 
-chi::InputParameters GridBasedFieldFunctionInterface::GetInputParameters()
+chi::InputParameters
+GridBasedFieldFunctionInterface::GetInputParameters()
 {
   chi::InputParameters params = FieldFunctionInterface::GetInputParameters();
 
   return params;
 }
 
-GridBasedFieldFunctionInterface::GridBasedFieldFunctionInterface(
-  const chi::InputParameters& params)
+GridBasedFieldFunctionInterface::GridBasedFieldFunctionInterface(const chi::InputParameters& params)
   : FieldFunctionInterface(params)
 {
 }

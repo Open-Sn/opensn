@@ -11,13 +11,13 @@ namespace lbs::adjoint_lua_utils
 
 RegisterLuaFunctionAsIs(chiAdjointSolverMakeExpRepFromP1Moments);
 
-int chiAdjointSolverMakeExpRepFromP1Moments(lua_State* L)
+int
+chiAdjointSolverMakeExpRepFromP1Moments(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
 
-  if (num_args < 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckTableValue(fname, L, 1);
@@ -38,11 +38,10 @@ int chiAdjointSolverMakeExpRepFromP1Moments(lua_State* L)
     verbose = lua_toboolean(L, 2);
   }
 
-  auto solution =
-    lbs::MakeExpRepFromP1({P1[0], P1[1], P1[2], P1[3]}, verbose);
+  auto solution = lbs::MakeExpRepFromP1({P1[0], P1[1], P1[2], P1[3]}, verbose);
 
   lua_pushnumber(L, solution[0]);
   lua_pushnumber(L, solution[1]);
   return 2;
 }
-}//namespace lbs
+} // namespace lbs::adjoint_lua_utils

@@ -17,9 +17,9 @@ public:
                       const std::vector<UnitCellMatrices>& unit_cell_matrices,
                       bool verbose);
 
-  //02c
+  // 02c
   void AssembleAand_b(const std::vector<double>& q_vector) override;
-  //02d
+  // 02d
   void Assemble_b(const std::vector<double>& q_vector) override;
   void Assemble_b(Vec petsc_q_vector) override;
 };

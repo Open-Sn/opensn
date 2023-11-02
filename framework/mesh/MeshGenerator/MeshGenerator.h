@@ -52,10 +52,7 @@ public:
   struct STLVertexListHelper : public VertexListHelper
   {
     explicit STLVertexListHelper(const T& list) : list_(list) {}
-    const chi_mesh::Vertex& at(uint64_t vid) const override
-    {
-      return list_.at(vid);
-    };
+    const chi_mesh::Vertex& at(uint64_t vid) const override { return list_.at(vid); };
     const T& list_;
   };
 
@@ -63,27 +60,22 @@ protected:
   // 01
   /**Builds a cell-graph and executes the partitioner that assigns cell
    * partition ids based on the supplied number of partitions.*/
-  std::vector<int64_t> PartitionMesh(const UnpartitionedMesh& input_umesh,
-                                     int num_partitions);
+  std::vector<int64_t> PartitionMesh(const UnpartitionedMesh& input_umesh, int num_partitions);
 
   /**Executes the partitioner and configures the mesh as a real mesh.*/
-  std::shared_ptr<MeshContinuum>
-  SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
-            const std::vector<int64_t>& cell_pids);
+  std::shared_ptr<MeshContinuum> SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
+                                           const std::vector<int64_t>& cell_pids);
 
   // 02 utils
   /**Broadcasts PIDs to other locations.*/
 
-  static void BroadcastPIDs(std::vector<int64_t>& cell_pids,
-                            int root,
-                            MPI_Comm communicator);
+  static void BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm communicator);
   /**Determines if a cells needs to be included as a ghost or as a local cell.*/
-  bool
-  CellHasLocalScope(int location_id,
-                    const chi_mesh::UnpartitionedMesh::LightWeightCell& lwcell,
-                    uint64_t cell_global_id,
-                    const std::vector<std::set<uint64_t>>& vertex_subscriptions,
-                    const std::vector<int64_t>& cell_partition_ids) const;
+  bool CellHasLocalScope(int location_id,
+                         const chi_mesh::UnpartitionedMesh::LightWeightCell& lwcell,
+                         uint64_t cell_global_id,
+                         const std::vector<std::set<uint64_t>>& vertex_subscriptions,
+                         const std::vector<int64_t>& cell_partition_ids) const;
 
   /**Converts a light-weight cell to a real cell.*/
   static std::unique_ptr<chi_mesh::Cell>
@@ -96,7 +88,7 @@ protected:
                                 MeshAttributes new_attribs,
                                 std::array<size_t, 3> ortho_cells_per_dimension);
 
-  static void ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid) ;
+  static void ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid);
 
   const double scale_;
   const bool replicated_;

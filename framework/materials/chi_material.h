@@ -11,13 +11,12 @@ class Material : public ChiObject
 {
 private:
   std::string name_;
+
 public:
   static InputParameters GetInputParameters();
   explicit Material(const chi::InputParameters& params);
-
-
 };
 
-}
+} // namespace chi
 
 #endif // CHITECH_CHI_MATERIAL_H

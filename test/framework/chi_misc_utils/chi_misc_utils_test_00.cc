@@ -8,8 +8,7 @@
 namespace chi_unit_tests
 {
 
-chi::ParameterBlock
-chi_misc_utils_Test00(const chi::InputParameters& params);
+chi::ParameterBlock chi_misc_utils_Test00(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*name_in_lua=*/chi_misc_utils_Test00,

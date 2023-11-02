@@ -24,6 +24,6 @@ private:
   std::array<double, 2> zbounds_;
 };
 
-}
+} // namespace chi_mesh
 
 #endif // CHITECH_SURFACEMESHLOGICALVOLUME_H

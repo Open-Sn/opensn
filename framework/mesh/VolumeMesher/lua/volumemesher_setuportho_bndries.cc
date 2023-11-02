@@ -6,12 +6,12 @@
 
 RegisterLuaFunctionAsIs(chiVolumeMesherSetupOrthogonalBoundaries);
 
-RegisterLuaConstant(OrthoBoundaryID, XMAX,chi_data_types::Varying(0));
-RegisterLuaConstant(OrthoBoundaryID, XMIN,chi_data_types::Varying(1));
-RegisterLuaConstant(OrthoBoundaryID, YMAX,chi_data_types::Varying(2));
-RegisterLuaConstant(OrthoBoundaryID, YMIN,chi_data_types::Varying(3));
-RegisterLuaConstant(OrthoBoundaryID, ZMAX,chi_data_types::Varying(4));
-RegisterLuaConstant(OrthoBoundaryID, ZMIN,chi_data_types::Varying(5));
+RegisterLuaConstant(OrthoBoundaryID, XMAX, chi_data_types::Varying(0));
+RegisterLuaConstant(OrthoBoundaryID, XMIN, chi_data_types::Varying(1));
+RegisterLuaConstant(OrthoBoundaryID, YMAX, chi_data_types::Varying(2));
+RegisterLuaConstant(OrthoBoundaryID, YMIN, chi_data_types::Varying(3));
+RegisterLuaConstant(OrthoBoundaryID, ZMAX, chi_data_types::Varying(4));
+RegisterLuaConstant(OrthoBoundaryID, ZMIN, chi_data_types::Varying(5));
 
 //###################################################################
 /** Sets boundary numbers on boundaries orthogonal to the cardinal directions
@@ -19,7 +19,8 @@ RegisterLuaConstant(OrthoBoundaryID, ZMIN,chi_data_types::Varying(5));
  *
 \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetupOrthogonalBoundaries(lua_State* L)
+int
+chiVolumeMesherSetupOrthogonalBoundaries(lua_State* L)
 {
   chi_mesh::VolumeMesher::SetupOrthogonalBoundaries();
   return 0;

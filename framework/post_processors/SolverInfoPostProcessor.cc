@@ -13,7 +13,8 @@ namespace chi
 
 RegisterChiObject(chi, SolverInfoPostProcessor);
 
-InputParameters SolverInfoPostProcessor::GetInputParameters()
+InputParameters
+SolverInfoPostProcessor::GetInputParameters()
 {
   InputParameters params = PostProcessor::GetInputParameters();
 
@@ -50,18 +51,17 @@ SolverInfoPostProcessor::SolverInfoPostProcessor(const InputParameters& params)
     solvername_filter_ = solver_.TextName();
 }
 
-void SolverInfoPostProcessor::Execute(const Event& event_context)
+void
+SolverInfoPostProcessor::Execute(const Event& event_context)
 {
   value_ = solver_.GetInfoWithPreCheck(info_);
   SetType(FigureTypeFromValue(value_));
 
   const int event_code = event_context.Code();
-  if (event_code == 32 /*SolverInitialized*/ or
-      event_code == 38 /*SolverAdvanced*/)
+  if (event_code == 32 /*SolverInitialized*/ or event_code == 38 /*SolverAdvanced*/)
   {
-    TimeHistoryEntry entry{solver_.GetTimeStepper().TimeStepIndex(),
-                           solver_.GetTimeStepper().Time(),
-                           value_};
+    TimeHistoryEntry entry{
+      solver_.GetTimeStepper().TimeStepIndex(), solver_.GetTimeStepper().Time(), value_};
     time_history_.push_back(std::move(entry));
   }
 }

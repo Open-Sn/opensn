@@ -14,8 +14,7 @@
 namespace chi_unit_sim_tests
 {
 
-chi::ParameterBlock
-chiSimTest03_PWLC(const chi::InputParameters& params);
+chi::ParameterBlock chiSimTest03_PWLC(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_sim_tests,
                         /*name_in_lua=*/chiSimTest03_PWLC,
@@ -60,11 +59,9 @@ chiSimTest03_PWLC(const chi::InputParameters&)
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
-  sdm.BuildSparsityPattern(
-    nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
+  sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(
-    A, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   //============================================= Assemble the system
   Chi::log.Log() << "Assembling system: ";
@@ -84,8 +81,7 @@ chiSimTest03_PWLC(const chi::InputParameters&)
         double entry_aij = 0.0;
         for (size_t qp : qp_data.QuadraturePointIndices())
         {
-          entry_aij += qp_data.ShapeGrad(i, qp).Dot(qp_data.ShapeGrad(j, qp)) *
-                       qp_data.JxW(qp);
+          entry_aij += qp_data.ShapeGrad(i, qp).Dot(qp_data.ShapeGrad(j, qp)) * qp_data.JxW(qp);
         } // for qp
         Acell[i][j] = entry_aij;
       } // for j
@@ -126,8 +122,7 @@ chiSimTest03_PWLC(const chi::InputParameters&)
       {
         for (size_t j = 0; j < num_nodes; ++j)
         {
-          if (not node_boundary_flag[j])
-            MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
+          if (not node_boundary_flag[j]) MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
         } // for j
         VecSetValue(b, imap[i], cell_rhs[i], ADD_VALUES);
       }
@@ -145,13 +140,13 @@ chiSimTest03_PWLC(const chi::InputParameters&)
 
   //============================================= Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A,                // Matrix
-    "PWLCDiffSolver", // Solver name
-    KSPCG,            // Solver type
-    PCGAMG,           // Preconditioner type
-    1.0e-6,           // Relative residual tolerance
-    1000);            // Max iterations
+  auto petsc_solver =
+    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,                // Matrix
+                                                        "PWLCDiffSolver", // Solver name
+                                                        KSPCG,            // Solver type
+                                                        PCGAMG,           // Preconditioner type
+                                                        1.0e-6, // Relative residual tolerance
+                                                        1000);  // Max iterations
 
   //============================================= Solve
   KSPSolve(petsc_solver.ksp, b, x);
@@ -180,8 +175,7 @@ chiSimTest03_PWLC(const chi::InputParameters&)
 
   ff->UpdateFieldVector(field);
 
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("CodeTut3_PWLC",
-                                                           {ff});
+  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("CodeTut3_PWLC", {ff});
 
   return chi::ParameterBlock();
 }

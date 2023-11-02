@@ -6,4 +6,4 @@
 int chiCutMesh(lua_State* L);
 int chiCountMeshInLogicalVolume(lua_State* L);
 
-#endif //CHITECH_MESHCUTTING_LUA_H
+#endif // CHITECH_MESHCUTTING_LUA_H

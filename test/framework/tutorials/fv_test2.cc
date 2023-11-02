@@ -17,8 +17,7 @@
 namespace chi_unit_sim_tests
 {
 
-chi::ParameterBlock
-chiSimTest02_FV(const chi::InputParameters& params);
+chi::ParameterBlock chiSimTest02_FV(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_sim_tests,
                         /*name_in_lua=*/chiSimTest02_FV,
@@ -63,11 +62,9 @@ chiSimTest02_FV(const chi::InputParameters&)
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
-  sdm.BuildSparsityPattern(
-    nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
+  sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(
-    A, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   //============================================= Assemble the system
   Chi::log.Log() << "Assembling system: ";
@@ -124,13 +121,13 @@ chiSimTest02_FV(const chi::InputParameters&)
 
   //============================================= Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A,              // Matrix
-    "FVDiffSolver", // Solver name
-    KSPCG,          // Solver type
-    PCGAMG,         // Preconditioner type
-    1.0e-6,         // Relative residual tolerance
-    1000);          // Max iterations
+  auto petsc_solver =
+    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,              // Matrix
+                                                        "FVDiffSolver", // Solver name
+                                                        KSPCG,          // Solver type
+                                                        PCGAMG,         // Preconditioner type
+                                                        1.0e-6, // Relative residual tolerance
+                                                        1000);  // Max iterations
 
   //============================================= Solve
   KSPSolve(petsc_solver.ksp, b, x);
@@ -161,16 +158,14 @@ chiSimTest02_FV(const chi::InputParameters&)
   //============================================= Make ghosted vectors
   std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
 
-  chi_math::VectorGhostCommunicator vgc(
-    num_local_dofs, num_globl_dofs, ghost_ids, Chi::mpi.comm);
+  chi_math::VectorGhostCommunicator vgc(num_local_dofs, num_globl_dofs, ghost_ids, Chi::mpi.comm);
   std::vector<double> field_wg = vgc.MakeGhostedVector(field);
 
   vgc.CommunicateGhostEntries(field_wg);
 
   //============================================= Setup gradient unknown
-  //structure
-  chi_math::UnknownManager grad_uk_man(
-    {chi_math::Unknown(chi_math::UnknownType::VECTOR_3)});
+  // structure
+  chi_math::UnknownManager grad_uk_man({chi_math::Unknown(chi_math::UnknownType::VECTOR_3)});
 
   const size_t num_grad_dofs = sdm.GetNumLocalDOFs(grad_uk_man);
 
@@ -205,8 +200,7 @@ chiSimTest02_FV(const chi::InputParameters&)
         xn = adj_cell.centroid_;
       }
 
-      grad_phi_P += Af * ((xn - xf).Norm() * phi_P + (xf - xp).Norm() * phi_N) /
-                    (xn - xp).Norm();
+      grad_phi_P += Af * ((xn - xf).Norm() * phi_P + (xf - xp).Norm() * phi_N) / (xn - xp).Norm();
       ++f;
     } // for face
     grad_phi_P /= cell_mapping.CellVolume();
@@ -226,8 +220,7 @@ chiSimTest02_FV(const chi::InputParameters&)
 
   ff_grad->UpdateFieldVector(grad_phi);
 
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV_grad",
-                                                           {ff_grad});
+  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV_grad", {ff_grad});
 
   return chi::ParameterBlock();
 }

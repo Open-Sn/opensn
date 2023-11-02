@@ -7,13 +7,14 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-typedef std::vector<std::pair<int,short>> LockBox;
+typedef std::vector<std::pair<int, short>> LockBox;
 
 namespace chi_mesh::sweep_management
 {
 
-void AAH_FLUDSCommonData::InitializeAlphaElements(
-  const SPDS& spds, const GridFaceHistogram& grid_face_histogram)
+void
+AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
+                                             const GridFaceHistogram& grid_face_histogram)
 {
   const chi_mesh::MeshContinuum& grid = spds.Grid();
   const chi_mesh::sweep_management::SPLS& spls = spds.GetSPLS();
@@ -25,7 +26,7 @@ void AAH_FLUDSCommonData::InitializeAlphaElements(
   local_psi_stride.resize(num_face_categories, 0);
   local_psi_max_elements.resize(num_face_categories, 0);
   local_psi_n_block_stride.resize(num_face_categories, 0);
-  local_psi_Gn_block_strideG.resize(num_face_categories,0);
+  local_psi_Gn_block_strideG.resize(num_face_categories, 0);
 
   //================================================== Initialize dependent
   //                                                   locations
@@ -41,7 +42,7 @@ void AAH_FLUDSCommonData::InitializeAlphaElements(
   std::vector<int> local_so_cell_mapping;
   local_so_cell_mapping.resize(grid.local_cells.size(), 0);
 
-  largest_face = 0; // Will contain the max dofs per face
+  largest_face = 0;                                     // Will contain the max dofs per face
   std::vector<LockBox> lock_boxes(num_face_categories); // cell,face index pairs
   LockBox delayed_lock_box;
   std::set<int> location_boundary_dependency_set;
@@ -66,8 +67,7 @@ void AAH_FLUDSCommonData::InitializeAlphaElements(
 
   } // for csoi
 
-  Chi::log.Log(chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2)
-    << "Done with Slot Dynamics.";
+  Chi::log.Log(chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
   Chi::mpi.Barrier();
 
   //================================================== Populate boundary
@@ -100,8 +100,7 @@ void AAH_FLUDSCommonData::InitializeAlphaElements(
   delayed_local_psi_Gn_block_stride = largest_face * delayed_lock_box.size();
   delayed_local_psi_Gn_block_strideG = delayed_local_psi_Gn_block_stride * /*G=*/1;
 
-  Chi::log.Log(chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2)
-    << "Done with Local Incidence mapping.";
+  Chi::log.Log(chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
   Chi::mpi.Barrier();
 
   //================================================== Clean up

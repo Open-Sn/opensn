@@ -11,8 +11,8 @@ namespace chi_math::spatial_discretization
 
 // ###################################################################
 /**Get the number of ghost degrees-of-freedom.*/
-size_t PieceWiseLinearContinuous::GetNumGhostDOFs(
-  const chi_math::UnknownManager& unknown_manager) const
+size_t
+PieceWiseLinearContinuous::GetNumGhostDOFs(const chi_math::UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
@@ -21,14 +21,13 @@ size_t PieceWiseLinearContinuous::GetNumGhostDOFs(
 
 // ###################################################################
 /**Returns the ghost DOF indices.*/
-std::vector<int64_t> PieceWiseLinearContinuous::GetGhostDOFIndices(
-  const chi_math::UnknownManager& unknown_manager) const
+std::vector<int64_t>
+PieceWiseLinearContinuous::GetGhostDOFIndices(const chi_math::UnknownManager& unknown_manager) const
 {
   std::vector<int64_t> dof_ids;
   dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
 
-  const size_t num_unknown_comps =
-    unknown_manager.GetTotalUnknownStructureSize();
+  const size_t num_unknown_comps = unknown_manager.GetTotalUnknownStructureSize();
   const auto storage = unknown_manager.dof_storage_type_;
   const size_t num_unknowns = unknown_manager.unknowns_.size();
 
@@ -48,8 +47,7 @@ std::vector<int64_t> PieceWiseLinearContinuous::GetGhostDOFIndices(
         {
           for (int locJ = 0; locJ < Chi::mpi.process_count; ++locJ)
           {
-            const int64_t local_id =
-              global_id - sc_int64(locJ_block_address_[locJ]);
+            const int64_t local_id = global_id - sc_int64(locJ_block_address_[locJ]);
 
             if (local_id < 0 or local_id >= locJ_block_size_[locJ]) continue;
 
@@ -59,8 +57,7 @@ std::vector<int64_t> PieceWiseLinearContinuous::GetGhostDOFIndices(
           }
         }
         else if (storage == chi_math::UnknownStorageType::NODAL)
-          address =
-            global_id * sc_int64(num_unknown_comps) + sc_int64(block_id);
+          address = global_id * sc_int64(num_unknown_comps) + sc_int64(block_id);
 
         dof_ids.push_back(address);
       } // for c

@@ -8,8 +8,8 @@ namespace chi_math::spatial_discretization
 
 // ##################################################################
 /**Only constructor for this method.*/
-FiniteVolume::FiniteVolume(
-  const chi_mesh::MeshContinuum& grid, chi_math::CoordinateSystemType cs_type)
+FiniteVolume::FiniteVolume(const chi_mesh::MeshContinuum& grid,
+                           chi_math::CoordinateSystemType cs_type)
   : SpatialDiscretization(grid, cs_type, SDMType::FINITE_VOLUME)
 {
   CreateCellMappings();
@@ -22,8 +22,7 @@ FiniteVolume::FiniteVolume(
 std::shared_ptr<FiniteVolume>
 FiniteVolume::New(
   const chi_mesh::MeshContinuum& in_grid,
-  chi_math::CoordinateSystemType
-    in_cs_type /* = chi_math::CoordinateSystemType::CARTESIAN*/)
+  chi_math::CoordinateSystemType in_cs_type /* = chi_math::CoordinateSystemType::CARTESIAN*/)
 {
   // First try to find an existing spatial discretization that matches the
   // one requested.
@@ -42,8 +41,7 @@ FiniteVolume::New(
   // If no existing discretization was found then go ahead and make a
   // new one
   auto new_sdm =
-    std::shared_ptr<spatial_discretization::FiniteVolume>(
-      new FiniteVolume(in_grid, in_cs_type));
+    std::shared_ptr<spatial_discretization::FiniteVolume>(new FiniteVolume(in_grid, in_cs_type));
 
   Chi::sdm_stack.push_back(new_sdm);
 

@@ -10,10 +10,9 @@ to elements.*/
 class chi_mesh::SurfaceMesherPredefined : public chi_mesh::SurfaceMesher
 {
 public:
-  SurfaceMesherPredefined() : SurfaceMesher(SurfaceMesherType::Predefined)
-  {}
-  //02 Execute
+  SurfaceMesherPredefined() : SurfaceMesher(SurfaceMesherType::Predefined) {}
+  // 02 Execute
   void Execute() override;
 };
 
-#endif//CHI_MESH_SURFACEMESHER_PREDEFINED_H
+#endif // CHI_MESH_SURFACEMESHER_PREDEFINED_H

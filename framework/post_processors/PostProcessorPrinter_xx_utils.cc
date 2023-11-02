@@ -21,8 +21,7 @@ PostProcessorPrinter::GetScalarPostProcessorsList(const Event& event)
     const auto& scope = pp->PrintScope();
 
     // Check whether the pp wants to be printed on this event
-    if (std::find(scope.begin(), scope.end(), event.Name()) == scope.end())
-      continue;
+    if (std::find(scope.begin(), scope.end(), event.Name()) == scope.end()) continue;
 
     if (pp->Type() == PPType::SCALAR) scalar_pp_list.push_back(&(*pp));
   }
@@ -40,8 +39,7 @@ PostProcessorPrinter::GetVectorPostProcessorsList(const Event& event)
     const auto& scope = pp->PrintScope();
 
     // Check whether the pp wants to be printed on this event
-    if (std::find(scope.begin(), scope.end(), event.Name()) == scope.end())
-      continue;
+    if (std::find(scope.begin(), scope.end(), event.Name()) == scope.end()) continue;
 
     if (pp->Type() == PPType::VECTOR) scalar_pp_list.push_back(&(*pp));
   }
@@ -59,8 +57,7 @@ PostProcessorPrinter::GetArbitraryPostProcessorsList(const Event& event)
     const auto& scope = pp->PrintScope();
 
     // Check whether the pp wants to be printed on this event
-    if (std::find(scope.begin(), scope.end(), event.Name()) == scope.end())
-      continue;
+    if (std::find(scope.begin(), scope.end(), event.Name()) == scope.end()) continue;
 
     if (pp->Type() == PPType::ARBITRARY) scalar_pp_list.push_back(&(*pp));
   }
@@ -70,19 +67,16 @@ PostProcessorPrinter::GetArbitraryPostProcessorsList(const Event& event)
 
 // ##################################################################
 std::vector<std::vector<std::string>>
-PostProcessorPrinter::BuildPPHistoryMatrix(
-  size_t timehistsize,
-  size_t time_history_limit,
-  const std::vector<const PostProcessor*>& pp_sub_list)
+PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
+                                           size_t time_history_limit,
+                                           const std::vector<const PostProcessor*>& pp_sub_list)
 {
   if (pp_sub_list.empty()) return {};
 
   //+2 top header + bottom header
-  const size_t num_rows =
-    std::min(size_t(time_history_limit + 2), timehistsize + 2);
+  const size_t num_rows = std::min(size_t(time_history_limit + 2), timehistsize + 2);
   const size_t num_cols = pp_sub_list.size() + 1; //+1 time column
-  const size_t offset =
-    std::max(0, int(timehistsize) - int(time_history_limit));
+  const size_t offset = std::max(0, int(timehistsize) - int(time_history_limit));
 
   const auto& front_time_hist = pp_sub_list.front()->GetTimeHistory();
 
@@ -100,9 +94,7 @@ PostProcessorPrinter::BuildPPHistoryMatrix(
   {
     for (size_t j = 0; j <= pp_sub_list.size(); ++j)
     {
-      if (j == 0)
-        value_matrix[t + 1][j] =
-          std::to_string(front_time_hist[t + offset].time_);
+      if (j == 0) value_matrix[t + 1][j] = std::to_string(front_time_hist[t + offset].time_);
       else
       {
         const auto& pp = pp_sub_list.at(j - 1);

@@ -11,10 +11,9 @@ class SystemWideEventPublisher : public chi::EventPublisher
 public:
   static SystemWideEventPublisher& GetInstance();
 
-  SystemWideEventPublisher(const SystemWideEventPublisher&) =
-    delete; // Deleted copy constructor
-  SystemWideEventPublisher operator=(const SystemWideEventPublisher&) =
-    delete; // Deleted assignment operator
+  SystemWideEventPublisher(const SystemWideEventPublisher&) = delete; // Deleted copy constructor
+  SystemWideEventPublisher
+  operator=(const SystemWideEventPublisher&) = delete; // Deleted assignment operator
 
   void PublishEvent(const chi::Event& event) override;
 
@@ -22,6 +21,6 @@ private:
   SystemWideEventPublisher();
 };
 
-}
+} // namespace chi
 
 #endif // CHITECH_SYSTEMWIDEEVENTPUBLISHER_H

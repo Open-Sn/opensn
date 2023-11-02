@@ -6,14 +6,13 @@
 #include "chi_log.h"
 #include "chi_mpi.h"
 
-#define ExceptionReflectedAngleError                                           \
-  std::logic_error(                                                            \
-    fname + "Reflected angle not found for angle " + std::to_string(n) +       \
-    " with direction " + quadrature->omegas_[n].PrintStr() +                   \
-    ". This can happen for two reasons: i) A quadrature is used"               \
-    " that is not symmetric about the axis associated with the "               \
-    "reflected boundary, or ii) the reflecting boundary is not "               \
-    "aligned with any reflecting axis of the quadrature.")
+#define ExceptionReflectedAngleError                                                               \
+  std::logic_error(fname + "Reflected angle not found for angle " + std::to_string(n) +            \
+                   " with direction " + quadrature->omegas_[n].PrintStr() +                        \
+                   ". This can happen for two reasons: i) A quadrature is used"                    \
+                   " that is not symmetric about the axis associated with the "                    \
+                   "reflected boundary, or ii) the reflecting boundary is not "                    \
+                   "aligned with any reflecting axis of the quadrature.")
 
 // ###################################################################
 /** Sets up the angle-aggregation object. */
@@ -39,7 +38,8 @@ chi_mesh::sweep_management::AngleAggregation::AngleAggregation(
 // ###################################################################
 /** Resets all the outgoing intra-location and inter-location
  * cyclic interfaces.*/
-void chi_mesh::sweep_management::AngleAggregation::ZeroOutgoingDelayedPsi()
+void
+chi_mesh::sweep_management::AngleAggregation::ZeroOutgoingDelayedPsi()
 {
   for (auto& angsetgrp : angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
@@ -54,7 +54,8 @@ void chi_mesh::sweep_management::AngleAggregation::ZeroOutgoingDelayedPsi()
 // ###################################################################
 /** Resets all the incoming intra-location and inter-location
  * cyclic interfaces.*/
-void chi_mesh::sweep_management::AngleAggregation::ZeroIncomingDelayedPsi()
+void
+chi_mesh::sweep_management::AngleAggregation::ZeroIncomingDelayedPsi()
 {
   //======================================== Opposing reflecting bndries
   for (const auto& [bid, bndry] : sim_boundaries)
@@ -88,7 +89,8 @@ void chi_mesh::sweep_management::AngleAggregation::ZeroIncomingDelayedPsi()
 
 // ###################################################################
 /** Initializes reflecting boundary conditions. */
-void chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
+void
+chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
 {
   const std::string fname = "chi_mesh::sweep_management::AngleAggregation";
   const double epsilon = 1.0e-8;
@@ -109,8 +111,8 @@ void chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
       const auto& normal = rbndry.Normal();
 
       rbndry.GetReflectedAngleIndexMap().resize(tot_num_angles, -1);
-      rbndry.GetAngleReadyFlags().resize(
-        tot_num_angles, std::vector<bool>(number_of_group_subsets, false));
+      rbndry.GetAngleReadyFlags().resize(tot_num_angles,
+                                         std::vector<bool>(number_of_group_subsets, false));
 
       //========================================= Determine reflected angle
       //                                          and check that it is within
@@ -129,8 +131,7 @@ void chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
           case chi_math::CoordinateSystemType::CYLINDRICAL:
           {
             // left, top and bottom is regular reflecting
-            if (std::fabs(normal.Dot(jhat)) > 0.999999 or
-                normal.Dot(ihat) < -0.999999)
+            if (std::fabs(normal.Dot(jhat)) > 0.999999 or normal.Dot(ihat) < -0.999999)
               omega_reflected = omega_n - 2.0 * normal * omega_n.Dot(normal);
             // right derive their normal from omega_n
             else if (normal.Dot(ihat) > 0.999999)
@@ -141,8 +142,7 @@ void chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
               else
                 normal_star = Vec3(-omega_n.x, 0.0, -omega_n.y).Normalized();
 
-              omega_reflected =
-                omega_n - 2.0 * normal_star * omega_n.Dot(normal_star);
+              omega_reflected = omega_n - 2.0 * normal_star * omega_n.Dot(normal_star);
             }
           }
           break;
@@ -186,8 +186,7 @@ void chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
           bool on_ref_bndry = false;
           for (const auto& face : cell.faces_)
           {
-            if ((not face.has_neighbor_) and
-                (face.normal_.Dot(rbndry.Normal()) > 0.999999))
+            if ((not face.has_neighbor_) and (face.normal_.Dot(rbndry.Normal()) > 0.999999))
             {
               on_ref_bndry = true;
               break;
@@ -200,8 +199,7 @@ void chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
           int f = 0;
           for (const auto& face : cell.faces_)
           {
-            if ((not face.has_neighbor_) and
-                (face.normal_.Dot(rbndry.Normal()) > 0.999999))
+            if ((not face.has_neighbor_) and (face.normal_.Dot(rbndry.Normal()) > 0.999999))
             {
               cell_vec[c][f].clear();
               cell_vec[c][f].resize(face.vertex_ids_.size(),
@@ -223,8 +221,7 @@ void chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
         if (bid == otherbid) continue;
         if (not otherbndry->IsReflecting()) continue;
 
-        const auto& otherRbndry =
-          dynamic_cast<const BoundaryReflecting&>(*otherbndry);
+        const auto& otherRbndry = dynamic_cast<const BoundaryReflecting&>(*otherbndry);
 
         if (rbndry.Normal().Dot(otherRbndry.Normal()) < (0.0 - epsilon))
           if (bid < otherbid) rbndry.SetOpposingReflected(true);
@@ -282,12 +279,8 @@ chi_mesh::sweep_management::AngleAggregation::GetNumDelayedAngularDOFs()
         local_ang_unknowns += loc_vector.size();
 
   size_t global_ang_unknowns = 0;
-  MPI_Allreduce(&local_ang_unknowns,
-                &global_ang_unknowns,
-                1,
-                MPI_UNSIGNED_LONG_LONG,
-                MPI_SUM,
-                Chi::mpi.comm);
+  MPI_Allreduce(
+    &local_ang_unknowns, &global_ang_unknowns, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
 
   number_angular_unknowns = {local_ang_unknowns, global_ang_unknowns};
 
@@ -297,8 +290,9 @@ chi_mesh::sweep_management::AngleAggregation::GetNumDelayedAngularDOFs()
 
 // ###################################################################
 /** Assembles angular unknowns into the reference vector. */
-void chi_mesh::sweep_management::AngleAggregation::
-  AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
+void
+chi_mesh::sweep_management::AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index,
+                                                                                 double* x_ref)
 {
   //======================================== Opposing reflecting bndries
   for (auto& [bid, bndry] : sim_boundaries)
@@ -343,8 +337,9 @@ void chi_mesh::sweep_management::AngleAggregation::
 
 // ###################################################################
 /** Assembles angular unknowns into the reference vector. */
-void chi_mesh::sweep_management::AngleAggregation::
-  AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
+void
+chi_mesh::sweep_management::AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index,
+                                                                                 double* x_ref)
 {
   //======================================== Opposing reflecting bndries
   for (auto& [bid, bndry] : sim_boundaries)
@@ -389,8 +384,9 @@ void chi_mesh::sweep_management::AngleAggregation::
 
 // ###################################################################
 /** Assembles angular unknowns into the reference vector. */
-void chi_mesh::sweep_management::AngleAggregation::
-  SetOldDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref)
+void
+chi_mesh::sweep_management::AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index,
+                                                                                const double* x_ref)
 {
   //======================================== Opposing reflecting bndries
   for (auto& [bid, bndry] : sim_boundaries)
@@ -435,8 +431,9 @@ void chi_mesh::sweep_management::AngleAggregation::
 
 // ###################################################################
 /** Assembles angular unknowns into the reference vector. */
-void chi_mesh::sweep_management::AngleAggregation::
-  SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref)
+void
+chi_mesh::sweep_management::AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index,
+                                                                                const double* x_ref)
 {
   //======================================== Opposing reflecting bndries
   for (auto& [bid, bndry] : sim_boundaries)
@@ -481,8 +478,8 @@ void chi_mesh::sweep_management::AngleAggregation::
 
 // ###################################################################
 /**Gets the current values of the angular unknowns as an STL vector.*/
-std::vector<double> chi_mesh::sweep_management::AngleAggregation::
-  GetNewDelayedAngularDOFsAsSTLVector()
+std::vector<double>
+chi_mesh::sweep_management::AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
 {
   std::vector<double> psi_vector;
 
@@ -525,17 +522,17 @@ std::vector<double> chi_mesh::sweep_management::AngleAggregation::
 
 // ###################################################################
 /**Gets the current values of the angular unknowns as an STL vector.*/
-void chi_mesh::sweep_management::AngleAggregation::
-  SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double>& stl_vector)
+void
+chi_mesh::sweep_management::AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(
+  const std::vector<double>& stl_vector)
 {
   auto psi_size = GetNumDelayedAngularDOFs();
   size_t stl_size = stl_vector.size();
   if (stl_size != psi_size.first)
-    throw std::logic_error(
-      std::string(__FUNCTION__) +
-      ": STL-vector size "
-      "is incompatible with number angular unknowns stored "
-      "in the angle-aggregation object.");
+    throw std::logic_error(std::string(__FUNCTION__) +
+                           ": STL-vector size "
+                           "is incompatible with number angular unknowns stored "
+                           "in the angle-aggregation object.");
 
   size_t index = 0;
   //======================================== Opposing reflecting bndries
@@ -572,8 +569,8 @@ void chi_mesh::sweep_management::AngleAggregation::
 
 // ###################################################################
 /**Gets the current values of the angular unknowns as an STL vector.*/
-std::vector<double> chi_mesh::sweep_management::AngleAggregation::
-  GetOldDelayedAngularDOFsAsSTLVector()
+std::vector<double>
+chi_mesh::sweep_management::AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
 {
   std::vector<double> psi_vector;
 
@@ -616,17 +613,17 @@ std::vector<double> chi_mesh::sweep_management::AngleAggregation::
 
 // ###################################################################
 /**Gets the current values of the angular unknowns as an STL vector.*/
-void chi_mesh::sweep_management::AngleAggregation::
-  SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double>& stl_vector)
+void
+chi_mesh::sweep_management::AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(
+  const std::vector<double>& stl_vector)
 {
   auto psi_size = GetNumDelayedAngularDOFs();
   size_t stl_size = stl_vector.size();
   if (stl_size != psi_size.first)
-    throw std::logic_error(
-      std::string(__FUNCTION__) +
-      ": STL-vector size "
-      "is incompatible with number angular unknowns stored "
-      "in the angle-aggregation object.");
+    throw std::logic_error(std::string(__FUNCTION__) +
+                           ": STL-vector size "
+                           "is incompatible with number angular unknowns stored "
+                           "in the angle-aggregation object.");
 
   size_t index = 0;
   //======================================== Opposing reflecting bndries
@@ -663,7 +660,8 @@ void chi_mesh::sweep_management::AngleAggregation::
 
 // ###################################################################
 /**Copies the old delayed angular fluxes to the new.*/
-void chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiOld2New()
+void
+chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiOld2New()
 {
   //======================================== Opposing reflecting bndries
   for (auto& [bid, bndry] : sim_boundaries)
@@ -681,8 +679,7 @@ void chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiOld2New()
   //======================================== Intra-cell cycles
   for (auto& as_group : angle_set_groups)
     for (auto& angle_set : as_group.AngleSets())
-      angle_set->GetFLUDS().DelayedLocalPsi() =
-        angle_set->GetFLUDS().DelayedLocalPsiOld();
+      angle_set->GetFLUDS().DelayedLocalPsi() = angle_set->GetFLUDS().DelayedLocalPsiOld();
 
   //======================================== Inter location cycles
   for (auto& as_group : angle_set_groups)
@@ -693,7 +690,8 @@ void chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiOld2New()
 
 // ###################################################################
 /**Copies the new delayed angular fluxes to the old.*/
-void chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiNew2Old()
+void
+chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiNew2Old()
 {
   //======================================== Opposing reflecting bndries
   for (auto& [bid, bndry] : sim_boundaries)
@@ -711,8 +709,7 @@ void chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiNew2Old()
   //======================================== Intra-cell cycles
   for (auto& as_group : angle_set_groups)
     for (auto& angle_set : as_group.AngleSets())
-      angle_set->GetFLUDS().DelayedLocalPsiOld() =
-        angle_set->GetFLUDS().DelayedLocalPsi();
+      angle_set->GetFLUDS().DelayedLocalPsiOld() = angle_set->GetFLUDS().DelayedLocalPsi();
 
   //======================================== Inter location cycles
   for (auto& as_group : angle_set_groups)

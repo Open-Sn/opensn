@@ -1,10 +1,9 @@
 #include "chi_lua.h"
 
-#include"../dfem_diffusion_solver.h"
+#include "../dfem_diffusion_solver.h"
 
 #include "chi_runtime.h"
 #include "chi_log.h"
-
 
 //#############################################################################
 /** Creates a DFEM Diffusion solver based on the interior penalty method.
@@ -12,7 +11,8 @@
 \return Handle int Handle to the created solver.
 \ingroup LuaDiffusion
 */
-int chiDFEMDiffusionSolverCreate(lua_State *L)
+int
+chiDFEMDiffusionSolverCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -29,11 +29,9 @@ int chiDFEMDiffusionSolverCreate(lua_State *L)
 
   Chi::object_stack.push_back(new_solver);
 
-  lua_pushinteger(L,
-      static_cast<lua_Integer>(Chi::object_stack.size()-1));
+  lua_pushinteger(L, static_cast<lua_Integer>(Chi::object_stack.size() - 1));
 
-  Chi::log.LogAllVerbose1()
-    << "\nchiDFEMDiffusionSolverCreate: DFEM Diffusion solver created"
-    << std::endl;
+  Chi::log.LogAllVerbose1() << "\nchiDFEMDiffusionSolverCreate: DFEM Diffusion solver created"
+                            << std::endl;
   return 1;
 }

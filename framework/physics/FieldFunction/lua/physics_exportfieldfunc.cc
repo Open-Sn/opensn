@@ -18,7 +18,8 @@ RegisterLuaFunctionAsIs(chiExportMultiFieldFunctionToVTK);
 
 \ingroup LuaFieldFunc
 \author Jan*/
-int chiExportFieldFunctionToVTK(lua_State* L)
+int
+chiExportFieldFunctionToVTK(lua_State* L)
 {
   const std::string fname = "chiExportFieldFunctionToVTK";
   const int num_args = lua_gettop(L);
@@ -29,8 +30,7 @@ int chiExportFieldFunctionToVTK(lua_State* L)
 
   typedef chi_physics::FieldFunctionGridBased FFGridBased;
 
-  auto ff_base =
-    Chi::GetStackItemPtr(Chi::field_function_stack, ff_handle, fname);
+  auto ff_base = Chi::GetStackItemPtr(Chi::field_function_stack, ff_handle, fname);
   auto ff = std::dynamic_pointer_cast<FFGridBased>(ff_base);
 
   ChiLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
@@ -49,7 +49,8 @@ int chiExportFieldFunctionToVTK(lua_State* L)
 
 \ingroup LuaFieldFunc
 \author Jan*/
-int chiExportMultiFieldFunctionToVTK(lua_State* L)
+int
+chiExportMultiFieldFunctionToVTK(lua_State* L)
 {
   const std::string fname = "chiExportMultiFieldFunctionToVTK";
   const int num_args = lua_gettop(L);
@@ -90,8 +91,7 @@ int chiExportMultiFieldFunctionToVTK(lua_State* L)
         }
 
       ChiInvalidArgumentIf(not ff_base,
-                           "Field function with name \"" + ff_name +
-                             "\" could not be found.");
+                           "Field function with name \"" + ff_name + "\" could not be found.");
     }
     else
       ChiInvalidArgument("The field function specification can only be "
@@ -100,11 +100,10 @@ int chiExportMultiFieldFunctionToVTK(lua_State* L)
     typedef chi_physics::FieldFunctionGridBased FFGridBased;
     auto ff = std::dynamic_pointer_cast<FFGridBased>(ff_base);
 
-    ChiLogicalErrorIf(not ff,
-                      "Only grid-based field functions can be exported");
+    ChiLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
 
     ffs.push_back(ff);
-  }// for i
+  } // for i
 
   chi_physics::FieldFunctionGridBased::ExportMultipleToVTK(base_name, ffs);
 

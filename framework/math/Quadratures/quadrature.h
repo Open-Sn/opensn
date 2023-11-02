@@ -47,10 +47,7 @@ protected:
 
 protected:
   explicit Quadrature(const chi::InputParameters& params);
-  explicit Quadrature(QuadratureOrder in_order)
-    : order_(in_order), range_({0, 0})
-  {
-  }
+  explicit Quadrature(QuadratureOrder in_order) : order_(in_order), range_({0, 0}) {}
 
 public:
   /**Get the range on which the quadrature is defined

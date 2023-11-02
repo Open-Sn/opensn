@@ -18,7 +18,8 @@ RegisterLuaFunctionAsIs(chiMakeObjectType);
  *  called chi_obj_type that indicates the type of object to make.
 
 */
-  int chiMakeObject(lua_State* L)
+int
+chiMakeObject(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -43,7 +44,8 @@ RegisterLuaFunctionAsIs(chiMakeObjectType);
  * \param params ParameterBlock A single block tree.
 
 */
-int chiMakeObjectType(lua_State* L)
+int
+chiMakeObjectType(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -62,4 +64,4 @@ int chiMakeObjectType(lua_State* L)
   return 1;
 }
 
-} // namespace chi_objects::lua_utils
+} // namespace chi::lua_utils

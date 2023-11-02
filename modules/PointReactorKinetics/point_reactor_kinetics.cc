@@ -16,7 +16,8 @@ namespace prk
 RegisterChiObject(prk, TransientSolver);
 
 /**Sets input parameters.*/
-chi::InputParameters TransientSolver::GetInputParameters()
+chi::InputParameters
+TransientSolver::GetInputParameters()
 {
   chi::InputParameters params = chi_physics::Solver::GetInputParameters();
 
@@ -24,43 +25,32 @@ chi::InputParameters TransientSolver::GetInputParameters()
 
   params.ChangeExistingParamToOptional("name", "prk_TransientSolver");
 
-  std::vector<double> default_lambdas = {
-    0.0124, 0.0304, 0.111, 0.301, 1.14, 3.01};
-  std::vector<double> default_betas = {
-    0.00021, 0.00142, 0.00127, 0.00257, 0.00075, 0.00027};
+  std::vector<double> default_lambdas = {0.0124, 0.0304, 0.111, 0.301, 1.14, 3.01};
+  std::vector<double> default_betas = {0.00021, 0.00142, 0.00127, 0.00257, 0.00075, 0.00027};
 
   params.AddOptionalParameterArray(
     "precursor_lambdas", default_lambdas, "An array of decay constants");
   params.AddOptionalParameterArray(
-    "precursor_betas",
-    default_betas,
-    "An array of fractional delayed neutron fractions");
+    "precursor_betas", default_betas, "An array of fractional delayed neutron fractions");
 
-  params.AddOptionalParameter(
-    "gen_time", 1.0e-5, "Neutron generation time [s]");
+  params.AddOptionalParameter("gen_time", 1.0e-5, "Neutron generation time [s]");
   params.AddOptionalParameter("initial_rho", 0.0, "Initial reactivity [$]");
-  params.AddOptionalParameter(
-    "initial_source", 1.0, "Initial source strength [/s]");
+  params.AddOptionalParameter("initial_source", 1.0, "Initial source strength [/s]");
 
-  params.AddOptionalParameter(
-    "initial_population", 1.0, "Initial neutron population");
+  params.AddOptionalParameter("initial_population", 1.0, "Initial neutron population");
 
   params.AddOptionalParameter(
     "time_integration", "implicit_euler", "Time integration scheme to use");
 
   using namespace chi_data_types;
-  auto time_intgl_list = AllowableRangeList::New(
-    {"explicit_euler", "implicit_euler", "crank_nicolson"});
+  auto time_intgl_list =
+    AllowableRangeList::New({"explicit_euler", "implicit_euler", "crank_nicolson"});
 
-  params.ConstrainParameterRange("time_integration",
-                                 std::move(time_intgl_list));
+  params.ConstrainParameterRange("time_integration", std::move(time_intgl_list));
 
-  params.ConstrainParameterRange("gen_time",
-                                 AllowableRangeLowLimit::New(1.0e-12));
-  params.ConstrainParameterRange("initial_source",
-                                 AllowableRangeLowLimit::New(0.0));
-  params.ConstrainParameterRange("initial_population",
-                                 AllowableRangeLowLimit::New(0.0));
+  params.ConstrainParameterRange("gen_time", AllowableRangeLowLimit::New(1.0e-12));
+  params.ConstrainParameterRange("initial_source", AllowableRangeLowLimit::New(0.0));
+  params.ConstrainParameterRange("initial_population", AllowableRangeLowLimit::New(0.0));
   return params;
 }
 
@@ -93,14 +83,14 @@ TransientSolver::TransientSolver(const chi::InputParameters& params)
 }
 
 /**Initialize function.*/
-void TransientSolver::Initialize()
+void
+TransientSolver::Initialize()
 {
   // Check size
   if (lambdas_.size() != betas_.size())
-    throw std::logic_error(TextName() +
-                           ": Number of precursors cannot be "
-                           "deduced from precursor data because "
-                           "the data lists are of different size.");
+    throw std::logic_error(TextName() + ": Number of precursors cannot be "
+                                        "deduced from precursor data because "
+                                        "the data lists are of different size.");
 
   beta_ = std::accumulate(betas_.begin(), betas_.end(), /*init_val=*/0.0);
 
@@ -152,7 +142,8 @@ void TransientSolver::Initialize()
 }
 
 /**Execution function.*/
-void TransientSolver::Execute()
+void
+TransientSolver::Execute()
 {
   auto& physics_ev_pub = chi_physics::PhysicsEventPublisher::GetInstance();
 
@@ -164,17 +155,16 @@ void TransientSolver::Execute()
 }
 
 /**Step function*/
-void TransientSolver::Step()
+void
+TransientSolver::Step()
 {
-  Chi::log.Log() << "Solver \"" + TextName() + "\" " +
-                      timestepper_->StringTimeInfo();
+  Chi::log.Log() << "Solver \"" + TextName() + "\" " + timestepper_->StringTimeInfo();
 
   const double dt = timestepper_->TimeStepSize();
 
   A_[0][0] = beta_ * (rho_ - 1.0) / gen_time_;
 
-  if (time_integration_ == "implicit_euler" or
-      time_integration_ == "crank_nicolson")
+  if (time_integration_ == "implicit_euler" or time_integration_ == "crank_nicolson")
   {
     double theta = 1.0;
 
@@ -191,10 +181,7 @@ void TransientSolver::Step()
 
     x_tp1_ = x_t_ + (1.0 / theta) * (x_theta - x_t_);
   }
-  else if (time_integration_ == "explicit_euler")
-  {
-    x_tp1_ = x_t_ + dt * A_ * x_t_ + dt * q_;
-  }
+  else if (time_integration_ == "explicit_euler") { x_tp1_ = x_t_ + dt * A_ * x_t_ + dt * q_; }
   else
     ChiLogicalError("Unsupported time integration scheme.");
 
@@ -205,7 +192,8 @@ void TransientSolver::Step()
 }
 
 /**Advance time values function.*/
-void TransientSolver::Advance()
+void
+TransientSolver::Advance()
 {
   x_t_ = x_tp1_;
   timestepper_->Advance();
@@ -216,8 +204,7 @@ TransientSolver::GetInfo(const chi::ParameterBlock& params) const
 {
   const auto param_name = params.GetParamValue<std::string>("name");
 
-  if (param_name == "neutron_population")
-    return chi::ParameterBlock("", x_t_[0]);
+  if (param_name == "neutron_population") return chi::ParameterBlock("", x_t_[0]);
   else if (param_name == "population_next")
     return chi::ParameterBlock("", PopulationNew());
   else if (param_name == "period")
@@ -247,36 +234,59 @@ TransientSolver::GetInfo(const chi::ParameterBlock& params) const
 
 // ##################################################################
 /**Returns the population at the previous time step.*/
-double TransientSolver::PopulationPrev() const { return x_t_[0]; }
+double
+TransientSolver::PopulationPrev() const
+{
+  return x_t_[0];
+}
 /**Returns the population at the next time step.*/
-double TransientSolver::PopulationNew() const { return x_tp1_[0]; }
+double
+TransientSolver::PopulationNew() const
+{
+  return x_tp1_[0];
+}
 
 /**Returns the period computed for the last time step.*/
-double TransientSolver::Period() const { return period_tph_; }
+double
+TransientSolver::Period() const
+{
+  return period_tph_;
+}
 
 /**Returns the time computed for the last time step.*/
-double TransientSolver::TimePrev() const { return timestepper_->Time(); }
+double
+TransientSolver::TimePrev() const
+{
+  return timestepper_->Time();
+}
 
 /**Returns the time computed for the next time step.*/
-double TransientSolver::TimeNew() const
+double
+TransientSolver::TimeNew() const
 {
   return timestepper_->Time() + timestepper_->TimeStepSize();
 }
 
 /**Returns the solution at the previous time step.*/
-std::vector<double> TransientSolver::SolutionPrev() const
+std::vector<double>
+TransientSolver::SolutionPrev() const
 {
   return x_t_.elements_;
 }
 /**Returns the solution at the next time step.*/
-std::vector<double> TransientSolver::SolutionNew() const
+std::vector<double>
+TransientSolver::SolutionNew() const
 {
   return x_tp1_.elements_;
 }
 
 // ##################################################################
 /**Sets the value of rho.*/
-void TransientSolver::SetRho(double value) { rho_ = value; }
+void
+TransientSolver::SetRho(double value)
+{
+  rho_ = value;
+}
 
 /**\addtogroup prk
  *
@@ -286,12 +296,13 @@ void TransientSolver::SetRho(double value) { rho_ = value; }
  * \copydoc prk::TransientSolver::SetProperties
  * */
 
- /** PRK Transient solver settable properties:
- * - `rho`, The current reactivity
+/** PRK Transient solver settable properties:
+* - `rho`, The current reactivity
 
 Parents:
 \copydoc chi_physics::Solver::SetProperties*/
-void TransientSolver::SetProperties(const chi::ParameterBlock& params)
+void
+TransientSolver::SetProperties(const chi::ParameterBlock& params)
 {
   chi_physics::Solver::SetProperties(params);
 

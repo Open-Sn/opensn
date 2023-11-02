@@ -21,10 +21,11 @@ namespace chi_mpi_utils
  * The keys must be "castable" to `int`.
  *
  * Also expects the MPI_Datatype of T.*/
-template<typename K, class T> std::map<K, std::vector<T>>
-  MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
-              const MPI_Datatype data_mpi_type,
-              const MPI_Comm communicator=Chi::mpi.comm)
+template <typename K, class T>
+std::map<K, std::vector<T>>
+MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
+            const MPI_Datatype data_mpi_type,
+            const MPI_Comm communicator = Chi::mpi.comm)
 {
   static_assert(std::is_integral<K>::value, "Integral datatype required.");
 
@@ -46,30 +47,31 @@ template<typename K, class T> std::map<K, std::vector<T>>
   //                                              get recvcounts
   std::vector<int> recvcounts(Chi::mpi.process_count, 0);
 
-  MPI_Alltoall(sendcounts.data(), //sendbuf
-               1, MPI_INT,        //sendcount, sendtype
-               recvcounts.data(), //recvbuf
-               1, MPI_INT,        //recvcount, recvtype
-               communicator);   //communicator
+  MPI_Alltoall(sendcounts.data(), // sendbuf
+               1,
+               MPI_INT,           // sendcount, sendtype
+               recvcounts.data(), // recvbuf
+               1,
+               MPI_INT,       // recvcount, recvtype
+               communicator); // communicator
 
   //============================================= Populate recvdispls,
   //                                              sender_pids_set, and
   //                                              total_recv_count
   // All three these quantities are constructed
   // from recvcounts.
-  std::vector<int>   recvdispls(Chi::mpi.process_count, 0);
-  std::set<K>        sender_pids_set; //set of neighbor-partitions sending data
+  std::vector<int> recvdispls(Chi::mpi.process_count, 0);
+  std::set<K> sender_pids_set; // set of neighbor-partitions sending data
   size_t total_recv_count;
   {
-    int displacement=0;
-    for (int pid=0; pid < Chi::mpi.process_count; ++pid)
+    int displacement = 0;
+    for (int pid = 0; pid < Chi::mpi.process_count; ++pid)
     {
       recvdispls[pid] = displacement;
       displacement += recvcounts[pid];
 
-      if (recvcounts[pid] > 0)
-        sender_pids_set.insert(static_cast<K>(pid));
-    }//for pid
+      if (recvcounts[pid] > 0) sender_pids_set.insert(static_cast<K>(pid));
+    } // for pid
     total_recv_count = displacement;
   }
 
@@ -78,23 +80,21 @@ template<typename K, class T> std::map<K, std::vector<T>>
   // into a single buffer
   std::vector<T> sendbuf;
   for (const auto& pid_data_pair : pid_data_pairs)
-    sendbuf.insert(sendbuf.end(),
-                   pid_data_pair.second.begin(),
-                   pid_data_pair.second.end());
+    sendbuf.insert(sendbuf.end(), pid_data_pair.second.begin(), pid_data_pair.second.end());
 
   //============================================= Make recvbuf
   std::vector<T> recvbuf(total_recv_count);
 
   //============================================= Communicate serial data
-  MPI_Alltoallv(sendbuf.data(),        //sendbuf
-                sendcounts.data(),     //sendcounts
-                senddispls.data(),     //senddispls
-                data_mpi_type,         //sendtype
-                recvbuf.data(),        //recvbuf
-                recvcounts.data(),     //recvcounts
-                recvdispls.data(),     //recvdispls
-                data_mpi_type,         //recvtype
-                communicator);       //comm
+  MPI_Alltoallv(sendbuf.data(),    // sendbuf
+                sendcounts.data(), // sendcounts
+                senddispls.data(), // senddispls
+                data_mpi_type,     // sendtype
+                recvbuf.data(),    // recvbuf
+                recvcounts.data(), // recvcounts
+                recvdispls.data(), // recvdispls
+                data_mpi_type,     // recvtype
+                communicator);     // comm
 
   std::map<K, std::vector<T>> output_data;
   {
@@ -106,7 +106,7 @@ template<typename K, class T> std::map<K, std::vector<T>>
       auto& data = output_data[pid];
       data.resize(data_count);
 
-      for (int i=0; i<data_count; ++i)
+      for (int i = 0; i < data_count; ++i)
         data.at(i) = recvbuf.at(data_displ + i);
     }
   }
@@ -114,6 +114,6 @@ template<typename K, class T> std::map<K, std::vector<T>>
   return output_data;
 }
 
-}//namespace chi_mpi_utils
+} // namespace chi_mpi_utils
 
-#endif//CHI_MPI_MAP_ALL2ALL_H
+#endif // CHI_MPI_MAP_ALL2ALL_H

@@ -12,9 +12,15 @@ struct chi_mesh::Matrix3x3
   /**Creates a zeros matrix of size 3x3.*/
   Matrix3x3()
   {
-    vals[0] = 0.0; vals[1] = 0.0; vals[2] = 0.0;
-    vals[3] = 0.0; vals[4] = 0.0; vals[5] = 0.0;
-    vals[6] = 0.0; vals[7] = 0.0; vals[8] = 0.0;
+    vals[0] = 0.0;
+    vals[1] = 0.0;
+    vals[2] = 0.0;
+    vals[3] = 0.0;
+    vals[4] = 0.0;
+    vals[5] = 0.0;
+    vals[6] = 0.0;
+    vals[7] = 0.0;
+    vals[8] = 0.0;
   }
 
   /**Produces a rotation matrix with a reference vector rotated from the
@@ -39,18 +45,17 @@ struct chi_mesh::Matrix3x3
     chi_mesh::Vector3 n = vec;
     chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
 
-    if      (n.Dot(khat) >  0.9999999)
-      R.SetDiagonalVec(1.0,1.0,1.0);
+    if (n.Dot(khat) > 0.9999999) R.SetDiagonalVec(1.0, 1.0, 1.0);
     else if (n.Dot(khat) < -0.9999999)
-      R.SetDiagonalVec(1.0,1.0,-1.0);
+      R.SetDiagonalVec(1.0, 1.0, -1.0);
     else
     {
-      auto tangent = n.Cross(khat   ).Normalized();
-      auto binorm  = n.Cross(tangent).Normalized();
+      auto tangent = n.Cross(khat).Normalized();
+      auto binorm = n.Cross(tangent).Normalized();
 
-      R.SetColJVec(0,tangent);
-      R.SetColJVec(1,binorm);
-      R.SetColJVec(2,n);
+      R.SetColJVec(0, tangent);
+      R.SetColJVec(1, binorm);
+      R.SetColJVec(2, n);
     }
     return R;
   }
@@ -58,7 +63,7 @@ struct chi_mesh::Matrix3x3
   /**Copy constructor*/
   Matrix3x3& operator=(const Matrix3x3& inM)
   {
-    for (int k=0;k<9;k++)
+    for (int k = 0; k < 9; k++)
       this->vals[k] = inM.vals[k];
     return *this;
   }
@@ -67,7 +72,7 @@ struct chi_mesh::Matrix3x3
   Matrix3x3 operator+(const Matrix3x3& inM)
   {
     Matrix3x3 oM;
-    for (int k=0;k<9;k++)
+    for (int k = 0; k < 9; k++)
       oM.vals[k] = this->vals[k] + inM.vals[k];
     return oM;
   }
@@ -76,7 +81,7 @@ struct chi_mesh::Matrix3x3
   Matrix3x3 operator-(const Matrix3x3& inM)
   {
     Matrix3x3 oM;
-    for (int k=0;k<9;k++)
+    for (int k = 0; k < 9; k++)
       oM.vals[k] = this->vals[k] - inM.vals[k];
     return oM;
   }
@@ -85,9 +90,9 @@ struct chi_mesh::Matrix3x3
   Matrix3x3 operator*(const double value)
   {
     Matrix3x3 oM;
-    for (int k=0; k<9; k++)
+    for (int k = 0; k < 9; k++)
     {
-      oM.vals[k] = this->vals[k]*value;
+      oM.vals[k] = this->vals[k] * value;
     }
     return oM;
   }
@@ -95,14 +100,14 @@ struct chi_mesh::Matrix3x3
   /**Matrix multiply with vector.*/
   Vector3 operator*(const Vector3& vec) const
   {
-    double i_vec[] = {vec.x,vec.y,vec.z};
-    double o_vec[] = {0.0,0.0,0.0};
+    double i_vec[] = {vec.x, vec.y, vec.z};
+    double o_vec[] = {0.0, 0.0, 0.0};
 
-    for (int i=0;i<3;i++)
+    for (int i = 0; i < 3; i++)
     {
-      for (int j=0;j<3;j++)
+      for (int j = 0; j < 3; j++)
       {
-        o_vec[i] += this->GetIJ(i,j)*i_vec[j];
+        o_vec[i] += this->GetIJ(i, j) * i_vec[j];
       }
     }
     Vector3 oV(o_vec[0], o_vec[1], o_vec[2]);
@@ -112,60 +117,60 @@ struct chi_mesh::Matrix3x3
   /**Set value at row i and column j.*/
   void SetIJ(int i, int j, double value)
   {
-    int k = j + 3*i;
+    int k = j + 3 * i;
     vals[k] = value;
   }
 
   /**Add value to value at row i and column j.*/
   void AddIJ(int i, int j, double value)
   {
-    int k = j + 3*i;
+    int k = j + 3 * i;
     vals[k] += value;
   }
 
   /**Obtain a copy of the value at row i and column j.*/
   double GetIJ(int i, int j) const
   {
-    int k = j + 3*i;
+    int k = j + 3 * i;
     return vals[k];
   }
 
   /**Set row i using a vector.*/
   void SetRowIVec(int i, Vector3 vec)
   {
-    vals[0 + 3*i] = vec.x;
-    vals[1 + 3*i] = vec.y;
-    vals[2 + 3*i] = vec.z;
+    vals[0 + 3 * i] = vec.x;
+    vals[1 + 3 * i] = vec.y;
+    vals[2 + 3 * i] = vec.z;
   }
 
   /**Set column j using a vector.*/
   void SetColJVec(int j, Vector3 vec)
   {
-    vals[j + 3*0] = vec.x;
-    vals[j + 3*1] = vec.y;
-    vals[j + 3*2] = vec.z;
+    vals[j + 3 * 0] = vec.x;
+    vals[j + 3 * 1] = vec.y;
+    vals[j + 3 * 2] = vec.z;
   }
 
   /**Sets the diagonal of the matrix.*/
-  void SetDiagonalVec(double a00,double a11, double a22)
+  void SetDiagonalVec(double a00, double a11, double a22)
   {
-    vals[0 + 3*0] = a00;
-    vals[1 + 3*1] = a11;
-    vals[2 + 3*2] = a22;
+    vals[0 + 3 * 0] = a00;
+    vals[1 + 3 * 1] = a11;
+    vals[2 + 3 * 2] = a22;
   }
 
   /**Get the determinant using specified row [default:0].*/
-  double Det(int row=0)
+  double Det(int row = 0)
   {
-    double det=0.0;
+    double det = 0.0;
 
     int sign = -1;
-    for (int j=0; j<3; j++)
+    for (int j = 0; j < 3; j++)
     {
-      int k = j + 3*row;
+      int k = j + 3 * row;
       sign *= -1;
 
-      det += sign*GetIJ(row,j)*MinorIJ(row,j);
+      det += sign * GetIJ(row, j) * MinorIJ(row, j);
     }
 
     return det;
@@ -174,36 +179,36 @@ struct chi_mesh::Matrix3x3
   /**Get the minor value associated with row ir and column jr.*/
   double MinorIJ(int ir, int jr)
   {
-    double a[] = {0.0,0.0,0.0,0.0};
+    double a[] = {0.0, 0.0, 0.0, 0.0};
 
     int k = -1;
-    for (int i=0; i<3; i++)
+    for (int i = 0; i < 3; i++)
     {
-      if (i==ir) continue;
+      if (i == ir) continue;
 
-      for (int j=0; j<3; j++)
+      for (int j = 0; j < 3; j++)
       {
-        if (j==jr) continue;
+        if (j == jr) continue;
 
         k++;
-        int kr = j + 3*i;
+        int kr = j + 3 * i;
         a[k] = vals[kr];
       }
     }
 
-    return a[0]*a[3]-a[2]*a[1];
+    return a[0] * a[3] - a[2] * a[1];
   }
 
   /**Compute the matrix transpose.*/
   Matrix3x3 Transpose()
   {
     Matrix3x3 oM;
-    for (int i=0; i<3; i++)
+    for (int i = 0; i < 3; i++)
     {
-      for (int j=0; j<3; j++)
+      for (int j = 0; j < 3; j++)
       {
-        int kO = j + 3*i;
-        int kI = i + 3*j;
+        int kO = j + 3 * i;
+        int kI = i + 3 * j;
 
         oM.vals[kO] = vals[kI];
       }
@@ -218,22 +223,22 @@ struct chi_mesh::Matrix3x3
     Matrix3x3 oMT;
 
     //================================= Compute matrix of minors
-    for (int i=0; i<3; i++)
+    for (int i = 0; i < 3; i++)
     {
-      for (int j=0; j<3; j++)
+      for (int j = 0; j < 3; j++)
       {
-        oM.SetIJ(i,j,MinorIJ(i,j));
+        oM.SetIJ(i, j, MinorIJ(i, j));
       }
     }
 
     //================================= Compute matrix of cofactors
     int sign = -1;
-    for (int i=0; i<3; i++)
+    for (int i = 0; i < 3; i++)
     {
-      for (int j=0; j<3; j++)
+      for (int j = 0; j < 3; j++)
       {
-        sign*=-1;
-        oM.SetIJ(i,j,oM.GetIJ(i,j)*sign);
+        sign *= -1;
+        oM.SetIJ(i, j, oM.GetIJ(i, j) * sign);
       }
     }
 
@@ -243,21 +248,20 @@ struct chi_mesh::Matrix3x3
     //================================= Get determinant
     double det = Det();
 
-    return oMT*(1.0/det);
+    return oMT * (1.0 / det);
   }
 
   /**Outputs the matrix to a stream.*/
-  friend std::ostream & operator<< (std::ostream& out, Matrix3x3& inM)
+  friend std::ostream& operator<<(std::ostream& out, Matrix3x3& inM)
   {
     out << "[";
-    for (int i=0;i<3;i++)
+    for (int i = 0; i < 3; i++)
     {
-      for (int j=0;j<3;j++)
+      for (int j = 0; j < 3; j++)
       {
-        out << inM.GetIJ(i,j) << " ";
+        out << inM.GetIJ(i, j) << " ";
       }
-      if (i!=2)
-        out << "\n";
+      if (i != 2) out << "\n";
       else
         out << "]\n";
     }
@@ -269,21 +273,19 @@ struct chi_mesh::Matrix3x3
   {
     std::stringstream out;
     out << "[";
-    for (int i=0;i<3;i++)
+    for (int i = 0; i < 3; i++)
     {
-      for (int j=0;j<3;j++)
+      for (int j = 0; j < 3; j++)
       {
-        out << GetIJ(i,j) << " ";
+        out << GetIJ(i, j) << " ";
       }
-      if (i!=2)
-        out << "\n ";
+      if (i != 2) out << "\n ";
       else
         out << "]";
     }
 
     return out.str();
   }
-
 };
 
 #endif

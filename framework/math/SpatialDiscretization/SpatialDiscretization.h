@@ -40,10 +40,9 @@ public:
    * which specifies for each row the number of non-zeros in the local diagonal
    * block, `nodal_nnz_off_diag` which specifies for each row the number of
    * non-zeros in the off-diagonal block.*/
-  virtual void
-  BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
-                       std::vector<int64_t>& nodal_nnz_off_diag,
-                       const UnknownManager& unknown_manager) const = 0;
+  virtual void BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
+                                    std::vector<int64_t>& nodal_nnz_off_diag,
+                                    const UnknownManager& unknown_manager) const = 0;
 
   // 04 Mappings
   /**Maps the global address of a degree of freedom.*/
@@ -64,13 +63,11 @@ public:
   /**Maps the local address of a degree of freedom. This can include
    * ghost entries if the specific discretization has any. Default structure
    * here is a single scalar unknown.*/
-  virtual int64_t MapDOF(const chi_mesh::Cell& cell,
-                         unsigned int node) const = 0;
+  virtual int64_t MapDOF(const chi_mesh::Cell& cell, unsigned int node) const = 0;
   /**Maps the local address of a degree of freedom. This can include
    * ghost entries if the specific discretization has any. Default structure
    * here is a single scalar unknown.*/
-  virtual int64_t MapDOFLocal(const chi_mesh::Cell& cell,
-                              unsigned int node) const = 0;
+  virtual int64_t MapDOFLocal(const chi_mesh::Cell& cell, unsigned int node) const = 0;
 
   // 05 Utils
   /**For the unknown structure in the unknown manager, returns the
@@ -82,12 +79,10 @@ public:
 
   /**For the unknown structure in the unknown manager, returns the
    * number of ghost degrees-of-freedom.*/
-  virtual size_t
-  GetNumGhostDOFs(const UnknownManager& unknown_manager) const = 0;
+  virtual size_t GetNumGhostDOFs(const UnknownManager& unknown_manager) const = 0;
   /**For the unknown structure in the unknown manager, returns the
    * global IDs of all the ghost degrees-of-freedom.*/
-  virtual std::vector<int64_t>
-  GetGhostDOFIndices(const UnknownManager& unknown_manager) const = 0;
+  virtual std::vector<int64_t> GetGhostDOFIndices(const UnknownManager& unknown_manager) const = 0;
 
   /**For the unknown structure in the unknown manager, returns the
    * number of local- and ghost degrees-of-freedom.*/
@@ -99,8 +94,7 @@ public:
 
   /**For the given cell, returns a reference to the relevant node locations.
    * The same can be achieved by retrieving the cell-to-element mapping first.*/
-  const std::vector<chi_mesh::Vector3>&
-  GetCellNodeLocations(const chi_mesh::Cell& cell) const;
+  const std::vector<chi_mesh::Vector3>& GetCellNodeLocations(const chi_mesh::Cell& cell) const;
 
   /**\brief For each local cell, for each  face, for each face-node, provides a
   mapping to the adjacent cell's nodes.*/
@@ -126,19 +120,16 @@ public:
   /**Develops a localized view of a petsc vector.
    * Each spatial discretization can have a specialization of this
    * method.*/
-  virtual void
-  LocalizePETScVectorWithGhosts(Vec petsc_vector,
-                                std::vector<double>& local_vector,
-                                const UnknownManager& unknown_manager) const;
+  virtual void LocalizePETScVectorWithGhosts(Vec petsc_vector,
+                                             std::vector<double>& local_vector,
+                                             const UnknownManager& unknown_manager) const;
 
   /**Cartesian coordinate system spatial weighting function.*/
   static double CartesianSpatialWeightFunction(const chi_mesh::Vector3& point);
   /**Cylindrical coordinate system (RZ) spatial weighting function.*/
-  static double
-  CylindricalRZSpatialWeightFunction(const chi_mesh::Vector3& point);
+  static double CylindricalRZSpatialWeightFunction(const chi_mesh::Vector3& point);
   /**Spherical coordinate system (1D Spherical) spatial weighting function.*/
-  static double
-  Spherical1DSpatialWeightFunction(const chi_mesh::Vector3& point);
+  static double Spherical1DSpatialWeightFunction(const chi_mesh::Vector3& point);
 
   typedef std::function<double(const chi_mesh::Vector3&)> SpatialWeightFunction;
 

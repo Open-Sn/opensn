@@ -16,21 +16,19 @@ InputParameters PostProcessorPrinterOptions();
 InputParameters GetSyntax_PPPrinterSetOptions();
 ParameterBlock PostProcessorPrinterSetOptions(const InputParameters& params);
 
-RegisterSyntaxBlock(chi,
-                    PostProcessorPrinterOptions,
-                    PostProcessorPrinterOptions);
+RegisterSyntaxBlock(chi, PostProcessorPrinterOptions, PostProcessorPrinterOptions);
 
 RegisterWrapperFunction(/*namespace_in_lua=*/chi,
                         /*name_in_lua=*/PostProcessorPrinterSetOptions,
                         /*syntax_function=*/GetSyntax_PPPrinterSetOptions,
                         /*actual_function=*/PostProcessorPrinterSetOptions);
 
-InputParameters PostProcessorPrinterOptions()
+InputParameters
+PostProcessorPrinterOptions()
 {
   InputParameters params;
 
-  params.SetGeneralDescription(
-    "Options allowable for the PostProcessorPrinter");
+  params.SetGeneralDescription("Options allowable for the PostProcessorPrinter");
   params.SetDocGroup("doc_PPUtils");
 
   params.AddOptionalParameter("scalar_pp_table_format",
@@ -39,16 +37,13 @@ InputParameters PostProcessorPrinterOptions()
                               "PostProcessors");
 
   using namespace chi_data_types;
-  params.ConstrainParameterRange(
-    "scalar_pp_table_format",
-    AllowableRangeList::New({"horizontal", "vertical"}));
+  params.ConstrainParameterRange("scalar_pp_table_format",
+                                 AllowableRangeList::New({"horizontal", "vertical"}));
 
   params.AddOptionalParameterArray(
     "events_on_which_to_print_postprocs",
-    std::vector<std::string>{"SolverInitialized",
-                             "SolverAdvanced",
-                             "SolverExecuted",
-                             "ProgramExecuted"},
+    std::vector<std::string>{
+      "SolverInitialized", "SolverAdvanced", "SolverExecuted", "ProgramExecuted"},
     "A list of events on which to print post-processors");
 
   params.AddOptionalParameter(
@@ -73,11 +68,10 @@ InputParameters PostProcessorPrinterOptions()
                               "Controls the sizing of printed columns. If "
                               "false all the columns will be the same size.");
 
-  params.AddOptionalParameter(
-    "table_column_limit",
-    120,
-    "The maximum column, if reached, would cause tables to be wrapped. A "
-    "minimum limit of 80 is automatically enforced.");
+  params.AddOptionalParameter("table_column_limit",
+                              120,
+                              "The maximum column, if reached, would cause tables to be wrapped. A "
+                              "minimum limit of 80 is automatically enforced.");
 
   params.AddOptionalParameter(
     "time_history_limit",
@@ -85,16 +79,16 @@ InputParameters PostProcessorPrinterOptions()
     "Maximum amount of time values to show in post-processor histories. A "
     "maximum of 1000 is automatically enforced.");
 
-  params.AddOptionalParameter(
-    "csv_filename",
-    "",
-    "If not empty, a file will be printed with all the post-processors "
-    "formatted as comma seperated values.");
+  params.AddOptionalParameter("csv_filename",
+                              "",
+                              "If not empty, a file will be printed with all the post-processors "
+                              "formatted as comma seperated values.");
 
   return params;
 }
 
-InputParameters GetSyntax_PPPrinterSetOptions()
+InputParameters
+GetSyntax_PPPrinterSetOptions()
 {
   InputParameters params;
 
@@ -108,7 +102,8 @@ InputParameters GetSyntax_PPPrinterSetOptions()
   return params;
 }
 
-ParameterBlock PostProcessorPrinterSetOptions(const InputParameters& params)
+ParameterBlock
+PostProcessorPrinterSetOptions(const InputParameters& params)
 {
   auto& printer = PostProcessorPrinter::GetInstance();
 
@@ -117,7 +112,7 @@ ParameterBlock PostProcessorPrinterSetOptions(const InputParameters& params)
   for (const auto& param : set_params)
   {
     const std::string param_name = param.Name();
-    
+
     uint32_t param_name_hash = chi::hash_djb2a(param_name);
     // clang-format off
     switch (param_name_hash)

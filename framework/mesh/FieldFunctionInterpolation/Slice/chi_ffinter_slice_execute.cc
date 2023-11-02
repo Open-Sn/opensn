@@ -8,11 +8,12 @@
 
 //###################################################################
 /**Executes the slice interpolation.*/
-void chi_mesh::FieldFunctionInterpolationSlice::Execute()
+void
+chi_mesh::FieldFunctionInterpolationSlice::Execute()
 {
   const auto& ref_ff = *field_functions_.front();
-  const auto& sdm    = ref_ff.GetSpatialDiscretization();
-  const auto& grid   = sdm.Grid();
+  const auto& sdm = ref_ff.GetSpatialDiscretization();
+  const auto& grid = sdm.Grid();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;
@@ -27,7 +28,7 @@ void chi_mesh::FieldFunctionInterpolationSlice::Execute()
     const size_t num_nodes = cell_mapping.NumNodes();
 
     std::vector<double> dof_values(num_nodes, 0.0);
-    for (size_t i=0; i<num_nodes; ++i)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
       const int64_t imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
       dof_values[i] = field_data[imap];
@@ -38,10 +39,10 @@ void chi_mesh::FieldFunctionInterpolationSlice::Execute()
     {
       cell_mapping.ShapeValues(edge_intersection.point, shape_values);
       double point_value = 0.0;
-      for (size_t i=0; i<num_nodes; ++i)
-        point_value += dof_values[i]*shape_values[i];
+      for (size_t i = 0; i < num_nodes; ++i)
+        point_value += dof_values[i] * shape_values[i];
 
       edge_intersection.point_value = point_value;
-    }//for edge intersection
-  }//for cell intersection
+    } // for edge intersection
+  }   // for cell intersection
 }

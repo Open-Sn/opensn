@@ -2,9 +2,9 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-
 //######################################################################
-void chi_physics::SingleStateMGXS::ComputeAbsorption()
+void
+chi_physics::SingleStateMGXS::ComputeAbsorption()
 {
   sigma_a_.assign(num_groups_, 0.0);
 
@@ -13,11 +13,10 @@ void chi_physics::SingleStateMGXS::ComputeAbsorption()
     for (size_t g = 0; g < num_groups_; ++g)
       sigma_a_[g] = sigma_t_[g];
 
-    // estimate from a transfer matrix
+  // estimate from a transfer matrix
   else
   {
-    Chi::log.Log0Warning()
-        << "Estimating absorption from the transfer matrices.";
+    Chi::log.Log0Warning() << "Estimating absorption from the transfer matrices.";
 
     const auto& S0 = transfer_matrices_[0];
     for (size_t g = 0; g < num_groups_; ++g)
@@ -40,27 +39,25 @@ void chi_physics::SingleStateMGXS::ComputeAbsorption()
 
       // TODO: Should negative absorption be allowed?
       if (sigma_a_[g] < 0.0)
-        Chi::log.Log0Warning()
-            << "Negative absorption cross section encountered "
-            << "in group " << g << " when estimating from the "
-            << "transfer matrices";
-    }//for g
-  }//if scattering present
+        Chi::log.Log0Warning() << "Negative absorption cross section encountered "
+                               << "in group " << g << " when estimating from the "
+                               << "transfer matrices";
+    } // for g
+  }   // if scattering present
 }
 
-
 //######################################################################
-void chi_physics::SingleStateMGXS::ComputeDiffusionParameters()
+void
+chi_physics::SingleStateMGXS::ComputeDiffusionParameters()
 {
-  if (diffusion_initialized_)
-    return;
+  if (diffusion_initialized_) return;
 
-  //initialize diffusion data
+  // initialize diffusion data
   diffusion_coeff_.resize(num_groups_, 1.0);
   sigma_s_gtog_.resize(num_groups_, 0.0);
   sigma_removal_.resize(num_groups_, 0.1);
 
-  //perfom computations group-wise
+  // perfom computations group-wise
   const auto& S = transfer_matrices_;
   for (unsigned int g = 0; g < num_groups_; ++g)
   {
@@ -81,8 +78,8 @@ void chi_physics::SingleStateMGXS::ComputeDiffusionParameters()
             sig_1 += vals[t];
             break;
           }
-      }//for gp
-    }//if moment 1 available
+      } // for gp
+    }   // if moment 1 available
 
     //============================================================
     // Compute diffusion coefficient
@@ -91,17 +88,15 @@ void chi_physics::SingleStateMGXS::ComputeDiffusionParameters()
     if (sig_1 >= sigma_t_[g])
     {
       sig_1 = 0.0;
-      Chi::log.Log0Warning()
-          << "Transport corrected diffusion coefficient failed for group "
-          << g << " in call to " << __FUNCTION__ << ". "
-          << "sigma_t=" << sigma_t_[g] << " sigs_g_(m=1)=" << sig_1
-          << ". Setting sigs_g_(m=1) to zero for this group.";
+      Chi::log.Log0Warning() << "Transport corrected diffusion coefficient failed for group " << g
+                             << " in call to " << __FUNCTION__ << ". "
+                             << "sigma_t=" << sigma_t_[g] << " sigs_g_(m=1)=" << sig_1
+                             << ". Setting sigs_g_(m=1) to zero for this group.";
     }
 
-    //compute the diffusion coefficient
-    //cap the value for when sig_t - sig_1 is near zero
-    diffusion_coeff_[g] = std::fmin(1.0e12,
-                                   1.0 / 3.0 / (sigma_t_[g] - sig_1));
+    // compute the diffusion coefficient
+    // cap the value for when sig_t - sig_1 is near zero
+    diffusion_coeff_[g] = std::fmin(1.0e12, 1.0 / 3.0 / (sigma_t_[g] - sig_1));
 
     //============================================================
     // Determine within group scattering
@@ -124,7 +119,7 @@ void chi_physics::SingleStateMGXS::ComputeDiffusionParameters()
     //============================================================
 
     sigma_removal_[g] = std::max(0.0, sigma_t_[g] - sigma_s_gtog_[g]);
-  }//for g
+  } // for g
 
   diffusion_initialized_ = true;
 }

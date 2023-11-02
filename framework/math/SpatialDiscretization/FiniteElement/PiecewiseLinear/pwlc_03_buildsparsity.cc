@@ -15,7 +15,8 @@ namespace chi_math::spatial_discretization
 
 // ###################################################################
 /**Builds the sparsity pattern for a Continuous Finite Element Method.*/
-void PieceWiseLinearContinuous::BuildSparsityPattern(
+void
+PieceWiseLinearContinuous::BuildSparsityPattern(
   std::vector<int64_t>& nodal_nnz_in_diag,
   std::vector<int64_t>& nodal_nnz_off_diag,
   const chi_math::UnknownManager& unknown_manager) const
@@ -39,18 +40,14 @@ void PieceWiseLinearContinuous::BuildSparsityPattern(
     {
     }
 
-    bool IsMapLocal(int64_t ir) const
-    {
-      return (ir >= local_block_start and ir < local_block_end);
-    }
+    bool IsMapLocal(int64_t ir) const { return (ir >= local_block_start and ir < local_block_end); }
 
     int64_t MapIRLocal(int64_t ir) const { return ir - local_block_start; }
 
     int64_t GetLocFromIR(int64_t ir)
     {
-      int64_t locI =
-        std::upper_bound(locI_block_addr.begin(), locI_block_addr.end(), ir) -
-        locI_block_addr.begin() - 1;
+      int64_t locI = std::upper_bound(locI_block_addr.begin(), locI_block_addr.end(), ir) -
+                     locI_block_addr.begin() - 1;
       return locI;
     }
 
@@ -194,9 +191,8 @@ void PieceWiseLinearContinuous::BuildSparsityPattern(
   {
     const int64_t locI = dof_handler.GetLocFromIR(ir_linkage.first);
 
-    locI_serialized[locI].push_back(
-      sc_int64(ir_linkage.second.size())); // row cols amount
-    locI_serialized[locI].push_back(sc_int64(ir_linkage.first)); // row num
+    locI_serialized[locI].push_back(sc_int64(ir_linkage.second.size())); // row cols amount
+    locI_serialized[locI].push_back(sc_int64(ir_linkage.first));         // row num
     for (int64_t jr : ir_linkage.second)
       locI_serialized[locI].push_back(jr); // col num
   }
@@ -213,14 +209,12 @@ void PieceWiseLinearContinuous::BuildSparsityPattern(
     sendcount[locI] = static_cast<int>(locI_data.size());
 
     if (Chi::mpi.location_id == 0)
-      Chi::log.LogAllVerbose1()
-        << "To send to " << locI << " = " << sendcount[locI];
+      Chi::log.LogAllVerbose1() << "To send to " << locI << " = " << sendcount[locI];
 
     ++locI;
   }
 
-  MPI_Alltoall(
-    sendcount.data(), 1, MPI_INT, recvcount.data(), 1, MPI_INT, Chi::mpi.comm);
+  MPI_Alltoall(sendcount.data(), 1, MPI_INT, recvcount.data(), 1, MPI_INT, Chi::mpi.comm);
 
   //=================================== Step 3
   // We now establish send displacements and
@@ -337,8 +331,7 @@ void PieceWiseLinearContinuous::BuildSparsityPattern(
       } // for j
     }   // for i
   }
-  else if (unknown_manager.dof_storage_type_ ==
-           chi_math::UnknownStorageType::BLOCK)
+  else if (unknown_manager.dof_storage_type_ == chi_math::UnknownStorageType::BLOCK)
   {
     int ir = -1;
     for (int j = 0; j < N; ++j)

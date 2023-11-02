@@ -17,8 +17,7 @@
 namespace chi_unit_sim_tests
 {
 
-chi::ParameterBlock
-acceleration_Diffusion_CFEM(const chi::InputParameters& params);
+chi::ParameterBlock acceleration_Diffusion_CFEM(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*name_in_lua=*/acceleration_Diffusion_CFEM,
@@ -53,22 +52,21 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
   //============================================= Make Boundary conditions
   typedef lbs::acceleration::BoundaryCondition BC;
   std::map<uint64_t, BC> bcs;
-  //bcs[0] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
-  //bcs[1] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
-  //bcs[2] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
-  //bcs[3] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
-  //bcs[4] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
-  //bcs[5] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}};
-  bcs[0] = {lbs::acceleration::BCType::ROBIN,{0.25,0.5,0}},
-  bcs[1] = {lbs::acceleration::BCType::ROBIN,{0.25,0.5,0}},
-  bcs[2] = {lbs::acceleration::BCType::ROBIN,{0.25,0.5,0}},
-  bcs[3] = {lbs::acceleration::BCType::ROBIN,{0.25,0.5,0}},
-  bcs[4] = {lbs::acceleration::BCType::ROBIN,{0.25,0.5,0}},
-  bcs[5] = {lbs::acceleration::BCType::ROBIN,{0.25,0.5,0}};
+  // bcs[0] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[1] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[2] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[3] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[4] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[5] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}};
+  bcs[0] = {lbs::acceleration::BCType::ROBIN, {0.25, 0.5, 0}},
+  bcs[1] = {lbs::acceleration::BCType::ROBIN, {0.25, 0.5, 0}},
+  bcs[2] = {lbs::acceleration::BCType::ROBIN, {0.25, 0.5, 0}},
+  bcs[3] = {lbs::acceleration::BCType::ROBIN, {0.25, 0.5, 0}},
+  bcs[4] = {lbs::acceleration::BCType::ROBIN, {0.25, 0.5, 0}},
+  bcs[5] = {lbs::acceleration::BCType::ROBIN, {0.25, 0.5, 0}};
 
   MatID2XSMap matid_2_xs_map;
-  matid_2_xs_map.insert(
-    std::make_pair(0,lbs::acceleration::Multigroup_D_and_sigR{{1.0},{0.0}}));
+  matid_2_xs_map.insert(std::make_pair(0, lbs::acceleration::Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
   std::vector<lbs::UnitCellMatrices> unit_cell_matrices;
   unit_cell_matrices.resize(grid.local_cells.size());
@@ -83,39 +81,36 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
     const size_t cell_num_nodes = cell_mapping.NumNodes();
     const auto vol_qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
 
-    MatDbl  IntV_gradshapeI_gradshapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
-    MatDbl  IntV_shapeI_shapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
-    VecDbl  IntV_shapeI(cell_num_nodes);
+    MatDbl IntV_gradshapeI_gradshapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
+    MatDbl IntV_shapeI_shapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
+    VecDbl IntV_shapeI(cell_num_nodes);
 
-    std::vector<MatDbl>  IntS_shapeI_shapeJ(cell_num_faces);
+    std::vector<MatDbl> IntS_shapeI_shapeJ(cell_num_faces);
     std::vector<MatVec3> IntS_shapeI_gradshapeJ(cell_num_faces);
-    std::vector<VecDbl>  IntS_shapeI(cell_num_faces);
+    std::vector<VecDbl> IntS_shapeI(cell_num_faces);
 
-    //Volume integrals
+    // Volume integrals
     for (unsigned int i = 0; i < cell_num_nodes; ++i)
     {
       for (unsigned int j = 0; j < cell_num_nodes; ++j)
       {
         for (const auto& qp : vol_qp_data.QuadraturePointIndices())
         {
-          IntV_gradshapeI_gradshapeJ[i][j]
-            += vol_qp_data.ShapeGrad(i, qp).Dot(vol_qp_data.ShapeGrad(j, qp)) *
-               vol_qp_data.JxW(qp);  //K-matrix
+          IntV_gradshapeI_gradshapeJ[i][j] +=
+            vol_qp_data.ShapeGrad(i, qp).Dot(vol_qp_data.ShapeGrad(j, qp)) *
+            vol_qp_data.JxW(qp); // K-matrix
 
-          IntV_shapeI_shapeJ[i][j]
-            += vol_qp_data.ShapeValue(i, qp) *
-               vol_qp_data.ShapeValue(j, qp) *
-               vol_qp_data.JxW(qp);  //M-matrix
-        }// for qp
-      }// for j
+          IntV_shapeI_shapeJ[i][j] += vol_qp_data.ShapeValue(i, qp) *
+                                      vol_qp_data.ShapeValue(j, qp) *
+                                      vol_qp_data.JxW(qp); // M-matrix
+        }                                                  // for qp
+      }                                                    // for j
 
       for (const auto& qp : vol_qp_data.QuadraturePointIndices())
       {
-        IntV_shapeI[i]
-          += vol_qp_data.ShapeValue(i, qp) * vol_qp_data.JxW(qp);
-      }// for qp
-    }//for i
-
+        IntV_shapeI[i] += vol_qp_data.ShapeValue(i, qp) * vol_qp_data.JxW(qp);
+      } // for qp
+    }   // for i
 
     //  surface integrals
     for (size_t f = 0; f < cell_num_faces; ++f)
@@ -131,44 +126,35 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
         {
           for (const auto& qp : faces_qp_data.QuadraturePointIndices())
           {
-            IntS_shapeI_shapeJ[f][i][j]
-              += faces_qp_data.ShapeValue(i, qp) *
-                 faces_qp_data.ShapeValue(j, qp) *
-                 faces_qp_data.JxW(qp);
-            IntS_shapeI_gradshapeJ[f][i][j]
-              += faces_qp_data.ShapeValue(i, qp) *
-                 faces_qp_data.ShapeGrad(j, qp) *
-                 faces_qp_data.JxW(qp);
-          }// for qp
-        }//for j
+            IntS_shapeI_shapeJ[f][i][j] += faces_qp_data.ShapeValue(i, qp) *
+                                           faces_qp_data.ShapeValue(j, qp) * faces_qp_data.JxW(qp);
+            IntS_shapeI_gradshapeJ[f][i][j] += faces_qp_data.ShapeValue(i, qp) *
+                                               faces_qp_data.ShapeGrad(j, qp) *
+                                               faces_qp_data.JxW(qp);
+          } // for qp
+        }   // for j
 
         for (const auto& qp : faces_qp_data.QuadraturePointIndices())
         {
-          IntS_shapeI[f][i]
-            += faces_qp_data.ShapeValue(i, qp) * faces_qp_data.JxW(qp);
-        }// for qp
-      }//for i
-    }//for f
+          IntS_shapeI[f][i] += faces_qp_data.ShapeValue(i, qp) * faces_qp_data.JxW(qp);
+        } // for qp
+      }   // for i
+    }     // for f
 
     unit_cell_matrices[cell.local_id_] =
-      lbs::UnitCellMatrices{IntV_gradshapeI_gradshapeJ, //K-matrix
-                            {},                         //G-matrix
-                            IntV_shapeI_shapeJ,         //M-matrix
-                            IntV_shapeI,                //Vi-vectors
+      lbs::UnitCellMatrices{IntV_gradshapeI_gradshapeJ, // K-matrix
+                            {},                         // G-matrix
+                            IntV_shapeI_shapeJ,         // M-matrix
+                            IntV_shapeI,                // Vi-vectors
 
-                            IntS_shapeI_shapeJ,         //face M-matrices
-                            IntS_shapeI_gradshapeJ,     //face G-matrices
-                            IntS_shapeI};               //face Si-vectors
-  }//for cell
+                            IntS_shapeI_shapeJ,     // face M-matrices
+                            IntS_shapeI_gradshapeJ, // face G-matrices
+                            IntS_shapeI};           // face Si-vectors
+  }                                                 // for cell
 
   //============================================= Make solver
-  lbs::acceleration::DiffusionPWLCSolver solver("SimTest92b_DSA_PWLC",
-                                               sdm,
-                                               OneDofPerNode,
-                                               bcs,
-                                               matid_2_xs_map,
-                                               unit_cell_matrices,
-                                               true);
+  lbs::acceleration::DiffusionPWLCSolver solver(
+    "SimTest92b_DSA_PWLC", sdm, OneDofPerNode, bcs, matid_2_xs_map, unit_cell_matrices, true);
   solver.options.ref_solution_lua_function = "MMS_phi";
   solver.options.source_lua_function = "MMS_q";
   solver.options.verbose = true;
@@ -180,8 +166,8 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
   Chi::log.Log() << "Done constructing solver" << std::endl;
 
   //============================================= Assemble and solve
-  std::vector<double> q_vector(num_local_dofs,1.0);
-  std::vector<double> x_vector(num_local_dofs,0.0);
+  std::vector<double> q_vector(num_local_dofs, 1.0);
+  std::vector<double> x_vector(num_local_dofs, 0.0);
 
   solver.AssembleAand_b(q_vector);
   solver.Solve(x_vector);
@@ -192,10 +178,7 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
 
   //============================================= Make Field-Function
   auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",
-    sdm_ptr,
-    OneDofPerNode.unknowns_.front()
-    );
+    "Phi", sdm_ptr, OneDofPerNode.unknowns_.front());
 
   ff->UpdateFieldVector(x_vector);
 
@@ -204,4 +187,4 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
   return chi::ParameterBlock();
 }
 
-}//namespace chi_unit_sim_tests
+} // namespace chi_unit_sim_tests

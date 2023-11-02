@@ -29,13 +29,13 @@ With direction points:
 
 \ingroup LuaSLDFESQ
 \author Jan */
-int chiCreateSLDFESQAngularQuadrature(lua_State* L)
+int
+chiCreateSLDFESQAngularQuadrature(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError("chiCreateSLDFESQAngularQuadrature",1,num_args);
+  if (num_args != 1) LuaPostArgAmountError("chiCreateSLDFESQAngularQuadrature", 1, num_args);
 
-  int init_refinement_level = lua_tonumber(L,1);
+  int init_refinement_level = lua_tonumber(L, 1);
 
   auto sldfesq = new chi_math::SimplifiedLDFESQ::Quadrature;
   sldfesq->GenerateInitialRefinement(init_refinement_level);
@@ -45,7 +45,7 @@ int chiCreateSLDFESQAngularQuadrature(lua_State* L)
 
   Chi::angular_quadrature_stack.push_back(new_ang_quad);
   const size_t index = Chi::angular_quadrature_stack.size() - 1;
-  lua_pushnumber(L,static_cast<lua_Number>(index));
+  lua_pushnumber(L, static_cast<lua_Number>(index));
 
   return 1;
 }

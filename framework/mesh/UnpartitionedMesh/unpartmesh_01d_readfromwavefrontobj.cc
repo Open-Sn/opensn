@@ -10,7 +10,8 @@
 
 // ###################################################################
 /**Reads an unpartitioned mesh from a wavefront .obj file.*/
-void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
+void
+chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
 {
   const std::string fname = "chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ";
 
@@ -19,15 +20,13 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   file.open(options.file_name);
   if (!file.is_open())
   {
-    Chi::log.LogAllError() << "Failed to open file: " << options.file_name
-                           << " in call "
+    Chi::log.LogAllError() << "Failed to open file: " << options.file_name << " in call "
                            << "to ImportFromOBJFile \n";
     Chi::Exit(EXIT_FAILURE);
   }
 
   Chi::mpi.Barrier();
-  Chi::log.Log() << "Making Unpartitioned mesh from wavefront file "
-                 << options.file_name;
+  Chi::log.Log() << "Making Unpartitioned mesh from wavefront file " << options.file_name;
 
   typedef std::pair<uint64_t, uint64_t> Edge;
   struct BlockData
@@ -64,8 +63,7 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
 
     if (first_word == "usemtl")
     {
-      Chi::log.Log0Verbose1()
-        << "New material at cell count: " << block_data.back().cells.size();
+      Chi::log.Log0Verbose1() << "New material at cell count: " << block_data.back().cells.size();
       ++material_id;
     }
 
@@ -95,8 +93,7 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
         //================================== Catch conversion error
         catch (const std::invalid_argument& ia)
         {
-          Chi::log.Log0Warning()
-            << "Failed to convert vertex in line " << file_line << std::endl;
+          Chi::log.Log0Warning() << "Failed to convert vertex in line " << file_line << std::endl;
         }
 
         //================================== Stop word extraction on line end
@@ -108,8 +105,7 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
     //===================================================== Keyword "f" for face
     if (first_word == "f")
     {
-      size_t number_of_verts =
-        std::count(file_line.begin(), file_line.end(), '/') / 2;
+      size_t number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
 
       CellType sub_type = CellType::POLYGON;
       if (number_of_verts == 3) sub_type = CellType::TRIANGLE;
@@ -133,8 +129,7 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
 
         //============================= Extract the words ass. vertex and normal
         std::string vert_word = sub_word.substr(0, first_dash - 0);
-        std::string norm_word =
-          sub_word.substr(last_dash + 1, sub_word.length() - last_dash - 1);
+        std::string norm_word = sub_word.substr(last_dash + 1, sub_word.length() - last_dash - 1);
 
         //============================= Convert word to number (Vertex)
         try
@@ -144,8 +139,8 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
         }
         catch (const std::invalid_argument& ia)
         {
-          Chi::log.Log0Warning() << "Failed converting work to number in line "
-                                 << file_line << std::endl;
+          Chi::log.Log0Warning() << "Failed converting work to number in line " << file_line
+                                 << std::endl;
         }
 
         //============================= Stop word extraction on line end
@@ -160,17 +155,15 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
 
         face.vertex_ids.resize(2);
         face.vertex_ids[0] = cell->vertex_ids[v];
-        face.vertex_ids[1] =
-          (v < (num_verts - 1)) ? cell->vertex_ids[v + 1] : cell->vertex_ids[0];
+        face.vertex_ids[1] = (v < (num_verts - 1)) ? cell->vertex_ids[v + 1] : cell->vertex_ids[0];
 
         cell->faces.push_back(std::move(face));
       } // for v
 
       if (block_data.empty())
-        throw std::logic_error(
-          fname + ": Could not add cell to block-data. "
-                  "This normally indicates that the file does not have the "
-                  "\"o Object Name\" entry.");
+        throw std::logic_error(fname + ": Could not add cell to block-data. "
+                                       "This normally indicates that the file does not have the "
+                                       "\"o Object Name\" entry.");
 
       block_data.back().cells.push_back(cell);
     } // if (first_word == "f")
@@ -197,16 +190,14 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
         //================================== Catch conversion error
         catch (const std::invalid_argument& ia)
         {
-          Chi::log.Log0Warning()
-            << "Failed to text to integer in line " << file_line << std::endl;
+          Chi::log.Log0Warning() << "Failed to text to integer in line " << file_line << std::endl;
         }
       } // for k
 
       if (block_data.empty())
-        throw std::logic_error(
-          fname + ": Could not add edge to block-data. "
-                  "This normally indicates that the file does not have the "
-                  "\"o Object Name\" entry.");
+        throw std::logic_error(fname + ": Could not add edge to block-data. "
+                                       "This normally indicates that the file does not have the "
+                                       "\"o Object Name\" entry.");
 
       block_data.back().edges.push_back(edge);
     } // if (first_word == "l")
@@ -219,10 +210,10 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
     for (const auto& cell : block.cells)
       for (const auto vid : cell->vertex_ids)
       {
-        ChiLogicalErrorIf(vid >= file_vertices.size(),
-                          "Cell vertex id " + std::to_string(vid) +
-                            " not in list of vertices read (size=" +
-                            std::to_string(file_vertices.size()) + ").");
+        ChiLogicalErrorIf(
+          vid >= file_vertices.size(),
+          "Cell vertex id " + std::to_string(vid) +
+            " not in list of vertices read (size=" + std::to_string(file_vertices.size()) + ").");
       }
 
   //======================================================= Filter blocks
@@ -231,8 +222,7 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   size_t main_block_id = 0;
   for (size_t block_id = 0; block_id < block_data.size(); ++block_id)
   {
-    if (not block_data[block_id].edges.empty())
-      bndry_block_ids.push_back(block_id);
+    if (not block_data[block_id].edges.empty()) bndry_block_ids.push_back(block_id);
     if (not block_data[block_id].cells.empty())
     {
       ++num_cell_blocks;
@@ -241,12 +231,11 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   } // for block_id
 
   if (num_cell_blocks != 1)
-    throw std::logic_error(
-      fname +
-      ": More than one cell-block has been read "
-      "from the file. Only a single face-containing object is supported. "
-      "If you exported this mesh from blender, be sure to export "
-      "\"selection only\"");
+    throw std::logic_error(fname +
+                           ": More than one cell-block has been read "
+                           "from the file. Only a single face-containing object is supported. "
+                           "If you exported this mesh from blender, be sure to export "
+                           "\"selection only\"");
 
   //======================================================= Process blocks
   std::vector<chi_mesh::Vertex> cell_vertices;
@@ -302,11 +291,10 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
         }
       } // for cvid
       if (not match_found)
-        throw std::logic_error(
-          fname +
-          ": Failed to map a boundary vertex to"
-          "any cell vertex. Check that the edges are conformal with the "
-          "object containing the faces.");
+        throw std::logic_error(fname +
+                               ": Failed to map a boundary vertex to"
+                               "any cell vertex. Check that the edges are conformal with the "
+                               "object containing the faces.");
     } // for bvid
 
     // Change cell and face vertex ids to cell vertex ids
@@ -340,10 +328,7 @@ void chi_mesh::UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   BuildMeshConnectivity();
 
   //======================================================= Set boundary ids
-  if (bndry_block_ids.empty())
-  {
-    mesh_options_.boundary_id_map[0] = "Default Boundary";
-  }
+  if (bndry_block_ids.empty()) { mesh_options_.boundary_id_map[0] = "Default Boundary"; }
   else
   {
     std::vector<LightWeightFace*> bndry_faces;

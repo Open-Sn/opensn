@@ -24,7 +24,7 @@ private:
   chi_mesh::Vector3 normal_vector_boundary_;
 
   // Runtime params
-  const MatDbl*  Maux_ = nullptr;
+  const MatDbl* Maux_ = nullptr;
 
   unsigned int polar_level_ = 0;
   double fac_diamond_difference_ = 0.0;
@@ -33,19 +33,18 @@ private:
   //  Methods
 public:
   /** Constructor. */
-  SweepChunkPWLRZ(
-    const chi_mesh::MeshContinuum& grid,
-    const chi_math::SpatialDiscretization& discretization_primary,
-    const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
-    const std::vector<lbs::UnitCellMatrices>& secondary_unit_cell_matrices,
-    std::vector<lbs::CellLBSView>& cell_transport_views,
-    std::vector<double>& destination_phi,
-    std::vector<double>& destination_psi,
-    const std::vector<double>& source_moments,
-    lbs::LBSGroupset& groupset,
-    const std::map<int, lbs::XSPtr>& xs,
-    int num_moments,
-    int max_num_cell_dofs);
+  SweepChunkPWLRZ(const chi_mesh::MeshContinuum& grid,
+                  const chi_math::SpatialDiscretization& discretization_primary,
+                  const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
+                  const std::vector<lbs::UnitCellMatrices>& secondary_unit_cell_matrices,
+                  std::vector<lbs::CellLBSView>& cell_transport_views,
+                  std::vector<double>& destination_phi,
+                  std::vector<double>& destination_psi,
+                  const std::vector<double>& source_moments,
+                  lbs::LBSGroupset& groupset,
+                  const std::map<int, lbs::XSPtr>& xs,
+                  int num_moments,
+                  int max_num_cell_dofs);
 
 protected:
   // operations

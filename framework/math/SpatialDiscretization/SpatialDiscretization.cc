@@ -8,10 +8,9 @@
 namespace chi_math
 {
 
-SpatialDiscretization::SpatialDiscretization(
-  const chi_mesh::MeshContinuum& grid,
-  CoordinateSystemType cs_type,
-  SDMType sdm_type)
+SpatialDiscretization::SpatialDiscretization(const chi_mesh::MeshContinuum& grid,
+                                             CoordinateSystemType cs_type,
+                                             SDMType sdm_type)
   : UNITARY_UNKNOWN_MANAGER({std::make_pair(chi_math::UnknownType::SCALAR, 0)}),
     ref_grid_(grid),
     coord_sys_type_(cs_type),
@@ -26,53 +25,58 @@ SpatialDiscretization::GetCellMapping(const chi_mesh::Cell& cell) const
                                      "GetCellMapping";
   try
   {
-    if (Grid().IsCellLocal(cell.global_id_))
-      return *cell_mappings_.at(cell.local_id_);
+    if (Grid().IsCellLocal(cell.global_id_)) return *cell_mappings_.at(cell.local_id_);
     else
       return *nb_cell_mappings_.at(cell.global_id_);
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range(std::string(fname) +
-                            ": Failed to obtain cell mapping.");
+    throw std::out_of_range(std::string(fname) + ": Failed to obtain cell mapping.");
   }
 }
 
-SpatialDiscretizationType SpatialDiscretization::Type() const { return type_; }
+SpatialDiscretizationType
+SpatialDiscretization::Type() const
+{
+  return type_;
+}
 
-const chi_mesh::MeshContinuum& SpatialDiscretization::Grid() const
+const chi_mesh::MeshContinuum&
+SpatialDiscretization::Grid() const
 {
   return ref_grid_;
 }
 
-CoordinateSystemType SpatialDiscretization::GetCoordinateSystemType() const
+CoordinateSystemType
+SpatialDiscretization::GetCoordinateSystemType() const
 {
   return coord_sys_type_;
 }
 
-size_t SpatialDiscretization::GetNumLocalDOFs(
-  const UnknownManager& unknown_manager) const
+size_t
+SpatialDiscretization::GetNumLocalDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
   return local_base_block_size_ * N;
 }
 
-size_t SpatialDiscretization::GetNumGlobalDOFs(
-  const UnknownManager& unknown_manager) const
+size_t
+SpatialDiscretization::GetNumGlobalDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
   return globl_base_block_size_ * N;
 }
 
-size_t SpatialDiscretization::GetNumLocalAndGhostDOFs(
-  const UnknownManager& unknown_manager) const
+size_t
+SpatialDiscretization::GetNumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const
 {
   return GetNumLocalDOFs(unknown_manager) + GetNumGhostDOFs(unknown_manager);
 }
 
-size_t SpatialDiscretization::GetCellNumNodes(const chi_mesh::Cell& cell) const
+size_t
+SpatialDiscretization::GetCellNumNodes(const chi_mesh::Cell& cell) const
 {
   return GetCellMapping(cell).NumNodes();
 }
@@ -84,8 +88,7 @@ SpatialDiscretization::GetCellNodeLocations(const chi_mesh::Cell& cell) const
 }
 
 std::pair<std::set<uint32_t>, std::set<uint32_t>>
-SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(
-  const chi_mesh::Cell& cell) const
+SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const chi_mesh::Cell& cell) const
 {
   const auto& cell_mapping = GetCellMapping(cell);
   const size_t num_faces = cell.faces_.size();
@@ -107,8 +110,7 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(
   //====================================== Determine non-boundary nodes
   std::set<uint32_t> internal_nodes;
   for (size_t i = 0; i < num_nodes; ++i)
-    if (boundary_nodes.find(i) == boundary_nodes.end())
-      internal_nodes.insert(i);
+    if (boundary_nodes.find(i) == boundary_nodes.end()) internal_nodes.insert(i);
 
   return {internal_nodes, boundary_nodes};
 }
@@ -194,8 +196,7 @@ chi_math::SpatialDiscretization::MakeInternalFaceNodeMappings(
               break;
             }
           } // for ai
-          if (face_adj_mapping[fi] < 0)
-            throw std::logic_error("Face node mapping failed");
+          if (face_adj_mapping[fi] < 0) throw std::logic_error("Face node mapping failed");
         } // for fi
       }   // if internal face
 
@@ -224,13 +225,13 @@ chi_math::SpatialDiscretization::MakeInternalFaceNodeMappings(
 \param to_vec_uk_structure Unknown manager for vector B.
 \param to_vec_uk_id Unknown-id in unknown manager B.
  */
-void SpatialDiscretization::CopyVectorWithUnknownScope(
-  const std::vector<double>& from_vector,
-  std::vector<double>& to_vector,
-  const UnknownManager& from_vec_uk_structure,
-  const unsigned int from_vec_uk_id,
-  const UnknownManager& to_vec_uk_structure,
-  const unsigned int to_vec_uk_id) const
+void
+SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& from_vector,
+                                                  std::vector<double>& to_vector,
+                                                  const UnknownManager& from_vec_uk_structure,
+                                                  const unsigned int from_vec_uk_id,
+                                                  const UnknownManager& to_vec_uk_structure,
+                                                  const unsigned int to_vec_uk_id) const
 {
   const std::string fname = "chi_math::SpatialDiscretization::"
                             "CopyVectorWithUnknownScope";
@@ -268,53 +269,51 @@ void SpatialDiscretization::CopyVectorWithUnknownScope(
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range(fname +
-                            ": either from_vec_uk_id or to_vec_uk_id is "
-                            "out of range for its respective "
-                            "unknown manager.");
+    throw std::out_of_range(fname + ": either from_vec_uk_id or to_vec_uk_id is "
+                                    "out of range for its respective "
+                                    "unknown manager.");
   }
 }
 
 // ###################################################################
 /**Develops a localized view of a petsc vector.*/
-void SpatialDiscretization::LocalizePETScVector(
-  Vec petsc_vector,
-  std::vector<double>& local_vector,
-  const chi_math::UnknownManager& unknown_manager) const
+void
+SpatialDiscretization::LocalizePETScVector(Vec petsc_vector,
+                                           std::vector<double>& local_vector,
+                                           const chi_math::UnknownManager& unknown_manager) const
 {
   size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
 
-  chi_math::PETScUtils::CopyVecToSTLvector(
-    petsc_vector, local_vector, num_local_dofs);
+  chi_math::PETScUtils::CopyVecToSTLvector(petsc_vector, local_vector, num_local_dofs);
 }
 
 // ###################################################################
 /**Develops a localized view of a petsc vector.*/
-void SpatialDiscretization::LocalizePETScVectorWithGhosts(
+void
+SpatialDiscretization::LocalizePETScVectorWithGhosts(
   Vec petsc_vector,
   std::vector<double>& local_vector,
   const chi_math::UnknownManager& unknown_manager) const
 {
   size_t num_local_dofs = GetNumLocalAndGhostDOFs(unknown_manager);
 
-  chi_math::PETScUtils::CopyVecToSTLvectorWithGhosts(
-    petsc_vector, local_vector, num_local_dofs);
+  chi_math::PETScUtils::CopyVecToSTLvectorWithGhosts(petsc_vector, local_vector, num_local_dofs);
 }
 
-double SpatialDiscretization::CartesianSpatialWeightFunction(
-  const chi_mesh::Vector3& point)
+double
+SpatialDiscretization::CartesianSpatialWeightFunction(const chi_mesh::Vector3& point)
 {
   return 1.0;
 }
 
-double SpatialDiscretization::CylindricalRZSpatialWeightFunction(
-  const chi_mesh::Vector3& point)
+double
+SpatialDiscretization::CylindricalRZSpatialWeightFunction(const chi_mesh::Vector3& point)
 {
   return 2.0 * M_PI * point[0];
 }
 
-double SpatialDiscretization::Spherical1DSpatialWeightFunction(
-  const chi_mesh::Vector3& point)
+double
+SpatialDiscretization::Spherical1DSpatialWeightFunction(const chi_mesh::Vector3& point)
 {
   const double r = point[2];
   return 4.0 * M_PI * r * r;

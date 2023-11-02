@@ -20,22 +20,22 @@ RegisterLuaFunctionAsIs(chiAdjointSolverApplyFluxMomentBuffer);
 
 \return handle int A handle that can be used with
                    `chiAdjointSolverApplyFluxMomentBuffer`.*/
-int chiAdjointSolverReadFluxMomentsToBuffer(lua_State* L)
+int
+chiAdjointSolverReadFluxMomentsToBuffer(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
 
-  const int solver_handle     = lua_tointeger(L, 1);
+  const int solver_handle = lua_tointeger(L, 1);
 
-  auto& solver = Chi::GetStackItem<lbs::DiscreteOrdinatesAdjointSolver>(
-    Chi::object_stack, solver_handle, fname);
+  auto& solver =
+    Chi::GetStackItem<lbs::DiscreteOrdinatesAdjointSolver>(Chi::object_stack, solver_handle, fname);
 
-  const std::string file_basename = lua_tostring(L,2);
+  const std::string file_basename = lua_tostring(L, 2);
 
   std::vector<double> moments;
   solver.ReadFluxMoments(file_basename, moments);
@@ -53,25 +53,24 @@ int chiAdjointSolverReadFluxMomentsToBuffer(lua_State* L)
 \param SolverHandle int Handle to the relevant solver.
 \param BufferHandle int The handle to the buffer-position to be applied.
  */
-int chiAdjointSolverApplyFluxMomentBuffer(lua_State* L)
+int
+chiAdjointSolverApplyFluxMomentBuffer(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
 
-  const int solver_handle     = lua_tointeger(L, 1);
+  const int solver_handle = lua_tointeger(L, 1);
 
-  auto& solver = Chi::GetStackItem<lbs::DiscreteOrdinatesAdjointSolver>(
-    Chi::object_stack, solver_handle, fname);
+  auto& solver =
+    Chi::GetStackItem<lbs::DiscreteOrdinatesAdjointSolver>(Chi::object_stack, solver_handle, fname);
 
-  const int buffer_handle = lua_tointeger(L,2);
+  const int buffer_handle = lua_tointeger(L, 2);
 
-  if (buffer_handle < 0 or
-      buffer_handle >= solver.m_moment_buffers_.size())
+  if (buffer_handle < 0 or buffer_handle >= solver.m_moment_buffers_.size())
     throw std::invalid_argument(fname + ": Invalid buffer handle.");
 
   solver.PhiOldLocal() = solver.m_moment_buffers_[buffer_handle];
@@ -79,4 +78,4 @@ int chiAdjointSolverApplyFluxMomentBuffer(lua_State* L)
   return 0;
 }
 
-}//namespace lbs::lua_utils
+} // namespace lbs::adjoint_lua_utils

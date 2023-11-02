@@ -26,6 +26,6 @@ public:
   void Advance() override;
 };
 
-}
+} // namespace lbs
 
 #endif // CHITECH_LBS_TRANSIENT_H

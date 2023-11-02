@@ -6,7 +6,8 @@
 /** This function sends the commands contained in the command_buffer to
 the lua state from where it is executed. These could be commands passed
  via the command line or loaded elsewhere.*/
-void chi::Console::FlushConsole()
+void
+chi::Console::FlushConsole()
 {
   try
   {
@@ -20,7 +21,7 @@ void chi::Console::FlushConsole()
       }
     }
   }
-  catch(const std::exception& e)
+  catch (const std::exception& e)
   {
     Chi::log.LogAllError() << e.what();
     Chi::Exit(EXIT_FAILURE);

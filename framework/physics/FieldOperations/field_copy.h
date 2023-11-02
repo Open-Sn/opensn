@@ -8,7 +8,7 @@ namespace chi_physics::field_operations
 {
 
 /**Field operaiton that copies components of one field to the
-* components of another.*/
+ * components of another.*/
 class FieldCopyOperation : public FieldOperation
 {
 private:
@@ -29,6 +29,6 @@ public:
   void Execute() override;
 };
 
-}
+} // namespace chi_physics::field_operations
 
 #endif // CHITECH_FIELD_COPY_H

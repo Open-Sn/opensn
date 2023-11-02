@@ -20,16 +20,12 @@ class LagrangeBaseMapping : public CellMapping
 {
 public:
   double ShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
-  void ShapeValues(const chi_mesh::Vector3& xyz,
-                   std::vector<double>& shape_values) const override;
-  chi_mesh::Vector3 GradShapeValue(int i,
-                                   const chi_mesh::Vector3& xyz) const override;
-  void GradShapeValues(
-    const chi_mesh::Vector3& xyz,
-    std::vector<chi_mesh::Vector3>& gradshape_values) const override;
+  void ShapeValues(const chi_mesh::Vector3& xyz, std::vector<double>& shape_values) const override;
+  chi_mesh::Vector3 GradShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
+  void GradShapeValues(const chi_mesh::Vector3& xyz,
+                       std::vector<chi_mesh::Vector3>& gradshape_values) const override;
 
-  finite_element::VolumetricQuadraturePointData
-  MakeVolumetricQuadraturePointData() const override;
+  finite_element::VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
 
   finite_element::SurfaceQuadraturePointData
   MakeSurfaceQuadraturePointData(size_t face_index) const override;
@@ -52,13 +48,11 @@ protected:
   Vec3 MapWorldXYZToNaturalXYZ(const Vec3& world_xyz) const;
 
   /**Used in the constructor this method simply collects the cell vertices.*/
-  static std::vector<chi_mesh::Vector3>
-  GetVertexLocations(const chi_mesh::MeshContinuum& grid,
-                     const chi_mesh::Cell& cell);
+  static std::vector<chi_mesh::Vector3> GetVertexLocations(const chi_mesh::MeshContinuum& grid,
+                                                           const chi_mesh::Cell& cell);
 
   /**Used in the constructor this method maps face node ids to cell ids.*/
-  static std::vector<std::vector<int>>
-  MakeFaceNodeMapping(const chi_mesh::Cell& cell);
+  static std::vector<std::vector<int>> MakeFaceNodeMapping(const chi_mesh::Cell& cell);
 
   /**Reference element shape function evaluation. Meant to be overridden by
    * a specific element mapping.*/
@@ -75,14 +69,12 @@ protected:
   /**Computes the determinant of the surface Jacobian and the surface normal
    * at the face quadrature point.*/
   virtual std::pair<double, Vec3>
-  RefFaceJacobianDeterminantAndNormal(size_t face_index,
-                                      const Vec3& qpoint_face) const;
+  RefFaceJacobianDeterminantAndNormal(size_t face_index, const Vec3& qpoint_face) const;
 
   /**Converts a face quadrature point to a reference element position allowing
    * the reuse of the reference element shape functions. Meant to be overridden
    * by a specific element mapping.*/
-  virtual Vec3 FaceToElementQPointConversion(size_t face_index,
-                                             const Vec3& qpoint_face) const = 0;
+  virtual Vec3 FaceToElementQPointConversion(size_t face_index, const Vec3& qpoint_face) const = 0;
 
   /**Overrideable method to return the appropriate face quadrature. Default
    * returns surface_quadrature. Some mappings might change quadrature based
@@ -99,8 +91,7 @@ class WorldXYZToNaturalMappingHelper : public NonLinearFunction
 {
 public:
   typedef chi_mesh::Vector3 Vec3;
-  WorldXYZToNaturalMappingHelper(
-    const LagrangeBaseMapping& cell_mapping, const Vec3& world_x);
+  WorldXYZToNaturalMappingHelper(const LagrangeBaseMapping& cell_mapping, const Vec3& world_x);
 
   VecDbl F(const VecDbl& x) const override;
   MatDbl J(const VecDbl& x) const override;

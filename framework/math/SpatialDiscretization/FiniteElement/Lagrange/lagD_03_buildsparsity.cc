@@ -10,10 +10,10 @@ namespace chi_math::spatial_discretization
 
 // ###################################################################
 /**Builds the sparsity pattern for a Discontinuous Finite Element Method.*/
-void LagrangeDiscontinuous::BuildSparsityPattern(
-  std::vector<int64_t>& nodal_nnz_in_diag,
-  std::vector<int64_t>& nodal_nnz_off_diag,
-  const chi_math::UnknownManager& unknown_manager) const
+void
+LagrangeDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
+                                            std::vector<int64_t>& nodal_nnz_off_diag,
+                                            const chi_math::UnknownManager& unknown_manager) const
 {
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOCAL CONNECTIVITY
   size_t local_dof_count = local_base_block_size_;
@@ -48,8 +48,7 @@ void LagrangeDiscontinuous::BuildSparsityPattern(
         for (int i = 0; i < num_nodes; ++i)
         {
           int64_t ir = cell_local_block_address_[lc] + i;
-          nodal_nnz_in_diag[ir] +=
-            static_cast<int64_t>(adj_cell_mapping.NumNodes());
+          nodal_nnz_in_diag[ir] += static_cast<int64_t>(adj_cell_mapping.NumNodes());
         }
       }
     } // for face
@@ -73,8 +72,7 @@ void LagrangeDiscontinuous::BuildSparsityPattern(
         for (int i = 0; i < cell_mapping.NumNodes(); ++i)
         {
           int64_t ir = cell_local_block_address_[lc] + i;
-          nodal_nnz_off_diag[ir] +=
-            static_cast<int64_t>(adj_cell_mapping.NumNodes());
+          nodal_nnz_off_diag[ir] += static_cast<int64_t>(adj_cell_mapping.NumNodes());
         }
       }
     }
@@ -107,8 +105,7 @@ void LagrangeDiscontinuous::BuildSparsityPattern(
       } // for j
     }   // for i
   }
-  else if (unknown_manager.dof_storage_type_ ==
-           chi_math::UnknownStorageType::BLOCK)
+  else if (unknown_manager.dof_storage_type_ == chi_math::UnknownStorageType::BLOCK)
   {
     int ir = -1;
     for (int j = 0; j < N; ++j)

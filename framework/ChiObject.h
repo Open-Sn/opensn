@@ -2,7 +2,7 @@
 #define CHITECH_CHIOBJECT_H
 
 #include "chi_runtime.h"
-#include"parameters/input_parameters.h"
+#include "parameters/input_parameters.h"
 
 class ChiObject
 {
@@ -11,7 +11,7 @@ private:
 
 public:
   /**Returns the input parameters. For the base ChiObject, there
-  * are now parameters loaded.*/
+   * are now parameters loaded.*/
   static chi::InputParameters GetInputParameters();
 
   /**Default constructor. This will be removed in future.*/
@@ -31,8 +31,8 @@ public:
   size_t StackID() const;
 
   /**An overridable callback that is called by the ObjectMaker and by default
-  * adds the object onto the object stack. This function can be used to
-  * place the object on a different stack.*/
+   * adds the object onto the object stack. This function can be used to
+   * place the object on a different stack.*/
   virtual void PushOntoStack(std::shared_ptr<ChiObject>& new_object);
 
   virtual ~ChiObject() = default;

@@ -14,9 +14,9 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   const chi_math::QuadratureTriangle& volume_quadrature,
   const chi_math::QuadratureLine& surface_quadrature)
   : PieceWiseLinearBaseMapping(ref_grid,
-                        poly_cell,
-                        poly_cell.vertex_ids_.size(), // num_nodes
-                        MakeFaceNodeMapping(poly_cell)),
+                               poly_cell,
+                               poly_cell.vertex_ids_.size(), // num_nodes
+                               MakeFaceNodeMapping(poly_cell)),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature)
 {

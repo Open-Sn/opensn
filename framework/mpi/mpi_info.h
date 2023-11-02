@@ -14,6 +14,7 @@ namespace chi
 class MPI_Info
 {
   friend class ::Chi;
+
 private:
   MPI_Comm communicator_ = MPI_COMM_WORLD;
   int location_id_ = 0;
@@ -25,7 +26,7 @@ private:
 public:
   const int& location_id = location_id_;     ///< Current process rank.
   const int& process_count = process_count_; ///< Total number of processes.
-  const MPI_Comm& comm = communicator_; ///< MPI communicator
+  const MPI_Comm& comm = communicator_;      ///< MPI communicator
 
 private:
   MPI_Info() = default;
@@ -34,8 +35,8 @@ public:
   static MPI_Info& GetInstance() noexcept;
 
 public:
-  MPI_Info(const MPI_Info&) = delete;           //Deleted copy constructor
-  MPI_Info operator=(const MPI_Info&) = delete; //Deleted assigment operator
+  MPI_Info(const MPI_Info&) = delete;           // Deleted copy constructor
+  MPI_Info operator=(const MPI_Info&) = delete; // Deleted assigment operator
 
 protected:
   /**Sets the active communicator*/
@@ -49,9 +50,8 @@ public:
   /**Calls the generic `MPI_Barrier` with the current communicator.*/
   void Barrier() const;
   static void Call(int mpi_error_code);
-
 };
 
-}//namespace chi_objects
+} // namespace chi
 
-#endif //CHITECH_MPI_INFO_H
+#endif // CHITECH_MPI_INFO_H

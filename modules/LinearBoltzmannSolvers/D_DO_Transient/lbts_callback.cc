@@ -6,7 +6,8 @@
 /**Provides a callback interface to lua after each timestep. Users,
  * can setup all sorts of controls like adaptive timestepping and
  * outputs.*/
-void lbs::DiscOrdTransientSolver::PostStepCallBackFunction() const
+void
+lbs::DiscOrdTransientSolver::PostStepCallBackFunction() const
 {
   const std::string fname = "lbs::TransientSolver::PostStepCallBackFunction";
 
@@ -20,22 +21,20 @@ void lbs::DiscOrdTransientSolver::PostStepCallBackFunction() const
 
   //============= Error check lua function
   if (not lua_isfunction(L, -1))
-    throw std::logic_error(fname + " attempted to access lua-function, " +
-                           lua_func_name + ", but it seems the function"
-                                           " could not be retrieved.");
+    throw std::logic_error(fname + " attempted to access lua-function, " + lua_func_name +
+                           ", but it seems the function"
+                           " could not be retrieved.");
 
   //============= Push arguments
-  //There are no arguments
+  // There are no arguments
 
   //============= Call lua function
-  //0 arguments, 0 result (double), 0=original error object
+  // 0 arguments, 0 result (double), 0=original error object
   double lua_return;
-  if (lua_pcall(L,0,0,0) == 0)
-  {
-  }
+  if (lua_pcall(L, 0, 0, 0) == 0) {}
   else
-    throw std::logic_error(fname + " attempted to call lua-function, " +
-                           lua_func_name + ", but the call failed.");
+    throw std::logic_error(fname + " attempted to call lua-function, " + lua_func_name +
+                           ", but the call failed.");
 
-//  lua_pop(L,1); //pop the double, or error code
+  //  lua_pop(L,1); //pop the double, or error code
 }

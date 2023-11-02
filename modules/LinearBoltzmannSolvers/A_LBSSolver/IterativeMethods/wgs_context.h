@@ -9,19 +9,18 @@
 
 namespace lbs
 {
-  class LBSGroupset;
-  class LBSSolver;
-}
+class LBSGroupset;
+class LBSSolver;
+} // namespace lbs
 
-typedef std::function<void(lbs::LBSGroupset&,
-                           std::vector<double>&,
-                           const std::vector<double>&,
-                           int)> SetSourceFunction;
+typedef std::function<void(
+  lbs::LBSGroupset&, std::vector<double>&, const std::vector<double>&, int)>
+  SetSourceFunction;
 
 namespace lbs
 {
 
-template<class MatType, class VecType, class SolverType>
+template <class MatType, class VecType, class SolverType>
 struct WGSContext : public chi_math::LinearSolverContext<MatType, VecType>
 {
   LBSSolver& lbs_solver_;
@@ -35,28 +34,26 @@ struct WGSContext : public chi_math::LinearSolverContext<MatType, VecType>
   WGSContext(LBSSolver& lbs_solver,
              LBSGroupset& groupset,
              const SetSourceFunction& set_source_function,
-             int lhs_scope, int rhs_scope,
-             bool log_info) :
-            lbs_solver_(lbs_solver),
-            groupset_(groupset),
-            set_source_function_(set_source_function),
-            lhs_src_scope_(lhs_scope),
-            rhs_src_scope_(rhs_scope),
-            log_info_(log_info)
+             int lhs_scope,
+             int rhs_scope,
+             bool log_info)
+    : lbs_solver_(lbs_solver),
+      groupset_(groupset),
+      set_source_function_(set_source_function),
+      lhs_src_scope_(lhs_scope),
+      rhs_src_scope_(rhs_scope),
+      log_info_(log_info)
   {
-    this->residual_scale_type =
-      chi_math::ResidualScaleType::RHS_PRECONDITIONED_NORM;
+    this->residual_scale_type = chi_math::ResidualScaleType::RHS_PRECONDITIONED_NORM;
   }
 
-  virtual void PreSetupCallback() {};
-  virtual void SetPreconditioner(SolverType& solver) {};
-  virtual void PostSetupCallback() {};
+  virtual void PreSetupCallback(){};
+  virtual void SetPreconditioner(SolverType& solver){};
+  virtual void PostSetupCallback(){};
 
-  virtual void PreSolveCallback() {};
+  virtual void PreSolveCallback(){};
 
-  int MatrixAction(MatType& matrix,
-                   VecType& action_vector,
-                   VecType& action) override;
+  int MatrixAction(MatType& matrix, VecType& action_vector, VecType& action) override;
 
   virtual std::pair<int64_t, int64_t> SystemSize() = 0;
 
@@ -65,9 +62,9 @@ struct WGSContext : public chi_math::LinearSolverContext<MatType, VecType>
    * q_moments_local vextor.*/
   virtual void ApplyInverseTransportOperator(int scope) = 0;
 
-  virtual void PostSolveCallback() {};
+  virtual void PostSolveCallback(){};
 };
 
-}//namespace lbs
+} // namespace lbs
 
-#endif //CHITECH_WGS_CONTEXT_H
+#endif // CHITECH_WGS_CONTEXT_H

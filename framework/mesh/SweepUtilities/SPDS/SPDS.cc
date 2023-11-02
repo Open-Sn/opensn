@@ -13,7 +13,8 @@
 
 // ###################################################################
 /** Given a location J index, maps to a predecessor location.*/
-int chi_mesh::sweep_management::SPDS::MapLocJToPrelocI(int locJ) const
+int
+chi_mesh::sweep_management::SPDS::MapLocJToPrelocI(int locJ) const
 {
   for (int i = 0; i < location_dependencies_.size(); i++)
   {
@@ -25,30 +26,30 @@ int chi_mesh::sweep_management::SPDS::MapLocJToPrelocI(int locJ) const
     if (delayed_location_dependencies_[i] == locJ) { return -(i + 1); }
   }
 
-  Chi::log.LogAllError()
-    << "SPDS Invalid mapping encountered in MapLocJToPrelocI.";
+  Chi::log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToPrelocI.";
   Chi::Exit(EXIT_FAILURE);
   return 0;
 }
 
 // ###################################################################
 /** Given a location J index, maps to a dependent location.*/
-int chi_mesh::sweep_management::SPDS::MapLocJToDeplocI(int locJ) const
+int
+chi_mesh::sweep_management::SPDS::MapLocJToDeplocI(int locJ) const
 {
   for (int i = 0; i < location_successors_.size(); i++)
   {
     if (location_successors_[i] == locJ) { return i; }
   }
 
-  Chi::log.LogAllError()
-    << "SPDS Invalid mapping encountered in MapLocJToDeplocI.";
+  Chi::log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToDeplocI.";
   Chi::Exit(EXIT_FAILURE);
   return 0;
 }
 
 // ###################################################################
 /**Populates cell relationships*/
-void chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
+void
+chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
   const chi_mesh::Vector3& omega,
   std::set<int>& location_dependencies,
   std::set<int>& location_successors,
@@ -62,8 +63,7 @@ void chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
 
   cell_face_orientations_.assign(grid_.local_cells.size(), {});
   for (auto& cell : grid_.local_cells)
-    cell_face_orientations_[cell.local_id_].assign(cell.faces_.size(),
-                                                   FOPARALLEL);
+    cell_face_orientations_[cell.local_id_].assign(cell.faces_.size(), FOPARALLEL);
 
   for (auto& cell : grid_.local_cells)
   {
@@ -76,8 +76,7 @@ void chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
       const double mu = omega.Dot(face.normal_);
 
       bool owns_face = true;
-      if (face.has_neighbor_ and cell.global_id_ > face.neighbor_id_)
-        owns_face = false;
+      if (face.has_neighbor_ and cell.global_id_ > face.neighbor_id_) owns_face = false;
 
       if (owns_face)
       {
@@ -153,8 +152,7 @@ void chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
           if (face.IsNeighborLocal(grid_))
           {
             double weight = mu * face.ComputeFaceArea(grid_);
-            cell_successors[c].insert(
-              std::make_pair(face.GetNeighborLocalID(grid_), weight));
+            cell_successors[c].insert(std::make_pair(face.GetNeighborLocalID(grid_), weight));
           }
           else
             location_successors.insert(face.GetNeighborPartitionID(grid_));
@@ -173,10 +171,9 @@ void chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
   }   // for cell
 }
 
-
-
 // ###################################################################
-void chi_mesh::sweep_management::SPDS::PrintedGhostedGraph() const
+void
+chi_mesh::sweep_management::SPDS::PrintedGhostedGraph() const
 {
   constexpr double tolerance = 1.0e-16;
 
@@ -213,11 +210,9 @@ void chi_mesh::sweep_management::SPDS::PrintedGhostedGraph() const
           if (face.has_neighbor_ and (cell.global_id_ > face.neighbor_id_))
           {
             if (omega_.Dot(face.normal_) > tolerance)
-              std::cout << "  " << cell.global_id_ << " -> "
-                        << face.neighbor_id_ << "\n";
+              std::cout << "  " << cell.global_id_ << " -> " << face.neighbor_id_ << "\n";
             else if (omega_.Dot(face.normal_) < tolerance)
-              std::cout << "  " << face.neighbor_id_ << " -> "
-                        << cell.global_id_ << "\n";
+              std::cout << "  " << face.neighbor_id_ << " -> " << cell.global_id_ << "\n";
           } // if outgoing
         }
       }
@@ -232,11 +227,9 @@ void chi_mesh::sweep_management::SPDS::PrintedGhostedGraph() const
               grid_.IsCellLocal(face.neighbor_id_))
           {
             if (omega_.Dot(face.normal_) > tolerance)
-              std::cout << "  " << cell.global_id_ << " -> "
-                        << face.neighbor_id_ << "\n";
+              std::cout << "  " << cell.global_id_ << " -> " << face.neighbor_id_ << "\n";
             else if (omega_.Dot(face.normal_) < tolerance)
-              std::cout << "  " << face.neighbor_id_ << " -> "
-                        << cell.global_id_ << "\n";
+              std::cout << "  " << face.neighbor_id_ << " -> " << cell.global_id_ << "\n";
           } // if outgoing
         }
       }

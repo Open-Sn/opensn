@@ -19,6 +19,6 @@ public:
   bool Inside(const chi_mesh::Vector3& point) const override;
 };
 
-}
+} // namespace chi_mesh
 
 #endif // CHITECH_BOOLEANLOGICALVOLUME_H

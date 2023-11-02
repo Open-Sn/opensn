@@ -19,11 +19,9 @@ TranslateBCs(const std::map<uint64_t, SwpBndryPtr>& sweep_boundaries,
   std::map<uint64_t, BC> bcs;
   for (auto& [bid, lbs_bndry] : sweep_boundaries)
   {
-    if (lbs_bndry->Type() == SwpBndryType::REFLECTING)
-      bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
+    if (lbs_bndry->Type() == SwpBndryType::REFLECTING) bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
     else if (lbs_bndry->Type() == SwpBndryType::INCIDENT_VACCUUM)
-      if (vaccum_bcs_are_dirichlet)
-        bcs[bid] = {BCType::DIRICHLET, {0.0, 0.0, 0.0}};
+      if (vaccum_bcs_are_dirichlet) bcs[bid] = {BCType::DIRICHLET, {0.0, 0.0, 0.0}};
       else
         bcs[bid] = {BCType::ROBIN, {0.25, 0.5}};
     else // dirichlet
@@ -39,8 +37,7 @@ PackGroupsetXS(const std::map<int, MGXSPtr>& matid_to_xs_map,
                int last_group_index)
 {
   const int num_gs_groups = last_group_index - first_grp_index + 1;
-  ChiInvalidArgumentIf(num_gs_groups < 0,
-                       "last_grp_index must be >= first_grp_index");
+  ChiInvalidArgumentIf(num_gs_groups < 0, "last_grp_index must be >= first_grp_index");
 
   typedef lbs::acceleration::Multigroup_D_and_sigR MGXS;
   typedef std::map<int, lbs::acceleration::Multigroup_D_and_sigR> MatID2XSMap;

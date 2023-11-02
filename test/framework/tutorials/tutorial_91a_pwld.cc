@@ -21,8 +21,7 @@
 namespace chi_unit_sim_tests
 {
 
-chi::ParameterBlock
-chiSimTest91_PWLD(const chi::InputParameters&);
+chi::ParameterBlock chiSimTest91_PWLD(const chi::InputParameters&);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*name_in_lua=*/chiSimTest91_PWLD,
@@ -37,8 +36,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
 
   Chi::log.Log() << "chiSimTest91_PWLD num_args = " << 0;
 
-  if (Chi::mpi.process_count != 1)
-    throw std::logic_error(fname + ": Is serial only.");
+  if (Chi::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
 
   //============================================= Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
@@ -78,8 +76,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
 
   //============================================= Make an angular quadrature
   std::shared_ptr<chi_math::AngularQuadrature> quadrature;
-  if (dimension == 1)
-    quadrature = std::make_shared<chi_math::AngularQuadratureProdGL>(8);
+  if (dimension == 1) quadrature = std::make_shared<chi_math::AngularQuadratureProdGL>(8);
   else if (dimension == 2)
   {
     quadrature = std::make_shared<chi_math::AngularQuadratureProdGLC>(8, 8);
@@ -144,8 +141,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    if (cc.x < 0.5 and cc.y < 0.5 and cc.z < 0.5 and cc.x > -0.5 and
-        cc.y > -0.5 and cc.z > -0.5)
+    if (cc.x < 0.5 and cc.y < 0.5 and cc.z < 0.5 and cc.x > -0.5 and cc.y > -0.5 and cc.z > -0.5)
     {
       for (size_t i = 0; i < num_nodes; ++i)
       {
@@ -174,21 +170,18 @@ chiSimTest91_PWLD(const chi::InputParameters&)
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto vol_qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
 
-    MatVec3 IntV_shapeI_gradshapeJ(num_nodes,
-                                   VecVec3(num_nodes, Vec3(0, 0, 0)));
+    MatVec3 IntV_shapeI_gradshapeJ(num_nodes, VecVec3(num_nodes, Vec3(0, 0, 0)));
     MatDbl IntV_shapeI_shapeJ(num_nodes, VecDbl(num_nodes, 0.0));
 
     for (unsigned int i = 0; i < num_nodes; ++i)
       for (unsigned int j = 0; j < num_nodes; ++j)
         for (const auto& qp : vol_qp_data.QuadraturePointIndices())
         {
-          IntV_shapeI_gradshapeJ[i][j] += vol_qp_data.ShapeValue(i, qp) *
-                                          vol_qp_data.ShapeGrad(j, qp) *
-                                          vol_qp_data.JxW(qp);
+          IntV_shapeI_gradshapeJ[i][j] +=
+            vol_qp_data.ShapeValue(i, qp) * vol_qp_data.ShapeGrad(j, qp) * vol_qp_data.JxW(qp);
 
-          IntV_shapeI_shapeJ[i][j] += vol_qp_data.ShapeValue(i, qp) *
-                                      vol_qp_data.ShapeValue(j, qp) *
-                                      vol_qp_data.JxW(qp);
+          IntV_shapeI_shapeJ[i][j] +=
+            vol_qp_data.ShapeValue(i, qp) * vol_qp_data.ShapeValue(j, qp) * vol_qp_data.JxW(qp);
         } // for qp
 
     cell_Gmatrices.push_back(std::move(IntV_shapeI_gradshapeJ));
@@ -204,8 +197,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
         for (unsigned int j = 0; j < num_nodes; ++j)
           for (const auto& qp : face_qp_data.QuadraturePointIndices())
             IntS_shapeI_shapeJ[i][j] += face_qp_data.ShapeValue(i, qp) *
-                                        face_qp_data.ShapeValue(j, qp) *
-                                        face_qp_data.JxW(qp);
+                                        face_qp_data.ShapeValue(j, qp) * face_qp_data.JxW(qp);
 
       faces_Mmatrices.push_back(std::move(IntS_shapeI_shapeJ));
     } // for face f
@@ -217,29 +209,28 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   Chi::log.Log() << "End cell matrices." << std::endl;
 
   //============================================= Make Grid internal face
-  //mapping
+  // mapping
   const auto cell_adj_mapping = sdm.MakeInternalFaceNodeMappings();
 
   //============================================= Define sweep chunk
-  auto SweepChunk =
-    [&ijk_mapping,
-     &grid,
-     &sdm,
-     &num_moments,
-     &phi_uk_man,
-     &psi_uk_man,
-     &m2d,
-     &d2m,
-     &phi_new,
-     &source_moments,
-     &psi_old,
-     &cell_Gmatrices,
-     &cell_Mmatrices,
-     &cell_faceMmatrices,
-     &cell_adj_mapping](const std::array<int64_t, 3>& ijk,
-                        const Vec3& omega,
-                        const size_t d,
-                        const chi_physics::SingleStateMGXS& cell_xs)
+  auto SweepChunk = [&ijk_mapping,
+                     &grid,
+                     &sdm,
+                     &num_moments,
+                     &phi_uk_man,
+                     &psi_uk_man,
+                     &m2d,
+                     &d2m,
+                     &phi_new,
+                     &source_moments,
+                     &psi_old,
+                     &cell_Gmatrices,
+                     &cell_Mmatrices,
+                     &cell_faceMmatrices,
+                     &cell_adj_mapping](const std::array<int64_t, 3>& ijk,
+                                        const Vec3& omega,
+                                        const size_t d,
+                                        const chi_physics::SingleStateMGXS& cell_xs)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
     const auto& cell = grid.cells[cell_global_id];
@@ -284,8 +275,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
             {
               const auto& adj_cell = grid.cells[face.neighbor_id_];
               const int aj = cell_adj_mapping[cell.local_id_][f][fj];
-              const int64_t ajmap =
-                sdm.MapDOFLocal(adj_cell, aj, psi_uk_man, d, 0);
+              const int64_t ajmap = sdm.MapDOFLocal(adj_cell, aj, psi_uk_man, d, 0);
               upwind_psi = &psi_old[ajmap];
             }
 
@@ -425,9 +415,9 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   };
 
   //============================================= Define L-infinite-norm
-  auto ComputeRelativePWChange = [&grid, &sdm, &num_moments, &phi_uk_man](
-                                   const std::vector<double>& in_phi_new,
-                                   const std::vector<double>& in_phi_old)
+  auto ComputeRelativePWChange =
+    [&grid, &sdm, &num_moments, &phi_uk_man](const std::vector<double>& in_phi_new,
+                                             const std::vector<double>& in_phi_old)
   {
     double pw_change = 0.0;
 
@@ -455,8 +445,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
             const double abs_phi_new_g_m0 = std::fabs(phi_new_m0[g]);
             const double abs_phi_old_g_m0 = std::fabs(phi_old_m0[g]);
 
-            const double max_denominator =
-              std::max(abs_phi_new_g_m0, abs_phi_old_g_m0);
+            const double max_denominator = std::max(abs_phi_new_g_m0, abs_phi_old_g_m0);
 
             const double delta_phi = std::fabs(phi_new_m[g] - phi_old_m[g]);
 
@@ -502,16 +491,16 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   std::vector<std::shared_ptr<chi_physics::FieldFunctionGridBased>> ff_list;
 
   ff_list.push_back(std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",   // Text name
-    sdm_ptr, // Spatial Discr.
+    "Phi",                                                         // Text name
+    sdm_ptr,                                                       // Spatial Discr.
     chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups) // Unknown
     ));
 
   const std::vector<std::string> dim_strings = {"x", "y", "z"};
   for (const std::string& dim : dim_strings)
     ff_list.push_back(std::make_shared<chi_physics::FieldFunctionGridBased>(
-      "J-" + dim, // Text name
-      sdm_ptr,    // Spatial Discr.
+      "J-" + dim,                                                    // Text name
+      sdm_ptr,                                                       // Spatial Discr.
       chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups) // Unknown
       ));
 
@@ -541,12 +530,9 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   if (dimension == 2 and num_moments >= 3) j_map = {2, 1, 0};
   if (dimension == 3 and num_moments >= 4) j_map = {3, 1, 2};
 
-  sdm.CopyVectorWithUnknownScope(
-    phi_old, mx_phi, phi_uk_man, j_map[0], m0_uk_man, 0);
-  sdm.CopyVectorWithUnknownScope(
-    phi_old, my_phi, phi_uk_man, j_map[1], m0_uk_man, 0);
-  sdm.CopyVectorWithUnknownScope(
-    phi_old, mz_phi, phi_uk_man, j_map[2], m0_uk_man, 0);
+  sdm.CopyVectorWithUnknownScope(phi_old, mx_phi, phi_uk_man, j_map[0], m0_uk_man, 0);
+  sdm.CopyVectorWithUnknownScope(phi_old, my_phi, phi_uk_man, j_map[1], m0_uk_man, 0);
+  sdm.CopyVectorWithUnknownScope(phi_old, mz_phi, phi_uk_man, j_map[2], m0_uk_man, 0);
 
   ff_list[1]->UpdateFieldVector(mx_phi);
   ff_list[2]->UpdateFieldVector(my_phi);
@@ -556,8 +542,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   chi_physics::FieldFunctionGridBased::FFList const_ff_list;
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("SimTest_91a_PWLD",
-                                                           const_ff_list);
+  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("SimTest_91a_PWLD", const_ff_list);
 
   return chi::ParameterBlock();
 }

@@ -12,15 +12,15 @@ namespace chi
 
 RegisterChiObject(chi, PETScGraphPartitioner);
 
-InputParameters PETScGraphPartitioner::GetInputParameters()
+InputParameters
+PETScGraphPartitioner::GetInputParameters()
 {
   InputParameters params = GraphPartitioner::GetInputParameters();
 
   params.SetGeneralDescription("PETSc based partitioning");
   params.SetDocGroup("Graphs");
 
-  params.AddOptionalParameter(
-    "type", "parmetis", "The type of PETSc partitioner");
+  params.AddOptionalParameter("type", "parmetis", "The type of PETSc partitioner");
 
   return params;
 }
@@ -30,10 +30,10 @@ PETScGraphPartitioner::PETScGraphPartitioner(const InputParameters& params)
 {
 }
 
-std::vector<int64_t> PETScGraphPartitioner::Partition(
-  const std::vector<std::vector<uint64_t>>& graph,
-  const std::vector<chi_mesh::Vector3>&,
-  int number_of_parts)
+std::vector<int64_t>
+PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
+                                 const std::vector<chi_mesh::Vector3>&,
+                                 int number_of_parts)
 {
   Chi::log.Log0Verbose1() << "Partitioning with PETScGraphPartitioner";
   //================================================== Determine avg num faces
@@ -43,8 +43,8 @@ std::vector<int64_t> PETScGraphPartitioner::Partition(
   size_t num_raw_faces = 0;
   for (auto& cell_row : graph)
     num_raw_faces += cell_row.size();
-  size_t avg_num_face_per_cell = std::ceil(static_cast<double>(num_raw_faces) /
-                                           static_cast<double>(num_raw_cells));
+  size_t avg_num_face_per_cell =
+    std::ceil(static_cast<double>(num_raw_faces) / static_cast<double>(num_raw_cells));
 
   //================================================== Start building indices
   std::vector<int64_t> cell_pids(num_raw_cells, 0);

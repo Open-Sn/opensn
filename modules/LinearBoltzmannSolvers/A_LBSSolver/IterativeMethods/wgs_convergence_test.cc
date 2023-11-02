@@ -15,12 +15,12 @@ namespace lbs
 
 //###################################################################
 /**Customized convergence test.*/
-PetscErrorCode GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm,
-                                 KSPConvergedReason* convergedReason, void*)
+PetscErrorCode
+GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
 {
   //======================================== Get data context
   WGSContext<Mat, Vec, KSP>* context;
-  KSPGetApplicationContext(ksp,&context);
+  KSPGetApplicationContext(ksp, &context);
 
   //======================================== Set rhs norm
   double residual_scale = 1.0;
@@ -30,23 +30,22 @@ PetscErrorCode GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm,
       residual_scale = 1.0;
       break;
     case chi_math::ResidualScaleType::RHS_NORM:
-      if (context->rhs_norm > 1.0e-25)
-        residual_scale = 1.0/context->rhs_norm;
+      if (context->rhs_norm > 1.0e-25) residual_scale = 1.0 / context->rhs_norm;
       break;
     case chi_math::ResidualScaleType::RHS_PRECONDITIONED_NORM:
       if (context->rhs_preconditioned_norm > 1.0e-25)
-        residual_scale = 1.0/context->rhs_preconditioned_norm;
+        residual_scale = 1.0 / context->rhs_preconditioned_norm;
       break;
     case chi_math::ResidualScaleType::CUSTOM_SCALE:
       if (context->custom_residual_scale > 1.0e-25)
-        residual_scale = 1.0/context->custom_residual_scale;
+        residual_scale = 1.0 / context->custom_residual_scale;
       break;
   }
 
   //======================================== Compute test criterion
   double tol;
-  int64_t    maxIts;
-  KSPGetTolerances(ksp, nullptr,&tol, nullptr,&maxIts);
+  int64_t maxIts;
+  KSPGetTolerances(ksp, nullptr, &tol, nullptr, &maxIts);
 
   double scaled_residual = rnorm * residual_scale;
 
@@ -56,16 +55,11 @@ PetscErrorCode GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm,
     offset = std::string("    ");
 
   std::stringstream iter_info;
-  iter_info
-    << Chi::program_timer.GetTimeString() << " "
-    << offset
-    << "WGS groups ["
-    << context->groupset_.groups_.front().id_
-    << "-"
-    << context->groupset_.groups_.back().id_
-    << "]"
-    << " Iteration " << std::setw(5) << n
-    << " Residual " << std::setw(9) << scaled_residual;
+  iter_info << Chi::program_timer.GetTimeString() << " " << offset << "WGS groups ["
+            << context->groupset_.groups_.front().id_ << "-"
+            << context->groupset_.groups_.back().id_ << "]"
+            << " Iteration " << std::setw(5) << n << " Residual " << std::setw(9)
+            << scaled_residual;
 
   if (scaled_residual < tol)
   {
@@ -78,4 +72,4 @@ PetscErrorCode GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm,
   return KSP_CONVERGED_ITERATING;
 }
 
-}//namespace lbs
+} // namespace lbs

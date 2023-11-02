@@ -3,7 +3,6 @@
 namespace lbs::acceleration
 {
 
-PetscErrorCode
-  NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx);
+PetscErrorCode NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx);
 
-}//namespace lbs::acceleration
+} // namespace lbs::acceleration

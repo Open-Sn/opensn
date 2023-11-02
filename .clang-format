@@ -8,7 +8,7 @@ AlwaysBreakTemplateDeclarations: 'Yes'
 BinPackArguments: 'false'
 BinPackParameters: 'false'
 BreakBeforeBraces: Allman
-ColumnLimit: '80'
+ColumnLimit: '100'
 CommentPragmas: ''' ?[\\@][a-zA-Z].*$'''
 ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
 ConstructorInitializerIndentWidth: '2'
@@ -22,5 +22,7 @@ SpaceBeforeParens: ControlStatements
 SpacesBeforeTrailingComments: '1'
 TabWidth: '2'
 UseTab: Never
+AlwaysBreakAfterReturnType: TopLevelDefinitions
+AllowShortFunctionsOnASingleLine: InlineOnly
 
 ...

@@ -27,12 +27,10 @@ public:
                              std::vector<std::vector<int>> face_node_mappings);
 
 protected:
-  static std::vector<chi_mesh::Vector3>
-  GetVertexLocations(const chi_mesh::MeshContinuum& grid,
-                     const chi_mesh::Cell& cell);
+  static std::vector<chi_mesh::Vector3> GetVertexLocations(const chi_mesh::MeshContinuum& grid,
+                                                           const chi_mesh::Cell& cell);
 
-  static std::vector<std::vector<int>>
-  MakeFaceNodeMapping(const chi_mesh::Cell& cell);
+  static std::vector<std::vector<int>> MakeFaceNodeMapping(const chi_mesh::Cell& cell);
 };
 
 } // namespace chi_math::cell_mapping

@@ -13,19 +13,15 @@ public:
                          const chi_mesh::MeshContinuum& grid,
                          bool cycle_allowance_flag,
                          bool verbose);
-  const std::vector<STDG>& GetGlobalSweepPlanes() const
-  {
-    return global_sweep_planes_;
-  }
+  const std::vector<STDG>& GetGlobalSweepPlanes() const { return global_sweep_planes_; }
 
 private:
-  void BuildTaskDependencyGraph(
-    const std::vector<std::vector<int>>& global_dependencies,
-    bool cycle_allowance_flag);
+  void BuildTaskDependencyGraph(const std::vector<std::vector<int>>& global_dependencies,
+                                bool cycle_allowance_flag);
 
   std::vector<STDG> global_sweep_planes_; ///< Processor sweep planes
 };
 
-}
+} // namespace chi_mesh::sweep_management
 
 #endif // CHITECH_SPDS_ADAMSADAMSHAWKINS_H

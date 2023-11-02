@@ -18,8 +18,7 @@
  *    of interest.
  *  - OP_VOLUME_SUM. Obtains the volume integral of the field function
  *    of interest.*/
-class chi_mesh::FieldFunctionInterpolationVolume :
-  public chi_mesh::FieldFunctionInterpolation
+class chi_mesh::FieldFunctionInterpolationVolume : public chi_mesh::FieldFunctionInterpolation
 {
 protected:
   std::shared_ptr<chi_mesh::LogicalVolume> logical_volume_ = nullptr;
@@ -31,30 +30,25 @@ private:
   std::vector<uint64_t> cell_local_ids_inside_logvol_;
 
 public:
-  FieldFunctionInterpolationVolume() :
-    FieldFunctionInterpolation(ff_interpolation::Type::VOLUME)
-  {  }
-  std::shared_ptr<chi_mesh::LogicalVolume>&
-  GetLogicalVolume() {return logical_volume_;}
+  FieldFunctionInterpolationVolume() : FieldFunctionInterpolation(ff_interpolation::Type::VOLUME) {}
+  std::shared_ptr<chi_mesh::LogicalVolume>& GetLogicalVolume() { return logical_volume_; }
 
-  ff_interpolation::Operation& GetOperationType() {return op_type_;}
+  ff_interpolation::Operation& GetOperationType() { return op_type_; }
 
-  std::string& GetOperationLuaFunction() {return op_lua_func_;}
+  std::string& GetOperationLuaFunction() { return op_lua_func_; }
 
-  double& GetOpValue() {return op_value_;}
+  double& GetOpValue() { return op_value_; }
 
-  //01
+  // 01
   void Initialize() override;
 
-  //02
+  // 02
   void Execute() override;
 
   double CallLuaFunction(double ff_value, int mat_id) const;
 
-  std::string GetDefaultFileBaseName() const override
-  {return "ZVFFI";}
+  std::string GetDefaultFileBaseName() const override { return "ZVFFI"; }
   void ExportPython(std::string base_name) override {}
 };
-
 
 #endif

@@ -13,26 +13,23 @@ namespace chi_mesh
 
 RegisterChiObject(chi_mesh, SurfaceMeshLogicalVolume);
 
-chi::InputParameters SurfaceMeshLogicalVolume::GetInputParameters()
+chi::InputParameters
+SurfaceMeshLogicalVolume::GetInputParameters()
 {
   chi::InputParameters params = LogicalVolume::GetInputParameters();
 
   params.SetDocGroup("LuaLogicVolumes");
 
-  params.AddRequiredParameter<size_t>(
-    "surface_mesh_handle",
-    "Handle to a surface mesh that will represent this object");
+  params.AddRequiredParameter<size_t>("surface_mesh_handle",
+                                      "Handle to a surface mesh that will represent this object");
 
   return params;
 }
 
-SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(
-  const chi::InputParameters& params)
+SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const chi::InputParameters& params)
   : LogicalVolume(params),
     surf_mesh(Chi::GetStackItemPtrAsType<chi_mesh::SurfaceMesh>(
-      Chi::object_stack,
-      params.GetParamValue<size_t>("surface_mesh_handle"),
-      __FUNCTION__)),
+      Chi::object_stack, params.GetParamValue<size_t>("surface_mesh_handle"), __FUNCTION__)),
     xbounds_({1.0e6, -1.0e6}),
     ybounds_({1.0e6, -1.0e6}),
     zbounds_({1.0e6, -1.0e6})
@@ -54,19 +51,20 @@ SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(
     }
     else
     {
-      xbounds_[0] = std::min(xbounds_[0],x);
-      xbounds_[1] = std::max(xbounds_[1],x);
-      ybounds_[0] = std::min(ybounds_[0],y);
-      ybounds_[1] = std::max(ybounds_[1],y);
-      zbounds_[0] = std::min(zbounds_[0],z);
-      zbounds_[1] = std::max(zbounds_[1],z);
+      xbounds_[0] = std::min(xbounds_[0], x);
+      xbounds_[1] = std::max(xbounds_[1], x);
+      ybounds_[0] = std::min(ybounds_[0], y);
+      ybounds_[1] = std::max(ybounds_[1], y);
+      zbounds_[0] = std::min(zbounds_[0], z);
+      zbounds_[1] = std::max(zbounds_[1], z);
     }
   }
 }
 
 // ###################################################################
 /**Logical operation for surface mesh.*/
-bool SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+bool
+SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
 {
   double tolerance = 1.0e-5;
 
@@ -139,12 +137,7 @@ bool SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
         chi_mesh::Vertex intp; // Intersection point
         std::pair<double, double> weights;
         bool intersects_plane = chi_mesh::CheckPlaneLineIntersect(
-          surf_mesh->GetTriangles()[fi].geometric_normal,
-          v0,
-          point,
-          fc,
-          intp,
-          &weights);
+          surf_mesh->GetTriangles()[fi].geometric_normal, v0, point, fc, intp, &weights);
         if (!intersects_plane) continue;
 
         //=========================== Check if the line intersects the triangle
@@ -170,9 +163,8 @@ bool SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
         x1p = x1p / x1p.Norm();
         x2p = x2p / x2p.Norm();
 
-        chi_mesh::Vector3 face_norm =
-          surf_mesh->GetTriangles()[fi].geometric_normal /
-          surf_mesh->GetTriangles()[fi].geometric_normal.Norm();
+        chi_mesh::Vector3 face_norm = surf_mesh->GetTriangles()[fi].geometric_normal /
+                                      surf_mesh->GetTriangles()[fi].geometric_normal.Norm();
 
         if (x0p.Dot(face_norm) < 0.0) intersects_triangle = false;
         if (x1p.Dot(face_norm) < 0.0) intersects_triangle = false;
@@ -181,8 +173,7 @@ bool SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
         if (!intersects_triangle) continue;
 
         //============================ Determine the sense with the triangle
-        double sense_with_this_tri =
-          p_to_fc.Dot(surf_mesh->GetTriangles()[fi].geometric_normal);
+        double sense_with_this_tri = p_to_fc.Dot(surf_mesh->GetTriangles()[fi].geometric_normal);
         double distance_to_triangle = weights.second * distance_to_face;
 
         if (distance_to_triangle < closest_distance)
@@ -197,8 +188,7 @@ bool SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
       } // for inner iter face
     }   // if sense negative
 
-    if ((closest_distance < distance_to_face) && closest_sense_pos)
-      good_to_go = true;
+    if ((closest_distance < distance_to_face) && closest_sense_pos) good_to_go = true;
 
     if (!good_to_go) return false;
   } // for f

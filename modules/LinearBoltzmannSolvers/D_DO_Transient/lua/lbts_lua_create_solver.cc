@@ -12,7 +12,8 @@ namespace lbs::lbts_lua_utils
                          [Default="LBSTransientSolver"].
 
 \author Zachary Hardy*/
-int chiLBSCreateTransientSolver(lua_State* L)
+int
+chiLBSCreateTransientSolver(lua_State* L)
 {
   const std::string fname = "chiLBSCreateTransientSolver";
   const int num_args = lua_gettop(L);
@@ -28,8 +29,8 @@ int chiLBSCreateTransientSolver(lua_State* L)
 
   chi::object_stack.push_back(new_solver);
 
-  lua_pushinteger(L, static_cast<lua_Integer>(chi::object_stack.size()-1));
+  lua_pushinteger(L, static_cast<lua_Integer>(chi::object_stack.size() - 1));
   return 1;
 }
 
-}//namespace lbs::lbts_lua_utils
+} // namespace lbs::lbts_lua_utils

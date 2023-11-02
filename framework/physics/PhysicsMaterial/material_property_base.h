@@ -21,6 +21,7 @@ class MaterialProperty
 {
 private:
   const PropertyType type_;
+
 public:
   std::string property_name;
 
@@ -32,9 +33,9 @@ public:
 
   virtual double GetScalarValue() { return 0.0; }
 
-  virtual void PushLuaTable(lua_State *L) const;
+  virtual void PushLuaTable(lua_State* L) const;
 };
 
-}
+} // namespace chi_physics
 
-#endif //CHI_PHYSICS_MATERIAL_PROPERTY_BASE_H
+#endif // CHI_PHYSICS_MATERIAL_PROPERTY_BASE_H

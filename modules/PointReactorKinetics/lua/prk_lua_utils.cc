@@ -18,7 +18,8 @@ RegisterLuaFunctionAsIs(chiPRKSetParam);
 * \param handle int Handle of the solver.
 * \param param_name  string Name of the parameter to retrieve.
 \return Varying*/
-int chiPRKGetParam(lua_State* L)
+int
+chiPRKGetParam(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -29,13 +30,11 @@ int chiPRKGetParam(lua_State* L)
 
   const int handle = lua_tointeger(L, 1);
 
-  auto solver =
-    Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
+  auto solver = Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
 
   const std::string param_name = lua_tostring(L, 2);
 
-  if (param_name == "population_prev")
-    lua_pushnumber(L, solver.PopulationPrev());
+  if (param_name == "population_prev") lua_pushnumber(L, solver.PopulationPrev());
   else if (param_name == "population_next")
     lua_pushnumber(L, solver.PopulationNew());
   else if (param_name == "period")
@@ -45,8 +44,7 @@ int chiPRKGetParam(lua_State* L)
   else if (param_name == "time_next")
     lua_pushnumber(L, solver.TimeNew());
   else
-    throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name +
-                                "\".");
+    throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name + "\".");
 
   return 1;
 }
@@ -57,7 +55,8 @@ int chiPRKGetParam(lua_State* L)
 * \param param_name  string Name of the parameter to retrieve.
 * \param value Varying The value to be set to the parameter.
 \return Varying*/
-int chiPRKSetParam(lua_State* L)
+int
+chiPRKSetParam(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -69,21 +68,18 @@ int chiPRKSetParam(lua_State* L)
 
   const int handle = lua_tointeger(L, 1);
 
-  auto& solver =
-    Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
+  auto& solver = Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
 
   const std::string param_name = lua_tostring(L, 2);
 
   if (param_name == "rho")
   {
-    LuaCheckNumberValue(
-      fname + "(handle,\"rho\", : Expects a number value.", L, 3);
+    LuaCheckNumberValue(fname + "(handle,\"rho\", : Expects a number value.", L, 3);
     const double val = lua_tonumber(L, 3);
     solver.SetRho(val);
   }
   else
-    throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name +
-                                "\".");
+    throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name + "\".");
 
   return 0;
 }
@@ -94,7 +90,8 @@ RegisterWrapperFunction(/*namespace_in_lua=*/prk,
                         /*syntax_function=*/GetSyntax_SetParam,
                         /*actual_function=*/SetParam);
 
-chi::InputParameters GetSyntax_SetParam()
+chi::InputParameters
+GetSyntax_SetParam()
 {
   chi::InputParameters params;
 
@@ -103,13 +100,10 @@ chi::InputParameters GetSyntax_SetParam()
     " module.");
   params.SetDocGroup("prk");
 
-  params.AddRequiredParameter<size_t>(
-    "arg0", "Handle to a <TT>prk::TransientSolver</TT> object.");
-  params.AddRequiredParameter<std::string>(
-    "arg1", "Text name of the parameter to set.");
+  params.AddRequiredParameter<size_t>("arg0", "Handle to a <TT>prk::TransientSolver</TT> object.");
+  params.AddRequiredParameter<std::string>("arg1", "Text name of the parameter to set.");
 
-  params.AddRequiredParameter<double>(
-    "arg2", "Value to set to the parameter pointed to by arg1");
+  params.AddRequiredParameter<double>("arg2", "Value to set to the parameter pointed to by arg1");
 
   using namespace chi_data_types;
   params.ConstrainParameterRange("arg1", AllowableRangeList::New({"rho"}));
@@ -117,13 +111,13 @@ chi::InputParameters GetSyntax_SetParam()
   return params;
 }
 
-chi::ParameterBlock SetParam(const chi::InputParameters& params)
+chi::ParameterBlock
+SetParam(const chi::InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& solver =
-    Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
+  auto& solver = Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
 
   const auto param_name = params.GetParamValue<std::string>("arg1");
   const auto& value_param = params.GetParam("arg2");
@@ -147,7 +141,8 @@ RegisterWrapperFunction(/*namespace_in_lua=*/prk,
                         /*syntax_function=*/GetParamSyntax,
                         /*actual_function=*/GetParam);
 
-chi::InputParameters GetParamSyntax()
+chi::InputParameters
+GetParamSyntax()
 {
   chi::InputParameters params;
 
@@ -156,10 +151,8 @@ chi::InputParameters GetParamSyntax()
     " module.");
   params.SetDocGroup("prk");
 
-  params.AddRequiredParameter<size_t>(
-    "arg0", "Handle to a <TT>prk::TransientSolver</TT> object.");
-  params.AddRequiredParameter<std::string>(
-    "arg1", "Text name of the parameter to get.");
+  params.AddRequiredParameter<size_t>("arg0", "Handle to a <TT>prk::TransientSolver</TT> object.");
+  params.AddRequiredParameter<std::string>("arg1", "Text name of the parameter to get.");
 
   // clang-format off
   using namespace chi_data_types;
@@ -169,19 +162,18 @@ chi::InputParameters GetParamSyntax()
   return params;
 }
 
-chi::ParameterBlock GetParam(const chi::InputParameters& params)
+chi::ParameterBlock
+GetParam(const chi::InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& solver =
-    Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
+  auto& solver = Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
 
   const auto param_name = params.GetParamValue<std::string>("arg1");
   chi::ParameterBlock outputs;
 
-  if (param_name == "population_prev")
-    outputs.AddParameter("", solver.PopulationPrev());
+  if (param_name == "population_prev") outputs.AddParameter("", solver.PopulationPrev());
   else if (param_name == "population_next")
     outputs.AddParameter("", solver.PopulationNew());
   else if (param_name == "period")

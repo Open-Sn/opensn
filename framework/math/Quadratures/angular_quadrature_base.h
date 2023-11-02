@@ -24,10 +24,7 @@ struct chi_math::QuadraturePointPhiTheta
 {
   double phi = 0.0;
   double theta = 0.0;
-  QuadraturePointPhiTheta(const double phi, const double theta)
-    : phi(phi), theta(theta)
-  {
-  }
+  QuadraturePointPhiTheta(const double phi, const double theta) : phi(phi), theta(theta) {}
 };
 
 // ################################################################### Class def
@@ -66,24 +63,18 @@ protected:
 public:
   AngularQuadrature() : type_(chi_math::AngularQuadratureType::Arbitrary) {}
 
-  explicit AngularQuadrature(chi_math::AngularQuadratureType in_type)
-    : type_(in_type)
-  {
-  }
+  explicit AngularQuadrature(chi_math::AngularQuadratureType in_type) : type_(in_type) {}
 
   virtual ~AngularQuadrature() = default;
 
   virtual void OptimizeForPolarSymmetry(double normalization);
 
 protected:
-  virtual void MakeHarmonicIndices(unsigned int scattering_order,
-                                   int dimension);
+  virtual void MakeHarmonicIndices(unsigned int scattering_order, int dimension);
 
 public:
-  virtual void BuildDiscreteToMomentOperator(unsigned int scattering_order,
-                                             int dimension);
-  virtual void BuildMomentToDiscreteOperator(unsigned int scattering_order,
-                                             int dimension);
+  virtual void BuildDiscreteToMomentOperator(unsigned int scattering_order, int dimension);
+  virtual void BuildMomentToDiscreteOperator(unsigned int scattering_order, int dimension);
 
   std::vector<std::vector<double>> const& GetDiscreteToMomentOperator() const;
 

@@ -23,14 +23,11 @@ private:
   //  Methods
 public:
   static chi::InputParameters GetInputParameters();
-  explicit DiscreteOrdinatesCurvilinearSolver(
-    const chi::InputParameters& params);
+  explicit DiscreteOrdinatesCurvilinearSolver(const chi::InputParameters& params);
 
   // Deleted copy constructors
-  DiscreteOrdinatesCurvilinearSolver(
-    const DiscreteOrdinatesCurvilinearSolver&) = delete;
-  DiscreteOrdinatesCurvilinearSolver&
-  operator=(const DiscreteOrdinatesCurvilinearSolver&) = delete;
+  DiscreteOrdinatesCurvilinearSolver(const DiscreteOrdinatesCurvilinearSolver&) = delete;
+  DiscreteOrdinatesCurvilinearSolver& operator=(const DiscreteOrdinatesCurvilinearSolver&) = delete;
 
 protected:
   void PerformInputChecks() override;
@@ -38,10 +35,9 @@ protected:
   void ComputeSecondaryUnitIntegrals();
 
 private:
-  std::shared_ptr<SweepChunk>
-  SetSweepChunk(lbs::LBSGroupset& groupset) override;
+  std::shared_ptr<SweepChunk> SetSweepChunk(lbs::LBSGroupset& groupset) override;
 };
 
-} // namespace lbs_curvilinear
+} // namespace lbs
 
 #endif // LBS_CURVILINEAR_SOLVER_H

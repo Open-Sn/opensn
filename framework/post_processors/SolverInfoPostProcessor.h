@@ -24,6 +24,6 @@ private:
   const ParameterBlock info_;
 };
 
-}
+} // namespace chi
 
 #endif // CHITECH_SOLVERINFOPOSTPROCESSOR_H

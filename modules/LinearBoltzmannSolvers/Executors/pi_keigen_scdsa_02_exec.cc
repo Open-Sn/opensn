@@ -15,23 +15,21 @@ namespace lbs
 
 // ##################################################################
 /**Executes the scheme.*/
-void XXPowerIterationKEigenSCDSA::Execute()
+void
+XXPowerIterationKEigenSCDSA::Execute()
 {
   auto phi_temp = phi_old_local_;
 
   /**Lambda for the creation of scattering sources but the
    * input vector is only the zeroth moment*/
   auto SetLBSScatterSourcePhi0 =
-    [this, &phi_temp](const VecDbl& input,
-                      const bool additive,
-                      const bool suppress_wg_scat = false)
+    [this, &phi_temp](const VecDbl& input, const bool additive, const bool suppress_wg_scat = false)
   {
     ProjectBackPhi0(front_gs_, input, phi_temp);
     SetLBSScatterSource(/*in*/ phi_temp, additive, suppress_wg_scat);
   };
 
-  const size_t tag_SCDSA_solve_time =
-    Chi::log.GetRepeatingEventTag("SCDSA_solve_time");
+  const size_t tag_SCDSA_solve_time = Chi::log.GetRepeatingEventTag("SCDSA_solve_time");
   const size_t tag_sweep_timing = Chi::log.GetRepeatingEventTag("Sweep Timing");
 
   using namespace chi_math;
@@ -103,12 +101,10 @@ void XXPowerIterationKEigenSCDSA::Execute()
         auto Ss = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
         // Solve the diffusion system
-        Chi::log.LogEvent(tag_SCDSA_solve_time,
-                          chi::ChiLog::EventType::EVENT_BEGIN);
+        Chi::log.LogEvent(tag_SCDSA_solve_time, chi::ChiLog::EventType::EVENT_BEGIN);
         diffusion_solver_->Assemble_b(Ss + Sfaux + Ss_res - Sf0_ell);
         diffusion_solver_->Solve(epsilon_kp1, /*use_initial_guess=*/true);
-        Chi::log.LogEvent(tag_SCDSA_solve_time,
-                          chi::ChiLog::EventType::EVENT_END);
+        Chi::log.LogEvent(tag_SCDSA_solve_time, chi::ChiLog::EventType::EVENT_END);
 
         epsilon_k = epsilon_kp1;
       }
@@ -117,15 +113,14 @@ void XXPowerIterationKEigenSCDSA::Execute()
                       /*in*/ epsilon_kp1 + phi0_lph_ip1,
                       /*out*/ phi_old_local_);
 
-      double production_kp1 =
-        lbs_solver_.ComputeFissionProduction(phi_old_local_);
+      double production_kp1 = lbs_solver_.ComputeFissionProduction(phi_old_local_);
 
       lambda_kp1 = production_kp1 / (production_k / lambda_k);
 
       const double lambda_change = std::fabs(1.0 - lambda_kp1 / lambda_k);
       if (accel_pi_verbose_ >= 1)
-        Chi::log.Log() << "PISCDSA iteration " << k << " lambda " << lambda_kp1
-                       << " lambda change " << lambda_change;
+        Chi::log.Log() << "PISCDSA iteration " << k << " lambda " << lambda_kp1 << " lambda change "
+                       << lambda_change;
 
       if (lambda_change < accel_pi_k_tol_) break;
 
@@ -141,8 +136,7 @@ void XXPowerIterationKEigenSCDSA::Execute()
                                               /*in*/ phi_new_local_,
                                               /*out*/ phi_old_local_);
 
-    const double production =
-      lbs_solver_.ComputeFissionProduction(phi_old_local_);
+    const double production = lbs_solver_.ComputeFissionProduction(phi_old_local_);
     lbs_solver_.ScalePhiVector(PhiSTLOption::PHI_OLD, lambda_kp1 / production);
 
     //================================= Recompute k-eigenvalue
@@ -161,10 +155,9 @@ void XXPowerIterationKEigenSCDSA::Execute()
     {
       std::stringstream k_iter_info;
       k_iter_info << Chi::program_timer.GetTimeString() << " "
-                  << "  Iteration " << std::setw(5) << nit << "  k_eff "
-                  << std::setw(11) << std::setprecision(7) << k_eff_
-                  << "  k_eff change " << std::setw(12) << k_eff_change
-                  << "  reactivity " << std::setw(10) << reactivity * 1e5;
+                  << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
+                  << std::setprecision(7) << k_eff_ << "  k_eff change " << std::setw(12)
+                  << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
       if (converged) k_iter_info << " CONVERGED\n";
 
       Chi::log.Log() << k_iter_info.str();
@@ -175,22 +168,19 @@ void XXPowerIterationKEigenSCDSA::Execute()
 
   //================================================== Print summary
   Chi::log.Log() << "\n";
-  Chi::log.Log() << "        Final k-eigenvalue    :        "
-                 << std::setprecision(7) << k_eff_;
-  Chi::log.Log()
-    << "        Final change          :        " << std::setprecision(6)
-    << k_eff_change
-    << " (num_TrOps:" << front_wgs_context_->counter_applications_of_inv_op_
-    << ")"
-    << "\n"
-    << "        Diffusion solve time  :        "
-    << Chi::log.ProcessEvent(tag_SCDSA_solve_time,
-                             chi::ChiLog::EventOperation::TOTAL_DURATION) *
-         1.0e-6
-    << "s\n"
-    << "        Total sweep time      :        "
-    << Chi::log.ProcessEvent(tag_sweep_timing,
-                             chi::ChiLog::EventOperation::TOTAL_DURATION);
+  Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
+  Chi::log.Log() << "        Final change          :        " << std::setprecision(6)
+                 << k_eff_change
+                 << " (num_TrOps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
+                 << "\n"
+                 << "        Diffusion solve time  :        "
+                 << Chi::log.ProcessEvent(tag_SCDSA_solve_time,
+                                          chi::ChiLog::EventOperation::TOTAL_DURATION) *
+                      1.0e-6
+                 << "s\n"
+                 << "        Total sweep time      :        "
+                 << Chi::log.ProcessEvent(tag_sweep_timing,
+                                          chi::ChiLog::EventOperation::TOTAL_DURATION);
   Chi::log.Log() << "\n";
 
   if (lbs_solver_.Options().use_precursors)
@@ -201,8 +191,7 @@ void XXPowerIterationKEigenSCDSA::Execute()
 
   lbs_solver_.UpdateFieldFunctions();
 
-  Chi::log.Log()
-    << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
+  Chi::log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
 
 } // namespace lbs

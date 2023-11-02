@@ -12,8 +12,8 @@
 //###################################################################
 /**Initializes the data structures necessary for interpolation. This is
  * independent of the physics and hence is a routine on its own.*/
-void chi_mesh::FieldFunctionInterpolationLine::
-  Initialize()
+void
+chi_mesh::FieldFunctionInterpolationLine::Initialize()
 {
   Chi::log.Log0Verbose1() << "Initializing line interpolator.";
   //================================================== Check for empty FF-list
@@ -28,12 +28,12 @@ void chi_mesh::FieldFunctionInterpolationLine::
   const auto omega = vif.Normalized();
 
   interpolation_points_.push_back(pi_);
-  for (int k=1; k<(number_of_points_); k++)
+  for (int k = 1; k < (number_of_points_); k++)
     interpolation_points_.push_back(pi_ + omega * delta_d_ * k);
 
   //====================================================== Loop over contexts
   const size_t num_ff = field_functions_.size();
-  for (size_t ff=0; ff<num_ff; ff++)
+  for (size_t ff = 0; ff < num_ff; ff++)
   {
     ff_contexts_.emplace_back();
     auto& ff_context = ff_contexts_.back();
@@ -49,7 +49,7 @@ void chi_mesh::FieldFunctionInterpolationLine::
     //                                                   point
     for (const auto& cell : grid.local_cells)
     {
-      for (int p=0; p < number_of_points_; p++)
+      for (int p = 0; p < number_of_points_; p++)
       {
         const auto& point = interpolation_points_[p];
         if (grid.CheckPointInsideCell(cell, point))
@@ -57,9 +57,9 @@ void chi_mesh::FieldFunctionInterpolationLine::
           ff_context.interpolation_points_ass_cell[p] = cell.local_id_;
           ff_context.interpolation_points_has_ass_cell[p] = true;
         }
-      }//for point p
-    }//for cell
-  }//for ff
+      } // for point p
+    }   // for cell
+  }     // for ff
 
   Chi::log.Log0Verbose1() << "Finished initializing interpolator.";
 }

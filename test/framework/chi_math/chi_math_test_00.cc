@@ -10,8 +10,7 @@
 namespace chi_unit_tests
 {
 
-chi::ParameterBlock
-chi_math_Test00(const chi::InputParameters& params);
+chi::ParameterBlock chi_math_Test00(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*name_in_lua=*/chi_math_Test00,
@@ -63,28 +62,24 @@ chi_math_Test00(const chi::InputParameters& params)
 
       Chi::log.Log() << "----- for (const auto& entry : m.Row(2)) -----";
       for (const auto& entry : m.Row(2))
-        Chi::log.Log() << entry.row_index << " " << entry.column_index << " "
-                       << entry.value;
+        Chi::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
 
       Chi::log.Log() << "----- after value*2 -----";
       for (const auto& [row_index, column_index, value] : m.Row(2))
         value *= 2;
 
       for (const auto& entry : m.Row(2))
-        Chi::log.Log() << entry.row_index << " " << entry.column_index << " "
-                       << entry.value;
+        Chi::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
     }
 
     Chi::log.Log() << "----- for (auto entry : matrix) -----";
     for (const auto& entry : matrix)
-      Chi::log.Log() << entry.row_index << " " << entry.column_index << " "
-                     << entry.value;
+      Chi::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
 
     matrix.Compress();
     Chi::log.Log() << "----- after compress -----";
     for (const auto& entry : matrix)
-      Chi::log.Log() << entry.row_index << " " << entry.column_index << " "
-                     << entry.value;
+      Chi::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
   }
 
   Chi::log.Log() << "GOLD_END";

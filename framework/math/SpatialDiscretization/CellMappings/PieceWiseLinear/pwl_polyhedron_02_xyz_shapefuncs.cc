@@ -8,8 +8,7 @@ namespace chi_math::cell_mapping
 // ###################################################################
 /**Returns the evaluation of shape function i at the supplied point.*/
 double
-PieceWiseLinearPolyhedronMapping::ShapeValue(const int i,
-                                           const chi_mesh::Vector3& xyz) const
+PieceWiseLinearPolyhedronMapping::ShapeValue(const int i, const chi_mesh::Vector3& xyz) const
 {
   for (size_t f = 0; f < face_data_.size(); f++)
   {
@@ -35,14 +34,8 @@ PieceWiseLinearPolyhedronMapping::ShapeValue(const int i,
 
         if (node_side_maps_[i].face_map[f].side_map[s].part_of_face)
         {
-          if (node_side_maps_[i].face_map[f].side_map[s].index == 0)
-          {
-            Ni = 1 - xi - eta - zeta;
-          }
-          if (node_side_maps_[i].face_map[f].side_map[s].index == 2)
-          {
-            Ni = eta;
-          }
+          if (node_side_maps_[i].face_map[f].side_map[s].index == 0) { Ni = 1 - xi - eta - zeta; }
+          if (node_side_maps_[i].face_map[f].side_map[s].index == 2) { Ni = eta; }
 
           Nf = face_betaf_[f] * xi;
         }
@@ -57,8 +50,9 @@ PieceWiseLinearPolyhedronMapping::ShapeValue(const int i,
 // ###################################################################
 /**Populates shape_values with the value of each shape function's
  * value evaluate at the supplied point.*/
-void PieceWiseLinearPolyhedronMapping::ShapeValues(
-  const chi_mesh::Vector3& xyz, std::vector<double>& shape_values) const
+void
+PieceWiseLinearPolyhedronMapping::ShapeValues(const chi_mesh::Vector3& xyz,
+                                              std::vector<double>& shape_values) const
 {
   shape_values.resize(num_nodes_, 0.0);
   for (size_t f = 0; f < face_data_.size(); f++)
@@ -105,8 +99,8 @@ void PieceWiseLinearPolyhedronMapping::ShapeValues(
 
 // ###################################################################
 /**Returns the evaluation of grad-shape function i at the supplied point.*/
-chi_mesh::Vector3 PieceWiseLinearPolyhedronMapping::GradShapeValue(const int i,
-                                        const chi_mesh::Vector3& xyz) const
+chi_mesh::Vector3
+PieceWiseLinearPolyhedronMapping::GradShapeValue(const int i, const chi_mesh::Vector3& xyz) const
 {
   chi_mesh::Vector3 grad, gradr;
   for (size_t f = 0; f < face_data_.size(); f++)
@@ -168,9 +162,9 @@ chi_mesh::Vector3 PieceWiseLinearPolyhedronMapping::GradShapeValue(const int i,
 // ###################################################################
 /**Populates gradshape_values with the value of each shape function's
  * gradient evaluated at the supplied point.*/
-void PieceWiseLinearPolyhedronMapping::GradShapeValues(
-  const chi_mesh::Vector3& xyz,
-  std::vector<chi_mesh::Vector3>& gradshape_values) const
+void
+PieceWiseLinearPolyhedronMapping::GradShapeValues(
+  const chi_mesh::Vector3& xyz, std::vector<chi_mesh::Vector3>& gradshape_values) const
 {
   gradshape_values.clear();
   for (int i = 0; i < num_nodes_; ++i)

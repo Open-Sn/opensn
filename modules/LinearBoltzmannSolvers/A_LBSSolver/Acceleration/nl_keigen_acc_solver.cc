@@ -11,35 +11,35 @@
 
 #include <iomanip>
 
-#define CheckContext(x) \
-if (not x) \
-throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + \
-": context casting failure")
-#define GetNLKDiffContextPtr(x) \
-  std::dynamic_pointer_cast<NLKEigenDiffContext>(x); \
+#define CheckContext(x)                                                                            \
+  if (not x)                                                                                       \
+  throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": context casting failure")
+#define GetNLKDiffContextPtr(x)                                                                    \
+  std::dynamic_pointer_cast<NLKEigenDiffContext>(x);                                               \
   CheckContext(x)
 
 namespace lbs::acceleration
 {
 
-void NLKEigenDiffSolver::SetMonitor()
+void
+NLKEigenDiffSolver::SetMonitor()
 {
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_);
 
   if (nl_context_ptr->verbosity_level_ >= 1)
-    SNESMonitorSet(nl_solver_, &lbs::KEigenSNESMonitor,
-                   &nl_context_ptr->kresid_func_context_, nullptr);
+    SNESMonitorSet(
+      nl_solver_, &lbs::KEigenSNESMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
 
   if (nl_context_ptr->verbosity_level_ >= 2)
   {
     KSP ksp;
     SNESGetKSP(nl_solver_, &ksp);
-    KSPMonitorSet(ksp, &lbs::KEigenKSPMonitor,
-                  &nl_context_ptr->kresid_func_context_, nullptr);
+    KSPMonitorSet(ksp, &lbs::KEigenKSPMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
   }
 }
 
-void NLKEigenDiffSolver::SetSystemSize()
+void
+NLKEigenDiffSolver::SetSystemSize()
 {
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_);
 
@@ -50,36 +50,38 @@ void NLKEigenDiffSolver::SetSystemSize()
   num_globl_dofs_ = static_cast<int64_t>(sizes.second);
 }
 
-
-void NLKEigenDiffSolver::SetSystem()
+void
+NLKEigenDiffSolver::SetSystem()
 {
   //============================================= Create the vectors
-  x_ = chi_math::PETScUtils::CreateVector(num_local_dofs_,
-                                          num_globl_dofs_);
+  x_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_globl_dofs_);
   VecDuplicate(x_, &r_);
 }
 
-
-void NLKEigenDiffSolver::SetFunction()
+void
+NLKEigenDiffSolver::SetFunction()
 {
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_);
 
-  SNESSetFunction(nl_solver_, r_, NLKEigenAccResidualFunction,
-                  &nl_context_ptr->kresid_func_context_);
+  SNESSetFunction(
+    nl_solver_, r_, NLKEigenAccResidualFunction, &nl_context_ptr->kresid_func_context_);
 }
 
-void NLKEigenDiffSolver::SetJacobian()
+void
+NLKEigenDiffSolver::SetJacobian()
 {
   MatCreateSNESMF(nl_solver_, &J_);
   SNESSetJacobian(nl_solver_, J_, J_, MatMFFDComputeJacobian, nullptr);
 }
 
-void NLKEigenDiffSolver::SetInitialGuess()
+void
+NLKEigenDiffSolver::SetInitialGuess()
 {
   VecSet(x_, 0.0);
 }
 
-void NLKEigenDiffSolver::PostSolveCallback()
+void
+NLKEigenDiffSolver::PostSolveCallback()
 {
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_);
 
@@ -102,20 +104,16 @@ void NLKEigenDiffSolver::PostSolveCallback()
   double k_eff = nl_context_ptr->kresid_func_context_.k_eff;
 
   const double production = lbs_solver.ComputeFissionProduction(phi_old_local);
-  lbs_solver.ScalePhiVector(PhiSTLOption::PHI_OLD, k_eff/production);
-
+  lbs_solver.ScalePhiVector(PhiSTLOption::PHI_OLD, k_eff / production);
 
   PetscInt number_of_func_evals;
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
 
   //================================================== Print summary
   if (nl_context_ptr->verbosity_level_ >= 1)
-    Chi::log.Log()
-                 << "        Final lambda-eigenvalue    :        "
-                 << std::fixed << std::setw(10) << std::setprecision(7)
-                 << k_eff
-                 << " (num_DOps:" << number_of_func_evals << ")"
-                 << "\n";
+    Chi::log.Log() << "        Final lambda-eigenvalue    :        " << std::fixed << std::setw(10)
+                   << std::setprecision(7) << k_eff << " (num_DOps:" << number_of_func_evals << ")"
+                   << "\n";
 }
 
-}//namespace lbs::acceleration
+} // namespace lbs::acceleration

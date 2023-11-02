@@ -22,12 +22,8 @@ struct MIPWGSContext2 : public WGSContext<MatType, VecType, SolverType>
                  int lhs_scope,
                  int rhs_scope,
                  bool log_info)
-    : WGSContext<MatType, VecType, SolverType>(lbs_mip_ss_solver,
-                                               groupset,
-                                               set_source_function,
-                                               lhs_scope,
-                                               rhs_scope,
-                                               log_info),
+    : WGSContext<MatType, VecType, SolverType>(
+        lbs_mip_ss_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
       lbs_mip_ss_solver_(lbs_mip_ss_solver)
   {
   }

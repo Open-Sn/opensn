@@ -38,19 +38,19 @@ public:
   /**Returns a reference to the unknown structure.*/
   const chi_math::Unknown& Unknown() const { return unknown_; }
   /**Returns a reference to the unknown manager that can be used in
-  * spatial discretizations.*/
-  const chi_math::UnknownManager& GetUnknownManager() const
-  {
-    return unknown_manager_;
-  }
+   * spatial discretizations.*/
+  const chi_math::UnknownManager& GetUnknownManager() const { return unknown_manager_; }
 
   /**\brief Overrides the stack placement so that FieldFunctions go
-  * to the field function stack.*/
+   * to the field function stack.*/
   void PushOntoStack(std::shared_ptr<ChiObject>& new_object) override;
 
   virtual double Evaluate(const chi_mesh::Cell& cell,
                           const chi_mesh::Vector3& position,
-                          unsigned int component) const {return 0.0;}
+                          unsigned int component) const
+  {
+    return 0.0;
+  }
 };
 
 } // namespace chi_physics

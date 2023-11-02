@@ -11,18 +11,17 @@
 namespace lbs
 {
 
-CBC_SweepChunk::CBC_SweepChunk(
-  std::vector<double>& destination_phi,
-  std::vector<double>& destination_psi,
-  const chi_mesh::MeshContinuum& grid,
-  const chi_math::SpatialDiscretization& discretization,
-  const std::vector<UnitCellMatrices>& unit_cell_matrices,
-  std::vector<lbs::CellLBSView>& cell_transport_views,
-  const std::vector<double>& source_moments,
-  const LBSGroupset& groupset,
-  const std::map<int, XSPtr>& xs,
-  int num_moments,
-  int max_num_cell_dofs)
+CBC_SweepChunk::CBC_SweepChunk(std::vector<double>& destination_phi,
+                               std::vector<double>& destination_psi,
+                               const chi_mesh::MeshContinuum& grid,
+                               const chi_math::SpatialDiscretization& discretization,
+                               const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                               std::vector<lbs::CellLBSView>& cell_transport_views,
+                               const std::vector<double>& source_moments,
+                               const LBSGroupset& groupset,
+                               const std::map<int, XSPtr>& xs,
+                               int num_moments,
+                               int max_num_cell_dofs)
   : SweepChunk(destination_phi,
                destination_psi,
                grid,
@@ -35,20 +34,16 @@ CBC_SweepChunk::CBC_SweepChunk(
                num_moments,
                max_num_cell_dofs,
                std::make_unique<CBC_SweepDependencyInterface>()),
-    cbc_sweep_depinterf_(
-      dynamic_cast<CBC_SweepDependencyInterface&>(sweep_dependency_interface_))
+    cbc_sweep_depinterf_(dynamic_cast<CBC_SweepDependencyInterface&>(sweep_dependency_interface_))
 {
   // ================================== Register kernels
   RegisterKernel("FEMVolumetricGradTerm",
                  std::bind(&SweepChunk::KernelFEMVolumetricGradientTerm, this));
   RegisterKernel("FEMUpwindSurfaceIntegrals",
                  std::bind(&SweepChunk::KernelFEMUpwindSurfaceIntegrals, this));
-  RegisterKernel("FEMSSTDMassTerms",
-                 std::bind(&SweepChunk::KernelFEMSTDMassTerms, this));
-  RegisterKernel("KernelPhiUpdate",
-                 std::bind(&SweepChunk::KernelPhiUpdate, this));
-  RegisterKernel("KernelPsiUpdate",
-                 std::bind(&SweepChunk::KernelPsiUpdate, this));
+  RegisterKernel("FEMSSTDMassTerms", std::bind(&SweepChunk::KernelFEMSTDMassTerms, this));
+  RegisterKernel("KernelPhiUpdate", std::bind(&SweepChunk::KernelPhiUpdate, this));
+  RegisterKernel("KernelPsiUpdate", std::bind(&SweepChunk::KernelPsiUpdate, this));
 
   // ================================== Setup callbacks
   cell_data_callbacks_ = {};
@@ -64,12 +59,12 @@ CBC_SweepChunk::CBC_SweepChunk(
   post_cell_dir_sweep_callbacks_ = {};
 }
 
-void CBC_SweepChunk::SetAngleSet(chi_mesh::sweep_management::AngleSet& angle_set)
+void
+CBC_SweepChunk::SetAngleSet(chi_mesh::sweep_management::AngleSet& angle_set)
 {
   cbc_sweep_depinterf_.fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
-  const chi::SubSetInfo& grp_ss_info =
-    groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
+  const chi::SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
 
   gs_ss_size_ = grp_ss_info.ss_size;
   gs_ss_begin_ = grp_ss_info.ss_begin;
@@ -81,12 +76,12 @@ void CBC_SweepChunk::SetAngleSet(chi_mesh::sweep_management::AngleSet& angle_set
   sweep_dependency_interface_.gs_gi_ = gs_gi_;
 
   cbc_sweep_depinterf_.group_stride_ = angle_set.GetNumGroups();
-  cbc_sweep_depinterf_.group_angle_stride_ =
-    angle_set.GetNumGroups() * angle_set.GetNumAngles();
+  cbc_sweep_depinterf_.group_angle_stride_ = angle_set.GetNumGroups() * angle_set.GetNumAngles();
 }
 
-void CBC_SweepChunk::SetCell(const chi_mesh::Cell* cell_ptr,
-                             chi_mesh::sweep_management::AngleSet& angle_set)
+void
+CBC_SweepChunk::SetCell(const chi_mesh::Cell* cell_ptr,
+                        chi_mesh::sweep_management::AngleSet& angle_set)
 {
   cell_ptr_ = cell_ptr;
   cell_local_id_ = cell_ptr_->local_id_;
@@ -113,16 +108,17 @@ void CBC_SweepChunk::SetCell(const chi_mesh::Cell* cell_ptr,
   cbc_sweep_depinterf_.cell_transport_view_ = cell_transport_view_;
 }
 
-void CBC_SweepChunk::SetCells(const std::vector<const chi_mesh::Cell*>& cell_ptrs)
+void
+CBC_SweepChunk::SetCells(const std::vector<const chi_mesh::Cell*>& cell_ptrs)
 {
   cell_ptrs_ = cell_ptrs;
 }
 
-void CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
+void
+CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
 {
   using FaceOrientation = chi_mesh::sweep_management::FaceOrientation;
-  const auto& face_orientations =
-    angle_set.GetSPDS().CellFaceOrientations()[cell_local_id_];
+  const auto& face_orientations = angle_set.GetSPDS().CellFaceOrientations()[cell_local_id_];
   const auto& sigma_t = xs_.at(cell_->material_id_)->SigmaTotal();
 
   // as = angle set
@@ -196,12 +192,7 @@ void CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
       const int locality = cell_transport_view_->FaceLocality(f);
 
       sweep_dependency_interface_.SetupOutgoingFace(
-        f,
-        cell_mapping_->NumFaceNodes(f),
-        face.neighbor_id_,
-        local,
-        boundary,
-        locality);
+        f, cell_mapping_->NumFaceNodes(f), face.neighbor_id_, local, boundary, locality);
 
       OutgoingSurfaceOperations();
     } // for face
@@ -211,11 +202,9 @@ void CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
 }
 
 // ##################################################################
-void CBC_SweepDependencyInterface::SetupIncomingFace(int face_id,
-                                                     size_t num_face_nodes,
-                                                     uint64_t neighbor_id,
-                                                     bool on_local_face,
-                                                     bool on_boundary)
+void
+CBC_SweepDependencyInterface::SetupIncomingFace(
+  int face_id, size_t num_face_nodes, uint64_t neighbor_id, bool on_local_face, bool on_boundary)
 {
   current_face_idx_ = face_id;
   num_face_nodes_ = num_face_nodes;
@@ -223,15 +212,15 @@ void CBC_SweepDependencyInterface::SetupIncomingFace(int face_id,
   on_local_face_ = on_local_face;
   on_boundary_ = on_boundary;
 
-  face_nodal_mapping_ = &fluds_->CommonData().GetFaceNodalMapping(
-    cell_local_id_, current_face_idx_);
+  face_nodal_mapping_ =
+    &fluds_->CommonData().GetFaceNodalMapping(cell_local_id_, current_face_idx_);
 
   if (on_local_face_)
   {
     neighbor_cell_ptr_ = cell_transport_view_->FaceNeighbor(face_id);
     psi_upwnd_data_block_ = &fluds_->GetLocalUpwindDataBlock();
-    psi_local_face_upwnd_data_ = fluds_->GetLocalCellUpwindPsi(
-      *psi_upwnd_data_block_, *neighbor_cell_ptr_);
+    psi_local_face_upwnd_data_ =
+      fluds_->GetLocalCellUpwindPsi(*psi_upwnd_data_block_, *neighbor_cell_ptr_);
   }
   else if (not on_boundary_)
   {
@@ -240,12 +229,13 @@ void CBC_SweepDependencyInterface::SetupIncomingFace(int face_id,
   }
 }
 
-void CBC_SweepDependencyInterface::SetupOutgoingFace(int face_id,
-                                                     size_t num_face_nodes,
-                                                     uint64_t neighbor_id,
-                                                     bool on_local_face,
-                                                     bool on_boundary,
-                                                     int locality)
+void
+CBC_SweepDependencyInterface::SetupOutgoingFace(int face_id,
+                                                size_t num_face_nodes,
+                                                uint64_t neighbor_id,
+                                                bool on_local_face,
+                                                bool on_boundary,
+                                                int locality)
 {
   current_face_idx_ = face_id;
   num_face_nodes_ = num_face_nodes;
@@ -254,12 +244,11 @@ void CBC_SweepDependencyInterface::SetupOutgoingFace(int face_id,
   on_local_face_ = on_local_face;
   on_boundary_ = on_boundary;
 
-  face_nodal_mapping_ = &fluds_->CommonData().GetFaceNodalMapping(
-    cell_local_id_, current_face_idx_);
+  face_nodal_mapping_ =
+    &fluds_->CommonData().GetFaceNodalMapping(cell_local_id_, current_face_idx_);
 
   is_reflecting_bndry_ =
-    (on_boundary_ and
-     angle_set_->GetBoundaries()[neighbor_id_]->IsReflecting());
+    (on_boundary_ and angle_set_->GetBoundaries()[neighbor_id_]->IsReflecting());
 
   if (not on_local_face_ and not on_boundary_)
   {
@@ -267,12 +256,11 @@ void CBC_SweepDependencyInterface::SetupOutgoingFace(int face_id,
 
     size_t data_size = num_face_nodes_ * group_angle_stride_;
 
-    psi_dnwnd_data_ = &async_comm.InitGetDownwindMessageData(
-      face_locality_,
-      neighbor_id_,
-      face_nodal_mapping_->associated_face_,
-      angle_set_->GetID(),
-      data_size);
+    psi_dnwnd_data_ = &async_comm.InitGetDownwindMessageData(face_locality_,
+                                                             neighbor_id_,
+                                                             face_nodal_mapping_->associated_face_,
+                                                             angle_set_->GetID(),
+                                                             data_size);
   }
 }
 
@@ -282,20 +270,16 @@ CBC_SweepDependencyInterface::GetUpwindPsi(int face_node_local_idx) const
   const double* psi;
   if (on_local_face_)
   {
-    const unsigned int adj_cell_node =
-      face_nodal_mapping_->cell_node_mapping_[face_node_local_idx];
+    const unsigned int adj_cell_node = face_nodal_mapping_->cell_node_mapping_[face_node_local_idx];
 
     return &psi_local_face_upwnd_data_[adj_cell_node * groupset_angle_group_stride_ +
-                                  angle_num_ * groupset_group_stride_ +
-                                  gs_ss_begin_];
+                                       angle_num_ * groupset_group_stride_ + gs_ss_begin_];
   }
   else if (not on_boundary_)
   {
-    const unsigned int adj_face_node =
-      face_nodal_mapping_->face_node_mapping_[face_node_local_idx];
+    const unsigned int adj_face_node = face_nodal_mapping_->face_node_mapping_[face_node_local_idx];
 
-    psi = fluds_->GetNonLocalUpwindPsi(
-      *psi_upwnd_data_block_, adj_face_node, angle_set_index_);
+    psi = fluds_->GetNonLocalUpwindPsi(*psi_upwnd_data_block_, adj_face_node, angle_set_index_);
   }
   else
     psi = angle_set_->PsiBndry(neighbor_id_,
@@ -318,8 +302,8 @@ CBC_SweepDependencyInterface::GetDownwindPsi(int face_node_local_idx) const
   if (on_local_face_) psi = nullptr; // We don't write local face outputs
   else if (not on_boundary_)
   {
-    const size_t addr_offset = face_node_local_idx * group_angle_stride_ +
-                               angle_set_index_ * group_stride_;
+    const size_t addr_offset =
+      face_node_local_idx * group_angle_stride_ + angle_set_index_ * group_stride_;
 
     psi = &(*psi_dnwnd_data_)[addr_offset];
   }

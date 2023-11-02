@@ -11,7 +11,7 @@ namespace chi_mesh
 class GridFaceHistogram;
 class Cell;
 class CellFace;
-}
+} // namespace chi_mesh
 
 namespace chi_mesh::sweep_management
 {
@@ -42,19 +42,18 @@ public:
     ~INCOMING_FACE_INFO() { delete[] upwind_dof_mapping; }
   }; // TODO: Make common
 public:
-  explicit AAH_FLUDSCommonData(
-    const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
-    const SPDS& spds,
-    const chi_mesh::GridFaceHistogram& grid_face_histogram);
+  explicit AAH_FLUDSCommonData(const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
+                               const SPDS& spds,
+                               const chi_mesh::GridFaceHistogram& grid_face_histogram);
 
 protected:
   friend class AAH_FLUDS;
   int largest_face = 0;
-  size_t num_face_categories = 0;       // Number of face categories
-  std::vector<size_t> local_psi_stride; // Group-angle-faceDOF stride per cat
+  size_t num_face_categories = 0;             // Number of face categories
+  std::vector<size_t> local_psi_stride;       // Group-angle-faceDOF stride per cat
   std::vector<size_t> local_psi_max_elements; // Number of faces in each cat
-  size_t delayed_local_psi_stride = 0; // Group-angle-faceDOF stride delayed cat
-  size_t delayed_local_psi_max_elements = 0; // Number of faces in delayed cat
+  size_t delayed_local_psi_stride = 0;        // Group-angle-faceDOF stride delayed cat
+  size_t delayed_local_psi_max_elements = 0;  // Number of faces in delayed cat
 
   // local_psi_n_block_stride[fc]. Given face category fc, the value is
   // total number of faces that store information in this category's buffer
@@ -128,15 +127,13 @@ private:
   // AlphaPairs. AlphaPair-first is the prelocI index and
   // AlphaPair-second is a BetaPair. The BetaPair-first is the slot where
   // the face storage begins and BetaPair-second is a dof mapping
-  std::vector<std::pair<int, std::pair<int, std::vector<int>>>>
-    nonlocal_inc_face_prelocI_slot_dof;
+  std::vector<std::pair<int, std::pair<int, std::vector<int>>>> nonlocal_inc_face_prelocI_slot_dof;
 
   std::vector<std::pair<int, std::pair<int, std::vector<int>>>>
     delayed_nonlocal_inc_face_prelocI_slot_dof;
 
   // 00
-  void InitializeAlphaElements(const SPDS& spds,
-                               const GridFaceHistogram& grid_face_histogram);
+  void InitializeAlphaElements(const SPDS& spds, const GridFaceHistogram& grid_face_histogram);
   // 00a
   void SlotDynamics(const chi_mesh::Cell& cell,
                     const SPDS& spds,
@@ -156,11 +153,11 @@ private:
   void InitializeBetaElements(const SPDS& spds, int tag_index = 0);
   // 01a
   static void SerializeCellInfo(std::vector<CompactCellView>& cell_views,
-                         std::vector<int>& face_indices,
-                         int num_face_dofs);
+                                std::vector<int>& face_indices,
+                                int num_face_dofs);
   static void DeSerializeCellInfo(std::vector<CompactCellView>& cell_views,
-                           std::vector<int>* face_indices,
-                           int& num_face_dofs);
+                                  std::vector<int>* face_indices,
+                                  int& num_face_dofs);
   // 01b
   void NonLocalIncidentMapping(const chi_mesh::Cell& cell, const SPDS& spds);
 };

@@ -27,10 +27,9 @@ public:
 
   void SetMaxBufferMessages(int new_max) override;
 
-  AngleSetStatus AngleSetAdvance(
-    SweepChunk& sweep_chunk,
-    const std::vector<size_t>& timing_tags,
-    ExecutionPermission permission) override;
+  AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk,
+                                 const std::vector<size_t>& timing_tags,
+                                 ExecutionPermission permission) override;
   AngleSetStatus FlushSendBuffers() override;
   void ResetSweepBuffers() override;
   bool ReceiveDelayedData() override;
@@ -54,6 +53,6 @@ protected:
   chi_mesh::sweep_management::AAH_ASynchronousCommunicator async_comm_;
 };
 
-}
+} // namespace chi_mesh::sweep_management
 
 #endif // CHITECH_AAH_ANGLESET_H

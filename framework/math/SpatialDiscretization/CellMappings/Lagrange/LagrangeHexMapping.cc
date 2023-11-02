@@ -11,16 +11,13 @@ LagrangeHexMapping::LagrangeHexMapping(const chi_mesh::MeshContinuum& grid,
                                        const chi_mesh::Cell& cell,
                                        const Quadrature& volume_quadrature,
                                        const Quadrature& surface_quadrature)
-  : LagrangeBaseMapping(grid,
-                        cell,
-                        8,
-                        MakeFaceNodeMapping(cell),
-                        volume_quadrature,
-                        surface_quadrature)
+  : LagrangeBaseMapping(
+      grid, cell, 8, MakeFaceNodeMapping(cell), volume_quadrature, surface_quadrature)
 {
 }
 
-double LagrangeHexMapping::RefShape(uint32_t i, const Vec3& qpoint) const
+double
+LagrangeHexMapping::RefShape(uint32_t i, const Vec3& qpoint) const
 {
   ChiLogicalErrorIf(i >= 8, "Invalid shapefunction index " + std::to_string(i));
 
@@ -41,8 +38,8 @@ double LagrangeHexMapping::RefShape(uint32_t i, const Vec3& qpoint) const
   // clang-format on
 }
 
-chi_mesh::Vector3 LagrangeHexMapping::RefGradShape(uint32_t i,
-                                                   const Vec3& qpoint) const
+chi_mesh::Vector3
+LagrangeHexMapping::RefGradShape(uint32_t i, const Vec3& qpoint) const
 {
   ChiLogicalErrorIf(i >= 8, "Invalid shapefunction index " + std::to_string(i));
 
@@ -98,8 +95,8 @@ LagrangeHexMapping::RefJacobian(const Vec3& qpoint) const
 }
 
 std::pair<double, LagrangeBaseMapping::Vec3>
-LagrangeHexMapping::RefFaceJacobianDeterminantAndNormal(
-  size_t face_index, const Vec3& qpoint_face) const
+LagrangeHexMapping::RefFaceJacobianDeterminantAndNormal(size_t face_index,
+                                                        const Vec3& qpoint_face) const
 {
   const auto& x0 = node_locations_[face_node_mappings_[face_index][0]];
   const auto& x1 = node_locations_[face_node_mappings_[face_index][1]];
@@ -133,8 +130,7 @@ LagrangeHexMapping::RefFaceJacobianDeterminantAndNormal(
 }
 
 LagrangeBaseMapping::Vec3
-LagrangeHexMapping::FaceToElementQPointConversion(size_t face_index,
-                                                  const Vec3& qpoint_face) const
+LagrangeHexMapping::FaceToElementQPointConversion(size_t face_index, const Vec3& qpoint_face) const
 {
   const double x = qpoint_face.x + 1.0;
   const double y = qpoint_face.y + 1.0;

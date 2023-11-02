@@ -11,16 +11,13 @@ LagrangeTetMapping::LagrangeTetMapping(const chi_mesh::MeshContinuum& grid,
                                        const chi_mesh::Cell& cell,
                                        const Quadrature& volume_quadrature,
                                        const Quadrature& surface_quadrature)
-  : LagrangeBaseMapping(grid,
-                        cell,
-                        4,
-                        MakeFaceNodeMapping(cell),
-                        volume_quadrature,
-                        surface_quadrature)
+  : LagrangeBaseMapping(
+      grid, cell, 4, MakeFaceNodeMapping(cell), volume_quadrature, surface_quadrature)
 {
 }
 
-double LagrangeTetMapping::RefShape(uint32_t i, const Vec3& qpoint) const
+double
+LagrangeTetMapping::RefShape(uint32_t i, const Vec3& qpoint) const
 {
   const double x = qpoint.x;
   const double y = qpoint.y;
@@ -36,8 +33,8 @@ double LagrangeTetMapping::RefShape(uint32_t i, const Vec3& qpoint) const
   ChiLogicalError("Invalid shapefunction index " + std::to_string(i));
 }
 
-chi_mesh::Vector3 LagrangeTetMapping::RefGradShape(uint32_t i,
-                                                   const Vec3& qpoint) const
+chi_mesh::Vector3
+LagrangeTetMapping::RefGradShape(uint32_t i, const Vec3& qpoint) const
 {
   // clang-format off
   if (i == 0) return Vec3( -1.0, -1.0, -1.0);
@@ -79,8 +76,8 @@ LagrangeTetMapping::RefJacobian(const Vec3& qpoint) const
 }
 
 std::pair<double, LagrangeBaseMapping::Vec3>
-LagrangeTetMapping::RefFaceJacobianDeterminantAndNormal(
-  size_t face_index, const Vec3& qpoint_face) const
+LagrangeTetMapping::RefFaceJacobianDeterminantAndNormal(size_t face_index,
+                                                        const Vec3& qpoint_face) const
 {
   const auto& x0 = node_locations_[face_node_mappings_[face_index][0]];
   const auto& x1 = node_locations_[face_node_mappings_[face_index][1]];
@@ -105,12 +102,11 @@ LagrangeTetMapping::RefFaceJacobianDeterminantAndNormal(
   const auto cross = dx_dxbar.Cross(dx_dybar);
   const double detJ = cross.Norm();
 
-  return {detJ, cross/detJ};
+  return {detJ, cross / detJ};
 }
 
 LagrangeBaseMapping::Vec3
-LagrangeTetMapping::FaceToElementQPointConversion(size_t face_index,
-                                                  const Vec3& qpoint_face) const
+LagrangeTetMapping::FaceToElementQPointConversion(size_t face_index, const Vec3& qpoint_face) const
 {
   const double x = qpoint_face.x;
   const double y = qpoint_face.y;

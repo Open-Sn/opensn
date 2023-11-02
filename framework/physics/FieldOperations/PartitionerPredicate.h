@@ -26,6 +26,6 @@ protected:
   const size_t result_component_;
 };
 
-}
+} // namespace chi_physics::field_operations
 
 #endif // CHITECH_PARTITIONERPREDICATE_H

@@ -4,7 +4,6 @@
 #include "physics/PhysicsMaterial/material_property_base.h"
 #include "math/SparseMatrix/chi_math_sparse_matrix.h"
 
-
 namespace chi_physics
 {
 
@@ -22,12 +21,9 @@ public:
     std::vector<double> emission_spectrum;
   };
 
-  MultiGroupXS()
-      : MaterialProperty(PropertyType::TRANSPORT_XSECTIONS)
-  {}
+  MultiGroupXS() : MaterialProperty(PropertyType::TRANSPORT_XSECTIONS) {}
 
-  void ExportToChiXSFile(const std::string& file_name,
-                         const double fission_scaling = 1.0) const;
+  void ExportToChiXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
   void PushLuaTable(lua_State* L) const override;
 
   virtual const unsigned int NumGroups() const = 0;
@@ -56,15 +52,13 @@ public:
 
   virtual const std::vector<double>& InverseVelocity() const = 0;
 
-  virtual const std::vector <chi_math::SparseMatrix>&
-  TransferMatrices() const = 0;
+  virtual const std::vector<chi_math::SparseMatrix>& TransferMatrices() const = 0;
 
-  virtual const chi_math::SparseMatrix&
-  TransferMatrix(unsigned int ell) const = 0;
+  virtual const chi_math::SparseMatrix& TransferMatrix(unsigned int ell) const = 0;
 
-  virtual const std::vector <std::vector<double>> ProductionMatrix() const = 0;
+  virtual const std::vector<std::vector<double>> ProductionMatrix() const = 0;
 
-  virtual const std::vector <Precursor>& Precursors() const = 0;
+  virtual const std::vector<Precursor>& Precursors() const = 0;
 
   virtual const std::vector<double>& DiffusionCoefficient() const = 0;
 
@@ -75,6 +69,6 @@ public:
   virtual const std::vector<double>& SigmaSGtoG() const = 0;
 };
 
-}//namespace chi_physics
+} // namespace chi_physics
 
-#endif //MULTIGROUP_XS_H
+#endif // MULTIGROUP_XS_H

@@ -12,19 +12,18 @@
 namespace lbs
 {
 
-SweepChunk::SweepChunk(
-  std::vector<double>& destination_phi,
-  std::vector<double>& destination_psi,
-  const chi_mesh::MeshContinuum& grid,
-  const chi_math::SpatialDiscretization& discretization,
-  const std::vector<UnitCellMatrices>& unit_cell_matrices,
-  std::vector<lbs::CellLBSView>& cell_transport_views,
-  const std::vector<double>& source_moments,
-  const LBSGroupset& groupset,
-  const std::map<int, XSPtr>& xs,
-  int num_moments,
-  int max_num_cell_dofs,
-  std::unique_ptr<SweepDependencyInterface> sweep_dependency_interface_ptr)
+SweepChunk::SweepChunk(std::vector<double>& destination_phi,
+                       std::vector<double>& destination_psi,
+                       const chi_mesh::MeshContinuum& grid,
+                       const chi_math::SpatialDiscretization& discretization,
+                       const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                       std::vector<lbs::CellLBSView>& cell_transport_views,
+                       const std::vector<double>& source_moments,
+                       const LBSGroupset& groupset,
+                       const std::map<int, XSPtr>& xs,
+                       int num_moments,
+                       int max_num_cell_dofs,
+                       std::unique_ptr<SweepDependencyInterface> sweep_dependency_interface_ptr)
   : chi_mesh::sweep_management::SweepChunk(destination_phi, destination_psi),
     grid_(grid),
     grid_fe_view_(discretization),
@@ -43,19 +42,17 @@ SweepChunk::SweepChunk(
 {
   Amat_.resize(max_num_cell_dofs, std::vector<double>(max_num_cell_dofs));
   Atemp_.resize(max_num_cell_dofs, std::vector<double>(max_num_cell_dofs));
-  b_.resize(groupset.groups_.size(),
-            std::vector<double>(max_num_cell_dofs, 0.0));
+  b_.resize(groupset.groups_.size(), std::vector<double>(max_num_cell_dofs, 0.0));
   source_.resize(max_num_cell_dofs, 0.0);
 
-  sweep_dependency_interface_.groupset_angle_group_stride_ =
-    groupset_angle_group_stride_;
+  sweep_dependency_interface_.groupset_angle_group_stride_ = groupset_angle_group_stride_;
   sweep_dependency_interface_.groupset_group_stride_ = groupset_group_stride_;
 }
 
 // ##################################################################
 /**Registers a kernel as a named callback function*/
-void SweepChunk::RegisterKernel(const std::string& name,
-                                CallbackFunction function)
+void
+SweepChunk::RegisterKernel(const std::string& name, CallbackFunction function)
 {
   ChiInvalidArgumentIf(kernels_.count(name) > 0,
                        "Attempting to register kernel with name \"" + name +
@@ -66,7 +63,8 @@ void SweepChunk::RegisterKernel(const std::string& name,
 
 // ##################################################################
 /**Returns a kernel if the given name exists.*/
-SweepChunk::CallbackFunction SweepChunk::Kernel(const std::string& name) const
+SweepChunk::CallbackFunction
+SweepChunk::Kernel(const std::string& name) const
 {
   ChiInvalidArgumentIf(kernels_.count(name) == 0,
                        "No register kernel with name \"" + name + "\" found");
@@ -75,7 +73,8 @@ SweepChunk::CallbackFunction SweepChunk::Kernel(const std::string& name) const
 
 // ##################################################################
 /**Executes the supplied kernels list.*/
-void SweepChunk::ExecuteKernels(const std::vector<CallbackFunction>& kernels)
+void
+SweepChunk::ExecuteKernels(const std::vector<CallbackFunction>& kernels)
 {
   for (auto& kernel : kernels)
     kernel();
@@ -86,7 +85,8 @@ void SweepChunk::ExecuteKernels(const std::vector<CallbackFunction>& kernels)
  * face angular fluxes downstream and computing
  * balance parameters (i.e. outflow)
  * */
-void SweepChunk::OutgoingSurfaceOperations()
+void
+SweepChunk::OutgoingSurfaceOperations()
 {
   const size_t f = sweep_dependency_interface_.current_face_idx_;
   const auto& IntF_shapeI = (*IntS_shapeI_)[f];
@@ -94,8 +94,7 @@ void SweepChunk::OutgoingSurfaceOperations()
   const double wt = direction_qweight_;
 
   const bool on_boundary = sweep_dependency_interface_.on_boundary_;
-  const bool is_reflecting_boundary =
-    sweep_dependency_interface_.is_reflecting_bndry_;
+  const bool is_reflecting_boundary = sweep_dependency_interface_.is_reflecting_bndry_;
 
   const size_t num_face_nodes = cell_mapping_->NumFaceNodes(f);
   for (int fi = 0; fi < num_face_nodes; ++fi)
@@ -110,15 +109,15 @@ void SweepChunk::OutgoingSurfaceOperations()
           psi[gsg] = b_[gsg][i];
     if (on_boundary and not is_reflecting_boundary)
       for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-        cell_transport_view_->AddOutflow(gs_gi_ + gsg,
-                                         wt * mu * b_[gsg][i] * IntF_shapeI[i]);
+        cell_transport_view_->AddOutflow(gs_gi_ + gsg, wt * mu * b_[gsg][i] * IntF_shapeI[i]);
 
   } // for fi
 }
 
 // ##################################################################
 /**Assembles the volumetric gradient term.*/
-void SweepChunk::KernelFEMVolumetricGradientTerm()
+void
+SweepChunk::KernelFEMVolumetricGradientTerm()
 {
   const auto& G = *G_;
 
@@ -129,7 +128,8 @@ void SweepChunk::KernelFEMVolumetricGradientTerm()
 
 // ##################################################################
 /**Performs the integral over the surface of a face.*/
-void SweepChunk::KernelFEMUpwindSurfaceIntegrals()
+void
+SweepChunk::KernelFEMUpwindSurfaceIntegrals()
 {
   const size_t f = sweep_dependency_interface_.current_face_idx_;
   const auto& M_surf_f = (*M_surf_)[f];
@@ -157,7 +157,8 @@ void SweepChunk::KernelFEMUpwindSurfaceIntegrals()
 
 // ##################################################################
 /**Assembles angular sources and applies the mass matrix terms.*/
-void SweepChunk::KernelFEMSTDMassTerms()
+void
+SweepChunk::KernelFEMSTDMassTerms()
 {
   const auto& M = *M_;
   const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
@@ -193,7 +194,8 @@ void SweepChunk::KernelFEMSTDMassTerms()
 
 // ##################################################################
 /**Adds a single direction's contribution to the moment integrals.*/
-void SweepChunk::KernelPhiUpdate()
+void
+SweepChunk::KernelPhiUpdate()
 {
   const auto& d2m_op = groupset_.quadrature_->GetDiscreteToMomentOperator();
 
@@ -213,19 +215,19 @@ void SweepChunk::KernelPhiUpdate()
 
 // ##################################################################
 /**Updates angular fluxes.*/
-void SweepChunk::KernelPsiUpdate()
+void
+SweepChunk::KernelPsiUpdate()
 {
   if (not save_angular_flux_) return;
 
   auto& output_psi = GetDestinationPsi();
-  double* cell_psi_data = &output_psi[grid_fe_view_.MapDOFLocal(
-    *cell_, 0, groupset_.psi_uk_man_, 0, 0)];
-
+  double* cell_psi_data =
+    &output_psi[grid_fe_view_.MapDOFLocal(*cell_, 0, groupset_.psi_uk_man_, 0, 0)];
 
   for (size_t i = 0; i < cell_num_nodes_; ++i)
   {
-    const size_t imap = i * groupset_angle_group_stride_ +
-                        direction_num_ * groupset_group_stride_ + gs_ss_begin_;
+    const size_t imap =
+      i * groupset_angle_group_stride_ + direction_num_ * groupset_group_stride_ + gs_ss_begin_;
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
       cell_psi_data[imap + gsg] = b_[gsg][i];
   } // for i
@@ -233,11 +235,9 @@ void SweepChunk::KernelPsiUpdate()
 
 // ##################################################################
 /**Sets data for the current incoming face.*/
-void SweepDependencyInterface::SetupIncomingFace(int face_id,
-                                                 size_t num_face_nodes,
-                                                 uint64_t neighbor_id,
-                                                 bool on_local_face,
-                                                 bool on_boundary)
+void
+SweepDependencyInterface::SetupIncomingFace(
+  int face_id, size_t num_face_nodes, uint64_t neighbor_id, bool on_local_face, bool on_boundary)
 {
   current_face_idx_ = face_id;
   num_face_nodes_ = num_face_nodes;
@@ -248,12 +248,13 @@ void SweepDependencyInterface::SetupIncomingFace(int face_id,
 
 // ##################################################################
 /**Sets data for the current outgoing face.*/
-void SweepDependencyInterface::SetupOutgoingFace(int face_id,
-                                                 size_t num_face_nodes,
-                                                 uint64_t neighbor_id,
-                                                 bool on_local_face,
-                                                 bool on_boundary,
-                                                 int locality)
+void
+SweepDependencyInterface::SetupOutgoingFace(int face_id,
+                                            size_t num_face_nodes,
+                                            uint64_t neighbor_id,
+                                            bool on_local_face,
+                                            bool on_boundary,
+                                            int locality)
 {
   current_face_idx_ = face_id;
   num_face_nodes_ = num_face_nodes;
@@ -263,8 +264,7 @@ void SweepDependencyInterface::SetupOutgoingFace(int face_id,
   on_boundary_ = on_boundary;
 
   is_reflecting_bndry_ =
-    (on_boundary_ and
-     angle_set_->GetBoundaries()[neighbor_id_]->IsReflecting());
+    (on_boundary_ and angle_set_->GetBoundaries()[neighbor_id_]->IsReflecting());
 }
 
 } // namespace lbs

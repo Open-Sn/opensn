@@ -14,14 +14,13 @@ class VolumetricQuadraturePointData
 {
 public:
   VolumetricQuadraturePointData();
-  VolumetricQuadraturePointData(
-    std::vector<unsigned int> quadrature_point_indices,
-    VecVec3 qpoints_xyz,
-    std::vector<VecDbl> shape_value,
-    std::vector<VecVec3> shape_grad,
-    VecDbl JxW,
-    std::vector<std::vector<int>> face_dof_mappings,
-    size_t num_nodes);
+  VolumetricQuadraturePointData(std::vector<unsigned int> quadrature_point_indices,
+                                VecVec3 qpoints_xyz,
+                                std::vector<VecDbl> shape_value,
+                                std::vector<VecVec3> shape_grad,
+                                VecDbl JxW,
+                                std::vector<std::vector<int>> face_dof_mappings,
+                                size_t num_nodes);
 
   const std::vector<unsigned int>& QuadraturePointIndices() const;
   chi_mesh::Vector3 QPointXYZ(unsigned int qp) const;
@@ -54,13 +53,13 @@ class SurfaceQuadraturePointData : public VolumetricQuadraturePointData
 public:
   SurfaceQuadraturePointData();
   SurfaceQuadraturePointData(std::vector<unsigned int> quadrature_point_indices,
-                      VecVec3 qpoints_xyz,
-                      std::vector<VecDbl> shape_value,
-                      std::vector<VecVec3> shape_grad,
-                      VecDbl JxW,
-                      VecVec3 normals,
-                      std::vector<std::vector<int>> face_dof_mappings,
-                      size_t num_nodes);
+                             VecVec3 qpoints_xyz,
+                             std::vector<VecDbl> shape_value,
+                             std::vector<VecVec3> shape_grad,
+                             VecDbl JxW,
+                             VecVec3 normals,
+                             std::vector<std::vector<int>> face_dof_mappings,
+                             size_t num_nodes);
   chi_mesh::Vector3 Normal(unsigned int qp) const;
   const VecVec3& Normals() const;
 

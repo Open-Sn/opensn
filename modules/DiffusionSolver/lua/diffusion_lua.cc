@@ -2,7 +2,8 @@
 
 #define LUA_FMACRO1(x) lua_register(L, #x, x)
 
-void diffusion_solver::lua_utils::RegisterLuaEntities(lua_State *L)
+void
+diffusion_solver::lua_utils::RegisterLuaEntities(lua_State* L)
 {
   LUA_FMACRO1(chiDiffusionCreateSolver);
   LUA_FMACRO1(chiDiffusionInitialize);

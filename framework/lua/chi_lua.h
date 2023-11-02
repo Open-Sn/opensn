@@ -3,9 +3,9 @@
 
 extern "C"
 {
-#include<lua.h>
-#include<lualib.h>
-#include<lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 }
 
 #include <typeinfo>
@@ -13,7 +13,7 @@ extern "C"
 #include <vector>
 #include <memory>
 
-void LuaPostArgAmountError(const std::string& func_name,int expected, int given);
+void LuaPostArgAmountError(const std::string& func_name, int expected, int given);
 void LuaCheckNilValue(const std::string& func_name, lua_State* L, int arg);
 void LuaCheckStringValue(const std::string& func_name, lua_State* L, int arg);
 void LuaCheckBoolValue(const std::string& func_name, lua_State* L, int arg);
@@ -28,34 +28,30 @@ void LuaPopulateVectorFrom1DArray(const std::string& func_name,
 
 namespace chi
 {
-  class ParameterBlock;
+class ParameterBlock;
 }
 namespace chi_lua
 {
-  /**This static object is used to parse lua tables into parameter blocks.*/
-  class TableParserAsParameterBlock
-  {
-  private:
-    static
-    void RecursivelyParseTableValues(
-      lua_State* L,
-                                            chi::ParameterBlock& block,
-      const std::string& key_str_name);
+/**This static object is used to parse lua tables into parameter blocks.*/
+class TableParserAsParameterBlock
+{
+private:
+  static void RecursivelyParseTableValues(lua_State* L,
+                                          chi::ParameterBlock& block,
+                                          const std::string& key_str_name);
 
-    static
-    void RecursivelyParseTableKeys(
-      lua_State* L, int t, chi::ParameterBlock& block);
-  public:
-    /**\brief Parses a lua table into a hierarchical parameter block.*/
-    static chi::ParameterBlock ParseTable(lua_State* L, int table_stack_index);
-  };
+  static void RecursivelyParseTableKeys(lua_State* L, int t, chi::ParameterBlock& block);
 
-  /**\brief This recursive routine operates on a parameter block and passes
-  * the parameters to the lua stack.*/
-  void PushParameterBlock(
-    lua_State* L, const chi::ParameterBlock& block, int level = 0);
+public:
+  /**\brief Parses a lua table into a hierarchical parameter block.*/
+  static chi::ParameterBlock ParseTable(lua_State* L, int table_stack_index);
+};
 
-  chi::ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
-}//namespace chi_lua
+/**\brief This recursive routine operates on a parameter block and passes
+ * the parameters to the lua stack.*/
+void PushParameterBlock(lua_State* L, const chi::ParameterBlock& block, int level = 0);
+
+chi::ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
+} // namespace chi_lua
 
 #endif

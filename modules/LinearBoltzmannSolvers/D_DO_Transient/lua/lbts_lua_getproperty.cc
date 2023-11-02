@@ -3,10 +3,9 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-#define PropertyArgCntErr(prop_name) \
-throw std::logic_error(fname + ": Insufficient amount of arguments, " + \
-                       std::to_string(num_args) + ", for property " + \
-                       prop_name)
+#define PropertyArgCntErr(prop_name)                                                               \
+  throw std::logic_error(fname + ": Insufficient amount of arguments, " +                          \
+                         std::to_string(num_args) + ", for property " + prop_name)
 
 namespace lbs::lbts_lua_utils
 {
@@ -35,20 +34,19 @@ Returns the simulation time before the latest timestep.\n\n
 
 
 \author Zachary Hardy*/
-int chiLBTSGetProperty(lua_State* L)
+int
+chiLBTSGetProperty(lua_State* L)
 {
   const std::string fname = "chiLBTSSetProperty";
   const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
   //============================================= Get the solver
   LuaCheckNilValue(fname, L, 1);
   const int solver_handle = lua_tointeger(L, 1);
 
-  auto& solver = chi::GetStackItem<lbs::DiscOrdTransientSolver>(chi::object_stack,
-                                                                solver_handle,
-                                                                fname);
+  auto& solver =
+    chi::GetStackItem<lbs::DiscOrdTransientSolver>(chi::object_stack, solver_handle, fname);
 
   //============================================= Get the property
   LuaCheckStringValue(fname, L, 2);
@@ -75,8 +73,7 @@ int chiLBTSGetProperty(lua_State* L)
     return 1;
   }
   else
-    throw std::logic_error(fname + ": unsupported property name \"" +
-                           property + "\".");
+    throw std::logic_error(fname + ": unsupported property name \"" + property + "\".");
 }
 
-}//namespace lbs::lbts_lua_utils
+} // namespace lbs::lbts_lua_utils

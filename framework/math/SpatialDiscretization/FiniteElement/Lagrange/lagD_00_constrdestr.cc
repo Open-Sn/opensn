@@ -12,12 +12,10 @@ namespace chi_math::spatial_discretization
 
 // ###################################################################
 /**Constructor.*/
-LagrangeDiscontinuous::LagrangeDiscontinuous(
-  const chi_mesh::MeshContinuum& grid,
-  chi_math::QuadratureOrder q_order,
-  chi_math::CoordinateSystemType cs_type)
-  : LagrangeBase(
-      grid, q_order, SDMType::LAGRANGE_DISCONTINUOUS, cs_type)
+LagrangeDiscontinuous::LagrangeDiscontinuous(const chi_mesh::MeshContinuum& grid,
+                                             chi_math::QuadratureOrder q_order,
+                                             chi_math::CoordinateSystemType cs_type)
+  : LagrangeBase(grid, q_order, SDMType::LAGRANGE_DISCONTINUOUS, cs_type)
 {
   CreateCellMappings();
 
@@ -26,18 +24,17 @@ LagrangeDiscontinuous::LagrangeDiscontinuous(
 
 // ###################################################################
 /**Construct a shared object using the protected constructor.*/
-std::shared_ptr<LagrangeDiscontinuous> LagrangeDiscontinuous::New(
-  const chi_mesh::MeshContinuum& grid,
-  QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
-  CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
+std::shared_ptr<LagrangeDiscontinuous>
+LagrangeDiscontinuous::New(const chi_mesh::MeshContinuum& grid,
+                           QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
+                           CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
 
 {
   const auto LagrangeD = SpatialDiscretizationType::LAGRANGE_DISCONTINUOUS;
   // First try to find an existing spatial discretization that matches the
   // one requested.
   for (auto& sdm : Chi::sdm_stack)
-    if (sdm->Type() == LagrangeD and
-        std::addressof(sdm->Grid()) == std::addressof(grid) and
+    if (sdm->Type() == LagrangeD and std::addressof(sdm->Grid()) == std::addressof(grid) and
         sdm->GetCoordinateSystemType() == cs_type)
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
@@ -46,16 +43,15 @@ std::shared_ptr<LagrangeDiscontinuous> LagrangeDiscontinuous::New(
 
       if (fe_ptr->GetQuadratureOrder() != q_order) break;
 
-      auto sdm_ptr =
-        std::dynamic_pointer_cast<LagrangeDiscontinuous>(fe_ptr);
+      auto sdm_ptr = std::dynamic_pointer_cast<LagrangeDiscontinuous>(fe_ptr);
 
       ChiLogicalErrorIf(not sdm_ptr, "Casting failure");
 
       return sdm_ptr;
     }
 
-  auto new_sdm = std::shared_ptr<LagrangeDiscontinuous>(
-    new LagrangeDiscontinuous(grid, q_order, cs_type));
+  auto new_sdm =
+    std::shared_ptr<LagrangeDiscontinuous>(new LagrangeDiscontinuous(grid, q_order, cs_type));
 
   Chi::sdm_stack.push_back(new_sdm);
 

@@ -11,7 +11,8 @@ namespace chi_math::functions
 
 RegisterChiObject(chi_math::functions, LuaDimAToDimB);
 
-chi::InputParameters LuaDimAToDimB::GetInputParameters()
+chi::InputParameters
+LuaDimAToDimB::GetInputParameters()
 {
   chi::InputParameters params = FunctionDimAToDimB::GetInputParameters();
 
@@ -22,8 +23,7 @@ chi::InputParameters LuaDimAToDimB::GetInputParameters()
   params.SetDocGroup("DocMathFunctions");
   // clang-format on
 
-  params.AddRequiredParameter<std::string>("lua_function_name",
-                                           "Name of the lua function");
+  params.AddRequiredParameter<std::string>("lua_function_name", "Name of the lua function");
 
   return params;
 }
@@ -42,21 +42,19 @@ LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
   lua_getglobal(L, lua_function_name_.c_str());
 
   ChiLogicalErrorIf(not lua_isfunction(L, -1),
-                    std::string("Attempted to access lua-function, ") +
-                      lua_function_name_ +
+                    std::string("Attempted to access lua-function, ") + lua_function_name_ +
                       ", but it seems the function could "
                       "not be retrieved.");
 
   const size_t num_vals = vals.size();
 
-  ChiInvalidArgumentIf(
-    num_vals != InputDimension(),
-    std::string("Number of inputs do not match. ") +
-      "Attempted to evaluate with " + std::to_string(num_vals) +
-      " parameters but requires " + std::to_string(InputDimension()));
+  ChiInvalidArgumentIf(num_vals != InputDimension(),
+                       std::string("Number of inputs do not match. ") +
+                         "Attempted to evaluate with " + std::to_string(num_vals) +
+                         " parameters but requires " + std::to_string(InputDimension()));
 
   lua_newtable(L);
-  lua_Integer k=0;
+  lua_Integer k = 0;
   for (double val : vals)
   {
     lua_pushinteger(L, ++k);
@@ -80,16 +78,14 @@ LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
     }
   }
   else
-    throw std::logic_error(fname + " attempted to call lua-function, " +
-                           lua_function_name_ + ", but the call failed. " +
-                           lua_tostring(L, -1));
+    throw std::logic_error(fname + " attempted to call lua-function, " + lua_function_name_ +
+                           ", but the call failed. " + lua_tostring(L, -1));
 
-  ChiLogicalErrorIf(
-    result.size() != OutputDimension(),
-    std::string("Number of outputs after the function was ") +
-      "called does not "
-      "match the function specifications. A table is expected with " +
-      std::to_string(OutputDimension()) + " entries.");
+  ChiLogicalErrorIf(result.size() != OutputDimension(),
+                    std::string("Number of outputs after the function was ") +
+                      "called does not "
+                      "match the function specifications. A table is expected with " +
+                      std::to_string(OutputDimension()) + " entries.");
 
   return result;
 }

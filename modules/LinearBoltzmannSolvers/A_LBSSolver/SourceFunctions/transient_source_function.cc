@@ -2,29 +2,31 @@
 
 //###################################################################
 /**Constructor for the transient source function. The only difference
- * as compared to a steady source function is the treatment of delayed fission.*/
-lbs::TransientSourceFunction::
-TransientSourceFunction(const LBSSolver& lbs_solver,
-                        double &ref_dt, chi_math::SteppingMethod &method) :
-  SourceFunction(lbs_solver),
-  dt_(ref_dt),
-  method_(method)
-{}
+ * as compared to a steady source function is the treatment of delayed
+ * fission.*/
+lbs::TransientSourceFunction::TransientSourceFunction(const LBSSolver& lbs_solver,
+                                                      double& ref_dt,
+                                                      chi_math::SteppingMethod& method)
+  : SourceFunction(lbs_solver), dt_(ref_dt), method_(method)
+{
+}
 
 //###################################################################
 /**Customized delayed fission source..*/
-double lbs::TransientSourceFunction::
-AddDelayedFission(const PrecursorList &precursors,
-                  const std::vector<double> &nu_delayed_sigma_f,
-                  const double *phi) const
+double
+lbs::TransientSourceFunction::AddDelayedFission(const PrecursorList& precursors,
+                                                const std::vector<double>& nu_delayed_sigma_f,
+                                                const double* phi) const
 {
   const auto& BackwardEuler = chi_math::SteppingMethod::IMPLICIT_EULER;
   const auto& CrankNicolson = chi_math::SteppingMethod::CRANK_NICOLSON;
 
   double theta;
-  if      (method_ == BackwardEuler) theta = 1.0;
-  else if (method_ == CrankNicolson) theta = 0.5;
-  else                              theta = 0.7;
+  if (method_ == BackwardEuler) theta = 1.0;
+  else if (method_ == CrankNicolson)
+    theta = 0.5;
+  else
+    theta = 0.7;
 
   const double eff_dt = theta * dt_;
 
@@ -34,15 +36,10 @@ AddDelayedFission(const PrecursorList &precursors,
       if (gp < gs_i_ or gp > gs_f_)
         for (const auto& precursor : precursors)
         {
-          const double coeff =
-            precursor.emission_spectrum[g_] *
-            precursor.decay_constant /
-            (1.0 + eff_dt * precursor.decay_constant);
+          const double coeff = precursor.emission_spectrum[g_] * precursor.decay_constant /
+                               (1.0 + eff_dt * precursor.decay_constant);
 
-          value += coeff * eff_dt *
-                   precursor.fractional_yield *
-                   nu_delayed_sigma_f[gp] *
-                   phi[gp] /
+          value += coeff * eff_dt * precursor.fractional_yield * nu_delayed_sigma_f[gp] * phi[gp] /
                    cell_volume_;
         }
 
@@ -50,15 +47,10 @@ AddDelayedFission(const PrecursorList &precursors,
     for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
       for (const auto& precursor : precursors)
       {
-        const double coeff =
-          precursor.emission_spectrum[g_] *
-          precursor.decay_constant /
-          (1.0 + eff_dt * precursor.decay_constant);
+        const double coeff = precursor.emission_spectrum[g_] * precursor.decay_constant /
+                             (1.0 + eff_dt * precursor.decay_constant);
 
-        value += coeff * eff_dt *
-                 precursor.fractional_yield *
-                 nu_delayed_sigma_f[gp] *
-                 phi[gp] /
+        value += coeff * eff_dt * precursor.fractional_yield * nu_delayed_sigma_f[gp] * phi[gp] /
                  cell_volume_;
       }
 

@@ -6,14 +6,14 @@
 
 //###################################################################
 /**Extrude template cells into polygons.*/
-void chi_mesh::VolumeMesherExtruder::
-  ExtrudeCells(chi_mesh::MeshContinuum& template_grid,
-               chi_mesh::MeshContinuum& grid)
+void
+chi_mesh::VolumeMesherExtruder::ExtrudeCells(chi_mesh::MeshContinuum& template_grid,
+                                             chi_mesh::MeshContinuum& grid)
 {
-  const chi_mesh::Vector3 khat(0.0,0.0,1.0);
+  const chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
   //================================================== Start extrusion
   size_t num_global_cells = 0;
-  for (size_t iz=0; iz<(vertex_layers_.size() - 1); iz++)
+  for (size_t iz = 0; iz < (vertex_layers_.size() - 1); iz++)
   {
     for (const auto& template_cell : template_grid.local_cells)
     {
@@ -31,7 +31,7 @@ void chi_mesh::VolumeMesherExtruder::
         auto v01 = v1 - v0;
         auto v02 = v2 - v0;
 
-        if (v01.Cross(v02).Dot(khat)<0.0)
+        if (v01.Cross(v02).Dot(khat) < 0.0)
           throw std::logic_error("Extruder attempting to extrude a template"
                                  " cell with a normal pointing downward. This"
                                  " causes erratic behavior and needs to be"
@@ -45,12 +45,8 @@ void chi_mesh::VolumeMesherExtruder::
 
       if (has_local_scope)
       {
-        auto cell = MakeExtrudedCell(template_cell,
-                                     grid,
-                                     iz,
-                                     num_global_cells,
-                                     pid,
-                                     template_grid.local_cells.size());
+        auto cell = MakeExtrudedCell(
+          template_cell, grid, iz, num_global_cells, pid, template_grid.local_cells.size());
 
         cell->material_id_ = template_cell.material_id_;
 
@@ -58,10 +54,7 @@ void chi_mesh::VolumeMesherExtruder::
       }
       ++num_global_cells;
 
-    }//for template cell
+    } // for template cell
 
-  }//for iz
-
-
+  } // for iz
 }
-

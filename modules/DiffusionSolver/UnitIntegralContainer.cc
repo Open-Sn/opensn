@@ -8,17 +8,16 @@
 namespace chi_diffusion
 {
 
-UnitIntegralContainer::UnitIntegralContainer(
-  MatDbl IntV_gradShapeI_gradShapeJ,
-  MatVec3 IntV_shapeI_gradshapeJ,
-  MatDbl IntV_shapeI_shapeJ,
-  VecDbl IntV_shapeI,
-  VecVec3 IntV_gradshapeI,
-  std::vector<MatDbl> IntS_shapeI_shapeJ,
-  std::vector<VecDbl> IntS_shapeI,
-  std::vector<MatVec3> IntS_shapeI_gradshapeJ,
-  std::vector<std::vector<int>> face_dof_mappings,
-  size_t num_nodes)
+UnitIntegralContainer::UnitIntegralContainer(MatDbl IntV_gradShapeI_gradShapeJ,
+                                             MatVec3 IntV_shapeI_gradshapeJ,
+                                             MatDbl IntV_shapeI_shapeJ,
+                                             VecDbl IntV_shapeI,
+                                             VecVec3 IntV_gradshapeI,
+                                             std::vector<MatDbl> IntS_shapeI_shapeJ,
+                                             std::vector<VecDbl> IntS_shapeI,
+                                             std::vector<MatVec3> IntS_shapeI_gradshapeJ,
+                                             std::vector<std::vector<int>> face_dof_mappings,
+                                             size_t num_nodes)
   : IntV_gradShapeI_gradShapeJ_(std::move(IntV_gradShapeI_gradShapeJ)),
     IntV_shapeI_gradshapeJ_(std::move(IntV_shapeI_gradshapeJ)),
     IntV_shapeI_shapeJ_(std::move(IntV_shapeI_shapeJ)),
@@ -66,13 +65,11 @@ UnitIntegralContainer::Make(const chi_math::CellMapping& cell_mapping)
           internal_data.ShapeGrad(i, qp).Dot(internal_data.ShapeGrad(j, qp)) *
           internal_data.JxW(qp);
 
-        IntV_shapeI_gradshapeJ[i][j] += internal_data.ShapeValue(i, qp) *
-                                        internal_data.ShapeGrad(j, qp) *
-                                        internal_data.JxW(qp);
+        IntV_shapeI_gradshapeJ[i][j] +=
+          internal_data.ShapeValue(i, qp) * internal_data.ShapeGrad(j, qp) * internal_data.JxW(qp);
 
-        IntV_shapeI_shapeJ[i][j] += internal_data.ShapeValue(i, qp) *
-                                    internal_data.ShapeValue(j, qp) *
-                                    internal_data.JxW(qp);
+        IntV_shapeI_shapeJ[i][j] +=
+          internal_data.ShapeValue(i, qp) * internal_data.ShapeValue(j, qp) * internal_data.JxW(qp);
       } // for qp
     }   // for j
 
@@ -80,8 +77,7 @@ UnitIntegralContainer::Make(const chi_math::CellMapping& cell_mapping)
     {
       IntV_shapeI[i] += internal_data.ShapeValue(i, qp) * internal_data.JxW(qp);
 
-      IntV_gradshapeI[i] +=
-        internal_data.ShapeGrad(i, qp) * internal_data.JxW(qp);
+      IntV_gradshapeI[i] += internal_data.ShapeGrad(i, qp) * internal_data.JxW(qp);
     } // for qp
   }   // for i
 
@@ -102,16 +98,15 @@ UnitIntegralContainer::Make(const chi_math::CellMapping& cell_mapping)
                                          faces_qp_data[f].ShapeValue(j, qp) *
                                          faces_qp_data[f].JxW(qp);
 
-          IntS_shapeI_gradshapeJ[f][i][j] +=
-            faces_qp_data[f].ShapeValue(i, qp) *
-            faces_qp_data[f].ShapeGrad(j, qp) * faces_qp_data[f].JxW(qp);
+          IntS_shapeI_gradshapeJ[f][i][j] += faces_qp_data[f].ShapeValue(i, qp) *
+                                             faces_qp_data[f].ShapeGrad(j, qp) *
+                                             faces_qp_data[f].JxW(qp);
         } // for qp
       }   // for j
 
       for (const auto& qp : faces_qp_data[f].QuadraturePointIndices())
       {
-        IntS_shapeI[f][i] +=
-          faces_qp_data[f].ShapeValue(i, qp) * faces_qp_data[f].JxW(qp);
+        IntS_shapeI[f][i] += faces_qp_data[f].ShapeValue(i, qp) * faces_qp_data[f].JxW(qp);
       } // for qp
     }   // for i
   }     // for f
@@ -131,8 +126,8 @@ UnitIntegralContainer::Make(const chi_math::CellMapping& cell_mapping)
   return ui_data;
 }
 
-double UnitIntegralContainer::IntV_gradShapeI_gradShapeJ(unsigned int i,
-                                                         unsigned int j) const
+double
+UnitIntegralContainer::IntV_gradShapeI_gradShapeJ(unsigned int i, unsigned int j) const
 {
   double value;
   auto& row_I = IntV_gradShapeI_gradShapeJ_.at(i);
@@ -140,36 +135,36 @@ double UnitIntegralContainer::IntV_gradShapeI_gradShapeJ(unsigned int i,
   return value;
 }
 chi_mesh::Vector3
-UnitIntegralContainer::IntV_shapeI_gradshapeJ(unsigned int i,
-                                              unsigned int j) const
+UnitIntegralContainer::IntV_shapeI_gradshapeJ(unsigned int i, unsigned int j) const
 {
   chi_mesh::Vector3 value;
   auto& row_I = IntV_shapeI_gradshapeJ_.at(i);
   value = row_I.at(j);
   return value;
 }
-double UnitIntegralContainer::IntV_shapeI_shapeJ(unsigned int i,
-                                                 unsigned int j) const
+double
+UnitIntegralContainer::IntV_shapeI_shapeJ(unsigned int i, unsigned int j) const
 {
   double value;
   auto& row_I = IntV_shapeI_shapeJ_.at(i);
   value = row_I.at(j);
   return value;
 }
-double UnitIntegralContainer::IntV_shapeI(unsigned int i) const
+double
+UnitIntegralContainer::IntV_shapeI(unsigned int i) const
 {
   double value = IntV_shapeI_.at(i);
   return value;
 }
-chi_mesh::Vector3 UnitIntegralContainer::IntV_gradshapeI(unsigned int i) const
+chi_mesh::Vector3
+UnitIntegralContainer::IntV_gradshapeI(unsigned int i) const
 {
   chi_mesh::Vector3 value;
   value = IntV_gradshapeI_.at(i);
   return value;
 }
-double UnitIntegralContainer::IntS_shapeI_shapeJ(unsigned int face,
-                                                 unsigned int i,
-                                                 unsigned int j) const
+double
+UnitIntegralContainer::IntS_shapeI_shapeJ(unsigned int face, unsigned int i, unsigned int j) const
 {
   double value;
   auto& face_data = IntS_shapeI_shapeJ_.at(face);
@@ -178,8 +173,8 @@ double UnitIntegralContainer::IntS_shapeI_shapeJ(unsigned int face,
   return value;
 }
 
-double UnitIntegralContainer::IntS_shapeI(unsigned int face,
-                                          unsigned int i) const
+double
+UnitIntegralContainer::IntS_shapeI(unsigned int face, unsigned int i) const
 {
   double value;
   auto& face_data = IntS_shapeI_.at(face);
@@ -187,8 +182,10 @@ double UnitIntegralContainer::IntS_shapeI(unsigned int face,
   return value;
 }
 
-chi_mesh::Vector3 UnitIntegralContainer::IntS_shapeI_gradshapeJ(
-  unsigned int face, unsigned int i, unsigned int j) const
+chi_mesh::Vector3
+UnitIntegralContainer::IntS_shapeI_gradshapeJ(unsigned int face,
+                                              unsigned int i,
+                                              unsigned int j) const
 {
   chi_mesh::Vector3 value;
   auto& face_data = IntS_shapeI_gradshapeJ_.at(face);

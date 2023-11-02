@@ -6,21 +6,21 @@
 namespace chi_mesh::sweep_management
 {
 
-void AAH_FLUDSCommonData::LocalIncidentMapping(
-  const chi_mesh::Cell& cell,
-  const SPDS& spds,
-  std::vector<int>& local_so_cell_mapping)
+void
+AAH_FLUDSCommonData::LocalIncidentMapping(const chi_mesh::Cell& cell,
+                                          const SPDS& spds,
+                                          std::vector<int>& local_so_cell_mapping)
 {
   const chi_mesh::MeshContinuum& grid = spds.Grid();
   auto& cell_nodal_mapping = grid_nodal_mappings_[cell.local_id_];
-  std::vector<std::pair<int,std::vector<short>>> inco_face_dof_mapping;
+  std::vector<std::pair<int, std::vector<short>>> inco_face_dof_mapping;
 
-  short        incoming_face_count=-1;
+  short incoming_face_count = -1;
 
   //=================================================== Loop over faces
   //           INCIDENT                                 but process
   //                                                    only incident faces
-  for (short f=0; f < cell.faces_.size(); f++)
+  for (short f = 0; f < cell.faces_.size(); f++)
   {
     const CellFace& face = cell.faces_[f];
     const auto& orienation = spds.CellFaceOrientations()[cell.local_id_][f];
@@ -35,7 +35,7 @@ void AAH_FLUDSCommonData::LocalIncidentMapping(
         //                                         dof mapping
         int ass_face = cell_nodal_mapping[f].associated_face_;
 
-        std::pair<int,std::vector<short>> dof_mapping;
+        std::pair<int, std::vector<short>> dof_mapping;
         dof_mapping.second = cell_nodal_mapping[f].face_node_mapping_;
 
         //======================================== Find associated face
@@ -46,9 +46,9 @@ void AAH_FLUDSCommonData::LocalIncidentMapping(
         int ass_f_counter = -1;
 
         int out_f = -1;
-        for (size_t af=0; af < adj_cell.faces_.size(); ++af)
+        for (size_t af = 0; af < adj_cell.faces_.size(); ++af)
         {
-          if (face_oris[af] == FaceOrientation::OUTGOING) {++out_f;}
+          if (face_oris[af] == FaceOrientation::OUTGOING) { ++out_f; }
 
           if (af == ass_face)
           {
@@ -62,12 +62,12 @@ void AAH_FLUDSCommonData::LocalIncidentMapping(
 
         dof_mapping.second.shrink_to_fit();
         inco_face_dof_mapping.push_back(dof_mapping);
-      }//if local
-    }//if incident
-  }//for incindent f
+      } // if local
+    }   // if incident
+  }     // for incindent f
 
   auto inco_face_info_array = new INCOMING_FACE_INFO[inco_face_dof_mapping.size()];
-  for (int i=0; i<inco_face_dof_mapping.size(); ++i)
+  for (int i = 0; i < inco_face_dof_mapping.size(); ++i)
     inco_face_info_array[i].Setup(inco_face_dof_mapping[i]);
 
   so_cell_inco_face_dof_indices.push_back(inco_face_info_array);

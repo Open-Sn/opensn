@@ -11,19 +11,19 @@ namespace lbs::adjoint_lua_utils
 
 RegisterLuaFunctionAsIs(chiAdjointSolverComputeInnerProduct);
 
-int chiAdjointSolverComputeInnerProduct(lua_State* L)
+int
+chiAdjointSolverComputeInnerProduct(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckNilValue(fname, L, 1);
 
-  const int solver_handle     = lua_tointeger(L, 1);
+  const int solver_handle = lua_tointeger(L, 1);
 
-  auto& solver = Chi::GetStackItem<lbs::DiscreteOrdinatesAdjointSolver>(
-    Chi::object_stack, solver_handle, fname);
+  auto& solver =
+    Chi::GetStackItem<lbs::DiscreteOrdinatesAdjointSolver>(Chi::object_stack, solver_handle, fname);
 
   const double ip_Q_phi_star = solver.ComputeInnerProduct();
 
@@ -31,4 +31,4 @@ int chiAdjointSolverComputeInnerProduct(lua_State* L)
   return 1;
 }
 
-}//namespace lbs
+} // namespace lbs::adjoint_lua_utils

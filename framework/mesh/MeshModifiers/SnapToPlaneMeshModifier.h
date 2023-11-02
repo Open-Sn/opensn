@@ -9,13 +9,12 @@ namespace chi_mesh
 {
 
 /**Object that will modify boundary elements that are close to the specified
-* direction to become perfectly aligned with that direction.*/
+ * direction to become perfectly aligned with that direction.*/
 class SnapToPlaneMeshModifier : public MeshModifier
 {
 public:
   static chi::InputParameters GetInputParameters();
-  explicit SnapToPlaneMeshModifier(
-    const chi::InputParameters& params);
+  explicit SnapToPlaneMeshModifier(const chi::InputParameters& params);
 
   void Apply() override;
 

@@ -34,7 +34,8 @@ LagrangeBase::LagrangeBase(const chi_mesh::MeshContinuum& grid,
   CreateCellMappings();
 }
 
-void LagrangeBase::CreateCellMappings()
+void
+LagrangeBase::CreateCellMappings()
 {
   typedef cell_mapping::LagrangeSlabMapping Slab;
   typedef cell_mapping::LagrangeQuadMapping Quad;
@@ -105,8 +106,7 @@ void LagrangeBase::CreateCellMappings()
           const auto& area_quad1 = quad_quad_order_arbitrary_;
           const auto& area_quad2 = tri_quad_order_arbitrary_;
 
-          mapping = make_unique<Wedge>(
-            ref_grid_, cell, vol_quad, area_quad1, area_quad2);
+          mapping = make_unique<Wedge>(ref_grid_, cell, vol_quad, area_quad1, area_quad2);
           break;
         }
         else if (cell.SubType() == chi_mesh::CellType::TETRAHEDRON)
@@ -114,8 +114,7 @@ void LagrangeBase::CreateCellMappings()
           const auto& vol_quad = tet_quad_order_arbitrary_;
           const auto& area_quad = tri_quad_order_arbitrary_;
 
-          mapping = make_unique<Tetrahedron>(
-            ref_grid_, cell, vol_quad, area_quad);
+          mapping = make_unique<Tetrahedron>(ref_grid_, cell, vol_quad, area_quad);
           break;
         }
         else
@@ -123,8 +122,7 @@ void LagrangeBase::CreateCellMappings()
           const auto& vol_quad = tet_quad_order_arbitrary_;
           const auto& area_quad = tri_quad_order_arbitrary_;
 
-          mapping =
-            make_unique<Polyhedron>(cell, ref_grid_, vol_quad, area_quad);
+          mapping = make_unique<Polyhedron>(cell, ref_grid_, vol_quad, area_quad);
           break;
         }
       }
@@ -141,8 +139,7 @@ void LagrangeBase::CreateCellMappings()
   for (uint64_t ghost_id : ghost_ids)
   {
     auto ghost_mapping = MakeCellMapping(ref_grid_.cells[ghost_id]);
-    nb_cell_mappings_.insert(
-      std::make_pair(ghost_id, std::move(ghost_mapping)));
+    nb_cell_mappings_.insert(std::make_pair(ghost_id, std::move(ghost_mapping)));
   }
 }
 

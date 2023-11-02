@@ -4,9 +4,9 @@
 /**Structure containing edge properties*/
 struct chi_mesh::Edge
 {
-  int              v_index[2]{};    ///< Indices of the vertices
-  int              f_index[4]{};    ///< Indices of faces adjoining it
-  chi_mesh::Vertex vertices[2];   ///< Vector vertices
+  int v_index[2]{};             ///< Indices of the vertices
+  int f_index[4]{};             ///< Indices of faces adjoining it
+  chi_mesh::Vertex vertices[2]; ///< Vector vertices
 
   Edge()
   {
@@ -38,6 +38,5 @@ struct chi_mesh::Edge
     return *this;
   }
 };
-
 
 #endif

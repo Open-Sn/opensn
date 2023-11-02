@@ -11,7 +11,8 @@
 
 // ###################################################################
 /**Initializes the Depth-Of-Graph algorithm.*/
-void chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
+void
+chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
 {
   //================================================== Load all anglesets
   //                                                   in preperation for
@@ -26,8 +27,7 @@ void chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
     for (size_t as = 0; as < num_anglesets; as++)
     {
       auto angleset = angleset_group.AngleSets()[as];
-      const auto& spds =
-        dynamic_cast<const SPDS_AdamsAdamsHawkins&>(angleset->GetSPDS());
+      const auto& spds = dynamic_cast<const SPDS_AdamsAdamsHawkins&>(angleset->GetSPDS());
 
       const TLEVELED_GRAPH& leveled_graph = spds.GetGlobalSweepPlanes();
 
@@ -35,8 +35,7 @@ void chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
       int loc_depth = -1;
       for (size_t level = 0; level < leveled_graph.size(); level++)
       {
-        for (size_t index = 0; index < leveled_graph[level].item_id.size();
-             index++)
+        for (size_t index = 0; index < leveled_graph[level].item_id.size(); index++)
         {
           if (leveled_graph[level].item_id[index] == Chi::mpi.location_id)
           {
@@ -62,8 +61,7 @@ void chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
       }
       else
       {
-        Chi::log.LogAllError()
-          << "Location depth not found in Depth-Of-Graph algorithm.";
+        Chi::log.LogAllError() << "Location depth not found in Depth-Of-Graph algorithm.";
         Chi::Exit(EXIT_FAILURE);
       }
 
@@ -83,8 +81,7 @@ void chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
   {
     bool operator()(const RULE_VALUES& a, const RULE_VALUES& b)
     {
-      return (a.depth_of_graph == b.depth_of_graph) and
-             (a.sign_of_omegax > b.sign_of_omegax);
+      return (a.depth_of_graph == b.depth_of_graph) and (a.sign_of_omegax > b.sign_of_omegax);
     }
   } compare_omega_x;
 
@@ -92,8 +89,7 @@ void chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
   {
     bool operator()(const RULE_VALUES& a, const RULE_VALUES& b)
     {
-      return (a.depth_of_graph == b.depth_of_graph) and
-             (a.sign_of_omegax == b.sign_of_omegax) and
+      return (a.depth_of_graph == b.depth_of_graph) and (a.sign_of_omegax == b.sign_of_omegax) and
              (a.sign_of_omegay > b.sign_of_omegay);
     }
   } compare_omega_y;
@@ -102,10 +98,8 @@ void chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
   {
     bool operator()(const RULE_VALUES& a, const RULE_VALUES& b)
     {
-      return (a.depth_of_graph == b.depth_of_graph) and
-             (a.sign_of_omegax == b.sign_of_omegax) and
-             (a.sign_of_omegay == b.sign_of_omegay) and
-             (a.sign_of_omegaz > b.sign_of_omegaz);
+      return (a.depth_of_graph == b.depth_of_graph) and (a.sign_of_omegax == b.sign_of_omegax) and
+             (a.sign_of_omegay == b.sign_of_omegay) and (a.sign_of_omegaz > b.sign_of_omegaz);
     }
   } compare_omega_z;
 
@@ -118,19 +112,17 @@ void chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
 
 // ###################################################################
 /**Executes the Depth-Of-Graph algorithm.*/
-void chi_mesh::sweep_management::SweepScheduler::ScheduleAlgoDOG(
-  SweepChunk& sweep_chunk)
+void
+chi_mesh::sweep_management::SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
   typedef ExecutionPermission ExePerm;
   typedef AngleSetStatus Status;
 
   Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::EVENT_BEGIN);
 
-  auto ev_info =
-    std::make_shared<chi::ChiLog::EventInfo>(std::string("Sweep initiated"));
+  auto ev_info = std::make_shared<chi::ChiLog::EventInfo>(std::string("Sweep initiated"));
 
-  Chi::log.LogEvent(
-    sweep_event_tag_, chi::ChiLog::EventType::SINGLE_OCCURRENCE, ev_info);
+  Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::SINGLE_OCCURRENCE, ev_info);
 
   //==================================================== Loop till done
   bool finished = false;
@@ -150,9 +142,8 @@ void chi_mesh::sweep_management::SweepScheduler::ScheduleAlgoDOG(
       //      Meaning it has received all upstream data and can be executed
       //  - FINISHED.
       //      Meaning the angleset has executed its sweep chunk
-      Status status = angleset->AngleSetAdvance(sweep_chunk,
-                                                sweep_timing_events_tag_,
-                                                ExePerm::NO_EXEC_IF_READY);
+      Status status =
+        angleset->AngleSetAdvance(sweep_chunk, sweep_timing_events_tag_, ExePerm::NO_EXEC_IF_READY);
 
       //=============================== Execute if ready and allowed
       // If this angleset is the one scheduled to run
@@ -163,27 +154,19 @@ void chi_mesh::sweep_management::SweepScheduler::ScheduleAlgoDOG(
         message_i << "Angleset " << angleset->GetID() << " executed on location "
                   << Chi::mpi.location_id;
 
-        auto ev_info_i =
-          std::make_shared<chi::ChiLog::EventInfo>(message_i.str());
+        auto ev_info_i = std::make_shared<chi::ChiLog::EventInfo>(message_i.str());
 
-        Chi::log.LogEvent(sweep_event_tag_,
-                          chi::ChiLog::EventType::SINGLE_OCCURRENCE,
-                          ev_info_i);
+        Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::SINGLE_OCCURRENCE, ev_info_i);
 
-        status = angleset->AngleSetAdvance(sweep_chunk,
-                                           sweep_timing_events_tag_,
-                                           ExePerm::EXECUTE);
+        status = angleset->AngleSetAdvance(sweep_chunk, sweep_timing_events_tag_, ExePerm::EXECUTE);
 
         std::stringstream message_f;
         message_f << "Angleset " << angleset->GetID() << " finished on location "
                   << Chi::mpi.location_id;
 
-        auto ev_info_f =
-          std::make_shared<chi::ChiLog::EventInfo>(message_f.str());
+        auto ev_info_f = std::make_shared<chi::ChiLog::EventInfo>(message_f.str());
 
-        Chi::log.LogEvent(sweep_event_tag_,
-                          chi::ChiLog::EventType::SINGLE_OCCURRENCE,
-                          ev_info_f);
+        Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::SINGLE_OCCURRENCE, ev_info_f);
 
         scheduled_angleset++; // Schedule the next angleset
       }
@@ -205,8 +188,7 @@ void chi_mesh::sweep_management::SweepScheduler::ScheduleAlgoDOG(
         if (angle_set->FlushSendBuffers() == Status::MESSAGES_PENDING)
           received_delayed_data = false;
 
-        if (not angle_set->ReceiveDelayedData())
-          received_delayed_data = false;
+        if (not angle_set->ReceiveDelayedData()) received_delayed_data = false;
       }
   }
 
@@ -219,8 +201,7 @@ void chi_mesh::sweep_management::SweepScheduler::ScheduleAlgoDOG(
   {
     if (bndry->Type() == chi_mesh::sweep_management::BoundaryType::REFLECTING)
     {
-      auto rbndry = std::static_pointer_cast<
-        chi_mesh::sweep_management::BoundaryReflecting>(bndry);
+      auto rbndry = std::static_pointer_cast<chi_mesh::sweep_management::BoundaryReflecting>(bndry);
       rbndry->ResetAnglesReadyStatus();
     }
   }

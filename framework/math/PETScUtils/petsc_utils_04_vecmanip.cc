@@ -7,10 +7,11 @@
 // ###################################################################
 /**Copies a PETSc vector to a STL vector. Only the local portion is
  * copied.*/
-void chi_math::PETScUtils::CopyVecToSTLvector(Vec x,
-                                              std::vector<double>& data,
-                                              size_t N,
-                                              bool resize_STL /*=true*/)
+void
+chi_math::PETScUtils::CopyVecToSTLvector(Vec x,
+                                         std::vector<double>& data,
+                                         size_t N,
+                                         bool resize_STL /*=true*/)
 {
   if (resize_STL)
   {
@@ -19,8 +20,8 @@ void chi_math::PETScUtils::CopyVecToSTLvector(Vec x,
   }
   else
     ChiLogicalErrorIf(data.size() < N,
-                      "data.size() < N, " + std::to_string(data.size()) +
-                        " < " + std::to_string(N));
+                      "data.size() < N, " + std::to_string(data.size()) + " < " +
+                        std::to_string(N));
 
   const double* x_ref;
   VecGetArrayRead(x, &x_ref);
@@ -33,8 +34,11 @@ void chi_math::PETScUtils::CopyVecToSTLvector(Vec x,
 // ###################################################################
 /**Copies a PETSc vector to a STL vector. Only the local portion is
  * copied.*/
-void chi_math::PETScUtils::CopyVecToSTLvectorWithGhosts(
-  Vec x, std::vector<double>& data, size_t N, bool resize_STL /*=true*/)
+void
+chi_math::PETScUtils::CopyVecToSTLvectorWithGhosts(Vec x,
+                                                   std::vector<double>& data,
+                                                   size_t N,
+                                                   bool resize_STL /*=true*/)
 {
   if (resize_STL)
   {
@@ -43,8 +47,8 @@ void chi_math::PETScUtils::CopyVecToSTLvectorWithGhosts(
   }
   else
     ChiLogicalErrorIf(data.size() != N,
-                      "data.size() != N, " + std::to_string(data.size()) +
-                        " < " + std::to_string(N));
+                      "data.size() != N, " + std::to_string(data.size()) + " < " +
+                        std::to_string(N));
 
   auto info = GetGhostVectorLocalViewRead(x);
   const double* x_ref = info.x_localized_raw;
@@ -54,9 +58,8 @@ void chi_math::PETScUtils::CopyVecToSTLvectorWithGhosts(
   RestoreGhostVectorLocalViewRead(x, info);
 }
 
-void chi_math::PETScUtils::CopySTLvectorToVec(const std::vector<double>& data,
-                                              Vec x,
-                                              size_t N)
+void
+chi_math::PETScUtils::CopySTLvectorToVec(const std::vector<double>& data, Vec x, size_t N)
 {
   double* x_ref;
   VecGetArray(x, &x_ref);
@@ -66,8 +69,8 @@ void chi_math::PETScUtils::CopySTLvectorToVec(const std::vector<double>& data,
   VecRestoreArray(x, &x_ref);
 }
 
-void chi_math::PETScUtils::CopyParallelVectorToVec(const ParallelVector& y,
-                                                   Vec x)
+void
+chi_math::PETScUtils::CopyParallelVectorToVec(const ParallelVector& y, Vec x)
 {
   const double* y_data = y.Data();
   double* x_data;
@@ -78,8 +81,10 @@ void chi_math::PETScUtils::CopyParallelVectorToVec(const ParallelVector& y,
 
 // ###################################################################
 /**Copies global values from a PETSc vector to a STL vector.*/
-void chi_math::PETScUtils::CopyGlobalVecToSTLvector(
-  Vec x, const std::vector<int64_t>& global_indices, std::vector<double>& data)
+void
+chi_math::PETScUtils::CopyGlobalVecToSTLvector(Vec x,
+                                               const std::vector<int64_t>& global_indices,
+                                               std::vector<double>& data)
 {
   //=================================== Populating local indices
   size_t N = global_indices.size();
@@ -99,10 +104,8 @@ void chi_math::PETScUtils::CopyGlobalVecToSTLvector(
   //=================================== Create and transfer index sets
   IS global_set;
   IS local_set;
-  ISCreateGeneral(
-    PETSC_COMM_SELF, N, global_indices.data(), PETSC_COPY_VALUES, &global_set);
-  ISCreateGeneral(
-    PETSC_COMM_SELF, N, local_indices.data(), PETSC_COPY_VALUES, &local_set);
+  ISCreateGeneral(PETSC_COMM_SELF, N, global_indices.data(), PETSC_COPY_VALUES, &global_set);
+  ISCreateGeneral(PETSC_COMM_SELF, N, local_indices.data(), PETSC_COPY_VALUES, &local_set);
   VecScatter scat;
   VecScatterCreate(x, global_set, local_vec, local_set, &scat);
   VecScatterBegin(scat, x, local_vec, INSERT_VALUES, SCATTER_FORWARD);
@@ -131,7 +134,8 @@ void chi_math::PETScUtils::CopyGlobalVecToSTLvector(
  * more than vector is communicated it would be more efficient
  * to "Begin" all the vectors followed by and "End" of each
  * vector.*/
-void chi_math::PETScUtils::CommunicateGhostEntries(Vec x)
+void
+chi_math::PETScUtils::CommunicateGhostEntries(Vec x)
 {
   VecGhostUpdateBegin(x, INSERT_VALUES, SCATTER_FORWARD);
   VecGhostUpdateEnd(x, INSERT_VALUES, SCATTER_FORWARD);
@@ -157,10 +161,9 @@ chi_math::PETScUtils::GetGhostVectorLocalViewRead(Vec x)
 
 // ###################################################################
 /**Gets a local raw view of a ghost vector.*/
-void chi_math::PETScUtils::RestoreGhostVectorLocalViewRead(
-  Vec x, GhostVecLocalRaw& local_data)
+void
+chi_math::PETScUtils::RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data)
 {
-  VecRestoreArrayRead(local_data.x_localized,
-                      (const double**)&local_data.x_localized_raw);
+  VecRestoreArrayRead(local_data.x_localized, (const double**)&local_data.x_localized_raw);
   VecGhostRestoreLocalForm(x, &local_data.x_localized);
 }

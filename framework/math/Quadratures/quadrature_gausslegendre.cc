@@ -17,7 +17,8 @@ namespace chi_math
 
 RegisterChiObject(chi_math, QuadratureGaussLegendre);
 
-chi::InputParameters QuadratureGaussLegendre::GetInputParameters()
+chi::InputParameters
+QuadratureGaussLegendre::GetInputParameters()
 {
   chi::InputParameters params = Quadrature::GetInputParameters();
 
@@ -28,30 +29,21 @@ chi::InputParameters QuadratureGaussLegendre::GetInputParameters()
 
   params.ChangeExistingParamToOptional("order", 0);
   params.AddOptionalParameter(
-    "max_root_finding_iters",
-    1000,
-    "Maximum number of iterations used during root finding");
-  params.AddOptionalParameter(
-    "root_finding_tol",
-    1.0e-12,
-    "Root finding iterative tolerance");
-
+    "max_root_finding_iters", 1000, "Maximum number of iterations used during root finding");
+  params.AddOptionalParameter("root_finding_tol", 1.0e-12, "Root finding iterative tolerance");
 
   params.AddOptionalParameter("N", 1, "Number of quadrature points.");
 
   return params;
 }
 
-QuadratureGaussLegendre::QuadratureGaussLegendre(
-  const chi::InputParameters& params)
+QuadratureGaussLegendre::QuadratureGaussLegendre(const chi::InputParameters& params)
   : chi_math::Quadrature(params)
 {
   const auto& assigned_params = params.ParametersAtAssignment();
 
-  const int param_count =
-    int(assigned_params.Has("order")) + int(assigned_params.Has("N"));
-  ChiInvalidArgumentIf(param_count == 2,
-                       "Either \"order\" or \"N\" must be specified, not both");
+  const int param_count = int(assigned_params.Has("order")) + int(assigned_params.Has("N"));
+  ChiInvalidArgumentIf(param_count == 2, "Either \"order\" or \"N\" must be specified, not both");
 
   const uint max_iters = params.GetParamValue<uint>("max_root_finding_iters");
   const double tol = params.GetParamValue<double>("root_finding_tol");
@@ -102,10 +94,11 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(unsigned int N,
 // ###################################################################
 /**Populates the abscissae and weights for a Gauss-Legendre
  * quadrature given the number of desired quadrature points.*/
-void QuadratureGaussLegendre::Initialize(unsigned int N,
-                                         bool verbose,
-                                         unsigned int max_iters,
-                                         double tol)
+void
+QuadratureGaussLegendre::Initialize(unsigned int N,
+                                    bool verbose,
+                                    unsigned int max_iters,
+                                    double tol)
 {
   switch (order_)
   {
@@ -125,13 +118,12 @@ void QuadratureGaussLegendre::Initialize(unsigned int N,
       weights_.resize(N, 1.0);
       for (size_t k = 0; k < qpoints_.size(); k++)
       {
-        weights_[k] = 2.0 * (1.0 - qpoints_[k][0] * qpoints_[k][0]) /
-                      ((N + 1) * (N + 1) * Legendre(N + 1, qpoints_[k][0]) *
-                       Legendre(N + 1, qpoints_[k][0]));
+        weights_[k] =
+          2.0 * (1.0 - qpoints_[k][0] * qpoints_[k][0]) /
+          ((N + 1) * (N + 1) * Legendre(N + 1, qpoints_[k][0]) * Legendre(N + 1, qpoints_[k][0]));
 
         if (verbose)
-          Chi::log.Log() << "root[" << k << "]=" << qpoints_[k][0]
-                         << ", weight=" << weights_[k];
+          Chi::log.Log() << "root[" << k << "]=" << qpoints_[k][0] << ", weight=" << weights_[k];
       } // for abscissae
 
       break;
@@ -158,9 +150,8 @@ void QuadratureGaussLegendre::Initialize(unsigned int N,
  *        Default: 1.0e-12.
  *
  * \author Jan*/
-std::vector<double> QuadratureGaussLegendre::FindRoots(unsigned int N,
-                                                       unsigned int max_iters,
-                                                       double tol)
+std::vector<double>
+QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, double tol)
 {
   //======================================== Populate init guess
   // This initial guess proved to be quite important
@@ -174,11 +165,10 @@ std::vector<double> QuadratureGaussLegendre::FindRoots(unsigned int N,
   if (N > 2056)
   {
     num_search_intvls *= 10;
-    Chi::log.Log0Warning()
-      << "chi_math::QuadratureGaussLegendre::FindRoots: "
-      << "The order of the polynomial for which to find the roots is "
-      << "greater than 2056. Accuracy of the root finder will be diminished "
-      << "along with a reduction in stability.";
+    Chi::log.Log0Warning() << "chi_math::QuadratureGaussLegendre::FindRoots: "
+                           << "The order of the polynomial for which to find the roots is "
+                           << "greater than 2056. Accuracy of the root finder will be diminished "
+                           << "along with a reduction in stability.";
   }
 
   // For this code we simply check to see where the
@@ -191,8 +181,7 @@ std::vector<double> QuadratureGaussLegendre::FindRoots(unsigned int N,
     double x_i = -1.0 + i * delta;
     double x_ip1 = x_i + delta;
 
-    if (Legendre(N, x_i) * Legendre(N, x_ip1) < 0.0)
-      xk[++counter] = (x_ip1 + x_i) / 2.0;
+    if (Legendre(N, x_i) * Legendre(N, x_ip1) < 0.0) xk[++counter] = (x_ip1 + x_i) / 2.0;
   }
 
   //======================================== Apply algorithm

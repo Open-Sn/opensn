@@ -5,7 +5,8 @@
 
 // ###################################################################
 /**Access to the singleton*/
-ChiObjectFactory& ChiObjectFactory::GetInstance() noexcept
+ChiObjectFactory&
+ChiObjectFactory::GetInstance() noexcept
 {
   static ChiObjectFactory singleton;
   return singleton;
@@ -21,7 +22,8 @@ ChiObjectFactory::Registry() const
 
 // ###################################################################
 /**Checks if the object registry has a specific text key.*/
-bool ChiObjectFactory::RegistryHasKey(const std::string& key) const
+bool
+ChiObjectFactory::RegistryHasKey(const std::string& key) const
 {
   return object_registry_.count(key) > 0;
 }
@@ -33,16 +35,15 @@ bool ChiObjectFactory::RegistryHasKey(const std::string& key) const
 size_t
 ChiObjectFactory::MakeRegisteredObject(const chi::ParameterBlock& params) const
 {
-  if (Chi::log.GetVerbosity() >= 2)
-    Chi::log.Log() << "Making object with type from parameters";
+  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object with type from parameters";
 
   const std::string fname = __PRETTY_FUNCTION__;
 
   if (not params.Has("chi_obj_type"))
-    throw std::invalid_argument(
-      fname + ": Requires a parameter block with a field called "
-              "\"chi_obj_type\". The given parameter block does not seem to "
-              "have this parameter.");
+    throw std::invalid_argument(fname +
+                                ": Requires a parameter block with a field called "
+                                "\"chi_obj_type\". The given parameter block does not seem to "
+                                "have this parameter.");
 
   const auto type = params.GetParamValue<std::string>("chi_obj_type");
 
@@ -52,20 +53,18 @@ ChiObjectFactory::MakeRegisteredObject(const chi::ParameterBlock& params) const
 // ###################################################################
 /**Makes an object with the given parameters and places on the global
  * object stack. Returns a handle to the object.*/
-size_t ChiObjectFactory::MakeRegisteredObjectOfType(
-  const std::string& type, const chi::ParameterBlock& params) const
+size_t
+ChiObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
+                                             const chi::ParameterBlock& params) const
 {
-  if (Chi::log.GetVerbosity() >= 2)
-    Chi::log.Log() << "Making object with specified type";
+  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object with specified type";
 
   const std::string fname = __PRETTY_FUNCTION__;
 
   if (object_registry_.count(type) == 0)
-    throw std::logic_error(fname + ": No registered type \"" + type +
-                           "\" found.");
+    throw std::logic_error(fname + ": No registered type \"" + type + "\" found.");
 
-  if (Chi::log.GetVerbosity() >= 2)
-    Chi::log.Log() << "Making object type " << type;
+  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object type " << type;
 
   auto object_entry = object_registry_.at(type);
 
@@ -78,13 +77,11 @@ size_t ChiObjectFactory::MakeRegisteredObjectOfType(
   input_params.SetObjectType(type);
   input_params.SetErrorOriginScope(type);
 
-  if (Chi::log.GetVerbosity() >= 2)
-    Chi::log.Log() << "Assigning parameters for object " << type;
+  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Assigning parameters for object " << type;
 
   input_params.AssignParameters(params);
 
-  if (Chi::log.GetVerbosity() >= 2)
-    Chi::log.Log() << "Constructing object " << type;
+  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Constructing object " << type;
 
   auto new_object = object_entry.constructor_func(input_params);
 
@@ -104,8 +101,7 @@ ChiObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
 {
   auto iter = object_registry_.find(type);
   ChiInvalidArgumentIf(iter == object_registry_.end(),
-                       "Object type \"" + type +
-                         "\" is not registered in ChiObjectFactory.");
+                       "Object type \"" + type + "\" is not registered in ChiObjectFactory.");
 
   auto& reg_entry = iter->second;
 
@@ -114,7 +110,8 @@ ChiObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
 
 // ##################################################################
 /**Dumps the registry to stdout.*/
-void ChiObjectFactory::DumpRegister() const
+void
+ChiObjectFactory::DumpRegister() const
 {
   Chi::log.Log() << "\n\n";
   for (const auto& [key, entry] : object_registry_)
@@ -127,8 +124,7 @@ void ChiObjectFactory::DumpRegister() const
 
     Chi::log.Log() << "OBJECT_BEGIN " << key;
 
-    if (entry.constructor_func == nullptr)
-      Chi::log.Log() << "NOT_CONSTRUCTIBLE";
+    if (entry.constructor_func == nullptr) Chi::log.Log() << "NOT_CONSTRUCTIBLE";
 
     const auto in_params = entry.get_in_params_func();
     in_params.DumpParameters();
@@ -141,11 +137,11 @@ void ChiObjectFactory::DumpRegister() const
 // ##################################################################
 /**Checks that the registry key is available and throws a
  * `std::logical_error` if it is not.*/
-void ChiObjectFactory::AssertRegistryKeyAvailable(
-  const std::string& key, const std::string& calling_function) const
+void
+ChiObjectFactory::AssertRegistryKeyAvailable(const std::string& key,
+                                             const std::string& calling_function) const
 {
   if (RegistryHasKey(key))
-    ChiLogicalError(
-      calling_function + ": Attempted to register Object \"" + key +
-      "\" but an object with the same name is already registered.");
+    ChiLogicalError(calling_function + ": Attempted to register Object \"" + key +
+                    "\" but an object with the same name is already registered.");
 }

@@ -30,15 +30,13 @@ typedef std::vector<FaceNodalMapping> CellFaceNodalMapping;
 class FLUDSCommonData
 {
 public:
-  explicit FLUDSCommonData(
-    const SPDS& spds,
-    const std::vector<CellFaceNodalMapping>& grid_nodal_mappings);
+  explicit FLUDSCommonData(const SPDS& spds,
+                           const std::vector<CellFaceNodalMapping>& grid_nodal_mappings);
 
   virtual ~FLUDSCommonData() = default;
 
   const SPDS& GetSPDS() const;
-  const FaceNodalMapping& GetFaceNodalMapping(uint64_t cell_local_id,
-                                              unsigned int face_id) const;
+  const FaceNodalMapping& GetFaceNodalMapping(uint64_t cell_local_id, unsigned int face_id) const;
 
 protected:
   const SPDS& spds_;

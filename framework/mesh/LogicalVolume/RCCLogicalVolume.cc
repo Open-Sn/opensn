@@ -7,7 +7,8 @@ namespace chi_mesh
 
 RegisterChiObject(chi_mesh, RCCLogicalVolume);
 
-chi::InputParameters RCCLogicalVolume::GetInputParameters()
+chi::InputParameters
+RCCLogicalVolume::GetInputParameters()
 {
   chi::InputParameters params = LogicalVolume::GetInputParameters();
 
@@ -17,12 +18,9 @@ chi::InputParameters RCCLogicalVolume::GetInputParameters()
   params.AddOptionalParameter("x0", 0.0, "X-coordinate of the volume base");
   params.AddOptionalParameter("y0", 0.0, "Y-coordinate of the volume base");
   params.AddOptionalParameter("z0", 0.0, "Z-coordinate of the volume base");
-  params.AddOptionalParameter(
-    "vx", 0.0, "X-component of the volume extrusion vector");
-  params.AddOptionalParameter(
-    "vy", 0.0, "Y-component of the volume extrusion vector");
-  params.AddOptionalParameter(
-    "vz", 1.0, "Z-component of the volume extrusion vector");
+  params.AddOptionalParameter("vx", 0.0, "X-component of the volume extrusion vector");
+  params.AddOptionalParameter("vy", 0.0, "Y-component of the volume extrusion vector");
+  params.AddOptionalParameter("vz", 1.0, "Z-component of the volume extrusion vector");
 
   return params;
 }
@@ -39,7 +37,8 @@ RCCLogicalVolume::RCCLogicalVolume(const chi::InputParameters& params)
 {
 }
 
-bool RCCLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+bool
+RCCLogicalVolume::Inside(const chi_mesh::Vector3& point) const
 {
   typedef chi_mesh::Vector3 Vec3;
 
@@ -81,7 +80,7 @@ bool RCCLogicalVolume::Inside(const chi_mesh::Vector3& point) const
   const Vec3 p0r_projected(p0r.Dot(tangent), p0r.Dot(binorm), 0.0);
 
   //====================================== Determine if point is within
-  //cylinder
+  // cylinder
   if (p0r_projected.NormSquare() <= r_ * r_) return true;
   else
     return false;

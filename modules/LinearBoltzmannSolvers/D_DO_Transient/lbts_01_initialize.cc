@@ -7,7 +7,8 @@
 
 //###################################################################
 /**Transient solver initialize routine.*/
-void lbs::DiscOrdTransientSolver::Initialize()
+void
+lbs::DiscOrdTransientSolver::Initialize()
 {
   chi::log.Log() << "Initializing " << TextName() << ".";
   options_.save_angular_flux = true;
@@ -18,7 +19,7 @@ void lbs::DiscOrdTransientSolver::Initialize()
   {
     const double FR = ComputeFissionRate(phi_new_local_);
     char buff[200];
-    snprintf(buff,200, " Initial Fission Rate FR=%12.6g", FR);
+    snprintf(buff, 200, " Initial Fission Rate FR=%12.6g", FR);
     chi::log.Log() << TextName() << buff;
   }
 
@@ -32,14 +33,16 @@ void lbs::DiscOrdTransientSolver::Initialize()
   {
     const double beta = ComputeBeta();
     char buff[200];
-    snprintf(buff,200, " Beta=%.2f [pcm] reactivity=%.3f [$]",
-            beta*1e5, (1.0- 1.0 / GetKeff()) / beta);
+    snprintf(buff,
+             200,
+             " Beta=%.2f [pcm] reactivity=%.3f [$]",
+             beta * 1e5,
+             (1.0 - 1.0 / GetKeff()) / beta);
     chi::log.Log() << TextName() << buff;
   }
 
   //================================================== Initialize source func
-  auto src_function =
-    std::make_shared<TransientSourceFunction>(*this, this->dt_, this->method);
+  auto src_function = std::make_shared<TransientSourceFunction>(*this, this->dt_, this->method);
 
   using namespace std::placeholders;
   active_set_source_function_ =

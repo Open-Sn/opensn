@@ -16,16 +16,12 @@ equations:
 where the primary unknowns are the neutron population, \f$ n \f$, and each of
 the delayed-neutron precursors concentrations, \f$ c_j \f$. The reactivity,
 \f$ \rho \f$ in units of $, and the external source, \f$ s_{ext} \f$, are both
-variable knowns/inputs, whereas the values \f$ \lambda_j, \beta_j , 
-\Lambda_0\f$, are known constants. The decay constants, \f$ \lambda_j \f$, 
-are in units of \f$ [s^{-1}]\f$ and the delayed neutron fractions, 
-\f$ \beta_j \f$, have no units. \f$ \beta_{eff} \f$ is the total delayed neutron fraction,
-\f[
-\label{Eq:3}
-\beta_{eff} = \sum_{j=0}^{J-1} \beta_j
-\f]
-and \f$ \Lambda_0 \f$ is the neutron generation time.
+variable knowns/inputs, whereas the values \f$ \lambda_j, \beta_j ,
+\Lambda_0\f$, are known constants. The decay constants, \f$ \lambda_j \f$,
+are in units of \f$ [s^{-1}]\f$ and the delayed neutron fractions,
+\f$ \beta_j \f$, have no units. \f$ \beta_{eff} \f$ is the total delayed neutron
+fraction, \f[ \label{Eq:3} \beta_{eff} = \sum_{j=0}^{J-1} \beta_j \f] and \f$
+\Lambda_0 \f$ is the neutron generation time.
 
 Consult the whitepaper for this solver at `modules/PointReactorKinetics/doc`.
 */
-

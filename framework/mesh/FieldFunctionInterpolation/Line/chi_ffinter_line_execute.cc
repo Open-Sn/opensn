@@ -11,15 +11,16 @@
 
 //###################################################################
 /**Executes the interpolation.*/
-void chi_mesh::FieldFunctionInterpolationLine::Execute()
+void
+chi_mesh::FieldFunctionInterpolationLine::Execute()
 {
   Chi::log.Log0Verbose1() << "Executing line interpolator.";
-  for (int ff=0; ff < field_functions_.size(); ff++)
+  for (int ff = 0; ff < field_functions_.size(); ff++)
   {
-          auto& ff_ctx = ff_contexts_[ff];
+    auto& ff_ctx = ff_contexts_[ff];
     const auto& ref_ff = *ff_ctx.ref_ff;
-    const auto& sdm    = ref_ff.GetSpatialDiscretization();
-    const auto& grid   = sdm.Grid();
+    const auto& sdm = ref_ff.GetSpatialDiscretization();
+    const auto& grid = sdm.Grid();
 
     const auto& uk_man = ref_ff.GetUnknownManager();
     const auto uid = 0;
@@ -28,7 +29,7 @@ void chi_mesh::FieldFunctionInterpolationLine::Execute()
     const auto field_data = ref_ff.GetGhostedFieldVector();
 
     ff_ctx.interpolation_points_values.assign(number_of_points_, 0.0);
-    for (int p=0; p < number_of_points_; ++p)
+    for (int p = 0; p < number_of_points_; ++p)
     {
       if (not ff_ctx.interpolation_points_has_ass_cell[p]) continue;
 
@@ -41,14 +42,13 @@ void chi_mesh::FieldFunctionInterpolationLine::Execute()
       cell_mapping.ShapeValues(interpolation_points_[p], shape_function_vals);
 
       double point_value = 0.0;
-      for (size_t i=0; i<num_nodes; ++i)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         const int64_t imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
 
-        point_value += shape_function_vals[i]*field_data[imap];
-      }//for node i
+        point_value += shape_function_vals[i] * field_data[imap];
+      } // for node i
       ff_ctx.interpolation_points_values[p] = point_value;
-    }//for p
-  }//for ff
-
+    } // for p
+  }   // for ff
 }

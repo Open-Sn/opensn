@@ -19,8 +19,8 @@ QuadratureWedge::QuadratureWedge(QuadratureOrder order) : Quadrature(order)
   weights_.resize(NL * NT);
 
   size_t q = 0;
-  for (size_t i=0; i<NL; ++i)
-    for (size_t j=0; j<NT; ++j)
+  for (size_t i = 0; i < NL; ++i)
+    for (size_t j = 0; j < NT; ++j)
     {
       qpoints_[q](0) = triangle.qpoints_[j][0];
       qpoints_[q](1) = triangle.qpoints_[j][1];
@@ -30,7 +30,6 @@ QuadratureWedge::QuadratureWedge(QuadratureOrder order) : Quadrature(order)
 
       ++q;
     }
-
 }
 
 } // namespace chi_math

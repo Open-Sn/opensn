@@ -79,7 +79,8 @@ const std::string Chi::run_time::command_line_help_string_ =
 \param argc int    Number of arguments supplied.
 \param argv char** Array of strings representing each argument.
  */
-void Chi::run_time::ParseArguments(int argc, char** argv)
+void
+Chi::run_time::ParseArguments(int argc, char** argv)
 {
   bool input_file_found = false;
   for (int i = 1; i < argc; i++)
@@ -88,8 +89,7 @@ void Chi::run_time::ParseArguments(int argc, char** argv)
 
     Chi::log.Log() << "Parsing argument " << i << " " << argument;
 
-    if (argument.find("-h") != std::string::npos or
-        argument.find("--help") != std::string::npos)
+    if (argument.find("-h") != std::string::npos or argument.find("--help") != std::string::npos)
     {
       Chi::log.Log() << Chi::run_time::command_line_help_string_;
       Chi::run_time::termination_posted_ = true;
@@ -170,7 +170,8 @@ void Chi::run_time::ParseArguments(int argc, char** argv)
 \param argv char** Array of strings representing each argument.
 \param communicator MPI_Comm The main communicator, used system wide.
  */
-int Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
+int
+Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
 {
   int location_id = 0, number_processes = 1;
 
@@ -191,14 +192,15 @@ int Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
 
   auto& t_main = Chi::log.CreateTimingBlock("ChiTech");
   t_main.TimeSectionBegin();
-  chi::SystemWideEventPublisher::GetInstance().PublishEvent(chi::Event(
-    "ProgramStart", chi::GetStandardEventCode("ProgramStart")));
+  chi::SystemWideEventPublisher::GetInstance().PublishEvent(
+    chi::Event("ProgramStart", chi::GetStandardEventCode("ProgramStart")));
 
   return 0;
 }
 
 /**Initializes PetSc for use by all entities.*/
-int Chi::run_time::InitPetSc(int argc, char** argv)
+int
+Chi::run_time::InitPetSc(int argc, char** argv)
 {
   PETSC_COMM_WORLD = mpi.comm;
   PetscOptionsInsertString(nullptr, "-error_output_stderr");
@@ -213,12 +215,13 @@ int Chi::run_time::InitPetSc(int argc, char** argv)
 // ############################################### Finalize ChiTech
 /**Finalizes ChiTech.
  * */
-void Chi::Finalize()
+void
+Chi::Finalize()
 {
   auto& t_main = Chi::log.GetTimingBlock("ChiTech");
   t_main.TimeSectionEnd();
-  chi::SystemWideEventPublisher::GetInstance().PublishEvent(chi::Event(
-    "ProgramExecuted", chi::GetStandardEventCode("ProgramExecuted")));
+  chi::SystemWideEventPublisher::GetInstance().PublishEvent(
+    chi::Event("ProgramExecuted", chi::GetStandardEventCode("ProgramExecuted")));
   meshhandler_stack.clear();
 
   surface_mesh_stack.clear();
@@ -236,13 +239,14 @@ void Chi::Finalize()
 
 // ############################################### Interactive interface
 /**Runs the interactive chitech engine*/
-int Chi::RunInteractive(int argc, char** argv)
+int
+Chi::RunInteractive(int argc, char** argv)
 {
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
     Chi::log.Log() << chi::Timer::GetLocalDateTimeString()
-                   << " Running ChiTech in interactive-mode with "
-                   << Chi::mpi.process_count << " processes.";
+                   << " Running ChiTech in interactive-mode with " << Chi::mpi.process_count
+                   << " processes.";
 
     Chi::log.Log() << "ChiTech version " << GetVersionStr();
   }
@@ -273,8 +277,7 @@ int Chi::RunInteractive(int argc, char** argv)
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
     Chi::log.Log() << "Final program time " << program_timer.GetTimeString();
-    Chi::log.Log() << chi::Timer::GetLocalDateTimeString()
-                   << " ChiTech finished execution.";
+    Chi::log.Log() << chi::Timer::GetLocalDateTimeString() << " ChiTech finished execution.";
   }
 
   return 0;
@@ -282,12 +285,12 @@ int Chi::RunInteractive(int argc, char** argv)
 
 // ############################################### Batch interface
 /**Runs ChiTech in pure batch mode. Start then finish.*/
-int Chi::RunBatch(int argc, char** argv)
+int
+Chi::RunBatch(int argc, char** argv)
 {
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    Chi::log.Log() << chi::Timer::GetLocalDateTimeString()
-                   << " Running ChiTech in batch-mode with "
+    Chi::log.Log() << chi::Timer::GetLocalDateTimeString() << " Running ChiTech in batch-mode with "
                    << Chi::mpi.process_count << " processes.";
 
     Chi::log.Log() << "ChiTech version " << GetVersionStr();
@@ -329,8 +332,7 @@ int Chi::RunBatch(int argc, char** argv)
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
     Chi::log.Log() << "\nFinal program time " << program_timer.GetTimeString();
-    Chi::log.Log() << chi::Timer::GetLocalDateTimeString()
-                   << " ChiTech finished execution of "
+    Chi::log.Log() << chi::Timer::GetLocalDateTimeString() << " ChiTech finished execution of "
                    << Chi::run_time::input_file_name_;
   }
 
@@ -339,15 +341,24 @@ int Chi::RunBatch(int argc, char** argv)
 
 // ###################################################################
 /** Exits the program appropriately.*/
-void Chi::Exit(int error_code) { MPI_Abort(mpi.comm, error_code); }
+void
+Chi::Exit(int error_code)
+{
+  MPI_Abort(mpi.comm, error_code);
+}
 
 // ###################################################################
 /** Gets the ChiTech-version string.*/
-std::string Chi::GetVersionStr() { return PROJECT_VERSION; }
+std::string
+Chi::GetVersionStr()
+{
+  return PROJECT_VERSION;
+}
 
 // ###################################################################
 /**Builds a `RegistryStatuses` structure*/
-chi::RegistryStatuses Chi::GetStatusOfRegistries()
+chi::RegistryStatuses
+Chi::GetStatusOfRegistries()
 {
   chi::RegistryStatuses stats;
 

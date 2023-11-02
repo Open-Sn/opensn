@@ -7,7 +7,8 @@ namespace chi_mesh
 
 RegisterChiObject(chi_mesh, SphereLogicalVolume);
 
-chi::InputParameters SphereLogicalVolume::GetInputParameters()
+chi::InputParameters
+SphereLogicalVolume::GetInputParameters()
 {
   chi::InputParameters params = ChiObject::GetInputParameters();
 
@@ -19,14 +20,12 @@ chi::InputParameters SphereLogicalVolume::GetInputParameters()
   params.AddOptionalParameter("z", 0.0, "Z-location of the volume.");
 
   using namespace chi_data_types;
-  params.ConstrainParameterRange(
-    "r", AllowableRangeLowLimit::New(0.0, /*low_closed=*/false));
+  params.ConstrainParameterRange("r", AllowableRangeLowLimit::New(0.0, /*low_closed=*/false));
 
   return params;
 }
 
-SphereLogicalVolume::SphereLogicalVolume(
-  const chi::InputParameters& params)
+SphereLogicalVolume::SphereLogicalVolume(const chi::InputParameters& params)
   : LogicalVolume(params),
     r_(params.GetParamValue<double>("r")),
     x0_(params.GetParamValue<double>("x")),
@@ -35,7 +34,8 @@ SphereLogicalVolume::SphereLogicalVolume(
 {
 }
 
-bool SphereLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+bool
+SphereLogicalVolume::Inside(const chi_mesh::Vector3& point) const
 {
   double dx = point.x - x0_;
   double dy = point.y - y0_;

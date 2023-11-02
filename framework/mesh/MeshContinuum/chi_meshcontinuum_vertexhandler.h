@@ -12,16 +12,17 @@ namespace chi_mesh
 class VertexHandler
 {
   typedef std::map<uint64_t, chi_mesh::Vector3> GlobalIDMap;
+
 private:
   std::map<uint64_t, chi_mesh::Vector3> m_global_id_vertex_map;
 
 public:
   // Iterators
-  GlobalIDMap::iterator begin() {return m_global_id_vertex_map.begin();}
-  GlobalIDMap::iterator end() {return m_global_id_vertex_map.end();}
+  GlobalIDMap::iterator begin() { return m_global_id_vertex_map.begin(); }
+  GlobalIDMap::iterator end() { return m_global_id_vertex_map.end(); }
 
-  GlobalIDMap::const_iterator begin() const {return m_global_id_vertex_map.begin();}
-  GlobalIDMap::const_iterator end() const {return m_global_id_vertex_map.end();}
+  GlobalIDMap::const_iterator begin() const { return m_global_id_vertex_map.begin(); }
+  GlobalIDMap::const_iterator end() const { return m_global_id_vertex_map.end(); }
 
   // Accessors
   chi_mesh::Vector3& operator[](const uint64_t global_id)
@@ -40,17 +41,11 @@ public:
     m_global_id_vertex_map.insert(std::make_pair(global_id, vec));
   }
 
-  size_t NumLocallyStored() const
-  {
-    return m_global_id_vertex_map.size();
-  }
+  size_t NumLocallyStored() const { return m_global_id_vertex_map.size(); }
 
-  void Clear()
-  {
-    m_global_id_vertex_map.clear();
-  }
+  void Clear() { m_global_id_vertex_map.clear(); }
 };
 
-}//namespace chi_mesh
+} // namespace chi_mesh
 
-#endif //CHI_MESHCONTINUUM_VERTEXHANDLER_H
+#endif // CHI_MESHCONTINUUM_VERTEXHANDLER_H

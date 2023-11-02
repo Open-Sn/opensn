@@ -15,8 +15,7 @@
 namespace chi_unit_sim_tests
 {
 
-chi::ParameterBlock
-chiSimTest01_FV(const chi::InputParameters& params);
+chi::ParameterBlock chiSimTest01_FV(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_sim_tests,
                         /*name_in_lua=*/chiSimTest01_FV,
@@ -53,31 +52,29 @@ chiSimTest01_FV(const chi::InputParameters&)
   const auto n = static_cast<int64_t>(num_local_dofs);
   const auto N = static_cast<int64_t>(num_globl_dofs);
   Mat A;
-  Vec x,b;
+  Vec x, b;
 
-  A = chi_math::PETScUtils::CreateSquareMatrix(n,N);
-  x = chi_math::PETScUtils::CreateVector(n,N);
-  b = chi_math::PETScUtils::CreateVector(n,N);
+  A = chi_math::PETScUtils::CreateSquareMatrix(n, N);
+  x = chi_math::PETScUtils::CreateVector(n, N);
+  b = chi_math::PETScUtils::CreateVector(n, N);
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
-  sdm.BuildSparsityPattern(nodal_nnz_in_diag,nodal_nnz_off_diag,OneDofPerNode);
+  sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(A,
-                                           nodal_nnz_in_diag,
-                                           nodal_nnz_off_diag);
+  chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   //============================================= Assemble the system
   Chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const int64_t imap = sdm.MapDOF(cell,0);
+    const int64_t imap = sdm.MapDOF(cell, 0);
 
     const auto& xp = cell.centroid_;
     const double V = cell_mapping.CellVolume();
 
-    size_t f=0;
+    size_t f = 0;
     for (const auto& face : cell.faces_)
     {
       const auto Af = face.normal_ * cell_mapping.FaceArea(f);
@@ -85,7 +82,7 @@ chiSimTest01_FV(const chi::InputParameters&)
       if (face.has_neighbor_)
       {
         const auto& adj_cell = grid.cells[face.neighbor_id_];
-        const int64_t jnmap = sdm.MapDOF(adj_cell,0);
+        const int64_t jnmap = sdm.MapDOF(adj_cell, 0);
 
         const auto& xn = adj_cell.centroid_;
 
@@ -93,23 +90,23 @@ chiSimTest01_FV(const chi::InputParameters&)
 
         const auto cf = Af.Dot(xpn) / xpn.NormSquare();
 
-        MatSetValue(A, imap, imap ,  cf, ADD_VALUES);
+        MatSetValue(A, imap, imap, cf, ADD_VALUES);
         MatSetValue(A, imap, jnmap, -cf, ADD_VALUES);
       }
       else
       {
-        const auto& xn = xp + 2.0*(face.centroid_ - xp);
+        const auto& xn = xp + 2.0 * (face.centroid_ - xp);
         const auto xpn = xn - xp;
 
         const auto cf = Af.Dot(xpn) / xpn.NormSquare();
 
-        MatSetValue(A, imap, imap , cf, ADD_VALUES);
+        MatSetValue(A, imap, imap, cf, ADD_VALUES);
       }
       ++f;
-    }//for face
+    } // for face
 
-    VecSetValue(b, imap, 1.0*V, ADD_VALUES);
-  }//for cell i
+    VecSetValue(b, imap, 1.0 * V, ADD_VALUES);
+  } // for cell i
 
   Chi::log.Log() << "Global assembly";
 
@@ -123,22 +120,21 @@ chiSimTest01_FV(const chi::InputParameters&)
   //============================================= Create Krylov Solver
   Chi::log.Log() << "Solving: ";
   auto petsc_solver =
-    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-      A,               //Matrix
-      "FVDiffSolver",  //Solver name
-      KSPCG,           //Solver type
-      PCGAMG,          //Preconditioner type
-      1.0e-6,          //Relative residual tolerance
-      1000);            //Max iterations
+    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,              // Matrix
+                                                        "FVDiffSolver", // Solver name
+                                                        KSPCG,          // Solver type
+                                                        PCGAMG,         // Preconditioner type
+                                                        1.0e-6, // Relative residual tolerance
+                                                        1000);  // Max iterations
 
   //============================================= Solve
-  KSPSolve(petsc_solver.ksp,b,x);
+  KSPSolve(petsc_solver.ksp, b, x);
 
   Chi::log.Log() << "Done solving";
 
   //============================================= Extract PETSc vector
   std::vector<double> field(num_local_dofs, 0.0);
-  sdm.LocalizePETScVector(x,field,OneDofPerNode);
+  sdm.LocalizePETScVector(x, field, OneDofPerNode);
 
   //============================================= Clean up
   KSPDestroy(&petsc_solver.ksp);
@@ -151,10 +147,7 @@ chiSimTest01_FV(const chi::InputParameters&)
 
   //============================================= Create Field Function
   auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",
-    sdm_ptr,
-    chi_math::Unknown(chi_math::UnknownType::SCALAR)
-  );
+    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::SCALAR));
 
   ff->UpdateFieldVector(field);
 
@@ -163,4 +156,4 @@ chiSimTest01_FV(const chi::InputParameters&)
   return chi::ParameterBlock();
 }
 
-}//namespace chi_unit_tests
+} // namespace chi_unit_sim_tests

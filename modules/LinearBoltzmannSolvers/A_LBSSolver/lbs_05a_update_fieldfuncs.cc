@@ -10,7 +10,8 @@ namespace lbs
 
 // ###################################################################
 /**Copy relevant section of phi_old to the field functions.*/
-void LBSSolver::UpdateFieldFunctions()
+void
+LBSSolver::UpdateFieldFunctions()
 {
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
@@ -114,12 +115,11 @@ void LBSSolver::UpdateFieldFunctions()
       MPI_Allreduce(&local_total_power, // sendbuf
                     &globl_total_power, // recvbuf
                     1,
-                    MPI_DOUBLE,      // count + datatype
-                    MPI_SUM,         // operation
+                    MPI_DOUBLE,     // count + datatype
+                    MPI_SUM,        // operation
                     Chi::mpi.comm); // communicator
 
-      chi_math::Scale(data_vector_local,
-                      options_.power_normalization / globl_total_power);
+      chi_math::Scale(data_vector_local, options_.power_normalization / globl_total_power);
     }
 
     const size_t ff_index = power_gen_fieldfunc_local_handle_;
@@ -133,17 +133,18 @@ void LBSSolver::UpdateFieldFunctions()
 // ###################################################################
 /**Sets the internal phi vector to the value in the associated
 field function.*/
-void LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
-                                         const std::vector<size_t>& m_indices,
-                                         const std::vector<size_t>& g_indices)
+void
+LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
+                                    const std::vector<size_t>& m_indices,
+                                    const std::vector<size_t>& g_indices)
 {
   std::vector<size_t> m_ids_to_copy = m_indices;
   std::vector<size_t> g_ids_to_copy = g_indices;
   if (m_indices.empty())
-    for (size_t m=0; m<num_moments_; ++m)
+    for (size_t m = 0; m < num_moments_; ++m)
       m_ids_to_copy.push_back(m);
   if (g_ids_to_copy.empty())
-    for (size_t g=0; g<num_groups_; ++g)
+    for (size_t g = 0; g < num_groups_; ++g)
       g_ids_to_copy.push_back(g);
 
   const auto& sdm = *discretization_;
@@ -153,7 +154,7 @@ void LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
   {
     for (const size_t g : g_ids_to_copy)
     {
-      const size_t ff_index = phi_field_functions_local_map_.at({g,m});
+      const size_t ff_index = phi_field_functions_local_map_.at({g, m});
       auto& ff_ptr = field_functions_.at(ff_index);
       auto& ff_data = ff_ptr->FieldVector();
 
@@ -167,15 +168,13 @@ void LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
           const int64_t imapA = sdm.MapDOFLocal(cell, i);
           const int64_t imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
 
-          if (which_phi == PhiSTLOption::PHI_OLD)
-            phi_old_local_[imapB] = ff_data[imapA];
+          if (which_phi == PhiSTLOption::PHI_OLD) phi_old_local_[imapB] = ff_data[imapA];
           else if (which_phi == PhiSTLOption::PHI_NEW)
             phi_new_local_[imapB] = ff_data[imapA];
         } // for node
-      }//for cell
-    }//for g
-  }//for m
-
+      }   // for cell
+    }     // for g
+  }       // for m
 }
 
 } // namespace lbs

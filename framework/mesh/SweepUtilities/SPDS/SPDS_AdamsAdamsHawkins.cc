@@ -13,16 +13,14 @@
 namespace chi_mesh::sweep_management
 {
 
-SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(
-  const chi_mesh::Vector3& omega,
-  const chi_mesh::MeshContinuum& grid,
-  bool cycle_allowance_flag,
-  bool verbose)
+SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
+                                               const chi_mesh::MeshContinuum& grid,
+                                               bool cycle_allowance_flag,
+                                               bool verbose)
   : SPDS(omega, grid, verbose)
 {
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Building sweep ordering for Omega = "
-                          << omega.PrintS();
+                          << " Building sweep ordering for Omega = " << omega.PrintS();
 
   size_t num_loc_cells = grid.local_cells.size();
 
@@ -32,10 +30,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(
   std::set<int> location_successors;
   std::set<int> location_dependencies;
 
-  PopulateCellRelationships(omega,
-                            location_dependencies,
-                            location_successors,
-                            cell_successors);
+  PopulateCellRelationships(omega, location_dependencies, location_successors, cell_successors);
 
   location_successors_.reserve(location_successors.size());
   location_dependencies_.reserve(location_dependencies.size());
@@ -59,27 +54,23 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(
       local_DG.AddEdge(c, successor.first, successor.second);
 
   //============================================= Remove local cycles if allowed
-  if (verbose_)
-    PrintedGhostedGraph();
+  if (verbose_) PrintedGhostedGraph();
 
   if (cycle_allowance_flag)
   {
-    Chi::log.Log0Verbose1()
-      << Chi::program_timer.GetTimeString() << " Removing inter-cell cycles.";
+    Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Removing inter-cell cycles.";
 
     auto edges_to_remove = local_DG.RemoveCyclicDependencies();
 
     for (auto& edge_to_remove : edges_to_remove)
     {
-      local_cyclic_dependencies_.emplace_back(edge_to_remove.first,
-                                              edge_to_remove.second);
+      local_cyclic_dependencies_.emplace_back(edge_to_remove.first, edge_to_remove.second);
     }
   }
 
   //============================================= Generate topological sorting
-  Chi::log.Log0Verbose1()
-    << Chi::program_timer.GetTimeString()
-    << " Generating topological sorting for local sweep ordering";
+  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
+                          << " Generating topological sorting for local sweep ordering";
   auto so_temp = local_DG.GenerateTopologicalSort();
   spls_.item_id.clear();
   for (auto v : so_temp)
@@ -87,10 +78,9 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(
 
   if (spls_.item_id.empty())
   {
-    Chi::log.LogAllError()
-      << "Topological sorting for local sweep-ordering failed. "
-      << "Cyclic dependencies detected. Cycles need to be allowed"
-      << " by calling application.";
+    Chi::log.LogAllError() << "Topological sorting for local sweep-ordering failed. "
+                           << "Cyclic dependencies detected. Cycles need to be allowed"
+                           << " by calling application.";
     Chi::Exit(EXIT_FAILURE);
   }
 
@@ -121,10 +111,9 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(
 
 // ###################################################################
 /**Builds the task dependency graph.*/
-void chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::
-  BuildTaskDependencyGraph(
-  const std::vector<std::vector<int>>& global_dependencies,
-  bool cycle_allowance_flag)
+void
+chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
+  const std::vector<std::vector<int>>& global_dependencies, bool cycle_allowance_flag)
 {
 
   std::vector<std::pair<int, int>> edges_to_remove;
@@ -169,8 +158,7 @@ void chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::
   //============================================= Broadcast edge buffer size
   int edge_buffer_size = 0;
 
-  if (Chi::mpi.location_id == 0)
-    edge_buffer_size = static_cast<int>(raw_edges_to_remove.size());
+  if (Chi::mpi.location_id == 0) edge_buffer_size = static_cast<int>(raw_edges_to_remove.size());
 
   MPI_Bcast(&edge_buffer_size, // Buffer
             1,
@@ -179,8 +167,7 @@ void chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::
             Chi::mpi.comm); // Communicator
 
   //============================================= Broadcast edges
-  if (Chi::mpi.location_id != 0)
-    raw_edges_to_remove.resize(edge_buffer_size, -1);
+  if (Chi::mpi.location_id != 0) raw_edges_to_remove.resize(edge_buffer_size, -1);
 
   MPI_Bcast(raw_edges_to_remove.data(), // Buffer
             edge_buffer_size,
@@ -210,14 +197,13 @@ void chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::
 
     if (locI == Chi::mpi.location_id)
     {
-      auto dependent_location = std::find(
-        location_dependencies_.begin(), location_dependencies_.end(), rlocI);
+      auto dependent_location =
+        std::find(location_dependencies_.begin(), location_dependencies_.end(), rlocI);
       location_dependencies_.erase(dependent_location);
       delayed_location_dependencies_.push_back(rlocI);
     }
 
-    if (rlocI == Chi::mpi.location_id)
-      delayed_location_successors_.push_back(locI);
+    if (rlocI == Chi::mpi.location_id) delayed_location_successors_.push_back(locI);
   }
 
   //============================================= Generate topological sort
@@ -232,10 +218,9 @@ void chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::
 
     if (glob_linear_sweep_order.empty())
     {
-      Chi::log.LogAllError()
-        << "Topological sorting for global sweep-ordering failed. "
-        << "Cyclic dependencies detected. Cycles need to be allowed"
-        << " by calling application.";
+      Chi::log.LogAllError() << "Topological sorting for global sweep-ordering failed. "
+                             << "Cyclic dependencies detected. Cycles need to be allowed"
+                             << " by calling application.";
       Chi::Exit(EXIT_FAILURE);
     }
   }
@@ -243,8 +228,7 @@ void chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::
   //============================================= Broadcasting topsort size
   int topsort_buffer_size = 0;
 
-  if (Chi::mpi.location_id == 0)
-    topsort_buffer_size = glob_linear_sweep_order.size();
+  if (Chi::mpi.location_id == 0) topsort_buffer_size = glob_linear_sweep_order.size();
 
   MPI_Bcast(&topsort_buffer_size, // Buffer
             1,
@@ -253,8 +237,7 @@ void chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::
             Chi::mpi.comm); // Communicator
 
   //============================================= Broadcast topological sort
-  if (Chi::mpi.location_id != 0)
-    glob_linear_sweep_order.resize(topsort_buffer_size, -1);
+  if (Chi::mpi.location_id != 0) glob_linear_sweep_order.resize(topsort_buffer_size, -1);
 
   MPI_Bcast(glob_linear_sweep_order.data(), // Buffer
             topsort_buffer_size,
@@ -302,16 +285,14 @@ void chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::
   }
 
   //============================================= Generate TDG structure
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Generating TDG structure.";
+  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Generating TDG structure.";
   for (int r = 0; r <= abs_max_rank; r++)
   {
     chi_mesh::sweep_management::STDG new_stdg;
 
     for (int k = 0; k < Chi::mpi.process_count; k++)
     {
-      if (glob_sweep_order_rank[k] == r)
-        new_stdg.item_id.push_back(glob_linear_sweep_order[k]);
+      if (glob_sweep_order_rank[k] == r) new_stdg.item_id.push_back(glob_linear_sweep_order[k]);
     }
     global_sweep_planes_.push_back(new_stdg);
   }

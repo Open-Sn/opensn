@@ -15,14 +15,13 @@
  * for Hypre's BooomerAMG. Note: `PCSetFromOptions` and
  * `KSPSetFromOptions` are called at the end. Therefore, any number of
  * additional PETSc options can be passed via the commandline.*/
-void lbs::acceleration::DiffusionSolver::Initialize()
+void
+lbs::acceleration::DiffusionSolver::Initialize()
 {
-  if (options.verbose)
-    Chi::log.Log() << text_name_ << ": Initializing PETSc items";
+  if (options.verbose) Chi::log.Log() << text_name_ << ": Initializing PETSc items";
 
   if (options.verbose)
-    Chi::log.Log() << text_name_
-                   << ": Global number of DOFs=" << num_global_dofs_;
+    Chi::log.Log() << text_name_ << ": Global number of DOFs=" << num_global_dofs_;
 
   Chi::mpi.Barrier();
   Chi::log.Log() << "Sparsity pattern";
@@ -34,18 +33,15 @@ void lbs::acceleration::DiffusionSolver::Initialize()
   Chi::mpi.Barrier();
   Chi::log.Log() << "Done Sparsity pattern";
   Chi::mpi.Barrier();
-  A_ =
-    chi_math::PETScUtils::CreateSquareMatrix(num_local_dofs_, num_global_dofs_);
-  chi_math::PETScUtils::InitMatrixSparsity(
-    A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  A_ = chi_math::PETScUtils::CreateSquareMatrix(num_local_dofs_, num_global_dofs_);
+  chi_math::PETScUtils::InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
   Chi::mpi.Barrier();
   Chi::log.Log() << "Done matrix creation";
   Chi::mpi.Barrier();
 
   //============================================= Create RHS
   if (not requires_ghosts_)
-    rhs_ =
-      chi_math::PETScUtils::CreateVector(num_local_dofs_, num_global_dofs_);
+    rhs_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_global_dofs_);
   else
     rhs_ = chi_math::PETScUtils::CreateVectorWithGhosts(
       num_local_dofs_,
@@ -62,8 +58,7 @@ void lbs::acceleration::DiffusionSolver::Initialize()
   KSPSetOptionsPrefix(ksp_, text_name_.c_str());
   KSPSetType(ksp_, KSPCG);
 
-  KSPSetTolerances(
-    ksp_, 1.e-50, options.residual_tolerance, 1.0e50, options.max_iters);
+  KSPSetTolerances(ksp_, 1.e-50, options.residual_tolerance, 1.0e50, options.max_iters);
 
   //============================================= Set Pre-conditioner
   PC pc;
@@ -72,14 +67,13 @@ void lbs::acceleration::DiffusionSolver::Initialize()
   PCSetType(pc, PCHYPRE);
 
   PCHYPRESetType(pc, "boomeramg");
-  std::vector<std::string> pc_options = {
-    "pc_hypre_boomeramg_agg_nl 1",
-    "pc_hypre_boomeramg_P_max 4",
-    "pc_hypre_boomeramg_grid_sweeps_coarse 1",
-    "pc_hypre_boomeramg_max_levels 25",
-    "pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi",
-    "pc_hypre_boomeramg_coarsen_type HMIS",
-    "pc_hypre_boomeramg_interp_type ext+i"};
+  std::vector<std::string> pc_options = {"pc_hypre_boomeramg_agg_nl 1",
+                                         "pc_hypre_boomeramg_P_max 4",
+                                         "pc_hypre_boomeramg_grid_sweeps_coarse 1",
+                                         "pc_hypre_boomeramg_max_levels 25",
+                                         "pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi",
+                                         "pc_hypre_boomeramg_coarsen_type HMIS",
+                                         "pc_hypre_boomeramg_interp_type ext+i"};
 
   if (grid_.Attributes() & chi_mesh::DIMENSION_2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");

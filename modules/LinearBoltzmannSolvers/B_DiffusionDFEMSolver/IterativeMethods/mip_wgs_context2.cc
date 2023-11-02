@@ -18,8 +18,9 @@
 namespace lbs
 {
 
-template<>
-void MIPWGSContext2<Mat, Vec, KSP>::PreSetupCallback()
+template <>
+void
+MIPWGSContext2<Mat, Vec, KSP>::PreSetupCallback()
 {
   if (log_info_)
   {
@@ -27,22 +28,26 @@ void MIPWGSContext2<Mat, Vec, KSP>::PreSetupCallback()
     switch (groupset_.iterative_method_)
     {
       case IterativeMethod::KRYLOV_RICHARDSON:
-        method_name = "KRYLOV_RICHARDSON"; break;
+        method_name = "KRYLOV_RICHARDSON";
+        break;
       case IterativeMethod::KRYLOV_GMRES:
-        method_name = "KRYLOV_GMRES"; break;
+        method_name = "KRYLOV_GMRES";
+        break;
       case IterativeMethod::KRYLOV_BICGSTAB:
-        method_name = "KRYLOV_BICGSTAB"; break;
-      default: method_name = "KRYLOV_GMRES";
+        method_name = "KRYLOV_BICGSTAB";
+        break;
+      default:
+        method_name = "KRYLOV_GMRES";
     }
-    Chi::log.Log()
-      << "\n\n"
-      << "********** Solving groupset " << groupset_.id_
-      << " with " << method_name << ".\n\n";
+    Chi::log.Log() << "\n\n"
+                   << "********** Solving groupset " << groupset_.id_ << " with " << method_name
+                   << ".\n\n";
   }
 }
 
-template<>
-void MIPWGSContext2<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
+template <>
+void
+MIPWGSContext2<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
 {
   auto& ksp = solver;
 
@@ -52,16 +57,17 @@ void MIPWGSContext2<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
   if (groupset_.apply_tgdsa_)
   {
     PCSetType(pc, PCSHELL);
-    PCShellSetApply(pc, (PCShellPtr) MIP_TGDSA_PreConditionerMult);
+    PCShellSetApply(pc, (PCShellPtr)MIP_TGDSA_PreConditionerMult);
     PCShellSetContext(pc, &(*this));
   }
 
-  KSPSetPCSide(ksp,PC_LEFT);
+  KSPSetPCSide(ksp, PC_LEFT);
   KSPSetUp(ksp);
 }
 
-template<>
-std::pair<int64_t, int64_t> MIPWGSContext2<Mat, Vec, KSP>::SystemSize()
+template <>
+std::pair<int64_t, int64_t>
+MIPWGSContext2<Mat, Vec, KSP>::SystemSize()
 {
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
@@ -70,12 +76,12 @@ std::pair<int64_t, int64_t> MIPWGSContext2<Mat, Vec, KSP>::SystemSize()
   const size_t local_size = local_node_count * groupset_numgrps;
   const size_t globl_size = globl_node_count * groupset_numgrps;
 
-  return {static_cast<int64_t>(local_size),
-          static_cast<int64_t>(globl_size)};
+  return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};
 }
 
-template<>
-void MIPWGSContext2<Mat, Vec, KSP>::ApplyInverseTransportOperator(int scope)
+template <>
+void
+MIPWGSContext2<Mat, Vec, KSP>::ApplyInverseTransportOperator(int scope)
 {
   ++counter_applications_of_inv_op_;
   auto& mip_solver = *lbs_mip_ss_solver_.gs_mip_solvers_[groupset_.id_];
@@ -85,26 +91,22 @@ void MIPWGSContext2<Mat, Vec, KSP>::ApplyInverseTransportOperator(int scope)
   Vec work_vector;
   VecDuplicate(mip_solver.RHS(), &work_vector);
 
-  lbs_solver_.SetGSPETScVecFromPrimarySTLvector(groupset_,
-                                                work_vector,
-                                                PhiSTLOption::PHI_NEW);
+  lbs_solver_.SetGSPETScVecFromPrimarySTLvector(groupset_, work_vector, PhiSTLOption::PHI_NEW);
 
   mip_solver.Assemble_b(work_vector);
   mip_solver.Solve(work_vector);
 
-  lbs_solver_.SetPrimarySTLvectorFromGSPETScVec(groupset_,
-                                                work_vector,
-                                                PhiSTLOption::PHI_NEW);
+  lbs_solver_.SetPrimarySTLvectorFromGSPETScVec(groupset_, work_vector, PhiSTLOption::PHI_NEW);
 
   VecDestroy(&work_vector);
 }
 
-template<>
-void MIPWGSContext2<Mat, Vec, KSP>::PostSolveCallback()
+template <>
+void
+MIPWGSContext2<Mat, Vec, KSP>::PostSolveCallback()
 {
-  lbs_solver_.GSScopedCopyPrimarySTLvectors(groupset_,
-                                            PhiSTLOption::PHI_NEW,
-                                            PhiSTLOption::PHI_OLD);
+  lbs_solver_.GSScopedCopyPrimarySTLvectors(
+    groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 }
 
-}//namespace lbs
+} // namespace lbs

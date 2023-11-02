@@ -6,9 +6,8 @@
 #include "math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolygonMapping.h"
 #include "math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolyhedronMapping.h"
 
-#define UnsupportedCellType(fname)                                             \
-  std::invalid_argument((fname) +                                              \
-                        ": Unsupported cell type encountered. type_id=" +      \
+#define UnsupportedCellType(fname)                                                                 \
+  std::invalid_argument((fname) + ": Unsupported cell type encountered. type_id=" +                \
                         std::to_string(static_cast<int>(cell.Type())));
 
 namespace chi_math::spatial_discretization
@@ -27,7 +26,8 @@ PieceWiseLinearBase::PieceWiseLinearBase(const chi_mesh::MeshContinuum& grid,
 {
 }
 
-void PieceWiseLinearBase::CreateCellMappings()
+void
+PieceWiseLinearBase::CreateCellMappings()
 {
   constexpr std::string_view fname = __PRETTY_FUNCTION__;
 
@@ -79,8 +79,7 @@ void PieceWiseLinearBase::CreateCellMappings()
   for (uint64_t ghost_id : ghost_ids)
   {
     auto ghost_mapping = MakeCellMapping(ref_grid_.cells[ghost_id]);
-    nb_cell_mappings_.insert(
-      std::make_pair(ghost_id, std::move(ghost_mapping)));
+    nb_cell_mappings_.insert(std::make_pair(ghost_id, std::move(ghost_mapping)));
   }
 }
 } // namespace chi_math::spatial_discretization

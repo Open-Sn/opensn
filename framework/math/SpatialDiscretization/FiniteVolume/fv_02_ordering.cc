@@ -7,8 +7,8 @@
 
 #include "mpi/chi_mpi_utils_map_all2all.h"
 
-#define MappingError                                                           \
-  "chi_math::SpatialDiscretization_FV::OrderNodes: "                           \
+#define MappingError                                                                               \
+  "chi_math::SpatialDiscretization_FV::OrderNodes: "                                               \
   "Error mapping neighbor cells"
 
 namespace chi_math::spatial_discretization
@@ -16,7 +16,8 @@ namespace chi_math::spatial_discretization
 
 // ###################################################################
 /**Develops node ordering per location.*/
-void chi_math::spatial_discretization::FiniteVolume::OrderNodes()
+void
+chi_math::spatial_discretization::FiniteVolume::OrderNodes()
 {
   //============================================= Communicate node counts
   const uint64_t local_num_nodes = ref_grid_.local_cells.size();
@@ -54,10 +55,9 @@ void chi_math::spatial_discretization::FiniteVolume::OrderNodes()
 
   //============================================= Communicate neighbor ids
   //                                              requiring mapping
-  const auto query_nb_gids =
-    chi_mpi_utils::MapAllToAll(sorted_nb_gids, // map
-                               MPI_UINT64_T,   // datatype
-                               Chi::mpi.comm); // comm
+  const auto query_nb_gids = chi_mpi_utils::MapAllToAll(sorted_nb_gids, // map
+                                                        MPI_UINT64_T,   // datatype
+                                                        Chi::mpi.comm); // comm
 
   //============================================= Map the ids
   std::map<uint64_t, std::vector<uint64_t>> mapped_query_nb_gids;
@@ -79,10 +79,9 @@ void chi_math::spatial_discretization::FiniteVolume::OrderNodes()
 
   //============================================= Communicate back the mapped
   //                                              ids
-  const auto mapped_nb_gids =
-    chi_mpi_utils::MapAllToAll(mapped_query_nb_gids, // map
-                               MPI_UINT64_T,         // datatype
-                               Chi::mpi.comm);       // comm
+  const auto mapped_nb_gids = chi_mpi_utils::MapAllToAll(mapped_query_nb_gids, // map
+                                                         MPI_UINT64_T,         // datatype
+                                                         Chi::mpi.comm);       // comm
 
   //============================================= Create the neighbor cell
   //                                              mapping
@@ -99,8 +98,7 @@ void chi_math::spatial_discretization::FiniteVolume::OrderNodes()
         throw std::logic_error(MappingError + std::string(" Size-mismatch."));
 
       for (size_t i = 0; i < gid_list.size(); ++i)
-        neighbor_cell_local_ids_.insert(
-          std::make_pair(gid_list[i], lid_list[i]));
+        neighbor_cell_local_ids_.insert(std::make_pair(gid_list[i], lid_list[i]));
     }
     catch (const std::out_of_range& oor)
     {

@@ -8,22 +8,22 @@
 
 #include "chi_mpi.h"
 
-
 //###################################################################
 /**Export cells to python.
  *
  * \todo Export Cells to OBJ needs polygon support. */
-void chi_mesh::MeshContinuum::
- ExportCellsToObj(const char* fileName, bool per_material, int options) const
+void
+chi_mesh::MeshContinuum::ExportCellsToObj(const char* fileName,
+                                          bool per_material,
+                                          int options) const
 {
   if (!per_material)
   {
-    FILE* of = fopen(fileName,"w");
+    FILE* of = fopen(fileName, "w");
 
     if (of == nullptr)
     {
-      Chi::log.LogAllError() << "Could not open file: "
-                                  << std::string(fileName);
+      Chi::log.LogAllError() << "Could not open file: " << std::string(fileName);
       Chi::Exit(EXIT_FAILURE);
     }
 
@@ -42,22 +42,21 @@ void chi_mesh::MeshContinuum::
 
             for (int vid : face.vertex_ids_)
               nodes_set.insert(vid);
-          }//if boundary
-        }//for face
-      }//if polyhedron
-    }//for local cell
+          } // if boundary
+        }   // for face
+      }     // if polyhedron
+    }       // for local cell
 
     //====================================== Write header
-    fprintf(of,"# Exported mesh file from Extrusion script\n");
+    fprintf(of, "# Exported mesh file from Extrusion script\n");
     std::string str_file_name(fileName);
-    std::string file_base_name =
-      str_file_name.substr(0,str_file_name.find('.'));
-    fprintf(of,"o %s\n",file_base_name.c_str());
+    std::string file_base_name = str_file_name.substr(0, str_file_name.find('.'));
+    fprintf(of, "o %s\n", file_base_name.c_str());
 
     //====================================== Develop node mapping and write them
     std::vector<int> node_mapping(GetGlobalVertexCount(), -1);
 
-    int node_counter=0;
+    int node_counter = 0;
     for (auto node : nodes_set)
     {
       node_counter++;
@@ -66,67 +65,54 @@ void chi_mesh::MeshContinuum::
 
       chi_mesh::Vertex cur_v = vertices[node_g_index];
 
-      fprintf(of,"v %9.6f %9.6f %9.6f\n",cur_v.x,cur_v.y,cur_v.z);
+      fprintf(of, "v %9.6f %9.6f %9.6f\n", cur_v.x, cur_v.y, cur_v.z);
     }
 
     //====================================== Write face normals
     for (const auto& face : faces_to_export)
     {
-      fprintf(of,"vn %.4f %.4f %.4f\n",
-              face.normal_.x,
-              face.normal_.y,
-              face.normal_.z);
+      fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
     }
 
     //====================================== Write faces
-    int normal_counter=0;
+    int normal_counter = 0;
     for (const auto& face : faces_to_export)
     {
       normal_counter++;
-      fprintf(of,"f");
+      fprintf(of, "f");
 
       for (auto v_g_index : face.vertex_ids_)
-        fprintf(of," %d//%d",node_mapping[v_g_index],normal_counter);
+        fprintf(of, " %d//%d", node_mapping[v_g_index], normal_counter);
 
-      fprintf(of,"\n");
+      fprintf(of, "\n");
     }
-
 
     fclose(of);
 
-    Chi::log.Log()
-     << "Exported Volume mesh to "
-     << str_file_name;
-  }//Whole mesh
+    Chi::log.Log() << "Exported Volume mesh to " << str_file_name;
+  } // Whole mesh
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PER MATERIAL
   else
   {
     //========================================= Get base name
     std::string str_file_name(fileName);
-    std::string file_base_name =
-      str_file_name.substr(0,str_file_name.find('.'));
+    std::string file_base_name = str_file_name.substr(0, str_file_name.find('.'));
 
     if (Chi::material_stack.empty())
     {
-      Chi::log.Log0Warning()
-        << "ExportCellsToObj: No mesh will be exported because there "
-        << "are no physics materials present";
+      Chi::log.Log0Warning() << "ExportCellsToObj: No mesh will be exported because there "
+                             << "are no physics materials present";
     }
 
-
-    for (int mat=0; mat< Chi::material_stack.size(); mat++)
+    for (int mat = 0; mat < Chi::material_stack.size(); mat++)
     {
-      std::string mat_base_name = file_base_name +
-                                  std::string("_m") +
-                                  std::to_string(mat);
-      std::string mat_file_name = mat_base_name +
-                                  std::string(".obj");
-      FILE* of = fopen(mat_file_name.c_str(),"w");
+      std::string mat_base_name = file_base_name + std::string("_m") + std::to_string(mat);
+      std::string mat_file_name = mat_base_name + std::string(".obj");
+      FILE* of = fopen(mat_file_name.c_str(), "w");
 
       if (of == nullptr)
       {
-        Chi::log.LogAllError() << "Could not open file: "
-                                  << mat_file_name;
+        Chi::log.LogAllError() << "Could not open file: " << mat_file_name;
         Chi::Exit(EXIT_FAILURE);
       }
 
@@ -143,13 +129,13 @@ void chi_mesh::MeshContinuum::
           {
             int adjcell_glob_index = face.neighbor_id_;
 
-            if (adjcell_glob_index<0)
+            if (adjcell_glob_index < 0)
             {
               faces_to_export.push_back(face);
 
               for (auto vid : face.vertex_ids_)
                 nodes_set.insert(vid);
-            }//if boundary
+            } // if boundary
             else
             {
               auto& adj_cell = cells[adjcell_glob_index];
@@ -160,20 +146,21 @@ void chi_mesh::MeshContinuum::
 
                 for (auto vid : face.vertex_ids_)
                   nodes_set.insert(vid);
-              }//if material missmatch
-            }//if neigbor cell
-          }//for face
-        }//if polyhedron
-      }//for local cell
+              } // if material missmatch
+            }   // if neigbor cell
+          }     // for face
+        }       // if polyhedron
+      }         // for local cell
 
       //====================================== Write header
-      fprintf(of,"# Exported mesh file from Extrusion script\n");
-      fprintf(of,"o %s\n",mat_base_name.c_str());
+      fprintf(of, "# Exported mesh file from Extrusion script\n");
+      fprintf(of, "o %s\n", mat_base_name.c_str());
 
-      //====================================== Develop node mapping and write them
+      //====================================== Develop node mapping and write
+      // them
       std::vector<int> node_mapping(GetGlobalVertexCount(), -1);
 
-      int node_counter=0;
+      int node_counter = 0;
       for (auto node : nodes_set)
       {
         node_counter++;
@@ -182,38 +169,31 @@ void chi_mesh::MeshContinuum::
 
         chi_mesh::Vertex cur_v = vertices[node_g_index];
 
-        fprintf(of,"v %9.6f %9.6f %9.6f\n",cur_v.x,cur_v.y,cur_v.z);
+        fprintf(of, "v %9.6f %9.6f %9.6f\n", cur_v.x, cur_v.y, cur_v.z);
       }
 
       //====================================== Write face normals
       for (const auto& face : faces_to_export)
       {
-        fprintf(of,"vn %.4f %.4f %.4f\n",
-                face.normal_.x,
-                face.normal_.y,
-                face.normal_.z);
+        fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
       }
 
       //====================================== Write faces
-      int normal_counter=0;
+      int normal_counter = 0;
       for (const auto& face : faces_to_export)
       {
         normal_counter++;
-        fprintf(of,"f");
+        fprintf(of, "f");
 
         for (auto v_g_index : face.vertex_ids_)
-          fprintf(of," %d//%d",node_mapping[v_g_index],normal_counter);
+          fprintf(of, " %d//%d", node_mapping[v_g_index], normal_counter);
 
-        fprintf(of,"\n");
+        fprintf(of, "\n");
       }
-
 
       fclose(of);
 
-      Chi::log.Log()
-        << "Exported Material Volume mesh to "
-        << mat_file_name;
-    }//for mat
-  }//if per material
-
+      Chi::log.Log() << "Exported Material Volume mesh to " << mat_file_name;
+    } // for mat
+  }   // if per material
 }

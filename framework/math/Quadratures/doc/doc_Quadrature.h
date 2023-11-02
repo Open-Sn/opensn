@@ -1,2 +1,2 @@
 /**\defgroup LuaQuadrature Quadrature rules
-* \ingroup LuaMath*/
+ * \ingroup LuaMath*/

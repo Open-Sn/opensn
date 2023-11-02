@@ -1,4 +1,4 @@
-#include"parameters/parameter_block.h"
+#include "parameters/parameter_block.h"
 
 #include "chi_lua.h"
 
@@ -15,13 +15,13 @@ RegisterLuaFunction(/*function_ptr=*/chi_ParameterBlock_Test00,
                     /*namespace_name=*/chi_unit_tests,
                     /*func_name=*/chi_ParameterBlock_Test00);
 
-int chi_ParameterBlock_Test00(lua_State* L)
+int
+chi_ParameterBlock_Test00(lua_State* L)
 {
   Chi::log.Log() << "GOLD_BEGIN";
   const int num_args = lua_gettop(L);
   bool verbose = false;
-  if (num_args >= 1)
-    verbose = lua_toboolean(L,1);
+  if (num_args >= 1) verbose = lua_toboolean(L, 1);
 
   if (verbose) Chi::log.Log() << "Hello world";
 
@@ -30,8 +30,7 @@ int chi_ParameterBlock_Test00(lua_State* L)
     if (lua_istable(L, 2))
     {
       Chi::log.Log() << "It is a block";
-      const auto param_block =
-        chi_lua::TableParserAsParameterBlock::ParseTable(L, 2);
+      const auto param_block = chi_lua::TableParserAsParameterBlock::ParseTable(L, 2);
 
       {
         std::string outstr;
@@ -42,25 +41,20 @@ int chi_ParameterBlock_Test00(lua_State* L)
 
       Chi::log.Log() << param_block.GetParamValue<std::string>("it_method");
 
-      Chi::log.Log() << param_block.GetParam("sub1").GetParamValue<int>(
-        "ax_method");
+      Chi::log.Log() << param_block.GetParam("sub1").GetParamValue<int>("ax_method");
 
       Chi::log.Log() << param_block.GetParamValue<double>("nl_abs_tol");
 
-      Chi::log.Log() << (param_block.GetParamValue<bool>("enabled") ? "true"
-                                                                    : "false");
+      Chi::log.Log() << (param_block.GetParamValue<bool>("enabled") ? "true" : "false");
 
       Chi::log.Log() << param_block.GetParamValue<size_t>("nl_max_its");
 
-      Chi::log.Log() << "Has \"blocks\"?: "
-                     << param_block.GetParam("sub2").Has("blocks");
+      Chi::log.Log() << "Has \"blocks\"?: " << param_block.GetParam("sub2").Has("blocks");
 
-      Chi::log.Log()
-        << "Num Parameters: "
-        << param_block.GetParam("sub2").GetParam("blocks").NumParameters();
+      Chi::log.Log() << "Num Parameters: "
+                     << param_block.GetParam("sub2").GetParam("blocks").NumParameters();
 
-      const auto vec =
-        param_block.GetParam("sub2").GetParamVectorValue<int>("blocks");
+      const auto vec = param_block.GetParam("sub2").GetParamVectorValue<int>("blocks");
 
       {
         std::stringstream outstr;
@@ -86,8 +80,8 @@ int chi_ParameterBlock_Test00(lua_State* L)
 
         Chi::log.Log() << outstr;
       }
-    }//if table
-  }//if num_args == 2
+    } // if table
+  }   // if num_args == 2
 
   Chi::log.Log() << "Testing varying";
   {
@@ -123,4 +117,4 @@ int chi_ParameterBlock_Test00(lua_State* L)
   return 0;
 }
 
-}//namespace chi_unit_tests
+} // namespace chi_unit_tests

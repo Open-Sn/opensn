@@ -13,7 +13,8 @@ int chiMeshGeneratorExecute(lua_State* L);
 
 RegisterLuaFunction(chiMeshGeneratorExecute, chi_mesh::MeshGenerator, Execute);
 
-int chiMeshGeneratorExecute(lua_State* L)
+int
+chiMeshGeneratorExecute(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -24,8 +25,7 @@ int chiMeshGeneratorExecute(lua_State* L)
 
   const size_t handle = lua_tointeger(L, 1);
 
-  auto& generator =
-    Chi::GetStackItem<MeshGenerator>(Chi::object_stack, handle, fname);
+  auto& generator = Chi::GetStackItem<MeshGenerator>(Chi::object_stack, handle, fname);
   generator.Execute();
 
   return 0;

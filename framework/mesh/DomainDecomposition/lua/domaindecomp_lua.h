@@ -3,6 +3,6 @@
 
 #include "chi_lua.h"
 
-int chiDecomposeSurfaceMeshPxPy(lua_State *L);
+int chiDecomposeSurfaceMeshPxPy(lua_State* L);
 
-#endif //CHITECH_DOMAINDECOMP_LUA_H
+#endif // CHITECH_DOMAINDECOMP_LUA_H

@@ -5,8 +5,8 @@
 
 namespace chi
 {
-  struct GraphVertex;
-  class DirectedGraph;
-}
+struct GraphVertex;
+class DirectedGraph;
+} // namespace chi
 
-#endif //CHI_GRAPH_H
+#endif // CHI_GRAPH_H

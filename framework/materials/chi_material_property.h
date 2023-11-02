@@ -19,6 +19,6 @@ public:
   const std::string& TextName() const;
 };
 
-}
+} // namespace chi
 
 #endif // CHITECH_CHI_MATERIAL_PROPERTY_H

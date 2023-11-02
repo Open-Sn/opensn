@@ -3,19 +3,19 @@
 namespace chi_physics::field_operations
 {
 
-//Since there are no input parameters we will not register this object
+// Since there are no input parameters we will not register this object
 
 // ##################################################################
 /**Returns the input parameters.*/
-chi::InputParameters FieldOperation::GetInputParameters()
+chi::InputParameters
+FieldOperation::GetInputParameters()
 {
   return ChiObject::GetInputParameters();
 }
 
 // ##################################################################
 /**Constructor.*/
-FieldOperation::FieldOperation(const chi::InputParameters& params)
-  : ChiObject(params)
+FieldOperation::FieldOperation(const chi::InputParameters& params) : ChiObject(params)
 {
 }
 

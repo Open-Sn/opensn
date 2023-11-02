@@ -7,23 +7,23 @@
 #include <algorithm>
 #include <utility>
 
-#define ThrowInputError                                                        \
-  throw std::invalid_argument(                                                 \
-    (GetErrorOriginScope().empty() ? "" : GetErrorOriginScope() + "\n") +      \
+#define ThrowInputError                                                                            \
+  throw std::invalid_argument(                                                                     \
+    (GetErrorOriginScope().empty() ? "" : GetErrorOriginScope() + "\n") +                          \
     "Input error: " + ObjectType() + "\n" + err_stream.str())
 
-#define ExceptionParamNotPresent(param_name)                                   \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ": Parameter \"" + \
-                         param_name + "\" not present in list of parameters.")
+#define ExceptionParamNotPresent(param_name)                                                       \
+  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ": Parameter \"" + param_name +        \
+                         "\" not present in list of parameters.")
 
 namespace chi
 {
 
-const std::vector<std::string> InputParameters::system_ignored_param_names_ = {
-  "chi_obj_type"};
+const std::vector<std::string> InputParameters::system_ignored_param_names_ = {"chi_obj_type"};
 
 // #################################################################
-InputParameters& InputParameters::operator+=(InputParameters other)
+InputParameters&
+InputParameters::operator+=(InputParameters other)
 {
   for (const auto& param : other)
     AddParameter(param);
@@ -34,8 +34,7 @@ InputParameters& InputParameters::operator+=(InputParameters other)
     auto& this_map = parameter_class_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0,
-                        "Duplicate tags detected.");
+      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -44,8 +43,7 @@ InputParameters& InputParameters::operator+=(InputParameters other)
     auto& this_map = parameter_doc_string_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0,
-                        "Duplicate tags detected.");
+      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -54,8 +52,7 @@ InputParameters& InputParameters::operator+=(InputParameters other)
     auto& this_map = deprecation_warning_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0,
-                        "Duplicate tags detected.");
+      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -64,8 +61,7 @@ InputParameters& InputParameters::operator+=(InputParameters other)
     auto& this_map = deprecation_error_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0,
-                        "Duplicate tags detected.");
+      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -74,8 +70,7 @@ InputParameters& InputParameters::operator+=(InputParameters other)
     auto& this_map = renamed_error_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0,
-                        "Duplicate tags detected.");
+      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -84,8 +79,7 @@ InputParameters& InputParameters::operator+=(InputParameters other)
     auto& this_map = type_mismatch_allowed_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0,
-                        "Duplicate tags detected.");
+      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -94,8 +88,7 @@ InputParameters& InputParameters::operator+=(InputParameters other)
     auto& this_map = parameter_link_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0,
-                        "Duplicate tags detected.");
+      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -104,8 +97,7 @@ InputParameters& InputParameters::operator+=(InputParameters other)
     auto& this_map = constraint_tags_;
     for (auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0,
-                        "Duplicate tags detected.");
+      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = std::move(tag);
     }
   }
@@ -115,19 +107,24 @@ InputParameters& InputParameters::operator+=(InputParameters other)
 
 // #################################################################
 /**Sets the object type string for more descriptive error messages.*/
-void InputParameters::SetObjectType(const std::string& obj_type)
+void
+InputParameters::SetObjectType(const std::string& obj_type)
 {
   class_name_ = obj_type;
 }
 
 // #################################################################
 /**Returns the object type string.*/
-std::string InputParameters::ObjectType() const { return class_name_; }
+std::string
+InputParameters::ObjectType() const
+{
+  return class_name_;
+}
 
 // #################################################################
 /**Sets a link to the documentation of a different object.*/
-void InputParameters::LinkParameterToBlock(const std::string& param_name,
-                                           const std::string& block_name)
+void
+InputParameters::LinkParameterToBlock(const std::string& param_name, const std::string& block_name)
 {
   ChiInvalidArgumentIf(not this->Has(param_name),
                        "Parameter \"" + param_name + "\" not present in block");
@@ -136,11 +133,10 @@ void InputParameters::LinkParameterToBlock(const std::string& param_name,
 
 // #################################################################
 /**Gets any linkage information of a parameter.*/
-std::string InputParameters::GetParameterDocumentationLink(
-  const std::string& param_name) const
+std::string
+InputParameters::GetParameterDocumentationLink(const std::string& param_name) const
 {
-  if (parameter_link_.count(param_name) > 0)
-    return parameter_link_.at(param_name);
+  if (parameter_link_.count(param_name) > 0) return parameter_link_.at(param_name);
   return {};
 }
 
@@ -156,14 +152,14 @@ InputParameters::GetParameterDocString(const std::string& param_name)
 
 // #################################################################
 /**Determines if a parameter is ignored.*/
-bool InputParameters::IsParameterIgnored(const std::string& param_name)
+bool
+InputParameters::IsParameterIgnored(const std::string& param_name)
 {
   bool ignored = false;
 
   {
     auto& list = system_ignored_param_names_;
-    if (std::find(list.begin(), list.end(), param_name) != list.end())
-      ignored = true;
+    if (std::find(list.begin(), list.end(), param_name) != list.end()) ignored = true;
   }
 
   return ignored;
@@ -171,9 +167,10 @@ bool InputParameters::IsParameterIgnored(const std::string& param_name)
 
 // #################################################################
 /**Specialization for block type parameters.*/
-void InputParameters::AddOptionalParameterBlock(const std::string& name,
-                                                const ParameterBlock& block,
-                                                const std::string& doc_string)
+void
+InputParameters::AddOptionalParameterBlock(const std::string& name,
+                                           const ParameterBlock& block,
+                                           const std::string& doc_string)
 {
   auto new_block = block;
   new_block.SetBlockName(name);
@@ -184,10 +181,10 @@ void InputParameters::AddOptionalParameterBlock(const std::string& name,
 
 // #################################################################
 /**Specialization for block type parameters.*/
-void InputParameters::AddOptionalParameterArray(
-  const std::string& name,
-  const std::vector<ParameterBlock>& array,
-  const std::string& doc_string)
+void
+InputParameters::AddOptionalParameterArray(const std::string& name,
+                                           const std::vector<ParameterBlock>& array,
+                                           const std::string& doc_string)
 {
   ParameterBlock new_block(name);
   new_block.ChangeToArray();
@@ -201,8 +198,8 @@ void InputParameters::AddOptionalParameterArray(
 
 // #################################################################
 /**Specialization for block type parameters.*/
-void InputParameters::AddRequiredParameterBlock(const std::string& name,
-                                                const std::string& doc_string)
+void
+InputParameters::AddRequiredParameterBlock(const std::string& name, const std::string& doc_string)
 {
   ParameterBlock new_block(name);
   AddParameter(new_block);
@@ -212,8 +209,8 @@ void InputParameters::AddRequiredParameterBlock(const std::string& name,
 
 // #################################################################
 /**Specialization for array type parameters.*/
-void InputParameters::AddRequiredParameterArray(const std::string& name,
-                                                const std::string& doc_string)
+void
+InputParameters::AddRequiredParameterArray(const std::string& name, const std::string& doc_string)
 {
   ParameterBlock new_block(name);
   new_block.ChangeToArray();
@@ -227,14 +224,14 @@ void InputParameters::AddRequiredParameterArray(const std::string& name,
  * first checks whether all the required parameters are supplied. Then
  * it checks that all the parameters supplied actually maps to valid parameters.
  * */
-void InputParameters::AssignParameters(const ParameterBlock& params)
+void
+InputParameters::AssignParameters(const ParameterBlock& params)
 {
   param_block_at_assignment_ = params;
   std::stringstream err_stream;
 
   if (Chi::log.GetVerbosity() >= 2)
-    Chi::log.Log0Verbose2()
-      << "Number of parameters " << params.NumParameters();
+    Chi::log.Log0Verbose2() << "Number of parameters " << params.NumParameters();
 
   // ================================== Check required parameters
   // Loops over all input-parameters that have been
@@ -254,8 +251,7 @@ void InputParameters::AssignParameters(const ParameterBlock& params)
 
     if (not params.Has(req_param_name))
       err_stream << "Required param \"" << req_param_name
-                 << "\" not supplied.\ndoc-string: "
-                 << GetParameterDocString(req_param_name)
+                 << "\" not supplied.\ndoc-string: " << GetParameterDocString(req_param_name)
                  << "\nEnsure the parameter given is supplied or not nil";
   }
 
@@ -295,10 +291,9 @@ void InputParameters::AssignParameters(const ParameterBlock& params)
       if (IsParameterIgnored(param_name)) continue;
 
       if (this->Has(param_name) and (dep_warns.count(param_name) > 0))
-        Chi::log.Log0Warning()
-          << "Parameter \"" << param_name << "\" has been deprecated "
-          << "and will be removed soon.\n"
-          << dep_warns.at(param_name);
+        Chi::log.Log0Warning() << "Parameter \"" << param_name << "\" has been deprecated "
+                               << "and will be removed soon.\n"
+                               << dep_warns.at(param_name);
     }
   }
 
@@ -315,9 +310,8 @@ void InputParameters::AssignParameters(const ParameterBlock& params)
 
       if (this->Has(param_name) and (dep_errs.count(param_name) > 0))
       {
-        Chi::log.Log0Error()
-          << "Parameter \"" << param_name << "\" has been deprecated.\n"
-          << dep_errs.at(param_name);
+        Chi::log.Log0Error() << "Parameter \"" << param_name << "\" has been deprecated.\n"
+                             << dep_errs.at(param_name);
         Chi::Exit(EXIT_FAILURE);
       }
     }
@@ -337,10 +331,8 @@ void InputParameters::AssignParameters(const ParameterBlock& params)
     {
       if (type_mismatch_allowed_tags_.count(param_name) == 0)
       {
-        err_stream << "Invalid parameter type \""
-                   << ParameterBlockTypeName(param.Type())
-                   << "\" for parameter \"" << param_name
-                   << "\". Expecting type \""
+        err_stream << "Invalid parameter type \"" << ParameterBlockTypeName(param.Type())
+                   << "\" for parameter \"" << param_name << "\". Expecting type \""
                    << ParameterBlockTypeName(input_param.Type()) << "\".\n"
                    << "doc-string: " << GetParameterDocString(param_name);
         continue;
@@ -353,15 +345,13 @@ void InputParameters::AssignParameters(const ParameterBlock& params)
       const auto& constraint = constraint_tags_.at(input_param.Name());
       if (not constraint->IsAllowable(param.Value()))
       {
-        err_stream << constraint->OutOfRangeString(input_param.Name(),
-                                                   param.Value());
+        err_stream << constraint->OutOfRangeString(input_param.Name(), param.Value());
         err_stream << "\n";
         continue;
       }
     } // if constraint
 
-    if (Chi::log.GetVerbosity() >= 2)
-      Chi::log.Log0Verbose2() << "Setting parameter " << param_name;
+    if (Chi::log.GetVerbosity() >= 2) Chi::log.Log0Verbose2() << "Setting parameter " << param_name;
     input_param = param;
   } // for input params
 
@@ -370,11 +360,11 @@ void InputParameters::AssignParameters(const ParameterBlock& params)
 
 // ##################################################################
 /**Marks a parameters as deprecated but will only produce a warning.*/
-void InputParameters::MarkParamaterDeprecatedWarning(
-  const std::string& param_name, const std::string& deprecation_message /*=""*/)
+void
+InputParameters::MarkParamaterDeprecatedWarning(const std::string& param_name,
+                                                const std::string& deprecation_message /*=""*/)
 {
-  if (Has(param_name))
-    deprecation_warning_tags_[param_name] = deprecation_message;
+  if (Has(param_name)) deprecation_warning_tags_[param_name] = deprecation_message;
   else
     ExceptionParamNotPresent(param_name);
 }
@@ -382,11 +372,11 @@ void InputParameters::MarkParamaterDeprecatedWarning(
 // ##################################################################
 /**Marks a parameters as deprecated and will produce an error if the parameter
  * is specified.*/
-void InputParameters::MarkParamaterDeprecatedError(
-  const std::string& param_name, const std::string& deprecation_message /*=""*/)
+void
+InputParameters::MarkParamaterDeprecatedError(const std::string& param_name,
+                                              const std::string& deprecation_message /*=""*/)
 {
-  if (Has(param_name))
-    deprecation_error_tags_[param_name] = deprecation_message;
+  if (Has(param_name)) deprecation_error_tags_[param_name] = deprecation_message;
   else
     ExceptionParamNotPresent(param_name);
 }
@@ -394,8 +384,9 @@ void InputParameters::MarkParamaterDeprecatedError(
 // ##################################################################
 /**Marks a parameters as renamed and will produce an error if the parameter
  * is specified.*/
-void InputParameters::MarkParamaterRenamed(
-  const std::string& param_name, const std::string& renaming_description)
+void
+InputParameters::MarkParamaterRenamed(const std::string& param_name,
+                                      const std::string& renaming_description)
 {
   if (Has(param_name)) renamed_error_tags_[param_name] = renaming_description;
   else
@@ -404,18 +395,17 @@ void InputParameters::MarkParamaterRenamed(
 
 // ##################################################################
 /**Creates a range based constraint for a given parameter.*/
-void InputParameters::ConstrainParameterRange(const std::string& param_name,
-                                              AllowableRangePtr allowable_range)
+void
+InputParameters::ConstrainParameterRange(const std::string& param_name,
+                                         AllowableRangePtr allowable_range)
 {
   if (Has(param_name))
   {
     const auto& param_type = GetParam(param_name).Type();
-    ChiInvalidArgumentIf(param_type == ParameterBlockType::BLOCK or
-                           param_type == ParameterBlockType::ARRAY,
-                         std::string("Parameter \"") + param_name +
-                           "\" is of type " +
-                           ParameterBlockTypeName(param_type) +
-                           " to which constraints cannot be applied");
+    ChiInvalidArgumentIf(
+      param_type == ParameterBlockType::BLOCK or param_type == ParameterBlockType::ARRAY,
+      std::string("Parameter \"") + param_name + "\" is of type " +
+        ParameterBlockTypeName(param_type) + " to which constraints cannot be applied");
     constraint_tags_[param_name] = std::move(allowable_range);
   }
   else
@@ -425,17 +415,17 @@ void InputParameters::ConstrainParameterRange(const std::string& param_name,
 // ##################################################################
 /**Useful for accepting varying datatypes or making a choice based
  * upon the type of a parameter.*/
-void InputParameters::SetParameterTypeMismatchAllowed(
-  const std::string& param_name)
+void
+InputParameters::SetParameterTypeMismatchAllowed(const std::string& param_name)
 {
-  ChiInvalidArgumentIf(not Has(param_name),
-                       "Parameter \"" + param_name + "\" not present.");
+  ChiInvalidArgumentIf(not Has(param_name), "Parameter \"" + param_name + "\" not present.");
   type_mismatch_allowed_tags_[param_name] = true;
 }
 
 // ##################################################################
 /**Dumps the input parameters to stdout.*/
-void InputParameters::DumpParameters() const
+void
+InputParameters::DumpParameters() const
 {
   Chi::log.Log() << "CLASS_NAME " << class_name_;
 
@@ -460,8 +450,7 @@ void InputParameters::DumpParameters() const
     if (parameter_class_tags_.at(param_name) == InputParameterTag::OPTIONAL)
     {
       Chi::log.Log() << sp4 << "TAG OPTIONAL";
-      if (type != ParameterBlockType::BLOCK and
-          type != ParameterBlockType::ARRAY)
+      if (type != ParameterBlockType::BLOCK and type != ParameterBlockType::ARRAY)
         Chi::log.Log() << sp4 << "DEFAULT_VALUE " << param.Value().PrintStr();
       else if (type == ParameterBlockType::ARRAY)
       {
@@ -479,8 +468,7 @@ void InputParameters::DumpParameters() const
       Chi::log.Log() << sp4 << "TAG REQUIRED";
 
     if (constraint_tags_.count(param_name) != 0)
-      Chi::log.Log() << sp4 << "CONSTRAINTS "
-                     << constraint_tags_.at(param_name)->PrintRange();
+      Chi::log.Log() << sp4 << "CONSTRAINTS " << constraint_tags_.at(param_name)->PrintRange();
 
     if (parameter_doc_string_.count(param_name) != 0)
     {

@@ -22,21 +22,22 @@ Properties:\n
 
 \ingroup LuaSurfaceMesher
 \author Jan*/
-int chiSurfaceMesherSetProperty(lua_State *L)
+int
+chiSurfaceMesherSetProperty(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
   auto surf_mesher = cur_hndlr.GetSurfaceMesher();
 
   //================================================== Get property number
-  int property_num = lua_tonumber(L,1);
+  int property_num = lua_tonumber(L, 1);
 
   //================================================== Area constraint
-  if (property_num == 1)   //MAX_AREA
+  if (property_num == 1) // MAX_AREA
   {
     Chi::log.Log0Warning() << "Deprecated and removed feature"
-                                 "property MAX_AREA in call"
-                                 " to chiSurfaceMesherSetProperty";
+                              "property MAX_AREA in call"
+                              " to chiSurfaceMesherSetProperty";
   }
 
   return 0;

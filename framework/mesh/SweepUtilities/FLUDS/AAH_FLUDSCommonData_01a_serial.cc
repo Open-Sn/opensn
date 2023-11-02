@@ -7,10 +7,10 @@ namespace chi_mesh::sweep_management
 /**This cell takes a hierarchy of a cell compact view and
  * serializes it for MPI transmission. This is easy since all
  * the values are integers.*/
-void AAH_FLUDSCommonData::SerializeCellInfo(
-  std::vector<CompactCellView>& cell_views,
-  std::vector<int>& face_indices,
-  int num_face_dofs)
+void
+AAH_FLUDSCommonData::SerializeCellInfo(std::vector<CompactCellView>& cell_views,
+                                       std::vector<int>& face_indices,
+                                       int num_face_dofs)
 {
   const size_t num_cells = cell_views.size();
 
@@ -51,10 +51,10 @@ void AAH_FLUDSCommonData::SerializeCellInfo(
 
 // ###################################################################
 /**Deserializes face indices.*/
-void AAH_FLUDSCommonData::DeSerializeCellInfo(
-  std::vector<CompactCellView>& cell_views,
-  std::vector<int>* face_indices,
-  int& num_face_dofs)
+void
+AAH_FLUDSCommonData::DeSerializeCellInfo(std::vector<CompactCellView>& cell_views,
+                                         std::vector<int>* face_indices,
+                                         int& num_face_dofs)
 {
   num_face_dofs = (*face_indices)[0];
   int num_cells = (*face_indices)[1];
@@ -107,4 +107,4 @@ void AAH_FLUDSCommonData::DeSerializeCellInfo(
   } // while k
 }
 
-}
+} // namespace chi_mesh::sweep_management

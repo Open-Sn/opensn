@@ -8,14 +8,13 @@ namespace chi_math::spatial_discretization
 
 // ###################################################################
 /**Builds finite volume based sparsity pattern.*/
-void FiniteVolume::
-  BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
-                       std::vector<int64_t>& nodal_nnz_off_diag,
-                       const chi_math::UnknownManager& unknown_manager) const
+void
+FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
+                                   std::vector<int64_t>& nodal_nnz_off_diag,
+                                   const chi_math::UnknownManager& unknown_manager) const
 {
-  unsigned int num_uk = unknown_manager.unknowns_.size(); // Number of unknowns
-  unsigned int N =
-    unknown_manager.GetTotalUnknownStructureSize(); // Total number of unknowns
+  unsigned int num_uk = unknown_manager.unknowns_.size();          // Number of unknowns
+  unsigned int N = unknown_manager.GetTotalUnknownStructureSize(); // Total number of unknowns
 
   nodal_nnz_in_diag.clear();
   nodal_nnz_off_diag.clear();
@@ -27,8 +26,7 @@ void FiniteVolume::
 
   for (int uk = 0; uk < num_uk; ++uk)
   {
-    const unsigned int num_comps =
-      unknown_manager.unknowns_[uk].num_components_;
+    const unsigned int num_comps = unknown_manager.unknowns_[uk].num_components_;
     for (int comp = 0; comp < num_comps; ++comp)
     {
       for (auto& cell : ref_grid_.local_cells)

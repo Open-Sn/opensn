@@ -10,10 +10,9 @@ namespace chi_math::spatial_discretization
 
 // ###################################################################
 /**Constructor.*/
-PieceWiseLinearContinuous::PieceWiseLinearContinuous(
-  const chi_mesh::MeshContinuum& grid,
-  chi_math::QuadratureOrder q_order,
-  chi_math::CoordinateSystemType cs_type)
+PieceWiseLinearContinuous::PieceWiseLinearContinuous(const chi_mesh::MeshContinuum& grid,
+                                                     chi_math::QuadratureOrder q_order,
+                                                     chi_math::CoordinateSystemType cs_type)
   : spatial_discretization::PieceWiseLinearBase(
       grid, q_order, SDMType::PIECEWISE_LINEAR_CONTINUOUS, cs_type)
 {
@@ -24,18 +23,17 @@ PieceWiseLinearContinuous::PieceWiseLinearContinuous(
 
 // ###################################################################
 /**Construct a shared object using the protected constructor.*/
-std::shared_ptr<PieceWiseLinearContinuous> PieceWiseLinearContinuous::New(
-  const chi_mesh::MeshContinuum& grid,
-  QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
-  CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
+std::shared_ptr<PieceWiseLinearContinuous>
+PieceWiseLinearContinuous::New(const chi_mesh::MeshContinuum& grid,
+                               QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
+                               CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
 
 {
   const auto PWLC = SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS;
   // First try to find an existing spatial discretization that matches the
   // one requested.
   for (auto& sdm : Chi::sdm_stack)
-    if (sdm->Type() == PWLC and
-        std::addressof(sdm->Grid()) == std::addressof(grid) and
+    if (sdm->Type() == PWLC and std::addressof(sdm->Grid()) == std::addressof(grid) and
         sdm->GetCoordinateSystemType() == cs_type)
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
@@ -44,8 +42,7 @@ std::shared_ptr<PieceWiseLinearContinuous> PieceWiseLinearContinuous::New(
 
       if (fe_ptr->GetQuadratureOrder() != q_order) break;
 
-      auto sdm_ptr =
-        std::dynamic_pointer_cast<PieceWiseLinearContinuous>(fe_ptr);
+      auto sdm_ptr = std::dynamic_pointer_cast<PieceWiseLinearContinuous>(fe_ptr);
 
       ChiLogicalErrorIf(not sdm_ptr, "Casting failure");
 

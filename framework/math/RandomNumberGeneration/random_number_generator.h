@@ -10,7 +10,7 @@ namespace chi_math
 class RandomNumberGenerator
 {
 private:
-  std::mt19937_64    mt1993764_generator_;
+  std::mt19937_64 mt1993764_generator_;
   std::uniform_real_distribution<double> distribution_;
 
 public:
@@ -18,6 +18,6 @@ public:
   RandomNumberGenerator(int seed);
   double Rand();
 };
-}
+} // namespace chi_math
 
 #endif

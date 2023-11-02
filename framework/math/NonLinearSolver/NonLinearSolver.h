@@ -20,9 +20,9 @@ public:
   typedef NonLinearSolverContext<VecType, SolverType> NLSolverContext;
   typedef std::shared_ptr<NLSolverContext> NLSolverContextPtr;
 
-  explicit NonLinearSolver(NLSolverContextPtr context_ptr,
-                           const chi::InputParameters& params =
-                             NonLinearSolverOptions::GetInputParameters())
+  explicit NonLinearSolver(
+    NLSolverContextPtr context_ptr,
+    const chi::InputParameters& params = NonLinearSolverOptions::GetInputParameters())
     : solver_name_(params.GetParamValue<std::string>("name")),
       context_ptr_(context_ptr),
       options_(params)

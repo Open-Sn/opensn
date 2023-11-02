@@ -10,8 +10,7 @@ namespace lbs::acceleration
 // ###################################################################
 /***/
 TwoGridCollapsedInfo
-MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs,
-                         EnergyCollapseScheme scheme)
+MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseScheme scheme)
 {
   const std::string fname = "lbs::acceleration::MakeTwoGridCollapsedInfo";
 

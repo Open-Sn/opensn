@@ -10,22 +10,16 @@ struct chi_mesh::TensorRank2Dim3
   std::vector<chi_mesh::Vector3> t; ///< Tensor entries.
 
   /**Default constructor.*/
-  TensorRank2Dim3()
-  {
-    t.resize(3,chi_mesh::Vector3(0.0,0.0,0.0));
-  }
+  TensorRank2Dim3() { t.resize(3, chi_mesh::Vector3(0.0, 0.0, 0.0)); }
   /**Constructor with specified value.
    * \f$ T_{ii} = \alpha \f$*/
   explicit TensorRank2Dim3(const double value)
   {
-    t.resize(3,chi_mesh::Vector3(value,value,value));
+    t.resize(3, chi_mesh::Vector3(value, value, value));
   }
 
   /**Copy constructor.*/
-  TensorRank2Dim3(const TensorRank2Dim3& that)
-  {
-    this->t = that.t;
-  }
+  TensorRank2Dim3(const TensorRank2Dim3& that) { this->t = that.t; }
 
   /**Component-wise copy*/
   TensorRank2Dim3& operator=(const TensorRank2Dim3& that)
@@ -36,10 +30,7 @@ struct chi_mesh::TensorRank2Dim3
   }
 
   /**Element access.*/
-  chi_mesh::Vector3& operator[](int index)
-  {
-    return t[index];
-  }
+  chi_mesh::Vector3& operator[](int index) { return t[index]; }
 
   //============================================= Addition
   /**Component-wise addition.
@@ -47,8 +38,8 @@ struct chi_mesh::TensorRank2Dim3
   TensorRank2Dim3 operator+(const TensorRank2Dim3& that) const
   {
     TensorRank2Dim3 new_t;
-    for (int i=0; i<3; ++i)
-      for (int j=0; j<3; ++j)
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
         new_t[i](j) = this->t[i][j] + that.t[i][j];
 
     return new_t;
@@ -58,8 +49,8 @@ struct chi_mesh::TensorRank2Dim3
    * \f$ \vec{\vec{X}} = \vec{\vec{X}} + \vec{\vec{Y}} \f$*/
   TensorRank2Dim3& operator+=(const TensorRank2Dim3& that)
   {
-    for (int i=0; i<3; ++i)
-      for (int j=0; j<3; ++j)
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
         this->t[i](j) += that.t[i][j];
 
     return *this;
@@ -71,8 +62,8 @@ struct chi_mesh::TensorRank2Dim3
   TensorRank2Dim3 operator-(const TensorRank2Dim3& that) const
   {
     TensorRank2Dim3 new_t;
-    for (int i=0; i<3; ++i)
-      for (int j=0; j<3; ++j)
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
         new_t[i](j) = this->t[i][j] - that.t[i][j];
 
     return new_t;
@@ -82,8 +73,8 @@ struct chi_mesh::TensorRank2Dim3
    * \f$ \vec{\vec{X}} = \vec{\vec{X}} - \vec{\vec{Y}} \f$*/
   TensorRank2Dim3& operator-=(const TensorRank2Dim3& that)
   {
-    for (int i=0; i<3; ++i)
-      for (int j=0; j<3; ++j)
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
         this->t[i](j) -= that.t[i][j];
 
     return *this;
@@ -95,9 +86,9 @@ struct chi_mesh::TensorRank2Dim3
   TensorRank2Dim3 operator*(const double value) const
   {
     TensorRank2Dim3 new_t;
-    for (int i=0; i<3; ++i)
-      for (int j=0; j<3; ++j)
-        new_t[i](j) = this->t[i][j]*value;
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
+        new_t[i](j) = this->t[i][j] * value;
 
     return new_t;
   }
@@ -106,8 +97,8 @@ struct chi_mesh::TensorRank2Dim3
    *  \f$ \vec{\vec{X}} = \vec{\vec{X}}\alpha \f$*/
   TensorRank2Dim3& operator*=(const double value)
   {
-    for (int i=0; i<3; ++i)
-      for (int j=0; j<3; ++j)
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
         this->t[i](j) *= value;
 
     return *this;
@@ -119,9 +110,9 @@ struct chi_mesh::TensorRank2Dim3
   TensorRank2Dim3 operator/(const double value) const
   {
     TensorRank2Dim3 new_t;
-    for (int i=0; i<3; ++i)
-      for (int j=0; j<3; ++j)
-        new_t[i](j) = this->t[i][j]/value;
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
+        new_t[i](j) = this->t[i][j] / value;
 
     return new_t;
   }
@@ -130,8 +121,8 @@ struct chi_mesh::TensorRank2Dim3
    * \f$ \vec{\vec{X}} = \vec{\vec{X}}\frac{1}{\alpha} \f$*/
   TensorRank2Dim3& operator/=(const double value)
   {
-    for (int i=0; i<3; ++i)
-      for (int j=0; j<3; ++j)
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
         this->t[i](j) /= value;
 
     return *this;
@@ -143,19 +134,19 @@ struct chi_mesh::TensorRank2Dim3
   TensorRank2Dim3 Transpose()
   {
     TensorRank2Dim3 new_t;
-    for (int i=0; i<3; ++i)
-      for (int j=0; j<3; ++j)
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
         new_t[i](j) = this->t[j][i];
 
     return new_t;
   }
 
   //============================================= Tensor dot product
-  //Defined in chi_mesh_utilities.cc
+  // Defined in chi_mesh_utilities.cc
   Vector3 Dot(const chi_mesh::Vector3& v) const;
 
   //============================================= Get Diagonal
-  //Defined in chi_mesh_utilities.cc
+  // Defined in chi_mesh_utilities.cc
   chi_mesh::Vector3 Diag() const;
 
   /**Returns the sum of the diagonal. Sometimes useful to get
@@ -163,7 +154,7 @@ struct chi_mesh::TensorRank2Dim3
   double DiagSum() const
   {
     double val = 0.0;
-    for (int i=0; i<3; ++i)
+    for (int i = 0; i < 3; ++i)
       val += t[i][i];
 
     return val;
@@ -175,14 +166,13 @@ struct chi_mesh::TensorRank2Dim3
   {
     std::stringstream out;
     out << "[";
-    for (int i=0;i<3;i++)
+    for (int i = 0; i < 3; i++)
     {
-      for (int j=0;j<3;j++)
+      for (int j = 0; j < 3; j++)
       {
         out << t[i][j] << " ";
       }
-      if (i!=2)
-        out << "\n ";
+      if (i != 2) out << "\n ";
       else
         out << "]";
     }
@@ -191,9 +181,8 @@ struct chi_mesh::TensorRank2Dim3
   }
 };
 
-//The following functions are defined in chi_mesh_utilities.cc
-//Left multiplcation by scalar
-chi_mesh::TensorRank2Dim3
-  operator*(const double value, const chi_mesh::TensorRank2Dim3& that);
+// The following functions are defined in chi_mesh_utilities.cc
+// Left multiplcation by scalar
+chi_mesh::TensorRank2Dim3 operator*(const double value, const chi_mesh::TensorRank2Dim3& that);
 
 #endif

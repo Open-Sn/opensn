@@ -5,7 +5,7 @@
 namespace chi_math
 {
 
-template<>
+template <>
 LinearSolver<Mat, Vec, KSP>::~LinearSolver()
 {
   VecDestroy(&x_);
@@ -13,51 +13,64 @@ LinearSolver<Mat, Vec, KSP>::~LinearSolver()
   KSPDestroy(&solver_);
 }
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::ApplyToleranceOptions()
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::ApplyToleranceOptions()
 {
   KSPSetTolerances(solver_,
-                  tolerance_options_.residual_relative,
-                  tolerance_options_.residual_absolute,
-                  tolerance_options_.residual_divergence,
-                  tolerance_options_.maximum_iterations);
+                   tolerance_options_.residual_relative,
+                   tolerance_options_.residual_absolute,
+                   tolerance_options_.residual_divergence,
+                   tolerance_options_.maximum_iterations);
 }
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::PreSetupCallback()
-{}
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::PreSetupCallback()
+{
+}
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::SetOptions()
-{}
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::SetOptions()
+{
+}
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::SetSolverContext()
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::SetSolverContext()
 {
   KSPSetApplicationContext(solver_, &(*context_ptr_));
 }
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::SetConvergenceTest()
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::SetConvergenceTest()
 {
   KSPSetConvergenceTest(solver_, &KSPConvergedDefault, nullptr, nullptr);
 }
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::SetMonitor()
-{}
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::SetMonitor()
+{
+}
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::SetPreconditioner()
-{}
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::SetPreconditioner()
+{
+}
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::PostSetupCallback()
-{}
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::PostSetupCallback()
+{
+}
 
-
-template<>
-void LinearSolver<Mat, Vec, KSP>::Setup()
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::Setup()
 {
   if (IsSystemSet()) return;
   this->PreSetupCallback();
@@ -70,8 +83,7 @@ void LinearSolver<Mat, Vec, KSP>::Setup()
   if (iterative_method_ == "gmres")
   {
     KSPGMRESSetRestart(solver_, tolerance_options_.gmres_restart_interval);
-    KSPGMRESSetBreakdownTolerance(solver_,
-                                  tolerance_options_.gmres_breakdown_tolerance);
+    KSPGMRESSetBreakdownTolerance(solver_, tolerance_options_.gmres_breakdown_tolerance);
   }
 
   KSPSetInitialGuessNonzero(solver_, PETSC_FALSE);
@@ -91,25 +103,28 @@ void LinearSolver<Mat, Vec, KSP>::Setup()
   system_set_ = true;
 }
 
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::PreSolveCallback()
+{
+}
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::PreSolveCallback()
-{}
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::PostSolveCallback()
+{
+}
 
-template<>
-void LinearSolver<Mat, Vec, KSP>::PostSolveCallback()
-{}
-
-template<>
-void LinearSolver<Mat, Vec, KSP>::Solve()
+template <>
+void
+LinearSolver<Mat, Vec, KSP>::Solve()
 {
   this->PreSolveCallback();
   this->SetInitialGuess();
   this->SetRHS();
 
-  if (not suppress_kspsolve_)
-    KSPSolve(solver_, b_, x_);
+  if (not suppress_kspsolve_) KSPSolve(solver_, b_, x_);
   this->PostSolveCallback();
 }
 
-}//namespace chi_math
+} // namespace chi_math

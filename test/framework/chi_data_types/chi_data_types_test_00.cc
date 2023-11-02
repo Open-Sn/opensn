@@ -16,8 +16,7 @@
 namespace chi_unit_tests
 {
 
-chi::ParameterBlock
-chi_data_types_Test00(const chi::InputParameters& params);
+chi::ParameterBlock chi_data_types_Test00(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*name_in_lua=*/chi_data_types_Test00,
@@ -30,7 +29,7 @@ chi_data_types_Test00(const chi::InputParameters&)
   bool passed = true;
 
   //======================================================= Byte array
-  //write/read
+  // write/read
   Chi::log.Log() << "GOLD_BEGIN";
   Chi::log.Log() << "Testing chi_data_types::ByteArray Write and Read\n";
   chi_data_types::ByteArray barr;
@@ -59,9 +58,8 @@ chi_data_types_Test00(const chi::InputParameters&)
   Chi::log.Log() << "OffsetAfterSeek " << seeker.Offset();
   Chi::log.Log() << "Value check " << seeker.Read<double>();
 
-  if (dbl_value != 1.01234567890123456789 or int_value != -15600700 or
-      dbl_value2 != 2.0987654321 or bl_value1 or !bl_value2 or
-      vec3[0] != chi_mesh::Vector3(3.0, 2.0, 1.0)[0] or
+  if (dbl_value != 1.01234567890123456789 or int_value != -15600700 or dbl_value2 != 2.0987654321 or
+      bl_value1 or !bl_value2 or vec3[0] != chi_mesh::Vector3(3.0, 2.0, 1.0)[0] or
       vec3[1] != chi_mesh::Vector3(3.0, 2.0, 1.0)[1] or
       vec3[2] != chi_mesh::Vector3(3.0, 2.0, 1.0)[2])
 
@@ -75,7 +73,7 @@ chi_data_types_Test00(const chi::InputParameters&)
                                   "Write/Read ... Passed\n");
 
   //======================================================= Testing Byte array
-  //serialization
+  // serialization
   Chi::log.Log() << "Testing chi_data_types::ByteArray "
                     "Serialization/DeSerialization\n";
   if (Chi::mpi.process_count == 2)
@@ -180,8 +178,7 @@ chi_data_types_Test00(const chi::InputParameters&)
       size_t address = 0;
       while (address < byte_array.Size())
       {
-        const chi_mesh::Cell read_cell =
-          chi_mesh::Cell::DeSerialize(byte_array, address);
+        const chi_mesh::Cell read_cell = chi_mesh::Cell::DeSerialize(byte_array, address);
 
         auto& rcell = read_cell;
         auto& pcell = poster_child_cell;
@@ -319,8 +316,7 @@ chi_data_types_Test00(const chi::InputParameters&)
   // Constructor vector value
   {
     dummy << "Should be 2x2x2=8 zeros\n";
-    chi_data_types::NDArray<double> nd_array1(std::vector<size_t>{2, 2, 2},
-                                              0.0);
+    chi_data_types::NDArray<double> nd_array1(std::vector<size_t>{2, 2, 2}, 0.0);
     for (auto val : nd_array1)
     {
       dummy << val << " ";
@@ -331,8 +327,7 @@ chi_data_types_Test00(const chi::InputParameters&)
   // Constructor array value
   {
     dummy << "Should be 2x2x2=8 zeros\n";
-    chi_data_types::NDArray<double> nd_array1(std::array<size_t, 3>{2, 2, 2},
-                                              0.0);
+    chi_data_types::NDArray<double> nd_array1(std::array<size_t, 3>{2, 2, 2}, 0.0);
     for (auto val : nd_array1)
     {
       dummy << val << " ";

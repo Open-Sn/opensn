@@ -10,7 +10,8 @@ RegisterSyntaxBlock(/*namespace_name=*/lbs,
                     /*block_name=*/OptionsBlock,
                     /*syntax_function=*/LBSSolver::OptionsBlock);
 
-chi::InputParameters LBSSolver::OptionsBlock()
+chi::InputParameters
+LBSSolver::OptionsBlock()
 {
   chi::InputParameters params;
 
@@ -113,7 +114,8 @@ RegisterSyntaxBlock(/*namespace_in_lua=*/lbs,
                     /*name_in_lua=*/BoundaryOptionsBlock,
                     /*syntax_function=*/LBSSolver::BoundaryOptionsBlock);
 
-chi::InputParameters LBSSolver::BoundaryOptionsBlock()
+chi::InputParameters
+LBSSolver::BoundaryOptionsBlock()
 {
   chi::InputParameters params;
 
@@ -148,7 +150,8 @@ chi::InputParameters LBSSolver::BoundaryOptionsBlock()
 }
 
 // ##################################################################
-void LBSSolver::SetOptions(const chi::InputParameters& params)
+void
+LBSSolver::SetOptions(const chi::InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
 
@@ -160,8 +163,7 @@ void LBSSolver::SetOptions(const chi::InputParameters& params)
     {
       auto sdm_name = spec.GetValue<std::string>();
       if (sdm_name == "pwld")
-        Options().sd_type =
-          chi_math::SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
+        Options().sd_type = chi_math::SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
     }
 
     else if (spec.Name() == "scattering_order")
@@ -174,23 +176,19 @@ void LBSSolver::SetOptions(const chi::InputParameters& params)
       Options().read_restart_data = spec.GetValue<bool>();
 
     else if (spec.Name() == "read_restart_folder_name")
-      Options().read_restart_folder_name =
-        spec.GetValue<std::string>();
+      Options().read_restart_folder_name = spec.GetValue<std::string>();
 
     else if (spec.Name() == "read_restart_file_base")
-      Options().read_restart_file_base =
-        spec.GetValue<std::string>();
+      Options().read_restart_file_base = spec.GetValue<std::string>();
 
     else if (spec.Name() == "write_restart_data")
       Options().write_restart_data = spec.GetValue<bool>();
 
     else if (spec.Name() == "write_restart_folder_name")
-      Options().write_restart_folder_name =
-        spec.GetValue<std::string>();
+      Options().write_restart_folder_name = spec.GetValue<std::string>();
 
     else if (spec.Name() == "write_restart_file_base")
-      Options().write_restart_file_base =
-        spec.GetValue<std::string>();
+      Options().write_restart_file_base = spec.GetValue<std::string>();
 
     else if (spec.Name() == "write_restart_interval")
       Options().write_restart_interval = spec.GetValue<double>();
@@ -224,8 +222,7 @@ void LBSSolver::SetOptions(const chi::InputParameters& params)
 
     else if (spec.Name() == "field_function_prefix_option")
     {
-      Options().field_function_prefix_option =
-        spec.GetValue<std::string>();
+      Options().field_function_prefix_option = spec.GetValue<std::string>();
     }
 
     else if (spec.Name() == "field_function_prefix")
@@ -247,26 +244,22 @@ void LBSSolver::SetOptions(const chi::InputParameters& params)
 }
 
 // ##################################################################
-void LBSSolver::SetBoundaryOptions(const chi::InputParameters& params)
+void
+LBSSolver::SetBoundaryOptions(const chi::InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
   const auto& user_params = params.ParametersAtAssignment();
   const auto boundary_name = user_params.GetParamValue<std::string>("name");
   const auto bndry_type = user_params.GetParamValue<std::string>("type");
 
-  const std::map<std::string, uint64_t> supported_bndry_names = {{"xmin", 1},
-                                                                 {"xmax", 0},
-                                                                 {"ymin", 3},
-                                                                 {"ymax", 2},
-                                                                 {"zmin", 5},
-                                                                 {"zmax", 4}};
+  const std::map<std::string, uint64_t> supported_bndry_names = {
+    {"xmin", 1}, {"xmax", 0}, {"ymin", 3}, {"ymax", 2}, {"zmin", 5}, {"zmax", 4}};
   const auto bid = supported_bndry_names.at(boundary_name);
   const std::map<std::string, lbs::BoundaryType> type_list = {
     {"vacuum", BoundaryType::VACUUM},
     {"incident_isotropic", BoundaryType::INCIDENT_ISOTROPIC},
     {"reflecting", BoundaryType::REFLECTING},
-    {"incident_anisotropic_heterogeneous",
-     BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS}};
+    {"incident_anisotropic_heterogeneous", BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS}};
 
   const auto type = type_list.at(bndry_type);
   switch (type)
@@ -288,12 +281,9 @@ void LBSSolver::SetBoundaryOptions(const chi::InputParameters& params)
 
         throw std::invalid_argument(message);
       }
-      user_params.RequireParameterBlockTypeIs(
-        "group_strength",
-                                              chi::ParameterBlockType::ARRAY);
+      user_params.RequireParameterBlockTypeIs("group_strength", chi::ParameterBlockType::ARRAY);
 
-      const auto group_strength =
-        user_params.GetParamVectorValue<double>("group_strength");
+      const auto group_strength = user_params.GetParamVectorValue<double>("group_strength");
       BoundaryPreferences()[bid] = {type, group_strength};
       break;
     }
@@ -308,8 +298,7 @@ void LBSSolver::SetBoundaryOptions(const chi::InputParameters& params)
 
         throw std::invalid_argument(message);
       }
-      const auto bndry_function_name =
-        user_params.GetParamValue<std::string>("function_name");
+      const auto bndry_function_name = user_params.GetParamValue<std::string>("function_name");
 
       BoundaryPreferences()[bid] = {type, {}, bndry_function_name};
       break;
@@ -317,4 +306,4 @@ void LBSSolver::SetBoundaryOptions(const chi::InputParameters& params)
   }
 }
 
-}
+} // namespace lbs

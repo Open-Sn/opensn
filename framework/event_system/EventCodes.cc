@@ -4,7 +4,8 @@
 namespace chi
 {
 
-int GetStandardEventCode(const std::string& event_name)
+int
+GetStandardEventCode(const std::string& event_name)
 {
   static std::map<std::string, int> event_name_2_code_map{
     {"ProgramStart", 1},

@@ -25,14 +25,11 @@ public:
 
 public:
   static chi::InputParameters GetInputParameters();
-  explicit DiscreteOrdinatesAdjointSolver(
-    const chi::InputParameters& params);
+  explicit DiscreteOrdinatesAdjointSolver(const chi::InputParameters& params);
   explicit DiscreteOrdinatesAdjointSolver(const std::string& solver_name);
 
-  DiscreteOrdinatesAdjointSolver(const DiscreteOrdinatesAdjointSolver&) =
-    delete;
-  DiscreteOrdinatesAdjointSolver&
-  operator=(const DiscreteOrdinatesAdjointSolver&) = delete;
+  DiscreteOrdinatesAdjointSolver(const DiscreteOrdinatesAdjointSolver&) = delete;
+  DiscreteOrdinatesAdjointSolver& operator=(const DiscreteOrdinatesAdjointSolver&) = delete;
 
   double ComputeInnerProduct();
   const std::vector<RespFuncAndSubs>& GetResponseFunctions() const;
@@ -43,10 +40,9 @@ public:
   void Execute() override;
 
   // 04
-  size_t
-  AddResponseFunction(const std::string& qoi_name,
-                      std::shared_ptr<chi_mesh::LogicalVolume> logical_volume,
-                      const std::string& lua_function_name);
+  size_t AddResponseFunction(const std::string& qoi_name,
+                             std::shared_ptr<chi_mesh::LogicalVolume> logical_volume,
+                             const std::string& lua_function_name);
   // 05a
   void ExportImportanceMap(const std::string& file_name);
 };

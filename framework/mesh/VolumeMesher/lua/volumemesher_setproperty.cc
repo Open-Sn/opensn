@@ -103,7 +103,8 @@ Can be any of the following:
 
 \ingroup LuaVolumeMesher
 \author Jan*/
-int chiVolumeMesherSetProperty(lua_State* L)
+int
+chiVolumeMesherSetProperty(lua_State* L)
 {
   const std::string fname = "chiVolumeMesherSetProperty";
   //============================================= Get current mesh handler
@@ -174,12 +175,10 @@ int chiVolumeMesherSetProperty(lua_State* L)
     int p = lua_tonumber(L, 2);
     if (p >= chi_mesh::VolumeMesher::PartitionType::KBA_STYLE_XYZ and
         p <= chi_mesh::VolumeMesher::PartitionType::PARMETIS)
-      volume_mesher.options.partition_type =
-        (chi_mesh::VolumeMesher::PartitionType)p;
+      volume_mesher.options.partition_type = (chi_mesh::VolumeMesher::PartitionType)p;
     else
     {
-      Chi::log.LogAllError()
-        << "Unsupported partition type used in call to " << fname << ".";
+      Chi::log.LogAllError() << "Unsupported partition type used in call to " << fname << ".";
       Chi::Exit(EXIT_FAILURE);
     }
   }
@@ -188,8 +187,7 @@ int chiVolumeMesherSetProperty(lua_State* L)
   {
     if (volume_mesher.Type() == chi_mesh::VolumeMesherType::EXTRUDER)
     {
-      auto& mesher =
-        dynamic_cast<chi_mesh::VolumeMesherExtruder&>(volume_mesher);
+      auto& mesher = dynamic_cast<chi_mesh::VolumeMesherExtruder&>(volume_mesher);
 
       double layer_height = lua_tonumber(L, 2);
       int subdivisions = 1;
@@ -224,8 +222,8 @@ int chiVolumeMesherSetProperty(lua_State* L)
     int sense = true;
     if (num_args == 4) sense = lua_toboolean(L, 4);
 
-    const auto& log_vol = Chi::GetStackItem<chi_mesh::LogicalVolume>(
-      Chi::object_stack, volume_hndl, fname);
+    const auto& log_vol =
+      Chi::GetStackItem<chi_mesh::LogicalVolume>(Chi::object_stack, volume_hndl, fname);
 
     chi_mesh::VolumeMesher::SetMatIDFromLogical(log_vol, sense, mat_id);
   }
@@ -250,8 +248,8 @@ int chiVolumeMesherSetProperty(lua_State* L)
       throw std::invalid_argument(fname + ": argument 3 must not be"
                                           "an empty string.");
 
-    const auto& log_vol = Chi::GetStackItem<chi_mesh::LogicalVolume>(
-      Chi::object_stack, volume_hndl, fname);
+    const auto& log_vol =
+      Chi::GetStackItem<chi_mesh::LogicalVolume>(Chi::object_stack, volume_hndl, fname);
 
     chi_mesh::VolumeMesher::SetBndryIDFromLogical(log_vol, sense, bndry_name);
   }
@@ -291,7 +289,8 @@ int chiVolumeMesherSetProperty(lua_State* L)
 \param Pz int Number partitions in z.
 \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
+int
+chiVolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(__FUNCTION__, 3, num_args);
@@ -319,7 +318,8 @@ int chiVolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
 /**Sets the x-cuts for KBA type partitioning with a lua array.
 \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetKBACutsX(lua_State* L)
+int
+chiVolumeMesherSetKBACutsX(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
@@ -339,7 +339,8 @@ int chiVolumeMesherSetKBACutsX(lua_State* L)
 /**Sets the y-cuts for KBA type partitioning with a lua array.
 \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetKBACutsY(lua_State* L)
+int
+chiVolumeMesherSetKBACutsY(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
@@ -359,7 +360,8 @@ int chiVolumeMesherSetKBACutsY(lua_State* L)
 /**Sets the z-cuts for KBA type partitioning with a lua array.
 \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetKBACutsZ(lua_State* L)
+int
+chiVolumeMesherSetKBACutsZ(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);

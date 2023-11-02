@@ -8,41 +8,45 @@
 
 //######################################################### Run Console loop
 /** Executes the loop for the console.*/
-void chi::Console::RunConsoleLoop(char*) const
+void
+chi::Console::RunConsoleLoop(char*) const
 {
   Chi::log.Log() << "Console loop started. "
-                     << "Type \"exit\" to quit (or Ctl-C).";
+                 << "Type \"exit\" to quit (or Ctl-C).";
 
   /** Wrapper to an MPI_Bcast call for a single integer
    * broadcast from location 0. */
   auto BroadcastSingleInteger = [](int* int_being_bcast)
   {
-    MPI_Bcast(int_being_bcast,    //buffer
-              1, MPI_INT,         //count + type
-              0,                  //root
-              Chi::mpi.comm);    //communicator
+    MPI_Bcast(int_being_bcast, // buffer
+              1,
+              MPI_INT,        // count + type
+              0,              // root
+              Chi::mpi.comm); // communicator
   };
 
   /** Wrapper to an MPI_Bcast call for an array of characters
    * broadcast from location 0. */
-  auto HomeBroadcastStringAsRaw = [](std::string string_to_bcast,int length)
+  auto HomeBroadcastStringAsRaw = [](std::string string_to_bcast, int length)
   {
     char* raw_string_to_bcast = string_to_bcast.data();
-    MPI_Bcast(raw_string_to_bcast,           //buffer
-              length, MPI_CHAR,              //count + type
-              0,                             //root
-              Chi::mpi.comm);               //communicator
+    MPI_Bcast(raw_string_to_bcast, // buffer
+              length,
+              MPI_CHAR,       // count + type
+              0,              // root
+              Chi::mpi.comm); // communicator
   };
 
   /** Wrapper to an MPI_Bcast call for an array of characters
    * broadcast from location 0. This call is for non-home locations. */
-  auto NonHomeBroadcastStringAsRaw = [](std::string& string_to_bcast,int length)
+  auto NonHomeBroadcastStringAsRaw = [](std::string& string_to_bcast, int length)
   {
-    std::vector<char> raw_chars(length+1,'\0');
-    MPI_Bcast(raw_chars.data(),              //buffer
-              length, MPI_CHAR,              //count + type
-              0,                             //root
-              Chi::mpi.comm);               //communicator
+    std::vector<char> raw_chars(length + 1, '\0');
+    MPI_Bcast(raw_chars.data(), // buffer
+              length,
+              MPI_CHAR,       // count + type
+              0,              // root
+              Chi::mpi.comm); // communicator
 
     string_to_bcast = std::string(raw_chars.data());
   };
@@ -72,28 +76,32 @@ void chi::Console::RunConsoleLoop(char*) const
   {
     std::string console_input;
 
-    if (HOME) std::cin >> console_input; //Home will be waiting here
+    if (HOME) std::cin >> console_input; // Home will be waiting here
 
     int console_input_len = ConsoleInputNumChars(console_input);
 
-    BroadcastSingleInteger(&console_input_len); //Non-Home locs wait here
+    BroadcastSingleInteger(&console_input_len); // Non-Home locs wait here
 
     if (console_input_len < 0) break;
+    else if (HOME)
+      HomeBroadcastStringAsRaw(console_input, console_input_len);
     else
-      if (HOME) HomeBroadcastStringAsRaw(console_input, console_input_len);
-      else      NonHomeBroadcastStringAsRaw(console_input, console_input_len);
+      NonHomeBroadcastStringAsRaw(console_input, console_input_len);
 
-    try { LuaDoString(console_input); }
-    catch(const Chi::RecoverableException& e)
+    try
+    {
+      LuaDoString(console_input);
+    }
+    catch (const Chi::RecoverableException& e)
     {
       Chi::log.LogAllError() << e.what();
     }
-    catch(const std::exception& e)
+    catch (const std::exception& e)
     {
       Chi::log.LogAllError() << e.what();
       Chi::Exit(EXIT_FAILURE);
     }
-  }//while not termination posted
+  } // while not termination posted
 
   Chi::run_time::termination_posted_ = true;
 

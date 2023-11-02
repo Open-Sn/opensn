@@ -33,26 +33,25 @@ chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
 
 \ingroup LuaUnpartitionedMesh
  */
-int chiUnpartitionedMeshUploadVertex(lua_State* L)
+int
+chiUnpartitionedMeshUploadVertex(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 4)
-    LuaPostArgAmountError(fname, 4, num_args);
+  if (num_args != 4) LuaPostArgAmountError(fname, 4, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
   LuaCheckNilValue(fname, L, 3);
   LuaCheckNilValue(fname, L, 4);
 
-  const int handle = lua_tointeger(L,1);
+  const int handle = lua_tointeger(L, 1);
   const double x = lua_tonumber(L, 2);
   const double y = lua_tonumber(L, 3);
   const double z = lua_tonumber(L, 4);
 
-  auto& mesh = Chi::GetStackItem<chi_mesh::UnpartitionedMesh>(
-    Chi::unpartitionedmesh_stack,
-    handle, fname);
+  auto& mesh =
+    Chi::GetStackItem<chi_mesh::UnpartitionedMesh>(Chi::unpartitionedmesh_stack, handle, fname);
 
   mesh.GetVertices().emplace_back(x, y, z);
 
@@ -73,8 +72,8 @@ int chiUnpartitionedMeshUploadVertex(lua_State* L)
 
 ###cell_table
 A lua-table with the following fields:
-- `type` <I>string</I>. The value of this field contains the cell's primary type.
- The value can be "SLAB", "POLYGON" or "POLYHEDRON".
+- `type` <I>string</I>. The value of this field contains the cell's primary
+type. The value can be "SLAB", "POLYGON" or "POLYHEDRON".
 - `sub_type` <I>string</I>. The value of this field constains the cell's
  secondary type. The value can be "SLAB", "POLYGON", "TRIANGLE",
  "QUADRILATERAL", "POLYHEDRON", "TETRAHEDRON" or "HEXAHEDRON".
@@ -84,7 +83,8 @@ A lua-table with the following fields:
 - `material_id` <I>int</I>. (Optional) The value of this field holds a material
  identifier. If not provided, will be defaulted to -1.
 - `faceX` <I>table</I>. A field holding a lua-table containing the vertex-ids
- of face X. There must be `num_faces` of these fields, i.e., "face0", "face1", etc.
+ of face X. There must be `num_faces` of these fields, i.e., "face0", "face1",
+etc.
 
 ###Example
 Example usage
@@ -117,29 +117,27 @@ chiUnpartitionedMeshFinalizeEmpty(umesh)
 
 \ingroup LuaUnpartitionedMesh
  */
-int chiUnpartitionedMeshUploadCell(lua_State* L)
+int
+chiUnpartitionedMeshUploadCell(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
   if (num_args == 3) LuaCheckBoolValue(fname, L, 3);
 
-  const int handle   = lua_tointeger(L,1);
+  const int handle = lua_tointeger(L, 1);
   bool verbose = false;
   if (num_args == 3) verbose = lua_toboolean(L, 3);
 
-  auto& mesh = Chi::GetStackItem<chi_mesh::UnpartitionedMesh>(
-    Chi::unpartitionedmesh_stack,
-    handle, fname);
+  auto& mesh =
+    Chi::GetStackItem<chi_mesh::UnpartitionedMesh>(Chi::unpartitionedmesh_stack, handle, fname);
 
   LuaCheckTableValue(fname, L, 2);
 
-  auto GetField = [fname]
-    (lua_State* L, int index, const std::string& field_name)
+  auto GetField = [fname](lua_State* L, int index, const std::string& field_name)
   {
     if (not lua_getfield(L, index, field_name.c_str()))
     {
@@ -153,13 +151,16 @@ int chiUnpartitionedMeshUploadCell(lua_State* L)
   };
 
   GetField(L, 2, "type");
-  const std::string cell_type_str = lua_tostring(L,-1); lua_pop(L, 1);
+  const std::string cell_type_str = lua_tostring(L, -1);
+  lua_pop(L, 1);
 
   GetField(L, 2, "sub_type");
-  const std::string cell_sub_type_str = lua_tostring(L,-1); lua_pop(L, 1);
+  const std::string cell_sub_type_str = lua_tostring(L, -1);
+  lua_pop(L, 1);
 
   GetField(L, 2, "num_faces");
-  const int cell_num_faces = lua_tointeger(L, -1); lua_pop(L, 1);
+  const int cell_num_faces = lua_tointeger(L, -1);
+  lua_pop(L, 1);
 
   int cell_material_id = -1;
   if (lua_getfield(L, 2, "material_id"))
@@ -178,7 +179,7 @@ int chiUnpartitionedMeshUploadCell(lua_State* L)
 
   std::vector<std::vector<uint64_t>> proxy_faces(cell_num_faces);
   const std::string face_prefix = "face";
-  for (int f=0; f < cell_num_faces; ++f)
+  for (int f = 0; f < cell_num_faces; ++f)
   {
     auto face_field_name = face_prefix + std::to_string(f);
 
@@ -192,7 +193,8 @@ int chiUnpartitionedMeshUploadCell(lua_State* L)
     {
       std::stringstream outstr;
       outstr << "face" << f << " ";
-      for (auto val : vals) outstr << val << " ";
+      for (auto val : vals)
+        outstr << val << " ";
       Chi::log.Log() << outstr.str();
     }
 
@@ -203,12 +205,11 @@ int chiUnpartitionedMeshUploadCell(lua_State* L)
 
     proxy_faces[f] = std::move(proxy_face);
 
-    lua_pop(L, 1); //pop off the table
+    lua_pop(L, 1); // pop off the table
   }
 
-  mesh.PushProxyCell(cell_type_str, cell_sub_type_str,
-                     cell_num_faces, cell_material_id,
-                     proxy_faces);
+  mesh.PushProxyCell(
+    cell_type_str, cell_sub_type_str, cell_num_faces, cell_material_id, proxy_faces);
 
   size_t cell_handle = mesh.GetNumberOfCells() - 1;
 
@@ -255,20 +256,19 @@ chiUnpartitionedMeshFinalizeEmpty(umesh)
 
 \ingroup LuaUnpartitionedMesh
  */
-int chiUnpartitionedMeshFinalizeEmpty(lua_State* L)
+int
+chiUnpartitionedMeshFinalizeEmpty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckNilValue(fname, L, 1);
 
-  const int handle = lua_tointeger(L,1);
+  const int handle = lua_tointeger(L, 1);
 
-  auto& mesh = Chi::GetStackItem<chi_mesh::UnpartitionedMesh>(
-    Chi::unpartitionedmesh_stack,
-    handle, fname);
+  auto& mesh =
+    Chi::GetStackItem<chi_mesh::UnpartitionedMesh>(Chi::unpartitionedmesh_stack, handle, fname);
 
   mesh.ComputeCentroidsAndCheckQuality();
   mesh.BuildMeshConnectivity();
@@ -276,4 +276,4 @@ int chiUnpartitionedMeshFinalizeEmpty(lua_State* L)
   return 0;
 }
 
-}//namespace chi_mesh::unpartition_mesh_lua_utils
+} // namespace chi_mesh::unpartition_mesh_lua_utils

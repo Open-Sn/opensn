@@ -12,16 +12,13 @@ LagrangeQuadMapping::LagrangeQuadMapping(const chi_mesh::MeshContinuum& grid,
                                          const chi_mesh::Cell& cell,
                                          const Quadrature& volume_quadrature,
                                          const Quadrature& surface_quadrature)
-  : LagrangeBaseMapping(grid,
-                        cell,
-                        4,
-                        MakeFaceNodeMapping(cell),
-                        volume_quadrature,
-                        surface_quadrature)
+  : LagrangeBaseMapping(
+      grid, cell, 4, MakeFaceNodeMapping(cell), volume_quadrature, surface_quadrature)
 {
 }
 
-double LagrangeQuadMapping::RefShape(uint32_t i, const Vec3& qpoint) const
+double
+LagrangeQuadMapping::RefShape(uint32_t i, const Vec3& qpoint) const
 {
   ChiLogicalErrorIf(i >= 4, "Invalid shapefunction index " + std::to_string(i));
 
@@ -36,8 +33,8 @@ double LagrangeQuadMapping::RefShape(uint32_t i, const Vec3& qpoint) const
   return 0.25 * (1.0 + a * qpoint.x) * (1.0 + b * qpoint.y);
 }
 
-chi_mesh::Vector3 LagrangeQuadMapping::RefGradShape(uint32_t i,
-                                                    const Vec3& qpoint) const
+chi_mesh::Vector3
+LagrangeQuadMapping::RefGradShape(uint32_t i, const Vec3& qpoint) const
 {
   ChiLogicalErrorIf(i >= 4, "Invalid shapefunction index " + std::to_string(i));
 
@@ -76,8 +73,8 @@ LagrangeQuadMapping::RefJacobian(const Vec3& qpoint) const
 }
 
 std::pair<double, LagrangeBaseMapping::Vec3>
-LagrangeQuadMapping::RefFaceJacobianDeterminantAndNormal(
-  size_t face_index, const Vec3& qpoint_face) const
+LagrangeQuadMapping::RefFaceJacobianDeterminantAndNormal(size_t face_index,
+                                                         const Vec3& qpoint_face) const
 {
   // x = sum_i N_i x_i
   const auto& x0 = node_locations_[face_node_mappings_[face_index][0]];
@@ -89,13 +86,13 @@ LagrangeQuadMapping::RefFaceJacobianDeterminantAndNormal(
     if (i == 1) dx_dxbar += 0.5 * x1;
   }
 
-  const auto cross = dx_dxbar.Cross(Vec3(0.0,0.0,1.0));
+  const auto cross = dx_dxbar.Cross(Vec3(0.0, 0.0, 1.0));
 
   return {dx_dxbar.Norm(), cross.Normalized()};
 }
 
-LagrangeBaseMapping::Vec3 LagrangeQuadMapping::FaceToElementQPointConversion(
-  size_t face_index, const Vec3& qpoint_face) const
+LagrangeBaseMapping::Vec3
+LagrangeQuadMapping::FaceToElementQPointConversion(size_t face_index, const Vec3& qpoint_face) const
 {
   // The quadrature for the face of a quad is a line-quadrature, thus
   // only x-component has a value.

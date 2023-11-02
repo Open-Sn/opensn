@@ -15,7 +15,7 @@ namespace chi_math::spatial_discretization
 {
 
 /**Base class for Lagrange spatial discretizations.
-* \ingroup doc_SpatialDiscretization*/
+ * \ingroup doc_SpatialDiscretization*/
 class LagrangeBase : public FiniteElementBase
 {
 protected:
@@ -35,6 +35,6 @@ protected:
   void CreateCellMappings();
 };
 
-}
+} // namespace chi_math::spatial_discretization
 
 #endif // CHITECH_LAGRANGEBASE_H

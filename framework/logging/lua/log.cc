@@ -36,7 +36,8 @@ RegisterLuaConstantAsIs(LOG_ALLVERBOSE_2, chi_data_types::Varying(12));
 
 \ingroup LuaLogging
 \author Jan*/
-int chiLogSetVerbosity(lua_State* L)
+int
+chiLogSetVerbosity(lua_State* L)
 {
   int num_args = lua_gettop(L);
 
@@ -86,7 +87,8 @@ all locations in the parallel context.
 \ingroup LuaLogging
 \author Jan
 */
-int chiLog(lua_State* L)
+int
+chiLog(lua_State* L)
 {
   int num_args = lua_gettop(L);
 
@@ -110,7 +112,8 @@ int chiLog(lua_State* L)
 * \ingroup LuaLogging
 \return double The processed value.
 */
-int chiLogProcessEvent(lua_State* L)
+int
+chiLogProcessEvent(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -137,8 +140,7 @@ int chiLogProcessEvent(lua_State* L)
   else if (event_operation_name == "AVERAGE_VALUE")
     event_operation = chi::ChiLog::EventOperation::AVERAGE_VALUE;
   else
-    ChiInvalidArgument("Unsupported event operation name \"" +
-                       event_operation_name + "\".");
+    ChiInvalidArgument("Unsupported event operation name \"" + event_operation_name + "\".");
 
   const double value = Chi::log.ProcessEvent(event_tag, event_operation);
 
@@ -152,7 +154,8 @@ int chiLogProcessEvent(lua_State* L)
  *
  * \ingroup LuaLogging
  * */
-int chiLogPrintTimingGraph(lua_State* L)
+int
+chiLogPrintTimingGraph(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -166,12 +169,11 @@ int chiLogPrintTimingGraph(lua_State* L)
   }
 
   ChiInvalidArgumentIf(rank >= Chi::mpi.process_count,
-                       "rank >= process_count, i.e., " + std::to_string(rank)
-                         + " >= " + std::to_string(Chi::mpi.process_count));
+                       "rank >= process_count, i.e., " + std::to_string(rank) +
+                         " >= " + std::to_string(Chi::mpi.process_count));
 
   if (Chi::mpi.location_id == rank)
-    Chi::log.LogAll() << "\nPerformance Graph:\n"
-                      << chitech_timing.MakeGraphString();
+    Chi::log.LogAll() << "\nPerformance Graph:\n" << chitech_timing.MakeGraphString();
 
   return 0;
 }

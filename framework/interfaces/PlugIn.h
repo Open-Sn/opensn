@@ -19,6 +19,6 @@ protected:
   void* library_handle_ = nullptr;
 };
 
-}
+} // namespace chi
 
 #endif // CHITECH_PLUGIN_H

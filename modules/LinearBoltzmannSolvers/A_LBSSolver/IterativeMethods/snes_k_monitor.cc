@@ -10,8 +10,8 @@
 namespace lbs
 {
 
-PetscErrorCode KEigenSNESMonitor(SNES, PetscInt iter,
-                                 PetscReal rnorm, void*ctx)
+PetscErrorCode
+KEigenSNESMonitor(SNES, PetscInt iter, PetscReal rnorm, void* ctx)
 {
   auto& residual_context = *(KResidualFunctionContext*)ctx;
 
@@ -19,38 +19,30 @@ PetscErrorCode KEigenSNESMonitor(SNES, PetscInt iter,
   double reactivity = (k_eff - 1.0) / k_eff;
 
   std::stringstream iter_info;
-  iter_info
-    << Chi::program_timer.GetTimeString() << " "
-    << residual_context.solver_name
-    << "_NonLinearK_Outer"
-    << " Iteration " << std::setw(5) << iter
-    << " Residual " << std::setw(11) << rnorm
-    << " k_eff " << std::fixed << std::setw(10) << std::setprecision(7)
-    << k_eff
-    << std::setprecision(2)
-    << "  reactivity " << std::setw(10) << reactivity * 1e5;
+  iter_info << Chi::program_timer.GetTimeString() << " " << residual_context.solver_name
+            << "_NonLinearK_Outer"
+            << " Iteration " << std::setw(5) << iter << " Residual " << std::setw(11) << rnorm
+            << " k_eff " << std::fixed << std::setw(10) << std::setprecision(7) << k_eff
+            << std::setprecision(2) << "  reactivity " << std::setw(10) << reactivity * 1e5;
 
   Chi::log.Log() << iter_info.str();
 
   return 0;
 }
 
-PetscErrorCode KEigenKSPMonitor(KSP ksp, PetscInt iter, PetscReal rnorm,
-                                void*ctx)
+PetscErrorCode
+KEigenKSPMonitor(KSP ksp, PetscInt iter, PetscReal rnorm, void* ctx)
 {
   auto& residual_context = *(KResidualFunctionContext*)ctx;
 
   std::stringstream iter_info;
-  iter_info
-    << "      " << Chi::program_timer.GetTimeString() << " "
-    << residual_context.solver_name
-    << "_NonLinearK_Inner"
-    << " Iteration " << std::setw(5) << iter
-    << " Residual " << std::setw(11) << rnorm;
+  iter_info << "      " << Chi::program_timer.GetTimeString() << " " << residual_context.solver_name
+            << "_NonLinearK_Inner"
+            << " Iteration " << std::setw(5) << iter << " Residual " << std::setw(11) << rnorm;
 
   Chi::log.Log() << iter_info.str();
 
   return 0;
 }
 
-}//namespace lbs
+} // namespace lbs

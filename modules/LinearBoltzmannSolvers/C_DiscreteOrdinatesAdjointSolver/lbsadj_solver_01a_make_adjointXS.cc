@@ -6,7 +6,8 @@
 namespace lbs
 {
 
-void DiscreteOrdinatesAdjointSolver::MakeAdjointXSs()
+void
+DiscreteOrdinatesAdjointSolver::MakeAdjointXSs()
 {
   //============================================= Create adjoint cross sections
   using AdjXS = chi_physics::AdjointMGXS;
@@ -16,8 +17,7 @@ void DiscreteOrdinatesAdjointSolver::MakeAdjointXSs()
   for (const auto& matid_xs_pair : matid_to_xs_map_)
   {
     const auto matid = matid_xs_pair.first;
-    const auto fwd_xs = std::dynamic_pointer_cast<chi_physics::MultiGroupXS>(
-      matid_xs_pair.second);
+    const auto fwd_xs = std::dynamic_pointer_cast<chi_physics::MultiGroupXS>(matid_xs_pair.second);
     matid_to_adj_xs_map[matid] = std::make_shared<AdjXS>(*fwd_xs);
   } // for each mat
   matid_to_xs_map_ = std::move(matid_to_adj_xs_map);

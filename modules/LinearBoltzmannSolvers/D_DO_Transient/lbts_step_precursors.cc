@@ -2,15 +2,18 @@
 
 //###################################################################
 /**Performs a timestep of the precursors.*/
-void lbs::DiscOrdTransientSolver::StepPrecursors()
+void
+lbs::DiscOrdTransientSolver::StepPrecursors()
 {
   const auto& BackwardEuler = chi_math::SteppingMethod::IMPLICIT_EULER;
   const auto& CrankNicolson = chi_math::SteppingMethod::CRANK_NICOLSON;
 
   double theta;
-  if      (method == BackwardEuler) theta = 1.0;
-  else if (method == CrankNicolson) theta = 0.5;
-  else                              theta = 0.7;
+  if (method == BackwardEuler) theta = 1.0;
+  else if (method == CrankNicolson)
+    theta = 0.5;
+  else
+    theta = 0.7;
 
   const double eff_dt = theta * dt_;
 
@@ -36,12 +39,10 @@ void lbs::DiscOrdTransientSolver::StepPrecursors()
     for (int i = 0; i < transport_view.NumNodes(); ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-      const double node_V_fraction = fe_values.Vi_vectors[i]/cell_volume;
+      const double node_V_fraction = fe_values.Vi_vectors[i] / cell_volume;
 
       for (int g = 0; g < groups_.size(); ++g)
-        delayed_fission += nu_delayed_sigma_f[g] *
-                           phi_new_local_[uk_map + g] *
-                           node_V_fraction;
+        delayed_fission += nu_delayed_sigma_f[g] * phi_new_local_[uk_map + g] * node_V_fraction;
     }
 
     //========================================= Loop over precursors
@@ -52,21 +53,21 @@ void lbs::DiscOrdTransientSolver::StepPrecursors()
       const auto& precursor = precursors[j];
       const double coeff = 1.0 / (1.0 + eff_dt * precursor.decay_constant);
 
-      //contribute last time step precursors
+      // contribute last time step precursors
       precursor_new_local_[dof_map] = coeff * precursor_prev_local_[dof_map];
 
-      //contribute delayed fission production
+      // contribute delayed fission production
       precursor_new_local_[dof_map] +=
         coeff * eff_dt * precursor.fractional_yield * delayed_fission;
     }
-  }//for cell
+  } // for cell
 
   //======================================== Compute t^{n+1} value
   {
     auto& Cj = precursor_new_local_;
     const auto& Cj_prev = precursor_prev_local_;
 
-    const double inv_theta = 1.0/theta;
+    const double inv_theta = 1.0 / theta;
     for (size_t i = 0; i < Cj.size(); ++i)
       Cj[i] = inv_theta * (Cj[i] + (theta - 1.0) * Cj_prev[i]);
   }

@@ -12,7 +12,8 @@
 namespace lbs
 {
 
-void XXPowerIterationKEigenSCDSA::Initialize()
+void
+XXPowerIterationKEigenSCDSA::Initialize()
 {
   XXPowerIterationKEigen::Initialize();
 
@@ -26,43 +27,40 @@ void XXPowerIterationKEigenSCDSA::Initialize()
                                         /*vaccum_bcs_are_dirichlet=*/true);
 
   //=========================================== Make xs map
-  auto matid_2_mgxs_map =
-    acceleration::PackGroupsetXS(lbs_solver_.GetMatID2XSMap(),
-                                 front_gs_.groups_.front().id_,
-                                 front_gs_.groups_.back().id_);
+  auto matid_2_mgxs_map = acceleration::PackGroupsetXS(
+    lbs_solver_.GetMatID2XSMap(), front_gs_.groups_.front().id_, front_gs_.groups_.back().id_);
 
   //=========================================== Create solver
   const auto& sdm = lbs_solver_.SpatialDiscretization();
   const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
 
   if (diffusion_solver_sdm_ == "pwld")
-    diffusion_solver_ = std::make_shared<acceleration::DiffusionMIPSolver>(
-      std::string(TextName() + "_WGDSA"),
-      sdm,
-      uk_man,
-      bcs,
-      matid_2_mgxs_map,
-      unit_cell_matrices,
-      true); // verbosity
+    diffusion_solver_ =
+      std::make_shared<acceleration::DiffusionMIPSolver>(std::string(TextName() + "_WGDSA"),
+                                                         sdm,
+                                                         uk_man,
+                                                         bcs,
+                                                         matid_2_mgxs_map,
+                                                         unit_cell_matrices,
+                                                         true); // verbosity
   else
   {
     continuous_sdm_ptr_ =
       chi_math::spatial_discretization::PieceWiseLinearContinuous::New(sdm.Grid());
-    diffusion_solver_ = std::make_shared<acceleration::DiffusionPWLCSolver>(
-      std::string(TextName() + "_WGDSA"),
-      *continuous_sdm_ptr_,
-      uk_man,
-      bcs,
-      matid_2_mgxs_map,
-      unit_cell_matrices,
-      true); // verbosity
+    diffusion_solver_ =
+      std::make_shared<acceleration::DiffusionPWLCSolver>(std::string(TextName() + "_WGDSA"),
+                                                          *continuous_sdm_ptr_,
+                                                          uk_man,
+                                                          bcs,
+                                                          matid_2_mgxs_map,
+                                                          unit_cell_matrices,
+                                                          true); // verbosity
     requires_ghosts_ = true;
-    lbs_pwld_ghost_info_ = MakePWLDVecGhostCommInfo(
-      lbs_solver_.SpatialDiscretization(), lbs_solver_.UnknownManager());
+    lbs_pwld_ghost_info_ =
+      MakePWLDVecGhostCommInfo(lbs_solver_.SpatialDiscretization(), lbs_solver_.UnknownManager());
 
     const auto& cfem_sdm = *continuous_sdm_ptr_;
-    const auto ghost_dof_ids =
-      cfem_sdm.GetGhostDOFIndices(lbs_solver_.UnknownManager());
+    const auto ghost_dof_ids = cfem_sdm.GetGhostDOFIndices(lbs_solver_.UnknownManager());
   }
 
   {
@@ -81,8 +79,7 @@ void XXPowerIterationKEigenSCDSA::Initialize()
 
   Chi::log.Log() << "Assembling A and b";
   std::vector<double> dummy_rhs;
-  if (diffusion_solver_sdm_ == "pwld")
-    dummy_rhs.assign(sdm.GetNumLocalDOFs(uk_man), 0.0);
+  if (diffusion_solver_sdm_ == "pwld") dummy_rhs.assign(sdm.GetNumLocalDOFs(uk_man), 0.0);
   else
     dummy_rhs.assign(continuous_sdm_ptr_->GetNumLocalAndGhostDOFs(uk_man), 0.0);
 

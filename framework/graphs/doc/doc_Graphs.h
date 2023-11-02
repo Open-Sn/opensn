@@ -1,3 +1,3 @@
 /**\defgroup Graphs G Graphs
-*
-* */
+ *
+ * */

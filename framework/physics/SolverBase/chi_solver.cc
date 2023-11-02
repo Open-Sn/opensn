@@ -13,7 +13,8 @@ namespace chi_physics
 {
 
 /**Returns the input parameters.*/
-chi::InputParameters Solver::GetInputParameters()
+chi::InputParameters
+Solver::GetInputParameters()
 {
   chi::InputParameters params = ChiObject::GetInputParameters();
 
@@ -24,20 +25,15 @@ chi::InputParameters Solver::GetInputParameters()
 
   params.AddOptionalParameter("dt", 0.01, "Desired initial timestep size.");
   params.AddOptionalParameter("time", 0.0, "Current time of the solver.");
+  params.AddOptionalParameter("start_time", 0.0, "Transient start-time if applicable.");
+  params.AddOptionalParameter("end_time", 1.0, "Transient end-time if applicable.");
   params.AddOptionalParameter(
-    "start_time", 0.0, "Transient start-time if applicable.");
-  params.AddOptionalParameter(
-    "end_time", 1.0, "Transient end-time if applicable.");
-  params.AddOptionalParameter(
-    "max_time_steps",
-    -1,
-    "Maximum number of timesteps to allow. Negative values disables this.");
+    "max_time_steps", -1, "Maximum number of timesteps to allow. Negative values disables this.");
 
-  params.AddOptionalParameter(
-    "timestepper",
-    0,
-    "Handle to a timestepper. If not supplied then a ConstantTimeStepper "
-    "will be created.");
+  params.AddOptionalParameter("timestepper",
+                              0,
+                              "Handle to a timestepper. If not supplied then a ConstantTimeStepper "
+                              "will be created.");
 
   using namespace chi_data_types;
   params.ConstrainParameterRange("dt", AllowableRangeLowLimit::New(1.0e-12));
@@ -46,13 +42,11 @@ chi::InputParameters Solver::GetInputParameters()
 }
 
 Solver::Solver(std::string in_text_name)
-  : timestepper_(InitTimeStepper(GetInputParameters())),
-    text_name_(std::move(in_text_name))
+  : timestepper_(InitTimeStepper(GetInputParameters())), text_name_(std::move(in_text_name))
 {
 }
 
-Solver::Solver(std::string in_text_name,
-               std::initializer_list<BasicOption> in_options)
+Solver::Solver(std::string in_text_name, std::initializer_list<BasicOption> in_options)
   : basic_options_(in_options),
     timestepper_(InitTimeStepper(GetInputParameters())),
     text_name_(std::move(in_text_name))
@@ -113,11 +107,23 @@ Solver::InitTimeStepper(const chi::InputParameters& params)
   }
 }
 
-std::string Solver::TextName() const { return text_name_; }
+std::string
+Solver::TextName() const
+{
+  return text_name_;
+}
 
-BasicOptions& Solver::GetBasicOptions() { return basic_options_; }
+BasicOptions&
+Solver::GetBasicOptions()
+{
+  return basic_options_;
+}
 
-const BasicOptions& Solver::GetBasicOptions() const { return basic_options_; }
+const BasicOptions&
+Solver::GetBasicOptions() const
+{
+  return basic_options_;
+}
 
 std::vector<std::shared_ptr<FieldFunctionGridBased>>&
 Solver::GetFieldFunctions()
@@ -125,13 +131,15 @@ Solver::GetFieldFunctions()
   return field_functions_;
 }
 
-TimeStepper& Solver::GetTimeStepper()
+TimeStepper&
+Solver::GetTimeStepper()
 {
   ChiLogicalErrorIf(not timestepper_, "Bad trouble: Timestepper not assigned.");
   return *timestepper_;
 }
 
-const TimeStepper& Solver::GetTimeStepper() const
+const TimeStepper&
+Solver::GetTimeStepper() const
 {
   ChiLogicalErrorIf(not timestepper_, "Bad trouble: Timestepper not assigned.");
   return *timestepper_;
@@ -143,27 +151,32 @@ Solver::GetFieldFunctions() const
   return field_functions_;
 }
 
-void Solver::Initialize()
+void
+Solver::Initialize()
 {
   Chi::log.Log() << "\"Initialize()\" method not defined for " << TextName();
 }
 
-void Solver::Execute()
+void
+Solver::Execute()
 {
   Chi::log.Log() << "\"Execute()\" method not defined for " << TextName();
 }
 
-void Solver::Step()
+void
+Solver::Step()
 {
   Chi::log.Log() << "\"Step()\" method not defined for " << TextName();
 }
 
-void Solver::Advance()
+void
+Solver::Advance()
 {
   Chi::log.Log() << "\"Advance()\" method not defined for " << TextName();
 }
 
-chi::ParameterBlock Solver::GetInfo(const chi::ParameterBlock& params) const
+chi::ParameterBlock
+Solver::GetInfo(const chi::ParameterBlock& params) const
 {
   return chi::ParameterBlock{};
 }
@@ -181,35 +194,30 @@ Solver::GetInfoWithPreCheck(const chi::ParameterBlock& params) const
 }
 
 /**\addtogroup SolverBase
-*
-* \section Properties Properties that can be set
-* The following properties can be set via the lua call
-* `chi_lua::chiSolverSetProperties`
-* \copydoc chi_physics::Solver::SetProperties*/
+ *
+ * \section Properties Properties that can be set
+ * The following properties can be set via the lua call
+ * `chi_lua::chiSolverSetProperties`
+ * \copydoc chi_physics::Solver::SetProperties*/
 
 /**
 Base solver settable properties:
 * - `dt`, Timestep size
 * - `time`, Current time
 * */
-void Solver::SetProperties(const chi::ParameterBlock& params)
+void
+Solver::SetProperties(const chi::ParameterBlock& params)
 {
   for (const auto& param : params)
   {
     const std::string param_name = param.Name();
 
-    if (param_name == "dt")
-      timestepper_->SetTimeStepSize(param.GetValue<double>());
-    if (param_name == "time")
-      timestepper_->SetTime(param.GetValue<double>());
-    if (param_name == "start_time")
-      timestepper_->SetStartTime(param.GetValue<double>());
-    if (param_name == "end_time")
-      timestepper_->SetEndTime(param.GetValue<double>());
-    if (param_name == "max_time_steps")
-      timestepper_->SetMaxTimeSteps(param.GetValue<int>());
-    if (param_name == "dt_min")
-      timestepper_->SetMinimumTimeStepSize(param.GetValue<int>());
+    if (param_name == "dt") timestepper_->SetTimeStepSize(param.GetValue<double>());
+    if (param_name == "time") timestepper_->SetTime(param.GetValue<double>());
+    if (param_name == "start_time") timestepper_->SetStartTime(param.GetValue<double>());
+    if (param_name == "end_time") timestepper_->SetEndTime(param.GetValue<double>());
+    if (param_name == "max_time_steps") timestepper_->SetMaxTimeSteps(param.GetValue<int>());
+    if (param_name == "dt_min") timestepper_->SetMinimumTimeStepSize(param.GetValue<int>());
   }
 }
 

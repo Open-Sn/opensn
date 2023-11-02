@@ -10,16 +10,16 @@ up to a partitioner that can also be designed to be pluggable.
 ## Example A
 \code
 nodes = {-1.0,-0.75,-0.5,-0.25,0.0,0.25,0.5,0.75,1.0}
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes}
+}) chi_mesh.MeshGenerator.Execute(meshgen1)
 
 chiMeshHandlerExportMeshToVTK("ZMeshTest")
 \endcode
 
 In this example we created a set of nodes (monotonically increasing in value)
 for use with the
-\ref chi_mesh__OrthogonalMeshGenerator. We supplied the same set twice meaning the generator
-will build a 2D mesh.
+\ref chi_mesh__OrthogonalMeshGenerator. We supplied the same set twice meaning
+the generator will build a 2D mesh.
 
 We did not specify a partitioner and therefore the generator will use the
 \ref chi__PETScGraphPartitioner with `type="parmetis"` by default. Using 8
@@ -29,8 +29,8 @@ processes, we can see the mesh and it's partitioning below.
 
 ## Example B
 \code
-meshgen1 = chi_mesh.FromFileMeshGenerator.Create({ filename="TriangleMesh2x2.obj" })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = chi_mesh.FromFileMeshGenerator.Create({
+filename="TriangleMesh2x2.obj" }) chi_mesh.MeshGenerator.Execute(meshgen1)
 
 chiMeshHandlerExportMeshToVTK("ZMeshTest")
 \endcode
@@ -137,12 +137,12 @@ that each process builds the mesh as an unpartitioned mesh then the mesh gets
 converted to a partitioned mesh. Therefore, when a lot of processes are used,
 there could be a large memory spike, large enough to be greater than what even
 an HPC node has available. To partly address this problem we have the
-\ref chi_mesh__SplitFileMeshGenerator. This generator will process multiple mesh inputs like
-any other mesh generator but instead of building the mesh on each processor only
-the home location builds the mesh. Thereafter the mesh is partitioned and each
-processors' local-cells, ghost-cells, and relevant vertices are written to
-separate binary files. The default folder, into which these files are written,
-is named "SplitMesh" and the default file names for the meshes are
+\ref chi_mesh__SplitFileMeshGenerator. This generator will process multiple mesh
+inputs like any other mesh generator but instead of building the mesh on each
+processor only the home location builds the mesh. Thereafter the mesh is
+partitioned and each processors' local-cells, ghost-cells, and relevant vertices
+are written to separate binary files. The default folder, into which these files
+are written, is named "SplitMesh" and the default file names for the meshes are
 "split_mesh_x.cmesh", where the x represents the processors rank. Both the
 folder name and file name prefixes (i.e. the "split_mesh" part) can be altered
 via input parameters.
@@ -189,7 +189,8 @@ chi_mesh.MeshGenerator.Execute(meshgen1)
 This example is the same as the one above it, however, it uses the extruder
 mesh generator in a chain.
 
-\note Partitioning and the other parameters of \ref chi_mesh__SplitFileMeshGenerator are
-identical to that of the base \ref chi_mesh__MeshGenerator.
+\note Partitioning and the other parameters of \ref
+chi_mesh__SplitFileMeshGenerator are identical to that of the base \ref
+chi_mesh__MeshGenerator.
 
 */

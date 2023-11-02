@@ -6,7 +6,8 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-void lbs::LBSSolver::InitializeSolverSchemes()
+void
+lbs::LBSSolver::InitializeSolverSchemes()
 {
   Chi::log.Log() << "Initializing Solver schemes";
 
@@ -18,12 +19,10 @@ void lbs::LBSSolver::InitializeSolverSchemes()
   //=========================================== Default AGS scheme
   if (options_.ags_scheme.empty())
   {
-    auto ags_context = std::make_shared<AGSContext<Mat,Vec,KSP>>(
-      *this, wgs_solvers_);
+    auto ags_context = std::make_shared<AGSContext<Mat, Vec, KSP>>(*this, wgs_solvers_);
 
-    auto ags_solver = std::make_shared<AGSLinearSolver<Mat,Vec,KSP>>(
-      "richardson", ags_context,
-      groupsets_.front().id_, groupsets_.back().id_);
+    auto ags_solver = std::make_shared<AGSLinearSolver<Mat, Vec, KSP>>(
+      "richardson", ags_context, groupsets_.front().id_, groupsets_.back().id_);
     ags_solver->ToleranceOptions().maximum_iterations = 1;
     ags_solver->SetVerbosity(options_.verbose_ags_iterations);
 

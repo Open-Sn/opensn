@@ -27,14 +27,14 @@ XXPowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
   const int gsi = groupset.groups_.front().id_;
   const size_t gss = groupset.groups_.size();
 
-  const size_t diff_num_local_dofs =
-    requires_ghosts_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
-                     : diff_sdm.GetNumLocalDOFs(diff_uk_man);
+  const size_t diff_num_local_dofs = requires_ghosts_
+                                       ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
+                                       : diff_sdm.GetNumLocalDOFs(diff_uk_man);
 
   std::vector<double> phi_data;
   if (continuous_sdm_ptr_)
-    phi_data = NodallyAveragedPWLDVector(
-      phi_in, lbs_sdm, diff_sdm, phi_uk_man, lbs_pwld_ghost_info_);
+    phi_data =
+      NodallyAveragedPWLDVector(phi_in, lbs_sdm, diff_sdm, phi_uk_man, lbs_pwld_ghost_info_);
   else
     phi_data = phi_in;
 
@@ -65,10 +65,10 @@ XXPowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
 
 // ##################################################################
 /**Copies back only the scalar moments to a lbs primary flux vector.*/
-void XXPowerIterationKEigenSCDSA::ProjectBackPhi0(
-  const LBSGroupset& groupset,
-  const std::vector<double>& input,
-  std::vector<double>& output)
+void
+XXPowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
+                                             const std::vector<double>& input,
+                                             std::vector<double>& output)
 {
   typedef const int64_t cint64;
 
@@ -80,12 +80,11 @@ void XXPowerIterationKEigenSCDSA::ProjectBackPhi0(
   const int gsi = groupset.groups_.front().id_;
   const size_t gss = groupset.groups_.size();
 
-  const size_t diff_num_local_dofs =
-    requires_ghosts_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
-                     : diff_sdm.GetNumLocalDOFs(diff_uk_man);
+  const size_t diff_num_local_dofs = requires_ghosts_
+                                       ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
+                                       : diff_sdm.GetNumLocalDOFs(diff_uk_man);
 
-  ChiLogicalErrorIf(input.size() != diff_num_local_dofs,
-                    "Vector size mismatch");
+  ChiLogicalErrorIf(input.size() != diff_num_local_dofs, "Vector size mismatch");
 
   for (const auto& cell : lbs_solver_.Grid().local_cells)
   {
@@ -109,9 +108,8 @@ void XXPowerIterationKEigenSCDSA::ProjectBackPhi0(
 // ##################################################################
 /**Creates a ghost communicator and all associated information.*/
 XXPowerIterationKEigenSCDSA::GhostInfo
-XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(
-  const chi_math::SpatialDiscretization& sdm,
-  const chi_math::UnknownManager& uk_man)
+XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const chi_math::SpatialDiscretization& sdm,
+                                                      const chi_math::UnknownManager& uk_man)
 {
   Chi::log.Log() << "Making PWLD ghost communicator";
 
@@ -148,8 +146,7 @@ XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(
   }       // for ghost cell
 
   // Convert the list to a vector
-  std::vector<int64_t> global_indices(global_dof_ids_set.begin(),
-                                      global_dof_ids_set.end());
+  std::vector<int64_t> global_indices(global_dof_ids_set.begin(), global_dof_ids_set.end());
 
   // Create the vector ghost communicator
   auto vgc = std::make_shared<chi_math::VectorGhostCommunicator>(
@@ -161,8 +158,7 @@ XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(
     int64_t k = 0;
     for (const auto ghost_id : global_indices)
     {
-      ghost_global_id_2_local_map[ghost_id] =
-        static_cast<int64_t>(num_local_dofs + k++);
+      ghost_global_id_2_local_map[ghost_id] = static_cast<int64_t>(num_local_dofs + k++);
     }
   }
 

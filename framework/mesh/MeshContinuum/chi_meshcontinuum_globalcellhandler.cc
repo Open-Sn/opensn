@@ -6,8 +6,8 @@
 
 //###################################################################
 /**Adds a new cell to grid registry.*/
-void chi_mesh::GlobalCellHandler::
-  push_back(std::unique_ptr<chi_mesh::Cell> new_cell)
+void
+chi_mesh::GlobalCellHandler::push_back(std::unique_ptr<chi_mesh::Cell> new_cell)
 {
   if (new_cell->partition_id_ == static_cast<uint64_t>(Chi::mpi.location_id))
   {
@@ -17,8 +17,8 @@ void chi_mesh::GlobalCellHandler::
 
     const auto& cell = local_cells_ref_.back();
 
-    global_cell_id_to_native_id_map.insert(std::make_pair(
-      cell->global_id_, local_cells_ref_.size() - 1));
+    global_cell_id_to_native_id_map.insert(
+      std::make_pair(cell->global_id_, local_cells_ref_.size() - 1));
   }
   else
   {
@@ -26,16 +26,15 @@ void chi_mesh::GlobalCellHandler::
 
     const auto& cell = ghost_cells_ref_.back();
 
-    global_cell_id_to_foreign_id_map.insert(std::make_pair(
-      cell->global_id_, ghost_cells_ref_.size() - 1));
+    global_cell_id_to_foreign_id_map.insert(
+      std::make_pair(cell->global_id_, ghost_cells_ref_.size() - 1));
   }
-
 }
 
 //###################################################################
 /**Returns a reference to a cell given its global cell index.*/
-chi_mesh::Cell& chi_mesh::GlobalCellHandler::
-  operator[](uint64_t cell_global_index)
+chi_mesh::Cell&
+chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index)
 {
   auto native_location = global_cell_id_to_native_id_map.find(cell_global_index);
 
@@ -58,8 +57,8 @@ chi_mesh::Cell& chi_mesh::GlobalCellHandler::
 
 //###################################################################
 /**Returns a const reference to a cell given its global cell index.*/
-const chi_mesh::Cell& chi_mesh::GlobalCellHandler::
-  operator[](uint64_t cell_global_index) const
+const chi_mesh::Cell&
+chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index) const
 {
   auto native_location = global_cell_id_to_native_id_map.find(cell_global_index);
 
@@ -82,17 +81,14 @@ const chi_mesh::Cell& chi_mesh::GlobalCellHandler::
 
 //###################################################################
 /**Returns the total number of global cells.*/
-size_t chi_mesh::MeshContinuum::GetGlobalNumberOfCells() const
+size_t
+chi_mesh::MeshContinuum::GetGlobalNumberOfCells() const
 {
   size_t num_local_cells = local_cells_.size();
   size_t num_globl_cells = 0;
 
-  MPI_Allreduce(&num_local_cells,
-                &num_globl_cells,
-                1,
-                MPI_UNSIGNED_LONG_LONG,
-                MPI_SUM,
-                Chi::mpi.comm);
+  MPI_Allreduce(
+    &num_local_cells, &num_globl_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
 
   return num_globl_cells;
 }
@@ -101,8 +97,8 @@ size_t chi_mesh::MeshContinuum::GetGlobalNumberOfCells() const
 /**Returns the cell global ids of all ghost cells. These are cells that
  * neighbors to this partition's cells but are on a different
  * partition.*/
-std::vector<uint64_t> chi_mesh::GlobalCellHandler::
-  GetGhostGlobalIDs() const
+std::vector<uint64_t>
+chi_mesh::GlobalCellHandler::GetGhostGlobalIDs() const
 {
   std::vector<uint64_t> ids;
   ids.reserve(GetNumGhosts());
@@ -118,14 +114,12 @@ std::vector<uint64_t> chi_mesh::GlobalCellHandler::
  * ghost is not truly a ghost then -1 is returned, but is wasteful and
  * therefore the user of this function should implement code
  * to prevent it.*/
-uint64_t chi_mesh::GlobalCellHandler::
-  GetGhostLocalID(uint64_t cell_global_index) const
+uint64_t
+chi_mesh::GlobalCellHandler::GetGhostLocalID(uint64_t cell_global_index) const
 {
-  auto foreign_location =
-    global_cell_id_to_foreign_id_map.find(cell_global_index);
+  auto foreign_location = global_cell_id_to_foreign_id_map.find(cell_global_index);
 
-  if (foreign_location != global_cell_id_to_foreign_id_map.end())
-    return foreign_location->second;
+  if (foreign_location != global_cell_id_to_foreign_id_map.end()) return foreign_location->second;
 
   std::stringstream ostr;
   ostr << "Grid GetGhostLocalID failed to find cell " << cell_global_index;

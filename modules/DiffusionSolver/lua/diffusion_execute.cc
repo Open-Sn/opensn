@@ -11,12 +11,12 @@
 \return Success bool Returns if initialization failed.
 \ingroup LuaDiffusion
 \author Jan*/
-int chiDiffusionExecute(lua_State *L)
+int
+chiDiffusionExecute(lua_State* L)
 {
-  const size_t solver_index = lua_tonumber(L,1);
-  auto& solver = Chi::GetStackItem<chi_diffusion::Solver>(
-    Chi::object_stack,
-                                       solver_index, __FUNCTION__);
+  const size_t solver_index = lua_tonumber(L, 1);
+  auto& solver =
+    Chi::GetStackItem<chi_diffusion::Solver>(Chi::object_stack, solver_index, __FUNCTION__);
 
   solver.ExecuteS();
 

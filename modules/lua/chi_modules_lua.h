@@ -5,10 +5,10 @@
 
 namespace chi_modules
 {
-  namespace lua_utils
-  {
-    void RegisterLuaEntities(lua_State* L);
-  }//namespace lua_utils
-}
+namespace lua_utils
+{
+void RegisterLuaEntities(lua_State* L);
+} // namespace lua_utils
+} // namespace chi_modules
 
-#endif //CHITECH_CHI_MODULES_LUA_H
+#endif // CHITECH_CHI_MODULES_LUA_H

@@ -17,9 +17,9 @@ public:
 
 protected:
   explicit FiniteElementBase(const chi_mesh::MeshContinuum& grid,
-                                       CoordinateSystemType cs_type,
-                                       SDMType sdm_type,
-                                       QuadratureOrder q_order)
+                             CoordinateSystemType cs_type,
+                             SDMType sdm_type,
+                             QuadratureOrder q_order)
     : SpatialDiscretization(grid, cs_type, sdm_type), q_order_(q_order)
   {
   }

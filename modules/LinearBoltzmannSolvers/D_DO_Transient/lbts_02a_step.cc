@@ -8,7 +8,8 @@
 
 //###################################################################
 /**Transient solver timestep routine.*/
-void lbs::DiscOrdTransientSolver::Step()
+void
+lbs::DiscOrdTransientSolver::Step()
 {
   if (transient_options_.verbosity_level >= 2)
     chi::log.Log() << TextName() << " Stepping with dt " << dt_;
@@ -23,17 +24,16 @@ void lbs::DiscOrdTransientSolver::Step()
     q_moments_local_.assign(q_moments_local_.size(), 0.0);
     auto sweep_chunk = SetTransientSweepChunk(groupset);
 
-    auto sweep_wgs_context_ptr =
-    std::make_shared<SweepWGSContext<Mat, Vec, KSP>>(
-      *this, groupset,
-        active_set_source_function_,
-        APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES,  //lhs_scope
-        APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES |
-        APPLY_AGS_FISSION_SOURCES,                              //rhs_scope
-        options_.verbose_inner_iterations,
-        sweep_chunk);
+    auto sweep_wgs_context_ptr = std::make_shared<SweepWGSContext<Mat, Vec, KSP>>(
+      *this,
+      groupset,
+      active_set_source_function_,
+      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES,                       // lhs_scope
+      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES, // rhs_scope
+      options_.verbose_inner_iterations,
+      sweep_chunk);
 
-    WGSLinearSolver<Mat,Vec,KSP> solver(sweep_wgs_context_ptr);
+    WGSLinearSolver<Mat, Vec, KSP> solver(sweep_wgs_context_ptr);
     solver.Setup();
     solver.Solve();
 
@@ -46,18 +46,19 @@ void lbs::DiscOrdTransientSolver::Step()
     const auto& CrankNicolson = chi_math::SteppingMethod::CRANK_NICOLSON;
 
     double theta;
-    if      (method == BackwardEuler) theta = 1.0;
-    else if (method == CrankNicolson) theta = 0.5;
-    else                              theta = 0.7;
-    const double inv_theta = 1.0/theta;
+    if (method == BackwardEuler) theta = 1.0;
+    else if (method == CrankNicolson)
+      theta = 0.5;
+    else
+      theta = 0.7;
+    const double inv_theta = 1.0 / theta;
 
     auto& phi = phi_new_local_;
     const auto& phi_prev = phi_prev_local_;
     for (size_t i = 0; i < phi.size(); ++i)
-      phi[i] = inv_theta*(phi[i] + (theta-1.0) * phi_prev[i]);
+      phi[i] = inv_theta * (phi[i] + (theta - 1.0) * phi_prev[i]);
 
-    if (options_.use_precursors)
-      StepPrecursors();
+    if (options_.use_precursors) StepPrecursors();
   }
 
   const double FR_new = ComputeFissionProduction(phi_new_local_);

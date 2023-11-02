@@ -19,9 +19,9 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
   const chi_math::QuadratureTetrahedron& volume_quadrature,
   const chi_math::QuadratureTriangle& surface_quadrature)
   : PieceWiseLinearBaseMapping(ref_grid,
-                        polyh_cell,
-                        polyh_cell.vertex_ids_.size(), // num_nodes
-                        MakeFaceNodeMapping(polyh_cell)),
+                               polyh_cell,
+                               polyh_cell.vertex_ids_.size(), // num_nodes
+                               MakeFaceNodeMapping(polyh_cell)),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature)
 {
@@ -161,8 +161,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
           newSideMap.index = -1;
           for (size_t v = 0; v < polyh_cell.faces_[f].vertex_ids_.size(); v++)
           {
-            if (polyh_cell.vertex_ids_[i] ==
-                polyh_cell.faces_[f].vertex_ids_[v])
+            if (polyh_cell.vertex_ids_[i] == polyh_cell.faces_[f].vertex_ids_[v])
             {
               newSideMap.part_of_face = true;
               break;

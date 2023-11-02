@@ -13,8 +13,9 @@ int chiProgramTime(lua_State* L);
 RegisterLuaFunctionAsIs(chiProgramTime);
 
 /**Returns the program time as determined from the home location (involves a
-* collective broadcast).*/
-int chiProgramTime(lua_State* L)
+ * collective broadcast).*/
+int
+chiProgramTime(lua_State* L)
 {
   double time;
   if (Chi::mpi.location_id == 0) time = Chi::program_timer.GetTime() / 1000.0;

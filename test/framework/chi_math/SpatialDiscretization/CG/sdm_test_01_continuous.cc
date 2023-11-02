@@ -18,15 +18,15 @@ namespace chi_unit_tests
 {
 
 chi::InputParameters chi_math_SDM_Test01Syntax();
-chi::ParameterBlock
-chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters);
+chi::ParameterBlock chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*name_in_lua=*/chi_math_SDM_Test01_Continuous,
                         /*syntax_function=*/chi_math_SDM_Test01Syntax,
                         /*actual_function=*/chi_math_SDM_Test01_Continuous);
 
-chi::InputParameters chi_math_SDM_Test01Syntax()
+chi::InputParameters
+chi_math_SDM_Test01Syntax()
 {
   chi::InputParameters params;
 
@@ -40,8 +40,7 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
 {
   const chi::ParameterBlock& params = input_parameters.GetParam("arg0");
 
-  const bool export_vtk =
-    params.Has("export_vtk") && params.GetParamValue<bool>("export_vtk");
+  const bool export_vtk = params.Has("export_vtk") && params.GetParamValue<bool>("export_vtk");
 
   //============================================= Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
@@ -57,10 +56,7 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
   {
     using namespace chi_math::spatial_discretization;
     if (sdm_type == "PWLC") sdm_ptr = PieceWiseLinearContinuous::New(grid);
-    else if (sdm_type == "LagrangeC")
-    {
-      sdm_ptr = LagrangeContinuous::New(grid);
-    }
+    else if (sdm_type == "LagrangeC") { sdm_ptr = LagrangeContinuous::New(grid); }
     else
       ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
   }
@@ -87,11 +83,9 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
-  sdm.BuildSparsityPattern(
-    nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
+  sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(
-    A, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   //============================================= Assemble the system
   Chi::log.Log() << "Assembling system: ";
@@ -101,8 +95,7 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
     const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    const auto [domain_nodes, bndry_nodes] =
-      sdm.MakeCellInternalAndBndryNodeIDs(cell);
+    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
 
     MatDbl Acell(num_nodes, VecDbl(num_nodes, 0.0));
     VecDbl cell_rhs(num_nodes, 0.0);
@@ -162,25 +155,24 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
 
   //============================================= Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A,                // Matrix
-    "PWLCDiffSolver", // Solver name
-    KSPCG,            // Solver type
-    PCHYPRE,           // Preconditioner type
-    1.0e-6,           // Relative residual tolerance
-    1000);            // Max iterations
+  auto petsc_solver =
+    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,                // Matrix
+                                                        "PWLCDiffSolver", // Solver name
+                                                        KSPCG,            // Solver type
+                                                        PCHYPRE,          // Preconditioner type
+                                                        1.0e-6, // Relative residual tolerance
+                                                        1000);  // Max iterations
 
   PC pc;
   KSPGetPC(petsc_solver.ksp, &pc);
   PCHYPRESetType(pc, "boomeramg");
-  std::vector<std::string> pc_options = {
-    "pc_hypre_boomeramg_agg_nl 1",
-    "pc_hypre_boomeramg_P_max 4",
-    "pc_hypre_boomeramg_grid_sweeps_coarse 1",
-    "pc_hypre_boomeramg_max_levels 25",
-    "pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi",
-    "pc_hypre_boomeramg_coarsen_type HMIS",
-    "pc_hypre_boomeramg_interp_type ext+i"};
+  std::vector<std::string> pc_options = {"pc_hypre_boomeramg_agg_nl 1",
+                                         "pc_hypre_boomeramg_P_max 4",
+                                         "pc_hypre_boomeramg_grid_sweeps_coarse 1",
+                                         "pc_hypre_boomeramg_max_levels 25",
+                                         "pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi",
+                                         "pc_hypre_boomeramg_coarsen_type HMIS",
+                                         "pc_hypre_boomeramg_interp_type ext+i"};
 
   if (grid.Attributes() & chi_mesh::DIMENSION_2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
@@ -199,7 +191,6 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
   const char* reason;
   KSPGetConvergedReasonString(petsc_solver.ksp, &reason);
   Chi::log.Log() << "Done solving " << reason;
-
 
   //============================================= Extract PETSc vector
   std::vector<double> field;
@@ -234,8 +225,7 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
 
     ff->UpdateFieldVector(field);
 
-    chi_physics::FieldFunctionGridBased::ExportMultipleToVTK(
-      "ZSDM_Test", {ff});
+    chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("ZSDM_Test", {ff});
   }
 
   return chi::ParameterBlock{};

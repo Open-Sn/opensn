@@ -10,10 +10,8 @@ to elements.*/
 class chi_mesh::SurfaceMesherPassthrough : public chi_mesh::SurfaceMesher
 {
 public:
-  SurfaceMesherPassthrough() : SurfaceMesher(SurfaceMesherType::Predefined)
-  {
-  }
-  //02 Execute
+  SurfaceMesherPassthrough() : SurfaceMesher(SurfaceMesherType::Predefined) {}
+  // 02 Execute
   void Execute() override;
 };
 

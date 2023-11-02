@@ -5,9 +5,9 @@
 
 #include <algorithm>
 
-
 //######################################################################
-void chi_physics::SingleStateMGXS::Clear()
+void
+chi_physics::SingleStateMGXS::Clear()
 {
   num_groups_ = 0;
   scattering_order_ = 0;
@@ -29,23 +29,22 @@ void chi_physics::SingleStateMGXS::Clear()
 
   precursors_.clear();
 
-  //Diffusion quantities
+  // Diffusion quantities
   diffusion_initialized_ = false;
   diffusion_coeff_.clear();
   sigma_removal_.clear();
   sigma_s_gtog_.clear();
 
-  //Monte-Carlo quantities
+  // Monte-Carlo quantities
   scattering_initialized_ = false;
   cdf_gprime_g_.clear();
   scat_angles_gprime_g_.clear();
 }
 
-
 //######################################################################
 /** Makes a simple material with no transfer matrix just sigma_t. */
-void chi_physics::SingleStateMGXS::
-MakeSimple0(unsigned int num_groups, double sigma_t)
+void
+chi_physics::SingleStateMGXS::MakeSimple0(unsigned int num_groups, double sigma_t)
 {
   Clear();
 
@@ -56,15 +55,14 @@ MakeSimple0(unsigned int num_groups, double sigma_t)
   ComputeDiffusionParameters();
 }
 
-
 //######################################################################
 /**
  * Makes a simple material with isotropic transfer matrix (L=0)
  * and mostly down scattering but with a few of the last groups
  * subject to up-scattering.
  */
-void chi_physics::SingleStateMGXS::
-MakeSimple1(unsigned int num_groups, double sigma_t, double c)
+void
+chi_physics::SingleStateMGXS::MakeSimple1(unsigned int num_groups, double sigma_t, double c)
 {
   Clear();
 
@@ -93,11 +91,10 @@ MakeSimple1(unsigned int num_groups, double sigma_t, double c)
 
   for (unsigned int g = 0; g < num_groups_; ++g)
   {
-    //downscattering
-    if (g > 0)
-      S.Insert(g, g - 1, sigma_t * c * 0.5);
+    // downscattering
+    if (g > 0) S.Insert(g, g - 1, sigma_t * c * 0.5);
 
-    //upscattering
+    // upscattering
     if (g > num_groups_ / 2)
     {
       if (g < num_groups_ - 1)
@@ -108,74 +105,67 @@ MakeSimple1(unsigned int num_groups, double sigma_t, double c)
       else
         S.Insert(g, g - 1, sigma_t * c * 0.5);
     }
-  }//for g
+  } // for g
 
   ComputeAbsorption();
   ComputeDiffusionParameters();
 }
 
-
 //######################################################################
 /** Populates the cross section from a combination of others. */
-void chi_physics::SingleStateMGXS::
-MakeCombined(std::vector<std::pair<int, double> > &combinations)
+void
+chi_physics::SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
 {
   Clear();
 
-  //pickup all xs and make sure valid
+  // pickup all xs and make sure valid
   std::vector<std::shared_ptr<MultiGroupXS>> xsecs;
   xsecs.reserve(combinations.size());
 
   unsigned int n_grps = 0;
   unsigned int n_precs = 0;
-  double Nf_total = 0.0; //total density of fissile materials
+  double Nf_total = 0.0; // total density of fissile materials
 
-  //loop over cross sections
+  // loop over cross sections
   for (auto combo : combinations)
   {
-    //get the cross section from the lua stack
+    // get the cross section from the lua stack
     std::shared_ptr<MultiGroupXS> xs;
-    xs = Chi::GetStackItemPtr(
-      Chi::multigroup_xs_stack, combo.first,
-                              std::string(__FUNCTION__));
+    xs = Chi::GetStackItemPtr(Chi::multigroup_xs_stack, combo.first, std::string(__FUNCTION__));
     xsecs.push_back(xs);
 
-    //increment densities
+    // increment densities
     if (xs->IsFissionable())
     {
       is_fissionable_ = true;
       Nf_total += combo.second;
     }
 
-    //define and check number of groups
-    if (xsecs.size() == 1)
-      n_grps = xs->NumGroups();
+    // define and check number of groups
+    if (xsecs.size() == 1) n_grps = xs->NumGroups();
     else if (xs->NumGroups() != n_grps)
-      throw std::logic_error(
-          "Incompatible cross sections encountered.\n"
-          "All cross sections being combined must have the "
-          "same number of energy groups.");
+      throw std::logic_error("Incompatible cross sections encountered.\n"
+                             "All cross sections being combined must have the "
+                             "same number of energy groups.");
 
-    //increment number of precursors
+    // increment number of precursors
     n_precs += xs->NumPrecursors();
-  }//for cross section
+  } // for cross section
 
   // Check that the fissile and precursor densities are greater than
   // machine precision. If this condition is not met, the material is assumed
   // to be either not fissile, have zero precursors, or both.
-  if (Nf_total < 1.0e-12)
-    is_fissionable_ = false;
+  if (Nf_total < 1.0e-12) is_fissionable_ = false;
 
   // Check to ensure that all fissionable cross sections contain either
   // prompt/delayed fission data or total fission data
   if (n_precs > 0)
     for (const auto& xs : xsecs)
       if (xs->IsFissionable() and xs->NumPrecursors() == 0)
-        throw std::logic_error(
-            "Incompatible cross sections encountered.\n"
-            "If any fissionable cross sections specify delayed neutron "
-            "data, all fissionable cross sections must specify delayed "
-            "neutron data.");
+        throw std::logic_error("Incompatible cross sections encountered.\n"
+                               "If any fissionable cross sections specify delayed neutron "
+                               "data, all fissionable cross sections must specify delayed "
+                               "neutron data.");
 
   //============================================================
   // Initialize the data
@@ -185,30 +175,28 @@ MakeCombined(std::vector<std::pair<int, double> > &combinations)
   num_precursors_ = n_precs;
   scattering_order_ = 0;
   for (const auto& xs : xsecs)
-    scattering_order_ = std::max(scattering_order_,
-                                 xs->ScatteringOrder());
+    scattering_order_ = std::max(scattering_order_, xs->ScatteringOrder());
 
-  //mandatory cross sections
+  // mandatory cross sections
   sigma_t_.assign(n_grps, 0.0);
   sigma_a_.assign(n_grps, 0.0);
 
-  //init transfer matrices only if at least one exists
+  // init transfer matrices only if at least one exists
   using XSPtr = chi_physics::MultiGroupXSPtr;
-  if (std::any_of(xsecs.begin(), xsecs.end(),
-                  [](const XSPtr& x)
-                  { return not x->TransferMatrices().empty(); }))
+  if (std::any_of(xsecs.begin(),
+                  xsecs.end(),
+                  [](const XSPtr& x) { return not x->TransferMatrices().empty(); }))
     transfer_matrices_.assign(scattering_order_ + 1,
                               chi_math::SparseMatrix(num_groups_, num_groups_));
 
-  //init fission data
+  // init fission data
   if (is_fissionable_)
   {
     sigma_f_.assign(n_grps, 0.0);
     nu_sigma_f_.assign(n_grps, 0.0);
-    production_matrix_.assign(
-        num_groups_, std::vector<double>(num_groups_, 0.0));
+    production_matrix_.assign(num_groups_, std::vector<double>(num_groups_, 0.0));
 
-    //init prompt/delayed fission data
+    // init prompt/delayed fission data
     if (n_precs > 0)
     {
       nu_prompt_sigma_f_.assign(n_grps, 0.0);
@@ -224,13 +212,12 @@ MakeCombined(std::vector<std::pair<int, double> > &combinations)
   unsigned int precursor_count = 0;
   for (size_t x = 0; x < xsecs.size(); ++x)
   {
-    //atom density
+    // atom density
     double N_i = combinations[x].second;
 
-    //fraction of fissile density
+    // fraction of fissile density
     double ff_i = 0.0;
-    if (xsecs[x]->IsFissionable())
-      ff_i = N_i / Nf_total;
+    if (xsecs[x]->IsFissionable()) ff_i = N_i / Nf_total;
 
     //============================================================
     // Combine cross sections
@@ -263,7 +250,7 @@ MakeCombined(std::vector<std::pair<int, double> > &combinations)
           nu_delayed_sigma_f_[g] += nu_d_sig_f[g] * N_i;
         }
       }
-    }//for g
+    } // for g
 
     //============================================================
     // Combine precursor data
@@ -288,7 +275,7 @@ MakeCombined(std::vector<std::pair<int, double> > &combinations)
         precursors_[count].decay_constant = precursor.decay_constant;
         precursors_[count].fractional_yield = precursor.fractional_yield * ff_i;
         precursors_[count].emission_spectrum = precursor.emission_spectrum;
-      }//for j
+      } // for j
 
       precursor_count += xsecs[x]->NumPrecursors();
     }
@@ -297,14 +284,12 @@ MakeCombined(std::vector<std::pair<int, double> > &combinations)
     // Set inverse velocity data
     //============================================================
 
-    if (x == 0 && !xsecs[x]->InverseVelocity().empty())
-      inv_velocity_ = xsecs[x]->InverseVelocity();
+    if (x == 0 && !xsecs[x]->InverseVelocity().empty()) inv_velocity_ = xsecs[x]->InverseVelocity();
     else if (xsecs[x]->InverseVelocity() != inv_velocity_)
-      throw std::logic_error(
-          "Invalid cross sections encountered.\n"
-          "All cross sections being combined must share a group "
-          "structure. This implies that the inverse speeds for "
-          "each of the cross sections must be equivalent.");
+      throw std::logic_error("Invalid cross sections encountered.\n"
+                             "All cross sections being combined must share a group "
+                             "structure. This implies that the inverse speeds for "
+                             "each of the cross sections must be equivalent.");
 
     //============================================================
     // Combine transfer matrices
@@ -330,7 +315,7 @@ MakeCombined(std::vector<std::pair<int, double> > &combinations)
         }
       }
     }
-  }//for cross sections
+  } // for cross sections
 
   ComputeDiffusionParameters();
 }

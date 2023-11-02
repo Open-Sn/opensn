@@ -5,7 +5,7 @@
 
 namespace chi_math
 {
-  class QuadratureTetrahedron;
+class QuadratureTetrahedron;
 }
 
 //###################################################################
@@ -13,13 +13,10 @@ namespace chi_math
 class chi_math::QuadratureTetrahedron : public chi_math::Quadrature
 {
 public:
-  //Constructor
-  explicit
-  QuadratureTetrahedron(QuadratureOrder order);
+  // Constructor
+  explicit QuadratureTetrahedron(QuadratureOrder order);
 
-  void KeastRule(const std::vector<std::vector<double>>& rule_data,
-                 const unsigned int n_pts);
-
+  void KeastRule(const std::vector<std::vector<double>>& rule_data, const unsigned int n_pts);
 };
 
 #endif

@@ -10,13 +10,12 @@
 namespace chi_math::cell_mapping
 {
 
-LagrangeBaseMapping::LagrangeBaseMapping(
-  const chi_mesh::MeshContinuum& grid,
-  const chi_mesh::Cell& cell,
-  size_t num_nodes,
-  std::vector<std::vector<int>> face_node_mappings,
-  const Quadrature& volume_quadrature,
-  const Quadrature& surface_quadrature)
+LagrangeBaseMapping::LagrangeBaseMapping(const chi_mesh::MeshContinuum& grid,
+                                         const chi_mesh::Cell& cell,
+                                         size_t num_nodes,
+                                         std::vector<std::vector<int>> face_node_mappings,
+                                         const Quadrature& volume_quadrature,
+                                         const Quadrature& surface_quadrature)
   : CellMapping(grid,
                 cell,
                 num_nodes,
@@ -95,15 +94,16 @@ LagrangeBaseMapping::MapWorldXYZToNaturalXYZ(const Vec3& world_xyz) const
   return {nat_xyz[0], nat_xyz[1], nat_xyz[2]};
 }
 
-double LagrangeBaseMapping::ShapeValue(int i,
-                                       const chi_mesh::Vector3& xyz) const
+double
+LagrangeBaseMapping::ShapeValue(int i, const chi_mesh::Vector3& xyz) const
 {
   const auto natural_xyz = MapWorldXYZToNaturalXYZ(xyz);
   return RefShape(i, natural_xyz);
 }
 
-void LagrangeBaseMapping::ShapeValues(const chi_mesh::Vector3& xyz,
-                                      std::vector<double>& shape_values) const
+void
+LagrangeBaseMapping::ShapeValues(const chi_mesh::Vector3& xyz,
+                                 std::vector<double>& shape_values) const
 {
   const auto natural_xyz = MapWorldXYZToNaturalXYZ(xyz);
 
@@ -119,9 +119,9 @@ LagrangeBaseMapping::GradShapeValue(int i, const chi_mesh::Vector3& xyz) const
   return RefGradShape(i, natural_xyz);
 }
 
-void LagrangeBaseMapping::GradShapeValues(
-  const chi_mesh::Vector3& xyz,
-  std::vector<chi_mesh::Vector3>& gradshape_values) const
+void
+LagrangeBaseMapping::GradShapeValues(const chi_mesh::Vector3& xyz,
+                                     std::vector<chi_mesh::Vector3>& gradshape_values) const
 {
   const auto natural_xyz = MapWorldXYZToNaturalXYZ(xyz);
 
@@ -179,12 +179,12 @@ LagrangeBaseMapping::MakeVolumetricQuadraturePointData() const
   }   // for qp
 
   return finite_element::VolumetricQuadraturePointData(quadrature_point_indices,
-                                                     qpoints_xyz,
-                                                     shape_value,
-                                                     shape_grad,
-                                                     JxW,
-                                                     face_node_mappings_,
-                                                     num_nodes_);
+                                                       qpoints_xyz,
+                                                       shape_value,
+                                                       shape_grad,
+                                                       JxW,
+                                                       face_node_mappings_,
+                                                       num_nodes_);
 }
 
 const Quadrature&
@@ -228,8 +228,7 @@ LagrangeBaseMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
     const auto J = RefJacobian(qpoint);
     const auto JT = chi_math::Transpose(J);
     const auto JTinv = chi_math::Inverse(JT);
-    const auto [detJ, qp_normal] =
-      RefFaceJacobianDeterminantAndNormal(f, qpoint_face);
+    const auto [detJ, qp_normal] = RefFaceJacobianDeterminantAndNormal(f, qpoint_face);
 
     normals[qp] = qp_normal;
 
@@ -252,18 +251,18 @@ LagrangeBaseMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
   }   // for qp
 
   return finite_element::SurfaceQuadraturePointData(quadrature_point_indices,
-                                                 qpoints_xyz,
-                                                 shape_value,
-                                                 shape_grad,
-                                                 JxW,
-                                                 normals,
-                                                 face_node_mappings_,
-                                                 num_nodes_);
+                                                    qpoints_xyz,
+                                                    shape_value,
+                                                    shape_grad,
+                                                    JxW,
+                                                    normals,
+                                                    face_node_mappings_,
+                                                    num_nodes_);
 }
 
 std::pair<double, LagrangeBaseMapping::Vec3>
 LagrangeBaseMapping::RefFaceJacobianDeterminantAndNormal(size_t face_index,
-                                                const Vec3& qpoint_face) const
+                                                         const Vec3& qpoint_face) const
 {
   ChiLogicalError("Method not implemented");
 }
@@ -283,7 +282,8 @@ WorldXYZToNaturalMappingHelper::WorldXYZToNaturalMappingHelper(
     ChiLogicalError("Unsupported cell type.");
 }
 
-VecDbl WorldXYZToNaturalMappingHelper::F(const VecDbl& x) const
+VecDbl
+WorldXYZToNaturalMappingHelper::F(const VecDbl& x) const
 {
   const size_t num_nodes = cell_mapping_.NumNodes();
   const auto& node_x = cell_mapping_.GetNodeLocations();
@@ -299,8 +299,7 @@ VecDbl WorldXYZToNaturalMappingHelper::F(const VecDbl& x) const
     for (uint32_t i = 0; i < num_nodes; ++i)
     {
       const double shape_i_val = cell_mapping_.RefShape(i, {x[0], x[1], x[2]});
-      result_vec3 -=
-        Vec3(shape_i_val * node_x[i].x, shape_i_val * node_x[i].y, 0.0);
+      result_vec3 -= Vec3(shape_i_val * node_x[i].x, shape_i_val * node_x[i].y, 0.0);
     }
   else if (dimension_ == 3)
     for (uint32_t i = 0; i < num_nodes; ++i)
@@ -309,7 +308,8 @@ VecDbl WorldXYZToNaturalMappingHelper::F(const VecDbl& x) const
   return {result_vec3.x, result_vec3.y, result_vec3.z};
 }
 
-MatDbl WorldXYZToNaturalMappingHelper::J(const VecDbl& x) const
+MatDbl
+WorldXYZToNaturalMappingHelper::J(const VecDbl& x) const
 {
   return cell_mapping_.RefJacobian({x[0], x[1], x[2]});
 }

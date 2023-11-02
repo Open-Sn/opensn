@@ -8,7 +8,8 @@
 
 // ###################################################################
 /**Initializes the Within-Group DSA solver. */
-void lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
+void
+lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
 {
   if (groupset.apply_tgdsa_)
   {
@@ -19,46 +20,43 @@ void lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
     auto bcs = acceleration::TranslateBCs(sweep_boundaries_);
 
     //=========================================== Make TwoGridInfo
-     for (const auto& mat_id_xs_pair : matid_to_xs_map_)
+    for (const auto& mat_id_xs_pair : matid_to_xs_map_)
     {
-       const auto& mat_id = mat_id_xs_pair.first;
-       const auto& xs     = mat_id_xs_pair.second;
+      const auto& mat_id = mat_id_xs_pair.first;
+      const auto& xs = mat_id_xs_pair.second;
 
-       acceleration::TwoGridCollapsedInfo tginfo =
-         MakeTwoGridCollapsedInfo(*xs,
-         acceleration::EnergyCollapseScheme::JFULL);
+      acceleration::TwoGridCollapsedInfo tginfo =
+        MakeTwoGridCollapsedInfo(*xs, acceleration::EnergyCollapseScheme::JFULL);
 
-       groupset.tg_acceleration_info_.map_mat_id_2_tginfo.insert(
-         std::make_pair(mat_id, std::move(tginfo)));
-     }
+      groupset.tg_acceleration_info_.map_mat_id_2_tginfo.insert(
+        std::make_pair(mat_id, std::move(tginfo)));
+    }
 
     //=========================================== Make xs map
-     typedef lbs::acceleration::Multigroup_D_and_sigR MGXS;
-     typedef std::map<int, MGXS> MatID2MGDXSMap;
-     MatID2MGDXSMap matid_2_mgxs_map;
-     for (const auto& matid_xs_pair : matid_to_xs_map_)
+    typedef lbs::acceleration::Multigroup_D_and_sigR MGXS;
+    typedef std::map<int, MGXS> MatID2MGDXSMap;
+    MatID2MGDXSMap matid_2_mgxs_map;
+    for (const auto& matid_xs_pair : matid_to_xs_map_)
     {
-       const auto& mat_id = matid_xs_pair.first;
+      const auto& mat_id = matid_xs_pair.first;
 
-       const auto& tg_info =
-         groupset.tg_acceleration_info_.map_mat_id_2_tginfo.at(mat_id);
+      const auto& tg_info = groupset.tg_acceleration_info_.map_mat_id_2_tginfo.at(mat_id);
 
-       matid_2_mgxs_map.insert(
-         std::make_pair(mat_id, MGXS{{tg_info.collapsed_D},
-                                     {tg_info.collapsed_sig_a}}));
-     }
+      matid_2_mgxs_map.insert(
+        std::make_pair(mat_id, MGXS{{tg_info.collapsed_D}, {tg_info.collapsed_sig_a}}));
+    }
 
     //=========================================== Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<acceleration::DiffusionMIPSolver>(
-      std::string(TextName() + "_TGDSA"),
-      sdm,
-      uk_man,
-      bcs,
-      matid_2_mgxs_map,
-      unit_cell_matrices_,
-      true); // verbosity
+    auto solver =
+      std::make_shared<acceleration::DiffusionMIPSolver>(std::string(TextName() + "_TGDSA"),
+                                                         sdm,
+                                                         uk_man,
+                                                         bcs,
+                                                         matid_2_mgxs_map,
+                                                         unit_cell_matrices_,
+                                                         true); // verbosity
 
     solver->options.residual_tolerance = groupset.tgdsa_tol_;
     solver->options.max_iters = groupset.tgdsa_max_iters_;
@@ -77,17 +75,18 @@ void lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
 
 // ###################################################################
 /**Cleans up memory consuming items. */
-void lbs::LBSSolver::CleanUpTGDSA(LBSGroupset& groupset)
+void
+lbs::LBSSolver::CleanUpTGDSA(LBSGroupset& groupset)
 {
   if (groupset.apply_tgdsa_) groupset.tgdsa_solver_ = nullptr;
 }
 
 // ###################################################################
 /**Assembles a delta-phi vector on the first moment.*/
-void lbs::LBSSolver::AssembleTGDSADeltaPhiVector(
-  const LBSGroupset& groupset,
-  const std::vector<double>& phi_in,
-  std::vector<double>& delta_phi_local)
+void
+lbs::LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
+                                            const std::vector<double>& phi_in,
+                                            std::vector<double>& delta_phi_local)
 {
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
@@ -116,8 +115,7 @@ void lbs::LBSSolver::AssembleTGDSADeltaPhiVector(
       {
         double R_g = 0.0;
         for (const auto& [row_g, gprime, sigma_sm] : S.Row(gsi + g))
-          if (gprime >= gsi and gprime != (gsi + g))
-            R_g += sigma_sm * phi_in_mapped[gprime];
+          if (gprime >= gsi and gprime != (gsi + g)) R_g += sigma_sm * phi_in_mapped[gprime];
 
         delta_phi_mapped += R_g;
       } // for g
@@ -127,10 +125,10 @@ void lbs::LBSSolver::AssembleTGDSADeltaPhiVector(
 
 // ###################################################################
 /**DAssembles a delta-phi vector on the first moment.*/
-void lbs::LBSSolver::DisAssembleTGDSADeltaPhiVector(
-  const LBSGroupset& groupset,
-  const std::vector<double>& delta_phi_local,
-  std::vector<double>& ref_phi_new)
+void
+lbs::LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
+                                               const std::vector<double>& delta_phi_local,
+                                               std::vector<double>& ref_phi_new)
 {
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
@@ -138,8 +136,7 @@ void lbs::LBSSolver::DisAssembleTGDSADeltaPhiVector(
   const int gsi = groupset.groups_.front().id_;
   const size_t gss = groupset.groups_.size();
 
-  const auto& map_mat_id_2_tginfo =
-    groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
+  const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
 
   for (const auto& cell : grid_ptr_->local_cells)
   {

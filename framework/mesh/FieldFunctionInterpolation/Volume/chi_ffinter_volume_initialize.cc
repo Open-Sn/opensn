@@ -9,7 +9,8 @@
 
 //###################################################################
 /**Initializes the volume field function interpolation.*/
-void chi_mesh::FieldFunctionInterpolationVolume::Initialize()
+void
+chi_mesh::FieldFunctionInterpolationVolume::Initialize()
 {
   Chi::log.Log0Verbose1() << "Initializing volume interpolator.";
   //================================================== Check grid available
@@ -21,8 +22,7 @@ void chi_mesh::FieldFunctionInterpolationVolume::Initialize()
     throw std::logic_error("Unassigned logical volume in volume field function"
                            "interpolator.");
 
-  const auto& grid =
-    field_functions_.front()->GetSpatialDiscretization().Grid();
+  const auto& grid = field_functions_.front()->GetSpatialDiscretization().Grid();
 
   //================================================== Find cells inside volume
   for (const auto& cell : grid.local_cells)

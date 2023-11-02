@@ -8,7 +8,8 @@ using namespace lbs;
 //###################################################################
 /**Compute the total fission production in the problem.
 \author Zachary Hardy.*/
-double LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
+double
+LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
 {
   const int first_grp = groups_.front().id_;
   const int last_grp = groups_.back().id_;
@@ -39,26 +40,23 @@ double LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
       {
         const auto& prod = F[g];
         for (size_t gp = 0; gp <= last_grp; ++gp)
-          local_production += prod[gp] *
-                              phi[uk_map + gp] *
-                              IntV_ShapeI;
+          local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
 
         if (options_.use_precursors)
           for (unsigned int j = 0; j < xs.NumPrecursors(); ++j)
-            local_production += nu_delayed_sigma_f[g] *
-                                phi[uk_map + g] *
-                                IntV_ShapeI;
+            local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
       }
-    }//for node
-  }//for cell
+    } // for node
+  }   // for cell
 
   //============================================= Allreduce global production
   double global_production = 0.0;
-  MPI_Allreduce(&local_production,  //sendbuf
-                &global_production, //recvbuf
-                1, MPI_DOUBLE,      //count+datatype
-                MPI_SUM,            //operation
-                Chi::mpi.comm);    //communicator
+  MPI_Allreduce(&local_production,  // sendbuf
+                &global_production, // recvbuf
+                1,
+                MPI_DOUBLE,     // count+datatype
+                MPI_SUM,        // operation
+                Chi::mpi.comm); // communicator
 
   return global_production;
 }
@@ -66,7 +64,8 @@ double LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
 //###################################################################
 /**Computes the total fission rate in the problem.
 \author Zachary Hardy.*/
-double LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
+double
+LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
 {
   const int first_grp = groups_.front().id_;
   const int last_grp = groups_.back().id_;
@@ -95,16 +94,17 @@ double LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
       //=============================== Loop over groups
       for (size_t g = first_grp; g <= last_grp; ++g)
         local_fission_rate += sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
-    }//for node
-  }//for cell
+    } // for node
+  }   // for cell
 
   //============================================= Allreduce global production
   double global_fission_rate = 0.0;
-  MPI_Allreduce(&local_fission_rate,  //sendbuf
-                &global_fission_rate, //recvbuf
-                1, MPI_DOUBLE,        //count+datatype
-                MPI_SUM,              //operation
-                Chi::mpi.comm);      //communicator
+  MPI_Allreduce(&local_fission_rate,  // sendbuf
+                &global_fission_rate, // recvbuf
+                1,
+                MPI_DOUBLE,     // count+datatype
+                MPI_SUM,        // operation
+                Chi::mpi.comm); // communicator
 
   return global_fission_rate;
 }

@@ -7,13 +7,13 @@ namespace chi_math
 {
 
 /**Quadrate for a single point. Helps generalize quadrature based integration
-* on 1D cell faces.*/
+ * on 1D cell faces.*/
 class PointQuadrature : public Quadrature
 {
 public:
   PointQuadrature();
 };
 
-}
+} // namespace chi_math
 
 #endif // CHITECH_POINT_QUADRATURE_H

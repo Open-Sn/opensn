@@ -7,17 +7,18 @@
 namespace chi_math
 {
 
-template<>
-int LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
+template <>
+int
+LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
 {
-  LinearSolverContext<Mat,Vec>* context;
-  MatShellGetContext(matrix,&context);
+  LinearSolverContext<Mat, Vec>* context;
+  MatShellGetContext(matrix, &context);
 
-  context->MatrixAction(matrix, vector, //inputs
-                        action);        //output
+  context->MatrixAction(matrix,
+                        vector,  // inputs
+                        action); // output
 
   return 0;
 }
 
-}//namespace chi_math
-
+} // namespace chi_math

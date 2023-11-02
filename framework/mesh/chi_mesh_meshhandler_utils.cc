@@ -1,16 +1,16 @@
 #include "chi_mesh.h"
-#include<iostream>
+#include <iostream>
 
 #include "MeshHandler/chi_meshhandler.h"
 #include "chi_runtime.h"
-
 
 //###################################################################
 /**Obtains a reference to the current mesh handler from the global stack.
  *
  * If the stack is empty this routine will through `std::logic_error`.
 \author Jan*/
-chi_mesh::MeshHandler& chi_mesh::GetCurrentHandler()
+chi_mesh::MeshHandler&
+chi_mesh::GetCurrentHandler()
 {
   if (Chi::meshhandler_stack.empty())
     throw std::logic_error("chi_mesh::GetCurrentHandler: No handlers on stack");
@@ -22,7 +22,8 @@ chi_mesh::MeshHandler& chi_mesh::GetCurrentHandler()
 //###################################################################
 /**Adds a new mesh handler to the stack, sets it as the current handler
  * and returns a handle to it.*/
-size_t chi_mesh::PushNewHandlerAndGetIndex()
+size_t
+chi_mesh::PushNewHandlerAndGetIndex()
 {
   Chi::meshhandler_stack.push_back(std::make_shared<chi_mesh::MeshHandler>());
 
@@ -31,5 +32,3 @@ size_t chi_mesh::PushNewHandlerAndGetIndex()
 
   return index;
 }
-
-

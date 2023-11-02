@@ -15,7 +15,8 @@ namespace chi_math::spatial_discretization
 // ###################################################################
 /**Reorders the nodes for parallel computation in a Continuous
  * Finite Element calculation.*/
-void PieceWiseLinearDiscontinuous::OrderNodes()
+void
+PieceWiseLinearDiscontinuous::OrderNodes()
 {
   const std::string fname = __FUNCTION__;
   chi::Timer t_stage[6];
@@ -33,8 +34,7 @@ void PieceWiseLinearDiscontinuous::OrderNodes()
   for (const auto& cell : ref_grid_.local_cells)
   {
     const auto& cell_mapping = GetCellMapping(cell);
-    cell_local_block_address_[cell.local_id_] =
-      static_cast<int64_t>(local_node_count);
+    cell_local_block_address_[cell.local_id_] = static_cast<int64_t>(local_node_count);
     local_node_count += cell_mapping.NumNodes();
   }
 
@@ -72,8 +72,7 @@ void PieceWiseLinearDiscontinuous::OrderNodes()
     const auto& cell = ref_grid_.cells[global_id];
     const int locI = static_cast<int>(cell.partition_id_);
 
-    std::vector<uint64_t>& locI_cell_id_list =
-      ghost_cell_ids_consolidated[locI];
+    std::vector<uint64_t>& locI_cell_id_list = ghost_cell_ids_consolidated[locI];
 
     locI_cell_id_list.push_back(cell.global_id_);
   }
@@ -81,8 +80,7 @@ void PieceWiseLinearDiscontinuous::OrderNodes()
   //================================================== AllToAll to get query
   //                                                   cell-ids
   const std::map<int, std::vector<uint64_t>> query_ghost_cell_ids_consolidated =
-    chi_mpi_utils::MapAllToAll(ghost_cell_ids_consolidated,
-                               MPI_UNSIGNED_LONG_LONG);
+    chi_mpi_utils::MapAllToAll(ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
 
   //================================================== Map all query cell-ids
   std::map<int, std::vector<uint64_t>> mapped_ghost_cell_ids_consolidated;
@@ -103,8 +101,7 @@ void PieceWiseLinearDiscontinuous::OrderNodes()
   //================================================== Communicate back the
   // mapping
   const std::map<int, std::vector<uint64_t>> global_id_mapping =
-    chi_mpi_utils::MapAllToAll(mapped_ghost_cell_ids_consolidated,
-                               MPI_UNSIGNED_LONG_LONG);
+    chi_mpi_utils::MapAllToAll(mapped_ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
 
   //================================================== Process global id mapping
   for (const auto& [pid, mapping_list] : global_id_mapping)
@@ -116,14 +113,13 @@ void PieceWiseLinearDiscontinuous::OrderNodes()
 
     const size_t list_size = mapping_list.size();
     for (size_t k = 0; k < list_size; ++k)
-      neighbor_cell_block_address_.emplace_back(
-        global_id_list[k], static_cast<int64_t>(mapping_list[k]));
+      neighbor_cell_block_address_.emplace_back(global_id_list[k],
+                                                static_cast<int64_t>(mapping_list[k]));
   }
 
   //================================================== Print info
-  Chi::log.LogAllVerbose2()
-    << "Local dof count, start, total " << local_node_count << " "
-    << local_block_address_ << " " << global_node_count;
+  Chi::log.LogAllVerbose2() << "Local dof count, start, total " << local_node_count << " "
+                            << local_block_address_ << " " << global_node_count;
 }
 
 } // namespace chi_math::spatial_discretization

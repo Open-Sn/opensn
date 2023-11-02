@@ -35,8 +35,8 @@ FieldFunctionGridBased::GetPointValue(const chi_mesh::Vector3& point) const
 
   const auto& field_vector = *ghosted_field_vector_;
 
-  if (point.x >= xmin and point.x <= xmax and point.y >= ymin and
-      point.y <= ymax and point.z >= zmin and point.z <= zmax)
+  if (point.x >= xmin and point.x <= xmax and point.y >= ymin and point.y <= ymax and
+      point.z >= zmin and point.z <= zmax)
   {
     const auto& grid = sdm_->Grid();
     for (const auto& cell : grid.local_cells)
@@ -70,28 +70,28 @@ FieldFunctionGridBased::GetPointValue(const chi_mesh::Vector3& point) const
   MPI_Allreduce(&local_num_point_hits, // sendbuf
                 &globl_num_point_hits, // recvbuf
                 1,
-                MPIU_SIZE_T,     // count + datatype
-                MPI_SUM,         // operation
+                MPIU_SIZE_T,    // count + datatype
+                MPI_SUM,        // operation
                 Chi::mpi.comm); // communicator
 
   std::vector<double> globl_point_value(num_components, 0.0);
   MPI_Allreduce(local_point_value.data(), // sendbuf
                 globl_point_value.data(), // recvbuf
                 1,
-                MPI_DOUBLE,      // count + datatype
-                MPI_SUM,         // operation
+                MPI_DOUBLE,     // count + datatype
+                MPI_SUM,        // operation
                 Chi::mpi.comm); // communicator
 
-  chi_math::Scale(globl_point_value,
-                  1.0 / static_cast<double>(globl_num_point_hits));
+  chi_math::Scale(globl_point_value, 1.0 / static_cast<double>(globl_num_point_hits));
 
   return globl_point_value;
 }
 
 // ##################################################################
-double FieldFunctionGridBased::Evaluate(const chi_mesh::Cell& cell,
-                                        const chi_mesh::Vector3& position,
-                                        unsigned int component) const
+double
+FieldFunctionGridBased::Evaluate(const chi_mesh::Cell& cell,
+                                 const chi_mesh::Vector3& position,
+                                 unsigned int component) const
 {
   const auto& field_vector = *ghosted_field_vector_;
 
@@ -103,7 +103,7 @@ double FieldFunctionGridBased::Evaluate(const chi_mesh::Cell& cell,
 
   double value = 0.0;
   const size_t num_nodes = cell_mapping.NumNodes();
-  for (size_t j=0; j<num_nodes; ++j)
+  for (size_t j = 0; j < num_nodes; ++j)
   {
     cint64_t dof_map = sdm_->MapDOFLocal(cell, j, GetUnknownManager(), 0, component);
 

@@ -13,7 +13,8 @@ namespace lbs
 RegisterChiObject(lbs, DiffusionDFEMSolver);
 
 // ##################################################################
-chi::InputParameters DiffusionDFEMSolver::GetInputParameters()
+chi::InputParameters
+DiffusionDFEMSolver::GetInputParameters()
 {
   chi::InputParameters params = LBSSolver::GetInputParameters();
 
@@ -26,9 +27,7 @@ chi::InputParameters DiffusionDFEMSolver::GetInputParameters()
 }
 
 // ##################################################################
-DiffusionDFEMSolver::DiffusionDFEMSolver(
-  const chi::InputParameters& params)
-  : LBSSolver(params)
+DiffusionDFEMSolver::DiffusionDFEMSolver(const chi::InputParameters& params) : LBSSolver(params)
 {
 }
 
@@ -42,7 +41,8 @@ DiffusionDFEMSolver::~DiffusionDFEMSolver()
 
 // ##################################################################
 /**Initializing.*/
-void DiffusionDFEMSolver::Initialize()
+void
+DiffusionDFEMSolver::Initialize()
 {
   options_.scattering_order = 0; // overwrite any setting otherwise
   LBSSolver::Initialize();
@@ -64,7 +64,8 @@ void DiffusionDFEMSolver::Initialize()
 
 // ##################################################################
 /**Initializes Within-GroupSet solvers.*/
-void DiffusionDFEMSolver::InitializeWGSSolvers()
+void
+DiffusionDFEMSolver::InitializeWGSSolvers()
 {
   //============================================= Initialize groupset solvers
   gs_mip_solvers_.assign(groupsets_.size(), nullptr);
@@ -118,8 +119,7 @@ void DiffusionDFEMSolver::InitializeWGSSolvers()
       std::vector<double> sigR(gs_G, 0.0);
 
       size_t g = 0;
-      for (size_t gprime = groupset.groups_.front().id_;
-           gprime <= groupset.groups_.back().id_;
+      for (size_t gprime = groupset.groups_.front().id_; gprime <= groupset.groups_.back().id_;
            ++gprime)
       {
         Dg[g] = diffusion_coeff[gprime];
@@ -133,14 +133,14 @@ void DiffusionDFEMSolver::InitializeWGSSolvers()
     //=========================================== Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<acceleration::DiffusionMIPSolver>(
-      std::string(TextName() + "_WGSolver"),
-      sdm,
-      uk_man,
-      bcs,
-      matid_2_mgxs_map,
-      unit_cell_matrices_,
-      true); // verbosity
+    auto solver =
+      std::make_shared<acceleration::DiffusionMIPSolver>(std::string(TextName() + "_WGSolver"),
+                                                         sdm,
+                                                         uk_man,
+                                                         bcs,
+                                                         matid_2_mgxs_map,
+                                                         unit_cell_matrices_,
+                                                         true); // verbosity
 
     solver->options.residual_tolerance = groupset.wgdsa_tol_;
     solver->options.max_iters = groupset.wgdsa_max_iters_;
@@ -164,14 +164,11 @@ void DiffusionDFEMSolver::InitializeWGSSolvers()
       *this,
       groupset,
       active_set_source_function_,
-      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES |
-        SUPPRESS_WG_SCATTER, // lhs_scope
-      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES |
-        APPLY_AGS_FISSION_SOURCES, // rhs_scope
+      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES | SUPPRESS_WG_SCATTER, // lhs_scope
+      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES, // rhs_scope
       options_.verbose_inner_iterations);
 
-    auto wgs_solver =
-      std::make_shared<WGSLinearSolver<Mat, Vec, KSP>>(mip_wgs_context_ptr);
+    auto wgs_solver = std::make_shared<WGSLinearSolver<Mat, Vec, KSP>>(mip_wgs_context_ptr);
 
     wgs_solvers_.push_back(wgs_solver);
   } // for groupset

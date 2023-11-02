@@ -19,11 +19,9 @@
  * RegisterChiObject(kaka, Zorba);
  * \endcode
  * \note Remember to include the header "ChiObject/ChiObjectFactory.h".*/
-#define RegisterChiObject(namespace_name, object_name)                         \
-  static char ChiObjectFactoryJoinWordsB(                                      \
-    unique_var_name_object_##object_name##_, __COUNTER__) =                    \
-    ChiObjectFactory::AddObjectToRegistry<object_name, ChiObject>(             \
-      #namespace_name, #object_name)
+#define RegisterChiObject(namespace_name, object_name)                                             \
+  static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
+    ChiObjectFactory::AddObjectToRegistry<object_name, ChiObject>(#namespace_name, #object_name)
 
 /**Macro for registering an object (parameters only) within the
  * ChiObjectFactory singleton.
@@ -35,11 +33,9 @@
  * \endcode
  *
  * \note Remember to include the header "ChiObject/object_maker.h"*/
-#define RegisterChiObjectParametersOnly(namespace_name, object_name)           \
-  static char ChiObjectFactoryJoinWordsB(                                      \
-    unique_var_name_object_##object_name##_, __COUNTER__) =                    \
-    ChiObjectFactory::AddObjectToRegistryParamsOnly<object_name>(              \
-      #namespace_name, #object_name)
+#define RegisterChiObjectParametersOnly(namespace_name, object_name)                               \
+  static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
+    ChiObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name, #object_name)
 
 /**Macro for registering a pure input parameters block within the
  * ChiObjectFactory singleton AND giving it a custom name
@@ -52,11 +48,9 @@
  * \endcode
  *
  * \note Remember to include the header "ChiObject/object_maker.h"*/
-#define RegisterSyntaxBlock(namespace_name, block_name, syntax_function)       \
-  static char ChiObjectFactoryJoinWordsB(                                      \
-    unique_var_name_syntax_##block_name##_, __COUNTER__) =                     \
-    ChiObjectFactory::AddSyntaxBlockToRegistry(                                \
-      #namespace_name, #block_name, syntax_function)
+#define RegisterSyntaxBlock(namespace_name, block_name, syntax_function)                           \
+  static char ChiObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) =    \
+    ChiObjectFactory::AddSyntaxBlockToRegistry(#namespace_name, #block_name, syntax_function)
 
 class ChiObject;
 
@@ -88,8 +82,7 @@ public:
   bool RegistryHasKey(const std::string& key) const;
 
   template <typename T, typename base_T>
-  static char AddObjectToRegistry(const std::string& namespace_name,
-                                  const std::string& object_name)
+  static char AddObjectToRegistry(const std::string& namespace_name, const std::string& object_name)
   {
     auto& object_maker = GetInstance();
 
@@ -141,8 +134,7 @@ public:
                                     const chi::ParameterBlock& params) const;
 
   /**Returns the input parameters of a registered object.*/
-  chi::InputParameters
-  GetRegisteredObjectParameters(const std::string& type) const;
+  chi::InputParameters GetRegisteredObjectParameters(const std::string& type) const;
 
   /**\brief Dumps the object registry to stdout.*/
   void DumpRegister() const;
@@ -164,8 +156,7 @@ private:
   /**Utility redirection to call an object's constructor with a specified list
    * of input parameters.*/
   template <typename T, typename base_T>
-  static std::shared_ptr<base_T>
-  CallObjectConstructor(const chi::InputParameters& params)
+  static std::shared_ptr<base_T> CallObjectConstructor(const chi::InputParameters& params)
   {
     return std::make_shared<T>(params);
   }

@@ -27,8 +27,7 @@ private:
   template <typename T>
   struct IsString
   {
-    static constexpr bool value =
-      std::is_same_v<T, std::string> or std::is_same_v<T, char*>;
+    static constexpr bool value = std::is_same_v<T, std::string> or std::is_same_v<T, char*>;
   };
   template <typename T>
   struct IsFloat
@@ -38,8 +37,7 @@ private:
   template <typename T>
   struct IsInteger
   {
-    static constexpr bool value =
-      std::is_integral_v<T> and not std::is_same_v<T, bool>;
+    static constexpr bool value = std::is_integral_v<T> and not std::is_same_v<T, bool>;
   };
 
   template <typename T>
@@ -54,8 +52,7 @@ private:
   template <typename T>
   using FloatStorageType = typename std::enable_if_t<IsFloat<T>::value, double>;
   template <typename T>
-  using IntegerStorageType =
-    typename std::enable_if_t<IsInteger<T>::value, int64_t>;
+  using IntegerStorageType = typename std::enable_if_t<IsInteger<T>::value, int64_t>;
 
   template <typename T>
   BoolStorageType<T> CastValue(const T& value)
@@ -153,10 +150,7 @@ private:
       }
     }
 
-    bool operator!=(const VaryingType& that) const override
-    {
-      return not(*this == that);
-    }
+    bool operator!=(const VaryingType& that) const override { return not(*this == that); }
     bool operator>(const VaryingType& that) const override
     {
       if (type_ != that.Type()) return false;
@@ -219,8 +213,7 @@ private:
 private:
   /**Checks if two VaryingDataType values match.
    * Type A is matched against type B.*/
-  void CheckTypeMatch(VaryingDataType type_A,
-                      VaryingDataType type_B_required) const;
+  void CheckTypeMatch(VaryingDataType type_A, VaryingDataType type_B_required) const;
 
 private:
 public:
@@ -231,23 +224,12 @@ public:
   template <typename T>
   explicit Varying(const T& value)
   {
-    constexpr bool is_supported_type =
-      IsBool<T>::value or IsFloat<T>::value or IsInteger<T>::value;
-    static_assert(is_supported_type,
-                  "Constructor called with unsupported type");
+    constexpr bool is_supported_type = IsBool<T>::value or IsFloat<T>::value or IsInteger<T>::value;
+    static_assert(is_supported_type, "Constructor called with unsupported type");
 
-    if (IsBool<T>::value)
-    {
-      type_ = VaryingDataType::BOOL;
-    }
-    else if (IsFloat<T>::value)
-    {
-      type_ = VaryingDataType::FLOAT;
-    }
-    else if (IsInteger<T>::value)
-    {
-      type_ = VaryingDataType::INTEGER;
-    }
+    if (IsBool<T>::value) { type_ = VaryingDataType::BOOL; }
+    else if (IsFloat<T>::value) { type_ = VaryingDataType::FLOAT; }
+    else if (IsInteger<T>::value) { type_ = VaryingDataType::INTEGER; }
 
     data_ = Helper(CastValue(value));
   }
@@ -266,8 +248,6 @@ public:
   {
     return std::make_unique<VaryingArbitraryType<double>>(value);
   }
-
-
 
   // template <typename T>
   // explicit Varying(const BoolType<T>& value)
@@ -311,10 +291,7 @@ public:
   explicit Varying(const std::string& value);
   /**Constructor for a string literal value.*/
   // explicit Varying(const char*& value) : Varying(std::string(value)) {}
-  explicit Varying(const char* value)
-    : Varying((not value) ? std::string() : std::string(value))
-  {
-  }
+  explicit Varying(const char* value) : Varying((not value) ? std::string() : std::string(value)) {}
   // template <std::size_t N>
   // explicit Varying(const char (&value)[N])
   //   : Varying(static_cast<const char*>(value))
@@ -377,17 +354,11 @@ public:
   /**Relation operators*/
   bool operator>(const Varying& that) const { return *data_ > *that.data_; }
   /**Relation operators*/
-  bool operator>=(const Varying& that) const
-  {
-    return (*this > that) or (*this == that);
-  }
+  bool operator>=(const Varying& that) const { return (*this > that) or (*this == that); }
   /**Relation operators*/
   bool operator<(const Varying& that) const { return *data_ < *that.data_; }
   /**Relation operators*/
-  bool operator<=(const Varying& that) const
-  {
-    return (*this < that) or (*this == that);
-  }
+  bool operator<=(const Varying& that) const { return (*this < that) or (*this == that); }
 
   /**Returns a default value for the type required.*/
   template <typename T>
@@ -401,26 +372,22 @@ public:
   template <typename T>
   struct IsSignedInteger
   {
-    static constexpr bool value = std::is_integral_v<T> and
-                                  std::is_signed_v<T> and
-                                  not std::is_same_v<T, bool>;
+    static constexpr bool value =
+      std::is_integral_v<T> and std::is_signed_v<T> and not std::is_same_v<T, bool>;
   };
   template <typename T>
   struct IsUnsignedInteger
   {
-    static constexpr bool value = std::is_integral_v<T> and
-                                  std::is_unsigned_v<T> and
-                                  not std::is_same_v<T, bool>;
+    static constexpr bool value =
+      std::is_integral_v<T> and std::is_unsigned_v<T> and not std::is_same_v<T, bool>;
   };
 
   template <typename T>
   using StringType = typename std::enable_if_t<IsString<T>::value, T>;
   template <typename T>
-  using SignedIntegerType =
-    typename std::enable_if_t<IsSignedInteger<T>::value, T>;
+  using SignedIntegerType = typename std::enable_if_t<IsSignedInteger<T>::value, T>;
   template <typename T>
-  using UnsignedIntegerType =
-    typename std::enable_if_t<IsUnsignedInteger<T>::value, T>;
+  using UnsignedIntegerType = typename std::enable_if_t<IsUnsignedInteger<T>::value, T>;
 
   /**Returns values of type bool if able.*/
   template <typename T>
@@ -505,7 +472,6 @@ public:
 } // namespace chi_data_types
 
 /**Stream operator*/
-std::ostream& operator<<(std::ostream& outstr,
-                         const chi_data_types::Varying& value);
+std::ostream& operator<<(std::ostream& outstr, const chi_data_types::Varying& value);
 
 #endif // CHI_DATA_TYPES_VARYING_H

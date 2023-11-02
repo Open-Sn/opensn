@@ -15,18 +15,12 @@ struct chi::GraphVertex
   std::set<size_t> us_edge;
   std::set<size_t> ds_edge;
 
-  std::map<size_t,double> us_weights;
-  std::map<size_t,double> ds_weights;
+  std::map<size_t, double> us_weights;
+  std::map<size_t, double> ds_weights;
 
-  GraphVertex(size_t in_id, void* in_context) :
-    id(in_id),
-    context(in_context)
-  {}
+  GraphVertex(size_t in_id, void* in_context) : id(in_id), context(in_context) {}
 
-  explicit GraphVertex(size_t in_id) :
-    id(in_id),
-    context(nullptr)
-  {}
+  explicit GraphVertex(size_t in_id) : id(in_id), context(nullptr) {}
 
   GraphVertex(const GraphVertex& in_v)
   {
@@ -74,10 +68,7 @@ struct chi::GraphVertex
     return *this;
   }
 
-  bool operator==(const GraphVertex& other) const
-  {
-    return other.id == this->id;
-  }
+  bool operator==(const GraphVertex& other) const { return other.id == this->id; }
 };
 
-#endif //CHI_DIRECTED_GRAPH_VERTEX_H
+#endif // CHI_DIRECTED_GRAPH_VERTEX_H

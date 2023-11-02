@@ -9,7 +9,8 @@
 namespace chi
 {
 
-void PostProcessorPrinter::PrintCSVFile(const Event& event) const
+void
+PostProcessorPrinter::PrintCSVFile(const Event& event) const
 {
   const auto scalar_pps = GetScalarPostProcessorsList(event);
   const auto vector_pps = GetVectorPostProcessorsList(event);
@@ -25,8 +26,9 @@ void PostProcessorPrinter::PrintCSVFile(const Event& event) const
   csvfile.close();
 }
 
-void PostProcessorPrinter::PrintScalarPPsToCSV(
-  std::ofstream& csvfile, const std::vector<const PostProcessor*>& pp_list)
+void
+PostProcessorPrinter::PrintScalarPPsToCSV(std::ofstream& csvfile,
+                                          const std::vector<const PostProcessor*>& pp_list)
 {
   csvfile << "Scalar Post-Processors\n";
 
@@ -52,8 +54,7 @@ void PostProcessorPrinter::PrintScalarPPsToCSV(
   //======================================== For each timeline. Build the table
   for (const auto& [timehistsize, pp_sub_list] : pp_timehist_size_subs)
   {
-    const auto value_matrix =
-      BuildPPHistoryMatrix(timehistsize, timehistsize, pp_sub_list);
+    const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, pp_sub_list);
     for (const auto& row : value_matrix)
     {
       for (const auto& entry : row)
@@ -66,8 +67,9 @@ void PostProcessorPrinter::PrintScalarPPsToCSV(
   } // for each thing in pp_timehist_size_subs
 }
 
-void PostProcessorPrinter::PrintVectorPPsToCSV(
-  std::ofstream& csvfile, const std::vector<const PostProcessor*>& pp_list)
+void
+PostProcessorPrinter::PrintVectorPPsToCSV(std::ofstream& csvfile,
+                                          const std::vector<const PostProcessor*>& pp_list)
 {
   csvfile << "Vector Post-Processors\n";
 
@@ -75,8 +77,7 @@ void PostProcessorPrinter::PrintVectorPPsToCSV(
   {
     csvfile << pp->Name() << "\n";
     const size_t timehistsize = pp->GetTimeHistory().size();
-    const auto value_matrix =
-      BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
+    const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
     for (const auto& row : value_matrix)
     {
       for (const auto& entry : row)
@@ -91,8 +92,9 @@ void PostProcessorPrinter::PrintVectorPPsToCSV(
   }
 }
 
-void PostProcessorPrinter::PrintArbitraryPPsToCSV(
-  std::ofstream& csvfile, const std::vector<const PostProcessor*>& pp_list)
+void
+PostProcessorPrinter::PrintArbitraryPPsToCSV(std::ofstream& csvfile,
+                                             const std::vector<const PostProcessor*>& pp_list)
 {
   csvfile << "Arbitrary Post-Processors\n";
 
@@ -100,8 +102,7 @@ void PostProcessorPrinter::PrintArbitraryPPsToCSV(
   {
     csvfile << pp->Name() << "\n";
     const size_t timehistsize = pp->GetTimeHistory().size();
-    const auto value_matrix =
-      BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
+    const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
     for (const auto& row : value_matrix)
     {
       for (const auto& entry : row)

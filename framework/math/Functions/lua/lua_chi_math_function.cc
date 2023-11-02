@@ -18,7 +18,8 @@ RegisterLuaFunctionAsIs(chiFunctionDimAToDimBEvaluate);
 \param params Varying. Table or individual arguments.
 
 \return Varying Either a single number or a table of output values.*/
-int chiFunctionDimAToDimBEvaluate(lua_State* L)
+int
+chiFunctionDimAToDimBEvaluate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -28,8 +29,8 @@ int chiFunctionDimAToDimBEvaluate(lua_State* L)
   LuaCheckNilValue(fname, L, 1);
   const size_t handle = lua_tointeger(L, 1);
 
-  const auto& function = Chi::GetStackItem<chi_math::FunctionDimAToDimB>(
-    Chi::object_stack, handle, fname);
+  const auto& function =
+    Chi::GetStackItem<chi_math::FunctionDimAToDimB>(Chi::object_stack, handle, fname);
 
   // ================================== Getting params
   std::vector<double> params;

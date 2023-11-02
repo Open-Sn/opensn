@@ -11,13 +11,12 @@
 
 // ###################################################################
 /** Receives delayed data from successor locations. */
-bool chi_mesh::sweep_management::AAH_ASynchronousCommunicator::ReceiveDelayedData(
-  int angle_set_num)
+bool
+chi_mesh::sweep_management::AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 {
   const auto& spds = fluds_.GetSPDS();
 
-  const auto& delayed_location_dependencies =
-    spds.GetDelayedLocationDependencies();
+  const auto& delayed_location_dependencies = spds.GetDelayedLocationDependencies();
   const size_t num_delayed_loc_deps = delayed_location_dependencies.size();
 
   //======================================== Receive delayed data
@@ -45,20 +44,18 @@ bool chi_mesh::sweep_management::AAH_ASynchronousCommunicator::ReceiveDelayedDat
         }
 
         //============================ Receive upstream data
-        auto& upstream_psi =
-          fluds_.DelayedPrelocIOutgoingPsi()[prelocI];
+        auto& upstream_psi = fluds_.DelayedPrelocIOutgoingPsi()[prelocI];
 
         u_ll_int block_addr = delayed_prelocI_message_blockpos[prelocI][m];
         u_ll_int message_size = delayed_prelocI_message_size[prelocI][m];
 
-        int error_code =
-          MPI_Recv(&upstream_psi[block_addr],
-                   static_cast<int>(message_size),
-                   MPI_DOUBLE,
-                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                   max_num_mess * angle_set_num + m, // tag
-                   comm_set_.LocICommunicator(Chi::mpi.location_id),
-                   MPI_STATUS_IGNORE);
+        int error_code = MPI_Recv(&upstream_psi[block_addr],
+                                  static_cast<int>(message_size),
+                                  MPI_DOUBLE,
+                                  comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+                                  max_num_mess * angle_set_num + m, // tag
+                                  comm_set_.LocICommunicator(Chi::mpi.location_id),
+                                  MPI_STATUS_IGNORE);
 
         delayed_prelocI_message_received[prelocI][m] = true;
 
@@ -66,9 +63,8 @@ bool chi_mesh::sweep_management::AAH_ASynchronousCommunicator::ReceiveDelayedDat
         {
           std::stringstream err_stream;
           err_stream << "################# Delayed receive error."
-                     << " message size=" << message_size
-                     << " as_num=" << angle_set_num << " num_mess=" << num_mess
-                     << " m=" << m << " error="
+                     << " message size=" << message_size << " as_num=" << angle_set_num
+                     << " num_mess=" << num_mess << " m=" << m << " error="
                      << " size="
                      << "\n";
           char error_string[BUFSIZ];

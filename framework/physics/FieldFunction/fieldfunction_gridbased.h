@@ -76,8 +76,7 @@ public:
   // 03 Export VTK
   /**Static method to export multiple grid-based field functions.*/
   typedef std::vector<std::shared_ptr<const FieldFunctionGridBased>> FFList;
-  static void ExportMultipleToVTK(const std::string& file_base_name,
-                                  const FFList& ff_list);
+  static void ExportMultipleToVTK(const std::string& file_base_name, const FFList& ff_list);
 
   // 04 Utils
   /**Makes a copy of the locally stored data with ghost access.*/
@@ -85,8 +84,7 @@ public:
 
   // 05 Point Values
   /**\brief Returns the component values at requested point.*/
-  virtual std::vector<double>
-  GetPointValue(const chi_mesh::Vector3& point) const;
+  virtual std::vector<double> GetPointValue(const chi_mesh::Vector3& point) const;
 
   /**Evaluates the field function, on a cell, at the specified point.*/
   double Evaluate(const chi_mesh::Cell& cell,
@@ -100,8 +98,7 @@ protected:
 private:
   /**Static method for making the GetSpatialDiscretization for the
    * constructors.*/
-  static chi_math::SDMPtr
-  MakeSpatialDiscretization(const chi::InputParameters& params);
+  static chi_math::SDMPtr MakeSpatialDiscretization(const chi::InputParameters& params);
   /**Static method for making the ghosted vector for the constructors.*/
   static std::unique_ptr<chi_math::GhostedParallelSTLVector>
   MakeFieldVector(const chi_math::SpatialDiscretization& discretization,

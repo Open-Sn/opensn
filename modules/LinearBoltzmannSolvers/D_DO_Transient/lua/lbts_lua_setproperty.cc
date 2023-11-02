@@ -3,10 +3,9 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-#define PropertyArgCntErr(prop_name) \
-throw std::logic_error(fname + ": Insufficient amount of arguments, " + \
-                       std::to_string(num_args) + ", for property " + \
-                       prop_name)
+#define PropertyArgCntErr(prop_name)                                                               \
+  throw std::logic_error(fname + ": Insufficient amount of arguments, " +                          \
+                         std::to_string(num_args) + ", for property " + prop_name)
 
 namespace lbs::lbts_lua_utils
 {
@@ -59,20 +58,19 @@ Sets the initial data normalization data. Can be "TOTAL_POWER",
 "POWER_DENSITY", or "NONE". [Default="TOTAL_POWER"]\n\n
 
 \author Zachary Hardy*/
-int chiLBTSSetProperty(lua_State* L)
+int
+chiLBTSSetProperty(lua_State* L)
 {
   const std::string fname = "chiLBTSSetProperty";
   const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
   //============================================= Get the solver
   LuaCheckNilValue(fname, L, 1);
   const int solver_handle = lua_tointeger(L, 1);
 
-  auto& solver = chi::GetStackItem<lbs::DiscOrdTransientSolver>(chi::object_stack,
-                                                                solver_handle,
-                                                                fname);
+  auto& solver =
+    chi::GetStackItem<lbs::DiscOrdTransientSolver>(chi::object_stack, solver_handle, fname);
 
   //============================================= Get the property
   LuaCheckStringValue(fname, L, 2);
@@ -88,8 +86,7 @@ int chiLBTSSetProperty(lua_State* L)
 
     solver.dt_ = dt_input;
 
-    chi::log.Log() << solver.TextName() << ": dt set to "
-                   << std::to_string(dt_input);
+    chi::log.Log() << solver.TextName() << ": dt set to " << std::to_string(dt_input);
   }
   else if (property == "TIME")
   {
@@ -101,8 +98,7 @@ int chiLBTSSetProperty(lua_State* L)
 
     solver.time_ = t_input;
 
-    chi::log.Log() << solver.TextName() << ": time set to "
-                   << std::to_string(t_input);
+    chi::log.Log() << solver.TextName() << ": time set to " << std::to_string(t_input);
   }
   else if (property == "TIMESTOP")
   {
@@ -114,8 +110,7 @@ int chiLBTSSetProperty(lua_State* L)
 
     solver.transient_options_.t_final = t_input;
 
-    chi::log.Log() << solver.TextName() << ": t_final set to "
-                   << std::to_string(t_input);
+    chi::log.Log() << solver.TextName() << ": t_final set to " << std::to_string(t_input);
   }
   else if (property == "MAX_TIMESTEPS")
   {
@@ -127,8 +122,7 @@ int chiLBTSSetProperty(lua_State* L)
 
     solver.transient_options_.max_time_steps = t_input;
 
-    chi::log.Log() << solver.TextName() << ": max_time_steps set to "
-                   << std::to_string(t_input);
+    chi::log.Log() << solver.TextName() << ": max_time_steps set to " << std::to_string(t_input);
   }
   else if (property == "INHIBIT_ADVANCE")
   {
@@ -164,16 +158,15 @@ int chiLBTSSetProperty(lua_State* L)
 
     const std::string option = lua_tostring(L, 3);
 
-    if (option == "BACKWARD_EULER")
-      solver.method = chi_math::SteppingMethod::IMPLICIT_EULER;
-    else if (option =="CRANK_NICHOLSON")
+    if (option == "BACKWARD_EULER") solver.method = chi_math::SteppingMethod::IMPLICIT_EULER;
+    else if (option == "CRANK_NICHOLSON")
       solver.method = chi_math::SteppingMethod::CRANK_NICOLSON;
     else
-      throw std::invalid_argument(fname + ": Only the following timestepping "
-            "methods are supported: \"CRANK_NICHOLSON\", \"BACKWARD_EULER\"");
+      throw std::invalid_argument(fname +
+                                  ": Only the following timestepping "
+                                  "methods are supported: \"CRANK_NICHOLSON\", \"BACKWARD_EULER\"");
 
-    chi::log.Log() << solver.TextName() << ": method set to "
-                   << option;
+    chi::log.Log() << solver.TextName() << ": method set to " << option;
   }
   else if (property == "CALLBACK")
   {
@@ -184,8 +177,7 @@ int chiLBTSSetProperty(lua_State* L)
     const std::string cbfname = lua_tostring(L, 3);
 
     solver.transient_options_.console_call_back_function = cbfname;
-    chi::log.Log() << solver.TextName() << ": console_call_back_function set to "
-                   << cbfname;
+    chi::log.Log() << solver.TextName() << ": console_call_back_function set to " << cbfname;
   }
   else if (property == "SCALE_FISSION_XS")
   {
@@ -209,26 +201,23 @@ int chiLBTSSetProperty(lua_State* L)
 
     if (option == "TOTAL_POWER")
       solver.transient_options_.normalization_method =
-          lbs::DiscOrdTransientSolver::NormalizationMethod::TOTAL_POWER;
+        lbs::DiscOrdTransientSolver::NormalizationMethod::TOTAL_POWER;
     else if (option == "POWER_DENSITY")
       solver.transient_options_.normalization_method =
-          lbs::DiscOrdTransientSolver::NormalizationMethod::POWER_DENSITY;
+        lbs::DiscOrdTransientSolver::NormalizationMethod::POWER_DENSITY;
     else if (option == "NONE")
       solver.transient_options_.normalization_method =
-          lbs::DiscOrdTransientSolver::NormalizationMethod::NONE;
+        lbs::DiscOrdTransientSolver::NormalizationMethod::NONE;
     else
-      throw std::invalid_argument(
-          fname + ": Only the following normalization methods are " +
-          "supported: \"TOTAL_POWER\", \"POWER_DENSITY\", \"NONE\"");
+      throw std::invalid_argument(fname + ": Only the following normalization methods are " +
+                                  "supported: \"TOTAL_POWER\", \"POWER_DENSITY\", \"NONE\"");
 
-    chi::log.Log() << solver.TextName() << ": normalization_method set to "
-                   << option;
+    chi::log.Log() << solver.TextName() << ": normalization_method set to " << option;
   }
   else
-    throw std::logic_error(fname + ": unsupported property name \"" +
-                           property + "\".");
+    throw std::logic_error(fname + ": unsupported property name \"" + property + "\".");
 
   return 0;
 }
 
-}//namespace lbs::lbts_lua_utils
+} // namespace lbs::lbts_lua_utils

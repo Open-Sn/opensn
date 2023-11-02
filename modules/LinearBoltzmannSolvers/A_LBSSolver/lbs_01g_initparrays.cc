@@ -11,7 +11,8 @@
 
 // ###################################################################
 /**Initializes parallel arrays.*/
-void lbs::LBSSolver::InitializeParrays()
+void
+lbs::LBSSolver::InitializeParrays()
 {
   Chi::log.Log() << "Initializing parallel arrays."
                  << " G=" << num_groups_ << " M=" << num_moments_ << std::endl;
@@ -21,8 +22,7 @@ void lbs::LBSSolver::InitializeParrays()
   flux_moments_uk_man_.unknowns_.clear();
   for (size_t m = 0; m < num_moments_; m++)
   {
-    flux_moments_uk_man_.AddUnknown(chi_math::UnknownType::VECTOR_N,
-                                    groups_.size());
+    flux_moments_uk_man_.AddUnknown(chi_math::UnknownType::VECTOR_N, groups_.size());
     flux_moments_uk_man_.unknowns_.back().text_name_ = "m" + std::to_string(m);
   }
 
@@ -35,8 +35,7 @@ void lbs::LBSSolver::InitializeParrays()
   size_t num_grps = groups_.size();
   size_t local_unknown_count = local_node_count_ * num_grps * num_moments_;
 
-  Chi::log.LogAllVerbose1()
-    << "LBS Number of phi unknowns: " << local_unknown_count;
+  Chi::log.LogAllVerbose1() << "LBS Number of phi unknowns: " << local_unknown_count;
 
   //================================================== Size local vectors
   q_moments_local_.assign(local_unknown_count, 0.0);
@@ -50,8 +49,7 @@ void lbs::LBSSolver::InitializeParrays()
     psi_new_local_.emplace_back();
     if (options_.save_angular_flux)
     {
-      size_t num_ang_unknowns =
-        discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
+      size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
       psi_new_local_.back().assign(num_ang_unknowns, 0.0);
     }
   }
@@ -59,15 +57,13 @@ void lbs::LBSSolver::InitializeParrays()
   //============================================= Setup precursor vector
   if (options_.use_precursors)
   {
-    size_t num_precursor_dofs =
-      grid_ptr_->local_cells.size() * max_precursors_per_material_;
+    size_t num_precursor_dofs = grid_ptr_->local_cells.size() * max_precursors_per_material_;
     precursor_new_local_.assign(num_precursor_dofs, 0.0);
   }
 
   //================================================== Read Restart data
   if (options_.read_restart_data)
-    ReadRestartData(options_.read_restart_folder_name,
-                    options_.read_restart_file_base);
+    ReadRestartData(options_.read_restart_folder_name, options_.read_restart_file_base);
   Chi::mpi.Barrier();
 
   //================================================== Initialize transport
@@ -184,8 +180,7 @@ void lbs::LBSSolver::InitializeParrays()
         ass_face = face.GetNeighborAssociatedFace(*grid_ptr_);
       }
 
-      cell_nodal_mapping.emplace_back(
-        ass_face, face_node_mapping, cell_node_mapping);
+      cell_nodal_mapping.emplace_back(ass_face, face_node_mapping, cell_node_mapping);
     } // for f
 
     grid_nodal_mappings_.push_back(cell_nodal_mapping);
@@ -203,8 +198,7 @@ void lbs::LBSSolver::InitializeParrays()
   InitializeFieldFunctions();
 
   Chi::mpi.Barrier();
-  Chi::log.Log()
-    << "Done with parallel arrays.                Process memory = "
-    << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB"
-    << std::endl;
+  Chi::log.Log() << "Done with parallel arrays.                Process memory = "
+                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB"
+                 << std::endl;
 }

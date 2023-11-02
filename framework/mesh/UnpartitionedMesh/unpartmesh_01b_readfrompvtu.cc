@@ -11,17 +11,16 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-#define ErrorReadingFile(fname) \
-std::runtime_error("Failed to open file: " + options.file_name + \
-" in call to " + #fname + ".")
+#define ErrorReadingFile(fname)                                                                    \
+  std::runtime_error("Failed to open file: " + options.file_name + " in call to " + #fname + ".")
 
 //###################################################################
 /**Reads a VTK unstructured mesh. This reader will use the following
  * options:
  * - `file_name`, of course.
  * - `material_id_fieldname`, cell data for material_id.*/
-void chi_mesh::UnpartitionedMesh::
-  ReadFromPVTU(const chi_mesh::UnpartitionedMesh::Options &options)
+void
+chi_mesh::UnpartitionedMesh::ReadFromPVTU(const chi_mesh::UnpartitionedMesh::Options& options)
 {
   Chi::log.Log() << "Reading PVTU file: " << options.file_name << ".";
 
@@ -45,7 +44,7 @@ void chi_mesh::UnpartitionedMesh::
   // For vtu files this is very simple. The
   // output of the reader is an UnstructuredGrid.
   auto ugrid_main = vtkUGridPtr(reader->GetOutput());
-  std::vector<vtkUGridPtrAndName> grid_blocks = {{ugrid_main,""}};
+  std::vector<vtkUGridPtrAndName> grid_blocks = {{ugrid_main, ""}};
 
   //======================================== Get the main + bndry blocks
   const int max_dimension = chi_mesh::FindHighestDimension(grid_blocks);
@@ -53,7 +52,7 @@ void chi_mesh::UnpartitionedMesh::
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
     chi_mesh::GetBlocksOfDesiredDimension(grid_blocks, max_dimension);
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
-    chi_mesh::GetBlocksOfDesiredDimension(grid_blocks, max_dimension-1);
+    chi_mesh::GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
   //======================================== Process blocks
   auto ugrid = chi_mesh::ConsolidateGridBlocks(domain_grid_blocks);
@@ -70,10 +69,17 @@ void chi_mesh::UnpartitionedMesh::
   chi_mesh::MeshAttributes dimension = NONE;
   switch (max_dimension)
   {
-    case 1: dimension = DIMENSION_1; break;
-    case 2: dimension = DIMENSION_2; break;
-    case 3: dimension = DIMENSION_3; break;
-    default: break;
+    case 1:
+      dimension = DIMENSION_1;
+      break;
+    case 2:
+      dimension = DIMENSION_2;
+      break;
+    case 3:
+      dimension = DIMENSION_3;
+      break;
+    default:
+      break;
   }
 
   attributes_ = dimension | UNSTRUCTURED;
@@ -83,4 +89,3 @@ void chi_mesh::UnpartitionedMesh::
 
   Chi::log.Log() << "Done reading PVTU file: " << options.file_name << ".";
 }
-

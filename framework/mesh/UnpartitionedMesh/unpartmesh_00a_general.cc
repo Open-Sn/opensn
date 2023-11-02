@@ -18,7 +18,8 @@ chi_mesh::UnpartitionedMesh::~UnpartitionedMesh()
 }
 
 /**Compute centroids for all cells.*/
-void chi_mesh::UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
+void
+chi_mesh::UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
 {
   const chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
 
@@ -29,8 +30,7 @@ void chi_mesh::UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
     for (auto vid : cell->vertex_ids)
       cell->centroid += vertices_[vid];
 
-    cell->centroid =
-      cell->centroid / static_cast<double>(cell->vertex_ids.size());
+    cell->centroid = cell->centroid / static_cast<double>(cell->vertex_ids.size());
   }
   Chi::log.Log0Verbose1() << "Done computing cell-centroids.";
 
@@ -102,8 +102,8 @@ void chi_mesh::UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
         const auto& v0 = vertices_.at(face.vertex_ids[0]);
         const auto& v1 = vertices_.at(face.vertex_ids[1]);
         ChiLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
-                          "Cell " + std::to_string(cell_id) + " (centroid=" +
-                            cell->centroid.PrintStr() + ") face " +
+                          "Cell " + std::to_string(cell_id) +
+                            " (centroid=" + cell->centroid.PrintStr() + ") face " +
                             std::to_string(f) + ": Face has length < 1.0e-12.");
         ++f;
       }
@@ -123,9 +123,8 @@ void chi_mesh::UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
 
           ChiLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
                             "Cell " + std::to_string(cell_id) + " (centroid=" +
-                              cell->centroid.PrintStr() + ") face " +
-                              std::to_string(f) + " side " + std::to_string(s) +
-                              ": Side has length < 1.0e-12.");
+                              cell->centroid.PrintStr() + ") face " + std::to_string(f) + " side " +
+                              std::to_string(s) + ": Side has length < 1.0e-12.");
         }
 
         ++f;
@@ -135,11 +134,10 @@ void chi_mesh::UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
   } // for cell in raw_cells
 
   if (num_negative_volume_elements > 0)
-    Chi::log.LogAllWarning()
-      << "Cell quality checks detected " << num_negative_volume_elements
-      << " negative volume sub-elements (sub-triangle or sub-tetrahedron)."
-      << " This issue could result in incorrect quantities"
-      << " under some circumstances.";
+    Chi::log.LogAllWarning() << "Cell quality checks detected " << num_negative_volume_elements
+                             << " negative volume sub-elements (sub-triangle or sub-tetrahedron)."
+                             << " This issue could result in incorrect quantities"
+                             << " under some circumstances.";
   Chi::log.Log() << "Done checking cell-center-to-face orientations";
 }
 
@@ -162,8 +160,9 @@ chi_mesh::UnpartitionedMesh::MakeBoundaryID(const std::string& boundary_name)
 }
 
 // ##################################################################
-void chi_mesh::UnpartitionedMesh::SetAttributes(MeshAttributes new_attribs,
-                                                std::array<size_t, 3> ortho_Nis)
+void
+chi_mesh::UnpartitionedMesh::SetAttributes(MeshAttributes new_attribs,
+                                           std::array<size_t, 3> ortho_Nis)
 {
   attributes_ = attributes_ | new_attribs;
   mesh_options_.ortho_Nx = ortho_Nis[0];

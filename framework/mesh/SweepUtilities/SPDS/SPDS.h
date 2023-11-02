@@ -14,9 +14,7 @@ namespace chi_mesh::sweep_management
 class SPDS
 {
 public:
-  SPDS(const chi_mesh::Vector3& in_omega,
-       const chi_mesh::MeshContinuum& in_grid,
-       bool verbose)
+  SPDS(const chi_mesh::Vector3& in_omega, const chi_mesh::MeshContinuum& in_grid, bool verbose)
     : omega_(in_omega), grid_(in_grid), verbose_(verbose)
   {
   }
@@ -26,19 +24,10 @@ public:
   const SPLS& GetSPLS() const { return spls_; }
 
   typedef std::vector<int> VecInt;
-  const VecInt& GetLocationDependencies() const
-  {
-    return location_dependencies_;
-  }
+  const VecInt& GetLocationDependencies() const { return location_dependencies_; }
   const VecInt& GetLocationSuccessors() const { return location_successors_; }
-  const VecInt& GetDelayedLocationDependencies() const
-  {
-    return delayed_location_dependencies_;
-  }
-  const VecInt& GetDelayedLocationSuccessors() const
-  {
-    return delayed_location_successors_;
-  }
+  const VecInt& GetDelayedLocationDependencies() const { return delayed_location_dependencies_; }
+  const VecInt& GetDelayedLocationSuccessors() const { return delayed_location_successors_; }
   const std::vector<std::pair<int, int>>& GetLocalCyclicDependencies() const
   {
     return local_cyclic_dependencies_;
@@ -72,13 +61,10 @@ protected:
   bool verbose_ = false;
 
   /**Populates cell relationships and cell_face_orientations.*/
-  void PopulateCellRelationships(
-    const chi_mesh::Vector3& omega,
-    std::set<int>& location_dependencies,
-    std::set<int>& location_successors,
-    std::vector<std::set<std::pair<int, double>>>& cell_successors);
-
-
+  void PopulateCellRelationships(const chi_mesh::Vector3& omega,
+                                 std::set<int>& location_dependencies,
+                                 std::set<int>& location_successors,
+                                 std::vector<std::set<std::pair<int, double>>>& cell_successors);
 
   void PrintedGhostedGraph() const;
 };

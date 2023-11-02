@@ -10,8 +10,7 @@ namespace chi_mesh
 {
 /**Builds a cell-graph and executes the partitioner.*/
 std::vector<int64_t>
-MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh,
-                             int num_partitions)
+MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_partitions)
 {
   const auto& raw_cells = input_umesh.GetRawCells();
   const size_t num_raw_cells = raw_cells.size();
@@ -60,8 +59,8 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh,
   }
   avg_num_cells /= num_partitions;
 
-  Chi::log.Log() << "Partitioner num_cells allocated max,min,avg = "
-    << max_num_cells << "," << min_num_cells << "," << avg_num_cells;
+  Chi::log.Log() << "Partitioner num_cells allocated max,min,avg = " << max_num_cells << ","
+                 << min_num_cells << "," << avg_num_cells;
 
   return cell_pids;
 }
@@ -74,24 +73,18 @@ MeshGenerator::SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
   //============================================= Convert mesh
   auto grid_ptr = chi_mesh::MeshContinuum::New();
 
-  grid_ptr->GetBoundaryIDMap() =
-    input_umesh_ptr->GetMeshOptions().boundary_id_map;
+  grid_ptr->GetBoundaryIDMap() = input_umesh_ptr->GetMeshOptions().boundary_id_map;
 
   auto& vertex_subs = input_umesh_ptr->GetVertextCellSubscriptions();
   size_t cell_globl_id = 0;
   for (auto& raw_cell : input_umesh_ptr->GetRawCells())
   {
-    if (CellHasLocalScope(Chi::mpi.location_id,
-                          *raw_cell,
-                          cell_globl_id,
-                          vertex_subs,
-                          cell_pids))
+    if (CellHasLocalScope(Chi::mpi.location_id, *raw_cell, cell_globl_id, vertex_subs, cell_pids))
     {
-      auto cell =
-        SetupCell(*raw_cell,
-                  cell_globl_id,
-                  cell_pids[cell_globl_id],
-                  STLVertexListHelper(input_umesh_ptr->GetVertices()));
+      auto cell = SetupCell(*raw_cell,
+                            cell_globl_id,
+                            cell_pids[cell_globl_id],
+                            STLVertexListHelper(input_umesh_ptr->GetVertices()));
 
       for (uint64_t vid : cell->vertex_ids_)
         grid_ptr->vertices.Insert(vid, input_umesh_ptr->GetVertices()[vid]);

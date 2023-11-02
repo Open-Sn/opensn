@@ -9,7 +9,6 @@ namespace chi_math
 class VectorGhostCommunicator;
 }
 
-
 namespace lbs
 {
 
@@ -43,14 +42,12 @@ protected:
 
 public:
   static chi::InputParameters GetInputParameters();
-  explicit XXPowerIterationKEigenSCDSA(
-    const chi::InputParameters& params);
+  explicit XXPowerIterationKEigenSCDSA(const chi::InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
 
-  std::vector<double> CopyOnlyPhi0(const LBSGroupset& groupset,
-                                   const std::vector<double>& phi_in);
+  std::vector<double> CopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double>& phi_in);
 
   void ProjectBackPhi0(const LBSGroupset& groupset,
                        const std::vector<double>& input,
@@ -59,12 +56,12 @@ public:
   GhostInfo MakePWLDVecGhostCommInfo(const chi_math::SpatialDiscretization& sdm,
                                      const chi_math::UnknownManager& uk_man);
 
-  static std::vector<double> NodallyAveragedPWLDVector(
-    const std::vector<double>& input,
-    const chi_math::SpatialDiscretization& pwld_sdm,
-    const chi_math::SpatialDiscretization& pwlc_sdm,
-    const chi_math::UnknownManager& uk_man,
-    const XXPowerIterationKEigenSCDSA::GhostInfo& ghost_info);
+  static std::vector<double>
+  NodallyAveragedPWLDVector(const std::vector<double>& input,
+                            const chi_math::SpatialDiscretization& pwld_sdm,
+                            const chi_math::SpatialDiscretization& pwlc_sdm,
+                            const chi_math::UnknownManager& uk_man,
+                            const XXPowerIterationKEigenSCDSA::GhostInfo& ghost_info);
 };
 
 } // namespace lbs

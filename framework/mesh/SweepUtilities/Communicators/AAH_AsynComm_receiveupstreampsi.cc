@@ -20,8 +20,7 @@ chi_mesh::sweep_management::AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int
   const size_t num_loc_deps = spds.GetLocationDependencies().size();
   if (!upstream_data_initialized)
   {
-    fluds_.AllocatePrelocIOutgoingPsi(
-      num_groups_, num_angles_, num_loc_deps);
+    fluds_.AllocatePrelocIOutgoingPsi(num_groups_, num_angles_, num_loc_deps);
 
     upstream_data_initialized = true;
   }
@@ -57,14 +56,13 @@ chi_mesh::sweep_management::AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int
         u_ll_int block_addr = prelocI_message_blockpos[prelocI][m];
         u_ll_int message_size = prelocI_message_size[prelocI][m];
 
-        int error_code =
-          MPI_Recv(&upstream_psi[block_addr],
-                   static_cast<int>(message_size),
-                   MPI_DOUBLE,
-                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                   max_num_mess * angle_set_num + m, // tag
-                   comm_set_.LocICommunicator(Chi::mpi.location_id),
-                   MPI_STATUS_IGNORE);
+        int error_code = MPI_Recv(&upstream_psi[block_addr],
+                                  static_cast<int>(message_size),
+                                  MPI_DOUBLE,
+                                  comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+                                  max_num_mess * angle_set_num + m, // tag
+                                  comm_set_.LocICommunicator(Chi::mpi.location_id),
+                                  MPI_STATUS_IGNORE);
 
         prelocI_message_received[prelocI][m] = true;
 
@@ -72,9 +70,8 @@ chi_mesh::sweep_management::AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int
         {
           std::stringstream err_stream;
           err_stream << "################# Delayed receive error."
-                     << " message size=" << message_size
-                     << " as_num=" << angle_set_num << " num_mess=" << num_mess
-                     << " m=" << m << " error="
+                     << " message size=" << message_size << " as_num=" << angle_set_num
+                     << " num_mess=" << num_mess << " m=" << m << " error="
                      << " size=\n";
           char error_string[BUFSIZ];
           int length_of_error_string, error_class;

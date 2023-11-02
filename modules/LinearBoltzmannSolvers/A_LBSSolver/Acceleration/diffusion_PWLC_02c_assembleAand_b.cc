@@ -9,10 +9,13 @@
 #include "chi_log.h"
 #include "utils/chi_timer.h"
 
-#define DefaultBCDirichlet                                                     \
-  BoundaryCondition                                                            \
-  {                                                                            \
-    BCType::DIRICHLET, { 0, 0, 0 }                                             \
+#define DefaultBCDirichlet                                                                         \
+  BoundaryCondition                                                                                \
+  {                                                                                                \
+    BCType::DIRICHLET,                                                                             \
+    {                                                                                              \
+      0, 0, 0                                                                                      \
+    }                                                                                              \
   }
 
 namespace lbs::acceleration
@@ -20,22 +23,20 @@ namespace lbs::acceleration
 // ###################################################################
 /**Assembles both the matrix and the RHS using unit cell-matrices. These are
  * the routines used in the production versions.*/
-void DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
+void
+DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 {
   const size_t num_local_dofs = sdm_.GetNumLocalAndGhostDOFs(uk_man_);
   ChiInvalidArgumentIf(q_vector.size() != num_local_dofs,
-                       std::string("q_vector size mismatch. ") +
-                         std::to_string(q_vector.size()) + " vs " +
-                         std::to_string(num_local_dofs));
+                       std::string("q_vector size mismatch. ") + std::to_string(q_vector.size()) +
+                         " vs " + std::to_string(num_local_dofs));
 
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
                             "AssembleAand_b";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose)
-    Chi::log.Log() << Chi::program_timer.GetTimeString()
-                   << " Starting assembly";
+  if (options.verbose) Chi::log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -69,8 +70,7 @@ void DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
-          node_is_dirichlet[cell_mapping.MapFaceNode(f, fi)] = {true,
-                                                                bc.values[0]};
+          node_is_dirichlet[cell_mapping.MapFaceNode(f, fi)] = {true, bc.values[0]};
       }
     }
 
@@ -94,11 +94,9 @@ void DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
         {
           const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
-          const double entry_aij =
-            Dg * cell_K_matrix[i][j] + sigr_g * cell_M_matrix[i][j];
+          const double entry_aij = Dg * cell_K_matrix[i][j] + sigr_g * cell_M_matrix[i][j];
 
-          if (not node_is_dirichlet[j].first)
-            MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
+          if (not node_is_dirichlet[j].first) MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
           else
           {
             const double bcvalue = node_is_dirichlet[j].second;
@@ -123,8 +121,7 @@ void DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
         if (not face.has_neighbor_)
         {
           auto bc = DefaultBCDirichlet;
-          if (bcs_.count(face.neighbor_id_) > 0)
-            bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -201,15 +198,13 @@ void DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   {
     PetscBool symmetry = PETSC_FALSE;
     MatIsSymmetric(A_, 1.0e-6, &symmetry);
-    if (symmetry == PETSC_FALSE)
-      throw std::logic_error(fname + ":Symmetry check failed");
+    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   KSPSetOperators(ksp_, A_, A_);
 
   if (options.verbose)
-    Chi::log.Log() << Chi::program_timer.GetTimeString()
-                   << " Assembly completed";
+    Chi::log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
 
   PC pc;
   KSPGetPC(ksp_, &pc);

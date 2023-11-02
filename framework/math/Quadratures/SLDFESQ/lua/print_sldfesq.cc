@@ -12,7 +12,6 @@
 
 RegisterLuaFunctionAsIs(chiPrintToPythonSLDFESQAngularQuadrature);
 
-
 //###################################################################
 /** Outputs the quadrature information to python format.
 \param handle int Handle to the reference quadrature.
@@ -35,21 +34,22 @@ chiPrintToPythonSLDFESQAngularQuadrature(pquad,"YQuad_");
 
 \ingroup LuaSLDFESQ
 \author Jan */
-int chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
+int
+chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError("chiPrintToPythonSLDFESQAngularQuadrature",2,num_args);
+  if (num_args != 2) LuaPostArgAmountError("chiPrintToPythonSLDFESQAngularQuadrature", 2, num_args);
 
-  int handle = lua_tonumber(L,1);
-  const char* file_name = lua_tostring(L,2);
+  int handle = lua_tonumber(L, 1);
+  const char* file_name = lua_tostring(L, 2);
 
-  try{
+  try
+  {
     auto ref_quadrature = Chi::angular_quadrature_stack.at(handle);
     if (ref_quadrature->type_ == chi_math::AngularQuadratureType::SLDFESQ)
     {
-      auto sldfesq = std::dynamic_pointer_cast<
-        chi_math::SimplifiedLDFESQ::Quadrature>(ref_quadrature);
+      auto sldfesq =
+        std::dynamic_pointer_cast<chi_math::SimplifiedLDFESQ::Quadrature>(ref_quadrature);
 
       if (Chi::mpi.location_id == 0)
       {
@@ -59,27 +59,23 @@ int chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
     }
     else
     {
-      Chi::log.LogAllError()
-        << "chiPrintToPythonSLDFESQAngularQuadrature: "
-           "Invalid angular quadrature type.";
+      Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+                                "Invalid angular quadrature type.";
       Chi::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
-    Chi::log.LogAllError()
-      << "chiPrintToPythonSLDFESQAngularQuadrature: "
-         "Invalid handle to angular quadrature.";
+    Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+                              "Invalid handle to angular quadrature.";
     Chi::Exit(EXIT_FAILURE);
   }
   catch (...)
   {
-    Chi::log.LogAllError()
-      << "chiPrintToPythonSLDFESQAngularQuadrature: "
-         "Call failed with unknown error.";
+    Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+                              "Call failed with unknown error.";
     Chi::Exit(EXIT_FAILURE);
   }
-
 
   return 0;
 }

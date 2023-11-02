@@ -15,8 +15,8 @@ RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*syntax_function=*/nullptr,
                         /*actual_function=*/LogTimingInfoTest);
 
-
-chi::ParameterBlock LogTimingInfoTest(const chi::InputParameters&)
+chi::ParameterBlock
+LogTimingInfoTest(const chi::InputParameters&)
 {
   Chi::log.Log() << "LogTiming test";
   auto& t_main = Chi::log.CreateTimingBlock("Timing_Main");
@@ -53,4 +53,4 @@ chi::ParameterBlock LogTimingInfoTest(const chi::InputParameters&)
   return chi::ParameterBlock{};
 }
 
-}
+} // namespace chi_unit_tests

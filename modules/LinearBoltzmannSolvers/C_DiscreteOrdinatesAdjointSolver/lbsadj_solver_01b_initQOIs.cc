@@ -9,7 +9,8 @@
 namespace lbs
 {
 
-void DiscreteOrdinatesAdjointSolver::InitQOIs()
+void
+DiscreteOrdinatesAdjointSolver::InitQOIs()
 {
   //============================================= Initialize QOIs
   for (auto& qoi_pair : response_functions_)
@@ -24,16 +25,16 @@ void DiscreteOrdinatesAdjointSolver::InitQOIs()
     size_t num_local_subs = qoi_cell_subscription.size();
     size_t num_globl_subs = 0;
 
-    MPI_Allreduce(&num_local_subs,           //sendbuf
-                  &num_globl_subs,           //recvbuf
-                  1, MPI_UNSIGNED_LONG_LONG, //count + datatype
-                  MPI_SUM,                   //operation
-                  Chi::mpi.comm );          //communicator
+    MPI_Allreduce(&num_local_subs, // sendbuf
+                  &num_globl_subs, // recvbuf
+                  1,
+                  MPI_UNSIGNED_LONG_LONG, // count + datatype
+                  MPI_SUM,                // operation
+                  Chi::mpi.comm);         // communicator
 
-    Chi::log.Log() << "LBAdjointSolver: Number of cells subscribed to "
-                   << qoi_designation.name << " = "
-                   << num_globl_subs;
+    Chi::log.Log() << "LBAdjointSolver: Number of cells subscribed to " << qoi_designation.name
+                   << " = " << num_globl_subs;
   }
 }
 
-}
+} // namespace lbs

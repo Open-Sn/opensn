@@ -7,13 +7,13 @@ namespace lbs
 RegisterChiObject(lbs, DiscreteOrdinatesSolver);
 }
 
-lbs::DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(
-  const std::string& text_name)
+lbs::DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const std::string& text_name)
   : LBSSolver(text_name)
 {
 }
 
-chi::InputParameters lbs::DiscreteOrdinatesSolver::GetInputParameters()
+chi::InputParameters
+lbs::DiscreteOrdinatesSolver::GetInputParameters()
 {
   chi::InputParameters params = LBSSolver::GetInputParameters();
 
@@ -31,18 +31,15 @@ chi::InputParameters lbs::DiscreteOrdinatesSolver::GetInputParameters()
     "sweep_type", "AAH", "The sweep type to use for sweep operatorations.");
 
   using namespace chi_data_types;
-  params.ConstrainParameterRange("sweep_type",
-                                 AllowableRangeList::New({"AAH", "CBC"}));
+  params.ConstrainParameterRange("sweep_type", AllowableRangeList::New({"AAH", "CBC"}));
 
   return params;
 }
 
 /**Static registration based constructor.*/
-lbs::DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(
-  const chi::InputParameters& params)
+lbs::DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const chi::InputParameters& params)
   : LBSSolver(params),
-    verbose_sweep_angles_(
-      params.GetParamVectorValue<size_t>("directions_sweep_order_to_print")),
+    verbose_sweep_angles_(params.GetParamVectorValue<size_t>("directions_sweep_order_to_print")),
     sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
 }
@@ -73,8 +70,7 @@ lbs::DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
   size_t num_globl_psi_dofs = 0;
   for (auto& groupset : groupsets_)
   {
-    const auto num_delayed_psi_info =
-      groupset.angle_agg_->GetNumDelayedAngularDOFs();
+    const auto num_delayed_psi_info = groupset.angle_agg_->GetNumDelayedAngularDOFs();
     num_local_psi_dofs += num_delayed_psi_info.first;
     num_globl_psi_dofs += num_delayed_psi_info.second;
   }

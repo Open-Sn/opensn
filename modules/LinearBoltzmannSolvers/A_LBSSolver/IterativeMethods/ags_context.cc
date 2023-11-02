@@ -5,14 +5,14 @@
 
 #include <petscksp.h>
 
-#define GetGSContextPtr(x) \
-        std::dynamic_pointer_cast<WGSContext<Mat,Vec,KSP>>(x)
+#define GetGSContextPtr(x) std::dynamic_pointer_cast<WGSContext<Mat, Vec, KSP>>(x)
 
 namespace lbs
 {
 
-template<>
-std::pair<int64_t,int64_t> AGSContext<Mat,Vec,KSP>::SystemSize()
+template <>
+std::pair<int64_t, int64_t>
+AGSContext<Mat, Vec, KSP>::SystemSize()
 {
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
@@ -32,23 +32,21 @@ std::pair<int64_t,int64_t> AGSContext<Mat,Vec,KSP>::SystemSize()
   const size_t local_size = local_node_count * gslist_num_groups * num_moments;
   const size_t globl_size = globl_node_count * gslist_num_groups * num_moments;
 
-  return {static_cast<int64_t>(local_size),
-          static_cast<int64_t>(globl_size)};
+  return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};
 }
 
-template<>
-void AGSContext<Mat,Vec,KSP>::SetPreconditioner(KSP& solver)
+template <>
+void
+AGSContext<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
 {
-
 }
 
-template<>
-int AGSContext<Mat,Vec,KSP>::MatrixAction(Mat& matrix,
-                                          Vec& vector,
-                                          Vec& action)
+template <>
+int
+AGSContext<Mat, Vec, KSP>::MatrixAction(Mat& matrix, Vec& vector, Vec& action)
 {
 
   return 0;
 }
 
-}//namespace lbs
+} // namespace lbs

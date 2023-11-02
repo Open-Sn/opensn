@@ -47,8 +47,7 @@ chi_mesh::PrepareVtkUnstructuredGrid(const chi_mesh::MeshContinuum& grid,
   for (const auto& cell : grid.local_cells)
   {
     if (discontinuous)
-      chi_mesh::UploadCellGeometryDiscontinuous(
-        grid, cell, node_count, points, ugrid);
+      chi_mesh::UploadCellGeometryDiscontinuous(grid, cell, node_count, points, ugrid);
     else
     {
       for (uint64_t vid : cell.vertex_ids_)
@@ -74,14 +73,13 @@ chi_mesh::PrepareVtkUnstructuredGrid(const chi_mesh::MeshContinuum& grid,
 
 // ###################################################################
 /**Writes an unstructured grid to files (.pvtu and .vtu).*/
-void chi_mesh::WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid,
-                              const std::string& file_base_name)
+void
+chi_mesh::WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_name)
 {
   //============================================= Construct file name
   std::string base_filename = std::string(file_base_name);
-  std::string location_filename = base_filename + std::string("_") +
-                                  std::to_string(Chi::mpi.location_id) +
-                                  std::string(".vtu");
+  std::string location_filename =
+    base_filename + std::string("_") + std::to_string(Chi::mpi.location_id) + std::string(".vtu");
 
   //============================================= Write master file
   if (Chi::mpi.location_id == 0)

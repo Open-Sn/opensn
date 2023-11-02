@@ -14,14 +14,12 @@ chi_mesh::sweep_management::SweepScheduler::SweepScheduler(
     sweep_chunk_(in_sweep_chunk),
     sweep_event_tag_(Chi::log.GetRepeatingEventTag("Sweep Timing")),
     sweep_timing_events_tag_(
-      {Chi::log.GetRepeatingEventTag("Sweep Chunk Only Timing"),
-       sweep_event_tag_})
+      {Chi::log.GetRepeatingEventTag("Sweep Chunk Only Timing"), sweep_event_tag_})
 
 {
   angle_agg_.InitializeReflectingBCs();
 
-  if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
-    InitializeAlgoDOG();
+  if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH) InitializeAlgoDOG();
 
   //=================================== Initialize delayed upstream data
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)
@@ -33,17 +31,12 @@ chi_mesh::sweep_management::SweepScheduler::SweepScheduler(
   int local_max_num_messages = 0;
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
-      local_max_num_messages =
-        std::max(angset->GetMaxBufferMessages(), local_max_num_messages);
+      local_max_num_messages = std::max(angset->GetMaxBufferMessages(), local_max_num_messages);
 
   //=================================== Reconcile all local maximums
   int global_max_num_messages = 0;
-  MPI_Allreduce(&local_max_num_messages,
-                &global_max_num_messages,
-                1,
-                MPI_INT,
-                MPI_MAX,
-                Chi::mpi.comm);
+  MPI_Allreduce(
+    &local_max_num_messages, &global_max_num_messages, 1, MPI_INT, MPI_MAX, Chi::mpi.comm);
 
   //=================================== Propogate items back to sweep buffers
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)

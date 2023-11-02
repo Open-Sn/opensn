@@ -54,11 +54,8 @@ protected:
   bool IsSystemSet() const { return system_set_; }
 
 public:
-  explicit LinearSolver(const std::string& iterative_method,
-                        LinSolveContextPtr context_ptr)
-    : solver_name_(iterative_method),
-      iterative_method_(iterative_method),
-      context_ptr_(context_ptr)
+  explicit LinearSolver(const std::string& iterative_method, LinSolveContextPtr context_ptr)
+    : solver_name_(iterative_method), iterative_method_(iterative_method), context_ptr_(context_ptr)
   {
   }
 

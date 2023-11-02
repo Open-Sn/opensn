@@ -178,8 +178,7 @@ public:
   const std::vector<VecDbl>& PsiNewLocal() const;
 
   /**Returns the sweep boundaries as a read only reference*/
-  const std::map<uint64_t, std::shared_ptr<SweepBndry>>&
-  SweepBoundaries() const;
+  const std::map<uint64_t, std::shared_ptr<SweepBndry>>& SweepBoundaries() const;
 
   SetSourceFunction GetActiveSetSourceFunction() const;
 
@@ -249,10 +248,9 @@ public:
                                    const std::vector<double>& phi_in,
                                    std::vector<double>& delta_phi_local);
 
-  void
-  DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                 const std::vector<double>& delta_phi_local,
-                                 std::vector<double>& ref_phi_new);
+  void DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
+                                      const std::vector<double>& delta_phi_local,
+                                      std::vector<double>& ref_phi_new);
 
 protected:
   static void CleanUpWGDSA(LBSGroupset& groupset);
@@ -264,30 +262,24 @@ public:
   void AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
                                    const std::vector<double>& phi_in,
                                    std::vector<double>& delta_phi_local);
-  void
-  DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                 const std::vector<double>& delta_phi_local,
-                                 std::vector<double>& ref_phi_new);
+  void DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
+                                      const std::vector<double>& delta_phi_local,
+                                      std::vector<double>& ref_phi_new);
 
 protected:
   static void CleanUpTGDSA(LBSGroupset& groupset);
   // 04 File IO
 public:
   // 04a
-  void WriteRestartData(const std::string& folder_name,
-                        const std::string& file_base);
-  void ReadRestartData(const std::string& folder_name,
-                       const std::string& file_base);
+  void WriteRestartData(const std::string& folder_name, const std::string& file_base);
+  void ReadRestartData(const std::string& folder_name, const std::string& file_base);
   // 04b
-  void WriteGroupsetAngularFluxes(const LBSGroupset& groupset,
-                                  const std::string& file_base);
-  void ReadGroupsetAngularFluxes(LBSGroupset& groupset,
-                                 const std::string& file_base);
+  void WriteGroupsetAngularFluxes(const LBSGroupset& groupset, const std::string& file_base);
+  void ReadGroupsetAngularFluxes(LBSGroupset& groupset, const std::string& file_base);
 
   // 04c
   std::vector<double> MakeSourceMomentsFromPhi();
-  void WriteFluxMoments(const std::string& file_base,
-                        const std::vector<double>& flux_moments);
+  void WriteFluxMoments(const std::string& file_base, const std::vector<double>& flux_moments);
   void ReadFluxMoments(const std::string& file_base,
                        std::vector<double>& flux_moments,
                        bool single_file = false);
@@ -309,16 +301,13 @@ public:
 
   // 07 Vector assembly
 public:
-  virtual void SetPhiVectorScalarValues(std::vector<double>& phi_vector,
-                                        double value);
+  virtual void SetPhiVectorScalarValues(std::vector<double>& phi_vector, double value);
   virtual void ScalePhiVector(PhiSTLOption which_phi, double value);
-  virtual void SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset,
-                                                 Vec x,
-                                                 PhiSTLOption which_phi);
+  virtual void
+  SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset, Vec x, PhiSTLOption which_phi);
 
-  virtual void SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset,
-                                                 Vec x_src,
-                                                 PhiSTLOption which_phi);
+  virtual void
+  SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset, Vec x_src, PhiSTLOption which_phi);
 
   virtual void GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
                                              const std::vector<double>& x_src,
@@ -328,17 +317,23 @@ public:
                                              PhiSTLOption from_which_phi,
                                              PhiSTLOption to_which_phi);
 
-  virtual void SetGroupScopedPETScVecFromPrimarySTLvector(
-    int first_group_id, int last_group_id, Vec x, const std::vector<double>& y);
+  virtual void SetGroupScopedPETScVecFromPrimarySTLvector(int first_group_id,
+                                                          int last_group_id,
+                                                          Vec x,
+                                                          const std::vector<double>& y);
 
-  virtual void SetPrimarySTLvectorFromGroupScopedPETScVec(
-    int first_group_id, int last_group_id, Vec x_src, std::vector<double>& y);
+  virtual void SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
+                                                          int last_group_id,
+                                                          Vec x_src,
+                                                          std::vector<double>& y);
 
-  virtual void SetMultiGSPETScVecFromPrimarySTLvector(
-    const std::vector<int>& gs_ids, Vec x, PhiSTLOption which_phi);
+  virtual void SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& gs_ids,
+                                                      Vec x,
+                                                      PhiSTLOption which_phi);
 
-  virtual void SetPrimarySTLvectorFromMultiGSPETScVecFrom(
-    const std::vector<int>& gs_ids, Vec x_src, PhiSTLOption which_phi);
+  virtual void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs_ids,
+                                                          Vec x_src,
+                                                          PhiSTLOption which_phi);
 };
 
 } // namespace lbs

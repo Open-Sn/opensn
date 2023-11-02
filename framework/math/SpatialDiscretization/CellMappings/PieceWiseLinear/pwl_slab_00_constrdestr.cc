@@ -10,9 +10,9 @@ PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(
   const chi_mesh::MeshContinuum& ref_grid,
   const chi_math::QuadratureLine& volume_quadrature)
   : PieceWiseLinearBaseMapping(ref_grid,
-                        slab_cell,
-                        2, // num_nodes
-                        MakeFaceNodeMapping(slab_cell)),
+                               slab_cell,
+                               2, // num_nodes
+                               MakeFaceNodeMapping(slab_cell)),
     volume_quadrature_(volume_quadrature)
 {
   v0i_ = slab_cell.vertex_ids_[0];

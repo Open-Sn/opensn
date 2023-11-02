@@ -16,9 +16,9 @@ public:
    * sizes, with the specified global ghost indices.
    */
   GhostedParallelSTLVector(const uint64_t local_size,
-                        const uint64_t global_size,
-                        const std::vector<int64_t>& ghost_ids,
-                        const MPI_Comm communicator = MPI_COMM_WORLD)
+                           const uint64_t global_size,
+                           const std::vector<int64_t>& ghost_ids,
+                           const MPI_Comm communicator = MPI_COMM_WORLD)
     : ParallelSTLVector(local_size, global_size, communicator),
       ghost_comm_(local_size, global_size, ghost_ids, communicator)
   {
@@ -27,9 +27,7 @@ public:
 
   /// Initialize a ghosted parallel vector from a ghost communicator.
   explicit GhostedParallelSTLVector(const VectorGhostCommunicator& ghost_comm)
-    : ParallelSTLVector(ghost_comm.LocalSize(),
-                     ghost_comm.GlobalSize(),
-                     ghost_comm.Communicator()),
+    : ParallelSTLVector(ghost_comm.LocalSize(), ghost_comm.GlobalSize(), ghost_comm.Communicator()),
       ghost_comm_(ghost_comm)
   {
     values_.assign(local_size_ + ghost_comm_.NumGhosts(), 0.0);
@@ -37,15 +35,13 @@ public:
 
   /**Copy constructor.*/
   GhostedParallelSTLVector(const GhostedParallelSTLVector& other)
-    : ParallelSTLVector(other),
-      ghost_comm_(other.ghost_comm_)
+    : ParallelSTLVector(other), ghost_comm_(other.ghost_comm_)
   {
   }
 
   /**Move constructor.*/
   GhostedParallelSTLVector(GhostedParallelSTLVector&& other) noexcept
-    : ParallelSTLVector(std::move(other)),
-      ghost_comm_(std::move(other.ghost_comm_))
+    : ParallelSTLVector(std::move(other)), ghost_comm_(std::move(other.ghost_comm_))
   {
   }
 
@@ -59,10 +55,7 @@ public:
   uint64_t LocalSizeWithGhosts() const { return values_.size(); }
 
   /// Return the ghost indices associated with the local vector.
-  const std::vector<int64_t>& GhostIndices() const
-  {
-    return ghost_comm_.GhostIndices();
-  }
+  const std::vector<int64_t>& GhostIndices() const { return ghost_comm_.GhostIndices(); }
 
   /// Map a global ghost id to its respective local id.
   int64_t MapGhostToLocal(const int64_t ghost_id) const
@@ -85,10 +78,7 @@ public:
    * Communicate the current ghost entries to all other processes to
    * update the locally stored ghost data.
    */
-  void CommunicateGhostEntries() override
-  {
-    ghost_comm_.CommunicateGhostEntries(values_);
-  }
+  void CommunicateGhostEntries() override { ghost_comm_.CommunicateGhostEntries(values_); }
 
 private:
   VectorGhostCommunicator ghost_comm_;

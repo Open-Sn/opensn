@@ -25,9 +25,7 @@ public:
    * Initialize a parallel vector with the given local and global sizes with
    * the given communicator whose entries are set to zero.
    */
-  ParallelVector(uint64_t local_size,
-                 uint64_t global_size,
-                 MPI_Comm communicator);
+  ParallelVector(uint64_t local_size, uint64_t global_size, MPI_Comm communicator);
 
   /**Copy constructor.*/
   ParallelVector(const ParallelVector& other);
@@ -96,16 +94,14 @@ public:
    * current vector starting at local_offset. The input STL vector must have
    * exactly num_values entries.
    * */
-  virtual void BlockSet(const std::vector<double>& y,
-                        int64_t local_offset,
-                        int64_t num_values) = 0;
+  virtual void BlockSet(const std::vector<double>& y, int64_t local_offset, int64_t num_values) = 0;
 
   /**Sets the local values of one vector equal to another. The sizes must be
    * compatible.*/
   virtual void CopyLocalValues(const ParallelVector& y) = 0;
 
   /**Sets the local values of the vector equal to that of the PETSc vector.
-  * The sizes must be compatible.*/
+   * The sizes must be compatible.*/
   virtual void CopyLocalValues(Vec y) = 0;
 
   /**Copies a contiguous block of local data (num_values entries) from the
@@ -119,10 +115,8 @@ public:
   /**Copies a contiguous block of local data (num_values entries) from the
    * source vector (starting at y_offset) to the
    * current vector starting at local_offset. PETSc flavor.*/
-  virtual void BlockCopyLocalValues(Vec y,
-                                    int64_t y_offset,
-                                    int64_t local_offset,
-                                    int64_t num_values) = 0;
+  virtual void
+  BlockCopyLocalValues(Vec y, int64_t y_offset, int64_t local_offset, int64_t num_values) = 0;
 
   /**
    * Define a set or add operation for the given global id-value pair

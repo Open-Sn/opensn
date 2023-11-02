@@ -258,12 +258,11 @@ public:
   };
   enum class EventOperation
   {
-    NUMBER_OF_OCCURRENCES =
-      0, ///< Counts creation events, single occurrences and begins
-    TOTAL_DURATION = 1,   ///< Integrates times between begins and ends
-    AVERAGE_DURATION = 2, ///< Computes average time between begins and ends
-    MAX_VALUE = 3,        ///< Computes the maximum of the EventInfo arb_value
-    AVERAGE_VALUE = 4     ///< Computes the average of the EventInfo arb_value
+    NUMBER_OF_OCCURRENCES = 0, ///< Counts creation events, single occurrences and begins
+    TOTAL_DURATION = 1,        ///< Integrates times between begins and ends
+    AVERAGE_DURATION = 2,      ///< Computes average time between begins and ends
+    MAX_VALUE = 3,             ///< Computes the maximum of the EventInfo arb_value
+    AVERAGE_VALUE = 4          ///< Computes the average of the EventInfo arb_value
   };
   struct EventInfo;
   struct Event;
@@ -274,9 +273,7 @@ private:
 public:
   size_t GetRepeatingEventTag(std::string event_name);
   size_t GetExistingRepeatingEventTag(std::string event_name);
-  void LogEvent(size_t ev_tag,
-                EventType ev_type,
-                const std::shared_ptr<EventInfo>& ev_info);
+  void LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventInfo>& ev_info);
   void LogEvent(size_t ev_tag, EventType ev_type);
   std::string PrintEventHistory(size_t ev_tag);
   double ProcessEvent(size_t ev_tag, EventOperation ev_operation);
@@ -311,9 +308,7 @@ struct chi::ChiLog::Event
   const EventType ev_type = EventType::SINGLE_OCCURRENCE;
   std::shared_ptr<EventInfo> ev_info;
 
-  Event(double in_time,
-        EventType in_ev_type,
-        std::shared_ptr<EventInfo> in_event_info)
+  Event(double in_time, EventType in_ev_type, std::shared_ptr<EventInfo> in_event_info)
     : ev_time(in_time), ev_type(in_ev_type), ev_info(std::move(in_event_info))
   {
   }
@@ -331,15 +326,11 @@ public:
   std::vector<Event>& Events() { return events_; }
   const std::vector<Event>& Events() const { return events_; }
 
-  bool operator==(const RepeatingEvent& other)
-  {
-    return this->name_ == other.name_;
-  }
+  bool operator==(const RepeatingEvent& other) { return this->name_ == other.name_; }
 
 private:
   const std::string name_;
   std::vector<Event> events_;
-
 };
 
 #endif // CHI_LOG_H

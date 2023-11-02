@@ -5,7 +5,7 @@
 
 namespace chi_math
 {
-  class CurvilinearAngularQuadrature;
+class CurvilinearAngularQuadrature;
 }
 
 /** Base class for curvilinear angular quadratures (product angular
@@ -13,7 +13,7 @@ namespace chi_math
  */
 class chi_math::CurvilinearAngularQuadrature : public chi_math::ProductQuadrature
 {
-//  Attributes
+  //  Attributes
 protected:
   /** Factor to account for angular diamond differencing. */
   std::vector<double> fac_diamond_difference_;
@@ -21,14 +21,13 @@ protected:
    *  operator that contains the angular derivative. */
   std::vector<double> fac_streaming_operator_;
 
-//  Methods
+  //  Methods
 public:
   /** Return constant reference to fac_diamond_difference. */
-  const std::vector<double>& GetDiamondDifferenceFactor() const
-  { return fac_diamond_difference_; }
+  const std::vector<double>& GetDiamondDifferenceFactor() const { return fac_diamond_difference_; }
   /** Return constant reference to fac_streaming_operator. */
-  const std::vector<double>& GetStreamingOperatorFactor() const
-  { return fac_streaming_operator_; }
+  const std::vector<double>& GetStreamingOperatorFactor() const { return fac_streaming_operator_; }
+
 protected:
   /** Default constructor. */
   CurvilinearAngularQuadrature() = default;

@@ -5,17 +5,16 @@
 namespace chi_math
 {
 
-chi::InputParameters FunctionDimAToDimB::GetInputParameters()
+chi::InputParameters
+FunctionDimAToDimB::GetInputParameters()
 {
   chi::InputParameters params = ChiObject::GetInputParameters();
 
   params.AddRequiredParameter<size_t>(
-    "input_dimension",
-    "The dimension of the input values (excluding the position).");
+    "input_dimension", "The dimension of the input values (excluding the position).");
 
   params.AddRequiredParameter<size_t>(
-    "output_dimension",
-    "The dimension of the output values (excluding the position).");
+    "output_dimension", "The dimension of the output values (excluding the position).");
 
   return params;
 }
@@ -27,38 +26,35 @@ FunctionDimAToDimB::FunctionDimAToDimB(const chi::InputParameters& params)
 {
 }
 
-double FunctionDimAToDimB::ScalarFunction1Parameter(double) const
+double
+FunctionDimAToDimB::ScalarFunction1Parameter(double) const
 {
   ChiLogicalError("No available function");
 }
-double FunctionDimAToDimB::ScalarFunctionSlope1Parameter(double) const
+double
+FunctionDimAToDimB::ScalarFunctionSlope1Parameter(double) const
 {
   ChiLogicalError("No available function");
 }
-double FunctionDimAToDimB::ScalarFunctionCurvature1Parameter(double) const
-{
-  ChiLogicalError("No available function");
-}
-
-double FunctionDimAToDimB::ScalarFunction4Parameters(double,
-                                                     double,
-                                                     double,
-                                                     double) const
+double
+FunctionDimAToDimB::ScalarFunctionCurvature1Parameter(double) const
 {
   ChiLogicalError("No available function");
 }
 
-double FunctionDimAToDimB::ScalarFunctionSlope4Parameters(double,
-                                                          double,
-                                                          double,
-                                                          double) const
+double
+FunctionDimAToDimB::ScalarFunction4Parameters(double, double, double, double) const
 {
   ChiLogicalError("No available function");
 }
-double FunctionDimAToDimB::ScalarFunctionCurvature4Parameters(double,
-                                                              double,
-                                                              double,
-                                                              double) const
+
+double
+FunctionDimAToDimB::ScalarFunctionSlope4Parameters(double, double, double, double) const
+{
+  ChiLogicalError("No available function");
+}
+double
+FunctionDimAToDimB::ScalarFunctionCurvature4Parameters(double, double, double, double) const
 {
   ChiLogicalError("No available function");
 }

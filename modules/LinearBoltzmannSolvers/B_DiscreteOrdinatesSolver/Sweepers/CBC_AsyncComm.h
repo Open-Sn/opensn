@@ -26,14 +26,12 @@ namespace lbs
 
 class CBC_FLUDS;
 
-class CBC_ASynchronousCommunicator
-  : public chi_mesh::sweep_management::AsynchronousCommunicator
+class CBC_ASynchronousCommunicator : public chi_mesh::sweep_management::AsynchronousCommunicator
 {
 public:
-  explicit CBC_ASynchronousCommunicator(
-    size_t angle_set_id,
-    chi_mesh::sweep_management::FLUDS& fluds,
-    const chi::ChiMPICommunicatorSet& comm_set);
+  explicit CBC_ASynchronousCommunicator(size_t angle_set_id,
+                                        chi_mesh::sweep_management::FLUDS& fluds,
+                                        const chi::ChiMPICommunicatorSet& comm_set);
 
   // location_id
   // cell_global_id

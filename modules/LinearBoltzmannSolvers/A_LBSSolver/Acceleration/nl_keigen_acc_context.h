@@ -7,13 +7,12 @@
 #include "A_LBSSolver/IterativeMethods/snes_k_residual_func_context.h"
 #include "A_LBSSolver/lbs_solver.h"
 
-
 #include <petscsnes.h>
 
 namespace lbs::acceleration
 {
 
-struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec,SNES>
+struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec, SNES>
 {
   DiffusionMIPSolver& diff_solver_;
   LBSSolver& lbs_solver_;
@@ -30,13 +29,14 @@ struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec,SNES>
 
   explicit NLKEigenDiffContext(DiffusionMIPSolver& diff_solver,
                                LBSSolver& lbs_solver,
-                               int verbosity_level) :
-    diff_solver_(diff_solver),
-    lbs_solver_(lbs_solver),
-    verbosity_level_(verbosity_level),
-    kresid_func_context_({diff_solver.TextName(), 1.0}),
-    diff_num_local_dofs_(diff_solver_.GetNumPhiIterativeUnknowns().first)
-  {}
+                               int verbosity_level)
+    : diff_solver_(diff_solver),
+      lbs_solver_(lbs_solver),
+      verbosity_level_(verbosity_level),
+      kresid_func_context_({diff_solver.TextName(), 1.0}),
+      diff_num_local_dofs_(diff_solver_.GetNumPhiIterativeUnknowns().first)
+  {
+  }
 
   VecDbl PhiVecToSTLVec(Vec phi) const
   {
@@ -44,7 +44,7 @@ struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec,SNES>
 
     const double* phi_raw;
     VecGetArrayRead(phi, &phi_raw);
-    for (size_t i=0; i<diff_num_local_dofs_; ++i)
+    for (size_t i = 0; i < diff_num_local_dofs_; ++i)
       output[i] = phi_raw[i];
     VecRestoreArrayRead(phi, &phi_raw);
 
@@ -55,7 +55,7 @@ struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec,SNES>
   {
     double* phi_raw;
     VecGetArray(phi, &phi_raw);
-    for (size_t i=0; i<diff_num_local_dofs_; ++i)
+    for (size_t i = 0; i < diff_num_local_dofs_; ++i)
       phi_raw[i] = input[i];
     VecRestoreArray(phi, &phi_raw);
   }
@@ -63,7 +63,6 @@ struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec,SNES>
   virtual ~NLKEigenDiffContext() override = default;
 };
 
+} // namespace lbs::acceleration
 
-}//namespace lbs::acceleration
-
-#endif //CHITECH_LBS_NL_KEIGEN_ACC_CONTEXT_H
+#endif // CHITECH_LBS_NL_KEIGEN_ACC_CONTEXT_H

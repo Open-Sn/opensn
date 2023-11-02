@@ -17,14 +17,8 @@ protected:
 public:
   ByteArray() = default;
   explicit ByteArray(const size_t raw_data_size) : raw_data_(raw_data_size) {}
-  explicit ByteArray(std::vector<std::byte>&& raw_data)
-    : raw_data_(std::move(raw_data))
-  {
-  }
-  explicit ByteArray(const std::vector<std::byte>& raw_data)
-    : raw_data_(raw_data)
-  {
-  }
+  explicit ByteArray(std::vector<std::byte>&& raw_data) : raw_data_(std::move(raw_data)) {}
+  explicit ByteArray(const std::vector<std::byte>& raw_data) : raw_data_(raw_data) {}
 
   /**Uses the template type T to convert an associated value (of type T)
    * to a sub-array of std::bytes and adds it to the internal byte-array.
@@ -34,11 +28,9 @@ public:
   void Write(const T& value)
   {
     const size_t num_bytes = sizeof(T);
-    const std::byte* value_byte_array =
-      reinterpret_cast<const std::byte*>(&value);
+    const std::byte* value_byte_array = reinterpret_cast<const std::byte*>(&value);
 
-    raw_data_.insert(
-      raw_data_.end(), value_byte_array, value_byte_array + num_bytes);
+    raw_data_.insert(raw_data_.end(), value_byte_array, value_byte_array + num_bytes);
   }
 
   /**Uses the template type `T` to convert `sizeof(T)` number of bytes to
@@ -56,9 +48,8 @@ public:
     const size_t num_bytes = sizeof(T);
     if ((offset_ + num_bytes - 1) >= raw_data_.size())
       throw std::out_of_range(
-        std::string("ByteArray reading error. ") +
-        " Typename: " + std::string(typeid(T).name()) + " m_offset: " +
-        std::to_string(offset_) + " size: " + std::to_string(raw_data_.size()) +
+        std::string("ByteArray reading error. ") + " Typename: " + std::string(typeid(T).name()) +
+        " m_offset: " + std::to_string(offset_) + " size: " + std::to_string(raw_data_.size()) +
         " num_bytes to read: " + std::to_string(num_bytes));
 
     T value = *reinterpret_cast<T*>(&raw_data_[offset_]);
@@ -84,9 +75,8 @@ public:
     const size_t num_bytes = sizeof(T);
     if ((address + num_bytes - 1) >= raw_data_.size())
       throw std::logic_error(
-        std::string("ByteArray reading error. ") + " Typename: " +
-        std::string(typeid(T).name()) + " address: " + std::to_string(address) +
-        " size: " + std::to_string(raw_data_.size()) +
+        std::string("ByteArray reading error. ") + " Typename: " + std::string(typeid(T).name()) +
+        " address: " + std::to_string(address) + " size: " + std::to_string(raw_data_.size()) +
         " num_bytes to read: " + std::to_string(num_bytes));
 
     T value = *reinterpret_cast<const T*>(&raw_data_[address]);

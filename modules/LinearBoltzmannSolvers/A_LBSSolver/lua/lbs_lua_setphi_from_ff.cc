@@ -48,20 +48,19 @@ Optional. Array of group IDs. If this is empty all the groups will be copied.
 Default: `{}`.\n\n
 
 */
-int chiLBSSetPhiFromFieldFunction(lua_State* L)
+int
+chiLBSSetPhiFromFieldFunction(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, /*expected=*/2, /*given=*/num_args);
+  if (num_args != 2) LuaPostArgAmountError(fname, /*expected=*/2, /*given=*/num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckTableValue(fname, L, 2);
 
   const size_t handle = lua_tointeger(L, 1);
 
-  auto& lbs_solver =
-    Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, handle, fname);
+  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, handle, fname);
 
   auto specs = chi_lua::TableParserAsParameterBlock::ParseTable(L, 2);
 
@@ -83,22 +82,15 @@ int chiLBSSetPhiFromFieldFunction(lua_State* L)
                                        " \"old\" or \"new\". ") +
                            "\"" + phi_str + "\" is not allowed.");
     }
-    else if (spec.Name() == "m_ids")
-    {
-      moment_indices = spec.GetVectorValue<size_t>();
-    }
-    else if (spec.Name() == "g_ids")
-    {
-      group_indices = spec.GetVectorValue<size_t>();
-    }
+    else if (spec.Name() == "m_ids") { moment_indices = spec.GetVectorValue<size_t>(); }
+    else if (spec.Name() == "g_ids") { group_indices = spec.GetVectorValue<size_t>(); }
     else
       ChiInvalidArgument(std::string("Unsupported option ") + spec.Name());
 
   } // for each specification
 
   // ============================================ Now call the function
-  lbs_solver.SetPhiFromFieldFunctions(
-    phi_option, moment_indices, group_indices);
+  lbs_solver.SetPhiFromFieldFunctions(phi_option, moment_indices, group_indices);
 
   return 0;
 }

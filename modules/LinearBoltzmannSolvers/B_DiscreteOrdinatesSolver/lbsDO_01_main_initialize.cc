@@ -11,7 +11,8 @@ typedef chi_mesh::sweep_management::SweepChunk SweepChunk;
 
 //###################################################################
 /** Initialize the solver.*/
-void lbs::DiscreteOrdinatesSolver::Initialize()
+void
+lbs::DiscreteOrdinatesSolver::Initialize()
 {
   LBSSolver::Initialize();
 
@@ -33,32 +34,30 @@ void lbs::DiscreteOrdinatesSolver::Initialize()
     InitTGDSA(groupset);
   }
 
-  InitializeSolverSchemes();           //j
+  InitializeSolverSchemes(); // j
   source_event_tag_ = Chi::log.GetRepeatingEventTag("Set Source");
 }
 
 /**Initializes Within-GroupSet solvers.*/
-void lbs::DiscreteOrdinatesSolver::InitializeWGSSolvers()
+void
+lbs::DiscreteOrdinatesSolver::InitializeWGSSolvers()
 {
-  wgs_solvers_.clear(); //this is required
+  wgs_solvers_.clear(); // this is required
   for (auto& groupset : groupsets_)
   {
     std::shared_ptr<SweepChunk> sweep_chunk = SetSweepChunk(groupset);
 
-    auto sweep_wgs_context_ptr =
-    std::make_shared<SweepWGSContext<Mat, Vec, KSP>>(
-      *this, groupset,
-        active_set_source_function_,
-        APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES,  //lhs_scope
-        APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES |
-        APPLY_AGS_FISSION_SOURCES,                              //rhs_scope
-        options_.verbose_inner_iterations,
-        sweep_chunk);
+    auto sweep_wgs_context_ptr = std::make_shared<SweepWGSContext<Mat, Vec, KSP>>(
+      *this,
+      groupset,
+      active_set_source_function_,
+      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES,                       // lhs_scope
+      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES, // rhs_scope
+      options_.verbose_inner_iterations,
+      sweep_chunk);
 
-    auto wgs_solver =
-      std::make_shared<WGSLinearSolver<Mat,Vec,KSP>>(sweep_wgs_context_ptr);
+    auto wgs_solver = std::make_shared<WGSLinearSolver<Mat, Vec, KSP>>(sweep_wgs_context_ptr);
 
     wgs_solvers_.push_back(wgs_solver);
-  }//for groupset
-
+  } // for groupset
 }

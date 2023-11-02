@@ -10,76 +10,62 @@ namespace lbs
 
 RegisterChiObject(lbs, XXPowerIterationKEigenSCDSA);
 
-chi::InputParameters XXPowerIterationKEigenSCDSA::GetInputParameters()
+chi::InputParameters
+XXPowerIterationKEigenSCDSA::GetInputParameters()
 {
-  chi::InputParameters params =
-    XXPowerIterationKEigen::GetInputParameters();
+  chi::InputParameters params = XXPowerIterationKEigen::GetInputParameters();
 
-  params.SetGeneralDescription(
-    "Generalized implementation of a k-Eigenvalue solver using Power "
-    "Iteration and with SCDSA acceleration.");
+  params.SetGeneralDescription("Generalized implementation of a k-Eigenvalue solver using Power "
+                               "Iteration and with SCDSA acceleration.");
   params.SetDocGroup("LBSExecutors");
 
-  params.AddOptionalParameter(
-    "accel_pi_max_its",
-    50,
-    "Maximum allowable iterations for the acceleration scheme's inner "
-    "power iterations");
+  params.AddOptionalParameter("accel_pi_max_its",
+                              50,
+                              "Maximum allowable iterations for the acceleration scheme's inner "
+                              "power iterations");
 
-  params.AddOptionalParameter(
-    "accel_pi_k_tol",
-    1.0e-10,
-    "K-eigenvalue tolerance for the acceleration scheme's inner "
-    "power iterations");
+  params.AddOptionalParameter("accel_pi_k_tol",
+                              1.0e-10,
+                              "K-eigenvalue tolerance for the acceleration scheme's inner "
+                              "power iterations");
 
-  params.AddOptionalParameter(
-    "accel_pi_verbose",
-    false,
-    "Flag, if set will result in verbose output from the acceleration "
-    "scheme");
+  params.AddOptionalParameter("accel_pi_verbose",
+                              false,
+                              "Flag, if set will result in verbose output from the acceleration "
+                              "scheme");
 
-  params.AddOptionalParameter(
-    "diff_accel_diffusion_l_abs_tol",
-    1.0e-10,
-    "Absolute residual tolerance to use for the diffusion accelerator");
-  params.AddOptionalParameter(
-    "diff_accel_diffusion_max_iters",
-    100,
-    "Maximum allowable iterations for the diffusion accelerator");
+  params.AddOptionalParameter("diff_accel_diffusion_l_abs_tol",
+                              1.0e-10,
+                              "Absolute residual tolerance to use for the diffusion accelerator");
+  params.AddOptionalParameter("diff_accel_diffusion_max_iters",
+                              100,
+                              "Maximum allowable iterations for the diffusion accelerator");
   params.AddOptionalParameter(
     "diff_accel_diffusion_verbose",
     false,
     "Flag, if set will enable verbose output of the diffusion accelerator");
-  params.AddOptionalParameter(
-    "diff_accel_diffusion_petsc_options",
-    std::string("ssss"),
-    "Additional PETSc options for the diffusion accelerator");
+  params.AddOptionalParameter("diff_accel_diffusion_petsc_options",
+                              std::string("ssss"),
+                              "Additional PETSc options for the diffusion accelerator");
 
   params.AddOptionalParameter(
-    "diff_accel_sdm",
-    "pwld",
-    "Spatial discretization to use for the diffusion solver");
+    "diff_accel_sdm", "pwld", "Spatial discretization to use for the diffusion solver");
 
   using namespace chi_data_types;
-  params.ConstrainParameterRange("diff_accel_sdm",
-                                 AllowableRangeList::New({"pwld", "pwlc"}));
+  params.ConstrainParameterRange("diff_accel_sdm", AllowableRangeList::New({"pwld", "pwlc"}));
 
   return params;
 }
 
-XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(
-  const chi::InputParameters& params)
+XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const chi::InputParameters& params)
   : XXPowerIterationKEigen(params),
     accel_pi_max_its_(params.GetParamValue<int>("accel_pi_max_its")),
     accel_pi_k_tol_(params.GetParamValue<double>("accel_pi_k_tol")),
     accel_pi_verbose_(params.GetParamValue<bool>("accel_pi_verbose")),
     diffusion_solver_sdm_(params.GetParamValue<std::string>("diff_accel_sdm")),
-    diff_accel_diffusion_l_abs_tol_(
-      params.GetParamValue<double>("diff_accel_diffusion_l_abs_tol")),
-    diff_accel_diffusion_max_iters_(
-      params.GetParamValue<int>("diff_accel_diffusion_max_iters")),
-    diff_accel_diffusion_verbose_(
-      params.GetParamValue<bool>("diff_accel_diffusion_verbose")),
+    diff_accel_diffusion_l_abs_tol_(params.GetParamValue<double>("diff_accel_diffusion_l_abs_tol")),
+    diff_accel_diffusion_max_iters_(params.GetParamValue<int>("diff_accel_diffusion_max_iters")),
+    diff_accel_diffusion_verbose_(params.GetParamValue<bool>("diff_accel_diffusion_verbose")),
     diff_accel_diffusion_petsc_options_(
       params.GetParamValue<std::string>("diff_accel_diffusion_petsc_options"))
 {

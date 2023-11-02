@@ -17,10 +17,9 @@ class FieldFunctionGridBased;
 namespace chi
 {
 
-class CellVolumeIntegralPostProcessor
-  : public PostProcessor,
-    public chi_physics::GridBasedFieldFunctionInterface,
-    public chi_mesh::LogicalVolumeInterface
+class CellVolumeIntegralPostProcessor : public PostProcessor,
+                                        public chi_physics::GridBasedFieldFunctionInterface,
+                                        public chi_mesh::LogicalVolumeInterface
 {
 public:
   static InputParameters GetInputParameters();

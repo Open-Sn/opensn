@@ -16,12 +16,12 @@ namespace lbs::common_lua_utils
 
  \ingroup LBSLuaFunctions
  */
-int chiLBSAddPointSource(lua_State *L)
+int
+chiLBSAddPointSource(lua_State* L)
 {
   const std::string fname = "chiLBSAddPointSource";
   const int num_args = lua_gettop(L);
-  if (num_args != 5)
-    LuaPostArgAmountError(fname, 5, num_args);
+  if (num_args != 5) LuaPostArgAmountError(fname, 5, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -30,18 +30,15 @@ int chiLBSAddPointSource(lua_State *L)
   LuaCheckNilValue(fname, L, 5);
 
   //============================================= Get pointer to solver
-  const int solver_handle = lua_tonumber(L,1);
-  auto& lbs_solver =
-    Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack,
-                                                       solver_handle,
-                                                       fname);
+  const int solver_handle = lua_tonumber(L, 1);
+  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
   //============================================= Get other arguments
   const double x = lua_tonumber(L, 2);
   const double y = lua_tonumber(L, 3);
   const double z = lua_tonumber(L, 4);
 
-  const chi_mesh::Vector3 location(x,y,z);
+  const chi_mesh::Vector3 location(x, y, z);
 
   LuaCheckTableValue(fname, L, 5);
 
@@ -50,8 +47,7 @@ int chiLBSAddPointSource(lua_State *L)
 
   lbs_solver.AddPointSource(lbs::PointSource(location, groupwise_strength));
 
-  Chi::log.Log() << "LBS: Added point source at "
-                << location.PrintStr();
+  Chi::log.Log() << "LBS: Added point source at " << location.PrintStr();
 
   return 0;
 }
@@ -63,21 +59,18 @@ int chiLBSAddPointSource(lua_State *L)
 
  \ingroup LBSLuaFunctions
  */
-int chiLBSClearPointSources(lua_State *L)
+int
+chiLBSClearPointSources(lua_State* L)
 {
   const std::string fname = "chiLBSClearPointSources";
   const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckNilValue(fname, L, 1);
 
   //============================================= Get pointer to solver
-  const int solver_handle = lua_tonumber(L,1);
-  auto& lbs_solver =
-    Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack,
-                                                       solver_handle,
-                                                       fname);
+  const int solver_handle = lua_tonumber(L, 1);
+  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
   lbs_solver.ClearPointSources();
 
@@ -93,21 +86,18 @@ int chiLBSClearPointSources(lua_State *L)
 
  \ingroup LBSLuaFunctions
  */
-int chiLBSInitializePointSources(lua_State *L)
+int
+chiLBSInitializePointSources(lua_State* L)
 {
   const std::string fname = "chiLBSInitializePointSources";
   const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckNilValue(fname, L, 1);
 
   //============================================= Get pointer to solver
-  const int solver_handle = lua_tonumber(L,1);
-  auto& lbs_solver =
-    Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack,
-                                                       solver_handle,
-                                                       fname);
+  const int solver_handle = lua_tonumber(L, 1);
+  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
   lbs_solver.InitializePointSources();
 
@@ -116,4 +106,4 @@ int chiLBSInitializePointSources(lua_State *L)
   return 0;
 }
 
-}//namespace lbs::common_lua_utils
+} // namespace lbs::common_lua_utils

@@ -11,7 +11,8 @@
 
 //###################################################################
 /**Exports just the mesh to VTK format.*/
-void chi_mesh::MeshContinuum::ExportCellsToVTK(const std::string& file_base_name) const
+void
+chi_mesh::MeshContinuum::ExportCellsToVTK(const std::string& file_base_name) const
 {
   Chi::log.Log() << "Exporting mesh to VTK files with base " << file_base_name;
 

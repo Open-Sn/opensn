@@ -11,7 +11,8 @@ RegisterChiObject(chi_mesh, ExtruderMeshGenerator);
 
 RegisterChiObjectParametersOnly(chi_mesh, ExtrusionLayer);
 
-chi::InputParameters ExtrusionLayer::GetInputParameters()
+chi::InputParameters
+ExtrusionLayer::GetInputParameters()
 {
   chi::InputParameters params;
 
@@ -21,8 +22,7 @@ chi::InputParameters ExtrusionLayer::GetInputParameters()
   // clang-format on
   params.SetDocGroup("doc_MeshGenerators");
 
-  params.AddOptionalParameter(
-    "h", 1.0, "Layer height. Cannot be specified if \"z\" is specified.");
+  params.AddOptionalParameter("h", 1.0, "Layer height. Cannot be specified if \"z\" is specified.");
   params.AddOptionalParameter("n", 1, "Number of sub-layers");
   params.AddOptionalParameter("z",
                               0.0,
@@ -35,7 +35,8 @@ chi::InputParameters ExtrusionLayer::GetInputParameters()
   return params;
 }
 
-chi::InputParameters ExtruderMeshGenerator::GetInputParameters()
+chi::InputParameters
+ExtruderMeshGenerator::GetInputParameters()
 {
   chi::InputParameters params = MeshGenerator::GetInputParameters();
 
@@ -55,13 +56,10 @@ chi::InputParameters ExtruderMeshGenerator::GetInputParameters()
   params.AddRequiredParameterArray("layers", "A list of layers");
   params.LinkParameterToBlock("layers", "chi_mesh::ExtrusionLayer");
 
-  params.AddOptionalParameter("top_boundary_name",
-                              "ZMAX",
-                              "The name to associate with the top boundary.");
   params.AddOptionalParameter(
-    "bottom_boundary_name",
-    "ZMIN",
-    "The name to associate with the bottom boundary.");
+    "top_boundary_name", "ZMAX", "The name to associate with the top boundary.");
+  params.AddOptionalParameter(
+    "bottom_boundary_name", "ZMIN", "The name to associate with the bottom boundary.");
 
   return params;
 }
@@ -69,8 +67,7 @@ chi::InputParameters ExtruderMeshGenerator::GetInputParameters()
 ExtruderMeshGenerator::ExtruderMeshGenerator(const chi::InputParameters& params)
   : MeshGenerator(params),
     top_boundary_name_(params.GetParamValue<std::string>("top_boundary_name")),
-    bottom_boundary_name_(
-      params.GetParamValue<std::string>("bottom_boundary_name"))
+    bottom_boundary_name_(params.GetParamValue<std::string>("bottom_boundary_name"))
 {
   const auto& layers_param = params.GetParam("layers");
 
@@ -81,8 +78,7 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const chi::InputParameters& params)
     valid_params.SetErrorOriginScope("ExtruderMeshGenerator:\"layers\"");
     valid_params.AssignParameters(layer_block);
 
-    const int h_and_z_config =
-      int(layer_block.Has("h")) + int(layer_block.Has("z"));
+    const int h_and_z_config = int(layer_block.Has("h")) + int(layer_block.Has("z"));
 
     if (h_and_z_config != 1)
       ChiInvalidArgument("For an ExtrusionLayer either \"h\" or \"z\" must"
@@ -104,23 +100,20 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const chi::InputParameters& params)
 
     layers_.push_back(ExtrusionLayer{h, n});
 
-    Chi::log.Log0Verbose1()
-      << "Layer " << layer_block.Name() << " height=" << h
-      << " num_sub_layers=" << n << " top-z=" << current_z_level;
+    Chi::log.Log0Verbose1() << "Layer " << layer_block.Name() << " height=" << h
+                            << " num_sub_layers=" << n << " top-z=" << current_z_level;
   } // layer_block in layers_param
 }
 
 // ##################################################################
 std::unique_ptr<UnpartitionedMesh>
-ExtruderMeshGenerator::GenerateUnpartitionedMesh(
-  std::unique_ptr<UnpartitionedMesh> input_umesh)
+ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
   Chi::log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh";
   const chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
 
-  ChiInvalidArgumentIf(
-    not(input_umesh->GetMeshAttributes() & DIMENSION_2),
-    "Input mesh is not 2D. A 2D mesh is required for extrusion");
+  ChiInvalidArgumentIf(not(input_umesh->GetMeshAttributes() & DIMENSION_2),
+                       "Input mesh is not 2D. A 2D mesh is required for extrusion");
 
   const auto& template_vertices = input_umesh->GetVertices();
   const auto& template_cells = input_umesh->GetRawCells();
@@ -180,8 +173,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(
   auto& extruded_vertices = umesh->GetVertices();
   for (const double z_level : z_levels)
     for (const auto& template_vertex : template_vertices)
-      extruded_vertices.push_back(
-        Vec3(template_vertex.x, template_vertex.y, z_level));
+      extruded_vertices.push_back(Vec3(template_vertex.x, template_vertex.y, z_level));
 
   //============================================= Build cells
   size_t k = 0;
@@ -204,8 +196,8 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(
         // clang-format on
 
         //================================== Create new cell
-        auto new_cell_ptr = new UnpartitionedMesh::LightWeightCell(
-          CellType::POLYHEDRON, extruded_subtype);
+        auto new_cell_ptr =
+          new UnpartitionedMesh::LightWeightCell(CellType::POLYHEDRON, extruded_subtype);
         auto& new_cell = *new_cell_ptr;
 
         new_cell.material_id = template_cell->material_id;
@@ -216,8 +208,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(
         for (const auto tc_vid : template_cell->vertex_ids)
           new_cell.vertex_ids.push_back(tc_vid + k * num_template_vertices);
         for (const auto tc_vid : template_cell->vertex_ids)
-          new_cell.vertex_ids.push_back(tc_vid +
-                                        (k + 1) * num_template_vertices);
+          new_cell.vertex_ids.push_back(tc_vid + (k + 1) * num_template_vertices);
 
         //================================== Create side faces
         for (const auto& tc_face : template_cell->faces)
@@ -253,17 +244,16 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(
 
           new_face.vertex_ids.reserve(template_cell->vertex_ids.size());
           for (auto vid : template_cell->vertex_ids)
-            new_face.vertex_ids.push_back(vid +
-                                          (k + 1) * num_template_vertices);
+            new_face.vertex_ids.push_back(vid + (k + 1) * num_template_vertices);
 
-          if (k == (z_levels.size()-2))
+          if (k == (z_levels.size() - 2))
           {
             new_face.neighbor = zmax_bndry_id;
             new_face.has_neighbor = false;
           }
           else
           {
-            new_face.neighbor = num_template_cells * (k+1) + tc_counter;
+            new_face.neighbor = num_template_cells * (k + 1) + tc_counter;
             new_face.has_neighbor = true;
           }
 
@@ -286,7 +276,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(
           }
           else
           {
-            new_face.neighbor = num_template_cells * (k-1) + tc_counter;
+            new_face.neighbor = num_template_cells * (k - 1) + tc_counter;
             new_face.has_neighbor = true;
           }
 
@@ -305,8 +295,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(
   umesh->ComputeCentroidsAndCheckQuality();
   umesh->BuildMeshConnectivity();
 
-  Chi::log.Log0Verbose1()
-    << "ExtruderMeshGenerator::GenerateUnpartitionedMesh Done";
+  Chi::log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh Done";
   return umesh;
 }
 

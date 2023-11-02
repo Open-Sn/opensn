@@ -12,9 +12,7 @@ namespace chi_mesh::sweep_management
 class AAH_FLUDS : public FLUDS
 {
 public:
-  AAH_FLUDS(size_t num_groups,
-            size_t num_angles,
-            const AAH_FLUDSCommonData& common_data);
+  AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data);
 
 private:
   const AAH_FLUDSCommonData& common_data_;
@@ -37,20 +35,12 @@ private:
   std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_old_;
 
 public:
-  double* OutgoingPsi(int cell_so_index,
-                      int outb_face_counter,
-                      int face_dof,
-                      int n);
-  double* UpwindPsi(int cell_so_index,
-                    int inc_face_counter,
-                    int face_dof,
-                    int g,
-                    int n);
+  double* OutgoingPsi(int cell_so_index, int outb_face_counter, int face_dof, int n);
+  double* UpwindPsi(int cell_so_index, int inc_face_counter, int face_dof, int g, int n);
 
   double* NLOutgoingPsi(int outb_face_count, int face_dof, int n);
 
-  double*
-  NLUpwindPsi(int nonl_inc_face_counter, int face_dof, int g, int n);
+  double* NLUpwindPsi(int nonl_inc_face_counter, int face_dof, int g, int n);
 
   size_t GetPrelocIFaceDOFCount(int prelocI) const;
   size_t GetDelayedPrelocIFaceDOFCount(int prelocI) const;
@@ -59,14 +49,10 @@ public:
   void ClearLocalAndReceivePsi() override;
   void ClearSendPsi() override;
   void AllocateInternalLocalPsi(size_t num_grps, size_t num_angles) override;
-  void AllocateOutgoingPsi(size_t num_grps,
-                           size_t num_angles,
-                           size_t num_loc_sucs) override;
+  void AllocateOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_sucs) override;
 
   void AllocateDelayedLocalPsi(size_t num_grps, size_t num_angles) override;
-  void AllocatePrelocIOutgoingPsi(size_t num_grps,
-                                  size_t num_angles,
-                                  size_t num_loc_deps) override;
+  void AllocatePrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps) override;
   void AllocateDelayedPrelocIOutgoingPsi(size_t num_grps,
                                          size_t num_angles,
                                          size_t num_loc_deps) override;

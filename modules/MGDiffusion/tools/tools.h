@@ -5,8 +5,7 @@
 
 namespace mg_diffusion
 {
-  PetscErrorCode MGKSPMonitor(
-    KSP ksp, PetscInt n, PetscReal rnorm, void*);
+PetscErrorCode MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*);
 }
 
-#endif //CHITECH_TOOLS_H
+#endif // CHITECH_TOOLS_H

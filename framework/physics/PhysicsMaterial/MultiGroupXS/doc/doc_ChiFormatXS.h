@@ -87,24 +87,26 @@ constants, \f$ \lambda_j \f$ are required.
 - Optional key words per line:
     - SIGMA_T_BEGIN. Optional. Starts a block that is terminated by a line
       SIGMA_T_END. Each line in the block processes the first two words as
-      [group, sigma_t]. Populates the sigma_tg field. Symbol \f$ \sigma_{tg} \f$.
+      [group, sigma_t]. Populates the sigma_tg field. Symbol \f$ \sigma_{tg}
+\f$.
     - SIGMA_A_BEGIN. Optional. Starts a block that is terminated by a line
       SIGMA_A_END. Each line in the block processes the first two words as
-      [group, sigma_a]. Populates the sigma_ag field. Symbol \f$ \sigma_{ag} \f$.
-      If this is not supplied then sigma_a is estimated from the transfer matrix
+      [group, sigma_a]. Populates the sigma_ag field. Symbol \f$ \sigma_{ag}
+\f$. If this is not supplied then sigma_a is estimated from the transfer matrix
       and may erroneously estimate balance.
     - SIGMA_F_BEGIN. Optional. Starts a block that is terminated by a line
       SIGMA_F_END. Each line in the block processes the first two words as
-      [group, sigma_f]. Populates the sigma_fg field. Symbol \f$ \sigma_{fg} \f$.
+      [group, sigma_f]. Populates the sigma_fg field. Symbol \f$ \sigma_{fg}
+\f$.
     - NU_BEGIN. Optional. Starts a block that is terminated by a line NU_END.
       Each line in the block processes the first two words as [group, nu].
-      Populates the nu field. Upon completing the file processing the nu_sigma_fg
-      field gets populated from the product of nu and sigma_fg.
-      Symbol \f$ \nu_g \f$.
+      Populates the nu field. Upon completing the file processing the
+nu_sigma_fg field gets populated from the product of nu and sigma_fg. Symbol \f$
+\nu_g \f$.
     - NU_PROMPT_BEGIN. Optional. Starts a block that is terminated by a line
       NU_PROMPT_END. Each line in the block processes the first two words as
-      [group, nu_prompt]. Populates the nu_prompt field. Upon completing the file
-      processing the nu_p_sigma_fg field gets populated from the product of
+      [group, nu_prompt]. Populates the nu_prompt field. Upon completing the
+file processing the nu_p_sigma_fg field gets populated from the product of
       nu_prompt and sigma_fg. Symbol \f$ \nu_{prompt,g} \f$.
     - NU_DELAYED_BEGIN. Optional. Starts a block that is terminated by a line
       NU_DELAYED_END. Each line in the block processes the first two words as
@@ -127,14 +129,14 @@ constants, \f$ \lambda_j \f$ are required.
       [group, inv_velocity]. Populates the inv_velocity field. If this field and
       VELOCITY are provided, this field will be used.
       Symbol \f$ \frac{1}{v_g} \f$.
-    - PRECURSOR_DECAY_CONSTANTS_BEGIN. Optional. Starts a block that is terminated by a
-      line PRECURSOR_DECAY_CONSTANTS_END. Each line in the block processes the first two
-      words as [precursor, lambda]. Populates the lambda field (the precursor
-      decay constant). Symbol \f$ \lambda_j \f$.
-    - PRECURSOR_FRACTIONAL_YIELDS_BEGIN. Optional. Starts a block that is terminated by a
-      line PRECURSOR_FRACTIONAL_YIELDS_END. Each line in the block processes the first two
-      words as [precursor, gamma]. Populates the gamma field (the precursor
-      production fraction per fission). Symbol \f$ \gamma_j \f$.
+    - PRECURSOR_DECAY_CONSTANTS_BEGIN. Optional. Starts a block that is
+terminated by a line PRECURSOR_DECAY_CONSTANTS_END. Each line in the block
+processes the first two words as [precursor, lambda]. Populates the lambda field
+(the precursor decay constant). Symbol \f$ \lambda_j \f$.
+    - PRECURSOR_FRACTIONAL_YIELDS_BEGIN. Optional. Starts a block that is
+terminated by a line PRECURSOR_FRACTIONAL_YIELDS_END. Each line in the block
+processes the first two words as [precursor, gamma]. Populates the gamma field
+(the precursor production fraction per fission). Symbol \f$ \gamma_j \f$.
     - CHI_DELAYED_BEGIN. Optional. Starts a block that is terminated by a line
       CHI_DELAYED_END. Each line in the block processes the first word as the
       group index and the remaining NUM_PRECURSORS words as the the individual
@@ -142,9 +144,9 @@ constants, \f$ \lambda_j \f$ are required.
       Symbol \f$ \chi_{delayed,jg} \f$.
     - TRANSFER_MOMENTS_BEGIN. Optional. Starts a block that is terminated by a
       line TRANSFER_MOMENTS_END. Each line in the block processes a line only if
-      it starts with the keyword M_GPRIME_G_VAL which needs to be followed by four
-      values [moment,gprime,g,value]. Populates transfer-matrix for moment m,
-      row g, column gprime, with value. Symbol \f$ \sigma_{s\ell,g'{\to}g} \f$.
+      it starts with the keyword M_GPRIME_G_VAL which needs to be followed by
+four values [moment,gprime,g,value]. Populates transfer-matrix for moment m, row
+g, column gprime, with value. Symbol \f$ \sigma_{s\ell,g'{\to}g} \f$.
 
 - Comments can be between individual blocks but only the TRANSFER_MOMENTS block
   may have comments between the _BEGIN and _END
@@ -152,7 +154,8 @@ constants, \f$ \lambda_j \f$ are required.
   format is keyword driven.
 - Any number that is not convertible to its required type (integer, double)
   will throw an error to that effect.
-- All errors will indicate the current file, line number and nature of the error.
+- All errors will indicate the current file, line number and nature of the
+error.
 
 ## More Advanced Examples
 \code

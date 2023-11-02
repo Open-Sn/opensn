@@ -13,7 +13,8 @@ RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*syntax_function=*/nullptr,
                         /*actual_function=*/ExampleTest);
 
-chi::ParameterBlock ExampleTest(const chi::InputParameters&)
+chi::ParameterBlock
+ExampleTest(const chi::InputParameters&)
 {
   Chi::log.Log() << "This is an example test";
 

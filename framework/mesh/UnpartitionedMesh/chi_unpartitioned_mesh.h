@@ -39,8 +39,7 @@ public:
     std::vector<uint64_t> vertex_ids;
     std::vector<LightWeightFace> faces;
 
-    explicit LightWeightCell(chi_mesh::CellType in_type,
-                             chi_mesh::CellType in_sub_type)
+    explicit LightWeightCell(chi_mesh::CellType in_type, chi_mesh::CellType in_sub_type)
       : type(in_type), sub_type(in_sub_type)
     {
     }
@@ -61,8 +60,7 @@ public:
 
   struct BoundBox
   {
-    double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, zmin = 0.0,
-           zmax = 0.0;
+    double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, zmin = 0.0, zmax = 0.0;
   };
 
 protected:
@@ -83,14 +81,11 @@ protected:
 
   typedef vtkSmartPointer<vtkUnstructuredGrid> vtkUGridPtr;
   typedef std::pair<vtkUGridPtr, std::string> vtkUGridPtrAndName;
-  void CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
-                               double scale,
-                               int dimension_to_copy);
+  void CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid, double scale, int dimension_to_copy);
 
   void SetMaterialIDsFromList(const std::vector<int>& material_ids);
 
-  void
-  SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bndry_grid_blocks);
+  void SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bndry_grid_blocks);
 
 public:
   const BoundBox& GetBoundBox() const { return *bound_box_; }
@@ -109,10 +104,7 @@ public:
   void AddCell(LightWeightCell*& cell) { raw_cells_.push_back(cell); }
   size_t GetNumberOfCells() const { return raw_cells_.size(); }
   std::vector<LightWeightCell*>& GetRawCells() { return raw_cells_; }
-  const std::vector<LightWeightCell*>& GetRawCells() const
-  {
-    return raw_cells_;
-  }
+  const std::vector<LightWeightCell*>& GetRawCells() const { return raw_cells_; }
 
   const std::vector<chi_mesh::Vertex>& GetVertices() const { return vertices_; }
   std::vector<chi_mesh::Vertex>& GetVertices() { return vertices_; }
@@ -121,8 +113,7 @@ public:
   void ComputeCentroidsAndCheckQuality();
   /**Makes or gets a boundary that uniquely identifies the given name.*/
   uint64_t MakeBoundaryID(const std::string& boundary_name);
-  void SetAttributes(MeshAttributes new_attribs,
-                     std::array<size_t, 3> ortho_Nis = {0, 0, 0});
+  void SetAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis = {0, 0, 0});
 
   void ReadFromVTU(const Options& options);
   void ReadFromPVTU(const Options& options);

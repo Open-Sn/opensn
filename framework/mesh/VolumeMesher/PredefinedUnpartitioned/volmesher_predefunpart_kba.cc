@@ -5,16 +5,14 @@
 #include "mesh/VolumeMesher/chi_volumemesher.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 
-
 #include "chi_runtime.h"
 #include "chi_log.h"
 #include "chi_mpi.h"
 
-
 //###################################################################
 /** Applies KBA-style partitioning to the mesh.*/
-std::vector<int64_t> chi_mesh::VolumeMesherPredefinedUnpartitioned::
-  KBA(const chi_mesh::UnpartitionedMesh& umesh)
+std::vector<int64_t>
+chi_mesh::VolumeMesherPredefinedUnpartitioned::KBA(const chi_mesh::UnpartitionedMesh& umesh)
 {
   Chi::log.Log() << "Partitioning mesh KBA-style.";
 
@@ -38,7 +36,7 @@ std::vector<int64_t> chi_mesh::VolumeMesherPredefinedUnpartitioned::
     int nyi = std::get<1>(xyz);
     int nzi = std::get<2>(xyz);
 
-    return nzi*Px*Py + nyi*Px + nxi;
+    return nzi * Px * Py + nyi * Px + nxi;
   };
 
   //======================================== Determine cell partition-IDs
@@ -49,15 +47,15 @@ std::vector<int64_t> chi_mesh::VolumeMesherPredefinedUnpartitioned::
     uint64_t cell_id = 0;
     for (auto& raw_cell : umesh.GetRawCells())
       cell_pids[cell_id++] = GetPIDFromCentroid(raw_cell->centroid);
-  }//if home location
+  } // if home location
 
   //======================================== Broadcast partitioning to all
   //                                         locations
-  MPI_Bcast(cell_pids.data(),                 //buffer [IN/OUT]
-            static_cast<int>(num_raw_cells),  //count
-            MPI_LONG_LONG_INT,                //data type
-            0,                                //root
-            Chi::mpi.comm);                  //communicator
+  MPI_Bcast(cell_pids.data(),                // buffer [IN/OUT]
+            static_cast<int>(num_raw_cells), // count
+            MPI_LONG_LONG_INT,               // data type
+            0,                               // root
+            Chi::mpi.comm);                  // communicator
   Chi::log.Log() << "Done partitioning mesh.";
 
   return cell_pids;

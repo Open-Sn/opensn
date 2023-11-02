@@ -22,23 +22,21 @@ public:
                size_t in_ref_subset,
                const chi::ChiMPICommunicatorSet& comm_set);
 
-  chi_mesh::sweep_management::AsynchronousCommunicator*
-  GetCommunicator() override;
+  chi_mesh::sweep_management::AsynchronousCommunicator* GetCommunicator() override;
   void InitializeDelayedUpstreamData() override {}
   int GetMaxBufferMessages() const override { return 0; }
   void SetMaxBufferMessages(int new_max) override {}
 
-  chi_mesh::sweep_management::AngleSetStatus AngleSetAdvance(
-    chi_mesh::sweep_management::SweepChunk& sweep_chunk,
-    const std::vector<size_t>& timing_tags,
-    chi_mesh::sweep_management::ExecutionPermission permission) override;
+  chi_mesh::sweep_management::AngleSetStatus
+  AngleSetAdvance(chi_mesh::sweep_management::SweepChunk& sweep_chunk,
+                  const std::vector<size_t>& timing_tags,
+                  chi_mesh::sweep_management::ExecutionPermission permission) override;
 
   chi_mesh::sweep_management::AngleSetStatus FlushSendBuffers() override
   {
     const bool all_messages_sent = async_comm_.SendData();
-    return all_messages_sent
-             ? chi_mesh::sweep_management::AngleSetStatus::MESSAGES_SENT
-             : chi_mesh::sweep_management::AngleSetStatus::MESSAGES_PENDING;
+    return all_messages_sent ? chi_mesh::sweep_management::AngleSetStatus::MESSAGES_SENT
+                             : chi_mesh::sweep_management::AngleSetStatus::MESSAGES_PENDING;
   }
   void ResetSweepBuffers() override;
   bool ReceiveDelayedData() override { return true; }

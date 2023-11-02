@@ -35,8 +35,7 @@ std::vector<double> SetSource(const chi_mesh::MeshContinuum& grid,
                               const chi_physics::SingleStateMGXS& xs,
                               const std::vector<YlmIndices>& m_ell_em_map);
 
-chi::ParameterBlock
-chiSimTest06_WDD(const chi::InputParameters&);
+chi::ParameterBlock chiSimTest06_WDD(const chi::InputParameters&);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_testsB,
                         /*name_in_lua=*/chiSimTest06_WDD,
@@ -51,8 +50,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
 
   Chi::log.Log() << "chiSimTest06_WDD num_args = " << 0;
 
-  if (Chi::mpi.process_count != 1)
-    throw std::logic_error(fname + ": Is serial only.");
+  if (Chi::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
 
   //============================================= Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
@@ -93,8 +91,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
 
   //============================================= Make an angular quadrature
   std::shared_ptr<chi_math::AngularQuadrature> quadrature;
-  if (dimension == 1)
-    quadrature = std::make_shared<chi_math::AngularQuadratureProdGL>(8);
+  if (dimension == 1) quadrature = std::make_shared<chi_math::AngularQuadratureProdGL>(8);
   else if (dimension == 2)
   {
     quadrature = std::make_shared<chi_math::AngularQuadratureProdGLC>(8, 8);
@@ -159,8 +156,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    if (cc.x < 0.5 and cc.y < 0.5 and cc.z < 0.5 and cc.x > -0.5 and
-        cc.y > -0.5 and cc.z > -0.5)
+    if (cc.x < 0.5 and cc.y < 0.5 and cc.z < 0.5 and cc.x > -0.5 and cc.y > -0.5 and cc.z > -0.5)
     {
       for (size_t i = 0; i < num_nodes; ++i)
       {
@@ -297,12 +293,10 @@ chiSimTest06_WDD(const chi::InputParameters&)
   {
     phi_new.assign(phi_new.size(), 0.0);
     // Build rhs
-    source_moments =
-      SetSource(grid, sdm, phi_uk_man, q_source, phi_old, xs, m_ell_em_map);
+    source_moments = SetSource(grid, sdm, phi_uk_man, q_source, phi_old, xs, m_ell_em_map);
     Sweep();
 
-    const double rel_change =
-      ComputeRelativePWChange(grid, sdm, phi_uk_man, phi_new, phi_old);
+    const double rel_change = ComputeRelativePWChange(grid, sdm, phi_uk_man, phi_new, phi_old);
 
     std::stringstream outstr;
     outstr << "Iteration " << std::setw(5) << iter << " ";
@@ -337,25 +331,25 @@ chiSimTest06_WDD(const chi::InputParameters&)
 
   //============================================= Create Field Function
   auto phi_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",   // Text name
-    sdm_ptr, // Spatial Discr.
+    "Phi",                                                         // Text name
+    sdm_ptr,                                                       // Spatial Discr.
     chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups) // Unknown
   );
 
   phi_ff->UpdateFieldVector(m0_phi);
 
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("SimTest_06_WDD",
-                                                           {phi_ff});
+  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("SimTest_06_WDD", {phi_ff});
 
   return chi::ParameterBlock();
 }
 
 // ###################################################################
-double ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
-                               const chi_math::SpatialDiscretization& sdm,
-                               const chi_math::UnknownManager& phi_uk_man,
-                               const std::vector<double>& in_phi_new,
-                               const std::vector<double>& in_phi_old)
+double
+ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
+                        const chi_math::SpatialDiscretization& sdm,
+                        const chi_math::UnknownManager& phi_uk_man,
+                        const std::vector<double>& in_phi_new,
+                        const std::vector<double>& in_phi_old)
 {
   double pw_change = 0.0;
   const size_t num_moments = phi_uk_man.unknowns_.size();
@@ -385,8 +379,7 @@ double ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
           const double abs_phi_new_g_m0 = std::fabs(phi_new_m0[g]);
           const double abs_phi_old_g_m0 = std::fabs(phi_old_m0[g]);
 
-          const double max_denominator =
-            std::max(abs_phi_new_g_m0, abs_phi_old_g_m0);
+          const double max_denominator = std::max(abs_phi_new_g_m0, abs_phi_old_g_m0);
 
           const double delta_phi = std::fabs(phi_new_m[g] - phi_old_m[g]);
 
@@ -404,13 +397,14 @@ double ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
 
 // ###################################################################
 /***/
-std::vector<double> SetSource(const chi_mesh::MeshContinuum& grid,
-                              const chi_math::SpatialDiscretization& sdm,
-                              const chi_math::UnknownManager& phi_uk_man,
-                              const std::vector<double>& q_source,
-                              const std::vector<double>& phi_old,
-                              const chi_physics::SingleStateMGXS& xs,
-                              const std::vector<YlmIndices>& m_ell_em_map)
+std::vector<double>
+SetSource(const chi_mesh::MeshContinuum& grid,
+          const chi_math::SpatialDiscretization& sdm,
+          const chi_math::UnknownManager& phi_uk_man,
+          const std::vector<double>& q_source,
+          const std::vector<double>& phi_old,
+          const chi_physics::SingleStateMGXS& xs,
+          const std::vector<YlmIndices>& m_ell_em_map)
 {
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   std::vector<double> source_moments(num_local_phi_dofs, 0.0);

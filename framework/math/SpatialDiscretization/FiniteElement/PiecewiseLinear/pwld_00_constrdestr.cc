@@ -12,12 +12,10 @@ namespace chi_math::spatial_discretization
 
 // ###################################################################
 /**Constructor.*/
-PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(
-  const chi_mesh::MeshContinuum& grid,
-  chi_math::QuadratureOrder q_order,
-  chi_math::CoordinateSystemType cs_type)
-  : PieceWiseLinearBase(
-      grid, q_order, SDMType::PIECEWISE_LINEAR_DISCONTINUOUS, cs_type)
+PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(const chi_mesh::MeshContinuum& grid,
+                                                           chi_math::QuadratureOrder q_order,
+                                                           chi_math::CoordinateSystemType cs_type)
+  : PieceWiseLinearBase(grid, q_order, SDMType::PIECEWISE_LINEAR_DISCONTINUOUS, cs_type)
 {
   CreateCellMappings();
 
@@ -26,18 +24,17 @@ PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(
 
 // ###################################################################
 /**Construct a shared object using the protected constructor.*/
-std::shared_ptr<PieceWiseLinearDiscontinuous> PieceWiseLinearDiscontinuous::New(
-  const chi_mesh::MeshContinuum& grid,
-  QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
-  CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
+std::shared_ptr<PieceWiseLinearDiscontinuous>
+PieceWiseLinearDiscontinuous::New(const chi_mesh::MeshContinuum& grid,
+                                  QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
+                                  CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
 
 {
   const auto PWLD = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
   // First try to find an existing spatial discretization that matches the
   // one requested.
   for (auto& sdm : Chi::sdm_stack)
-    if (sdm->Type() == PWLD and
-        std::addressof(sdm->Grid()) == std::addressof(grid) and
+    if (sdm->Type() == PWLD and std::addressof(sdm->Grid()) == std::addressof(grid) and
         sdm->GetCoordinateSystemType() == cs_type)
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
@@ -46,8 +43,7 @@ std::shared_ptr<PieceWiseLinearDiscontinuous> PieceWiseLinearDiscontinuous::New(
 
       if (fe_ptr->GetQuadratureOrder() != q_order) break;
 
-      auto sdm_ptr =
-        std::dynamic_pointer_cast<PieceWiseLinearDiscontinuous>(fe_ptr);
+      auto sdm_ptr = std::dynamic_pointer_cast<PieceWiseLinearDiscontinuous>(fe_ptr);
 
       ChiLogicalErrorIf(not sdm_ptr, "Casting failure");
 

@@ -4,10 +4,10 @@
 
 #include "chi_runtime.h"
 
-
 //###################################################################
 /**Compute the steady state delayed neutron precursor concentrations.*/
-void lbs::LBSSolver::ComputePrecursors()
+void
+lbs::LBSSolver::ComputePrecursors()
 {
   const size_t J = max_precursors_per_material_;
 
@@ -30,23 +30,20 @@ void lbs::LBSSolver::ComputePrecursors()
     {
       size_t dof = cell.local_id_ * J + j;
       const auto& precursor = precursors[j];
-      const double coeff = precursor.fractional_yield /
-                           precursor.decay_constant;
+      const double coeff = precursor.fractional_yield / precursor.decay_constant;
 
       //=================================== Loop over nodes
       for (int i = 0; i < transport_view.NumNodes(); ++i)
       {
         const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-        const double node_V_fraction = fe_values.Vi_vectors[i]/cell_volume;
+        const double node_V_fraction = fe_values.Vi_vectors[i] / cell_volume;
 
         //============================== Loop over groups
         for (unsigned int g = 0; g < groups_.size(); ++g)
-          precursor_new_local_[dof] += coeff *
-                                       nu_delayed_sigma_f[g] *
-                                       phi_new_local_[uk_map + g] *
-                                       node_V_fraction;
-      }//for node i
-    }//for precursor j
+          precursor_new_local_[dof] +=
+            coeff * nu_delayed_sigma_f[g] * phi_new_local_[uk_map + g] * node_V_fraction;
+      } // for node i
+    }   // for precursor j
 
-  }//for cell
+  } // for cell
 }

@@ -7,7 +7,8 @@
 namespace lbs
 {
 
-void LBSSolver::InitializeFieldFunctions()
+void
+LBSSolver::InitializeFieldFunctions()
 {
   using namespace chi_math;
 
@@ -27,16 +28,11 @@ void LBSSolver::InitializeFieldFunctions()
         prefix = options_.field_function_prefix;
         if (not prefix.empty()) prefix += "_";
       }
-      if (options_.field_function_prefix_option == "solver_name")
-        prefix = TextName() + "_";
+      if (options_.field_function_prefix_option == "solver_name") prefix = TextName() + "_";
 
       char buff[100];
-      snprintf(buff,
-               99,
-               "%sphi_g%03d_m%02d",
-               prefix.c_str(),
-               static_cast<int>(g),
-               static_cast<int>(m));
+      snprintf(
+        buff, 99, "%sphi_g%03d_m%02d", prefix.c_str(), static_cast<int>(g), static_cast<int>(m));
       const std::string text_name = std::string(buff);
 
       auto group_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
@@ -61,13 +57,12 @@ void LBSSolver::InitializeFieldFunctions()
       prefix = options_.field_function_prefix;
       if (not prefix.empty()) prefix += "_";
     }
-    if (options_.field_function_prefix_option == "solver_name")
-      prefix = TextName() + "_";
+    if (options_.field_function_prefix_option == "solver_name") prefix = TextName() + "_";
 
     auto power_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      prefix + "power_generation", // Field name
-      discretization_,                  // Spatial discretization
-      Unknown(UnknownType::SCALAR));    // Unknown/Variable
+      prefix + "power_generation",   // Field name
+      discretization_,               // Spatial discretization
+      Unknown(UnknownType::SCALAR)); // Unknown/Variable
 
     Chi::field_function_stack.push_back(power_ff);
     field_functions_.push_back(power_ff);

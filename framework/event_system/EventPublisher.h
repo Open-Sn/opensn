@@ -9,7 +9,7 @@ namespace chi
 {
 class Event;
 class EventSubscriber;
-}
+} // namespace chi
 
 namespace chi
 {
@@ -33,6 +33,6 @@ protected:
   std::vector<std::weak_ptr<chi::EventSubscriber>> subscribers_;
 };
 
-}
+} // namespace chi
 
 #endif // CHITECH_EVENTPUBLISHER_H

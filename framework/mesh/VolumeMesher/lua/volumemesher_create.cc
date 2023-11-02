@@ -16,12 +16,8 @@ RegisterLuaFunctionAsIs(chiVolumeMesherCreate);
 RegisterLuaConstantAsIs(VOLUMEMESHER_EXTRUDER, chi_data_types::Varying(4));
 RegisterLuaConstantAsIs(VOLUMEMESHER_UNPARTITIONED, chi_data_types::Varying(6));
 
-RegisterLuaConstant(ExtruderTemplateType,
-                    SURFACE_MESH,
-                    chi_data_types::Varying(1));
-RegisterLuaConstant(ExtruderTemplateType,
-                    UNPARTITIONED_MESH,
-                    chi_data_types::Varying(2));
+RegisterLuaConstant(ExtruderTemplateType, SURFACE_MESH, chi_data_types::Varying(1));
+RegisterLuaConstant(ExtruderTemplateType, UNPARTITIONED_MESH, chi_data_types::Varying(2));
 
 // #############################################################################
 /** Creates a new volume mesher.
@@ -51,7 +47,8 @@ additional arguments are required. `TemplateType` and `handle`.\n
 
 \ingroup LuaVolumeMesher
 \author Jan*/
-int chiVolumeMesherCreate(lua_State* L)
+int
+chiVolumeMesherCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
@@ -62,8 +59,7 @@ int chiVolumeMesherCreate(lua_State* L)
   LuaCheckNilValue(fname, L, 1);
 
   //============================================= Mesher type
-  const auto mesher_type =
-    static_cast<chi_mesh::VolumeMesherType>(lua_tointeger(L, 1));
+  const auto mesher_type = static_cast<chi_mesh::VolumeMesherType>(lua_tointeger(L, 1));
 
   std::shared_ptr<chi_mesh::VolumeMesher> new_mesher = nullptr;
 
@@ -71,11 +67,10 @@ int chiVolumeMesherCreate(lua_State* L)
   {
     if (num_args != 3)
     {
-      Chi::log.LogAllError()
-        << fname +
-             ": "
-             "When specifying VOLUMEMESHER_EXTRUDER, the template type and "
-             "handle must also be supplied.";
+      Chi::log.LogAllError() << fname +
+                                  ": "
+                                  "When specifying VOLUMEMESHER_EXTRUDER, the template type and "
+                                  "handle must also be supplied.";
       Chi::Exit(EXIT_FAILURE);
     }
 
@@ -90,8 +85,7 @@ int chiVolumeMesherCreate(lua_State* L)
 
     if (template_type == (int)UNPART_MESH_TEMPLATE)
     {
-      auto p_umesh = Chi::GetStackItemPtr(
-        Chi::unpartitionedmesh_stack, template_handle, fname);
+      auto p_umesh = Chi::GetStackItemPtr(Chi::unpartitionedmesh_stack, template_handle, fname);
 
       new_mesher = std::make_shared<chi_mesh::VolumeMesherExtruder>(p_umesh);
     }
@@ -106,21 +100,18 @@ int chiVolumeMesherCreate(lua_State* L)
   {
     if (num_args != 2)
     {
-      Chi::log.LogAllError()
-        << fname + ": "
-                   "When specifying VOLUMEMESHER_UNPARTITIONED, the "
-                   "handle must also be supplied.";
+      Chi::log.LogAllError() << fname + ": "
+                                        "When specifying VOLUMEMESHER_UNPARTITIONED, the "
+                                        "handle must also be supplied.";
       Chi::Exit(EXIT_FAILURE);
     }
 
     LuaCheckNilValue(fname, L, 2);
     const int template_handle = lua_tonumber(L, 2);
 
-    auto p_umesh = Chi::GetStackItemPtr(
-      Chi::unpartitionedmesh_stack, template_handle, fname);
+    auto p_umesh = Chi::GetStackItemPtr(Chi::unpartitionedmesh_stack, template_handle, fname);
 
-    new_mesher =
-      std::make_shared<chi_mesh::VolumeMesherPredefinedUnpartitioned>(p_umesh);
+    new_mesher = std::make_shared<chi_mesh::VolumeMesherPredefinedUnpartitioned>(p_umesh);
   }
   else
   {
@@ -134,8 +125,7 @@ int chiVolumeMesherCreate(lua_State* L)
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
   cur_hndlr.SetVolumeMesher(new_mesher);
 
-  Chi::log.LogAllVerbose2()
-    << "chiVolumeMesherCreate: Volume mesher created." << std::endl;
+  Chi::log.LogAllVerbose2() << "chiVolumeMesherCreate: Volume mesher created." << std::endl;
 
   return 0;
 }

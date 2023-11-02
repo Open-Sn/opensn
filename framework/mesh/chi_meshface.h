@@ -18,15 +18,15 @@ struct chi_mesh::Face
 
   Face()
   {
-    for (int k=0;k<3;k++)
+    for (int k = 0; k < 3; k++)
     {
-      v_index[k]=-1;
-      n_index[k]=-1;
-      vt_index[k]=-1;
-      e_index[k][0]=-1;
-      e_index[k][1]=-1;
-      e_index[k][2]=-1;
-      e_index[k][3]=-1;
+      v_index[k] = -1;
+      n_index[k] = -1;
+      vt_index[k] = -1;
+      e_index[k][0] = -1;
+      e_index[k][1] = -1;
+      e_index[k][2] = -1;
+      e_index[k][3] = -1;
       invalidated = false;
     }
   }
@@ -37,29 +37,31 @@ struct chi_mesh::Face
     v_index[1] = b;
     v_index[2] = c;
 
-    e_index[0][0] = a; e_index[0][1] = b;
-    e_index[1][0] = b; e_index[1][1] = c;
-    e_index[2][0] = c; e_index[2][1] = a;
+    e_index[0][0] = a;
+    e_index[0][1] = b;
+    e_index[1][0] = b;
+    e_index[1][1] = c;
+    e_index[2][0] = c;
+    e_index[2][1] = a;
   }
 
   Face& operator=(const Face& that)
   {
-    for (int k=0;k<3;k++)
+    for (int k = 0; k < 3; k++)
     {
-      v_index[k] =that.v_index[k] ;
-      n_index[k] =that.n_index[k] ;
-      vt_index[k]=that.vt_index[k];
-      e_index[k][0]=that.e_index[k][0];
-      e_index[k][1]=that.e_index[k][1];
-      e_index[k][2]=that.e_index[k][2];
-      e_index[k][3]=that.e_index[k][3];
+      v_index[k] = that.v_index[k];
+      n_index[k] = that.n_index[k];
+      vt_index[k] = that.vt_index[k];
+      e_index[k][0] = that.e_index[k][0];
+      e_index[k][1] = that.e_index[k][1];
+      e_index[k][2] = that.e_index[k][2];
+      e_index[k][3] = that.e_index[k][3];
     }
     geometric_normal = that.geometric_normal;
-    assigned_normal  = that.assigned_normal;
+    assigned_normal = that.assigned_normal;
     invalidated = that.invalidated;
     return *this;
   }
-
 };
 
 #define NEIGHBOR 0
@@ -97,17 +99,13 @@ struct chi_mesh::PolyFace
 
   bool invalidated;
 
-  PolyFace()
-  {
-    invalidated = false;
-  }
+  PolyFace() { invalidated = false; }
 
   ~PolyFace()
   {
-    for (auto edge : edges) delete [] edge;
+    for (auto edge : edges)
+      delete[] edge;
   }
-
 };
-
 
 #endif

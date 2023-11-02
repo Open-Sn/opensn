@@ -23,14 +23,14 @@
 
 // ###################################################################
 /**Initializes fluds_ data structures.*/
-void lbs::DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
+void
+lbs::DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 {
   namespace sweep_namespace = chi_mesh::sweep_management;
   typedef sweep_namespace::AngleSetGroup TAngleSetGroup;
   typedef sweep_namespace::AAH_AngleSet TAAH_AngleSet;
 
-  const auto& quadrature_sweep_info =
-    quadrature_unq_so_grouping_map_[groupset.quadrature_];
+  const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature_];
 
   const auto& unique_so_groupings = quadrature_sweep_info.first;
   const auto& dir_id_to_so_map = quadrature_sweep_info.second;
@@ -51,14 +51,11 @@ void lbs::DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
     const size_t master_dir_id = so_grouping.front();
     const size_t so_id = dir_id_to_so_map.at(master_dir_id);
 
-    const auto& sweep_ordering =
-      quadrature_spds_map_[groupset.quadrature_][so_id];
-    const auto& fluds_common_data =
-      *quadrature_fluds_commondata_map_[groupset.quadrature_][so_id];
+    const auto& sweep_ordering = quadrature_spds_map_[groupset.quadrature_][so_id];
+    const auto& fluds_common_data = *quadrature_fluds_commondata_map_[groupset.quadrature_][so_id];
 
     // Compute direction subsets
-    const auto dir_subsets =
-      chi::MakeSubSets(so_grouping.size(), groupset.master_num_ang_subsets_);
+    const auto dir_subsets = chi::MakeSubSets(so_grouping.size(), groupset.master_num_ang_subsets_);
 
     for (size_t gs_ss = 0; gs_ss < gs_num_ss; gs_ss++)
     {
@@ -84,16 +81,15 @@ void lbs::DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
             angle_indices.size(),
             dynamic_cast<const AAH_FLUDSCommonData&>(fluds_common_data));
 
-          auto angleSet =
-            std::make_shared<TAAH_AngleSet>(angle_set_id++,
-                                            gs_ss_size,
-                                            gs_ss,
-                                            *sweep_ordering,
-                                            fluds,
-                                            angle_indices,
-                                            sweep_boundaries_,
-                                            options_.sweep_eager_limit,
-                                            *grid_local_comm_set_);
+          auto angleSet = std::make_shared<TAAH_AngleSet>(angle_set_id++,
+                                                          gs_ss_size,
+                                                          gs_ss,
+                                                          *sweep_ordering,
+                                                          fluds,
+                                                          angle_indices,
+                                                          sweep_boundaries_,
+                                                          options_.sweep_eager_limit,
+                                                          *grid_local_comm_set_);
 
           angle_set_group.AngleSets().push_back(angleSet);
         }
@@ -103,13 +99,13 @@ void lbs::DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
                             "When using sweep_type \"CBC\" then "
                             "\"save_angular_flux\" must be true.");
           using namespace chi_mesh::sweep_management;
-          std::shared_ptr<FLUDS> fluds = std::make_shared<CBC_FLUDS>(
-            gs_ss_size,
-            angle_indices.size(),
-            dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-            psi_new_local_[groupset.id_],
-            groupset.psi_uk_man_,
-            *discretization_);
+          std::shared_ptr<FLUDS> fluds =
+            std::make_shared<CBC_FLUDS>(gs_ss_size,
+                                        angle_indices.size(),
+                                        dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
+                                        psi_new_local_[groupset.id_],
+                                        groupset.psi_uk_man_,
+                                        *discretization_);
 
           auto angleSet = std::make_shared<CBC_AngleSet>(angle_set_id++,
                                                          gs_ss_size,
@@ -131,8 +127,7 @@ void lbs::DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg_->angle_set_groups.push_back(std::move(angle_set_group));
 
   if (options_.verbose_inner_iterations)
-    Chi::log.Log() << Chi::program_timer.GetTimeString()
-                   << " Initialized Angle Aggregation.   "
+    Chi::log.Log() << Chi::program_timer.GetTimeString() << " Initialized Angle Aggregation.   "
                    << "         Process memory = " << std::setprecision(3)
                    << chi::Console::GetMemoryUsageInMB() << " MB.";
 

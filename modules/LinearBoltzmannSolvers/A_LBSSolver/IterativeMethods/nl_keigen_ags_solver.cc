@@ -13,20 +13,20 @@
 
 #include <iomanip>
 
-#define SNESTypes Mat,Vec,SNES
-#define CheckContext(x) \
-if (not x) \
-throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + \
-": context casting failure")
-#define GetNLKAGSContextPtr(x) \
-  std::dynamic_pointer_cast<NLKEigenAGSContext<Vec,SNES>>(x); \
+#define SNESTypes Mat, Vec, SNES
+#define CheckContext(x)                                                                            \
+  if (not x)                                                                                       \
+  throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": context casting failure")
+#define GetNLKAGSContextPtr(x)                                                                     \
+  std::dynamic_pointer_cast<NLKEigenAGSContext<Vec, SNES>>(x);                                     \
   CheckContext(x)
 
 namespace lbs
 {
 
-template<>
-void NLKEigenvalueAGSSolver<SNESTypes>::PreSetupCallback()
+template <>
+void
+NLKEigenvalueAGSSolver<SNESTypes>::PreSetupCallback()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
@@ -35,27 +35,28 @@ void NLKEigenvalueAGSSolver<SNESTypes>::PreSetupCallback()
     nl_context_ptr->groupset_ids.push_back(groupset.id_);
 }
 
-template<>
-void NLKEigenvalueAGSSolver<SNESTypes>::SetMonitor()
+template <>
+void
+NLKEigenvalueAGSSolver<SNESTypes>::SetMonitor()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
   auto& lbs_solver = nl_context_ptr->lbs_solver_;
   if (lbs_solver.Options().verbose_outer_iterations)
-    SNESMonitorSet(nl_solver_, &lbs::KEigenSNESMonitor,
-                   &nl_context_ptr->kresid_func_context_, nullptr);
+    SNESMonitorSet(
+      nl_solver_, &lbs::KEigenSNESMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
 
   if (lbs_solver.Options().verbose_inner_iterations)
   {
     KSP ksp;
     SNESGetKSP(nl_solver_, &ksp);
-    KSPMonitorSet(ksp, &lbs::KEigenKSPMonitor,
-                  &nl_context_ptr->kresid_func_context_, nullptr);
+    KSPMonitorSet(ksp, &lbs::KEigenKSPMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
   }
 }
 
-template<>
-void NLKEigenvalueAGSSolver<SNESTypes>::SetSystemSize()
+template <>
+void
+NLKEigenvalueAGSSolver<SNESTypes>::SetSystemSize()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
@@ -66,45 +67,47 @@ void NLKEigenvalueAGSSolver<SNESTypes>::SetSystemSize()
   num_globl_dofs_ = static_cast<int64_t>(sizes.second);
 }
 
-template<>
-void NLKEigenvalueAGSSolver<SNESTypes>::SetSystem()
+template <>
+void
+NLKEigenvalueAGSSolver<SNESTypes>::SetSystem()
 {
   //============================================= Create the vectors
-  x_ = chi_math::PETScUtils::CreateVector(num_local_dofs_,
-                                          num_globl_dofs_);
+  x_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_globl_dofs_);
   VecDuplicate(x_, &r_);
 }
 
-template<>
-void NLKEigenvalueAGSSolver<SNESTypes>::SetFunction()
+template <>
+void
+NLKEigenvalueAGSSolver<SNESTypes>::SetFunction()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
-  SNESSetFunction(nl_solver_, r_, NLKEigenResidualFunction,
-                  &nl_context_ptr->kresid_func_context_);
+  SNESSetFunction(nl_solver_, r_, NLKEigenResidualFunction, &nl_context_ptr->kresid_func_context_);
 }
 
-template<>
-void NLKEigenvalueAGSSolver<SNESTypes>::SetJacobian()
+template <>
+void
+NLKEigenvalueAGSSolver<SNESTypes>::SetJacobian()
 {
   MatCreateSNESMF(nl_solver_, &J_);
   SNESSetJacobian(nl_solver_, J_, J_, MatMFFDComputeJacobian, nullptr);
 }
 
-template<>
-void NLKEigenvalueAGSSolver<SNESTypes>::SetInitialGuess()
+template <>
+void
+NLKEigenvalueAGSSolver<SNESTypes>::SetInitialGuess()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
   auto& lbs_solver = nl_context_ptr->lbs_solver_;
   const auto& groupset_ids = nl_context_ptr->groupset_ids;
 
-  lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(
-    groupset_ids, x_, PhiSTLOption::PHI_OLD);
+  lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(groupset_ids, x_, PhiSTLOption::PHI_OLD);
 }
 
-template<>
-void NLKEigenvalueAGSSolver<SNESTypes>::PostSolveCallback()
+template <>
+void
+NLKEigenvalueAGSSolver<SNESTypes>::PostSolveCallback()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
@@ -123,11 +126,9 @@ void NLKEigenvalueAGSSolver<SNESTypes>::PostSolveCallback()
 
   //================================================== Print summary
   Chi::log.Log() << "\n"
-                 << "        Final k-eigenvalue    :        "
-                 << std::fixed << std::setw(10) << std::setprecision(7)
-                 << k_eff
-                 << " (num_TrOps:" << number_of_func_evals << ")"
+                 << "        Final k-eigenvalue    :        " << std::fixed << std::setw(10)
+                 << std::setprecision(7) << k_eff << " (num_TrOps:" << number_of_func_evals << ")"
                  << "\n";
 }
 
-}//namespace lbs
+} // namespace lbs

@@ -3,8 +3,8 @@
 
 namespace chi_math
 {
-template<class PCType, class VecType>
+template <class PCType, class VecType>
 int PreconditionerApplication(PCType pc, VecType vector, VecType action);
-}//namespace chi_math
+} // namespace chi_math
 
-#endif //CHITECH_PRECONDITIONER_APPLY_H
+#endif // CHITECH_PRECONDITIONER_APPLY_H

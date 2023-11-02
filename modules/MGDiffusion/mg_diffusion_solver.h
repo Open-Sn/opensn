@@ -17,16 +17,17 @@
 // forward declaration
 namespace chi_mesh
 {
-class MeshContinuum; 
+class MeshContinuum;
 typedef std::shared_ptr<MeshContinuum> MeshContinuumPtr;
-}
+} // namespace chi_mesh
 namespace chi_math
 {
-class SpatialDiscretization; 
-typedef std::shared_ptr<SpatialDiscretization> SDMPtr ;
-}
+class SpatialDiscretization;
+typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
+} // namespace chi_math
 
-namespace mg_diffusion {
+namespace mg_diffusion
+{
 
 struct KSPAppContext
 {
@@ -40,15 +41,15 @@ struct TwoGridCollapsedInfo
   std::vector<double> spectrum;
 };
 
-//struct Multigroup_D_and_sigR
+// struct Multigroup_D_and_sigR
 //{
-//  std::vector<double> Dg;
-//  std::vector<double> sigR;
-//};
+//   std::vector<double> Dg;
+//   std::vector<double> sigR;
+// };
 
 /** Multi-group diffusion solver
- * 
-*/
+ *
+ */
 class Solver : public chi_physics::Solver
 {
 public:
@@ -69,27 +70,26 @@ public:
   std::vector<Vec> x_old_; // vector of old fluxes
 
   Vec thermal_dphi_ = nullptr; // error vector for thermal fluxes
-  Vec b_ = nullptr; // actual rhs vector for the linear system A[g] x[g] = b
+  Vec b_ = nullptr;            // actual rhs vector for the linear system A[g] x[g] = b
 
   chi_math::PETScUtils::PETScSolverSetup petsc_solver_;
   KSPAppContext my_app_context_;
 
-  std::vector< std::vector<double> > VF_;
+  std::vector<std::vector<double>> VF_;
 
-//  typedef std::pair<BoundaryType,std::vector<double>> BoundaryInfo;
-  typedef std::pair<BoundaryType,std::array<std::vector<double>, 3>>
-                                                  BoundaryInfo;
+  //  typedef std::pair<BoundaryType,std::vector<double>> BoundaryInfo;
+  typedef std::pair<BoundaryType, std::array<std::vector<double>, 3>> BoundaryInfo;
 
   typedef std::map<uint, BoundaryInfo> BoundaryPreferences;
-  BoundaryPreferences     boundary_preferences_;
-  std::vector<Boundary>   boundaries_;
+  BoundaryPreferences boundary_preferences_;
+  std::vector<Boundary> boundaries_;
 
   explicit Solver(const std::string& in_solver_name);
   ~Solver() override;
 
   void Initialize() override;
 
-  void Initialize_Materials(std::set<int> &material_ids);
+  void Initialize_Materials(std::set<int>& material_ids);
   void Set_BCs(const std::vector<uint64_t>& globl_unique_bndry_ids);
   void Assemble_A_bext();
   void Compute_TwoGrid_Params();
@@ -102,23 +102,18 @@ public:
   void SolveOneGroupProblem(unsigned int g, int64_t iverbose);
   void Update_Flux_With_TwoGrid(int64_t iverbose);
 
-  //04
+  // 04
   void UpdateFieldFunctions();
 
 protected:
-  std::map<int,std::shared_ptr<chi_physics::MultiGroupXS>>
-  matid_to_xs_map;
+  std::map<int, std::shared_ptr<chi_physics::MultiGroupXS>> matid_to_xs_map;
 
-  std::map<int,std::shared_ptr<chi_physics::IsotropicMultiGrpSource>>
-  matid_to_src_map;
+  std::map<int, std::shared_ptr<chi_physics::IsotropicMultiGrpSource>> matid_to_src_map;
 
   std::map<int, TwoGridCollapsedInfo> map_mat_id_2_tginfo;
-//  std::map<int, Multigroup_D_and_sigR> map_mat_id_2_tgXS;
-
+  //  std::map<int, Multigroup_D_and_sigR> map_mat_id_2_tgXS;
 };
 
 } // namespace mg_diffusion
 
-
-#endif //MG_DIFFUSION_SOLVER_H
-
+#endif // MG_DIFFUSION_SOLVER_H

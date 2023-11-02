@@ -8,7 +8,8 @@
 #include "chi_log.h"
 
 /**Main execution function.*/
-void lbs::DiscreteOrdinatesAdjointSolver::Execute()
+void
+lbs::DiscreteOrdinatesAdjointSolver::Execute()
 {
   const std::string fname = __FUNCTION__;
 
@@ -22,10 +23,10 @@ void lbs::DiscreteOrdinatesAdjointSolver::Execute()
     for (const auto& group : groupset.groups_)
       set_group_numbers.insert(group.id_);
 
-  const auto& m_to_ell_em_map =
-    groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap();
+  const auto& m_to_ell_em_map = groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap();
 
-  //============================================= Reorient phi-moments for reverse
+  //============================================= Reorient phi-moments for
+  // reverse
   //                                              angle
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -38,14 +39,13 @@ void lbs::DiscreteOrdinatesAdjointSolver::Execute()
       {
         const auto& ell = m_to_ell_em_map[m].ell;
 
-        size_t dof_map_g0 = cell_view.MapDOF(i, m, 0); //unknown map
+        size_t dof_map_g0 = cell_view.MapDOF(i, m, 0); // unknown map
 
         for (int g : set_group_numbers)
           phi_old_local_[dof_map_g0 + g] *= pow(-1.0, ell);
-      }//for moment
-    }//node i
-  }//for cell
+      } // for moment
+    }   // node i
+  }     // for cell
 
   UpdateFieldFunctions();
-
 }

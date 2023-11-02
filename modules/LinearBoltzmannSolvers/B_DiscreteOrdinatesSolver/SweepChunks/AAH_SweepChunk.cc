@@ -8,18 +8,17 @@
 namespace lbs
 {
 
-AAH_SweepChunk::AAH_SweepChunk(
-  const chi_mesh::MeshContinuum& grid,
-  const chi_math::SpatialDiscretization& discretization,
-  const std::vector<UnitCellMatrices>& unit_cell_matrices,
-  std::vector<lbs::CellLBSView>& cell_transport_views,
-  std::vector<double>& destination_phi,
-  std::vector<double>& destination_psi,
-  const std::vector<double>& source_moments,
-  const LBSGroupset& groupset,
-  const std::map<int, XSPtr>& xs,
-  int num_moments,
-  int max_num_cell_dofs)
+AAH_SweepChunk::AAH_SweepChunk(const chi_mesh::MeshContinuum& grid,
+                               const chi_math::SpatialDiscretization& discretization,
+                               const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                               std::vector<lbs::CellLBSView>& cell_transport_views,
+                               std::vector<double>& destination_phi,
+                               std::vector<double>& destination_psi,
+                               const std::vector<double>& source_moments,
+                               const LBSGroupset& groupset,
+                               const std::map<int, XSPtr>& xs,
+                               int num_moments,
+                               int max_num_cell_dofs)
   : SweepChunk(destination_phi,
                destination_psi,
                grid,
@@ -38,12 +37,9 @@ AAH_SweepChunk::AAH_SweepChunk(
                  std::bind(&SweepChunk::KernelFEMVolumetricGradientTerm, this));
   RegisterKernel("FEMUpwindSurfaceIntegrals",
                  std::bind(&SweepChunk::KernelFEMUpwindSurfaceIntegrals, this));
-  RegisterKernel("FEMSSTDMassTerms",
-                 std::bind(&SweepChunk::KernelFEMSTDMassTerms, this));
-  RegisterKernel("KernelPhiUpdate",
-                 std::bind(&SweepChunk::KernelPhiUpdate, this));
-  RegisterKernel("KernelPsiUpdate",
-                 std::bind(&SweepChunk::KernelPsiUpdate, this));
+  RegisterKernel("FEMSSTDMassTerms", std::bind(&SweepChunk::KernelFEMSTDMassTerms, this));
+  RegisterKernel("KernelPhiUpdate", std::bind(&SweepChunk::KernelPhiUpdate, this));
+  RegisterKernel("KernelPsiUpdate", std::bind(&SweepChunk::KernelPsiUpdate, this));
 
   // ================================== Setup callbacks
   cell_data_callbacks_ = {};
@@ -59,10 +55,10 @@ AAH_SweepChunk::AAH_SweepChunk(
   post_cell_dir_sweep_callbacks_ = {};
 }
 
-void AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
+void
+AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
 {
-  const chi::SubSetInfo& grp_ss_info =
-    groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
+  const chi::SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
 
   gs_ss_size_ = grp_ss_info.ss_size;
   gs_ss_begin_ = grp_ss_info.ss_begin;
@@ -167,11 +163,7 @@ void AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
           ++preloc_face_counter;
 
         sweep_dependency_interface_.SetupIncomingFace(
-          f,
-          cell_mapping_->NumFaceNodes(f),
-          face.neighbor_id_,
-          local,
-          boundary);
+          f, cell_mapping_->NumFaceNodes(f), face.neighbor_id_, local, boundary);
 
         aah_sweep_depinterf.in_face_counter = in_face_counter;
         aah_sweep_depinterf.preloc_face_counter = preloc_face_counter;
@@ -214,12 +206,7 @@ void AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
         if (not boundary and not local) ++deploc_face_counter;
 
         sweep_dependency_interface_.SetupOutgoingFace(
-          f,
-          cell_mapping_->NumFaceNodes(f),
-          face.neighbor_id_,
-          local,
-          boundary,
-          locality);
+          f, cell_mapping_->NumFaceNodes(f), face.neighbor_id_, local, boundary, locality);
 
         aah_sweep_depinterf.out_face_counter = out_face_counter;
         aah_sweep_depinterf.deploc_face_counter = deploc_face_counter;
@@ -238,11 +225,9 @@ AAH_SweepDependencyInterface::GetUpwindPsi(int face_node_local_idx) const
 {
   const double* psi;
   if (on_local_face_)
-    psi = fluds_->UpwindPsi(
-      spls_index, in_face_counter, face_node_local_idx, 0, angle_set_index_);
+    psi = fluds_->UpwindPsi(spls_index, in_face_counter, face_node_local_idx, 0, angle_set_index_);
   else if (not on_boundary_)
-    psi = fluds_->NLUpwindPsi(
-      preloc_face_counter, face_node_local_idx, 0, angle_set_index_);
+    psi = fluds_->NLUpwindPsi(preloc_face_counter, face_node_local_idx, 0, angle_set_index_);
   else
     psi = angle_set_->PsiBndry(neighbor_id_,
                                angle_num_,
@@ -260,11 +245,9 @@ AAH_SweepDependencyInterface::GetDownwindPsi(int face_node_local_idx) const
 {
   double* psi;
   if (on_local_face_)
-    psi = fluds_->OutgoingPsi(
-      spls_index, out_face_counter, face_node_local_idx, angle_set_index_);
+    psi = fluds_->OutgoingPsi(spls_index, out_face_counter, face_node_local_idx, angle_set_index_);
   else if (not on_boundary_)
-    psi = fluds_->NLOutgoingPsi(
-      deploc_face_counter, face_node_local_idx, angle_set_index_);
+    psi = fluds_->NLOutgoingPsi(deploc_face_counter, face_node_local_idx, angle_set_index_);
   else if (is_reflecting_bndry_)
     psi = angle_set_->ReflectingPsiOutBoundBndry(neighbor_id_,
                                                  angle_num_,

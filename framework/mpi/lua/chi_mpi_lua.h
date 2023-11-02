@@ -3,12 +3,11 @@
 
 #include "chi_lua.h"
 
-
 namespace chi_mpi_utils
 {
 
-int chiMPIBarrier(lua_State *L);
+int chiMPIBarrier(lua_State* L);
 
-}//namespace chi_mesh
+} // namespace chi_mpi_utils
 
-#endif //CHITECH_CHI_MPI_LUA_H
+#endif // CHITECH_CHI_MPI_LUA_H

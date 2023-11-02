@@ -13,29 +13,26 @@ namespace chi
 
 RegisterChiObject(chi, AggregateNodalValuePostProcessor);
 
-InputParameters AggregateNodalValuePostProcessor::GetInputParameters()
+InputParameters
+AggregateNodalValuePostProcessor::GetInputParameters()
 {
   InputParameters params = PostProcessor::GetInputParameters();
   params += chi_physics::GridBasedFieldFunctionInterface::GetInputParameters();
   params += chi_mesh::LogicalVolumeInterface::GetInputParameters();
 
-  params.SetGeneralDescription(
-    "Gets the max/min/avg nodal value of a field function "
-    "among nodal values.");
+  params.SetGeneralDescription("Gets the max/min/avg nodal value of a field function "
+                               "among nodal values.");
   params.SetDocGroup("doc_PostProcessors");
 
-  params.AddRequiredParameter<std::string>(
-    "operation", "The required operation to be performed.");
+  params.AddRequiredParameter<std::string>("operation", "The required operation to be performed.");
 
   using namespace chi_data_types;
-  params.ConstrainParameterRange(
-    "operation", AllowableRangeList::New({"max", "min", "avg"}));
+  params.ConstrainParameterRange("operation", AllowableRangeList::New({"max", "min", "avg"}));
 
   return params;
 }
 
-AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(
-  const InputParameters& params)
+AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
     chi_physics::GridBasedFieldFunctionInterface(params),
     chi_mesh::LogicalVolumeInterface(params),
@@ -44,7 +41,8 @@ AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(
 }
 
 // ##################################################################
-void AggregateNodalValuePostProcessor::Initialize()
+void
+AggregateNodalValuePostProcessor::Initialize()
 {
   const auto* grid_field_function = GetGridBasedFieldFunction();
 
@@ -64,15 +62,15 @@ void AggregateNodalValuePostProcessor::Initialize()
   else
   {
     for (const auto& cell : grid.local_cells)
-      if (logical_volume_ptr_->Inside(cell.centroid_))
-        cell_local_ids_.push_back(cell.local_id_);
+      if (logical_volume_ptr_->Inside(cell.centroid_)) cell_local_ids_.push_back(cell.local_id_);
   }
 
   initialized_ = true;
 }
 
 // ##################################################################
-void AggregateNodalValuePostProcessor::Execute(const Event& event_context)
+void
+AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 {
   if (not initialized_) Initialize();
 
@@ -92,8 +90,7 @@ void AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 
   const auto field_data = ref_ff.GetGhostedFieldVector();
   const size_t num_local_dofs =
-    ref_ff.GetSpatialDiscretization().GetNumLocalDOFs(
-      ref_ff.GetUnknownManager());
+    ref_ff.GetSpatialDiscretization().GetNumLocalDOFs(ref_ff.GetUnknownManager());
 
   double local_max_value = 0.0;
   double local_min_value = 0.0;
@@ -160,16 +157,14 @@ void AggregateNodalValuePostProcessor::Execute(const Event& event_context)
                   Chi::mpi.comm); // communicator
 
     const size_t num_globl_dofs =
-      ref_ff.GetSpatialDiscretization().GetNumGlobalDOFs(
-        ref_ff.GetUnknownManager());
+      ref_ff.GetSpatialDiscretization().GetNumGlobalDOFs(ref_ff.GetUnknownManager());
     value_ = ParameterBlock("", globl_accumulation / double(num_globl_dofs));
   }
   else
     ChiLogicalError("Unsupported operation type \"" + operation_ + "\".");
 
   const int event_code = event_context.Code();
-  if (event_code == 32 /*SolverInitialized*/ or
-      event_code == 38 /*SolverAdvanced*/)
+  if (event_code == 32 /*SolverInitialized*/ or event_code == 38 /*SolverAdvanced*/)
   {
     const auto& event_params = event_context.Parameters();
 

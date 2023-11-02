@@ -8,18 +8,18 @@ namespace lbs
 
 //###################################################################
 /**Constructor for an adjoint source function.*/
-AdjointSourceFunction::
-  AdjointSourceFunction(const LBSSolver &lbs_solver) :
-  SourceFunction(lbs_solver)
-{}
+AdjointSourceFunction::AdjointSourceFunction(const LBSSolver& lbs_solver)
+  : SourceFunction(lbs_solver)
+{
+}
 
 //###################################################################
 /**Adds Quantities of Interest to the nodal sources.*/
-void AdjointSourceFunction::
-  AddVolumetricQOISources(LBSGroupset& groupset,
-                          std::vector<double>& destination_q,
-                          const std::vector<double>&,
-                          SourceFlags source_flags)
+void
+AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
+                                               std::vector<double>& destination_q,
+                                               const std::vector<double>&,
+                                               SourceFlags source_flags)
 {
   const std::string fname = "AdjointSourceFunction::AddVolumetricQOISources";
 
@@ -36,7 +36,7 @@ void AdjointSourceFunction::
   const auto& grid = adjoint_solver.Grid();
   const auto num_groups = adjoint_solver.NumGroups();
 
-  const bool apply_fixed_src       = (source_flags & APPLY_FIXED_SOURCES);
+  const bool apply_fixed_src = (source_flags & APPLY_FIXED_SOURCES);
 
   const auto gs_i = static_cast<size_t>(groupset.groups_.front().id_);
   const auto gs_f = static_cast<size_t>(groupset.groups_.back().id_);
@@ -57,13 +57,13 @@ void AdjointSourceFunction::
           const int num_nodes = full_cell_view.NumNodes();
           for (int i = 0; i < num_nodes; ++i)
           {
-            size_t uk_map = full_cell_view.MapDOF(i, 0, 0); //unknown map
+            size_t uk_map = full_cell_view.MapDOF(i, 0, 0); // unknown map
             for (size_t g = gs_i; g <= gs_f; ++g)
               destination_q[uk_map + g] += response[g];
-          }//for node
-        }//for local cell-id of qoi
-      }//if ref-qoi
-    }//for qoi
+          } // for node
+        }   // for local cell-id of qoi
+      }     // if ref-qoi
+    }       // for qoi
 }
 
-}//namespace lbs
+} // namespace lbs

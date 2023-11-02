@@ -1,8 +1,6 @@
 #ifndef _chi_math_cdfsampler_h
 #define _chi_math_cdfsampler_h
 
-
-
 //###################################################################
 /**Object for implementing an efficient cdf sampler.
  *
@@ -27,19 +25,19 @@ class chi_math::CDFSampler
 {
 public:
   struct SubIntvl;
-  static const int AUTO_SUBDIV  = -1;
+  static const int AUTO_SUBDIV = -1;
   static const int AUTO_FINERES = -2;
 
 private:
   int subdiv_factor_;
   int final_res_;
-  std::vector<double>&   ref_cdf_;
+  std::vector<double>& ref_cdf_;
   std::vector<SubIntvl*> sub_intvls_;
 
 public:
   CDFSampler(std::vector<double>& in_cdf,
-             int subdiv_factor=AUTO_SUBDIV,
-             int final_res=AUTO_FINERES);
+             int subdiv_factor = AUTO_SUBDIV,
+             int final_res = AUTO_FINERES);
 
   int Sample(double x);
 };
@@ -50,21 +48,22 @@ struct chi_math::CDFSampler::SubIntvl
 {
   int cbin_i;
   int cbin_f;
-  std::vector<double>&   ref_cdf;
+  std::vector<double>& ref_cdf;
   bool inhibited;
 
   std::vector<SubIntvl*> sub_intvls;
 
   std::string offset;
 
-  SubIntvl(std::string offset, int ibin, int fbin,
+  SubIntvl(std::string offset,
+           int ibin,
+           int fbin,
            std::vector<double>& in_cdf,
-           int subdiv_factor=10,
-           int final_res=10,
-           bool inhibit=false);
+           int subdiv_factor = 10,
+           int final_res = 10,
+           bool inhibit = false);
 
-  bool Sample(double x, std::pair<int,int>& range);
+  bool Sample(double x, std::pair<int, int>& range);
 };
-
 
 #endif

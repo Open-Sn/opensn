@@ -1,8 +1,6 @@
 #include "adjoint_mgxs.h"
 
-
-chi_physics::AdjointMGXS::
-AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
+chi_physics::AdjointMGXS::AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
 {
   // transpose transfer matrices
   for (unsigned int ell = 0; ell <= xs_.ScatteringOrder(); ++ell)
@@ -19,7 +17,7 @@ AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
         S_ell_transpose.Insert(*col_ptr++, g, *val_ptr++);
     }
     transposed_transfer_matrices_.push_back(S_ell_transpose);
-  }//for ell
+  } // for ell
 
   // transpose production matrices
   if (xs_.IsFissionable())

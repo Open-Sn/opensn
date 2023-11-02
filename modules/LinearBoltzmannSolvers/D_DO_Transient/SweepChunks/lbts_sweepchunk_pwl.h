@@ -10,7 +10,6 @@
 #include "Ca_DO_SteadyState/lbs_DO_steady_state.h"
 #include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
-
 namespace lbs
 {
 //###################################################################
@@ -34,34 +33,31 @@ protected:
   const double theta_;
   const double dt_;
 
-  //Runtime params
+  // Runtime params
   bool a_and_b_initialized_;
   std::vector<std::vector<double>> Amat_;
   std::vector<std::vector<double>> Atemp_;
   std::vector<double> source_;
 
-
 public:
   std::vector<std::vector<double>> b_;
 
-  SweepChunkPWLTransientTheta(
-    std::shared_ptr<chi_mesh::MeshContinuum> grid_ptr,
-    chi_math::SpatialDiscretization& discretization,
-    const std::vector<UnitCellMatrices>& unit_cell_matrices,
-    std::vector<lbs::CellLBSView>& cell_transport_views,
-    std::vector<double>& destination_phi,
-    std::vector<double>& destination_psi,
-    const std::vector<double>& psi_prev_ref,
-    double input_theta,
-    double time_step,
-    const std::vector<double>& source_moments,
-    LBSGroupset& groupset,
-    const std::map<int, XSPtr>& xs,
-    int num_moments,
-    int max_num_cell_dofs);
+  SweepChunkPWLTransientTheta(std::shared_ptr<chi_mesh::MeshContinuum> grid_ptr,
+                              chi_math::SpatialDiscretization& discretization,
+                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                              std::vector<lbs::CellLBSView>& cell_transport_views,
+                              std::vector<double>& destination_phi,
+                              std::vector<double>& destination_psi,
+                              const std::vector<double>& psi_prev_ref,
+                              double input_theta,
+                              double time_step,
+                              const std::vector<double>& source_moments,
+                              LBSGroupset& groupset,
+                              const std::map<int, XSPtr>& xs,
+                              int num_moments,
+                              int max_num_cell_dofs);
 
   void Sweep(chi_mesh::sweep_management::AngleSet* angle_set) override;
-
 
   struct Upwinder
   {
@@ -82,14 +78,9 @@ public:
     bool surface_source_active;
 
     const double* GetUpwindPsi(int fj, bool local, bool boundary) const;
-    double* GetDownwindPsi(int fi,
-                           bool local,
-                           bool boundary,
-                           bool reflecting_bndry) const;
+    double* GetDownwindPsi(int fi, bool local, bool boundary, bool reflecting_bndry) const;
   };
-
 };
-}
+} // namespace lbs
 
-
-#endif //LBTS_SWEEPCHUNK_PWL_H
+#endif // LBTS_SWEEPCHUNK_PWL_H

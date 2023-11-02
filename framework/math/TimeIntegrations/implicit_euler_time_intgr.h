@@ -10,8 +10,7 @@ class ImplicitEulerTimeIntegration : public ThetaSchemeTimeIntegration
 {
 public:
   static chi::InputParameters GetInputParameters();
-  explicit ImplicitEulerTimeIntegration(
-    const chi::InputParameters& params);
+  explicit ImplicitEulerTimeIntegration(const chi::InputParameters& params);
 };
 
 } // namespace chi_math

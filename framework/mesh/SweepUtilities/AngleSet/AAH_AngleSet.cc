@@ -10,32 +10,25 @@ namespace chi_mesh::sweep_management
 
 // ###################################################################
 /**AngleSet constructor.*/
-AAH_AngleSet::AAH_AngleSet(
-  size_t id,
-  size_t in_numgrps,
-  size_t in_ref_subset,
-  const SPDS& in_spds,
-  std::shared_ptr<FLUDS>& in_fluds,
-  std::vector<size_t>& angle_indices,
-  std::map<uint64_t, std::shared_ptr<SweepBndry>>& sim_boundaries,
-  int sweep_eager_limit,
-  const chi::ChiMPICommunicatorSet& in_comm_set)
-  : AngleSet(id,
-             in_numgrps,
-             in_spds,
-             in_fluds,
-             angle_indices,
-             sim_boundaries,
-             in_ref_subset),
-    async_comm_(
-      *in_fluds, num_grps, angle_indices.size(), sweep_eager_limit, in_comm_set)
+AAH_AngleSet::AAH_AngleSet(size_t id,
+                           size_t in_numgrps,
+                           size_t in_ref_subset,
+                           const SPDS& in_spds,
+                           std::shared_ptr<FLUDS>& in_fluds,
+                           std::vector<size_t>& angle_indices,
+                           std::map<uint64_t, std::shared_ptr<SweepBndry>>& sim_boundaries,
+                           int sweep_eager_limit,
+                           const chi::ChiMPICommunicatorSet& in_comm_set)
+  : AngleSet(id, in_numgrps, in_spds, in_fluds, angle_indices, sim_boundaries, in_ref_subset),
+    async_comm_(*in_fluds, num_grps, angle_indices.size(), sweep_eager_limit, in_comm_set)
 {
 }
 
 // ###################################################################
 /**Initializes delayed upstream data. This method gets called
  * when a sweep scheduler is constructed.*/
-void AAH_AngleSet::InitializeDelayedUpstreamData()
+void
+AAH_AngleSet::InitializeDelayedUpstreamData()
 {
   async_comm_.InitializeDelayedUpstreamData();
 }
@@ -56,8 +49,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
   }
 
   // Check upstream data available
-  Status status =
-    async_comm_.ReceiveUpstreamPsi(static_cast<int>(this->GetID()));
+  Status status = async_comm_.ReceiveUpstreamPsi(static_cast<int>(this->GetID()));
 
   // Also check boundaries
   for (auto& [bid, bndry] : ref_boundaries_)
@@ -68,8 +60,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
     }
 
   if (status == Status::RECEIVING) return status;
-  else if (status == Status::READY_TO_EXECUTE and
-           permission == ExecutionPermission::EXECUTE)
+  else if (status == Status::READY_TO_EXECUTE and permission == ExecutionPermission::EXECUTE)
   {
     async_comm_.InitializeLocalAndDownstreamBuffers();
 
@@ -94,7 +85,8 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
 
 // ###################################################################
 /***/
-AngleSetStatus AAH_AngleSet::FlushSendBuffers()
+AngleSetStatus
+AAH_AngleSet::FlushSendBuffers()
 {
   if (!async_comm_.DoneSending()) async_comm_.ClearDownstreamBuffers();
 
@@ -105,21 +97,24 @@ AngleSetStatus AAH_AngleSet::FlushSendBuffers()
 
 // ###################################################################
 /**Returns the maximum buffer size from the sweepbuffer.*/
-int AAH_AngleSet::GetMaxBufferMessages() const
+int
+AAH_AngleSet::GetMaxBufferMessages() const
 {
   return async_comm_.max_num_mess;
 }
 
 // ###################################################################
 /**Sets the maximum buffer size for the sweepbuffer.*/
-void AAH_AngleSet::SetMaxBufferMessages(int new_max)
+void
+AAH_AngleSet::SetMaxBufferMessages(int new_max)
 {
   async_comm_.max_num_mess = new_max;
 }
 
 // ###################################################################
 /**Resets the sweep buffer.*/
-void AAH_AngleSet::ResetSweepBuffers()
+void
+AAH_AngleSet::ResetSweepBuffers()
 {
   async_comm_.Reset();
   executed_ = false;
@@ -127,21 +122,23 @@ void AAH_AngleSet::ResetSweepBuffers()
 
 // ###################################################################
 /**Instructs the sweep buffer to receive delayed data.*/
-bool AAH_AngleSet::ReceiveDelayedData()
+bool
+AAH_AngleSet::ReceiveDelayedData()
 {
   return async_comm_.ReceiveDelayedData(static_cast<int>(this->GetID()));
 }
 
 // ###################################################################
 /**Returns a pointer to a boundary flux data.*/
-const double* AAH_AngleSet::PsiBndry(uint64_t bndry_map,
-                                     unsigned int angle_num,
-                                     uint64_t cell_local_id,
-                                     unsigned int face_num,
-                                     unsigned int fi,
-                                     int g,
-                                     size_t gs_ss_begin,
-                                     bool surface_source_active)
+const double*
+AAH_AngleSet::PsiBndry(uint64_t bndry_map,
+                       unsigned int angle_num,
+                       uint64_t cell_local_id,
+                       unsigned int face_num,
+                       unsigned int fi,
+                       int g,
+                       size_t gs_ss_begin,
+                       bool surface_source_active)
 {
   if (ref_boundaries_[bndry_map]->IsReflecting())
     return ref_boundaries_[bndry_map]->HeterogeneousPsiIncoming(
@@ -155,12 +152,13 @@ const double* AAH_AngleSet::PsiBndry(uint64_t bndry_map,
 
 // ###################################################################
 /**Returns a pointer to outbound boundary flux data.*/
-double* AAH_AngleSet::ReflectingPsiOutBoundBndry(uint64_t bndry_map,
-                                                 unsigned int angle_num,
-                                                 uint64_t cell_local_id,
-                                                 unsigned int face_num,
-                                                 unsigned int fi,
-                                                 size_t gs_ss_begin)
+double*
+AAH_AngleSet::ReflectingPsiOutBoundBndry(uint64_t bndry_map,
+                                         unsigned int angle_num,
+                                         uint64_t cell_local_id,
+                                         unsigned int face_num,
+                                         unsigned int fi,
+                                         size_t gs_ss_begin)
 {
   return ref_boundaries_[bndry_map]->HeterogeneousPsiOutgoing(
     cell_local_id, face_num, fi, angle_num, gs_ss_begin);

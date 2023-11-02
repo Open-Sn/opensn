@@ -3,10 +3,11 @@
 namespace chi_math::cell_mapping
 {
 
-double PieceWiseLinearSlabMapping::SlabShape(uint32_t index,
-                                    const chi_mesh::Vector3& qpoint,
-                                    bool on_surface,
-                                    uint32_t edge) const
+double
+PieceWiseLinearSlabMapping::SlabShape(uint32_t index,
+                                      const chi_mesh::Vector3& qpoint,
+                                      bool on_surface,
+                                      uint32_t edge) const
 {
   double xi = 0.0;
   if (!on_surface) xi = qpoint.x;
@@ -21,7 +22,8 @@ double PieceWiseLinearSlabMapping::SlabShape(uint32_t index,
   return value;
 }
 
-double PieceWiseLinearSlabMapping::SlabGradShape(uint32_t index) const
+double
+PieceWiseLinearSlabMapping::SlabGradShape(uint32_t index) const
 {
   double value = 0.0;
 

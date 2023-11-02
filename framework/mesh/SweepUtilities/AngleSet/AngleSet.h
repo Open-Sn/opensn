@@ -20,12 +20,13 @@ class AngleSet
 public:
   typedef std::shared_ptr<SweepBndry> SweepBndryPtr;
 
-  AngleSet(size_t id, size_t num_groups, const SPDS& spds,
+  AngleSet(size_t id,
+           size_t num_groups,
+           const SPDS& spds,
            std::shared_ptr<FLUDS>& fluds,
            const std::vector<size_t>& angle_indices,
            std::map<uint64_t, SweepBndryPtr>& sim_boundaries,
            size_t in_ref_subset);
-
 
   size_t GetID() const;
   const SPDS& GetSPDS() const;
@@ -37,7 +38,6 @@ public:
   size_t GetNumGroups() const;
   size_t GetNumAngles() const;
 
-
   // Virtual methods
   virtual AsynchronousCommunicator* GetCommunicator();
   virtual void InitializeDelayedUpstreamData() = 0;
@@ -46,10 +46,9 @@ public:
 
   virtual void SetMaxBufferMessages(int new_max) = 0;
 
-  virtual AngleSetStatus AngleSetAdvance(
-    SweepChunk& sweep_chunk,
-    const std::vector<size_t>& timing_tags,
-    ExecutionPermission permission) = 0;
+  virtual AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk,
+                                         const std::vector<size_t>& timing_tags,
+                                         ExecutionPermission permission) = 0;
   virtual AngleSetStatus FlushSendBuffers() = 0;
   virtual void ResetSweepBuffers() = 0;
   virtual bool ReceiveDelayedData() = 0;
@@ -82,8 +81,6 @@ protected:
 
   bool executed_ = false;
 };
-
-
 
 } // namespace chi_mesh::sweep_management
 

@@ -60,17 +60,17 @@ public:
   const std::vector<std::string>& PrintScope() const;
 
   /**Converts a scalar value into a string format based on this post-processor's
-  * numeric specifications.*/
+   * numeric specifications.*/
   std::string ConvertScalarValueToString(const ParameterBlock& value) const;
 
   /**Converts a scalar and vector values into a string format based on this
-  * post-processor's numeric specifications.*/
+   * post-processor's numeric specifications.*/
   std::string ConvertValueToString(const ParameterBlock& value) const;
-
 
   virtual ~PostProcessor() = default;
 
   static InputParameters GetInputParameters();
+
 protected:
   explicit PostProcessor(const InputParameters& params, PPType type);
 
@@ -78,8 +78,6 @@ protected:
 
   /**Sets the post-processor's generic type.*/
   void SetType(PPType type);
-
-
 
   const std::string name_;
   std::vector<std::string> subscribed_events_for_execution_;
@@ -92,7 +90,6 @@ protected:
   const PPNumericFormat print_numeric_format_ = PPNumericFormat::GENERAL;
   const size_t print_precision_ = 6;
   std::string solvername_filter_;
-
 
 private:
   static PPNumericFormat ConstructNumericFormat(const std::string& format_string);

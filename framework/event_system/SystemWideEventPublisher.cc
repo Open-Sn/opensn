@@ -3,19 +3,20 @@
 namespace chi
 {
 
-SystemWideEventPublisher::SystemWideEventPublisher()
-  : chi::EventPublisher("SystemWide")
+SystemWideEventPublisher::SystemWideEventPublisher() : chi::EventPublisher("SystemWide")
 {
 }
 
-SystemWideEventPublisher& SystemWideEventPublisher::GetInstance()
+SystemWideEventPublisher&
+SystemWideEventPublisher::GetInstance()
 {
   static SystemWideEventPublisher instance;
 
   return instance;
 }
 
-void SystemWideEventPublisher::PublishEvent(const chi::Event& event)
+void
+SystemWideEventPublisher::PublishEvent(const chi::Event& event)
 {
   EventPublisher::PublishEvent(event);
 }

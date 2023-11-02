@@ -18,14 +18,14 @@
 #define sc_double static_cast<double>
 #define sc_int64_t static_cast<int64_t>
 
-#define GetGSContextPtr(x)                                                     \
-  std::dynamic_pointer_cast<WGSContext<Mat, Vec, KSP>>(x)
+#define GetGSContextPtr(x) std::dynamic_pointer_cast<WGSContext<Mat, Vec, KSP>>(x)
 
 namespace lbs
 {
 
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::PreSetupCallback()
+void
+WGSLinearSolver<Mat, Vec, KSP>::PreSetupCallback()
 {
   auto gs_context_ptr = GetGSContextPtr(context_ptr_);
 
@@ -33,13 +33,15 @@ void WGSLinearSolver<Mat, Vec, KSP>::PreSetupCallback()
 }
 
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::SetConvergenceTest()
+void
+WGSLinearSolver<Mat, Vec, KSP>::SetConvergenceTest()
 {
   KSPSetConvergenceTest(solver_, &GSConvergenceTest, nullptr, nullptr);
 }
 
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::SetSystemSize()
+void
+WGSLinearSolver<Mat, Vec, KSP>::SetSystemSize()
 {
   auto gs_context_ptr = GetGSContextPtr(context_ptr_);
   const auto sizes = gs_context_ptr->SystemSize();
@@ -49,12 +51,12 @@ void WGSLinearSolver<Mat, Vec, KSP>::SetSystemSize()
 }
 
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::SetSystem()
+void
+WGSLinearSolver<Mat, Vec, KSP>::SetSystem()
 {
   if (IsSystemSet()) return;
 
-  x_ = chi_math::PETScUtils::CreateVector(sc_int64_t(num_local_dofs_),
-                                          sc_int64_t(num_globl_dofs_));
+  x_ = chi_math::PETScUtils::CreateVector(sc_int64_t(num_local_dofs_), sc_int64_t(num_globl_dofs_));
 
   VecSet(x_, 0.0);
   VecDuplicate(x_, &b_);
@@ -69,8 +71,7 @@ void WGSLinearSolver<Mat, Vec, KSP>::SetSystem()
                  &A_);
 
   //============================================= Set the action-operator
-  MatShellSetOperation(
-    A_, MATOP_MULT, (void (*)())chi_math::LinearSolverMatrixAction<Mat, Vec>);
+  MatShellSetOperation(A_, MATOP_MULT, (void (*)())chi_math::LinearSolverMatrixAction<Mat, Vec>);
 
   //============================================= Set solver operators
   KSPSetOperators(solver_, A_, A_);
@@ -78,7 +79,8 @@ void WGSLinearSolver<Mat, Vec, KSP>::SetSystem()
 }
 
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::SetPreconditioner()
+void
+WGSLinearSolver<Mat, Vec, KSP>::SetPreconditioner()
 {
   if (IsSystemSet()) return;
   auto gs_context_ptr = GetGSContextPtr(context_ptr_);
@@ -87,7 +89,8 @@ void WGSLinearSolver<Mat, Vec, KSP>::SetPreconditioner()
 }
 
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::PostSetupCallback()
+void
+WGSLinearSolver<Mat, Vec, KSP>::PostSetupCallback()
 {
   auto gs_context_ptr = GetGSContextPtr(context_ptr_);
 
@@ -95,7 +98,8 @@ void WGSLinearSolver<Mat, Vec, KSP>::PostSetupCallback()
 }
 
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::PreSolveCallback()
+void
+WGSLinearSolver<Mat, Vec, KSP>::PreSolveCallback()
 {
   auto gs_context_ptr = GetGSContextPtr(context_ptr_);
 
@@ -106,15 +110,15 @@ void WGSLinearSolver<Mat, Vec, KSP>::PreSolveCallback()
  * is large enough the initial guess will be used, otherwise it is assumed
  * zero.*/
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::SetInitialGuess()
+void
+WGSLinearSolver<Mat, Vec, KSP>::SetInitialGuess()
 {
   auto gs_context_ptr = GetGSContextPtr(context_ptr_);
 
   auto& groupset = gs_context_ptr->groupset_;
   auto& lbs_solver = gs_context_ptr->lbs_solver_;
 
-  lbs_solver.SetGSPETScVecFromPrimarySTLvector(
-    groupset, x_, PhiSTLOption::PHI_OLD);
+  lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, x_, PhiSTLOption::PHI_OLD);
 
   double init_guess_norm = 0.0;
   VecNorm(x_, NORM_2, &init_guess_norm);
@@ -122,13 +126,13 @@ void WGSLinearSolver<Mat, Vec, KSP>::SetInitialGuess()
   if (init_guess_norm > 1.0e-10)
   {
     KSPSetInitialGuessNonzero(solver_, PETSC_TRUE);
-    if (gs_context_ptr->log_info_)
-      Chi::log.Log() << "Using phi_old as initial guess.";
+    if (gs_context_ptr->log_info_) Chi::log.Log() << "Using phi_old as initial guess.";
   }
 }
 
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::SetRHS()
+void
+WGSLinearSolver<Mat, Vec, KSP>::SetRHS()
 {
   auto gs_context_ptr = GetGSContextPtr(context_ptr_);
 
@@ -141,29 +145,27 @@ void WGSLinearSolver<Mat, Vec, KSP>::SetRHS()
   // SetSource for RHS
   saved_q_moments_local_ = lbs_solver.QMomentsLocal();
 
-  const bool single_richardson = iterative_method_ == "richardson" and
-                                 tolerance_options_.maximum_iterations == 1;
+  const bool single_richardson =
+    iterative_method_ == "richardson" and tolerance_options_.maximum_iterations == 1;
 
   if (not single_richardson)
   {
-    const int scope =
-      gs_context_ptr->rhs_src_scope_ | ZERO_INCOMING_DELAYED_PSI;
+    const int scope = gs_context_ptr->rhs_src_scope_ | ZERO_INCOMING_DELAYED_PSI;
     gs_context_ptr->set_source_function_(
       groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
 
     //=================================================== Apply transport
-    //operator
+    // operator
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     //=================================================== Assemble PETSc vector
-    lbs_solver.SetGSPETScVecFromPrimarySTLvector(
-      groupset, b_, PhiSTLOption::PHI_NEW);
+    lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, b_, PhiSTLOption::PHI_NEW);
 
     //============================================= Compute RHS norm
     VecNorm(b_, NORM_2, &context_ptr_->rhs_norm);
 
     //============================================= Compute precondition RHS
-    //norm
+    // norm
     PC pc;
     KSPGetPC(solver_, &pc);
     Vec temp_vec;
@@ -178,24 +180,22 @@ void WGSLinearSolver<Mat, Vec, KSP>::SetRHS()
   // RHS, and just suppress the kspsolve part.
   else
   {
-    const int scope = gs_context_ptr->rhs_src_scope_ |
-                      gs_context_ptr->lhs_src_scope_;
+    const int scope = gs_context_ptr->rhs_src_scope_ | gs_context_ptr->lhs_src_scope_;
     gs_context_ptr->set_source_function_(
       groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
 
     //=================================================== Apply transport
-    //operator
+    // operator
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     //=================================================== Assemble PETSc vector
-    lbs_solver.SetGSPETScVecFromPrimarySTLvector(
-      groupset, x_, PhiSTLOption::PHI_NEW);
+    lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, x_, PhiSTLOption::PHI_NEW);
 
     //============================================= Compute RHS norm
     VecNorm(x_, NORM_2, &context_ptr_->rhs_norm);
 
     //============================================= Compute precondition RHS
-    //norm
+    // norm
     PC pc;
     KSPGetPC(solver_, &pc);
     Vec temp_vec;
@@ -210,7 +210,8 @@ void WGSLinearSolver<Mat, Vec, KSP>::SetRHS()
 
 /**For this callback we simply restore the q_moments_local vector.*/
 template <>
-void WGSLinearSolver<Mat, Vec, KSP>::PostSolveCallback()
+void
+WGSLinearSolver<Mat, Vec, KSP>::PostSolveCallback()
 {
   //============================================= Get convergence reason
   if (not GetKSPSolveSuppressionFlag())
@@ -219,9 +220,7 @@ void WGSLinearSolver<Mat, Vec, KSP>::PostSolveCallback()
     KSPGetConvergedReason(solver_, &reason);
     if (reason != KSP_CONVERGED_RTOL and reason != KSP_DIVERGED_ITS)
       Chi::log.Log0Warning() << "Krylov solver failed. "
-                             << "Reason: "
-                             << chi_physics::GetPETScConvergedReasonstring(
-                                  reason);
+                             << "Reason: " << chi_physics::GetPETScConvergedReasonstring(reason);
   }
 
   //============================================= Copy x to local solution
@@ -230,10 +229,8 @@ void WGSLinearSolver<Mat, Vec, KSP>::PostSolveCallback()
   auto& groupset = gs_context_ptr->groupset_;
   auto& lbs_solver = gs_context_ptr->lbs_solver_;
 
-  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(
-    groupset, x_, PhiSTLOption::PHI_NEW);
-  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(
-    groupset, x_, PhiSTLOption::PHI_OLD);
+  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, x_, PhiSTLOption::PHI_NEW);
+  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, x_, PhiSTLOption::PHI_OLD);
 
   //============================================= Restore saved q_moms
   lbs_solver.QMomentsLocal() = saved_q_moments_local_;

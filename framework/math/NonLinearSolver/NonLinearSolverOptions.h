@@ -23,17 +23,17 @@ public:
   double nl_rel_tol_ = 1.0e-8;
   double nl_abs_tol_ = 1.0e-8;
   double nl_sol_tol_ = 1.0e-50;
-  int    nl_max_its_ = 50;
-  int    nl_max_r_evaluations_ = -1;
-  int    l_max_failed_iterations_ = 1000;
+  int nl_max_its_ = 50;
+  int nl_max_r_evaluations_ = -1;
+  int l_max_failed_iterations_ = 1000;
   double l_rel_tol_ = 1.0e-8;
   double l_abs_tol_ = 1.0e-8;
   double l_div_tol_ = 1.0e6;
-  int    l_max_its_ = 100;
-  int    l_gmres_restart_intvl_ = 30;
+  int l_max_its_ = 100;
+  int l_gmres_restart_intvl_ = 30;
   double l_gmres_breakdown_tol_ = 1.0e6;
 };
 
-}
+} // namespace chi_math
 
 #endif // CHITECH_NONLINEARSOLVEROPTIONS_H

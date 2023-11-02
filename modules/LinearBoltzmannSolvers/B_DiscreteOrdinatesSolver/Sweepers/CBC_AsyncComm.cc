@@ -25,23 +25,23 @@ CBC_ASynchronousCommunicator::CBC_ASynchronousCommunicator(
 {
 }
 
-std::vector<double>& CBC_ASynchronousCommunicator::InitGetDownwindMessageData(
-  int location_id,
-  uint64_t cell_global_id,
-  unsigned int face_id,
-  size_t angle_set_id,
-  size_t data_size)
+std::vector<double>&
+CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
+                                                         uint64_t cell_global_id,
+                                                         unsigned int face_id,
+                                                         size_t angle_set_id,
+                                                         size_t data_size)
 {
   MessageKey key{location_id, cell_global_id, face_id};
 
   std::vector<double>& data = outgoing_message_queue_[key];
-  if (data.empty())
-    data.assign(data_size, 0.0);
+  if (data.empty()) data.assign(data_size, 0.0);
 
   return data;
 }
 
-bool CBC_ASynchronousCommunicator::SendData()
+bool
+CBC_ASynchronousCommunicator::SendData()
 {
   typedef int MPIRank;
 
@@ -85,22 +85,20 @@ bool CBC_ASynchronousCommunicator::SendData()
     if (not buffer_item.send_initiated_)
     {
       const int locJ = buffer_item.destination_;
-      chi::MPI_Info::Call(
-        MPI_Isend(buffer_item.data_array_.Data().data(),            // buf
-                  static_cast<int>(buffer_item.data_array_.Size()), // count
-                  MPI_BYTE,                                         //
-                  comm_set_.MapIonJ(locJ, locJ),    // destination
-                  static_cast<int>(angle_set_id_),  // tag
-                  comm_set_.LocICommunicator(locJ), // comm
-                  &buffer_item.mpi_request_));      // request
+      chi::MPI_Info::Call(MPI_Isend(buffer_item.data_array_.Data().data(),            // buf
+                                    static_cast<int>(buffer_item.data_array_.Size()), // count
+                                    MPI_BYTE,                                         //
+                                    comm_set_.MapIonJ(locJ, locJ),                    // destination
+                                    static_cast<int>(angle_set_id_),                  // tag
+                                    comm_set_.LocICommunicator(locJ),                 // comm
+                                    &buffer_item.mpi_request_));                      // request
       buffer_item.send_initiated_ = true;
     }
 
     if (not buffer_item.completed_)
     {
       int sent;
-      chi::MPI_Info::Call(
-        MPI_Test(&buffer_item.mpi_request_, &sent, MPI_STATUS_IGNORE));
+      chi::MPI_Info::Call(MPI_Test(&buffer_item.mpi_request_, &sent, MPI_STATUS_IGNORE));
       if (sent) buffer_item.completed_ = true;
       else
         all_messages_sent = false;
@@ -110,7 +108,8 @@ bool CBC_ASynchronousCommunicator::SendData()
   return all_messages_sent;
 }
 
-std::vector<uint64_t> CBC_ASynchronousCommunicator::ReceiveData()
+std::vector<uint64_t>
+CBC_ASynchronousCommunicator::ReceiveData()
 {
   typedef std::pair<uint64_t, uint> CellFaceKey; // cell_gid + face_id
 
@@ -121,26 +120,24 @@ std::vector<uint64_t> CBC_ASynchronousCommunicator::ReceiveData()
   {
     int message_available = 0;
     MPI_Status status;
-    chi::MPI_Info::Call(
-      MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),    // source
-                 static_cast<int>(angle_set_id_),                  // tag
-                 comm_set_.LocICommunicator(Chi::mpi.location_id), // comm
-                 &message_available,                               // flag
-                 &status));                                        // status
+    chi::MPI_Info::Call(MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),    // source
+                                   static_cast<int>(angle_set_id_),                  // tag
+                                   comm_set_.LocICommunicator(Chi::mpi.location_id), // comm
+                                   &message_available,                               // flag
+                                   &status));                                        // status
 
     if (message_available)
     {
       int num_items;
       MPI_Get_count(&status, MPI_BYTE, &num_items);
       std::vector<std::byte> recv_buffer(num_items);
-      chi::MPI_Info::Call(
-        MPI_Recv(recv_buffer.data(),                            // recv_buffer
-                 num_items,                                     // count
-                 MPI_BYTE,                                      // datatype
-                 comm_set_.MapIonJ(locJ, Chi::mpi.location_id), // src
-                 status.MPI_TAG,                                // tag
-                 comm_set_.LocICommunicator(Chi::mpi.location_id), // comm
-                 MPI_STATUS_IGNORE));                              // status
+      chi::MPI_Info::Call(MPI_Recv(recv_buffer.data(),                               // recv_buffer
+                                   num_items,                                        // count
+                                   MPI_BYTE,                                         // datatype
+                                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),    // src
+                                   status.MPI_TAG,                                   // tag
+                                   comm_set_.LocICommunicator(Chi::mpi.location_id), // comm
+                                   MPI_STATUS_IGNORE));                              // status
 
       chi_data_types::ByteArray data_array(recv_buffer);
 
@@ -159,7 +156,7 @@ std::vector<uint64_t> CBC_ASynchronousCommunicator::ReceiveData()
         cells_who_received_data.push_back(
           fluds_.GetSPDS().Grid().MapCellGlobalID2LocalID(cell_global_id));
       } // while not at end of buffer
-    }// Process each message embedded in buffer
+    }   // Process each message embedded in buffer
   }
 
   cbc_fluds_.DeplocsOutgoingMessages().merge(received_messages);

@@ -4,7 +4,8 @@
 
 //###################################################################
 /**Pushes all of the relevant items of the transport xs to a lua table.*/
-void chi_physics::MultiGroupXS::PushLuaTable(lua_State *L) const
+void
+chi_physics::MultiGroupXS::PushLuaTable(lua_State* L) const
 {
   //================================================== General data
   lua_newtable(L);
@@ -29,9 +30,7 @@ void chi_physics::MultiGroupXS::PushLuaTable(lua_State *L) const
   lua_settable(L, -3);
 
   //================================================== 1D cross sections
-  auto Push1DXS =
-      [L](const std::vector<double>& xs,
-          const std::string& name)
+  auto Push1DXS = [L](const std::vector<double>& xs, const std::string& name)
   {
     lua_pushstring(L, name.c_str());
     lua_newtable(L);
@@ -40,7 +39,7 @@ void chi_physics::MultiGroupXS::PushLuaTable(lua_State *L) const
       for (const auto& val : xs)
       {
         lua_pushinteger(L, ++g);
-        lua_pushnumber(L ,val);
+        lua_pushnumber(L, val);
         lua_settable(L, -3);
       }
     }
@@ -69,13 +68,13 @@ void chi_physics::MultiGroupXS::PushLuaTable(lua_State *L) const
   lua_newtable(L);
   {
     unsigned int g = 0;
-    for (const auto& emission_g: chi_delayed)
+    for (const auto& emission_g : chi_delayed)
     {
       lua_pushinteger(L, ++g);
       lua_newtable(L);
       {
         unsigned int j = 0;
-        for (const auto& val: emission_g)
+        for (const auto& val : emission_g)
         {
           lua_pushinteger(L, ++j);
           lua_pushnumber(L, val);
@@ -88,7 +87,7 @@ void chi_physics::MultiGroupXS::PushLuaTable(lua_State *L) const
   lua_settable(L, -3);
 
   //================================================== Precursor data
-  lua_pushstring(L,"precursor_decay_constants");
+  lua_pushstring(L, "precursor_decay_constants");
   lua_newtable(L);
   {
     unsigned int j = 0;
@@ -127,7 +126,7 @@ void chi_physics::MultiGroupXS::PushLuaTable(lua_State *L) const
         for (unsigned int g = 0; g < matrix.NumRows(); ++g)
         {
           const auto& col_indices = matrix.rowI_indices_[g];
-          const auto& col_values  = matrix.rowI_values_[g];
+          const auto& col_values = matrix.rowI_values_[g];
           size_t num_vals = col_values.size();
 
           lua_pushinteger(L, g + 1);
@@ -167,7 +166,7 @@ void chi_physics::MultiGroupXS::PushLuaTable(lua_State *L) const
         }
         lua_settable(L, -3);
       }
-    }//for g
+    } // for g
   }
   lua_settable(L, -3);
 

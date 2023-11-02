@@ -8,7 +8,7 @@ namespace lbs::acceleration
 {
 
 PetscErrorCode
-  NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
+NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
   NLKEigenDiffContext* nl_context_ptr;
   SNESGetApplicationContext(snes, &nl_context_ptr);
@@ -31,65 +31,61 @@ PetscErrorCode
   const auto& Sf = nl_context_ptr->Sf_;
 
   //============================================= Lambdas
-  auto SetLBSFissionSource = [&active_set_source_function,&front_gs]
-    (const VecDbl& input, VecDbl& output)
+  auto SetLBSFissionSource =
+    [&active_set_source_function, &front_gs](const VecDbl& input, VecDbl& output)
   {
     chi_math::Set(output, 0.0);
-    active_set_source_function(front_gs, output,
-                               input,
-                               APPLY_AGS_FISSION_SOURCES |
-                               APPLY_WGS_FISSION_SOURCES);
+    active_set_source_function(
+      front_gs, output, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
 
-  auto SetLBSScatterSource = [&active_set_source_function,&front_gs]
-    (const VecDbl& input, VecDbl& output, bool suppress_wgs)
+  auto SetLBSScatterSource =
+    [&active_set_source_function, &front_gs](const VecDbl& input, VecDbl& output, bool suppress_wgs)
   {
     chi_math::Set(output, 0.0);
-    active_set_source_function(front_gs, output,
+    active_set_source_function(front_gs,
+                               output,
                                input,
-                               APPLY_AGS_SCATTER_SOURCES |
-                               APPLY_WGS_SCATTER_SOURCES |
-                               (suppress_wgs ?
-                               SUPPRESS_WG_SCATTER :
-                               NO_FLAGS_SET));
+                               APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
+                                 (suppress_wgs ? SUPPRESS_WG_SCATTER : NO_FLAGS_SET));
   };
 
-  auto SetPhi0FissionSource = [&front_gs,&lbs_solver,&phi_temp,
-    &SetLBSFissionSource,&q_moments_local]
-    (const VecDbl& input)
-  {
-    chi_math::Set(phi_temp, 0.0);
-    lbs_solver.GSProjectBackPhi0(front_gs, /*in*/input,
-      /*out*/phi_temp);
-
-    SetLBSFissionSource(/*input*/phi_temp, /*output*/q_moments_local);
-
-    auto output = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
-    return output;
-  };
-
-  auto SetPhi0ScatterSource = [&front_gs,&lbs_solver,&phi_temp,
-    &SetLBSScatterSource,&q_moments_local]
-    (const VecDbl& input, bool suppress_wgs)
-  {
-    chi_math::Set(phi_temp, 0.0);
-    lbs_solver.GSProjectBackPhi0(front_gs, /*in*/input,
-      /*out*/phi_temp);
-
-    SetLBSScatterSource(/*input*/phi_temp, /*output*/q_moments_local,
-                        suppress_wgs);
-
-    auto output = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
-    return output;
-  };
-
-  auto Phi0FissionProdL2Norm = [&front_gs,&lbs_solver,&phi_temp]
-    (const VecDbl& input)
+  auto SetPhi0FissionSource =
+    [&front_gs, &lbs_solver, &phi_temp, &SetLBSFissionSource, &q_moments_local](const VecDbl& input)
   {
     chi_math::Set(phi_temp, 0.0);
     lbs_solver.GSProjectBackPhi0(front_gs,
-      /*in*/input,
-      /*out*/phi_temp);
+                                 /*in*/ input,
+                                 /*out*/ phi_temp);
+
+    SetLBSFissionSource(/*input*/ phi_temp, /*output*/ q_moments_local);
+
+    auto output = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
+    return output;
+  };
+
+  auto SetPhi0ScatterSource =
+    [&front_gs, &lbs_solver, &phi_temp, &SetLBSScatterSource, &q_moments_local](const VecDbl& input,
+                                                                                bool suppress_wgs)
+  {
+    chi_math::Set(phi_temp, 0.0);
+    lbs_solver.GSProjectBackPhi0(front_gs,
+                                 /*in*/ input,
+                                 /*out*/ phi_temp);
+
+    SetLBSScatterSource(
+      /*input*/ phi_temp, /*output*/ q_moments_local, suppress_wgs);
+
+    auto output = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
+    return output;
+  };
+
+  auto Phi0FissionProdL2Norm = [&front_gs, &lbs_solver, &phi_temp](const VecDbl& input)
+  {
+    chi_math::Set(phi_temp, 0.0);
+    lbs_solver.GSProjectBackPhi0(front_gs,
+                                 /*in*/ input,
+                                 /*out*/ phi_temp);
 
     return lbs_solver.ComputeFissionProduction(phi_temp);
   };
@@ -100,7 +96,7 @@ PetscErrorCode
   auto delta_phi = nl_context_ptr->PhiVecToSTLVec(phi);
   auto epsilon = delta_phi;
 
-  auto Ss_res = SetPhi0ScatterSource(phi_lph_ip1-phi_lph_i, /*suppress_wgs=*/false);
+  auto Ss_res = SetPhi0ScatterSource(phi_lph_ip1 - phi_lph_i, /*suppress_wgs=*/false);
   auto Sscat = SetPhi0ScatterSource(delta_phi, /*suppress_wgs=*/true);
 
   auto Sfaux = SetPhi0FissionSource(delta_phi + phi_lph_ip1);
@@ -112,17 +108,17 @@ PetscErrorCode
 
   nl_context_ptr->STLVecToPhiVec(epsilon - delta_phi, r);
 
-//  double production_old = Phi0FissionProdL2Norm(epsilon_k + phi_lph);
-//  double production_new = Phi0FissionProdL2Norm(epsilon_kp1 + phi_lph);
+  //  double production_old = Phi0FissionProdL2Norm(epsilon_k + phi_lph);
+  //  double production_new = Phi0FissionProdL2Norm(epsilon_kp1 + phi_lph);
 
-//  nl_context_ptr->kresid_func_context_.k_eff =
-//    production_new / production_old * mu_k;
+  //  nl_context_ptr->kresid_func_context_.k_eff =
+  //    production_new / production_old * mu_k;
 
-//  chi::log.Log() << Phi0FissionProdL2Norm(delta_phi) << " " << lambda;
+  //  chi::log.Log() << Phi0FissionProdL2Norm(delta_phi) << " " << lambda;
 
   nl_context_ptr->kresid_func_context_.k_eff = lambda;
 
   return 0;
 }
 
-}//namespace lbs::acceleration
+} // namespace lbs::acceleration

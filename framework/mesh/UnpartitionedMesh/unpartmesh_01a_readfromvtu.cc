@@ -11,17 +11,16 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-#define ErrorReadingFile(fname)                                                \
-  std::runtime_error("Failed to open file: " + options.file_name +             \
-                     " in call to " + #fname + ".")
+#define ErrorReadingFile(fname)                                                                    \
+  std::runtime_error("Failed to open file: " + options.file_name + " in call to " + #fname + ".")
 
 // ###################################################################
 /**Reads a VTK unstructured mesh. This reader will use the following
  * options:
  * - `file_name`, of course.
  * - `material_id_fieldname`, cell data for material_id.*/
-void chi_mesh::UnpartitionedMesh::ReadFromVTU(
-  const chi_mesh::UnpartitionedMesh::Options& options)
+void
+chi_mesh::UnpartitionedMesh::ReadFromVTU(const chi_mesh::UnpartitionedMesh::Options& options)
 {
   Chi::log.Log() << "Reading VTU file: " << options.file_name << ".";
 
@@ -56,8 +55,8 @@ void chi_mesh::UnpartitionedMesh::ReadFromVTU(
     chi_mesh::GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
   //======================================== Process blocks
-  auto ugrid = chi_mesh::ConsolidateGridBlocks(
-    domain_grid_blocks, mesh_options_.material_id_fieldname);
+  auto ugrid =
+    chi_mesh::ConsolidateGridBlocks(domain_grid_blocks, mesh_options_.material_id_fieldname);
 
   //======================================== Copy Data
   CopyUGridCellsAndPoints(*ugrid, options.scale, max_dimension);

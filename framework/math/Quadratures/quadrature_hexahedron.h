@@ -5,7 +5,7 @@
 
 namespace chi_math
 {
-  class QuadratureHexahedron;
+class QuadratureHexahedron;
 }
 
 //###################################################################
@@ -13,10 +13,8 @@ namespace chi_math
 class chi_math::QuadratureHexahedron : public chi_math::Quadrature
 {
 public:
-  //Constructor
-  explicit
-  QuadratureHexahedron(QuadratureOrder order);
-
+  // Constructor
+  explicit QuadratureHexahedron(QuadratureOrder order);
 };
 
-#endif //QUADRATURE_HEXAHEDRON_H
+#endif // QUADRATURE_HEXAHEDRON_H

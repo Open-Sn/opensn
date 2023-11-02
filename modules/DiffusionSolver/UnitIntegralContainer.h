@@ -50,22 +50,18 @@ public:
 
   double IntV_gradShapeI_gradShapeJ(unsigned int i, unsigned int j) const;
 
-  chi_mesh::Vector3 IntV_shapeI_gradshapeJ(unsigned int i,
-                                           unsigned int j) const;
+  chi_mesh::Vector3 IntV_shapeI_gradshapeJ(unsigned int i, unsigned int j) const;
   double IntV_shapeI_shapeJ(unsigned int i, unsigned int j) const;
 
   double IntV_shapeI(unsigned int i) const;
 
   chi_mesh::Vector3 IntV_gradshapeI(unsigned int i) const;
 
-  double
-  IntS_shapeI_shapeJ(unsigned int face, unsigned int i, unsigned int j) const;
+  double IntS_shapeI_shapeJ(unsigned int face, unsigned int i, unsigned int j) const;
 
   double IntS_shapeI(unsigned int face, unsigned int i) const;
 
-  chi_mesh::Vector3 IntS_shapeI_gradshapeJ(unsigned int face,
-                                           unsigned int i,
-                                           unsigned int j) const;
+  chi_mesh::Vector3 IntS_shapeI_gradshapeJ(unsigned int face, unsigned int i, unsigned int j) const;
 
   int FaceDofMapping(size_t face, size_t face_node_index) const
   {
@@ -75,27 +71,15 @@ public:
 
   size_t NumNodes() const { return num_nodes_; }
 
-  const MatDbl& GetIntV_gradShapeI_gradShapeJ() const
-  {
-    return IntV_gradShapeI_gradShapeJ_;
-  }
-  const MatVec3& GetIntV_shapeI_gradshapeJ() const
-  {
-    return IntV_shapeI_gradshapeJ_;
-  }
+  const MatDbl& GetIntV_gradShapeI_gradShapeJ() const { return IntV_gradShapeI_gradShapeJ_; }
+  const MatVec3& GetIntV_shapeI_gradshapeJ() const { return IntV_shapeI_gradshapeJ_; }
   const MatDbl& GetIntV_shapeI_shapeJ() const { return IntV_shapeI_shapeJ_; }
   const VecDbl& GetIntV_shapeI() const { return IntV_shapeI_; }
   const VecVec3& GetIntV_gradshapeI() const { return IntV_gradshapeI_; }
 
-  const std::vector<MatDbl>& GetIntS_shapeI_shapeJ() const
-  {
-    return IntS_shapeI_shapeJ_;
-  }
+  const std::vector<MatDbl>& GetIntS_shapeI_shapeJ() const { return IntS_shapeI_shapeJ_; }
   const std::vector<VecDbl>& GetIntS_shapeI() const { return IntS_shapeI_; }
-  const std::vector<MatVec3>& GetIntS_shapeI_gradshapeJ() const
-  {
-    return IntS_shapeI_gradshapeJ_;
-  }
+  const std::vector<MatVec3>& GetIntS_shapeI_gradshapeJ() const { return IntS_shapeI_gradshapeJ_; }
 };
 
 } // namespace chi_diffusion

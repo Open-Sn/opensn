@@ -11,15 +11,15 @@
 
 //###################################################################
 /***/
-void chi_mesh::mesh_cutting::
-  Cut3DCell(const std::vector<ECI> &global_cut_edges,
-            const std::set<uint64_t> &global_cut_vertices,
-            const Vector3 &plane_point,
-            const Vector3 &plane_normal,
-            double float_compare,
-            MeshContinuum &mesh,
-            chi_mesh::Cell &cell,
-            bool verbose/*=false*/)
+void
+chi_mesh::mesh_cutting::Cut3DCell(const std::vector<ECI>& global_cut_edges,
+                                  const std::set<uint64_t>& global_cut_vertices,
+                                  const Vector3& plane_point,
+                                  const Vector3& plane_normal,
+                                  double float_compare,
+                                  MeshContinuum& mesh,
+                                  chi_mesh::Cell& cell,
+                                  bool verbose /*=false*/)
 {
   const auto& p = plane_point;
   const auto& n = plane_normal;
@@ -36,20 +36,17 @@ void chi_mesh::mesh_cutting::
   /**Utility function to check if an edge is in the "cut_edges" list.*/
   auto EdgeIsCut = [](const Edge& edge, const std::vector<ECI>& cut_edges)
   {
-    Edge edge_set(std::min(edge.first,edge.second),
-                  std::max(edge.first,edge.second));
+    Edge edge_set(std::min(edge.first, edge.second), std::max(edge.first, edge.second));
 
-    constexpr auto Arg1       = std::placeholders::_1;
+    constexpr auto Arg1 = std::placeholders::_1;
     constexpr auto Comparator = &ECI::Comparator;
 
-    auto result = std::find_if(cut_edges.begin(),
-                               cut_edges.end(),
-                               std::bind(Comparator,Arg1,edge_set));
+    auto result =
+      std::find_if(cut_edges.begin(), cut_edges.end(), std::bind(Comparator, Arg1, edge_set));
 
-    if (result != cut_edges.end())
-      return std::make_pair(true,*result);
+    if (result != cut_edges.end()) return std::make_pair(true, *result);
 
-    return std::make_pair(false,*result);
+    return std::make_pair(false, *result);
   };
 
   /**Utility lambda to check if a vertex is in generic list.*/
@@ -71,18 +68,15 @@ void chi_mesh::mesh_cutting::
   };
 
   /**Utility lambda to flip and edge.*/
-  auto FlipEdge = [](const Edge& in_edge)
-  {
-    return Edge(in_edge.second, in_edge.first);
-  };
+  auto FlipEdge = [](const Edge& in_edge) { return Edge(in_edge.second, in_edge.first); };
 
   /**Utility lambda to convert a vector of edges to a vertex list.*/
-  auto PopulateFragment = [NumberInList](std::vector<uint64_t>& frag,
-                                           const std::vector<Edge>& frag_edges)
+  auto PopulateFragment =
+    [NumberInList](std::vector<uint64_t>& frag, const std::vector<Edge>& frag_edges)
   {
     for (auto edge : frag_edges)
     {
-      if (not NumberInList(edge.first , frag)) frag.push_back(edge.first );
+      if (not NumberInList(edge.first, frag)) frag.push_back(edge.first);
       if (not NumberInList(edge.second, frag)) frag.push_back(edge.second);
     }
   };
@@ -92,11 +86,10 @@ void chi_mesh::mesh_cutting::
   //============================================= Determine cut-edges relevant
   //                                              to this cell
   std::vector<ECI> local_cut_edges;
-  const std::set<uint64_t> local_vertex_id_set(cell.vertex_ids_.begin(),
-                                               cell.vertex_ids_.end());
+  const std::set<uint64_t> local_vertex_id_set(cell.vertex_ids_.begin(), cell.vertex_ids_.end());
 
   for (auto& eci : global_cut_edges)
-    if (NumberInSet(eci.vertex_ids.first , local_vertex_id_set) and
+    if (NumberInSet(eci.vertex_ids.first, local_vertex_id_set) and
         NumberInSet(eci.vertex_ids.second, local_vertex_id_set))
       local_cut_edges.push_back(eci);
 
@@ -105,11 +98,9 @@ void chi_mesh::mesh_cutting::
     std::stringstream outstr;
     outstr << "Local cut edges:\n";
     for (const auto& eci : local_cut_edges)
-      outstr << eci.vertex_ids.first << "->"
-             << eci.vertex_ids.second << " "
+      outstr << eci.vertex_ids.first << "->" << eci.vertex_ids.second << " "
              << "cut at vertex " << eci.cut_point_id << " "
-             << mesh.vertices[eci.cut_point_id].PrintStr()
-             << "\n";
+             << mesh.vertices[eci.cut_point_id].PrintStr() << "\n";
     Chi::log.Log() << outstr.str();
   }
 
@@ -121,7 +112,7 @@ void chi_mesh::mesh_cutting::
   std::vector<size_t> uncut_faces_indices_B;
   cut_faces_indices.reserve(cell_num_faces);
   {
-    size_t face_index=0;
+    size_t face_index = 0;
     for (const auto& face : cell.faces_)
     {
       size_t num_neg_senses = 0;
@@ -129,21 +120,22 @@ void chi_mesh::mesh_cutting::
       for (auto vid : face.vertex_ids_)
       {
         const auto& x = mesh.vertices[vid];
-        double new_sense = n.Dot(x-p);
+        double new_sense = n.Dot(x - p);
 
-        if (new_sense < (0.0-float_compare)) ++num_neg_senses;
-        if (new_sense > (0.0+float_compare)) ++num_pos_senses;
+        if (new_sense < (0.0 - float_compare)) ++num_neg_senses;
+        if (new_sense > (0.0 + float_compare)) ++num_pos_senses;
 
-        if (num_neg_senses>0 && num_pos_senses>0)
-        { cut_faces_indices.push_back(face_index); break; }
-      }//for vid
+        if (num_neg_senses > 0 && num_pos_senses > 0)
+        {
+          cut_faces_indices.push_back(face_index);
+          break;
+        }
+      } // for vid
 
-      if (num_neg_senses >  0 and num_pos_senses == 0)
-        uncut_faces_indices_A.push_back(face_index);
-      if (num_neg_senses == 0 and num_pos_senses >  0)
-        uncut_faces_indices_B.push_back(face_index);
+      if (num_neg_senses > 0 and num_pos_senses == 0) uncut_faces_indices_A.push_back(face_index);
+      if (num_neg_senses == 0 and num_pos_senses > 0) uncut_faces_indices_B.push_back(face_index);
       ++face_index;
-    }//for cell face
+    } // for cell face
   }
 
   if (verbose)
@@ -183,12 +175,12 @@ void chi_mesh::mesh_cutting::
     std::vector<Edge> fragment_edges_A;
     std::vector<Edge> fragment_edges_B;
     const size_t face_num_verts = cut_face.vertex_ids_.size();
-    for (size_t e=0; e<face_num_verts; ++e)
+    for (size_t e = 0; e < face_num_verts; ++e)
     {
       auto edge = MakeEdgeFromPolygonEdgeIndex(cut_face.vertex_ids_, e);
 
       auto edge_cut_state = EdgeIsCut(edge, local_cut_edges);
-      bool edge_is_cut   = edge_cut_state.first;
+      bool edge_is_cut = edge_cut_state.first;
       ECI& edge_cut_info = edge_cut_state.second;
 
       // Extract edges according to if they are cut
@@ -196,10 +188,8 @@ void chi_mesh::mesh_cutting::
       extracted_edges.reserve(2);
       if (edge_is_cut)
       {
-        extracted_edges.push_back(
-          std::make_pair(edge.first, edge_cut_info.cut_point_id));
-        extracted_edges.push_back(
-          std::make_pair(edge_cut_info.cut_point_id, edge.second));
+        extracted_edges.push_back(std::make_pair(edge.first, edge_cut_info.cut_point_id));
+        extracted_edges.push_back(std::make_pair(edge_cut_info.cut_point_id, edge.second));
       }
       else
         extracted_edges.push_back(edge);
@@ -209,10 +199,8 @@ void chi_mesh::mesh_cutting::
         std::stringstream outstr;
         for (const auto& eedge : extracted_edges)
           outstr << eedge.first << "->" << eedge.second << " ";
-        Chi::log.Log() << "edge " << e << " "
-                      << edge.first << "->" << edge.second
-                      << " cut? " << ((edge_is_cut)? "yes" : "no")
-                      << " " << outstr.str();
+        Chi::log.Log() << "edge " << e << " " << edge.first << "->" << edge.second << " cut? "
+                       << ((edge_is_cut) ? "yes" : "no") << " " << outstr.str();
       }
 
       // Enlist the edges to the corrected fragment
@@ -222,8 +210,8 @@ void chi_mesh::mesh_cutting::
           fragment_edges_A.push_back(extracted_edge);
         else
           fragment_edges_B.push_back(extracted_edge);
-      }//for extracted edge
-    }// for edge e of face
+      } // for extracted edge
+    }   // for edge e of face
 
     // Now convert the fragment edges to vertex-id list
     std::vector<uint64_t> fragment_A;
@@ -238,7 +226,7 @@ void chi_mesh::mesh_cutting::
     // Finally map the fragments
     cut_faces_fragments_A[cut_face_id] = fragment_A;
     cut_faces_fragments_B[cut_face_id] = fragment_B;
-  }//for cut-face
+  } // for cut-face
 
   if (verbose)
   {
@@ -268,26 +256,24 @@ void chi_mesh::mesh_cutting::
   //============================================= Make proxy-faces from data
   /**This lambda can be applied to uncut faces and cut-face fragments
    * to give a collection of proxy faces.*/
-  auto MakeProxyFaces = [NumberInList_t, cut_faces_indices, FlipEdge,
-                       PopulateFragment]
-    (const chi_mesh::Cell& parent_cell,
-     const std::vector<size_t>& uncut_faces_indices,
-     const std::map<size_t, std::vector<uint64_t>>& cut_face_fragments)
+  auto MakeProxyFaces = [NumberInList_t, cut_faces_indices, FlipEdge, PopulateFragment](
+                          const chi_mesh::Cell& parent_cell,
+                          const std::vector<size_t>& uncut_faces_indices,
+                          const std::map<size_t, std::vector<uint64_t>>& cut_face_fragments)
   {
     //================================= Build proxy faces based on uncut-faces
     //                                  and cut faces
     std::vector<std::vector<uint64_t>> proxy_faces;
     proxy_faces.reserve(parent_cell.faces_.size());
 
-    size_t f=0;
+    size_t f = 0;
     for (const auto& face : parent_cell.faces_)
     {
-      if (NumberInList_t(f, uncut_faces_indices))
-        proxy_faces.push_back(face.vertex_ids_);
+      if (NumberInList_t(f, uncut_faces_indices)) proxy_faces.push_back(face.vertex_ids_);
       else if (NumberInList_t(f, cut_faces_indices))
         proxy_faces.push_back(cut_face_fragments.at(f));
       ++f;
-    }//for face f
+    } // for face f
 
     //================================= Now build the interface proxy-face
     // Find non-manifold edges
@@ -308,15 +294,12 @@ void chi_mesh::mesh_cutting::
     return proxy_faces;
   };
 
-  auto proxies_A =
-    MakeProxyFaces(cell, uncut_faces_indices_A, cut_faces_fragments_A);
-  auto proxies_B =
-    MakeProxyFaces(cell, uncut_faces_indices_B, cut_faces_fragments_B);
+  auto proxies_A = MakeProxyFaces(cell, uncut_faces_indices_A, cut_faces_fragments_A);
+  auto proxies_B = MakeProxyFaces(cell, uncut_faces_indices_B, cut_faces_fragments_B);
 
   chi_mesh::Cell cell_A(CellType::POLYHEDRON, CellType::POLYHEDRON);
   auto cell_A_ptr = &cell_A;
-  auto cell_B_ptr = std::make_unique<chi_mesh::Cell>(CellType::POLYHEDRON,
-                                                     CellType::POLYHEDRON);
+  auto cell_B_ptr = std::make_unique<chi_mesh::Cell>(CellType::POLYHEDRON, CellType::POLYHEDRON);
 
   PopulatePolyhedronFromFaces(mesh, proxies_A, *cell_A_ptr);
   PopulatePolyhedronFromFaces(mesh, proxies_B, *cell_B_ptr);
@@ -341,13 +324,9 @@ void chi_mesh::mesh_cutting::
     for (uint64_t vid : verts)
       Chi::log.Log() << vid << " " << mesh.vertices[vid].PrintStr();
     Chi::log.Log() << "Checkpoint 4:\n"
-                  << cell.ToString()
-                  << cell_A_ptr->ToString()
-                  << cell_B_ptr->ToString();
+                   << cell.ToString() << cell_A_ptr->ToString() << cell_B_ptr->ToString();
   }
 
   cell = cell_A;
   mesh.cells.push_back(std::move(cell_B_ptr));
-
-
 }

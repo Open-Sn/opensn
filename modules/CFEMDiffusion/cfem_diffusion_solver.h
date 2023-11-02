@@ -16,20 +16,20 @@
 // forward declaration
 namespace chi_mesh
 {
-class MeshContinuum; 
+class MeshContinuum;
 typedef std::shared_ptr<MeshContinuum> MeshContinuumPtr;
-}
+} // namespace chi_mesh
 namespace chi_math
 {
-class SpatialDiscretization; 
-typedef std::shared_ptr<SpatialDiscretization> SDMPtr ;
-}
+class SpatialDiscretization;
+typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
+} // namespace chi_math
 
 namespace cfem_diffusion
 {
 /** CFEM diffusion solver
- * 
-*/
+ *
+ */
 class Solver : public chi_physics::Solver
 {
 public:
@@ -40,14 +40,14 @@ public:
   size_t num_local_dofs_ = 0;
   size_t num_globl_dofs_ = 0;
 
-  Vec            x_ = nullptr;            // approx solution
-  Vec            b_ = nullptr;            // RHS
-  Mat            A_ = nullptr;            // linear system matrix
+  Vec x_ = nullptr; // approx solution
+  Vec b_ = nullptr; // RHS
+  Mat A_ = nullptr; // linear system matrix
 
-  typedef std::pair<BoundaryType,std::vector<double>> BoundaryInfo;
+  typedef std::pair<BoundaryType, std::vector<double>> BoundaryInfo;
   typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
-  BoundaryPreferences     boundary_preferences_;
-  std::map<uint64_t, Boundary>   boundaries_;
+  BoundaryPreferences boundary_preferences_;
+  std::map<uint64_t, Boundary> boundaries_;
 
   explicit Solver(const std::string& in_solver_name);
   ~Solver() override;
@@ -57,16 +57,12 @@ public:
 
   void Execute() override;
 
-  static double CallLua_iXYZFunction(lua_State* L,
-                                     const std::string&,
-                                     int,
-                                     const chi_mesh::Vector3&);
+  static double
+  CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
 
   void UpdateFieldFunctions();
 };
 
 } // namespace cfem_diffusion
 
-
-#endif //CFEM_DIFFUSION_SOLVER_H
-
+#endif // CFEM_DIFFUSION_SOLVER_H

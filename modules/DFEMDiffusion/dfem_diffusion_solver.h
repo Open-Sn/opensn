@@ -17,20 +17,20 @@
 // forward declaration
 namespace chi_mesh
 {
-class MeshContinuum; 
+class MeshContinuum;
 typedef std::shared_ptr<MeshContinuum> MeshContinuumPtr;
-}
+} // namespace chi_mesh
 namespace chi_math
 {
-class SpatialDiscretization; 
-typedef std::shared_ptr<SpatialDiscretization> SDMPtr ;
-}
+class SpatialDiscretization;
+typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
+} // namespace chi_math
 
 namespace dfem_diffusion
 {
 /** DFEM diffusion solver
- * 
-*/
+ *
+ */
 class Solver : public chi_physics::Solver
 {
 public:
@@ -43,14 +43,14 @@ public:
 
   std::vector<double> field_;
 
-  Vec            x_ = nullptr;            // approx solution
-  Vec            b_ = nullptr;            // RHS
-  Mat            A_ = nullptr;            // linear system matrix
+  Vec x_ = nullptr; // approx solution
+  Vec b_ = nullptr; // RHS
+  Mat A_ = nullptr; // linear system matrix
 
-  typedef std::pair<BoundaryType,std::vector<double>> BoundaryInfo;
+  typedef std::pair<BoundaryType, std::vector<double>> BoundaryInfo;
   typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
-  BoundaryPreferences      boundary_preferences_;
-  std::map<uint64_t, Boundary>    boundaries_;
+  BoundaryPreferences boundary_preferences_;
+  std::map<uint64_t, Boundary> boundaries_;
 
   explicit Solver(const std::string& in_solver_name);
   ~Solver() override;
@@ -65,20 +65,17 @@ public:
                       const chi_mesh::Cell& adj_cell,
                       const std::vector<chi_mesh::Vector3>& cc_node_locs,
                       const std::vector<chi_mesh::Vector3>& ac_node_locs,
-                      size_t ccf, size_t acf,
+                      size_t ccf,
+                      size_t acf,
                       size_t ccfi,
-                      double epsilon=1.0e-12);
+                      double epsilon = 1.0e-12);
 
-  static double CallLua_iXYZFunction(lua_State* L,
-                                     const std::string&,
-                                     int,
-                                     const chi_mesh::Vector3&);
+  static double
+  CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
 
   void UpdateFieldFunctions();
 };
 
 } // namespace dfem_diffusion
 
-
-#endif //DFEM_DIFFUSION_SOLVER_H
-
+#endif // DFEM_DIFFUSION_SOLVER_H

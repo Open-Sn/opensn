@@ -3,7 +3,6 @@
 #include "../chi_meshhandler.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 
-
 //###################################################################
 /**Exports the mesh to a wavefront.obj format.
 \param FileName char Base name of the file to be used.
@@ -11,18 +10,18 @@
                      the extruder's surface mesh by material.
 \ingroup LuaMeshHandler
 */
-int chiMeshHandlerExportMeshToObj(lua_State* L)
+int
+chiMeshHandlerExportMeshToObj(lua_State* L)
 {
   //============================================= Check arguments
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
 
-  const std::string file_name = lua_tostring(L,1);
+  const std::string file_name = lua_tostring(L, 1);
 
   bool per_material = false;
-  if (num_args == 2) per_material = lua_toboolean(L,2);
+  if (num_args == 2) per_material = lua_toboolean(L, 2);
 
   //============================================= Get current handler
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
@@ -33,21 +32,20 @@ int chiMeshHandlerExportMeshToObj(lua_State* L)
   return 0;
 }
 
-
 //###################################################################
 /**Exports the mesh to vtu format.
 \param FileName char Base name of the file to be used.
 \ingroup LuaMeshHandler
 */
-int chiMeshHandlerExportMeshToVTK(lua_State* L)
+int
+chiMeshHandlerExportMeshToVTK(lua_State* L)
 {
   //============================================= Check arguments
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
 
-  const std::string file_name = lua_tostring(L,1);
+  const std::string file_name = lua_tostring(L, 1);
 
   //============================================= Get current handler
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
@@ -67,15 +65,15 @@ int chiMeshHandlerExportMeshToVTK(lua_State* L)
                               Default = `false`.
 \ingroup LuaMeshHandler
 */
-int chiMeshHandlerExportMeshToExodus(lua_State* L)
+int
+chiMeshHandlerExportMeshToExodus(lua_State* L)
 {
   //============================================= Check arguments
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
 
-  const std::string file_name = lua_tostring(L,1);
+  const std::string file_name = lua_tostring(L, 1);
 
   bool suppress_nodesets = false;
   bool suppress_sidesets = false;

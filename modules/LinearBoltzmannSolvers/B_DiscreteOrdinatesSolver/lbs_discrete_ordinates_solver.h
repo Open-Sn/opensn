@@ -37,13 +37,13 @@ protected:
 
 public:
   static chi::InputParameters GetInputParameters();
-  explicit DiscreteOrdinatesSolver(
-    const chi::InputParameters& params);
+  explicit DiscreteOrdinatesSolver(const chi::InputParameters& params);
+
 protected:
   explicit DiscreteOrdinatesSolver(const std::string& text_name);
 
 public:
-  const std::string& SweepType() const {return sweep_type_;}
+  const std::string& SweepType() const { return sweep_type_; }
   virtual ~DiscreteOrdinatesSolver() override;
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
@@ -69,9 +69,8 @@ protected:
   // Vector assembly
 public:
   void ScalePhiVector(PhiSTLOption which_phi, double value) override;
-  void SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset,
-                                         Vec x,
-                                         PhiSTLOption which_phi) override;
+  void
+  SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset, Vec x, PhiSTLOption which_phi) override;
 
   void SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset,
                                          Vec x_src,
@@ -85,8 +84,9 @@ public:
                                               Vec x,
                                               PhiSTLOption which_phi) override;
 
-  void SetPrimarySTLvectorFromMultiGSPETScVecFrom(
-    const std::vector<int>& gs_ids, Vec x_src, PhiSTLOption which_phi) override;
+  void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs_ids,
+                                                  Vec x_src,
+                                                  PhiSTLOption which_phi) override;
 
   // compute_balance
 public:
@@ -95,8 +95,7 @@ public:
 
   // compute leakage
 public:
-  std::vector<double> ComputeLeakage(int groupset_id,
-                                     uint64_t boundary_id) const;
+  std::vector<double> ComputeLeakage(int groupset_id, uint64_t boundary_id) const;
 };
 
 } // namespace lbs

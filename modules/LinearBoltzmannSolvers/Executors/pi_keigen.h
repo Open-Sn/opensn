@@ -37,10 +37,9 @@ public:
 
 protected:
   void SetLBSFissionSource(const VecDbl& input, bool additive);
-  void SetLBSScatterSource(const VecDbl& input, bool additive,
-                           bool suppress_wg_scat = false);
+  void SetLBSScatterSource(const VecDbl& input, bool additive, bool suppress_wg_scat = false);
 };
 
-}
+} // namespace lbs
 
 #endif // CHITECH_PI_KEIGEN_H

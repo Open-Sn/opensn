@@ -12,18 +12,17 @@
 namespace chi_math::cell_mapping
 {
 /** Object for handling polygon shaped 2D cells.
-* \ingroup doc_CellMappings*/
+ * \ingroup doc_CellMappings*/
 class PieceWiseLinearPolygonMapping : public PieceWiseLinearBaseMapping
 {
 public:
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Constructor
   PieceWiseLinearPolygonMapping(const chi_mesh::Cell& poly_cell,
-                       const chi_mesh::MeshContinuum& ref_grid,
-                       const QuadratureTriangle& volume_quadrature,
-                       const QuadratureLine& surface_quadrature);
+                                const chi_mesh::MeshContinuum& ref_grid,
+                                const QuadratureTriangle& volume_quadrature,
+                                const QuadratureLine& surface_quadrature);
 
-  finite_element::VolumetricQuadraturePointData
-  MakeVolumetricQuadraturePointData() const override;
+  finite_element::VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
 
   finite_element::SurfaceQuadraturePointData
   MakeSurfaceQuadraturePointData(size_t face_index) const override;
@@ -33,23 +32,18 @@ public:
 
   double ShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
 
-  chi_mesh::Vector3 GradShapeValue(int i,
-                                   const chi_mesh::Vector3& xyz) const override;
+  chi_mesh::Vector3 GradShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
 
-  void ShapeValues(const chi_mesh::Vector3& xyz,
-                   std::vector<double>& shape_values) const override;
+  void ShapeValues(const chi_mesh::Vector3& xyz, std::vector<double>& shape_values) const override;
 
-  void GradShapeValues(
-    const chi_mesh::Vector3& xyz,
-    std::vector<chi_mesh::Vector3>& gradshape_values) const override;
+  void GradShapeValues(const chi_mesh::Vector3& xyz,
+                       std::vector<chi_mesh::Vector3>& gradshape_values) const override;
 
 private:
   // ################################################## Define standard
   //                                                    triangle linear shape
   //                                                    functions
-  static double TriShape(uint32_t index,
-                         const chi_mesh::Vector3& qpoint,
-                         bool on_surface = false);
+  static double TriShape(uint32_t index, const chi_mesh::Vector3& qpoint, bool on_surface = false);
 
   // ############################################### Shape functions per side
   double SideShape(uint32_t side,

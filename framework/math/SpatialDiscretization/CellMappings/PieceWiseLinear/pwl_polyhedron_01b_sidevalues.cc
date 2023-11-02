@@ -5,15 +5,15 @@ namespace chi_math::cell_mapping
 
 /**Precomputes the shape function values of a face-side pair
  * at a quadrature point*/
-double PieceWiseLinearPolyhedronMapping::FaceSideShape(uint32_t face_index,
-                                              uint32_t side_index,
-                                              uint32_t i,
-                                              const chi_mesh::Vector3& qpoint,
-                                              bool on_surface /*=false*/) const
+double
+PieceWiseLinearPolyhedronMapping::FaceSideShape(uint32_t face_index,
+                                                uint32_t side_index,
+                                                uint32_t i,
+                                                const chi_mesh::Vector3& qpoint,
+                                                bool on_surface /*=false*/) const
 {
   double value = 0.0;
-  int index =
-    node_side_maps_[i].face_map[face_index].side_map[side_index].index;
+  int index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
   double betaf = face_betaf_[face_index];
 
   value += TetShape(index, qpoint, on_surface);
@@ -28,16 +28,16 @@ double PieceWiseLinearPolyhedronMapping::FaceSideShape(uint32_t face_index,
 
 /**Precomputes the gradx-shape function values of a face-side pair
  * at a quadrature point*/
-double PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(uint32_t face_index,
-                                                    uint32_t side_index,
-                                                    uint32_t i) const
+double
+PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(uint32_t face_index,
+                                                      uint32_t side_index,
+                                                      uint32_t i) const
 {
   double value = 0.0;
   double tetdfdx = 0.0;
   double tetdfdy = 0.0;
   double tetdfdz = 0.0;
-  int index =
-    node_side_maps_[i].face_map[face_index].side_map[side_index].index;
+  int index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
   double betaf = face_betaf_[face_index];
 
   tetdfdx += TetGradShape_x(index);
@@ -70,16 +70,16 @@ double PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(uint32_t face_index
 
 /**Precomputes the grady-shape function values of a face-side pair
  * at a quadrature point*/
-double PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(uint32_t face_index,
-                                                    uint32_t side_index,
-                                                    uint32_t i) const
+double
+PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(uint32_t face_index,
+                                                      uint32_t side_index,
+                                                      uint32_t i) const
 {
   double value = 0.0;
   double tetdfdx = 0.0;
   double tetdfdy = 0.0;
   double tetdfdz = 0.0;
-  int index =
-    node_side_maps_[i].face_map[face_index].side_map[side_index].index;
+  int index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
   double betaf = face_betaf_[face_index];
 
   tetdfdx += TetGradShape_x(index);
@@ -112,16 +112,16 @@ double PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(uint32_t face_index
 
 /**Precomputes the gradz-shape function values of a face-side pair
  * at a quadrature point*/
-double PieceWiseLinearPolyhedronMapping::FaceSideGradShape_z(uint32_t face_index,
-                                                    uint32_t side_index,
-                                                    uint32_t i) const
+double
+PieceWiseLinearPolyhedronMapping::FaceSideGradShape_z(uint32_t face_index,
+                                                      uint32_t side_index,
+                                                      uint32_t i) const
 {
   double value = 0.0;
   double tetdfdx = 0.0;
   double tetdfdy = 0.0;
   double tetdfdz = 0.0;
-  int index =
-    node_side_maps_[i].face_map[face_index].side_map[side_index].index;
+  int index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
   double betaf = face_betaf_[face_index];
 
   tetdfdx += TetGradShape_x(index);

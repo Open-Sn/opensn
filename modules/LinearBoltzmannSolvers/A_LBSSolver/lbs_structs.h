@@ -96,7 +96,8 @@ enum SourceFlags : int
   ZERO_INCOMING_DELAYED_PSI = (1 << 6)
 };
 
-inline SourceFlags operator|(const SourceFlags f1, const SourceFlags f2)
+inline SourceFlags
+operator|(const SourceFlags f1, const SourceFlags f2)
 {
   return static_cast<SourceFlags>(static_cast<int>(f1) | static_cast<int>(f2));
 }
@@ -204,10 +205,7 @@ public:
 
   bool IsFaceLocal(int f) const { return face_local_flags_[f]; }
   int FaceLocality(int f) const { return face_locality_[f]; }
-  const chi_mesh::Cell* FaceNeighbor(int f) const
-  {
-    return neighbor_cell_ptrs_[f];
-  }
+  const chi_mesh::Cell* FaceNeighbor(int f) const { return neighbor_cell_ptrs_[f]; }
 
   int NumNodes() const { return num_nodes_; }
 
@@ -230,10 +228,7 @@ public:
       return 0.0;
   }
 
-  void ReassingXS(const chi_physics::MultiGroupXS& xs_mapped)
-  {
-    xs_ = &xs_mapped;
-  }
+  void ReassingXS(const chi_physics::MultiGroupXS& xs_mapped) { xs_ = &xs_mapped; }
 };
 
 struct UnitCellMatrices

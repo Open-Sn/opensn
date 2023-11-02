@@ -33,20 +33,14 @@ public:
   virtual void ClearLocalAndReceivePsi() {}
   virtual void ClearSendPsi() {}
   virtual void AllocateInternalLocalPsi(size_t num_grps, size_t num_angles) {}
-  virtual void
-  AllocateOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_sucs)
-  {
-  }
+  virtual void AllocateOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_sucs) {}
 
   virtual void AllocateDelayedLocalPsi(size_t num_grps, size_t num_angles) {}
-  virtual void AllocatePrelocIOutgoingPsi(size_t num_grps,
-                                          size_t num_angles,
-                                          size_t num_loc_deps)
+  virtual void AllocatePrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps)
   {
   }
-  virtual void AllocateDelayedPrelocIOutgoingPsi(size_t num_grps,
-                                                 size_t num_angles,
-                                                 size_t num_loc_deps)
+  virtual void
+  AllocateDelayedPrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps)
   {
   }
 

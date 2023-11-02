@@ -7,8 +7,8 @@
 
 // ###################################################################
 /**Initializes the Within-Group DSA solver. */
-void lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset,
-                               bool vaccum_bcs_are_dirichlet /*=true*/)
+void
+lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet /*=true*/)
 {
   if (groupset.apply_wgdsa_)
   {
@@ -18,26 +18,23 @@ void lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset,
     uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_gs_groups);
 
     //=========================================== Make boundary conditions
-    auto bcs = acceleration::TranslateBCs(sweep_boundaries_,
-                                          vaccum_bcs_are_dirichlet);
+    auto bcs = acceleration::TranslateBCs(sweep_boundaries_, vaccum_bcs_are_dirichlet);
 
     //=========================================== Make xs map
-    auto matid_2_mgxs_map =
-      acceleration::PackGroupsetXS(matid_to_xs_map_,
-                                   groupset.groups_.front().id_,
-                                   groupset.groups_.back().id_);
+    auto matid_2_mgxs_map = acceleration::PackGroupsetXS(
+      matid_to_xs_map_, groupset.groups_.front().id_, groupset.groups_.back().id_);
 
     //=========================================== Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<acceleration::DiffusionMIPSolver>(
-      std::string(TextName() + "_WGDSA"),
-      sdm,
-      uk_man,
-      bcs,
-      matid_2_mgxs_map,
-      unit_cell_matrices_,
-      true); // verbosity
+    auto solver =
+      std::make_shared<acceleration::DiffusionMIPSolver>(std::string(TextName() + "_WGDSA"),
+                                                         sdm,
+                                                         uk_man,
+                                                         bcs,
+                                                         matid_2_mgxs_map,
+                                                         unit_cell_matrices_,
+                                                         true); // verbosity
     chi::ParameterBlock block;
 
     solver->options.residual_tolerance = groupset.wgdsa_tol_;
@@ -57,7 +54,8 @@ void lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset,
 
 // ###################################################################
 /**Cleans up memory consuming items. */
-void lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
+void
+lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
 {
   if (groupset.apply_wgdsa_) groupset.wgdsa_solver_ = nullptr;
 }
@@ -66,8 +64,7 @@ void lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
 /**Creates a vector from a lbs primary stl vector where only the
  * scalar moments are mapped to the DOFs needed by WGDSA.*/
 std::vector<double>
-lbs::LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset,
-                                const std::vector<double>& phi_in)
+lbs::LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double>& phi_in)
 {
   const auto& sdm = *discretization_;
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
@@ -104,9 +101,10 @@ lbs::LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset,
 // ###################################################################
 /**From the WGDSA DOFs, projects the scalar moments back into a
  * primary STL vector.*/
-void lbs::LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
-                                       const std::vector<double>& input,
-                                       std::vector<double>& output)
+void
+lbs::LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
+                                  const std::vector<double>& input,
+                                  std::vector<double>& output)
 {
   const auto& sdm = *discretization_;
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
@@ -136,10 +134,10 @@ void lbs::LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
 
 // ###################################################################
 /**Assembles a delta-phi vector on the first moment.*/
-void lbs::LBSSolver::AssembleWGDSADeltaPhiVector(
-  const LBSGroupset& groupset,
-  const std::vector<double>& phi_in,
-  std::vector<double>& delta_phi_local)
+void
+lbs::LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
+                                            const std::vector<double>& phi_in,
+                                            std::vector<double>& delta_phi_local)
 {
   const auto& sdm = *discretization_;
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
@@ -175,10 +173,10 @@ void lbs::LBSSolver::AssembleWGDSADeltaPhiVector(
 
 // ###################################################################
 /**DAssembles a delta-phi vector on the first moment.*/
-void lbs::LBSSolver::DisAssembleWGDSADeltaPhiVector(
-  const LBSGroupset& groupset,
-  const std::vector<double>& delta_phi_local,
-  std::vector<double>& ref_phi_new)
+void
+lbs::LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
+                                               const std::vector<double>& delta_phi_local,
+                                               std::vector<double>& ref_phi_new)
 {
   const auto& sdm = *discretization_;
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();

@@ -6,11 +6,10 @@
 
 namespace mg_diffusion::mgd_lua_utils
 {
-  int chiCFEMMGDiffusionSolverCreate(lua_State *L);
-  int chiCFEMMGDiffusionSetBCProperty(lua_State *L);
+int chiCFEMMGDiffusionSolverCreate(lua_State* L);
+int chiCFEMMGDiffusionSetBCProperty(lua_State* L);
 
-  void RegisterLuaEntities(lua_State *L);
-}//namespace mg_diffusion
+void RegisterLuaEntities(lua_State* L);
+} // namespace mg_diffusion::mgd_lua_utils
 
-
-#endif //CFEM_MG_DIFFUSION_LUA_UTILS_H
+#endif // CFEM_MG_DIFFUSION_LUA_UTILS_H

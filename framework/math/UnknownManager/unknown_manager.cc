@@ -6,15 +6,13 @@
 //###################################################################
 /**Adds an unknown to the manager. This method will figure out
  * where the last unknown ends and where to begin the next one.*/
-unsigned int chi_math::UnknownManager::
-  AddUnknown(UnknownType unk_type,
-             unsigned int dimension)
+unsigned int
+chi_math::UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
 {
   auto& log = chi::ChiLog::GetInstance();
 
   unsigned int last_unknown_end = -1;
-  if (not unknowns_.empty())
-    last_unknown_end = unknowns_.back().GetMapEnd();
+  if (not unknowns_.empty()) last_unknown_end = unknowns_.back().GetMapEnd();
 
   unsigned int new_unknown_index = unknowns_.size();
 
@@ -37,9 +35,8 @@ unsigned int chi_math::UnknownManager::
   {
     if (dimension == 0)
     {
-      log.LogAllError()
-        << "UnknownManager: When adding unknown of type VECTOR_N, "
-        << "the dimension must not be 0.";
+      log.LogAllError() << "UnknownManager: When adding unknown of type VECTOR_N, "
+                        << "the dimension must not be 0.";
       Chi::Exit(EXIT_FAILURE);
     }
 
@@ -50,9 +47,8 @@ unsigned int chi_math::UnknownManager::
   {
     if (dimension == 0 or dimension == 1)
     {
-      log.LogAllError()
-        << "UnknownManager: When adding unknown of type TENSOR, "
-        << "the dimension must not be 0 or 1.";
+      log.LogAllError() << "UnknownManager: When adding unknown of type TENSOR, "
+                        << "the dimension must not be 0 or 1.";
       Chi::Exit(EXIT_FAILURE);
     }
 
@@ -70,15 +66,14 @@ unsigned int chi_math::UnknownManager::
 
 //###################################################################
 /**Maps the unknown's component within the storage of a node.*/
-unsigned int chi_math::UnknownManager::
-  MapUnknown(unsigned int unknown_id, unsigned int component) const
+unsigned int
+chi_math::UnknownManager::MapUnknown(unsigned int unknown_id, unsigned int component) const
 {
   auto& log = chi::ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
-    log.LogAllError()
-      << "UnknownManager failed call to MapUnknown " << unknown_id;
+    log.LogAllError() << "UnknownManager failed call to MapUnknown " << unknown_id;
     Chi::Exit(EXIT_FAILURE);
   }
   return unknowns_[unknown_id].GetMap(component);
@@ -86,10 +81,10 @@ unsigned int chi_math::UnknownManager::
 
 //###################################################################
 /**Determines the total number of components over all unknowns.*/
-unsigned int chi_math::UnknownManager::GetTotalUnknownStructureSize() const
+unsigned int
+chi_math::UnknownManager::GetTotalUnknownStructureSize() const
 {
-  if (unknowns_.empty())
-    return 0;
+  if (unknowns_.empty()) return 0;
 
   return unknowns_.back().GetMapEnd() + 1;
 }
@@ -97,17 +92,16 @@ unsigned int chi_math::UnknownManager::GetTotalUnknownStructureSize() const
 //###################################################################
 /**Sets the number of off block connections for the given unknown.
  * All the components will be set to the same amount.*/
-void chi_math::UnknownManager::
-  SetUnknownNumOffBlockConnections(unsigned int unknown_id,
-                                   int num_conn)
+void
+chi_math::UnknownManager::SetUnknownNumOffBlockConnections(unsigned int unknown_id, int num_conn)
 {
   auto& log = chi::ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
-    log.LogAllError()
-      << "UnknownManager failed call to SetUnknownNumOffBlockConnections,"
-         " illegal index. " << unknown_id;
+    log.LogAllError() << "UnknownManager failed call to SetUnknownNumOffBlockConnections,"
+                         " illegal index. "
+                      << unknown_id;
     Chi::Exit(EXIT_FAILURE);
   }
 
@@ -117,46 +111,45 @@ void chi_math::UnknownManager::
 //###################################################################
 /**Sets the number of off block connections for the given unknown-
  * component pair.*/
-void chi_math::UnknownManager::
-  SetUnknownComponentNumOffBlockConnections(unsigned int unknown_id,
-                                            unsigned int component,
-                                            int num_conn)
+void
+chi_math::UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int unknown_id,
+                                                                    unsigned int component,
+                                                                    int num_conn)
 {
   auto& log = chi::ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
-    log.LogAllError()
-      << "UnknownManager failed call to SetUnknownComponentTextName,"
-         " illegal unknown index. " << unknown_id;
+    log.LogAllError() << "UnknownManager failed call to SetUnknownComponentTextName,"
+                         " illegal unknown index. "
+                      << unknown_id;
     Chi::Exit(EXIT_FAILURE);
   }
 
   if (component < 0 or component >= unknowns_[unknown_id].num_components_)
   {
-    log.LogAllError()
-      << "UnknownManager failed call to SetUnknownComponentTextName,"
-         " illegal component index. " << component;
+    log.LogAllError() << "UnknownManager failed call to SetUnknownComponentTextName,"
+                         " illegal component index. "
+                      << component;
     Chi::Exit(EXIT_FAILURE);
   }
 
   unknowns_[unknown_id].num_off_block_connections_[component] = num_conn;
-
 }
 
 //###################################################################
 /**Sets a text name for the indicated unknown.*/
-void chi_math::UnknownManager::
-  SetUnknownTextName(unsigned int unknown_id,
-                     const std::string& in_text_name)
+void
+chi_math::UnknownManager::SetUnknownTextName(unsigned int unknown_id,
+                                             const std::string& in_text_name)
 {
   auto& log = chi::ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
-    log.LogAllError()
-      << "UnknownManager failed call to SetUnknownTextName,"
-         " illegal index. " << unknown_id;
+    log.LogAllError() << "UnknownManager failed call to SetUnknownTextName,"
+                         " illegal index. "
+                      << unknown_id;
     Chi::Exit(EXIT_FAILURE);
   }
 
@@ -166,29 +159,28 @@ void chi_math::UnknownManager::
 //###################################################################
 /**Sets the text name to be associated with each component of the
  * unknown.*/
-void chi_math::UnknownManager::
-  SetUnknownComponentTextName(unsigned int unknown_id,
-                              unsigned int component,
-                              const std::string& in_text_name)
+void
+chi_math::UnknownManager::SetUnknownComponentTextName(unsigned int unknown_id,
+                                                      unsigned int component,
+                                                      const std::string& in_text_name)
 {
   auto& log = chi::ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
-    log.LogAllError()
-      << "UnknownManager failed call to SetUnknownComponentTextName,"
-         " illegal unknown index. " << unknown_id;
+    log.LogAllError() << "UnknownManager failed call to SetUnknownComponentTextName,"
+                         " illegal unknown index. "
+                      << unknown_id;
     Chi::Exit(EXIT_FAILURE);
   }
 
   if (component < 0 or component >= unknowns_[unknown_id].num_components_)
   {
-    log.LogAllError()
-      << "UnknownManager failed call to SetUnknownComponentTextName,"
-         " illegal component index. " << component;
+    log.LogAllError() << "UnknownManager failed call to SetUnknownComponentTextName,"
+                         " illegal component index. "
+                      << component;
     Chi::Exit(EXIT_FAILURE);
   }
 
   unknowns_[unknown_id].component_text_names_[component] = in_text_name;
-
 }

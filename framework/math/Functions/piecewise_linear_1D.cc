@@ -7,7 +7,8 @@ namespace chi_math::functions
 
 RegisterChiObject(chi_math::functions, PiecewiseLinear1D);
 
-chi::InputParameters PiecewiseLinear1D::GetInputParameters()
+chi::InputParameters
+PiecewiseLinear1D::GetInputParameters()
 {
   chi::InputParameters params = FunctionDimAToDimB::GetInputParameters();
 
@@ -16,10 +17,8 @@ chi::InputParameters PiecewiseLinear1D::GetInputParameters()
   params.SetDocGroup("DocMathFunctions");
   // clang-format on
 
-  params.AddRequiredParameterArray(
-    "x_values", "The x-values used in the interpolation function.");
-  params.AddRequiredParameterArray(
-    "y_values", "The x-values used in the interpolation function.");
+  params.AddRequiredParameterArray("x_values", "The x-values used in the interpolation function.");
+  params.AddRequiredParameterArray("y_values", "The x-values used in the interpolation function.");
 
   params.ChangeExistingParamToOptional("input_dimension", size_t{1});
   params.ChangeExistingParamToOptional("output_dimension", size_t{1});
@@ -33,13 +32,11 @@ PiecewiseLinear1D::PiecewiseLinear1D(const chi::InputParameters& params)
     y_values_(params.GetParamVectorValue<double>("y_values")),
     num_vals_(x_values_.size())
 {
-  ChiInvalidArgumentIf(
-    y_values_.size() != num_vals_,
-    std::string("Number of y-values (") + std::to_string(y_values_.size()) +
-      ") must match number of x-values (" + std::to_string(num_vals_) + ".");
+  ChiInvalidArgumentIf(y_values_.size() != num_vals_,
+                       std::string("Number of y-values (") + std::to_string(y_values_.size()) +
+                         ") must match number of x-values (" + std::to_string(num_vals_) + ".");
 
-  ChiInvalidArgumentIf(y_values_.size() < 2,
-                       "Number of pairs must at least be 2");
+  ChiInvalidArgumentIf(y_values_.size() < 2, "Number of pairs must at least be 2");
 
   delta_x_values_.assign(num_vals_ - 1, 0.0);
   slopes_.assign(num_vals_ - 1, 0.0);
@@ -57,8 +54,7 @@ PiecewiseLinear1D::PiecewiseLinear1D(const chi::InputParameters& params)
 std::vector<double>
 PiecewiseLinear1D::Evaluate(const std::vector<double>& values) const
 {
-  if (values.size() != 1)
-    ChiInvalidArgument("Can only be called with 1 argument.");
+  if (values.size() != 1) ChiInvalidArgument("Can only be called with 1 argument.");
 
   return {ScalarFunction1Parameter(values.front())};
 }
@@ -66,13 +62,13 @@ PiecewiseLinear1D::Evaluate(const std::vector<double>& values) const
 std::vector<double>
 PiecewiseLinear1D::EvaluateSlope(const std::vector<double>& values) const
 {
-  if (values.size() != 1)
-    ChiInvalidArgument("Can only be called with 1 argument.");
+  if (values.size() != 1) ChiInvalidArgument("Can only be called with 1 argument.");
 
   return {ScalarFunctionSlope1Parameter(values.front())};
 }
 
-double PiecewiseLinear1D::ScalarFunction1Parameter(double x) const
+double
+PiecewiseLinear1D::ScalarFunction1Parameter(double x) const
 {
   if (x < x_values_.front()) return y_values_.front();
 
@@ -82,15 +78,15 @@ double PiecewiseLinear1D::ScalarFunction1Parameter(double x) const
   for (size_t k = 0; k < max_k; ++k)
     if ((x >= x_values_[k]) and (x < x_values_[k + 1]))
     {
-      return (y_values_[k] * (x_values_[k + 1] - x) +
-              y_values_[k + 1] * (x - x_values_[k])) /
+      return (y_values_[k] * (x_values_[k + 1] - x) + y_values_[k + 1] * (x - x_values_[k])) /
              delta_x_values_[k];
     }
 
   ChiLogicalError("Bad trouble");
 }
 
-double PiecewiseLinear1D::ScalarFunctionSlope1Parameter(double x) const
+double
+PiecewiseLinear1D::ScalarFunctionSlope1Parameter(double x) const
 {
   if (x < x_values_.front()) return 0.0;
 

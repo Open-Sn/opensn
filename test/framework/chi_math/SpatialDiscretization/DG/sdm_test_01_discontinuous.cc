@@ -18,15 +18,15 @@ namespace chi_unit_tests
 {
 
 chi::InputParameters chi_math_SDM_Test02Syntax();
-chi::ParameterBlock
-chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters);
+chi::ParameterBlock chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*name_in_lua=*/chi_math_SDM_Test02_DisContinuous,
                         /*syntax_function=*/chi_math_SDM_Test02Syntax,
                         /*actual_function=*/chi_math_SDM_Test02_DisContinuous);
 
-chi::InputParameters chi_math_SDM_Test02Syntax()
+chi::InputParameters
+chi_math_SDM_Test02Syntax()
 {
   chi::InputParameters params;
 
@@ -44,8 +44,7 @@ int MapFaceNodeDisc(const chi_math::CellMapping& cur_cell_mapping,
                     size_t ccfi,
                     double epsilon = 1.0e-12);
 
-double HPerpendicular(const chi_math::CellMapping& cell_mapping,
-                      unsigned int f);
+double HPerpendicular(const chi_math::CellMapping& cell_mapping, unsigned int f);
 
 chi::ParameterBlock
 chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
@@ -53,12 +52,9 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
   const chi::ParameterBlock& params = input_parameters.GetParam("arg0");
 
   const double penalty_factor =
-    params.Has("penalty_factor")
-      ? params.GetParamValue<double>("penalty_factor")
-      : 4.0;
+    params.Has("penalty_factor") ? params.GetParamValue<double>("penalty_factor") : 4.0;
 
-  const bool export_vtk =
-    params.Has("export_vtk") && params.GetParamValue<bool>("export_vtk");
+  const bool export_vtk = params.Has("export_vtk") && params.GetParamValue<bool>("export_vtk");
 
   //============================================= Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
@@ -73,14 +69,8 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
   {
     using namespace chi_math::spatial_discretization;
-    if (sdm_type == "PWLD")
-    {
-      sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
-    }
-    else if (sdm_type == "LagrangeD")
-    {
-      sdm_ptr = LagrangeDiscontinuous::New(grid);
-    }
+    if (sdm_type == "PWLD") { sdm_ptr = PieceWiseLinearDiscontinuous::New(grid); }
+    else if (sdm_type == "LagrangeD") { sdm_ptr = LagrangeDiscontinuous::New(grid); }
     else
       ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
   }
@@ -107,11 +97,9 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
-  sdm.BuildSparsityPattern(
-    nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
+  sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(
-    A, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   //============================================= Assemble the system
   Chi::log.Log() << "Assembling system: ";
@@ -125,8 +113,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
     const double D = 1.0;
 
-    const auto [domain_nodes, bndry_nodes] =
-      sdm.MakeCellInternalAndBndryNodeIDs(cell);
+    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
 
     MatDbl Acell(num_nodes, VecDbl(num_nodes, 0.0));
     VecDbl cell_rhs(num_nodes, 0.0);
@@ -199,13 +186,12 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
                                            acf,
                                            fj); // j-plus
             const int64_t jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
-            const int64_t jpmap =
-              sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
+            const int64_t jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
 
             double aij = 0.0;
             for (size_t qp : fqp_data.QuadraturePointIndices())
-              aij += kappa * fqp_data.ShapeValue(i, qp) *
-                     fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
+              aij +=
+                kappa * fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
 
             MatSetValue(A, imap, jmmap, aij, ADD_VALUES);
             MatSetValue(A, imap, jpmap, -aij, ADD_VALUES);
@@ -232,13 +218,11 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
                                            acf,
                                            fj); // j-plus
             const int64_t jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
-            const int64_t jpmap =
-              sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
+            const int64_t jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
 
             chi_mesh::Vector3 vec_aij;
             for (size_t qp : fqp_data.QuadraturePointIndices())
-              vec_aij += fqp_data.ShapeValue(jm, qp) *
-                         fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp);
+              vec_aij += fqp_data.ShapeValue(jm, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp);
             const double aij = -0.5 * D * n_f.Dot(vec_aij);
 
             MatSetValue(A, imap, jmmap, aij, ADD_VALUES);
@@ -266,8 +250,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
             chi_mesh::Vector3 vec_aij;
             for (size_t qp : fqp_data.QuadraturePointIndices())
-              vec_aij += fqp_data.ShapeValue(im, qp) *
-                         fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
+              vec_aij += fqp_data.ShapeValue(im, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
             const double aij = -0.5 * D * n_f.Dot(vec_aij);
 
             MatSetValue(A, immap, jmap, aij, ADD_VALUES);
@@ -282,12 +265,9 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
         //========================= Compute kappa
         double kappa = 1.0;
-        if (cell.Type() == chi_mesh::CellType::SLAB)
-          kappa = 4.0 * penalty_factor * D / hm;
-        if (cell.Type() == chi_mesh::CellType::POLYGON)
-          kappa = 4.0 * penalty_factor * D / hm;
-        if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
-          kappa = 8.0 * penalty_factor * D / hm;
+        if (cell.Type() == chi_mesh::CellType::SLAB) kappa = 4.0 * penalty_factor * D / hm;
+        if (cell.Type() == chi_mesh::CellType::POLYGON) kappa = 4.0 * penalty_factor * D / hm;
+        if (cell.Type() == chi_mesh::CellType::POLYHEDRON) kappa = 8.0 * penalty_factor * D / hm;
 
         //========================= Assembly penalty terms
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -302,8 +282,8 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
             double aij = 0.0;
             for (size_t qp : fqp_data.QuadraturePointIndices())
-              aij += kappa * fqp_data.ShapeValue(i, qp) *
-                     fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
+              aij +=
+                kappa * fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
             double aij_bc_value = aij * bc_value;
 
             MatSetValue(A, imap, jmmap, aij, ADD_VALUES);
@@ -326,10 +306,8 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
             chi_mesh::Vector3 vec_aij;
             for (size_t qp : fqp_data.QuadraturePointIndices())
-              vec_aij += fqp_data.ShapeValue(j, qp) *
-                           fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
-                         fqp_data.ShapeValue(i, qp) *
-                           fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
+              vec_aij += fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
+                         fqp_data.ShapeValue(i, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
             const double aij = -D * n_f.Dot(vec_aij);
 
             double aij_bc_value = aij * bc_value;
@@ -367,25 +345,24 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
   //============================================= Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A,                // Matrix
-    "PWLCDiffSolver", // Solver name
-    KSPCG,            // Solver type
-    PCHYPRE,           // Preconditioner type
-    1.0e-6,           // Relative residual tolerance
-    1000);            // Max iterations
+  auto petsc_solver =
+    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,                // Matrix
+                                                        "PWLCDiffSolver", // Solver name
+                                                        KSPCG,            // Solver type
+                                                        PCHYPRE,          // Preconditioner type
+                                                        1.0e-6, // Relative residual tolerance
+                                                        1000);  // Max iterations
 
   PC pc;
   KSPGetPC(petsc_solver.ksp, &pc);
   PCHYPRESetType(pc, "boomeramg");
-  std::vector<std::string> pc_options = {
-    "pc_hypre_boomeramg_agg_nl 1",
-    "pc_hypre_boomeramg_P_max 4",
-    "pc_hypre_boomeramg_grid_sweeps_coarse 1",
-    "pc_hypre_boomeramg_max_levels 25",
-    "pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi",
-    "pc_hypre_boomeramg_coarsen_type HMIS",
-    "pc_hypre_boomeramg_interp_type ext+i"};
+  std::vector<std::string> pc_options = {"pc_hypre_boomeramg_agg_nl 1",
+                                         "pc_hypre_boomeramg_P_max 4",
+                                         "pc_hypre_boomeramg_grid_sweeps_coarse 1",
+                                         "pc_hypre_boomeramg_max_levels 25",
+                                         "pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi",
+                                         "pc_hypre_boomeramg_coarsen_type HMIS",
+                                         "pc_hypre_boomeramg_interp_type ext+i"};
 
   if (grid.Attributes() & chi_mesh::DIMENSION_2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
@@ -404,7 +381,6 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
   const char* reason;
   KSPGetConvergedReasonString(petsc_solver.ksp, &reason);
   Chi::log.Log() << "Done solving " << reason;
-
 
   //============================================= Extract PETSc vector
   std::vector<double> field;
@@ -439,8 +415,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
     ff->UpdateFieldVector(field);
 
-    chi_physics::FieldFunctionGridBased::ExportMultipleToVTK(
-      "ZSDM_Test", {ff});
+    chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("ZSDM_Test", {ff});
   }
 
   return chi::ParameterBlock{};
@@ -448,14 +423,15 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
 // ###################################################################
 /**Maps a face, in a discontinuous sense, using the spatial discretization.*/
-int MapFaceNodeDisc(const chi_math::CellMapping& cur_cell_mapping,
-                    const chi_math::CellMapping& adj_cell_mapping,
-                    const std::vector<chi_mesh::Vector3>& cc_node_locs,
-                    const std::vector<chi_mesh::Vector3>& ac_node_locs,
-                    size_t ccf,
-                    size_t acf,
-                    size_t ccfi,
-                    double epsilon /*=1.0e-12*/)
+int
+MapFaceNodeDisc(const chi_math::CellMapping& cur_cell_mapping,
+                const chi_math::CellMapping& adj_cell_mapping,
+                const std::vector<chi_mesh::Vector3>& cc_node_locs,
+                const std::vector<chi_mesh::Vector3>& ac_node_locs,
+                size_t ccf,
+                size_t acf,
+                size_t ccfi,
+                double epsilon /*=1.0e-12*/)
 {
   const int i = cur_cell_mapping.MapFaceNode(ccf, ccfi);
   const auto& node_i_loc = cc_node_locs[i];
@@ -472,7 +448,8 @@ int MapFaceNodeDisc(const chi_math::CellMapping& cur_cell_mapping,
     "lbs::acceleration::DiffusionMIPSolver::MapFaceNodeDisc: Mapping failure.");
 }
 
-double HPerpendicular(const chi_math::CellMapping& cell_mapping, unsigned int f)
+double
+HPerpendicular(const chi_math::CellMapping& cell_mapping, unsigned int f)
 {
   const auto& cell = cell_mapping.ReferenceCell();
   double hp;
@@ -509,9 +486,7 @@ double HPerpendicular(const chi_math::CellMapping& cell_mapping, unsigned int f)
       else
       {
         hp = 2.0 * volume / surface_area;
-        hp +=
-          sqrt(2.0 * volume /
-               (scdouble(num_faces) * sin(2.0 * M_PI / scdouble(num_faces))));
+        hp += sqrt(2.0 * volume / (scdouble(num_faces) * sin(2.0 * M_PI / scdouble(num_faces))));
       }
     }
   }
@@ -528,9 +503,8 @@ double HPerpendicular(const chi_math::CellMapping& cell_mapping, unsigned int f)
       hp = 6 * volume / surface_area;
   } // Polyhedron
   else
-    throw std::logic_error(
-      "lbs::acceleration::DiffusionMIPSolver::HPerpendicular: "
-      "Unsupported cell type in call to HPerpendicular");
+    throw std::logic_error("lbs::acceleration::DiffusionMIPSolver::HPerpendicular: "
+                           "Unsupported cell type in call to HPerpendicular");
 
   return hp;
 }

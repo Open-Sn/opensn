@@ -8,24 +8,24 @@
 namespace chi_physics
 {
 
-chi::InputParameters FieldFunctionInterface::GetInputParameters()
+chi::InputParameters
+FieldFunctionInterface::GetInputParameters()
 {
   chi::InputParameters params;
 
-  params.AddRequiredParameterBlock("field_function",
-                                   "Field function handle or name.");
+  params.AddRequiredParameterBlock("field_function", "Field function handle or name.");
   params.SetParameterTypeMismatchAllowed("field_function");
 
   return params;
 }
 
-FieldFunctionInterface::FieldFunctionInterface(
-  const chi::InputParameters& params)
+FieldFunctionInterface::FieldFunctionInterface(const chi::InputParameters& params)
   : field_function_param_(params.GetParam("field_function"))
 {
 }
 
-FieldFunction* FieldFunctionInterface::GetFieldFunction() const
+FieldFunction*
+FieldFunctionInterface::GetFieldFunction() const
 {
   std::shared_ptr<chi_physics::FieldFunction> ref_ff_ptr = nullptr;
   if (field_function_param_.Type() == chi::ParameterBlockType::STRING)
@@ -34,8 +34,7 @@ FieldFunction* FieldFunctionInterface::GetFieldFunction() const
     for (const auto& ff_ptr : Chi::field_function_stack)
       if (ff_ptr->TextName() == name) ref_ff_ptr = ff_ptr;
 
-    ChiInvalidArgumentIf(ref_ff_ptr == nullptr,
-                         "Field function \"" + name + "\" not found.");
+    ChiInvalidArgumentIf(ref_ff_ptr == nullptr, "Field function \"" + name + "\" not found.");
   }
   else if (field_function_param_.Type() == chi::ParameterBlockType::INTEGER)
   {

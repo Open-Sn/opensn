@@ -3,7 +3,8 @@
 
 //######################################################### Print Vector
 /** Prints the Vector.*/
-void chi_math::PrintVector(const VecDbl &x)
+void
+chi_math::PrintVector(const VecDbl& x)
 {
   for (auto& xi : x)
     std::cout << xi << ' ';
@@ -12,7 +13,8 @@ void chi_math::PrintVector(const VecDbl &x)
 
 //#########################################################  Scale
 /** Scales a vector in place by constant.*/
-void chi_math::Scale(VecDbl &x, const double &val)
+void
+chi_math::Scale(VecDbl& x, const double& val)
 {
   for (double& xi : x)
     xi *= val;
@@ -20,7 +22,8 @@ void chi_math::Scale(VecDbl &x, const double &val)
 
 //#########################################################  Scale
 /** Sets a constant value to a vector.*/
-void chi_math::Set(VecDbl &x, const double &val)
+void
+chi_math::Set(VecDbl& x, const double& val)
 {
   for (double& xi : x)
     xi = val;
@@ -33,7 +36,8 @@ void chi_math::Set(VecDbl &x, const double &val)
  * \mathrm{a} \cdot \mathrm{b}=\sum_{i=1}^{n} a_{i} b_{i}
  * \f]
  * */
-double chi_math::Dot(const VecDbl &x, const VecDbl &y)
+double
+chi_math::Dot(const VecDbl& x, const VecDbl& y)
 {
   // Error Checks
   assert(x.size() > 0);
@@ -43,7 +47,7 @@ double chi_math::Dot(const VecDbl &x, const VecDbl &y)
   size_t n = x.size();
   double val = 0.0;
 
-  for(size_t i = 0; i != n; i++)
+  for (size_t i = 0; i != n; i++)
     val += x[i] * y[i];
 
   return val;
@@ -51,7 +55,8 @@ double chi_math::Dot(const VecDbl &x, const VecDbl &y)
 
 //######################################################### Multiply with const
 /** Multiplies the vector with a constant and returns result.*/
-VecDbl chi_math::VecMul(const VecDbl &x, const double &val)
+VecDbl
+chi_math::VecMul(const VecDbl& x, const double& val)
 {
   size_t n = x.size();
   VecDbl y(n);
@@ -70,18 +75,18 @@ VecDbl chi_math::VecMul(const VecDbl &x, const double &val)
  * \f]
  *
  * */
- double chi_math::Vec1Norm(const VecDbl &x)
- {
-   // Local Variables
-   size_t n = x.size();
-   double val = 0.;
+double
+chi_math::Vec1Norm(const VecDbl& x)
+{
+  // Local Variables
+  size_t n = x.size();
+  double val = 0.;
 
-   for(size_t i = 0; i != n; i++)
-     val += std::fabs(x[i]);
+  for (size_t i = 0; i != n; i++)
+    val += std::fabs(x[i]);
 
-   return val;
- }
-
+  return val;
+}
 
 /** Returns the 2-norm. Also known as the Euclidian or Frobenius norm.
  *
@@ -90,14 +95,15 @@ VecDbl chi_math::VecMul(const VecDbl &x, const double &val)
  * \f]
  *
  * */
-double chi_math::Vec2Norm(const VecDbl &x)
+double
+chi_math::Vec2Norm(const VecDbl& x)
 {
   // Local Variables
   size_t n = x.size();
   double val = 0.;
 
-  for(size_t i = 0; i != n; i++)
-    val += x[i]*x[i];
+  for (size_t i = 0; i != n; i++)
+    val += x[i] * x[i];
 
   return std::sqrt(val);
 }
@@ -105,17 +111,18 @@ double chi_math::Vec2Norm(const VecDbl &x)
 /** Returns the infinity-norm.
  *
  * \f[
- * \|\mathbf{x}\|_{\infty}=\max \left(\left|x_{1}\right|, \ldots,\left|x_{n}\right|\right)
- * \f]
+ * \|\mathbf{x}\|_{\infty}=\max \left(\left|x_{1}\right|,
+ * \ldots,\left|x_{n}\right|\right) \f]
  *
  * */
-double chi_math::VecInfinityNorm(const VecDbl &x)
+double
+chi_math::VecInfinityNorm(const VecDbl& x)
 {
   // Local Variables
   size_t n = x.size();
   double val = 0.0;
 
-  for(size_t i = 0; i != n; i++)
+  for (size_t i = 0; i != n; i++)
     val += std::max(std::fabs(x[i]), val);
 
   return val;
@@ -128,37 +135,40 @@ double chi_math::VecInfinityNorm(const VecDbl &x)
  * \f]
  *
  * */
-double chi_math::VecPNorm(const VecDbl &x, const double& p)
+double
+chi_math::VecPNorm(const VecDbl& x, const double& p)
 {
   // Local Variables
   size_t n = x.size();
   double val = 0.;
 
-  for(size_t i = 0; i != n; i++)
+  for (size_t i = 0; i != n; i++)
     val += std::pow(std::fabs(x[i]), p);
 
-  return std::pow(val, 1./p);
+  return std::pow(val, 1. / p);
 }
 
 /**Adds two vectors component-wise.*/
-VecDbl chi_math::operator+(const VecDbl& a, const VecDbl& b)
+VecDbl
+chi_math::operator+(const VecDbl& a, const VecDbl& b)
 {
   assert(a.size() == b.size());
   VecDbl result(a.size(), 0.0);
 
-  for (size_t i=0; i<a.size(); ++i)
+  for (size_t i = 0; i < a.size(); ++i)
     result[i] = a[i] + b[i];
 
   return result;
 }
 
 /**Subtracts two vectors component-wise.*/
-VecDbl chi_math::operator-(const VecDbl& a, const VecDbl& b)
+VecDbl
+chi_math::operator-(const VecDbl& a, const VecDbl& b)
 {
   assert(a.size() == b.size());
   VecDbl result(a.size(), 0.0);
 
-  for (size_t i=0; i<a.size(); ++i)
+  for (size_t i = 0; i < a.size(); ++i)
     result[i] = a[i] - b[i];
 
   return result;

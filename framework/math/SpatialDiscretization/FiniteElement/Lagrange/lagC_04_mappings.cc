@@ -11,18 +11,17 @@ namespace chi_math::spatial_discretization
 
 // ###################################################################
 /**Maps a vertex id according to a developed node ordering.*/
-int64_t LagrangeContinuous::MapDOF(
-  const chi_mesh::Cell& cell,
-  const unsigned int node,
-  const chi_math::UnknownManager& unknown_manager,
-  const unsigned int unknown_id,
-  const unsigned int component /*=0*/) const
+int64_t
+LagrangeContinuous::MapDOF(const chi_mesh::Cell& cell,
+                           const unsigned int node,
+                           const chi_math::UnknownManager& unknown_manager,
+                           const unsigned int unknown_id,
+                           const unsigned int component /*=0*/) const
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 
   ChiLogicalErrorIf(node_mapping_.count(vertex_id) == 0,
-                    std::string("Bad trouble mapping vertex ") +
-                      std::to_string(vertex_id));
+                    std::string("Bad trouble mapping vertex ") + std::to_string(vertex_id));
   const int64_t global_id = node_mapping_.at(vertex_id);
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
@@ -51,12 +50,12 @@ int64_t LagrangeContinuous::MapDOF(
 
 // ###################################################################
 /**Maps a vertex id according to a developed node ordering.*/
-int64_t LagrangeContinuous::MapDOFLocal(
-  const chi_mesh::Cell& cell,
-  const unsigned int node,
-  const chi_math::UnknownManager& unknown_manager,
-  const unsigned int unknown_id,
-  const unsigned int component /*=0*/) const
+int64_t
+LagrangeContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
+                                const unsigned int node,
+                                const chi_math::UnknownManager& unknown_manager,
+                                const unsigned int unknown_id,
+                                const unsigned int component /*=0*/) const
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 
@@ -96,12 +95,10 @@ int64_t LagrangeContinuous::MapDOFLocal(
     }
     if (storage == chi_math::UnknownStorageType::BLOCK)
     {
-      address =
-        sc_int64(ghost_node_mapping_.size() * block_id) + ghost_local_node_id;
+      address = sc_int64(ghost_node_mapping_.size() * block_id) + ghost_local_node_id;
     }
     else if (storage == chi_math::UnknownStorageType::NODAL)
-      address =
-        ghost_local_node_id * sc_int64(num_unknowns) + sc_int64(block_id);
+      address = ghost_local_node_id * sc_int64(num_unknowns) + sc_int64(block_id);
 
     address += sc_int64(num_local_dofs);
   }

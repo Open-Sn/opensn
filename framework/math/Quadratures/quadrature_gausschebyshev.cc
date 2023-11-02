@@ -14,7 +14,8 @@ namespace chi_math
 
 RegisterChiObject(chi_math, QuadratureGaussChebyshev);
 
-chi::InputParameters QuadratureGaussChebyshev::GetInputParameters()
+chi::InputParameters
+QuadratureGaussChebyshev::GetInputParameters()
 {
   chi::InputParameters params = Quadrature::GetInputParameters();
 
@@ -31,16 +32,13 @@ chi::InputParameters QuadratureGaussChebyshev::GetInputParameters()
   return params;
 }
 
-QuadratureGaussChebyshev::QuadratureGaussChebyshev(
-  const chi::InputParameters& params)
+QuadratureGaussChebyshev::QuadratureGaussChebyshev(const chi::InputParameters& params)
   : chi_math::Quadrature(params)
 {
   const auto& assigned_params = params.ParametersAtAssignment();
 
-  const int param_count =
-    int(assigned_params.Has("order")) + int(assigned_params.Has("N"));
-  ChiInvalidArgumentIf(param_count == 2,
-                       "Either \"order\" or \"N\" must be specified, not both");
+  const int param_count = int(assigned_params.Has("order")) + int(assigned_params.Has("N"));
+  ChiInvalidArgumentIf(param_count == 2, "Either \"order\" or \"N\" must be specified, not both");
 
   if (assigned_params.Has("order"))
   {
@@ -68,7 +66,8 @@ QuadratureGaussChebyshev::QuadratureGaussChebyshev(unsigned int N, bool verbose)
 // ###################################################################
 /**Populates the abscissae and weights for a Gauss-Chebyshev
  * quadrature given the number of desired quadrature points.*/
-void QuadratureGaussChebyshev::Initialize(unsigned int N)
+void
+QuadratureGaussChebyshev::Initialize(unsigned int N)
 {
   if (verbose_)
     Chi::log.Log() << "Initializing Gauss-Chebyshev Quadrature "
@@ -85,8 +84,7 @@ void QuadratureGaussChebyshev::Initialize(unsigned int N)
     weights_.emplace_back(wn);
 
     if (verbose_)
-      Chi::log.Log() << "root[" << n << "]=" << qpoints_[n][0]
-                     << ", weight=" << weights_[n];
+      Chi::log.Log() << "root[" << n << "]=" << qpoints_[n][0] << ", weight=" << weights_[n];
   }
 
   range_ = {-1, +1};

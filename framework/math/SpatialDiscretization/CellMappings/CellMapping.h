@@ -25,7 +25,7 @@ namespace chi_math
 {
 // ################################################################### Class def
 /**Base class for all cell mappings.
-* \ingroup doc_CellMappings*/
+ * \ingroup doc_CellMappings*/
 class CellMapping
 {
 public:
@@ -57,21 +57,19 @@ public:
   virtual double ShapeValue(int i, const chi_mesh::Vector3& xyz) const = 0;
 
   /**Populates all the shape function values at the given world xyz point. This
-  * method is optimized to minimize reallocation of shape_values.*/
+   * method is optimized to minimize reallocation of shape_values.*/
   virtual void ShapeValues(const chi_mesh::Vector3& xyz,
                            std::vector<double>& shape_values) const = 0;
 
   /**Returns the value of the required shape function gradient at the world xyz
    * point.*/
-  virtual chi_mesh::Vector3
-  GradShapeValue(int i, const chi_mesh::Vector3& xyz) const = 0;
+  virtual chi_mesh::Vector3 GradShapeValue(int i, const chi_mesh::Vector3& xyz) const = 0;
 
   /**Populates all the shape function gradient values at the given world xyz
-  * point. This method is optimized to minimize reallocation of
-  * gradshape_values.*/
-  virtual void
-  GradShapeValues(const chi_mesh::Vector3& xyz,
-                  std::vector<chi_mesh::Vector3>& gradshape_values) const = 0;
+   * point. This method is optimized to minimize reallocation of
+   * gradshape_values.*/
+  virtual void GradShapeValues(const chi_mesh::Vector3& xyz,
+                               std::vector<chi_mesh::Vector3>& gradshape_values) const = 0;
 
   /**Returns the node locations associated with this element.*/
   const std::vector<chi_mesh::Vector3>& GetNodeLocations() const;
@@ -95,10 +93,8 @@ protected:
    * used as this function. Otherwise (i.e. for higher order
    * elements, the child-class should
    * bind a different function to this.*/
-  typedef std::function<void(const chi_mesh::MeshContinuum&,
-                             const chi_mesh::Cell&,
-                             double&,
-                             std::vector<double>&)>
+  typedef std::function<void(
+    const chi_mesh::MeshContinuum&, const chi_mesh::Cell&, double&, std::vector<double>&)>
     VandAFunction;
 
   CellMapping(const chi_mesh::MeshContinuum& grid,

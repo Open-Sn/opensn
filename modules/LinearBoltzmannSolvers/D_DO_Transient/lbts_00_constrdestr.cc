@@ -4,8 +4,8 @@
 #include "chi_log.h"
 
 /**Constructor.*/
-lbs::DiscOrdTransientSolver::DiscOrdTransientSolver(const std::string &in_text_name) :
-  lbs::DiscOrdKEigenvalueSolver(in_text_name)
+lbs::DiscOrdTransientSolver::DiscOrdTransientSolver(const std::string& in_text_name)
+  : lbs::DiscOrdKEigenvalueSolver(in_text_name)
 {
   chi::log.Log() << TextName() << " created.";
 }
@@ -13,5 +13,4 @@ lbs::DiscOrdTransientSolver::DiscOrdTransientSolver(const std::string &in_text_n
 /**Destructor*/
 lbs::DiscOrdTransientSolver::~DiscOrdTransientSolver()
 {
-
 }

@@ -14,15 +14,14 @@
 #include "Sweepers/CBC_SPDS.h"
 #include "Sweepers/CBC_FLUDSCommonData.h"
 
-#define ParallelParmetisNeedsCycles                                            \
-  "When using PARMETIS type partitioning then groupset iterative method"       \
+#define ParallelParmetisNeedsCycles                                                                \
+  "When using PARMETIS type partitioning then groupset iterative method"                           \
   " must be NPT_CLASSICRICHARDSON_CYCLES or NPT_GMRES_CYCLES"
 
 #define IsParallel Chi::mpi.process_count > 1
 
-#define IsPartitionTypeParmetis                                                \
-  mesher.options.partition_type ==                                             \
-    chi_mesh::VolumeMesher::PartitionType::PARMETIS
+#define IsPartitionTypeParmetis                                                                    \
+  mesher.options.partition_type == chi_mesh::VolumeMesher::PartitionType::PARMETIS
 
 namespace lbs
 {
@@ -39,10 +38,10 @@ namespace lbs
  *
  * The Template FLUDS can be scaled with number of angles and groups which
  * provides us with the angle-set-subset- and groupset-subset capability.*/
-void DiscreteOrdinatesSolver::InitializeSweepDataStructures()
+void
+DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 {
-  Chi::log.Log() << Chi::program_timer.GetTimeString()
-                 << " Initializing sweep datastructures.\n";
+  Chi::log.Log() << Chi::program_timer.GetTimeString() << " Initializing sweep datastructures.\n";
 
   //=================================== Perform checks
   {
@@ -67,15 +66,11 @@ void DiscreteOrdinatesSolver::InitializeSweepDataStructures()
   for (auto& groupset : groupsets_)
   {
     if (quadrature_unq_so_grouping_map_.count(groupset.quadrature_) == 0)
-      quadrature_unq_so_grouping_map_[groupset.quadrature_] =
-        AssociateSOsAndDirections(*grid_ptr_,
-                                  *groupset.quadrature_,
-                                  groupset.angleagg_method_,
-                                  options_.geometry_type);
+      quadrature_unq_so_grouping_map_[groupset.quadrature_] = AssociateSOsAndDirections(
+        *grid_ptr_, *groupset.quadrature_, groupset.angleagg_method_, options_.geometry_type);
 
     if (quadrature_allow_cycles_map_.count(groupset.quadrature_) == 0)
-      quadrature_allow_cycles_map_[groupset.quadrature_] =
-        groupset.allow_cycles_;
+      quadrature_allow_cycles_map_[groupset.quadrature_] = groupset.allow_cycles_;
   }
 
   //=================================== Build sweep orderings
@@ -104,19 +99,13 @@ void DiscreteOrdinatesSolver::InitializeSweepDataStructures()
       {
         using namespace chi_mesh::sweep_management;
         const auto new_swp_order = std::make_shared<SPDS_AdamsAdamsHawkins>(
-          omega,
-          *this->grid_ptr_,
-          quadrature_allow_cycles_map_[quadrature],
-          verbose);
+          omega, *this->grid_ptr_, quadrature_allow_cycles_map_[quadrature], verbose);
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
       }
       else if (sweep_type_ == "CBC")
       {
-        const auto new_swp_order =
-          std::make_shared<CBC_SPDS>(omega,
-                                     *this->grid_ptr_,
-                                     quadrature_allow_cycles_map_[quadrature],
-                                     verbose);
+        const auto new_swp_order = std::make_shared<CBC_SPDS>(
+          omega, *this->grid_ptr_, quadrature_allow_cycles_map_[quadrature], verbose);
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
       }
       else

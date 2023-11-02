@@ -1,15 +1,15 @@
 #include "D_DO_Transient/lbts_transient_solver.h"
 
 /**Computes the delayed neutron factor.*/
-double lbs::DiscOrdTransientSolver::ComputeBeta()
+double
+lbs::DiscOrdTransientSolver::ComputeBeta()
 {
-  if (num_precursors_ == 0 or not options_.use_precursors)
-    return 0.0;
+  if (num_precursors_ == 0 or not options_.use_precursors) return 0.0;
 
-  //compute total fission neutron production
+  // compute total fission neutron production
   const double FPR = ComputeFissionProduction(phi_new_local_);
 
-  //compute delayed fission neutron production
+  // compute delayed fission neutron production
   double localDNPR = 0.0;
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -21,9 +21,8 @@ double lbs::DiscOrdTransientSolver::ComputeBeta()
     const auto& num_precursors = xs.NumPrecursors();
     const auto& precursors = xs.Precursors();
 
-    //skip cell if not fissionable
-    if (not xs.IsFissionable())
-      continue;
+    // skip cell if not fissionable
+    if (not xs.IsFissionable()) continue;
 
     //============================= Loop over groupsets
     for (const auto& groupset : groupsets_)
@@ -37,19 +36,16 @@ double lbs::DiscOrdTransientSolver::ComputeBeta()
         {
           const auto& precursor = precursors[j];
 
-          //TODO: Verify that this is correct.
-          localDNPR += precursor.emission_spectrum[g] *
-                       precursor.decay_constant *
-                       precursor_new_local_[dof_map + j] *
-                       cell_volume;
+          // TODO: Verify that this is correct.
+          localDNPR += precursor.emission_spectrum[g] * precursor.decay_constant *
+                       precursor_new_local_[dof_map + j] * cell_volume;
         }
     }
   }
 
   //============================================= Allreduce global DNPR
   double DNPR = 0.0;
-  MPI_Allreduce(&localDNPR, &DNPR, 1,
-                MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
+  MPI_Allreduce(&localDNPR, &DNPR, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   return DNPR / (DNPR + FPR);
 }

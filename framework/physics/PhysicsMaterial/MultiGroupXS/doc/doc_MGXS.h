@@ -1,2 +1,2 @@
 /**\defgroup LuaTransportXSs Transport Cross Sections
-* \ingroup LuaPhysics*/
+ * \ingroup LuaPhysics*/

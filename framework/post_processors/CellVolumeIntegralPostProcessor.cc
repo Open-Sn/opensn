@@ -16,7 +16,8 @@ namespace chi
 RegisterChiObject(chi, CellVolumeIntegralPostProcessor);
 
 // ##################################################################
-InputParameters CellVolumeIntegralPostProcessor::GetInputParameters()
+InputParameters
+CellVolumeIntegralPostProcessor::GetInputParameters()
 {
   InputParameters params = PostProcessor::GetInputParameters();
   params += chi_physics::GridBasedFieldFunctionInterface::GetInputParameters();
@@ -37,19 +38,18 @@ InputParameters CellVolumeIntegralPostProcessor::GetInputParameters()
 }
 
 // ##################################################################
-CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(
-  const InputParameters& params)
+CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
     chi_physics::GridBasedFieldFunctionInterface(params),
     chi_mesh::LogicalVolumeInterface(params),
-    compute_volume_average_(
-      params.GetParamValue<bool>("compute_volume_average"))
+    compute_volume_average_(params.GetParamValue<bool>("compute_volume_average"))
 {
   value_ = ParameterBlock("", 0.0);
 }
 
 // ##################################################################
-void CellVolumeIntegralPostProcessor::Initialize()
+void
+CellVolumeIntegralPostProcessor::Initialize()
 {
   const auto* grid_field_function = GetGridBasedFieldFunction();
 
@@ -69,15 +69,15 @@ void CellVolumeIntegralPostProcessor::Initialize()
   else
   {
     for (const auto& cell : grid.local_cells)
-      if (logical_volume_ptr_->Inside(cell.centroid_))
-        cell_local_ids_.push_back(cell.local_id_);
+      if (logical_volume_ptr_->Inside(cell.centroid_)) cell_local_ids_.push_back(cell.local_id_);
   }
 
   initialized_ = true;
 }
 
 // ##################################################################
-void CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
+void
+CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 {
   if (not initialized_) Initialize();
 
@@ -120,8 +120,7 @@ void CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
       // phi_h = sum_j b_j phi_j
       double ff_value = 0.0;
       for (size_t j = 0; j < num_nodes; ++j)
-        ff_value += qp_data.ShapeValue(j, qp) *
-                    node_dof_values[j];
+        ff_value += qp_data.ShapeValue(j, qp) * node_dof_values[j];
 
       local_integral += ff_value * coord(qp_data.QPointXYZ(qp)) * qp_data.JxW(qp);
       local_volume += coord(qp_data.QPointXYZ(qp)) * qp_data.JxW(qp);
@@ -150,8 +149,7 @@ void CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
   }
 
   const int event_code = event_context.Code();
-  if (event_code == 32 /*SolverInitialized*/ or
-      event_code == 38 /*SolverAdvanced*/)
+  if (event_code == 32 /*SolverInitialized*/ or event_code == 38 /*SolverAdvanced*/)
   {
     const auto& event_params = event_context.Parameters();
 

@@ -5,10 +5,10 @@
 
 namespace lbs
 {
-  void TestFunction();
+void TestFunction();
 
-  std::array<double,2> MakeExpRepFromP1(const std::array<double,4>& P1_moments,
-                                        bool verbose=false);
-}//namespace lbs
+std::array<double, 2> MakeExpRepFromP1(const std::array<double, 4>& P1_moments,
+                                       bool verbose = false);
+} // namespace lbs
 
-#endif //LBSADJOINTSOLVER_LBSADJOINT_H
+#endif // LBSADJOINTSOLVER_LBSADJOINT_H

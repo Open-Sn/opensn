@@ -46,11 +46,8 @@ public:
   virtual const double* GetUpwindPsi(int face_node_local_idx) const = 0;
   virtual double* GetDownwindPsi(int face_node_local_idx) const = 0;
 
-  virtual void SetupIncomingFace(int face_id,
-                                 size_t num_face_nodes,
-                                 uint64_t neighbor_id,
-                                 bool on_local_face,
-                                 bool on_boundary);
+  virtual void SetupIncomingFace(
+    int face_id, size_t num_face_nodes, uint64_t neighbor_id, bool on_local_face, bool on_boundary);
   virtual void SetupOutgoingFace(int face_id,
                                  size_t num_face_nodes,
                                  uint64_t neighbor_id,
@@ -66,19 +63,18 @@ public:
 class SweepChunk : public chi_mesh::sweep_management::SweepChunk
 {
 public:
-  SweepChunk(
-    std::vector<double>& destination_phi,
-    std::vector<double>& destination_psi,
-    const chi_mesh::MeshContinuum& grid,
-    const chi_math::SpatialDiscretization& discretization,
-    const std::vector<UnitCellMatrices>& unit_cell_matrices,
-    std::vector<lbs::CellLBSView>& cell_transport_views,
-    const std::vector<double>& source_moments,
-    const LBSGroupset& groupset,
-    const std::map<int, XSPtr>& xs,
-    int num_moments,
-    int max_num_cell_dofs,
-    std::unique_ptr<SweepDependencyInterface> sweep_dependency_interface_ptr);
+  SweepChunk(std::vector<double>& destination_phi,
+             std::vector<double>& destination_psi,
+             const chi_mesh::MeshContinuum& grid,
+             const chi_math::SpatialDiscretization& discretization,
+             const std::vector<UnitCellMatrices>& unit_cell_matrices,
+             std::vector<lbs::CellLBSView>& cell_transport_views,
+             const std::vector<double>& source_moments,
+             const LBSGroupset& groupset,
+             const std::map<int, XSPtr>& xs,
+             int num_moments,
+             int max_num_cell_dofs,
+             std::unique_ptr<SweepDependencyInterface> sweep_dependency_interface_ptr);
 
 protected:
   typedef std::function<void()> CallbackFunction;

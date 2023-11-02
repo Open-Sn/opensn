@@ -11,39 +11,36 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-#define dcastPoint(x)                                                          \
-  dynamic_cast<chi_mesh::FieldFunctionInterpolationPoint&>(x)
+#define dcastPoint(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationPoint&>(x)
 #define dcastLine(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationLine&>(x)
-#define dcastSlice(x)                                                          \
-  dynamic_cast<chi_mesh::FieldFunctionInterpolationSlice&>(x)
-#define dcastVolume(x)                                                         \
-  dynamic_cast<chi_mesh::FieldFunctionInterpolationVolume&>(x)
+#define dcastSlice(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationSlice&>(x)
+#define dcastVolume(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationVolume&>(x)
 
 #include "ffinterpol_lua.h"
 #include "console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiFFInterpolationSetProperty);
-RegisterLuaConstantAsIs(PROBEPOINT,    chi_data_types::Varying(0));
-RegisterLuaConstantAsIs(SLICE_POINT,   chi_data_types::Varying(1));
-RegisterLuaConstantAsIs(SLICE_NORMAL,  chi_data_types::Varying(2));
+RegisterLuaConstantAsIs(PROBEPOINT, chi_data_types::Varying(0));
+RegisterLuaConstantAsIs(SLICE_POINT, chi_data_types::Varying(1));
+RegisterLuaConstantAsIs(SLICE_NORMAL, chi_data_types::Varying(2));
 RegisterLuaConstantAsIs(SLICE_TANGENT, chi_data_types::Varying(3));
-RegisterLuaConstantAsIs(SLICE_BINORM,  chi_data_types::Varying(4));
-RegisterLuaConstantAsIs(OPERATION,     chi_data_types::Varying(5));
-  RegisterLuaConstantAsIs(OP_SUM,     chi_data_types::Varying(10));
-  RegisterLuaConstantAsIs(OP_AVG,     chi_data_types::Varying(11));
-  RegisterLuaConstantAsIs(OP_MAX,     chi_data_types::Varying(12));
-  RegisterLuaConstantAsIs(OP_SUM_LUA, chi_data_types::Varying(13));
-  RegisterLuaConstantAsIs(OP_AVG_LUA, chi_data_types::Varying(14));
-  RegisterLuaConstantAsIs(OP_MAX_LUA, chi_data_types::Varying(15));
-RegisterLuaConstantAsIs(LOGICAL_VOLUME,      chi_data_types::Varying(8 ));
+RegisterLuaConstantAsIs(SLICE_BINORM, chi_data_types::Varying(4));
+RegisterLuaConstantAsIs(OPERATION, chi_data_types::Varying(5));
+RegisterLuaConstantAsIs(OP_SUM, chi_data_types::Varying(10));
+RegisterLuaConstantAsIs(OP_AVG, chi_data_types::Varying(11));
+RegisterLuaConstantAsIs(OP_MAX, chi_data_types::Varying(12));
+RegisterLuaConstantAsIs(OP_SUM_LUA, chi_data_types::Varying(13));
+RegisterLuaConstantAsIs(OP_AVG_LUA, chi_data_types::Varying(14));
+RegisterLuaConstantAsIs(OP_MAX_LUA, chi_data_types::Varying(15));
+RegisterLuaConstantAsIs(LOGICAL_VOLUME, chi_data_types::Varying(8));
 
-RegisterLuaConstantAsIs(ADD_FIELDFUNCTION,   chi_data_types::Varying(9 ));
-RegisterLuaConstantAsIs(SET_FIELDFUNCTIONS,  chi_data_types::Varying(10));
+RegisterLuaConstantAsIs(ADD_FIELDFUNCTION, chi_data_types::Varying(9));
+RegisterLuaConstantAsIs(SET_FIELDFUNCTIONS, chi_data_types::Varying(10));
 
-RegisterLuaConstantAsIs(LINE_FIRSTPOINT,     chi_data_types::Varying(11));
-RegisterLuaConstantAsIs(LINE_SECONDPOINT,    chi_data_types::Varying(12));
+RegisterLuaConstantAsIs(LINE_FIRSTPOINT, chi_data_types::Varying(11));
+RegisterLuaConstantAsIs(LINE_SECONDPOINT, chi_data_types::Varying(12));
 RegisterLuaConstantAsIs(LINE_NUMBEROFPOINTS, chi_data_types::Varying(13));
-RegisterLuaConstantAsIs(LINE_CUSTOM_ARRAY,   chi_data_types::Varying(14));
+RegisterLuaConstantAsIs(LINE_CUSTOM_ARRAY, chi_data_types::Varying(14));
 
 // #############################################################################
 /** Creates a new field function interpolation.
@@ -129,17 +126,17 @@ volume `vol0`.
 \return Handle int Handle to the created interpolation.
 \ingroup LuaFFInterpol
 \author Jan*/
-int chiFFInterpolationSetProperty(lua_State* L)
+int
+chiFFInterpolationSetProperty(lua_State* L)
 {
   const std::string fname = "chiFFInterpolationSetProperty";
   int numArgs = lua_gettop(L);
 
   //================================================== Get handle to field
-  //function
+  // function
   const size_t ffihandle = lua_tonumber(L, 1);
 
-  auto p_ffi =
-    Chi::GetStackItemPtr(Chi::field_func_interpolation_stack, ffihandle, fname);
+  auto p_ffi = Chi::GetStackItemPtr(Chi::field_func_interpolation_stack, ffihandle, fname);
 
   //================================================== Process properties
   using namespace chi_mesh::ff_interpolation;
@@ -154,24 +151,20 @@ int chiFFInterpolationSetProperty(lua_State* L)
   //======================================== Check slice properties
   if ((property >= Property::SLICEPOINT) && (property <= Property::SLICEBINORM))
     if (p_ffi->Type() != chi_mesh::ff_interpolation::Type::SLICE)
-      throw std::logic_error(
-        "Slice property" + std::to_string(static_cast<int>(property)) +
-        " used in chiFFInterpolationSetProperty but FFI is not a slice.");
+      throw std::logic_error("Slice property" + std::to_string(static_cast<int>(property)) +
+                             " used in chiFFInterpolationSetProperty but FFI is not a slice.");
 
   //======================================== Check Line properties
-  if ((property >= Property::FIRSTPOINT) &&
-      (property <= Property::NUMBEROFPOINTS))
+  if ((property >= Property::FIRSTPOINT) && (property <= Property::NUMBEROFPOINTS))
     if (p_ffi->Type() != chi_mesh::ff_interpolation::Type::LINE)
-      throw std::logic_error(
-        "Line property " + std::to_string(static_cast<int>(property)) +
-        " used in chiFFInterpolationSetProperty but FFI is not a line.");
+      throw std::logic_error("Line property " + std::to_string(static_cast<int>(property)) +
+                             " used in chiFFInterpolationSetProperty but FFI is not a line.");
 
   //========================================= Generic
   if (property == Property::ADD_FIELD_FUNCTION)
   {
     int ffhandle = lua_tonumber(L, 3);
-    auto cur_ff_base =
-      Chi::GetStackItemPtr(Chi::field_function_stack, ffhandle, fname);
+    auto cur_ff_base = Chi::GetStackItemPtr(Chi::field_function_stack, ffhandle, fname);
     typedef chi_physics::FieldFunctionGridBased FFGridBased;
     auto cur_ff = std::dynamic_pointer_cast<FFGridBased>(cur_ff_base);
 
@@ -186,8 +179,7 @@ int chiFFInterpolationSetProperty(lua_State* L)
     for (double handle_d : handle_array)
     {
       const auto ffhandle = static_cast<int>(handle_d);
-      auto cur_ff_base =
-        Chi::GetStackItemPtr(Chi::field_function_stack, ffhandle, fname);
+      auto cur_ff_base = Chi::GetStackItemPtr(Chi::field_function_stack, ffhandle, fname);
       typedef chi_physics::FieldFunctionGridBased FFGridBased;
       auto cur_ff = std::dynamic_pointer_cast<FFGridBased>(cur_ff_base);
 
@@ -246,30 +238,25 @@ int chiFFInterpolationSetProperty(lua_State* L)
   }
   else if (property == Property::FIRSTPOINT)
   {
-    if (numArgs != 5)
-      LuaPostArgAmountError("chiFFInterpolationSetProperty", 5, numArgs);
+    if (numArgs != 5) LuaPostArgAmountError("chiFFInterpolationSetProperty", 5, numArgs);
 
     auto& cur_ffi_line = dcastLine(*p_ffi);
 
-    chi_mesh::Vector3 point(
-      lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
+    chi_mesh::Vector3 point(lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
     cur_ffi_line.GetInitialPoint() = point;
   }
   else if (property == Property::SECONDPOINT)
   {
-    if (numArgs != 5)
-      LuaPostArgAmountError("chiFFInterpolationSetProperty", 5, numArgs);
+    if (numArgs != 5) LuaPostArgAmountError("chiFFInterpolationSetProperty", 5, numArgs);
 
     auto& cur_ffi_line = dcastLine(*p_ffi);
 
-    chi_mesh::Vector3 point(
-      lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
+    chi_mesh::Vector3 point(lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
     cur_ffi_line.GetFinalPoint() = point;
   }
   else if (property == Property::NUMBEROFPOINTS)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("chiFFInterpolationSetProperty", 3, numArgs);
+    if (numArgs != 3) LuaPostArgAmountError("chiFFInterpolationSetProperty", 3, numArgs);
 
     auto& cur_ffi_line = dcastLine(*p_ffi);
 
@@ -277,27 +264,24 @@ int chiFFInterpolationSetProperty(lua_State* L)
 
     if (num_points < 2)
     {
-      Chi::log.LogAllError()
-        << "Line property FFI_LINE_NUMBEROFPOINTS"
-        << " used in chiFFInterpolationSetProperty. Number of points must"
-        << " be greater than or equal to 2.";
+      Chi::log.LogAllError() << "Line property FFI_LINE_NUMBEROFPOINTS"
+                             << " used in chiFFInterpolationSetProperty. Number of points must"
+                             << " be greater than or equal to 2.";
       Chi::Exit(EXIT_FAILURE);
     }
     cur_ffi_line.GetNumberOfPoints() = num_points;
   }
   else if (property == Property::CUSTOM_ARRAY)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("chiFFInterpolationSetProperty", 3, numArgs);
+    if (numArgs != 3) LuaPostArgAmountError("chiFFInterpolationSetProperty", 3, numArgs);
 
     auto& cur_ffi_line = dcastLine(*p_ffi);
 
     if (not lua_istable(L, 3))
     {
-      Chi::log.LogAllError()
-        << "Line property FFI_LINE_CUSTOM_ARRAY"
-        << " used in chiFFInterpolationSetProperty. Argument 3 is expected "
-           "to be an array.";
+      Chi::log.LogAllError() << "Line property FFI_LINE_CUSTOM_ARRAY"
+                             << " used in chiFFInterpolationSetProperty. Argument 3 is expected "
+                                "to be an array.";
       Chi::Exit(EXIT_FAILURE);
     }
 
@@ -320,10 +304,9 @@ int chiFFInterpolationSetProperty(lua_State* L)
       LuaPostArgAmountError("chiFFInterpolationSetProperty", 3, numArgs);
 
     if (p_ffi->Type() != chi_mesh::ff_interpolation::Type::VOLUME)
-      throw std::logic_error(
-        "Volume property FFI_PROP_OPERATION"
-        " used in chiFFInterpolationSetProperty can only be used with "
-        "Volume type interpolations.");
+      throw std::logic_error("Volume property FFI_PROP_OPERATION"
+                             " used in chiFFInterpolationSetProperty can only be used with "
+                             "Volume type interpolations.");
 
     auto& cur_ffi_volume = dcastVolume(*p_ffi);
 
@@ -335,17 +318,15 @@ int chiFFInterpolationSetProperty(lua_State* L)
 
     if (!((op_type >= OP_SUM) && (op_type <= OP_MAX_LUA)))
     {
-      Chi::log.LogAllError()
-        << "Volume property FFI_PROP_OPERATION"
-        << " used in chiFFInterpolationSetProperty. Unsupported OPERATON."
-        << " Supported types are OP_AVG and OP_SUM. " << op_type;
+      Chi::log.LogAllError() << "Volume property FFI_PROP_OPERATION"
+                             << " used in chiFFInterpolationSetProperty. Unsupported OPERATON."
+                             << " Supported types are OP_AVG and OP_SUM. " << op_type;
       Chi::Exit(EXIT_FAILURE);
     }
 
     if ((op_type >= OP_SUM_LUA) and (op_type <= OP_MAX_LUA))
     {
-      if (numArgs != 4)
-        LuaPostArgAmountError("chiFFInterpolationSetProperty", 4, numArgs);
+      if (numArgs != 4) LuaPostArgAmountError("chiFFInterpolationSetProperty", 4, numArgs);
 
       const char* func_name = lua_tostring(L, 4);
       cur_ffi_volume.GetOperationLuaFunction() = std::string(func_name);
@@ -355,20 +336,17 @@ int chiFFInterpolationSetProperty(lua_State* L)
   }
   else if (property == Property::LOGICAL_VOLUME)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("chiFFInterpolationSetProperty", 3, numArgs);
+    if (numArgs != 3) LuaPostArgAmountError("chiFFInterpolationSetProperty", 3, numArgs);
 
     int logvol_hndle = lua_tonumber(L, 3);
 
-    auto p_logical_volume =
-      std::dynamic_pointer_cast<chi_mesh::LogicalVolume>(
+    auto p_logical_volume = std::dynamic_pointer_cast<chi_mesh::LogicalVolume>(
       Chi::GetStackItemPtr(Chi::object_stack, logvol_hndle, fname));
 
     if (p_ffi->Type() != chi_mesh::ff_interpolation::Type::VOLUME)
-      throw std::logic_error(
-        "Volume property FFI_PROP_LOGICAL_VOLUME"
-        " used in chiFFInterpolationSetProperty can only be used with "
-        "Volume type interpolations.");
+      throw std::logic_error("Volume property FFI_PROP_LOGICAL_VOLUME"
+                             " used in chiFFInterpolationSetProperty can only be used with "
+                             "Volume type interpolations.");
 
     auto& cur_ffi_volume = dcastVolume(*p_ffi);
 
@@ -376,8 +354,7 @@ int chiFFInterpolationSetProperty(lua_State* L)
   }
   else // Fall back
   {
-    Chi::log.LogAllError()
-      << "Invalid PropertyIndex used in chiFFInterpolationSetProperty.";
+    Chi::log.LogAllError() << "Invalid PropertyIndex used in chiFFInterpolationSetProperty.";
     Chi::Exit(EXIT_FAILURE);
   }
 

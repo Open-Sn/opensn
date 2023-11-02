@@ -12,16 +12,15 @@ public:
 
   explicit PiecewiseLinear1D(const chi::InputParameters& params);
 
-  std::vector<double>
-  Evaluate(const std::vector<double>& values) const override;
-  std::vector<double>
-  EvaluateSlope(const std::vector<double>& values) const override;
+  std::vector<double> Evaluate(const std::vector<double>& values) const override;
+  std::vector<double> EvaluateSlope(const std::vector<double>& values) const override;
 
   double ScalarFunction1Parameter(double x) const override;
   double ScalarFunctionSlope1Parameter(double x) const override;
 
-  bool HasSlope() const override {return true;}
-  bool HasCurvature() const override {return false;}
+  bool HasSlope() const override { return true; }
+  bool HasCurvature() const override { return false; }
+
 private:
   // Inputs
   /**Independent variable values.*/

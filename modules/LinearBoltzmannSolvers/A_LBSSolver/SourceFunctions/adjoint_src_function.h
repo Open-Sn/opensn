@@ -11,18 +11,17 @@ namespace lbs
 class AdjointSourceFunction : public SourceFunction
 {
 public:
-  explicit
-  AdjointSourceFunction(const LBSSolver& lbs_solver);
+  explicit AdjointSourceFunction(const LBSSolver& lbs_solver);
 
-  double AddSourceMoments() const override {return 0.0;}
+  double AddSourceMoments() const override { return 0.0; }
 
   void AddAdditionalSources(LBSGroupset& groupset,
                             std::vector<double>& destination_q,
                             const std::vector<double>& phi,
                             SourceFlags source_flags) override
   {
-    //Inhibit -> AddPointSources
-    //Add     -> AddVolumetricQOISources
+    // Inhibit -> AddPointSources
+    // Add     -> AddVolumetricQOISources
     AddVolumetricQOISources(groupset, destination_q, phi, source_flags);
   }
 
@@ -32,7 +31,6 @@ public:
                                SourceFlags source_flags);
 };
 
+} // namespace lbs
 
-}//namespace lbs
-
-#endif //CHITECH_LBS_ADJOINT_SRC_FUNCTION_H
+#endif // CHITECH_LBS_ADJOINT_SRC_FUNCTION_H

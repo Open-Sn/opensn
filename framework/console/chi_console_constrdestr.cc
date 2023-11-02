@@ -6,25 +6,25 @@
 
 #include "ChiObjectFactory.h"
 
-//###################################################################
+// ###################################################################
 /**Access to the singleton*/
-chi::Console& chi::Console::GetInstance() noexcept
+chi::Console&
+chi::Console::GetInstance() noexcept
 {
   static Console singleton;
   return singleton;
 }
 
-//###################################################################
+// ###################################################################
 /** Default constructor for the console*/
-chi::Console::Console() noexcept :
-  console_state_(luaL_newstate())
+chi::Console::Console() noexcept : console_state_(luaL_newstate())
 {
-
 }
 
-//###################################################################
+// ###################################################################
 /**Registers all lua items so that they are available in the console.*/
-void chi::Console::LoadRegisteredLuaItems()
+void
+chi::Console::LoadRegisteredLuaItems()
 {
   //=================================== Initializing console
   auto& L = GetConsoleState();
@@ -32,10 +32,14 @@ void chi::Console::LoadRegisteredLuaItems()
   luaL_openlibs(L);
 
   //=================================== Register version
-  lua_pushstring(L, PROJECT_VERSION);      lua_setglobal(L,"chi_version");
-  lua_pushinteger(L,PROJECT_MAJOR_VERSION);lua_setglobal(L,"chi_major_version");
-  lua_pushinteger(L,PROJECT_MINOR_VERSION);lua_setglobal(L,"chi_minor_version");
-  lua_pushinteger(L,PROJECT_PATCH_VERSION);lua_setglobal(L,"chi_patch_version");
+  lua_pushstring(L, PROJECT_VERSION);
+  lua_setglobal(L, "chi_version");
+  lua_pushinteger(L, PROJECT_MAJOR_VERSION);
+  lua_setglobal(L, "chi_major_version");
+  lua_pushinteger(L, PROJECT_MINOR_VERSION);
+  lua_setglobal(L, "chi_minor_version");
+  lua_pushinteger(L, PROJECT_PATCH_VERSION);
+  lua_setglobal(L, "chi_patch_version");
 
   //=================================== Registering functions
   chi_modules::lua_utils::RegisterLuaEntities(L);
@@ -47,8 +51,7 @@ void chi::Console::LoadRegisteredLuaItems()
 
   //=================================== Registering LuaFunctionWrappers
   for (const auto& [key, entry] : function_wrapper_registry_)
-    if (entry.call_func)
-      SetLuaFuncWrapperNamespaceTableStructure(key);
+    if (entry.call_func) SetLuaFuncWrapperNamespaceTableStructure(key);
 
   for (const auto& [key, value] : lua_constants_registry_)
     SetLuaConstant(key, value);
@@ -58,7 +61,4 @@ void chi::Console::LoadRegisteredLuaItems()
   const auto& object_maker = ChiObjectFactory::GetInstance();
   for (const auto& entry : object_maker.Registry())
     SetObjectNamespaceTableStructure(entry.first);
-
 }
-
-

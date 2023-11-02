@@ -12,20 +12,19 @@ RegisterChiObject(chi_physics::field_operations, MultiFieldOperation);
 
 // ##################################################################
 /**Returns the input parameters.*/
-chi::InputParameters MultiFieldOperation::GetInputParameters()
+chi::InputParameters
+MultiFieldOperation::GetInputParameters()
 {
   chi::InputParameters params = FieldOperation::GetInputParameters();
 
   params.SetDocGroup("DocFieldOperation");
 
-  params.AddRequiredParameter<size_t>(
-    "result_field_handle",
-    "Handle to the field function that should "
-    "receive the result of the operation.");
+  params.AddRequiredParameter<size_t>("result_field_handle",
+                                      "Handle to the field function that should "
+                                      "receive the result of the operation.");
 
-  params.AddOptionalParameterArray("dependent_field_handles",
-                                   std::vector<int>{},
-                                   "List of dependent field handles");
+  params.AddOptionalParameterArray(
+    "dependent_field_handles", std::vector<int>{}, "List of dependent field handles");
 
   params.AddOptionalParameterArray("dependent_component_references",
                                    std::vector<unsigned int>{},
@@ -45,12 +44,10 @@ chi::InputParameters MultiFieldOperation::GetInputParameters()
 
 // ##################################################################
 /**Constructor.*/
-MultiFieldOperation::MultiFieldOperation(
-  const chi::InputParameters& params)
+MultiFieldOperation::MultiFieldOperation(const chi::InputParameters& params)
   : FieldOperation(params),
     result_field_handle_(params.GetParamValue<size_t>("result_field_handle")),
-    dependent_field_handles_(
-      params.GetParamVectorValue<size_t>("dependent_field_handles")),
+    dependent_field_handles_(params.GetParamVectorValue<size_t>("dependent_field_handles")),
     function_handle_(params.GetParamValue<size_t>("function_handle"))
 {
   //============================================= Make component references
@@ -58,11 +55,9 @@ MultiFieldOperation::MultiFieldOperation(
   if (user_supplied_params.Has("dependent_component_references"))
   {
     dependent_field_ref_component_ =
-      user_supplied_params.GetParamVectorValue<unsigned int>(
-        "dependent_component_references");
+      user_supplied_params.GetParamVectorValue<unsigned int>("dependent_component_references");
 
-    ChiInvalidArgumentIf(dependent_field_ref_component_.size() !=
-                           dependent_field_handles_.size(),
+    ChiInvalidArgumentIf(dependent_field_ref_component_.size() != dependent_field_handles_.size(),
                          "Not each dependent field handle has an associated "
                          "reference component");
   }
@@ -72,15 +67,14 @@ MultiFieldOperation::MultiFieldOperation(
   if (user_supplied_params.Has("result_component_references"))
   {
     result_component_references_ =
-      user_supplied_params.GetParamVectorValue<unsigned int>(
-        "result_component_references");
+      user_supplied_params.GetParamVectorValue<unsigned int>("result_component_references");
   }
   else
     result_component_references_ = {0};
 
   //============================================= Process handles
-  auto ff_base_ptr = Chi::GetStackItemPtr(
-    Chi::field_function_stack, result_field_handle_, __FUNCTION__);
+  auto ff_base_ptr =
+    Chi::GetStackItemPtr(Chi::field_function_stack, result_field_handle_, __FUNCTION__);
 
   primary_ff_ = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base_ptr);
 
@@ -93,8 +87,7 @@ MultiFieldOperation::MultiFieldOperation(
     auto dep_ff_base_ptr =
       Chi::GetStackItemPtr(Chi::field_function_stack, dep_handle, __FUNCTION__);
 
-    auto dep_ff_ptr =
-      std::dynamic_pointer_cast<FieldFunctionGridBased>(dep_ff_base_ptr);
+    auto dep_ff_ptr = std::dynamic_pointer_cast<FieldFunctionGridBased>(dep_ff_base_ptr);
 
     ChiLogicalErrorIf(not dep_ff_ptr,
                       "Dependent field function must be based on "
@@ -103,11 +96,9 @@ MultiFieldOperation::MultiFieldOperation(
     dependent_ffs_.push_back(dep_ff_ptr);
   }
 
-  auto function_base_obj =
-    Chi::GetStackItemPtr(Chi::object_stack, function_handle_, __FUNCTION__);
+  auto function_base_obj = Chi::GetStackItemPtr(Chi::object_stack, function_handle_, __FUNCTION__);
 
-  function_ptr_ =
-    std::dynamic_pointer_cast<chi_math::FunctionDimAToDimB>(function_base_obj);
+  function_ptr_ = std::dynamic_pointer_cast<chi_math::FunctionDimAToDimB>(function_base_obj);
 
   ChiLogicalErrorIf(not function_ptr_, "Casting failure of function");
 
@@ -121,20 +112,19 @@ MultiFieldOperation::MultiFieldOperation(
                          std::to_string(dependent_ffs_.size()) +
                          " values, "
                          "however, it only supports " +
-                         std::to_string(function_ptr_->InputDimension()) +
-                         " values.");
+                         std::to_string(function_ptr_->InputDimension()) + " values.");
 
-  ChiInvalidArgumentIf(
-    function_ptr_->OutputDimension() != result_component_references_.size(),
-    std::string("The function will return ") +
-      std::to_string(function_ptr_->OutputDimension()) +
-      " values however this operation only requires " +
-      std::to_string(result_component_references_.size()) + " value(s).");
+  ChiInvalidArgumentIf(function_ptr_->OutputDimension() != result_component_references_.size(),
+                       std::string("The function will return ") +
+                         std::to_string(function_ptr_->OutputDimension()) +
+                         " values however this operation only requires " +
+                         std::to_string(result_component_references_.size()) + " value(s).");
 }
 
 // ##################################################################
 /**Constructor.*/
-void MultiFieldOperation::Execute()
+void
+MultiFieldOperation::Execute()
 {
   typedef unsigned int uint;
   typedef const int64_t cint64_t;
@@ -162,16 +152,14 @@ void MultiFieldOperation::Execute()
       for (size_t k = 0; k < num_deps; ++k)
       {
         const auto& dep_ff = dependent_ffs_[k];
-        const double value =
-          dep_ff->Evaluate(cell, node_i_xyz, dependent_field_ref_component_[k]);
+        const double value = dep_ff->Evaluate(cell, node_i_xyz, dependent_field_ref_component_[k]);
         input_params.push_back(value);
       }
 
       std::vector<double> output_params = function_ptr_->Evaluate(input_params);
 
-      ChiLogicalErrorIf(
-        output_params.size() != result_component_references_.size(),
-        "Calling function number of output values not matching");
+      ChiLogicalErrorIf(output_params.size() != result_component_references_.size(),
+                        "Calling function number of output values not matching");
 
       size_t k = 0;
       for (uint c : result_component_references_)

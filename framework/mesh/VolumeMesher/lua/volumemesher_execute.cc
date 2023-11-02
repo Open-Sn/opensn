@@ -21,32 +21,27 @@ RegisterLuaFunctionAsIs(chiVolumeMesherExecute);
 
 \ingroup LuaVolumeMesher
 \author Jan*/
-int chiVolumeMesherExecute(lua_State *L)
+int
+chiVolumeMesherExecute(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //Get memory before
+  // Get memory before
   chi::CSTMemory mem_before = chi::Console::GetMemoryUsage();
 
   cur_hndlr.GetVolumeMesher().Execute();
 
-  //Get memory usage
+  // Get memory usage
   chi::CSTMemory mem_after = chi::Console::GetMemoryUsage();
 
   std::stringstream mem_string;
-  mem_string
-  << " Memory used = " << std::setprecision(3)
-  << mem_after.memory_mbytes - mem_before.memory_mbytes
-  << " MB\n"
-  << "Total process memory used after meshing "
-  << mem_after.memory_mbytes
-  << " MB";
+  mem_string << " Memory used = " << std::setprecision(3)
+             << mem_after.memory_mbytes - mem_before.memory_mbytes << " MB\n"
+             << "Total process memory used after meshing " << mem_after.memory_mbytes << " MB";
 
-  Chi::log.Log()
-    << Chi::program_timer.GetTimeString()
-    << " chiVolumeMesherExecute: Volume meshing completed."
-    << mem_string.str()
-    << std::endl;
+  Chi::log.Log() << Chi::program_timer.GetTimeString()
+                 << " chiVolumeMesherExecute: Volume meshing completed." << mem_string.str()
+                 << std::endl;
 
   return 0;
 }

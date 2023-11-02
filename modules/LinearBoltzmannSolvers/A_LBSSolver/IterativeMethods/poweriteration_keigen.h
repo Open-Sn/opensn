@@ -3,20 +3,14 @@
 
 namespace lbs
 {
-  class LBSSolver;
-void PowerIterationKEigen(LBSSolver& lbs_solver,
-                          double tolerance,
-                          int max_iterations,
-                          double& k_eff);
-void PowerIterationKEigen1(LBSSolver& lbs_solver,
-                           double tolerance,
-                           int max_iterations,
-                           double& k_eff);
-void PowerIterationKEigen2(LBSSolver& lbs_solver,
-                           double tolerance,
-                           int max_iterations,
-                           double& k_eff);
+class LBSSolver;
+void
+PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations, double& k_eff);
+void
+PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iterations, double& k_eff);
+void
+PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iterations, double& k_eff);
 
-}//namespace lbs
+} // namespace lbs
 
-#endif //CHITECH_LBS_POWERITERATION_KEIGEN_H
+#endif // CHITECH_LBS_POWERITERATION_KEIGEN_H

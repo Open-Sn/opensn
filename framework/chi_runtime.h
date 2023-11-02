@@ -66,7 +66,6 @@ struct RegistryStatuses
 };
 } // namespace chi
 
-
 class ChiObject;
 typedef std::shared_ptr<ChiObject> ChiObjectPtr;
 
@@ -132,8 +131,7 @@ public:
   {
   public:
     explicit RecoverableException(const char* message)
-      : std::runtime_error(std::string("RecoverableException: ") +
-                           std::string(message))
+      : std::runtime_error(std::string("RecoverableException: ") + std::string(message))
     {
     }
     explicit RecoverableException(const std::string& message)
@@ -235,8 +233,7 @@ public:
 
     auto item_type_T = std::dynamic_pointer_cast<T>(item_type_P);
     if (not item_type_T)
-      throw std::logic_error(calling_function_name +
-                             "Failed to cast to requested type");
+      throw std::logic_error(calling_function_name + "Failed to cast to requested type");
 
     return item_type_T;
   }
@@ -254,10 +251,9 @@ public:
    * \endcode
    * */
   template <class T>
-  static std::shared_ptr<T>&
-  GetStackItemPtr(std::vector<std::shared_ptr<T>>& stack,
-                  const size_t handle,
-                  const std::string& calling_function_name = "Unknown")
+  static std::shared_ptr<T>& GetStackItemPtr(std::vector<std::shared_ptr<T>>& stack,
+                                             const size_t handle,
+                                             const std::string& calling_function_name = "Unknown")
   {
     try
     {

@@ -16,7 +16,8 @@ RegisterWrapperFunction(/*namespace_in_lua=*/chi,
                         /*syntax_function=*/GetSyntax_PostProcessorGetValue,
                         /*actual_function=*/PostProcessorGetValue);
 
-InputParameters GetSyntax_PostProcessorGetValue()
+InputParameters
+GetSyntax_PostProcessorGetValue()
 {
   InputParameters params;
 
@@ -24,14 +25,14 @@ InputParameters GetSyntax_PostProcessorGetValue()
     "Wrapper function to retrieve the current value of a post-processor");
   params.SetDocGroup("doc_PPUtils");
 
-  params.AddRequiredParameter<size_t>("arg0",
-                                      "Handle or name of the post-processor");
+  params.AddRequiredParameter<size_t>("arg0", "Handle or name of the post-processor");
   params.SetParameterTypeMismatchAllowed("arg0");
 
   return params;
 }
 
-ParameterBlock PostProcessorGetValue(const InputParameters& params)
+ParameterBlock
+PostProcessorGetValue(const InputParameters& params)
 {
   const auto& param = params.GetParam("arg0");
   if (param.Type() == ParameterBlockType::STRING)
@@ -42,14 +43,13 @@ ParameterBlock PostProcessorGetValue(const InputParameters& params)
       if (pp_ptr->Name() == pp_name) return pp_ptr->GetValue();
 
     // If we haven't returned here
-    ChiInvalidArgument("Post-processor with name \"" + pp_name +
-                       "\" not found.");
+    ChiInvalidArgument("Post-processor with name \"" + pp_name + "\" not found.");
   }
   else if (param.Type() == ParameterBlockType::INTEGER)
   {
     const auto pp_handle = param.GetValue<size_t>();
-    const auto& pp = Chi::GetStackItem<PostProcessor>(
-      Chi::postprocessor_stack, pp_handle, __FUNCTION__);
+    const auto& pp =
+      Chi::GetStackItem<PostProcessor>(Chi::postprocessor_stack, pp_handle, __FUNCTION__);
 
     return pp.GetValue();
   }

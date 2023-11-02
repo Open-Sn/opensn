@@ -5,14 +5,14 @@
 
 namespace chi_diffusion
 {
-  enum class BoundaryType : int
-  {
-    Reflecting = 1,
-    Dirichlet  = 2,
-    Neumann    = 3,
-    Robin      = 4,
-    Vacuum     = 5
-  };
+enum class BoundaryType : int
+{
+  Reflecting = 1,
+  Dirichlet = 2,
+  Neumann = 3,
+  Robin = 4,
+  Vacuum = 5
+};
 }
 
 //###################################################################
@@ -22,8 +22,7 @@ class chi_diffusion::Boundary
 public:
   BoundaryType type_;
 
-  explicit
-  Boundary(BoundaryType in_bndry_type) : type_(in_bndry_type) {}
+  explicit Boundary(BoundaryType in_bndry_type) : type_(in_bndry_type) {}
 };
 
 //###################################################################
@@ -39,15 +38,14 @@ public:
 class chi_diffusion::BoundaryDirichlet : public chi_diffusion::Boundary
 {
 public:
-  double boundary_value=0.0;
+  double boundary_value = 0.0;
 
 public:
   BoundaryDirichlet() : Boundary(BoundaryType::Dirichlet) {}
-  explicit
-  BoundaryDirichlet(double in_bndry_value) :
-    Boundary(BoundaryType::Dirichlet),
-    boundary_value(in_bndry_value)
-  {}
+  explicit BoundaryDirichlet(double in_bndry_value)
+    : Boundary(BoundaryType::Dirichlet), boundary_value(in_bndry_value)
+  {
+  }
 };
 
 //###################################################################
@@ -76,19 +74,17 @@ and \f$ f=0 \f$ then the boundary condition is equivalent to a
 class chi_diffusion::BoundaryRobin : public chi_diffusion::Boundary
 {
 public:
-  double a=0.25;
-  double b=0.5;
-  double f=0.0;
+  double a = 0.25;
+  double b = 0.5;
+  double f = 0.0;
+
 public:
-  BoundaryRobin(double a_value, double b_value, double f_value) :
-    Boundary(BoundaryType::Robin)
+  BoundaryRobin(double a_value, double b_value, double f_value) : Boundary(BoundaryType::Robin)
   {
     a = a_value;
     b = b_value;
     f = f_value;
   }
-
 };
 
-
-#endif //CHI_DIFFUSION_BOUNDARY_H
+#endif // CHI_DIFFUSION_BOUNDARY_H

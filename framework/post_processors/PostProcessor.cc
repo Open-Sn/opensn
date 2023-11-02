@@ -12,13 +12,13 @@ namespace chi
 
 RegisterChiObjectParametersOnly(chi, PostProcessor);
 
-InputParameters PostProcessor::GetInputParameters()
+InputParameters
+PostProcessor::GetInputParameters()
 {
   InputParameters params = ChiObject::GetInputParameters();
 
-  params.SetGeneralDescription(
-    "Base class for Post-Processors. For more general"
-    "information see \\ref doc_PostProcessors");
+  params.SetGeneralDescription("Base class for Post-Processors. For more general"
+                               "information see \\ref doc_PostProcessors");
   params.SetDocGroup("doc_PostProcessors");
 
   params.AddRequiredParameter<std::string>(
@@ -27,43 +27,35 @@ InputParameters PostProcessor::GetInputParameters()
     "sure it's a useful name.");
   params.AddOptionalParameterArray(
     "execute_on",
-    std::vector<std::string>{"SolverInitialized",
-                             "SolverAdvanced",
-                             "SolverExecuted",
-                             "ProgramExecuted"},
+    std::vector<std::string>{
+      "SolverInitialized", "SolverAdvanced", "SolverExecuted", "ProgramExecuted"},
     "List of events at which the post-processor will execute.");
 
   params.AddOptionalParameterArray(
     "print_on",
-    std::vector<std::string>{"SolverInitialized",
-                             "SolverAdvanced",
-                             "SolverExecuted",
-                             "ProgramExecuted"},
+    std::vector<std::string>{
+      "SolverInitialized", "SolverAdvanced", "SolverExecuted", "ProgramExecuted"},
     "List of events at which the post-processor will print. Make sure that "
     "these "
     "events are also set for the `PostProcessorPrinter` otherwise it wont "
     "print.");
 
-  params.AddOptionalParameterBlock(
-    "initial_value", ParameterBlock{}, "An initial value.");
+  params.AddOptionalParameterBlock("initial_value", ParameterBlock{}, "An initial value.");
 
-  params.AddOptionalParameter(
-    "print_numeric_format", "general", "Numeric format to use.");
+  params.AddOptionalParameter("print_numeric_format", "general", "Numeric format to use.");
 
   using namespace chi_data_types;
   params.ConstrainParameterRange(
     "print_numeric_format",
-    AllowableRangeList::New(
-      {"fixed", "floating_point", "scientific", "general"}));
+    AllowableRangeList::New({"fixed", "floating_point", "scientific", "general"}));
 
   params.AddOptionalParameter(
     "print_precision", 6, "Number of digits to display after decimal point");
 
-  params.AddOptionalParameter(
-    "solvername_filter",
-    "",
-    "Controls update events to only execute on the relevant solver's"
-    "event calls.");
+  params.AddOptionalParameter("solvername_filter",
+                              "",
+                              "Controls update events to only execute on the relevant solver's"
+                              "event calls.");
 
   return params;
 }
@@ -71,13 +63,11 @@ InputParameters PostProcessor::GetInputParameters()
 PostProcessor::PostProcessor(const InputParameters& params, PPType type)
   : ChiObject(params),
     name_(params.GetParamValue<std::string>("name")),
-    subscribed_events_for_execution_(
-      params.GetParamVectorValue<std::string>("execute_on")),
-    subscribed_events_for_printing_(
-      params.GetParamVectorValue<std::string>("print_on")),
+    subscribed_events_for_execution_(params.GetParamVectorValue<std::string>("execute_on")),
+    subscribed_events_for_printing_(params.GetParamVectorValue<std::string>("print_on")),
     type_(type),
-    print_numeric_format_(ConstructNumericFormat(
-      params.GetParamValue<std::string>("print_numeric_format"))),
+    print_numeric_format_(
+      ConstructNumericFormat(params.GetParamValue<std::string>("print_numeric_format"))),
     print_precision_(params.GetParamValue<size_t>("print_precision")),
     solvername_filter_(params.GetParamValue<std::string>("solvername_filter"))
 {
@@ -103,51 +93,61 @@ PostProcessor::ConstructNumericFormat(const std::string& format_string)
     ChiLogicalError("Invalid numeric format string \"" + format_string + "\"");
 }
 
-const std::string& PostProcessor::Name() const { return name_; }
-PPType PostProcessor::Type() const { return type_; }
+const std::string&
+PostProcessor::Name() const
+{
+  return name_;
+}
+PPType
+PostProcessor::Type() const
+{
+  return type_;
+}
 
-PPNumericFormat PostProcessor::NumericFormat() const
+PPNumericFormat
+PostProcessor::NumericFormat() const
 {
   return print_numeric_format_;
 }
 
-size_t PostProcessor::NumericPrecision() const { return print_precision_; }
+size_t
+PostProcessor::NumericPrecision() const
+{
+  return print_precision_;
+}
 
 /**Pushes onto the post-processor stack and adds a subscription to
  * `chi_physics::PhysicsEventPublisher` singleton.*/
-void PostProcessor::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
+void
+PostProcessor::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
 {
 
   auto pp_ptr = std::dynamic_pointer_cast<PostProcessor>(new_object);
-  ChiLogicalErrorIf(not pp_ptr,
-                    "Failure to cast new object to chi::PostProcessor");
+  ChiLogicalErrorIf(not pp_ptr, "Failure to cast new object to chi::PostProcessor");
 
   Chi::postprocessor_stack.push_back(pp_ptr);
   new_object->SetStackID(Chi::postprocessor_stack.size() - 1);
 
   auto new_subscriber = std::dynamic_pointer_cast<chi::EventSubscriber>(pp_ptr);
 
-  ChiLogicalErrorIf(
-    not new_subscriber,
-    "Failure to cast chi::PostProcessor to chi::EventSubscriber");
+  ChiLogicalErrorIf(not new_subscriber,
+                    "Failure to cast chi::PostProcessor to chi::EventSubscriber");
 
   auto& publisher = chi_physics::PhysicsEventPublisher::GetInstance();
   publisher.AddSubscriber(new_subscriber);
 }
 
-void PostProcessor::ReceiveEventUpdate(const Event& event)
+void
+PostProcessor::ReceiveEventUpdate(const Event& event)
 {
-  auto it = std::find(subscribed_events_for_execution_.begin(),
-                      subscribed_events_for_execution_.end(),
-                      event.Name());
+  auto it = std::find(
+    subscribed_events_for_execution_.begin(), subscribed_events_for_execution_.end(), event.Name());
 
   if (it != subscribed_events_for_execution_.end())
   {
-    if (event.Code() >= 31 and event.Code() <= 38 and
-        not solvername_filter_.empty())
+    if (event.Code() >= 31 and event.Code() <= 38 and not solvername_filter_.empty())
     {
-      if (event.Parameters().GetParamValue<std::string>("solver_name") !=
-          solvername_filter_)
+      if (event.Parameters().GetParamValue<std::string>("solver_name") != solvername_filter_)
         return;
     }
 
@@ -160,7 +160,11 @@ void PostProcessor::ReceiveEventUpdate(const Event& event)
   }
 }
 
-const ParameterBlock& PostProcessor::GetValue() const { return value_; }
+const ParameterBlock&
+PostProcessor::GetValue() const
+{
+  return value_;
+}
 
 const std::vector<PostProcessor::TimeHistoryEntry>&
 PostProcessor::GetTimeHistory() const
@@ -168,7 +172,8 @@ PostProcessor::GetTimeHistory() const
   return time_history_;
 }
 
-const std::vector<std::string>& PostProcessor::PrintScope() const
+const std::vector<std::string>&
+PostProcessor::PrintScope() const
 {
   return subscribed_events_for_printing_;
 }
@@ -247,16 +252,15 @@ PostProcessor::ConvertValueToString(const ParameterBlock& value) const
     const auto first_entry_type = first_entry.Type();
 
     ChiLogicalErrorIf(FigureTypeFromValue(first_entry) != PPType::SCALAR,
-                      "The entries of the vector value of post-processor \"" +
-                        Name() + "\" must all be SCALAR.");
+                      "The entries of the vector value of post-processor \"" + Name() +
+                        "\" must all be SCALAR.");
 
     std::string output;
     for (const auto& entry : value)
     {
-      ChiLogicalErrorIf(
-        entry.Type() != first_entry_type,
-        "Mixed typed encountered in the vector values of post-processor \"" +
-          Name() + "\"");
+      ChiLogicalErrorIf(entry.Type() != first_entry_type,
+                        "Mixed typed encountered in the vector values of post-processor \"" +
+                          Name() + "\"");
       output.append(ConvertScalarValueToString(entry) + " ");
     }
 
@@ -271,23 +275,19 @@ PostProcessor::ConvertValueToString(const ParameterBlock& value) const
   }
 }
 
-PPType PostProcessor::FigureTypeFromValue(const ParameterBlock& value)
+PPType
+PostProcessor::FigureTypeFromValue(const ParameterBlock& value)
 {
-  const std::vector<ParameterBlockType> scalar_types = {
-    ParameterBlockType::BOOLEAN,
-    ParameterBlockType::FLOAT,
-    ParameterBlockType::STRING,
-    ParameterBlockType::INTEGER};
+  const std::vector<ParameterBlockType> scalar_types = {ParameterBlockType::BOOLEAN,
+                                                        ParameterBlockType::FLOAT,
+                                                        ParameterBlockType::STRING,
+                                                        ParameterBlockType::INTEGER};
 
   /**Lambda to check if this is a scalar*/
   auto IsScalar = [&scalar_types](const ParameterBlockType& block_type)
-  {
-    return std::find(scalar_types.begin(), scalar_types.end(), block_type) !=
-           scalar_types.end();
-  };
+  { return std::find(scalar_types.begin(), scalar_types.end(), block_type) != scalar_types.end(); };
 
-  if (not value.HasValue() and value.NumParameters() == 0)
-    return PPType::NO_VALUE;
+  if (not value.HasValue() and value.NumParameters() == 0) return PPType::NO_VALUE;
   else if (IsScalar(value.Type()))
     return PPType::SCALAR;
   else if (value.Type() == ParameterBlockType::ARRAY)
@@ -306,6 +306,10 @@ PPType PostProcessor::FigureTypeFromValue(const ParameterBlock& value)
     ChiLogicalError("Unsupported type");
 }
 
-void PostProcessor::SetType(PPType type) { type_ = type; }
+void
+PostProcessor::SetType(PPType type)
+{
+  type_ = type;
+}
 
 } // namespace chi

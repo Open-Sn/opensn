@@ -5,7 +5,8 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-void lbs::DiscreteOrdinatesAdjointSolver::Initialize()
+void
+lbs::DiscreteOrdinatesAdjointSolver::Initialize()
 {
   LBSSolver::Initialize();
 
@@ -30,6 +31,6 @@ void lbs::DiscreteOrdinatesAdjointSolver::Initialize()
     InitTGDSA(groupset);
   }
 
-  InitializeSolverSchemes();           //j
+  InitializeSolverSchemes(); // j
   source_event_tag_ = Chi::log.GetRepeatingEventTag("Set Source");
 }

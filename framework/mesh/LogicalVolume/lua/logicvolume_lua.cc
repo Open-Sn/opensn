@@ -15,12 +15,12 @@
 #include "console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiLogicalVolumeCreate);
-RegisterLuaConstantAsIs(SPHERE       , chi_data_types::Varying(1 ));
-RegisterLuaConstantAsIs(SPHERE_ORIGIN, chi_data_types::Varying(2 ));
-RegisterLuaConstantAsIs(RPP          , chi_data_types::Varying(3 ));
-RegisterLuaConstantAsIs(RCC          , chi_data_types::Varying(4 ));
-RegisterLuaConstantAsIs(SURFACE      , chi_data_types::Varying(9 ));
-RegisterLuaConstantAsIs(BOOLEAN      , chi_data_types::Varying(10));
+RegisterLuaConstantAsIs(SPHERE, chi_data_types::Varying(1));
+RegisterLuaConstantAsIs(SPHERE_ORIGIN, chi_data_types::Varying(2));
+RegisterLuaConstantAsIs(RPP, chi_data_types::Varying(3));
+RegisterLuaConstantAsIs(RCC, chi_data_types::Varying(4));
+RegisterLuaConstantAsIs(SURFACE, chi_data_types::Varying(9));
+RegisterLuaConstantAsIs(BOOLEAN, chi_data_types::Varying(10));
 RegisterLuaFunctionAsIs(chiLogicalVolumePointSense);
 
 // ###################################################################
@@ -79,7 +79,8 @@ lv6 = chiLogicalVolumeCreate(BOOLEAN, {{true , lv5},  -- inside logical volume 5
 \return Handle int Handle to the created logical volume.
 \ingroup LuaLogicVolumes
 \author Jan*/
-int chiLogicalVolumeCreate(lua_State* L)
+int
+chiLogicalVolumeCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
@@ -124,8 +125,8 @@ int chiLogicalVolumeCreate(lua_State* L)
     chi::ParameterBlock params;
     params.AddParameter("r", r);
 
-    const size_t handle = object_maker.MakeRegisteredObjectOfType(
-      "chi_mesh::SphereLogicalVolume", params);
+    const size_t handle =
+      object_maker.MakeRegisteredObjectOfType("chi_mesh::SphereLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -157,8 +158,8 @@ int chiLogicalVolumeCreate(lua_State* L)
     params.AddParameter("y", y);
     params.AddParameter("z", z);
 
-    const size_t handle = object_maker.MakeRegisteredObjectOfType(
-      "chi_mesh::SphereLogicalVolume", params);
+    const size_t handle =
+      object_maker.MakeRegisteredObjectOfType("chi_mesh::SphereLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -194,8 +195,8 @@ int chiLogicalVolumeCreate(lua_State* L)
     params.AddParameter("zmin", zmin);
     params.AddParameter("zmax", zmax);
 
-    const size_t handle = object_maker.MakeRegisteredObjectOfType(
-      "chi_mesh::RPPLogicalVolume", params);
+    const size_t handle =
+      object_maker.MakeRegisteredObjectOfType("chi_mesh::RPPLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -234,12 +235,11 @@ int chiLogicalVolumeCreate(lua_State* L)
     params.AddParameter("vz", vz);
     params.AddParameter("r", r);
 
-    const size_t handle = object_maker.MakeRegisteredObjectOfType(
-      "chi_mesh::RCCLogicalVolume", params);
+    const size_t handle =
+      object_maker.MakeRegisteredObjectOfType("chi_mesh::RCCLogicalVolume", params);
 
-    Chi::log.Log0Verbose1()
-      << "Created RCC Logical volume with x0,y0,z0,vx,vy,vz,r = " << x0 << " "
-      << y0 << " " << z0 << " " << vx << " " << vy << " " << vz << " " << r;
+    Chi::log.Log0Verbose1() << "Created RCC Logical volume with x0,y0,z0,vx,vy,vz,r = " << x0 << " "
+                            << y0 << " " << z0 << " " << vx << " " << vy << " " << vz << " " << r;
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -247,8 +247,7 @@ int chiLogicalVolumeCreate(lua_State* L)
   //================================================== SURFACE
   else if (type_index == LVSURFACE)
   {
-    if (num_args != 2)
-      LuaPostArgAmountError("chiMeshCreateLogicalVolume:SURFACE", 2, num_args);
+    if (num_args != 2) LuaPostArgAmountError("chiMeshCreateLogicalVolume:SURFACE", 2, num_args);
 
     int surf_mesh_hndle = lua_tonumber(L, 2);
 
@@ -264,8 +263,8 @@ int chiLogicalVolumeCreate(lua_State* L)
     chi::ParameterBlock params;
     params.AddParameter("surface_mesh_handle", surf_mesh_hndle);
 
-    const size_t handle = object_maker.MakeRegisteredObjectOfType(
-      "chi_mesh::SurfaceMeshLogicalVolume", params);
+    const size_t handle =
+      object_maker.MakeRegisteredObjectOfType("chi_mesh::SurfaceMeshLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -344,59 +343,58 @@ int chiLogicalVolumeCreate(lua_State* L)
     int num_pairs = num_args / 2;
     for (int p = 0; p < num_pairs; p++)
     {
-       //==================================== Checking first part of pair
-       if (not lua_isboolean(L, 2 * p))
-       {
-         Chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
-                                 " argument "
-                              << 2 * p
-                              << " expected to be "
-                                 "Boolean. Found not to be";
-         Chi::Exit(EXIT_FAILURE);
-       }
-       //==================================== Checking second part of pair
-       if (not lua_isnumber(L, 2 * p + 1))
-       {
-         Chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
-                                 " argument "
-                              << 2 * p + 1
-                              << " expected to be "
-                                 "number. Found not to be";
-         Chi::Exit(EXIT_FAILURE);
-       }
-       if (lua_tointeger(L, 2 * p + 1) >=
-           static_cast<lua_Number>(Chi::object_stack.size()))
-       {
-         Chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
-                                 " argument "
-                              << 2 * p + 1 << " points to non-existent volume.";
-         Chi::Exit(EXIT_FAILURE);
-       }
+      //==================================== Checking first part of pair
+      if (not lua_isboolean(L, 2 * p))
+      {
+        Chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
+                                " argument "
+                             << 2 * p
+                             << " expected to be "
+                                "Boolean. Found not to be";
+        Chi::Exit(EXIT_FAILURE);
+      }
+      //==================================== Checking second part of pair
+      if (not lua_isnumber(L, 2 * p + 1))
+      {
+        Chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
+                                " argument "
+                             << 2 * p + 1
+                             << " expected to be "
+                                "number. Found not to be";
+        Chi::Exit(EXIT_FAILURE);
+      }
+      if (lua_tointeger(L, 2 * p + 1) >= static_cast<lua_Number>(Chi::object_stack.size()))
+      {
+        Chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
+                                " argument "
+                             << 2 * p + 1 << " points to non-existent volume.";
+        Chi::Exit(EXIT_FAILURE);
+      }
 
-       const bool logic = lua_toboolean(L, 2 * p);
-       const bool handle = lua_tonumber(L, 2 * p + 1);
+      const bool logic = lua_toboolean(L, 2 * p);
+      const bool handle = lua_tonumber(L, 2 * p + 1);
 
-       chi::ParameterBlock block;
-       block.AddParameter("op", logic);
-       block.AddParameter("lv", handle);
+      chi::ParameterBlock block;
+      block.AddParameter("op", logic);
+      block.AddParameter("lv", handle);
 
-       params.AddParameter(block);
-     }
-     params.ChangeToArray();
+      params.AddParameter(block);
+    }
+    params.ChangeToArray();
 
-     const size_t handle = object_maker.MakeRegisteredObjectOfType(
-       "chi_mesh::BooleanLogicalVolume", params);
+    const size_t handle =
+      object_maker.MakeRegisteredObjectOfType("chi_mesh::BooleanLogicalVolume", params);
 
-     lua_pushinteger(L, static_cast<lua_Integer>(handle));
-     return 1;
+    lua_pushinteger(L, static_cast<lua_Integer>(handle));
+    return 1;
   }
 
   //================================================== Unrecognized option
   else
   {
-     Chi::log.Log0Error() << "Unrecognized volume type used in "
+    Chi::log.Log0Error() << "Unrecognized volume type used in "
                             "chiLogicalVolumeCreate.";
-     Chi::Exit(EXIT_FAILURE);
+    Chi::Exit(EXIT_FAILURE);
   }
 
   return 1;
@@ -412,7 +410,8 @@ int chiLogicalVolumeCreate(lua_State* L)
 \return Sense true if inside the logical volume and false if outside.
 \ingroup LuaLogicVolumes
 */
-int chiLogicalVolumePointSense(lua_State* L)
+int
+chiLogicalVolumePointSense(lua_State* L)
 {
   const std::string fname = "chiLogicalVolumePointSense";
   const int num_args = lua_gettop(L);
@@ -422,11 +421,9 @@ int chiLogicalVolumePointSense(lua_State* L)
 
   const int lv_handle = lua_tointeger(L, 1);
 
-  const auto& lv = Chi::GetStackItem<chi_mesh::LogicalVolume>(
-    Chi::object_stack, lv_handle, fname);
+  const auto& lv = Chi::GetStackItem<chi_mesh::LogicalVolume>(Chi::object_stack, lv_handle, fname);
 
-  const chi_mesh::Vector3 point(
-    lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
+  const chi_mesh::Vector3 point(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
 
   if (lv.Inside(point)) lua_pushboolean(L, true);
   else

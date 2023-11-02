@@ -5,20 +5,18 @@
 namespace chi_physics
 {
 
-chi::InputParameters TimeStepper::GetInputParameters()
+chi::InputParameters
+TimeStepper::GetInputParameters()
 {
   chi::InputParameters params = ChiObject::GetInputParameters();
 
   params.AddOptionalParameter("dt", 0.01, "Initial timestep to use");
   params.AddOptionalParameter("time", 0.0, "Initial time");
-  params.AddOptionalParameter(
-    "time_index", 0, "Time index. Useful for output control.");
+  params.AddOptionalParameter("time_index", 0, "Time index. Useful for output control.");
   params.AddOptionalParameter("start_time", 0.0, "Start time");
   params.AddOptionalParameter("end_time", 1.0, "End time");
   params.AddOptionalParameter(
-    "max_time_steps",
-    -1,
-    "Maximum number of timesteps to take. A negative number disables this.");
+    "max_time_steps", -1, "Maximum number of timesteps to take. A negative number disables this.");
   params.AddOptionalParameter("dt_min", 1.0e-5, "Minimum allowable timestep.");
 
   params.AddOptionalParameter("eps",
@@ -46,30 +44,55 @@ TimeStepper::TimeStepper(const chi::InputParameters& params)
 }
 
 /**Overridable method to get the timestep size.*/
-double TimeStepper::TimeStepSize() const { return dt_; }
+double
+TimeStepper::TimeStepSize() const
+{
+  return dt_;
+}
 
 /**Returns the current controller time.*/
-double TimeStepper::Time() const { return time_; }
+double
+TimeStepper::Time() const
+{
+  return time_;
+}
 
 /**Returns the current time index.*/
-size_t TimeStepper::TimeStepIndex() const { return t_index_; }
+size_t
+TimeStepper::TimeStepIndex() const
+{
+  return t_index_;
+}
 
 /**Returns the current controller start_time.*/
-double TimeStepper::StartTime() const { return start_time_; }
+double
+TimeStepper::StartTime() const
+{
+  return start_time_;
+}
 
 /**Returns the current controller end_time.*/
-double TimeStepper::EndTime() const { return end_time_; }
+double
+TimeStepper::EndTime() const
+{
+  return end_time_;
+}
 
 /**Returns the current controller max time steps.*/
-double TimeStepper::MaxTimeSteps() const { return max_time_steps_; }
+double
+TimeStepper::MaxTimeSteps() const
+{
+  return max_time_steps_;
+}
 
 /**If start_time <= time <= end_time, this will return true.*/
-bool TimeStepper::IsActive() const
+bool
+TimeStepper::IsActive() const
 {
   if (max_time_steps_ >= 0 and (t_index_ >= max_time_steps_)) return false;
 
-  bool active = (time_ >= (start_time_ - general_tolerance_) and
-                 time_ <= (end_time_ + general_tolerance_));
+  bool active =
+    (time_ >= (start_time_ - general_tolerance_) and time_ <= (end_time_ + general_tolerance_));
 
   if (std::fabs(end_time_ - time_) < general_tolerance_) active = false;
 
@@ -77,7 +100,8 @@ bool TimeStepper::IsActive() const
 }
 
 /**Manually set the time step size.*/
-void TimeStepper::SetTimeStepSize(double dt)
+void
+TimeStepper::SetTimeStepSize(double dt)
 {
   dt_ = dt;
 
@@ -85,13 +109,22 @@ void TimeStepper::SetTimeStepSize(double dt)
 }
 
 /**Manually set the current time.*/
-void TimeStepper::SetTime(double time) { time_ = time; }
+void
+TimeStepper::SetTime(double time)
+{
+  time_ = time;
+}
 
 /**Manually set the start_time.*/
-void TimeStepper::SetStartTime(double time) { start_time_ = time; }
+void
+TimeStepper::SetStartTime(double time)
+{
+  start_time_ = time;
+}
 
 /**Manually set the end_time.*/
-void TimeStepper::SetEndTime(double time)
+void
+TimeStepper::SetEndTime(double time)
 {
   end_time_ = time;
   dt_ = last_dt_;
@@ -99,15 +132,24 @@ void TimeStepper::SetEndTime(double time)
 
 /**Manually set the maximum number of time steps. A negative number disables
  * this check.*/
-void TimeStepper::SetMaxTimeSteps(int n) { max_time_steps_ = n; }
+void
+TimeStepper::SetMaxTimeSteps(int n)
+{
+  max_time_steps_ = n;
+}
 
 /**Manually sets the minimum time step size.*/
-void TimeStepper::SetMinimumTimeStepSize(double dt_min) { dt_min_ = dt_min; }
+void
+TimeStepper::SetMinimumTimeStepSize(double dt_min)
+{
+  dt_min_ = dt_min;
+}
 
 /**Advances the controller's state. The most basic action here is to
  * advance time and the time index. If the solver is at or beyond its end time
  * then it will return false. Otherwise it will advance and return true.*/
-void TimeStepper::Advance()
+void
+TimeStepper::Advance()
 {
   last_dt_ = dt_;
   time_ += dt_;
@@ -119,7 +161,8 @@ void TimeStepper::Advance()
   dt_ = std::max(dt_, dt_min_);
 }
 
-std::string TimeStepper::StringTimeInfo(bool old_time /*=false*/) const
+std::string
+TimeStepper::StringTimeInfo(bool old_time /*=false*/) const
 {
   const double time = old_time ? time_ : time_ + dt_;
   std::stringstream outstr;

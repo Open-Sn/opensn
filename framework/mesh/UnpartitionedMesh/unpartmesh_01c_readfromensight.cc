@@ -14,14 +14,14 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-#define ErrorReadingFile(fname) \
-std::runtime_error("Failed to open file: " + options.file_name + \
-" in call to " + #fname + ".")
+#define ErrorReadingFile(fname)                                                                    \
+  std::runtime_error("Failed to open file: " + options.file_name + " in call to " + #fname + ".")
 
 //###################################################################
 /**Reads an Ensight-Gold unstructured mesh.*/
-void chi_mesh::UnpartitionedMesh::
-  ReadFromEnsightGold(const chi_mesh::UnpartitionedMesh::Options &options)
+void
+chi_mesh::UnpartitionedMesh::ReadFromEnsightGold(
+  const chi_mesh::UnpartitionedMesh::Options& options)
 {
   Chi::log.Log() << "Reading Ensight-Gold file: " << options.file_name << ".";
 
@@ -51,20 +51,18 @@ void chi_mesh::UnpartitionedMesh::
   {
     auto block_a = iter_a->GetCurrentDataObject();
 
-    const std::string block_name = chi::StringTrim(
-      iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()));
+    const std::string block_name =
+      chi::StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()));
 
     if (block_a->GetDataObjectType() == VTK_UNSTRUCTURED_GRID)
     {
       grid_blocks.emplace_back(
         vtkUnstructuredGrid::SafeDownCast(block_a),
-        chi::StringTrim(
-          iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME())));
+        chi::StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME())));
 
-      Chi::log.Log()
-        << "Reading block " << block_name
-        << " Number of cells: " << grid_blocks.back().first->GetNumberOfCells()
-        << " Number of points: " << grid_blocks.back().first->GetNumberOfPoints();
+      Chi::log.Log() << "Reading block " << block_name
+                     << " Number of cells: " << grid_blocks.back().first->GetNumberOfCells()
+                     << " Number of points: " << grid_blocks.back().first->GetNumberOfPoints();
     }
 
     iter_a->GoToNextItem();
@@ -76,9 +74,7 @@ void chi_mesh::UnpartitionedMesh::
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
     chi_mesh::GetBlocksOfDesiredDimension(grid_blocks, max_dimension);
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
-    chi_mesh::GetBlocksOfDesiredDimension(grid_blocks, max_dimension-1);
-
-
+    chi_mesh::GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
   //======================================== Process blocks
   chi_mesh::SetBlockIDArrays(domain_grid_blocks);
@@ -92,10 +88,17 @@ void chi_mesh::UnpartitionedMesh::
   chi_mesh::MeshAttributes dimension = NONE;
   switch (max_dimension)
   {
-    case 1: dimension = DIMENSION_1; break;
-    case 2: dimension = DIMENSION_2; break;
-    case 3: dimension = DIMENSION_3; break;
-    default: break;
+    case 1:
+      dimension = DIMENSION_1;
+      break;
+    case 2:
+      dimension = DIMENSION_2;
+      break;
+    case 3:
+      dimension = DIMENSION_3;
+      break;
+    default:
+      break;
   }
 
   attributes_ = dimension | UNSTRUCTURED;
@@ -106,6 +109,5 @@ void chi_mesh::UnpartitionedMesh::
   //======================================== Set boundary ids
   SetBoundaryIDsFromBlocks(bndry_grid_blocks);
 
-  Chi::log.Log() << "Done reading Ensight-Gold file: "
-                 << options.file_name << ".";
+  Chi::log.Log() << "Done reading Ensight-Gold file: " << options.file_name << ".";
 }

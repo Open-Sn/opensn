@@ -220,12 +220,12 @@ parallel efficiency by lowering this limit, however, there is a point where
 the parallel efficiency will actually get worse so use with caution.
 
 \ingroup LBSLuaFunctions*/
-int chiLBSSetProperty(lua_State* L)
+int
+chiLBSSetProperty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
-  Chi::log.Log0Warning()
-    << fname + " has been deprecated. Use chiLBSSetOptions instead.";
+  Chi::log.Log0Warning() << fname + " has been deprecated. Use chiLBSSetOptions instead.";
 
   const int numArgs = lua_gettop(L);
   if (numArgs < 2) LuaPostArgAmountError(fname, 2, numArgs);
@@ -234,8 +234,7 @@ int chiLBSSetProperty(lua_State* L)
 
   //============================================= Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
-  auto& lbs_solver =
-    Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
   //============================================= Get property index
   LuaCheckNilValue(fname, L, 2);
@@ -267,8 +266,7 @@ int chiLBSSetProperty(lua_State* L)
     const int bident = lua_tonumber(L, 3);
     const int btype = lua_tonumber(L, 4);
 
-    if (!((bident >= scint(PropertyCode::XMAX)) &&
-          (bident <= scint(PropertyCode::ZMIN))))
+    if (!((bident >= scint(PropertyCode::XMAX)) && (bident <= scint(PropertyCode::ZMIN))))
     {
       Chi::log.LogAllError() << "Unknown boundary identifier encountered "
                                 "in call to chiLBSSetProperty";
@@ -288,21 +286,19 @@ int chiLBSSetProperty(lua_State* L)
 
       if (lbs_solver.Groups().empty())
       {
-        Chi::log.Log0Error()
-          << "In call to chiLBSSetProperty, setting "
-          << "incident isotropic flux boundary type: Number of solver groups"
-          << " is zero. Boundary fluxes can only be set after group structure"
-          << " has been defined.";
+        Chi::log.Log0Error() << "In call to chiLBSSetProperty, setting "
+                             << "incident isotropic flux boundary type: Number of solver groups"
+                             << " is zero. Boundary fluxes can only be set after group structure"
+                             << " has been defined.";
         Chi::Exit(EXIT_FAILURE);
       }
 
       if (!lua_istable(L, 5))
       {
-        Chi::log.LogAllError()
-          << "In call to chiLBSSetProperty, setting "
-          << "incident isotropic flux boundary type,"
-          << " argument 5 should be a lua table and was detected as"
-             " not being one.";
+        Chi::log.LogAllError() << "In call to chiLBSSetProperty, setting "
+                               << "incident isotropic flux boundary type,"
+                               << " argument 5 should be a lua table and was detected as"
+                                  " not being one.";
         Chi::Exit(EXIT_FAILURE);
       }
 
@@ -318,20 +314,19 @@ int chiLBSSetProperty(lua_State* L)
 
       if (table_len != lbs_solver.Groups().size())
       {
-        Chi::log.Log0Error()
-          << "In call to chiLBSSetProperty, setting "
-          << "incident isotropic flux boundary type: "
-          << "Number of groups in boundary flux specification is " << table_len
-          << " but solver has a total of " << lbs_solver.Groups().size()
-          << " groups. These two must be equal.";
+        Chi::log.Log0Error() << "In call to chiLBSSetProperty, setting "
+                             << "incident isotropic flux boundary type: "
+                             << "Number of groups in boundary flux specification is " << table_len
+                             << " but solver has a total of " << lbs_solver.Groups().size()
+                             << " groups. These two must be equal.";
         Chi::Exit(EXIT_FAILURE);
       }
 
-      lbs_solver.BoundaryPreferences()[bid] = {
-        lbs::BoundaryType::INCIDENT_ISOTROPIC, group_strength};
+      lbs_solver.BoundaryPreferences()[bid] = {lbs::BoundaryType::INCIDENT_ISOTROPIC,
+                                               group_strength};
 
-      Chi::log.Log() << "Isotropic boundary condition for boundary " << bid
-                     << " loaded with " << table_len << " groups.";
+      Chi::log.Log() << "Isotropic boundary condition for boundary " << bid << " loaded with "
+                     << table_len << " groups.";
     }
     else if (btype == (int)lbs::BoundaryType::REFLECTING)
     {
@@ -344,9 +339,7 @@ int chiLBSSetProperty(lua_State* L)
 
       const std::string lua_func_name = lua_tostring(L, 5);
       lbs_solver.BoundaryPreferences()[bid] = {
-        lbs::BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS,
-        {},
-        lua_func_name};
+        lbs::BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS, {}, lua_func_name};
       Chi::log.Log() << "Boundary " << bid
                      << " set to Incident anistoropic"
                         " heterogeneous.";
@@ -377,8 +370,7 @@ int chiLBSSetProperty(lua_State* L)
   }
   else if (scpcode(property) == PropertyCode::SWEEP_EAGER_LIMIT)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("chiLBSSetProperty:SWEEP_EAGER_LIMIT", 3, numArgs);
+    if (numArgs != 3) LuaPostArgAmountError("chiLBSSetProperty:SWEEP_EAGER_LIMIT", 3, numArgs);
 
     LuaCheckNilValue(fname, L, 3);
 
@@ -483,8 +475,7 @@ int chiLBSSetProperty(lua_State* L)
     Chi::log.Log() << "LBS option: use_precursors set to " << flag;
   }
   else
-    throw std::logic_error(fname +
-                           ": Invalid property in chiLBSSetProperty.\n");
+    throw std::logic_error(fname + ": Invalid property in chiLBSSetProperty.\n");
 
   return 0;
 }

@@ -33,20 +33,19 @@ class AAH_SweepChunk : public SweepChunk
 {
 public:
   AAH_SweepChunk(const chi_mesh::MeshContinuum& grid,
-                const chi_math::SpatialDiscretization& discretization,
-                const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                std::vector<lbs::CellLBSView>& cell_transport_views,
-                std::vector<double>& destination_phi,
-                std::vector<double>& destination_psi,
-                const std::vector<double>& source_moments,
-                const LBSGroupset& groupset,
-                const std::map<int, XSPtr>& xs,
-                int num_moments,
-                int max_num_cell_dofs);
+                 const chi_math::SpatialDiscretization& discretization,
+                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                 std::vector<lbs::CellLBSView>& cell_transport_views,
+                 std::vector<double>& destination_phi,
+                 std::vector<double>& destination_psi,
+                 const std::vector<double>& source_moments,
+                 const LBSGroupset& groupset,
+                 const std::map<int, XSPtr>& xs,
+                 int num_moments,
+                 int max_num_cell_dofs);
 
   // 01
   void Sweep(chi_mesh::sweep_management::AngleSet& angle_set) override;
-
 };
 
 } // namespace lbs

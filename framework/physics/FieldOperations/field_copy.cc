@@ -11,21 +11,20 @@ RegisterChiObject(chi_physics::field_operations, FieldCopyOperation);
 
 // ##################################################################
 /**Returns the input parameters.*/
-chi::InputParameters FieldCopyOperation::GetInputParameters()
+chi::InputParameters
+FieldCopyOperation::GetInputParameters()
 {
   chi::InputParameters params = FieldOperation::GetInputParameters();
 
   params.SetDocGroup("DocFieldOperation");
 
-  params.AddRequiredParameter<size_t>(
-    "to",
-    "Handle to the field function that should "
-    "receive the result of the operation.");
+  params.AddRequiredParameter<size_t>("to",
+                                      "Handle to the field function that should "
+                                      "receive the result of the operation.");
 
-  params.AddRequiredParameter<size_t>(
-    "from",
-    "Handle to the field function that should "
-    "be copied from.");
+  params.AddRequiredParameter<size_t>("from",
+                                      "Handle to the field function that should "
+                                      "be copied from.");
 
   params.AddOptionalParameterArray(
     "to_components",
@@ -50,16 +49,15 @@ chi::InputParameters FieldCopyOperation::GetInputParameters()
 
 // ##################################################################
 /**Constructor.*/
-FieldCopyOperation::FieldCopyOperation(
-  const chi::InputParameters& params)
+FieldCopyOperation::FieldCopyOperation(const chi::InputParameters& params)
   : FieldOperation(params),
     to_field_handle_(params.GetParamValue<size_t>("to")),
     from_field_handle_(params.GetParamValue<size_t>("from"))
 {
   //============================================= Get field functions
   {
-    auto to_base_ptr = Chi::GetStackItemPtr(
-      Chi::field_function_stack, to_field_handle_, __FUNCTION__);
+    auto to_base_ptr =
+      Chi::GetStackItemPtr(Chi::field_function_stack, to_field_handle_, __FUNCTION__);
 
     to_ff_ = std::dynamic_pointer_cast<FieldFunctionGridBased>(to_base_ptr);
 
@@ -69,8 +67,8 @@ FieldCopyOperation::FieldCopyOperation(
   }
 
   {
-    auto from_base_ptr = Chi::GetStackItemPtr(
-      Chi::field_function_stack, from_field_handle_, __FUNCTION__);
+    auto from_base_ptr =
+      Chi::GetStackItemPtr(Chi::field_function_stack, from_field_handle_, __FUNCTION__);
 
     from_ff_ = std::dynamic_pointer_cast<FieldFunctionGridBased>(from_base_ptr);
 
@@ -93,13 +91,10 @@ FieldCopyOperation::FieldCopyOperation(
     ChiInvalidArgument("If \"from_components\" is specified then "
                        "\"to_components\" must also be specified");
 
-  if (user_supplied_params.Has("to_components") and
-      user_supplied_params.Has("from_components"))
+  if (user_supplied_params.Has("to_components") and user_supplied_params.Has("from_components"))
   {
-    to_components_ =
-      user_supplied_params.GetParamVectorValue<size_t>("to_components");
-    from_components_ =
-      user_supplied_params.GetParamVectorValue<size_t>("from_components");
+    to_components_ = user_supplied_params.GetParamVectorValue<size_t>("to_components");
+    from_components_ = user_supplied_params.GetParamVectorValue<size_t>("from_components");
 
     ChiInvalidArgumentIf(to_components_.size() != from_components_.size(),
                          "\"to_components\" and \"from_components\" must have "
@@ -107,14 +102,12 @@ FieldCopyOperation::FieldCopyOperation(
   }
   else
   {
-    ChiInvalidArgumentIf(
-      to_ff_->GetUnknownManager().GetTotalUnknownStructureSize() !=
-        from_ff_->GetUnknownManager().GetTotalUnknownStructureSize(),
-      "The number of components of the unknowns in the field functions are"
-      " not compatible");
+    ChiInvalidArgumentIf(to_ff_->GetUnknownManager().GetTotalUnknownStructureSize() !=
+                           from_ff_->GetUnknownManager().GetTotalUnknownStructureSize(),
+                         "The number of components of the unknowns in the field functions are"
+                         " not compatible");
 
-    const size_t num_comps =
-      to_ff_->GetUnknownManager().GetTotalUnknownStructureSize();
+    const size_t num_comps = to_ff_->GetUnknownManager().GetTotalUnknownStructureSize();
     to_components_.reserve(num_comps);
     from_components_.reserve(num_comps);
     for (size_t c = 0; c < num_comps; ++c)
@@ -131,7 +124,8 @@ FieldCopyOperation::FieldCopyOperation(
                        "same grid");
 }
 
-void FieldCopyOperation::Execute()
+void
+FieldCopyOperation::Execute()
 {
   typedef const int64_t cint64_t;
   const auto& sdm = to_ff_->GetSpatialDiscretization();

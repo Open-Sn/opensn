@@ -12,9 +12,7 @@ class Event
 {
 public:
   Event(const std::string& name, int code);
-  Event(const std::string& name,
-        int code,
-        const ParameterBlock& parameter_block);
+  Event(const std::string& name, int code, const ParameterBlock& parameter_block);
   const std::string& Name() const;
   int Code() const;
   const ParameterBlock& Parameters() const;

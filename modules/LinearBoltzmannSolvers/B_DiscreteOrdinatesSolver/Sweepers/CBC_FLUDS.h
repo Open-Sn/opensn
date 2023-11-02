@@ -45,22 +45,13 @@ public:
                                      unsigned int face_node_mapped,
                                      unsigned int angle_set_index);
 
-  void ClearLocalAndReceivePsi() override
-  {
-    deplocs_outgoing_messages_.clear();
-  }
+  void ClearLocalAndReceivePsi() override { deplocs_outgoing_messages_.clear(); }
   void ClearSendPsi() override {}
   void AllocateInternalLocalPsi(size_t num_grps, size_t num_angles) override {}
-  void AllocateOutgoingPsi(size_t num_grps,
-                           size_t num_angles,
-                           size_t num_loc_sucs) override
-  {
-  }
+  void AllocateOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_sucs) override {}
 
   void AllocateDelayedLocalPsi(size_t num_grps, size_t num_angles) override {}
-  void AllocatePrelocIOutgoingPsi(size_t num_grps,
-                                  size_t num_angles,
-                                  size_t num_loc_deps) override
+  void AllocatePrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps) override
   {
   }
   void AllocateDelayedPrelocIOutgoingPsi(size_t num_grps,
@@ -70,20 +61,11 @@ public:
   }
 
   std::vector<double>& DelayedLocalPsi() override { return delayed_local_psi_; }
-  std::vector<double>& DelayedLocalPsiOld() override
-  {
-    return delayed_local_psi_old_;
-  }
+  std::vector<double>& DelayedLocalPsiOld() override { return delayed_local_psi_old_; }
 
-  std::vector<std::vector<double>>& DeplocIOutgoingPsi() override
-  {
-    return deplocI_outgoing_psi_;
-  }
+  std::vector<std::vector<double>>& DeplocIOutgoingPsi() override { return deplocI_outgoing_psi_; }
 
-  std::vector<std::vector<double>>& PrelocIOutgoingPsi() override
-  {
-    return prelocI_outgoing_psi_;
-  }
+  std::vector<std::vector<double>>& PrelocIOutgoingPsi() override { return prelocI_outgoing_psi_; }
 
   std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsi() override
   {

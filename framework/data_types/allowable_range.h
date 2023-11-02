@@ -71,19 +71,15 @@ public:
   }
 
   template <typename T>
-  static std::unique_ptr<AllowableRangeList>
-  New(const std::initializer_list<T>& raw_list)
+  static std::unique_ptr<AllowableRangeList> New(const std::initializer_list<T>& raw_list)
   {
-    return std::unique_ptr<AllowableRangeList>{
-      new AllowableRangeList(raw_list)};
+    return std::unique_ptr<AllowableRangeList>{new AllowableRangeList(raw_list)};
   }
 
   template <typename T>
-  static std::unique_ptr<AllowableRangeList>
-  New(const std::vector<T>& raw_list)
+  static std::unique_ptr<AllowableRangeList> New(const std::vector<T>& raw_list)
   {
-    return std::unique_ptr<AllowableRangeList>{
-      new AllowableRangeList(raw_list)};
+    return std::unique_ptr<AllowableRangeList>{new AllowableRangeList(raw_list)};
   }
 
 protected:
@@ -121,8 +117,7 @@ public:
   }
 
   template <typename T>
-  static std::unique_ptr<AllowableRangeLowLimit> New(const T& low_value,
-                                                     bool low_closed = true)
+  static std::unique_ptr<AllowableRangeLowLimit> New(const T& low_value, bool low_closed = true)
   {
     return std::unique_ptr<AllowableRangeLowLimit>{
       new AllowableRangeLowLimit(low_value, low_closed)};
@@ -162,8 +157,7 @@ public:
   }
 
   template <typename T>
-  static std::unique_ptr<AllowableRangeHighLimit> New(const T& hi_value,
-                                                      bool hi_closed = true)
+  static std::unique_ptr<AllowableRangeHighLimit> New(const T& hi_value, bool hi_closed = true)
   {
     return std::unique_ptr<AllowableRangeHighLimit>{
       new AllowableRangeHighLimit(hi_value, hi_closed)};
@@ -201,27 +195,22 @@ public:
                                       const T& hi_value,
                                       bool low_closed = true,
                                       bool hi_closed = true)
-    : low_range_(Varying(low_value), low_closed),
-      hi_range(Varying(hi_value), hi_closed)
+    : low_range_(Varying(low_value), low_closed), hi_range(Varying(hi_value), hi_closed)
   {
   }
 
   template <typename T>
-  static std::unique_ptr<AllowableRangeLowHighLimit> New(const T& low_value,
-                                                         const T& hi_value,
-                                                         bool low_closed = true,
-                                                         bool hi_closed = true)
+  static std::unique_ptr<AllowableRangeLowHighLimit>
+  New(const T& low_value, const T& hi_value, bool low_closed = true, bool hi_closed = true)
   {
     return std::unique_ptr<AllowableRangeLowHighLimit>{
-      new AllowableRangeLowHighLimit(
-        low_value, hi_value, low_closed, hi_closed)};
+      new AllowableRangeLowHighLimit(low_value, hi_value, low_closed, hi_closed)};
   }
 
 protected:
   bool ChildIsAllowable(Varying value) const override
   {
-    return low_range_.ChildIsAllowable(value) and
-           hi_range.ChildIsAllowable(value);
+    return low_range_.ChildIsAllowable(value) and hi_range.ChildIsAllowable(value);
   }
   std::string AllowableRangeStr() const override
   {

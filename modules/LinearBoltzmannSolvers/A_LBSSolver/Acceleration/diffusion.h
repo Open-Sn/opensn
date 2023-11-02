@@ -57,12 +57,11 @@ protected:
 public:
   struct Options
   {
-    double residual_tolerance = 1.0e-4; ///< Residual tol. relative to rhs
-    int max_iters = 100;                ///< Maximum iterations
-    bool verbose = false;               ///< Verbosity flag
-    bool perform_symmetry_check =
-      false;                         ///< For debugging only (very expensive)
-    std::string source_lua_function; ///< for mms
+    double residual_tolerance = 1.0e-4;    ///< Residual tol. relative to rhs
+    int max_iters = 100;                   ///< Maximum iterations
+    bool verbose = false;                  ///< Verbosity flag
+    bool perform_symmetry_check = false;   ///< For debugging only (very expensive)
+    std::string source_lua_function;       ///< for mms
     std::string ref_solution_lua_function; ///< for mms
     std::string additional_options_string;
     double penalty_factor = 4.0;
@@ -80,7 +79,7 @@ public:
 
   std::string TextName() const;
   const Vec& RHS() const;
-  const std::map<uint64_t, BoundaryCondition>& BCS() const {return bcs_;}
+  const std::map<uint64_t, BoundaryCondition>& BCS() const { return bcs_; }
 
   const chi_math::UnknownManager& UnknownStructure() const;
   const chi_math::SpatialDiscretization& SpatialDiscretization() const;
@@ -96,8 +95,8 @@ public:
   virtual void Assemble_b(Vec petsc_q_vector) = 0;
   void AddToRHS(const std::vector<double>& values);
 
-  void Solve(std::vector<double>& solution, bool use_initial_guess=false);
-  void Solve(Vec petsc_solution, bool use_initial_guess=false);
+  void Solve(std::vector<double>& solution, bool use_initial_guess = false);
+  void Solve(Vec petsc_solution, bool use_initial_guess = false);
 };
 
 } // namespace lbs::acceleration

@@ -29,16 +29,17 @@ class chi_mesh::sweep_management::AngleAggregation
 {
 public:
   typedef std::shared_ptr<SweepBndry> SweepBndryPtr;
+
 public:
-  std::vector<AngleSetGroup>                   angle_set_groups;
-  std::map<uint64_t, SweepBndryPtr>            sim_boundaries;
-  size_t                                       number_of_groups=0;
-  size_t                                       number_of_group_subsets=0;
-  std::shared_ptr<chi_math::AngularQuadrature> quadrature=nullptr;
+  std::vector<AngleSetGroup> angle_set_groups;
+  std::map<uint64_t, SweepBndryPtr> sim_boundaries;
+  size_t number_of_groups = 0;
+  size_t number_of_group_subsets = 0;
+  std::shared_ptr<chi_math::AngularQuadrature> quadrature = nullptr;
 
 private:
-  bool is_setup=false;
-  std::pair<size_t ,size_t> number_angular_unknowns;
+  bool is_setup = false;
+  std::pair<size_t, size_t> number_angular_unknowns;
   bool num_ang_unknowns_avail = false;
 
 public:
@@ -50,15 +51,15 @@ public:
                    std::shared_ptr<chi_math::AngularQuadrature>& in_quadrature,
                    chi_mesh::MeshContinuumPtr& in_grid);
 
-  bool IsSetup() const {return is_setup;}
+  bool IsSetup() const { return is_setup; }
 
 public:
-  void   ZeroOutgoingDelayedPsi();
-  void   ZeroIncomingDelayedPsi();
+  void ZeroOutgoingDelayedPsi();
+  void ZeroIncomingDelayedPsi();
 
   void InitializeReflectingBCs();
 
-  std::pair<size_t,size_t> GetNumDelayedAngularDOFs();
+  std::pair<size_t, size_t> GetNumDelayedAngularDOFs();
 
   void AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref);
   void AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_ref);
@@ -76,5 +77,4 @@ public:
   void SetDelayedPsiNew2Old();
 };
 
-
-#endif //CHI_ANGLEAGGREGATION_H
+#endif // CHI_ANGLEAGGREGATION_H

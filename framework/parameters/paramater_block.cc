@@ -6,7 +6,8 @@
 namespace chi
 {
 // #################################################################
-std::string ParameterBlockTypeName(ParameterBlockType type)
+std::string
+ParameterBlockTypeName(ParameterBlockType type)
 {
   switch (type)
   {
@@ -23,13 +24,16 @@ std::string ParameterBlockTypeName(ParameterBlockType type)
     case ParameterBlockType::BLOCK:
       return "BLOCK";
     default:
-      throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
-                             ": No name associated with type");
+      throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ": No name associated with type");
   }
 }
 
 // #################################################################
-void ParameterBlock::SetBlockName(const std::string& name) { name_ = name; }
+void
+ParameterBlock::SetBlockName(const std::string& name)
+{
+  name_ = name;
+}
 
 // #################################################################
 ParameterBlock::ParameterBlock(const std::string& name)
@@ -45,8 +49,7 @@ ParameterBlock::ParameterBlock(const ParameterBlock& other)
   name_ = other.name_;
 
   using namespace chi_data_types;
-  if (other.value_ptr_)
-    value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
+  if (other.value_ptr_) value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
 
   parameters_ = other.parameters_;
   error_origin_scope_ = other.error_origin_scope_;
@@ -54,7 +57,8 @@ ParameterBlock::ParameterBlock(const ParameterBlock& other)
 
 // #################################################################
 /**Copy assignment operator*/
-ParameterBlock& ParameterBlock::operator=(const ParameterBlock& other)
+ParameterBlock&
+ParameterBlock::operator=(const ParameterBlock& other)
 {
   if (this != &other)
   {
@@ -62,8 +66,7 @@ ParameterBlock& ParameterBlock::operator=(const ParameterBlock& other)
     name_ = other.name_;
 
     using namespace chi_data_types;
-    if (other.value_ptr_)
-      value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
+    if (other.value_ptr_) value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
 
     parameters_ = other.parameters_;
     error_origin_scope_ = other.error_origin_scope_;
@@ -85,7 +88,8 @@ ParameterBlock::ParameterBlock(ParameterBlock&& other) noexcept
 
 // #################################################################
 /**Move assigment operator.*/
-ParameterBlock& ParameterBlock::operator=(ParameterBlock&& other) noexcept
+ParameterBlock&
+ParameterBlock::operator=(ParameterBlock&& other) noexcept
 {
   if (this != &other)
   {
@@ -100,22 +104,32 @@ ParameterBlock& ParameterBlock::operator=(ParameterBlock&& other) noexcept
 }
 
 // Accessors
-ParameterBlockType ParameterBlock::Type() const { return type_; }
+ParameterBlockType
+ParameterBlock::Type() const
+{
+  return type_;
+}
 /**Returns true if the parameter block comprises a single value of any of
  * the types BOOLEAN, FLOAT, STRING, INTEGER.*/
-bool ParameterBlock::IsScalar() const
+bool
+ParameterBlock::IsScalar() const
 {
-  return (type_ >= ParameterBlockType::BOOLEAN and
-          type_ <= ParameterBlockType::INTEGER);
+  return (type_ >= ParameterBlockType::BOOLEAN and type_ <= ParameterBlockType::INTEGER);
 }
-std::string ParameterBlock::TypeName() const
+std::string
+ParameterBlock::TypeName() const
 {
   return ParameterBlockTypeName(type_);
 }
-std::string ParameterBlock::Name() const { return name_; }
+std::string
+ParameterBlock::Name() const
+{
+  return name_;
+}
 
 // #################################################################
-const chi_data_types::Varying& ParameterBlock::Value() const
+const chi_data_types::Varying&
+ParameterBlock::Value() const
 {
   switch (this->Type())
   {
@@ -125,29 +139,32 @@ const chi_data_types::Varying& ParameterBlock::Value() const
     case ParameterBlockType::INTEGER:
     {
       if (value_ptr_ == nullptr)
-        throw std::runtime_error(
-          error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
-          ": Uninitialized Varying value for block " + this->Name());
+        throw std::runtime_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
+                                 ": Uninitialized Varying value for block " + this->Name());
       return *value_ptr_;
     }
     default:
-      throw std::logic_error(
-        error_origin_scope_ + std::string(__PRETTY_FUNCTION__) + ":\"" +
-        this->Name() +
-        "\""
-        " Called for block of type " +
-        ParameterBlockTypeName(this->Type()) + " which has no value.");
+      throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) + ":\"" +
+                             this->Name() +
+                             "\""
+                             " Called for block of type " +
+                             ParameterBlockTypeName(this->Type()) + " which has no value.");
   }
 }
 
 // #################################################################
 /**Returns the number of parameters in a block. This is normally
  * only useful for the ARRAY type.*/
-size_t ParameterBlock::NumParameters() const { return parameters_.size(); }
+size_t
+ParameterBlock::NumParameters() const
+{
+  return parameters_.size();
+}
 
 // ################################################################
 /**Returns the sub-parameters of this block.*/
-const std::vector<ParameterBlock>& ParameterBlock::Parameters() const
+const std::vector<ParameterBlock>&
+ParameterBlock::Parameters() const
 {
   return parameters_;
 }
@@ -157,13 +174,18 @@ const std::vector<ParameterBlock>& ParameterBlock::Parameters() const
  * sub-parameters it should not have a value. This is a good way to
  * check if the block is actually a single value because some
  * Parameter blocks can be passed as empty.*/
-bool ParameterBlock::HasValue() const { return value_ptr_ != nullptr; }
+bool
+ParameterBlock::HasValue() const
+{
+  return value_ptr_ != nullptr;
+}
 
 // Mutators
 // #################################################################
 /**Changes the block type to array, making it accessible via integer
  * keys.*/
-void ParameterBlock::ChangeToArray()
+void
+ParameterBlock::ChangeToArray()
 {
   const std::string fname = __PRETTY_FUNCTION__;
   if (parameters_.empty())
@@ -175,11 +197,10 @@ void ParameterBlock::ChangeToArray()
   const auto& first_param = parameters_.front();
   for (const auto& param : parameters_)
     if (param.Type() != first_param.Type())
-      throw std::logic_error(
-        error_origin_scope_ + fname +
-        ": Cannot change ParameterBlock to "
-        "array. It has existing parameters and they are not of the same"
-        "type.");
+      throw std::logic_error(error_origin_scope_ + fname +
+                             ": Cannot change ParameterBlock to "
+                             "array. It has existing parameters and they are not of the same"
+                             "type.");
 
   type_ = ParameterBlockType::ARRAY;
 }
@@ -188,7 +209,8 @@ void ParameterBlock::ChangeToArray()
 // NOLINTBEGIN(misc-no-recursion)
 /**Sets a string to be displayed alongside exceptions that give some
  * notion of the origin of the error.*/
-void ParameterBlock::SetErrorOriginScope(const std::string& scope)
+void
+ParameterBlock::SetErrorOriginScope(const std::string& scope)
 {
   error_origin_scope_ = scope;
   for (auto& param : parameters_)
@@ -199,36 +221,37 @@ void ParameterBlock::SetErrorOriginScope(const std::string& scope)
 // #################################################################
 /**Checks that the block is of the given type. If it is not it
  * will throw an exception `std::logic_error`.*/
-void ParameterBlock::RequireBlockTypeIs(ParameterBlockType type) const
+void
+ParameterBlock::RequireBlockTypeIs(ParameterBlockType type) const
 {
   if (Type() != type)
-    throw std::logic_error(error_origin_scope_ + ":" + Name() +
-                           " Is required to be of type " +
+    throw std::logic_error(error_origin_scope_ + ":" + Name() + " Is required to be of type " +
                            ParameterBlockTypeName(type) + " but is " +
                            ParameterBlockTypeName(Type()));
 }
 
 /**Check that the parameter with the given name exists otherwise
  * throws a `std::logic_error`.*/
-void ParameterBlock::RequireParameter(const std::string& param_name) const
+void
+ParameterBlock::RequireParameter(const std::string& param_name) const
 {
   if (not Has(param_name))
-    throw std::logic_error(error_origin_scope_ + ":" + Name() +
-                           " Is required to have parameter " + param_name);
+    throw std::logic_error(error_origin_scope_ + ":" + Name() + " Is required to have parameter " +
+                           param_name);
 }
 
 // #################################################################
 /**Adds a parameter to the sub-parameter list.*/
-void ParameterBlock::AddParameter(ParameterBlock block)
+void
+ParameterBlock::AddParameter(ParameterBlock block)
 {
   for (const auto& param : parameters_)
     if (param.Name() == block.Name())
-      throw std::invalid_argument(
-        error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
-        ": Attempting to add duplicate parameter " + param.Name() +
-        " to "
-        "block " +
-        this->Name());
+      throw std::invalid_argument(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
+                                  ": Attempting to add duplicate parameter " + param.Name() +
+                                  " to "
+                                  "block " +
+                                  this->Name());
   parameters_.push_back(std::move(block));
 
   SortParameters();
@@ -237,7 +260,8 @@ void ParameterBlock::AddParameter(ParameterBlock block)
 // #################################################################
 /**Sorts the sub-parameter list according to name. This is useful
  * for regression testing.*/
-void ParameterBlock::SortParameters()
+void
+ParameterBlock::SortParameters()
 {
   struct AlphabeticFunctor
   {
@@ -262,14 +286,14 @@ void ParameterBlock::SortParameters()
   if (this->Type() != ParameterBlockType::ARRAY)
     std::sort(parameters_.begin(), parameters_.end(), AlphabeticFunctor());
   else
-    std::sort(
-      parameters_.begin(), parameters_.end(), AlphabeticNumericFunctor());
+    std::sort(parameters_.begin(), parameters_.end(), AlphabeticNumericFunctor());
 }
 
 // #################################################################
 /**Returns true if a parameter with the specified name is in the
  * list of sub-parameters. Otherwise, false.*/
-bool ParameterBlock::Has(const std::string& param_name) const
+bool
+ParameterBlock::Has(const std::string& param_name) const
 {
   return std::any_of(parameters_.begin(),
                      parameters_.end(),
@@ -279,19 +303,20 @@ bool ParameterBlock::Has(const std::string& param_name) const
 
 // #################################################################
 /**Gets a parameter by name.*/
-ParameterBlock& ParameterBlock::GetParam(const std::string& param_name)
+ParameterBlock&
+ParameterBlock::GetParam(const std::string& param_name)
 {
   for (auto& param : parameters_)
     if (param.Name() == param_name) return param;
 
-  throw std::out_of_range(error_origin_scope_ + ":" +
-                          std::string(__PRETTY_FUNCTION__) + ": Parameter \"" +
-                          param_name + "\" not present in block");
+  throw std::out_of_range(error_origin_scope_ + ":" + std::string(__PRETTY_FUNCTION__) +
+                          ": Parameter \"" + param_name + "\" not present in block");
 }
 
 // #################################################################
 /**Gets a parameter by index.*/
-ParameterBlock& ParameterBlock::GetParam(size_t index)
+ParameterBlock&
+ParameterBlock::GetParam(size_t index)
 {
   try
   {
@@ -299,8 +324,7 @@ ParameterBlock& ParameterBlock::GetParam(size_t index)
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range(error_origin_scope_ +
-                            std::string(__PRETTY_FUNCTION__) +
+    throw std::out_of_range(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
                             ": Parameter with index " + std::to_string(index) +
                             " not present in block");
   }
@@ -314,14 +338,14 @@ ParameterBlock::GetParam(const std::string& param_name) const
   for (const auto& param : parameters_)
     if (param.Name() == param_name) return param;
 
-  throw std::out_of_range(error_origin_scope_ +
-                          std::string(__PRETTY_FUNCTION__) + ": Parameter \"" +
-                          param_name + "\" not present in block");
+  throw std::out_of_range(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
+                          ": Parameter \"" + param_name + "\" not present in block");
 }
 
 // #################################################################
 /**Gets a parameter by index.*/
-const ParameterBlock& ParameterBlock::GetParam(size_t index) const
+const ParameterBlock&
+ParameterBlock::GetParam(size_t index) const
 {
   try
   {
@@ -329,8 +353,7 @@ const ParameterBlock& ParameterBlock::GetParam(size_t index) const
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range(error_origin_scope_ +
-                            std::string(__PRETTY_FUNCTION__) +
+    throw std::out_of_range(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
                             ": Parameter with index " + std::to_string(index) +
                             " not present in block");
   }
@@ -339,8 +362,8 @@ const ParameterBlock& ParameterBlock::GetParam(size_t index) const
 // #################################################################
 //  NOLINTBEGIN(misc-no-recursion)
 /**Print the block tree structure into a designated string.*/
-void ParameterBlock::RecursiveDumpToString(std::string& outstr,
-                                           const std::string& offset) const
+void
+ParameterBlock::RecursiveDumpToString(std::string& outstr, const std::string& offset) const
 {
   outstr += offset + this->Name() + " = \n";
   outstr += offset + "{\n";
@@ -398,7 +421,8 @@ void ParameterBlock::RecursiveDumpToString(std::string& outstr,
 // #################################################################
 //  NOLINTBEGIN(misc-no-recursion)
 /**Print the block tree structure into a designated string.*/
-void ParameterBlock::RecursiveDumpToJSON(std::string& outstr) const
+void
+ParameterBlock::RecursiveDumpToJSON(std::string& outstr) const
 {
   if (HasValue())
   {

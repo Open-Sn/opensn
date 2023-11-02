@@ -38,7 +38,6 @@ public:
   /**If start_time <= time <= end_time, this will return true.*/
   bool IsActive() const;
 
-
   /**Manually set the time step size.*/
   void SetTimeStepSize(double dt);
 
@@ -52,22 +51,22 @@ public:
   void SetEndTime(double time);
 
   /**Manually set the maximum number of time steps. A negative number disables
-* this check.*/
+   * this check.*/
   void SetMaxTimeSteps(int n);
 
   /**Manually sets the minimum time step size.*/
   void SetMinimumTimeStepSize(double dt_min);
 
   /**Advances the controller's state. The most basic action here is to
-  * advance time and the time index.*/
+   * advance time and the time index.*/
   virtual void Advance();
 
   /**Adapts according to the timestep status. If it could provide a change
-  * it returns true, otherwise false.*/
-  virtual bool Adapt(TimeStepStatus time_step_status) {return false;}
+   * it returns true, otherwise false.*/
+  virtual bool Adapt(TimeStepStatus time_step_status) { return false; }
 
   /**Builds a formatted string of the time information.*/
-  std::string StringTimeInfo(bool old_time=false) const;
+  std::string StringTimeInfo(bool old_time = false) const;
 
 protected:
   static chi::InputParameters GetInputParameters();
@@ -87,6 +86,6 @@ protected:
   double last_dt_;
 };
 
-}
+} // namespace chi_physics
 
 #endif // CHITECH_TIMESTEPPER_H

@@ -13,7 +13,8 @@ namespace lbs
 
 // ##################################################################
 /**Executes the solver.*/
-void XXPowerIterationKEigen::Execute()
+void
+XXPowerIterationKEigen::Execute()
 {
   using namespace chi_math;
 
@@ -53,10 +54,9 @@ void XXPowerIterationKEigen::Execute()
     {
       std::stringstream k_iter_info;
       k_iter_info << Chi::program_timer.GetTimeString() << " "
-                  << "  Iteration " << std::setw(5) << nit << "  k_eff "
-                  << std::setw(11) << std::setprecision(7) << k_eff_
-                  << "  k_eff change " << std::setw(12) << k_eff_change
-                  << "  reactivity " << std::setw(10) << reactivity * 1e5;
+                  << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
+                  << std::setprecision(7) << k_eff_ << "  k_eff change " << std::setw(12)
+                  << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
       if (converged) k_iter_info << " CONVERGED\n";
 
       Chi::log.Log() << k_iter_info.str();
@@ -67,11 +67,10 @@ void XXPowerIterationKEigen::Execute()
 
   //================================================== Print summary
   Chi::log.Log() << "\n";
-  Chi::log.Log() << "        Final k-eigenvalue    :        "
-                 << std::setprecision(7) << k_eff_;
-  Chi::log.Log() << "        Final change          :        "
-                 << std::setprecision(6) << k_eff_change << " (num_TrOps:"
-                 << front_wgs_context_->counter_applications_of_inv_op_ << ")"
+  Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
+  Chi::log.Log() << "        Final change          :        " << std::setprecision(6)
+                 << k_eff_change
+                 << " (num_TrOps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
                  << "\n";
   Chi::log.Log() << "\n";
 
@@ -83,8 +82,7 @@ void XXPowerIterationKEigen::Execute()
 
   lbs_solver_.UpdateFieldFunctions();
 
-  Chi::log.Log()
-    << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
+  Chi::log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
 
 } // namespace lbs

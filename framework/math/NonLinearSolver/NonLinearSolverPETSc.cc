@@ -18,7 +18,8 @@ NonLinearSolverPETSc::~NonLinearSolver()
 }
 
 template <>
-void NonLinearSolverPETSc::ApplyToleranceOptions()
+void
+NonLinearSolverPETSc::ApplyToleranceOptions()
 {
   SNESSetTolerances(nl_solver_,
                     options_.nl_abs_tol_,
@@ -29,11 +30,8 @@ void NonLinearSolverPETSc::ApplyToleranceOptions()
   SNESSetMaxLinearSolveFailures(nl_solver_, options_.l_max_failed_iterations_);
   KSP ksp;
   SNESGetKSP(nl_solver_, &ksp);
-  KSPSetTolerances(ksp,
-                   options_.l_rel_tol_,
-                   options_.l_abs_tol_,
-                   options_.l_div_tol_,
-                   options_.l_max_its_);
+  KSPSetTolerances(
+    ksp, options_.l_rel_tol_, options_.l_abs_tol_, options_.l_div_tol_, options_.l_max_its_);
   if (options_.l_method_ == "gmres")
   {
     KSPGMRESSetRestart(ksp, options_.l_gmres_restart_intvl_);
@@ -42,43 +40,51 @@ void NonLinearSolverPETSc::ApplyToleranceOptions()
   KSPSetInitialGuessNonzero(ksp, PETSC_FALSE);
 }
 template <>
-void NonLinearSolverPETSc::PreSetupCallback()
+void
+NonLinearSolverPETSc::PreSetupCallback()
 {
 }
 
 template <>
-void NonLinearSolverPETSc::SetOptions()
+void
+NonLinearSolverPETSc::SetOptions()
 {
 }
 
 template <>
-void NonLinearSolverPETSc::SetSolverContext()
+void
+NonLinearSolverPETSc::SetSolverContext()
 {
   SNESSetApplicationContext(nl_solver_, &(*context_ptr_));
 }
 
 template <>
-void NonLinearSolverPETSc::SetConvergenceTest()
+void
+NonLinearSolverPETSc::SetConvergenceTest()
 {
 }
 
 template <>
-void NonLinearSolverPETSc::SetMonitor()
+void
+NonLinearSolverPETSc::SetMonitor()
 {
 }
 
 template <>
-void NonLinearSolverPETSc::SetPreconditioner()
+void
+NonLinearSolverPETSc::SetPreconditioner()
 {
 }
 
 template <>
-void NonLinearSolverPETSc::PostSetupCallback()
+void
+NonLinearSolverPETSc::PostSetupCallback()
 {
 }
 
 template <>
-void NonLinearSolverPETSc::Setup()
+void
+NonLinearSolverPETSc::Setup()
 {
   if (IsSystemSet()) return;
   this->PreSetupCallback();
@@ -123,17 +129,20 @@ void NonLinearSolverPETSc::Setup()
 }
 
 template <>
-void NonLinearSolverPETSc::PreSolveCallback()
+void
+NonLinearSolverPETSc::PreSolveCallback()
 {
 }
 
 template <>
-void NonLinearSolverPETSc::PostSolveCallback()
+void
+NonLinearSolverPETSc::PostSolveCallback()
 {
 }
 
 template <>
-void NonLinearSolverPETSc::Solve()
+void
+NonLinearSolverPETSc::Solve()
 {
   converged_ = false;
   converged_reason_string_ = "Reason not obtained";
@@ -155,17 +164,16 @@ void NonLinearSolverPETSc::Solve()
 }
 
 template <>
-std::string NonLinearSolverPETSc::GetConvergedReasonString() const
+std::string
+NonLinearSolverPETSc::GetConvergedReasonString() const
 {
   std::stringstream outstr;
   if (converged_)
-    outstr << chi::StringStreamColor(chi::FG_GREEN) << std::string(10, ' ')
-           << "Converged " << converged_reason_string_
-           << chi::StringStreamColor(chi::RESET);
+    outstr << chi::StringStreamColor(chi::FG_GREEN) << std::string(10, ' ') << "Converged "
+           << converged_reason_string_ << chi::StringStreamColor(chi::RESET);
   else
-    outstr << chi::StringStreamColor(chi::FG_RED) << std::string(10, ' ')
-           << "Convergence failure " << converged_reason_string_
-           << chi::StringStreamColor(chi::RESET);
+    outstr << chi::StringStreamColor(chi::FG_RED) << std::string(10, ' ') << "Convergence failure "
+           << converged_reason_string_ << chi::StringStreamColor(chi::RESET);
 
   return outstr.str();
 }

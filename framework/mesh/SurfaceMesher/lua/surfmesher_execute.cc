@@ -15,16 +15,16 @@ RegisterLuaFunctionAsIs(chiSurfaceMesherExecute);
 
 \ingroup LuaSurfaceMesher
 \author Jan*/
-int chiSurfaceMesherExecute(lua_State *L)
+int
+chiSurfaceMesherExecute(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
   Chi::log.LogAllVerbose2() << "Executing surface mesher\n";
 
   cur_hndlr.GetSurfaceMesher().Execute();
 
-  Chi::log.LogAllVerbose2()
-    << "chiSurfaceMesherExecute: Surface mesher execution completed."
-    << std::endl;
+  Chi::log.LogAllVerbose2() << "chiSurfaceMesherExecute: Surface mesher execution completed."
+                            << std::endl;
 
   return 0;
 }

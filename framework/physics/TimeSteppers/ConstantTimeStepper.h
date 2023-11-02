@@ -14,6 +14,6 @@ public:
   explicit ConstantTimeStepper(const chi::InputParameters& params);
 };
 
-}
+} // namespace chi_physics
 
 #endif // CHITECH_CONSTANTTIMESTEPPER_H

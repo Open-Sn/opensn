@@ -1,20 +1,20 @@
 #ifndef CHI_MESH_VECTOR3_H
 #define CHI_MESH_VECTOR3_H
-#include<iostream>
-#include<cmath>
+#include <iostream>
+#include <cmath>
 #include <sstream>
 
 namespace chi_mesh
 {
-  struct TensorRank2Dim3;
+struct TensorRank2Dim3;
 }
 
-//namespace chi_mesh
+// namespace chi_mesh
 //{
 //=============================================== General 3D vector structure
-/**General 3 element vector structure. 
+/**General 3 element vector structure.
  * \author Jan
-*/
+ */
 struct chi_mesh::Vector3
 {
   double x; ///< Element-0
@@ -22,23 +22,35 @@ struct chi_mesh::Vector3
   double z; ///< Element-2
 
   /**Default constructor. Initialized as all zeros.*/
-  Vector3()  {
-    x=0.0; y=0.0; z=0.0;
+  Vector3()
+  {
+    x = 0.0;
+    y = 0.0;
+    z = 0.0;
   }
 
   /**Constructor where single element is initialized \f$ x[z]=a \f$.*/
-  explicit Vector3(double a){
-    x=a; y=0.0; z=0.0;
+  explicit Vector3(double a)
+  {
+    x = a;
+    y = 0.0;
+    z = 0.0;
   }
 
   /**Constructor where \f$ x=a\f$ and \f$ y=b \f$. */
-  explicit Vector3(double a, double b){
-    x=a; y=b; z=0.0;
+  explicit Vector3(double a, double b)
+  {
+    x = a;
+    y = b;
+    z = 0.0;
   }
 
   /**Constructor where \f$ \vec{x}=[a,b,c] \f$.*/
-  explicit Vector3(double a, double b, double c){
-    x=a; y=b; z=c;
+  explicit Vector3(double a, double b, double c)
+  {
+    x = a;
+    y = b;
+    z = c;
   }
 
   /**Constructor where \f$ \vec{x}=\{a,b,c\} \f$.*/
@@ -47,11 +59,11 @@ struct chi_mesh::Vector3
     if (not empty(list))
     {
       std::vector<double> vec = list;
-      for (size_t i=0; ( (i<3) and ( i<vec.size() ) ); ++i)
+      for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
       {
-        if (i==0) x = vec[i];
-        if (i==1) y = vec[i];
-        if (i==2) z = vec[i];
+        if (i == 0) x = vec[i];
+        if (i == 1) y = vec[i];
+        if (i == 2) z = vec[i];
       }
     }
   }
@@ -62,11 +74,11 @@ struct chi_mesh::Vector3
     if (not empty(list))
     {
       std::vector<double> vec = list;
-      for (size_t i=0; ( (i<3) and ( i<vec.size() ) ); ++i)
+      for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
       {
-        if (i==0) x = vec[i];
-        if (i==1) y = vec[i];
-        if (i==2) z = vec[i];
+        if (i == 0) x = vec[i];
+        if (i == 1) y = vec[i];
+        if (i == 2) z = vec[i];
       }
     }
   }
@@ -94,7 +106,7 @@ struct chi_mesh::Vector3
     if (not empty(list))
     {
       std::vector<double> vec = list;
-      for (size_t i=0; ( (i<3) and ( i<vec.size() ) ); ++i)
+      for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
       {
         this->operator()(i) = vec[i];
       }
@@ -108,7 +120,7 @@ struct chi_mesh::Vector3
     if (not empty(list))
     {
       std::vector<double> vec = list;
-      for (size_t i=0; ( (i<3) and ( i<vec.size() ) ); ++i)
+      for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
       {
         this->operator()(i) = vec[i];
       }
@@ -194,9 +206,9 @@ struct chi_mesh::Vector3
   Vector3 operator*(const double value) const
   {
     Vector3 newVector;
-    newVector.x = this->x*value;
-    newVector.y = this->y*value;
-    newVector.z = this->z*value;
+    newVector.x = this->x * value;
+    newVector.y = this->y * value;
+    newVector.z = this->z * value;
 
     return newVector;
   }
@@ -205,9 +217,9 @@ struct chi_mesh::Vector3
    * \f$ \vec{x} = \vec{x} \alpha \f$*/
   Vector3& operator*=(const double value)
   {
-    this->x*=value;
-    this->y*=value;
-    this->z*=value;
+    this->x *= value;
+    this->y *= value;
+    this->z *= value;
 
     return *this;
   }
@@ -217,9 +229,9 @@ struct chi_mesh::Vector3
   Vector3 operator*(const Vector3& that) const
   {
     Vector3 newVector;
-    newVector.x = this->x*that.x;
-    newVector.y = this->y*that.y;
-    newVector.z = this->z*that.z;
+    newVector.x = this->x * that.x;
+    newVector.y = this->y * that.y;
+    newVector.z = this->z * that.z;
 
     return newVector;
   }
@@ -228,9 +240,9 @@ struct chi_mesh::Vector3
    * \f$ x_i = x_i y_i \f$*/
   Vector3& operator*=(const Vector3& that)
   {
-    this->x*=that.x;
-    this->y*=that.y;
-    this->z*=that.z;
+    this->x *= that.x;
+    this->y *= that.y;
+    this->z *= that.z;
 
     return *this;
   }
@@ -241,9 +253,9 @@ struct chi_mesh::Vector3
   Vector3 operator/(const double value) const
   {
     Vector3 newVector;
-    newVector.x = this->x/value;
-    newVector.y = this->y/value;
-    newVector.z = this->z/value;
+    newVector.x = this->x / value;
+    newVector.y = this->y / value;
+    newVector.z = this->z / value;
 
     return newVector;
   }
@@ -252,9 +264,9 @@ struct chi_mesh::Vector3
    * \f$ x_i = \frac{x_i}{\alpha} \f$*/
   Vector3& operator/=(const double value)
   {
-    this->x/=value;
-    this->y/=value;
-    this->z/=value;
+    this->x /= value;
+    this->y /= value;
+    this->z /= value;
 
     return *this;
   }
@@ -264,9 +276,9 @@ struct chi_mesh::Vector3
   Vector3 operator/(const Vector3& that) const
   {
     Vector3 newVector;
-    newVector.x = this->x/that.x;
-    newVector.y = this->y/that.y;
-    newVector.z = this->z/that.z;
+    newVector.x = this->x / that.x;
+    newVector.y = this->y / that.y;
+    newVector.z = this->z / that.z;
 
     return newVector;
   }
@@ -275,9 +287,9 @@ struct chi_mesh::Vector3
    * \f$ x_i = \frac{x_i}{y_i} \f$*/
   Vector3& operator/=(const Vector3& that)
   {
-    this->x/=that.x;
-    this->y/=that.y;
-    this->z/=that.z;
+    this->x /= that.x;
+    this->y /= that.y;
+    this->z /= that.z;
 
     return *this;
   }
@@ -286,9 +298,11 @@ struct chi_mesh::Vector3
   /**Returns a copy of the value at the given index.*/
   double operator[](const size_t i) const
   {
-    if (i==0)      return this->x;
-    else if (i==1) return this->y;
-    else if (i==2) return this->z;
+    if (i == 0) return this->x;
+    else if (i == 1)
+      return this->y;
+    else if (i == 2)
+      return this->z;
 
     return 0.0;
   }
@@ -296,19 +310,21 @@ struct chi_mesh::Vector3
   /**Returns a reference of the value at the given index.*/
   double& operator()(const size_t i)
   {
-    if (i==0)      return this->x;
-    else if (i==1) return this->y;
-    else if (i==2) return this->z;
+    if (i == 0) return this->x;
+    else if (i == 1)
+      return this->y;
+    else if (i == 2)
+      return this->z;
 
     return this->x;
   }
 
   //============================================= Tensor product
-  //Defined in chi_mesh_utilities.cc
+  // Defined in chi_mesh_utilities.cc
   chi_mesh::TensorRank2Dim3 OTimes(const Vector3& that) const;
 
   //============================================= Tensor dot product
-  //Defined in chi_mesh_utilities.cc
+  // Defined in chi_mesh_utilities.cc
   Vector3 Dot(const chi_mesh::TensorRank2Dim3& that) const;
 
   //============================================= Operations
@@ -317,9 +333,9 @@ struct chi_mesh::Vector3
   Vector3 Cross(const Vector3& that) const
   {
     Vector3 newVector;
-    newVector.x = this->y*that.z - this->z*that.y;
-    newVector.y = this->z*that.x - this->x*that.z;
-    newVector.z = this->x*that.y - this->y*that.x;
+    newVector.x = this->y * that.z - this->z * that.y;
+    newVector.y = this->z * that.x - this->x * that.z;
+    newVector.z = this->x * that.y - this->y * that.x;
 
     return newVector;
   }
@@ -329,9 +345,9 @@ struct chi_mesh::Vector3
   double Dot(const Vector3& that) const
   {
     double value = 0.0;
-    value += this->x*that.x;
-    value += this->y*that.y;
-    value += this->z*that.z;
+    value += this->x * that.x;
+    value += this->y * that.y;
+    value += this->z * that.z;
 
     return value;
   }
@@ -341,9 +357,9 @@ struct chi_mesh::Vector3
   double Norm() const
   {
     double value = 0.0;
-    value += this->x*this->x;
-    value += this->y*this->y;
-    value += this->z*this->z;
+    value += this->x * this->x;
+    value += this->y * this->y;
+    value += this->z * this->z;
 
     value = sqrt(value);
 
@@ -356,9 +372,9 @@ struct chi_mesh::Vector3
   double NormSquare() const
   {
     double value = 0.0;
-    value += this->x*this->x;
-    value += this->y*this->y;
-    value += this->z*this->z;
+    value += this->x * this->x;
+    value += this->y * this->y;
+    value += this->z * this->z;
 
     return value;
   }
@@ -381,9 +397,9 @@ struct chi_mesh::Vector3
     double norm = this->Norm();
 
     Vector3 newVector;
-    newVector.x = this->x/norm;
-    newVector.y = this->y/norm;
-    newVector.z = this->z/norm;
+    newVector.x = this->x / norm;
+    newVector.y = this->y / norm;
+    newVector.z = this->z / norm;
 
     return newVector;
   }
@@ -395,9 +411,9 @@ struct chi_mesh::Vector3
   Vector3 InverseZeroIfSmaller(const double tol) const
   {
     Vector3 newVector;
-    newVector.x = (std::fabs(this->x)>tol)? 1.0/this->x : 0.0;
-    newVector.y = (std::fabs(this->y)>tol)? 1.0/this->y : 0.0;
-    newVector.z = (std::fabs(this->z)>tol)? 1.0/this->z : 0.0;
+    newVector.x = (std::fabs(this->x) > tol) ? 1.0 / this->x : 0.0;
+    newVector.y = (std::fabs(this->y) > tol) ? 1.0 / this->y : 0.0;
+    newVector.z = (std::fabs(this->z) > tol) ? 1.0 / this->z : 0.0;
 
     return newVector;
   }
@@ -409,9 +425,9 @@ struct chi_mesh::Vector3
   Vector3 InverseOneIfSmaller(const double tol) const
   {
     Vector3 newVector;
-    newVector.x = (std::fabs(this->x)>tol)? 1.0/this->x : 1.0;
-    newVector.y = (std::fabs(this->y)>tol)? 1.0/this->y : 1.0;
-    newVector.z = (std::fabs(this->z)>tol)? 1.0/this->z : 1.0;
+    newVector.x = (std::fabs(this->x) > tol) ? 1.0 / this->x : 1.0;
+    newVector.y = (std::fabs(this->y) > tol) ? 1.0 / this->y : 1.0;
+    newVector.z = (std::fabs(this->z) > tol) ? 1.0 / this->z : 1.0;
 
     return newVector;
   }
@@ -422,9 +438,9 @@ struct chi_mesh::Vector3
   Vector3 Inverse() const
   {
     Vector3 newVector;
-    double dx_inv = 1.0/this->x;
-    double dy_inv = 1.0/this->y;
-    double dz_inv = 1.0/this->z;
+    double dx_inv = 1.0 / this->x;
+    double dy_inv = 1.0 / this->y;
+    double dz_inv = 1.0 / this->z;
 
     return newVector;
   }
@@ -432,12 +448,12 @@ struct chi_mesh::Vector3
   /**Prints the vector to std::cout.*/
   void Print() const
   {
-    std::cout<<this->x << " ";
-    std::cout<<this->y << " ";
-    std::cout<<this->z;
+    std::cout << this->x << " ";
+    std::cout << this->y << " ";
+    std::cout << this->z;
   }
 
-  friend std::ostream & operator<< (std::ostream& out, Vector3& v)
+  friend std::ostream& operator<<(std::ostream& out, Vector3& v)
   {
     out << "[" << v.x << " " << v.y << " " << v.z << "]";
 
@@ -445,7 +461,7 @@ struct chi_mesh::Vector3
   }
 
   /**Deprecated. Prints the vector to a string and then returns the string.*/
-  std::string PrintS() const //TODO: Deprecated
+  std::string PrintS() const // TODO: Deprecated
   {
     std::stringstream out;
     out << "[" << x << " " << y << " " << z << "]";
@@ -462,16 +478,13 @@ struct chi_mesh::Vector3
     return out.str();
   }
 
-  static size_t Size()
-  {
-    return 3;
-  }
+  static size_t Size() { return 3; }
 };
 
-//The following functions are defined in chi_mesh_utilities.cc
-//Left multiplcation by scalar
-chi_mesh::Vector3 operator*(double value,const chi_mesh::Vector3& that);
+// The following functions are defined in chi_mesh_utilities.cc
+// Left multiplcation by scalar
+chi_mesh::Vector3 operator*(double value, const chi_mesh::Vector3& that);
 
 //}//namespace chi_mesh
 
-#endif //CHI_MESH_VECTOR3_H
+#endif // CHI_MESH_VECTOR3_H

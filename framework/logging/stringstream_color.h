@@ -24,6 +24,6 @@ enum StringSteamColorCode
 
 std::string StringStreamColor(StringSteamColorCode code);
 
-}//chi_objects
+} // namespace chi
 
-#endif //CHITECH_STRINGSTREAM_COLOR_H
+#endif // CHITECH_STRINGSTREAM_COLOR_H

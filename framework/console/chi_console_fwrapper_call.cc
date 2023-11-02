@@ -11,7 +11,8 @@ RegisterLuaFunction(Console::LuaWrapperCall, chi_console, LuaWrapperCall);
 /** This function expects at least 1 parameter. The first parameter must
  * be a string indicating the registered name of the function wrapper to
  * call. All other parameters will be forwarded to the function wrapper.*/
-int Console::LuaWrapperCall(lua_State* L)
+int
+Console::LuaWrapperCall(lua_State* L)
 {
   const int num_args = lua_gettop(L);
   // We do not check for the required parameters here because we want
@@ -25,8 +26,7 @@ int Console::LuaWrapperCall(lua_State* L)
   const std::string fname = lua_tostring(L, 1);
 
   ChiLogicalErrorIf(registry.count(fname) == 0,
-                    std::string("Wrapper with name \"") + fname +
-                      "\" not in console registry.");
+                    std::string("Wrapper with name \"") + fname + "\" not in console registry.");
 
   const auto& reg_entry = registry.at(fname);
 
@@ -35,10 +35,9 @@ int Console::LuaWrapperCall(lua_State* L)
   ParameterBlock main_arguments_block;
   for (int p = 2; p <= num_args; ++p)
   {
-    const std::string arg_name = "arg" + std::to_string(p-2);
+    const std::string arg_name = "arg" + std::to_string(p - 2);
 
-    if (lua_isboolean(L, p))
-      main_arguments_block.AddParameter(arg_name, lua_toboolean(L, p));
+    if (lua_isboolean(L, p)) main_arguments_block.AddParameter(arg_name, lua_toboolean(L, p));
     else if (lua_isinteger(L, p))
       main_arguments_block.AddParameter(arg_name, lua_tointeger(L, p));
     else if (lua_isnumber(L, p))
@@ -74,4 +73,4 @@ int Console::LuaWrapperCall(lua_State* L)
   return output_params.IsScalar() ? 1 : num_sub_params;
 }
 
-} // namespace chi_objects
+} // namespace chi

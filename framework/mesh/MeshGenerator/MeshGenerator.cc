@@ -17,20 +17,18 @@ namespace chi_mesh
 
 RegisterChiObject(chi_mesh, MeshGenerator);
 
-chi::InputParameters MeshGenerator::GetInputParameters()
+chi::InputParameters
+MeshGenerator::GetInputParameters()
 {
   chi::InputParameters params = ChiObject::GetInputParameters();
 
   params.SetGeneralDescription("The base class for all mesh generators");
   params.SetDocGroup("doc_MeshGenerators");
 
-  params.AddOptionalParameter(
-    "scale", 1.0, "Uniform scale to apply to the mesh after reading.");
+  params.AddOptionalParameter("scale", 1.0, "Uniform scale to apply to the mesh after reading.");
 
   params.AddOptionalParameterArray(
-    "inputs",
-    std::vector<size_t>{},
-    "A list of handles to MeshGenerator objects");
+    "inputs", std::vector<size_t>{}, "A list of handles to MeshGenerator objects");
 
   params.AddOptionalParameter(
     "partitioner",
@@ -56,8 +54,8 @@ MeshGenerator::MeshGenerator(const chi::InputParameters& params)
 
   for (const size_t input_handle : input_handles)
   {
-    auto& mesh_generator = Chi::GetStackItem<MeshGenerator>(
-      Chi::object_stack, input_handle, __FUNCTION__);
+    auto& mesh_generator =
+      Chi::GetStackItem<MeshGenerator>(Chi::object_stack, input_handle, __FUNCTION__);
     inputs_.push_back(&mesh_generator);
   }
 
@@ -69,31 +67,31 @@ MeshGenerator::MeshGenerator(const chi::InputParameters& params)
   {
     auto& factory = ChiObjectFactory::GetInstance();
     auto valid_params = chi::PETScGraphPartitioner::GetInputParameters();
-    partitioner_handle = factory.MakeRegisteredObjectOfType(
-      "chi::PETScGraphPartitioner", chi::ParameterBlock());
+    partitioner_handle =
+      factory.MakeRegisteredObjectOfType("chi::PETScGraphPartitioner", chi::ParameterBlock());
   }
-  partitioner_ = &Chi::GetStackItem<chi::GraphPartitioner>(
-    Chi::object_stack, partitioner_handle, __FUNCTION__);
+  partitioner_ =
+    &Chi::GetStackItem<chi::GraphPartitioner>(Chi::object_stack, partitioner_handle, __FUNCTION__);
 }
 
 // ##################################################################
 /**Default behavior here is to return the input umesh unaltered.*/
-std::unique_ptr<UnpartitionedMesh> MeshGenerator::GenerateUnpartitionedMesh(
-  std::unique_ptr<UnpartitionedMesh> input_umesh)
+std::unique_ptr<UnpartitionedMesh>
+MeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
   return input_umesh;
 }
 
 /**Final execution step. */
-void MeshGenerator::Execute()
+void
+MeshGenerator::Execute()
 {
   //======================================== Execute all input generators
   // Note these could be empty
   std::unique_ptr<UnpartitionedMesh> current_umesh = nullptr;
   for (auto mesh_generator_ptr : inputs_)
   {
-    auto new_umesh =
-      mesh_generator_ptr->GenerateUnpartitionedMesh(std::move(current_umesh));
+    auto new_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(std::move(current_umesh));
     current_umesh = std::move(new_umesh);
   }
 
@@ -101,16 +99,14 @@ void MeshGenerator::Execute()
   current_umesh = GenerateUnpartitionedMesh(std::move(current_umesh));
 
   std::vector<int64_t> cell_pids;
-  if (Chi::mpi.location_id == 0)
-    cell_pids = PartitionMesh(*current_umesh, Chi::mpi.process_count);
+  if (Chi::mpi.location_id == 0) cell_pids = PartitionMesh(*current_umesh, Chi::mpi.process_count);
 
   BroadcastPIDs(cell_pids, 0, Chi::mpi.comm);
 
   auto grid_ptr = SetupMesh(std::move(current_umesh), cell_pids);
 
   //======================================== Assign the mesh to a VolumeMesher
-  auto new_mesher =
-    std::make_shared<chi_mesh::VolumeMesher>(VolumeMesherType::UNPARTITIONED);
+  auto new_mesher = std::make_shared<chi_mesh::VolumeMesher>(VolumeMesherType::UNPARTITIONED);
   new_mesher->SetContinuum(grid_ptr);
 
   if (Chi::current_mesh_handler < 0) chi_mesh::PushNewHandlerAndGetIndex();
@@ -121,15 +117,16 @@ void MeshGenerator::Execute()
   Chi::mpi.Barrier();
 }
 
-void MeshGenerator::SetGridAttributes(
-  chi_mesh::MeshContinuum& grid,
-  MeshAttributes new_attribs,
-  std::array<size_t, 3> ortho_cells_per_dimension)
+void
+MeshGenerator::SetGridAttributes(chi_mesh::MeshContinuum& grid,
+                                 MeshAttributes new_attribs,
+                                 std::array<size_t, 3> ortho_cells_per_dimension)
 {
   grid.SetAttributes(new_attribs, ortho_cells_per_dimension);
 }
 
-void MeshGenerator::ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid)
+void
+MeshGenerator::ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid)
 {
   const size_t num_local_cells = grid.local_cells.size();
   size_t num_global_cells = 0;
@@ -159,8 +156,7 @@ void MeshGenerator::ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid)
 
   const size_t avg_num_local_cells = num_global_cells / Chi::mpi.process_count;
   const size_t num_local_ghosts = grid.cells.GetNumGhosts();
-  const double local_ghost_to_local_cell_ratio =
-    double(num_local_ghosts) / double(num_local_cells);
+  const double local_ghost_to_local_cell_ratio = double(num_local_ghosts) / double(num_local_cells);
 
   double average_ghost_ratio;
   MPI_Allreduce(&local_ghost_to_local_cell_ratio, // sendbuf
@@ -183,8 +179,7 @@ void MeshGenerator::ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid)
 
   Chi::log.Log() << "\n" << outstr.str() << "\n\n";
 
-  Chi::log.LogAllVerbose2()
-    << Chi::mpi.location_id << "Local cells=" << num_local_cells;
+  Chi::log.LogAllVerbose2() << Chi::mpi.location_id << "Local cells=" << num_local_cells;
 }
 
 } // namespace chi_mesh

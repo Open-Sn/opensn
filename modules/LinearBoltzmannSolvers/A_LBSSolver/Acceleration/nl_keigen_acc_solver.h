@@ -10,14 +10,15 @@
 namespace lbs::acceleration
 {
 
-class NLKEigenDiffSolver : public chi_math::NonLinearSolver<Mat,Vec,SNES>
+class NLKEigenDiffSolver : public chi_math::NonLinearSolver<Mat, Vec, SNES>
 {
 public:
   typedef std::shared_ptr<NLKEigenDiffContext> NLKEigenDiffContextPtr;
 
-  explicit NLKEigenDiffSolver(NLKEigenDiffContextPtr nlk_diff_context_ptr) :
-    chi_math::NonLinearSolver<Mat, Vec, SNES>(nlk_diff_context_ptr)
-  {}
+  explicit NLKEigenDiffSolver(NLKEigenDiffContextPtr nlk_diff_context_ptr)
+    : chi_math::NonLinearSolver<Mat, Vec, SNES>(nlk_diff_context_ptr)
+  {
+  }
 
   virtual ~NLKEigenDiffSolver() override = default;
 
@@ -41,10 +42,10 @@ protected:
   /*void PreSolveCallback();*/
   void SetInitialGuess() override;
   void PostSolveCallback() override;
-//public:
-//  void Solve();
+  // public:
+  //   void Solve();
 };
 
-}//namespace lbs::acceleration
+} // namespace lbs::acceleration
 
-#endif //CHITECH_LBS_NL_KEIGEN_ACC_SOLVER_H
+#endif // CHITECH_LBS_NL_KEIGEN_ACC_SOLVER_H

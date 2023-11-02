@@ -11,15 +11,14 @@ namespace lbs::acceleration
 
 // ###################################################################
 /**Default constructor.*/
-DiffusionSolver::DiffusionSolver(
-  std::string text_name,
-  const chi_math::SpatialDiscretization& sdm,
-  const chi_math::UnknownManager& uk_man,
-  std::map<uint64_t, BoundaryCondition> bcs,
-  MatID2XSMap map_mat_id_2_xs,
-  const std::vector<UnitCellMatrices>& unit_cell_matrices,
-  const bool verbose,
-  const bool requires_ghosts)
+DiffusionSolver::DiffusionSolver(std::string text_name,
+                                 const chi_math::SpatialDiscretization& sdm,
+                                 const chi_math::UnknownManager& uk_man,
+                                 std::map<uint64_t, BoundaryCondition> bcs,
+                                 MatID2XSMap map_mat_id_2_xs,
+                                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                                 const bool verbose,
+                                 const bool requires_ghosts)
   : text_name_(std::move(text_name)),
     grid_(sdm.Grid()),
     sdm_(sdm),
@@ -48,15 +47,24 @@ DiffusionSolver::~DiffusionSolver()
 
 // ###################################################################
 /**Returns the assigned text name.*/
-std::string DiffusionSolver::TextName() const { return text_name_; }
+std::string
+DiffusionSolver::TextName() const
+{
+  return text_name_;
+}
 
 // ###################################################################
 /**Returns the right-hand side petsc vector.*/
-const Vec& DiffusionSolver::RHS() const { return rhs_; }
+const Vec&
+DiffusionSolver::RHS() const
+{
+  return rhs_;
+}
 
 // ###################################################################
 /**Returns the assigned unknown structure.*/
-const chi_math::UnknownManager& DiffusionSolver::UnknownStructure() const
+const chi_math::UnknownManager&
+DiffusionSolver::UnknownStructure() const
 {
   return uk_man_;
 }
@@ -77,8 +85,8 @@ lbs::acceleration::DiffusionSolver::GetNumPhiIterativeUnknowns()
 
 // ##################################################################
 /**Adds to the right-hand side without applying spatial discretization.*/
-void lbs::acceleration::DiffusionSolver::AddToRHS(
-  const std::vector<double>& values)
+void
+lbs::acceleration::DiffusionSolver::AddToRHS(const std::vector<double>& values)
 {
   typedef unsigned int uint;
   typedef const int64_t cint64_t;

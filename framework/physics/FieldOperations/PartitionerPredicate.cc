@@ -7,13 +7,13 @@
 
 #include "ChiObjectFactory.h"
 
-
 namespace chi_physics::field_operations
 {
 
 RegisterChiObject(chi_physics::field_operations, PartitionerPredicate);
 
-chi::InputParameters PartitionerPredicate::GetInputParameters()
+chi::InputParameters
+PartitionerPredicate::GetInputParameters()
 {
   chi::InputParameters params = FieldOperation::GetInputParameters();
 
@@ -22,22 +22,18 @@ chi::InputParameters PartitionerPredicate::GetInputParameters()
   params.SetDocGroup("DocFieldOperation");
 
   params.AddRequiredParameter<size_t>(
-    "partitioner",
-    "Handle to a GraphPartitioner object to use for parallel partitioning.");
+    "partitioner", "Handle to a GraphPartitioner object to use for parallel partitioning.");
 
-  params.AddRequiredParameter<size_t>(
-    "result_field",
-    "Handle to, or name of, the field function that should "
-    "receive the result of the operation.");
+  params.AddRequiredParameter<size_t>("result_field",
+                                      "Handle to, or name of, the field function that should "
+                                      "receive the result of the operation.");
   params.SetParameterTypeMismatchAllowed("result_field");
 
-  params.AddRequiredParameter<size_t>(
-    "num_partitions", "Number of parts to apply to the partitioning");
+  params.AddRequiredParameter<size_t>("num_partitions",
+                                      "Number of parts to apply to the partitioning");
 
   params.AddOptionalParameter(
-    "result_component",
-    0,
-    "Resulting component into which the result will be written.");
+    "result_component", 0, "Resulting component into which the result will be written.");
 
   return params;
 }
@@ -45,28 +41,25 @@ chi::InputParameters PartitionerPredicate::GetInputParameters()
 PartitionerPredicate::PartitionerPredicate(const chi::InputParameters& params)
   : FieldOperation(params),
     partitioner_(Chi::GetStackItem<chi::GraphPartitioner>(
-      Chi::object_stack,
-      params.GetParamValue<size_t>("partitioner"),
-      __FUNCTION__)),
+      Chi::object_stack, params.GetParamValue<size_t>("partitioner"), __FUNCTION__)),
     result_field_param_(params.GetParam("result_field")),
     num_partitions_(params.GetParamValue<size_t>("num_partitions")),
     result_component_(params.GetParamValue<size_t>("result_component"))
 {
 }
 
-void PartitionerPredicate::Execute()
+void
+PartitionerPredicate::Execute()
 {
   std::shared_ptr<FieldFunctionGridBased> grid_ff_ptr;
   if (result_field_param_.Type() == chi::ParameterBlockType::INTEGER)
   {
     const size_t handle = result_field_param_.GetValue<size_t>();
-    auto ff_ptr = Chi::GetStackItemPtrAsType<FieldFunction>(
-      Chi::field_function_stack, handle, __FUNCTION__);
+    auto ff_ptr =
+      Chi::GetStackItemPtrAsType<FieldFunction>(Chi::field_function_stack, handle, __FUNCTION__);
     grid_ff_ptr = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_ptr);
 
-    ChiLogicalErrorIf(
-      not grid_ff_ptr,
-      "Could not cast field function to FieldFunctionGridBased");
+    ChiLogicalErrorIf(not grid_ff_ptr, "Could not cast field function to FieldFunctionGridBased");
   }
   else if (result_field_param_.Type() == chi::ParameterBlockType::STRING)
   {
@@ -76,14 +69,12 @@ void PartitionerPredicate::Execute()
       {
         grid_ff_ptr = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_ptr);
 
-        ChiLogicalErrorIf(
-          not grid_ff_ptr,
-          "Could not cast field function to FieldFunctionGridBased");
+        ChiLogicalErrorIf(not grid_ff_ptr,
+                          "Could not cast field function to FieldFunctionGridBased");
       }
   }
 
-  ChiInvalidArgumentIf(
-    not grid_ff_ptr, "Could not find the associated resulting field function");
+  ChiInvalidArgumentIf(not grid_ff_ptr, "Could not find the associated resulting field function");
 
   //============================================= Build cell graph and centroids
   const auto& sdm = grid_ff_ptr->GetSpatialDiscretization();
@@ -111,8 +102,8 @@ void PartitionerPredicate::Execute()
   }
 
   //============================================= Create partition
-  auto cell_pids = partitioner_.Partition(
-    cell_graph, cell_centroids, static_cast<int>(num_partitions_));
+  auto cell_pids =
+    partitioner_.Partition(cell_graph, cell_centroids, static_cast<int>(num_partitions_));
 
   auto& local_data = grid_ff_ptr->FieldVector();
   const auto& uk_man = grid_ff_ptr->GetUnknownManager();
@@ -126,8 +117,7 @@ void PartitionerPredicate::Execute()
 
     for (uint32_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dof_map =
-        sdm.MapDOFLocal(cell, i, uk_man, 0, result_component_);
+      const int64_t dof_map = sdm.MapDOFLocal(cell, i, uk_man, 0, result_component_);
 
       local_data[dof_map] = static_cast<double>(cell_pid);
     }

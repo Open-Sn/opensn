@@ -59,10 +59,7 @@ public:
   }
 
   /**Move constructor.*/
-  DynamicVector(DynamicVector&& other) noexcept
-  {
-    elements_ = std::move(other.elements_);
-  }
+  DynamicVector(DynamicVector&& other) noexcept { elements_ = std::move(other.elements_); }
 
   /**Move assignment operator.*/
   DynamicVector& operator=(DynamicVector&& other) noexcept
@@ -121,10 +118,7 @@ public:
   bool empty() const noexcept { return elements_.empty(); }
 
   //============================================= Iterator access
-  typename std::vector<NumberFormat>::iterator begin()
-  {
-    return elements_.begin();
-  }
+  typename std::vector<NumberFormat>::iterator begin() { return elements_.begin(); }
 
   typename std::vector<NumberFormat>::iterator end() { return elements_.end(); }
 

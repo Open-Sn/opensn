@@ -51,8 +51,7 @@ chi_mesh::MeshContinuum::MakeGridFaceHistogram(double master_tolerance,
   size_t smallest_face = face_size_histogram.front();
   size_t largest_face = face_size_histogram.back();
   size_t total_num_faces = face_size_histogram.size();
-  double average_dofs_per_face =
-    (double)total_face_dofs_count / (double)total_num_faces;
+  double average_dofs_per_face = (double)total_face_dofs_count / (double)total_num_faces;
 
   std::stringstream outstr;
   outstr << "\nSmallest face = " << smallest_face;
@@ -60,19 +59,17 @@ chi_mesh::MeshContinuum::MakeGridFaceHistogram(double master_tolerance,
   outstr << "\nTotal face dofs = " << total_face_dofs_count;
   outstr << "\nTotal faces = " << face_size_histogram.size();
   outstr << "\nAverage dofs/face = " << average_dofs_per_face;
-  outstr << "\nMax to avg ratio = "
-         << (double)largest_face / average_dofs_per_face;
+  outstr << "\nMax to avg ratio = " << (double)largest_face / average_dofs_per_face;
   Chi::log.LogAllVerbose2() << outstr.str();
 
   //================================================== Determine number of bins
   size_t last_bin_num_faces = total_num_faces;
   if (((double)largest_face / average_dofs_per_face) > master_tolerance)
   {
-    Chi::log.LogAllVerbose2()
-      << "The ratio of max face dofs to average face dofs "
-      << "is larger than " << master_tolerance
-      << ", therefore a binned histogram "
-      << "will be constructed.";
+    Chi::log.LogAllVerbose2() << "The ratio of max face dofs to average face dofs "
+                              << "is larger than " << master_tolerance
+                              << ", therefore a binned histogram "
+                              << "will be constructed.";
 
     //====================================== Build categories
     size_t running_total_face_dofs = 0;
@@ -85,8 +82,7 @@ chi_mesh::MeshContinuum::MakeGridFaceHistogram(double master_tolerance,
     {
       if (((double)face_size_histogram[f] / running_average) > slave_tolerance)
       {
-        face_categories_list.emplace_back(running_face_size,
-                                          running_face_count);
+        face_categories_list.emplace_back(running_face_size, running_face_count);
         running_total_face_dofs = 0;
         running_face_count = 0;
       }
@@ -94,8 +90,7 @@ chi_mesh::MeshContinuum::MakeGridFaceHistogram(double master_tolerance,
       running_face_size = face_size_histogram[f];
       running_total_face_dofs += face_size_histogram[f];
       running_face_count++;
-      running_average =
-        (double)running_total_face_dofs / double(running_face_count);
+      running_average = (double)running_total_face_dofs / double(running_face_count);
       last_bin_num_faces = running_face_count;
     }
   }
@@ -103,14 +98,13 @@ chi_mesh::MeshContinuum::MakeGridFaceHistogram(double master_tolerance,
 
   //================================================== Verbose print bins
   outstr.str(std::string());
-  outstr << "A total of " << face_categories_list.size()
-         << " bins were created:\n";
+  outstr << "A total of " << face_categories_list.size() << " bins were created:\n";
 
   size_t bin_counter = -1;
   for (auto bins : face_categories_list)
   {
-    outstr << "Bin " << ++bin_counter << ": " << bins.second
-           << " faces with max face dofs " << bins.first << "\n";
+    outstr << "Bin " << ++bin_counter << ": " << bins.second << " faces with max face dofs "
+           << bins.first << "\n";
   }
 
   Chi::log.LogAllVerbose2() << outstr.str();
@@ -121,7 +115,8 @@ chi_mesh::MeshContinuum::MakeGridFaceHistogram(double master_tolerance,
 // ###################################################################
 /**Check whether a cell is local by attempting to find the key in
  * the native index map.*/
-bool chi_mesh::MeshContinuum::IsCellLocal(uint64_t cell_global_index) const
+bool
+chi_mesh::MeshContinuum::IsCellLocal(uint64_t cell_global_index) const
 {
   auto native_index = global_cell_id_to_local_id_map_.find(cell_global_index);
 
@@ -133,7 +128,8 @@ bool chi_mesh::MeshContinuum::IsCellLocal(uint64_t cell_global_index) const
 // ###################################################################
 /**Check whether a cell is a boundary by checking if the key is
  * found in the native or foreign cell maps.*/
-int chi_mesh::MeshContinuum::GetCellDimension(const chi_mesh::Cell& cell)
+int
+chi_mesh::MeshContinuum::GetCellDimension(const chi_mesh::Cell& cell)
 {
   switch (cell.Type())
   {
@@ -161,8 +157,9 @@ int chi_mesh::MeshContinuum::GetCellDimension(const chi_mesh::Cell& cell)
 
 // ###################################################################
 /**General map vertices*/
-void chi_mesh::MeshContinuum::FindAssociatedVertices(
-  const chi_mesh::CellFace& cur_face, std::vector<short>& dof_mapping) const
+void
+chi_mesh::MeshContinuum::FindAssociatedVertices(const chi_mesh::CellFace& cur_face,
+                                                std::vector<short>& dof_mapping) const
 {
   const int associated_face = cur_face.GetNeighborAssociatedFace(*this);
   //======================================== Check face validity
@@ -194,11 +191,10 @@ void chi_mesh::MeshContinuum::FindAssociatedVertices(
 
     if (!found)
     {
-      Chi::log.LogAllError()
-        << "Face DOF mapping failed in call to "
-        << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
-           "node."
-        << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
+      Chi::log.LogAllError() << "Face DOF mapping failed in call to "
+                             << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
+                                "node."
+                             << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
       Chi::Exit(EXIT_FAILURE);
     }
   }
@@ -206,8 +202,9 @@ void chi_mesh::MeshContinuum::FindAssociatedVertices(
 
 // ###################################################################
 /**General map vertices*/
-void chi_mesh::MeshContinuum::FindAssociatedCellVertices(
-  const chi_mesh::CellFace& cur_face, std::vector<short>& dof_mapping) const
+void
+chi_mesh::MeshContinuum::FindAssociatedCellVertices(const chi_mesh::CellFace& cur_face,
+                                                    std::vector<short>& dof_mapping) const
 {
   //======================================== Check face validity
   ChiLogicalErrorIf(not cur_face.has_neighbor_,
@@ -236,11 +233,10 @@ void chi_mesh::MeshContinuum::FindAssociatedCellVertices(
 
     if (!found)
     {
-      Chi::log.LogAllError()
-        << "Face DOF mapping failed in call to "
-        << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
-           "node."
-        << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
+      Chi::log.LogAllError() << "Face DOF mapping failed in call to "
+                             << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
+                                "node."
+                             << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
       Chi::Exit(EXIT_FAILURE);
     }
   }
@@ -251,9 +247,10 @@ void chi_mesh::MeshContinuum::FindAssociatedCellVertices(
  * cell B adjacent to A at the `f`-th face of cell A. Will determine the
  * `af`-th index of the face on cell B that interface with the `f`-th face
  * of cell A.*/
-size_t chi_mesh::MeshContinuum::MapCellFace(const chi_mesh::Cell& cur_cell,
-                                            const chi_mesh::Cell& adj_cell,
-                                            unsigned int f)
+size_t
+chi_mesh::MeshContinuum::MapCellFace(const chi_mesh::Cell& cur_cell,
+                                     const chi_mesh::Cell& adj_cell,
+                                     unsigned int f)
 {
   const auto& ccface = cur_cell.faces_[f]; // current cell face
   std::set<uint64_t> ccface_vids;
@@ -279,8 +276,7 @@ size_t chi_mesh::MeshContinuum::MapCellFace(const chi_mesh::Cell& cur_cell,
   } // for adj faces
 
   if (not map_found)
-    throw std::logic_error(
-      "chi_mesh::MeshContinuum::MapCellFace: Mapping failure.");
+    throw std::logic_error("chi_mesh::MeshContinuum::MapCellFace: Mapping failure.");
 
   return fmap;
 }
@@ -296,8 +292,8 @@ chi_mesh::MeshContinuum::MapCellGlobalID2LocalID(uint64_t global_id) const
 
 // ###################################################################
 /**Computes the centroid from nodes specified by the given list.*/
-chi_mesh::Vector3 chi_mesh::MeshContinuum::ComputeCentroidFromListOfNodes(
-  const std::vector<uint64_t>& list) const
+chi_mesh::Vector3
+chi_mesh::MeshContinuum::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const
 {
   if (list.empty())
   {
@@ -314,8 +310,8 @@ chi_mesh::Vector3 chi_mesh::MeshContinuum::ComputeCentroidFromListOfNodes(
 // ###################################################################
 /**Counts the number of cells within a logical volume across all
  * partitions.*/
-size_t chi_mesh::MeshContinuum::CountCellsInLogicalVolume(
-  const chi_mesh::LogicalVolume& log_vol) const
+size_t
+chi_mesh::MeshContinuum::CountCellsInLogicalVolume(const chi_mesh::LogicalVolume& log_vol) const
 {
   size_t local_count = 0;
   for (const auto& cell : local_cells)
@@ -335,13 +331,13 @@ size_t chi_mesh::MeshContinuum::CountCellsInLogicalVolume(
 
 // ###################################################################
 /**Checks whether a point is within a cell.*/
-bool chi_mesh::MeshContinuum::CheckPointInsideCell(
-  const chi_mesh::Cell& cell, const chi_mesh::Vector3& point) const
+bool
+chi_mesh::MeshContinuum::CheckPointInsideCell(const chi_mesh::Cell& cell,
+                                              const chi_mesh::Vector3& point) const
 {
   const auto& grid_ref = *this;
   typedef chi_mesh::Vector3 Vec3;
-  auto InsideTet =
-    [](const Vec3& point, const Vec3& v0, const Vec3& v1, const Vec3& v2)
+  auto InsideTet = [](const Vec3& point, const Vec3& v0, const Vec3& v1, const Vec3& v2)
   {
     const auto& v01 = v1 - v0;
     const auto& v02 = v2 - v0;
@@ -413,10 +409,8 @@ bool chi_mesh::MeshContinuum::CheckPointInsideCell(
         bool inside_tet = true;
         for (const auto& tet_face : tet_faces)
         {
-          if (not InsideTet(point,
-                            std::get<0>(tet_face),
-                            std::get<1>(tet_face),
-                            std::get<2>(tet_face)))
+          if (not InsideTet(
+                point, std::get<0>(tet_face), std::get<1>(tet_face), std::get<2>(tet_face)))
           {
             inside_tet = false;
             break;
@@ -440,7 +434,8 @@ bool chi_mesh::MeshContinuum::CheckPointInsideCell(
 
 // ###################################################################
 /**Gets and orthogonal mesh interface object.*/
-std::array<size_t, 3> chi_mesh::MeshContinuum::GetIJKInfo() const
+std::array<size_t, 3>
+chi_mesh::MeshContinuum::GetIJKInfo() const
 {
   const std::string fname = "GetIJKInfo";
   if (not(this->Attributes() & MeshAttributes::ORTHOGONAL))
@@ -467,8 +462,7 @@ chi_mesh::MeshContinuum::MakeIJKToGlobalIDMapping() const
   for (int i = 0; i < Nx; ++i)
     for (int j = 0; j < Ny; ++j)
       for (int k = 0; k < Nz; ++k)
-        m_ijk_to_i(i, j, k) =
-          static_cast<uint64_t>(m_ijk_to_i.MapNDtoLin(i, j, k));
+        m_ijk_to_i(i, j, k) = static_cast<uint64_t>(m_ijk_to_i.MapNDtoLin(i, j, k));
 
   return m_ijk_to_i;
 }
@@ -528,19 +522,15 @@ chi_mesh::MeshContinuum::GetLocalBoundingBox() const
   chi_mesh::Vector3 xyz_min;
   chi_mesh::Vector3 xyz_max;
 
-  auto Vec3Min =
-    [](const chi_mesh::Vector3& xyz_A, const chi_mesh::Vector3& xyz_B)
+  auto Vec3Min = [](const chi_mesh::Vector3& xyz_A, const chi_mesh::Vector3& xyz_B)
   {
-    return chi_mesh::Vector3(std::min(xyz_A.x, xyz_B.x),
-                             std::min(xyz_A.y, xyz_B.y),
-                             std::min(xyz_A.z, xyz_B.z));
+    return chi_mesh::Vector3(
+      std::min(xyz_A.x, xyz_B.x), std::min(xyz_A.y, xyz_B.y), std::min(xyz_A.z, xyz_B.z));
   };
-  auto Vec3Max =
-    [](const chi_mesh::Vector3& xyz_A, const chi_mesh::Vector3& xyz_B)
+  auto Vec3Max = [](const chi_mesh::Vector3& xyz_A, const chi_mesh::Vector3& xyz_B)
   {
-    return chi_mesh::Vector3(std::max(xyz_A.x, xyz_B.x),
-                             std::max(xyz_A.y, xyz_B.y),
-                             std::max(xyz_A.z, xyz_B.z));
+    return chi_mesh::Vector3(
+      std::max(xyz_A.x, xyz_B.x), std::max(xyz_A.y, xyz_B.y), std::max(xyz_A.z, xyz_B.z));
   };
 
   bool initialized = false;

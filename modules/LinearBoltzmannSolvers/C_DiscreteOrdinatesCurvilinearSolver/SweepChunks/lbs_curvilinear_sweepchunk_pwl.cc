@@ -24,40 +24,35 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
   int num_moments,
   int max_num_cell_dofs)
   : AAH_SweepChunk(grid,
-                  discretization_primary,
-                  unit_cell_matrices,
-                  cell_transport_views,
-                  destination_phi,
-                  destination_psi,
-                  source_moments,
-                  groupset,
-                  xs,
-                  num_moments,
-                  max_num_cell_dofs),
+                   discretization_primary,
+                   unit_cell_matrices,
+                   cell_transport_views,
+                   destination_phi,
+                   destination_psi,
+                   source_moments,
+                   groupset,
+                   xs,
+                   num_moments,
+                   max_num_cell_dofs),
     secondary_unit_cell_matrices_(secondary_unit_cell_matrices),
     unknown_manager_(),
     psi_sweep_(),
     normal_vector_boundary_()
 {
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<chi_math::CurvilinearAngularQuadrature>(
-      groupset_.quadrature_);
+    std::dynamic_pointer_cast<chi_math::CurvilinearAngularQuadrature>(groupset_.quadrature_);
 
   if (!curvilinear_product_quadrature)
-    throw std::invalid_argument(
-      "D_DO_RZ_SteadyState::SweepChunkPWL::SweepChunkPWL : "
-      "invalid angular quadrature");
+    throw std::invalid_argument("D_DO_RZ_SteadyState::SweepChunkPWL::SweepChunkPWL : "
+                                "invalid angular quadrature");
 
   //  configure unknown manager for quantities that depend on polar level
-  const size_t dir_map_size =
-    curvilinear_product_quadrature->GetDirectionMap().size();
+  const size_t dir_map_size = curvilinear_product_quadrature->GetDirectionMap().size();
   for (size_t m = 0; m < dir_map_size; ++m)
-    unknown_manager_.AddUnknown(chi_math::UnknownType::VECTOR_N,
-                                groupset_.groups_.size());
+    unknown_manager_.AddUnknown(chi_math::UnknownType::VECTOR_N, groupset_.groups_.size());
 
   //  allocate storage for sweeping dependency
-  const unsigned int n_dof =
-    discretization_primary.GetNumLocalDOFs(unknown_manager_);
+  const unsigned int n_dof = discretization_primary.GetNumLocalDOFs(unknown_manager_);
   psi_sweep_.resize(n_dof);
 
   //  initialise mappings from direction linear index
@@ -71,17 +66,15 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
   normal_vector_boundary_(d) = 1;
 
   RegisterKernel("FEMRZVolumetricGradTerm",
-    std::bind(&SweepChunkPWLRZ::KernelFEMRZVolumetricGradientTerm, this));
+                 std::bind(&SweepChunkPWLRZ::KernelFEMRZVolumetricGradientTerm, this));
   RegisterKernel("FEMRZUpwindSurfaceIntegrals",
-    std::bind(&SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals, this));
+                 std::bind(&SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals, this));
 
   // ================================== Setup callbacks
-  cell_data_callbacks_.push_back(
-    std::bind(&SweepChunkPWLRZ::CellDataCallback, this));
+  cell_data_callbacks_.push_back(std::bind(&SweepChunkPWLRZ::CellDataCallback, this));
 
-  direction_data_callbacks_and_kernels_ = {
-    std::bind(&SweepChunkPWLRZ::DirectionDataCallback, this),
-    Kernel("FEMRZVolumetricGradTerm")};
+  direction_data_callbacks_and_kernels_ = {std::bind(&SweepChunkPWLRZ::DirectionDataCallback, this),
+                                           Kernel("FEMRZVolumetricGradTerm")};
 
   surface_integral_kernels_ = {Kernel("FEMUpwindSurfaceIntegrals")};
 
@@ -95,43 +88,43 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
 
 // ##################################################################
 /**Cell data callback.*/
-void SweepChunkPWLRZ::CellDataCallback()
+void
+SweepChunkPWLRZ::CellDataCallback()
 {
-  const auto& fe_intgrl_values_secondary =
-    secondary_unit_cell_matrices_[cell_local_id_];
+  const auto& fe_intgrl_values_secondary = secondary_unit_cell_matrices_[cell_local_id_];
 
   Maux_ = &fe_intgrl_values_secondary.M_matrix;
 }
 
 // ##################################################################
 /**Direction data callback.*/
-void SweepChunkPWLRZ::DirectionDataCallback()
+void
+SweepChunkPWLRZ::DirectionDataCallback()
 {
   polar_level_ = map_polar_level_[direction_num_];
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<chi_math::CurvilinearAngularQuadrature>(
-      groupset_.quadrature_);
+    std::dynamic_pointer_cast<chi_math::CurvilinearAngularQuadrature>(groupset_.quadrature_);
 
   ChiLogicalErrorIf(not curvilinear_product_quadrature,
                     "Failure to cast angular quadrature to "
                     "chi_math::CurvilinearAngularQuadrature");
 
-  fac_diamond_difference_ = curvilinear_product_quadrature
-                              ->GetDiamondDifferenceFactor()[direction_num_];
-  fac_streaming_operator_ = curvilinear_product_quadrature
-                              ->GetStreamingOperatorFactor()[direction_num_];
+  fac_diamond_difference_ =
+    curvilinear_product_quadrature->GetDiamondDifferenceFactor()[direction_num_];
+  fac_streaming_operator_ =
+    curvilinear_product_quadrature->GetStreamingOperatorFactor()[direction_num_];
 }
 
 // ##################################################################
 /**Applies diamond differencing on azimuthal directions.*/
-void SweepChunkPWLRZ::PostCellDirSweepCallback()
+void
+SweepChunkPWLRZ::PostCellDirSweepCallback()
 {
   const auto f0 = 1 / fac_diamond_difference_;
   const auto f1 = f0 - 1;
   for (size_t i = 0; i < cell_num_nodes_; ++i)
   {
-    const auto ir = grid_fe_view_.MapDOFLocal(
-      *cell_, i, unknown_manager_, polar_level_, gs_gi_);
+    const auto ir = grid_fe_view_.MapDOFLocal(*cell_, i, unknown_manager_, polar_level_, gs_gi_);
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
       psi_sweep_[ir + gsg] = f0 * b_[gsg][i] - f1 * psi_sweep_[ir + gsg];
   }
@@ -139,7 +132,8 @@ void SweepChunkPWLRZ::PostCellDirSweepCallback()
 
 // ##################################################################
 /**Assembles the volumetric gradient term.*/
-void SweepChunkPWLRZ::KernelFEMRZVolumetricGradientTerm()
+void
+SweepChunkPWLRZ::KernelFEMRZVolumetricGradientTerm()
 {
   const auto& G = *G_;
   const auto& Maux = *Maux_;
@@ -148,17 +142,16 @@ void SweepChunkPWLRZ::KernelFEMRZVolumetricGradientTerm()
     for (int j = 0; j < cell_num_nodes_; ++j)
     {
       Amat_[i][j] = omega_.Dot(G[i][j]) + fac_streaming_operator_ * Maux[i][j];
-      const auto jr = grid_fe_view_.MapDOFLocal(
-        *cell_, j, unknown_manager_, polar_level_, gs_gi_);
+      const auto jr = grid_fe_view_.MapDOFLocal(*cell_, j, unknown_manager_, polar_level_, gs_gi_);
       for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-        b_[gsg][i] +=
-          fac_streaming_operator_ * Maux[i][j] * psi_sweep_[jr + gsg];
+        b_[gsg][i] += fac_streaming_operator_ * Maux[i][j] * psi_sweep_[jr + gsg];
     }
 }
 
 // ##################################################################
 /**Performs the integral over the surface of a face.*/
-void SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals()
+void
+SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals()
 {
   const size_t f = sweep_dependency_interface_.current_face_idx_;
   if (sweep_dependency_interface_.on_boundary_)

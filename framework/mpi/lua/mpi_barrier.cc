@@ -14,7 +14,8 @@ RegisterLuaFunctionAsIs(chiMPIBarrier);
 
 \ingroup chiMPI
 \author Jan*/
-int chiMPIBarrier(lua_State* L)
+int
+chiMPIBarrier(lua_State* L)
 {
 
   MPI_Barrier(Chi::mpi.comm);

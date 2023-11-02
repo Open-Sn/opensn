@@ -15,7 +15,8 @@ RegisterWrapperFunction(/*namespace_in_lua=*/lbs,
                         /*syntax_function=*/GetSyntax_SetOptions,
                         /*actual_function=*/SetOptions);
 
-chi::InputParameters GetSyntax_SetOptions()
+chi::InputParameters
+GetSyntax_SetOptions()
 {
   chi::InputParameters params;
 
@@ -43,8 +44,7 @@ SetOptions(const chi::InputParameters& params)
   params.RequireParameter("arg1");
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
-  auto& lbs_solver =
-    Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, handle, fname);
+  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, handle, fname);
 
   auto options_params = LBSSolver::OptionsBlock();
   options_params.AssignParameters(params.GetParam("arg1"));

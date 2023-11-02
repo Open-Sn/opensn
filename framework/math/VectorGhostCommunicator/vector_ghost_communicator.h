@@ -39,8 +39,7 @@ public:
   void CommunicateGhostEntries(std::vector<double>& ghosted_vector) const;
 
   std::vector<double> MakeGhostedVector() const;
-  std::vector<double>
-  MakeGhostedVector(const std::vector<double>& local_vector) const;
+  std::vector<double> MakeGhostedVector(const std::vector<double>& local_vector) const;
 
 protected:
   const uint64_t local_size_;
@@ -70,6 +69,6 @@ private:
   CachedParallelData MakeCachedParallelData();
 };
 
-}//namespace chi_math
+} // namespace chi_math
 
-#endif //CHITECH_VECTOR_GHOST_COMMUNICATOR_H
+#endif // CHITECH_VECTOR_GHOST_COMMUNICATOR_H

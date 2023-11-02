@@ -19,8 +19,8 @@
  *
  * The second step is find where face-edges are intersected. This will
  * effectively create intersection polygons.*/
-void chi_mesh::FieldFunctionInterpolationSlice::
-  Initialize()
+void
+chi_mesh::FieldFunctionInterpolationSlice::Initialize()
 {
   Chi::log.Log0Verbose1() << "Initializing slice interpolator.";
   //================================================== Check grid available
@@ -28,8 +28,7 @@ void chi_mesh::FieldFunctionInterpolationSlice::
     throw std::logic_error("Unassigned field function in slice "
                            "field function interpolator.");
 
-  const auto& grid =
-    field_functions_.front()->GetSpatialDiscretization().Grid();
+  const auto& grid = field_functions_.front()->GetSpatialDiscretization().Grid();
 
   //================================================== Find cells intersecting
   //                                                   plane
@@ -49,14 +48,14 @@ void chi_mesh::FieldFunctionInterpolationSlice::
       bool intersects = false;
 
       size_t num_faces = cell.faces_.size();
-      for (size_t f=0; f<num_faces; f++)
+      for (size_t f = 0; f < num_faces; f++)
       {
         const auto& face = cell.faces_[f];
 
         size_t num_edges = face.vertex_ids_.size();
-        for (size_t e=0; e<num_edges; e++)
+        for (size_t e = 0; e < num_edges; e++)
         {
-          size_t ep1 = (e < (num_edges-1))? e+1 : 0;
+          size_t ep1 = (e < (num_edges - 1)) ? e + 1 : 0;
           uint64_t v0_i = face.vertex_ids_[e];
           uint64_t v1_i = face.vertex_ids_[ep1];
 
@@ -71,16 +70,16 @@ void chi_mesh::FieldFunctionInterpolationSlice::
           {
             intersecting_cell_indices.push_back(cell_local_index);
             intersects = true;
-            break;//from for e
+            break; // from for e
           }
-        }//for e
-        if (intersects) break; //from for f
-      }//for f
+        }                      // for e
+        if (intersects) break; // from for f
+      }                        // for f
     }
     else
       throw std::logic_error("Unsupported cell type in call "
                              "to Slice Initialize.");
-  }//for local cell
+  } // for local cell
 
   //================================================== Computing cell
   //                                                   intersections
@@ -98,9 +97,9 @@ void chi_mesh::FieldFunctionInterpolationSlice::
       {
         FFIFaceEdgeIntersection face_isds;
 
-        const auto nudge = 1.0e-4*(grid.vertices[v0gi] - cell.centroid_);
+        const auto nudge = 1.0e-4 * (grid.vertices[v0gi] - cell.centroid_);
 
-        face_isds.point   = grid.vertices[v0gi] - nudge;
+        face_isds.point = grid.vertices[v0gi] - nudge;
         face_isds.point2d = grid.vertices[v0gi];
         cell_isds.intersections.push_back(face_isds);
       }
@@ -114,7 +113,7 @@ void chi_mesh::FieldFunctionInterpolationSlice::
 
       //========================================= Same for 2D points
       size_t num_points = cell_isds.intersections.size();
-      for (size_t p=0; p<num_points; p++)
+      for (size_t p = 0; p < num_points; p++)
       {
         chi_mesh::Vector3 vref = cell_isds.intersections[p].point - plane_point_;
 
@@ -122,7 +121,7 @@ void chi_mesh::FieldFunctionInterpolationSlice::
       }
 
       cell_intersections_.push_back(cell_isds);
-    }//polygon
+    } // polygon
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
     else if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
     {
@@ -133,34 +132,32 @@ void chi_mesh::FieldFunctionInterpolationSlice::
 
       //========================================= Loop over faces
       size_t num_faces = cell.faces_.size();
-      for (size_t f=0; f<num_faces; f++)
+      for (size_t f = 0; f < num_faces; f++)
       {
         const auto& face = cell.faces_[f];
         //================================== Loop over edges
         size_t num_edges = face.vertex_ids_.size();
-        for (size_t e=0; e<num_edges; e++)
+        for (size_t e = 0; e < num_edges; e++)
         {
-          size_t ep1 = (e < (num_edges-1))? e+1 : 0;
-          uint64_t v0gi = face.vertex_ids_[e  ]; //global index v0
-          uint64_t v1gi = face.vertex_ids_[ep1]; //global index v1
+          size_t ep1 = (e < (num_edges - 1)) ? e + 1 : 0;
+          uint64_t v0gi = face.vertex_ids_[e];   // global index v0
+          uint64_t v1gi = face.vertex_ids_[ep1]; // global index v1
 
           const auto& v0 = grid.vertices[v0gi];
           const auto& v1 = grid.vertices[v1gi];
 
-          chi_mesh::Vertex interstion_point;            //Placeholder
-          std::pair<double,double> weights;
+          chi_mesh::Vertex interstion_point; // Placeholder
+          std::pair<double, double> weights;
 
           //=========================== Check if intersects plane
-          if (CheckPlaneLineIntersect(this->normal_, this->plane_point_,
-                                      v0, v1, interstion_point,
-                                      &weights))
+          if (CheckPlaneLineIntersect(
+                this->normal_, this->plane_point_, v0, v1, interstion_point, &weights))
           {
             //==================== Check for duplicate
             bool duplicate_found = false;
             for (auto& existing_face_isds : cell_isds.intersections)
             {
-              double dif = (existing_face_isds.point -
-                            interstion_point).NormSquare();
+              double dif = (existing_face_isds.point - interstion_point).NormSquare();
               if (dif < 1.0e-6)
               {
                 duplicate_found = true;
@@ -176,30 +173,29 @@ void chi_mesh::FieldFunctionInterpolationSlice::
               face_isds.point = interstion_point;
               cell_isds.intersections.push_back(face_isds);
             }
-          }//if intersecting
-        }//for edge
-      }//for face
+          } // if intersecting
+        }   // for edge
+      }     // for face
 
       //====================================
 
       //==================================== Computing intersection centre
       size_t num_points = cell_isds.intersections.size();
-      if (num_points>0)
+      if (num_points > 0)
       {
-        for (int p=0; p<num_points; p++)
+        for (int p = 0; p < num_points; p++)
         {
           cell_isds.intersection_centre =
-            cell_isds.intersection_centre +
-            cell_isds.intersections[p].point;
+            cell_isds.intersection_centre + cell_isds.intersections[p].point;
         }
         cell_isds.intersection_centre =
-          cell_isds.intersection_centre/static_cast<double>(num_points);
+          cell_isds.intersection_centre / static_cast<double>(num_points);
       }
       else
       {
         Chi::log.LogAllWarning() << "No face intersections encountered "
-                                       "for a cell that is indicated as being "
-                                       "intersected. Slice FF interp.";
+                                    "for a cell that is indicated as being "
+                                    "intersected. Slice FF interp.";
       }
 
       //==================================== Computing 2D transforms
@@ -211,7 +207,7 @@ void chi_mesh::FieldFunctionInterpolationSlice::
 
       //==================================== Points
       std::vector<FFIFaceEdgeIntersection> unsorted_points;
-      for (int p=0; p<num_points; p++)
+      for (int p = 0; p < num_points; p++)
       {
         vref = cell_isds.intersections[p].point - plane_point_;
 
@@ -224,47 +220,46 @@ void chi_mesh::FieldFunctionInterpolationSlice::
       cell_isds.intersections.clear();
 
       //==================================== Sort points clockwise
-      //The first point is retrieved from the unused stack.
-      //Subsequent points are only added if they form a
-      //convex line wrt the right hand rule.
+      // The first point is retrieved from the unused stack.
+      // Subsequent points are only added if they form a
+      // convex line wrt the right hand rule.
       cell_isds.intersections.push_back(unsorted_points[0]);
       unsorted_points.erase(unsorted_points.begin());
 
       while (!unsorted_points.empty())
       {
-        for (int p=0; p<unsorted_points.size(); p++)
+        for (int p = 0; p < unsorted_points.size(); p++)
         {
-          chi_mesh::Vector3 v1 = unsorted_points[p].point2d -
-                                 cell_isds.intersections.back().point2d;
+          chi_mesh::Vector3 v1 =
+            unsorted_points[p].point2d - cell_isds.intersections.back().point2d;
 
           bool illegal_value = false;
-          for (int pr=0; pr<unsorted_points.size(); pr++)
+          for (int pr = 0; pr < unsorted_points.size(); pr++)
           {
-            if (pr!=p)
+            if (pr != p)
             {
-              chi_mesh::Vector3 vr = unsorted_points[pr].point2d -
-                                     unsorted_points[p].point2d;
+              chi_mesh::Vector3 vr = unsorted_points[pr].point2d - unsorted_points[p].point2d;
 
               if (vr.Cross(v1).z < 0.0)
               {
                 illegal_value = true;
                 break;
               }
-            }//if not p
-          }//for pr
+            } // if not p
+          }   // for pr
 
           if (!illegal_value)
           {
             cell_isds.intersections.push_back(unsorted_points[p]);
-            unsorted_points.erase(unsorted_points.begin()+p);
+            unsorted_points.erase(unsorted_points.begin() + p);
             break;
           }
 
-        }//for p
+        } // for p
       }
       cell_intersections_.push_back(cell_isds);
-    }//polyhedron
-  }//for intersected cell
+    } // polyhedron
+  }   // for intersected cell
 
-  //chi::log.Log() << "Finished initializing interpolator.";
+  // chi::log.Log() << "Finished initializing interpolator.";
 }

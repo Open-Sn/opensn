@@ -15,10 +15,8 @@
 /**IDK why this is needed. Seems like counter doesnt work properly without it*/
 #define JoinWordsB(x, y) JoinWordsA(x, y)
 
-std::shared_ptr<chi::PPPrinterSubscribeHelper>
-  chi::PostProcessorPrinter::helper_ptr_ =
-    std::make_shared<PPPrinterSubscribeHelper>(
-      PostProcessorPrinter::GetInstance());
+std::shared_ptr<chi::PPPrinterSubscribeHelper> chi::PostProcessorPrinter::helper_ptr_ =
+  std::make_shared<PPPrinterSubscribeHelper>(PostProcessorPrinter::GetInstance());
 
 static char JoinWordsB(unique_var_name_ppp_, __COUNTER__) =
   chi::PostProcessorPrinter::SubscribeToSystemWideEventPublisher();
@@ -27,30 +25,29 @@ namespace chi
 {
 
 // ##################################################################
-PPPrinterSubscribeHelper::PPPrinterSubscribeHelper(
-  PostProcessorPrinter& printer_ref)
+PPPrinterSubscribeHelper::PPPrinterSubscribeHelper(PostProcessorPrinter& printer_ref)
   : printer_ref_(printer_ref)
 {
 }
 
 // ##################################################################
 /**Overrides base class to forward the call to the printer.*/
-void PPPrinterSubscribeHelper::ReceiveEventUpdate(const Event& event)
+void
+PPPrinterSubscribeHelper::ReceiveEventUpdate(const Event& event)
 {
   printer_ref_.ReceiveEventUpdate(event);
 }
 
 // ##################################################################
 PostProcessorPrinter::PostProcessorPrinter()
-  : events_on_which_to_print_postprocs_({"SolverInitialized",
-                                         "SolverAdvanced",
-                                         "SolverExecuted",
-                                         "ProgramExecuted"})
+  : events_on_which_to_print_postprocs_(
+      {"SolverInitialized", "SolverAdvanced", "SolverExecuted", "ProgramExecuted"})
 {
 }
 
 // ##################################################################
-PostProcessorPrinter& PostProcessorPrinter::GetInstance()
+PostProcessorPrinter&
+PostProcessorPrinter::GetInstance()
 {
   static PostProcessorPrinter instance;
 
@@ -58,16 +55,16 @@ PostProcessorPrinter& PostProcessorPrinter::GetInstance()
 }
 
 // ##################################################################
-char PostProcessorPrinter::SubscribeToSystemWideEventPublisher()
+char
+PostProcessorPrinter::SubscribeToSystemWideEventPublisher()
 {
   auto helper_ptr = PostProcessorPrinter::helper_ptr_;
 
   auto& publisher = SystemWideEventPublisher::GetInstance();
   auto subscriber_ptr = std::dynamic_pointer_cast<EventSubscriber>(helper_ptr);
 
-  ChiLogicalErrorIf(
-    not subscriber_ptr,
-    "Failure to cast chi::PPPrinterSubscribeHelper to chi::EventSubscriber");
+  ChiLogicalErrorIf(not subscriber_ptr,
+                    "Failure to cast chi::PPPrinterSubscribeHelper to chi::EventSubscriber");
 
   publisher.AddSubscriber(subscriber_ptr);
 
@@ -75,62 +72,71 @@ char PostProcessorPrinter::SubscribeToSystemWideEventPublisher()
 }
 
 // ##################################################################
-void PostProcessorPrinter::SetScalarPPTableFormat(ScalarPPTableFormat format)
+void
+PostProcessorPrinter::SetScalarPPTableFormat(ScalarPPTableFormat format)
 {
   scalar_pp_table_format_ = format;
 }
 
 // ##################################################################
-void PostProcessorPrinter::SetEventsOnWhichPrintPPs(
-  const std::vector<std::string>& events)
+void
+PostProcessorPrinter::SetEventsOnWhichPrintPPs(const std::vector<std::string>& events)
 {
   events_on_which_to_print_postprocs_ = events;
 }
 
 // ##################################################################
-void PostProcessorPrinter::SetPrintScalarTimeHistory(bool value)
+void
+PostProcessorPrinter::SetPrintScalarTimeHistory(bool value)
 {
   print_scalar_time_history_ = value;
 }
 
 // ##################################################################
-void PostProcessorPrinter::SetPrintVectorTimeHistory(bool value)
+void
+PostProcessorPrinter::SetPrintVectorTimeHistory(bool value)
 {
   print_vector_time_history_ = value;
 }
 
 // ##################################################################
-void PostProcessorPrinter::SetScalarPerColumnSize(bool value)
+void
+PostProcessorPrinter::SetScalarPerColumnSize(bool value)
 {
   per_column_size_scalars_ = value;
 }
 
 // ##################################################################
-void PostProcessorPrinter::SetVectorPerColumnSize(bool value)
+void
+PostProcessorPrinter::SetVectorPerColumnSize(bool value)
 {
   per_column_size_vectors_ = value;
 }
 
 // ##################################################################
-void PostProcessorPrinter::SetTableColumnLimit(size_t limit)
+void
+PostProcessorPrinter::SetTableColumnLimit(size_t limit)
 {
   table_column_limit_ = std::max(limit, size_t(80));
 }
 
 // ##################################################################
-void PostProcessorPrinter::SetTimeHistoryLimit(size_t limit)
+void
+PostProcessorPrinter::SetTimeHistoryLimit(size_t limit)
 {
   time_history_limit_ = std::min(limit, size_t(1000));
 }
 
 // ##################################################################
-void PostProcessorPrinter::SetCSVFilename(const std::string& csv_filename)
+void
+PostProcessorPrinter::SetCSVFilename(const std::string& csv_filename)
 {
   csv_filename_ = csv_filename;
 }
 
 // ##################################################################
-void PostProcessorPrinter::ReceiveEventUpdate(const Event& event)
+void
+PostProcessorPrinter::ReceiveEventUpdate(const Event& event)
 {
   {
     auto& vec = events_on_which_to_print_postprocs_;
@@ -140,15 +146,14 @@ void PostProcessorPrinter::ReceiveEventUpdate(const Event& event)
 }
 
 // ##################################################################
-void PostProcessorPrinter::PrintPostProcessors(const Event& event) const
+void
+PostProcessorPrinter::PrintPostProcessors(const Event& event) const
 {
   const auto scalar_pps = GetScalarPostProcessorsList(event);
   {
-    if (not print_scalar_time_history_)
-      PrintPPsLatestValuesOnly("SCALAR", scalar_pps, event);
+    if (not print_scalar_time_history_) PrintPPsLatestValuesOnly("SCALAR", scalar_pps, event);
     else
-      PrintPPsTimeHistory(
-        "SCALAR", scalar_pps, event, per_column_size_scalars_);
+      PrintPPsTimeHistory("SCALAR", scalar_pps, event, per_column_size_scalars_);
 
     // If we are not printing the latest values, then how would we get values
     // suitable for regression tests. This is how.
@@ -158,11 +163,9 @@ void PostProcessorPrinter::PrintPostProcessors(const Event& event) const
 
   const auto vector_pps = GetVectorPostProcessorsList(event);
   {
-    if (not print_vector_time_history_)
-      PrintPPsLatestValuesOnly("VECTOR", vector_pps, event);
+    if (not print_vector_time_history_) PrintPPsLatestValuesOnly("VECTOR", vector_pps, event);
     else
-      PrintPPsTimeHistory(
-        "VECTOR", vector_pps, event, per_column_size_vectors_);
+      PrintPPsTimeHistory("VECTOR", vector_pps, event, per_column_size_vectors_);
 
     // If we are not printing the latest values, then how would we get values
     // suitable for regression tests. This is how.
@@ -170,13 +173,13 @@ void PostProcessorPrinter::PrintPostProcessors(const Event& event) const
       PrintPPsLatestValuesOnly("VECTOR", vector_pps, event);
   }
 
-  if (not csv_filename_.empty() and event.Name() == "ProgramExecuted")
-    PrintCSVFile(event);
+  if (not csv_filename_.empty() and event.Name() == "ProgramExecuted") PrintCSVFile(event);
 }
 
 // ##################################################################
 /**A manual means to print a post processor.*/
-std::string PostProcessorPrinter::GetPrintedPostProcessors(
+std::string
+PostProcessorPrinter::GetPrintedPostProcessors(
   const std::vector<const PostProcessor*>& pp_list) const
 {
   std::stringstream outstr;

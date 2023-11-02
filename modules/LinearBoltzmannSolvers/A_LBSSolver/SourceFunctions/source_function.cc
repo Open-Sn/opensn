@@ -11,10 +11,9 @@ namespace lbs
 
 //###################################################################
 /**Constructor.*/
-SourceFunction::SourceFunction(const LBSSolver &lbs_solver) :
-  lbs_solver_(lbs_solver)
-{}
-
+SourceFunction::SourceFunction(const LBSSolver& lbs_solver) : lbs_solver_(lbs_solver)
+{
+}
 
 //###################################################################
 /**Sets the source moments for the groups in the current group set.
@@ -28,17 +27,18 @@ SourceFunction::SourceFunction(const LBSSolver &lbs_solver) :
  *        and across/within-groups fission.
  *
  * */
-void SourceFunction::operator()(LBSGroupset &groupset,
-                                std::vector<double> &destination_q,
-                                const std::vector<double> &phi_local,
-                                SourceFlags source_flags)
+void
+SourceFunction::operator()(LBSGroupset& groupset,
+                           std::vector<double>& destination_q,
+                           const std::vector<double>& phi_local,
+                           SourceFlags source_flags)
 {
   if (source_flags & NO_FLAGS_SET) return;
 
   const size_t source_event_tag = lbs_solver_.GetSourceEventTag();
   Chi::log.LogEvent(source_event_tag, chi::ChiLog::EventType::EVENT_BEGIN);
 
-  apply_fixed_src_       = (source_flags & APPLY_FIXED_SOURCES);
+  apply_fixed_src_ = (source_flags & APPLY_FIXED_SOURCES);
   apply_wgs_scatter_src_ = (source_flags & APPLY_WGS_SCATTER_SOURCES);
   apply_ags_scatter_src_ = (source_flags & APPLY_AGS_SCATTER_SOURCES);
   apply_wgs_fission_src_ = (source_flags & APPLY_WGS_FISSION_SOURCES);
@@ -60,8 +60,7 @@ void SourceFunction::operator()(LBSGroupset &groupset,
   const size_t num_moments = lbs_solver_.NumMoments();
   const auto& ext_src_moments_local = lbs_solver_.ExtSrcMomentsLocal();
 
-  const auto& m_to_ell_em_map =
-    groupset.quadrature_->GetMomentToHarmonicsIndexMap();
+  const auto& m_to_ell_em_map = groupset.quadrature_->GetMomentToHarmonicsIndexMap();
 
   //================================================== Loop over local cells
   const auto& grid = lbs_solver_.Grid();
@@ -74,7 +73,7 @@ void SourceFunction::operator()(LBSGroupset &groupset,
     //==================== Obtain xs
     const auto& xs = transport_view.XS();
 
-      std::shared_ptr<chi_physics::IsotropicMultiGrpSource> P0_src = nullptr;
+    std::shared_ptr<chi_physics::IsotropicMultiGrpSource> P0_src = nullptr;
     if (matid_to_src_map.count(cell.material_id_) > 0)
       P0_src = matid_to_src_map.at(cell.material_id_);
 
@@ -92,13 +91,12 @@ void SourceFunction::operator()(LBSGroupset &groupset,
       {
         unsigned int ell = m_to_ell_em_map[m].ell;
 
-        size_t uk_map = transport_view.MapDOF(i, m, 0); //unknown map
+        size_t uk_map = transport_view.MapDOF(i, m, 0); // unknown map
 
         const double* phi = &phi_local[uk_map];
 
         //==================== Declare moment src
-        if (P0_src and ell == 0)
-          fixed_src_moments_ = P0_src->source_value_g_.data();
+        if (P0_src and ell == 0) fixed_src_moments_ = P0_src->source_value_g_.data();
         else
           fixed_src_moments_ = default_zero_src_.data();
 
@@ -122,8 +120,7 @@ void SourceFunction::operator()(LBSGroupset &groupset,
             //==================== Add Across GroupSet Scattering (AGS)
             if (apply_ags_scatter_src_)
               for (const auto& [_, gp, sigma_sm] : S_ell.Row(g))
-                if (gp < gs_i_ or gp > gs_f_)
-                  rhs += sigma_sm * phi[gp];
+                if (gp < gs_i_ or gp > gs_f_) rhs += sigma_sm * phi[gp];
 
             //==================== Add Within GroupSet Scattering (WGS)
             if (apply_wgs_scatter_src_)
@@ -143,73 +140,68 @@ void SourceFunction::operator()(LBSGroupset &groupset,
             const auto& F_g = F[g];
             if (apply_ags_fission_src_)
               for (size_t gp = first_grp_; gp <= last_grp_; ++gp)
-                if (gp < gs_i_ or gp > gs_f_)
-                  rhs += F_g[gp] * phi[gp];
+                if (gp < gs_i_ or gp > gs_f_) rhs += F_g[gp] * phi[gp];
 
             if (apply_wgs_fission_src_)
               for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
                 rhs += F_g[gp] * phi[gp];
 
             if (lbs_solver_.Options().use_precursors)
-              rhs += this->AddDelayedFission(
-                precursors, nu_delayed_sigma_f, &phi_local[uk_map]);
+              rhs += this->AddDelayedFission(precursors, nu_delayed_sigma_f, &phi_local[uk_map]);
           }
 
           //============================== Add to destination vector
           destination_q[uk_map + g] += rhs;
 
-        }//for g
-      }//for m
-    }//for dof i
-  }//for cell
+        } // for g
+      }   // for m
+    }     // for dof i
+  }       // for cell
 
   AddAdditionalSources(groupset, destination_q, phi_local, source_flags);
 
   Chi::log.LogEvent(source_event_tag, chi::ChiLog::EventType::EVENT_END);
 }
 
-double SourceFunction::AddSourceMoments() const
+double
+SourceFunction::AddSourceMoments() const
 {
   return fixed_src_moments_[g_];
 }
 
-
 //###################################################################
 /**Adds delayed particle precursor sources.*/
-double SourceFunction::
-  AddDelayedFission(const PrecursorList &precursors,
-                    const std::vector<double> &nu_delayed_sigma_f,
-                    const double *phi) const
+double
+SourceFunction::AddDelayedFission(const PrecursorList& precursors,
+                                  const std::vector<double>& nu_delayed_sigma_f,
+                                  const double* phi) const
 {
   double value = 0.0;
   if (apply_ags_fission_src_)
     for (size_t gp = first_grp_; gp <= last_grp_; ++gp)
       if (gp < gs_i_ or gp > gs_f_)
         for (const auto& precursor : precursors)
-          value += precursor.emission_spectrum[g_] *
-                   precursor.fractional_yield *
+          value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
                    nu_delayed_sigma_f[gp] * phi[gp];
 
   if (apply_wgs_fission_src_)
     for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
       for (const auto& precursor : precursors)
-        value += precursor.emission_spectrum[g_] *
-                 precursor.fractional_yield *
+        value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
                  nu_delayed_sigma_f[gp] * phi[gp];
 
   return value;
 }
 
-
 //###################################################################
 /**Adds point sources to the source moments.*/
-void SourceFunction::
-  AddPointSources(LBSGroupset &groupset,
-                  std::vector<double> &destination_q,
-                  const std::vector<double>&,
-                  SourceFlags source_flags)
+void
+SourceFunction::AddPointSources(LBSGroupset& groupset,
+                                std::vector<double>& destination_q,
+                                const std::vector<double>&,
+                                SourceFlags source_flags)
 {
-  const bool apply_fixed_src       = (source_flags & APPLY_FIXED_SOURCES);
+  const bool apply_fixed_src = (source_flags & APPLY_FIXED_SOURCES);
 
   const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
 
@@ -235,9 +227,9 @@ void SourceFunction::
           const size_t uk_map = transport_view.MapDOF(i, /*moment=*/0, /*grp=*/0);
           for (size_t g = gs_i; g <= gs_f; ++g)
             destination_q[uk_map + g] += strength[g] * node_weights[i] * vol_w;
-        }//for node i
-      }//for cell
-    }//for point source
+        } // for node i
+      }   // for cell
+    }     // for point source
 }
 
-}//namespace lbs
+} // namespace lbs

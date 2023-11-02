@@ -21,9 +21,9 @@ public:
   /// Options for initial condition normalization
   enum class NormalizationMethod
   {
-    TOTAL_POWER = 0,    ///< Total reactor power
-    POWER_DENSITY = 1,  ///< Power density
-    NONE = 2            ///< No normalization
+    TOTAL_POWER = 0,   ///< Total reactor power
+    POWER_DENSITY = 1, ///< Power density
+    NONE = 2           ///< No normalization
   };
 
   struct Options
@@ -37,7 +37,7 @@ public:
 
     bool scale_fission_xs = false;
     NormalizationMethod normalization_method = NormalizationMethod::TOTAL_POWER;
-  }transient_options_;
+  } transient_options_;
 
   /**Temporal domain and discretization information.*/
   double dt_ = 2.0e-3;
@@ -55,25 +55,25 @@ protected:
 public:
   explicit DiscOrdTransientSolver(const std::string& in_text_name);
 
-  //01
+  // 01
   void Initialize() override;
-  //02
+  // 02
   void Execute() override;
   void Step() override;
   void Advance() override;
 
-  //Iterative operations
+  // Iterative operations
   std::shared_ptr<SweepChunk> SetTransientSweepChunk(LBSGroupset& groupset);
 
   double ComputeBeta();
-  void   PostStepCallBackFunction() const;
+  void PostStepCallBackFunction() const;
 
-  //precursors
+  // precursors
   void StepPrecursors();
 
   virtual ~DiscOrdTransientSolver() override;
 };
 
-}//namespace lbs
+} // namespace lbs
 
-#endif //CHITECH_LBTS_TRANSIENT_SOLVER_H
+#endif // CHITECH_LBTS_TRANSIENT_SOLVER_H

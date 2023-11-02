@@ -17,7 +17,8 @@ namespace chi_math::spatial_discretization
 // ###################################################################
 /**Reorders the nodes for parallel computation in a Continuous
  * Finite Element calculation.*/
-void LagrangeContinuous::OrderNodes()
+void
+LagrangeContinuous::OrderNodes()
 {
   const std::string fname = __FUNCTION__;
   //============================================= Build set of local scope nodes
@@ -60,8 +61,7 @@ void LagrangeContinuous::OrderNodes()
     for (const uint64_t pid : ls_node_ids_psubs[node_id]) // pid = partition id
       smallest_partition_id = std::min(smallest_partition_id, pid);
 
-    if (smallest_partition_id == Chi::mpi.location_id)
-      local_node_ids.push_back(node_id);
+    if (smallest_partition_id == Chi::mpi.location_id) local_node_ids.push_back(node_id);
     else
       nonlocal_node_ids_map[smallest_partition_id].push_back(node_id);
   }
@@ -95,8 +95,7 @@ void LagrangeContinuous::OrderNodes()
   //                                              nodes
   node_mapping_.clear();
   for (uint64_t i = 0; i < local_num_nodes; ++i)
-    node_mapping_[local_node_ids[i]] =
-      static_cast<int64_t>(local_block_address_ + i);
+    node_mapping_[local_node_ids[i]] = static_cast<int64_t>(local_block_address_ + i);
 
   //============================================= Communicate nodes in need
   //                                              of mapping
@@ -111,8 +110,7 @@ void LagrangeContinuous::OrderNodes()
     const auto& node_list = key_value.second;
 
     for (const uint64_t node_id : node_list)
-      if (node_mapping_.count(node_id) == 0)
-        throw std::logic_error("Error mapping query node.");
+      if (node_mapping_.count(node_id) == 0) throw std::logic_error("Error mapping query node.");
       else
       {
         const int64_t mapping = node_mapping_.at(node_id);
@@ -152,8 +150,7 @@ void LagrangeContinuous::OrderNodes()
   }
   catch (const std::logic_error& lerr)
   {
-    throw std::logic_error(fname + ": Processing non-local mapping failed." +
-                           lerr.what());
+    throw std::logic_error(fname + ": Processing non-local mapping failed." + lerr.what());
   }
 }
 

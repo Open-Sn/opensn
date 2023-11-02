@@ -14,10 +14,11 @@ public:
 
   virtual void Apply() = 0;
   virtual ~MeshModifier() = default;
+
 protected:
   MeshModifier() = default;
 };
 
-}
+} // namespace chi_mesh
 
 #endif // CHITECH_MESHMODIFIER_H

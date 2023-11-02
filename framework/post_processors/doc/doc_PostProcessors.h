@@ -48,9 +48,8 @@ By default a post-processor subscribes to the following events for execution:
 - `SolverExecuted`
 - `ProgramExecuted`
 
-This behavior can be customized by using the `execute_on` parameter. For example:
-\code
-pp0 = chi.SolverInfoPostProcessor.Create
+This behavior can be customized by using the `execute_on` parameter. For
+example: \code pp0 = chi.SolverInfoPostProcessor.Create
 ({
   name = "neutron_population",
   solver = phys0,

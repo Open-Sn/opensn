@@ -3,9 +3,9 @@
 
 #include "chi_lua.h"
 
-int chiSurfaceMesherCreate(lua_State *L);
-int chiSurfaceMesherExecute(lua_State *L);
-int chiSurfaceMesherSetProperty(lua_State *L);
-//int chiSurfaceMesherExportToObj(lua_State* L);
+int chiSurfaceMesherCreate(lua_State* L);
+int chiSurfaceMesherExecute(lua_State* L);
+int chiSurfaceMesherSetProperty(lua_State* L);
+// int chiSurfaceMesherExportToObj(lua_State* L);
 
-#endif //CHITECH_SURFMESHER_LUA_H
+#endif // CHITECH_SURFMESHER_LUA_H

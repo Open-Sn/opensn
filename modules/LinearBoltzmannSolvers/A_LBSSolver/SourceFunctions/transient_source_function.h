@@ -15,6 +15,7 @@ class TransientSourceFunction : public SourceFunction
 private:
   double& dt_;
   chi_math::SteppingMethod& method_;
+
 public:
   TransientSourceFunction(const LBSSolver& lbs_solver,
                           double& ref_dt,
@@ -25,6 +26,6 @@ public:
                            const double* phi) const override;
 };
 
-}//namespace lbs
+} // namespace lbs
 
-#endif //CHITECH_LBS_TRANSIENT_SOURCE_FUNCTION_H
+#endif // CHITECH_LBS_TRANSIENT_SOURCE_FUNCTION_H

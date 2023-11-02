@@ -6,8 +6,7 @@ namespace chi_math::cell_mapping
 
 /**Shape function i evaluated at given point for the slab.*/
 double
-PieceWiseLinearSlabMapping::ShapeValue(const int i,
-                                     const chi_mesh::Vector3& xyz) const
+PieceWiseLinearSlabMapping::ShapeValue(const int i, const chi_mesh::Vector3& xyz) const
 {
   const auto& p0 = ref_grid_.vertices[v0i_];
   const auto& p1 = ref_grid_.vertices[v1i_];
@@ -30,8 +29,9 @@ PieceWiseLinearSlabMapping::ShapeValue(const int i,
 // #################################################################
 /**Populates shape_values with the value of each shape function's
  * value evaluate at the supplied point.*/
-void PieceWiseLinearSlabMapping::ShapeValues(const chi_mesh::Vector3& xyz,
-                                    std::vector<double>& shape_values) const
+void
+PieceWiseLinearSlabMapping::ShapeValues(const chi_mesh::Vector3& xyz,
+                                        std::vector<double>& shape_values) const
 {
   shape_values.resize(num_nodes_, 0.0);
   const auto& p0 = ref_grid_.vertices[v0i_];
@@ -58,8 +58,7 @@ void PieceWiseLinearSlabMapping::ShapeValues(const chi_mesh::Vector3& xyz,
 // ###################################################################
 /**Returns the evaluation of grad-shape function i at the supplied point.*/
 chi_mesh::Vector3
-PieceWiseLinearSlabMapping::GradShapeValue(const int i,
-                                  const chi_mesh::Vector3& xyz) const
+PieceWiseLinearSlabMapping::GradShapeValue(const int i, const chi_mesh::Vector3& xyz) const
 {
   if (i == 0) return chi_mesh::Vector3(0.0, 0.0, -1.0 / h_);
   else
@@ -69,9 +68,9 @@ PieceWiseLinearSlabMapping::GradShapeValue(const int i,
 // ###################################################################
 /**Populates shape_values with the value of each shape function's
  * value evaluate at the supplied point.*/
-void PieceWiseLinearSlabMapping::GradShapeValues(
-  const chi_mesh::Vector3& xyz,
-  std::vector<chi_mesh::Vector3>& gradshape_values) const
+void
+PieceWiseLinearSlabMapping::GradShapeValues(const chi_mesh::Vector3& xyz,
+                                            std::vector<chi_mesh::Vector3>& gradshape_values) const
 {
   gradshape_values.clear();
   gradshape_values.emplace_back(GradShapeValue(0, xyz));

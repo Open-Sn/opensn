@@ -28,8 +28,7 @@ public:
    */
   std::vector<MomentCallbackF> moment_callbacks;
 
-  SweepChunk(std::vector<double>& in_destination_phi,
-             std::vector<double>& in_destination_psi)
+  SweepChunk(std::vector<double>& in_destination_phi, std::vector<double>& in_destination_psi)
     : destination_phi(&in_destination_phi), destination_psi(&in_destination_psi)
   {
   }
@@ -60,10 +59,7 @@ protected:
   }
 
   /**Sets all elements of the output vector to zero.*/
-  void ZeroDestinationPhi()
-  {
-    (*destination_phi).assign((*destination_phi).size(), 0.0);
-  }
+  void ZeroDestinationPhi() { (*destination_phi).assign((*destination_phi).size(), 0.0); }
 
   /**Returns a reference to the output flux moments vector.*/
   std::vector<double>& GetDestinationPhi() { return *destination_phi; }
@@ -75,10 +71,7 @@ protected:
   }
 
   /**Sets all elements of the output angular flux vector to zero.*/
-  void ZeroDestinationPsi()
-  {
-    (*destination_psi).assign((*destination_psi).size(), 0.0);
-  }
+  void ZeroDestinationPsi() { (*destination_psi).assign((*destination_psi).size(), 0.0); }
 
   /**Returns a reference to the output angular flux vector.*/
   std::vector<double>& GetDestinationPsi() { return *destination_psi; }

@@ -10,4 +10,4 @@ int chiPhysicsTransportXSSetCombined(lua_State* L);
 int chiPhysicsTransportXSGet(lua_State* L);
 int chiPhysicsTransportXSExportToChiTechFormat(lua_State* L);
 
-#endif //CHITECH_XSECTIONS_LUA_UTILS_H
+#endif // CHITECH_XSECTIONS_LUA_UTILS_H

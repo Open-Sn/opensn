@@ -17,10 +17,9 @@ class FieldFunctionGridBased;
 namespace chi
 {
 
-class AggregateNodalValuePostProcessor
-  : public PostProcessor,
-    public chi_physics::GridBasedFieldFunctionInterface,
-    public chi_mesh::LogicalVolumeInterface
+class AggregateNodalValuePostProcessor : public PostProcessor,
+                                         public chi_physics::GridBasedFieldFunctionInterface,
+                                         public chi_mesh::LogicalVolumeInterface
 {
 public:
   static InputParameters GetInputParameters();
@@ -34,7 +33,6 @@ protected:
   const std::string operation_;
   bool initialized_ = false;
   std::vector<uint64_t> cell_local_ids_;
-
 };
 
 } // namespace chi

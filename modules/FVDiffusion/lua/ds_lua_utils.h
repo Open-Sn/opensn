@@ -6,11 +6,10 @@
 
 namespace fv_diffusion::fv_diffusion_lua_utils
 {
-  int chiFVDiffusionSolverCreate(lua_State *L);
-  int chiFVDiffusionSetBCProperty(lua_State *L);
+int chiFVDiffusionSolverCreate(lua_State* L);
+int chiFVDiffusionSetBCProperty(lua_State* L);
 
-  void RegisterLuaEntities(lua_State *L);
-}//namespace cfem_diffusion
+void RegisterLuaEntities(lua_State* L);
+} // namespace fv_diffusion::fv_diffusion_lua_utils
 
-
-#endif //FV_DIFFUSION_LUA_UTILS_H
+#endif // FV_DIFFUSION_LUA_UTILS_H

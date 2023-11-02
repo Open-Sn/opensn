@@ -31,23 +31,28 @@ chi_data_types::VaryingDataTypeStringName(chi_data_types::VaryingDataType type)
 namespace chi_data_types
 {
 //=============================================== VaryingType Base
-std::string Varying::VaryingType::StringValue() const
+std::string
+Varying::VaryingType::StringValue() const
 {
   ChiLogicalError("Method not implemented");
 }
-bool Varying::VaryingType::BoolValue() const
+bool
+Varying::VaryingType::BoolValue() const
 {
   ChiLogicalError("Method not implemented");
 }
-int64_t Varying::VaryingType::IntegerValue() const
+int64_t
+Varying::VaryingType::IntegerValue() const
 {
   ChiLogicalError("Method not implemented");
 }
-double Varying::VaryingType::FloatValue() const
+double
+Varying::VaryingType::FloatValue() const
 {
   ChiLogicalError("Method not implemented");
 }
-std::vector<std::byte> Varying::VaryingType::BytesValue() const
+std::vector<std::byte>
+Varying::VaryingType::BytesValue() const
 {
   ChiLogicalError("Method not implemented");
 }
@@ -60,7 +65,8 @@ Varying::VaryingArbitraryType<std::vector<std::byte>>::StringValue() const
   ChiLogicalError("Method not implemented");
 }
 template <>
-bool Varying::VaryingArbitraryType<std::vector<std::byte>>::BoolValue() const
+bool
+Varying::VaryingArbitraryType<std::vector<std::byte>>::BoolValue() const
 {
   ChiLogicalError("Method not implemented");
 }
@@ -71,95 +77,112 @@ Varying::VaryingArbitraryType<std::vector<std::byte>>::IntegerValue() const
   ChiLogicalError("Method not implemented");
 }
 template <>
-double Varying::VaryingArbitraryType<std::vector<std::byte>>::FloatValue() const
+double
+Varying::VaryingArbitraryType<std::vector<std::byte>>::FloatValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 
 //=============================================== VaryingString
 template <>
-std::string Varying::VaryingArbitraryType<std::string>::StringValue() const
+std::string
+Varying::VaryingArbitraryType<std::string>::StringValue() const
 {
   return value_;
 }
 template <>
-bool Varying::VaryingArbitraryType<std::string>::BoolValue() const
+bool
+Varying::VaryingArbitraryType<std::string>::BoolValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 template <>
-int64_t Varying::VaryingArbitraryType<std::string>::IntegerValue() const
+int64_t
+Varying::VaryingArbitraryType<std::string>::IntegerValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 template <>
-double Varying::VaryingArbitraryType<std::string>::FloatValue() const
+double
+Varying::VaryingArbitraryType<std::string>::FloatValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 
 //=============================================== VaryingBool
 template <>
-std::string Varying::VaryingArbitraryType<bool>::StringValue() const
+std::string
+Varying::VaryingArbitraryType<bool>::StringValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 template <>
-bool Varying::VaryingArbitraryType<bool>::BoolValue() const
+bool
+Varying::VaryingArbitraryType<bool>::BoolValue() const
 {
   return value_;
 }
 template <>
-int64_t Varying::VaryingArbitraryType<bool>::IntegerValue() const
+int64_t
+Varying::VaryingArbitraryType<bool>::IntegerValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 template <>
-double Varying::VaryingArbitraryType<bool>::FloatValue() const
+double
+Varying::VaryingArbitraryType<bool>::FloatValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 
 //=============================================== VaryingInteger
 template <>
-std::string Varying::VaryingArbitraryType<int64_t>::StringValue() const
+std::string
+Varying::VaryingArbitraryType<int64_t>::StringValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 template <>
-bool Varying::VaryingArbitraryType<int64_t>::BoolValue() const
+bool
+Varying::VaryingArbitraryType<int64_t>::BoolValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 template <>
-int64_t Varying::VaryingArbitraryType<int64_t>::IntegerValue() const
+int64_t
+Varying::VaryingArbitraryType<int64_t>::IntegerValue() const
 {
   return value_;
 }
 template <>
-double Varying::VaryingArbitraryType<int64_t>::FloatValue() const
+double
+Varying::VaryingArbitraryType<int64_t>::FloatValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 
 //=============================================== VaryingFloat
 template <>
-std::string Varying::VaryingArbitraryType<double>::StringValue() const
+std::string
+Varying::VaryingArbitraryType<double>::StringValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 template <>
-bool Varying::VaryingArbitraryType<double>::BoolValue() const
+bool
+Varying::VaryingArbitraryType<double>::BoolValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 template <>
-int64_t Varying::VaryingArbitraryType<double>::IntegerValue() const
+int64_t
+Varying::VaryingArbitraryType<double>::IntegerValue() const
 {
   ChiLogicalError("Method not implemented");
 }
 template <>
-double Varying::VaryingArbitraryType<double>::FloatValue() const
+double
+Varying::VaryingArbitraryType<double>::FloatValue() const
 {
   return value_;
 }
@@ -168,8 +191,9 @@ double Varying::VaryingArbitraryType<double>::FloatValue() const
 
 /**Checks if two VaryingDataType values match.
  * Type A is matched against type B.*/
-void chi_data_types::Varying::CheckTypeMatch(
-  const VaryingDataType type_A, const VaryingDataType type_B_required) const
+void
+chi_data_types::Varying::CheckTypeMatch(const VaryingDataType type_A,
+                                        const VaryingDataType type_B_required) const
 {
   if (type_A != type_B_required)
     throw std::logic_error("Varying data type " + TypeName() +
@@ -245,7 +269,8 @@ chi_data_types::Varying::operator=(const std::string& value)
 // ###################################################################
 //  Get values
 /**Returns the string value if valid. Otherwise throws std::logic_error.*/
-std::string chi_data_types::Varying::StringValue() const
+std::string
+chi_data_types::Varying::StringValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::STRING);
 
@@ -253,7 +278,8 @@ std::string chi_data_types::Varying::StringValue() const
 }
 
 /**Returns the bool value if valid. Otherwise throws std::logic_error.*/
-bool chi_data_types::Varying::BoolValue() const
+bool
+chi_data_types::Varying::BoolValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::BOOL);
 
@@ -261,7 +287,8 @@ bool chi_data_types::Varying::BoolValue() const
 }
 
 /**Returns the integer value if valid. Otherwise throws std::logic_error.*/
-int64_t chi_data_types::Varying::IntegerValue() const
+int64_t
+chi_data_types::Varying::IntegerValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::INTEGER);
 
@@ -269,7 +296,8 @@ int64_t chi_data_types::Varying::IntegerValue() const
 }
 
 /**Returns the float value if valid. Otherwise throws std::logic_error.*/
-double chi_data_types::Varying::FloatValue() const
+double
+chi_data_types::Varying::FloatValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::FLOAT);
 
@@ -278,11 +306,16 @@ double chi_data_types::Varying::FloatValue() const
 
 // ###################################################################
 /**Returns the raw byte size associated with the type.*/
-size_t chi_data_types::Varying::ByteSize() const { return data_->Size(); }
+size_t
+chi_data_types::Varying::ByteSize() const
+{
+  return data_->Size();
+}
 
 // ###################################################################
 /**Returns a string value for the value.*/
-std::string chi_data_types::Varying::PrintStr(bool with_type/*=false*/) const
+std::string
+chi_data_types::Varying::PrintStr(bool with_type /*=false*/) const
 {
   std::stringstream outstr;
 
@@ -300,8 +333,8 @@ std::string chi_data_types::Varying::PrintStr(bool with_type/*=false*/) const
 
 // ###################################################################
 /**Stream operator*/
-std::ostream& operator<<(std::ostream& outstr,
-                         const chi_data_types::Varying& value)
+std::ostream&
+operator<<(std::ostream& outstr, const chi_data_types::Varying& value)
 {
   outstr << value.PrintStr(false);
   return outstr;
