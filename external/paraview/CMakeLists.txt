@@ -1,0 +1,10 @@
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx")
+
+set(TARGET ThirdPartyParaView)
+add_library(${TARGET} OBJECT ${SOURCES})
+if (VTK_VERSION VERSION_LESS "8.90.0")
+    target_include_directories(${TARGET} SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
+else ()
+    vtk_module_autoinit(TARGETS ${TARGET} MODULES ${VTK_LIBRARIES})
+endif()
+target_link_libraries(${TARGET} ${VTK_LIBRARIES})

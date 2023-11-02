@@ -1,0 +1,6 @@
+submodule: Diffusion
+function: chiDiffusionCreateSolver
+function: chiDiffusionInitialize
+function: chiDiffusionExecute
+function: chiDiffusionSetProperty
+module_end

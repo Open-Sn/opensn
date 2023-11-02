@@ -1,0 +1,4 @@
+submodule: DFEM Diffusion solver
+function: chiDFEMDiffusionSolverCreate
+function: chiDFEMDiffusionSetBCProperty
+module_end

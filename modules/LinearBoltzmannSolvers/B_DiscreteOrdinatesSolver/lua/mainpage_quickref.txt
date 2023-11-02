@@ -1,0 +1,7 @@
+submodule: Discrete Ordinates
+
+function: \ref lbs__DiscreteOrdinatesSolver
+function: chiLBSComputeBalance
+function: chiLBSComputeLeakage
+
+module_end

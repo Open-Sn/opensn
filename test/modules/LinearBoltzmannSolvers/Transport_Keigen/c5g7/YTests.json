@@ -1,0 +1,37 @@
+[
+  {
+    "file": "c5g7.lua",
+    "outfileprefix": "c5g7_jfnk",
+    "comment": "2D C5G7 with non-linear k-solver",
+    "num_procs": 8,
+    "args": ["k_method=\"jfnk\""],
+    "weight_class" : "long",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 1.1925596,
+        "tol": 1.0e-7,
+        "skip_lines_until": "LBSDiscreteOrdinatesSolver_NonLinearK_Outer Iteration"
+      }
+    ]
+  },
+  {
+    "file": "c5g7.lua",
+    "outfileprefix": "c5g7_scdsa",
+    "comment": "2D C5G7 with PI and PWLD SCDSA",
+    "num_procs": 8,
+    "args": ["k_method=\"pi_scdsa\""],
+    "weight_class" : "long",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 1.192559,
+        "tol": 1.0e-6
+      }
+    ]
+  }
+]

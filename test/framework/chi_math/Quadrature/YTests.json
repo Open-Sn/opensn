@@ -1,0 +1,9 @@
+[
+  {
+    "file" : "quadrature_test1.lua", "num_procs" : 1, "checks" :
+    [
+      {"type" : "ErrorCode", "error_code" : 0},
+      {"type" :  "GoldFile", "scope_keyword" :  "GOLD"}
+    ]
+  }
+]

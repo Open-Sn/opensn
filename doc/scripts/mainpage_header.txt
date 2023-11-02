@@ -1,0 +1,36 @@
+/** \mainpage
+
+ChiTech is an engineering development platform under development to support
+various scientific simulations. At the core of the platform is the **Lua**
+scripting engine which allows the user to interact with their C++ code using
+a script-environment.\n
+\n
+Please be patient as we add more capabilities and tutorials to the code. For
+now we have only a couple of tutorials.\n
+\n
+
+ # Index
+
+ \subpage Tutorial00 \n
+ \subpage ProgrammerManual \n
+ <a href="https://www.lua.org/manual/5.3/"><B>Lua 5.3 Reference</B></a>\n
+ <a href="https://www.mcs.anl.gov/petsc/documentation/index.html"><B>PETSc Documentation</B></a>\n
+ <a href="https://lorensen.github.io/VTKExamples/site/"><B>Visualization Tool Kit (VTK) documentation</B></a>\n
+ <a href="https://clang.llvm.org/extra/clang-tidy/#suppressing-undesired-diagnostics"><B>clang-tidy Documentation</B></a>
+
+\n
+
+\tableofcontents
+
+# Variables defined in lua
+Variable Name        | Description                            | Variable Name        | Description
+---------------------|------------------                      |--------------------- |---------------------
+ `chi_version`       | Version string, e.g., "1.2.3"          | `chi_minor_version`  | Minor version, e.g., 2, as an integer
+ `chi_major_version` | Major version, e.g., 1, as an integer  | `chi_patch_version`  | Patch version, e.g., 3, as an integer
+ `chi_location_id`   | Current process rank in MPI-context    | `chi_number_of_processes` | Number of MPI processes
+
+\n
+
+
+ \section MainPage1 Input Functions
+

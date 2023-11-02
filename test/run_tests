@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+"""
+This is the next version of ChiTech's Test system.
+
+The basic philosophy that we want to support, over and above what we had before,
+is a system to which we can easily add+remove+modify tests such that the burden
+of writing tests is reduced.
+
+Principles:
+- A test is initiated by an input file (.lua file)
+- A test can be subjected to one or more checks
+  - RunCheck, does it run and exit with error-code 0
+  - ConsoleOutputCheck, Does the console have specific output
+  - ConsoleGoldCheck, Diffs a portion of the console output against gold
+  - OutputCheck, Compares output data (vtk, exodus, data) against gold
+- Any folder, that contains the correct information for tests, can be
+  bootstrapped to the test system.
+- A folder can be used as a staging area to perfect a test after which the
+  test can be moved into the appropriate place
+"""
+import os
+import sys
+import argparse
+import textwrap
+import warnings
+
+from src import jobmanager
+
+if sys.version_info.major < 3:
+    raise Exception("Python version detected to be " +
+                    str(sys.version_info.major) + "." +
+                    str(sys.version_info.minor) +
+                    " but is required to >= 3")
+
+# ========================================================= Process commandline
+#                                                           arguments
+arguments_help = textwrap.dedent('''\
+Run the test suite, or optionally, a series of individual
+tests or a range of tests. 
+''')
+
+parser = argparse.ArgumentParser(
+    description="A script to run the regression test suite.",
+    epilog=arguments_help
+)
+
+parser.add_argument(
+    "-d", "--directory", default=None, type=str, required=True,
+    help="The test directory to process"
+)
+
+parser.add_argument(
+    "-t", "--test", default=None, type=str, required=False,
+    help="A specific test to run"
+)
+
+parser.add_argument(
+    "--exe", default="test/bin/ChiTech_test", type=str, required=False,
+    help="The executable to use for testing"
+)
+
+parser.add_argument(
+    "-j", "--jobs", default=1, type=int, required=False,
+    help="Allow N jobs at once"
+)
+
+parser.add_argument(
+    "-v", "--verbose", default=False, type=bool, required=False,
+    help="Controls verbose failure"
+)
+
+parser.add_argument("-w", "--weights", default=3, type=int, required=False,
+                    help="Test weight configuration. Single numeric value < 7,"
+                         " converted to binary gives the long, intermediate, "
+                         "short test weight configuration flag. For example:"
+                         " 111 -> [long, intermediate, short], "
+                         "7 -> 111 runs short, intermediate and long tests."
+                         "4 -> 100 runs only the long tests. 3-> 011 runs the "
+                         "short and intermediate tests.")
+
+argv = parser.parse_args()  # argv = argument values
+
+# ========================================================= Check stuff
+# Check the exe exists
+if not os.path.isfile(argv.exe):
+    raise FileNotFoundError(argv.exe)
+
+# Check the test directory exists
+if not os.path.isdir(argv.directory):
+    raise NotADirectoryError(argv.directory)
+
+# Ensure exe path is absolute
+argv.exe = os.path.abspath(argv.exe)
+
+# If no test directory specified then we print help and quit
+if argv.directory is None:
+    print(arguments_help)
+    exit(0)
+
+# ========================================================= Main execution
+test_hierarchy = jobmanager.BuildSearchHierarchyForTests(argv)
+with warnings.catch_warnings(record=True) as warning_manager1:
+    tests = jobmanager.ConfigureTests(test_hierarchy, argv)
+
+# EchoTests(tests)
+
+print("""
+***************************** ChiTech Test system *****************************
+
+Use flag -h to print argument options.
+Test directories identified:""")
+
+for test_dir in test_hierarchy:
+    print("  " + os.path.relpath(test_dir))
+print()
+print("Description of what you are looking at:")
+print("\033[33m[XX]\033[0m<test directory>/<lua filename>.lua.......", end="")
+print("\033[36m[annotations]\033[0m", end="")
+print("\033[32mPassed\033[0m/\033[31mFailed\033[0m")
+print("\033[33m[XX]\033[0m = number of mpi processes")
+print("\033[36m[annotations]\033[0m = error messages preventing a test from " +
+      "running")
+print("\033[36m[lua file missing]\033[0m = A test pointing to a .lua file was "
+      "indicated in a .json file but the actual lua file is missing.")
+print("\033[36m[Gold file missing]\033[0m = Test with a GoldFile check has no "
+      ".gold file in the gold/ directory. If the input is Input.lua \n"
+      # [Gold file missing] = 
+      "                      then there"
+      " needs to be a Input.lua.gold file in the gold directory. If this was "
+      "the first run \n"
+      "                      then copy Input.lua.out from the out/ directory "
+      "and use that as the gold.")
+print("\033[36m[Python error]\033[0m = A python error occurred. Run with -v 1 "
+      "to see the error.")
+
+print()
+
+jobmanager.PrintCaughtWarnings(warning_manager1,
+                               "Warnings during test configuration")
+print()
+
+with warnings.catch_warnings(record=True) as warning_manager2:
+    retval = jobmanager.RunTests(tests, argv)
+
+jobmanager.PrintCaughtWarnings(warning_manager1,
+                               "Warnings during test configuration")
+jobmanager.PrintCaughtWarnings(warning_manager2,
+                               "Warnings during test execution")
+
+sys.exit(retval)

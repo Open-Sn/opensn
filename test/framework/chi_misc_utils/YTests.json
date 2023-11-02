@@ -1,0 +1,10 @@
+[
+  {
+    "file" : "chi_misc_utils_test_00.lua", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "GoldFile", "scope_keyword" : "GOLD"
+      }
+    ]
+  }
+]

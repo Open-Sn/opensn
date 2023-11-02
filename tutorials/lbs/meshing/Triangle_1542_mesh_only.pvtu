@@ -1,0 +1,15 @@
+<VTKFile type="PUnstructuredGrid" version="0.1" byte_order="LittleEndian" header_type="UInt32" compressor="vtkZLibDataCompressor">
+  <PUnstructuredGrid GhostLevel="0">
+    <PCellData>
+      <PDataArray type="Int32" Name="Material"/>
+      <PDataArray type="UInt32" Name="Partition"/>
+    </PCellData>
+    <PPoints>
+      <PDataArray type="Float64" Name="Points" NumberOfComponents="3"/>
+    </PPoints>
+    <Piece Source="Triangle_1542_mesh_only_0.vtu"/>
+    <Piece Source="Triangle_1542_mesh_only_1.vtu"/>
+    <Piece Source="Triangle_1542_mesh_only_2.vtu"/>
+    <Piece Source="Triangle_1542_mesh_only_3.vtu"/>
+  </PUnstructuredGrid>
+</VTKFile>

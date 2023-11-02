@@ -1,0 +1,70 @@
+[0]  Parsing argument 1 quadrature_test1.lua
+[0m[0]  Parsing argument 2 --suppress_color
+[0m[0]  Parsing argument 3 --supress_beg_end_timelog
+[0]  Parsing argument 4 master_export=false
+[0]  ChiTech number of arguments supplied: 4
+GOLD_BEGIN
+[0]  Initializing Gauss-Legendre Quadrature with 4 q-points
+[0]  root[0]=-0.861136, weight=0.347855
+[0]  root[1]=-0.339981, weight=0.652145
+[0]  root[2]=0.339981, weight=0.652145
+[0]  root[3]=0.861136, weight=0.347855
+qpoints:
+  1 table
+    1 -0.86113631159405
+    2 0.0
+    3 0.0
+  2 table
+    1 -0.33998104358486
+    2 0.0
+    3 0.0
+  3 table
+    1 0.33998104358486
+    2 0.0
+    3 0.0
+  4 table
+    1 0.86113631159405
+    2 0.0
+    3 0.0
+weights:
+  1 0.34785484513745
+  2 0.65214515486255
+  3 0.65214515486255
+  4 0.34785484513745
+
+[0]  Initializing Gauss-Chebyshev Quadrature with 4 q-points
+[0]  root[0]=-0.92388, weight=0.785398
+[0]  root[1]=-0.382683, weight=0.785398
+[0]  root[2]=0.382683, weight=0.785398
+[0]  root[3]=0.92388, weight=0.785398
+qpoints:
+  1 table
+    1 -0.92387953251129
+    2 0.0
+    3 0.0
+  2 table
+    1 -0.38268343236509
+    2 0.0
+    3 0.0
+  3 table
+    1 0.38268343236509
+    2 0.0
+    3 0.0
+  4 table
+    1 0.92387953251129
+    2 0.0
+    3 0.0
+weights:
+  1 0.78539816339745
+  2 0.78539816339745
+  3 0.78539816339745
+  4 0.78539816339745
+chiLegendre(0, 0.25)	1.0
+chiLegendre(1, 0.25)	0.25
+chiLegendreDerivative(0, 0.25)	0.0
+chiLegendreDerivative(1, 0.25)	1.0
+chiYlm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0)	1.0
+chiYlm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0)	0.70710678118655
+GOLD_END
+
+

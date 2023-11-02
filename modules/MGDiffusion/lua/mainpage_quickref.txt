@@ -1,0 +1,4 @@
+submodule: CFEM Multigroup Diffusion solver
+function: chiCFEMMGDiffusionSolverCreate
+function: chiCFEMMGDiffusionSetBCProperty
+module_end

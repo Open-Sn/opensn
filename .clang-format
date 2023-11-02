@@ -1,0 +1,26 @@
+﻿---
+BasedOnStyle: LLVM
+AlignTrailingComments: 'true'
+AllowShortBlocksOnASingleLine: 'true'
+AllowShortIfStatementsOnASingleLine: Always
+AllowShortLoopsOnASingleLine: 'false'
+AlwaysBreakTemplateDeclarations: 'Yes'
+BinPackArguments: 'false'
+BinPackParameters: 'false'
+BreakBeforeBraces: Allman
+ColumnLimit: '80'
+CommentPragmas: ''' ?[\\@][a-zA-Z].*$'''
+ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+ConstructorInitializerIndentWidth: '2'
+ContinuationIndentWidth: '2'
+FixNamespaceComments: 'true'
+IndentCaseLabels: 'true'
+PointerAlignment: Left
+ReflowComments: 'true'
+SortIncludes: 'false'
+SpaceBeforeParens: ControlStatements
+SpacesBeforeTrailingComments: '1'
+TabWidth: '2'
+UseTab: Never
+
+...

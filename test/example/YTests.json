@@ -1,0 +1,10 @@
+[
+  {
+    "comment" : "Example test configuration",
+    "file" : "example_test.lua", "num_procs" : 1, "checks" :
+    [
+      { "type" : "StrCompare", "key" : "This is an example test" },
+      { "type" :  "ErrorCode", "error_code" :  0}
+    ]
+  }
+]
