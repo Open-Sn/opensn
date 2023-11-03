@@ -1,16 +1,14 @@
 #include "diffusion.h"
-
 #include "math/SpatialDiscretization/SpatialDiscretization.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
-
+#include "math/PETScUtils/petsc_utils.h"
+#include "physics/chi_physics_namespace.h"
 #include "chi_runtime.h"
 #include "chi_log.h"
 
 namespace lbs::acceleration
 {
 
-// ###################################################################
-/**Default constructor.*/
 DiffusionSolver::DiffusionSolver(std::string text_name,
                                  const chi_math::SpatialDiscretization& sdm,
                                  const chi_math::UnknownManager& uk_man,
@@ -36,8 +34,6 @@ DiffusionSolver::DiffusionSolver(std::string text_name,
   options.verbose = verbose;
 }
 
-// ###################################################################
-/**Default destructor.*/
 DiffusionSolver::~DiffusionSolver()
 {
   MatDestroy(&A_);
@@ -45,32 +41,24 @@ DiffusionSolver::~DiffusionSolver()
   KSPDestroy(&ksp_);
 }
 
-// ###################################################################
-/**Returns the assigned text name.*/
 std::string
 DiffusionSolver::TextName() const
 {
   return text_name_;
 }
 
-// ###################################################################
-/**Returns the right-hand side petsc vector.*/
 const Vec&
 DiffusionSolver::RHS() const
 {
   return rhs_;
 }
 
-// ###################################################################
-/**Returns the assigned unknown structure.*/
 const chi_math::UnknownManager&
 DiffusionSolver::UnknownStructure() const
 {
   return uk_man_;
 }
 
-// ###################################################################
-/**Returns the associated spatial discretization.*/
 const chi_math::SpatialDiscretization&
 DiffusionSolver::SpatialDiscretization() const
 {
@@ -78,15 +66,13 @@ DiffusionSolver::SpatialDiscretization() const
 }
 
 std::pair<size_t, size_t>
-lbs::acceleration::DiffusionSolver::GetNumPhiIterativeUnknowns()
+DiffusionSolver::GetNumPhiIterativeUnknowns()
 {
   return {sdm_.GetNumLocalDOFs(uk_man_), sdm_.GetNumGlobalDOFs(uk_man_)};
 }
 
-// ##################################################################
-/**Adds to the right-hand side without applying spatial discretization.*/
 void
-lbs::acceleration::DiffusionSolver::AddToRHS(const std::vector<double>& values)
+DiffusionSolver::AddToRHS(const std::vector<double>& values)
 {
   typedef unsigned int uint;
   typedef const int64_t cint64_t;
@@ -118,6 +104,216 @@ lbs::acceleration::DiffusionSolver::AddToRHS(const std::vector<double>& values)
 
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
+}
+
+void
+DiffusionSolver::Initialize()
+{
+  if (options.verbose) Chi::log.Log() << text_name_ << ": Initializing PETSc items";
+
+  if (options.verbose)
+    Chi::log.Log() << text_name_ << ": Global number of DOFs=" << num_global_dofs_;
+
+  Chi::mpi.Barrier();
+  Chi::log.Log() << "Sparsity pattern";
+  Chi::mpi.Barrier();
+  //============================================= Create Matrix
+  std::vector<int64_t> nodal_nnz_in_diag;
+  std::vector<int64_t> nodal_nnz_off_diag;
+  sdm_.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, uk_man_);
+  Chi::mpi.Barrier();
+  Chi::log.Log() << "Done Sparsity pattern";
+  Chi::mpi.Barrier();
+  A_ = chi_math::PETScUtils::CreateSquareMatrix(num_local_dofs_, num_global_dofs_);
+  chi_math::PETScUtils::InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  Chi::mpi.Barrier();
+  Chi::log.Log() << "Done matrix creation";
+  Chi::mpi.Barrier();
+
+  //============================================= Create RHS
+  if (not requires_ghosts_)
+    rhs_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_global_dofs_);
+  else
+    rhs_ = chi_math::PETScUtils::CreateVectorWithGhosts(
+      num_local_dofs_,
+      num_global_dofs_,
+      static_cast<int64_t>(sdm_.GetNumGhostDOFs(uk_man_)),
+      sdm_.GetGhostDOFIndices(uk_man_));
+
+  Chi::mpi.Barrier();
+  Chi::log.Log() << "Done vector creation";
+  Chi::mpi.Barrier();
+
+  //============================================= Create KSP
+  KSPCreate(PETSC_COMM_WORLD, &ksp_);
+  KSPSetOptionsPrefix(ksp_, text_name_.c_str());
+  KSPSetType(ksp_, KSPCG);
+
+  KSPSetTolerances(ksp_, 1.e-50, options.residual_tolerance, 1.0e50, options.max_iters);
+
+  //============================================= Set Pre-conditioner
+  PC pc;
+  KSPGetPC(ksp_, &pc);
+  //  PCSetType(pc, PCGAMG);
+  PCSetType(pc, PCHYPRE);
+
+  PCHYPRESetType(pc, "boomeramg");
+  std::vector<std::string> pc_options = {"pc_hypre_boomeramg_agg_nl 1",
+                                         "pc_hypre_boomeramg_P_max 4",
+                                         "pc_hypre_boomeramg_grid_sweeps_coarse 1",
+                                         "pc_hypre_boomeramg_max_levels 25",
+                                         "pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi",
+                                         "pc_hypre_boomeramg_coarsen_type HMIS",
+                                         "pc_hypre_boomeramg_interp_type ext+i"};
+
+  if (grid_.Attributes() & chi_mesh::DIMENSION_2)
+    pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
+  if (grid_.Attributes() & chi_mesh::DIMENSION_3)
+    pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.8");
+
+  for (const auto& option : pc_options)
+    PetscOptionsInsertString(nullptr, ("-" + text_name_ + option).c_str());
+
+  PetscOptionsInsertString(nullptr, options.additional_options_string.c_str());
+
+  PCSetFromOptions(pc);
+  KSPSetFromOptions(ksp_);
+}
+
+void
+DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess /*=false*/)
+{
+  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
+  Vec x;
+  VecDuplicate(rhs_, &x);
+  VecSet(x, 0.0);
+
+  if (not use_initial_guess) KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
+  else
+    KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
+
+  KSPSetTolerances(
+    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters);
+
+  if (options.perform_symmetry_check)
+  {
+    PetscBool symmetry = PETSC_FALSE;
+    MatIsSymmetric(A_, 1.0e-6, &symmetry);
+    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
+  }
+
+  if (options.verbose)
+  {
+    using namespace chi_math::PETScUtils;
+    KSPSetConvergenceTest(ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
+
+    KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
+
+    double rhs_norm;
+    VecNorm(rhs_, NORM_2, &rhs_norm);
+    Chi::log.Log() << "RHS-norm " << rhs_norm;
+  }
+
+  if (use_initial_guess)
+  {
+    double* x_raw;
+    VecGetArray(x, &x_raw);
+    size_t k = 0;
+    for (const auto& value : solution)
+      x_raw[k++] = value;
+    VecRestoreArray(x, &x_raw);
+  }
+
+  //============================================= Solve
+  KSPSolve(ksp_, rhs_, x);
+
+  //============================================= Print convergence info
+  if (options.verbose)
+  {
+    double sol_norm;
+    VecNorm(x, NORM_2, &sol_norm);
+    Chi::log.Log() << "Solution-norm " << sol_norm;
+
+    using namespace chi_physics;
+    KSPConvergedReason reason;
+    KSPGetConvergedReason(ksp_, &reason);
+
+    Chi::log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
+  }
+
+  //============================================= Transfer petsc solution to
+  //                                              vector
+  if (requires_ghosts_)
+  {
+    chi_math::PETScUtils::CommunicateGhostEntries(x);
+    sdm_.LocalizePETScVectorWithGhosts(x, solution, uk_man_);
+  }
+  else
+    sdm_.LocalizePETScVector(x, solution, uk_man_);
+
+  //============================================= Cleanup x
+  VecDestroy(&x);
+}
+
+void
+DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess /*=false*/)
+{
+  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
+  Vec x;
+  VecDuplicate(rhs_, &x);
+  VecSet(x, 0.0);
+
+  if (not use_initial_guess) KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
+  else
+    KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
+
+  KSPSetTolerances(
+    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters);
+
+  if (options.perform_symmetry_check)
+  {
+    PetscBool symmetry = PETSC_FALSE;
+    MatIsSymmetric(A_, 1.0e-6, &symmetry);
+    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
+  }
+
+  if (options.verbose)
+  {
+    using namespace chi_math::PETScUtils;
+    KSPSetConvergenceTest(ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
+
+    KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
+
+    double rhs_norm;
+    VecNorm(rhs_, NORM_2, &rhs_norm);
+    Chi::log.Log() << "RHS-norm " << rhs_norm;
+  }
+
+  if (use_initial_guess) { VecCopy(petsc_solution, x); }
+
+  //============================================= Solve
+  KSPSolve(ksp_, rhs_, x);
+
+  //============================================= Print convergence info
+  if (options.verbose)
+  {
+    double sol_norm;
+    VecNorm(x, NORM_2, &sol_norm);
+    Chi::log.Log() << "Solution-norm " << sol_norm;
+
+    using namespace chi_physics;
+    KSPConvergedReason reason;
+    KSPGetConvergedReason(ksp_, &reason);
+
+    Chi::log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
+  }
+
+  //============================================= Transfer petsc solution to
+  //                                              vector
+  VecCopy(x, petsc_solution);
+
+  //============================================= Cleanup x
+  VecDestroy(&x);
 }
 
 } // namespace lbs::acceleration
