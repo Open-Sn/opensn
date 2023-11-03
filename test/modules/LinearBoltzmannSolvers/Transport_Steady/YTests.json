@@ -396,11 +396,12 @@
         "gold": 7.340585e-04,
         "tol": 1.0e-9
       }
-    ]
+    ],
+    "skip": "Failing because of shared SplitMesh directory.  - WDH"
   },
   {
     "file": "Transport3D_6BSplitMesh.lua",
-    "comment": "3D LinearBSolver Test Split mesh configuration A",
+    "comment": "3D LinearBSolver Test Split mesh configuration B",
     "num_procs": 4,
     "weight_class" : "intermediate",
     "checks": [
