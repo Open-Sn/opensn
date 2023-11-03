@@ -1,5 +1,4 @@
-#ifndef CHITECH_CONSTANTTIMESTEPPER_H
-#define CHITECH_CONSTANTTIMESTEPPER_H
+#pragma once
 
 #include "TimeStepper.h"
 
@@ -16,4 +15,4 @@ public:
 
 } // namespace chi_physics
 
-#endif // CHITECH_CONSTANTTIMESTEPPER_H
+

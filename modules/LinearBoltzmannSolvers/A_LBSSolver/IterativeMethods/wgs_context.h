@@ -1,5 +1,4 @@
-#ifndef CHITECH_WGS_CONTEXT_H
-#define CHITECH_WGS_CONTEXT_H
+#pragma once
 
 #include "math/LinearSolver/linear_solver_context.h"
 
@@ -67,4 +66,4 @@ struct WGSContext : public chi_math::LinearSolverContext<MatType, VecType>
 
 } // namespace lbs
 
-#endif // CHITECH_WGS_CONTEXT_H
+

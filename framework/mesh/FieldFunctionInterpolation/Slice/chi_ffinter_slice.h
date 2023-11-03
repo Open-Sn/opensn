@@ -1,5 +1,4 @@
-#ifndef CHI_FFINTER_SLICE_H
-#define CHI_FFINTER_SLICE_H
+#pragma once
 
 #include "../chi_ffinterpolation.h"
 
@@ -64,4 +63,3 @@ public:
   void ExportPython(std::string base_name) override;
 };
 
-#endif

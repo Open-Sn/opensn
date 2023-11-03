@@ -1,5 +1,4 @@
-#ifndef CHITECH_NONLINEARSOLVEROPTIONS_H
-#define CHITECH_NONLINEARSOLVEROPTIONS_H
+#pragma once
 
 #include "ChiObject.h"
 
@@ -36,4 +35,4 @@ public:
 
 } // namespace chi_math
 
-#endif // CHITECH_NONLINEARSOLVEROPTIONS_H
+

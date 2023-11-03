@@ -1,5 +1,4 @@
-#ifndef CHITECH_ASYNCCOMM_H
-#define CHITECH_ASYNCCOMM_H
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -36,4 +35,4 @@ protected:
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHITECH_ASYNCCOMM_H
+

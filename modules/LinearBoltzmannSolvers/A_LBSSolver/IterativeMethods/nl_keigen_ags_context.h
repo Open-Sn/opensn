@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_NL_KEIGEN_AGS_CONTEXT_H
-#define CHITECH_LBS_NL_KEIGEN_AGS_CONTEXT_H
+#pragma once
 
 #include "math/NonLinearSolver/NonLinearSolverContext.h"
 
@@ -35,4 +34,4 @@ struct NLKEigenAGSContext : public chi_math::NonLinearSolverContext<VecType, Sol
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_NL_KEIGEN_AGS_CONTEXT_H
+

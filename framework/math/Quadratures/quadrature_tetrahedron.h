@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_TETRAHEDRON_H
-#define QUADRATURE_TETRAHEDRON_H
+#pragma once
 
 #include "quadrature.h"
 
@@ -19,4 +18,3 @@ public:
   void KeastRule(const std::vector<std::vector<double>>& rule_data, const unsigned int n_pts);
 };
 
-#endif

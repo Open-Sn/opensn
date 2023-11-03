@@ -1,5 +1,4 @@
-#ifndef CHITECH_TIMESTEPPER_H
-#define CHITECH_TIMESTEPPER_H
+#pragma once
 
 #include "ChiObject.h"
 
@@ -88,4 +87,4 @@ protected:
 
 } // namespace chi_physics
 
-#endif // CHITECH_TIMESTEPPER_H
+

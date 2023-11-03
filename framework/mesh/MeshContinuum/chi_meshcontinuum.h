@@ -1,5 +1,4 @@
-#ifndef CHI_MESHCONTINUUM_H_
-#define CHI_MESHCONTINUUM_H_
+#pragma once
 
 #include <memory>
 #include <array>
@@ -150,4 +149,3 @@ private:
   }
 };
 
-#endif // CHI_MESHCONTINUUM_H_

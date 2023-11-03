@@ -1,5 +1,4 @@
-#ifndef CHITECH_PARAMS_TEST_H
-#define CHITECH_PARAMS_TEST_H
+#pragma once
 
 #include "ChiObject.h"
 #include "parameters/input_parameters.h"
@@ -41,4 +40,4 @@ public:
 
 } // namespace chi_unit_testsB
 
-#endif // CHITECH_PARAMS_TEST_H
+

@@ -1,5 +1,4 @@
-#ifndef CHITECH_EVENTSUBSCRIBER_H
-#define CHITECH_EVENTSUBSCRIBER_H
+#pragma once
 
 namespace chi
 {
@@ -20,4 +19,4 @@ public:
 
 } // namespace chi
 
-#endif // CHITECH_EVENTSUBSCRIBER_H
+

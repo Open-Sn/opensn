@@ -1,5 +1,4 @@
-#ifndef CHI_PHYSICS_MATERIAL_H
-#define CHI_PHYSICS_MATERIAL_H
+#pragma once
 
 #include "physics/chi_physics_namespace.h"
 #include "material_property_base.h"
@@ -21,4 +20,3 @@ public:
 
 } // namespace chi_physics
 
-#endif

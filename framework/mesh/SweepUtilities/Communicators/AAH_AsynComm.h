@@ -1,5 +1,4 @@
-#ifndef CHI_AAH_ASYNCOMM_H
-#define CHI_AAH_ASYNCOMM_H
+#pragma once
 
 #include "mesh/SweepUtilities/sweep_namespace.h"
 #include "chi_mpi.h"
@@ -72,4 +71,3 @@ protected:
   void BuildMessageStructure();
 };
 } // namespace chi_mesh::sweep_management
-#endif // CHI_AAH_ASYNCOMM_H

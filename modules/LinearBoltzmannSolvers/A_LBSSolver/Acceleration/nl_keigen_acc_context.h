@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_NL_KEIGEN_ACC_CONTEXT_H
-#define CHITECH_LBS_NL_KEIGEN_ACC_CONTEXT_H
+#pragma once
 
 #include "math/NonLinearSolver/NonLinearSolverContext.h"
 
@@ -65,4 +64,4 @@ struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec, SNES>
 
 } // namespace lbs::acceleration
 
-#endif // CHITECH_LBS_NL_KEIGEN_ACC_CONTEXT_H
+

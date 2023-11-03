@@ -1,5 +1,4 @@
-#ifndef CHITECH_MPI_INFO_H
-#define CHITECH_MPI_INFO_H
+#pragma once
 
 #include <mpi.h>
 #include <set>
@@ -54,4 +53,4 @@ public:
 
 } // namespace chi
 
-#endif // CHITECH_MPI_INFO_H
+

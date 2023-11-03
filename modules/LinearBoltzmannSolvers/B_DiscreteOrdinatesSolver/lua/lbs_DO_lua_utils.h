@@ -1,5 +1,4 @@
-#ifndef LBS_LUA_UTILS_H
-#define LBS_LUA_UTILS_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -9,4 +8,4 @@ int chiLBSComputeBalance(lua_State* L);
 int chiLBSComputeLeakage(lua_State* L);
 } // namespace lbs::disc_ord_lua_utils
 
-#endif
+

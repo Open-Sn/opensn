@@ -1,5 +1,4 @@
-#ifndef CHITECH_POINT_REACTOR_KINETICS_LUA_UTILS_H
-#define CHITECH_POINT_REACTOR_KINETICS_LUA_UTILS_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -15,4 +14,3 @@ chi::InputParameters GetParamSyntax();
 chi::ParameterBlock GetParam(const chi::InputParameters& params);
 } // namespace prk::lua_utils
 
-#endif

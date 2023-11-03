@@ -1,5 +1,4 @@
-#ifndef CHITECH_MESHGENERATOR_H
-#define CHITECH_MESHGENERATOR_H
+#pragma once
 
 #include "ChiObject.h"
 #include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
@@ -98,4 +97,4 @@ protected:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_MESHGENERATOR_H
+

@@ -1,5 +1,4 @@
-#ifndef PWL_POLYGON_VALUES_H
-#define PWL_POLYGON_VALUES_H
+#pragma once
 
 #include "math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
 #include "math/Quadratures/quadrature_line.h"
@@ -75,4 +74,4 @@ private:
 };
 } // namespace chi_math::cell_mapping
 
-#endif
+

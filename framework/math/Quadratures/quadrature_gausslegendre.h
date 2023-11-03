@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_GAUSS_LEGENDRE_H
-#define QUADRATURE_GAUSS_LEGENDRE_H
+#pragma once
 
 #include "quadrature.h"
 
@@ -32,4 +31,3 @@ private:
   FindRoots(unsigned int N, unsigned int max_iters = 1000, double tol = 1.0e-12);
 };
 
-#endif

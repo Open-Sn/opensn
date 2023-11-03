@@ -1,5 +1,4 @@
-#ifndef CHI_ANGLESET_GROUP_H
-#define CHI_ANGLESET_GROUP_H
+#pragma once
 
 #include "mesh/SweepUtilities/AngleSet/AngleSet.h"
 
@@ -14,4 +13,3 @@ private:
   std::vector<std::shared_ptr<AngleSet>> angle_sets_;
 };
 
-#endif // CHI_ANGLESET_GROUP_H

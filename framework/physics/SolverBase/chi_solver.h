@@ -1,5 +1,4 @@
-#ifndef CHI_PHYSICS_SOLVER_H
-#define CHI_PHYSICS_SOLVER_H
+#pragma once
 
 #include "ChiObject.h"
 #include "physics/chi_physics_namespace.h"
@@ -62,4 +61,3 @@ private:
 
 } // namespace chi_physics
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef CHITECH_SURFACEMESHLOGICALVOLUME_H
-#define CHITECH_SURFACEMESHLOGICALVOLUME_H
+#pragma once
 
 #include "LogicalVolume.h"
 
@@ -26,4 +25,4 @@ private:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_SURFACEMESHLOGICALVOLUME_H
+

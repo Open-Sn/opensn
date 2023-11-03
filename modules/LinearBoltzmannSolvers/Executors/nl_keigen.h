@@ -1,5 +1,4 @@
-#ifndef CHITECH_NL_KEIGEN_H
-#define CHITECH_NL_KEIGEN_H
+#pragma once
 
 #include "physics/SolverBase/chi_solver.h"
 #include "LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
@@ -30,4 +29,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_NL_KEIGEN_H
+

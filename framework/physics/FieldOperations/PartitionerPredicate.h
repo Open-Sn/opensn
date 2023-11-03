@@ -1,5 +1,4 @@
-#ifndef CHITECH_PARTITIONERPREDICATE_H
-#define CHITECH_PARTITIONERPREDICATE_H
+#pragma once
 
 #include "field_operation.h"
 
@@ -28,4 +27,4 @@ protected:
 
 } // namespace chi_physics::field_operations
 
-#endif // CHITECH_PARTITIONERPREDICATE_H
+

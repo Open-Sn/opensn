@@ -1,5 +1,4 @@
-#ifndef CHITECH_SPHERELOGICALVOLUME_H
-#define CHITECH_SPHERELOGICALVOLUME_H
+#pragma once
 
 #include "LogicalVolume.h"
 
@@ -23,4 +22,4 @@ protected:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_SPHERELOGICALVOLUME_H
+

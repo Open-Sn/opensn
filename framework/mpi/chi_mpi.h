@@ -1,7 +1,5 @@
-#ifndef CHI_MPI_H
-#define CHI_MPI_H
+#pragma once
 
 #include <mpi.h>
 #include "mpi_info.h"
 
-#endif

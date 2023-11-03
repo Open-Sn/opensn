@@ -1,5 +1,4 @@
-#ifndef CHITECH_GRIDBASEDFIELDFUNCTIONINTERFACE_H
-#define CHITECH_GRIDBASEDFIELDFUNCTIONINTERFACE_H
+#pragma once
 
 #include "FieldFunctionInterface.h"
 
@@ -24,4 +23,4 @@ public:
 
 } // namespace chi_physics
 
-#endif // CHITECH_GRIDBASEDFIELDFUNCTIONINTERFACE_H
+

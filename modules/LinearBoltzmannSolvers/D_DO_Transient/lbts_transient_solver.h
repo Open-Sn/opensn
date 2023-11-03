@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBTS_TRANSIENT_SOLVER_H
-#define CHITECH_LBTS_TRANSIENT_SOLVER_H
+#pragma once
 
 #include "Cc_DO_KEigenvalue/lbkes_k_eigenvalue_solver.h"
 #include "math/chi_math_time_stepping.h"
@@ -76,4 +75,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBTS_TRANSIENT_SOLVER_H
+

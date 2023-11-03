@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MATH_LINEAR_SOLVER_H
-#define CHITECH_CHI_MATH_LINEAR_SOLVER_H
+#pragma once
 
 #include "linear_solver_context.h"
 
@@ -106,4 +105,4 @@ public:
 
 } // namespace chi_math
 
-#endif // CHITECH_CHI_MATH_LINEAR_SOLVER_H
+

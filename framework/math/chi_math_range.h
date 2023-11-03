@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MATH_RANGE_H
-#define CHITECH_CHI_MATH_RANGE_H
+#pragma once
 
 #include <type_traits>
 #include <vector>
@@ -44,4 +43,4 @@ Range(T start, T end, D delta = 1)
 
 } // namespace chi_math
 
-#endif // CHITECH_CHI_MATH_RANGE_H
+

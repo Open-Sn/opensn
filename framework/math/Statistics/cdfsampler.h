@@ -1,5 +1,4 @@
-#ifndef _chi_math_cdfsampler_h
-#define _chi_math_cdfsampler_h
+#pragma once
 
 //###################################################################
 /**Object for implementing an efficient cdf sampler.
@@ -66,4 +65,3 @@ struct chi_math::CDFSampler::SubIntvl
   bool Sample(double x, std::pair<int, int>& range);
 };
 
-#endif

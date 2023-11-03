@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_SOURCE_FUNCTION_H
-#define CHITECH_LBS_SOURCE_FUNCTION_H
+#pragma once
 
 #include "LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
@@ -71,4 +70,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_SOURCE_FUNCTION_H
+

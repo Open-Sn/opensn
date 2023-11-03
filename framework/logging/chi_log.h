@@ -1,5 +1,4 @@
-#ifndef CHI_LOG_H
-#define CHI_LOG_H
+#pragma once
 
 #include "chi_logstream.h"
 #include "chi_log_exceptions.h"
@@ -333,4 +332,3 @@ private:
   std::vector<Event> events_;
 };
 
-#endif // CHI_LOG_H

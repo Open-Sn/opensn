@@ -1,5 +1,4 @@
-#ifndef _chi_math_sparse_matrix_h
-#define _chi_math_sparse_matrix_h
+#pragma once
 
 #include "../chi_math.h"
 
@@ -248,4 +247,3 @@ public:
   EntriesIterator end();
 };
 
-#endif

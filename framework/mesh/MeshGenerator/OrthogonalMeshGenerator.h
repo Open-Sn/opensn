@@ -1,5 +1,4 @@
-#ifndef CHITECH_ORTHOGONALMESHGENERATOR_H
-#define CHITECH_ORTHOGONALMESHGENERATOR_H
+#pragma once
 
 #include "MeshGenerator.h"
 
@@ -33,4 +32,4 @@ protected:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_ORTHOGONALMESHGENERATOR_H
+

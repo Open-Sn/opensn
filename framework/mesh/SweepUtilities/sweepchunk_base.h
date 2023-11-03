@@ -1,5 +1,4 @@
-#ifndef CHI_SWEEPCHUNK_BASE_H
-#define CHI_SWEEPCHUNK_BASE_H
+#pragma once
 
 #include "mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
 
@@ -92,4 +91,4 @@ private:
   bool surface_source_active = false;
 };
 
-#endif // CHI_SWEEPCHUNK_BASE_H
+

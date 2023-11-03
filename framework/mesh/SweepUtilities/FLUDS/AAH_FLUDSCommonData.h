@@ -1,5 +1,4 @@
-#ifndef CHITECH_AAH_FLUDSCOMMONDATA_H
-#define CHITECH_AAH_FLUDSCOMMONDATA_H
+#pragma once
 
 #include "FLUDSCommonData.h"
 #include <cstddef>
@@ -164,4 +163,4 @@ private:
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHITECH_AAH_FLUDSCOMMONDATA_H
+

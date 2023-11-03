@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_STEADY_STATE_H
-#define CHITECH_LBS_STEADY_STATE_H
+#pragma once
 
 #include "LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
@@ -22,4 +21,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_STEADY_STATE_H
+

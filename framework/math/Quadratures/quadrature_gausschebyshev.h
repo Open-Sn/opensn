@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_QUADRATURE_GAUSS_CHEBYSHEV_H
-#define CHI_MATH_QUADRATURE_GAUSS_CHEBYSHEV_H
+#pragma once
 
 #include "quadrature.h"
 
@@ -21,4 +20,3 @@ private:
 };
 
 } // namespace chi_math
-#endif // CHI_MATH_QUADRATURE_GAUSS_CHEBYSHEV_H

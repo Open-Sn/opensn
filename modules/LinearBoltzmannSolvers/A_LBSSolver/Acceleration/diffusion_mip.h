@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_DIFFUSION_MIP_H
-#define CHITECH_LBS_DIFFUSION_MIP_H
+#pragma once
 
 #include "diffusion.h"
 #include "chi_lua.h"
@@ -70,4 +69,4 @@ public:
 
 } // namespace lbs::acceleration
 
-#endif // CHITECH_LBS_DIFFUSION_MIP_H
+

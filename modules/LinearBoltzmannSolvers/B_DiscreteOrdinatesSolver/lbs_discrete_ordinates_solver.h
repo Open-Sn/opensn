@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_DISCRETE_ORDINATES_SOLVER_H
-#define CHITECH_LBS_DISCRETE_ORDINATES_SOLVER_H
+#pragma once
 
 #include "A_LBSSolver/lbs_solver.h"
 
@@ -100,4 +99,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_DISCRETE_ORDINATES_SOLVER_H
+

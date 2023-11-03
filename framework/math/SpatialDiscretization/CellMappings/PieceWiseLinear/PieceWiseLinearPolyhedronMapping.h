@@ -1,5 +1,4 @@
-#ifndef PWL_POLYHEDRON_VALUES_H
-#define PWL_POLYHEDRON_VALUES_H
+#pragma once
 
 #include "math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
 #include "math/Quadratures/quadrature_tetrahedron.h"
@@ -118,4 +117,4 @@ private:
 
 } // namespace chi_math::cell_mapping
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef CHITECH_VECTOR_GHOST_COMMUNICATOR_H
-#define CHITECH_VECTOR_GHOST_COMMUNICATOR_H
+#pragma once
 
 #include <vector>
 #include <cstdint>
@@ -71,4 +70,4 @@ private:
 
 } // namespace chi_math
 
-#endif // CHITECH_VECTOR_GHOST_COMMUNICATOR_H
+

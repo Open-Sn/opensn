@@ -1,5 +1,4 @@
-#ifndef CHITECH_PI_KEIGEN_H
-#define CHITECH_PI_KEIGEN_H
+#pragma once
 
 #include "LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 #include "A_LBSSolver/IterativeMethods/wgs_context.h"
@@ -42,4 +41,4 @@ protected:
 
 } // namespace lbs
 
-#endif // CHITECH_PI_KEIGEN_H
+

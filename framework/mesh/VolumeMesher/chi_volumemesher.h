@@ -1,5 +1,4 @@
-#ifndef CHI_VOLUMEMESHER_H
-#define CHI_VOLUMEMESHER_H
+#pragma once
 
 #include "mesh/chi_mesh.h"
 #include "mesh/Cell/cell.h"
@@ -95,4 +94,3 @@ public:
   virtual void Execute();
 };
 
-#endif // CHI_VOLUMEMESHER_H

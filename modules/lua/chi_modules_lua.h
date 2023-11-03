@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MODULES_LUA_H
-#define CHITECH_CHI_MODULES_LUA_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -11,4 +10,4 @@ void RegisterLuaEntities(lua_State* L);
 } // namespace lua_utils
 } // namespace chi_modules
 
-#endif // CHITECH_CHI_MODULES_LUA_H
+

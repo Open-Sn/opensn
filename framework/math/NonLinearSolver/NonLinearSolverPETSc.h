@@ -1,5 +1,4 @@
-#ifndef CHITECH_NONLINEARSOLVERPETSC_H
-#define CHITECH_NONLINEARSOLVERPETSC_H
+#pragma once
 
 #include "NonLinearSolver.h"
 
@@ -12,4 +11,4 @@ using NonLinearSolverPETSc = NonLinearSolver<Mat, Vec, SNES>;
 
 }
 
-#endif // CHITECH_NONLINEARSOLVERPETSC_H
+

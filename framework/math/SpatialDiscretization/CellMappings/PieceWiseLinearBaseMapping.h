@@ -1,5 +1,4 @@
-#ifndef CELL_MAPPING_FE_PWL_BASE_H
-#define CELL_MAPPING_FE_PWL_BASE_H
+#pragma once
 
 #include <utility>
 
@@ -35,4 +34,3 @@ protected:
 
 } // namespace chi_math::cell_mapping
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef CHITECH_FIELD_OPS_LUA_H
-#define CHITECH_FIELD_OPS_LUA_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -10,4 +9,4 @@ int chiFieldOperationExecute(lua_State* L);
 
 }
 
-#endif // CHITECH_FIELD_OPS_LUA_H
+

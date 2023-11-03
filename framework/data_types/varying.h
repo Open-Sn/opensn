@@ -1,5 +1,4 @@
-#ifndef CHI_DATA_TYPES_VARYING_H
-#define CHI_DATA_TYPES_VARYING_H
+#pragma once
 
 #include "chi_data_types.h"
 
@@ -474,4 +473,3 @@ public:
 /**Stream operator*/
 std::ostream& operator<<(std::ostream& outstr, const chi_data_types::Varying& value);
 
-#endif // CHI_DATA_TYPES_VARYING_H

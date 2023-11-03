@@ -1,5 +1,4 @@
-#ifndef CHITECH_PHYSICS_SOLVER_LUA_UTILS_H
-#define CHITECH_PHYSICS_SOLVER_LUA_UTILS_H
+#pragma once
 
 namespace chi
 {
@@ -21,4 +20,4 @@ int chiSolverGetInfo(lua_State* L);
 int chiSolverSetProperties(lua_State* L);
 } // namespace chi_physics::lua_utils
 
-#endif // CHITECH_PHYSICS_SOLVER_LUA_UTILS_H
+

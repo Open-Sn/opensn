@@ -1,5 +1,4 @@
-#ifndef _chi_math_rng_h
-#define _chi_math_rng_h
+#pragma once
 
 #include <random>
 
@@ -20,4 +19,4 @@ public:
 };
 } // namespace chi_math
 
-#endif
+

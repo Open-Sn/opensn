@@ -1,5 +1,4 @@
-#ifndef CHITECH_SYSTEMWIDEEVENTPUBLISHER_H
-#define CHITECH_SYSTEMWIDEEVENTPUBLISHER_H
+#pragma once
 
 #include "event_system/EventPublisher.h"
 
@@ -23,4 +22,4 @@ private:
 
 } // namespace chi
 
-#endif // CHITECH_SYSTEMWIDEEVENTPUBLISHER_H
+

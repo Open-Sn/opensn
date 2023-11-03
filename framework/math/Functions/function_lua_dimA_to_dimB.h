@@ -1,5 +1,4 @@
-#ifndef CHITECH_FUNCTION_LUA_DIMA_TO_DIMB_H
-#define CHITECH_FUNCTION_LUA_DIMA_TO_DIMB_H
+#pragma once
 
 #include "function_dimA_to_dimB.h"
 
@@ -24,4 +23,4 @@ public:
 
 } // namespace chi_math::functions
 
-#endif // CHITECH_FUNCTION_LUA_DIMA_TO_DIMB_H
+

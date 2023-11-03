@@ -1,5 +1,4 @@
-#ifndef CHITECH_SWEEPCHUNK_H
-#define CHITECH_SWEEPCHUNK_H
+#pragma once
 
 #include "mesh/SweepUtilities/sweepchunk_base.h"
 #include "A_LBSSolver/lbs_structs.h"
@@ -167,4 +166,4 @@ private:
 
 } // namespace lbs
 
-#endif // CHITECH_SWEEPCHUNK_H
+

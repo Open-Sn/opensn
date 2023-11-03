@@ -1,5 +1,4 @@
-#ifndef chi_runtime_h
-#define chi_runtime_h
+#pragma once
 
 #include <utility>
 #include <vector>
@@ -269,4 +268,3 @@ public:
   }
 };
 
-#endif

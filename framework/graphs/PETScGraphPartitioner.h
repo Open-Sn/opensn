@@ -1,5 +1,4 @@
-#ifndef CHITECH_PETSCGRAPHPARTITIONER_H
-#define CHITECH_PETSCGRAPHPARTITIONER_H
+#pragma once
 
 #include "GraphPartitioner.h"
 
@@ -22,4 +21,4 @@ protected:
 
 } // namespace chi
 
-#endif // CHITECH_PETSCGRAPHPARTITIONER_H
+

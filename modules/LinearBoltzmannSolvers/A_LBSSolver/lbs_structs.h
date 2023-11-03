@@ -1,5 +1,4 @@
-#ifndef LBS_STRUCTS_H
-#define LBS_STRUCTS_H
+#pragma once
 
 #include "math/chi_math.h"
 #include "physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
@@ -276,4 +275,4 @@ public:
 
 } // namespace lbs
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef _legendrepoly_h
-#define _legendrepoly_h
+#pragma once
 
 //###################################################################
 /**Container object for functions relating to Legendre polynomials.*/
@@ -14,4 +13,3 @@ double AssocLegendre(unsigned int ell, int m, double x);
 double Ylm(unsigned int ell, int m, double varphi, double theta);
 } // namespace chi_math
 
-#endif

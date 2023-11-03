@@ -1,5 +1,4 @@
-#ifndef CHI_MESH_MESH_CUTTING_H
-#define CHI_MESH_MESH_CUTTING_H
+#pragma once
 
 #include "mesh/chi_mesh.h"
 #include "mesh/Cell/cell.h"
@@ -87,4 +86,3 @@ void CutMeshWithPlane(MeshContinuum& mesh,
 } // namespace mesh_cutting
 } // namespace chi_mesh
 
-#endif // CHI_MESH_MESH_CUTTING_H

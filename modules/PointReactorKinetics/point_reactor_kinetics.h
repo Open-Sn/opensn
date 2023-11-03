@@ -1,5 +1,4 @@
-#ifndef CHITECH_POINT_REACTOR_KINETICS_H
-#define CHITECH_POINT_REACTOR_KINETICS_H
+#pragma once
 
 #include "physics/SolverBase/chi_solver.h"
 #include "math/chi_math.h"
@@ -53,4 +52,4 @@ public:
 };
 } // namespace prk
 
-#endif // CHITECH_POINT_REACTOR_KINETICS_H
+

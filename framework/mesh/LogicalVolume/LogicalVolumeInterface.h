@@ -1,5 +1,4 @@
-#ifndef CHITECH_LOGICALVOLUMEINTERFACE_H
-#define CHITECH_LOGICALVOLUMEINTERFACE_H
+#pragma once
 
 #include "parameters/input_parameters.h"
 
@@ -27,4 +26,4 @@ private:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_LOGICALVOLUMEINTERFACE_H
+

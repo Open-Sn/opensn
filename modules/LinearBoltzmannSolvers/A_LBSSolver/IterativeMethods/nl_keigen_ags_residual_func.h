@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_NL_KEIGEN_AGS_RESIDUAL_FUNC_H
-#define CHITECH_LBS_NL_KEIGEN_AGS_RESIDUAL_FUNC_H
+#pragma once
 
 #include <petscsnes.h>
 
@@ -10,4 +9,4 @@ PetscErrorCode NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx);
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_NL_KEIGEN_AGS_RESIDUAL_FUNC_H
+

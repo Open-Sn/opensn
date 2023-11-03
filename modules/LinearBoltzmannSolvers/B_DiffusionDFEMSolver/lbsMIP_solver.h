@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBSMIP_SOLVER_H
-#define CHITECH_LBSMIP_SOLVER_H
+#pragma once
 
 #include "A_LBSSolver/lbs_solver.h"
 
@@ -26,4 +25,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBSMIP_SOLVER_H
+

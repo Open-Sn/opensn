@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_GRID_FACE_HISTOGRAM_H
-#define CHITECH_CHI_GRID_FACE_HISTOGRAM_H
+#pragma once
 
 #include <cstddef>
 #include <vector>
@@ -28,4 +27,4 @@ public:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_CHI_GRID_FACE_HISTOGRAM_H
+

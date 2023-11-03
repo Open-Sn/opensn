@@ -1,5 +1,4 @@
-#ifndef VOLUME_MESHER_EXTRUDER_H
-#define VOLUME_MESHER_EXTRUDER_H
+#pragma once
 
 #include <utility>
 
@@ -70,4 +69,3 @@ private:
   void ExtrudeCells(chi_mesh::MeshContinuum& template_grid, chi_mesh::MeshContinuum& grid);
 };
 
-#endif // VOLUME_MESHER_EXTRUDER_H

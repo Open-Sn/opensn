@@ -1,5 +1,4 @@
-#ifndef CHITECH_EXTRUDERMESHGENERATOR_H
-#define CHITECH_EXTRUDERMESHGENERATOR_H
+#pragma once
 
 #include "MeshGenerator.h"
 
@@ -32,4 +31,4 @@ protected:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_EXTRUDERMESHGENERATOR_H
+

@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_DYNAMIC_MATRIX_H
-#define CHI_MATH_DYNAMIC_MATRIX_H
+#pragma once
 
 #include <vector>
 #include <stdexcept>
@@ -391,4 +390,3 @@ operator*(const double value, chi_math::DynamicMatrix<NumberFormat>& that)
   return newMatrix;
 }
 
-#endif // CHI_MATH_DYNAMIC_MATRIX_H

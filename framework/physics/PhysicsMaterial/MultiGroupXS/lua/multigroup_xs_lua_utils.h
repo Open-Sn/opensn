@@ -1,5 +1,4 @@
-#ifndef CHITECH_XSECTIONS_LUA_UTILS_H
-#define CHITECH_XSECTIONS_LUA_UTILS_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -10,4 +9,4 @@ int chiPhysicsTransportXSSetCombined(lua_State* L);
 int chiPhysicsTransportXSGet(lua_State* L);
 int chiPhysicsTransportXSExportToChiTechFormat(lua_State* L);
 
-#endif // CHITECH_XSECTIONS_LUA_UTILS_H
+

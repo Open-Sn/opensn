@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_SOLVER_H
-#define CHITECH_LBS_SOLVER_H
+#pragma once
 
 #include "physics/SolverBase/chi_solver.h"
 
@@ -338,4 +337,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_SOLVER_H
+

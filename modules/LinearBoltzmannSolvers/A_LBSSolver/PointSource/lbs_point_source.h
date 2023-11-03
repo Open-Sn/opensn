@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_POINT_SOURCE_H
-#define CHITECH_LBS_POINT_SOURCE_H
+#pragma once
 
 #include <utility>
 
@@ -52,4 +51,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_POINT_SOURCE_H
+

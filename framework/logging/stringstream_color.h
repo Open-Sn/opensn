@@ -1,5 +1,4 @@
-#ifndef CHITECH_STRINGSTREAM_COLOR_H
-#define CHITECH_STRINGSTREAM_COLOR_H
+#pragma once
 
 #include <string>
 
@@ -26,4 +25,4 @@ std::string StringStreamColor(StringSteamColorCode code);
 
 } // namespace chi
 
-#endif // CHITECH_STRINGSTREAM_COLOR_H
+

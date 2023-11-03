@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_CONICAL_H
-#define QUADRATURE_CONICAL_H
+#pragma once
 
 #include "math/Quadratures/quadrature.h"
 
@@ -20,4 +19,3 @@ public:
 
 } // namespace chi_math
 
-#endif // QUADRATURE_CONICAL_H

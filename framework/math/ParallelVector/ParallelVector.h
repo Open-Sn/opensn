@@ -1,5 +1,4 @@
-#ifndef CHITECH_PARALLELVECTOR_H
-#define CHITECH_PARALLELVECTOR_H
+#pragma once
 
 #include "math/chi_math.h"
 #include "math/PETScUtils/petsc_forward_declarations.h"
@@ -187,4 +186,4 @@ protected:
 
 } // namespace chi_math
 
-#endif // CHITECH_PARALLELVECTOR_H
+

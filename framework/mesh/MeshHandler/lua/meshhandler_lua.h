@@ -1,5 +1,4 @@
-#ifndef CHITECH_MESHHANDLER_LUA_H
-#define CHITECH_MESHHANDLER_LUA_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -9,4 +8,4 @@ int chiMeshHandlerExportMeshToObj(lua_State* L);
 int chiMeshHandlerExportMeshToVTK(lua_State* L);
 int chiMeshHandlerExportMeshToExodus(lua_State* L);
 
-#endif // CHITECH_MESHHANDLER_LUA_H
+

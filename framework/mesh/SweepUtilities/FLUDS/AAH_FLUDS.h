@@ -1,5 +1,4 @@
-#ifndef AUX_FLUDS_h
-#define AUX_FLUDS_h
+#pragma once
 
 #include "FLUDS.h"
 #include "AAH_FLUDSCommonData.h"
@@ -70,4 +69,3 @@ public:
 
 } // namespace chi_mesh::sweep_management
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef FV_DIFFUSION_SOLVER_H
-#define FV_DIFFUSION_SOLVER_H
+#pragma once
 
 #include "physics/SolverBase/chi_solver.h"
 #include "math/PETScUtils/petsc_utils.h"
@@ -64,4 +63,4 @@ public:
 
 } // namespace fv_diffusion
 
-#endif // FV_DIFFUSION_SOLVER_H
+

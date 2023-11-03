@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_POWERITERATION_KEIGEN_H
-#define CHITECH_LBS_POWERITERATION_KEIGEN_H
+#pragma once
 
 namespace lbs
 {
@@ -13,4 +12,4 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_POWERITERATION_KEIGEN_H
+

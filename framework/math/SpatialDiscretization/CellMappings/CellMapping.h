@@ -1,5 +1,4 @@
-#ifndef CHITECH_CELLMAPPING_H
-#define CHITECH_CELLMAPPING_H
+#pragma once
 
 #include <memory>
 #include <utility>
@@ -127,4 +126,4 @@ protected:
 };
 } // namespace chi_math
 
-#endif // CHITECH_CELLMAPPING_H
+

@@ -1,5 +1,4 @@
-#ifndef CHITECH_VOLUMEMESHER_LUA_H
-#define CHITECH_VOLUMEMESHER_LUA_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -15,4 +14,4 @@ int chiVolumeMesherSetKBACutsZ(lua_State* L);
 int chiVolumeMesherSetMatIDToAll(lua_State* L);
 int chiVolumeMesherSetupOrthogonalBoundaries(lua_State* L);
 
-#endif // CHITECH_VOLUMEMESHER_LUA_H
+

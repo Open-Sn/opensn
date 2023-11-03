@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_SLDFESQ_H
-#define QUADRATURE_SLDFESQ_H
+#pragma once
 
 #include "mesh/chi_mesh.h"
 
@@ -222,4 +221,4 @@ struct chi_math::SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   }
 };
 
-#endif
+

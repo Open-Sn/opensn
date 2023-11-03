@@ -1,5 +1,4 @@
-#ifndef CHI_DIRECTED_GRAPH_VERTEX_H
-#define CHI_DIRECTED_GRAPH_VERTEX_H
+#pragma once
 
 #include "chi_graph.h"
 
@@ -71,4 +70,3 @@ struct chi::GraphVertex
   bool operator==(const GraphVertex& other) const { return other.id == this->id; }
 };
 
-#endif // CHI_DIRECTED_GRAPH_VERTEX_H

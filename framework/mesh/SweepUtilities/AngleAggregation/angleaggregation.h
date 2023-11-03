@@ -1,5 +1,4 @@
-#ifndef CHI_ANGLEAGGREGATION_H
-#define CHI_ANGLEAGGREGATION_H
+#pragma once
 
 #include "mesh/SweepUtilities/sweep_namespace.h"
 #include "mesh/SweepUtilities/SPDS/SPDS.h"
@@ -77,4 +76,4 @@ public:
   void SetDelayedPsiNew2Old();
 };
 
-#endif // CHI_ANGLEAGGREGATION_H
+

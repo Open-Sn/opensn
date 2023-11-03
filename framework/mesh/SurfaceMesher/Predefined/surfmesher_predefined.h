@@ -1,5 +1,4 @@
-#ifndef CHI_MESH_SURFACEMESHER_PREDEFINED_H
-#define CHI_MESH_SURFACEMESHER_PREDEFINED_H
+#pragma once
 
 #include "../surfacemesher.h"
 
@@ -15,4 +14,3 @@ public:
   void Execute() override;
 };
 
-#endif // CHI_MESH_SURFACEMESHER_PREDEFINED_H

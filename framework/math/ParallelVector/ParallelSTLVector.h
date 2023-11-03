@@ -1,5 +1,4 @@
-#ifndef PARALLEL_VECTOR_H
-#define PARALLEL_VECTOR_H
+#pragma once
 
 #include "ParallelVector.h"
 #include "math/chi_math.h"
@@ -177,4 +176,4 @@ private:
 
 } // namespace chi_math
 
-#endif // PARALLEL_VECTOR_H
+

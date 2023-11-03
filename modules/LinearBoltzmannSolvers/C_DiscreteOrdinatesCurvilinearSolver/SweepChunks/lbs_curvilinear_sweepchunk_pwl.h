@@ -1,5 +1,4 @@
-#ifndef LBS_CURVILINEAR_SWEEPCHUNK_PWL2_H
-#define LBS_CURVILINEAR_SWEEPCHUNK_PWL2_H
+#pragma once
 
 #include "B_DiscreteOrdinatesSolver/SweepChunks/AAH_SweepChunk.h"
 #include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
@@ -59,4 +58,4 @@ protected:
 
 } // namespace lbs
 
-#endif // LBS_CURVILINEAR_SWEEPCHUNK_PWL2_H
+

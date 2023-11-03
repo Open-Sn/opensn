@@ -1,5 +1,4 @@
-#ifndef CHITECH_RCCLOGICALVOLUME_H
-#define CHITECH_RCCLOGICALVOLUME_H
+#pragma once
 
 #include "LogicalVolume.h"
 
@@ -27,4 +26,4 @@ protected:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_RCCLOGICALVOLUME_H
+

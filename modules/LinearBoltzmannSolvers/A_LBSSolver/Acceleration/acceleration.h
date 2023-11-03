@@ -1,5 +1,4 @@
-#ifndef CHI_LBS_ACCELERATION_H
-#define CHI_LBS_ACCELERATION_H
+#pragma once
 
 #include <vector>
 #include <map>
@@ -89,4 +88,3 @@ std::map<int, Multigroup_D_and_sigR> PackGroupsetXS(const std::map<int, MGXSPtr>
 
 } // namespace lbs::acceleration
 
-#endif // CHI_LBS_ACCELERATION_H

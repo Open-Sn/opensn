@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_PETSC_UTILS_H
-#define CHI_MATH_PETSC_UTILS_H
+#pragma once
 
 #include <petscksp.h>
 #include <vector>
@@ -90,4 +89,3 @@ void RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data);
 
 } // namespace chi_math::PETScUtils
 
-#endif

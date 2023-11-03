@@ -1,5 +1,4 @@
-#ifndef CHITECH_WGS_CONVERGENCE_TEST_H
-#define CHITECH_WGS_CONVERGENCE_TEST_H
+#pragma once
 
 #include <petscksp.h>
 
@@ -11,4 +10,4 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
 
 } // namespace lbs
 
-#endif // CHITECH_WGS_CONVERGENCE_TEST_H
+

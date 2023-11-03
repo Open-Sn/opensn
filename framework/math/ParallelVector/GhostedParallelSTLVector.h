@@ -1,5 +1,4 @@
-#ifndef GHOSTED_PARALLEL_VECTOR_H
-#define GHOSTED_PARALLEL_VECTOR_H
+#pragma once
 
 #include "ParallelSTLVector.h"
 
@@ -86,4 +85,4 @@ private:
 
 } // namespace chi_math
 
-#endif // GHOSTED_PARALLEL_VECTOR_H
+

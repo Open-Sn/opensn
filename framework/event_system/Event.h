@@ -1,5 +1,4 @@
-#ifndef CHITECH_EVENT_H
-#define CHITECH_EVENT_H
+#pragma once
 
 #include "parameters/parameter_block.h"
 
@@ -27,4 +26,4 @@ protected:
 
 } // namespace chi
 
-#endif // CHITECH_EVENT_H
+

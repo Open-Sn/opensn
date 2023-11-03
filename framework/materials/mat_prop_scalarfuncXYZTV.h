@@ -1,5 +1,4 @@
-#ifndef CHITECH_MAT_PROP_FUNCXYZTV_H
-#define CHITECH_MAT_PROP_FUNCXYZTV_H
+#pragma once
 
 #include "chi_material_property.h"
 #include "math/Functions/function_dimA_to_dimB.h"
@@ -25,4 +24,4 @@ public:
 
 } // namespace chi
 
-#endif // CHITECH_MAT_PROP_FUNCXYZTV_H
+

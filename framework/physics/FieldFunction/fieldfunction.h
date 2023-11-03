@@ -1,5 +1,4 @@
-#ifndef CHITECH_FIELDFUNCTION_H
-#define CHITECH_FIELDFUNCTION_H
+#pragma once
 
 #include "ChiObject.h"
 #include "math/UnknownManager/unknown_manager.h"
@@ -55,4 +54,4 @@ public:
 
 } // namespace chi_physics
 
-#endif // CHITECH_FIELDFUNCTION_H
+

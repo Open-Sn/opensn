@@ -1,5 +1,4 @@
-#ifndef CHI_SWEEPSCHEDULER_H
-#define CHI_SWEEPSCHEDULER_H
+#pragma once
 
 #include "mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
 #include "mesh/SweepUtilities/sweepchunk_base.h"
@@ -90,4 +89,3 @@ public:
   void SetBoundarySourceActiveFlag(bool flag_value);
 };
 
-#endif // CHI_SWEEPSCHEDULER_H

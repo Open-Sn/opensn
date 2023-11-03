@@ -1,5 +1,4 @@
-#ifndef CHITECH_CBC_ASYNCCOMM_H
-#define CHITECH_CBC_ASYNCCOMM_H
+#pragma once
 
 #include <cstdint>
 #include <cstddef>
@@ -71,4 +70,4 @@ protected:
 
 } // namespace lbs
 
-#endif // CHITECH_CBC_ASYNCCOMM_H
+

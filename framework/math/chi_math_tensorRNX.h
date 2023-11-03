@@ -1,5 +1,4 @@
-#ifndef chi_math_tensorNX_h
-#define chi_math_tensorNX_h
+#pragma once
 
 #include "chi_math_vectorNX.h"
 
@@ -333,4 +332,3 @@ operator*(const double value, const chi_math::TensorRNX<2, N, NumberFormat>& tha
   return new_tensor;
 }
 
-#endif

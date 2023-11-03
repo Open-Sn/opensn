@@ -1,5 +1,4 @@
-#ifndef CHI_DIFFUSION_BOUNDARY_H
-#define CHI_DIFFUSION_BOUNDARY_H
+#pragma once
 
 #include "../chi_diffusion.h"
 
@@ -87,4 +86,3 @@ public:
   }
 };
 
-#endif // CHI_DIFFUSION_BOUNDARY_H

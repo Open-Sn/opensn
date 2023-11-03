@@ -1,5 +1,4 @@
-#ifndef CHI_ANGLESET_H
-#define CHI_ANGLESET_H
+#pragma once
 
 #include "mesh/chi_mesh.h"
 #include "mesh/SweepUtilities/Communicators/AAH_AsynComm.h"
@@ -84,4 +83,3 @@ protected:
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHI_ANGLESET_H

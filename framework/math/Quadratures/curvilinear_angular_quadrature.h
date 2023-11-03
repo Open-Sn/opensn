@@ -1,5 +1,4 @@
-#ifndef CURVILINEAR_ANGULAR_QUADRATURE_H
-#define CURVILINEAR_ANGULAR_QUADRATURE_H
+#pragma once
 
 #include "math/Quadratures/angular_product_quadrature.h"
 
@@ -35,4 +34,4 @@ protected:
   virtual ~CurvilinearAngularQuadrature() = default;
 };
 
-#endif // CURVILINEAR_ANGULAR_QUADRATURE_H
+

@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_ANGULAR_QUADRATURE_H
-#define CHI_MATH_ANGULAR_QUADRATURE_H
+#pragma once
 
 #include <vector>
 
@@ -92,4 +91,4 @@ public:
                           bool verbose);
 };
 
-#endif // CHI_MATH_ANGULAR_QUADRATURE_H
+

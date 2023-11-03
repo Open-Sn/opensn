@@ -1,5 +1,4 @@
-#ifndef CHITECH_AAH_ANGLESET_H
-#define CHITECH_AAH_ANGLESET_H
+#pragma once
 
 #include "AngleSet.h"
 
@@ -55,4 +54,4 @@ protected:
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHITECH_AAH_ANGLESET_H
+

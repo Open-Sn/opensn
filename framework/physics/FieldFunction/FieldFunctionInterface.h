@@ -1,5 +1,4 @@
-#ifndef CHITECH_FIELDFUNCTIONINTERFACE_H
-#define CHITECH_FIELDFUNCTIONINTERFACE_H
+#pragma once
 
 #include "parameters/input_parameters.h"
 
@@ -27,4 +26,4 @@ private:
 
 } // namespace chi_physics
 
-#endif // CHITECH_FIELDFUNCTIONINTERFACE_H
+

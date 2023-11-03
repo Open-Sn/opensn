@@ -1,5 +1,4 @@
-#ifndef CHI_MESH_SURFACEMESH_H
-#define CHI_MESH_SURFACEMESH_H
+#pragma once
 
 #include <stdio.h>
 #include <vector>
@@ -62,4 +61,4 @@ public:
   void ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<double>& y_cuts);
 };
 
-#endif // CHI_MESH_SURFACEMESH_H
+

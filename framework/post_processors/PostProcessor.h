@@ -1,5 +1,4 @@
-#ifndef CHITECH_POSTPROCESSOR_H
-#define CHITECH_POSTPROCESSOR_H
+#pragma once
 
 #include "ChiObject.h"
 #include "event_system/EventSubscriber.h"
@@ -97,4 +96,4 @@ private:
 
 } // namespace chi
 
-#endif // CHITECH_POSTPROCESSOR_H
+

@@ -179,12 +179,11 @@ class decleration and methods should be on the bottom.
  have the following guard:
 
  \code
-#ifndef FOO_BAR_BAZ_H_
-#define FOO_BAR_BAZ_H_
+#pragma once
 
 ...
 
-#endif  // FOO_BAR_BAZ_H_
+
  \endcode
 
  \subsection devman1_sec1_3 Forward declarations

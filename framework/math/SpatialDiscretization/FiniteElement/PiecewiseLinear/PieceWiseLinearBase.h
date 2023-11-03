@@ -1,5 +1,4 @@
-#ifndef SPATIAL_DISCRETIZATION_PWL_BASE_H
-#define SPATIAL_DISCRETIZATION_PWL_BASE_H
+#pragma once
 
 #include "math/SpatialDiscretization/FiniteElement/FiniteElementBase.h"
 
@@ -31,4 +30,4 @@ protected:
 
 } // namespace chi_math::spatial_discretization
 
-#endif // SPATIAL_DISCRETIZATION_PWL_BASE_H
+

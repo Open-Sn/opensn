@@ -1,5 +1,4 @@
-#ifndef CHITECH_MESHMODIFIER_H
-#define CHITECH_MESHMODIFIER_H
+#pragma once
 
 #include "ChiObject.h"
 
@@ -21,4 +20,4 @@ protected:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_MESHMODIFIER_H
+

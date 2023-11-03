@@ -1,5 +1,4 @@
-#ifndef LBS_CURVILINEAR_SOLVER_H
-#define LBS_CURVILINEAR_SOLVER_H
+#pragma once
 
 #include "B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
 #include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
@@ -40,4 +39,4 @@ private:
 
 } // namespace lbs
 
-#endif // LBS_CURVILINEAR_SOLVER_H
+

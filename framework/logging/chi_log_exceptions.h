@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_LOG_EXCEPTIONS_H
-#define CHITECH_CHI_LOG_EXCEPTIONS_H
+#pragma once
 
 #include <string>
 #include <stdexcept>
@@ -30,4 +29,4 @@
                                       ": " + #message);                                            \
   }
 
-#endif // CHITECH_CHI_LOG_EXCEPTIONS_H
+

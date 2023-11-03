@@ -1,5 +1,4 @@
-#ifndef CHITECH_PARAMETER_BLOCK_H
-#define CHITECH_PARAMETER_BLOCK_H
+#pragma once
 
 #include "data_types/varying.h"
 
@@ -318,4 +317,4 @@ public:
 
 } // namespace chi
 
-#endif // CHITECH_PARAMETER_BLOCK_H
+

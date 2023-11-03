@@ -1,5 +1,4 @@
-#ifndef CHITECH_CBC_SPDS_H
-#define CHITECH_CBC_SPDS_H
+#pragma once
 
 #include "mesh/SweepUtilities/SPDS/SPDS.h"
 
@@ -25,4 +24,4 @@ protected:
 
 } // namespace lbs
 
-#endif // CHITECH_CBC_SPDS_H
+

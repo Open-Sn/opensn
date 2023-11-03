@@ -1,5 +1,4 @@
-#ifndef MG_DIFFUSION_SOLVER_H
-#define MG_DIFFUSION_SOLVER_H
+#pragma once
 
 #include "physics/SolverBase/chi_solver.h"
 #include "math/PETScUtils/petsc_utils.h"
@@ -116,4 +115,4 @@ protected:
 
 } // namespace mg_diffusion
 
-#endif // MG_DIFFUSION_SOLVER_H
+

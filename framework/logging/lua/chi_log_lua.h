@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_LOG_LUA_H
-#define CHITECH_CHI_LOG_LUA_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -11,4 +10,4 @@ int chiLogProcessEvent(lua_State* L);
 int chiLogPrintTimingGraph(lua_State* L);
 } // namespace chi_log_utils::lua_utils
 
-#endif // CHITECH_CHI_LOG_LUA_H
+

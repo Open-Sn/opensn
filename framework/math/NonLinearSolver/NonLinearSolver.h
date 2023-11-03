@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MATH_NON_LINEAR_SOLVER_H
-#define CHITECH_CHI_MATH_NON_LINEAR_SOLVER_H
+#pragma once
 
 #include "NonLinearSolverContext.h"
 #include "NonLinearSolverOptions.h"
@@ -86,4 +85,4 @@ private:
 
 } // namespace chi_math
 
-#endif // CHITECH_CHI_MATH_NON_LINEAR_SOLVER_H
+

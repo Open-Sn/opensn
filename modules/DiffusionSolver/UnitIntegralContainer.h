@@ -1,5 +1,4 @@
-#ifndef CHITECH_UNITINTEGRALCONTAINER_H
-#define CHITECH_UNITINTEGRALCONTAINER_H
+#pragma once
 
 #include <vector>
 #include "mesh/chi_mesh.h"
@@ -84,4 +83,4 @@ public:
 
 } // namespace chi_diffusion
 
-#endif // CHITECH_UNITINTEGRALCONTAINER_H
+

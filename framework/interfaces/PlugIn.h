@@ -1,5 +1,4 @@
-#ifndef CHITECH_PLUGIN_H
-#define CHITECH_PLUGIN_H
+#pragma once
 
 #include "ChiObject.h"
 
@@ -21,4 +20,4 @@ protected:
 
 } // namespace chi
 
-#endif // CHITECH_PLUGIN_H
+

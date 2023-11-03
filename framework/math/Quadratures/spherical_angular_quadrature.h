@@ -1,5 +1,4 @@
-#ifndef SPHERICAL_ANGULAR_QUADRATURE_H
-#define SPHERICAL_ANGULAR_QUADRATURE_H
+#pragma once
 
 #include "math/Quadratures/curvilinear_angular_quadrature.h"
 
@@ -32,4 +31,4 @@ private:
   void InitializeParameters();
 };
 
-#endif // SPHERICAL_ANGULAR_QUADRATURE_H
+

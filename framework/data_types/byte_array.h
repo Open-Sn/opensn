@@ -1,5 +1,4 @@
-#ifndef CHITECH_BYTE_ARRAY_H
-#define CHITECH_BYTE_ARRAY_H
+#pragma once
 
 #include <cstddef>
 #include <vector>
@@ -128,4 +127,4 @@ public:
 };
 } // namespace chi_data_types
 
-#endif // CHITECH_BYTE_ARRAY_H
+

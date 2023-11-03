@@ -1,5 +1,4 @@
-#ifndef LBS_GROUP
-#define LBS_GROUP
+#pragma once
 
 //################################################################### Class def
 namespace lbs
@@ -16,4 +15,3 @@ public:
 };
 } // namespace lbs
 
-#endif

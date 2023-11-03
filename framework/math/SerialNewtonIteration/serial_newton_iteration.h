@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_SERIAL_NEWTON_ITERATION_H
-#define CHI_MATH_SERIAL_NEWTON_ITERATION_H
+#pragma once
 
 #include <vector>
 #include <cassert>
@@ -37,4 +36,3 @@ VecDbl NewtonIteration(const NonLinearFunction& non_linear_function,
 
 } // namespace chi_math
 
-#endif // CHI_MATH_SERIAL_NEWTON_ITERATION_H

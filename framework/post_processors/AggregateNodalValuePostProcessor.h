@@ -1,5 +1,4 @@
-#ifndef CHITECH_AGGREGATENODALVALUEPOSTPROCESSOR_H
-#define CHITECH_AGGREGATENODALVALUEPOSTPROCESSOR_H
+#pragma once
 
 #include "PostProcessor.h"
 #include "physics/FieldFunction/GridBasedFieldFunctionInterface.h"
@@ -37,4 +36,4 @@ protected:
 
 } // namespace chi
 
-#endif // CHITECH_AGGREGATENODALVALUEPOSTPROCESSOR_H
+

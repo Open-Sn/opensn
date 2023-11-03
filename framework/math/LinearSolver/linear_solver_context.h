@@ -1,5 +1,4 @@
-#ifndef CHITECH_LINEAR_SOLVER_CONTEXT_H
-#define CHITECH_LINEAR_SOLVER_CONTEXT_H
+#pragma once
 
 namespace chi_math
 {
@@ -24,4 +23,4 @@ struct LinearSolverContext
 };
 } // namespace chi_math
 
-#endif // CHITECH_LINEAR_SOLVER_CONTEXT_H
+

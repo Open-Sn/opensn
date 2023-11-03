@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_ACCEL_DIFFUSION_H
-#define CHITECH_LBS_ACCEL_DIFFUSION_H
+#pragma once
 
 #include "acceleration.h"
 #include "math/UnknownManager/unknown_manager.h"
@@ -101,4 +100,4 @@ public:
 
 } // namespace lbs::acceleration
 
-#endif // CHITECH_LBS_ACCEL_DIFFUSION_H
+

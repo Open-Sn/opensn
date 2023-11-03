@@ -1,5 +1,4 @@
-#ifndef LBTS_LUA_UTILS_H
-#define LBTS_LUA_UTILS_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -13,4 +12,4 @@ int chiLBTSAdvanceTimeData(lua_State* L);
 void RegisterLuaEntities(lua_State* L);
 } // namespace lbs::lbts_lua_utils
 
-#endif // LBTS_LUA_UTILS_H
+

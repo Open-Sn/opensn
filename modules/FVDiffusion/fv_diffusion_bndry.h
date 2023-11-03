@@ -1,5 +1,4 @@
-#ifndef FV_DIFFUSION_BOUNDARY_H
-#define FV_DIFFUSION_BOUNDARY_H
+#pragma once
 
 #include <array>
 
@@ -27,4 +26,3 @@ public:
   std::array<double, 3> values_ = {0., 0., 0.};
 };
 
-#endif // FV_DIFFUSION_BOUNDARY_H

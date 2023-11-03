@@ -1,5 +1,4 @@
-#ifndef CHITECH_DIFFUSION_PWLC_H
-#define CHITECH_DIFFUSION_PWLC_H
+#pragma once
 
 #include "diffusion.h"
 
@@ -26,4 +25,4 @@ public:
 
 } // namespace lbs::acceleration
 
-#endif // CHITECH_DIFFUSION_PWLC_H
+

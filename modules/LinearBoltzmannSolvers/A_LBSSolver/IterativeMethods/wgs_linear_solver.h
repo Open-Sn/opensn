@@ -1,5 +1,4 @@
-#ifndef CHITECH_WGSLINSOLVEBASE_H
-#define CHITECH_WGSLINSOLVEBASE_H
+#pragma once
 
 #include "math/LinearSolver/linear_solver.h"
 
@@ -65,4 +64,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_WGSLINSOLVEBASE_H
+

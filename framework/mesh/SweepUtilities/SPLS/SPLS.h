@@ -1,5 +1,4 @@
-#ifndef CHI_SPLS_H
-#define CHI_SPLS_H
+#pragma once
 
 #include "mesh/SweepUtilities/FLUDS/FLUDS.h"
 
@@ -23,4 +22,3 @@ struct STDG
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHI_SPLS_H

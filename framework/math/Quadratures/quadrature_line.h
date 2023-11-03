@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_LINE_H
-#define QUADRATURE_LINE_H
+#pragma once
 
 #include "quadrature_gausslegendre.h"
 
@@ -18,4 +17,4 @@ public:
   }
 };
 
-#endif
+

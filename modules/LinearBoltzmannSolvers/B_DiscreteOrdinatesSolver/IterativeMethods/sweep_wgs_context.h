@@ -1,5 +1,4 @@
-#ifndef CHITECH_SWEEP_WGS_CONTEXT_H
-#define CHITECH_SWEEP_WGS_CONTEXT_H
+#pragma once
 
 #include "A_LBSSolver/IterativeMethods/wgs_context.h"
 
@@ -51,4 +50,4 @@ struct SweepWGSContext : public WGSContext<MatType, VecType, SolverType>
 
 } // namespace lbs
 
-#endif // CHITECH_SWEEP_WGS_CONTEXT_H
+

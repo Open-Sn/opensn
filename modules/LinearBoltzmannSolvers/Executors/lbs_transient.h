@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_TRANSIENT_H
-#define CHITECH_LBS_TRANSIENT_H
+#pragma once
 
 #include "LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 namespace chi_math
@@ -28,4 +27,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_TRANSIENT_H
+

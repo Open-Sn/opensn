@@ -1,5 +1,4 @@
-#ifndef CHITECH_LUA_SURFACE_MESH_H
-#define CHITECH_LUA_SURFACE_MESH_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -13,4 +12,4 @@ int chiSurfaceMeshExportPolyFile(lua_State* L);
 int chiSurfaceMeshCheckCycles(lua_State* L);
 int chiComputeLoadBalancing(lua_State* L);
 
-#endif // CHITECH_LUA_SURFACE_MESH_H
+
