@@ -52,4 +52,3 @@ void PushParameterBlock(lua_State* L, const chi::ParameterBlock& block, int leve
 
 chi::ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
 } // namespace chi_lua
-

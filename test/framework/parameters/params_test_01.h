@@ -39,5 +39,3 @@ public:
 };
 
 } // namespace chi_unit_testsB
-
-

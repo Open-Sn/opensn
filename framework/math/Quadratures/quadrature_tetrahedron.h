@@ -17,4 +17,3 @@ public:
 
   void KeastRule(const std::vector<std::vector<double>>& rule_data, const unsigned int n_pts);
 };
-

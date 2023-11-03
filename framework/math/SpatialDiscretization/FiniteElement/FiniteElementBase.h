@@ -26,4 +26,3 @@ protected:
   const QuadratureOrder q_order_;
 };
 } // namespace chi_math::spatial_discretization
-

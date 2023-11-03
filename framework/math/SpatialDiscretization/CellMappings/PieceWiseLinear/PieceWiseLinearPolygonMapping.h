@@ -73,5 +73,3 @@ private:
   std::vector<std::vector<int>> node_to_side_map_;
 };
 } // namespace chi_math::cell_mapping
-
-

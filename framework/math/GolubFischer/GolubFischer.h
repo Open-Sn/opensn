@@ -66,4 +66,3 @@ private:
   double Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta);
 };
 } // namespace chi_math
-

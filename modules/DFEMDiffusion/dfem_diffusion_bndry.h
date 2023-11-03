@@ -25,4 +25,3 @@ public:
 
   std::array<double, 3> values_ = {0., 0., 0.};
 };
-

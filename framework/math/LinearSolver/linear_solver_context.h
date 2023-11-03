@@ -22,5 +22,3 @@ struct LinearSolverContext
   virtual ~LinearSolverContext() = default;
 };
 } // namespace chi_math
-
-

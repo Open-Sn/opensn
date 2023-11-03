@@ -61,5 +61,3 @@ protected:
 };
 
 } // namespace lbs
-
-

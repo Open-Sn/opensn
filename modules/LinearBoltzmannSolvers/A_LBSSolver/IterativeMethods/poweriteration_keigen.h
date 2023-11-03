@@ -11,5 +11,3 @@ void
 PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iterations, double& k_eff);
 
 } // namespace lbs
-
-

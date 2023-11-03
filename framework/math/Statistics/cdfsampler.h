@@ -64,4 +64,3 @@ struct chi_math::CDFSampler::SubIntvl
 
   bool Sample(double x, std::pair<int, int>& range);
 };
-

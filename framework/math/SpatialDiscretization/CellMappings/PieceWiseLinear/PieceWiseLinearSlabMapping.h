@@ -55,4 +55,3 @@ private:
   double h_;
 };
 } // namespace chi_math::cell_mapping
-

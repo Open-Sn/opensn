@@ -219,5 +219,3 @@ protected:
 };
 
 } // namespace chi_data_types
-
-

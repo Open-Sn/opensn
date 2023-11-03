@@ -10,5 +10,3 @@ namespace chi
 int GetStandardEventCode(const std::string& event_name);
 
 } // namespace chi
-
-

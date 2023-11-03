@@ -85,4 +85,3 @@ void CutMeshWithPlane(MeshContinuum& mesh,
                       double float_compare = 1.0e-10);
 } // namespace mesh_cutting
 } // namespace chi_mesh
-

@@ -12,5 +12,3 @@ struct PreconditionerContext
 };
 
 } // namespace chi_math
-
-

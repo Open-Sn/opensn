@@ -21,4 +21,3 @@ public:
                       const unsigned int* permutation_ids,
                       const unsigned int n_wts);
 };
-

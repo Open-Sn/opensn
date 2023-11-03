@@ -85,4 +85,3 @@ public:
     f = f_value;
   }
 };
-

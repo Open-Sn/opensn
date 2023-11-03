@@ -88,4 +88,3 @@ public:
 
   void SetBoundarySourceActiveFlag(bool flag_value);
 };
-

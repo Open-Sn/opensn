@@ -90,5 +90,3 @@ public:
                           std::vector<double>& in_weights,
                           bool verbose);
 };
-
-

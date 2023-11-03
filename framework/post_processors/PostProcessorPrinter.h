@@ -122,5 +122,3 @@ private:
 };
 
 } // namespace chi
-
-

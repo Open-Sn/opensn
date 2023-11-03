@@ -13,5 +13,3 @@ int chiVolumeMesherSetKBACutsZ(lua_State* L);
 
 int chiVolumeMesherSetMatIDToAll(lua_State* L);
 int chiVolumeMesherSetupOrthogonalBoundaries(lua_State* L);
-
-

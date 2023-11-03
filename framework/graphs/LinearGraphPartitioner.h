@@ -20,5 +20,3 @@ protected:
 };
 
 } // namespace chi
-
-

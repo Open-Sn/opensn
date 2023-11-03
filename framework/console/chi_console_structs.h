@@ -24,5 +24,3 @@ struct CSTMemory
   CSTMemory& operator=(const CSTMemory& in_struct) = default;
 };
 } // namespace chi
-
-

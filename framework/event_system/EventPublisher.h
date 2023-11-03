@@ -33,5 +33,3 @@ protected:
 };
 
 } // namespace chi
-
-

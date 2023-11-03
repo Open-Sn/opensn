@@ -10,5 +10,3 @@ namespace chi_math
 using NonLinearSolverPETSc = NonLinearSolver<Mat, Vec, SNES>;
 
 }
-
-

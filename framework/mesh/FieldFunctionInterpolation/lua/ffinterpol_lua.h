@@ -8,5 +8,3 @@ int chiFFInterpolationInitialize(lua_State* L);
 int chiFFInterpolationExecute(lua_State* L);
 int chiFFInterpolationExportPython(lua_State* L);
 int chiFFInterpolationGetValue(lua_State* L);
-
-

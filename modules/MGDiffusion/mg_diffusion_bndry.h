@@ -25,4 +25,3 @@ public:
   std::array<std::vector<double>, 3> mg_values_;
   // std::array<double, 3> mg_values = {0.25,0.5,0.};
 };
-

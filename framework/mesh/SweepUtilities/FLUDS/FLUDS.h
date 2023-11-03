@@ -64,4 +64,3 @@ protected:
 };
 
 } // namespace chi_mesh::sweep_management
-

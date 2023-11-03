@@ -59,5 +59,3 @@ vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(const chi_mesh::MeshConti
 void WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_name);
 
 } // namespace chi_mesh
-
-

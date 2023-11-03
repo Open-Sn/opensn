@@ -7,5 +7,3 @@ int chiMeshHandlerSetCurrent(lua_State* L);
 int chiMeshHandlerExportMeshToObj(lua_State* L);
 int chiMeshHandlerExportMeshToVTK(lua_State* L);
 int chiMeshHandlerExportMeshToExodus(lua_State* L);
-
-

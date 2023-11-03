@@ -90,5 +90,3 @@ private:
   std::vector<double>* destination_psi;
   bool surface_source_active = false;
 };
-
-

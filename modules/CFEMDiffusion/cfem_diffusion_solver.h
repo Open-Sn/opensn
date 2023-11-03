@@ -63,5 +63,3 @@ public:
 };
 
 } // namespace cfem_diffusion
-
-

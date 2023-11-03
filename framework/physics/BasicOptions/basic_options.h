@@ -92,4 +92,3 @@ public:
 };
 
 } // namespace chi_physics
-

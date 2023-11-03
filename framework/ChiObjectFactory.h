@@ -163,5 +163,3 @@ private:
   void AssertRegistryKeyAvailable(const std::string& key,
                                   const std::string& calling_function) const;
 };
-
-

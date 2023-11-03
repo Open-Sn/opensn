@@ -39,5 +39,3 @@ int chiLBSAddPointSource(lua_State* L);
 int chiLBSClearPointSources(lua_State* L);
 int chiLBSInitializePointSources(lua_State* L);
 } // namespace lbs::common_lua_utils
-
-

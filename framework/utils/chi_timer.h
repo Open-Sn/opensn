@@ -31,5 +31,3 @@ public:
  * `std::Sleep(std::chrono::seconds(1))` sleeps for 1 second.*/
 void Sleep(std::chrono::duration<double> time);
 } // namespace chi
-
-

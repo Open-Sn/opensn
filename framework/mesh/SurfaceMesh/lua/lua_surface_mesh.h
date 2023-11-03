@@ -11,5 +11,3 @@ int chiSurfaceMeshExportPolyFile(lua_State* L);
 
 int chiSurfaceMeshCheckCycles(lua_State* L);
 int chiComputeLoadBalancing(lua_State* L);
-
-

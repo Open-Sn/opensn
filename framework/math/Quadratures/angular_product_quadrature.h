@@ -92,5 +92,3 @@ public:
                               const std::vector<double>& in_weights,
                               bool verbose);
 };
-
-

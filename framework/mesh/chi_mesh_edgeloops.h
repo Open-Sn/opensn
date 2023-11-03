@@ -37,5 +37,3 @@ struct chi_mesh::Edge
     return *this;
   }
 };
-
-

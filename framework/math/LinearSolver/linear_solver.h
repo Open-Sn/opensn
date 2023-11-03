@@ -104,5 +104,3 @@ public:
 };
 
 } // namespace chi_math
-
-

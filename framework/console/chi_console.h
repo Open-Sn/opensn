@@ -207,5 +207,3 @@ public:
   void UpdateConsoleBindings(const chi::RegistryStatuses& old_statuses);
 };
 } // namespace chi
-
-

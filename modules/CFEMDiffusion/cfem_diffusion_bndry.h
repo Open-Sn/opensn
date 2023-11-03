@@ -48,4 +48,3 @@ public:
 // However, one should not set \f$b=0$\f in the hopes of obtaining a
 // <B>Dirichlet</B> boundary condition as this type of boundary condition is
 // strongly imposed in a different implementation.
-

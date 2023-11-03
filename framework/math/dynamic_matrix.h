@@ -389,4 +389,3 @@ operator*(const double value, chi_math::DynamicMatrix<NumberFormat>& that)
 
   return newMatrix;
 }
-

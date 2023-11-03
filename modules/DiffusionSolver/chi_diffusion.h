@@ -19,4 +19,3 @@ PetscErrorCode KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* mo
 PetscErrorCode DiffusionConvergenceTestNPT(
   KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void* monitordestroy);
 } // namespace chi_diffusion
-

@@ -18,5 +18,3 @@ public:
   double Rand();
 };
 } // namespace chi_math
-
-

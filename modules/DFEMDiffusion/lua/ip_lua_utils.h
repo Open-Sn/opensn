@@ -13,4 +13,3 @@ namespace dfem_diffusion_lua_utils
 void RegisterLuaEntities(lua_State* L);
 } // namespace dfem_diffusion_lua_utils
 } // namespace dfem_diffusion
-

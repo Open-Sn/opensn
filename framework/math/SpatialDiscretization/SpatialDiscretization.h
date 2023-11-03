@@ -162,4 +162,3 @@ private:
   const SpatialDiscretizationType type_;
 };
 } // namespace chi_math
-

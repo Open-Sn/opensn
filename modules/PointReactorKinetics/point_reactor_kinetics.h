@@ -51,5 +51,3 @@ public:
   void SetRho(double value);
 };
 } // namespace prk
-
-

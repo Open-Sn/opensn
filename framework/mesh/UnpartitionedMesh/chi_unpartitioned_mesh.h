@@ -147,5 +147,3 @@ public:
     vertex_cell_subscriptions_.shrink_to_fit();
   }
 };
-
-

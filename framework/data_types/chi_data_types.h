@@ -24,4 +24,3 @@ class ByteArray;
 template <typename T>
 class NDArray;
 } // namespace chi_data_types
-

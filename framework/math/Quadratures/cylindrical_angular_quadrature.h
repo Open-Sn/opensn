@@ -43,5 +43,3 @@ private:
    *  starting from a fully initialized underlying product quadrature. */
   void InitializeParameters();
 };
-
-

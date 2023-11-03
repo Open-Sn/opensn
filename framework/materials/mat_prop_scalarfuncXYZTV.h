@@ -23,5 +23,3 @@ public:
 };
 
 } // namespace chi
-
-

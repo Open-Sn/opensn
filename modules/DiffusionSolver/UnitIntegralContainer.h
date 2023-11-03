@@ -82,5 +82,3 @@ public:
 };
 
 } // namespace chi_diffusion
-
-

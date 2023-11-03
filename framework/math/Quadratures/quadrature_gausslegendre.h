@@ -30,4 +30,3 @@ private:
   static std::vector<double>
   FindRoots(unsigned int N, unsigned int max_iters = 1000, double tol = 1.0e-12);
 };
-

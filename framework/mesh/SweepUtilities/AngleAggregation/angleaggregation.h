@@ -75,5 +75,3 @@ public:
   void SetDelayedPsiOld2New();
   void SetDelayedPsiNew2Old();
 };
-
-

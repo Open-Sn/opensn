@@ -28,5 +28,3 @@
                                         std::string(__PRETTY_FUNCTION__) +                         \
                                       ": " + #message);                                            \
   }
-
-

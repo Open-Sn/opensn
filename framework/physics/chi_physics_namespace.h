@@ -21,4 +21,3 @@ class Solver;
 // 03 Utils
 std::string GetPETScConvergedReasonstring(KSPConvergedReason reason);
 } // namespace chi_physics
-

@@ -9,5 +9,3 @@ struct KResidualFunctionContext
   double k_eff = 1.0;
 };
 } // namespace lbs
-
-

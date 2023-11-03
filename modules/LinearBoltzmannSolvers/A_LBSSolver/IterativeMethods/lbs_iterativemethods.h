@@ -43,4 +43,3 @@ IterativeMethodPETScName(IterativeMethod it_method)
   return "";
 }
 } // namespace lbs
-

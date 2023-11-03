@@ -61,4 +61,3 @@ public:
 };
 
 } // namespace chi_math::cell_mapping
-

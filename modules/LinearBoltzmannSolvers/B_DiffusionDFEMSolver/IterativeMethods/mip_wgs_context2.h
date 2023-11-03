@@ -38,5 +38,3 @@ struct MIPWGSContext2 : public WGSContext<MatType, VecType, SolverType>
   void PostSolveCallback() override;
 };
 } // namespace lbs
-
-

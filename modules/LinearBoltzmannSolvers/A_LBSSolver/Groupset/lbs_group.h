@@ -14,4 +14,3 @@ public:
   explicit LBSGroup(int id) : id_(id) {}
 };
 } // namespace lbs
-

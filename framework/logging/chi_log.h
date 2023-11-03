@@ -331,4 +331,3 @@ private:
   const std::string name_;
   std::vector<Event> events_;
 };
-

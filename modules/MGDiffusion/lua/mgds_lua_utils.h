@@ -10,4 +10,3 @@ int chiCFEMMGDiffusionSetBCProperty(lua_State* L);
 
 void RegisterLuaEntities(lua_State* L);
 } // namespace mg_diffusion::mgd_lua_utils
-

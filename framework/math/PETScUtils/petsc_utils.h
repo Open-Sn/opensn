@@ -88,4 +88,3 @@ GhostVecLocalRaw GetGhostVectorLocalViewRead(Vec x);
 void RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data);
 
 } // namespace chi_math::PETScUtils
-

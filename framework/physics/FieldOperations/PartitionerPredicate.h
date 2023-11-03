@@ -26,5 +26,3 @@ protected:
 };
 
 } // namespace chi_physics::field_operations
-
-

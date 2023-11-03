@@ -33,5 +33,3 @@ struct NLKEigenAGSContext : public chi_math::NonLinearSolverContext<VecType, Sol
 };
 
 } // namespace lbs
-
-

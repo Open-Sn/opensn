@@ -8,5 +8,3 @@ namespace lbs
 PetscErrorCode NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx);
 
 } // namespace lbs
-
-

@@ -12,4 +12,3 @@ double AssocLegendre(unsigned int ell, int m, double x);
 
 double Ylm(unsigned int ell, int m, double varphi, double theta);
 } // namespace chi_math
-

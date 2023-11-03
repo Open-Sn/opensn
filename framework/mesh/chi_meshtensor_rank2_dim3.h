@@ -183,4 +183,3 @@ struct chi_mesh::TensorRank2Dim3
 // The following functions are defined in chi_mesh_utilities.cc
 // Left multiplcation by scalar
 chi_mesh::TensorRank2Dim3 operator*(const double value, const chi_mesh::TensorRank2Dim3& that);
-

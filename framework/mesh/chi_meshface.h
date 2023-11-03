@@ -106,5 +106,3 @@ struct chi_mesh::PolyFace
       delete[] edge;
   }
 };
-
-

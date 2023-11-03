@@ -246,4 +246,3 @@ public:
   EntriesIterator begin();
   EntriesIterator end();
 };
-

@@ -28,5 +28,3 @@ private:
 };
 
 } // namespace chi_physics
-
-

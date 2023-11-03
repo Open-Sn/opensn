@@ -19,5 +19,3 @@ int chiSolverGetFieldFunctionList(lua_State* L);
 int chiSolverGetInfo(lua_State* L);
 int chiSolverSetProperties(lua_State* L);
 } // namespace chi_physics::lua_utils
-
-

@@ -66,4 +66,3 @@ protected:
   VecVec3 normals_; ///< node i, then qp
 };
 } // namespace chi_math::finite_element
-

@@ -106,4 +106,3 @@ size_t CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
 #include "chi_mesh_edgeloops.h"
 
 #include "mesh/SweepUtilities/sweep_namespace.h"
-

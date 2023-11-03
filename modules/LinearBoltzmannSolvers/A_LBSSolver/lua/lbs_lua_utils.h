@@ -21,5 +21,3 @@ int chiLBSSetOptions(lua_State* L);
 int chiLBSSetPhiFromFieldFunction(lua_State* L);
 void RegisterLuaEntities(lua_State* L);
 } // namespace lbs::common_lua_utils
-
-

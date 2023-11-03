@@ -63,5 +63,3 @@ struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec, SNES>
 };
 
 } // namespace lbs::acceleration
-
-

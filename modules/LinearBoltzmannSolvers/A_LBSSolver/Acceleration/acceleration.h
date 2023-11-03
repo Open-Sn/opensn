@@ -87,4 +87,3 @@ std::map<int, Multigroup_D_and_sigR> PackGroupsetXS(const std::map<int, MGXSPtr>
                                                     int last_group_index);
 
 } // namespace lbs::acceleration
-

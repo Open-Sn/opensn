@@ -126,5 +126,3 @@ public:
 
   void UpdateFieldFunctions();
 };
-
-

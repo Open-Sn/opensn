@@ -56,4 +56,3 @@ public:
   MeshHandler(const MeshHandler&) = delete;
   MeshHandler& operator=(const MeshHandler&) = delete;
 };
-

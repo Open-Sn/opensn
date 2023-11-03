@@ -90,5 +90,3 @@ MatDbl Inverse(const MatDbl& A);
 double PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it = 2000, double tol = 1.0e-13);
 
 } // namespace chi_math
-
-

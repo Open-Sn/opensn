@@ -16,5 +16,3 @@ public:
     SetRange({0, 1});
   }
 };
-
-

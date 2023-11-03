@@ -69,4 +69,3 @@ struct chi::GraphVertex
 
   bool operator==(const GraphVertex& other) const { return other.id == this->id; }
 };
-

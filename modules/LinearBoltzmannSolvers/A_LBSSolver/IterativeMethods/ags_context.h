@@ -35,5 +35,3 @@ struct AGSContext : public chi_math::LinearSolverContext<MatType, VecType>
 };
 
 } // namespace lbs
-
-

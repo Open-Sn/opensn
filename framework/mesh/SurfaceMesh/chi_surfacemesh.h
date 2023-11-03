@@ -60,5 +60,3 @@ public:
   void GetMeshStats();
   void ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<double>& y_cuts);
 };
-
-

@@ -15,4 +15,3 @@ public:
   // Constructor
   explicit QuadratureHexahedron(QuadratureOrder order);
 };
-

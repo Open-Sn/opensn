@@ -114,5 +114,3 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
 }
 
 } // namespace chi_mpi_utils
-
-

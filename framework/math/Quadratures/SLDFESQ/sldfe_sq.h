@@ -220,5 +220,3 @@ struct chi_math::SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
     return sldfesq.IntegrateLDFEShapeFunctions(sq, c_coeffs, lqp, lqw);
   }
 };
-
-

@@ -99,5 +99,3 @@ public:
 };
 
 } // namespace lbs::acceleration
-
-

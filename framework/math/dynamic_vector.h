@@ -352,4 +352,3 @@ operator*(const double value, const chi_math::DynamicVector<NumberFormat>& that)
     newVector.elements_[i] = that.elements_[i] * value;
   return newVector;
 }
-

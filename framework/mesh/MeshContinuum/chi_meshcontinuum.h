@@ -148,4 +148,3 @@ private:
     ortho_attributes = {ortho_Nis[0], ortho_Nis[1], ortho_Nis[2]};
   }
 };
-

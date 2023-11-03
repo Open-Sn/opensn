@@ -286,5 +286,3 @@ struct chi_mesh::Matrix3x3
     return out.str();
   }
 };
-
-

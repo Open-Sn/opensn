@@ -25,5 +25,3 @@ protected:
 };
 
 } // namespace chi_mesh
-
-

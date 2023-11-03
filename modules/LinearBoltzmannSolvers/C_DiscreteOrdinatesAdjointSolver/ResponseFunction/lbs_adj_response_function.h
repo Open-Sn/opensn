@@ -26,5 +26,3 @@ struct ResponseFunctionDesignation
 };
 
 } // namespace lbs
-
-

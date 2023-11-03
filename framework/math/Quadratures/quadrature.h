@@ -58,4 +58,3 @@ public:
    * of the abscissae and scaling of the weights.*/
   void SetRange(const std::pair<double, double>& in_range);
 };
-

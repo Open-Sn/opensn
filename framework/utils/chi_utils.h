@@ -89,5 +89,3 @@ ReadBinaryValue(std::ifstream& input_file)
   return value;
 }
 } // namespace chi
-
-

@@ -35,4 +35,3 @@ VecDbl NewtonIteration(const NonLinearFunction& non_linear_function,
                        bool verbose = false);
 
 } // namespace chi_math
-

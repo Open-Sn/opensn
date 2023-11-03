@@ -64,4 +64,3 @@ private:
                                      CoordinateSystemType cs_type);
 };
 } // namespace chi_math::spatial_discretization
-

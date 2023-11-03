@@ -103,5 +103,3 @@ private:
 };
 
 } // namespace lbs
-
-

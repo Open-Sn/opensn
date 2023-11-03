@@ -125,5 +125,3 @@ protected:
   const std::vector<std::vector<int>> face_node_mappings_;
 };
 } // namespace chi_math
-
-

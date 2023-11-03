@@ -156,4 +156,3 @@ public:
 
   ~DirectedGraph();
 }; // CHI_DIRECTED_GRAPH_H
-

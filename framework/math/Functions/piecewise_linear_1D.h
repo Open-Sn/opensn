@@ -36,5 +36,3 @@ private:
   std::vector<double> delta_x_values_;
 };
 } // namespace chi_math::functions
-
-

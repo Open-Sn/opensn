@@ -14,5 +14,3 @@ int GetProcessCount(MPI_Comm mpi_comm);
  * Example: location i starts at extents[i] and ends at extents[i+1]*/
 std::vector<uint64_t> BuildLocationExtents(uint64_t local_size, MPI_Comm comm);
 } // namespace chi_mpi_utils
-
-

@@ -13,4 +13,3 @@ int chiAdjointSolverComputeInnerProduct(lua_State* L);
 int chiAdjointSolverReadFluxMomentsToBuffer(lua_State* L);
 int chiAdjointSolverApplyFluxMomentBuffer(lua_State* L);
 } // namespace lbs::adjoint_lua_utils
-

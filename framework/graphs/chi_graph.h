@@ -7,4 +7,3 @@ namespace chi
 struct GraphVertex;
 class DirectedGraph;
 } // namespace chi
-

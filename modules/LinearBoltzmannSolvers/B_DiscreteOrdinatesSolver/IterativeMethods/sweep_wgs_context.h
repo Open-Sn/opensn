@@ -49,5 +49,3 @@ struct SweepWGSContext : public WGSContext<MatType, VecType, SolverType>
 };
 
 } // namespace lbs
-
-

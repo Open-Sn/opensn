@@ -18,5 +18,3 @@ std::string SteppingMethodStringName(SteppingMethod);
 SteppingMethod SteppingMethodFromString(const std::string& name);
 
 } // namespace chi_math
-
-

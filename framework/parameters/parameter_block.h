@@ -316,5 +316,3 @@ public:
 };
 
 } // namespace chi
-
-

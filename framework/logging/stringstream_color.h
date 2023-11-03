@@ -24,5 +24,3 @@ enum StringSteamColorCode
 std::string StringStreamColor(StringSteamColorCode code);
 
 } // namespace chi
-
-

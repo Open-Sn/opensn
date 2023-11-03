@@ -472,4 +472,3 @@ public:
 
 /**Stream operator*/
 std::ostream& operator<<(std::ostream& outstr, const chi_data_types::Varying& value);
-

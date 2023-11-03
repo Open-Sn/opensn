@@ -485,5 +485,3 @@ struct chi_mesh::Vector3
 chi_mesh::Vector3 operator*(double value, const chi_mesh::Vector3& that);
 
 //}//namespace chi_mesh
-
-

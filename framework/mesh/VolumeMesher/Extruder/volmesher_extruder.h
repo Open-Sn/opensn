@@ -68,4 +68,3 @@ private:
 
   void ExtrudeCells(chi_mesh::MeshContinuum& template_grid, chi_mesh::MeshContinuum& grid);
 };
-

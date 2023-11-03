@@ -8,5 +8,3 @@
 typedef struct _p_Vec* Vec;
 typedef struct _p_Mat* Mat;
 // NOLINTEND(bugprone-reserved-identifier)
-
-

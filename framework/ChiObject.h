@@ -36,5 +36,3 @@ public:
 
   virtual ~ChiObject() = default;
 };
-
-

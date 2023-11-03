@@ -10,5 +10,3 @@ struct NonLinearSolverContext
 };
 
 } // namespace chi_math
-
-

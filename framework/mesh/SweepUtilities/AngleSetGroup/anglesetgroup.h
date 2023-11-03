@@ -12,4 +12,3 @@ public:
 private:
   std::vector<std::shared_ptr<AngleSet>> angle_sets_;
 };
-

@@ -49,5 +49,3 @@ public:
   std::string GetDefaultFileBaseName() const override { return "ZVFFI"; }
   void ExportPython(std::string base_name) override {}
 };
-
-

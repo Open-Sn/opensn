@@ -65,5 +65,3 @@ enum class AngleSetStatus
 typedef AngleSetStatus ExecutionPermission;
 } // namespace sweep_management
 } // namespace chi_mesh
-
-

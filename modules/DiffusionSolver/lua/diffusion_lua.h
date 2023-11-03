@@ -11,5 +11,3 @@ namespace diffusion_solver::lua_utils
 {
 void RegisterLuaEntities(lua_State* L);
 } // namespace diffusion_solver::lua_utils
-
-

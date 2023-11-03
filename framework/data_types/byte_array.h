@@ -126,5 +126,3 @@ public:
   const std::vector<std::byte>& Data() const { return raw_data_; }
 };
 } // namespace chi_data_types
-
-

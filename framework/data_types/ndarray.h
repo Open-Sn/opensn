@@ -603,5 +603,3 @@ public:
 };
 
 } // namespace chi_data_types
-
-

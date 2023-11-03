@@ -64,5 +64,3 @@ private:
 };
 
 } // namespace chi_math::spatial_discretization
-
-

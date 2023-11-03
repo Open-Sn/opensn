@@ -331,4 +331,3 @@ operator*(const double value, const chi_math::TensorRNX<2, N, NumberFormat>& tha
 
   return new_tensor;
 }
-

@@ -114,5 +114,3 @@ protected:
 };
 
 } // namespace mg_diffusion
-
-

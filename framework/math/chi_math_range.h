@@ -42,5 +42,3 @@ Range(T start, T end, D delta = 1)
 }
 
 } // namespace chi_math
-
-
