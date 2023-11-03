@@ -29,4 +29,4 @@ jobs:
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
           module load opensn/gcc/12.3.0
-          test/run_tests -d test/ -j 32 -v 1 -w 7
+          test/run_tests -d test/ -j 32 -v 1 -w 3
