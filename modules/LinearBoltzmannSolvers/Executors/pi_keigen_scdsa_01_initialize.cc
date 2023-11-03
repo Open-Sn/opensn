@@ -1,6 +1,6 @@
 #include "pi_keigen_scdsa.h"
 
-#include "A_LBSSolver/Acceleration/diffusion_mip.h"
+#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "A_LBSSolver/Acceleration/diffusion_PWLC.h"
 
 #include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"

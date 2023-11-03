@@ -3,7 +3,7 @@
 #include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "A_LBSSolver/Acceleration/diffusion_mip.h"
+#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 
 // ###################################################################
 /**Initializes the Within-Group DSA solver. */

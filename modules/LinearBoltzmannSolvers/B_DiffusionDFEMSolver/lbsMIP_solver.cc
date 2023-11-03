@@ -3,7 +3,7 @@
 #include "ChiObjectFactory.h"
 
 #include "A_LBSSolver/SourceFunctions/source_function.h"
-#include "A_LBSSolver/Acceleration/diffusion_mip.h"
+#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
 #include "IterativeMethods/mip_wgs_context2.h"
 

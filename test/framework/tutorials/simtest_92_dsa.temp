@@ -6,7 +6,7 @@
 #include "ChiMath/SpatialDiscretization/FiniteElement/PiecewiseLinear/pwl.h"
 
 #include "A_LBSSolver/Acceleration/acceleration.h"
-#include "A_LBSSolver/Acceleration/diffusion_mip.h"
+#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
 #include "ChiPhysics/FieldFunction/fieldfunction_gridbased.h"
