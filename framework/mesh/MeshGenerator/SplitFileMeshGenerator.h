@@ -1,5 +1,4 @@
-#ifndef CHITECH_SPLITFILEMESHGENERATOR_H
-#define CHITECH_SPLITFILEMESHGENERATOR_H
+#pragma once
 
 #include "MeshGenerator.h"
 
@@ -54,4 +53,4 @@ protected:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_SPLITFILEMESHGENERATOR_H
+

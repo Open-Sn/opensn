@@ -1,5 +1,4 @@
-#ifndef CHITECH_PI_KEIGEN_SCDSA_H
-#define CHITECH_PI_KEIGEN_SCDSA_H
+#pragma once
 
 #include "pi_keigen.h"
 #include "LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
@@ -66,4 +65,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_PI_KEIGEN_SCDSA_H
+

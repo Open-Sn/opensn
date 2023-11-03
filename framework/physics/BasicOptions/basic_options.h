@@ -1,5 +1,4 @@
-#ifndef CHI_BASIC_OPTIONS_H
-#define CHI_BASIC_OPTIONS_H
+#pragma once
 
 #include "data_types/varying.h"
 
@@ -93,4 +92,4 @@ public:
 };
 
 } // namespace chi_physics
-#endif
+

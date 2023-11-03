@@ -1,5 +1,4 @@
-#ifndef LBS_ITERATIVE_METHODS_H
-#define LBS_ITERATIVE_METHODS_H
+#pragma once
 
 #include <string>
 
@@ -45,4 +44,3 @@ IterativeMethodPETScName(IterativeMethod it_method)
 }
 } // namespace lbs
 
-#endif

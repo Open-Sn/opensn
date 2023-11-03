@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_NL_KEIGEN_ACC_SOLVER_H
-#define CHITECH_LBS_NL_KEIGEN_ACC_SOLVER_H
+#pragma once
 
 #include "math/NonLinearSolver/NonLinearSolver.h"
 
@@ -48,4 +47,4 @@ protected:
 
 } // namespace lbs::acceleration
 
-#endif // CHITECH_LBS_NL_KEIGEN_ACC_SOLVER_H
+

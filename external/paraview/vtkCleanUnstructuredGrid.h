@@ -27,8 +27,7 @@
  * vtkCleanPolyData
  */
 
-#ifndef vtkCleanUnstructuredGrid_h
-#define vtkCleanUnstructuredGrid_h
+#pragma once
 
 #include "vtkPVVTKExtensionsFiltersGeneralModule.h" //needed for exports
 #include "vtkUnstructuredGridAlgorithm.h"
@@ -107,4 +106,4 @@ private:
   vtkCleanUnstructuredGrid(const vtkCleanUnstructuredGrid&) = delete;
   void operator=(const vtkCleanUnstructuredGrid&) = delete;
 };
-#endif
+

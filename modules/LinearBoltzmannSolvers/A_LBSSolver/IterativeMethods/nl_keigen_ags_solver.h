@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_NL_KEIGEN_AGS_SOLVER_H
-#define CHITECH_LBS_NL_KEIGEN_AGS_SOLVER_H
+#pragma once
 
 #include "math/NonLinearSolver/NonLinearSolver.h"
 #include "nl_keigen_ags_context.h"
@@ -47,4 +46,4 @@ protected:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_NL_KEIGEN_AGS_SOLVER_H
+

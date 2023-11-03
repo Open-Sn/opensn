@@ -1,5 +1,4 @@
-#ifndef CHITECH_PRECONDITIONER_CONTEXT_H
-#define CHITECH_PRECONDITIONER_CONTEXT_H
+#pragma once
 
 namespace chi_math
 {
@@ -14,4 +13,4 @@ struct PreconditionerContext
 
 } // namespace chi_math
 
-#endif // CHITECH_PRECONDITIONER_CONTEXT_H
+

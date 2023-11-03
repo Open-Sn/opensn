@@ -1,5 +1,4 @@
-#ifndef CHITECH_POINT_QUADRATURE_H
-#define CHITECH_POINT_QUADRATURE_H
+#pragma once
 
 #include "quadrature.h"
 
@@ -16,4 +15,4 @@ public:
 
 } // namespace chi_math
 
-#endif // CHITECH_POINT_QUADRATURE_H
+

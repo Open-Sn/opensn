@@ -1,5 +1,4 @@
-#ifndef CHITECH_EVENTCODES_H
-#define CHITECH_EVENTCODES_H
+#pragma once
 
 #include <string>
 
@@ -12,4 +11,4 @@ int GetStandardEventCode(const std::string& event_name);
 
 } // namespace chi
 
-#endif // CHITECH_EVENTCODES_H
+

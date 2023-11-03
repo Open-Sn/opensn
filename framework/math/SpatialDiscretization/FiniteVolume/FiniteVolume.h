@@ -1,5 +1,4 @@
-#ifndef SPATIAL_DISCRETIZATION_FV_H
-#define SPATIAL_DISCRETIZATION_FV_H
+#pragma once
 
 #include "math/SpatialDiscretization/SpatialDiscretization.h"
 #include "math/UnknownManager/unknown_manager.h"
@@ -68,4 +67,3 @@ public:
 
 } // namespace chi_math::spatial_discretization
 
-#endif

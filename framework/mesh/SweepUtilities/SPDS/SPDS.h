@@ -1,5 +1,4 @@
-#ifndef CHI_SPDS_H
-#define CHI_SPDS_H
+#pragma once
 
 #include "mesh/SweepUtilities/SPLS/SPLS.h"
 #include "mesh/chi_mesh.h"
@@ -71,4 +70,3 @@ protected:
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHI_SPDS_H

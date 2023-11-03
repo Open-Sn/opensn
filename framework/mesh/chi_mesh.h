@@ -1,5 +1,4 @@
-#ifndef CHI_MESH_H
-#define CHI_MESH_H
+#pragma once
 
 #include <vector>
 #include <iostream>
@@ -108,4 +107,3 @@ size_t CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
 
 #include "mesh/SweepUtilities/sweep_namespace.h"
 
-#endif

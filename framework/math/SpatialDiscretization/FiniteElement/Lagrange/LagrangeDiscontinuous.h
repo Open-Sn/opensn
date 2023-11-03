@@ -1,5 +1,4 @@
-#ifndef CHITECH_LAGRANGEDISCONTINUOUS_H
-#define CHITECH_LAGRANGEDISCONTINUOUS_H
+#pragma once
 
 #include "LagrangeBase.h"
 
@@ -66,4 +65,4 @@ private:
 
 } // namespace chi_math::spatial_discretization
 
-#endif // CHITECH_LAGRANGEDISCONTINUOUS_H
+

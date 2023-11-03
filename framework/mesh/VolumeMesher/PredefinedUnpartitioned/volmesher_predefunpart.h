@@ -1,5 +1,4 @@
-#ifndef VOLMESHER_PREDEFUNPART_H
-#define VOLMESHER_PREDEFUNPART_H
+#pragma once
 
 #include "../chi_volumemesher.h"
 #include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
@@ -36,4 +35,3 @@ public:
            uint64_t partition_id,
            const std::vector<chi_mesh::Vector3>& vertices);
 };
-#endif // VOLMESHER_PREDEFUNPART_H

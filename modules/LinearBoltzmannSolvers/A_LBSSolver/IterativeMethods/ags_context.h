@@ -1,5 +1,4 @@
-#ifndef CHITECH_AGS_CONTEXT_H
-#define CHITECH_AGS_CONTEXT_H
+#pragma once
 
 #include "math/LinearSolver/linear_solver_context.h"
 #include "math/LinearSolver/linear_solver.h"
@@ -37,4 +36,4 @@ struct AGSContext : public chi_math::LinearSolverContext<MatType, VecType>
 
 } // namespace lbs
 
-#endif // CHITECH_AGS_CONTEXT_H
+

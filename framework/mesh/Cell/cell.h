@@ -1,5 +1,4 @@
-#ifndef CHI_CELL_H
-#define CHI_CELL_H
+#pragma once
 
 #include "../chi_mesh.h"
 #include "data_types/chi_data_types.h"
@@ -101,4 +100,3 @@ public:
 
 } // namespace chi_mesh
 
-#endif

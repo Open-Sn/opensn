@@ -1,5 +1,4 @@
-#ifndef CHITECH_PHYSICSEVENTPUBLISHER_H
-#define CHITECH_PHYSICSEVENTPUBLISHER_H
+#pragma once
 
 #include "event_system/EventPublisher.h"
 
@@ -30,4 +29,4 @@ private:
 
 } // namespace chi_physics
 
-#endif // CHITECH_PHYSICSEVENTPUBLISHER_H
+

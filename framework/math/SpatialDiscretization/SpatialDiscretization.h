@@ -1,5 +1,4 @@
-#ifndef SPATIAL_DISCRETIZATION_H
-#define SPATIAL_DISCRETIZATION_H
+#pragma once
 
 #include "mesh/chi_mesh.h"
 #include "math/Quadratures/quadrature.h"
@@ -164,4 +163,3 @@ private:
 };
 } // namespace chi_math
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_FINITE_ELEMENT_H
-#define CHI_MATH_FINITE_ELEMENT_H
+#pragma once
 
 #include "math/chi_math.h"
 
@@ -68,4 +67,3 @@ protected:
 };
 } // namespace chi_math::finite_element
 
-#endif // CHI_MATH_FINITE_ELEMENT_H

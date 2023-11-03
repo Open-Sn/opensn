@@ -1,5 +1,4 @@
-#ifndef CHITECH_FIELDFUNCTION_GRIDBASED_H
-#define CHITECH_FIELDFUNCTION_GRIDBASED_H
+#pragma once
 
 #include "fieldfunction.h"
 
@@ -109,4 +108,4 @@ private:
 
 } // namespace chi_physics
 
-#endif // CHITECH_FIELDFUNCTION_GRIDBASED_H
+

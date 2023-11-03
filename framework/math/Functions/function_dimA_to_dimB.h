@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MATH_FUNCTION_DIMA_TO_DIMB_H
-#define CHITECH_CHI_MATH_FUNCTION_DIMA_TO_DIMB_H
+#pragma once
 
 #include "ChiObject.h"
 #include <functional>
@@ -38,4 +37,4 @@ public:
 
 } // namespace chi_math
 
-#endif // CHITECH_CHI_MATH_FUNCTION_DIMA_TO_DIMB_H
+

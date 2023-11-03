@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_QUADRATURE_H
-#define CHI_MATH_QUADRATURE_H
+#pragma once
 
 #include "ChiObject.h"
 #include "mesh/chi_mesh.h"
@@ -60,4 +59,3 @@ public:
   void SetRange(const std::pair<double, double>& in_range);
 };
 
-#endif // CHI_MATH_QUADRATURE_H

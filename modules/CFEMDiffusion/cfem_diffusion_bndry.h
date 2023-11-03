@@ -1,5 +1,4 @@
-#ifndef CFEM_DIFFUSION_BOUNDARY_H
-#define CFEM_DIFFUSION_BOUNDARY_H
+#pragma once
 
 #include <array>
 
@@ -50,4 +49,3 @@ public:
 // <B>Dirichlet</B> boundary condition as this type of boundary condition is
 // strongly imposed in a different implementation.
 
-#endif // CFEM_DIFFUSION_BOUNDARY_H

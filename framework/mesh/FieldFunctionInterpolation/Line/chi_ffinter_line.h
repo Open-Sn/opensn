@@ -1,5 +1,4 @@
-#ifndef CHI_FFINTER_LINE_H
-#define CHI_FFINTER_LINE_H
+#pragma once
 
 #include "../chi_ffinterpolation.h"
 #include "mesh/chi_mesh.h"
@@ -54,4 +53,3 @@ public:
 };
 } // namespace chi_mesh
 
-#endif

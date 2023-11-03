@@ -1,5 +1,4 @@
-#ifndef CHITECH_FIELD_OPERATIONS_MULTIFIELD_H
-#define CHITECH_FIELD_OPERATIONS_MULTIFIELD_H
+#pragma once
 
 #include "field_operation.h"
 #include "physics/FieldFunction/fieldfunction_gridbased.h"
@@ -35,4 +34,4 @@ public:
 
 } // namespace chi_physics::field_operations
 
-#endif // CHITECH_FIELD_OPERATIONS_MULTIFIELD_H
+

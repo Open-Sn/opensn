@@ -1,5 +1,4 @@
-#ifndef _chi_meshtensor_rank2_dim3_h
-#define _chi_meshtensor_rank2_dim3_h
+#pragma once
 
 #include "chi_meshvector.h"
 
@@ -185,4 +184,3 @@ struct chi_mesh::TensorRank2Dim3
 // Left multiplcation by scalar
 chi_mesh::TensorRank2Dim3 operator*(const double value, const chi_mesh::TensorRank2Dim3& that);
 
-#endif

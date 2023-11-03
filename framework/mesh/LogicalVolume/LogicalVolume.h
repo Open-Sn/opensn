@@ -1,5 +1,4 @@
-#ifndef CHI_MESH_LOGICALVOLUME_H
-#define CHI_MESH_LOGICALVOLUME_H
+#pragma once
 
 #include "ChiObject.h"
 
@@ -26,4 +25,4 @@ protected:
 
 } // namespace chi_mesh
 
-#endif // CHI_MESH_LOGICALVOLUME_H
+

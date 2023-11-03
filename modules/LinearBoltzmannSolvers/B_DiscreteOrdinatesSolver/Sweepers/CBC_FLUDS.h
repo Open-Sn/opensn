@@ -1,5 +1,4 @@
-#ifndef CHITECH_CBC_FLUDS_H
-#define CHITECH_CBC_FLUDS_H
+#pragma once
 
 #include "mesh/SweepUtilities/FLUDS/FLUDS.h"
 #include "CBC_FLUDSCommonData.h"
@@ -105,4 +104,4 @@ private:
 
 } // namespace lbs
 
-#endif // CHITECH_CBC_FLUDS_H
+

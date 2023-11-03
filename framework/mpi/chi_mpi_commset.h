@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MPI_COMMSET_H
-#define CHITECH_CHI_MPI_COMMSET_H
+#pragma once
 
 #include <mpi.h>
 #include "mesh/chi_mesh.h"
@@ -45,4 +44,4 @@ public:
 };
 } // namespace chi
 
-#endif // CHITECH_CHI_MPI_COMMSET_H
+

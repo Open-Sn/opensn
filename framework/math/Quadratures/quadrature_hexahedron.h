@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_HEXAHEDRON_H
-#define QUADRATURE_HEXAHEDRON_H
+#pragma once
 
 #include "quadrature.h"
 
@@ -17,4 +16,3 @@ public:
   explicit QuadratureHexahedron(QuadratureOrder order);
 };
 
-#endif // QUADRATURE_HEXAHEDRON_H

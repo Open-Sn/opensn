@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_UTILS_H
-#define CHITECH_CHI_UTILS_H
+#pragma once
 
 #include <cstddef>
 #include <string>
@@ -91,4 +90,4 @@ ReadBinaryValue(std::ifstream& input_file)
 }
 } // namespace chi
 
-#endif // CHITECH_CHI_UTILS_H
+

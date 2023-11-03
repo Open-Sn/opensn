@@ -1,5 +1,4 @@
-#ifndef CHITECH_KBAGRAPHPARTITIONER_H
-#define CHITECH_KBAGRAPHPARTITIONER_H
+#pragma once
 
 #include "GraphPartitioner.h"
 
@@ -33,4 +32,4 @@ protected:
 
 } // namespace chi
 
-#endif // CHITECH_KBAGRAPHPARTITIONER_H
+

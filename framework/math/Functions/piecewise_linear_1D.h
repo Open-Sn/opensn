@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MATH_FUNCTIONS_PIECEWISELINEAR1D_H
-#define CHITECH_CHI_MATH_FUNCTIONS_PIECEWISELINEAR1D_H
+#pragma once
 
 #include "function_dimA_to_dimB.h"
 
@@ -38,4 +37,4 @@ private:
 };
 } // namespace chi_math::functions
 
-#endif // CHITECH_CHI_MATH_FUNCTIONS_PIECEWISELINEAR1D_H
+

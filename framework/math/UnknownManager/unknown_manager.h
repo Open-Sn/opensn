@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_UNKNOWN_MANAGER_H
-#define CHI_MATH_UNKNOWN_MANAGER_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -211,4 +210,3 @@ public:
 
 } // namespace chi_math
 
-#endif

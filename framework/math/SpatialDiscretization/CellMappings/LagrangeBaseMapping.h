@@ -1,5 +1,4 @@
-#ifndef CHITECH_LAGRANGEBASEMAPPING_H
-#define CHITECH_LAGRANGEBASEMAPPING_H
+#pragma once
 
 #include "CellMapping.h"
 #include "math/SerialNewtonIteration/serial_newton_iteration.h"
@@ -104,4 +103,4 @@ private:
 
 } // namespace chi_math::cell_mapping
 
-#endif // CHITECH_LAGRANGEBASEMAPPING_H
+

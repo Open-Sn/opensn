@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_H
-#define CHI_MATH_H
+#pragma once
 
 #include "chi_math_incdef.h"
 
@@ -92,4 +91,4 @@ double PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it = 2000, double 
 
 } // namespace chi_math
 
-#endif
+

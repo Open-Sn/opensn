@@ -1,5 +1,4 @@
-#ifndef CHITECH_ALLOWABLE_RANGE_H
-#define CHITECH_ALLOWABLE_RANGE_H
+#pragma once
 
 #include <string>
 #include <utility>
@@ -221,4 +220,4 @@ protected:
 
 } // namespace chi_data_types
 
-#endif // CHITECH_ALLOWABLE_RANGE_H
+

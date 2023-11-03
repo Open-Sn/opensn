@@ -1,5 +1,4 @@
-#ifndef _chi_meshface_h
-#define _chi_meshface_h
+#pragma once
 
 //######################################################### Struct
 /**Data structure for a triangular face.*/
@@ -108,4 +107,4 @@ struct chi_mesh::PolyFace
   }
 };
 
-#endif
+

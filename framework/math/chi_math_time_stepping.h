@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MATH_TIME_STEPPING_H
-#define CHITECH_CHI_MATH_TIME_STEPPING_H
+#pragma once
 
 #include <string>
 
@@ -20,4 +19,4 @@ SteppingMethod SteppingMethodFromString(const std::string& name);
 
 } // namespace chi_math
 
-#endif // CHITECH_CHI_MATH_TIME_STEPPING_H
+

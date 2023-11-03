@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_TRANSIENT_SOURCE_FUNCTION_H
-#define CHITECH_LBS_TRANSIENT_SOURCE_FUNCTION_H
+#pragma once
 
 #include "source_function.h"
 
@@ -28,4 +27,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_TRANSIENT_SOURCE_FUNCTION_H
+

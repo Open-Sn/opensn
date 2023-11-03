@@ -1,5 +1,4 @@
-#ifndef CHITECH_AGS_LINEAR_SOLVER_H
-#define CHITECH_AGS_LINEAR_SOLVER_H
+#pragma once
 
 #include "math/LinearSolver/linear_solver.h"
 #include "ags_context.h"
@@ -74,4 +73,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_AGS_LINEAR_SOLVER_H
+

@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_DYNAMIC_VECTOR_H
-#define CHI_MATH_DYNAMIC_VECTOR_H
+#pragma once
 
 #include <vector>
 #include <stdexcept>
@@ -354,4 +353,3 @@ operator*(const double value, const chi_math::DynamicVector<NumberFormat>& that)
   return newVector;
 }
 
-#endif // CHI_MATH_DYNAMIC_VECTOR_H

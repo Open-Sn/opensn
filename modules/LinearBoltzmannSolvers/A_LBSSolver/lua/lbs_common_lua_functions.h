@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_COMMON_LUA_FUNCTIONS_H
-#define CHITECH_LBS_COMMON_LUA_FUNCTIONS_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -41,4 +40,4 @@ int chiLBSClearPointSources(lua_State* L);
 int chiLBSInitializePointSources(lua_State* L);
 } // namespace lbs::common_lua_utils
 
-#endif // CHITECH_LBS_COMMON_LUA_FUNCTIONS_H
+

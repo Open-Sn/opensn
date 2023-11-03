@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MPI_UTILS_H
-#define CHITECH_CHI_MPI_UTILS_H
+#pragma once
 
 #include "chi_mpi_utils_map_all2all.h"
 
@@ -16,4 +15,4 @@ int GetProcessCount(MPI_Comm mpi_comm);
 std::vector<uint64_t> BuildLocationExtents(uint64_t local_size, MPI_Comm comm);
 } // namespace chi_mpi_utils
 
-#endif // CHITECH_CHI_MPI_UTILS_H
+

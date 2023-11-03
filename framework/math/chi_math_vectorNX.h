@@ -1,5 +1,4 @@
-#ifndef chi_math_VectorNX_h
-#define chi_math_VectorNX_h
+#pragma once
 
 namespace chi_mesh
 {
@@ -478,4 +477,3 @@ operator*(const double value, const chi_math::VectorNX<N, NumberFormat>& that)
     newVector.elements[i] = that.elements[i] * value;
   return newVector;
 }
-#endif

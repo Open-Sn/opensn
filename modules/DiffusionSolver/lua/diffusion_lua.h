@@ -1,5 +1,4 @@
-#ifndef CHITECH_DIFFUSION_LUA_H
-#define CHITECH_DIFFUSION_LUA_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -13,4 +12,4 @@ namespace diffusion_solver::lua_utils
 void RegisterLuaEntities(lua_State* L);
 } // namespace diffusion_solver::lua_utils
 
-#endif // CHITECH_DIFFUSION_LUA_H
+

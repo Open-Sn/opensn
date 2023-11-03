@@ -1,5 +1,4 @@
-#ifndef CHITECH_GRAPHPARTITIONER_H
-#define CHITECH_GRAPHPARTITIONER_H
+#pragma once
 
 #include "ChiObject.h"
 
@@ -27,4 +26,4 @@ protected:
 
 } // namespace chi
 
-#endif // CHITECH_GRAPHPARTITIONER_H
+

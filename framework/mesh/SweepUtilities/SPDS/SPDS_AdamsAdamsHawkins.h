@@ -1,5 +1,4 @@
-#ifndef CHITECH_SPDS_ADAMSADAMSHAWKINS_H
-#define CHITECH_SPDS_ADAMSADAMSHAWKINS_H
+#pragma once
 
 #include "SPDS.h"
 
@@ -24,4 +23,4 @@ private:
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHITECH_SPDS_ADAMSADAMSHAWKINS_H
+

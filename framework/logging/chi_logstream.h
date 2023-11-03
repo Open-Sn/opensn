@@ -1,5 +1,4 @@
-#ifndef CHI_LOGSTREAM_H
-#define CHI_LOGSTREAM_H
+#pragma once
 
 #include <iostream>
 #include <sstream>
@@ -44,4 +43,3 @@ struct DummyStream : public std::ostream
   ~DummyStream() {}
 };
 } // namespace chi
-#endif // CHI_LOGSTREAM_H

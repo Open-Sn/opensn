@@ -1,5 +1,4 @@
-#ifndef CHITECH_LAGRANGEBASE_H
-#define CHITECH_LAGRANGEBASE_H
+#pragma once
 
 #include "math/SpatialDiscretization/FiniteElement/FiniteElementBase.h"
 
@@ -37,4 +36,4 @@ protected:
 
 } // namespace chi_math::spatial_discretization
 
-#endif // CHITECH_LAGRANGEBASE_H
+

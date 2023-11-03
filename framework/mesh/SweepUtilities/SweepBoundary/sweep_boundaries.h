@@ -1,5 +1,4 @@
-#ifndef CHI_SWEEP_BOUNDARY_BASE_H
-#define CHI_SWEEP_BOUNDARY_BASE_H
+#pragma once
 
 #include "mesh/chi_mesh.h"
 #include "math/chi_math.h"
@@ -240,4 +239,3 @@ public:
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHI_SWEEP_BOUNDARY_BASE_H

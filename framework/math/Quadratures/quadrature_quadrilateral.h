@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_QUADRILATERAL_H
-#define QUADRATURE_QUADRILATERAL_H
+#pragma once
 
 #include "quadrature.h"
 
@@ -17,4 +16,3 @@ public:
   explicit QuadratureQuadrilateral(QuadratureOrder order);
 };
 
-#endif // QUADRATURE_QUADRILATERAL_H

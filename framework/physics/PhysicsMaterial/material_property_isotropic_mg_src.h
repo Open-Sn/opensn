@@ -1,5 +1,4 @@
-#ifndef CHI_PHYSICS_PROPERTY_ISOTROPIC_MG_SRC_H
-#define CHI_PHYSICS_PROPERTY_ISOTROPIC_MG_SRC_H
+#pragma once
 
 #include "material_property_base.h"
 
@@ -42,4 +41,3 @@ public:
 
 } // namespace chi_physics
 
-#endif // CHI_PHYSICS_PROPERTY_ISOTROPIC_MG_SRC_H

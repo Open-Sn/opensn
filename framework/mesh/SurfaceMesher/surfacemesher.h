@@ -1,5 +1,4 @@
-#ifndef CHI_MESH_SURFACEMESHER_H
-#define CHI_MESH_SURFACEMESHER_H
+#pragma once
 
 #include "../chi_mesh.h"
 
@@ -31,4 +30,3 @@ public:
   virtual ~SurfaceMesher() = default;
 };
 
-#endif // CHI_MESH_SURFACEMESHER_H

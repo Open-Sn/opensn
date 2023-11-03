@@ -1,5 +1,4 @@
-#ifndef CHI_GRAPH_H
-#define CHI_GRAPH_H
+#pragma once
 
 #include "mesh/chi_mesh.h"
 
@@ -9,4 +8,3 @@ struct GraphVertex;
 class DirectedGraph;
 } // namespace chi
 
-#endif // CHI_GRAPH_H

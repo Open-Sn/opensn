@@ -1,5 +1,4 @@
-#ifndef _product_quadrature_h
-#define _product_quadrature_h
+#pragma once
 
 #include <map>
 #include <vector>
@@ -94,4 +93,4 @@ public:
                               bool verbose);
 };
 
-#endif
+

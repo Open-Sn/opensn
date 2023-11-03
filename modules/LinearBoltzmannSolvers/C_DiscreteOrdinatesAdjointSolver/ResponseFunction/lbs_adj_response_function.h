@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_ADJ_RESPONSE_FUNCTION_H
-#define CHITECH_LBS_ADJ_RESPONSE_FUNCTION_H
+#pragma once
 
 #include <utility>
 
@@ -28,4 +27,4 @@ struct ResponseFunctionDesignation
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_ADJ_RESPONSE_FUNCTION_H
+

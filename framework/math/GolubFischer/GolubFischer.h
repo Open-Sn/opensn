@@ -1,5 +1,4 @@
-#ifndef _golubfischer_h
-#define _golubfischer_h
+#pragma once
 
 /*	This module is the encapsulation of the algorithm
  *	depicted in:
@@ -68,4 +67,3 @@ private:
 };
 } // namespace chi_math
 
-#endif

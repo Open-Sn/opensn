@@ -1,5 +1,4 @@
-#ifndef SPATIAL_DISCRETIZATION_PWLD_H
-#define SPATIAL_DISCRETIZATION_PWLD_H
+#pragma once
 
 #include "PieceWiseLinearBase.h"
 #include "math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
@@ -68,4 +67,3 @@ private:
 
 } // namespace chi_math::spatial_discretization
 
-#endif // SPATIAL_DISCRETIZATION_PWLD_H

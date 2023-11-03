@@ -1,5 +1,4 @@
-#ifndef LBADJOINTSOLVER_H
-#define LBADJOINTSOLVER_H
+#pragma once
 
 #include <utility>
 
@@ -49,4 +48,3 @@ public:
 
 } // namespace lbs
 
-#endif // LBADJOINTSOLVER_H

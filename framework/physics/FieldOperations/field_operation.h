@@ -1,5 +1,4 @@
-#ifndef CHITECH_FIELD_OPERATION_H
-#define CHITECH_FIELD_OPERATION_H
+#pragma once
 
 #include "ChiObject.h"
 
@@ -21,4 +20,4 @@ public:
 
 } // namespace chi_physics::field_operations
 
-#endif // CHITECH_FIELD_OPERATION_H
+

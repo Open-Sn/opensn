@@ -1,5 +1,4 @@
-#ifndef CHI_MATH_INCDEF_H
-#define CHI_MATH_INCDEF_H
+#pragma once
 
 #include <math.h>
 #include <cmath>
@@ -11,4 +10,4 @@
 #include <cstdio>
 #include <fstream>
 
-#endif
+

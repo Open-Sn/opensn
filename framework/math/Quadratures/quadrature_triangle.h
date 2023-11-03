@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_TRIANGLE_H
-#define QUADRATURE_TRIANGLE_H
+#pragma once
 
 #include "quadrature.h"
 
@@ -23,4 +22,3 @@ public:
                       const unsigned int n_wts);
 };
 
-#endif

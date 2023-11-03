@@ -1,5 +1,4 @@
-#ifndef CHI_MESHHANDLER_H
-#define CHI_MESHHANDLER_H
+#pragma once
 
 #include <utility>
 #include <vector>
@@ -58,4 +57,3 @@ public:
   MeshHandler& operator=(const MeshHandler&) = delete;
 };
 
-#endif // CHI_MESHHANDLER_H

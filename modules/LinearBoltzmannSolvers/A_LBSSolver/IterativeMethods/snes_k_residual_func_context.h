@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_K_RESIDUAL_FUNC_CONTEXT_H
-#define CHITECH_LBS_K_RESIDUAL_FUNC_CONTEXT_H
+#pragma once
 
 #include <string>
 namespace lbs
@@ -11,4 +10,4 @@ struct KResidualFunctionContext
 };
 } // namespace lbs
 
-#endif // CHITECH_LBS_K_RESIDUAL_FUNC_CONTEXT_H
+

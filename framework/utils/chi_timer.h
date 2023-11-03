@@ -1,5 +1,4 @@
-#ifndef CHI_TIMER_H
-#define CHI_TIMER_H
+#pragma once
 
 #include <string>
 #include <chrono>
@@ -33,4 +32,4 @@ public:
 void Sleep(std::chrono::duration<double> time);
 } // namespace chi
 
-#endif
+

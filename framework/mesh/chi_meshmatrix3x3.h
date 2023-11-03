@@ -1,5 +1,4 @@
-#ifndef _chi_meshmatrix3x3_h
-#define _chi_meshmatrix3x3_h
+#pragma once
 
 #include <cmath>
 #include <sstream>
@@ -288,4 +287,4 @@ struct chi_mesh::Matrix3x3
   }
 };
 
-#endif
+

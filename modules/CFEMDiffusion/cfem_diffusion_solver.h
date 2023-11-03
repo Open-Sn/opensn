@@ -1,5 +1,4 @@
-#ifndef CFEM_DIFFUSION_SOLVER_H
-#define CFEM_DIFFUSION_SOLVER_H
+#pragma once
 
 #include "physics/SolverBase/chi_solver.h"
 #include "math/PETScUtils/petsc_utils.h"
@@ -65,4 +64,4 @@ public:
 
 } // namespace cfem_diffusion
 
-#endif // CFEM_DIFFUSION_SOLVER_H
+

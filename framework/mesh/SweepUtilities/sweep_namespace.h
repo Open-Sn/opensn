@@ -1,5 +1,4 @@
-#ifndef CHI_SWEEP_H
-#define CHI_SWEEP_H
+#pragma once
 
 #include "../chi_mesh.h"
 #include <set>
@@ -67,4 +66,4 @@ typedef AngleSetStatus ExecutionPermission;
 } // namespace sweep_management
 } // namespace chi_mesh
 
-#endif // CHI_SWEEP_H
+

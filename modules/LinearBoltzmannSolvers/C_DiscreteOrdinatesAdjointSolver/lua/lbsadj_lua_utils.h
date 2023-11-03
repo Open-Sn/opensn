@@ -1,5 +1,4 @@
-#ifndef LBSADJOINTSOLVER_LUA_UTILS_H
-#define LBSADJOINTSOLVER_LUA_UTILS_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -15,4 +14,3 @@ int chiAdjointSolverReadFluxMomentsToBuffer(lua_State* L);
 int chiAdjointSolverApplyFluxMomentBuffer(lua_State* L);
 } // namespace lbs::adjoint_lua_utils
 
-#endif // LBSADJOINTSOLVER_LUA_UTILS_H

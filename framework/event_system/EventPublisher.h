@@ -1,5 +1,4 @@
-#ifndef CHITECH_EVENTPUBLISHER_H
-#define CHITECH_EVENTPUBLISHER_H
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -35,4 +34,4 @@ protected:
 
 } // namespace chi
 
-#endif // CHITECH_EVENTPUBLISHER_H
+

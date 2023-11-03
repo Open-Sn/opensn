@@ -1,5 +1,4 @@
-#ifndef CHI_DIFFUSION_SOLVER_H
-#define CHI_DIFFUSION_SOLVER_H
+#pragma once
 
 #include "mesh/Cell/cell.h"
 
@@ -128,4 +127,4 @@ public:
   void UpdateFieldFunctions();
 };
 
-#endif
+

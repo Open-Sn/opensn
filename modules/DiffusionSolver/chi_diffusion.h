@@ -1,5 +1,4 @@
-#ifndef _chi_diffusion_h
-#define _chi_diffusion_h
+#pragma once
 
 #include <petscksp.h>
 
@@ -21,4 +20,3 @@ PetscErrorCode DiffusionConvergenceTestNPT(
   KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void* monitordestroy);
 } // namespace chi_diffusion
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef CHITECH_INPUT_PARAMETERS_H
-#define CHITECH_INPUT_PARAMETERS_H
+#pragma once
 
 #include "parameter_block.h"
 #include "data_types/allowable_range.h"
@@ -171,4 +170,4 @@ public:
 
 } // namespace chi
 
-#endif // CHITECH_INPUT_PARAMETERS_H
+

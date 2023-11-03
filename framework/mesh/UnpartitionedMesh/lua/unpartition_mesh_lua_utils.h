@@ -1,5 +1,4 @@
-#ifndef CHITECH_UNPARTITION_MESH_LUA_UTILS_H
-#define CHITECH_UNPARTITION_MESH_LUA_UTILS_H
+#pragma once
 
 #include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
 
@@ -25,4 +24,4 @@ int chiUnpartitionedMeshFinalizeEmpty(lua_State* L);
 
 } // namespace chi_mesh::unpartition_mesh_lua_utils
 
-#endif // CHITECH_UNPARTITION_MESH_LUA_UTILS_H
+

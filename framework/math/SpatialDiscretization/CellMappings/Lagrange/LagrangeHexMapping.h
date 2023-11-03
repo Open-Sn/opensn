@@ -1,5 +1,4 @@
-#ifndef CHITECH_LAGRANGEHEXMAPPING_H
-#define CHITECH_LAGRANGEHEXMAPPING_H
+#pragma once
 
 #include "math/SpatialDiscretization/CellMappings/LagrangeBaseMapping.h"
 
@@ -30,4 +29,4 @@ protected:
 
 } // namespace chi_math::cell_mapping
 
-#endif // CHITECH_LAGRANGEHEXMAPPING_H
+

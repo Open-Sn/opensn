@@ -1,5 +1,4 @@
-#ifndef CELL_FVDATA_BASE_H
-#define CELL_FVDATA_BASE_H
+#pragma once
 
 #include <utility>
 
@@ -63,4 +62,3 @@ public:
 
 } // namespace chi_math::cell_mapping
 
-#endif

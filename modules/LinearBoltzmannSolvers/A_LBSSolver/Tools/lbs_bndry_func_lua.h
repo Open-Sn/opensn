@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_BNDRY_FUNC_LUA_H
-#define CHITECH_LBS_BNDRY_FUNC_LUA_H
+#pragma once
 
 #include "mesh/SweepUtilities/SweepBoundary/sweep_boundaries.h"
 
@@ -36,4 +35,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_BNDRY_FUNC_LUA_H
+

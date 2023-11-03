@@ -1,5 +1,4 @@
-#ifndef CHI_MESH_UNPARTITIONED_MESH_H
-#define CHI_MESH_UNPARTITIONED_MESH_H
+#pragma once
 
 #include "mesh/chi_mesh.h"
 #include "mesh/Cell/cell.h"
@@ -149,4 +148,4 @@ public:
   }
 };
 
-#endif // CHI_MESH_UNPARTITIONED_MESH_H
+

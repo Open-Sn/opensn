@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_LUA_UTILS_H
-#define CHITECH_LBS_LUA_UTILS_H
+#pragma once
 
 #include "chi_lua.h"
 #include "parameters/input_parameters.h"
@@ -23,4 +22,4 @@ int chiLBSSetPhiFromFieldFunction(lua_State* L);
 void RegisterLuaEntities(lua_State* L);
 } // namespace lbs::common_lua_utils
 
-#endif // CHITECH_LBS_LUA_UTILS_H
+

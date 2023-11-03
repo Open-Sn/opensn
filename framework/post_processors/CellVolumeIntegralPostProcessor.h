@@ -1,5 +1,4 @@
-#ifndef CHITECH_CELLVOLUMEINTEGRALPOSTPROCESSOR_H
-#define CHITECH_CELLVOLUMEINTEGRALPOSTPROCESSOR_H
+#pragma once
 
 #include "PostProcessor.h"
 #include "physics/FieldFunction/GridBasedFieldFunctionInterface.h"
@@ -37,4 +36,4 @@ protected:
 
 } // namespace chi
 
-#endif // CHITECH_CELLVOLUMEINTEGRALPOSTPROCESSOR_H
+

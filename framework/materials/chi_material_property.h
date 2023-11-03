@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MATERIAL_PROPERTY_H
-#define CHITECH_CHI_MATERIAL_PROPERTY_H
+#pragma once
 
 #include "ChiObject.h"
 
@@ -21,4 +20,4 @@ public:
 
 } // namespace chi
 
-#endif // CHITECH_CHI_MATERIAL_PROPERTY_H
+

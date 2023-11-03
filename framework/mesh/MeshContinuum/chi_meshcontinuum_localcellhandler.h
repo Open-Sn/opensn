@@ -1,5 +1,4 @@
-#ifndef CHI_MESHCONTINUUM_LOCALCELLHANDLER_H_
-#define CHI_MESHCONTINUUM_LOCALCELLHANDLER_H_
+#pragma once
 
 #include "mesh/Cell/cell.h"
 
@@ -94,4 +93,3 @@ public:
 
 } // namespace chi_mesh
 
-#endif // CHI_MESHCONTINUUM_LOCALCELLHANDLER_H_

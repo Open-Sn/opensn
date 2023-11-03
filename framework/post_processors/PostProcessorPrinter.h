@@ -1,5 +1,4 @@
-#ifndef CHITECH_POSTPROCESSORPRINTER_H
-#define CHITECH_POSTPROCESSORPRINTER_H
+#pragma once
 
 #include "event_system/EventSubscriber.h"
 #include <memory>
@@ -124,4 +123,4 @@ private:
 
 } // namespace chi
 
-#endif // CHITECH_POSTPROCESSORPRINTER_H
+

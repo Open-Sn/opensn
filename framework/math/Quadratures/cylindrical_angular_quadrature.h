@@ -1,5 +1,4 @@
-#ifndef CYLINDRICAL_ANGULAR_QUADRATURE_H
-#define CYLINDRICAL_ANGULAR_QUADRATURE_H
+#pragma once
 
 #include "math/Quadratures/curvilinear_angular_quadrature.h"
 
@@ -45,4 +44,4 @@ private:
   void InitializeParameters();
 };
 
-#endif // CYLINDRICAL_ANGULAR_QUADRATURE_H
+

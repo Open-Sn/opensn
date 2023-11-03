@@ -1,5 +1,4 @@
-#ifndef ADJOINT_MGXS_H
-#define ADJOINT_MGXS_H
+#pragma once
 
 #include "multigroup_xs.h"
 
@@ -91,4 +90,4 @@ public:
 
 } // namespace chi_physics
 
-#endif // ADJOINT_MGXS_H
+

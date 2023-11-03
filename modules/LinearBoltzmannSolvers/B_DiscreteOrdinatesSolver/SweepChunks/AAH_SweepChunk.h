@@ -1,5 +1,4 @@
-#ifndef CHITECH_AAH_SWEEPCHUNK_H
-#define CHITECH_AAH_SWEEPCHUNK_H
+#pragma once
 
 #include "SweepChunk.h"
 
@@ -50,4 +49,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_AAH_SWEEPCHUNK_H
+

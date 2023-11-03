@@ -1,5 +1,4 @@
-#ifndef LBS_GROUPSET_H
-#define LBS_GROUPSET_H
+#pragma once
 
 #include "ChiObject.h"
 
@@ -96,4 +95,4 @@ public:
 };
 } // namespace lbs
 
-#endif
+

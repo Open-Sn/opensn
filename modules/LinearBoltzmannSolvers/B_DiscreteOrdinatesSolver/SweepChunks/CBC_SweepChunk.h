@@ -1,5 +1,4 @@
-#ifndef CHITECH_CBC_SWEEPCHUNK_H
-#define CHITECH_CBC_SWEEPCHUNK_H
+#pragma once
 
 #include "SweepChunk.h"
 
@@ -77,4 +76,4 @@ protected:
 
 } // namespace lbs
 
-#endif // CHITECH_CBC_SWEEPCHUNK_H
+

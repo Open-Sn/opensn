@@ -1,5 +1,4 @@
-#ifndef _chi_mesh_edgeloops_h
-#define _chi_mesh_edgeloops_h
+#pragma once
 
 /**Structure containing edge properties*/
 struct chi_mesh::Edge
@@ -39,4 +38,4 @@ struct chi_mesh::Edge
   }
 };
 
-#endif
+

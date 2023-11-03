@@ -1,5 +1,4 @@
-#ifndef MULTIGROUP_XS_H
-#define MULTIGROUP_XS_H
+#pragma once
 
 #include "physics/PhysicsMaterial/material_property_base.h"
 #include "math/SparseMatrix/chi_math_sparse_matrix.h"
@@ -71,4 +70,4 @@ public:
 
 } // namespace chi_physics
 
-#endif // MULTIGROUP_XS_H
+

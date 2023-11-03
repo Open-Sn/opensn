@@ -1,5 +1,4 @@
-#ifndef LBTS_SWEEPCHUNK_PWL_H
-#define LBTS_SWEEPCHUNK_PWL_H
+#pragma once
 
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 
@@ -83,4 +82,4 @@ public:
 };
 } // namespace lbs
 
-#endif // LBTS_SWEEPCHUNK_PWL_H
+

@@ -1,5 +1,4 @@
-#ifndef CHITECH_CBC_ANGLESET_H
-#define CHITECH_CBC_ANGLESET_H
+#pragma once
 
 #include "mesh/SweepUtilities/AngleSet/AngleSet.h"
 #include "CBC_AsyncComm.h"
@@ -63,4 +62,4 @@ protected:
 
 } // namespace lbs
 
-#endif // CHITECH_CBC_ANGLESET_H
+

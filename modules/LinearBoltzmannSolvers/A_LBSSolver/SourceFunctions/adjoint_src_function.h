@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_ADJOINT_SRC_FUNCTION_H
-#define CHITECH_LBS_ADJOINT_SRC_FUNCTION_H
+#pragma once
 
 #include "LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/source_function.h"
 
@@ -33,4 +32,4 @@ public:
 
 } // namespace lbs
 
-#endif // CHITECH_LBS_ADJOINT_SRC_FUNCTION_H
+

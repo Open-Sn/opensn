@@ -1,5 +1,4 @@
-#ifndef CHITECH_THETA_SCHEME_TIME_INTGR_H
-#define CHITECH_THETA_SCHEME_TIME_INTGR_H
+#pragma once
 
 #include "time_integration.h"
 
@@ -20,4 +19,4 @@ public:
 
 } // namespace chi_math
 
-#endif // CHITECH_THETA_SCHEME_TIME_INTGR_H
+

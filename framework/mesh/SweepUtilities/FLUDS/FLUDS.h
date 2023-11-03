@@ -1,5 +1,4 @@
-#ifndef CHI_FLUDS_H
-#define CHI_FLUDS_H
+#pragma once
 
 #include <vector>
 #include <set>
@@ -66,4 +65,3 @@ protected:
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHI_FLUDS_H

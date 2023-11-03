@@ -1,5 +1,4 @@
-#ifndef CHI_FFINTER_VOLUME_H
-#define CHI_FFINTER_VOLUME_H
+#pragma once
 
 #include "../chi_ffinterpolation.h"
 #include "mesh/LogicalVolume/LogicalVolume.h"
@@ -51,4 +50,4 @@ public:
   void ExportPython(std::string base_name) override {}
 };
 
-#endif
+

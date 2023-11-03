@@ -1,5 +1,4 @@
-#ifndef CHI_MESHCONTINUUM_VERTEXHANDLER_H
-#define CHI_MESHCONTINUUM_VERTEXHANDLER_H
+#pragma once
 
 #include "mesh/chi_meshvector.h"
 
@@ -48,4 +47,4 @@ public:
 
 } // namespace chi_mesh
 
-#endif // CHI_MESHCONTINUUM_VERTEXHANDLER_H
+

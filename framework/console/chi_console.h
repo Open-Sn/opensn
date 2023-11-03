@@ -1,5 +1,4 @@
-#ifndef CHI_CONSOLE_H
-#define CHI_CONSOLE_H
+#pragma once
 
 extern "C"
 {
@@ -209,4 +208,4 @@ public:
 };
 } // namespace chi
 
-#endif
+

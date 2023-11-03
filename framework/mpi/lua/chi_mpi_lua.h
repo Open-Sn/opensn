@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MPI_LUA_H
-#define CHITECH_CHI_MPI_LUA_H
+#pragma once
 
 #include "chi_lua.h"
 
@@ -10,4 +9,4 @@ int chiMPIBarrier(lua_State* L);
 
 } // namespace chi_mpi_utils
 
-#endif // CHITECH_CHI_MPI_LUA_H
+

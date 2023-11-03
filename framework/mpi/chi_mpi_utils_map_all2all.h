@@ -1,5 +1,4 @@
-#ifndef CHI_MPI_MAP_ALL2ALL_H
-#define CHI_MPI_MAP_ALL2ALL_H
+#pragma once
 
 #include <map>
 #include <vector>
@@ -116,4 +115,4 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
 
 } // namespace chi_mpi_utils
 
-#endif // CHI_MPI_MAP_ALL2ALL_H
+

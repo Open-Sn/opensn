@@ -1,5 +1,4 @@
-#ifndef CHITECH_OBJECT_FACTORY_H
-#define CHITECH_OBJECT_FACTORY_H
+#pragma once
 
 #include "parameters/input_parameters.h"
 #include "ChiObject.h"
@@ -165,4 +164,4 @@ private:
                                   const std::string& calling_function) const;
 };
 
-#endif // CHITECH_OBJECT_FACTORY_H
+

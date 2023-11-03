@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MESH_SNAPTOPLANEMESHMODIFIER_H
-#define CHITECH_CHI_MESH_SNAPTOPLANEMESHMODIFIER_H
+#pragma once
 
 #include "MeshModifier.h"
 
@@ -28,4 +27,4 @@ protected:
 
 } // namespace chi_mesh
 
-#endif // CHITECH_CHI_MESH_SNAPTOPLANEMESHMODIFIER_H
+

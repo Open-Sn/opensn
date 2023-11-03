@@ -1,5 +1,4 @@
-#ifndef CHITECH_NDARRAY_H
-#define CHITECH_NDARRAY_H
+#pragma once
 
 #include <cstddef>
 #include <type_traits>
@@ -605,4 +604,4 @@ public:
 
 } // namespace chi_data_types
 
-#endif // CHITECH_NDARRAY_H
+

@@ -1,5 +1,4 @@
-#ifndef CHITECH_LBS_SHELL_OPERATIONS_H
-#define CHITECH_LBS_SHELL_OPERATIONS_H
+#pragma once
 
 #include <petscksp.h>
 
@@ -14,4 +13,4 @@ int WGDSA_TGDSA_PreConditionerMult2(lbs::WGSContext<Mat, Vec, KSP>& gs_context_p
 int MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output);
 } // namespace lbs
 
-#endif // CHITECH_LBS_SHELL_OPERATIONS_H
+

@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_MATH_NL_SOLVER_CONTEXT_H
-#define CHITECH_CHI_MATH_NL_SOLVER_CONTEXT_H
+#pragma once
 
 namespace chi_math
 {
@@ -12,4 +11,4 @@ struct NonLinearSolverContext
 
 } // namespace chi_math
 
-#endif // CHITECH_CHI_MATH_NL_SOLVER_CONTEXT_H
+

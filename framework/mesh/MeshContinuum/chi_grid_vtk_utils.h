@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_GRID_VTK_UTILS_H
-#define CHITECH_CHI_GRID_VTK_UTILS_H
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -61,4 +60,4 @@ void WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_
 
 } // namespace chi_mesh
 
-#endif // CHITECH_CHI_GRID_VTK_UTILS_H
+

@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_JACOBI_H
-#define QUADRATURE_JACOBI_H
+#pragma once
 
 #include "math/Quadratures/quadrature.h"
 
@@ -27,4 +26,3 @@ private:
 
 } // namespace chi_math
 
-#endif // QUADRATURE_JACOBI_H

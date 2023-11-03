@@ -1,5 +1,4 @@
-#ifndef CHITECH_TIMINGLOG_H
-#define CHITECH_TIMINGLOG_H
+#pragma once
 
 #include <cstddef>
 #include <map>
@@ -85,4 +84,4 @@ protected:
 
 } // namespace chi
 
-#endif // CHITECH_TIMINGLOG_H
+

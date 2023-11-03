@@ -1,5 +1,4 @@
-#ifndef CHI_PHYSICS_NAMESPACE_H
-#define CHI_PHYSICS_NAMESPACE_H
+#pragma once
 
 #include <petscksp.h>
 
@@ -23,4 +22,3 @@ class Solver;
 std::string GetPETScConvergedReasonstring(KSPConvergedReason reason);
 } // namespace chi_physics
 
-#endif

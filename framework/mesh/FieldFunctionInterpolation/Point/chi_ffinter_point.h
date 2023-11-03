@@ -1,5 +1,4 @@
-#ifndef CHITECH_CHI_FFINTER_POINT_H
-#define CHITECH_CHI_FFINTER_POINT_H
+#pragma once
 
 #include "../chi_ffinterpolation.h"
 #include "mesh/chi_mesh.h"
@@ -32,4 +31,4 @@ public:
 };
 } // namespace chi_mesh
 
-#endif // CHITECH_CHI_FFINTER_POINT_H
+

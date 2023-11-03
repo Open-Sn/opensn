@@ -1,5 +1,4 @@
-#ifndef CHI_PHYSICS_MATERIAL_PROPERTY_BASE_H
-#define CHI_PHYSICS_MATERIAL_PROPERTY_BASE_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -38,4 +37,3 @@ public:
 
 } // namespace chi_physics
 
-#endif // CHI_PHYSICS_MATERIAL_PROPERTY_BASE_H

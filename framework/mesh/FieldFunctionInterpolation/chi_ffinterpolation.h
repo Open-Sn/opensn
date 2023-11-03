@@ -1,5 +1,4 @@
-#ifndef CHI_FFINTERPOLATION_H
-#define CHI_FFINTERPOLATION_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -81,4 +80,3 @@ public:
 
 } // namespace chi_mesh
 
-#endif

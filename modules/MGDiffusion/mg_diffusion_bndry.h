@@ -1,5 +1,4 @@
-#ifndef MG_DIFFUSION_BOUNDARY_H
-#define MG_DIFFUSION_BOUNDARY_H
+#pragma once
 
 #include "array"
 
@@ -27,4 +26,3 @@ public:
   // std::array<double, 3> mg_values = {0.25,0.5,0.};
 };
 
-#endif // MG_DIFFUSION_BOUNDARY_H

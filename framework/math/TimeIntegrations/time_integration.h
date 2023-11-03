@@ -1,5 +1,4 @@
-#ifndef CHITECH_TIME_INTEGRATION_H
-#define CHITECH_TIME_INTEGRATION_H
+#pragma once
 
 #include "ChiObject.h"
 #include "math/chi_math_time_stepping.h"
@@ -23,4 +22,4 @@ public:
 
 } // namespace chi_math
 
-#endif // CHITECH_TIME_INTEGRATION_H
+

@@ -1,5 +1,4 @@
-#ifndef CHI_CONSOLE_STRUCTS_H
-#define CHI_CONSOLE_STRUCTS_H
+#pragma once
 
 //=============================================================================
 namespace chi
@@ -26,4 +25,4 @@ struct CSTMemory
 };
 } // namespace chi
 
-#endif
+

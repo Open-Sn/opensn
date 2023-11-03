@@ -1,5 +1,4 @@
-#ifndef CHITECH_IMPLICIT_EULER_TIME_INTGR_H
-#define CHITECH_IMPLICIT_EULER_TIME_INTGR_H
+#pragma once
 
 #include "theta_scheme_time_intgr.h"
 
@@ -15,4 +14,4 @@ public:
 
 } // namespace chi_math
 
-#endif // CHITECH_IMPLICIT_EULER_TIME_INTGR_H
+

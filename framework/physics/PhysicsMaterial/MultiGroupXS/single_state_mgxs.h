@@ -1,5 +1,4 @@
-#ifndef CHI_PHYSICS_SINGLE_STATE_MGXS_H
-#define CHI_PHYSICS_SINGLE_STATE_MGXS_H
+#pragma once
 
 #include "multigroup_xs.h"
 
@@ -143,4 +142,3 @@ public:
 
 } // namespace chi_physics
 
-#endif // CHI_PHYSICS_SINGLE_STATE_MGXS_H

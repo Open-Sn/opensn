@@ -1,5 +1,4 @@
-#ifndef CHITECH_FLUDSCOMMONDATA_H
-#define CHITECH_FLUDSCOMMONDATA_H
+#pragma once
 
 #include <vector>
 #include <cstdint>
@@ -45,4 +44,4 @@ protected:
 
 } // namespace chi_mesh::sweep_management
 
-#endif // CHITECH_FLUDSCOMMONDATA_H
+

@@ -1,5 +1,4 @@
-#ifndef CHITECH_SOLVERINFOPOSTPROCESSOR_H
-#define CHITECH_SOLVERINFOPOSTPROCESSOR_H
+#pragma once
 
 #include "PostProcessor.h"
 
@@ -26,4 +25,4 @@ private:
 
 } // namespace chi
 
-#endif // CHITECH_SOLVERINFOPOSTPROCESSOR_H
+

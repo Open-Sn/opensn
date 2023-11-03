@@ -1,5 +1,4 @@
-#ifndef DFEM_DIFFUSION_LUA_UTILS_H
-#define DFEM_DIFFUSION_LUA_UTILS_H
+#pragma once
 
 #include "chi_lua.h"
 #include "../dfem_diffusion_solver.h"
@@ -15,4 +14,3 @@ void RegisterLuaEntities(lua_State* L);
 } // namespace dfem_diffusion_lua_utils
 } // namespace dfem_diffusion
 
-#endif // DFEM_DIFFUSION_LUA_UTILS_H

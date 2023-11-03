@@ -1,5 +1,4 @@
-#ifndef CHI_MESH_RAYTRACING_H
-#define CHI_MESH_RAYTRACING_H
+#pragma once
 
 #include "../chi_mesh.h"
 
@@ -123,4 +122,3 @@ void PopulateRaySegmentLengths(const chi_mesh::MeshContinuum& grid,
                                std::vector<double>& segment_lengths);
 
 } // namespace chi_mesh
-#endif
