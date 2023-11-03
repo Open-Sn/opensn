@@ -1,7 +1,7 @@
 #include "pi_keigen_scdsa.h"
 
 #include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
-#include "A_LBSSolver/Acceleration/diffusion_PWLC.h"
+#include "A_LBSSolver/Acceleration/diffusion_pwlc_solver.h"
 
 #include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
 #include "math/PETScUtils/petsc_utils.h"

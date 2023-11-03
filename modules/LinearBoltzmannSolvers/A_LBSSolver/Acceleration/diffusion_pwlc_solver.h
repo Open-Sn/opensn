@@ -5,7 +5,7 @@
 namespace lbs::acceleration
 {
 
-class DiffusionPWLCSolver : public lbs::acceleration::DiffusionSolver
+class DiffusionPWLCSolver : public DiffusionSolver
 {
 public:
   DiffusionPWLCSolver(std::string text_name,
@@ -16,10 +16,22 @@ public:
                       const std::vector<UnitCellMatrices>& unit_cell_matrices,
                       bool verbose);
 
-  // 02c
+  /**
+   * Assembles both the matrix and the RHS using unit cell-matrices. These are the routines used in
+   * the production versions.
+   */
   void AssembleAand_b(const std::vector<double>& q_vector) override;
-  // 02d
+
+  /**
+   * Assembles the RHS using unit cell-matrices. These are the routines used in the production
+   * versions.
+   */
   void Assemble_b(const std::vector<double>& q_vector) override;
+
+  /**
+   * Assembles the RHS using unit cell-matrices. These are the routines used in the production
+   * versions.
+   */
   void Assemble_b(Vec petsc_q_vector) override;
 };
 

@@ -6,7 +6,7 @@
 
 #include "A_LBSSolver/IterativeMethods/ags_linear_solver.h"
 #include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
-#include "A_LBSSolver/Acceleration/diffusion_PWLC.h"
+#include "A_LBSSolver/Acceleration/diffusion_pwlc_solver.h"
 
 #include <iomanip>
 
