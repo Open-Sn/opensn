@@ -1,38 +1,34 @@
 #include "cfem_diffusion_solver.h"
-
 #include "chi_runtime.h"
 #include "chi_log.h"
 #include "utils/chi_timer.h"
-
 #include "mesh/MeshHandler/chi_meshhandler.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
-
 #include "cfem_diffusion_bndry.h"
-
 #include "physics/FieldFunction/fieldfunction_gridbased.h"
-
 #include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
+#include "chi_lua.h"
 
-//============================================= constructor
-cfem_diffusion::Solver::Solver(const std::string& in_solver_name)
+namespace cfem_diffusion
+{
+
+Solver::Solver(const std::string& in_solver_name)
   : chi_physics::Solver(in_solver_name,
                         {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
 {
 }
 
-//============================================= destructor
-cfem_diffusion::Solver::~Solver()
+Solver::~Solver()
 {
   VecDestroy(&x_);
   VecDestroy(&b_);
   MatDestroy(&A_);
 }
 
-//============================================= Initialize
 void
-cfem_diffusion::Solver::Initialize()
+Solver::Initialize()
 {
-  const std::string fname = "cfem_diffusion::Solver::Initialize";
+  const std::string fname = "Solver::Initialize";
   Chi::log.Log() << "\n"
                  << Chi::program_timer.GetTimeString() << " " << TextName()
                  << ": Initializing CFEM Diffusion solver ";
@@ -157,12 +153,10 @@ cfem_diffusion::Solver::Initialize()
     field_functions_.push_back(initial_field_function);
     Chi::field_function_stack.push_back(initial_field_function);
   } // if not ff set
+}
 
-} // end initialize
-
-//========================================================== Execute
 void
-cfem_diffusion::Solver::Execute()
+Solver::Execute()
 {
   Chi::log.Log() << "\nExecuting CFEM Diffusion solver";
 
@@ -337,3 +331,52 @@ cfem_diffusion::Solver::Execute()
 
   Chi::log.Log() << "Done solving";
 }
+
+double
+Solver::CallLua_iXYZFunction(lua_State* L,
+                             const std::string& lua_func_name,
+                             const int imat,
+                             const chi_mesh::Vector3& xyz)
+{
+  //============= Load lua function
+  lua_getglobal(L, lua_func_name.c_str());
+
+  //============= Error check lua function
+  if (not lua_isfunction(L, -1))
+    throw std::logic_error("CallLua_iXYZFunction attempted to access lua-function, " +
+                           lua_func_name +
+                           ", but it seems the function"
+                           " could not be retrieved.");
+
+  //============= Push arguments
+  lua_pushinteger(L, imat);
+  lua_pushnumber(L, xyz.x);
+  lua_pushnumber(L, xyz.y);
+  lua_pushnumber(L, xyz.z);
+
+  //============= Call lua function
+  // 4 arguments, 1 result (double), 0=original error object
+  double lua_return;
+  if (lua_pcall(L, 4, 1, 0) == 0)
+  {
+    LuaCheckNumberValue("CallLua_iXYZFunction", L, -1);
+    lua_return = lua_tonumber(L, -1);
+  }
+  else
+    throw std::logic_error("CallLua_iXYZFunction attempted to call lua-function, " + lua_func_name +
+                           ", but the call failed." + xyz.PrintStr());
+
+  lua_pop(L, 1); // pop the double, or error code
+
+  return lua_return;
+}
+
+void
+Solver::UpdateFieldFunctions()
+{
+  auto& ff = *field_functions_.front();
+
+  ff.UpdateFieldVector(x_);
+}
+
+} // namespace cfem_diffusion
