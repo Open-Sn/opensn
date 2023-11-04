@@ -1,15 +1,39 @@
 #include "chi_ffinter_volume.h"
-
-#include "math/VectorGhostCommunicator/vector_ghost_communicator.h"
-#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 #include "physics/FieldFunction/fieldfunction_gridbased.h"
 #include "math/SpatialDiscretization/SpatialDiscretization.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "math/VectorGhostCommunicator/vector_ghost_communicator.h"
+#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "chi_runtime.h"
+#include "chi_log.h"
+#include "console/chi_console.h"
 
-//###################################################################
-/**Executes the volume interpolation.*/
+namespace chi_mesh
+{
+
 void
-chi_mesh::FieldFunctionInterpolationVolume::Execute()
+FieldFunctionInterpolationVolume::Initialize()
+{
+  Chi::log.Log0Verbose1() << "Initializing volume interpolator.";
+  //================================================== Check grid available
+  if (field_functions_.empty())
+    throw std::logic_error("Unassigned field function in volume field "
+                           "function interpolator.");
+
+  if (logical_volume_ == nullptr)
+    throw std::logic_error("Unassigned logical volume in volume field function"
+                           "interpolator.");
+
+  const auto& grid = field_functions_.front()->GetSpatialDiscretization().Grid();
+
+  //================================================== Find cells inside volume
+  for (const auto& cell : grid.local_cells)
+    if (logical_volume_->Inside(cell.centroid_))
+      cell_local_ids_inside_logvol_.push_back(cell.local_id_);
+}
+
+void
+FieldFunctionInterpolationVolume::Execute()
 {
   const auto& ref_ff = *field_functions_.front();
   const auto& sdm = ref_ff.GetSpatialDiscretization();
@@ -19,7 +43,7 @@ chi_mesh::FieldFunctionInterpolationVolume::Execute()
   const auto uid = 0;
   const auto cid = ref_component_;
 
-  using namespace chi_mesh::ff_interpolation;
+  using namespace ff_interpolation;
   const auto field_data = ref_ff.GetGhostedFieldVector();
 
   double local_volume = 0.0;
@@ -92,3 +116,22 @@ chi_mesh::FieldFunctionInterpolationVolume::Execute()
     op_value_ = global_value;
   }
 }
+
+double
+FieldFunctionInterpolationVolume::CallLuaFunction(double ff_value, int mat_id) const
+{
+  lua_State* L = Chi::console.GetConsoleState();
+  double ret_val = 0.0;
+
+  lua_getglobal(L, op_lua_func_.c_str());
+  lua_pushnumber(L, ff_value);
+  lua_pushnumber(L, mat_id);
+
+  // 2 arguments, 1 result, 0=original error object
+  if (lua_pcall(L, 2, 1, 0) == 0) { ret_val = lua_tonumber(L, -1); }
+  lua_pop(L, 1);
+
+  return ret_val;
+}
+
+} // namespace chi_mesh

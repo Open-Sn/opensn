@@ -5,8 +5,11 @@
 
 #include <petscksp.h>
 
-//###################################################################
-/**Volume-wise field function interpolation.
+namespace chi_mesh
+{
+
+/**
+ * Volume-wise field function interpolation.
  *
  * This interpolator allows the user to obtain quantities by logical
  * volume. If no logical volume is assigned to the method it will
@@ -16,8 +19,9 @@
  *  - OP_VOLUME_AVG. Obtains the volume average of the field function
  *    of interest.
  *  - OP_VOLUME_SUM. Obtains the volume integral of the field function
- *    of interest.*/
-class chi_mesh::FieldFunctionInterpolationVolume : public chi_mesh::FieldFunctionInterpolation
+ *    of interest.
+ */
+class FieldFunctionInterpolationVolume : public FieldFunctionInterpolation
 {
 protected:
   std::shared_ptr<chi_mesh::LogicalVolume> logical_volume_ = nullptr;
@@ -38,14 +42,16 @@ public:
 
   double& GetOpValue() { return op_value_; }
 
-  // 01
   void Initialize() override;
-
-  // 02
   void Execute() override;
 
+  /**
+   * Calls the designated lua function
+   */
   double CallLuaFunction(double ff_value, int mat_id) const;
 
   std::string GetDefaultFileBaseName() const override { return "ZVFFI"; }
   void ExportPython(std::string base_name) override {}
 };
+
+} // namespace chi_mesh
