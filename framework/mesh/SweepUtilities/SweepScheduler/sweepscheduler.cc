@@ -1,18 +1,60 @@
 #include "sweepscheduler.h"
-
-#include "mesh/SweepUtilities/SPDS/SPDS_AdamsAdamsHawkins.h"
-
 #include "chi_runtime.h"
-#include "chi_mpi.h"
 #include "chi_log.h"
-
+#include "mesh/SweepUtilities/SPDS/SPDS_AdamsAdamsHawkins.h"
+#include "chi_mpi.h"
 #include <sstream>
 #include <algorithm>
 
-// ###################################################################
-/**Initializes the Depth-Of-Graph algorithm.*/
+namespace chi_mesh::sweep_management
+{
+
+SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
+                               AngleAggregation& in_angle_agg,
+                               SweepChunk& in_sweep_chunk)
+  : scheduler_type_(in_scheduler_type),
+    angle_agg_(in_angle_agg),
+    sweep_chunk_(in_sweep_chunk),
+    sweep_event_tag_(Chi::log.GetRepeatingEventTag("Sweep Timing")),
+    sweep_timing_events_tag_(
+      {Chi::log.GetRepeatingEventTag("Sweep Chunk Only Timing"), sweep_event_tag_})
+
+{
+  angle_agg_.InitializeReflectingBCs();
+
+  if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH) InitializeAlgoDOG();
+
+  //=================================== Initialize delayed upstream data
+  for (auto& angsetgrp : in_angle_agg.angle_set_groups)
+    for (auto& angset : angsetgrp.AngleSets())
+      angset->InitializeDelayedUpstreamData();
+
+  //=================================== Get local max num messages accross
+  //                                    anglesets
+  int local_max_num_messages = 0;
+  for (auto& angsetgrp : in_angle_agg.angle_set_groups)
+    for (auto& angset : angsetgrp.AngleSets())
+      local_max_num_messages = std::max(angset->GetMaxBufferMessages(), local_max_num_messages);
+
+  //=================================== Reconcile all local maximums
+  int global_max_num_messages = 0;
+  MPI_Allreduce(
+    &local_max_num_messages, &global_max_num_messages, 1, MPI_INT, MPI_MAX, Chi::mpi.comm);
+
+  //=================================== Propogate items back to sweep buffers
+  for (auto& angsetgrp : in_angle_agg.angle_set_groups)
+    for (auto& angset : angsetgrp.AngleSets())
+      angset->SetMaxBufferMessages(global_max_num_messages);
+}
+
+SweepChunk&
+SweepScheduler::GetSweepChunk()
+{
+  return sweep_chunk_;
+}
+
 void
-chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
+SweepScheduler::InitializeAlgoDOG()
 {
   //================================================== Load all anglesets
   //                                                   in preperation for
@@ -110,10 +152,8 @@ chi_mesh::sweep_management::SweepScheduler::InitializeAlgoDOG()
   std::stable_sort(rule_values_.begin(), rule_values_.end(), compare_omega_z);
 }
 
-// ###################################################################
-/**Executes the Depth-Of-Graph algorithm.*/
 void
-chi_mesh::sweep_management::SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
+SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
   typedef ExecutionPermission ExePerm;
   typedef AngleSetStatus Status;
@@ -199,12 +239,171 @@ chi_mesh::sweep_management::SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_ch
 
   for (auto& [bid, bndry] : angle_agg_.sim_boundaries)
   {
-    if (bndry->Type() == chi_mesh::sweep_management::BoundaryType::REFLECTING)
+    if (bndry->Type() == BoundaryType::REFLECTING)
     {
-      auto rbndry = std::static_pointer_cast<chi_mesh::sweep_management::BoundaryReflecting>(bndry);
+      auto rbndry = std::static_pointer_cast<BoundaryReflecting>(bndry);
       rbndry->ResetAnglesReadyStatus();
     }
   }
 
   Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::EVENT_END);
 }
+
+void
+SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
+{
+  typedef AngleSetStatus Status;
+
+  Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::EVENT_BEGIN);
+
+  auto ev_info_i = std::make_shared<chi::ChiLog::EventInfo>(std::string("Sweep initiated"));
+
+  Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::SINGLE_OCCURRENCE, ev_info_i);
+
+  //================================================== Loop over AngleSetGroups
+  AngleSetStatus completion_status = AngleSetStatus::NOT_FINISHED;
+  while (completion_status == AngleSetStatus::NOT_FINISHED)
+  {
+    completion_status = AngleSetStatus::FINISHED;
+
+    for (auto& angle_set_group : angle_agg_.angle_set_groups)
+      for (auto& angle_set : angle_set_group.AngleSets())
+      {
+        const auto angle_set_status = angle_set->AngleSetAdvance(
+          sweep_chunk, sweep_timing_events_tag_, ExecutionPermission::EXECUTE);
+        if (angle_set_status == AngleSetStatus::NOT_FINISHED)
+          completion_status = AngleSetStatus::NOT_FINISHED;
+      } // for angleset
+  }     // while not finished
+
+  //================================================== Receive delayed data
+  Chi::mpi.Barrier();
+  bool received_delayed_data = false;
+  while (not received_delayed_data)
+  {
+    received_delayed_data = true;
+
+    for (auto& angle_set_group : angle_agg_.angle_set_groups)
+      for (auto& angle_set : angle_set_group.AngleSets())
+      {
+        if (angle_set->FlushSendBuffers() == Status::MESSAGES_PENDING)
+          received_delayed_data = false;
+
+        if (not angle_set->ReceiveDelayedData()) received_delayed_data = false;
+      }
+  }
+
+  //================================================== Reset all
+  for (auto& angle_set_group : angle_agg_.angle_set_groups)
+    for (auto& angle_set : angle_set_group.AngleSets())
+      angle_set->ResetSweepBuffers();
+
+  for (auto& [bid, bndry] : angle_agg_.sim_boundaries)
+  {
+    if (bndry->Type() == BoundaryType::REFLECTING)
+    {
+      auto rbndry = std::static_pointer_cast<BoundaryReflecting>(bndry);
+      rbndry->ResetAnglesReadyStatus();
+    }
+  }
+
+  Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::EVENT_END);
+}
+
+void
+SweepScheduler::Sweep()
+{
+  if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT) ScheduleAlgoFIFO(sweep_chunk_);
+  else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
+    ScheduleAlgoDOG(sweep_chunk_);
+}
+
+double
+SweepScheduler::GetAverageSweepTime() const
+{
+  return Chi::log.ProcessEvent(sweep_event_tag_, chi::ChiLog::EventOperation::AVERAGE_DURATION);
+}
+
+std::vector<double>
+SweepScheduler::GetAngleSetTimings()
+{
+  std::vector<double> info;
+
+  double total_sweep_time =
+    Chi::log.ProcessEvent(sweep_event_tag_, chi::ChiLog::EventOperation::TOTAL_DURATION);
+
+  double total_chunk_time =
+    Chi::log.ProcessEvent(sweep_timing_events_tag_[0], chi::ChiLog::EventOperation::TOTAL_DURATION);
+
+  double ratio_sweep_to_chunk = total_chunk_time / total_sweep_time;
+
+  info.push_back(total_sweep_time);
+  info.push_back(total_chunk_time);
+  info.push_back(ratio_sweep_to_chunk);
+
+  return info;
+}
+
+void
+SweepScheduler::SetDestinationPhi(std::vector<double>& in_destination_phi)
+{
+  sweep_chunk_.SetDestinationPhi(in_destination_phi);
+}
+
+void
+SweepScheduler::ZeroDestinationPhi()
+{
+  sweep_chunk_.ZeroDestinationPhi();
+}
+
+std::vector<double>&
+SweepScheduler::GetDestinationPhi()
+{
+  return sweep_chunk_.GetDestinationPhi();
+}
+
+void
+SweepScheduler::SetDestinationPsi(std::vector<double>& in_destination_psi)
+{
+  sweep_chunk_.SetDestinationPsi(in_destination_psi);
+}
+
+void
+SweepScheduler::ZeroDestinationPsi()
+{
+  sweep_chunk_.ZeroDestinationPsi();
+}
+
+std::vector<double>&
+SweepScheduler::GetDestinationPsi()
+{
+  return sweep_chunk_.GetDestinationPsi();
+}
+
+void
+SweepScheduler::ZeroIncomingDelayedPsi()
+{
+  angle_agg_.ZeroIncomingDelayedPsi();
+}
+
+void
+SweepScheduler::ZeroOutgoingDelayedPsi()
+{
+  angle_agg_.ZeroOutgoingDelayedPsi();
+}
+
+void
+SweepScheduler::ZeroOutputFluxDataStructures()
+{
+  ZeroDestinationPsi();
+  ZeroDestinationPhi();
+  ZeroOutgoingDelayedPsi();
+}
+
+void
+SweepScheduler::SetBoundarySourceActiveFlag(bool flag_value)
+{
+  sweep_chunk_.SetBoundarySourceActiveFlag(flag_value);
+}
+
+} // namespace chi_mesh::sweep_management
