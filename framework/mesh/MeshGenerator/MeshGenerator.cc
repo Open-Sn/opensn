@@ -1,16 +1,14 @@
 #include "MeshGenerator.h"
-
 #include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 #include "mesh/MeshHandler/chi_meshhandler.h"
 #include "mesh/VolumeMesher/chi_volumemesher.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 #include "graphs/GraphPartitioner.h"
 #include "graphs/PETScGraphPartitioner.h"
-
 #include "ChiObjectFactory.h"
-
 #include "chi_runtime.h"
 #include "chi_log.h"
+#include "mesh/Cell/cell.h"
 
 namespace chi_mesh
 {
@@ -74,15 +72,12 @@ MeshGenerator::MeshGenerator(const chi::InputParameters& params)
     &Chi::GetStackItem<chi::GraphPartitioner>(Chi::object_stack, partitioner_handle, __FUNCTION__);
 }
 
-// ##################################################################
-/**Default behavior here is to return the input umesh unaltered.*/
 std::unique_ptr<UnpartitionedMesh>
 MeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
   return input_umesh;
 }
 
-/**Final execution step. */
 void
 MeshGenerator::Execute()
 {
@@ -180,6 +175,240 @@ MeshGenerator::ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid)
   Chi::log.Log() << "\n" << outstr.str() << "\n\n";
 
   Chi::log.LogAllVerbose2() << Chi::mpi.location_id << "Local cells=" << num_local_cells;
+}
+
+std::vector<int64_t>
+MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_partitions)
+{
+  const auto& raw_cells = input_umesh.GetRawCells();
+  const size_t num_raw_cells = raw_cells.size();
+
+  ChiLogicalErrorIf(num_raw_cells == 0, "No cells in final input mesh");
+
+  //============================================= Build cell graph and centroids
+  typedef std::vector<uint64_t> CellGraphNode;
+  typedef std::vector<CellGraphNode> CellGraph;
+  CellGraph cell_graph;
+  std::vector<chi_mesh::Vector3> cell_centroids;
+
+  cell_graph.reserve(num_raw_cells);
+  cell_centroids.reserve(num_raw_cells);
+  {
+    for (const auto& raw_cell_ptr : raw_cells)
+    {
+      CellGraphNode cell_graph_node; // <-- Note A
+      for (auto& face : raw_cell_ptr->faces)
+        if (face.has_neighbor) cell_graph_node.push_back(face.neighbor);
+
+      cell_graph.push_back(cell_graph_node);
+      cell_centroids.push_back(raw_cell_ptr->centroid);
+    }
+  }
+
+  // Note A: We do not add the diagonal here. If we do it, ParMETIS seems
+  // to produce sub-optimal partitions
+
+  //============================================= Execute partitioner
+  std::vector<int64_t> cell_pids =
+    partitioner_->Partition(cell_graph, cell_centroids, num_partitions);
+
+  std::vector<size_t> partI_num_cells(num_partitions, 0);
+  for (int64_t pid : cell_pids)
+    partI_num_cells[pid] += 1;
+
+  size_t max_num_cells = partI_num_cells.front();
+  size_t min_num_cells = partI_num_cells.front();
+  size_t avg_num_cells = 0;
+  for (size_t count : partI_num_cells)
+  {
+    max_num_cells = std::max(max_num_cells, count);
+    min_num_cells = std::min(min_num_cells, count);
+    avg_num_cells += count;
+  }
+  avg_num_cells /= num_partitions;
+
+  Chi::log.Log() << "Partitioner num_cells allocated max,min,avg = " << max_num_cells << ","
+                 << min_num_cells << "," << avg_num_cells;
+
+  return cell_pids;
+}
+
+std::shared_ptr<MeshContinuum>
+MeshGenerator::SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
+                         const std::vector<int64_t>& cell_pids)
+{
+  //============================================= Convert mesh
+  auto grid_ptr = chi_mesh::MeshContinuum::New();
+
+  grid_ptr->GetBoundaryIDMap() = input_umesh_ptr->GetMeshOptions().boundary_id_map;
+
+  auto& vertex_subs = input_umesh_ptr->GetVertextCellSubscriptions();
+  size_t cell_globl_id = 0;
+  for (auto& raw_cell : input_umesh_ptr->GetRawCells())
+  {
+    if (CellHasLocalScope(Chi::mpi.location_id, *raw_cell, cell_globl_id, vertex_subs, cell_pids))
+    {
+      auto cell = SetupCell(*raw_cell,
+                            cell_globl_id,
+                            cell_pids[cell_globl_id],
+                            STLVertexListHelper(input_umesh_ptr->GetVertices()));
+
+      for (uint64_t vid : cell->vertex_ids_)
+        grid_ptr->vertices.Insert(vid, input_umesh_ptr->GetVertices()[vid]);
+
+      grid_ptr->cells.push_back(std::move(cell));
+    }
+
+    delete raw_cell;
+    raw_cell = nullptr;
+
+    ++cell_globl_id;
+  } // for raw_cell
+
+  SetGridAttributes(*grid_ptr,
+                    input_umesh_ptr->GetMeshAttributes(),
+                    {input_umesh_ptr->GetMeshOptions().ortho_Nx,
+                     input_umesh_ptr->GetMeshOptions().ortho_Ny,
+                     input_umesh_ptr->GetMeshOptions().ortho_Nz});
+
+  grid_ptr->SetGlobalVertexCount(input_umesh_ptr->GetVertices().size());
+
+  ComputeAndPrintStats(*grid_ptr);
+
+  return grid_ptr;
+}
+
+void
+MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm communicator)
+{
+  size_t data_count = Chi::mpi.location_id == root ? cell_pids.size() : 0;
+
+  //======================================== Broadcast data_count to all
+  //                                         locations
+  MPI_Bcast(&data_count,   // buffer [IN/OUT]
+            1,             // count
+            MPI_UINT64_T,  // data type
+            root,          // root
+            communicator); // communicator
+
+  if (Chi::mpi.location_id != root) cell_pids.assign(data_count, 0);
+
+  //======================================== Broadcast partitioning to all
+  //                                         locations
+  MPI_Bcast(cell_pids.data(),             // buffer [IN/OUT]
+            static_cast<int>(data_count), // count
+            MPI_LONG_LONG_INT,            // data type
+            root,                         // root
+            communicator);                // communicator
+}
+
+bool
+MeshGenerator::CellHasLocalScope(int location_id,
+                                 const chi_mesh::UnpartitionedMesh::LightWeightCell& lwcell,
+                                 uint64_t cell_global_id,
+                                 const std::vector<std::set<uint64_t>>& vertex_subscriptions,
+                                 const std::vector<int64_t>& cell_partition_ids) const
+{
+  if (replicated_) return true;
+  // First determine if the cell is a local cell
+  int cell_pid = static_cast<int>(cell_partition_ids[cell_global_id]);
+  if (cell_pid == location_id) return true;
+
+  // Now determine if the cell is a ghost cell
+  for (uint64_t vid : lwcell.vertex_ids)
+    for (uint64_t cid : vertex_subscriptions[vid])
+    {
+      if (cid == cell_global_id) continue;
+      int adj_pid = static_cast<int>(cell_partition_ids[cid]);
+      if (adj_pid == location_id) return true;
+    }
+
+  return false;
+}
+
+std::unique_ptr<chi_mesh::Cell>
+MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
+                         uint64_t global_id,
+                         uint64_t partition_id,
+                         const VertexListHelper& vertices)
+{
+  auto cell = std::make_unique<chi_mesh::Cell>(raw_cell.type, raw_cell.sub_type);
+  cell->centroid_ = raw_cell.centroid;
+  cell->global_id_ = global_id;
+  cell->partition_id_ = partition_id;
+  cell->material_id_ = raw_cell.material_id;
+
+  cell->vertex_ids_ = raw_cell.vertex_ids;
+
+  size_t face_counter = 0;
+  for (auto& raw_face : raw_cell.faces)
+  {
+    chi_mesh::CellFace newFace;
+
+    newFace.has_neighbor_ = raw_face.has_neighbor;
+    newFace.neighbor_id_ = raw_face.neighbor;
+
+    newFace.vertex_ids_ = raw_face.vertex_ids;
+    auto vfc = chi_mesh::Vertex(0.0, 0.0, 0.0);
+    for (auto fvid : newFace.vertex_ids_)
+      vfc = vfc + vertices.at(fvid);
+    newFace.centroid_ = vfc / static_cast<double>(newFace.vertex_ids_.size());
+
+    if (cell->Type() == CellType::SLAB)
+    {
+      // A slab face is very easy. If it is the first face
+      // the normal is -khat. If it is the second face then
+      // it is +khat.
+      if (face_counter == 0) newFace.normal_ = chi_mesh::Vector3(0.0, 0.0, -1.0);
+      else
+        newFace.normal_ = chi_mesh::Vector3(0.0, 0.0, 1.0);
+    }
+    else if (cell->Type() == CellType::POLYGON)
+    {
+      // A polygon face is just a line so we can just grab
+      // the first vertex and form a vector with the face
+      // centroid. The normal is then just khat
+      // cross-product with this vector.
+      uint64_t fvid = newFace.vertex_ids_[0];
+      auto vec_vvc = vertices.at(fvid) - newFace.centroid_;
+
+      newFace.normal_ = chi_mesh::Vector3(0.0, 0.0, 1.0).Cross(vec_vvc);
+      newFace.normal_.Normalize();
+    }
+    else if (cell->Type() == CellType::POLYHEDRON)
+    {
+      // A face of a polyhedron can itself be a polygon
+      // which can be multifaceted. Here we need the
+      // average normal over all the facets computed
+      // using an area-weighted average.
+      const size_t num_face_verts = newFace.vertex_ids_.size();
+      double total_area = 0.0;
+      for (size_t fv = 0; fv < num_face_verts; ++fv)
+      {
+        size_t fvp1 = (fv < (num_face_verts - 1)) ? fv + 1 : 0;
+
+        uint64_t fvid_m = newFace.vertex_ids_[fv];
+        uint64_t fvid_p = newFace.vertex_ids_[fvp1];
+
+        auto leg_m = vertices.at(fvid_m) - newFace.centroid_;
+        auto leg_p = vertices.at(fvid_p) - newFace.centroid_;
+
+        auto vn = leg_m.Cross(leg_p);
+
+        double area = 0.5 * vn.Norm();
+        total_area += area;
+
+        newFace.normal_ = newFace.normal_ + area * vn.Normalized();
+      }
+      newFace.normal_ = newFace.normal_ / total_area;
+      newFace.normal_.Normalize();
+    }
+    ++face_counter;
+
+    cell->faces_.push_back(newFace);
+  }
+
+  return cell;
 }
 
 } // namespace chi_mesh
