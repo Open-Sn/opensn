@@ -1,6 +1,6 @@
 #include "FromFileMeshGenerator.h"
 
-#include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
+#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 
 #include "ChiObjectFactory.h"
 

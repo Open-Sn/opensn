@@ -4,7 +4,7 @@
 #include "mesh/SurfaceMesher/Predefined/surfmesher_predefined.h"
 #include "mesh/VolumeMesher/PredefinedUnpartitioned/volmesher_predefunpart.h"
 
-#include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
+#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 
 #include "chi_runtime.h"
 #include "chi_log.h"

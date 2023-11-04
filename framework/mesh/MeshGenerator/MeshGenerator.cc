@@ -1,6 +1,6 @@
 #include "MeshGenerator.h"
 
-#include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
+#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 #include "mesh/MeshHandler/chi_meshhandler.h"
 #include "mesh/VolumeMesher/chi_volumemesher.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"

@@ -2,7 +2,7 @@
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 #include "mesh/MeshHandler/chi_meshhandler.h"
 #include "mesh/VolumeMesher/Extruder/volmesher_extruder.h"
-#include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
+#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 #include "mesh/LogicalVolume/LogicalVolume.h"
 #include "console/chi_console.h"
 #include "utils/chi_timer.h"
@@ -32,7 +32,7 @@ VolumeMesher::GetContinuum()
 
 void
 VolumeMesher::SetGridAttributes(MeshAttributes new_attribs,
-                                          std::array<size_t, 3> ortho_Nis /*={0,0,0}*/)
+                                std::array<size_t, 3> ortho_Nis /*={0,0,0}*/)
 {
   grid_ptr_->SetAttributes(new_attribs, ortho_Nis);
 }
@@ -250,8 +250,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
 }
 
 void
-VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh,
-                                           MeshContinuumPtr& grid)
+VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPtr& grid)
 {
   //=================================== Copy nodes
   {
@@ -313,9 +312,7 @@ VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh,
 }
 
 void
-VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol,
-                                            bool sense,
-                                            int mat_id)
+VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int mat_id)
 {
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Setting material id from logical volume.";
@@ -357,8 +354,8 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol,
 
 void
 VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
-                                              bool sense,
-                                              const std::string& bndry_name)
+                                    bool sense,
+                                    const std::string& bndry_name)
 {
   Chi::log.Log() << Chi::program_timer.GetTimeString()
                  << " Setting boundary id from logical volume.";

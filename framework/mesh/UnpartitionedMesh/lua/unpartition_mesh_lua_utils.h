@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
+#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 
 #include "chi_lua.h"
 

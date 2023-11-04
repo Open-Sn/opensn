@@ -2,7 +2,7 @@
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 #include "mesh/MeshHandler/chi_meshhandler.h"
 #include "mesh/SurfaceMesher/surfacemesher.h"
-#include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
+#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 #include "utils/chi_timer.h"
 #include "console/chi_console.h"
 #include "chi_runtime.h"

@@ -11,10 +11,14 @@ class vtkSmartPointer;
 #include <map>
 #include <array>
 
-// ###################################################################
-/**This object is intented for unpartitioned meshes that still require
- * partitioning.*/
-class chi_mesh::UnpartitionedMesh
+namespace chi_mesh
+{
+
+/**
+ * This object is intented for unpartitioned meshes that still require
+ * partitioning.
+ */
+class UnpartitionedMesh
 {
 public:
   struct LightWeightFace
@@ -31,14 +35,14 @@ public:
   };
   struct LightWeightCell
   {
-    const chi_mesh::CellType type;
-    const chi_mesh::CellType sub_type;
-    chi_mesh::Vertex centroid;
+    const CellType type;
+    const CellType sub_type;
+    Vertex centroid;
     int material_id = -1;
     std::vector<uint64_t> vertex_ids;
     std::vector<LightWeightFace> faces;
 
-    explicit LightWeightCell(chi_mesh::CellType in_type, chi_mesh::CellType in_sub_type)
+    explicit LightWeightCell(CellType in_type, CellType in_sub_type)
       : type(in_type), sub_type(in_sub_type)
     {
     }
@@ -63,7 +67,7 @@ public:
   };
 
 protected:
-  std::vector<chi_mesh::Vertex> vertices_;
+  std::vector<Vertex> vertices_;
   std::vector<LightWeightCell*> raw_cells_;
   std::vector<LightWeightCell*> raw_boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
@@ -73,17 +77,42 @@ protected:
   std::shared_ptr<BoundBox> bound_box_ = nullptr;
 
 protected:
+  /**
+   * Creates a raw polyhedron cell from a vtk-polyhedron.
+   */
   static LightWeightCell* CreateCellFromVTKPolyhedron(vtkCell* vtk_cell);
+
+  /**
+   * Creates a raw polygon cell from a vtk-polygon.
+   */
   static LightWeightCell* CreateCellFromVTKPolygon(vtkCell* vtk_cell);
+
+  /**
+   * Creates a raw slab cell from a vtk-line.
+   */
   static LightWeightCell* CreateCellFromVTKLine(vtkCell* vtk_cell);
+
+  /**
+   * Creates a raw point cell from a vtk-vertex.
+   */
   static LightWeightCell* CreateCellFromVTKVertex(vtkCell* vtk_cell);
 
   typedef vtkSmartPointer<vtkUnstructuredGrid> vtkUGridPtr;
   typedef std::pair<vtkUGridPtr, std::string> vtkUGridPtrAndName;
+
+  /**
+   * Copies the vtk data structures to the current object's internal data.
+   */
   void CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid, double scale, int dimension_to_copy);
 
+  /**
+   * Set material-ids from list.
+   */
   void SetMaterialIDsFromList(const std::vector<int>& material_ids);
 
+  /**
+   * Set boundary-ids from boundary grid_blocks.
+   */
   void SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bndry_grid_blocks);
 
 public:
@@ -105,20 +134,52 @@ public:
   std::vector<LightWeightCell*>& GetRawCells() { return raw_cells_; }
   const std::vector<LightWeightCell*>& GetRawCells() const { return raw_cells_; }
 
-  const std::vector<chi_mesh::Vertex>& GetVertices() const { return vertices_; }
-  std::vector<chi_mesh::Vertex>& GetVertices() { return vertices_; }
+  const std::vector<Vertex>& GetVertices() const { return vertices_; }
+  std::vector<Vertex>& GetVertices() { return vertices_; }
 
+  /**
+   * Establishes neighbor connectivity for the light-weight mesh.
+   */
   void BuildMeshConnectivity();
+
+  /**
+   * Compute centroids for all cells.
+   */
   void ComputeCentroidsAndCheckQuality();
-  /**Makes or gets a boundary that uniquely identifies the given name.*/
+
+  /**
+   * Makes or gets a boundary that uniquely identifies the given name.
+   */
   uint64_t MakeBoundaryID(const std::string& boundary_name);
   void SetAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis = {0, 0, 0});
 
+  /**Reads a VTK unstructured mesh. This reader will use the following
+   * options:
+   * - `file_name`, of course.
+   * - `material_id_fieldname`, cell data for material_id.
+   */
   void ReadFromVTU(const Options& options);
+
+  /**Reads a VTK unstructured mesh. This reader will use the following
+   * options:
+   * - `file_name`, of course.
+   * - `material_id_fieldname`, cell data for material_id.
+   */
   void ReadFromPVTU(const Options& options);
+
+  /**
+   * Reads an Ensight-Gold unstructured mesh.
+   */
   void ReadFromEnsightGold(const Options& options);
+
+  /**
+   * Reads an unpartitioned mesh from a wavefront .obj file.
+   */
   void ReadFromWavefrontOBJ(const Options& options);
 
+  /**
+   * Reads an unpartitioned mesh from a gmesh .msh legacy ASCII format 2 file.
+   */
   void ReadFromMsh(const Options& options);
 
   void ReadFromExodus(const Options& options);
@@ -147,3 +208,5 @@ public:
     vertex_cell_subscriptions_.shrink_to_fit();
   }
 };
+
+} // namespace chi_mesh
