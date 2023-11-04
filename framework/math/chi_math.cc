@@ -1,10 +1,50 @@
 #include "chi_math.h"
 #include <assert.h>
 
-//######################################################### Print
-/** Prints the contents of a matrix.*/
+namespace chi_math
+{
+
+double
+Factorial(const int x)
+{
+  double factorial_value = 1.0;
+  for (int i = 2; i <= x; ++i)
+    factorial_value *= i;
+
+  return factorial_value;
+}
+
+std::pair<double, double>
+OmegaToPhiThetaSafe(const chi_mesh::Vector3& omega)
+{
+  // Notes: asin maps [-1,+1] to [-pi/2,+pi/2]
+  //        acos maps [-1,+1] to [0,pi]
+  // This mapping requires some logic for determining the azimuthal angle.
+  //
+  const auto omega_hat = omega.Normalized();
+
+  double mu = omega_hat.z;
+  mu = std::min(mu, 1.0);
+  mu = std::max(mu, -1.0);
+
+  double theta = acos(mu);
+
+  //===== Handling omega aligned to k_hat
+  if (std::fabs(omega_hat.z) < 1.0e-16) return {0.0, theta};
+
+  double cos_phi = omega_hat.x / sin(theta);
+  cos_phi = std::min(cos_phi, 1.0);
+  cos_phi = std::max(cos_phi, -1.0);
+
+  //===== Computing varphi for NE and NW quadrant
+  if (omega_hat.y >= 0.0) return {acos(cos_phi), theta};
+  //===== Computing varphi for SE and SW quadrant
+  else
+    return {2.0 * M_PI - acos(cos_phi), theta};
+}
+
 void
-chi_math::PrintMatrix(const MatDbl& A)
+PrintMatrix(const MatDbl& A)
 {
   size_t AR = A.size();
   size_t AC = 0;
@@ -22,30 +62,24 @@ chi_math::PrintMatrix(const MatDbl& A)
   }
 }
 
-//######################################################### Scale
-/** Scales the matrix by a constant value.*/
 void
-chi_math::Scale(MatDbl& A, const double& val)
+Scale(MatDbl& A, const double& val)
 {
   for (std::vector<double>& Ai : A)
     for (double& Aij : Ai)
       Aij *= val;
 }
 
-//######################################################### Scale
-/** Sets all the entries of the matrix to a constant value.*/
 void
-chi_math::Set(MatDbl& A, const double& val)
+Set(MatDbl& A, const double& val)
 {
   for (std::vector<double>& Ai : A)
     for (double& Aij : Ai)
       Aij = val;
 }
 
-//######################################################### Transpose
-/** Returns the transpose of a matrix.*/
 MatDbl
-chi_math::Transpose(const MatDbl& A)
+Transpose(const MatDbl& A)
 {
   assert(A.size());
   assert(A[0].size());
@@ -60,10 +94,8 @@ chi_math::Transpose(const MatDbl& A)
   return T;
 }
 
-//######################################################### Swap Row
-/** Swaps two rows of a matrix.*/
 void
-chi_math::SwapRow(size_t r1, size_t r2, MatDbl& A)
+SwapRow(size_t r1, size_t r2, MatDbl& A)
 {
   assert(A.size());
   assert(A[0].size());
@@ -77,10 +109,8 @@ chi_math::SwapRow(size_t r1, size_t r2, MatDbl& A)
     std::swap(A[r1][j], A[r2][j]);
 }
 
-//######################################################### Swap Columns
-/** Swaps two columns of a matrix.*/
 void
-chi_math::SwapColumn(size_t c1, size_t c2, MatDbl& A)
+SwapColumn(size_t c1, size_t c2, MatDbl& A)
 {
   assert(A.size());
   assert(A[0].size());
@@ -92,10 +122,8 @@ chi_math::SwapColumn(size_t c1, size_t c2, MatDbl& A)
     std::swap(A[i][c1], A[i][c2]);
 }
 
-//######################################################### Matrix-multiply
-/** Multiply matrix with a constant and return result.*/
 MatDbl
-chi_math::MatMul(const MatDbl& A, const double c)
+MatMul(const MatDbl& A, const double c)
 {
   size_t R = A.size();
   size_t C = 0;
@@ -110,9 +138,8 @@ chi_math::MatMul(const MatDbl& A, const double c)
   return B;
 }
 
-/** Multiply matrix with a vector and return resulting vector*/
 VecDbl
-chi_math::MatMul(const MatDbl& A, const VecDbl& x)
+MatMul(const MatDbl& A, const VecDbl& x)
 {
   size_t R = A.size();
   size_t C = x.size();
@@ -131,9 +158,8 @@ chi_math::MatMul(const MatDbl& A, const VecDbl& x)
   return b;
 }
 
-/** Mutliply two matrices and return result.*/
 MatDbl
-chi_math::MatMul(const MatDbl& A, const MatDbl& B)
+MatMul(const MatDbl& A, const MatDbl& B)
 {
   size_t AR = A.size();
 
@@ -158,10 +184,8 @@ chi_math::MatMul(const MatDbl& A, const MatDbl& B)
   return C;
 }
 
-//######################################################### Addition
-/** Adds two matrices and returns the result.*/
 MatDbl
-chi_math::MatAdd(const MatDbl& A, const MatDbl& B)
+MatAdd(const MatDbl& A, const MatDbl& B)
 {
   size_t AR = A.size();
   size_t BR = A.size();
@@ -184,10 +208,8 @@ chi_math::MatAdd(const MatDbl& A, const MatDbl& B)
   return C;
 }
 
-//######################################################### Addition
-/** Subtracts matrix A from B and returns the result.*/
 MatDbl
-chi_math::MatSubtract(const MatDbl& A, const MatDbl& B)
+MatSubtract(const MatDbl& A, const MatDbl& B)
 {
   size_t AR = A.size();
   size_t BR = A.size();
@@ -210,10 +232,8 @@ chi_math::MatSubtract(const MatDbl& A, const MatDbl& B)
   return C;
 }
 
-//######################################################### Determinant
-/** Computes the determinant of a matrix.*/
 double
-chi_math::Determinant(const MatDbl& A)
+Determinant(const MatDbl& A)
 {
   size_t R = A.size();
 
@@ -253,10 +273,8 @@ chi_math::Determinant(const MatDbl& A)
   }
 }
 
-//######################################################### Submatrix
-/** Returns a sub-matrix.*/
 MatDbl
-chi_math::SubMatrix(const size_t r, const size_t c, const MatDbl& A)
+SubMatrix(const size_t r, const size_t c, const MatDbl& A)
 {
   size_t R = A.size();
   size_t C = 0;
@@ -283,10 +301,8 @@ chi_math::SubMatrix(const size_t r, const size_t c, const MatDbl& A)
   return B;
 }
 
-//######################################################### Gauss Elimination
-/** Gauss Elimination without pivoting.*/
 void
-chi_math::GaussElimination(MatDbl& A, VecDbl& b, int n)
+GaussElimination(MatDbl& A, VecDbl& b, int n)
 {
   // Forward elimination
   for (int i = 0; i < n - 1; ++i)
@@ -315,10 +331,8 @@ chi_math::GaussElimination(MatDbl& A, VecDbl& b, int n)
   }
 }
 
-//#########################################################
-/** Computes the inverse of a matrix using Gauss-Elimination with pivoting.*/
 MatDbl
-chi_math::InverseGEPivoting(const MatDbl& A)
+InverseGEPivoting(const MatDbl& A)
 {
   assert(A.size());
   assert(A.size() == A[0].size());
@@ -375,10 +389,8 @@ chi_math::InverseGEPivoting(const MatDbl& A)
   return M;
 }
 
-//######################################################### Matrix inverse
-/** Computes the inverse of a matrix.*/
 MatDbl
-chi_math::Inverse(const MatDbl& A)
+Inverse(const MatDbl& A)
 {
   size_t R = A.size();
   std::vector<std::vector<double>> M(R, std::vector<double>(R, 0.));
@@ -479,12 +491,8 @@ chi_math::Inverse(const MatDbl& A)
   return M;
 }
 
-//######################################################### Power iteration
-/** Performs power iteration to obtain the fundamental eigen mode. The
- * eigen-value of the fundamental mode is return whilst the eigen-vector
- * is return via reference.*/
 double
-chi_math::PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
+PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
 {
   // Local Variables
   unsigned int n = A.size();
@@ -525,3 +533,132 @@ chi_math::PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
 
   return lambda;
 }
+
+void
+PrintVector(const VecDbl& x)
+{
+  for (auto& xi : x)
+    std::cout << xi << ' ';
+  std::cout << std::endl;
+}
+
+void
+Scale(VecDbl& x, const double& val)
+{
+  for (double& xi : x)
+    xi *= val;
+}
+
+void
+Set(VecDbl& x, const double& val)
+{
+  for (double& xi : x)
+    xi = val;
+}
+
+double
+Dot(const VecDbl& x, const VecDbl& y)
+{
+  // Error Checks
+  assert(x.size() > 0);
+  assert(y.size() > 0);
+  assert(x.size() == y.size());
+  // Local Variables
+  size_t n = x.size();
+  double val = 0.0;
+
+  for (size_t i = 0; i != n; i++)
+    val += x[i] * y[i];
+
+  return val;
+}
+
+VecDbl
+VecMul(const VecDbl& x, const double& val)
+{
+  size_t n = x.size();
+  VecDbl y(n);
+
+  for (size_t i = 0; i != n; ++i)
+    y[i] = val * x[i];
+
+  return y;
+}
+
+double
+Vec1Norm(const VecDbl& x)
+{
+  // Local Variables
+  size_t n = x.size();
+  double val = 0.;
+
+  for (size_t i = 0; i != n; i++)
+    val += std::fabs(x[i]);
+
+  return val;
+}
+
+double
+Vec2Norm(const VecDbl& x)
+{
+  // Local Variables
+  size_t n = x.size();
+  double val = 0.;
+
+  for (size_t i = 0; i != n; i++)
+    val += x[i] * x[i];
+
+  return std::sqrt(val);
+}
+
+double
+VecInfinityNorm(const VecDbl& x)
+{
+  // Local Variables
+  size_t n = x.size();
+  double val = 0.0;
+
+  for (size_t i = 0; i != n; i++)
+    val += std::max(std::fabs(x[i]), val);
+
+  return val;
+}
+
+double
+VecPNorm(const VecDbl& x, const double& p)
+{
+  // Local Variables
+  size_t n = x.size();
+  double val = 0.;
+
+  for (size_t i = 0; i != n; i++)
+    val += std::pow(std::fabs(x[i]), p);
+
+  return std::pow(val, 1. / p);
+}
+
+VecDbl
+operator+(const VecDbl& a, const VecDbl& b)
+{
+  assert(a.size() == b.size());
+  VecDbl result(a.size(), 0.0);
+
+  for (size_t i = 0; i < a.size(); ++i)
+    result[i] = a[i] + b[i];
+
+  return result;
+}
+
+VecDbl
+operator-(const VecDbl& a, const VecDbl& b)
+{
+  assert(a.size() == b.size());
+  VecDbl result(a.size(), 0.0);
+
+  for (size_t i = 0; i < a.size(); ++i)
+    result[i] = a[i] - b[i];
+
+  return result;
+}
+
+} // namespace chi_math
