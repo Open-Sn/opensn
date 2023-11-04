@@ -5,58 +5,119 @@
 
 #include "../chi_mesh.h"
 
-//###################################################################
-/** Generic surface mesh class.
-This class facilitates many functions within the mesh environment including
-logically determining volumes.*/
-class chi_mesh::SurfaceMesh
+namespace chi_mesh
+{
+
+/**
+ * Generic surface mesh class.
+ * This class facilitates many functions within the mesh environment including logically
+ * determining volumes.
+ */
+class SurfaceMesh
 {
 protected:
-  std::vector<chi_mesh::Vertex> vertices_;
-  std::vector<chi_mesh::Vertex> tex_vertices_; ///< Texture vertices
-  std::vector<chi_mesh::Normal> normals_;
-  std::vector<chi_mesh::Face> faces_;
-  std::vector<chi_mesh::Edge> lines_;
-  std::vector<chi_mesh::PolyFace*> poly_faces_; ///< Polygonal faces
+  std::vector<Vertex> vertices_;
+  std::vector<Vertex> tex_vertices_; ///< Texture vertices
+  std::vector<Normal> normals_;
+  std::vector<Face> faces_;
+  std::vector<Edge> lines_;
+  std::vector<PolyFace*> poly_faces_; ///< Polygonal faces
 
   std::vector<int> physical_region_map_;
 
 public:
-  const std::vector<chi_mesh::Vertex>& GetVertices() const { return vertices_; }
+  const std::vector<Vertex>& GetVertices() const { return vertices_; }
 
-  const std::vector<chi_mesh::Face>& GetTriangles() const { return faces_; }
+  const std::vector<Face>& GetTriangles() const { return faces_; }
 
-  const std::vector<chi_mesh::PolyFace*>& GetPolygons() const { return poly_faces_; }
+  const std::vector<PolyFace*>& GetPolygons() const { return poly_faces_; }
 
   // constrdestr.cc
   SurfaceMesh();
   ~SurfaceMesh();
   friend std::ostream& operator<<(std::ostream& os, SurfaceMesh& dt);
-  // loadexport.cc
+
+  /**
+   * Loads a surface mesh from a wavefront .obj file.
+   */
   int ImportFromOBJFile(const std::string& fileName,
                         bool as_poly = false,
-                        const chi_mesh::Vector3& transform = Vector3(0, 0, 0));
+                        const Vector3& transform = Vector3(0, 0, 0));
+
+  /**
+   * Loads a surface mesh from triangle's file format.
+   */
   int ImportFromTriangleFiles(const char* fileName, bool as_poly);
+
+  /**
+   * Loads a surface mesh from gmsh's file format.
+   */
   int ImportFromMshFiles(const char* fileName, bool as_poly);
+
+  /**
+   * Exports the triangular faces of a surface mesh to
+   * wavefront .obj files.
+   */
   void ExportToOBJFile(const char* fileName);
+
+  /**
+   * Exports a PSLG to triangle1.6's .poly format.
+   */
   void ExportToPolyFile(const char* fileName);
+
+  /**
+   * Creates a 2D orthogonal mesh from a set of vertices in x and y.
+   * The vertices along a dimension merely represents the divisions. They
+   * are not the complete vertices defining a cell. For example:
+   * \code
+   * std::vector<Vertex> vertices_x = {0.0,1.0,2.0};
+   * std::vector<Vertex> vertices_y = {0.0,1.0,2.0};
+   * SurfaceMesh::CreateFromDivisions(vertices_x,vertices_y);
+   * \endcode
+   *
+   * This code will create a 2x2 mesh with \f$ \vec{x} \in [0,2]^2 \f$.
+   */
   static SurfaceMesh* CreateFromDivisions(std::vector<double>& vertices_1d_x,
                                           std::vector<double>& vertices_1d_y);
 
-  // internalconn.cc
+  /**
+   * Runs over the faces of the surfacemesh and determines
+   * neighbors. The algorithm first establishes which cells subscribe to each
+   * vertex and then loops over faces and edges. For each edge, only the
+   * subscribing faces are searched for neighbors. This routine has
+   * time complexity O(N).
+   */
   void UpdateInternalConnectivity();
 
-  // checksense.cc
   bool CheckNegativeSense(double x, double y, double z);
 
-  // splitbypatch.cc
-  void SplitByPatch(std::vector<chi_mesh::SurfaceMesh*>& patches);
+  /**
+   * Splits the surface by patch.
+   */
+  void SplitByPatch(std::vector<SurfaceMesh*>& patches);
 
-  // extractopenedges.cc
+  /**
+   * Extract open edges to wavefront obj format.
+   */
   void ExtractOpenEdgesToObj(const char* fileName);
 
-  // meshstats.cc
+  /**
+   * Checks for cyclic dependencies in this mesh.
+   * Transport type sweeps have a step where the inter-cell dependency is acyclically sorted.
+   * This step is repeated here.
+   */
   void CheckCyclicDependencies(int num_angles);
+
+  /**
+   * Gets simple mesh statistics.
+   */
   void GetMeshStats();
+
+  /**
+   * Computes load balancing parameters from a set of predictive cuts.
+   * Does not actually perform these cuts.
+   */
   void ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<double>& y_cuts);
 };
+
+} // namespace chi_mesh
