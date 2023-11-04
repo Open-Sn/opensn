@@ -46,8 +46,8 @@ struct TwoGridCollapsedInfo
 //   std::vector<double> sigR;
 // };
 
-/** Multi-group diffusion solver
- *
+/**
+ * Multi-group diffusion solver
  */
 class Solver : public chi_physics::Solver
 {
@@ -63,13 +63,19 @@ public:
   size_t num_local_dofs_ = 0;
   size_t num_globl_dofs_ = 0;
 
-  std::vector<Mat> A_;     // linear system matrix for each group
-  std::vector<Vec> bext_;  // external source vector for each group
-  std::vector<Vec> x_;     // solution vector for each group
-  std::vector<Vec> x_old_; // vector of old fluxes
+  /// linear system matrix for each group
+  std::vector<Mat> A_;
+  /// external source vector for each group
+  std::vector<Vec> bext_;
+  /// solution vector for each group
+  std::vector<Vec> x_;
+  /// vector of old fluxes
+  std::vector<Vec> x_old_;
 
-  Vec thermal_dphi_ = nullptr; // error vector for thermal fluxes
-  Vec b_ = nullptr;            // actual rhs vector for the linear system A[g] x[g] = b
+  /// error vector for thermal fluxes
+  Vec thermal_dphi_ = nullptr;
+  /// actual rhs vector for the linear system A[g] x[g] = b
+  Vec b_ = nullptr;
 
   chi_math::PETScUtils::PETScSolverSetup petsc_solver_;
   KSPAppContext my_app_context_;
@@ -101,7 +107,9 @@ public:
   void SolveOneGroupProblem(unsigned int g, int64_t iverbose);
   void Update_Flux_With_TwoGrid(int64_t iverbose);
 
-  // 04
+  /**
+   * Updates the field functions with the lates data.
+   */
   void UpdateFieldFunctions();
 
 protected:
