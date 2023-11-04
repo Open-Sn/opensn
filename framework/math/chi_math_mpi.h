@@ -6,6 +6,10 @@ typedef std::vector<double> VecDbl;
 
 namespace chi_math
 {
-// 02 Vector operations
+
+/**
+ * Computes a global L2-norm
+ */
 double Vec2NormMPI(const VecDbl& x, MPI_Comm comm);
+
 } // namespace chi_math

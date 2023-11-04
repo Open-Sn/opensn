@@ -5,7 +5,6 @@
 namespace chi_math
 {
 
-/**Computes a global L2-norm*/
 double
 Vec2NormMPI(const VecDbl& x, MPI_Comm comm)
 {
