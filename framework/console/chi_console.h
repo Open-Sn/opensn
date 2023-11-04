@@ -71,12 +71,12 @@ namespace chi
 struct RegistryStatuses;
 }
 
-// #############################################################################
-// CLASS DEF
 namespace chi
 {
 
-/** Class for handling the console and scripting.*/
+/**
+ * Class for handling the console and scripting.
+ */
 class Console
 {
 public:
@@ -96,9 +96,10 @@ private:
   };
 
 private:
-  lua_State* console_state_; ///< Pointer to lua console state
-
-  std::vector<std::string> command_buffer_; ///< Buffer of commands to execute
+  /// Pointer to lua console state
+  lua_State* console_state_;
+  /// Buffer of commands to execute
+  std::vector<std::string> command_buffer_;
   static Console instance_;
 
   std::map<std::string, LuaFunctionRegistryEntry> lua_function_registry_;
@@ -107,14 +108,20 @@ private:
 
   std::map<std::string, chi_data_types::Varying> lua_constants_registry_;
 
-  // 00
   Console() noexcept;
 
 private:
   friend class ::Chi;
+
+  /**
+   * Registers all lua items so that they are available in the console.
+   */
   void LoadRegisteredLuaItems();
 
 public:
+  /**
+   * Access to the singleton
+   */
   static Console& GetInstance() noexcept;
 
   lua_State*& GetConsoleState() { return console_state_; }
@@ -130,80 +137,112 @@ public:
     return lua_function_registry_;
   }
 
-  // 01 Loop
+  /**
+   * Executes the loop for the console.
+   */
   void RunConsoleLoop(char* fileName = nullptr) const;
-  // 02 Utilities
   int ExecuteFile(const std::string& fileName, int argc, char** argv) const;
   void PostMPIInfo(int location_id, int number_of_processes) const;
 
 private:
-  /**Basic addition to registry. Used by the other public methods
-   * to registry a text-key to a lua function.*/
+  /**
+   * Basic addition to registry. Used by the other public methods to registry a text-key to a lua
+   * function.
+   */
   static void AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunction function_ptr);
 
 public:
-  /**\brief Adds a lua_CFunction to the registry.*/
+  /**
+   * Adds a lua_CFunction to the registry.
+   */
   static char AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_in_lua,
                                                    lua_CFunction function_ptr);
 
-  /**\brief Adds a lua_CFunction to the registry. With namespace-table
-   * analogy.*/
+  /**
+   * Adds a lua_CFunction to the registry. With namespace-table analogy.
+   */
   static char AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_ptr,
                                                        const std::string& namespace_name,
                                                        const std::string& function_name);
 
-  /**\brief Adds a constant to the lua state.*/
+  /**
+   * Adds a constant to the lua state.
+   */
   static char AddLuaConstantToRegistry(const std::string& namespace_name,
                                        const std::string& constant_name,
                                        const chi_data_types::Varying& value);
 
-  /**\brief A default function for returning empty input parameters. */
+  /**
+   * A default function for returning empty input parameters.
+   */
   static InputParameters DefaultGetInParamsFunc();
 
-  /**\brief Adds a function wrapper to the lua registry.*/
+  /**
+   * Adds a function wrapper to the lua registry.
+   */
   static char AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_name,
                                                       const std::string& name_in_lua,
                                                       WrapperGetInParamsFunc syntax_function,
                                                       WrapperCallFunc actual_function,
                                                       bool ignore_null_call_func = false);
 
-  /**\brief Formats a namespace structure as table.*/
+  /**
+   * Formats a namespace structure as table.
+   */
   static void SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name,
                                                 lua_CFunction function_ptr);
 
-  /**\brief Formats a namespace structure as a table, but the last entry
-   * is a function call.*/
+  /**
+   * Formats a namespace structure as a table, but the last entry is a function call.
+   */
   static void SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_name);
 
-  /**\brief Formats a namespace structure as a table, but the last entry
-   * contains a "Create" function and a type.*/
+  /**
+   * Formats a namespace structure as a table, but the last entry contains a "Create" function and
+   * a type.
+   */
   static void SetObjectNamespaceTableStructure(const std::string& full_lua_name);
 
-  /**\brief Makes sure a table structure exists for the list of table names.*/
+  /**
+   * Makes sure a table structure exists for the list of table names.
+   */
   static void FleshOutLuaTableStructure(const std::vector<std::string>& table_names);
 
-  /**Sets a lua constant in the lua state.*/
+  /**
+   * Sets a lua constant in the lua state.
+   */
   static void SetLuaConstant(const std::string& constant_name,
                              const chi_data_types::Varying& value);
 
-  // 03
-  /**\brief Flushes any commands in the command buffer.*/
+  /**
+   * Flushes any commands in the command buffer.
+   */
   void FlushConsole();
-  // 05 Memory
-  /**\brief Get current memory usage.*/
+
+  /**
+   * Get current memory usage.
+   */
   static CSTMemory GetMemoryUsage();
-  /**\brief Get current memory usage in Megabytes.*/
+
+  /**
+   * Get current memory usage in Megabytes.
+   */
   static double GetMemoryUsageInMB();
 
-  // fwrapper_call
-  /**\brief Generic entry point for wrapper calls.*/
+  /**
+   * Generic entry point for wrapper calls.
+   */
   static int LuaWrapperCall(lua_State* L);
 
-  /**\brief Dumps the object registry to stdout.*/
+  /**
+   * Dumps the object registry to stdout.
+   */
   void DumpRegister() const;
 
-  /**Given an old status, will update the bindings for only newly registered
-   * items.*/
+  /**
+   * Given an old status, will update the bindings for only newly registered items.
+   */
   void UpdateConsoleBindings(const chi::RegistryStatuses& old_statuses);
 };
+
 } // namespace chi
