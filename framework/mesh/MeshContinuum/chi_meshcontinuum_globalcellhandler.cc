@@ -80,20 +80,6 @@ chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index) const
 }
 
 //###################################################################
-/**Returns the total number of global cells.*/
-size_t
-chi_mesh::MeshContinuum::GetGlobalNumberOfCells() const
-{
-  size_t num_local_cells = local_cells_.size();
-  size_t num_globl_cells = 0;
-
-  MPI_Allreduce(
-    &num_local_cells, &num_globl_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
-
-  return num_globl_cells;
-}
-
-//###################################################################
 /**Returns the cell global ids of all ghost cells. These are cells that
  * neighbors to this partition's cells but are on a different
  * partition.*/

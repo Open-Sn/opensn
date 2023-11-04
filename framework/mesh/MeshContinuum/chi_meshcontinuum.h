@@ -25,19 +25,18 @@ namespace chi_mesh
 {
 class GridFaceHistogram;
 class MeshGenerator;
-} // namespace chi_mesh
 
-// ######################################################### Class Definition
-/**Stores the relevant information for completely defining a computational
- * domain. */
-class chi_mesh::MeshContinuum
+/**
+ * Stores the relevant information for completely defining a computationaldomain.
+ */
+class MeshContinuum
 {
 private:
   typedef std::shared_ptr<chi::ChiMPICommunicatorSet> MPILocalCommSetPtr;
 
 private:
-  std::vector<std::unique_ptr<chi_mesh::Cell>> local_cells_; ///< Actual local cells
-  std::vector<std::unique_ptr<chi_mesh::Cell>> ghost_cells_; ///< Locally stored ghosts
+  std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
+  std::vector<std::unique_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
 
   std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
   std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
@@ -78,6 +77,11 @@ public:
 
   const std::map<uint64_t, std::string>& GetBoundaryIDMap() const { return boundary_id_map_; }
 
+  /**
+   * Makes a bndry id given a name. If the bndry name already exists,
+   * the associated bndry id will be returned. Other the id will be set
+   * to one more than the maximum boundary id.
+   */
   uint64_t MakeBoundaryID(const std::string& boundary_name) const;
 
   static std::shared_ptr<MeshContinuum> New() { return std::make_shared<MeshContinuum>(); }
@@ -93,58 +97,138 @@ public:
     vertices.Clear();
   }
 
+  /**Export cells to python.
+   *
+   * \todo Export Cells to OBJ needs polygon support.
+   */
   void ExportCellsToObj(const char* fileName, bool per_material = false, int options = 0) const;
+
+  /**
+   * Exports just the mesh to VTK format.
+   */
   void ExportCellsToVTK(const std::string& file_base_name) const;
+
+  /**
+   * Exports just the portion of the mesh to ExodusII format.
+   */
   void ExportCellsToExodus(const std::string& file_base_name,
                            bool suppress_node_sets = false,
                            bool suppress_side_sets = false) const;
 
+  /**
+   * Populates a face histogram.
+   *
+   * \param master_tolerance Multiple histograms will only be attempted
+   * if the ratio of the maximum dofs-per-face to the average dofs-per-face
+   * is greater than this value. Default 1.2.
+   *
+   * \param slave_tolerance While traversing a sorted list of dofs-per-face,
+   * a new bin will only be generated when the ratio of the listed dofs-per-face
+   * to a running bin average exceeds this value. Defualt 1.1.
+   *
+   * The function populates face_categories which is a structure containing
+   * pairs. Pair.first is the max dofs-per-face for the category and Pair.second
+   * is the number of faces in this category.
+   */
   std::shared_ptr<GridFaceHistogram> MakeGridFaceHistogram(double master_tolerance = 100.0,
                                                            double slave_tolerance = 1.1) const;
 
+  /**
+   * Check whether a cell is local by attempting to find the key in
+   * the native index map.
+   */
   bool IsCellLocal(uint64_t cell_global_index) const;
-  static int GetCellDimension(const chi_mesh::Cell& cell);
 
-  /**Creates a mapping of the current face local-ids to the
-   * adjacent face's local ids.*/
-  void FindAssociatedVertices(const chi_mesh::CellFace& cur_face,
-                              std::vector<short>& dof_mapping) const;
-  /**Creates a mapping of the current face local-ids to the
-   * adjacent cell's local ids.*/
-  void FindAssociatedCellVertices(const chi_mesh::CellFace& cur_face,
-                                  std::vector<short>& dof_mapping) const;
-  static size_t
-  MapCellFace(const chi_mesh::Cell& cur_cell, const chi_mesh::Cell& adj_cell, unsigned int f);
+  /**
+   * Check whether a cell is a boundary by checking if the key is found in the native or foreign
+   * cell maps.
+   */
+  static int GetCellDimension(const Cell& cell);
 
-  /**Given a global-id of a cell, will return the local-id if the
-   * cell is local, otherwise will throw out_of_range.*/
+  /**
+   * Creates a mapping of the current face local-ids to the adjacent face's local ids.
+   */
+  void FindAssociatedVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
+
+  /**
+   * Creates a mapping of the current face local-ids to the adjacent cell's local ids.
+   */
+  void FindAssociatedCellVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
+
+  /**
+   * Given the current cell, cell A, and its adjacent cell, cell B, with
+   * cell B adjacent to A at the `f`-th face of cell A. Will determine the
+   * `af`-th index of the face on cell B that interface with the `f`-th face
+   * of cell A.
+   */
+  static size_t MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned int f);
+
+  /**
+   * Given a global-id of a cell, will return the local-id if the cell is local, otherwise will
+   * throw out_of_range.
+   */
   size_t MapCellGlobalID2LocalID(uint64_t global_id) const;
 
-  chi_mesh::Vector3 ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const;
+  /**
+   * Computes the centroid from nodes specified by the given list.
+   */
+  Vector3 ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const;
 
+  /**
+   * Gets the communicator-set for interprocess communication,
+   * associated with this mesh. If not created yet, it will create it.
+   */
   MPILocalCommSetPtr MakeMPILocalCommunicatorSet() const;
 
+  /**
+   * Returns the total number of global cells.
+   */
   size_t GetGlobalNumberOfCells() const;
 
+  /**
+   * Builds and returns a vector of unique boundary id's present in
+   * the mesh.
+   */
   std::vector<uint64_t> GetDomainUniqueBoundaryIDs() const;
 
-  size_t CountCellsInLogicalVolume(const chi_mesh::LogicalVolume& log_vol) const;
-  bool CheckPointInsideCell(const chi_mesh::Cell& cell, const chi_mesh::Vector3& point) const;
+  /**
+   * Counts the number of cells within a logical volume across all partitions.
+   */
+  size_t CountCellsInLogicalVolume(const LogicalVolume& log_vol) const;
+
+  /**
+   * Checks whether a point is within a cell.
+   */
+  bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
 
   MeshAttributes Attributes() const { return attributes; }
 
+  /**
+   * Gets and orthogonal mesh interface object.
+   */
   std::array<size_t, 3> GetIJKInfo() const;
-  chi_data_types::NDArray<uint64_t> MakeIJKToGlobalIDMapping() const;
-  std::vector<chi_mesh::Vector3> MakeCellOrthoSizes() const;
 
-  std::pair<chi_mesh::Vector3, chi_mesh::Vector3> GetLocalBoundingBox() const;
+  /**
+   * Provides a mapping from cell ijk indices to global ids.
+   */
+  chi_data_types::NDArray<uint64_t> MakeIJKToGlobalIDMapping() const;
+
+  /**
+   * Determines the bounding box size of each cell and returns it as
+   * a list of 3-component vectors, one Vec3 for each cell.
+   */
+  std::vector<Vector3> MakeCellOrthoSizes() const;
+
+  std::pair<Vector3, Vector3> GetLocalBoundingBox() const;
 
 private:
-  friend class chi_mesh::VolumeMesher;
-  friend class chi_mesh::MeshGenerator;
+  friend class VolumeMesher;
+  friend class MeshGenerator;
   void SetAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis = {0, 0, 0})
   {
     attributes = attributes | new_attribs;
     ortho_attributes = {ortho_Nis[0], ortho_Nis[1], ortho_Nis[2]};
   }
 };
+
+} // namespace chi_mesh
