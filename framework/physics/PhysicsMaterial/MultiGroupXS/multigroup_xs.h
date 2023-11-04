@@ -22,7 +22,20 @@ public:
 
   MultiGroupXS() : MaterialProperty(PropertyType::TRANSPORT_XSECTIONS) {}
 
+  /**
+   * Exports the cross section information to ChiTech format.
+   *
+   * \param file_name The name of the file to save the cross sections to.
+   * \param fission_scaling A factor to scale fission data to. This is
+   *      generally equal to \f$ 1/k_{eff} \f$. Generally, this is done to
+   *      create exactly critical cross sections for a transient initial
+   *      condition.
+   */
   void ExportToChiXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
+
+  /**
+   * Pushes all of the relevant items of the transport xs to a lua table.
+   */
   void PushLuaTable(lua_State* L) const override;
 
   virtual const unsigned int NumGroups() const = 0;
