@@ -1,6 +1,6 @@
 #include "mesh/MeshHandler/chi_meshhandler.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/Raytrace/raytracing.h"
+#include "mesh/Raytrace/raytracer.h"
 
 #include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
 #include "math/RandomNumberGeneration/random_number_generator.h"

@@ -1,6 +1,6 @@
 #include "chi_ffinter_slice.h"
 #include "mesh/Cell/cell.h"
-#include "mesh/Raytrace/raytracing.h"
+#include "mesh/Raytrace/raytracer.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 #include "math/SpatialDiscretization/SpatialDiscretization.h"
 #include "math/VectorGhostCommunicator/vector_ghost_communicator.h"

@@ -1,7 +1,7 @@
 #include "meshcutting.h"
 
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/Raytrace/raytracing.h"
+#include "mesh/Raytrace/raytracer.h"
 
 #include "chi_runtime.h"
 #include "chi_log.h"
