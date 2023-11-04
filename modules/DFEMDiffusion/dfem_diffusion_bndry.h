@@ -14,14 +14,16 @@ enum class BoundaryType : int
   Robin = 4,
   Vacuum = 5
 };
-} // namespace dfem_diffusion
 
-//###################################################################
-/**Parent class for diffusion boundaries*/
-class dfem_diffusion::Boundary
+/**
+ * Parent class for diffusion boundaries
+ */
+class Boundary
 {
 public:
   BoundaryType type_ = BoundaryType::Dirichlet;
 
   std::array<double, 3> values_ = {0., 0., 0.};
 };
+
+} // namespace dfem_diffusion

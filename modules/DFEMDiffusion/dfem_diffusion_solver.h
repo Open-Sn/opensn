@@ -2,23 +2,19 @@
 
 #include "physics/SolverBase/chi_solver.h"
 #include "math/PETScUtils/petsc_utils.h"
-
 #include "dfem_diffusion_bndry.h"
 #include "utils/chi_timer.h"
-
 #include "console/chi_console.h"
 #include "math/UnknownManager/unknown_manager.h"
-
 #include "mesh/chi_mesh.h"
-
 #include <map>
 
-// forward declaration
 namespace chi_mesh
 {
 class MeshContinuum;
 typedef std::shared_ptr<MeshContinuum> MeshContinuumPtr;
 } // namespace chi_mesh
+
 namespace chi_math
 {
 class SpatialDiscretization;
@@ -27,8 +23,9 @@ typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
 
 namespace dfem_diffusion
 {
-/** DFEM diffusion solver
- *
+
+/**
+ * DFEM diffusion solver
  */
 class Solver : public chi_physics::Solver
 {
@@ -54,12 +51,24 @@ public:
   explicit Solver(const std::string& in_solver_name);
   ~Solver() override;
 
-  // void Initialize() override;
   void Initialize() override;
   void Execute() override;
 
+  /**Still searching for a reference for this.
+   *
+   * For Polygons:
+   * Defined from paper  \n
+   * Turcksin B, Ragusa J, "Discontinuous diffusion synthetic acceleration
+   * for S_n transport on 2D arbitrary polygonal meshes", Journal of
+   * Computational Physics 274, pg 356-369, 2014.\n
+   * \n
+   * Nv = Number of vertices. If Nv <= 4 then the perimeter parameter
+   * should be replaced by edge length.*/
   double HPerpendicular(const chi_mesh::Cell& cell, unsigned int f);
 
+  /**
+   * Maps a face, in a discontinuous sense, using the spatial discretization.
+   */
   int MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
                       const chi_mesh::Cell& adj_cell,
                       const std::vector<chi_mesh::Vector3>& cc_node_locs,
@@ -69,9 +78,21 @@ public:
                       size_t ccfi,
                       double epsilon = 1.0e-12);
 
+  /**
+   * Calls a lua function with xyz coordinates.
+   * \param L The lua state.
+   * \param lua_func_name The name used to define this lua function in the lua
+   *                      state.
+   * \param imat The material ID of the cell
+   * \param xyz The xyz coordinates of the point where the function is called.
+   *
+   * \return The function evaluation.*/
   static double
   CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
 
+  /**
+   * Updates the field functions with the latest data.
+   */
   void UpdateFieldFunctions();
 };
 
