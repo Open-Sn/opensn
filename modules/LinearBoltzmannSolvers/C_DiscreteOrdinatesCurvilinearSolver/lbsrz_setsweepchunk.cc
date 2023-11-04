@@ -5,7 +5,7 @@
 namespace lbs
 {
 
-std::shared_ptr<chi_mesh::sweep_management::SweepChunk>
+std::shared_ptr<SweepChunk>
 lbs::DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(lbs::LBSGroupset& groupset)
 {
   auto sweep_chunk = std::make_shared<SweepChunkPWLRZ>(*grid_ptr_,
