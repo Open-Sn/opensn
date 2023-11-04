@@ -4,15 +4,16 @@
 
 namespace chi_mesh
 {
+
 enum class SurfaceMesherType
 {
   Predefined = 1
 };
-}
 
-//###################################################################
-/**Base class for surface meshers.*/
-class chi_mesh::SurfaceMesher
+/**
+ * Base class for surface meshers.
+ */
+class SurfaceMesher
 {
 protected:
   const SurfaceMesherType type_;
@@ -29,3 +30,5 @@ public:
 
   virtual ~SurfaceMesher() = default;
 };
+
+} // namespace chi_mesh
