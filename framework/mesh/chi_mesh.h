@@ -4,12 +4,13 @@
 #include <iostream>
 #include <memory>
 
-/** # Namespace for all meshing features
+/**
+ * Namespace for all meshing features
  *
  * Meshes in ChiTech follow the concept of Regions. In any given region the
  * boundaries are a collection of either line-meshes (2D) or
  * surface-meshes (3D).
- * */
+ */
 namespace chi_mesh
 {
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ FORWARD DECLARATIONS
@@ -81,7 +82,18 @@ operator|(const MeshAttributes f1, const MeshAttributes f2)
 }
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ROUTINES
+
+/**
+ * Obtains a reference to the current mesh handler from the global stack.
+ *
+ * If the stack is empty this routine will through `std::logic_error`.
+ * \author Jan
+ */
 MeshHandler& GetCurrentHandler();
+
+/**
+ * Adds a new mesh handler to the stack, sets it as the current handler and returns a handle to it.
+ */
 size_t PushNewHandlerAndGetIndex();
 
 //=================================== Domain decompositions
