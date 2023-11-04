@@ -9,10 +9,12 @@
 namespace chi
 {
 class PostProcessor;
-class PostProcessorPrinter; // fwd declare
+class PostProcessorPrinter;
 class ParameterBlock;
 
-/**A helper object to allow the printer to subscribe to events.*/
+/**
+ * A helper object to allow the printer to subscribe to events.
+ */
 class PPPrinterSubscribeHelper : public EventSubscriber
 {
 public:
@@ -30,15 +32,16 @@ enum class ScalarPPTableFormat : int
   HORIZONTAL = 1,
 };
 
-/**A singleton responsible for printing post-processors.*/
+/**
+ * A singleton responsible for printing post-processors.
+ */
 class PostProcessorPrinter
 {
 public:
   static PostProcessorPrinter& GetInstance();
 
-  PostProcessorPrinter(const PostProcessorPrinter&) = delete; // Deleted copy constructor
-  PostProcessorPrinter
-  operator=(const PostProcessorPrinter&) = delete; // Deleted assignment operator
+  PostProcessorPrinter(const PostProcessorPrinter&) = delete;
+  PostProcessorPrinter operator=(const PostProcessorPrinter&) = delete;
 
   void ReceiveEventUpdate(const Event& event);
 
@@ -58,7 +61,9 @@ public:
 
   void SetCSVFilename(const std::string& csv_filename);
 
-  /**A manual means to print a post processor.*/
+  /**
+   * A manual means to print a post processor.
+   */
   std::string GetPrintedPostProcessors(const std::vector<const PostProcessor*>& pp_list) const;
 
 private:
@@ -66,7 +71,6 @@ private:
 
   void PrintPostProcessors(const Event& event) const;
 
-  // 00a_latest
   void PrintPPsLatestValuesOnly(const std::string& pps_typename,
                                 const std::vector<const PostProcessor*>& pp_list,
                                 const Event& event) const;
@@ -77,7 +81,6 @@ private:
   PrintPPsVertical(const std::vector<std::pair<std::string, std::string>>& scalar_ppnames_and_vals,
                    int event_code);
 
-  // 00b_history
   void PrintPPsTimeHistory(const std::string& pps_typename,
                            const std::vector<const PostProcessor*>& pp_list,
                            const Event& event,
@@ -86,7 +89,6 @@ private:
   static std::string
   PrintPPsSubTimeHistory(const std::vector<std::vector<std::string>>& sub_history);
 
-  // 01 csv
   void PrintCSVFile(const Event& event) const;
   static void PrintScalarPPsToCSV(std::ofstream& csvfile,
                                   const std::vector<const PostProcessor*>& pp_list);
@@ -95,7 +97,6 @@ private:
   static void PrintArbitraryPPsToCSV(std::ofstream& csvfile,
                                      const std::vector<const PostProcessor*>& pp_list);
 
-  // utils
   static std::vector<const PostProcessor*> GetScalarPostProcessorsList(const Event& event);
 
   static std::vector<const PostProcessor*> GetVectorPostProcessorsList(const Event& event);
