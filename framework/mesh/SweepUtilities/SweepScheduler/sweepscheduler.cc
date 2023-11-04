@@ -2,6 +2,7 @@
 #include "chi_runtime.h"
 #include "chi_log.h"
 #include "mesh/SweepUtilities/SPDS/SPDS_AdamsAdamsHawkins.h"
+#include "mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
 #include "chi_mpi.h"
 #include <sstream>
 #include <algorithm>

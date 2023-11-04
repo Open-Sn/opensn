@@ -1,5 +1,5 @@
 #include "angleaggregation.h"
-
+#include "mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 
 #include "chi_runtime.h"

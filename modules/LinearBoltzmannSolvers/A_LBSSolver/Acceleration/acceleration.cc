@@ -1,6 +1,6 @@
 #include "acceleration.h"
 
-#include "mesh/SweepUtilities/SweepBoundary/sweep_boundaries.h"
+#include "mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
 #include "physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
 
 #include "chi_runtime.h"

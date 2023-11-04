@@ -7,7 +7,7 @@
 #include "math/LinearSolver/linear_solver.h"
 #include "lbs_structs.h"
 #include "mesh/SweepUtilities/sweep_namespace.h"
-#include "mesh/SweepUtilities/SweepBoundary/sweep_boundaries.h"
+#include "mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
 
 #include "A_LBSSolver/PointSource/lbs_point_source.h"
 
