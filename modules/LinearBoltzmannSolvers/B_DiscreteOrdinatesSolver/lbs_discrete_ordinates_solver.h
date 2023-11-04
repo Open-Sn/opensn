@@ -33,30 +33,31 @@ public:
   explicit DiscreteOrdinatesSolver(const chi::InputParameters& params);
   ~DiscreteOrdinatesSolver() override;
 
-  const std::string& SweepType() const
-  {
-    return sweep_type_;
-  }
+  const std::string& SweepType() const { return sweep_type_; }
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
   void Initialize() override;
   void ScalePhiVector(PhiSTLOption which_phi, double value) override;
-  void SetGSPETScVecFromPrimarySTLvector(LBSGroupset & groupset, Vec x, PhiSTLOption which_phi)
-    override;
-  void SetPrimarySTLvectorFromGSPETScVec(LBSGroupset & groupset, Vec x_src, PhiSTLOption which_phi)
-    override;
-  void GSScopedCopyPrimarySTLvectors(
-    LBSGroupset & groupset, PhiSTLOption from_which_phi, PhiSTLOption to_which_phi) override;
-  void SetMultiGSPETScVecFromPrimarySTLvector(
-    const std::vector<int>& gs_ids, Vec x, PhiSTLOption which_phi) override;
-  void SetPrimarySTLvectorFromMultiGSPETScVecFrom(
-    const std::vector<int>& gs_ids, Vec x_src, PhiSTLOption which_phi) override;
+  void
+  SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset, Vec x, PhiSTLOption which_phi) override;
+  void SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset,
+                                         Vec x_src,
+                                         PhiSTLOption which_phi) override;
+  void GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
+                                     PhiSTLOption from_which_phi,
+                                     PhiSTLOption to_which_phi) override;
+  void SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& gs_ids,
+                                              Vec x,
+                                              PhiSTLOption which_phi) override;
+  void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs_ids,
+                                                  Vec x_src,
+                                                  PhiSTLOption which_phi) override;
 
   /**
    * Zeroes all the outflow data-structures required to compute
    * balance.
    */
-  void ZeroOutflowBalanceVars(LBSGroupset & groupset);
+  void ZeroOutflowBalanceVars(LBSGroupset& groupset);
 
   /**
    * Compute balance
@@ -100,17 +101,17 @@ protected:
   /**
    * Initializes fluds_ data structures.
    */
-  void InitFluxDataStructures(LBSGroupset & groupset);
+  void InitFluxDataStructures(LBSGroupset& groupset);
 
   /**
    * Clears all the sweep orderings for a groupset in preperation for another.
    */
-  void ResetSweepOrderings(LBSGroupset & groupset);
+  void ResetSweepOrderings(LBSGroupset& groupset);
 
   /**
    * Sets up the sweek chunk for the given discretization method.
    */
-  virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset & groupset);
+  virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
 
   std::map<AngQuadPtr, SwpOrderGroupingInfo> quadrature_unq_so_grouping_map_;
   std::map<AngQuadPtr, SPDS_ptrs> quadrature_spds_map_;
@@ -127,11 +128,11 @@ protected:
    * This routine groups angle-indices to groups sharing the same sweep
    * ordering. It also takes geometry into account.
    */
-  static std::pair<UniqueSOGroupings, DirIDToSOMap> AssociateSOsAndDirections(
-    const chi_mesh::MeshContinuum& grid,
-    const chi_math::AngularQuadrature& quadrature,
-    AngleAggregationType agg_type,
-    lbs::GeometryType lbs_geo_type);
+  static std::pair<UniqueSOGroupings, DirIDToSOMap>
+  AssociateSOsAndDirections(const chi_mesh::MeshContinuum& grid,
+                            const chi_math::AngularQuadrature& quadrature,
+                            AngleAggregationType agg_type,
+                            lbs::GeometryType lbs_geo_type);
 };
 
 } // namespace lbs

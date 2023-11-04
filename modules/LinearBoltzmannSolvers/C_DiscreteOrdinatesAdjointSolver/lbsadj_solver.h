@@ -11,39 +11,58 @@
 namespace lbs
 {
 
-// ###################################################################
-class DiscreteOrdinatesAdjointSolver : public lbs::DiscreteOrdinatesSolver
+class DiscreteOrdinatesAdjointSolver : public DiscreteOrdinatesSolver
 {
 protected:
   typedef std::vector<size_t> VecSize_t;
   typedef std::pair<ResponseFunctionDesignation, VecSize_t> RespFuncAndSubs;
-  std::vector<RespFuncAndSubs> response_functions_;
 
 public:
   std::vector<std::vector<double>> m_moment_buffers_;
 
 public:
-  static chi::InputParameters GetInputParameters();
   explicit DiscreteOrdinatesAdjointSolver(const chi::InputParameters& params);
   explicit DiscreteOrdinatesAdjointSolver(const std::string& solver_name);
 
   DiscreteOrdinatesAdjointSolver(const DiscreteOrdinatesAdjointSolver&) = delete;
   DiscreteOrdinatesAdjointSolver& operator=(const DiscreteOrdinatesAdjointSolver&) = delete;
 
-  double ComputeInnerProduct();
-  const std::vector<RespFuncAndSubs>& GetResponseFunctions() const;
-
   void Initialize() override;
-  void MakeAdjointXSs();
-  void InitQOIs();
   void Execute() override;
 
-  // 04
+  /**
+   * Computes the inner product of the flux and the material source.
+   */
+  double ComputeInnerProduct();
+
+  /**
+   * Returns the list of volumetric response functions.
+   */
+  const std::vector<RespFuncAndSubs>& GetResponseFunctions() const;
+
+  void MakeAdjointXSs();
+  void InitQOIs();
+
+  /**
+   * Subscribes cells to QOIs.
+   */
   size_t AddResponseFunction(const std::string& qoi_name,
                              std::shared_ptr<chi_mesh::LogicalVolume> logical_volume,
                              const std::string& lua_function_name);
-  // 05a
+
+  /**
+   * Exports an importance map in binary format.
+   */
   void ExportImportanceMap(const std::string& file_name);
+
+protected:
+  std::vector<RespFuncAndSubs> response_functions_;
+
+public:
+  /**
+   * Returns the input parameters.
+   */
+  static chi::InputParameters GetInputParameters();
 };
 
 } // namespace lbs

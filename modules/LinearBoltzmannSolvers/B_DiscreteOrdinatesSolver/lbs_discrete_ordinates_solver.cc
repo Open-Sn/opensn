@@ -28,7 +28,6 @@
 #include "chi_log_exceptions.h"
 #include <iomanip>
 
-
 #define ParallelParmetisNeedsCycles                                                                \
   "When using PARMETIS type partitioning then groupset iterative method"                           \
   " must be NPT_CLASSICRICHARDSON_CYCLES or NPT_GMRES_CYCLES"
@@ -60,7 +59,6 @@
 
 #define LogicCheck(condition, message)                                                             \
   if ((condition)) throw std::logic_error(fname + (message));
-
 
 namespace lbs
 {
