@@ -1,20 +1,15 @@
 #pragma once
 
 #include "mesh/Cell/cell.h"
-
 #include "DiffusionSolver/Boundaries/chi_diffusion_bndry.h"
 #include "DiffusionSolver/UnitIntegralContainer.h"
-
 #include "DiffusionSolver/chi_diffusion.h"
 #include "physics/SolverBase/chi_solver.h"
 #include "math/SpatialDiscretization/SpatialDiscretization.h"
 #include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
 #include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
-
 #include "mesh/VolumeMesher/chi_volumemesher.h"
-
 #include "utils/chi_timer.h"
-
 #include <petscksp.h>
 
 #define DIFFUSION_MATERIALS_REGULAR 10
@@ -23,12 +18,16 @@
 #define DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTF_JPART 13
 #define DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTF_JFULL 14
 
-//######################################################### Class def
-/**Solver for the general diffusion problem.
+namespace chi_diffusion
+{
 
- <img src="DiffusionMatProp.png" style="width:500px">
- * */
-class chi_diffusion::Solver : public chi_physics::Solver
+/**
+ * Solver for the general diffusion problem.
+ *
+ * <img src="DiffusionMatProp.png" style="width:500px">
+ *
+ */
+class Solver : public chi_physics::Solver
 {
 private:
   chi::Timer t_assembly_;
@@ -45,7 +44,7 @@ public:
 
 public:
   BoundaryPreferences boundary_preferences_;
-  std::map<uint64_t, chi_diffusion::Boundary*> boundaries_;
+  std::map<uint64_t, Boundary*> boundaries_;
   chi_mesh::MeshContinuumPtr grid_ptr_ = nullptr;
 
   std::shared_ptr<chi_math::SpatialDiscretization> discretization_;
@@ -77,14 +76,39 @@ public:
   std::map<uint64_t, UnitIntegralContainer> unit_integrals_;
 
 public:
-  // 00
   Solver(const Solver&) = delete;
   Solver& operator=(const Solver&) = delete;
 
+  /**
+   * \defgroup LuaDiffusionBasicOptions Basic Options
+   * \ingroup LuaDiffusion
+   *
+   * Option name           | Type   | Default Value | Description
+   * ----------------------|------- |---------------|------------
+   * "discretization_method" | string | "None"        | Spatial discretization
+   * method. "PWLC", "PWLD_MIP". "max_iters"             | int    | 500           |
+   * Maximum iterations for solver convergence. "residual_tolerance"    | float
+   * | 1.0e-8        | Residual convergence tolerance. "property_map_D"        | int
+   * | 0             | Material property index to use for diffusion coefficient
+   * "property_map_q"        | int    | 1             | Material property index to
+   * use for source. "property_map_sigma"    | int    | 2             | Material
+   * property index to use for interaction coefficient.
+   *
+   * To set these options use the command chiSolverSetBasicOption() with
+   * an option-name and value in the table above.
+   *
+   * ## Example
+   * Example usage
+   * \code
+   * chiSolverSetBasicOption(phys1, "discretization_method", "PWLC")
+   * \endcode
+   */
   explicit Solver(const std::string& in_solver_name);
   virtual ~Solver();
 
-  // 01 General
+  /**
+   * Gets material properties various sources.
+   */
   void GetMaterialProperties(const chi_mesh::Cell& cell,
                              int cell_dofs,
                              std::vector<double>& diffCoeff,
@@ -92,37 +116,74 @@ public:
                              std::vector<double>& sigmaa,
                              int group = 0,
                              int moment = 0);
-  // 01a
+
+  /**
+   * Initialization of common to all solver types.
+   */
   void InitializeCommonItems();
 
-  // 01b
   void Initialize() override { Initialize(true); }
+
+  /**
+   * Initializes the diffusion solver using the PETSc library.
+   */
   int Initialize(bool verbose);
 
-  // 02a
   void Execute() override { ExecuteS(); }
+
+  /**
+   * Executes the diffusion solver using the PETSc library.
+   */
   int ExecuteS(bool suppress_assembly = false, bool suppress_solve = false);
 
+  /**
+   * Assembles PWLC matrix for general cells.
+   */
   void CFEM_Assemble_A_and_b(chi_mesh::Cell& cell, int group = 0);
 
-  // 02c_c
+  /**
+   * Assembles PWLC matrix for polygon cells.
+   */
   void PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component = 0);
+
+  /**
+   * Assembles PWLC matrix for polygon cells.
+   */
   void PWLD_Assemble_b(const chi_mesh::Cell& cell, int component = 0);
 
-  // 02e_c
-  //  void PWLD_Assemble_A_and_b_GAGG(const chi_mesh::Cell& cell);
-  //  void PWLD_Assemble_b_GAGG(const chi_mesh::Cell& cell);
-
-  // 03b
+  /**
+   * Still searching for a reference for this.
+   *
+   * For Polygons:
+   * Defined from paper  \n
+   * Turcksin B, Ragusa J, "Discontinuous diffusion synthetic acceleration
+   * for S_n transport on 2D arbitrary polygonal meshes", Journal of
+   * Computational Physics 274, pg 356-369, 2014.\n
+   * \n
+   * Nv = Number of vertices. If Nv <= 4 then the perimeter parameter
+   * should be replaced by edge length.
+   */
   double HPerpendicular(const chi_mesh::Cell& cell,
                         const UnitIntegralContainer& fe_intgrl_values,
                         unsigned int f);
 
+  /**
+   * Given a global node index, returns the local cell-node it's associated on the referenced cell.
+   */
   static uint64_t MapCellLocalNodeIDFromGlobalID(const chi_mesh::Cell& cell,
                                                  uint64_t node_global_id);
 
+  /**
+   * Given the face index on the current cell, finds the
+   * corresponding face index on the adjacent cell.
+   */
   static unsigned int
   MapCellFace(const chi_mesh::Cell& cur_cell, const chi_mesh::Cell& adj_cell, unsigned int f);
 
+  /**
+   * Update the field functions with the latest data.
+   */
   void UpdateFieldFunctions();
 };
+
+} // namespace chi_diffusion
