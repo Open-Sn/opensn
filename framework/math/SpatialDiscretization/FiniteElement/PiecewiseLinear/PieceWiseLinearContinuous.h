@@ -41,7 +41,7 @@ public:
   {
     return MapDOF(cell, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
   }
-  
+
   int64_t MapDOFLocal(const chi_mesh::Cell& cell, unsigned int node) const override
   {
     return MapDOFLocal(cell, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
