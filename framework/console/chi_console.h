@@ -7,7 +7,6 @@ extern "C"
 #include <lauxlib.h>
 }
 
-#include "opensn/framework/console/chi_console_structs.h"
 #include "opensn/framework/parameters/parameter_block.h"
 #include "opensn/framework/parameters/input_parameters.h"
 #include "opensn/framework/logging/chi_log_exceptions.h"
@@ -218,16 +217,6 @@ public:
    * Flushes any commands in the command buffer.
    */
   void FlushConsole();
-
-  /**
-   * Get current memory usage.
-   */
-  static CSTMemory GetMemoryUsage();
-
-  /**
-   * Get current memory usage in Megabytes.
-   */
-  static double GetMemoryUsageInMB();
 
   /**
    * Generic entry point for wrapper calls.

@@ -66,7 +66,7 @@ VolumeMesherExtruder::Execute()
 {
   Chi::log.Log() << Chi::program_timer.GetTimeString()
                  << " VolumeMesherExtruder executed. Memory in use = "
-                 << chi::Console::GetMemoryUsageInMB() << " MB" << std::endl;
+                 << Chi::GetMemoryUsageInMB() << " MB" << std::endl;
 
   //================================================== Loop over all regions
   Chi::log.Log0Verbose1() << "VolumeMesherExtruder: Processing Region" << std::endl;

@@ -63,6 +63,28 @@ struct RegistryStatuses
   std::vector<std::string> console_lua_func_keys_;
   std::vector<std::string> console_lua_wrapper_keys_;
 };
+
+/**Simple structure for memory usage.*/
+struct CSTMemory
+{
+  double memory_bytes = 0.0;
+  double memory_kbytes = 0.0;
+  double memory_mbytes = 0.0;
+  double memory_gbytes = 0.0;
+
+  CSTMemory() = default;
+
+  explicit CSTMemory(double in_mem)
+  {
+    memory_bytes = in_mem;
+    memory_kbytes = in_mem / 1024.0;
+    memory_mbytes = in_mem / 1024.0 / 1024.0;
+    memory_gbytes = in_mem / 1024.0 / 1024.0;
+  }
+
+  CSTMemory& operator=(const CSTMemory& in_struct) = default;
+};
+
 } // namespace chi
 
 class ChiObject;
@@ -96,6 +118,17 @@ public:
   static std::vector<chi::PostProcessorPtr> postprocessor_stack;
 
   static const size_t SIZE_T_INVALID = ((size_t)-1);
+
+  /**
+   * Get current memory usage.
+   */
+  static chi::CSTMemory GetMemoryUsage();
+
+  /**
+   * Get current memory usage in Megabytes.
+   */
+  static double GetMemoryUsageInMB();
+
 
   // #######################################################
   /**Data block for run-time quantities.*/

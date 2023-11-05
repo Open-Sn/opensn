@@ -1100,7 +1100,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   if (options_.verbose_inner_iterations)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " Initialized Angle Aggregation.   "
                    << "         Process memory = " << std::setprecision(3)
-                   << chi::Console::GetMemoryUsageInMB() << " MB.";
+                   << Chi::GetMemoryUsageInMB() << " MB.";
 
   Chi::mpi.Barrier();
 }
@@ -1115,7 +1115,7 @@ DiscreteOrdinatesSolver::ResetSweepOrderings(LBSGroupset& groupset)
   Chi::mpi.Barrier();
 
   Chi::log.Log() << "SPDS and FLUDS reset complete.            Process memory = "
-                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB";
+                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
 
   double local_app_memory = Chi::log.ProcessEvent(chi::ChiLog::StdTags::MAX_MEMORY_USAGE,
                                                   chi::ChiLog::EventOperation::MAX_VALUE);

@@ -377,7 +377,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
 
   Chi::mpi.Barrier();
   Chi::log.Log() << "Secondary Cell matrices computed.         Process memory = "
-                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB";
+                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
 }
 
 std::shared_ptr<SweepChunk>

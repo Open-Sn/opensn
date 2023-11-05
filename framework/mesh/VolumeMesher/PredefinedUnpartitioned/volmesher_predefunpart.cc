@@ -104,7 +104,7 @@ VolumeMesherPredefinedUnpartitioned::Execute()
 {
   Chi::log.Log() << Chi::program_timer.GetTimeString()
                  << " VolumeMesherPredefinedUnpartitioned executing. Memory in use = "
-                 << chi::Console::GetMemoryUsageInMB() << " MB" << std::endl;
+                 << Chi::GetMemoryUsageInMB() << " MB" << std::endl;
 
   //======================================== Check partitioning params
   if (options.partition_type == KBA_STYLE_XYZ)

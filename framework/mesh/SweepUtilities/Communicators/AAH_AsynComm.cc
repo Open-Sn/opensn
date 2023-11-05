@@ -447,7 +447,7 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
     fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, num_loc_sucs);
 
     //================================================ Make a memory query
-    double memory_mb = chi::Console::GetMemoryUsageInMB();
+    double memory_mb = Chi::GetMemoryUsageInMB();
 
     std::shared_ptr<chi::ChiLog::EventInfo> memory_event_info =
       std::make_shared<chi::ChiLog::EventInfo>(memory_mb);

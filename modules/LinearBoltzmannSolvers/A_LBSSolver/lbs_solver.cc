@@ -1125,7 +1125,7 @@ LBSSolver::ComputeUnitIntegrals()
   Chi::log.Log() << "Ghost cell unit cell-matrix ratio: "
                  << (double)num_globl_ucms[1] * 100 / (double)num_globl_ucms[0] << "%";
   Chi::log.Log() << "Cell matrices computed.                   Process memory = "
-                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB";
+                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
 }
 
 void
@@ -1356,7 +1356,7 @@ LBSSolver::InitializeParrays()
 
   Chi::mpi.Barrier();
   Chi::log.Log() << "Done with parallel arrays.                Process memory = "
-                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB"
+                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB"
                  << std::endl;
 }
 
