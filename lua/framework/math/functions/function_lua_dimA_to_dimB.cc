@@ -1,4 +1,4 @@
-#include "opensn/framework/math/Functions/function_lua_dimA_to_dimB.h"
+#include "function_lua_dimA_to_dimB.h"
 
 #include "opensn/framework/console/chi_console.h"
 #include "opensn/framework/logging/chi_log_exceptions.h"

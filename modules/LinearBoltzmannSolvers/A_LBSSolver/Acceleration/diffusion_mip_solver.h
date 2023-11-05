@@ -1,7 +1,9 @@
 #pragma once
 
 #include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
+#ifdef OPENSN_WITH_LUA
 #include "opensn/framework/chi_lua.h"
+#endif
 
 // ############################################### Forward declarations
 namespace chi_mesh
@@ -91,6 +93,7 @@ public:
                       size_t ccfi,
                       double epsilon = 1.0e-12);
 
+#ifdef OPENSN_WITH_LUA
   /**
    * Calls a lua function with xyz coordinates.
    * \param L The lua state.
@@ -102,6 +105,7 @@ public:
    */
   static double
   CallLuaXYZFunction(lua_State* L, const std::string& lua_func_name, const chi_mesh::Vector3& xyz);
+#endif
 };
 
 } // namespace lbs::acceleration

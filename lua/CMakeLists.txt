@@ -17,6 +17,8 @@ target_link_libraries(libopensnlua
     libopensn
 )
 
+target_compile_definitions(libopensnlua PRIVATE OPENSN_WITH_LUA)
+
 if(NOT MSVC)
     set_target_properties(libopensnlua PROPERTIES OUTPUT_NAME opensnlua)
 endif()
@@ -24,14 +26,19 @@ endif()
 
 # opensn binary
 add_executable(opensn "main.cc")
+
 target_include_directories(opensn
     PRIVATE
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 )
+
 target_link_libraries(opensn
     PRIVATE
+    ${LUA_LIBRARIES}
     libopensn
     libopensnlua
     MPI::MPI_CXX
 )
+
+target_compile_definitions(opensn PRIVATE OPENSN_WITH_LUA)

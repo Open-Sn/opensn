@@ -19,7 +19,9 @@
 #include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
 #include "opensn/framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
 #include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#ifdef OPENSN_WITH_LUA
 #include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Tools/lbs_bndry_func_lua.h"
+#endif
 #include <algorithm>
 #include <iomanip>
 #include <sys/stat.h>
@@ -1501,8 +1503,13 @@ LBSSolver::InitializeBoundaries()
         sweep_boundaries_[bid] = mk_shrd(SweepIncHomoBndry)(G, mg_q);
       else if (bndry_pref.type == BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS)
       {
+#ifdef OPENSN_WITH_LUA
         sweep_boundaries_[bid] = mk_shrd(SweepAniHeteroBndry)(
           G, std::make_unique<BoundaryFunctionToLua>(bndry_pref.source_function), bid);
+#else
+        // hard exit since this is a missing capability
+        exit(-1);
+#endif
       }
       else if (bndry_pref.type == lbs::BoundaryType::REFLECTING)
       {

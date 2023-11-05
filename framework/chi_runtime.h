@@ -145,8 +145,6 @@ public:
 
     static const std::string command_line_help_string_;
 
-  private:
-    friend class Chi;
     static void ParseArguments(int argc, char** argv);
     static int InitPetSc(int argc, char** argv);
 

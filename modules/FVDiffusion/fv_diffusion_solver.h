@@ -55,8 +55,10 @@ public:
   void Initialize() override;
   void Execute() override;
 
+#ifdef OPENSN_WITH_LUA
   static double
   CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
+#endif
 
   void UpdateFieldFunctions();
 };

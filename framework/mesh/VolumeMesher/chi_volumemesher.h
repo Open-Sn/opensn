@@ -120,6 +120,7 @@ public:
    */
   static void SetMatIDToAll(int mat_id);
 
+#ifdef OPENSN_WITH_LUA
   /**
    * Sets material id's using a lua function. The lua function is called with for each cell with 4
    * arguments, the cell's centroid x,y,z values and the cell's current material id.
@@ -145,6 +146,7 @@ public:
    * \endcode
    */
   static void SetBndryIDFromLuaFunction(const std::string& lua_fname);
+#endif
 
   /**
    * Sets boundary numbers on boundaries orthogonal to the cardinal directions as "XMAX", "XMIN",

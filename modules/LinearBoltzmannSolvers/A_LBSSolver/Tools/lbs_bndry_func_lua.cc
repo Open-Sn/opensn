@@ -1,3 +1,4 @@
+#ifdef OPENSN_WITH_LUA
 #include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Tools/lbs_bndry_func_lua.h"
 
 #include "opensn/framework/chi_lua.h"
@@ -147,3 +148,4 @@ lbs::BoundaryFunctionToLua::Evaluate(
 
   return psi;
 }
+#endif

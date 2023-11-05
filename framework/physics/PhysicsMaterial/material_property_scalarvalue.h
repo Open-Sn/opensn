@@ -15,6 +15,7 @@ public:
   ScalarValue() : MaterialProperty(PropertyType::SCALAR_VALUE) {}
 
   double GetScalarValue() override { return value_; }
+#ifdef OPENSN_WITH_LUA
   void PushLuaTable(lua_State* L) const override
   {
     lua_newtable(L);
@@ -26,6 +27,7 @@ public:
     lua_pushnumber(L, value_);
     lua_settable(L, -3);
   }
+#endif
 };
 
 } // namespace chi_physics

@@ -1,3 +1,4 @@
+#ifdef OPENSN_WITH_LUA
 #include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/ResponseFunction/lbs_adj_response_function.h"
 
 #include "opensn/framework/chi_lua.h"
@@ -91,3 +92,4 @@ lbs::ResponseFunctionDesignation::GetMGResponse(const chi_mesh::Cell& cell,
 
   return response;
 }
+#endif

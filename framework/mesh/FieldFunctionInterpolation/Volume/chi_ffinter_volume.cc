@@ -83,8 +83,10 @@ FieldFunctionInterpolationVolume::Execute()
         ff_value += qp_data.ShapeValue(j, qp) * node_dof_values[j];
 
       double function_value = ff_value;
+#ifdef OPENSN_WITH_LUA
       if (op_type_ >= Operation::OP_SUM_LUA and op_type_ <= Operation::OP_MAX_LUA)
         function_value = CallLuaFunction(ff_value, cell.material_id_);
+#endif
 
       local_volume += qp_data.JxW(qp);
       local_sum += function_value * qp_data.JxW(qp);
@@ -117,6 +119,7 @@ FieldFunctionInterpolationVolume::Execute()
   }
 }
 
+#ifdef OPENSN_WITH_LUA
 double
 FieldFunctionInterpolationVolume::CallLuaFunction(double ff_value, int mat_id) const
 {
@@ -133,5 +136,6 @@ FieldFunctionInterpolationVolume::CallLuaFunction(double ff_value, int mat_id) c
 
   return ret_val;
 }
+#endif
 
 } // namespace chi_mesh

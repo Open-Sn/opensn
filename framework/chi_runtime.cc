@@ -163,11 +163,13 @@ Chi::run_time::ParseArguments(int argc, char** argv)
 
   } // for argument
 
+#ifdef OPENSN_WITH_LUA
   if (Chi::run_time::dump_registry_)
   {
     ChiObjectFactory::GetInstance().DumpRegister();
     Chi::console.DumpRegister();
   }
+#endif
 }
 
 // ############################################### Initialize ChiTech
@@ -189,7 +191,6 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
   mpi.SetLocationID(location_id);
   mpi.SetProcessCount(number_processes);
 
-  Chi::console.LoadRegisteredLuaItems();
   Chi::console.PostMPIInfo(location_id, number_processes);
 
   run_time::ParseArguments(argc, argv);
@@ -372,11 +373,13 @@ Chi::GetStatusOfRegistries()
   for (const auto& [key, _] : object_factory.Registry())
     stats.objfactory_keys_.push_back(key);
 
+#ifdef OPENSN_WITH_LUA
   for (const auto& [key, _] : console.GetLuaFunctionRegistry())
     stats.console_lua_func_keys_.push_back(key);
 
   for (const auto& [key, _] : console.GetFunctionWrapperRegistry())
     stats.console_lua_wrapper_keys_.push_back(key);
+#endif
 
   return stats;
 }

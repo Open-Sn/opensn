@@ -5,7 +5,9 @@
 #include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
 #include "opensn/framework/math/chi_math.h"
 
+#ifdef OPENSN_WITH_LUA
 #include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/ResponseFunction/lbs_adj_response_function.h"
+#endif
 #include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
 namespace lbs
@@ -15,7 +17,9 @@ class DiscreteOrdinatesAdjointSolver : public DiscreteOrdinatesSolver
 {
 protected:
   typedef std::vector<size_t> VecSize_t;
+#ifdef OPENSN_WITH_LUA
   typedef std::pair<ResponseFunctionDesignation, VecSize_t> RespFuncAndSubs;
+#endif
 
 public:
   std::vector<std::vector<double>> m_moment_buffers_;
@@ -35,10 +39,12 @@ public:
    */
   double ComputeInnerProduct();
 
+#ifdef OPENSN_WITH_LUA
   /**
    * Returns the list of volumetric response functions.
    */
   const std::vector<RespFuncAndSubs>& GetResponseFunctions() const;
+#endif
 
   void MakeAdjointXSs();
   void InitQOIs();
@@ -56,7 +62,9 @@ public:
   void ExportImportanceMap(const std::string& file_name);
 
 protected:
+#ifdef OPENSN_WITH_LUA
   std::vector<RespFuncAndSubs> response_functions_;
+#endif
 
 public:
   /**

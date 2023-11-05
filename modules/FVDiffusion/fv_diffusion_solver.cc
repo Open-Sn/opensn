@@ -169,7 +169,9 @@ fv_diffusion::Solver::Execute()
   const auto& grid = *grid_ptr_;
   const auto& sdm = *sdm_ptr_;
 
+#ifdef OPENSN_WITH_LUA
   lua_State* L = Chi::console.GetConsoleState();
+#endif
 
   //============================================= Assemble the system
   // P ~ Present cell
@@ -183,6 +185,7 @@ fv_diffusion::Solver::Execute()
 
     const auto imat = cell_P.material_id_;
 
+#ifdef OPENSN_WITH_LUA
     const double sigma_a = CallLua_iXYZFunction(L, "Sigma_a", imat, x_cc_P);
     const double q_ext = CallLua_iXYZFunction(L, "Q_ext", imat, x_cc_P);
     const double D_P = CallLua_iXYZFunction(L, "D_coef", imat, x_cc_P);
@@ -250,6 +253,7 @@ fv_diffusion::Solver::Execute()
         } // if Dirichlet
       }   // bndry face
     }     // for f
+#endif
   }       // for cell
 
   Chi::log.Log() << "Global assembly";

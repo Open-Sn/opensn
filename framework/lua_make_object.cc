@@ -1,3 +1,4 @@
+#ifdef OPENSN_WITH_LUA
 #include "opensn/framework/chi_lua.h"
 
 #include "opensn/framework/ChiObjectFactory.h"
@@ -65,3 +66,4 @@ chiMakeObjectType(lua_State* L)
 }
 
 } // namespace chi::lua_utils
+#endif

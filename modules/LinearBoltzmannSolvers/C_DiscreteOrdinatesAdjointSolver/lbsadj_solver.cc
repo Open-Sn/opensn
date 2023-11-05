@@ -45,11 +45,13 @@ DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const std::string
   basic_options_.AddOption<std::string>("REFERENCE_RF", std::string());
 }
 
+#ifdef OPENSN_WITH_LUA
 const std::vector<lbs::DiscreteOrdinatesAdjointSolver::RespFuncAndSubs>&
 DiscreteOrdinatesAdjointSolver::GetResponseFunctions() const
 {
   return response_functions_;
 }
+#endif
 
 void
 DiscreteOrdinatesAdjointSolver::Initialize()
@@ -111,6 +113,7 @@ DiscreteOrdinatesAdjointSolver::MakeAdjointXSs()
 void
 DiscreteOrdinatesAdjointSolver::InitQOIs()
 {
+#ifdef OPENSN_WITH_LUA
   //============================================= Initialize QOIs
   for (auto& qoi_pair : response_functions_)
   {
@@ -134,6 +137,7 @@ DiscreteOrdinatesAdjointSolver::InitQOIs()
     Chi::log.Log() << "LBAdjointSolver: Number of cells subscribed to " << qoi_designation.name
                    << " = " << num_globl_subs;
   }
+#endif
 }
 
 void
@@ -184,6 +188,7 @@ DiscreteOrdinatesAdjointSolver::AddResponseFunction(
   std::shared_ptr<chi_mesh::LogicalVolume> logical_volume,
   const std::string& lua_function_name)
 {
+#ifdef OPENSN_WITH_LUA
   // Make the designation
   ResponseFunctionDesignation qoi_designation(
     qoi_name, std::move(logical_volume), lua_function_name);
@@ -193,6 +198,10 @@ DiscreteOrdinatesAdjointSolver::AddResponseFunction(
   response_functions_.emplace_back(qoi_designation, cell_rf_subscriptions);
 
   return response_functions_.size() - 1;
+#else
+  // hard exit since this is a mssing capability
+  exit(-1);
+#endif
 }
 
 void

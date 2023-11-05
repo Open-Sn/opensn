@@ -13,10 +13,14 @@ include(GNUInstallDirs)
 include(CheckTypeSize)
 include(CheckSymbolExists)
 
+option(OPENSN_WITH_LUA "Build with lua support" ON)
+
 # dependencies
 find_package(MPI REQUIRED)
 
-find_package(Lua 5.4 REQUIRED)
+if(OPENSN_WITH_LUA)
+    find_package(Lua 5.4 REQUIRED)
+endif()
 
 find_package(VTK QUIET)
 if(VTK_VERSION VERSION_LESS "8.90.0")
@@ -65,18 +69,24 @@ target_include_directories(libopensn
 
 target_link_libraries(libopensn
     PRIVATE
-    ${LUA_LIBRARIES}
     ${PETSC_LIBRARY}
     ${VTK_LIBRARIES}
     MPI::MPI_CXX
 )
+if(OPENSN_WITH_LUA)
+    target_link_libraries(libopensn PRIVATE ${LUA_LIBRARIES})
+    target_compile_definitions(libopensn PRIVATE OPENSN_WITH_LUA)
+endif()
 
 if(NOT MSVC)
     set_target_properties(libopensn PROPERTIES OUTPUT_NAME opensn)
 endif()
 
-add_subdirectory(lua)
-add_subdirectory(test)
+
+if(OPENSN_WITH_LUA)
+    add_subdirectory(lua)
+    add_subdirectory(test)
+endif()
 
 #
 configure_file(config.h.in include/opensn/config.h)

@@ -179,6 +179,7 @@ MultiGroupXS::ExportToChiXSFile(const std::string& file_name,
                           << file_name;
 }
 
+#ifdef OPENSN_WITH_LUA
 void
 MultiGroupXS::PushLuaTable(lua_State* L) const
 {
@@ -350,5 +351,6 @@ MultiGroupXS::PushLuaTable(lua_State* L) const
   Push1DXS(SigmaRemoval(), "sigma_removal");
   Push1DXS(SigmaSGtoG(), "sigma_s_gtog");
 }
+#endif
 
 } // namespace chi_physics

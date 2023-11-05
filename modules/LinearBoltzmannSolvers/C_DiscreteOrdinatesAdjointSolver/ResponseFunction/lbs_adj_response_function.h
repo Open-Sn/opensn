@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef OPENSN_WITH_LUA
+
 #include <utility>
 
 #include "opensn/framework/mesh/Cell/cell.h"
@@ -26,3 +28,4 @@ struct ResponseFunctionDesignation
 };
 
 } // namespace lbs
+#endif

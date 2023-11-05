@@ -78,6 +78,7 @@ public:
                       size_t ccfi,
                       double epsilon = 1.0e-12);
 
+#ifdef OPENSN_WITH_LUA
   /**
    * Calls a lua function with xyz coordinates.
    * \param L The lua state.
@@ -89,6 +90,7 @@ public:
    * \return The function evaluation.*/
   static double
   CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
+#endif
 
   /**
    * Updates the field functions with the latest data.

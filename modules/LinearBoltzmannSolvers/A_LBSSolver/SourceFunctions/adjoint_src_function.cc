@@ -30,6 +30,7 @@ AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
 
   const auto& adjoint_solver = *adjoint_solver_ptr;
 
+#ifdef OPENSN_WITH_LUA
   const auto& response_functions = adjoint_solver.GetResponseFunctions();
   const auto& basic_options = adjoint_solver.GetBasicOptions();
   const auto& cell_transport_views = adjoint_solver.GetCellTransportViews();
@@ -64,6 +65,7 @@ AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
         }   // for local cell-id of qoi
       }     // if ref-qoi
     }       // for qoi
+#endif
 }
 
 } // namespace lbs

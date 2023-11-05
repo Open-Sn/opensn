@@ -7,7 +7,9 @@
 #include "opensn/modules/CFEMDiffusion/cfem_diffusion_bndry.h"
 #include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
 #include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
+#ifdef OPENSN_WITH_LUA
 #include "opensn/framework/chi_lua.h"
+#endif
 
 namespace cfem_diffusion
 {
@@ -163,7 +165,9 @@ Solver::Execute()
   const auto& grid = *grid_ptr_;
   const auto& sdm = *sdm_ptr_;
 
+#ifdef OPENSN_WITH_LUA
   lua_State* L = Chi::console.GetConsoleState();
+#endif
 
   //============================================= Assemble the system
   Chi::log.Log() << "Assembling system: ";
@@ -177,6 +181,7 @@ Solver::Execute()
     MatDbl Acell(num_nodes, VecDbl(num_nodes, 0.0));
     VecDbl cell_rhs(num_nodes, 0.0);
 
+#ifdef OPENSN_WITH_LUA
     for (size_t i = 0; i < num_nodes; ++i)
     {
       for (size_t j = 0; j < num_nodes; ++j)
@@ -196,6 +201,7 @@ Solver::Execute()
         cell_rhs[i] += CallLua_iXYZFunction(L, "Q_ext", imat, qp_data.QPointXYZ(qp)) *
                        qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
     } // for i
+#endif
 
     //======================= Flag nodes for being on a boundary
     std::vector<int> dirichlet_count(num_nodes, 0);
@@ -332,6 +338,7 @@ Solver::Execute()
   Chi::log.Log() << "Done solving";
 }
 
+#ifdef OPENSN_WITH_LUA
 double
 Solver::CallLua_iXYZFunction(lua_State* L,
                              const std::string& lua_func_name,
@@ -370,6 +377,7 @@ Solver::CallLua_iXYZFunction(lua_State* L,
 
   return lua_return;
 }
+#endif
 
 void
 Solver::UpdateFieldFunctions()

@@ -9,7 +9,9 @@
 #include "opensn/framework/chi_runtime.h"
 #include "opensn/framework/logging/chi_log.h"
 #include "opensn/framework/mpi/chi_mpi.h"
+#ifdef OPENSN_WITH_LUA
 #include "opensn/framework/chi_lua.h"
+#endif
 
 namespace chi_mesh
 {
@@ -424,6 +426,7 @@ VolumeMesher::SetMatIDToAll(int mat_id)
                  << " to all cells";
 }
 
+#ifdef OPENSN_WITH_LUA
 void
 VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
 {
@@ -513,7 +516,9 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
                           << " Done setting material id from lua function. "
                           << "Number of cells modified = " << globl_num_cells_modified << ".";
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 void
 VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
 {
@@ -626,6 +631,7 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
                           << " Done setting boundary id from lua function. "
                           << "Number of cells modified = " << globl_num_faces_modified << ".";
 }
+#endif
 
 void
 VolumeMesher::SetupOrthogonalBoundaries()

@@ -14,6 +14,7 @@ public:
 
   IsotropicMultiGrpSource() : MaterialProperty(PropertyType::ISOTROPIC_MG_SOURCE) {}
 
+#ifdef OPENSN_WITH_LUA
   void PushLuaTable(lua_State* L) const override
   {
     lua_newtable(L);
@@ -37,6 +38,7 @@ public:
     }
     lua_settable(L, -3);
   }
+#endif
 };
 
 } // namespace chi_physics

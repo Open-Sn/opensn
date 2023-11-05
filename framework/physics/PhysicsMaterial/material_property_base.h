@@ -2,8 +2,9 @@
 
 #include <string>
 #include <vector>
-
+#ifdef OPENSN_WITH_LUA
 #include "opensn/framework/chi_lua.h"
+#endif
 
 namespace chi_physics
 {
@@ -32,7 +33,9 @@ public:
 
   virtual double GetScalarValue() { return 0.0; }
 
+#ifdef OPENSN_WITH_LUA
   virtual void PushLuaTable(lua_State* L) const;
+#endif
 };
 
 } // namespace chi_physics

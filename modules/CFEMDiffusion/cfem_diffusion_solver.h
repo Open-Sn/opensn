@@ -57,6 +57,7 @@ public:
 
   void Execute() override;
 
+#ifdef OPENSN_WITH_LUA
   /**Calls a lua function with xyz coordinates.
    * \param L The lua state.
    * \param lua_func_name The name used to define this lua function in the lua
@@ -67,6 +68,7 @@ public:
    * \return The function evaluation.*/
   static double
   CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
+#endif
 
   /**
    * Updates the field functions with the latest data.

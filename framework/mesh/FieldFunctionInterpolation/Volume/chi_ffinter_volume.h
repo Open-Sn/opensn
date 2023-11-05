@@ -45,10 +45,12 @@ public:
   void Initialize() override;
   void Execute() override;
 
+#ifdef OPENSN_WITH_LUA
   /**
    * Calls the designated lua function
    */
   double CallLuaFunction(double ff_value, int mat_id) const;
+#endif
 
   std::string GetDefaultFileBaseName() const override { return "ZVFFI"; }
   void ExportPython(std::string base_name) override {}

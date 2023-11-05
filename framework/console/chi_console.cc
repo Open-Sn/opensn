@@ -1,6 +1,8 @@
 #include "opensn/framework/console/chi_console.h"
+#ifdef OPENSN_WITH_LUA
 #include "lua/modules/chi_modules_lua.h"
 #include "opensn/framework/chi_lua.h"
+#endif
 #include "opensn/config.h"
 #include "opensn/framework/ChiObjectFactory.h"
 #include "opensn/framework/chi_runtime.h"
@@ -27,55 +29,17 @@ Console::GetInstance() noexcept
   return singleton;
 }
 
-Console::Console() noexcept : console_state_(luaL_newstate())
-{
-}
-
-void
-Console::LoadRegisteredLuaItems()
-{
-#if OPENSN_WITH_LUA
-  //=================================== Initializing console
-  auto& L = GetConsoleState();
-
-  luaL_openlibs(L);
-
-  //=================================== Register version
-  lua_pushstring(L, PROJECT_VERSION);
-  lua_setglobal(L, "chi_version");
-  lua_pushinteger(L, PROJECT_MAJOR_VERSION);
-  lua_setglobal(L, "chi_major_version");
-  lua_pushinteger(L, PROJECT_MINOR_VERSION);
-  lua_setglobal(L, "chi_minor_version");
-  lua_pushinteger(L, PROJECT_PATCH_VERSION);
-  lua_setglobal(L, "chi_patch_version");
-
-  //=================================== Registering functions
-  chi_modules::lua_utils::RegisterLuaEntities(L);
-
-  //=================================== Registering static-registration
-  //                                    lua functions
-  for (const auto& [key, entry] : lua_function_registry_)
-    SetLuaFuncNamespaceTableStructure(key, entry.function_ptr);
-
-  //=================================== Registering LuaFunctionWrappers
-  for (const auto& [key, entry] : function_wrapper_registry_)
-    if (entry.call_func) SetLuaFuncWrapperNamespaceTableStructure(key);
-
-  for (const auto& [key, value] : lua_constants_registry_)
-    SetLuaConstant(key, value);
+Console::Console() noexcept
+#ifdef OPENSN_WITH_LUA
+    : console_state_(luaL_newstate())
 #endif
-
-  //=================================== Registering solver-function
-  //                                    scope resolution tables
-  const auto& object_maker = ChiObjectFactory::GetInstance();
-  for (const auto& entry : object_maker.Registry())
-    SetObjectNamespaceTableStructure(entry.first);
+{
 }
 
 void
 Console::FlushConsole()
 {
+#ifdef OPENSN_WITH_LUA
   try
   {
     for (auto& command : command_buffer_)
@@ -93,12 +57,13 @@ Console::FlushConsole()
     Chi::log.LogAllError() << e.what();
     Chi::Exit(EXIT_FAILURE);
   }
+#endif
 }
 
+#ifdef OPENSN_WITH_LUA
 int
 Console::LuaWrapperCall(lua_State* L)
 {
-#if OPENSN_WITH_LUA
   const int num_args = lua_gettop(L);
   // We do not check for the required parameters here because we want
   // to make this function call as fast as possible. Besides, via the
@@ -156,10 +121,8 @@ Console::LuaWrapperCall(lua_State* L)
   const int num_sub_params = static_cast<int>(output_params.NumParameters());
 
   return output_params.IsScalar() ? 1 : num_sub_params;
-#else
-  return 0;
-#endif
 }
+#endif
 
 void
 Console::RunConsoleLoop(char*) const
@@ -204,6 +167,7 @@ Console::RunConsoleLoop(char*) const
     string_to_bcast = std::string(raw_chars.data());
   };
 
+#ifdef OPENSN_WITH_LUA
   /** Executes a string within the lua-console. */
   auto LuaDoString = [this](const std::string& the_string)
   {
@@ -214,6 +178,7 @@ Console::RunConsoleLoop(char*) const
       lua_pop(console_state_, 1);
     }
   };
+#endif
 
   auto ConsoleInputNumChars = [](const std::string& input)
   {
@@ -241,6 +206,7 @@ Console::RunConsoleLoop(char*) const
     else
       NonHomeBroadcastStringAsRaw(console_input, console_input_len);
 
+#ifdef OPENSN_WITH_LUA
     try
     {
       LuaDoString(console_input);
@@ -254,6 +220,7 @@ Console::RunConsoleLoop(char*) const
       Chi::log.LogAllError() << e.what();
       Chi::Exit(EXIT_FAILURE);
     }
+#endif
   } // while not termination posted
 
   Chi::run_time::termination_posted_ = true;
@@ -267,6 +234,7 @@ Console::RunConsoleLoop(char*) const
 int
 chi::Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
 {
+#ifdef OPENSN_WITH_LUA
   lua_State* L = this->console_state_;
   if (not fileName.empty())
   {
@@ -289,6 +257,7 @@ chi::Console::ExecuteFile(const std::string& fileName, int argc, char** argv) co
       return EXIT_FAILURE;
     }
   }
+#endif
   return EXIT_SUCCESS;
 }
 
@@ -297,6 +266,7 @@ chi::Console::ExecuteFile(const std::string& fileName, int argc, char** argv) co
 void
 chi::Console::PostMPIInfo(int location_id, int number_of_processes) const
 {
+#ifdef OPENSN_WITH_LUA
   lua_State* L = this->console_state_;
 
   lua_pushinteger(L, location_id);
@@ -304,6 +274,7 @@ chi::Console::PostMPIInfo(int location_id, int number_of_processes) const
 
   lua_pushinteger(L, number_of_processes);
   lua_setglobal(L, "chi_number_of_processes");
+#endif
 }
 
 // ###################################################################
@@ -312,6 +283,7 @@ chi::Console::PostMPIInfo(int location_id, int number_of_processes) const
 void
 chi::Console::AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunction function_ptr)
 {
+#ifdef OPENSN_WITH_LUA
   auto& console = GetInstance();
 
   // Check if the function name is already there
@@ -330,8 +302,10 @@ chi::Console::AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunctio
 
   console.lua_function_registry_.insert(
     std::make_pair(name_in_lua, LuaFunctionRegistryEntry{function_ptr, name_in_lua}));
+#endif
 }
 
+#ifdef OPENSN_WITH_LUA
 // ###################################################################
 /**Adds a lua_CFunction to the registry. The registry of functions gets
  * parsed into the lua console when `chi::Initialize` is called. This
@@ -349,7 +323,9 @@ chi::Console::AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_i
 
   return 0;
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 // ###################################################################
 /**Adds a lua_CFunction to the registry. The registry of functions gets
  * parsed into the lua console when `chi::Initialize` is called. The full
@@ -366,7 +342,9 @@ chi::Console::AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_pt
 
   return 0;
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 // ###################################################################
 /**\brief Adds a constant to the lua state. Prepending the constant
  * within a namespace is optional.*/
@@ -390,8 +368,10 @@ chi::Console::AddLuaConstantToRegistry(const std::string& namespace_name,
   }
 
   console.lua_constants_registry_.insert(std::make_pair(name_in_lua, value));
+
   return 0;
 }
+#endif
 
 // ###################################################################
 chi::InputParameters
@@ -400,6 +380,7 @@ chi::Console::DefaultGetInParamsFunc()
   return InputParameters();
 }
 
+#ifdef OPENSN_WITH_LUA
 // ###################################################################
 /**Wrapper functions operate with input and output parameters, essentially
  * hiding the lua interface.*/
@@ -433,7 +414,9 @@ chi::Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespa
 
   return 0;
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 // ###################################################################
 /**Sets/Forms a lua function in the state using a namespace structure.*/
 void
@@ -460,7 +443,9 @@ chi::Console::SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name
 
   lua_pop(L, lua_gettop(L));
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 // ###################################################################
 /**Sets/Forms a table structure that mimics the namespace structure of
  * a string. For example the string "sing::sob::nook::Tigger" will be
@@ -503,7 +488,9 @@ chi::Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_l
 
   lua_pop(L, lua_gettop(L));
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 // ###################################################################
 /**Sets/Forms a table structure that mimics the namespace structure of
  * a string. For example the string "sing::sob::nook::Tigger" will be
@@ -537,7 +524,9 @@ chi::Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
 
   lua_pop(L, lua_gettop(L));
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 // ##################################################################
 /**Fleshes out a path in a table tree. For example, given
  * "fee::foo::fah::koo, this routine will make sure that
@@ -580,7 +569,9 @@ chi::Console::FleshOutLuaTableStructure(const std::vector<std::string>& table_na
     }
   } // for table_key in table_keys
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 // ##################################################################
 /**Sets a lua constant in the lua state.*/
 void
@@ -624,7 +615,9 @@ chi::Console::SetLuaConstant(const std::string& constant_name, const chi_data_ty
 
   lua_pop(L, lua_gettop(L));
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 // ##################################################################
 /**Makes a formatted output, readible by the documentation scripts,
  * of all the lua wrapper functions.*/
@@ -651,7 +644,9 @@ chi::Console::DumpRegister() const
   }
   Chi::log.Log() << "\n\n";
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 void
 Console::UpdateConsoleBindings(const chi::RegistryStatuses& old_statuses)
 {
@@ -670,5 +665,6 @@ Console::UpdateConsoleBindings(const chi::RegistryStatuses& old_statuses)
     if (not ListHasValue(old_statuses.objfactory_keys_, key))
       if (entry.call_func) SetLuaFuncWrapperNamespaceTableStructure(key);
 }
+#endif
 
 } // namespace chi

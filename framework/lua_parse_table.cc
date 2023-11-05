@@ -1,3 +1,4 @@
+#ifdef OPENSN_WITH_LUA
 #include "opensn/framework/chi_lua.h"
 
 #include "opensn/framework/chi_runtime.h"
@@ -248,3 +249,4 @@ StackItemToParameterBlock(lua_State* L, int index)
 }
 
 } // namespace chi_lua
+#endif

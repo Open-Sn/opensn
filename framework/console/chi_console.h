@@ -18,6 +18,8 @@ extern "C"
 
 class Chi;
 
+#ifdef OPENSN_WITH_LUA
+
 /**Small utility macro for joining two words.*/
 #define ConsoleJoinWordsA(x, y) x##y
 /**IDK why this is needed. Seems like counter doesnt work properly without it*/
@@ -61,6 +63,14 @@ class Chi;
   static char ConsoleJoinWordsB(unique_var_name_luaconst_##name_in_lua, __COUNTER__) =             \
     chi::Console::AddLuaConstantToRegistry("", #name_in_lua, value)
 
+#else
+#define RegisterLuaFunctionAsIs(func_name)
+#define RegisterLuaFunction(function, namespace_name, func_name)
+#define RegisterWrapperFunction(namespace_name, name_in_lua, syntax_function, actual_function)
+#define RegisterLuaConstant(namespace_name, name_in_lua, value)
+#define RegisterLuaConstantAsIs(name_in_lua, value)
+#endif
+
 namespace chi_physics
 {
 class Solver;
@@ -83,6 +93,7 @@ public:
   using WrapperCallFunc = chi::ParameterBlock (*)(const chi::InputParameters&);
 
 private:
+#ifdef OPENSN_WITH_LUA
   struct LuaFunctionRegistryEntry
   {
     lua_CFunction function_ptr;
@@ -94,16 +105,18 @@ private:
     WrapperCallFunc call_func = nullptr;
   };
 
-private:
   /// Pointer to lua console state
   lua_State* console_state_;
+#endif
   /// Buffer of commands to execute
   std::vector<std::string> command_buffer_;
   static Console instance_;
 
+#ifdef OPENSN_WITH_LUA
   std::map<std::string, LuaFunctionRegistryEntry> lua_function_registry_;
 
   std::map<std::string, LuaFuncWrapperRegEntry> function_wrapper_registry_;
+#endif
 
   std::map<std::string, chi_data_types::Varying> lua_constants_registry_;
 
@@ -112,29 +125,34 @@ private:
 private:
   friend class ::Chi;
 
-  /**
-   * Registers all lua items so that they are available in the console.
-   */
-  void LoadRegisteredLuaItems();
-
 public:
   /**
    * Access to the singleton
    */
   static Console& GetInstance() noexcept;
 
+#ifdef OPENSN_WITH_LUA
   lua_State*& GetConsoleState() { return console_state_; }
+#endif
+
   std::vector<std::string>& GetCommandBuffer() { return command_buffer_; }
 
+#ifdef OPENSN_WITH_LUA
   const std::map<std::string, LuaFunctionRegistryEntry>& GetLuaFunctionRegistry() const
   {
     return lua_function_registry_;
   }
 
-  const std::map<std::string, LuaFunctionRegistryEntry>& GetFunctionWrapperRegistry() const
+  const std::map<std::string, LuaFuncWrapperRegEntry>& GetFunctionWrapperRegistry() const
   {
-    return lua_function_registry_;
+    return function_wrapper_registry_;
   }
+
+  const std::map<std::string, chi_data_types::Varying> & GetLuaConstantsRegistry() const
+  {
+    return lua_constants_registry_;
+  }
+#endif
 
   /**
    * Executes the loop for the console.
@@ -151,6 +169,7 @@ private:
   static void AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunction function_ptr);
 
 public:
+#ifdef OPENSN_WITH_LUA
   /**
    * Adds a lua_CFunction to the registry.
    */
@@ -170,12 +189,14 @@ public:
   static char AddLuaConstantToRegistry(const std::string& namespace_name,
                                        const std::string& constant_name,
                                        const chi_data_types::Varying& value);
+#endif
 
   /**
    * A default function for returning empty input parameters.
    */
   static InputParameters DefaultGetInParamsFunc();
 
+#ifdef OPENSN_WITH_LUA
   /**
    * Adds a function wrapper to the lua registry.
    */
@@ -212,12 +233,14 @@ public:
    */
   static void SetLuaConstant(const std::string& constant_name,
                              const chi_data_types::Varying& value);
+#endif
 
   /**
    * Flushes any commands in the command buffer.
    */
   void FlushConsole();
 
+#ifdef OPENSN_WITH_LUA
   /**
    * Generic entry point for wrapper calls.
    */
@@ -232,6 +255,7 @@ public:
    * Given an old status, will update the bindings for only newly registered items.
    */
   void UpdateConsoleBindings(const chi::RegistryStatuses& old_statuses);
+#endif
 };
 
 } // namespace chi

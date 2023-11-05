@@ -1,5 +1,5 @@
 #pragma once
-
+#ifdef OPENSN_WITH_LUA
 #include "opensn/framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
 
 #include <string>
@@ -34,3 +34,4 @@ public:
 };
 
 } // namespace lbs
+#endif
