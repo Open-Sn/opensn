@@ -5,7 +5,7 @@
 #include "B_DiffusionDFEMSolver/lbsMIP_solver.h"
 #include "A_LBSSolver/lbs_solver.h"
 #include "A_LBSSolver/Preconditioning/lbs_shell_operations.h"
-#include "A_LBSSolver/Acceleration/diffusion_mip.h"
+#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 
 #include "chi_runtime.h"
 #include "chi_log.h"

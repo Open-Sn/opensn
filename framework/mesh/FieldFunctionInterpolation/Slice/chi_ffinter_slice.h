@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../chi_ffinterpolation.h"
-
 #include "mesh/chi_mesh.h"
 
 namespace chi_mesh
 {
+
 struct FFIFaceEdgeIntersection
 {
   chi_mesh::Vector3 point;
@@ -22,24 +22,23 @@ struct FFICellIntersection
   double cell_avg_value = 0.0;
 };
 
-} // namespace chi_mesh
-
-//###################################################################
-/** A slice based interpolation function.
+/**
+ * A slice based interpolation function.
  *
  * This functionality needs to cater for numerous spatial discretizations.
  * The most simple one is cell-averaged values and the more complicated ones
  * are PWLD and then CFEM.
  *
  * Cell average values requires computing the slice of the polyhedron and then
- * computing the centroid of that cut. This can be done cell by cell.*/
-class chi_mesh::FieldFunctionInterpolationSlice : public chi_mesh::FieldFunctionInterpolation
+ * computing the centroid of that cut. This can be done cell by cell.
+ */
+class FieldFunctionInterpolationSlice : public FieldFunctionInterpolation
 {
 protected:
-  chi_mesh::Normal normal_ = chi_mesh::Normal(0.0, 0.0, 1.0);
-  chi_mesh::Normal binorm_ = chi_mesh::Normal(0.0, 1.0, 0.0);
-  chi_mesh::Normal tangent_ = chi_mesh::Normal(1.0, 0.0, 0.0);
-  chi_mesh::Vector3 plane_point_;
+  Normal normal_ = Normal(0.0, 0.0, 1.0);
+  Normal binorm_ = Normal(0.0, 1.0, 0.0);
+  Normal tangent_ = Normal(1.0, 0.0, 0.0);
+  Vector3 plane_point_;
 
 private:
   std::vector<FFICellIntersection> cell_intersections_;
@@ -47,18 +46,26 @@ private:
 public:
   FieldFunctionInterpolationSlice() : FieldFunctionInterpolation(ff_interpolation::Type::SLICE) {}
 
-  chi_mesh::Normal& GetNormal() { return normal_; }
-  chi_mesh::Normal& GetBiNorm() { return binorm_; }
-  chi_mesh::Normal& GetTangent() { return tangent_; }
-  chi_mesh::Vector3& GetPlanePoint() { return plane_point_; }
-  // 01
-  void Initialize() override;
+  Normal& GetNormal() { return normal_; }
+  Normal& GetBiNorm() { return binorm_; }
+  Normal& GetTangent() { return tangent_; }
+  Vector3& GetPlanePoint() { return plane_point_; }
 
-  // 02
+  /**
+   * Initializes the data structures necessary for interpolation. This is independent of the physics
+   * and hence is a routine on its own.
+   *
+   * The first step of this initialization is to determine which cells are intersected by this
+   * plane. For polyhedrons this is evaluated tet-by-tet.
+   *
+   * The second step is find where face-edges are intersected. This will effectively create
+   * intersection polygons.
+   */
+  void Initialize() override;
   void Execute() override;
 
-public:
-  // 03
   std::string GetDefaultFileBaseName() const override { return "ZPFFI"; }
   void ExportPython(std::string base_name) override;
 };
+
+} // namespace chi_mesh

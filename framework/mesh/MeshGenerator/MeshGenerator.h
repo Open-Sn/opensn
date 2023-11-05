@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ChiObject.h"
-#include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
+#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 
 namespace chi
 {
@@ -13,7 +13,8 @@ namespace chi_mesh
 
 class MeshContinuum;
 
-/** Mesh generation can be very complicated in parallel. Some mesh formats
+/**
+ * Mesh generation can be very complicated in parallel. Some mesh formats
  * do not store connectivity information and therefore we have to establish
  * connectivity after the file is read. Most mesh formats are also not
  * partitioned for multiple processors when read/generated. The design of these
@@ -29,18 +30,26 @@ class MeshContinuum;
  * this mesh into real mesh (with both steps customizable). The phase that
  * creates the real mesh can be hooked up to a partitioner that can also be
  * designed to be pluggable.
- * */
+ */
 class MeshGenerator : public ChiObject
 {
 public:
-  /**Final execution step. */
+  /**
+   * Final execution step.
+   */
   virtual void Execute();
 
   static chi::InputParameters GetInputParameters();
   explicit MeshGenerator(const chi::InputParameters& params);
 
-  /**Virtual method to generate the unpartitioned mesh for the next step.*/
+  /**
+   * Virtual method to generate the unpartitioned mesh for the next step.
+   */
   virtual std::unique_ptr<UnpartitionedMesh>
+
+  /**
+   * Default behavior here is to return the input umesh unaltered.
+   */
   GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh);
 
   struct VertexListHelper
@@ -56,27 +65,35 @@ public:
   };
 
 protected:
-  // 01
-  /**Builds a cell-graph and executes the partitioner that assigns cell
-   * partition ids based on the supplied number of partitions.*/
+  /**
+   * Builds a cell-graph and executes the partitioner that assigns cell
+   * partition ids based on the supplied number of partitions.
+   */
   std::vector<int64_t> PartitionMesh(const UnpartitionedMesh& input_umesh, int num_partitions);
 
-  /**Executes the partitioner and configures the mesh as a real mesh.*/
+  /**
+   * Executes the partitioner and configures the mesh as a real mesh.
+   */
   std::shared_ptr<MeshContinuum> SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
                                            const std::vector<int64_t>& cell_pids);
 
-  // 02 utils
-  /**Broadcasts PIDs to other locations.*/
-
+  /**
+   * Broadcasts PIDs to other locations.
+   */
   static void BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm communicator);
-  /**Determines if a cells needs to be included as a ghost or as a local cell.*/
+
+  /**
+   * Determines if a cells needs to be included as a ghost or as a local cell.
+   */
   bool CellHasLocalScope(int location_id,
                          const chi_mesh::UnpartitionedMesh::LightWeightCell& lwcell,
                          uint64_t cell_global_id,
                          const std::vector<std::set<uint64_t>>& vertex_subscriptions,
                          const std::vector<int64_t>& cell_partition_ids) const;
 
-  /**Converts a light-weight cell to a real cell.*/
+  /**
+   * Converts a light-weight cell to a real cell.
+   */
   static std::unique_ptr<chi_mesh::Cell>
   SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
             uint64_t global_id,

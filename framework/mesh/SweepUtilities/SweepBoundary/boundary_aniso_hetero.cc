@@ -1,21 +1,19 @@
-#include "sweep_boundaries.h"
-
+#include "boundary_aniso_hetero.h"
 #include "mesh/MeshContinuum/chi_meshcontinuum.h"
 #include "math/Quadratures/angular_quadrature_base.h"
-
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-//###################################################################
-/**Returns a pointer to a heterogeneous flux storage location.*/
+namespace chi_mesh::sweep_management
+{
+
 double*
-chi_mesh::sweep_management::BoundaryIncidentHeterogeneous::HeterogeneousPsiIncoming(
-  uint64_t cell_local_id,
-  unsigned int face_num,
-  unsigned int fi,
-  unsigned int angle_num,
-  int group_num,
-  size_t gs_ss_begin)
+BoundaryIncidentHeterogeneous::HeterogeneousPsiIncoming(uint64_t cell_local_id,
+                                                        unsigned int face_num,
+                                                        unsigned int fi,
+                                                        unsigned int angle_num,
+                                                        int group_num,
+                                                        size_t gs_ss_begin)
 {
   if (local_cell_data_.empty())
   {
@@ -29,11 +27,9 @@ chi_mesh::sweep_management::BoundaryIncidentHeterogeneous::HeterogeneousPsiIncom
   return &local_cell_data_[cell_local_id][face_num][fi][dof_offset];
 }
 
-//###################################################################
-/**Performs the setup for a particular quadrature.*/
 void
-chi_mesh::sweep_management::BoundaryIncidentHeterogeneous::Setup(
-  const chi_mesh::MeshContinuum& grid, const chi_math::AngularQuadrature& quadrature)
+BoundaryIncidentHeterogeneous::Setup(const chi_mesh::MeshContinuum& grid,
+                                     const chi_math::AngularQuadrature& quadrature)
 {
   const size_t num_local_cells = grid.local_cells.size();
   local_cell_data_.clear();
@@ -123,3 +119,5 @@ chi_mesh::sweep_management::BoundaryIncidentHeterogeneous::Setup(
 
   } // for cell
 }
+
+} // namespace chi_mesh::sweep_management

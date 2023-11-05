@@ -2,6 +2,7 @@
 
 #include "B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
 #include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "B_DiscreteOrdinatesSolver/SweepChunks/SweepChunk.h"
 
 namespace lbs
 {

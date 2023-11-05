@@ -6,15 +6,14 @@
 namespace chi_mesh
 {
 struct TensorRank2Dim3;
-}
 
-// namespace chi_mesh
-//{
 //=============================================== General 3D vector structure
-/**General 3 element vector structure.
+
+/**
+ * General 3 element vector structure.
  * \author Jan
  */
-struct chi_mesh::Vector3
+struct Vector3
 {
   double x; ///< Element-0
   double y; ///< Element-1
@@ -319,16 +318,24 @@ struct chi_mesh::Vector3
   }
 
   //============================================= Tensor product
-  // Defined in chi_mesh_utilities.cc
-  chi_mesh::TensorRank2Dim3 OTimes(const Vector3& that) const;
+  /**
+   * Tensor product of two vectors.
+   * \f$ \vec{\vec{T}} = \vec{x} \otimes \vec{y} \f$
+   */
+  TensorRank2Dim3 OTimes(const Vector3& that) const;
 
   //============================================= Tensor dot product
-  // Defined in chi_mesh_utilities.cc
-  Vector3 Dot(const chi_mesh::TensorRank2Dim3& that) const;
+  /**
+   * Dot product of vector and a rank-2 tensor.
+   * \f$ \vec{w} = \vec{x} \bullet \vec{\vec{T}} \f$
+   */
+  Vector3 Dot(const TensorRank2Dim3& that) const;
 
   //============================================= Operations
-  /**Vector cross-product.
-   * \f$ \vec{w} = \vec{x} \times \vec{y} \f$*/
+  /**
+   * Vector cross-product.
+   * \f$ \vec{w} = \vec{x} \times \vec{y} \f$
+   */
   Vector3 Cross(const Vector3& that) const
   {
     Vector3 newVector;
@@ -480,8 +487,10 @@ struct chi_mesh::Vector3
   static size_t Size() { return 3; }
 };
 
-// The following functions are defined in chi_mesh_utilities.cc
-// Left multiplcation by scalar
-chi_mesh::Vector3 operator*(double value, const chi_mesh::Vector3& that);
+/**
+ * Returns a 3D vector multiplied by the given scalar from the left.
+ * \f$ \vec{w} = \alpha \vec{x}\f$
+ */
+Vector3 operator*(double value, const Vector3& that);
 
-//}//namespace chi_mesh
+} // namespace chi_mesh

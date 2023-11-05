@@ -27,7 +27,9 @@ namespace lbs::acceleration
 
 struct Multigroup_D_and_sigR;
 
-/**Generic diffusion solver for acceleration.*/
+/**
+ * Generic diffusion solver for acceleration.
+ */
 class DiffusionSolver
 {
 protected:
@@ -76,25 +78,66 @@ public:
                   bool verbose,
                   bool requires_ghosts);
 
+  /**
+   * Returns the assigned text name.
+   */
   std::string TextName() const;
+
+  /**
+   * Returns the right-hand side petsc vector.
+   */
   const Vec& RHS() const;
+
+  /**
+   * Returns the assigned unknown structure.
+   */
   const std::map<uint64_t, BoundaryCondition>& BCS() const { return bcs_; }
 
   const chi_math::UnknownManager& UnknownStructure() const;
+
+  /**
+   * Returns the associated spatial discretization.
+   */
   const chi_math::SpatialDiscretization& SpatialDiscretization() const;
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
 
   virtual ~DiffusionSolver();
 
+  /**
+   * Initializes the diffusion solver. This involves creating the sparse matrix with the appropriate
+   * sparsity pattern. Creating the RHS vector. Creating the KSP solver. Setting the very
+   * specialized parameters for Hypre's BooomerAMG. Note: `PCSetFromOptions` and `KSPSetFromOptions`
+   * are called at the end. Therefore, any number of additional PETSc options can be passed via the
+   * commandline.
+   */
   void Initialize();
 
   virtual void AssembleAand_b(const std::vector<double>& q_vector) = 0;
   virtual void Assemble_b(const std::vector<double>& q_vector) = 0;
   virtual void Assemble_b(Vec petsc_q_vector) = 0;
+
+  /**
+   * Adds to the right-hand side without applying spatial discretization.
+   */
   void AddToRHS(const std::vector<double>& values);
 
+  /**
+   * Solves the system and stores the local solution in the vector provide.
+   *
+   * \param solution Vector in to which the solution will be parsed.
+   * \param use_initial_guess bool [Default:False] Flag, when set, will
+   *                 use the values of the output solution as initial guess.
+   */
   void Solve(std::vector<double>& solution, bool use_initial_guess = false);
+
+  /**
+   * Solves the system and stores the local solution in the vector provide.
+   *
+   * \param petsc_solution Vector in to which the solution will be parsed.
+   * \param use_initial_guess bool [Default:False] Flag, when set, will
+   *                 use the values of the output solution as initial guess.
+   */
   void Solve(Vec petsc_solution, bool use_initial_guess = false);
 };
 

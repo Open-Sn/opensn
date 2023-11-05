@@ -2,7 +2,7 @@
 
 #include "mesh/chi_mesh.h"
 #include "mesh/SweepUtilities/Communicators/AAH_AsynComm.h"
-#include "mesh/SweepUtilities/SweepBoundary/sweep_boundaries.h"
+#include "mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
 #include "mesh/SweepUtilities/FLUDS/FLUDS.h"
 
 #include <chi_mpi.h>

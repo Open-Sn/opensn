@@ -10,11 +10,13 @@
 
 namespace chi_mesh
 {
+
 enum class VolumeMesherType
 {
   EXTRUDER = 4,
   UNPARTITIONED = 6
 };
+
 enum VolumeMesherProperty
 {
   FORCE_POLYGONS = 1,
@@ -32,14 +34,14 @@ enum VolumeMesherProperty
   MATID_FROM_LUA_FUNCTION = 13,
   BNDRYID_FROM_LUA_FUNCTION = 14
 };
-} // namespace chi_mesh
 
-//######################################################### Class def
-/**Parent volume mesher class.*/
-class chi_mesh::VolumeMesher
+/**
+ * Parent volume mesher class.
+ */
+class VolumeMesher
 {
 private:
-  chi_mesh::MeshContinuumPtr grid_ptr_;
+  MeshContinuumPtr grid_ptr_;
   const VolumeMesherType type_;
 
 public:
@@ -64,32 +66,95 @@ public:
   VOLUME_MESHER_OPTIONS options;
 
 public:
-  explicit
-    // 01 Utils
-    VolumeMesher(VolumeMesherType type);
+  explicit VolumeMesher(VolumeMesherType type);
   virtual ~VolumeMesher() = default;
+
+  /**
+   * Sets the grid member of the volume mesher.
+   */
   void SetContinuum(MeshContinuumPtr& grid);
+
+  /**
+   * Gets the smart-pointer for the grid.
+   */
   MeshContinuumPtr& GetContinuum();
+
+  /**
+   * Sets grid attributes. This is normally a private member of the grid but this class is a friend.
+   */
   void SetGridAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis = {0, 0, 0});
+
+  /**
+   * Gets the volume mesher's type.
+   */
   VolumeMesherType Type() const;
 
-  // 01a
-  static std::pair<int, int> GetCellXYPartitionID(chi_mesh::Cell* cell);
-  static std::tuple<int, int, int> GetCellXYZPartitionID(chi_mesh::Cell* cell);
-  // 01b
-  static void CreatePolygonCells(const chi_mesh::UnpartitionedMesh& umesh,
-                                 chi_mesh::MeshContinuumPtr& grid);
-  // 01c
-  static void SetMatIDFromLogical(const chi_mesh::LogicalVolume& log_vol, bool sense, int mat_id);
-  static void SetBndryIDFromLogical(const chi_mesh::LogicalVolume& log_vol,
-                                    bool sense,
-                                    const std::string& bndry_name);
+  /**
+   * Obtains the xy partition IDs of a cell.
+   * Cell xy_partition ids are obtained from the surface mesher.
+   */
+  static std::pair<int, int> GetCellXYPartitionID(Cell* cell);
+
+  /**
+   * Obtains the xyz partition IDs of a cell.
+   * Cell xy_partition ids are obtained from
+   * the surface mesher. z id is obtained from the volume mesher.
+   */
+  static std::tuple<int, int, int> GetCellXYZPartitionID(Cell* cell);
+
+  /**
+   * Creates 2D polygon cells for each face of an unpartitioned mesh.
+   */
+  static void CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPtr& grid);
+  /**
+   * Sets material id's using a logical volume.
+   */
+  static void SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int mat_id);
+
+  /**
+   * Sets material id's using a logical volume.
+   */
+  static void
+  SetBndryIDFromLogical(const LogicalVolume& log_vol, bool sense, const std::string& bndry_name);
+
+  /**
+   * Sets material id's for all cells to the specified material id.
+   */
   static void SetMatIDToAll(int mat_id);
 
+  /**
+   * Sets material id's using a lua function. The lua function is called with for each cell with 4
+   * arguments, the cell's centroid x,y,z values and the cell's current material id.
+   *
+   * The lua function's prototype should be:
+   * \code
+   * function LuaFuncName(x,y,z,id)
+   *   --stuff
+   * end
+   * \endcode
+   */
   static void SetMatIDFromLuaFunction(const std::string& lua_fname);
+
+  /**Sets boundary id's using a lua function. The lua function is called for each boundary face
+   * with 7 arguments, the face's centroid x,y,z values, the face's normal x,y,z values and the
+   * face's current boundary id. The function must return a new_bndry_name (string).
+   *
+   * The lua function's prototype should be:
+   * \code
+   * function LuaFuncName(x,y,z,nx,ny,nz,id)
+   * --stuff
+   * end
+   * \endcode
+   */
   static void SetBndryIDFromLuaFunction(const std::string& lua_fname);
-  // 01d
+
+  /**
+   * Sets boundary numbers on boundaries orthogonal to the cardinal directions as "XMAX", "XMIN",
+   * "YMAX", "YMIN", "ZMAX", "ZMIN".
+   */
   static void SetupOrthogonalBoundaries();
-  // 02
+
   virtual void Execute();
 };
+
+} // namespace chi_mesh

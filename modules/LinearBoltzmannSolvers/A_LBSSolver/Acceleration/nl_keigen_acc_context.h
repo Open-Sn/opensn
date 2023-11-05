@@ -2,7 +2,7 @@
 
 #include "math/NonLinearSolver/NonLinearSolverContext.h"
 
-#include "diffusion_mip.h"
+#include "diffusion_mip_solver.h"
 #include "A_LBSSolver/IterativeMethods/snes_k_residual_func_context.h"
 #include "A_LBSSolver/lbs_solver.h"
 

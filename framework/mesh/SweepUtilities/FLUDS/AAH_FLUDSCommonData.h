@@ -131,33 +131,45 @@ private:
   std::vector<std::pair<int, std::pair<int, std::vector<int>>>>
     delayed_nonlocal_inc_face_prelocI_slot_dof;
 
-  // 00
   void InitializeAlphaElements(const SPDS& spds, const GridFaceHistogram& grid_face_histogram);
-  // 00a
+
   void SlotDynamics(const chi_mesh::Cell& cell,
                     const SPDS& spds,
                     const GridFaceHistogram& grid_face_histogram,
                     std::vector<std::vector<std::pair<int, short>>>& lock_boxes,
                     std::vector<std::pair<int, short>>& delayed_lock_box,
                     std::set<int>& location_boundary_dependency_set);
+
+  /**
+   * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
+   * computes the location of this position's upwind psi in the local upwind psi vector.
+   */
   void AddFaceViewToDepLocI(int deplocI,
                             int cell_g_index,
                             int face_slot,
                             const chi_mesh::CellFace& face);
-  // 00b
+
   void LocalIncidentMapping(const chi_mesh::Cell& cell,
                             const SPDS& spds,
                             std::vector<int>& local_so_cell_mapping);
-  // 01
+
   void InitializeBetaElements(const SPDS& spds, int tag_index = 0);
-  // 01a
+
+  /**
+   * This cell takes a hierarchy of a cell compact view and serializes it for MPI transmission.
+   * This is easy since all the values are integers.
+   */
   static void SerializeCellInfo(std::vector<CompactCellView>& cell_views,
                                 std::vector<int>& face_indices,
                                 int num_face_dofs);
+
+  /**
+   * Deserializes face indices.
+   */
   static void DeSerializeCellInfo(std::vector<CompactCellView>& cell_views,
                                   std::vector<int>* face_indices,
                                   int& num_face_dofs);
-  // 01b
+
   void NonLocalIncidentMapping(const chi_mesh::Cell& cell, const SPDS& spds);
 };
 

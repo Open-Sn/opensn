@@ -35,7 +35,14 @@ public:
   void Execute() override;
 
 protected:
+  /**
+   * Combines function calls to set fission source.
+   */
   void SetLBSFissionSource(const VecDbl& input, bool additive);
+
+  /**
+   * Combines function calls to set scattering source source.
+   */
   void SetLBSScatterSource(const VecDbl& input, bool additive, bool suppress_wg_scat = false);
 };
 

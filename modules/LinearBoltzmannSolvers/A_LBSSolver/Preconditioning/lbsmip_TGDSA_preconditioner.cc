@@ -1,7 +1,7 @@
 #include "lbs_shell_operations.h"
 
 #include "A_LBSSolver/lbs_solver.h"
-#include "A_LBSSolver/Acceleration/diffusion_mip.h"
+#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
 //###################################################################

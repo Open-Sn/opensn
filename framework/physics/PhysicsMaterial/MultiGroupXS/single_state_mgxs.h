@@ -5,9 +5,10 @@
 namespace chi_physics
 {
 
-//######################################################################
 /**
  * A class for handling multi-group cross sections.
+ *
+ * See doc_ChiFormatXS.h for cross-section format
  */
 class SingleStateMGXS : public MultiGroupXS
 {
@@ -64,20 +65,32 @@ public:
   {
   }
 
-  // 00
+  /**
+   * Makes a simple material with no transfer matrix just sigma_t.
+   */
   void MakeSimple0(unsigned int num_groups, double sigma_t);
+
+  /**
+   * Makes a simple material with isotropic transfer matrix (L=0) and mostly down scattering but
+   * with a few of the last groups subject to up-scattering.
+   */
   void MakeSimple1(unsigned int num_groups, double sigma_t, double c);
+
+  /**
+   * Populates the cross section from a combination of others.
+   */
   void MakeCombined(std::vector<std::pair<int, double>>& combinations);
 
 private:
   void Clear();
 
 public:
-  // 01
+  /**
+   * This method populates a transport cross section from a Chi cross section file.
+   */
   void MakeFromChiXSFile(const std::string& file_name);
 
 private:
-  // 02
   void ComputeAbsorption();
   void ComputeDiffusionParameters();
 

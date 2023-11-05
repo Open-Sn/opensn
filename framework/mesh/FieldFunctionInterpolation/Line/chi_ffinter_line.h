@@ -7,6 +7,7 @@
 
 namespace chi_mesh
 {
+
 struct FieldFunctionContext
 {
   std::shared_ptr<chi_physics::FieldFunctionGridBased> ref_ff;
@@ -14,11 +15,7 @@ struct FieldFunctionContext
   std::vector<uint64_t> interpolation_points_ass_cell;
   std::vector<bool> interpolation_points_has_ass_cell;
 };
-} // namespace chi_mesh
 
-namespace chi_mesh
-{
-//###################################################################
 /** A line based interpolation function.*/
 class FieldFunctionInterpolationLine : public FieldFunctionInterpolation
 {
@@ -41,14 +38,12 @@ public:
   std::vector<std::vector<double>>& GetCustomArrays() { return custom_arrays_; }
   std::vector<chi_mesh::Vector3>& GetInterpolationPoints() { return interpolation_points_; }
   std::vector<FieldFunctionContext>& GetFFContexts() { return ff_contexts_; }
-  // 01
   void Initialize() override;
-
-  // 02
   void Execute() override;
 
 public:
   std::string GetDefaultFileBaseName() const override { return "ZLFFI"; }
   void ExportPython(std::string base_name) override;
 };
+
 } // namespace chi_mesh

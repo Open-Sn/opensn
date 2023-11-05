@@ -3,15 +3,13 @@
 #include "Cc_DO_KEigenvalue/lbkes_k_eigenvalue_solver.h"
 #include "math/chi_math_time_stepping.h"
 
-typedef chi_mesh::sweep_management::SweepChunk SweepChunk;
-
 namespace lbs
 {
 
-//################################################################### Class def
 /**A transient neutral particle transport solver.
  *
-\author Zachary Hardy.*/
+ * \author Zachary Hardy.
+ */
 class DiscOrdTransientSolver : public DiscOrdKEigenvalueSolver
 {
 public:
@@ -54,9 +52,7 @@ protected:
 public:
   explicit DiscOrdTransientSolver(const std::string& in_text_name);
 
-  // 01
   void Initialize() override;
-  // 02
   void Execute() override;
   void Step() override;
   void Advance() override;

@@ -1,8 +1,8 @@
 #pragma once
 
-//=============================================================================
 namespace chi
 {
+
 /**Simple structure for memory usage.*/
 struct CSTMemory
 {
@@ -23,4 +23,5 @@ struct CSTMemory
 
   CSTMemory& operator=(const CSTMemory& in_struct) = default;
 };
+
 } // namespace chi

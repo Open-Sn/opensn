@@ -3,7 +3,7 @@
 #include "mesh/VolumeMesher/PredefinedUnpartitioned/volmesher_predefunpart.h"
 
 #include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/UnpartitionedMesh/chi_unpartitioned_mesh.h"
+#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 
 #include <iostream>
 

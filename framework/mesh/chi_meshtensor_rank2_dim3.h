@@ -141,11 +141,17 @@ struct chi_mesh::TensorRank2Dim3
   }
 
   //============================================= Tensor dot product
-  // Defined in chi_mesh_utilities.cc
+  /**
+   * Dot product of rank-2 tensor with a vector.
+   * \f$ \vec{w} = \vec{\vec{T}} \bullet \vec{x} \f$
+   */
   Vector3 Dot(const chi_mesh::Vector3& v) const;
 
   //============================================= Get Diagonal
-  // Defined in chi_mesh_utilities.cc
+  /**
+   * Returns the diagonal of a rank-2 dim-3 tensor as a vector3.
+   * \f$ \vec{w} = \text{diag} \vec{\vec{T}} \f$
+   */
   chi_mesh::Vector3 Diag() const;
 
   /**Returns the sum of the diagonal. Sometimes useful to get
@@ -180,6 +186,8 @@ struct chi_mesh::TensorRank2Dim3
   }
 };
 
-// The following functions are defined in chi_mesh_utilities.cc
-// Left multiplcation by scalar
+/**
+ * Rank-2 dim-3 tensor multiplied from the left with a scalar.
+ * \f$ \vec{\vec{W}} = \alpha \vec{\vec{T}} \f$
+ */
 chi_mesh::TensorRank2Dim3 operator*(const double value, const chi_mesh::TensorRank2Dim3& that);

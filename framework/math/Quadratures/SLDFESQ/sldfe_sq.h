@@ -19,7 +19,7 @@ struct SphericalQuadrilateral;
 struct FUNCTION_WEIGHT_FROM_RHO;
 class Quadrature;
 
-//####################################################### Util Func
+// ####################################################### Util Func
 /**Base Functor to inherit from to change the function
  * to integrate in one of the integration utilities.*/
 struct BaseFunctor
@@ -27,12 +27,11 @@ struct BaseFunctor
   virtual double operator()(double mu, double eta, double xi) { return 0.0; }
 };
 } // namespace SimplifiedLDFESQ
-} // namespace chi_math
 
-//################################################################### Util Func
+// ################################################################### Util Func
 /**Serves as a general data structure for a
  * spherical quadrilateral (SQ).*/
-struct chi_math::SimplifiedLDFESQ::SphericalQuadrilateral
+struct SimplifiedLDFESQ::SphericalQuadrilateral
 {
   std::array<chi_mesh::Vertex, 4> vertices_xy_tilde;  ///< On square
   std::array<chi_mesh::Vertex, 4> vertices_xyz_prime; ///< On cube face
@@ -50,9 +49,9 @@ struct chi_math::SimplifiedLDFESQ::SphericalQuadrilateral
   chi_mesh::Vector3 octant_modifier;
 };
 
-//################################################################### Class def
+// ################################################################### Class def
 /** Piecewise-linear Finite element quadrature using quadrilaterals.*/
-class chi_math::SimplifiedLDFESQ::Quadrature : public chi_math::AngularQuadrature
+class SimplifiedLDFESQ::Quadrature : public AngularQuadrature
 {
 public:
   enum class QuadraturePointOptimization
@@ -79,99 +78,136 @@ private:
 
 public:
   friend struct FUNCTION_WEIGHT_FROM_RHO;
-  Quadrature() : AngularQuadrature(chi_math::AngularQuadratureType::SLDFESQ) {}
+  Quadrature() : AngularQuadrature(AngularQuadratureType::SLDFESQ) {}
 
   virtual ~Quadrature() {}
 
-  // 01
+  /**
+   * Generates uniform spherical quadrilaterals from the subdivision of an inscribed cube.
+   */
   void GenerateInitialRefinement(int level);
 
 private:
-  // 01a
+  /**
+   * Generates diagonal spacings.
+   */
   void GenerateDiagonalSpacings(int level);
 
-  // 01b
+  /**
+   * Generates the standard points on the reference face.
+   */
   void GenerateReferenceFaceVertices(const chi_mesh::Matrix3x3& rotation_matrix,
                                      const chi_mesh::Vector3& translation,
                                      int level);
 
-  // 01c
-  void DevelopSQLDFEValues(SphericalQuadrilateral& sq, chi_math::QuadratureGaussLegendre& legendre);
+  /**
+   * Develops LDFE quantities.
+   */
+  void DevelopSQLDFEValues(SphericalQuadrilateral& sq, QuadratureGaussLegendre& legendre);
 
-  // 01c_a
+  /**
+   * Applies empirical quadrature point optimization.
+   */
   void EmpiricalQPOptimization(SphericalQuadrilateral& sq,
-                               chi_math::QuadratureGaussLegendre& legendre,
+                               QuadratureGaussLegendre& legendre,
                                chi_mesh::Vertex& sq_xy_tilde_centroid,
                                std::array<chi_mesh::Vector3, 4>& radii_vectors_xy_tilde,
                                std::array<double, 4>& sub_sub_sqr_areas);
 
-  // 01c_b
   void IsolatedQPOptimization(SphericalQuadrilateral& sq,
-                              chi_math::QuadratureGaussLegendre& legendre,
+                              QuadratureGaussLegendre& legendre,
                               chi_mesh::Vertex& sq_xy_tilde_centroid,
                               std::array<chi_mesh::Vector3, 4>& radii_vectors_xy_tilde,
                               std::array<double, 4>& sub_sub_sqr_areas);
 
-  // 01d utilities
+  /**
+   * Computes the area of a cell. This routine uses Girard's theorem to get the area of a spherical
+   * triangle using the spherical excess.
+   */
   static double ComputeSphericalQuadrilateralArea(std::array<chi_mesh::Vertex, 4>& vertices_xyz);
 
+  /**
+   * Integrates shape functions to produce weights.
+   */
   static std::array<double, 4>
   IntegrateLDFEShapeFunctions(const SphericalQuadrilateral& sq,
-                              std::array<chi_math::DynamicVector<double>, 4>& shape_coeffs,
-                              const std::vector<chi_math::QuadraturePointXYZ>& legendre_qpoints,
+                              std::array<DynamicVector<double>, 4>& shape_coeffs,
+                              const std::vector<QuadraturePointXYZ>& legendre_qpoints,
                               const std::vector<double>& legendre_qweights);
 
+  /**
+   * Deploys the current set of SQs to all octants.
+   */
   void CopyToAllOctants();
 
+  /**
+   * Populates the quadrature abscissaes, weights and direction vectors.
+   */
   void PopulateQuadratureAbscissae();
 
-  // 02
 private:
+  /**
+   * Performs a simple Riemann integral of a base functor.
+   */
   double RiemannIntegral(BaseFunctor* F, int Ni = 20000);
+
+  /**
+   * Performs a quadrature integral of a base functor using the
+   * supplied SQs.
+   */
   double QuadratureSSIntegral(BaseFunctor* F);
 
 public:
+  /**
+   * Performs a test integration of predefined cases.
+   */
   void TestIntegration(int test_case, double ref_solution, int RiemannN = 0);
 
-  // 03
 public:
+  /**
+   * Prints the quadrature to file.
+   */
   void PrintQuadratureToFile();
 
-  // 04
 public:
+  /**
+   * Locally refines the cells.
+   */
   void LocallyRefine(const chi_mesh::Vector3& ref_dir,
                      const double cone_size,
                      const bool dir_as_plane_normal = false);
 
 private:
+  /**
+   * Split a SQ.
+   */
   std::array<SphericalQuadrilateral, 4> SplitSQ(SphericalQuadrilateral& sq,
-                                                chi_math::QuadratureGaussLegendre& legendre);
+                                                QuadratureGaussLegendre& legendre);
 };
 
-//################################################################### Util Func
 /**This is a utility function that encapsulates
  * all the necessary functionality to determine shape
  * function coefficients and integrate accross a
  * spherical quadrilateral.*/
-struct chi_math::SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
+struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
 {
   Quadrature& sldfesq;
   chi_mesh::Vertex& centroid_xy_tilde;
   std::array<chi_mesh::Vector3, 4>& radii_vectors_xy_tilde;
   SphericalQuadrilateral& sq;
 
-  std::array<chi_math::DynamicVector<double>, 4> rhs;
-  chi_math::DynamicMatrix<double> A;
-  chi_math::DynamicMatrix<double> A_inv;
-  std::array<chi_math::DynamicVector<double>, 4> c_coeffs;
-  std::vector<chi_math::QuadraturePointXYZ>& lqp; // Legendre quadrature points
-  std::vector<double>& lqw;                       // Legendre quadrature weights
+  std::array<DynamicVector<double>, 4> rhs;
+  DynamicMatrix<double> A;
+  DynamicMatrix<double> A_inv;
+  std::array<DynamicVector<double>, 4> c_coeffs;
+  std::vector<QuadraturePointXYZ>& lqp; // Legendre quadrature points
+  std::vector<double>& lqw;             // Legendre quadrature weights
 
-  FUNCTION_WEIGHT_FROM_RHO(chi_math::SimplifiedLDFESQ::Quadrature& in_sldfesq,
+  FUNCTION_WEIGHT_FROM_RHO(SimplifiedLDFESQ::Quadrature& in_sldfesq,
                            chi_mesh::Vertex& in_centroid_xy_tilde,
                            std::array<chi_mesh::Vector3, 4>& in_radii_vectors_xy_tilde,
                            SphericalQuadrilateral& in_sq,
-                           chi_math::QuadratureGaussLegendre& in_legendre_quadrature)
+                           QuadratureGaussLegendre& in_legendre_quadrature)
     : sldfesq(in_sldfesq),
       centroid_xy_tilde(in_centroid_xy_tilde),
       radii_vectors_xy_tilde(in_radii_vectors_xy_tilde),
@@ -191,11 +227,11 @@ struct chi_math::SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
     }
   }
 
-  //###########################################
+  // ###########################################
   /**Computes the quadrature point locations
    * from rho, followed by the shape-function coefficients and
    * then the integral of the shape function to get the weights.*/
-  std::array<double, 4> operator()(const chi_math::DynamicVector<double>& rho)
+  std::array<double, 4> operator()(const DynamicVector<double>& rho)
   {
     //=============================== Determine qpoints from rho
     std::array<chi_mesh::Vector3, 4> qpoints;
@@ -211,7 +247,7 @@ struct chi_math::SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
       A[i] = {1.0, qpoints[i][0], qpoints[i][1], qpoints[i][2]};
 
     //=============================== Compute A-inverse
-    A_inv = chi_math::Inverse(A.elements_);
+    A_inv = Inverse(A.elements_);
 
     //=============================== Compute coefficients
     for (int i = 0; i < 4; ++i)
@@ -220,3 +256,5 @@ struct chi_math::SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
     return sldfesq.IntegrateLDFEShapeFunctions(sq, c_coeffs, lqp, lqw);
   }
 };
+
+} // namespace chi_math

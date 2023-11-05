@@ -4,7 +4,7 @@
 #include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
 
 #include "A_LBSSolver/Acceleration/acceleration.h"
-#include "A_LBSSolver/Acceleration/diffusion_mip.h"
+#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
 #include "physics/FieldFunction/fieldfunction_gridbased.h"

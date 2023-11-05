@@ -2,7 +2,7 @@
 
 #include "mesh/chi_mesh.h"
 #include "mesh/SurfaceMesh/chi_surfacemesh.h"
-#include "mesh/Raytrace/raytracing.h"
+#include "mesh/Raytrace/raytracer.h"
 
 #include "ChiObjectFactory.h"
 

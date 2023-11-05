@@ -3,7 +3,7 @@
 #include "A_LBSSolver/IterativeMethods/ags_linear_solver.h"
 #include "A_LBSSolver/IterativeMethods/wgs_context.h"
 
-#include "A_LBSSolver/Acceleration/diffusion_mip.h"
+#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 
 #include "chi_runtime.h"
 #include "chi_log.h"
