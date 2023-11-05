@@ -1,4 +1,4 @@
-#include "transient_source_function.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/transient_source_function.h"
 
 //###################################################################
 /**Constructor for the transient source function. The only difference

@@ -1,6 +1,6 @@
-#include "quadrature_triangle.h"
+#include "opensn/framework/math/Quadratures/quadrature_triangle.h"
 
-#include "math/Quadratures/Conical/quadrature_conical.h"
+#include "opensn/framework/math/Quadratures/Conical/quadrature_conical.h"
 
 #include <cmath>
 #include <stdexcept>

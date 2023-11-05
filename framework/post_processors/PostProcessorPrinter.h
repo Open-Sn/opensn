@@ -1,6 +1,6 @@
 #pragma once
 
-#include "event_system/EventSubscriber.h"
+#include "opensn/framework/event_system/EventSubscriber.h"
 #include <memory>
 #include <vector>
 #include <string>

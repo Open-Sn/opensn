@@ -2,7 +2,7 @@
 
 #include <cmath>
 #include <sstream>
-#include "chi_meshvector.h"
+#include "opensn/framework/mesh/chi_meshvector.h"
 
 struct chi_mesh::Matrix3x3
 {

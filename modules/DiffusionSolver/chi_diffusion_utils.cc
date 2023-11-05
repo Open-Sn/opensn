@@ -2,10 +2,10 @@
 
 #include <iomanip>
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
-#include "chi_mpi.h"
+#include "opensn/framework/mpi/chi_mpi.h"
 
 //###################################################################
 /**Customized monitor for PETSc Krylov sub-space solvers.*/

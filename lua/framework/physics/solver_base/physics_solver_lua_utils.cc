@@ -1,14 +1,14 @@
 #include "physics_solver_lua_utils.h"
 
-#include "physics/SolverBase/chi_solver.h"
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "physics/PhysicsEventPublisher.h"
+#include "opensn/framework/physics/SolverBase/chi_solver.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "opensn/framework/physics/PhysicsEventPublisher.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "console/chi_console.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/console/chi_console.h"
 
 namespace chi_physics::lua_utils
 {

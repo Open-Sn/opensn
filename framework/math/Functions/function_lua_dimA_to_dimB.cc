@@ -1,10 +1,10 @@
-#include "function_lua_dimA_to_dimB.h"
+#include "opensn/framework/math/Functions/function_lua_dimA_to_dimB.h"
 
-#include "console/chi_console.h"
-#include "chi_log_exceptions.h"
-#include "chi_lua.h"
+#include "opensn/framework/console/chi_console.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
 namespace chi_math::functions
 {

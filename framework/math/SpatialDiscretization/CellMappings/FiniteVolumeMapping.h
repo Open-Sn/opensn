@@ -2,11 +2,11 @@
 
 #include <utility>
 
-#include "CellMapping.h"
+#include "opensn/framework/math/SpatialDiscretization/CellMappings/CellMapping.h"
 
-#include "mesh/Cell/cell.h"
+#include "opensn/framework/mesh/Cell/cell.h"
 
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 // ######################################################### Class def
 namespace chi_math::cell_mapping

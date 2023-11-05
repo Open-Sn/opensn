@@ -1,6 +1,6 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "chi_log.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #include <string>
 #include <sstream>

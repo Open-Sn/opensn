@@ -1,12 +1,12 @@
 #pragma once
 
-#include "mesh/chi_mesh.h"
+#include "opensn/framework/mesh/chi_mesh.h"
 
-#include "math/chi_math.h"
-#include "math/Quadratures/angular_quadrature_base.h"
-#include "math/dynamic_vector.h"
-#include "math/Quadratures/quadrature_gausslegendre.h"
-#include "math/dynamic_matrix.h"
+#include "opensn/framework/math/chi_math.h"
+#include "opensn/framework/math/Quadratures/angular_quadrature_base.h"
+#include "opensn/framework/math/dynamic_vector.h"
+#include "opensn/framework/math/Quadratures/quadrature_gausslegendre.h"
+#include "opensn/framework/math/dynamic_matrix.h"
 
 #include <vector>
 #include <array>

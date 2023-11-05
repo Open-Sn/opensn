@@ -1,10 +1,10 @@
 #pragma once
 
-#include "math/NonLinearSolver/NonLinearSolverContext.h"
+#include "opensn/framework/math/NonLinearSolver/NonLinearSolverContext.h"
 
-#include "diffusion_mip_solver.h"
-#include "A_LBSSolver/IterativeMethods/snes_k_residual_func_context.h"
-#include "A_LBSSolver/lbs_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/snes_k_residual_func_context.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
 #include <petscsnes.h>
 

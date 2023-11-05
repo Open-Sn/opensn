@@ -1,8 +1,8 @@
-#include "lbs_shell_operations.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Preconditioning/lbs_shell_operations.h"
 
-#include "A_LBSSolver/lbs_solver.h"
-#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
 //###################################################################
 /**Applies TGDSA to the given input vector.*/

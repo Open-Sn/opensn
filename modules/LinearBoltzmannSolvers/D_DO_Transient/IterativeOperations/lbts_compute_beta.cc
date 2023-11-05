@@ -1,5 +1,6 @@
-#include "D_DO_Transient/lbts_transient_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
 
+#if 0
 /**Computes the delayed neutron factor.*/
 double
 lbs::DiscOrdTransientSolver::ComputeBeta()
@@ -49,3 +50,5 @@ lbs::DiscOrdTransientSolver::ComputeBeta()
 
   return DNPR / (DNPR + FPR);
 }
+
+#endif

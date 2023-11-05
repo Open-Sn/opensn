@@ -1,6 +1,6 @@
-#include "ConstantTimeStepper.h"
+#include "opensn/framework/physics/TimeSteppers/ConstantTimeStepper.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
 namespace chi_physics
 {

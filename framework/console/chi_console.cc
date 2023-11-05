@@ -1,14 +1,14 @@
-#include "console/chi_console.h"
-#include "lua/chi_modules_lua.h"
-#include "chi_configuration.h"
-#include "ChiObjectFactory.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_log_exceptions.h"
-#include "chi_lua.h"
-#include "chi_mpi.h"
-#include "chi_console_structs.h"
-#include "chi_utils.h"
+#include "opensn/framework/console/chi_console.h"
+#include "lua/modules/chi_modules_lua.h"
+#include "opensn/framework/chi_lua.h"
+#include "opensn/config.h"
+#include "opensn/framework/ChiObjectFactory.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
+#include "opensn/framework/mpi/chi_mpi.h"
+#include "opensn/framework/console/chi_console_structs.h"
+#include "opensn/framework/utils/chi_utils.h"
 #if defined(__MACH__)
 #include <mach/mach.h>
 #else
@@ -40,6 +40,7 @@ Console::Console() noexcept : console_state_(luaL_newstate())
 void
 Console::LoadRegisteredLuaItems()
 {
+#if OPENSN_WITH_LUA
   //=================================== Initializing console
   auto& L = GetConsoleState();
 
@@ -69,6 +70,7 @@ Console::LoadRegisteredLuaItems()
 
   for (const auto& [key, value] : lua_constants_registry_)
     SetLuaConstant(key, value);
+#endif
 
   //=================================== Registering solver-function
   //                                    scope resolution tables
@@ -102,6 +104,7 @@ Console::FlushConsole()
 int
 Console::LuaWrapperCall(lua_State* L)
 {
+#if OPENSN_WITH_LUA
   const int num_args = lua_gettop(L);
   // We do not check for the required parameters here because we want
   // to make this function call as fast as possible. Besides, via the
@@ -159,6 +162,9 @@ Console::LuaWrapperCall(lua_State* L)
   const int num_sub_params = static_cast<int>(output_params.NumParameters());
 
   return output_params.IsScalar() ? 1 : num_sub_params;
+#else
+  return 0;
+#endif
 }
 
 void

@@ -1,6 +1,6 @@
-#include "quadrature_tetrahedron.h"
+#include "opensn/framework/math/Quadratures/quadrature_tetrahedron.h"
 
-#include "math/Quadratures/Conical/quadrature_conical.h"
+#include "opensn/framework/math/Quadratures/Conical/quadrature_conical.h"
 
 #include <cmath>
 #include <stdexcept>

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "chi_lua.h"
+#if 0
+#include "opensn/framework/chi_lua.h"
 
 namespace lbs::lbts_lua_utils
 {
@@ -11,3 +12,4 @@ int chiLBTSAdvanceTimeData(lua_State* L);
 
 void RegisterLuaEntities(lua_State* L);
 } // namespace lbs::lbts_lua_utils
+#endif

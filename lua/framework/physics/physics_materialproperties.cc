@@ -1,16 +1,16 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 #include <iostream>
 
-#include "physics/PhysicsMaterial/chi_physicsmaterial.h"
-#include "physics/PhysicsMaterial/material_property_scalarvalue.h"
-#include "physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
-#include "physics/PhysicsMaterial/material_property_isotropic_mg_src.h"
+#include "opensn/framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
+#include "opensn/framework/physics/PhysicsMaterial/material_property_scalarvalue.h"
+#include "opensn/framework/physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
+#include "opensn/framework/physics/PhysicsMaterial/material_property_isotropic_mg_src.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #include "physics_lua_utils.h"
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiPhysicsMaterialAddProperty);
 RegisterLuaFunctionAsIs(chiPhysicsMaterialSetProperty);

@@ -1,8 +1,7 @@
-#include "chi_directed_graph.h"
+#include "opensn/framework/graphs/chi_directed_graph.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #include <sstream>
 #include <algorithm>

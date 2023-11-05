@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_directed_graph_vertex.h"
+#include "opensn/framework/graphs/chi_directed_graph_vertex.h"
 #include <stack>
 
 //###################################################################

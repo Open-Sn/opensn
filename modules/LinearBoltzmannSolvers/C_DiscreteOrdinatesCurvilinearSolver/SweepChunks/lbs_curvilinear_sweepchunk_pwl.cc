@@ -1,9 +1,9 @@
-#include "lbs_curvilinear_sweepchunk_pwl.h"
+#include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesCurvilinearSolver/SweepChunks/lbs_curvilinear_sweepchunk_pwl.h"
 
-#include "math/Quadratures/curvilinear_angular_quadrature.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/math/Quadratures/curvilinear_angular_quadrature.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 namespace lbs
 {

@@ -1,4 +1,4 @@
-#include "material_property_base.h"
+#include "opensn/framework/physics/PhysicsMaterial/material_property_base.h"
 
 //###################################################################
 /** Base class method for pushing lua table.*/

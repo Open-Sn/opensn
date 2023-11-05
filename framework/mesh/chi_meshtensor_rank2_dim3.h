@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_meshvector.h"
+#include "opensn/framework/mesh/chi_meshvector.h"
 
 //###################################################################
 /**General rank 2 tensor to be used with Vector3*/

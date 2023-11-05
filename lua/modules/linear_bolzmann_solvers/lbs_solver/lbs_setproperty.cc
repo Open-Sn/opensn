@@ -1,10 +1,10 @@
-#include "A_LBSSolver/lbs_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
 #define scpcode static_cast<PropertyCode>
 #define scint static_cast<int>
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace lbs::common_lua_utils
 {

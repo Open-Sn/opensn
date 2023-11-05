@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
 namespace chi_physics
 {

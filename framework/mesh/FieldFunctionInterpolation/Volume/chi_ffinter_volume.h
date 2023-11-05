@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../chi_ffinterpolation.h"
-#include "mesh/LogicalVolume/LogicalVolume.h"
+#include "opensn/framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
+#include "opensn/framework/mesh/LogicalVolume/LogicalVolume.h"
 
 #include <petscksp.h>
 

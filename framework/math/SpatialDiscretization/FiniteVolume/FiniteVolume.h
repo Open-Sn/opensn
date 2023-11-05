@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "math/UnknownManager/unknown_manager.h"
+#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "opensn/framework/math/UnknownManager/unknown_manager.h"
 
 #include <map>
 

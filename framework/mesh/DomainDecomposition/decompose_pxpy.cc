@@ -1,4 +1,4 @@
-#include "mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "opensn/framework/mesh/SurfaceMesh/chi_surfacemesh.h"
 
 #include <algorithm>
 
@@ -6,8 +6,8 @@ typedef std::pair<int, int> IntPair;
 typedef std::vector<double> DblVec;
 typedef std::vector<int> IntVec;
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 //================================================== Define LBF-Calc funtion
 /**Makes a centroid based load balance factor calculation.

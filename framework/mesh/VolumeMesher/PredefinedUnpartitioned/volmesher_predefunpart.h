@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../chi_volumemesher.h"
-#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
+#include "opensn/framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "opensn/framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 
 namespace chi_mesh
 {

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "physics/SolverBase/chi_solver.h"
-#include "math/PETScUtils/petsc_utils.h"
+#include "opensn/framework/physics/SolverBase/chi_solver.h"
+#include "opensn/framework/math/PETScUtils/petsc_utils.h"
 
-#include "cfem_diffusion_bndry.h"
-#include "utils/chi_timer.h"
+#include "opensn/modules/CFEMDiffusion/cfem_diffusion_bndry.h"
+#include "opensn/framework/utils/chi_timer.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 #include <map>
 
-#include "mesh/chi_mesh.h"
+#include "opensn/framework/mesh/chi_mesh.h"
 
 namespace chi_mesh
 {

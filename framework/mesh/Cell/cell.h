@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../chi_mesh.h"
-#include "data_types/chi_data_types.h"
+#include "opensn/framework/mesh/chi_mesh.h"
+#include "opensn/framework/data_types/chi_data_types.h"
 #include <tuple>
 
 // Appending cell types to namespace

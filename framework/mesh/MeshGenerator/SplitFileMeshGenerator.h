@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MeshGenerator.h"
+#include "opensn/framework/mesh/MeshGenerator/MeshGenerator.h"
 
 namespace chi_data_types
 {

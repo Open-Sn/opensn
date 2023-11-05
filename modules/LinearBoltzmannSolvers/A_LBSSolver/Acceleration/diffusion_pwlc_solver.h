@@ -1,6 +1,6 @@
 #pragma once
 
-#include "diffusion.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
 
 namespace lbs::acceleration
 {

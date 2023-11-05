@@ -1,6 +1,7 @@
 #pragma once
 
-#include "LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+
 namespace chi_math
 {
 class TimeIntegration;

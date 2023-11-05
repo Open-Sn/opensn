@@ -1,7 +1,7 @@
-#include "petsc_utils.h"
-#include "math/ParallelVector/ParallelVector.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/math/PETScUtils/petsc_utils.h"
+#include "opensn/framework/math/ParallelVector/ParallelVector.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 #include <iomanip>
 
 namespace chi_math::PETScUtils

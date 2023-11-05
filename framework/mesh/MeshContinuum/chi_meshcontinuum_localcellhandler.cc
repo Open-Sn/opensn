@@ -1,4 +1,4 @@
-#include "chi_meshcontinuum.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 //###################################################################
 /**Returns a reference to a local cell, given a local cell index.*/

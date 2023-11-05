@@ -1,4 +1,4 @@
-#include "chi_timer.h"
+#include "opensn/framework/utils/chi_timer.h"
 
 #include <cmath>
 #include <ctime>

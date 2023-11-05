@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../surfacemesher.h"
+#include "opensn/framework/mesh/SurfaceMesher/surfacemesher.h"
 
 //######################################################### Class def
 /**Surface mesher that will not modify the mesh.

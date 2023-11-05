@@ -1,10 +1,10 @@
-#include "PieceWiseLinearContinuous.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
-#include "chi_mpi.h"
-#include "mpi/chi_mpi_utils_map_all2all.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/utils/chi_timer.h"
+#include "opensn/framework/mpi/chi_mpi.h"
+#include "opensn/framework/mpi/chi_mpi_utils_map_all2all.h"
 #include <algorithm>
 
 #define sc_int64 static_cast<int64_t>

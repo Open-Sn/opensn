@@ -1,7 +1,7 @@
 #pragma once
 
-#include "diffusion.h"
-#include "chi_lua.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
+#include "opensn/framework/chi_lua.h"
 
 // ############################################### Forward declarations
 namespace chi_mesh

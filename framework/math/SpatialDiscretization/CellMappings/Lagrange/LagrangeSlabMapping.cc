@@ -1,8 +1,8 @@
-#include "LagrangeSlabMapping.h"
+#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeSlabMapping.h"
 
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 namespace chi_math::cell_mapping
 {

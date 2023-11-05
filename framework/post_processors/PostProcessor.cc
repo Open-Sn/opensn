@@ -1,11 +1,11 @@
-#include "PostProcessor.h"
+#include "opensn/framework/post_processors/PostProcessor.h"
 
-#include "physics/PhysicsEventPublisher.h"
-#include "event_system/EventSubscriber.h"
-#include "event_system/Event.h"
+#include "opensn/framework/physics/PhysicsEventPublisher.h"
+#include "opensn/framework/event_system/EventSubscriber.h"
+#include "opensn/framework/event_system/Event.h"
 
-#include "chi_log.h"
-#include "ChiObjectFactory.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
 namespace chi
 {

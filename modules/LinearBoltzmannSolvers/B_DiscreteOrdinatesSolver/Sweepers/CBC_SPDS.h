@@ -1,8 +1,8 @@
 #pragma once
 
-#include "mesh/SweepUtilities/SPDS/SPDS.h"
+#include "opensn/framework/mesh/SweepUtilities/SPDS/SPDS.h"
 
-#include "mesh/SweepUtilities/sweep_namespace.h"
+#include "opensn/framework/mesh/SweepUtilities/sweep_namespace.h"
 
 namespace lbs
 {

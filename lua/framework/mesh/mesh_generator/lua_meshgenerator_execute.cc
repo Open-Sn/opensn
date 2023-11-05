@@ -1,10 +1,10 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "mesh/MeshGenerator/MeshGenerator.h"
+#include "opensn/framework/mesh/MeshGenerator/MeshGenerator.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
-#include "chi_runtime.h"
+#include "opensn/framework/chi_runtime.h"
 
 namespace chi_mesh::lua_utils
 {

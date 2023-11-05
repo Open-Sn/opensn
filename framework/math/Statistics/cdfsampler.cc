@@ -1,9 +1,9 @@
-#include <math/chi_math.h>
+#include "opensn/framework/math/chi_math.h"
 
-#include "cdfsampler.h"
+#include "opensn/framework/math/Statistics/cdfsampler.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #include <unistd.h>
 

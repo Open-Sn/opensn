@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PieceWiseLinearBase.h"
-#include "math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearBase.h"
+#include "opensn/framework/math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
 
 namespace chi_math::spatial_discretization
 {

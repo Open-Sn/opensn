@@ -1,6 +1,6 @@
-#include "legendrepoly.h"
+#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
 
-#include "math/chi_math.h"
+#include "opensn/framework/math/chi_math.h"
 #include <cmath>
 
 //###################################################################

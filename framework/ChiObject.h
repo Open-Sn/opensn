@@ -1,7 +1,7 @@
 #pragma once
 
-#include "chi_runtime.h"
-#include "parameters/input_parameters.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/parameters/input_parameters.h"
 
 class ChiObject
 {

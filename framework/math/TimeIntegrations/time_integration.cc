@@ -1,6 +1,6 @@
-#include "time_integration.h"
+#include "opensn/framework/math/TimeIntegrations/time_integration.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 #define scint static_cast<int>
 

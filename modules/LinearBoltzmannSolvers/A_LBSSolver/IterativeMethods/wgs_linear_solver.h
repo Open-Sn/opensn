@@ -1,8 +1,8 @@
 #pragma once
 
-#include "math/LinearSolver/linear_solver.h"
+#include "opensn/framework/math/LinearSolver/linear_solver.h"
 
-#include "wgs_context.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
 #include <memory>
 #include <vector>

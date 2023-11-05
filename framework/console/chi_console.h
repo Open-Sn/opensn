@@ -6,11 +6,11 @@ extern "C"
 #include <lualib.h>
 #include <lauxlib.h>
 }
-#include "chi_console_structs.h"
-#include "parameters/parameter_block.h"
-#include "parameters/input_parameters.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/console/chi_console_structs.h"
+#include "opensn/framework/parameters/parameter_block.h"
+#include "opensn/framework/parameters/input_parameters.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 #include <vector>
 #include <string>

@@ -1,12 +1,12 @@
-#include "sweep_wgs_context.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/IterativeMethods/sweep_wgs_context.h"
 
 #include <petscksp.h>
 
-#include "B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
-#include "A_LBSSolver/Preconditioning/lbs_shell_operations.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Preconditioning/lbs_shell_operations.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #include <iomanip>
 

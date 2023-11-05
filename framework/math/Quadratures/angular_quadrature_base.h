@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "mesh/chi_mesh.h"
+#include "opensn/framework/mesh/chi_mesh.h"
 
 namespace chi_math
 {

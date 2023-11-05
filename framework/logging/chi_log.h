@@ -1,8 +1,8 @@
 #pragma once
 
-#include "chi_logstream.h"
-#include "chi_log_exceptions.h"
-#include "TimingLog.h"
+#include "opensn/framework/logging/chi_logstream.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
+#include "opensn/framework/logging/TimingLog.h"
 
 #include <utility>
 #include <vector>

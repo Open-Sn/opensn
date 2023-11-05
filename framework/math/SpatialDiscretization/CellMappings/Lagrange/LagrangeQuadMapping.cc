@@ -1,9 +1,9 @@
-#include "LagrangeQuadMapping.h"
+#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeQuadMapping.h"
 
-#include "mesh/Cell/cell.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/Cell/cell.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 namespace chi_math::cell_mapping
 {

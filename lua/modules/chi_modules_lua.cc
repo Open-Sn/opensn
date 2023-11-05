@@ -1,11 +1,11 @@
 #include "chi_modules_lua.h"
 
-#include "DiffusionSolver/lua/diffusion_lua.h"
-#include "CFEMDiffusion/lua/ds_lua_utils.h"
-#include "DFEMDiffusion/lua/ip_lua_utils.h"
-#include "FVDiffusion/lua/ds_lua_utils.h"
-#include "MGDiffusion/lua/mgds_lua_utils.h"
-#include "A_LBSSolver/lua/lbs_lua_utils.h"
+#include "diffusion_solver/diffusion_lua.h"
+#include "cfem_diffusion/ds_lua_utils.h"
+#include "dfem_diffusion/ip_lua_utils.h"
+#include "fv_diffusion/ds_lua_utils.h"
+#include "mg_diffusion/mgds_lua_utils.h"
+#include "linear_bolzmann_solvers/lbs_solver/lbs_lua_utils.h"
 
 void
 chi_modules::lua_utils::RegisterLuaEntities(lua_State* L)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../chi_diffusion.h"
+#include "opensn/modules/DiffusionSolver/chi_diffusion.h"
 
 namespace chi_diffusion
 {

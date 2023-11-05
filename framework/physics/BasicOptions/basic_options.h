@@ -1,6 +1,6 @@
 #pragma once
 
-#include "data_types/varying.h"
+#include "opensn/framework/data_types/varying.h"
 
 namespace chi_physics
 {

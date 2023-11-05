@@ -1,5 +1,4 @@
-#include "legendrepoly.h"
-#include <cmath>
+#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
 
 #include <algorithm>
 //###################################################################

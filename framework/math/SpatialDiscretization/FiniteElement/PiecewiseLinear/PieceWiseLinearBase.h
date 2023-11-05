@@ -1,11 +1,11 @@
 #pragma once
 
-#include "math/SpatialDiscretization/FiniteElement/FiniteElementBase.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/FiniteElementBase.h"
 
-#include "math/Quadratures/quadrature_line.h"
-#include "math/Quadratures/quadrature_triangle.h"
-#include "math/Quadratures/quadrature_quadrilateral.h"
-#include "math/Quadratures/quadrature_tetrahedron.h"
+#include "opensn/framework/math/Quadratures/quadrature_line.h"
+#include "opensn/framework/math/Quadratures/quadrature_triangle.h"
+#include "opensn/framework/math/Quadratures/quadrature_quadrilateral.h"
+#include "opensn/framework/math/Quadratures/quadrature_tetrahedron.h"
 
 namespace chi_math::spatial_discretization
 {

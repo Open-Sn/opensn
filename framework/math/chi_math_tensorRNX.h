@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_math_vectorNX.h"
+#include "opensn/framework/math/chi_math_vectorNX.h"
 
 #include <iostream>
 

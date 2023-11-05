@@ -1,20 +1,20 @@
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "math/Quadratures/angular_quadrature_base.h"
-#include "math/Quadratures/angular_product_quadrature.h"
-#include "math/chi_math_range.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "opensn/framework/math/Quadratures/angular_quadrature_base.h"
+#include "opensn/framework/math/Quadratures/angular_product_quadrature.h"
+#include "opensn/framework/math/chi_math_range.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "opensn/framework/physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
 
-#include "data_types/ndarray.h"
+#include "opensn/framework/data_types/ndarray.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 #include <iomanip>
 

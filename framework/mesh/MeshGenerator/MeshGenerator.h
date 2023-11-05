@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ChiObject.h"
-#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
+#include "opensn/framework/ChiObject.h"
+#include "opensn/framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 
 namespace chi
 {

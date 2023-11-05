@@ -141,10 +141,10 @@ size_t CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
                                       std::vector<double>& vertices_1d_z);
 } // namespace chi_mesh
 
-#include "chi_meshvector.h"
-#include "chi_meshmatrix3x3.h"
-#include "chi_meshtensor_rank2_dim3.h"
-#include "chi_meshface.h"
-#include "chi_mesh_edgeloops.h"
+#include "opensn/framework/mesh/chi_meshvector.h"
+#include "opensn/framework/mesh/chi_meshmatrix3x3.h"
+#include "opensn/framework/mesh/chi_meshtensor_rank2_dim3.h"
+#include "opensn/framework/mesh/chi_meshface.h"
+#include "opensn/framework/mesh/chi_mesh_edgeloops.h"
 
-#include "mesh/SweepUtilities/sweep_namespace.h"
+#include "opensn/framework/mesh/SweepUtilities/sweep_namespace.h"

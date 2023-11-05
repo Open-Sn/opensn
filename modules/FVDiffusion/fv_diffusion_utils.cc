@@ -1,8 +1,8 @@
-#include "console/chi_console.h"
-#include "chi_lua.h"
-#include "fv_diffusion_solver.h"
+#include "opensn/framework/console/chi_console.h"
+#include "opensn/framework/chi_lua.h"
+#include "opensn/modules/FVDiffusion/fv_diffusion_solver.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
 //###################################################################
 /**Calls a lua function with xyz coordinates.

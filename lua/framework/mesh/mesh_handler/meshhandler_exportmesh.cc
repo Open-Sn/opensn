@@ -1,7 +1,7 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "../chi_meshhandler.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 //###################################################################
 /**Exports the mesh to a wavefront.obj format.

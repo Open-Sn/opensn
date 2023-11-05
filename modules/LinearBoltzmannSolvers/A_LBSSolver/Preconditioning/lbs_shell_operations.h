@@ -2,7 +2,7 @@
 
 #include <petscksp.h>
 
-#include "A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
 namespace lbs
 {

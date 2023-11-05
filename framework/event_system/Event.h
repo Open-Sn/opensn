@@ -1,6 +1,6 @@
 #pragma once
 
-#include "parameters/parameter_block.h"
+#include "opensn/framework/parameters/parameter_block.h"
 
 #include <string>
 

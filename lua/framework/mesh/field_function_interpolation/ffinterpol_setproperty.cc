@@ -1,15 +1,15 @@
-#include "chi_lua.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/chi_lua.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-#include "mesh/FieldFunctionInterpolation/Point/chi_ffinter_point.h"
-#include "mesh/FieldFunctionInterpolation/Slice/chi_ffinter_slice.h"
-#include "mesh/FieldFunctionInterpolation/Line/chi_ffinter_line.h"
-#include "mesh/FieldFunctionInterpolation/Volume/chi_ffinter_volume.h"
+#include "opensn/framework/mesh/FieldFunctionInterpolation/Point/chi_ffinter_point.h"
+#include "opensn/framework/mesh/FieldFunctionInterpolation/Slice/chi_ffinter_slice.h"
+#include "opensn/framework/mesh/FieldFunctionInterpolation/Line/chi_ffinter_line.h"
+#include "opensn/framework/mesh/FieldFunctionInterpolation/Volume/chi_ffinter_volume.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #define dcastPoint(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationPoint&>(x)
 #define dcastLine(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationLine&>(x)
@@ -17,7 +17,7 @@
 #define dcastVolume(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationVolume&>(x)
 
 #include "ffinterpol_lua.h"
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiFFInterpolationSetProperty);
 RegisterLuaConstantAsIs(PROBEPOINT, chi_data_types::Varying(0));

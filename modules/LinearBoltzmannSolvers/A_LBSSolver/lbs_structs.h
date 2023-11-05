@@ -1,8 +1,8 @@
 #pragma once
 
-#include "math/chi_math.h"
-#include "physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
-#include "physics/PhysicsMaterial/material_property_isotropic_mg_src.h"
+#include "opensn/framework/math/chi_math.h"
+#include "opensn/framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
+#include "opensn/framework/physics/PhysicsMaterial/material_property_isotropic_mg_src.h"
 
 #include <functional>
 #include <map>

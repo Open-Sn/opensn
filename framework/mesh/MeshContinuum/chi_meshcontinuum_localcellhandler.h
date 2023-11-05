@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mesh/Cell/cell.h"
+#include "opensn/framework/mesh/Cell/cell.h"
 
 namespace chi_mesh
 {

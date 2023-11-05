@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/Quadratures/angular_product_quadrature.h"
+#include "opensn/framework/math/Quadratures/angular_product_quadrature.h"
 
 namespace chi_math
 {

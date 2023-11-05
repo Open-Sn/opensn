@@ -12,7 +12,7 @@ template <int R, int N, class NumberFormat>
 struct TensorRNX;
 }
 
-#include "mesh/chi_meshvector.h"
+#include "opensn/framework/mesh/chi_meshvector.h"
 
 #include <iostream>
 

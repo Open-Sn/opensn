@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mesh/chi_mesh.h"
-#include "mesh/Cell/cell.h"
+#include "opensn/framework/mesh/chi_mesh.h"
+#include "opensn/framework/mesh/Cell/cell.h"
 
 class vtkCell;
 class vtkUnstructuredGrid;

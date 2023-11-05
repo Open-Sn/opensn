@@ -1,7 +1,7 @@
 #pragma once
 
-#include "acceleration.h"
-#include "math/UnknownManager/unknown_manager.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
+#include "opensn/framework/math/UnknownManager/unknown_manager.h"
 #include "petscksp.h"
 
 // ############################################### Forward declarations

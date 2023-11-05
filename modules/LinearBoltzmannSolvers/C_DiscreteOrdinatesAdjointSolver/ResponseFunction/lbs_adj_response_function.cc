@@ -1,10 +1,10 @@
-#include "lbs_adj_response_function.h"
+#include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/ResponseFunction/lbs_adj_response_function.h"
 
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "chi_runtime.h"
-#include "console/chi_console.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/console/chi_console.h"
+#include "opensn/framework/logging/chi_log.h"
 
 //###################################################################
 /** Calls the lua function associated with the response function and

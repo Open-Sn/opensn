@@ -1,10 +1,10 @@
-#include "TimingLog.h"
+#include "opensn/framework/logging/TimingLog.h"
 
-#include "utils/chi_timer.h"
+#include "opensn/framework/utils/chi_timer.h"
 
-#include "chi_runtime.h"
+#include "opensn/framework/chi_runtime.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 #include <sstream>
 

@@ -1,9 +1,9 @@
-#include "sldfe_sq.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
-#include "math/Quadratures/LegendrePoly/legendrepoly.h"
-#include "mesh/chi_meshvector.h"
+#include "opensn/framework/math/Quadratures/SLDFESQ/sldfe_sq.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/utils/chi_timer.h"
+#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
+#include "opensn/framework/mesh/chi_meshvector.h"
 #include <algorithm>
 #include <map>
 

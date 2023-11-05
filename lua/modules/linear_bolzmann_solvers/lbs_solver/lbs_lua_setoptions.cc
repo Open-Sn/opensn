@@ -1,10 +1,10 @@
 #include "lbs_lua_utils.h"
 
-#include "LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "console/chi_console.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/console/chi_console.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace lbs::common_lua_utils
 {

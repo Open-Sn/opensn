@@ -1,10 +1,10 @@
 #include "lbsadj_lua_utils.h"
 
-#include "C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
 
-#include "chi_runtime.h"
+#include "opensn/framework/chi_runtime.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 namespace lbs::adjoint_lua_utils
 {

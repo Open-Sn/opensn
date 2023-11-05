@@ -1,7 +1,7 @@
 #pragma once
 
-#include "NonLinearSolverContext.h"
-#include "NonLinearSolverOptions.h"
+#include "opensn/framework/math/NonLinearSolver/NonLinearSolverContext.h"
+#include "opensn/framework/math/NonLinearSolver/NonLinearSolverOptions.h"
 
 #include <string>
 

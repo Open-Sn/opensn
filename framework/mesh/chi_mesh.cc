@@ -1,10 +1,9 @@
-#include "chi_mesh.h"
-#include "MeshHandler/chi_meshhandler.h"
-#include "chi_runtime.h"
-#include "mesh/SurfaceMesher/Predefined/surfmesher_predefined.h"
-#include "mesh/VolumeMesher/PredefinedUnpartitioned/volmesher_predefunpart.h"
-#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
-#include "chi_log.h"
+#include "opensn/framework/mesh/chi_mesh.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/mesh/SurfaceMesher/Predefined/surfmesher_predefined.h"
+#include "opensn/framework/mesh/VolumeMesher/PredefinedUnpartitioned/volmesher_predefunpart.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace chi_mesh
 {

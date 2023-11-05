@@ -1,6 +1,6 @@
 #pragma once
 
-#include "event_system/EventPublisher.h"
+#include "opensn/framework/event_system/EventPublisher.h"
 
 namespace chi
 {

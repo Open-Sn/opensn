@@ -1,7 +1,7 @@
 #pragma once
 
-#include "physics/chi_physics_namespace.h"
-#include "material_property_base.h"
+#include "opensn/framework/physics/chi_physics_namespace.h"
+#include "opensn/framework/physics/PhysicsMaterial/material_property_base.h"
 
 #include <vector>
 #include <memory>

@@ -1,9 +1,9 @@
-#include "multifield.h"
+#include "opensn/framework/physics/FieldOperations/multifield.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 namespace chi_physics::field_operations
 {

@@ -1,12 +1,12 @@
-#include "ParallelSTLVector.h"
+#include "opensn/framework/math/ParallelVector/ParallelSTLVector.h"
 
-#include "chi_mpi_utils_map_all2all.h"
-#include "data_types/byte_array.h"
+#include "opensn/framework/mpi/chi_mpi_utils_map_all2all.h"
+#include "opensn/framework/data_types/byte_array.h"
 
 #include <petsc.h>
 
-#include "chi_log.h"
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 #include <sstream>
 #include <stdexcept>

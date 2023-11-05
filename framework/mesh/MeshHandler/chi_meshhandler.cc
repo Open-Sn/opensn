@@ -1,8 +1,8 @@
-#include "chi_meshhandler.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/VolumeMesher/chi_volumemesher.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/VolumeMesher/chi_volumemesher.h"
 
-#include "chi_log.h"
+#include "opensn/framework/logging/chi_log.h"
 
 //###################################################################
 /**Obtains a pointer to the last created grid. This method will

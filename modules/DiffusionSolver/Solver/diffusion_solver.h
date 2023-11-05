@@ -1,15 +1,15 @@
 #pragma once
 
-#include "mesh/Cell/cell.h"
-#include "DiffusionSolver/Boundaries/chi_diffusion_bndry.h"
-#include "DiffusionSolver/UnitIntegralContainer.h"
-#include "DiffusionSolver/chi_diffusion.h"
-#include "physics/SolverBase/chi_solver.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
-#include "mesh/VolumeMesher/chi_volumemesher.h"
-#include "utils/chi_timer.h"
+#include "opensn/framework/mesh/Cell/cell.h"
+#include "opensn/modules/DiffusionSolver/Boundaries/chi_diffusion_bndry.h"
+#include "opensn/modules/DiffusionSolver/UnitIntegralContainer.h"
+#include "opensn/modules/DiffusionSolver/chi_diffusion.h"
+#include "opensn/framework/physics/SolverBase/chi_solver.h"
+#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
+#include "opensn/framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "opensn/framework/utils/chi_timer.h"
 #include <petscksp.h>
 
 #define DIFFUSION_MATERIALS_REGULAR 10

@@ -1,5 +1,5 @@
-#include "chi_utils.h"
-#include "chi_log_exceptions.h"
+#include "opensn/framework/utils/chi_utils.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 #include <fstream>
 #include <cmath>
 #include <iomanip>

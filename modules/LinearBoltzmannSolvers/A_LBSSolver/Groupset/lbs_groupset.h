@@ -1,23 +1,23 @@
 #pragma once
 
-#include "ChiObject.h"
+#include "opensn/framework/ChiObject.h"
 
-#include "lbs_group.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/lbs_iterativemethods.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_group.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/lbs_iterativemethods.h"
 
-#include "math/Quadratures/LegendrePoly/legendrepoly.h"
-#include "math/Quadratures/angular_quadrature_base.h"
-#include "math/UnknownManager/unknown_manager.h"
+#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
+#include "opensn/framework/math/Quadratures/angular_quadrature_base.h"
+#include "opensn/framework/math/UnknownManager/unknown_manager.h"
 
-#include "mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
+#include "opensn/framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
 
-#include "LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
-#include "physics/chi_physics_namespace.h"
+#include "opensn/framework/physics/chi_physics_namespace.h"
 
-#include "A_LBSSolver/Acceleration/acceleration.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
 
-#include "utils/chi_utils.h"
+#include "opensn/framework/utils/chi_utils.h"
 
 namespace lbs::acceleration
 {

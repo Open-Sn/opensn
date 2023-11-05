@@ -1,6 +1,6 @@
-#include "A_LBSSolver/lbs_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "chi_runtime.h"
+#include "opensn/framework/chi_runtime.h"
 
 namespace lbs::common_lua_utils
 {

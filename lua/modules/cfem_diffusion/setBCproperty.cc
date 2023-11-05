@@ -1,9 +1,9 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "../cfem_diffusion_solver.h"
+#include "opensn/modules/CFEMDiffusion/cfem_diffusion_solver.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace cfem_diffusion::cfem_diffusion_lua_utils
 {

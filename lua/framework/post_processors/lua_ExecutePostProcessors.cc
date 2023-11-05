@@ -1,8 +1,8 @@
-#include "post_processors/PostProcessor.h"
+#include "opensn/framework/post_processors/PostProcessor.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
-#include "event_system/Event.h"
+#include "opensn/framework/event_system/Event.h"
 
 namespace chi
 {

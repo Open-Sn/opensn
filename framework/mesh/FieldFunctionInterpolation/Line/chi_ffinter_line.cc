@@ -1,12 +1,12 @@
-#include "chi_ffinter_line.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "math/VectorGhostCommunicator/vector_ghost_communicator.h"
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "mesh/Cell/cell.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
+#include "opensn/framework/mesh/FieldFunctionInterpolation/Line/chi_ffinter_line.h"
+#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "opensn/framework/math/VectorGhostCommunicator/vector_ghost_communicator.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "opensn/framework/mesh/Cell/cell.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/mpi/chi_mpi.h"
 #include <fstream>
 
 namespace chi_mesh

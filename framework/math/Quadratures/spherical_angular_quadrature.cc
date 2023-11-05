@@ -1,11 +1,11 @@
-#include "math/Quadratures/spherical_angular_quadrature.h"
+#include "opensn/framework/math/Quadratures/spherical_angular_quadrature.h"
 
 #include <algorithm>
 #include <limits>
 #include <numeric>
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 chi_math::SphericalAngularQuadrature::SphericalAngularQuadrature(
   const chi_math::Quadrature& quad_polar, const bool verbose)

@@ -1,7 +1,7 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "ChiObjectFactory.h"
-#include "console/chi_console.h"
+#include "opensn/framework/ChiObjectFactory.h"
+#include "opensn/framework/console/chi_console.h"
 
 namespace chi::lua_utils
 {

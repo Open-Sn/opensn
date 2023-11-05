@@ -1,11 +1,11 @@
 #pragma once
 
-#include "A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
-#include "mesh/SweepUtilities/SweepScheduler/sweepscheduler.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "opensn/framework/mesh/SweepUtilities/SweepScheduler/sweepscheduler.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
-#include "B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
 
 namespace lbs
 {

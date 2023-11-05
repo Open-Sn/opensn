@@ -1,10 +1,10 @@
-#include "EventPublisher.h"
+#include "opensn/framework/event_system/EventPublisher.h"
 
-#include "event_system/Event.h"
-#include "event_system/EventSubscriber.h"
+#include "opensn/framework/event_system/Event.h"
+#include "opensn/framework/event_system/EventSubscriber.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #include <algorithm>
 

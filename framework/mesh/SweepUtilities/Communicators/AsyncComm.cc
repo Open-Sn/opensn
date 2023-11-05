@@ -1,6 +1,6 @@
-#include "AsyncComm.h"
+#include "opensn/framework/mesh/SweepUtilities/Communicators/AsyncComm.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 namespace chi_mesh::sweep_management
 {

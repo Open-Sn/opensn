@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../surfacemesher.h"
+#include "opensn/framework/mesh/SurfaceMesher/surfacemesher.h"
 
 namespace chi_mesh
 {

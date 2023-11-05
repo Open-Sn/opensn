@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/LinearSolver/linear_solver.h"
-#include "ags_context.h"
+#include "opensn/framework/math/LinearSolver/linear_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_context.h"
 
 namespace lbs
 {

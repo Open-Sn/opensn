@@ -1,11 +1,11 @@
-#include "cell.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/Cell/cell.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "data_types/byte_array.h"
+#include "opensn/framework/data_types/byte_array.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/mpi/chi_mpi.h"
 
 //###################################################################
 /**Provides the text name associated with a cell type.*/

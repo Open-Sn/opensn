@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../chi_math.h"
+#include "opensn/framework/math/chi_math.h"
 
 //###################################################################
 /**Sparse matrix utility. This is a basic CSR type sparse matrix

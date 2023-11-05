@@ -1,10 +1,10 @@
-#include "SolverInfoPostProcessor.h"
+#include "opensn/framework/post_processors/SolverInfoPostProcessor.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
-#include "physics/SolverBase/chi_solver.h"
-#include "physics/TimeSteppers/TimeStepper.h"
-#include "event_system/Event.h"
+#include "opensn/framework/physics/SolverBase/chi_solver.h"
+#include "opensn/framework/physics/TimeSteppers/TimeStepper.h"
+#include "opensn/framework/event_system/Event.h"
 
 #include <algorithm>
 

@@ -1,9 +1,9 @@
-#include "angular_quadrature_base.h"
+#include "opensn/framework/math/Quadratures/angular_quadrature_base.h"
 
-#include "math/Quadratures/LegendrePoly/legendrepoly.h"
+#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #include <iomanip>
 #include <numeric>

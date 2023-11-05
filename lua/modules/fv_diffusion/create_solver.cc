@@ -1,9 +1,9 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "../fv_diffusion_solver.h"
+#include "opensn/modules/FVDiffusion/fv_diffusion_solver.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace fv_diffusion::fv_diffusion_lua_utils
 {

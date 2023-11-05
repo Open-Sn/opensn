@@ -1,11 +1,11 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "../Solver/diffusion_solver.h"
+#include "opensn/modules/DiffusionSolver/Solver/diffusion_solver.h"
 
-#include "chi_runtime.h"
+#include "opensn/framework/chi_runtime.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 //#############################################################################
 /** Creates a Diffusion solver.

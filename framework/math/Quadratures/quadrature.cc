@@ -1,8 +1,8 @@
-#include "quadrature.h"
+#include "opensn/framework/math/Quadratures/quadrature.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 namespace chi_math
 {

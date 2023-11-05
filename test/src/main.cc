@@ -1,4 +1,4 @@
-#include "chi_runtime.h"
+#include "opensn/framework/chi_runtime.h"
 
 int
 main(int argc, char** argv)

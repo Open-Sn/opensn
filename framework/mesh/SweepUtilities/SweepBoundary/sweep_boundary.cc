@@ -1,7 +1,7 @@
-#include "sweep_boundary.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
+#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/mpi/chi_mpi.h"
 
 namespace chi_mesh::sweep_management
 {

@@ -1,9 +1,9 @@
-#include "post_processors/PostProcessor.h"
+#include "opensn/framework/post_processors/PostProcessor.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace chi
 {

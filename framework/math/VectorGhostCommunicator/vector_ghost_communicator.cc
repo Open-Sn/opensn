@@ -1,8 +1,8 @@
-#include "vector_ghost_communicator.h"
+#include "opensn/framework/math/VectorGhostCommunicator/vector_ghost_communicator.h"
 
-#include "mpi/chi_mpi_utils.h"
+#include "opensn/framework/mpi/chi_mpi_utils.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 #include <map>
 #include <string>

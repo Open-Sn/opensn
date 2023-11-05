@@ -1,10 +1,10 @@
 #pragma once
 
-#include "mesh/SweepUtilities/sweep_namespace.h"
-#include "mesh/SweepUtilities/SPDS/SPDS.h"
-#include "mesh/SweepUtilities/AngleSetGroup/anglesetgroup.h"
+#include "opensn/framework/mesh/SweepUtilities/sweep_namespace.h"
+#include "opensn/framework/mesh/SweepUtilities/SPDS/SPDS.h"
+#include "opensn/framework/mesh/SweepUtilities/AngleSetGroup/anglesetgroup.h"
 
-#include "math/Quadratures/angular_quadrature_base.h"
+#include "opensn/framework/math/Quadratures/angular_quadrature_base.h"
 
 #include <memory>
 

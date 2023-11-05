@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mesh/SweepUtilities/FLUDS/FLUDS.h"
-#include "CBC_FLUDSCommonData.h"
+#include "opensn/framework/mesh/SweepUtilities/FLUDS/FLUDS.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDSCommonData.h"
 
 #include <map>
 #include <functional>

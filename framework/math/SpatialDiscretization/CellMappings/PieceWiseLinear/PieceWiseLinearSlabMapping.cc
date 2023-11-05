@@ -1,7 +1,7 @@
-#include "PieceWiseLinearSlabMapping.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
-#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "opensn/framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearSlabMapping.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 
 namespace chi_math::cell_mapping
 {

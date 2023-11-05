@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ChiObject.h"
+#include "opensn/framework/ChiObject.h"
 
-#include "../chi_mesh.h"
-#include <chi_log.h>
+#include "opensn/framework/mesh/chi_mesh.h"
+#include "opensn/framework/logging/chi_log.h"
 #include <array>
 
 namespace chi_mesh

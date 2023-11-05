@@ -1,12 +1,12 @@
-#include "chi_ffinter_volume.h"
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "math/VectorGhostCommunicator/vector_ghost_communicator.h"
-#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "console/chi_console.h"
+#include "opensn/framework/mesh/FieldFunctionInterpolation/Volume/chi_ffinter_volume.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/math/VectorGhostCommunicator/vector_ghost_communicator.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/console/chi_console.h"
 
 namespace chi_mesh
 {

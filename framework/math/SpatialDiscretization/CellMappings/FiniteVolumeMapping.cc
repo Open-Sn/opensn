@@ -1,6 +1,6 @@
-#include "math/SpatialDiscretization/CellMappings/FiniteVolumeMapping.h"
+#include "opensn/framework/math/SpatialDiscretization/CellMappings/FiniteVolumeMapping.h"
 
-#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 
 namespace chi_math::cell_mapping
 {

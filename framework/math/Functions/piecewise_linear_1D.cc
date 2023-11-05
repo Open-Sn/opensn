@@ -1,6 +1,6 @@
-#include "piecewise_linear_1D.h"
+#include "opensn/framework/math/Functions/piecewise_linear_1D.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
 namespace chi_math::functions
 {

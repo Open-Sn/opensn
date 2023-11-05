@@ -1,8 +1,8 @@
 #pragma once
 
-#include "source_function.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/source_function.h"
 
-#include "math/chi_math_time_stepping.h"
+#include "opensn/framework/math/chi_math_time_stepping.h"
 
 namespace lbs
 {

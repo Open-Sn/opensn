@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
 int chiDiffusionCreateSolver(lua_State* L);
 int chiDiffusionInitialize(lua_State* L);

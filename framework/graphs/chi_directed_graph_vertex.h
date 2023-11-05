@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_graph.h"
+#include "opensn/framework/graphs/chi_graph.h"
 
 #include <map>
 

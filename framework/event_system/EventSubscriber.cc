@@ -1,4 +1,4 @@
-#include "EventSubscriber.h"
+#include "opensn/framework/event_system/EventSubscriber.h"
 
 namespace chi
 {

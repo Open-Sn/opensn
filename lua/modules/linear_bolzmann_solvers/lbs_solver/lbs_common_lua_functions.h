@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
 namespace lbs::common_lua_utils
 {

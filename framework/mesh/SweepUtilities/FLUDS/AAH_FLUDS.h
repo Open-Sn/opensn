@@ -1,7 +1,7 @@
 #pragma once
 
-#include "FLUDS.h"
-#include "AAH_FLUDSCommonData.h"
+#include "opensn/framework/mesh/SweepUtilities/FLUDS/FLUDS.h"
+#include "opensn/framework/mesh/SweepUtilities/FLUDS/AAH_FLUDSCommonData.h"
 
 namespace chi_mesh::sweep_management
 {

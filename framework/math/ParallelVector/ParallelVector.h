@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/chi_math.h"
-#include "math/PETScUtils/petsc_forward_declarations.h"
+#include "opensn/framework/math/chi_math.h"
+#include "opensn/framework/math/PETScUtils/petsc_forward_declarations.h"
 
 #include <cstdint>
 

@@ -1,15 +1,15 @@
-#include "../chi_mesh.h"
-#include "../MeshContinuum/chi_meshcontinuum.h"
-#include "sweep_namespace.h"
+#include "opensn/framework/mesh/chi_mesh.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/SweepUtilities/sweep_namespace.h"
 #include <fstream>
 
-#include "../MeshHandler/chi_meshhandler.h"
-#include "mesh/Cell/cell.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/mesh/Cell/cell.h"
 
-#include "../MeshContinuum/chi_meshcontinuum.h"
-#include "../VolumeMesher/chi_volumemesher.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/VolumeMesher/chi_volumemesher.h"
 
-#include "mesh/SweepUtilities/SPDS/SPDS.h"
+#include "opensn/framework/mesh/SweepUtilities/SPDS/SPDS.h"
 
 //###################################################################
 /**Print a sweep ordering to file.*/

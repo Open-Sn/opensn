@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GraphPartitioner.h"
+#include "opensn/framework/graphs/GraphPartitioner.h"
 
-#include "array"
+#include <array>
 
 namespace chi
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "chi_lua.h"
-#include "parameters/input_parameters.h"
+#include "opensn/framework/chi_lua.h"
+#include "opensn/framework/parameters/input_parameters.h"
 
 namespace lbs
 {

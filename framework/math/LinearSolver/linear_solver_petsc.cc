@@ -1,4 +1,4 @@
-#include "linear_solver.h"
+#include "opensn/framework/math/LinearSolver/linear_solver.h"
 
 #include <petscksp.h>
 

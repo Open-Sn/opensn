@@ -1,17 +1,17 @@
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/Raytrace/raytracer.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/Raytrace/raytracer.h"
 
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "math/RandomNumberGeneration/random_number_generator.h"
-#include "math/Quadratures/LegendrePoly/legendrepoly.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "opensn/framework/math/RandomNumberGeneration/random_number_generator.h"
+#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 namespace chi_unit_sim_tests
 {

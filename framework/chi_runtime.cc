@@ -1,24 +1,24 @@
 /** @file Runtime file*/
-#include "chi_runtime.h"
-#include "chi_configuration.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/config.h"
 
-#include "console/chi_console.h"
-#include "math/chi_math.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/console/chi_console.h"
+#include "opensn/framework/math/chi_math.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
 
-#include "physics/chi_physics_namespace.h"
+#include "opensn/framework/physics/chi_physics_namespace.h"
 
-#include "post_processors/PostProcessor.h"
+#include "opensn/framework/post_processors/PostProcessor.h"
 
-#include "event_system/SystemWideEventPublisher.h"
-#include "event_system/EventCodes.h"
-#include "event_system/Event.h"
+#include "opensn/framework/event_system/SystemWideEventPublisher.h"
+#include "opensn/framework/event_system/EventCodes.h"
+#include "opensn/framework/event_system/Event.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
-#include "chi_mpi.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
+#include "opensn/framework/mpi/chi_mpi.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/utils/chi_timer.h"
 
 #include <iostream>
 

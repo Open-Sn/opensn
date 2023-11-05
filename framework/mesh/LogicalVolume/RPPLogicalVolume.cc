@@ -1,6 +1,6 @@
-#include "RPPLogicalVolume.h"
+#include "opensn/framework/mesh/LogicalVolume/RPPLogicalVolume.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
 namespace chi_mesh
 {

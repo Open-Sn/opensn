@@ -1,13 +1,12 @@
-#include "SPDS.h"
+#include "opensn/framework/mesh/SweepUtilities/SPDS/SPDS.h"
 
-#include "graphs/chi_directed_graph.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
-#include "console/chi_console.h"
-#include "utils/chi_timer.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/mpi/chi_mpi.h"
+#include "opensn/framework/console/chi_console.h"
+#include "opensn/framework/utils/chi_timer.h"
 
 #include <algorithm>
 

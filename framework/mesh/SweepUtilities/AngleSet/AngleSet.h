@@ -1,11 +1,11 @@
 #pragma once
 
-#include "mesh/chi_mesh.h"
-#include "mesh/SweepUtilities/Communicators/AAH_AsynComm.h"
-#include "mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
-#include "mesh/SweepUtilities/FLUDS/FLUDS.h"
+#include "opensn/framework/mesh/chi_mesh.h"
+#include "opensn/framework/mesh/SweepUtilities/Communicators/AAH_AsynComm.h"
+#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
+#include "opensn/framework/mesh/SweepUtilities/FLUDS/FLUDS.h"
 
-#include <chi_mpi.h>
+#include "opensn/framework/mpi/chi_mpi.h"
 
 typedef chi_mesh::sweep_management::SweepBoundary SweepBndry;
 

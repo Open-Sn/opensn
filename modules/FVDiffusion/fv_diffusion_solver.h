@@ -1,14 +1,14 @@
 #pragma once
 
-#include "physics/SolverBase/chi_solver.h"
-#include "math/PETScUtils/petsc_utils.h"
+#include "opensn/framework/physics/SolverBase/chi_solver.h"
+#include "opensn/framework/math/PETScUtils/petsc_utils.h"
 
-#include "fv_diffusion_bndry.h"
-#include "utils/chi_timer.h"
+#include "opensn/modules/FVDiffusion/fv_diffusion_bndry.h"
+#include "opensn/framework/utils/chi_timer.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
-#include "mesh/chi_mesh.h"
+#include "opensn/framework/mesh/chi_mesh.h"
 
 #include <map>
 

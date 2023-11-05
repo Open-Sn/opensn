@@ -1,7 +1,7 @@
 #pragma once
 
-#include "LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
-#include "A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
 namespace lbs
 {

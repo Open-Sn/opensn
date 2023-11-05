@@ -1,9 +1,9 @@
-#include "LinearGraphPartitioner.h"
+#include "opensn/framework/graphs/LinearGraphPartitioner.h"
 
-#include "ChiObjectFactory.h"
-#include "utils/chi_utils.h"
+#include "opensn/framework/ChiObjectFactory.h"
+#include "opensn/framework/utils/chi_utils.h"
 
-#include "chi_log.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #include <cmath>
 

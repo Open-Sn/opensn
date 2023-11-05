@@ -1,12 +1,12 @@
-#include "AAH_AsynComm.h"
-#include "mesh/SweepUtilities/AngleSet/AngleSet.h"
-#include "mesh/SweepUtilities/SPDS/SPDS.h"
-#include "mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
-#include "mpi/chi_mpi_commset.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
-#include "console/chi_console.h"
+#include "opensn/framework/mesh/SweepUtilities/Communicators/AAH_AsynComm.h"
+#include "opensn/framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
+#include "opensn/framework/mesh/SweepUtilities/SPDS/SPDS.h"
+#include "opensn/framework/mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
+#include "opensn/framework/mpi/chi_mpi_commset.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/mpi/chi_mpi.h"
+#include "opensn/framework/console/chi_console.h"
 
 namespace chi_mesh::sweep_management
 {

@@ -1,5 +1,6 @@
 #include "lbts_lua_utils.h"
 
+#if 0
 #define LUA_FMACRO1(x) lua_register(L, #x, lbs::lbts_lua_utils::x)
 #define LUA_CMACRO1(x, y)                                                                          \
   lua_pushnumber(L, y);                                                                            \
@@ -24,3 +25,4 @@ lbs::lbts_lua_utils::RegisterLuaEntities(lua_State* L)
   LUA_FMACRO1(chiLBTSGetProperty);
   LUA_FMACRO1(chiLBTSAdvanceTimeData);
 }
+#endif

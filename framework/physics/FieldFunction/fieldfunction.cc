@@ -1,6 +1,6 @@
-#include "fieldfunction.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 namespace chi_physics
 {

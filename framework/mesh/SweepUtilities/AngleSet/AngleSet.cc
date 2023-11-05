@@ -1,6 +1,6 @@
-#include "AngleSet.h"
+#include "opensn/framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 namespace chi_mesh::sweep_management
 {

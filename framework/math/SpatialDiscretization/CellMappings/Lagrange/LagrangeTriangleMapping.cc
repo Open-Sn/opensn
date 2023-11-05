@@ -1,8 +1,8 @@
-#include "LagrangeTriangleMapping.h"
+#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeTriangleMapping.h"
 
-#include "mesh/Cell/cell.h"
+#include "opensn/framework/mesh/Cell/cell.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 namespace chi_math::cell_mapping
 {

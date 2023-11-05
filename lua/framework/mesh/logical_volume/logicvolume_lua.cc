@@ -1,18 +1,18 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "../LogicalVolume.h"
+#include "opensn/framework/mesh/LogicalVolume/LogicalVolume.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "chi_runtime.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/chi_runtime.h"
 
-#include "chi_log.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #define scint static_cast<int>
 
 #include "logicvolume_lua.h"
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiLogicalVolumeCreate);
 RegisterLuaConstantAsIs(SPHERE, chi_data_types::Varying(1));

@@ -1,11 +1,11 @@
-#include "lbsMIP_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiffusionDFEMSolver/lbsMIP_solver.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
-#include "A_LBSSolver/SourceFunctions/source_function.h"
-#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
-#include "A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
-#include "IterativeMethods/mip_wgs_context2.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/source_function.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiffusionDFEMSolver/IterativeMethods/mip_wgs_context2.h"
 
 namespace lbs
 {

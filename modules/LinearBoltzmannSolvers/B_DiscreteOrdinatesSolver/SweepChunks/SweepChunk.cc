@@ -1,11 +1,11 @@
-#include "SweepChunk.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/SweepChunk.h"
 
-#include "A_LBSSolver/Groupset/lbs_groupset.h"
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_log_exceptions.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 #define scint static_cast<int>
 

@@ -1,7 +1,7 @@
-#include "chi_grid_vtk_utils.h"
-#include "chi_meshcontinuum.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_grid_vtk_utils.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 #include <vtkPoints.h>
 #include <vtkPointData.h>
 #include <vtkCellData.h>

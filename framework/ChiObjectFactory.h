@@ -1,9 +1,8 @@
 #pragma once
 
-#include "parameters/input_parameters.h"
-#include "ChiObject.h"
-
-#include "chi_log_exceptions.h"
+#include "opensn/framework/parameters/input_parameters.h"
+#include "opensn/framework/ChiObject.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 /**Small utility macro for joining two words.*/
 #define ChiObjectFactoryJoinWordsA(x, y) x##y

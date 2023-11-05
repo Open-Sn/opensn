@@ -1,4 +1,4 @@
-#include "boundary_iso_homo.h"
+#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/boundary_iso_homo.h"
 
 namespace chi_mesh::sweep_management
 {

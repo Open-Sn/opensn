@@ -1,14 +1,14 @@
-#include "CellVolumeIntegralPostProcessor.h"
+#include "opensn/framework/post_processors/CellVolumeIntegralPostProcessor.h"
 
-#include "event_system/Event.h"
+#include "opensn/framework/event_system/Event.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/LogicalVolume/LogicalVolume.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mesh/LogicalVolume/LogicalVolume.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
 namespace chi
 {

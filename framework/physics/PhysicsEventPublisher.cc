@@ -1,10 +1,10 @@
-#include "PhysicsEventPublisher.h"
-#include "event_system/Event.h"
-#include "event_system/SystemWideEventPublisher.h"
-#include "event_system/EventCodes.h"
+#include "opensn/framework/physics/PhysicsEventPublisher.h"
+#include "opensn/framework/event_system/Event.h"
+#include "opensn/framework/event_system/SystemWideEventPublisher.h"
+#include "opensn/framework/event_system/EventCodes.h"
 
-#include "SolverBase/chi_solver.h"
-#include "TimeSteppers/TimeStepper.h"
+#include "opensn/framework/physics/SolverBase/chi_solver.h"
+#include "opensn/framework/physics/TimeSteppers/TimeStepper.h"
 
 namespace chi_physics
 {

@@ -1,13 +1,13 @@
-#include "CBC_AngleSet.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AngleSet.h"
 
-#include "CBC_AsyncComm.h"
-#include "CBC_SPDS.h"
-#include "mesh/SweepUtilities/sweepchunk_base.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "math/chi_math_range.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AsyncComm.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_SPDS.h"
+#include "opensn/framework/mesh/SweepUtilities/sweepchunk_base.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/math/chi_math_range.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace lbs
 {

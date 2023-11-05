@@ -1,10 +1,10 @@
-#include "tools.h"
-#include "chi_log.h"
-#include "../mg_diffusion_solver.h"
+#include "opensn/modules/MGDiffusion/tools/tools.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/modules/MGDiffusion/mg_diffusion_solver.h"
 
 #include <iomanip>
 
-#include "chi_runtime.h"
+#include "opensn/framework/chi_runtime.h"
 
 //###################################################################
 /**My personal monitor monitor.*/

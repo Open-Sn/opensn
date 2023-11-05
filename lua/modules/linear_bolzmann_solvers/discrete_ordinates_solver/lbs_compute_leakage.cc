@@ -1,10 +1,10 @@
 #include "lbs_DO_lua_utils.h"
 
-#include "B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
-#include "chi_runtime.h"
+#include "opensn/framework/chi_runtime.h"
 
 namespace lbs::disc_ord_lua_utils
 {

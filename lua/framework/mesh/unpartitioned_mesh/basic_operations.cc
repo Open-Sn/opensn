@@ -1,9 +1,9 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 #include "unpartition_mesh_lua_utils.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "console/chi_console.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/console/chi_console.h"
 
 namespace chi_mesh::unpartition_mesh_lua_utils
 {

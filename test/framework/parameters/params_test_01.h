@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ChiObject.h"
-#include "parameters/input_parameters.h"
+#include "opensn/framework/ChiObject.h"
+#include "opensn/framework/parameters/input_parameters.h"
 
 namespace chi_unit_testsB
 {

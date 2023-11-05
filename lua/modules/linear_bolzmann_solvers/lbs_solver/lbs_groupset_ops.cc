@@ -1,12 +1,12 @@
-#include "A_LBSSolver/lbs_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "math/Quadratures/angular_product_quadrature.h"
+#include "opensn/framework/math/Quadratures/angular_product_quadrature.h"
 
-#include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_group.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_group.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 #define sc_int static_cast<int>
 

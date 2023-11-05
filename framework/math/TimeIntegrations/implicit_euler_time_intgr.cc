@@ -1,6 +1,6 @@
-#include "implicit_euler_time_intgr.h"
+#include "opensn/framework/math/TimeIntegrations/implicit_euler_time_intgr.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
 #define scint static_cast<int>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SPDS.h"
+#include "opensn/framework/mesh/SweepUtilities/SPDS/SPDS.h"
 
 namespace chi_mesh::sweep_management
 {

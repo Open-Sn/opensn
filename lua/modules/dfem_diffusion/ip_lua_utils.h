@@ -1,7 +1,7 @@
 #pragma once
 
-#include "chi_lua.h"
-#include "../dfem_diffusion_solver.h"
+#include "opensn/framework/chi_lua.h"
+#include "opensn/modules/DFEMDiffusion/dfem_diffusion_solver.h"
 
 int chiDFEMDiffusionSolverCreate(lua_State* L);
 int chiDFEMDiffusionSetBCProperty(lua_State* L);

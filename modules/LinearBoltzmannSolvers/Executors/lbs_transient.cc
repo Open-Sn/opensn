@@ -1,8 +1,8 @@
-#include "lbs_transient.h"
+#include "opensn/modules/LinearBoltzmannSolvers/Executors/lbs_transient.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
-#include "math/TimeIntegrations/time_integration.h"
+#include "opensn/framework/math/TimeIntegrations/time_integration.h"
 
 namespace lbs
 {

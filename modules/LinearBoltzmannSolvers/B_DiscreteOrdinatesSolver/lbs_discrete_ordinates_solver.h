@@ -1,7 +1,7 @@
 #pragma once
 
-#include "A_LBSSolver/lbs_solver.h"
-#include "SweepChunks/SweepChunk.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/SweepChunk.h"
 
 namespace lbs
 {

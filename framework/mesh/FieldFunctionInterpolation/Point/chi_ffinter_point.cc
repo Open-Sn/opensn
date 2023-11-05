@@ -1,11 +1,11 @@
-#include "chi_ffinter_point.h"
+#include "opensn/framework/mesh/FieldFunctionInterpolation/Point/chi_ffinter_point.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "chi_runtime.h"
-#include "chi_mpi.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/mpi/chi_mpi.h"
 
 //###################################################################
 /**Initializes the point interpolator.*/

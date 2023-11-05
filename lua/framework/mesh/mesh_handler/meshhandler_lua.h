@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
 int chiMeshHandlerCreate(lua_State* L);
 int chiMeshHandlerSetCurrent(lua_State* L);

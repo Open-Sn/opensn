@@ -1,8 +1,8 @@
-#include "chi_surfacemesh.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
-#include "graphs/chi_directed_graph.h"
+#include "opensn/framework/mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/utils/chi_timer.h"
+#include "opensn/framework/graphs/chi_directed_graph.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>

@@ -1,13 +1,11 @@
-#include "chi_solver.h"
+#include "opensn/framework/physics/SolverBase/chi_solver.h"
 
-#include "utils/chi_utils.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/physics/TimeSteppers/ConstantTimeStepper.h"
 
-#include "physics/TimeSteppers/ConstantTimeStepper.h"
-
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
 namespace chi_physics
 {

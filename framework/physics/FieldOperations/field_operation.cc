@@ -1,4 +1,4 @@
-#include "field_operation.h"
+#include "opensn/framework/physics/FieldOperations/field_operation.h"
 
 namespace chi_physics::field_operations
 {

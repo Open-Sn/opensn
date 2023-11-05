@@ -1,7 +1,7 @@
 #pragma once
 
-#include "chi_material_property.h"
-#include "math/Functions/function_dimA_to_dimB.h"
+#include "opensn/framework/materials/chi_material_property.h"
+#include "opensn/framework/math/Functions/function_dimA_to_dimB.h"
 
 namespace chi
 {

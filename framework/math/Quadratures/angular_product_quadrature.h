@@ -3,7 +3,7 @@
 #include <map>
 #include <vector>
 
-#include "angular_quadrature_base.h"
+#include "opensn/framework/math/Quadratures/angular_quadrature_base.h"
 
 namespace chi_math
 {

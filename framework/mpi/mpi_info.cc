@@ -1,6 +1,6 @@
-#include "mpi_info.h"
+#include "opensn/framework/mpi/mpi_info.h"
 
-#include "chi_log_exceptions.h"
+#include "opensn/framework/logging/chi_log_exceptions.h"
 
 namespace chi
 {

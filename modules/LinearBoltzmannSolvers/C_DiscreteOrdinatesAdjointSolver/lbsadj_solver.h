@@ -2,11 +2,11 @@
 
 #include <utility>
 
-#include "B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
-#include "math/chi_math.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
+#include "opensn/framework/math/chi_math.h"
 
-#include "ResponseFunction/lbs_adj_response_function.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/ResponseFunction/lbs_adj_response_function.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
 namespace lbs
 {

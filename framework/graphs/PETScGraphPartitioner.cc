@@ -1,11 +1,11 @@
-#include "PETScGraphPartitioner.h"
+#include "opensn/framework/graphs/PETScGraphPartitioner.h"
 
-#include "ChiObjectFactory.h"
+#include "opensn/framework/ChiObjectFactory.h"
 
 #include "petsc.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace chi
 {

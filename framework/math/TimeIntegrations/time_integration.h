@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ChiObject.h"
-#include "math/chi_math_time_stepping.h"
+#include "opensn/framework/ChiObject.h"
+#include "opensn/framework/math/chi_math_time_stepping.h"
 
 namespace chi_math
 {

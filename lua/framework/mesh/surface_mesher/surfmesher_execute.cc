@@ -1,12 +1,12 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "../surfacemesher.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
+#include "opensn/framework/mesh/SurfaceMesher/surfacemesher.h"
+#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 #include "surfmesher_lua.h"
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiSurfaceMesherExecute);
 

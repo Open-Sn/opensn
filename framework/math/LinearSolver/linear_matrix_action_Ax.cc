@@ -1,6 +1,4 @@
-#include "linear_matrix_action_Ax.h"
-
-#include "linear_solver_context.h"
+#include "opensn/framework/math/LinearSolver/linear_matrix_action_Ax.h"
 
 #include <petscksp.h>
 

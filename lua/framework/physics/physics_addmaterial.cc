@@ -1,11 +1,11 @@
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 #include <iostream>
-#include "../PhysicsMaterial/chi_physicsmaterial.h"
+#include "opensn/framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 #include "physics_lua_utils.h"
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiPhysicsAddMaterial);
 

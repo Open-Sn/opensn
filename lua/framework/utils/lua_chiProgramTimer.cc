@@ -1,9 +1,9 @@
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
-#include "chi_runtime.h"
-#include "../chi_timer.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/utils/chi_timer.h"
 
 namespace chi::lua_utils
 {

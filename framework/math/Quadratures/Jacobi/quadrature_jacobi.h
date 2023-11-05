@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/Quadratures/quadrature.h"
+#include "opensn/framework/math/Quadratures/quadrature.h"
 
 namespace chi_math
 {

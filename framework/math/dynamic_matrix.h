@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <sstream>
 
-#include "chi_math.h"
+#include "opensn/framework/math/chi_math.h"
 
 namespace chi_math
 {
@@ -12,7 +12,7 @@ template <class NumberFormat>
 class DynamicMatrix;
 }
 
-#include "dynamic_vector.h"
+#include "opensn/framework/math/dynamic_vector.h"
 
 //###################################################################
 /**General dynamic matrix utility.*/

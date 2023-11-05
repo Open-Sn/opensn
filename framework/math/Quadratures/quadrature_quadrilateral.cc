@@ -1,6 +1,6 @@
-#include "quadrature_quadrilateral.h"
+#include "opensn/framework/math/Quadratures/quadrature_quadrilateral.h"
 
-#include "quadrature_gausslegendre.h"
+#include "opensn/framework/math/Quadratures/quadrature_gausslegendre.h"
 
 //###################################################################
 /**Initialzes a set of points for a quadrature integration over

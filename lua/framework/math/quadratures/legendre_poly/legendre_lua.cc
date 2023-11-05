@@ -1,7 +1,7 @@
-#include "chi_lua.h"
-#include "../legendrepoly.h"
+#include "opensn/framework/chi_lua.h"
+#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 #include "legendre_lua.h"
 
 RegisterLuaFunctionAsIs(chiLegendre);

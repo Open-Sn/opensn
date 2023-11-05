@@ -1,7 +1,7 @@
-#include "quadrature_conical.h"
+#include "opensn/framework/math/Quadratures/Conical/quadrature_conical.h"
 
-#include "math/Quadratures/quadrature_gausslegendre.h"
-#include "math/Quadratures/Jacobi/quadrature_jacobi.h"
+#include "opensn/framework/math/Quadratures/quadrature_gausslegendre.h"
+#include "opensn/framework/math/Quadratures/Jacobi/quadrature_jacobi.h"
 
 //###################################################################
 /**Initialize conical quadrature for a triangle.*/

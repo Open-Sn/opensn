@@ -1,7 +1,7 @@
 #pragma once
 
-#include "physics/PhysicsMaterial/material_property_base.h"
-#include "math/SparseMatrix/chi_math_sparse_matrix.h"
+#include "opensn/framework/physics/PhysicsMaterial/material_property_base.h"
+#include "opensn/framework/math/SparseMatrix/chi_math_sparse_matrix.h"
 
 namespace chi_physics
 {

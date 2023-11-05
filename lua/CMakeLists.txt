@@ -1,0 +1,37 @@
+# libopensnlua
+file(GLOB_RECURSE LIBOPENSN_LUA_SRCS *.cc)
+add_library(libopensnlua SHARED ${LIBOPENSN_LUA_SRCS})
+
+target_include_directories(libopensnlua
+    PRIVATE
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${LUA_INCLUDE_DIR}
+)
+
+target_link_libraries(libopensnlua
+    PRIVATE
+    ${LUA_LIBRARIES}
+    MPI::MPI_CXX
+    libopensn
+)
+
+if(NOT MSVC)
+    set_target_properties(libopensnlua PROPERTIES OUTPUT_NAME opensnlua)
+endif()
+
+
+# opensn binary
+add_executable(opensn "main.cc")
+target_include_directories(opensn
+    PRIVATE
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+)
+target_link_libraries(opensn
+    PRIVATE
+    libopensn
+    libopensnlua
+    MPI::MPI_CXX
+)

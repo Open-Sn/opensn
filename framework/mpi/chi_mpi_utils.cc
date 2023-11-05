@@ -1,4 +1,4 @@
-#include "chi_mpi_utils.h"
+#include "opensn/framework/mpi/chi_mpi_utils.h"
 
 namespace chi_mpi_utils
 {

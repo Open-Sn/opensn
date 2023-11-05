@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mesh/SweepUtilities/SPLS/SPLS.h"
-#include "mesh/chi_mesh.h"
+#include "opensn/framework/mesh/SweepUtilities/SPLS/SPLS.h"
+#include "opensn/framework/mesh/chi_mesh.h"
 
 #include <memory>
 

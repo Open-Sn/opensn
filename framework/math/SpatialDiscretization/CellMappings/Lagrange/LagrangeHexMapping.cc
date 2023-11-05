@@ -1,8 +1,8 @@
-#include "LagrangeHexMapping.h"
+#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeHexMapping.h"
 
-#include "mesh/Cell/cell.h"
+#include "opensn/framework/mesh/Cell/cell.h"
 
-#include "chi_log.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace chi_math::cell_mapping
 {

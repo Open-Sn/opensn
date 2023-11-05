@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_lua.h"
+#include "opensn/framework/chi_lua.h"
 
 int chiPhysicsAddMaterial(lua_State* L);
 int chiPhysicsMaterialAddProperty(lua_State* L);

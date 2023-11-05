@@ -2,14 +2,14 @@
 #include <cstddef>
 #include <cmath>
 
-#include "data_types/ndarray.h"
-#include "math/Quadratures/angular_product_quadrature.h"
-#include "math/chi_math_range.h"
+#include "opensn/framework/data_types/ndarray.h"
+#include "opensn/framework/math/Quadratures/angular_product_quadrature.h"
+#include "opensn/framework/math/chi_math_range.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 namespace chi_unit_tests
 {

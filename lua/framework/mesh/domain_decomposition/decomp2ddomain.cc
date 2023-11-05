@@ -1,9 +1,9 @@
-#include "chi_lua.h"
-#include "chi_runtime.h"
+#include "opensn/framework/chi_lua.h"
+#include "opensn/framework/chi_runtime.h"
 
-#include "mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "opensn/framework/mesh/SurfaceMesh/chi_surfacemesh.h"
 #include "domaindecomp_lua.h"
-#include "console/chi_console.h"
+#include "opensn/framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiDecomposeSurfaceMeshPxPy);
 

@@ -1,9 +1,11 @@
-#include "lbts_transient_solver.h"
-#include "A_LBSSolver/SourceFunctions/transient_source_function.h"
-#include "B_DO_Solver/IterativeMethods/sweep_wgs_context.h"
-#include "A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "opensn/modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
+
+#if 0
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/transient_source_function.h"
+#include "opensn/modules/LinearBoltzmannSolvers/B_DO_Solver/IterativeMethods/sweep_wgs_context.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
 
 namespace lbs
 {
@@ -164,3 +166,4 @@ DiscOrdTransientSolver::Advance()
 }
 
 } // namespace lbs
+#endif

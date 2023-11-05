@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "mesh/Cell/cell.h"
+#include "opensn/framework/mesh/Cell/cell.h"
 
 namespace lbs
 {

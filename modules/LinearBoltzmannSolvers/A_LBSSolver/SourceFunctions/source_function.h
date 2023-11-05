@@ -1,8 +1,8 @@
 #pragma once
 
-#include "LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
-#include "physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
+#include "opensn/framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
 
 #include <memory>
 #include <utility>

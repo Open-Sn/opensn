@@ -1,7 +1,7 @@
-#include "multigroup_xs.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
+#include "opensn/framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/utils/chi_timer.h"
 #include <iostream>
 
 namespace chi_physics

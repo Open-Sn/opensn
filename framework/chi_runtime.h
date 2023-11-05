@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <memory>
 
-#include "chi_mpi.h"
+#include "opensn/framework/mpi/chi_mpi.h"
 
 namespace chi_mesh
 {

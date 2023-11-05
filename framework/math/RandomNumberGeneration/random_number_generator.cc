@@ -1,4 +1,4 @@
-#include "random_number_generator.h"
+#include "opensn/framework/math/RandomNumberGeneration/random_number_generator.h"
 
 /**Default constructor. Seeds the generator with a zero.*/
 chi_math::RandomNumberGenerator::RandomNumberGenerator() : distribution_(0.0, 1.0)

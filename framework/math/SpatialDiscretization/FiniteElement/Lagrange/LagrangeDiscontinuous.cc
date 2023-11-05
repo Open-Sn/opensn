@@ -1,11 +1,11 @@
-#include "LagrangeDiscontinuous.h"
-#include "math/UnknownManager/unknown_manager.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "chi_mpi.h"
-#include "chi_mpi_utils.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/Lagrange/LagrangeDiscontinuous.h"
+#include "opensn/framework/math/UnknownManager/unknown_manager.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/utils/chi_timer.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/mpi/chi_mpi.h"
+#include "opensn/framework/mpi/chi_mpi_utils.h"
 
 #define sc_int64 static_cast<int64_t>
 

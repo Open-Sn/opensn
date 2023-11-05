@@ -1,4 +1,4 @@
 #pragma once
 
 #include <mpi.h>
-#include "mpi_info.h"
+#include "opensn/framework/mpi/mpi_info.h"

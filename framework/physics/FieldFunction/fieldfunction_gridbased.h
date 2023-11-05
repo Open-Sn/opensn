@@ -1,11 +1,11 @@
 #pragma once
 
-#include "fieldfunction.h"
+#include "opensn/framework/physics/FieldFunction/fieldfunction.h"
 
-#include "mesh/chi_mesh.h"
+#include "opensn/framework/mesh/chi_mesh.h"
 
-#include "math/ParallelVector/GhostedParallelSTLVector.h"
-#include "math/PETScUtils/petsc_forward_declarations.h"
+#include "opensn/framework/math/ParallelVector/GhostedParallelSTLVector.h"
+#include "opensn/framework/math/PETScUtils/petsc_forward_declarations.h"
 
 #include <string>
 #include <memory>

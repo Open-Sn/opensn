@@ -1,13 +1,13 @@
 #include "diffusion_mip_solver.h"
-#include "acceleration.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "A_LBSSolver/lbs_structs.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
-#include "console/chi_console.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
+#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "opensn/framework/chi_runtime.h"
+#include "opensn/framework/logging/chi_log.h"
+#include "opensn/framework/utils/chi_timer.h"
+#include "opensn/framework/console/chi_console.h"
 #include <utility>
 
 #define DefaultBCDirichlet                                                                         \
