@@ -55,7 +55,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--exe", default="test/bin/ChiTech_test", type=str, required=False,
+    "--exe", default="build/test/opensn-test", type=str, required=False,
     help="The executable to use for testing"
 )
 

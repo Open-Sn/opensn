@@ -45,7 +45,8 @@ The entry point for the test executable is the `main.cc` contained in the
 `test/src` directory. Thereafter all other tests sources are added to the
 executable and linked together using \ref DevManStaticRegistration.
 
-The executable is called `ChiTech_test` and is contained in the `bin` directory.
+The executable is called `opensn-test` and is contained in the `test` directory where OpenSn was
+built.
 
 \section DevManTestSystem_sec2 2 What is a test?
 Comprises up to 4 things:
