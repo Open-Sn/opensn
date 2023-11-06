@@ -49,6 +49,27 @@ if(NOT ${PETSC_USE_64BIT_INDICES} MATCHES 1)
     message(FATAL_ERROR "PETSc has not been configured with the flag --with-64-bit-indices\n")
 endif()
 
+# compile options
+set(OPENSN_CXX_FLAGS)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    list(APPEND OPENSN_CXX_FLAGS "-pedantic")
+    list(APPEND OPENSN_CXX_FLAGS "-Wall")
+    list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+    list(APPEND OPENSN_CXX_FLAGS "-pedantic")
+    list(APPEND OPENSN_CXX_FLAGS "-Wall")
+    list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+    list(APPEND OPENSN_CXX_FLAGS "-pedantic")
+    list(APPEND OPENSN_CXX_FLAGS "-Wall")
+    list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
+    list(APPEND OPENSN_CXX_FLAGS "-Wno-sign-compare")
+    list(APPEND OPENSN_CXX_FLAGS "-Wno-psabi")
+else()
+    message(WARNING "Untested compiler : ${CMAKE_CXX_COMPILER_ID}")
+endif()
+
+
 # libopensn
 file(GLOB_RECURSE LIBOPENSN_SRCS
     framework/*.cc
@@ -78,6 +99,8 @@ if(OPENSN_WITH_LUA)
     target_link_libraries(libopensn PRIVATE ${LUA_LIBRARIES})
     target_compile_definitions(libopensn PRIVATE OPENSN_WITH_LUA)
 endif()
+
+target_compile_options(libopensn PRIVATE ${OPENSN_CXX_FLAGS})
 
 if(NOT MSVC)
     set_target_properties(libopensn PROPERTIES OUTPUT_NAME opensn)
