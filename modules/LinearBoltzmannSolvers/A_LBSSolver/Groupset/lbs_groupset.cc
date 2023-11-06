@@ -1,14 +1,14 @@
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/mpi/chi_mpi.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
 
 #include <fstream>
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 namespace lbs
 {

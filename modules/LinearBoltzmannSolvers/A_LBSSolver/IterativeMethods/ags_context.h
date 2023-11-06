@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/math/LinearSolver/linear_solver_context.h"
-#include "opensn/framework/math/LinearSolver/linear_solver.h"
+#include "framework/math/LinearSolver/linear_solver_context.h"
+#include "framework/math/LinearSolver/linear_solver.h"
 
 #include <vector>
 #include <memory>

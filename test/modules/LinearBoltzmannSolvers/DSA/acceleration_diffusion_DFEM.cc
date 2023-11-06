@@ -1,18 +1,18 @@
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_unit_sim_tests
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
+#include "framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
 
 // ###################################################################
 /**Manages the workstages of a single angleset group.*/

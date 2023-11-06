@@ -1,4 +1,4 @@
-#include "opensn/framework/math/LinearSolver/linear_matrix_action_Ax.h"
+#include "framework/math/LinearSolver/linear_matrix_action_Ax.h"
 
 #include <petscksp.h>
 

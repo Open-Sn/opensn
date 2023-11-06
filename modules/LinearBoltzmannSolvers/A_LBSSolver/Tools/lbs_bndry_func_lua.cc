@@ -1,13 +1,13 @@
 #ifdef OPENSN_WITH_LUA
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Tools/lbs_bndry_func_lua.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Tools/lbs_bndry_func_lua.h"
 
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/console/chi_console.h"
 
-//###################################################################
+// ###################################################################
 /**Customized boundary function by calling a lua routine.*/
 std::vector<double>
 lbs::BoundaryFunctionToLua::Evaluate(

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
-#include "opensn/framework/math/UnknownManager/unknown_manager.h"
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 
 // ###################################################################
 namespace chi_math::spatial_discretization

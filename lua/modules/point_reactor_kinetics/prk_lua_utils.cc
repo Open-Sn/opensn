@@ -1,11 +1,11 @@
-#include "opensn/framework/chi_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/chi_lua.h"
+#include "framework/console/chi_console.h"
 
-#include "opensn/modules/PointReactorKinetics/point_reactor_kinetics.h"
+#include "modules/PointReactorKinetics/point_reactor_kinetics.h"
 #include "prk_lua_utils.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace prk::lua_utils
 {

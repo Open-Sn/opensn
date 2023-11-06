@@ -1,4 +1,4 @@
-#include "opensn/framework/mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "framework/mesh/SurfaceMesh/chi_surfacemesh.h"
 
 #include <algorithm>
 
@@ -6,8 +6,8 @@ typedef std::pair<int, int> IntPair;
 typedef std::vector<double> DblVec;
 typedef std::vector<int> IntVec;
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 //================================================== Define LBF-Calc funtion
 /**Makes a centroid based load balance factor calculation.
@@ -70,7 +70,7 @@ chi_mesh::ComputeLBF(std::vector<Vector3>& points,
   return max_points_per_bin / average;
 }
 
-//###################################################################
+// ###################################################################
 /** Decomposes a 2D surface mesh using the centroids in a Px-Py fashion.*/
 void
 chi_mesh::DecomposeSurfaceMeshPxPy(const chi_mesh::SurfaceMesh& smesh, int px, int py)

@@ -1,16 +1,16 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/math/Quadratures/SLDFESQ/sldfe_sq.h"
+#include "framework/math/Quadratures/SLDFESQ/sldfe_sq.h"
 
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/logging/chi_log.h"
+#include "framework/console/chi_console.h"
 #include "sldfe_lua.h"
 
 RegisterLuaFunctionAsIs(chiLocallyRefineSLDFESQAngularQuadrature);
 
-//###################################################################
+// ###################################################################
 /** Applies a local refinement of angles.
 \param handle int. Handle to the reference quadrature.
 \param reference_direction vec3 Reference vector. \f$ \vec{r} \f$

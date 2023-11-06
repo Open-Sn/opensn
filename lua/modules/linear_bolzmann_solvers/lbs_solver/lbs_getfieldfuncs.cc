@@ -1,9 +1,9 @@
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace lbs::common_lua_utils
 {

@@ -1,6 +1,6 @@
-#include "opensn/framework/materials/chi_material_property.h"
+#include "framework/materials/chi_material_property.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 namespace chi
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
 int chiVolumeMesherCreate(lua_State* L);
 int chiVolumeMesherExecute(lua_State* L);

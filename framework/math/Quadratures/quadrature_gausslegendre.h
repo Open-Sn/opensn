@@ -1,13 +1,13 @@
 #pragma once
 
-#include "opensn/framework/math/Quadratures/quadrature.h"
+#include "framework/math/Quadratures/quadrature.h"
 
 namespace chi_math
 {
 class QuadratureGaussLegendre;
 }
 
-//######################################################### Class Def
+// ######################################################### Class Def
 /**Gauss-Legendre quadrature.*/
 class chi_math::QuadratureGaussLegendre : public chi_math::Quadrature
 {

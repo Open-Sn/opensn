@@ -4,8 +4,9 @@ add_library(libopensnlua SHARED ${LIBOPENSN_LUA_SRCS})
 
 target_include_directories(libopensnlua
     PRIVATE
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+    $<INSTALL_INTERFACE:include/opensn>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${LUA_INCLUDE_DIR}
 )
@@ -29,8 +30,9 @@ add_executable(opensn "main.cc")
 
 target_include_directories(opensn
     PRIVATE
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+    $<INSTALL_INTERFACE:include/opensn>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 )
 
 target_link_libraries(opensn

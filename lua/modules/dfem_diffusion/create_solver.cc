@@ -1,11 +1,11 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/modules/DFEMDiffusion/dfem_diffusion_solver.h"
+#include "modules/DFEMDiffusion/dfem_diffusion_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-//#############################################################################
+// #############################################################################
 /** Creates a DFEM Diffusion solver based on the interior penalty method.
 
 \return Handle int Handle to the created solver.

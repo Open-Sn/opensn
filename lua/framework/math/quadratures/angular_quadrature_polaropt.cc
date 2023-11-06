@@ -1,16 +1,16 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/math/Quadratures/angular_quadrature_base.h"
+#include "framework/math/Quadratures/angular_quadrature_base.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include "quadratures_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiOptimizeAngularQuadratureForPolarSymmetry);
 
-//###################################################################
+// ###################################################################
 /**Optimizes the indicated angular quadrature for polar symmetry.
  *
 \param handle        int. Handle to the quadrature to be optimized.

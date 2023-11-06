@@ -1,18 +1,18 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/math/Quadratures/angular_product_quadrature.h"
+#include "framework/math/Quadratures/angular_product_quadrature.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 
 #include "quadratures_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiGetProductQuadrature);
 
-//########################################################## Get product
-// quadrature
+// ########################################################## Get product
+//  quadrature
 /** Get the values of a product quadrature
 
 \param QuadHandle int Handle to an existing product quadrature.

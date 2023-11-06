@@ -1,9 +1,9 @@
-#include "opensn/framework/mesh/SweepUtilities/FLUDS/AAH_FLUDSCommonData.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/framework/mesh/SweepUtilities/SPDS/SPDS.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_grid_face_histogram.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/mesh/SweepUtilities/FLUDS/AAH_FLUDSCommonData.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
+#include "framework/mesh/MeshContinuum/chi_grid_face_histogram.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 #include <algorithm>
 
 typedef std::vector<std::pair<int, short>> LockBox;

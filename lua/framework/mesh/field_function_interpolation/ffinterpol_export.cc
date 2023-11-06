@@ -1,15 +1,15 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
+#include "framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 #include "ffinterpol_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiFFInterpolationExportPython);
 
-//###################################################################
+// ###################################################################
 /** Export interpolation to python line,contour plot depending on the
  * type of interpolation.
  *

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/math/LinearSolver/linear_solver_context.h"
+#include "framework/math/LinearSolver/linear_solver_context.h"
 
 #include <string>
 #include <utility>

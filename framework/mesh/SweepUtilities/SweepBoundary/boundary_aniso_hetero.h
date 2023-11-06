@@ -1,8 +1,8 @@
 #pragma once
 
-#include "opensn/framework/mesh/chi_mesh.h"
-#include "opensn/framework/math/chi_math.h"
-#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/math/chi_math.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
 #include <vector>
 #include <limits>
 

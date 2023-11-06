@@ -1,4 +1,4 @@
-#include "opensn/framework/mesh/MeshModifiers/MeshModifier.h"
+#include "framework/mesh/MeshModifiers/MeshModifier.h"
 
 namespace chi_mesh
 {

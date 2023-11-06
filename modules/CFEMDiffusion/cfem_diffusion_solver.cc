@@ -1,14 +1,14 @@
-#include "opensn/modules/CFEMDiffusion/cfem_diffusion_solver.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/utils/chi_timer.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/modules/CFEMDiffusion/cfem_diffusion_bndry.h"
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
+#include "modules/CFEMDiffusion/cfem_diffusion_solver.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "modules/CFEMDiffusion/cfem_diffusion_bndry.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
 #ifdef OPENSN_WITH_LUA
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 #endif
 
 namespace cfem_diffusion

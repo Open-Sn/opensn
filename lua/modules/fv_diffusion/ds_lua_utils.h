@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/chi_lua.h"
-#include "opensn/modules/FVDiffusion/fv_diffusion_solver.h"
+#include "framework/chi_lua.h"
+#include "modules/FVDiffusion/fv_diffusion_solver.h"
 
 namespace fv_diffusion::fv_diffusion_lua_utils
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/chi_lua.h"
-#include "opensn/modules/CFEMDiffusion/cfem_diffusion_solver.h"
+#include "framework/chi_lua.h"
+#include "modules/CFEMDiffusion/cfem_diffusion_solver.h"
 
 namespace cfem_diffusion::cfem_diffusion_lua_utils
 {

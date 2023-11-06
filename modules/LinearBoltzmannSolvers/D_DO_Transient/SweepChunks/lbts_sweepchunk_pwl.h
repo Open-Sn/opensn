@@ -1,14 +1,14 @@
 #pragma once
 
 #if 0
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
 
-#include "opensn/framework/mesh/SweepUtilities/sweepchunk_base.h"
+#include "framework/mesh/SweepUtilities/sweepchunk_base.h"
 
 #include "Ca_DO_SteadyState/lbs_DO_steady_state.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
 namespace lbs
 {

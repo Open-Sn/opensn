@@ -1,8 +1,8 @@
 #pragma once
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
 #ifdef OPENSN_WITH_LUA
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 #endif
 
 // ############################################### Forward declarations

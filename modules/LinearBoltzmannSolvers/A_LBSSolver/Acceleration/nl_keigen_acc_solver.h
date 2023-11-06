@@ -1,8 +1,8 @@
 #pragma once
 
-#include "opensn/framework/math/NonLinearSolver/NonLinearSolver.h"
+#include "framework/math/NonLinearSolver/NonLinearSolver.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/nl_keigen_acc_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/nl_keigen_acc_context.h"
 
 #include <petscsnes.h>
 

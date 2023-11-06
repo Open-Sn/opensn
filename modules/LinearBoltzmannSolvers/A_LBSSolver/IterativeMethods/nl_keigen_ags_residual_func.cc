@@ -1,6 +1,6 @@
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_context.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Preconditioning/lbs_shell_operations.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Preconditioning/lbs_shell_operations.h"
 
 #include <petscsnes.h>
 

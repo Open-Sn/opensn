@@ -1,9 +1,9 @@
-#include "opensn/modules/LinearBoltzmannSolvers/Executors/nl_keigen.h"
+#include "modules/LinearBoltzmannSolvers/Executors/nl_keigen.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/logging/chi_log.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/poweriteration_keigen.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/poweriteration_keigen.h"
 
 namespace lbs
 {

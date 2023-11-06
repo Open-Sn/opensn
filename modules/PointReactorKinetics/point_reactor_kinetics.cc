@@ -1,12 +1,12 @@
-#include "opensn/modules/PointReactorKinetics/point_reactor_kinetics.h"
+#include "modules/PointReactorKinetics/point_reactor_kinetics.h"
 
-#include "opensn/framework/physics/TimeSteppers/TimeStepper.h"
-#include "opensn/framework/physics/PhysicsEventPublisher.h"
+#include "framework/physics/TimeSteppers/TimeStepper.h"
+#include "framework/physics/PhysicsEventPublisher.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include <numeric>
 

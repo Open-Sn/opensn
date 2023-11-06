@@ -1,13 +1,13 @@
-#include "opensn/framework/mesh/MeshModifiers/SnapToPlaneMeshModifier.h"
+#include "framework/mesh/MeshModifiers/SnapToPlaneMeshModifier.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/mpi/chi_mpi.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/logging/chi_log.h"
 
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 namespace chi_mesh
 {

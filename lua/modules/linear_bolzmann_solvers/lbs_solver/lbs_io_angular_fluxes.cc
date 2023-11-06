@@ -1,13 +1,13 @@
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
 namespace lbs::common_lua_utils
 {
 
-//###################################################################
+// ###################################################################
 /**Writes the angular fluxes of a LBS groupset to file.
 
 \param SolverIndex int Handle to the solver for which the group
@@ -57,7 +57,7 @@ chiLBSWriteGroupsetAngularFlux(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Reads the angular fluxes of a LBS groupset from a file.
 
 \param SolverIndex int Handle to the solver for which the group

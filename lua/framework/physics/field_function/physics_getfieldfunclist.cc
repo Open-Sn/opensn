@@ -1,17 +1,17 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/physics/SolverBase/chi_solver.h"
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/SolverBase/chi_solver.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 #include "fieldfunctions_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiGetFieldFunctionHandleByName);
 
-//###################################################################
+// ###################################################################
 /**Gets a field-function handle by name.
 \param FFname string Name of the field function.
 

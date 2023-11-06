@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/source_function.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/source_function.h"
 
 namespace lbs
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #if 0
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
 namespace lbs::lbts_lua_utils
 {

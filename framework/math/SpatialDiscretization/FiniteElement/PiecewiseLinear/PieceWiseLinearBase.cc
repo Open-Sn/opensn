@@ -1,10 +1,10 @@
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearBase.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearBase.h"
 
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearSlabMapping.h"
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolygonMapping.h"
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolyhedronMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearSlabMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolygonMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolyhedronMapping.h"
 
 #define UnsupportedCellType(fname)                                                                 \
   std::invalid_argument((fname) + ": Unsupported cell type encountered. type_id=" +                \

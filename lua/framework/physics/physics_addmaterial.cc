@@ -1,15 +1,15 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 #include <iostream>
-#include "opensn/framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
+#include "framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 #include "physics_lua_utils.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiPhysicsAddMaterial);
 
-//#############################################################################
+// #############################################################################
 /** Adds a material to the problem. Materials are added to the global
  * physics handler and is therefore accessible across all meshes and solvers.
  *

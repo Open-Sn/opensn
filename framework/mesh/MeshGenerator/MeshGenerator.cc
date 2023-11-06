@@ -1,13 +1,13 @@
-#include "opensn/framework/mesh/MeshGenerator/MeshGenerator.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/VolumeMesher/chi_volumemesher.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/framework/graphs/GraphPartitioner.h"
-#include "opensn/framework/graphs/PETScGraphPartitioner.h"
-#include "opensn/framework/ChiObjectFactory.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/mesh/Cell/cell.h"
+#include "framework/mesh/MeshGenerator/MeshGenerator.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/graphs/GraphPartitioner.h"
+#include "framework/graphs/PETScGraphPartitioner.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mesh/Cell/cell.h"
 
 namespace chi_mesh
 {

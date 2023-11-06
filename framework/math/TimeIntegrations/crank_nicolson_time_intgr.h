@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/math/TimeIntegrations/theta_scheme_time_intgr.h"
+#include "framework/math/TimeIntegrations/theta_scheme_time_intgr.h"
 
 namespace chi_math
 {

@@ -1,14 +1,14 @@
-#include "opensn/modules/DFEMDiffusion/dfem_diffusion_solver.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/utils/chi_timer.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/modules/DFEMDiffusion/dfem_diffusion_bndry.h"
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "modules/DFEMDiffusion/dfem_diffusion_solver.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "modules/DFEMDiffusion/dfem_diffusion_bndry.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
 #ifdef OPENSN_WITH_LUA
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 #endif
 
 #define scdouble static_cast<double>
@@ -256,7 +256,7 @@ Solver::Execute()
         if (cell.Type() == chi_mesh::CellType::POLYGON) Ckappa = 2.0;
         if (cell.Type() == chi_mesh::CellType::POLYHEDRON) Ckappa = 4.0;
 
-        //========================= Assembly penalty terms
+          //========================= Assembly penalty terms
 #ifdef OPENSN_WITH_LUA
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
@@ -406,7 +406,7 @@ Solver::Execute()
           if (cell.Type() == chi_mesh::CellType::POLYGON) Ckappa = 4.0;
           if (cell.Type() == chi_mesh::CellType::POLYHEDRON) Ckappa = 8.0;
 
-          //========================= Assembly penalty terms
+            //========================= Assembly penalty terms
 #ifdef OPENSN_WITH_LUA
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
@@ -457,8 +457,8 @@ Solver::Execute()
 
               MatSetValue(A_, imap, jmap, aij, ADD_VALUES);
               VecSetValue(b_, imap, aij_bc_value, ADD_VALUES);
-            }   // for fj
-          }     // for i
+            } // for fj
+          }   // for i
 #endif
         }       // Dirichlet BC
         else {} // else BC

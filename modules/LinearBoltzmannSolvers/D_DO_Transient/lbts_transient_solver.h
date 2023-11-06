@@ -1,8 +1,8 @@
 #pragma once
 
 #if 0
-#include "opensn/modules/LinearBoltzmannSolvers/Cc_DO_KEigenvalue/lbkes_k_eigenvalue_solver.h"
-#include "opensn/framework/math/chi_math_time_stepping.h"
+#include "modules/LinearBoltzmannSolvers/Cc_DO_KEigenvalue/lbkes_k_eigenvalue_solver.h"
+#include "framework/math/chi_math_time_stepping.h"
 
 namespace lbs
 {

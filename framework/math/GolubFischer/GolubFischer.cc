@@ -1,7 +1,7 @@
-#include "opensn/framework/math/GolubFischer/GolubFischer.h"
+#include "framework/math/GolubFischer/GolubFischer.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include <cmath>
 

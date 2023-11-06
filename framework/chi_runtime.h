@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <memory>
 
-#include "opensn/framework/mpi/chi_mpi.h"
+#include "framework/mpi/chi_mpi.h"
 
 namespace chi_mesh
 {
@@ -128,7 +128,6 @@ public:
    * Get current memory usage in Megabytes.
    */
   static double GetMemoryUsageInMB();
-
 
   // #######################################################
   /**Data block for run-time quantities.*/

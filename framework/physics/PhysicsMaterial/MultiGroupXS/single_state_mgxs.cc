@@ -1,6 +1,6 @@
-#include "opensn/framework/physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 #include <algorithm>
 #include <string>
 #include <numeric>

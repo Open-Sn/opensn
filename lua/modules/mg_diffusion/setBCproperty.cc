@@ -1,14 +1,14 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/modules/MGDiffusion/mg_diffusion_solver.h"
+#include "modules/MGDiffusion/mg_diffusion_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace mg_diffusion::mgd_lua_utils
 {
 
-//#############################################################################
+// #############################################################################
 /** Sets a property of a Diffusion solver. Please also consult the whitepaper
  * for the Diffusion solver (<a
  * href="../../whitepages/DiffusionSolver/DiffusionSolver.pdf">

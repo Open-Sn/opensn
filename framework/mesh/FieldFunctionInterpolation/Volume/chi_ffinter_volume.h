@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
-#include "opensn/framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
+#include "framework/mesh/LogicalVolume/LogicalVolume.h"
 
 #include <petscksp.h>
 
@@ -52,8 +52,13 @@ public:
   double CallLuaFunction(double ff_value, int mat_id) const;
 #endif
 
-  std::string GetDefaultFileBaseName() const override { return "ZVFFI"; }
-  void ExportPython(std::string base_name) override {}
+  std::string GetDefaultFileBaseName() const override
+  {
+    return "ZVFFI";
+  }
+  void ExportPython(std::string base_name) override
+  {
+  }
 };
 
 } // namespace chi_mesh

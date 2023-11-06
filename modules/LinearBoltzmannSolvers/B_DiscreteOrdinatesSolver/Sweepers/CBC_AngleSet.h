@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
-#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AsyncComm.h"
+#include "framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AsyncComm.h"
 
 namespace lbs
 {

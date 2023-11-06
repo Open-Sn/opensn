@@ -1,5 +1,5 @@
 #include "chi_modules_lua.h"
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 #include "diffusion_solver/diffusion_lua.h"
 #include "cfem_diffusion/ds_lua_utils.h"
@@ -7,7 +7,7 @@
 #include "fv_diffusion/ds_lua_utils.h"
 #include "mg_diffusion/mgds_lua_utils.h"
 #include "linear_bolzmann_solvers/lbs_solver/lbs_lua_utils.h"
-#include "opensn/config.h"
+#include "config.h"
 
 void
 chi_modules::lua_utils::LoadRegisteredLuaItems()

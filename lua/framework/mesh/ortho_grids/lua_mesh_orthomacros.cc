@@ -1,19 +1,19 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/chi_mesh.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include "lua_mesh_orthomacros.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned1DOrthoMesh);
 RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned2DOrthoMesh);
 RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned3DOrthoMesh);
 
-//###################################################################
+// ###################################################################
 /** Creates a 1D Mesh from an array of 1D vertices.
 
 \param x_nodes array_float An Array of floating point numbers denoting
@@ -79,7 +79,7 @@ chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L)
   return 2;
 }
 
-//###################################################################
+// ###################################################################
 /** Creates a 2D Orthogonal Mesh from arrays of 1D vertices.
 
 \param x_nodes array_float An Array of floating point numbers denoting
@@ -165,7 +165,7 @@ chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L)
   return 2;
 }
 
-//###################################################################
+// ###################################################################
 /** Creates a 3D Orthogonal Mesh from arrays of 1D vertices. The
  * underlying mesher is an extruder.
 

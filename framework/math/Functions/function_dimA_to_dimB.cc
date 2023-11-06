@@ -1,6 +1,6 @@
-#include "opensn/framework/math/Functions/function_dimA_to_dimB.h"
+#include "framework/math/Functions/function_dimA_to_dimB.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_math
 {

@@ -1,15 +1,15 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/math/Quadratures/angular_product_quadrature.h"
+#include "framework/math/Quadratures/angular_product_quadrature.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 
 #include <memory>
 
 #include "quadratures_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiCreateProductQuadrature);
 
@@ -19,7 +19,7 @@ RegisterLuaConstantAsIs(GAUSS_LEGENDRE_LEGENDRE, chi_data_types::Varying(3));
 RegisterLuaConstantAsIs(GAUSS_LEGENDRE_CHEBYSHEV, chi_data_types::Varying(4));
 RegisterLuaConstantAsIs(CUSTOM_QUADRATURE, chi_data_types::Varying(5));
 
-//########################################################## Create empty system
+// ########################################################## Create empty system
 /** Creates a Product-quadrature.
  *
 \param QuadratureType int Quadrature identifier.

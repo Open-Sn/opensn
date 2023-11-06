@@ -1,13 +1,13 @@
-#include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesCurvilinearSolver/lbs_curvilinear_solver.h"
-#include "opensn/framework/ChiObjectFactory.h"
-#include "opensn/framework/math/Quadratures/cylindrical_angular_quadrature.h"
-#include "opensn/framework/math/Quadratures/spherical_angular_quadrature.h"
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesCurvilinearSolver/SweepChunks/lbs_curvilinear_sweepchunk_pwl.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/console/chi_console.h"
+#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesCurvilinearSolver/lbs_curvilinear_solver.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/math/Quadratures/cylindrical_angular_quadrature.h"
+#include "framework/math/Quadratures/spherical_angular_quadrature.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesCurvilinearSolver/SweepChunks/lbs_curvilinear_sweepchunk_pwl.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/console/chi_console.h"
 #include <iomanip>
 
 namespace lbs

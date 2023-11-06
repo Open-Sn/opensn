@@ -1,11 +1,11 @@
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/LagrangeBaseMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/LagrangeBaseMapping.h"
 
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_math::cell_mapping
 {

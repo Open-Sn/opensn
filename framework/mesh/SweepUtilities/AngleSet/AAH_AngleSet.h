@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
+#include "framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
 
 namespace chi_mesh::sweep_management
 {

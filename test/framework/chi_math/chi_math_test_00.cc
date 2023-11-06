@@ -1,11 +1,11 @@
-#include "opensn/framework/math/dynamic_vector.h"
-#include "opensn/framework/math/dynamic_matrix.h"
-#include "opensn/framework/math/SparseMatrix/chi_math_sparse_matrix.h"
+#include "framework/math/dynamic_vector.h"
+#include "framework/math/dynamic_matrix.h"
+#include "framework/math/SparseMatrix/chi_math_sparse_matrix.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_unit_tests
 {

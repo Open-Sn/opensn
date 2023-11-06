@@ -1,7 +1,7 @@
 #ifdef OPENSN_WITH_LUA
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 
 #include <string>
 #include <sstream>

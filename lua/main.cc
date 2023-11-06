@@ -1,9 +1,9 @@
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/console/chi_console.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/event_system/SystemWideEventPublisher.h"
-#include "opensn/framework/event_system/Event.h"
-#include "opensn/framework/event_system/EventCodes.h"
+#include "framework/chi_runtime.h"
+#include "framework/console/chi_console.h"
+#include "framework/logging/chi_log.h"
+#include "framework/event_system/SystemWideEventPublisher.h"
+#include "framework/event_system/Event.h"
+#include "framework/event_system/EventCodes.h"
 #include "modules/chi_modules_lua.h"
 
 // ######################################################### Program entry point

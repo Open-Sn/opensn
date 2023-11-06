@@ -1,8 +1,8 @@
 #pragma once
 
-#include "opensn/framework/post_processors/PostProcessor.h"
-#include "opensn/framework/physics/FieldFunction/GridBasedFieldFunctionInterface.h"
-#include "opensn/framework/mesh/LogicalVolume/LogicalVolumeInterface.h"
+#include "framework/post_processors/PostProcessor.h"
+#include "framework/physics/FieldFunction/GridBasedFieldFunctionInterface.h"
+#include "framework/mesh/LogicalVolume/LogicalVolumeInterface.h"
 
 namespace chi_mesh
 {

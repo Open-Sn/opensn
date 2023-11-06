@@ -1,14 +1,14 @@
 #include "ags_linear_solver.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "opensn/framework/math/PETScUtils/petsc_utils.h"
-#include "opensn/framework/math/LinearSolver/linear_matrix_action_Ax.h"
+#include "framework/math/PETScUtils/petsc_utils.h"
+#include "framework/math/LinearSolver/linear_matrix_action_Ax.h"
 
 #include <petscksp.h>
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include <iomanip>
 

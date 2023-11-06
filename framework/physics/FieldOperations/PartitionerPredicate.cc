@@ -1,11 +1,11 @@
-#include "opensn/framework/physics/FieldOperations/PartitionerPredicate.h"
+#include "framework/physics/FieldOperations/PartitionerPredicate.h"
 
-#include "opensn/framework/graphs/GraphPartitioner.h"
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
-#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/graphs/GraphPartitioner.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 namespace chi_physics::field_operations
 {

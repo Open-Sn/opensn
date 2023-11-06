@@ -1,14 +1,14 @@
-#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AsyncComm.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AsyncComm.h"
 
-#include "opensn/framework/mpi/chi_mpi_commset.h"
+#include "framework/mpi/chi_mpi_commset.h"
 
-#include "opensn/framework/mesh/SweepUtilities/FLUDS/FLUDS.h"
-#include "opensn/framework/mesh/SweepUtilities/SPDS/SPDS.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDS.h"
+#include "framework/mesh/SweepUtilities/FLUDS/FLUDS.h"
+#include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDS.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #define uint unsigned int
 

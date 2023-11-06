@@ -1,8 +1,8 @@
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/utils/chi_timer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
 
-#include "opensn/framework/logging/stringstream_color.h"
+#include "framework/logging/stringstream_color.h"
 
 #include <sstream>
 

@@ -3,7 +3,7 @@
 //
 #include "ip_lua_utils.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
 #define LUA_FMACRO1(x) lua_register(L, #x, x)
 #define LUA_CMACRO1(x, y)                                                                          \

@@ -1,18 +1,18 @@
-#include "opensn/framework/utils/chi_timer.h"
+#include "framework/utils/chi_timer.h"
 
 #include <cmath>
 #include <ctime>
 #include <thread>
 
-//################################################################### Default
-// constr
+// ################################################################### Default
+//  constr
 /** Default constructor.*/
 chi::Timer::Timer() noexcept
 {
   start_time_ = std::chrono::steady_clock::now();
 }
 
-//################################################################### Reset
+// ################################################################### Reset
 /** Resets the timer to zero.*/
 void
 chi::Timer::Reset()
@@ -20,7 +20,7 @@ chi::Timer::Reset()
   start_time_ = std::chrono::steady_clock::now();
 }
 
-//################################################################### Get time
+// ################################################################### Get time
 /** Gets the current timer value in milliseconds.*/
 double
 chi::Timer::GetTime() const
@@ -33,7 +33,7 @@ chi::Timer::GetTime() const
   return time_span.count() * 1000.0;
 }
 
-//################################################################### Get string
+// ################################################################### Get string
 /**Obtains a string in the format of hh:mm::ss.
  *
  * */
@@ -51,7 +51,7 @@ chi::Timer::GetTimeString() const
   return {buff};
 }
 
-//################################################################### Get date
+// ################################################################### Get date
 /**Obtains a string in the format YYYY-MM-DD hh:mm:ss
  *
  * */
@@ -68,7 +68,7 @@ chi::Timer::GetLocalDateTimeString()
   return s;
 }
 
-//###################################################################
+// ###################################################################
 void
 chi::Sleep(std::chrono::duration<double> time)
 {

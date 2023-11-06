@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/post_processors/PostProcessor.h"
+#include "framework/post_processors/PostProcessor.h"
 
 namespace chi_physics
 {

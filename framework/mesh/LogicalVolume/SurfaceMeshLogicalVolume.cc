@@ -1,10 +1,10 @@
-#include "opensn/framework/mesh/LogicalVolume/SurfaceMeshLogicalVolume.h"
+#include "framework/mesh/LogicalVolume/SurfaceMeshLogicalVolume.h"
 
-#include "opensn/framework/mesh/chi_mesh.h"
-#include "opensn/framework/mesh/SurfaceMesh/chi_surfacemesh.h"
-#include "opensn/framework/mesh/Raytrace/raytracer.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "framework/mesh/Raytrace/raytracer.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 #include <utility>
 

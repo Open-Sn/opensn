@@ -1,11 +1,11 @@
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
 namespace lbs::common_lua_utils
 {
 
-//###################################################################
+// ###################################################################
 /**Computes and returns the fission rate.
  *
 \param SolverIndex int Handle to the solver maintaining the information.

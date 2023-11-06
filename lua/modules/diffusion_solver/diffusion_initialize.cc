@@ -1,10 +1,10 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/modules/DiffusionSolver/Solver/diffusion_solver.h"
+#include "modules/DiffusionSolver/Solver/diffusion_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-//#############################################################################
+// #############################################################################
 /** Initialize the Diffusion solver.
  *
 \param SolverHandle int Handle to an existing diffusion solver.

@@ -1,10 +1,10 @@
-#include "opensn/framework/math/Quadratures/quadrature_gausschebyshev.h"
+#include "framework/math/Quadratures/quadrature_gausschebyshev.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 #include <cmath>
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #define uint unsigned int
 #define scint static_cast<int>

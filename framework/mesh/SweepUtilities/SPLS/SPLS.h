@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/mesh/SweepUtilities/FLUDS/FLUDS.h"
+#include "framework/mesh/SweepUtilities/FLUDS/FLUDS.h"
 
 namespace chi_mesh::sweep_management
 {

@@ -1,4 +1,4 @@
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 
 namespace chi_math::finite_element
 {

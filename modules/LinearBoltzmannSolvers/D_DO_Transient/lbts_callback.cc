@@ -1,7 +1,7 @@
-#include "opensn/modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
+#include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
 #if 0
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/chi_runtime.h"
+#include "framework/console/chi_console.h"
 
 /**Provides a callback interface to lua after each timestep. Users,
  * can setup all sorts of controls like adaptive timestepping and

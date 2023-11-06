@@ -1,15 +1,15 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/math/Quadratures/SLDFESQ/sldfe_sq.h"
+#include "framework/math/Quadratures/SLDFESQ/sldfe_sq.h"
 
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 #include "sldfe_lua.h"
 
 RegisterLuaFunctionAsIs(chiCreateSLDFESQAngularQuadrature);
 
-//###################################################################
+// ###################################################################
 /** Creates a Simplified Linear Discontinuous Finite Element (SLDFE)
 quadrature based on Spherical Quadrilaterals (SQ). Hence SLDFE-SQ.
 \param initial_refinement_level int Initial refinement level, \f$n\f$ to

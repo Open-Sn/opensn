@@ -1,13 +1,13 @@
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_solver.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/snes_k_monitor.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/snes_k_monitor.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_residual_func.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_residual_func.h"
 
-#include "opensn/framework/math/PETScUtils/petsc_utils.h"
+#include "framework/math/PETScUtils/petsc_utils.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include <petscsnes.h>
 

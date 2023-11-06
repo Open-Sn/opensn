@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/mesh/SweepUtilities/sweepchunk_base.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "framework/mesh/SweepUtilities/sweepchunk_base.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
 namespace chi_math
 {

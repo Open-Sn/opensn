@@ -12,7 +12,7 @@ template <int R, int N, class NumberFormat>
 struct TensorRNX;
 }
 
-#include "opensn/framework/mesh/chi_meshvector.h"
+#include "framework/mesh/chi_meshvector.h"
 
 #include <iostream>
 
@@ -25,7 +25,7 @@ struct TensorRNX;
 
 namespace chi_math
 {
-//#################################################################
+// #################################################################
 /**Generalized vector notion.
  * \author Jerry, Jan.*/
 template <int N, class NumberFormat>

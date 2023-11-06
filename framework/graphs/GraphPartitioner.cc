@@ -1,4 +1,4 @@
-#include "opensn/framework/graphs/GraphPartitioner.h"
+#include "framework/graphs/GraphPartitioner.h"
 
 namespace chi
 {

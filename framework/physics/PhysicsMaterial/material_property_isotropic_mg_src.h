@@ -1,11 +1,11 @@
 #pragma once
 
-#include "opensn/framework/physics/PhysicsMaterial/material_property_base.h"
+#include "framework/physics/PhysicsMaterial/material_property_base.h"
 
 namespace chi_physics
 {
 
-//###################################################################
+// ###################################################################
 /** Basic thermal conductivity material property.*/
 class IsotropicMultiGrpSource : public chi_physics::MaterialProperty
 {

@@ -1,26 +1,26 @@
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/console/chi_console.h"
-#include "opensn/framework/mpi/chi_mpi.h"
-#include "opensn/framework/ChiObjectFactory.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_context.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
-#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/boundary_vacuum.h"
-#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/boundary_iso_homo.h"
-#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/boundary_aniso_hetero.h"
-#include "opensn/framework/math/TimeIntegrations/time_integration.h"
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "opensn/framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/console/chi_console.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/ChiObjectFactory.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_vacuum.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_iso_homo.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_aniso_hetero.h"
+#include "framework/math/TimeIntegrations/time_integration.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 #ifdef OPENSN_WITH_LUA
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Tools/lbs_bndry_func_lua.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Tools/lbs_bndry_func_lua.h"
 #endif
 #include <algorithm>
 #include <iomanip>
@@ -1358,8 +1358,7 @@ LBSSolver::InitializeParrays()
 
   Chi::mpi.Barrier();
   Chi::log.Log() << "Done with parallel arrays.                Process memory = "
-                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB"
-                 << std::endl;
+                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB" << std::endl;
 }
 
 void

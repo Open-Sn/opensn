@@ -1,4 +1,4 @@
-#include "opensn/framework/math/Quadratures/point_quadrature.h"
+#include "framework/math/Quadratures/point_quadrature.h"
 
 namespace chi_math
 {

@@ -1,4 +1,4 @@
-#include "opensn/framework/ChiObject.h"
+#include "framework/ChiObject.h"
 
 /**Returns the input parameters.*/
 chi::InputParameters

@@ -1,6 +1,6 @@
-#include "opensn/framework/physics/FieldFunction/GridBasedFieldFunctionInterface.h"
+#include "framework/physics/FieldFunction/GridBasedFieldFunctionInterface.h"
 
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
 namespace chi_physics
 {

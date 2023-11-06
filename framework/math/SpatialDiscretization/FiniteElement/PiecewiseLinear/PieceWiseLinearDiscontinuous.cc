@@ -1,11 +1,11 @@
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "opensn/framework/math/UnknownManager/unknown_manager.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/framework/utils/chi_timer.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/mpi/chi_mpi.h"
-#include "opensn/framework/mpi/chi_mpi_utils.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/mpi/chi_mpi_utils.h"
 
 #define sc_int64 static_cast<int64_t>
 

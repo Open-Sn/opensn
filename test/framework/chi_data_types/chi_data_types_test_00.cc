@@ -1,15 +1,15 @@
-#include "opensn/framework/data_types/byte_array.h"
-#include "opensn/framework/data_types/ndarray.h"
-#include "opensn/framework/mesh/Cell/cell.h"
+#include "framework/data_types/byte_array.h"
+#include "framework/data_types/ndarray.h"
+#include "framework/mesh/Cell/cell.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
-#include "opensn/framework/mpi/chi_mpi.h"
+#include "framework/mpi/chi_mpi.h"
 
-#include "opensn/framework/mpi/chi_mpi_utils_map_all2all.h"
+#include "framework/mpi/chi_mpi_utils_map_all2all.h"
 
 #include <map>
 

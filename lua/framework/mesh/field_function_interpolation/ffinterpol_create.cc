@@ -1,16 +1,16 @@
-#include "opensn/framework/chi_lua.h"
-#include "opensn/framework/mesh/FieldFunctionInterpolation/Point/chi_ffinter_point.h"
-#include "opensn/framework/mesh/FieldFunctionInterpolation/Slice/chi_ffinter_slice.h"
-#include "opensn/framework/mesh/FieldFunctionInterpolation/Line/chi_ffinter_line.h"
-#include "opensn/framework/mesh/FieldFunctionInterpolation/Volume/chi_ffinter_volume.h"
+#include "framework/chi_lua.h"
+#include "framework/mesh/FieldFunctionInterpolation/Point/chi_ffinter_point.h"
+#include "framework/mesh/FieldFunctionInterpolation/Slice/chi_ffinter_slice.h"
+#include "framework/mesh/FieldFunctionInterpolation/Line/chi_ffinter_line.h"
+#include "framework/mesh/FieldFunctionInterpolation/Volume/chi_ffinter_volume.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #define scint(x) static_cast<int>(x)
 
 #include "ffinterpol_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiFFInterpolationCreate);
 RegisterLuaConstantAsIs(SLICE, chi_data_types::Varying(1));
@@ -18,7 +18,7 @@ RegisterLuaConstantAsIs(LINE, chi_data_types::Varying(2));
 RegisterLuaConstantAsIs(VOLUME, chi_data_types::Varying(3));
 RegisterLuaConstantAsIs(POINT, chi_data_types::Varying(4));
 
-//#############################################################################
+// #############################################################################
 /** Creates a new field function interpolation.
  *
 \param FFITypeIndex int Type of field function interpolation.

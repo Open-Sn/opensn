@@ -1,12 +1,12 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
 #include "volumemesher_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiVolumeMesherSetMatIDToAll);
 
-//###################################################################
+// ###################################################################
 /** Sets all cell-material id's to the supplied value.
 \param material_id int The id.
 \ingroup LuaVolumeMesher

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
 int chiSurfaceMeshCreate(lua_State* L);
 int chiSurfaceMeshImportFromOBJFile(lua_State* L);

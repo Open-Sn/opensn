@@ -1,8 +1,8 @@
-#include "opensn/framework/mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
+#include "framework/mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/math/chi_math.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/math/chi_math.h"
 
 namespace chi_mesh::sweep_management
 {

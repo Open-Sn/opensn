@@ -1,22 +1,22 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "opensn/framework/utils/chi_timer.h"
+#include "framework/utils/chi_timer.h"
 
 #include "volumemesher_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 #include <iomanip>
 #include <iostream>
 
 RegisterLuaFunctionAsIs(chiVolumeMesherExecute);
 
-//#############################################################################
+// #############################################################################
 /** Executes the volume meshing pipeline.
 
 \ingroup LuaVolumeMesher

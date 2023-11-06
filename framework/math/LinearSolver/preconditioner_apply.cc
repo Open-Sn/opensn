@@ -1,6 +1,6 @@
-#include "opensn/framework/math/LinearSolver/preconditioner_apply.h"
+#include "framework/math/LinearSolver/preconditioner_apply.h"
 
-#include "opensn/framework/math/LinearSolver/preconditioner_context.h"
+#include "framework/math/LinearSolver/preconditioner_context.h"
 
 #include <petscksp.h>
 

@@ -1,10 +1,10 @@
-#include "opensn/modules/LinearBoltzmannSolvers/Executors/pi_keigen.h"
-#include "opensn/framework/ChiObjectFactory.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/logging/chi_log_exceptions.h"
-#include "opensn/framework/utils/chi_timer.h"
+#include "modules/LinearBoltzmannSolvers/Executors/pi_keigen.h"
+#include "framework/ChiObjectFactory.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/logging/chi_log_exceptions.h"
+#include "framework/utils/chi_timer.h"
 #include <iomanip>
 
 namespace lbs

@@ -1,11 +1,11 @@
-#include "opensn/framework/parameters/parameter_block.h"
+#include "framework/parameters/parameter_block.h"
 
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_unit_tests
 {

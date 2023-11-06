@@ -1,6 +1,6 @@
-#include "opensn/framework/math/ParallelVector/GhostedParallelSTLVector.h"
+#include "framework/math/ParallelVector/GhostedParallelSTLVector.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 
 #include <algorithm>
 

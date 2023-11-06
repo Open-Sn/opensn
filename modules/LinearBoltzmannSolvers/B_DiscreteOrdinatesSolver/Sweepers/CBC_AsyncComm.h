@@ -5,10 +5,10 @@
 #include <map>
 #include <vector>
 
-#include "opensn/framework/mesh/SweepUtilities/Communicators/AsyncComm.h"
+#include "framework/mesh/SweepUtilities/Communicators/AsyncComm.h"
 
-#include "opensn/framework/mpi/chi_mpi.h"
-#include "opensn/framework/data_types/byte_array.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/data_types/byte_array.h"
 
 namespace chi
 {

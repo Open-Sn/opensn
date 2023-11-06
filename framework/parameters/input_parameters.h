@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/parameters/parameter_block.h"
-#include "opensn/framework/data_types/allowable_range.h"
+#include "framework/parameters/parameter_block.h"
+#include "framework/data_types/allowable_range.h"
 
 #include <map>
 

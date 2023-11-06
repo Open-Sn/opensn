@@ -1,9 +1,9 @@
-#include "opensn/modules/DiffusionSolver/UnitIntegralContainer.h"
+#include "modules/DiffusionSolver/UnitIntegralContainer.h"
 
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/CellMapping.h"
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "framework/math/SpatialDiscretization/CellMappings/CellMapping.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 
-#include "opensn/framework/mesh/Cell/cell.h"
+#include "framework/mesh/Cell/cell.h"
 
 namespace chi_diffusion
 {

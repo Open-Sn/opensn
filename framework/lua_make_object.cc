@@ -1,8 +1,8 @@
 #ifdef OPENSN_WITH_LUA
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/console/chi_console.h"
 
 namespace chi::lua_utils
 {

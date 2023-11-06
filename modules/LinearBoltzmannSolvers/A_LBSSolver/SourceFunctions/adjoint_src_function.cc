@@ -1,19 +1,19 @@
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/adjoint_src_function.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/adjoint_src_function.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 namespace lbs
 {
 
-//###################################################################
+// ###################################################################
 /**Constructor for an adjoint source function.*/
 AdjointSourceFunction::AdjointSourceFunction(const LBSSolver& lbs_solver)
   : SourceFunction(lbs_solver)
 {
 }
 
-//###################################################################
+// ###################################################################
 /**Adds Quantities of Interest to the nodal sources.*/
 void
 AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,

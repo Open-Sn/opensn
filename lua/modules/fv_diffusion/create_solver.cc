@@ -1,14 +1,14 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/modules/FVDiffusion/fv_diffusion_solver.h"
+#include "modules/FVDiffusion/fv_diffusion_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace fv_diffusion::fv_diffusion_lua_utils
 {
 
-//#############################################################################
+// #############################################################################
 /** Creates a Finite Volume Diffusion solver.
 
 \param solver_name string Optional. Text name for the solver.

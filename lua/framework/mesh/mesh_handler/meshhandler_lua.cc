@@ -1,13 +1,13 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/chi_runtime.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 
 #include <iostream>
 #include "meshhandler_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiMeshHandlerCreate);
 RegisterLuaFunctionAsIs(chiMeshHandlerSetCurrent);
@@ -15,7 +15,7 @@ RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToObj);
 RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToVTK);
 RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToExodus);
 
-//#############################################################################
+// #############################################################################
 /** Creates a mesh handler and sets it as "current".
 
 \return Handle int Handle to the created mesh handler.
@@ -32,7 +32,7 @@ chiMeshHandlerCreate(lua_State* L)
   return 1;
 }
 
-//#############################################################################
+// #############################################################################
 /** Sets the given mesh handler as "current".
 
 \param HandlerHandler int Handle to the mesh handler previously created

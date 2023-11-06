@@ -1,19 +1,19 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/chi_mesh.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/mesh/LogicalVolume/LogicalVolume.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
 #include "meshcutting_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiCountMeshInLogicalVolume);
 
-//###################################################################
+// ###################################################################
 /**Counts the number of cells with a logical volume.*/
 int
 chiCountMeshInLogicalVolume(lua_State* L)

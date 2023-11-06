@@ -1,8 +1,8 @@
 #pragma once
 
-#include "opensn/framework/math/ParallelVector/ParallelSTLVector.h"
+#include "framework/math/ParallelVector/ParallelSTLVector.h"
 
-#include "opensn/framework/math/VectorGhostCommunicator/vector_ghost_communicator.h"
+#include "framework/math/VectorGhostCommunicator/vector_ghost_communicator.h"
 
 namespace chi_math
 {

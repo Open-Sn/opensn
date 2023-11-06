@@ -1,16 +1,16 @@
-#include "opensn/framework/mesh/MeshGenerator/SplitFileMeshGenerator.h"
+#include "framework/mesh/MeshGenerator/SplitFileMeshGenerator.h"
 
-#include "opensn/framework/data_types/byte_array.h"
-#include "opensn/framework/utils/chi_utils.h"
+#include "framework/data_types/byte_array.h"
+#include "framework/utils/chi_utils.h"
 
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/VolumeMesher/chi_volumemesher.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/utils/chi_timer.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 #include <filesystem>
 

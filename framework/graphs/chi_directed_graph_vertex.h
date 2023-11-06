@@ -1,10 +1,10 @@
 #pragma once
 
-#include "opensn/framework/graphs/chi_graph.h"
+#include "framework/graphs/chi_graph.h"
 
 #include <map>
 
-//###################################################################
+// ###################################################################
 /**General implementation of a directed-graph vertex.*/
 struct chi::GraphVertex
 {

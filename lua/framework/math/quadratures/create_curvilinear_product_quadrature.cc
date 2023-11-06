@@ -1,16 +1,16 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/math/Quadratures/quadrature_gausschebyshev.h"
-#include "opensn/framework/math/Quadratures/quadrature_gausslegendre.h"
-#include "opensn/framework/math/Quadratures/cylindrical_angular_quadrature.h"
-#include "opensn/framework/math/Quadratures/spherical_angular_quadrature.h"
+#include "framework/math/Quadratures/quadrature_gausschebyshev.h"
+#include "framework/math/Quadratures/quadrature_gausslegendre.h"
+#include "framework/math/Quadratures/cylindrical_angular_quadrature.h"
+#include "framework/math/Quadratures/spherical_angular_quadrature.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 
 #include "quadratures_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiCreateCylindricalProductQuadrature);
 RegisterLuaFunctionAsIs(chiCreateSphericalProductQuadrature);

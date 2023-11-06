@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
 int chiGetFieldFunctionHandleByName(lua_State* L);
 int chiExportFieldFunctionToVTK(lua_State* L);

@@ -1,11 +1,11 @@
-#include "opensn/framework/interfaces/PlugIn.h"
+#include "framework/interfaces/PlugIn.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/utils/chi_utils.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_utils.h"
+#include "framework/console/chi_console.h"
 
 #include <dlfcn.h>
 

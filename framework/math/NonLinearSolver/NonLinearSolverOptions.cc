@@ -1,6 +1,6 @@
-#include "opensn/framework/math/NonLinearSolver/NonLinearSolverOptions.h"
+#include "framework/math/NonLinearSolver/NonLinearSolverOptions.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 namespace chi_math
 {

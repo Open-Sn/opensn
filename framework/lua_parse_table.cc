@@ -1,11 +1,11 @@
 #ifdef OPENSN_WITH_LUA
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log_exceptions.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log_exceptions.h"
 
-#include "opensn/framework/data_types/chi_data_types.h"
-#include "opensn/framework/parameters/parameter_block.h"
+#include "framework/data_types/chi_data_types.h"
+#include "framework/parameters/parameter_block.h"
 
 #define ExceptionLuaNilValue                                                                       \
   throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                                        \

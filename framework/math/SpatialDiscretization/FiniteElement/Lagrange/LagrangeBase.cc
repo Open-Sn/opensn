@@ -1,18 +1,18 @@
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/Lagrange/LagrangeBase.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/Lagrange/LagrangeBase.h"
 
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeSlabMapping.h"
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeQuadMapping.h"
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeTriangleMapping.h"
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeHexMapping.h"
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeWedgeMapping.h"
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeTetMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeSlabMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeQuadMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeTriangleMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeHexMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeWedgeMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeTetMapping.h"
 
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolygonMapping.h"
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolyhedronMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolygonMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolyhedronMapping.h"
 
-#include "opensn/framework/logging/chi_log_exceptions.h"
+#include "framework/logging/chi_log_exceptions.h"
 
 namespace chi_math::spatial_discretization
 {

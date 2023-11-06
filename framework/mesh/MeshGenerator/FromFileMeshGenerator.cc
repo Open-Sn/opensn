@@ -1,11 +1,11 @@
-#include "opensn/framework/mesh/MeshGenerator/FromFileMeshGenerator.h"
+#include "framework/mesh/MeshGenerator/FromFileMeshGenerator.h"
 
-#include "opensn/framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
+#include "framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include <filesystem>
 

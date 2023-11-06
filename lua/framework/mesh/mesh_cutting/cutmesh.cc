@@ -1,15 +1,15 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/MeshCutting/meshcutting.h"
-#include "opensn/framework/mesh/chi_mesh.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshCutting/meshcutting.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
 
 #include "meshcutting_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiCutMesh);
 
-//###################################################################
+// ###################################################################
 /**Cuts a mesh.
 
  \param PlanePoint Vec3 A 3 element lua-table containing the reference

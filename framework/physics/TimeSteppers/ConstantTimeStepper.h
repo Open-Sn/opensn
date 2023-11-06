@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/physics/TimeSteppers/TimeStepper.h"
+#include "framework/physics/TimeSteppers/TimeStepper.h"
 
 namespace chi_physics
 {

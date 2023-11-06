@@ -1,14 +1,14 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/modules/CFEMDiffusion/cfem_diffusion_solver.h"
+#include "modules/CFEMDiffusion/cfem_diffusion_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace cfem_diffusion::cfem_diffusion_lua_utils
 {
 
-//#############################################################################
+// #############################################################################
 /** Creates a CFEM Diffusion solver.
 
 \return Handle int Handle to the created solver.

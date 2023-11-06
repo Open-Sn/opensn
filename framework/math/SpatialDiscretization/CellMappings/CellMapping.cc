@@ -1,10 +1,10 @@
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/CellMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/CellMapping.h"
 
 #include <utility>
 
-#include "opensn/framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 namespace chi_math
 {

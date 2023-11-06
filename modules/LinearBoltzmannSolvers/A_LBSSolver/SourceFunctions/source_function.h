@@ -1,8 +1,8 @@
 #pragma once
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
-#include "opensn/framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
 
 #include <memory>
 #include <utility>
@@ -12,7 +12,7 @@ namespace lbs
 class LBSSolver;
 class LBSGroupset;
 
-//###################################################################
+// ###################################################################
 /**Implements a customizable source function using virtual methods.
  * This base class will function well for steady simulations and kEigenvalue
  * simulations. It needs some customization for adjoint and transient.*/

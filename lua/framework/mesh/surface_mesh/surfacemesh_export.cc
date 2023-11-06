@@ -1,20 +1,20 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
 #include <iostream>
-#include "opensn/framework/mesh/SurfaceMesh/chi_surfacemesh.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 #include "lua_surface_mesh.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportToObj);
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportPolyFile);
 
-//#############################################################################
-// Create
+// #############################################################################
+//  Create
 /** Exports mesh as a .obj format.
  *
 \param SurfaceHandle int Handle to the surface on which the operation is to be
@@ -44,8 +44,8 @@ chiSurfaceMeshExportToObj(lua_State* L)
   return 0;
 }
 
-//#############################################################################
-// Create
+// #############################################################################
+//  Create
 /** Exports mesh as a .poly format.
  *
 \param SurfaceHandle int Handle to the surface on which the operation is to be

@@ -1,11 +1,11 @@
-#include "opensn/modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
+#include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
 
 #if 0
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/transient_source_function.h"
-#include "opensn/modules/LinearBoltzmannSolvers/B_DO_Solver/IterativeMethods/sweep_wgs_context.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/transient_source_function.h"
+#include "modules/LinearBoltzmannSolvers/B_DO_Solver/IterativeMethods/sweep_wgs_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace lbs
 {

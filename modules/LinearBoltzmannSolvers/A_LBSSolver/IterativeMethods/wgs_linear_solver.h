@@ -1,8 +1,8 @@
 #pragma once
 
-#include "opensn/framework/math/LinearSolver/linear_solver.h"
+#include "framework/math/LinearSolver/linear_solver.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
 #include <memory>
 #include <vector>
@@ -11,7 +11,7 @@
 namespace lbs
 {
 
-//################################################################### Class def
+// ################################################################### Class def
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
 template <class MatType, class VecType, class SolverType>
 class WGSLinearSolver : public chi_math::LinearSolver<MatType, VecType, SolverType>

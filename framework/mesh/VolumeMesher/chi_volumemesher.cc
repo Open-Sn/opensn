@@ -1,16 +1,16 @@
-#include "opensn/framework/mesh/VolumeMesher/chi_volumemesher.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/VolumeMesher/Extruder/volmesher_extruder.h"
-#include "opensn/framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
-#include "opensn/framework/mesh/LogicalVolume/LogicalVolume.h"
-#include "opensn/framework/console/chi_console.h"
-#include "opensn/framework/utils/chi_timer.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/mpi/chi_mpi.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/VolumeMesher/Extruder/volmesher_extruder.h"
+#include "framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
+#include "framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/console/chi_console.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
 #ifdef OPENSN_WITH_LUA
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 #endif
 
 namespace chi_mesh

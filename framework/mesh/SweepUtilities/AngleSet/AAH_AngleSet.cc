@@ -1,9 +1,9 @@
-#include "opensn/framework/mesh/SweepUtilities/AngleSet/AAH_AngleSet.h"
+#include "framework/mesh/SweepUtilities/AngleSet/AAH_AngleSet.h"
 
-#include "opensn/framework/mesh/SweepUtilities/sweepchunk_base.h"
+#include "framework/mesh/SweepUtilities/sweepchunk_base.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_mesh::sweep_management
 {

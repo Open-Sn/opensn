@@ -1,19 +1,19 @@
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "opensn/framework/math/Quadratures/angular_product_quadrature.h"
+#include "framework/math/Quadratures/angular_product_quadrature.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_group.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_group.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #define sc_int static_cast<int>
 
 namespace lbs::common_lua_utils
 {
 
-//###################################################################
+// ###################################################################
 /**Create a groupset.
 \param SolverIndex int Handle to the solver for which the set is to be created.
 
@@ -41,7 +41,7 @@ chiLBSCreateGroupset(lua_State* L)
   return 1;
 }
 
-//###################################################################
+// ###################################################################
 /**Create a group.
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -89,7 +89,7 @@ chiLBSCreateGroup(lua_State* L)
   return 1;
 }
 
-//###################################################################
+// ###################################################################
 /**Adds a block of groups to a groupset.
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -170,7 +170,7 @@ chiLBSGroupsetAddGroups(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the product quadrature used for the groupset
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -259,7 +259,7 @@ chiLBSGroupsetSetQuadrature(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the the type of angle aggregation to use for this groupset.
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -337,7 +337,7 @@ chiLBSGroupsetSetAngleAggregationType(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the angle aggregation divisions
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -409,7 +409,7 @@ chiLBSGroupsetSetAngleAggDiv(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the number of group-subsets to use for groupset. Default 1.
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -473,7 +473,7 @@ chiLBSGroupsetSetGroupSubsets(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the number of group-subsets to use for groupset. Default 1.
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -657,7 +657,7 @@ chiLBSGroupsetSetIterativeMethod(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the residual tolerance for the iterative method of the groupset.
  *
 \param SolverIndex int Handle to the solver for which the group
@@ -728,7 +728,7 @@ chiLBSGroupsetSetResidualTolerance(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the maximum number of iterations for the groupset iterative method.
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -792,7 +792,7 @@ chiLBSGroupsetSetMaxIterations(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the restart interval for GMRES if applied to the groupset.
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -856,7 +856,7 @@ chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Enables or disables the printing of a sweep log.
 \param SolverIndex int Handle to the solver for which the group
 is to be created.
@@ -913,7 +913,7 @@ chiLBSGroupsetSetEnableSweepLog(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the Within-Group Diffusion Synthetic Acceleration parameters
  * for this groupset. If this call is being made then it is assumed
  * WGDSA is being applied.
@@ -997,7 +997,7 @@ chiLBSGroupsetSetWGDSA(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the Two-Grid Diffusion Synthetic Acceleration parameters
  * for this groupset. If this call is being made then it is assumed
  * TGDSA is being applied.

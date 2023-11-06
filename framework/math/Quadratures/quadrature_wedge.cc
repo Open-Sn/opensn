@@ -1,7 +1,7 @@
-#include "opensn/framework/math/Quadratures/quadrature_wedge.h"
+#include "framework/math/Quadratures/quadrature_wedge.h"
 
-#include "opensn/framework/math/Quadratures/quadrature_gausslegendre.h"
-#include "opensn/framework/math/Quadratures/quadrature_triangle.h"
+#include "framework/math/Quadratures/quadrature_gausslegendre.h"
+#include "framework/math/Quadratures/quadrature_triangle.h"
 
 namespace chi_math
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/mesh/chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 #include <set>
 
 #include <memory>

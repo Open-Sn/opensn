@@ -1,9 +1,9 @@
-#include "opensn/framework/math/UnknownManager/unknown_manager.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-//###################################################################
+// ###################################################################
 /**Adds an unknown to the manager. This method will figure out
  * where the last unknown ends and where to begin the next one.*/
 unsigned int
@@ -64,7 +64,7 @@ chi_math::UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimensio
   return new_unknown_index;
 }
 
-//###################################################################
+// ###################################################################
 /**Maps the unknown's component within the storage of a node.*/
 unsigned int
 chi_math::UnknownManager::MapUnknown(unsigned int unknown_id, unsigned int component) const
@@ -79,7 +79,7 @@ chi_math::UnknownManager::MapUnknown(unsigned int unknown_id, unsigned int compo
   return unknowns_[unknown_id].GetMap(component);
 }
 
-//###################################################################
+// ###################################################################
 /**Determines the total number of components over all unknowns.*/
 unsigned int
 chi_math::UnknownManager::GetTotalUnknownStructureSize() const
@@ -89,7 +89,7 @@ chi_math::UnknownManager::GetTotalUnknownStructureSize() const
   return unknowns_.back().GetMapEnd() + 1;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the number of off block connections for the given unknown.
  * All the components will be set to the same amount.*/
 void
@@ -108,7 +108,7 @@ chi_math::UnknownManager::SetUnknownNumOffBlockConnections(unsigned int unknown_
   for (auto& val : unknowns_[unknown_id].num_off_block_connections_)
     val = num_conn;
 }
-//###################################################################
+// ###################################################################
 /**Sets the number of off block connections for the given unknown-
  * component pair.*/
 void
@@ -137,7 +137,7 @@ chi_math::UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int
   unknowns_[unknown_id].num_off_block_connections_[component] = num_conn;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets a text name for the indicated unknown.*/
 void
 chi_math::UnknownManager::SetUnknownTextName(unsigned int unknown_id,
@@ -156,7 +156,7 @@ chi_math::UnknownManager::SetUnknownTextName(unsigned int unknown_id,
   unknowns_[unknown_id].text_name_ = in_text_name;
 }
 
-//###################################################################
+// ###################################################################
 /**Sets the text name to be associated with each component of the
  * unknown.*/
 void

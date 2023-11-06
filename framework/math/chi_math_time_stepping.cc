@@ -1,4 +1,4 @@
-#include "opensn/framework/math/chi_math_time_stepping.h"
+#include "framework/math/chi_math_time_stepping.h"
 
 #include <stdexcept>
 

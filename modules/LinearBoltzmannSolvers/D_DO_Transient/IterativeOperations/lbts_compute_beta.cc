@@ -1,4 +1,4 @@
-#include "opensn/modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
+#include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
 
 #if 0
 /**Computes the delayed neutron factor.*/

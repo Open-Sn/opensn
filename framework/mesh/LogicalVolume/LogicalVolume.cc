@@ -1,4 +1,4 @@
-#include "opensn/framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/mesh/LogicalVolume/LogicalVolume.h"
 
 namespace chi_mesh
 {

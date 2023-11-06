@@ -1,5 +1,5 @@
-#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_mesh::sweep_management
 {

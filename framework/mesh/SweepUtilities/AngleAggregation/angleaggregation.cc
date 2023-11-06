@@ -1,10 +1,10 @@
-#include "opensn/framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
-#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/mpi/chi_mpi.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
 
 #define ExceptionReflectedAngleError                                                               \
   std::logic_error(fname + "Reflected angle not found for angle " + std::to_string(n) +            \

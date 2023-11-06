@@ -1,9 +1,9 @@
-#include "opensn/framework/chi_lua.h"
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_lua.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "framework/mesh/SurfaceMesh/chi_surfacemesh.h"
 #include "domaindecomp_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiDecomposeSurfaceMeshPxPy);
 
@@ -11,7 +11,7 @@ RegisterLuaFunctionAsIs(chiDecomposeSurfaceMeshPxPy);
  * \ingroup LuaMesh
  */
 
-//#############################################################################
+// #############################################################################
 /** Decomposes a surface mesh into block px py elements.
  * \image html "InProgressImage.png" width=200px
  *

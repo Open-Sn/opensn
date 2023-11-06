@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #ifdef OPENSN_WITH_LUA
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 #endif
 
 namespace chi_physics
@@ -15,7 +15,7 @@ enum class PropertyType
   ISOTROPIC_MG_SOURCE = 11
 };
 
-//###################################################################
+// ###################################################################
 /** Base class for material properties.*/
 class MaterialProperty
 {

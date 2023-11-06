@@ -1,8 +1,8 @@
-#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
+#include "framework/math/Quadratures/LegendrePoly/legendrepoly.h"
 #include <cmath>
 #include <cstdlib>
 
-//###################################################################
+// ###################################################################
 /**Provides the function evaluation of the associated Legendre polynomial at
 value x.
 

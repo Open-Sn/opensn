@@ -1,9 +1,9 @@
-#include "opensn/framework/math/NonLinearSolver/NonLinearSolverPETSc.h"
+#include "framework/math/NonLinearSolver/NonLinearSolverPETSc.h"
 
 #include <petscsnes.h>
 
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/logging/stringstream_color.h"
+#include "framework/logging/chi_log.h"
+#include "framework/logging/stringstream_color.h"
 
 namespace chi_math
 {

@@ -1,7 +1,7 @@
 #include "field_ops_lua.h"
-#include "opensn/framework/physics/FieldOperations/field_operation.h"
+#include "framework/physics/FieldOperations/field_operation.h"
 
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_physics::field_operations::lua_utils
 {

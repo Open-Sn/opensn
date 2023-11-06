@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/parameters/input_parameters.h"
+#include "framework/parameters/input_parameters.h"
 
 namespace chi_mesh::lua_utils
 {

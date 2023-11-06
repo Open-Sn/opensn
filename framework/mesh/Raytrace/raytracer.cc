@@ -1,7 +1,7 @@
-#include "opensn/framework/mesh/Raytrace/raytracer.h"
-#include "opensn/framework/mesh/Cell/cell.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/mesh/Raytrace/raytracer.h"
+#include "framework/mesh/Cell/cell.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/logging/chi_log.h"
 #include <algorithm>
 
 namespace chi_mesh

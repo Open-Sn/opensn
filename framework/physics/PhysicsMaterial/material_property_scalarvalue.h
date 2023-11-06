@@ -1,11 +1,11 @@
 #pragma once
 
-#include "opensn/framework/physics/PhysicsMaterial/material_property_base.h"
+#include "framework/physics/PhysicsMaterial/material_property_base.h"
 
 namespace chi_physics
 {
 
-//###################################################################
+// ###################################################################
 /**Simple scalar material property.*/
 class ScalarValue : public chi_physics::MaterialProperty
 {

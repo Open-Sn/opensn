@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "opensn/framework/mesh/SweepUtilities/FLUDS/FLUDSCommonData.h"
+#include "framework/mesh/SweepUtilities/FLUDS/FLUDSCommonData.h"
 
 namespace chi_mesh
 {

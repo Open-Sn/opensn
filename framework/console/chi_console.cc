@@ -1,15 +1,15 @@
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 #ifdef OPENSN_WITH_LUA
 #include "lua/modules/chi_modules_lua.h"
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 #endif
-#include "opensn/config.h"
-#include "opensn/framework/ChiObjectFactory.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/logging/chi_log_exceptions.h"
-#include "opensn/framework/mpi/chi_mpi.h"
-#include "opensn/framework/utils/chi_utils.h"
+#include "config.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/logging/chi_log_exceptions.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/utils/chi_utils.h"
 #include <iostream>
 
 namespace chi::lua_utils
@@ -31,7 +31,7 @@ Console::GetInstance() noexcept
 
 Console::Console() noexcept
 #ifdef OPENSN_WITH_LUA
-    : console_state_(luaL_newstate())
+  : console_state_(luaL_newstate())
 #endif
 {
 }

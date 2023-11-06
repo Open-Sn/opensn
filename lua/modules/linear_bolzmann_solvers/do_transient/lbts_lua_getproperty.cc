@@ -1,8 +1,8 @@
-#include "opensn/modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
+#include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
 
 #if 0
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #define PropertyArgCntErr(prop_name)                                                               \
   throw std::logic_error(fname + ": Insufficient amount of arguments, " +                          \

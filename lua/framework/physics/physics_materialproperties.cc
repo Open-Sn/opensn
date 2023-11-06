@@ -1,16 +1,16 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 #include <iostream>
 
-#include "opensn/framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
-#include "opensn/framework/physics/PhysicsMaterial/material_property_scalarvalue.h"
-#include "opensn/framework/physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
-#include "opensn/framework/physics/PhysicsMaterial/material_property_isotropic_mg_src.h"
+#include "framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
+#include "framework/physics/PhysicsMaterial/material_property_scalarvalue.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
+#include "framework/physics/PhysicsMaterial/material_property_isotropic_mg_src.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include "physics_lua_utils.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiPhysicsMaterialAddProperty);
 RegisterLuaFunctionAsIs(chiPhysicsMaterialSetProperty);
@@ -20,7 +20,7 @@ RegisterLuaConstantAsIs(SCALAR_VALUE, chi_data_types::Varying(1));
 RegisterLuaConstantAsIs(TRANSPORT_XSECTIONS, chi_data_types::Varying(10));
 RegisterLuaConstantAsIs(ISOTROPIC_MG_SOURCE, chi_data_types::Varying(11));
 
-//#############################################################################
+// #############################################################################
 /** Adds a material property to a material.
  *
 \param MaterialHandle int Index to the reference material.
@@ -179,7 +179,7 @@ chiPhysicsMaterialAddProperty(lua_State* L)
   return 0;
 }
 
-//#############################################################################
+// #############################################################################
 /** Sets a material property for a given material.
  *
 \param MaterialHandle int Index to the reference material.
@@ -574,7 +574,7 @@ chiPhysicsMaterialSetProperty(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /** Returns a rich lua data-structure of the required property.
  *
 \param MaterialHandle int Index to the reference material.

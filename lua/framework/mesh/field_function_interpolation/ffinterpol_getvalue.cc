@@ -1,21 +1,21 @@
-#include "opensn/framework/chi_lua.h"
-#include "opensn/framework/mesh/FieldFunctionInterpolation/Point/chi_ffinter_point.h"
-#include "opensn/framework/mesh/FieldFunctionInterpolation/Line/chi_ffinter_line.h"
-#include "opensn/framework/mesh/FieldFunctionInterpolation/Volume/chi_ffinter_volume.h"
+#include "framework/chi_lua.h"
+#include "framework/mesh/FieldFunctionInterpolation/Point/chi_ffinter_point.h"
+#include "framework/mesh/FieldFunctionInterpolation/Line/chi_ffinter_line.h"
+#include "framework/mesh/FieldFunctionInterpolation/Volume/chi_ffinter_volume.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #define dcastPoint(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationPoint&>(x)
 #define dcastLine(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationLine&>(x)
 #define dcastVolume(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationVolume&>(x)
 
 #include "ffinterpol_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiFFInterpolationGetValue);
 
-//#############################################################################
+// #############################################################################
 /** Gets the value(s) associated with an interpolation provided the
  * interpolation type has an associated value.
  *

@@ -1,8 +1,8 @@
-#include "opensn/framework/physics/FieldOperations/field_copy.h"
+#include "framework/physics/FieldOperations/field_copy.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
-#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 namespace chi_physics::field_operations
 {

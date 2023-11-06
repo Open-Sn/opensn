@@ -5,8 +5,9 @@ add_executable(opensn-test ${TEST_SRCS})
 
 target_include_directories(opensn-test
     PRIVATE
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+    $<INSTALL_INTERFACE:include/opensn>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
     ${PROJECT_SOURCE_DIR}
 )
 

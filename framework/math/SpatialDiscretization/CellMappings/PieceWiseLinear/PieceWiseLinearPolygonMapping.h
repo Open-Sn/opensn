@@ -1,9 +1,9 @@
 #pragma once
 
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
-#include "opensn/framework/math/Quadratures/quadrature_line.h"
-#include "opensn/framework/math/Quadratures/quadrature_triangle.h"
-#include "opensn/framework/mesh/Cell/cell.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
+#include "framework/math/Quadratures/quadrature_line.h"
+#include "framework/math/Quadratures/quadrature_triangle.h"
+#include "framework/mesh/Cell/cell.h"
 
 #include <array>
 

@@ -1,4 +1,4 @@
-#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/boundary_vacuum.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_vacuum.h"
 
 namespace chi_mesh::sweep_management
 {

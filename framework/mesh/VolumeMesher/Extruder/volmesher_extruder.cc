@@ -1,13 +1,13 @@
-#include "opensn/framework/mesh/VolumeMesher/Extruder/volmesher_extruder.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/SurfaceMesher/surfacemesher.h"
-#include "opensn/framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
-#include "opensn/framework/utils/chi_timer.h"
-#include "opensn/framework/console/chi_console.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/mpi/chi_mpi.h"
+#include "framework/mesh/VolumeMesher/Extruder/volmesher_extruder.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/SurfaceMesher/surfacemesher.h"
+#include "framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/console/chi_console.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
 #include <iostream>
 
 namespace chi_mesh
@@ -65,8 +65,8 @@ void
 VolumeMesherExtruder::Execute()
 {
   Chi::log.Log() << Chi::program_timer.GetTimeString()
-                 << " VolumeMesherExtruder executed. Memory in use = "
-                 << Chi::GetMemoryUsageInMB() << " MB" << std::endl;
+                 << " VolumeMesherExtruder executed. Memory in use = " << Chi::GetMemoryUsageInMB()
+                 << " MB" << std::endl;
 
   //================================================== Loop over all regions
   Chi::log.Log0Verbose1() << "VolumeMesherExtruder: Processing Region" << std::endl;

@@ -1,13 +1,13 @@
 #pragma once
 
 #include <mpi.h>
-#include "opensn/framework/mesh/chi_mesh.h"
-#include "opensn/framework/chi_runtime.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/chi_runtime.h"
 
 namespace chi
 {
 
-//################################################################### Class def
+// ################################################################### Class def
 /**Simple implementation a communicator set.
  * Definitions:
  * P = total amount of processors.

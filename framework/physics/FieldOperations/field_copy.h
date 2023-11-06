@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/physics/FieldOperations/field_operation.h"
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/FieldOperations/field_operation.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
 namespace chi_physics::field_operations
 {

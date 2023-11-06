@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 
-#include "opensn/framework/mesh/chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 
 /**Object for containing all mesh related variables.*/
 class chi_mesh::MeshHandler

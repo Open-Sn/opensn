@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/mesh/chi_mesh.h"
-#include "opensn/framework/math/chi_math.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/math/chi_math.h"
 
 #include <vector>
 #include <limits>

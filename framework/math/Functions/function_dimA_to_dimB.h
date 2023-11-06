@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/ChiObject.h"
+#include "framework/ChiObject.h"
 #include <functional>
 
 namespace chi_math

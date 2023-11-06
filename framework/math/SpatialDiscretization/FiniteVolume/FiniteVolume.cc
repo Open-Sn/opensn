@@ -1,12 +1,12 @@
-#include "opensn/framework/math/SpatialDiscretization/FiniteVolume/FiniteVolume.h"
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log_exceptions.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "opensn/framework/math/SpatialDiscretization/CellMappings/FiniteVolumeMapping.h"
-#include "opensn/framework/math/UnknownManager/unknown_manager.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/mpi/chi_mpi.h"
-#include "opensn/framework/mpi/chi_mpi_utils_map_all2all.h"
+#include "framework/math/SpatialDiscretization/FiniteVolume/FiniteVolume.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log_exceptions.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/math/SpatialDiscretization/CellMappings/FiniteVolumeMapping.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/mpi/chi_mpi_utils_map_all2all.h"
 
 #define sc_int64 static_cast<int64_t>
 

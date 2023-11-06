@@ -1,15 +1,15 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
+#include "framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 #include "ffinterpol_lua.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiFFInterpolationInitialize);
 RegisterLuaFunctionAsIs(chiFFInterpolationExecute);
 
-//###################################################################
+// ###################################################################
 /** Initialize interpolator.
  *
 \param FFIHandle int Handle to the field function interpolation.
@@ -33,7 +33,7 @@ chiFFInterpolationInitialize(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /** Execute interpolator.
  *
 \param FFIHandle int Handle to the field function interpolation.

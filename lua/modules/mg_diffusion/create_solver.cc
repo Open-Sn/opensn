@@ -1,14 +1,14 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/modules/MGDiffusion/mg_diffusion_solver.h"
+#include "modules/MGDiffusion/mg_diffusion_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace mg_diffusion::mgd_lua_utils
 {
 
-//#############################################################################
+// #############################################################################
 /** Creates a Multigroup CFEM Diffusion solver.
 
 \return Handle int Handle to the created solver.

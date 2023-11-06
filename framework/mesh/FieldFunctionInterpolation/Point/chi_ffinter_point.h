@@ -1,11 +1,11 @@
 #pragma once
 
-#include "opensn/framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
-#include "opensn/framework/mesh/chi_mesh.h"
+#include "framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
+#include "framework/mesh/chi_mesh.h"
 
 namespace chi_mesh
 {
-//###################################################################
+// ###################################################################
 /** A line based interpolation function.*/
 class FieldFunctionInterpolationPoint : public FieldFunctionInterpolation
 {

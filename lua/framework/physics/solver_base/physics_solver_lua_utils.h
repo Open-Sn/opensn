@@ -5,7 +5,7 @@ namespace chi
 class InputParameters;
 }
 
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 namespace chi_physics::lua_utils
 {
 int chiSolverCreate(lua_State* L);

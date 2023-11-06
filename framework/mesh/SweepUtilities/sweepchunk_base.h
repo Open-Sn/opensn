@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
+#include "framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
 
 #include <functional>
 

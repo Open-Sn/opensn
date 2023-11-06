@@ -1,17 +1,17 @@
-#include "opensn/modules/FVDiffusion/fv_diffusion_solver.h"
+#include "modules/FVDiffusion/fv_diffusion_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/utils/chi_timer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
 
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "opensn/modules/FVDiffusion/fv_diffusion_bndry.h"
+#include "modules/FVDiffusion/fv_diffusion_bndry.h"
 
-#include "opensn/framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-#include "opensn/framework/math/SpatialDiscretization/FiniteVolume/FiniteVolume.h"
+#include "framework/math/SpatialDiscretization/FiniteVolume/FiniteVolume.h"
 
 //============================================= constructor
 fv_diffusion::Solver::Solver(const std::string& in_solver_name)
@@ -254,7 +254,7 @@ fv_diffusion::Solver::Execute()
       }   // bndry face
     }     // for f
 #endif
-  }       // for cell
+  } // for cell
 
   Chi::log.Log() << "Global assembly";
 

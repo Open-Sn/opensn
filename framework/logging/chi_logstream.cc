@@ -1,6 +1,6 @@
-#include "opensn/framework/logging/chi_logstream.h"
+#include "framework/logging/chi_logstream.h"
 
-#include "opensn/framework/logging/stringstream_color.h"
+#include "framework/logging/stringstream_color.h"
 
 chi::LogStream::~LogStream()
 {

@@ -1,9 +1,9 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-//###################################################################
+// ###################################################################
 /**Exports the mesh to a wavefront.obj format.
 \param FileName char Base name of the file to be used.
 \param ExportByMaterial bool Default: False. Flag indicating whether to export
@@ -32,7 +32,7 @@ chiMeshHandlerExportMeshToObj(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Exports the mesh to vtu format.
 \param FileName char Base name of the file to be used.
 \ingroup LuaMeshHandler
@@ -56,7 +56,7 @@ chiMeshHandlerExportMeshToVTK(lua_State* L)
   return 0;
 }
 
-//###################################################################
+// ###################################################################
 /**Exports the mesh to exodus format (.e extensions).
 \param FileName char Base name of the file to be used.
 \param suppress_nodesets bool Optional. Flag to suppress exporting nodesets.

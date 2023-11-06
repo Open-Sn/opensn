@@ -1,9 +1,9 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 #include "unpartition_mesh_lua_utils.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_mesh::unpartition_mesh_lua_utils
 {
@@ -12,7 +12,7 @@ RegisterLuaFunctionAsIs(chiUnpartitionedMeshUploadVertex);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshUploadCell);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshFinalizeEmpty);
 
-//###################################################################
+// ###################################################################
 /**Uploads a vertex.
  *
 \param handle int Handle to mesh.
@@ -61,7 +61,7 @@ chiUnpartitionedMeshUploadVertex(lua_State* L)
   return 1;
 }
 
-//###################################################################
+// ###################################################################
 /**Uploads a cell
 
 \param handle int Handle to mesh.
@@ -217,7 +217,7 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
   return 1;
 }
 
-//###################################################################
+// ###################################################################
 /**Finalizes a mesh. This usually involves computing centroids and
  * establishing connectivity.
  *

@@ -1,13 +1,13 @@
-#include "opensn/framework/math/chi_math.h"
+#include "framework/math/chi_math.h"
 
-#include "opensn/framework/math/Statistics/cdfsampler.h"
+#include "framework/math/Statistics/cdfsampler.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include <unistd.h>
 
-//###################################################################
+// ###################################################################
 /**Constructor for a sub interval*/
 chi_math::CDFSampler::SubIntvl::SubIntvl(std::string offset,
                                          int ibin,
@@ -54,7 +54,7 @@ chi_math::CDFSampler::SubIntvl::SubIntvl(std::string offset,
   }
 }
 
-//###################################################################
+// ###################################################################
 /**Default constructor.*/
 chi_math::CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor, int final_res)
   : ref_cdf_(in_cdf)
@@ -105,7 +105,7 @@ chi_math::CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor,
   }
 }
 
-//###################################################################
+// ###################################################################
 /**Initiates the sampling process.*/
 int
 chi_math::CDFSampler::Sample(double x)
@@ -162,7 +162,7 @@ chi_math::CDFSampler::Sample(double x)
   return ret_val;
 }
 
-//###################################################################
+// ###################################################################
 /**Sampling a sub-interval.*/
 bool
 chi_math::CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
@@ -203,7 +203,7 @@ chi_math::CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
   return false;
 }
 
-//###################################################################
+// ###################################################################
 /**Sample a Cumulative Distribution Function (CDF) given a probability.
  *
  * The supplied vector should contain the upper bin boundary for each

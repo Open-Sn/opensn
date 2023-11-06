@@ -1,6 +1,6 @@
-#include "opensn/framework/math/TimeIntegrations/crank_nicolson_time_intgr.h"
+#include "framework/math/TimeIntegrations/crank_nicolson_time_intgr.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 #define scint static_cast<int>
 

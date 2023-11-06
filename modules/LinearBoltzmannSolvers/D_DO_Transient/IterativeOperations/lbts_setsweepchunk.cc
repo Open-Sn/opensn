@@ -1,6 +1,6 @@
-#include "opensn/modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
+#include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
 #if 0
-#include "opensn/modules/LinearBoltzmannSolvers/D_DO_Transient/SweepChunks/lbts_sweepchunk_pwl.h"
+#include "modules/LinearBoltzmannSolvers/D_DO_Transient/SweepChunks/lbts_sweepchunk_pwl.h"
 
 //###################################################################
 /**Sets up the sweek chunk for the given discretization method.*/

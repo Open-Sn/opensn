@@ -1,23 +1,23 @@
 #pragma once
 
-#include "opensn/framework/ChiObject.h"
+#include "framework/ChiObject.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_group.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/lbs_iterativemethods.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_group.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/lbs_iterativemethods.h"
 
-#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
-#include "opensn/framework/math/Quadratures/angular_quadrature_base.h"
-#include "opensn/framework/math/UnknownManager/unknown_manager.h"
+#include "framework/math/Quadratures/LegendrePoly/legendrepoly.h"
+#include "framework/math/Quadratures/angular_quadrature_base.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
 
-#include "opensn/framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
+#include "framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
-#include "opensn/framework/physics/chi_physics_namespace.h"
+#include "framework/physics/chi_physics_namespace.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
 
-#include "opensn/framework/utils/chi_utils.h"
+#include "framework/utils/chi_utils.h"
 
 namespace lbs::acceleration
 {
@@ -29,7 +29,7 @@ namespace lbs
 
 class LBSSolver;
 
-//################################################################### Class def
+// ################################################################### Class def
 /**Group set functioning as a collection of groups*/
 class LBSGroupset : public ChiObject
 {

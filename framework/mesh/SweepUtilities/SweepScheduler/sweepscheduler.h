@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opensn/framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
-#include "opensn/framework/mesh/SweepUtilities/sweepchunk_base.h"
+#include "framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
+#include "framework/mesh/SweepUtilities/sweepchunk_base.h"
 
 namespace chi_mesh
 {

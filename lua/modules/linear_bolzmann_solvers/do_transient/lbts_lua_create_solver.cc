@@ -1,6 +1,6 @@
-#include "opensn/modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
+#include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
 #include "lbts_lua_utils.h"
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
 #if 0
 namespace lbs::lbts_lua_utils

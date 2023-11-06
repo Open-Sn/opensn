@@ -1,14 +1,14 @@
-#include "opensn/modules/LinearBoltzmannSolvers/B_DiffusionDFEMSolver/IterativeMethods/mip_wgs_context2.h"
+#include "modules/LinearBoltzmannSolvers/B_DiffusionDFEMSolver/IterativeMethods/mip_wgs_context2.h"
 
 #include <petscksp.h>
 
-#include "opensn/modules/LinearBoltzmannSolvers/B_DiffusionDFEMSolver/lbsMIP_solver.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Preconditioning/lbs_shell_operations.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
+#include "modules/LinearBoltzmannSolvers/B_DiffusionDFEMSolver/lbsMIP_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Preconditioning/lbs_shell_operations.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include <iomanip>
 

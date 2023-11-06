@@ -1,13 +1,13 @@
 #ifdef OPENSN_WITH_LUA
-#include "opensn/modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/ResponseFunction/lbs_adj_response_function.h"
+#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/ResponseFunction/lbs_adj_response_function.h"
 
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/console/chi_console.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/console/chi_console.h"
+#include "framework/logging/chi_log.h"
 
-//###################################################################
+// ###################################################################
 /** Calls the lua function associated with the response function and
  * returns a multigroup vector of the source values.*/
 std::vector<double>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/mpi/chi_mpi.h"
+#include "framework/mpi/chi_mpi.h"
 #include <vector>
 typedef std::vector<double> VecDbl;
 

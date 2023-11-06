@@ -1,14 +1,14 @@
-#include "opensn/framework/chi_lua.h"
-#include "opensn/framework/math/Quadratures/LegendrePoly/legendrepoly.h"
+#include "framework/chi_lua.h"
+#include "framework/math/Quadratures/LegendrePoly/legendrepoly.h"
 
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 #include "legendre_lua.h"
 
 RegisterLuaFunctionAsIs(chiLegendre);
 RegisterLuaFunctionAsIs(chiLegendreDerivative);
 RegisterLuaFunctionAsIs(chiYlm);
 
-//##########################################################
+// ##########################################################
 /**Provides the function evaluation of Pn at value x.
 
  \param N int The Legendre polynomial.
@@ -28,7 +28,7 @@ chiLegendre(lua_State* L)
   return 1;
 }
 
-//###################################################################
+// ###################################################################
 /**Provides the function evaluation of the derivative of Pn at value x
 
  \param N int The Legendre polynomial.
@@ -48,7 +48,7 @@ chiLegendreDerivative(lua_State* L)
   return 1;
 }
 
-//###################################################################
+// ###################################################################
 /**Provides the function evaluation of the spherical harmonics.
 
 \param ell int The \f$ \ell \f$-th order of the harmonic.

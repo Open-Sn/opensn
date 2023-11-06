@@ -1,19 +1,19 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
 #include <iostream>
 #include <algorithm>
-#include "opensn/framework/mesh/SurfaceMesh/chi_surfacemesh.h"
-#include "opensn/framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "opensn/framework/chi_runtime.h"
+#include "framework/mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 #include "lua_surface_mesh.h"
-#include "opensn/framework/console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 RegisterLuaFunctionAsIs(chiSurfaceMeshCheckCycles);
 RegisterLuaFunctionAsIs(chiComputeLoadBalancing);
 
-//#############################################################################
+// #############################################################################
 /** Builds sweep ordering for a number of angles and checks whether any
  * cyclic dependencies are encountered.
  *
@@ -41,7 +41,7 @@ chiSurfaceMeshCheckCycles(lua_State* L)
   return 0;
 }
 
-//#############################################################################
+// #############################################################################
 /** Computes load balancing parameters for given predictive x and y cuts
  * without actually performing cuts.
  *

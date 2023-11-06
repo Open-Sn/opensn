@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/physics/FieldFunction/FieldFunctionInterface.h"
+#include "framework/physics/FieldFunction/FieldFunctionInterface.h"
 
 namespace chi_physics
 {

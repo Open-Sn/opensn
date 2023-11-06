@@ -1,12 +1,12 @@
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
-#include "opensn/framework/mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "framework/mesh/SurfaceMesh/chi_surfacemesh.h"
 
-#include "opensn/framework/chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 
-//#############################################################################
+// #############################################################################
 /** Exports all open edges of a surface mesh to file. This is used mostly
  * for graphical error checking.
  *

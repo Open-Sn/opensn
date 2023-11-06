@@ -1,9 +1,9 @@
 #pragma once
 
-#include "opensn/framework/graphs/chi_directed_graph_vertex.h"
+#include "framework/graphs/chi_directed_graph_vertex.h"
 #include <stack>
 
-//###################################################################
+// ###################################################################
 /**Simple implementation of a directed graph. This implementation was
  * considered to serve more versatile strategies with regards to grid
  * parallel partitioning.*/
@@ -26,7 +26,7 @@ public:
 
     GraphVertex& operator[](size_t v);
 
-    //############################ iterator Class Definition
+    // ############################ iterator Class Definition
     /**Internal iterator class for vertex accessor.*/
     class iterator
     {
@@ -66,7 +66,7 @@ public:
       bool operator==(const iterator& rhs) const { return ref_element == rhs.ref_element; }
       bool operator!=(const iterator& rhs) const { return ref_element != rhs.ref_element; }
     };
-    //############################ End of iterator Class Definition
+    // ############################ End of iterator Class Definition
 
     iterator begin()
     {

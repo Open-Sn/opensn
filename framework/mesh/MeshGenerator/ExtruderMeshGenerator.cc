@@ -1,8 +1,8 @@
-#include "opensn/framework/mesh/MeshGenerator/ExtruderMeshGenerator.h"
+#include "framework/mesh/MeshGenerator/ExtruderMeshGenerator.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_mesh
 {

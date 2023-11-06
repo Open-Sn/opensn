@@ -1,15 +1,15 @@
 #pragma once
 
-#include "opensn/framework/physics/SolverBase/chi_solver.h"
+#include "framework/physics/SolverBase/chi_solver.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
-#include "opensn/framework/math/SpatialDiscretization/SpatialDiscretization.h"
-#include "opensn/framework/math/LinearSolver/linear_solver.h"
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
-#include "opensn/framework/mesh/SweepUtilities/sweep_namespace.h"
-#include "opensn/framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/math/LinearSolver/linear_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "framework/mesh/SweepUtilities/sweep_namespace.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
 
-#include "opensn/modules/LinearBoltzmannSolvers/A_LBSSolver/PointSource/lbs_point_source.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/PointSource/lbs_point_source.h"
 
 #include <petscksp.h>
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "opensn/framework/math/Quadratures/quadrature.h"
+#include "framework/math/Quadratures/quadrature.h"
 
 namespace chi_math
 {
 class QuadratureQuadrilateral;
 }
 
-//###################################################################
+// ###################################################################
 /**Quadrature set for quadrilaterals.*/
 class chi_math::QuadratureQuadrilateral : public chi_math::Quadrature
 {

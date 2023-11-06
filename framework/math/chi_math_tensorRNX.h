@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/math/chi_math_vectorNX.h"
+#include "framework/math/chi_math_vectorNX.h"
 
 #include <iostream>
 
@@ -12,7 +12,7 @@
 
 namespace chi_math
 {
-//#################################################################
+// #################################################################
 /**Generalized tensor with rank-R dimension-N and arbitrary number
  * format.
  * \author Jan.*/
@@ -69,7 +69,7 @@ struct TensorRNX
   //    }
 };
 
-//#################################################################
+// #################################################################
 /**Specialized rank-2 tensor.*/
 template <int N, class NumberFormat>
 struct TensorRNX<2, N, NumberFormat>

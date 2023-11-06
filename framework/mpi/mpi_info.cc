@@ -1,11 +1,11 @@
-#include "opensn/framework/mpi/mpi_info.h"
+#include "framework/mpi/mpi_info.h"
 
-#include "opensn/framework/logging/chi_log_exceptions.h"
+#include "framework/logging/chi_log_exceptions.h"
 
 namespace chi
 {
 
-//###################################################################
+// ###################################################################
 /**Access to the singleton*/
 MPI_Info&
 MPI_Info::GetInstance() noexcept

@@ -1,12 +1,12 @@
-#include "opensn/framework/math/Quadratures/quadrature_triangle.h"
+#include "framework/math/Quadratures/quadrature_triangle.h"
 
-#include "opensn/framework/math/Quadratures/Conical/quadrature_conical.h"
+#include "framework/math/Quadratures/Conical/quadrature_conical.h"
 
 #include <cmath>
 #include <stdexcept>
 #include <cassert>
 
-//###################################################################
+// ###################################################################
 /**Initializes quadratures for use on triangles.*/
 chi_math::QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order)
 {

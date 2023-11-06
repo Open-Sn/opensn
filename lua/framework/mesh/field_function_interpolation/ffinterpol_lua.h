@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opensn/framework/chi_lua.h"
+#include "framework/chi_lua.h"
 
 int chiFFInterpolationCreate(lua_State* L);
 int chiFFInterpolationSetProperty(lua_State* L);

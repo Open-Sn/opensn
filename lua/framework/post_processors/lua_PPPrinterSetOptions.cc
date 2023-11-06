@@ -1,13 +1,13 @@
-#include "opensn/framework/post_processors/PostProcessorPrinter.h"
+#include "framework/post_processors/PostProcessorPrinter.h"
 
-#include "opensn/framework/parameters/input_parameters.h"
-#include "opensn/framework/utils/chi_utils.h"
+#include "framework/parameters/input_parameters.h"
+#include "framework/utils/chi_utils.h"
 
-#include "opensn/framework/console/chi_console.h"
-#include "opensn/framework/ChiObjectFactory.h"
+#include "framework/console/chi_console.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi
 {

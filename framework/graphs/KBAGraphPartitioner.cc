@@ -1,12 +1,12 @@
-#include "opensn/framework/graphs/KBAGraphPartitioner.h"
+#include "framework/graphs/KBAGraphPartitioner.h"
 
-#include "opensn/framework/ChiObjectFactory.h"
-#include "opensn/framework/utils/chi_utils.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/utils/chi_utils.h"
 
-#include "opensn/framework/mesh/chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 
-#include "opensn/framework/chi_runtime.h"
-#include "opensn/framework/logging/chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include <cmath>
 
