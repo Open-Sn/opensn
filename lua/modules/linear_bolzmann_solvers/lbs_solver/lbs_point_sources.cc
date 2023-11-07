@@ -6,15 +6,6 @@
 namespace lbs::common_lua_utils
 {
 
-/**Adds a point source to an LBS solver.
-\param SolverIndex int Handle to the solver.
-\param Location_x double X-location.
-\param Location_y double Y-location.
-\param Location_z double Z-location.
-\param Strength table Source strength as a multigroup vector.
-
- \ingroup LBSLuaFunctions
- */
 int
 chiLBSAddPointSource(lua_State* L)
 {
@@ -51,12 +42,6 @@ chiLBSAddPointSource(lua_State* L)
   return 0;
 }
 
-/**Clears all the point sources from the solver. This is mostly
- * useful for adjoint response calculations.
-\param SolverIndex int Handle to the solver.
-
- \ingroup LBSLuaFunctions
- */
 int
 chiLBSClearPointSources(lua_State* L)
 {
@@ -77,12 +62,6 @@ chiLBSClearPointSources(lua_State* L)
   return 0;
 }
 
-/**Initializes the point sources. This is mostly
- * useful for adjoint response calculations.
-\param SolverIndex int Handle to the solver.
-
- \ingroup LBSLuaFunctions
- */
 int
 chiLBSInitializePointSources(lua_State* L)
 {

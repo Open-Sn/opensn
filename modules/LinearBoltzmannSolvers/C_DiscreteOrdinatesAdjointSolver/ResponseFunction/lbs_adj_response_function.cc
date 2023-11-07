@@ -7,8 +7,6 @@
 #include "framework/console/chi_console.h"
 #include "framework/logging/chi_log.h"
 
-/** Calls the lua function associated with the response function and
- * returns a multigroup vector of the source values.*/
 std::vector<double>
 lbs::ResponseFunctionDesignation::GetMGResponse(const chi_mesh::Cell& cell,
                                                 const size_t num_groups) const

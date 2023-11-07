@@ -52,7 +52,6 @@ FieldFunctionGridBased::GetInputParameters()
   return params;
 }
 
-/**ObjectMaker based constructor.*/
 FieldFunctionGridBased::FieldFunctionGridBased(const chi::InputParameters& params)
   : FieldFunction(params),
     sdm_(MakeSpatialDiscretization(params)),

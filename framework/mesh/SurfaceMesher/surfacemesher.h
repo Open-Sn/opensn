@@ -26,6 +26,7 @@ public:
   void AddYCut(double y_cut) { ycuts_.push_back(y_cut); }
   explicit SurfaceMesher(SurfaceMesherType in_type) : type_(in_type) {}
 
+  /**Executes the pass-through surface mesher.*/
   virtual void Execute();
 
   virtual ~SurfaceMesher() = default;

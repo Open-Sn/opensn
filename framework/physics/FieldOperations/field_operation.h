@@ -9,8 +9,10 @@ namespace chi_physics::field_operations
 class FieldOperation : public ChiObject
 {
 public:
+  /**Returns the input parameters.*/
   static chi::InputParameters GetInputParameters();
 
+  /**Constructor.*/
   explicit FieldOperation(const chi::InputParameters& params);
 
   virtual void Execute() = 0;

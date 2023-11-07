@@ -7,11 +7,6 @@
 #include "framework/chi_runtime.h"
 #include "framework/logging/chi_log.h"
 
-/** Creates a Diffusion solver.
-
-\return Handle int Handle to the created solver.
-\ingroup LuaDiffusion
-\author Jan*/
 int
 chiDiffusionCreateSolver(lua_State* L)
 {

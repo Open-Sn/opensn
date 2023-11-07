@@ -11,6 +11,7 @@ class Solver;
 class PhysicsEventPublisher : public chi::EventPublisher
 {
 public:
+  /**Access to the singleton*/
   static PhysicsEventPublisher& GetInstance();
   /// Deleted copy constructor
   PhysicsEventPublisher(const PhysicsEventPublisher&) = delete;

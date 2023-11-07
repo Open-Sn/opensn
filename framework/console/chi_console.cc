@@ -228,9 +228,6 @@ Console::RunConsoleLoop(char*) const
   Chi::log.Log() << "Console loop stopped successfully.";
 }
 
-// Execute file
-/** Executes the given file in the Lua engine.
-\author Jan*/
 int
 chi::Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
 {
@@ -261,7 +258,6 @@ chi::Console::ExecuteFile(const std::string& fileName, int argc, char** argv) co
   return EXIT_SUCCESS;
 }
 
-/**Pushes location id and number of processes to lua state.*/
 void
 chi::Console::PostMPIInfo(int location_id, int number_of_processes) const
 {
@@ -276,8 +272,6 @@ chi::Console::PostMPIInfo(int location_id, int number_of_processes) const
 #endif
 }
 
-/**Basic addition to registry. Used by the other public methods
- * to registry a text-key to a lua function.*/
 void
 chi::Console::AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunction function_ptr)
 {
@@ -305,11 +299,6 @@ chi::Console::AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunctio
 
 #ifdef OPENSN_WITH_LUA
 
-/**Adds a lua_CFunction to the registry. The registry of functions gets
- * parsed into the lua console when `chi::Initialize` is called. This
- * particular function will strip the namespace from the the parameter
- * `raw_name_in_lua` and cause the function to be registered in the
- * global namespace of the lua console.*/
 char
 chi::Console::AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_in_lua,
                                                    lua_CFunction function_ptr)
@@ -325,10 +314,6 @@ chi::Console::AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_i
 
 #ifdef OPENSN_WITH_LUA
 
-/**Adds a lua_CFunction to the registry. The registry of functions gets
- * parsed into the lua console when `chi::Initialize` is called. The full
- * path of the function will be derived from `namespace_name` + "::" +
- * `function_name`.*/
 char
 chi::Console::AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_ptr,
                                                        const std::string& namespace_name,
@@ -344,8 +329,6 @@ chi::Console::AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_pt
 
 #ifdef OPENSN_WITH_LUA
 
-/**\brief Adds a constant to the lua state. Prepending the constant
- * within a namespace is optional.*/
 char
 chi::Console::AddLuaConstantToRegistry(const std::string& namespace_name,
                                        const std::string& constant_name,
@@ -379,8 +362,6 @@ chi::Console::DefaultGetInParamsFunc()
 
 #ifdef OPENSN_WITH_LUA
 
-/**Wrapper functions operate with input and output parameters, essentially
- * hiding the lua interface.*/
 char
 chi::Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_name,
                                                       const std::string& name_in_lua,
@@ -415,7 +396,6 @@ chi::Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespa
 
 #ifdef OPENSN_WITH_LUA
 
-/**Sets/Forms a lua function in the state using a namespace structure.*/
 void
 chi::Console::SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name,
                                                 lua_CFunction function_ptr)
@@ -444,11 +424,6 @@ chi::Console::SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name
 
 #ifdef OPENSN_WITH_LUA
 
-/**Sets/Forms a table structure that mimics the namespace structure of
- * a string. For example the string "sing::sob::nook::Tigger" will be
- * assigned a table structure
- * `sing.sob.nook.Tigger = "sing::sob::nook::Tigger"`. Then finally assigns
- * lua call to this table.*/
 void
 chi::Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_name)
 {
@@ -489,10 +464,6 @@ chi::Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_l
 
 #ifdef OPENSN_WITH_LUA
 
-/**Sets/Forms a table structure that mimics the namespace structure of
- * a string. For example the string "sing::sob::nook::Tigger" will be
- * assigned a table structure
- * `sing.sob.nook.Tigger = "sing::sob::nook::Tigger"`.*/
 void
 chi::Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
 {
@@ -525,13 +496,6 @@ chi::Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
 
 #ifdef OPENSN_WITH_LUA
 
-/**Fleshes out a path in a table tree. For example, given
- * "fee::foo::fah::koo, this routine will make sure that
- * fee.foo.fah.koo is defined as a table tree structure. The routine will
- * create a table structure where one is needed and leave existing ones alone.
- *
- * At the end of the routine the last table in the structure will be on top
- * of the stack.*/
 void
 chi::Console::FleshOutLuaTableStructure(const std::vector<std::string>& table_names)
 {
@@ -570,7 +534,6 @@ chi::Console::FleshOutLuaTableStructure(const std::vector<std::string>& table_na
 
 #ifdef OPENSN_WITH_LUA
 
-/**Sets a lua constant in the lua state.*/
 void
 chi::Console::SetLuaConstant(const std::string& constant_name, const chi_data_types::Varying& value)
 {
@@ -616,8 +579,6 @@ chi::Console::SetLuaConstant(const std::string& constant_name, const chi_data_ty
 
 #ifdef OPENSN_WITH_LUA
 
-/**Makes a formatted output, readible by the documentation scripts,
- * of all the lua wrapper functions.*/
 void
 chi::Console::DumpRegister() const
 {

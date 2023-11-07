@@ -13,15 +13,6 @@
 RegisterLuaFunctionAsIs(chiSurfaceMeshCheckCycles);
 RegisterLuaFunctionAsIs(chiComputeLoadBalancing);
 
-/** Builds sweep ordering for a number of angles and checks whether any
- * cyclic dependencies are encountered.
- *
-\param SurfaceHandle int Handle to the surface on which the operation is to be
-performed. \param NumAngles int Number of azimuthal angles to use for checking
-cycles.
-
-\ingroup LuaSurfaceMesh
-\author Jan*/
 int
 chiSurfaceMeshCheckCycles(lua_State* L)
 {
@@ -40,15 +31,6 @@ chiSurfaceMeshCheckCycles(lua_State* L)
   return 0;
 }
 
-/** Computes load balancing parameters for given predictive x and y cuts
- * without actually performing cuts.
- *
-\param SurfaceHandle int Handle to the surface on which the operation is to be
-performed. \param Xcuts table Array of x-values associated with the xcuts.
-\param Ycuts table Array of y-values associated with the ycuts.
-
-\ingroup LuaSurfaceMesh
-\author Jan*/
 int
 chiComputeLoadBalancing(lua_State* L)
 {

@@ -299,13 +299,19 @@ public:
    */
   void InitializePointSources();
 
+  /**Initializes the Within-Group DSA solver. */
   void InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);
+  /**Creates a vector from a lbs primary stl vector where only the
+   * scalar moments are mapped to the DOFs needed by WGDSA.*/
   std::vector<double> WGSCopyOnlyPhi0(const LBSGroupset& groupset,
                                       const std::vector<double>& phi_in);
+  /**From the WGDSA DOFs, projects the scalar moments back into a
+   * primary STL vector.*/
   void GSProjectBackPhi0(const LBSGroupset& groupset,
                          const std::vector<double>& input,
                          std::vector<double>& output);
 
+  /**Assembles a delta-phi vector on the first moment.*/
   void AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
                                    const std::vector<double>& phi_in,
                                    std::vector<double>& delta_phi_local);
@@ -491,9 +497,11 @@ protected:
 
   void InitializeFieldFunctions();
 
+  /**Initializes transport related boundaries. */
   void InitializeBoundaries();
   virtual void InitializeSolverSchemes();
   virtual void InitializeWGSSolvers(){};
+  /**Initializes the Within-Group DSA solver. */
   void InitTGDSA(LBSGroupset& groupset);
 
   typedef chi_mesh::sweep_management::CellFaceNodalMapping CellFaceNodalMapping;
@@ -551,7 +559,9 @@ protected:
   /**Time integration parameter meant to be set by an executor*/
   std::shared_ptr<const chi_math::TimeIntegration> time_integration_ = nullptr;
 
+  /**Cleans up memory consuming items. */
   static void CleanUpWGDSA(LBSGroupset& groupset);
+  /**Cleans up memory consuming items. */
   static void CleanUpTGDSA(LBSGroupset& groupset);
 };
 

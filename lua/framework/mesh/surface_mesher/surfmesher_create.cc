@@ -12,24 +12,6 @@
 RegisterLuaFunctionAsIs(chiSurfaceMesherCreate);
 RegisterLuaConstantAsIs(SURFACEMESHER_PREDEFINED, chi_data_types::Varying(1));
 
-/** Creates a surface preprocessor.
- *
-\param SurfaceMesherType int Surface Remesher type. See SurfaceMesherType.
-
-## _
-
-###SurfaceMesherType:\n
-SURFACEMESHER_PREDEFINED\n
- Makes no modification to the region surfaces.\n\n
-
-\code
-chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
-\endcode
-
-## _
-
-\ingroup LuaSurfaceMesher
-\author Jan*/
 int
 chiSurfaceMesherCreate(lua_State* L)
 {

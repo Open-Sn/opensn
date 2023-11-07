@@ -7,10 +7,6 @@
 namespace chi_mesh::sweep_management
 {
 
-/**This constructor initializes an auxiliary FLUDS based
- * on a primary FLUDS. The restriction here is that the
- * auxiliary FLUDS has the exact same sweep ordering as the
- * primary FLUDS.*/
 AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data)
   : FLUDS(num_groups, num_angles, common_data.GetSPDS()), common_data_(common_data)
 {
@@ -21,10 +17,6 @@ AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommon
   delayed_local_psi_Gn_block_strideG = common_data_.delayed_local_psi_Gn_block_stride * num_groups_;
 }
 
-/**Given a sweep ordering index, the outgoing face counter,
- * the outgoing face dof, this function computes the location
- * of this position's upwind psi in the local upwind psi vector
- * and returns a reference to it.*/
 double*
 AAH_FLUDS::OutgoingPsi(int cell_so_index, int outb_face_counter, int face_dof, int n)
 {
@@ -51,8 +43,6 @@ AAH_FLUDS::OutgoingPsi(int cell_so_index, int outb_face_counter, int face_dof, i
   }
 }
 
-/**Given a outbound face counter this method returns a pointer
- * to the location*/
 double*
 AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, int face_dof, int n)
 {
@@ -81,10 +71,6 @@ AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, int face_dof, int n)
   return &deplocI_outgoing_psi_[depLocI][index];
 }
 
-/**Given a sweep ordering index, the incoming face counter,
- * the incoming face dof, this function computes the location
- * where to store this position's outgoing psi and returns a reference
- * to it.*/
 double*
 AAH_FLUDS::UpwindPsi(int cell_so_index, int inc_face_counter, int face_dof, int g, int n)
 {
@@ -119,9 +105,6 @@ AAH_FLUDS::UpwindPsi(int cell_so_index, int inc_face_counter, int face_dof, int 
   }
 }
 
-/**Given a sweep ordering index, the incoming face counter,
- * the incoming face dof, this function computes the location
- * where to obtain the position's upwind psi.*/
 double*
 AAH_FLUDS::NLUpwindPsi(int nonl_inc_face_counter, int face_dof, int g, int n)
 {

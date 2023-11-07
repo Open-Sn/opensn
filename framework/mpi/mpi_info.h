@@ -30,6 +30,7 @@ private:
   MPI_Info() = default;
 
 public:
+  /**Access to the singleton*/
   static MPI_Info& GetInstance() noexcept;
 
 public:

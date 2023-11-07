@@ -6,15 +6,6 @@
 namespace lbs::common_lua_utils
 {
 
-/**Writes the flux-moments of a LBS solution to file (phi_old_local).
-
-\param SolverIndex int Handle to the solver for which the group
-is to be created.
-
-\param file_base string Path+Filename_base to use for the output. Each location
-                        will append its id to the back plus an extension ".data"
-
-*/
 int
 chiLBSWriteFluxMoments(lua_State* L)
 {
@@ -37,16 +28,6 @@ chiLBSWriteFluxMoments(lua_State* L)
   return 0;
 }
 
-/**Creates scattered source-moments, based on a LBS solution, and writes them
- * to file.
-
-\param SolverIndex int Handle to the solver for which the group
-is to be created.
-
-\param file_base string Path+Filename_base to use for the output. Each location
-                        will append its id to the back plus an extension ".data"
-
-*/
 int
 chiLBSCreateAndWriteSourceMoments(lua_State* L)
 {
@@ -70,21 +51,6 @@ chiLBSCreateAndWriteSourceMoments(lua_State* L)
   return 0;
 }
 
-/**Reads flux-moments from a file and creates a scattering source from these
- * moments to be used instead of a regular material/boundary source.
-
-\param SolverIndex int Handle to the solver for which the group
-is to be created.
-
-\param file_base string Path+Filename_base to use for the output. Each location
-                        will append its id to the back plus an extension ".data"
-
-\param single_file_flag bool (Optional) Flag indicating that the file is a
-                             single stand-alone file. The file_base will then
-                             be used without adding the location-id, but still
-                             with the ".data" appended. Default: false.
-
-*/
 int
 chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
 {
@@ -120,21 +86,6 @@ chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
   return 0;
 }
 
-/**Reads the source-moments from a file to a specific
-ext_src_moments_local-vector
- * to be used instead of a regular material/boundary source.
-
-\param SolverIndex int Handle to the solver for which the group
-is to be created.
-
-\param file_base string Path+Filename_base to use for the output. Each location
-                        will append its id to the back plus an extension ".data"
-
-\param single_file_flag bool (Optional) Flag indicating that the file is a
-                             single stand-alone file. The file_base will then
-                             be used without adding the location-id, but still
-                             with the ".data" appended. Default: false.
-*/
 int
 chiLBSReadSourceMoments(lua_State* L)
 {
@@ -164,19 +115,6 @@ chiLBSReadSourceMoments(lua_State* L)
   return 0;
 }
 
-/**Reads flux-moments from a file to phi_old_local (the initial flux solution).
-
-\param SolverIndex int Handle to the solver for which the group
-is to be created.
-
-\param file_base string Path+Filename_base to use for the output. Each location
-                        will append its id to the back plus an extension ".data"
-
-\param single_file_flag bool (Optional) Flag indicating that the file is a
-                             single stand-alone file. The file_base will then
-                             be used without adding the location-id, but still
-                             with the ".data" appended. Default: false.
-*/
 int
 chiLBSReadFluxMoments(lua_State* L)
 {

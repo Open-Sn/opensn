@@ -5,7 +5,6 @@
 
 #include "framework/logging/chi_log_exceptions.h"
 
-/**Provides a string-name for an enumerated VaryingDataType.*/
 std::string
 chi_data_types::VaryingDataTypeStringName(chi_data_types::VaryingDataType type)
 {
@@ -189,8 +188,6 @@ Varying::VaryingArbitraryType<double>::FloatValue() const
 
 } // namespace chi_data_types
 
-/**Checks if two VaryingDataType values match.
- * Type A is matched against type B.*/
 void
 chi_data_types::Varying::CheckTypeMatch(const VaryingDataType type_A,
                                         const VaryingDataType type_B_required) const
@@ -203,7 +200,6 @@ chi_data_types::Varying::CheckTypeMatch(const VaryingDataType type_A,
 }
 
 // Constructors
-/**Constructor for an arbitrary sequence of bytes value.*/
 chi_data_types::Varying::Varying(const std::vector<std::byte>& value)
   : type_(VaryingDataType::ARBITRARY_BYTES)
 {
@@ -212,28 +208,24 @@ chi_data_types::Varying::Varying(const std::vector<std::byte>& value)
   data_ = std::make_unique<VaryingArbitraryType<std::vector<std::byte>>>(value);
 }
 
-/**Constructor for a string value.*/
 chi_data_types::Varying::Varying(const std::string& value)
   : type_(VaryingDataType::STRING),
     data_(std::make_unique<VaryingArbitraryType<std::string>>(value))
 {
 }
 
-/**Copy constructor.*/
 chi_data_types::Varying::Varying(const Varying& other)
 {
   data_ = other.data_->Clone();
   type_ = other.type_;
 }
 
-/**Move constructor.*/
 chi_data_types::Varying::Varying(Varying&& other) noexcept
 {
   std::swap(data_, other.data_);
   std::swap(type_, other.type_);
 }
 
-/**Assignment operator. i.e., type_A = type_B*/
 chi_data_types::Varying&
 chi_data_types::Varying::operator=(const Varying& other)
 {
@@ -246,7 +238,6 @@ chi_data_types::Varying::operator=(const Varying& other)
 }
 
 //  Assignments
-/**Assigns an arbitrary sequence of bytes value.*/
 chi_data_types::Varying&
 chi_data_types::Varying::operator=(const std::vector<std::byte>& value)
 {
@@ -255,7 +246,6 @@ chi_data_types::Varying::operator=(const std::vector<std::byte>& value)
   return *this;
 }
 
-/**Assigns a string value.*/
 chi_data_types::Varying&
 chi_data_types::Varying::operator=(const std::string& value)
 {
@@ -265,7 +255,6 @@ chi_data_types::Varying::operator=(const std::string& value)
 }
 
 //  Get values
-/**Returns the string value if valid. Otherwise throws std::logic_error.*/
 std::string
 chi_data_types::Varying::StringValue() const
 {
@@ -274,7 +263,6 @@ chi_data_types::Varying::StringValue() const
   return data_->StringValue();
 }
 
-/**Returns the bool value if valid. Otherwise throws std::logic_error.*/
 bool
 chi_data_types::Varying::BoolValue() const
 {
@@ -283,7 +271,6 @@ chi_data_types::Varying::BoolValue() const
   return data_->BoolValue();
 }
 
-/**Returns the integer value if valid. Otherwise throws std::logic_error.*/
 int64_t
 chi_data_types::Varying::IntegerValue() const
 {
@@ -292,7 +279,6 @@ chi_data_types::Varying::IntegerValue() const
   return data_->IntegerValue();
 }
 
-/**Returns the float value if valid. Otherwise throws std::logic_error.*/
 double
 chi_data_types::Varying::FloatValue() const
 {
@@ -301,14 +287,12 @@ chi_data_types::Varying::FloatValue() const
   return data_->FloatValue();
 }
 
-/**Returns the raw byte size associated with the type.*/
 size_t
 chi_data_types::Varying::ByteSize() const
 {
   return data_->Size();
 }
 
-/**Returns a string value for the value.*/
 std::string
 chi_data_types::Varying::PrintStr(bool with_type /*=false*/) const
 {
@@ -326,7 +310,6 @@ chi_data_types::Varying::PrintStr(bool with_type /*=false*/) const
   return outstr.str();
 }
 
-/**Stream operator*/
 std::ostream&
 operator<<(std::ostream& outstr, const chi_data_types::Varying& value)
 {

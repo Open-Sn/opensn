@@ -4,20 +4,17 @@
 #include <ctime>
 #include <thread>
 
-/** Default constructor.*/
 chi::Timer::Timer() noexcept
 {
   start_time_ = std::chrono::steady_clock::now();
 }
 
-/** Resets the timer to zero.*/
 void
 chi::Timer::Reset()
 {
   start_time_ = std::chrono::steady_clock::now();
 }
 
-/** Gets the current timer value in milliseconds.*/
 double
 chi::Timer::GetTime() const
 {
@@ -29,9 +26,6 @@ chi::Timer::GetTime() const
   return time_span.count() * 1000.0;
 }
 
-/**Obtains a string in the format of hh:mm::ss.
- *
- * */
 std::string
 chi::Timer::GetTimeString() const
 {
@@ -46,9 +40,6 @@ chi::Timer::GetTimeString() const
   return {buff};
 }
 
-/**Obtains a string in the format YYYY-MM-DD hh:mm:ss
- *
- * */
 std::string
 chi::Timer::GetLocalDateTimeString()
 {

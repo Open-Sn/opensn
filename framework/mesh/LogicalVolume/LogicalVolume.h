@@ -15,6 +15,7 @@ class LogicalVolume : public ChiObject
 public:
   static chi::InputParameters GetInputParameters();
 
+  /**Logical operation for surface mesh.*/
   virtual bool Inside(const chi_mesh::Vector3& point) const { return false; }
 
 protected:

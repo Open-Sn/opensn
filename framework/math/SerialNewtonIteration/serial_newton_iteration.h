@@ -28,6 +28,7 @@ public:
   virtual ~NonLinearFunction() = default;
 };
 
+/**Newton iteration.*/
 VecDbl NewtonIteration(const NonLinearFunction& non_linear_function,
                        const VecDbl& x_0,
                        unsigned int max_iters,

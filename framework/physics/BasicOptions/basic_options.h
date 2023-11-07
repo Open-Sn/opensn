@@ -78,7 +78,7 @@ public:
    * the string comparison equivalent.*/
   BasicOption& operator[](size_t index);
 
-  // AddOption
+  /**Adds an option to the options list.*/
   template <typename T>
   void AddOption(const std::string& option_name, const T& value);
 

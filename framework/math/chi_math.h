@@ -52,6 +52,38 @@ enum class NormType : int
   LINF_NORM = 3
 };
 
+/**Sample a Cumulative Distribution Function (CDF) given a probability.
+ *
+ * The supplied vector should contain the upper bin boundary for each
+ * bin and will return the bin associated with the bin that brackets
+ * the supplied probability.
+ *
+ * Example:
+ * Suppose we sample bins 0-9. Suppose also that the probalities for each
+ * bin is as follows:
+ * - 0.1 bin 0
+ * - 0.1 bin 1
+ * - 0.5 bin 5
+ * - 0.3 bin 8
+ *
+ * The CDF for this probability distribution will look like this
+ * - bin 0 = 0.1
+ * - bin 1 = 0.2
+ * - bin 2 = 0.2
+ * - bin 3 = 0.2
+ * - bin 4 = 0.2
+ * - bin 5 = 0.7
+ * - bin 6 = 0.7
+ * - bin 7 = 0.7
+ * - bin 8 = 1.0
+ * - bin 9 = 1.0
+ *
+ * Supplying a random number between 0 and 1 should indicate sampling one
+ * of the bins 0,1,5 or 8. The most inefficient way to do this is to
+ * linearly loop through the cdf and check \f$ cdf_{i-1} \ge \theta < cdf_i \f$.
+ *  An optimized version of this sampling would be to perform a recursive
+ *  block search which starts with a course view of the cdf and then gradually
+ *  refines the view until the final linear search can be performed.*/
 int SampleCDF(double x, std::vector<double> cdf_bin);
 
 /**

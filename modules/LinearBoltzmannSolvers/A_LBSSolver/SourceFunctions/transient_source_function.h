@@ -16,6 +16,9 @@ private:
   chi_math::SteppingMethod& method_;
 
 public:
+  /**Constructor for the transient source function. The only difference
+   * as compared to a steady source function is the treatment of delayed
+   * fission.*/
   TransientSourceFunction(const LBSSolver& lbs_solver,
                           double& ref_dt,
                           chi_math::SteppingMethod& method);

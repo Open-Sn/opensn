@@ -1,6 +1,6 @@
 #pragma once
 
-//###################################################################
+// ###################################################################
 /**Object for implementing an efficient cdf sampler.
  *
  * Normal linear sampling of bins of a Cumulative Distribution Function
@@ -34,14 +34,16 @@ private:
   std::vector<SubIntvl*> sub_intvls_;
 
 public:
+  /** constructor.*/
   CDFSampler(std::vector<double>& in_cdf,
              int subdiv_factor = AUTO_SUBDIV,
              int final_res = AUTO_FINERES);
 
+  /**Initiates the sampling process.*/
   int Sample(double x);
 };
 
-//###################################################################
+// ###################################################################
 /**Sub-structure for sub-intervals*/
 struct chi_math::CDFSampler::SubIntvl
 {
@@ -54,6 +56,7 @@ struct chi_math::CDFSampler::SubIntvl
 
   std::string offset;
 
+  /**Constructor for a sub interval*/
   SubIntvl(std::string offset,
            int ibin,
            int fbin,
@@ -62,5 +65,6 @@ struct chi_math::CDFSampler::SubIntvl
            int final_res = 10,
            bool inhibit = false);
 
+  /**Sampling a sub-interval.*/
   bool Sample(double x, std::pair<int, int>& range);
 };

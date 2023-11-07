@@ -9,11 +9,12 @@
 /** Exports all open edges of a surface mesh to file. This is used mostly
  * for graphical error checking.
  *
-\param SurfaceHandle int Handle to the surface on which the operation is to be
-performed. \param FileName char Filename to which the edges are to be exported.
-
-\ingroup LuaSurfaceMesh
-\author Jan*/
+ * \param SurfaceHandle int Handle to the surface on which the operation is to be
+ * performed. \param FileName char Filename to which the edges are to be exported.
+ *
+ * \ingroup LuaSurfaceMesh
+ * \author Jan
+ */
 int
 chiSurfaceMeshExtractOpenEdgesToObj(lua_State* L)
 {

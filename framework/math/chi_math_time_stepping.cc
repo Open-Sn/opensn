@@ -7,7 +7,7 @@ namespace chi_math
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic error "-Wswitch-enum"
-/**Returns the string name of a time stepping method.*/
+
 std::string
 SteppingMethodStringName(SteppingMethod method)
 {

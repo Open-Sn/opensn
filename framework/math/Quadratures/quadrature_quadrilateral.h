@@ -11,6 +11,7 @@ class QuadratureQuadrilateral;
 class chi_math::QuadratureQuadrilateral : public chi_math::Quadrature
 {
 public:
-  // Constructor
+  /**Initialzes a set of points for a quadrature integration over
+   * the volume of a quadrilateral.*/
   explicit QuadratureQuadrilateral(QuadratureOrder order);
 };

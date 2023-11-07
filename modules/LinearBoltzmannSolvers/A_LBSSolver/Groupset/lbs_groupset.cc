@@ -15,7 +15,6 @@ namespace lbs
 RegisterChiObjectParametersOnly(lbs, LBSGroupset);
 }
 
-/***/
 chi::InputParameters
 lbs::LBSGroupset::GetInputParameters()
 {
@@ -127,7 +126,6 @@ lbs::LBSGroupset::GetInputParameters()
   return params;
 }
 
-/**Input parameters based constructor.*/
 lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
                               const int id,
                               const LBSSolver& lbs_solver)
@@ -206,7 +204,6 @@ lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
   tgdsa_string_ = params.GetParamValue<std::string>("tgdsa_petsc_options");
 }
 
-/**Computes the discrete to moment operator.*/
 void
 lbs::LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order,
                                        lbs::GeometryType geometry_type)
@@ -228,7 +225,6 @@ lbs::LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order,
   }
 }
 
-/**Computes the moment to discrete operator.*/
 void
 lbs::LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order,
                                        lbs::GeometryType geometry_type)
@@ -250,7 +246,6 @@ lbs::LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order,
   }
 }
 
-/**Constructs the groupset subsets.*/
 void
 lbs::LBSGroupset::BuildSubsets()
 {
@@ -266,7 +261,6 @@ lbs::LBSGroupset::BuildSubsets()
   }
 }
 
-/**Constructs the groupset subsets.*/
 void
 lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name)
 {

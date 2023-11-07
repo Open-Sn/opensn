@@ -5,8 +5,6 @@
 
 #include <cmath>
 
-/**Master callable function that will return a reference to the abscissae and
- * weights of the discrete angles.*/
 AnglePairs&
 chi_math::GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
 {
@@ -61,8 +59,6 @@ chi_math::GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
   return xn_wn_;
 }
 
-/**Applies the Modified Chebyshev Algorithm contained in [1] to find the
- * recursion coefficients for the orthogonal polynomials.*/
 void
 chi_math::GolubFischer::MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
 {
@@ -113,7 +109,6 @@ chi_math::GolubFischer::MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c
   Chi::log.Log(chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
 }
 
-/**Finds the roots of the orthogonal polynomial.*/
 void
 chi_math::GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 {
@@ -223,7 +218,6 @@ chi_math::GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
   Chi::log.Log(chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
 }
 
-/**Computes the function evaluation of the orthogonal polynomials.*/
 double
 chi_math::GolubFischer::Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 {
@@ -246,7 +240,6 @@ chi_math::GolubFischer::Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_
   return Pnp1;
 }
 
-/**Computes the derivative of the orthogonal polynomials.*/
 double
 chi_math::GolubFischer::dOrtho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 {

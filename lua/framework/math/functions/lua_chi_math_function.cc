@@ -9,15 +9,16 @@
 namespace chi_math::functions::lua_utils
 {
 
+/**Evaluates a function of base type `FunctionXYZDimAToDimB`.
+ * \param handle int. Handle to the function to evaluate.
+ * \param params Varying. Table or individual arguments.
+ *
+ * \return Varying Either a single number or a table of output values.
+ */
 int chiFunctionDimAToDimBEvaluate(lua_State* L);
 
 RegisterLuaFunctionAsIs(chiFunctionDimAToDimBEvaluate);
 
-/**Evaluates a function of base type `FunctionXYZDimAToDimB`.
-\param handle int. Handle to the function to evaluate.
-\param params Varying. Table or individual arguments.
-
-\return Varying Either a single number or a table of output values.*/
 int
 chiFunctionDimAToDimBEvaluate(lua_State* L)
 {

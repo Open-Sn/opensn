@@ -97,8 +97,14 @@ MeshHandler& GetCurrentHandler();
 size_t PushNewHandlerAndGetIndex();
 
 // Domain decompositions
+
+/**Makes a centroid based load balance factor calculation.
+ *
+ * \author Jan*/
 double
 ComputeLBF(std::vector<Vector3>& points, std::vector<double>& x_cuts, std::vector<double>& y_cuts);
+
+/** Decomposes a 2D surface mesh using the centroids in a Px-Py fashion.*/
 void DecomposeSurfaceMeshPxPy(const SurfaceMesh& smesh, int Px, int Py);
 
 /**

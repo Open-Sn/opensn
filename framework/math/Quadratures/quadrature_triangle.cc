@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <cassert>
 
-/**Initializes quadratures for use on triangles.*/
 chi_math::QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order)
 {
   double x = 0.0, y = 0.0, z = 0.0;
@@ -1207,9 +1206,6 @@ chi_math::QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadra
   } // switch order
 }
 
-/*** The Dunavant rules are for triangles. This function takes
-permutation points and weights in a specific format as input and
-fills the _points and _weights vectors.*/
 void
 chi_math::QuadratureTriangle::dunavant_rule(const double rule_data[][4], const unsigned int n_pts)
 {

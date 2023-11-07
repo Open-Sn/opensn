@@ -13,11 +13,6 @@ namespace prk::lua_utils
 RegisterLuaFunctionAsIs(chiPRKGetParam);
 RegisterLuaFunctionAsIs(chiPRKSetParam);
 
-/**Gets a parameter from the prk::TransientSolver.
-*
-* \param handle int Handle of the solver.
-* \param param_name  string Name of the parameter to retrieve.
-\return Varying*/
 int
 chiPRKGetParam(lua_State* L)
 {
@@ -49,12 +44,6 @@ chiPRKGetParam(lua_State* L)
   return 1;
 }
 
-/**Gets a parameter from the prk::TransientSolver.
-*
-* \param handle int Handle of the solver.
-* \param param_name  string Name of the parameter to retrieve.
-* \param value Varying The value to be set to the parameter.
-\return Varying*/
 int
 chiPRKSetParam(lua_State* L)
 {

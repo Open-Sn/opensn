@@ -1842,7 +1842,6 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
                  << "Number of cells read: " << raw_cells_.size();
 }
 
-/**Reads an Exodus unstructured mesh.*/
 void
 UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
 {
@@ -1960,7 +1959,6 @@ UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
   Chi::log.Log() << "Done reading Exodus file: " << options.file_name << ".";
 }
 
-/**Makes a cell from proxy information and pushes the cell to the mesh.*/
 void
 UnpartitionedMesh::PushProxyCell(const std::string& type_str,
                                  const std::string& sub_type_str,

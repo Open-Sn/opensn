@@ -11,13 +11,6 @@ namespace lbs::disc_ord_lua_utils
 
 RegisterLuaFunctionAsIs(chiLBSComputeBalance);
 
-/**Computes balance tables and prints it to the console.
- *
-\param SolverIndex int Handle to the solver for which the list is to be
-obtained.
-
-\ingroup LBSLuaFunctions
-\author Jan*/
 int
 chiLBSComputeBalance(lua_State* L)
 {

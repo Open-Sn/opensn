@@ -29,14 +29,12 @@ DiffusionDFEMSolver::DiffusionDFEMSolver(const chi::InputParameters& params) : L
 {
 }
 
-/**Destructor to cleanup TGDSA*/
 DiffusionDFEMSolver::~DiffusionDFEMSolver()
 {
   for (auto& groupset : groupsets_)
     CleanUpTGDSA(groupset);
 }
 
-/**Initializing.*/
 void
 DiffusionDFEMSolver::Initialize()
 {
@@ -57,7 +55,6 @@ DiffusionDFEMSolver::Initialize()
   LBSSolver::InitializeSolverSchemes();
 }
 
-/**Initializes Within-GroupSet solvers.*/
 void
 DiffusionDFEMSolver::InitializeWGSSolvers()
 {

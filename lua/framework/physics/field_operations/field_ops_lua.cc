@@ -8,8 +8,6 @@ namespace chi_physics::field_operations::lua_utils
 
 RegisterLuaFunctionAsIs(chiFieldOperationExecute);
 
-/**Executes a field function operation.
- * \param handle int Handle to the field function operation object.*/
 int
 chiFieldOperationExecute(lua_State* L)
 {

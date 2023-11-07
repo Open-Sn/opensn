@@ -95,14 +95,58 @@ public:
    * The same can be achieved by retrieving the cell-to-element mapping first.*/
   const std::vector<chi_mesh::Vector3>& GetCellNodeLocations(const chi_mesh::Cell& cell) const;
 
-  /**\brief For each local cell, for each  face, for each face-node, provides a
-  mapping to the adjacent cell's nodes.*/
+  /**For each cell, for each face of that cell, for each node on that face, maps to which local
+   * node on the adjacent cell that node position corresponds.
+   *
+   * \param tolerance double. Tolerance to use to determine if two node locations are
+   *                            equal. [Default: 1.0e-12]
+   *
+   *  For example consider two adjacent quadrilaterals.
+   *
+   * \verbatim
+   * o--------o--------o                       o--------o
+   * |3      2|3      2|                       |    2   |
+   * |  101   |   102  | , face ids for both:  |3      1|
+   * |0      1|0      1|                       |    0   |
+   * o--------o--------o                       o--------o
+   * internal face for cell 101 is face-1, ccw orientated
+   * --o
+   *  1|
+   *   |
+   *  0|
+   * --o
+   * internal face for cell 102 is face-3, ccw orientated
+   * o-
+   * |0
+   * |
+   * |1
+   * o-
+   *
+   * mapping[101][1][0] = 0
+   * mapping[101][1][1] = 3
+   *
+   * mapping[102][3][0] = 2
+   * mapping[102][3][1] = 1
+   * \endverbatim
+   */
   std::vector<std::vector<std::vector<int>>>
   MakeInternalFaceNodeMappings(double tolerance = 1.0e-12) const;
 
-  /**Copies DOFs from the from_vector to the to_vector, however, both vectors
-   * have the unknown-structure specified, and the given from_vec_uk_id is
-   * copied to the to_vec_uk_id.*/
+  /**Copy part of vector A to vector B. Suppose vector A's entries are
+   * managed `chi_math::UnknownManager` A (`uk_manA`) and that the
+   * entries of the vector B are managed by `chi_math::UnknownManager` B
+   * (`uk_manB`). This function copies the entries associated with an unknown with
+   * id `uk_id_A` in `uk_manA` from vector A to vector B such that the entries
+   * in vector B are aligned with the entries of an unknown with id `uk_id_B` in
+   * `uk_manB`. All the components are copied.
+   *
+   * \param from_vector Vector to copy from.
+   * \param to_vector Vector to copy to.
+   * \param from_vec_uk_structure Unknown manager for vector A.
+   * \param from_vec_uk_id Unknown-id in unknown manager A.
+   * \param to_vec_uk_structure Unknown manager for vector B.
+   * \param to_vec_uk_id Unknown-id in unknown manager B.
+   */
   void CopyVectorWithUnknownScope(const std::vector<double>& from_vector,
                                   std::vector<double>& to_vector,
                                   const UnknownManager& from_vec_uk_structure,

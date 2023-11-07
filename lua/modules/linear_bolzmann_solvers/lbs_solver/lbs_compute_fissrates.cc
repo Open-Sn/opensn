@@ -5,17 +5,6 @@
 namespace lbs::common_lua_utils
 {
 
-/**Computes and returns the fission rate.
- *
-\param SolverIndex int Handle to the solver maintaining the information.
-\param OldNewOption string "NEW" or "OLD". For steady state solvers, the
-                           "OLD" option would give the fission rate for
-                           the previous iterate. [Default="NEW"]
-
-\return double The fission rate.
-
-\ingroup LBSLuaFunctions
-\author Jan*/
 int
 chiLBSComputeFissionRate(lua_State* L)
 {

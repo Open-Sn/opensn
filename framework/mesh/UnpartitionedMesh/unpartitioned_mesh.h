@@ -182,8 +182,10 @@ public:
    */
   void ReadFromMsh(const Options& options);
 
+  /**Reads an Exodus unstructured mesh.*/
   void ReadFromExodus(const Options& options);
 
+  /**Makes a cell from proxy information and pushes the cell to the mesh.*/
   void PushProxyCell(const std::string& type_str,
                      const std::string& sub_type_str,
                      int cell_num_faces,

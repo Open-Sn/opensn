@@ -45,8 +45,10 @@ public:
   virtual const double* GetUpwindPsi(int face_node_local_idx) const = 0;
   virtual double* GetDownwindPsi(int face_node_local_idx) const = 0;
 
+  /**Sets data for the current incoming face.*/
   virtual void SetupIncomingFace(
     int face_id, size_t num_face_nodes, uint64_t neighbor_id, bool on_local_face, bool on_boundary);
+  /**Sets data for the current outgoing face.*/
   virtual void SetupOutgoingFace(int face_id,
                                  size_t num_face_nodes,
                                  uint64_t neighbor_id,
@@ -149,14 +151,23 @@ protected:
   CallbackFunction Kernel(const std::string& name) const;
   /**Executes the supplied kernels list.*/
   static void ExecuteKernels(const std::vector<CallbackFunction>& kernels);
+  /**Operations when outgoing fluxes are handled including passing
+   * face angular fluxes downstream and computing
+   * balance parameters (i.e. outflow)
+   * */
   virtual void OutgoingSurfaceOperations();
 
   // kernels
-public: // public so that we can use bind
+public:
+  /**Assembles the volumetric gradient term.*/
   void KernelFEMVolumetricGradientTerm();
+  /**Performs the integral over the surface of a face.*/
   void KernelFEMUpwindSurfaceIntegrals();
+  /**Assembles angular sources and applies the mass matrix terms.*/
   void KernelFEMSTDMassTerms();
+  /**Adds a single direction's contribution to the moment integrals.*/
   void KernelPhiUpdate();
+  /**Updates angular fluxes.*/
   void KernelPsiUpdate();
 
 private:

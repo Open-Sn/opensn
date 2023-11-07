@@ -19,33 +19,6 @@ RegisterLuaConstantAsIs(VOLUMEMESHER_UNPARTITIONED, chi_data_types::Varying(6));
 RegisterLuaConstant(ExtruderTemplateType, SURFACE_MESH, chi_data_types::Varying(1));
 RegisterLuaConstant(ExtruderTemplateType, UNPARTITIONED_MESH, chi_data_types::Varying(2));
 
-/** Creates a new volume mesher.
- *
-\param Type int Volume Remesher type.
-\param OtherArgs varying Additional arguments depending on `Type`.
-
-Remesher types:\n
- VOLUMEMESHER_EXTRUDER = Creates an extruded mesh from a 2D template mesh.
- Requires two additional arguments. `TemplateType` and `handle`. See below.\n
- VOLUMEMESHER_UNPARTITIONED = Create the mesh from the latest UnpartitionedMesh.
- Requires a single additional argument, `handle`, which is a handle to
- a valid unpartitioned mesh.\n
-
-##_
-
-###Extruder parameters
-
-When the mesher type is specified to be VOLUMEMESHER_EXTRUDER then two
-additional arguments are required. `TemplateType` and `handle`.\n
-
-- `TemplateType` can for now only be
- `ExtruderTemplateType.UNPARTITIONED_MESH`.\n
-- `handle` is a handle to the template mesh. When `TemplateType` is
-  set to `ExtruderTemplateType.UNPARTITIONED_MESH` then the handle must point
-  to a valid unpartitioned mesh.
-
-\ingroup LuaVolumeMesher
-\author Jan*/
 int
 chiVolumeMesherCreate(lua_State* L)
 {

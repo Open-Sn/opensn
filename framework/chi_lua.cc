@@ -9,8 +9,6 @@
 
 static int a = 15;
 
-/**Posts a generalized error message indicating that the
- * expected amount of arguments don't match the given amount.*/
 void
 LuaPostArgAmountError(const std::string& func_name, int expected, int given)
 {
@@ -19,8 +17,6 @@ LuaPostArgAmountError(const std::string& func_name, int expected, int given)
                               std::to_string(given) + " provided");
 }
 
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is a nil value. Throws an error if it is.*/
 void
 LuaCheckNilValue(const std::string& func_name, lua_State* L, int arg)
 {
@@ -31,8 +27,6 @@ LuaCheckNilValue(const std::string& func_name, lua_State* L, int arg)
   }
 }
 
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is a string. Throws an error if it is not.*/
 void
 LuaCheckStringValue(const std::string& func_name, lua_State* L, int arg)
 {
@@ -43,8 +37,6 @@ LuaCheckStringValue(const std::string& func_name, lua_State* L, int arg)
   }
 }
 
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is a boolean. Throws an error if it is not.*/
 void
 LuaCheckBoolValue(const std::string& func_name, lua_State* L, int arg)
 {
@@ -55,8 +47,6 @@ LuaCheckBoolValue(const std::string& func_name, lua_State* L, int arg)
   }
 }
 
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is a number. Throws an error if it is not.*/
 void
 LuaCheckNumberValue(const std::string& func_name, lua_State* L, int arg)
 {
@@ -67,8 +57,6 @@ LuaCheckNumberValue(const std::string& func_name, lua_State* L, int arg)
   }
 }
 
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is an integer. Throws an error if it is not.*/
 void
 LuaCheckIntegerValue(const std::string& func_name, lua_State* L, int arg)
 {
@@ -79,8 +67,6 @@ LuaCheckIntegerValue(const std::string& func_name, lua_State* L, int arg)
   }
 }
 
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is an actual table. Throws an error if it is not.*/
 void
 LuaCheckTableValue(const std::string& func_name, lua_State* L, int arg)
 {
@@ -91,7 +77,6 @@ LuaCheckTableValue(const std::string& func_name, lua_State* L, int arg)
   }
 }
 
-/**Gets information about an error state.*/
 std::string
 LuaSourceInfo(lua_State* L, const char* func_name)
 {
@@ -105,9 +90,6 @@ LuaSourceInfo(lua_State* L, const char* func_name)
   return ret_str.str();
 }
 
-/**Performs the necessary checks and converts a lua-table, formatted
- * as a 1D array (i.e. numerical keys) to a std::vector. If the table
- * is not convertable, an error message is posted.*/
 void
 LuaPopulateVectorFrom1DArray(const std::string& func_name,
                              lua_State* L,

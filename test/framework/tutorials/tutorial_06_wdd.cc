@@ -35,6 +35,7 @@ std::vector<double> SetSource(const chi_mesh::MeshContinuum& grid,
                               const chi_physics::SingleStateMGXS& xs,
                               const std::vector<YlmIndices>& m_ell_em_map);
 
+/**WDD Sweep. */
 chi::ParameterBlock chiSimTest06_WDD(const chi::InputParameters&);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_testsB,
@@ -42,7 +43,6 @@ RegisterWrapperFunction(/*namespace_name=*/chi_unit_testsB,
                         /*syntax_function=*/nullptr,
                         /*actual_function=*/chiSimTest06_WDD);
 
-/**WDD Sweep. */
 chi::ParameterBlock
 chiSimTest06_WDD(const chi::InputParameters&)
 {
@@ -394,7 +394,6 @@ ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
   return pw_change;
 }
 
-/***/
 std::vector<double>
 SetSource(const chi_mesh::MeshContinuum& grid,
           const chi_math::SpatialDiscretization& sdm,

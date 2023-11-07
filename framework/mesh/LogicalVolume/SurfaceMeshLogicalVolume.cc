@@ -61,7 +61,6 @@ SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const chi::InputParameters& p
   }
 }
 
-/**Logical operation for surface mesh.*/
 bool
 SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
 {

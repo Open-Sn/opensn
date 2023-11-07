@@ -2,11 +2,6 @@
 
 #include <algorithm>
 
-/**Provides the function evaluation of the Legendre polynomial
- * P_N at value x.
-
- \param N int Order of the Legendre polynomial.
- \param x double The evaluation point.*/
 double
 chi_math::Legendre(int N, double x)
 {
@@ -29,10 +24,6 @@ chi_math::Legendre(int N, double x)
   return Pnp1;
 }
 
-/**Provides the function evaluation of the derivative of Pn at value x
-
- \param N int Order of the Legendre polynomial.
- \param x double The evaluation point.*/
 double
 chi_math::dLegendredx(int N, double x)
 {
@@ -46,10 +37,6 @@ chi_math::dLegendredx(int N, double x)
   return retval;
 }
 
-/**Provides the function evaluation of the second derivative of Pn at value x
-
- \param N int Order of the Legendre polynomial.
- \param x double The evaluation point.*/
 double
 chi_math::d2Legendredx2(int N, double x)
 {

@@ -9,10 +9,6 @@ typedef std::vector<int> IntVec;
 #include "framework/chi_runtime.h"
 #include "framework/logging/chi_log.h"
 
-// Define LBF-Calc funtion
-/**Makes a centroid based load balance factor calculation.
- *
- * \author Jan*/
 double
 chi_mesh::ComputeLBF(std::vector<Vector3>& points,
                      std::vector<double>& x_cuts,
@@ -70,7 +66,6 @@ chi_mesh::ComputeLBF(std::vector<Vector3>& points,
   return max_points_per_bin / average;
 }
 
-/** Decomposes a 2D surface mesh using the centroids in a Px-Py fashion.*/
 void
 chi_mesh::DecomposeSurfaceMeshPxPy(const chi_mesh::SurfaceMesh& smesh, int px, int py)
 {

@@ -13,7 +13,10 @@ protected:
   std::shared_ptr<chi_mesh::VolumeMesher> volume_mesher_ = nullptr;
 
 public:
-  /**Obtains the grid from the volume mesher.*/
+  /**Obtains a pointer to the last created grid. This method will
+   * get a smart-pointer to a grid object. If a volume-mesher has not
+   * been created, or if a grid is not available, this method will
+   * throw `std::logic_error`.*/
   chi_mesh::MeshContinuumPtr& GetGrid() const;
 
   /**Returns true if the surface mesher has been set.*/

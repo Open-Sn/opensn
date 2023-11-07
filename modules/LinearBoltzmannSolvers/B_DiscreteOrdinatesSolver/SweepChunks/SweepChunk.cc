@@ -49,7 +49,6 @@ SweepChunk::SweepChunk(std::vector<double>& destination_phi,
   sweep_dependency_interface_.groupset_group_stride_ = groupset_group_stride_;
 }
 
-/**Registers a kernel as a named callback function*/
 void
 SweepChunk::RegisterKernel(const std::string& name, CallbackFunction function)
 {
@@ -60,7 +59,6 @@ SweepChunk::RegisterKernel(const std::string& name, CallbackFunction function)
   kernels_[name] = std::move(function);
 }
 
-/**Returns a kernel if the given name exists.*/
 SweepChunk::CallbackFunction
 SweepChunk::Kernel(const std::string& name) const
 {
@@ -69,7 +67,6 @@ SweepChunk::Kernel(const std::string& name) const
   return kernels_.at(name);
 }
 
-/**Executes the supplied kernels list.*/
 void
 SweepChunk::ExecuteKernels(const std::vector<CallbackFunction>& kernels)
 {
@@ -77,10 +74,6 @@ SweepChunk::ExecuteKernels(const std::vector<CallbackFunction>& kernels)
     kernel();
 }
 
-/**Operations when outgoing fluxes are handled including passing
- * face angular fluxes downstream and computing
- * balance parameters (i.e. outflow)
- * */
 void
 SweepChunk::OutgoingSurfaceOperations()
 {
@@ -110,7 +103,6 @@ SweepChunk::OutgoingSurfaceOperations()
   } // for fi
 }
 
-/**Assembles the volumetric gradient term.*/
 void
 SweepChunk::KernelFEMVolumetricGradientTerm()
 {
@@ -121,7 +113,6 @@ SweepChunk::KernelFEMVolumetricGradientTerm()
       Amat_[i][j] = omega_.Dot(G[i][j]);
 }
 
-/**Performs the integral over the surface of a face.*/
 void
 SweepChunk::KernelFEMUpwindSurfaceIntegrals()
 {
@@ -149,7 +140,6 @@ SweepChunk::KernelFEMUpwindSurfaceIntegrals()
   }   // for face node i
 }
 
-/**Assembles angular sources and applies the mass matrix terms.*/
 void
 SweepChunk::KernelFEMSTDMassTerms()
 {
@@ -184,7 +174,6 @@ SweepChunk::KernelFEMSTDMassTerms()
   } // for i
 }
 
-/**Adds a single direction's contribution to the moment integrals.*/
 void
 SweepChunk::KernelPhiUpdate()
 {
@@ -204,7 +193,6 @@ SweepChunk::KernelPhiUpdate()
   }
 }
 
-/**Updates angular fluxes.*/
 void
 SweepChunk::KernelPsiUpdate()
 {
@@ -223,7 +211,6 @@ SweepChunk::KernelPsiUpdate()
   } // for i
 }
 
-/**Sets data for the current incoming face.*/
 void
 SweepDependencyInterface::SetupIncomingFace(
   int face_id, size_t num_face_nodes, uint64_t neighbor_id, bool on_local_face, bool on_boundary)
@@ -235,7 +222,6 @@ SweepDependencyInterface::SetupIncomingFace(
   on_boundary_ = on_boundary;
 }
 
-/**Sets data for the current outgoing face.*/
 void
 SweepDependencyInterface::SetupOutgoingFace(int face_id,
                                             size_t num_face_nodes,

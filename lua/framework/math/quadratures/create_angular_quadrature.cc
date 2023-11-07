@@ -11,19 +11,6 @@
 
 RegisterLuaFunctionAsIs(chiCreateCustomAngularQuadrature);
 
-/** Creates an angular quadrature.
- *
-\param azimuthal_angles array A lua table with N entries each being an azimuthal
-                              angle.
-\param polar_angles array A lua table with N entries each being a polar angle
-                              angle.
-\param weight array A lua table with N entries each being a quadrature weight.
-
-
-\return Returns a unique handle to the created angular quadrature
-
-\ingroup LuaQuadrature
-\author Jan*/
 int
 chiCreateCustomAngularQuadrature(lua_State* L)
 {

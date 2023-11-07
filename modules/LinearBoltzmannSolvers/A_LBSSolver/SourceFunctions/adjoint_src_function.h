@@ -10,6 +10,7 @@ namespace lbs
 class AdjointSourceFunction : public SourceFunction
 {
 public:
+  /**Constructor for an adjoint source function.*/
   explicit AdjointSourceFunction(const LBSSolver& lbs_solver);
 
   double AddSourceMoments() const override { return 0.0; }
@@ -24,6 +25,7 @@ public:
     AddVolumetricQOISources(groupset, destination_q, phi, source_flags);
   }
 
+  /**Adds Quantities of Interest to the nodal sources.*/
   void AddVolumetricQOISources(LBSGroupset& groupset,
                                std::vector<double>& destination_q,
                                const std::vector<double>& phi,

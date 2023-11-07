@@ -99,6 +99,7 @@ public:
   static chi::Console& console;
   static chi::ChiLog& log;
 
+  /** Global stack of handlers */
   static std::vector<chi_mesh::MeshHandlerPtr> meshhandler_stack;
   static int current_mesh_handler;
 
@@ -142,7 +143,12 @@ public:
 
     static const std::string command_line_help_string_;
 
+    /**Parses input arguments.
+    \param argc int    Number of arguments supplied.
+    \param argv char** Array of strings representing each argument.
+     */
     static void ParseArguments(int argc, char** argv);
+    /**Initializes PetSc for use by all entities.*/
     static int InitPetSc(int argc, char** argv);
 
   public:
@@ -184,15 +190,27 @@ public:
   Chi operator=(const Chi&) = delete;
 
 public:
+  /**Runs the interactive chitech engine*/
   static int RunInteractive(int argc, char** argv);
+  /**Runs ChiTech in pure batch mode. Start then finish.*/
   static int RunBatch(int argc, char** argv);
+  /**Initializes all necessary items for ChiTech.
+  \param argc int    Number of arguments supplied.
+  \param argv char** Array of strings representing each argument.
+  \param communicator MPI_Comm The main communicator, used system wide.
+   */
   static int Initialize(int argc, char** argv, MPI_Comm communicator);
+  /**
+   * Finalizes ChiTech.
+   */
   static void Finalize();
+  /** Exits the program appropriately.*/
   static void Exit(int error_code);
 
   /**Builds a `RegistryStatuses` structure*/
   static chi::RegistryStatuses GetStatusOfRegistries();
 
+  /** Gets the ChiTech-version string.*/
   static std::string GetVersionStr();
 
 public:

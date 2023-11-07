@@ -5,7 +5,6 @@
 
 #include <iomanip>
 
-/**Newton iteration.*/
 VecDbl
 chi_math::NewtonIteration(const NonLinearFunction& non_linear_function,
                           const VecDbl& x_0,

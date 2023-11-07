@@ -1,6 +1,5 @@
 #include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-/**Returns a reference to a local cell, given a local cell index.*/
 chi_mesh::Cell&
 chi_mesh::LocalCellHandler::operator[](uint64_t cell_local_index)
 {
@@ -24,7 +23,6 @@ chi_mesh::LocalCellHandler::operator[](uint64_t cell_local_index)
   return *native_cells[cell_local_index];
 }
 
-/**Returns a const reference to a local cell, given a local cell index.*/
 const chi_mesh::Cell&
 chi_mesh::LocalCellHandler::operator[](uint64_t cell_local_index) const
 {

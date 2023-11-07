@@ -34,7 +34,7 @@
 typedef std::vector<std::pair<double, double>> AnglePairs;
 typedef std::vector<double> Tvecdbl;
 
-//###################################################################
+// ###################################################################
 namespace chi_math
 {
 /**Implementation of the GolubFischer Modified ChebyShev Algorithm (MCA) to find
@@ -57,12 +57,19 @@ public:
   Tvecdbl beta_;
 
 public:
+  /**Master callable function that will return a reference to the abscissae and
+   * weights of the discrete angles.*/
   AnglePairs& GetDiscreteScatAngles(Tvecdbl& mell);
 
 private:
+  /**Applies the Modified Chebyshev Algorithm contained in [1] to find the
+   * recursion coefficients for the orthogonal polynomials.*/
   void MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c);
+  /**Finds the roots of the orthogonal polynomial.*/
   void RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta);
+  /**Computes the derivative of the orthogonal polynomials.*/
   double dOrtho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta);
+  /**Computes the function evaluation of the orthogonal polynomials.*/
   double Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta);
 };
 } // namespace chi_math

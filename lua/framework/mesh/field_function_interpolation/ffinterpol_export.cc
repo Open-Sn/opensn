@@ -9,14 +9,6 @@
 
 RegisterLuaFunctionAsIs(chiFFInterpolationExportPython);
 
-/** Export interpolation to python line,contour plot depending on the
- * type of interpolation.
- *
-\param FFIHandle int Handle to the field function interpolation.
-\param BaseName char Base name to be used for exported files.
-
-\ingroup LuaFFInterpol
-\author Jan*/
 int
 chiFFInterpolationExportPython(lua_State* L)
 {

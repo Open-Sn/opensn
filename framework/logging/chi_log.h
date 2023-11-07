@@ -213,16 +213,19 @@ private:
   int verbosity_;
 
 public:
+  /**Access to the singleton*/
   static ChiLog& GetInstance() noexcept;
 
 private:
-  // 00
+  /** Default constructor*/
   ChiLog() noexcept;
 
 public:
-  // 01
+  /** Makes a log entry.*/
   LogStream Log(LOG_LVL level = LOG_0);
+  /** Sets the verbosity level.*/
   void SetVerbosity(int int_level);
+  /** Gets the current verbosity level.*/
   int GetVerbosity() const;
 
   LogStream Log0() { return Log(LOG_0); }
@@ -269,11 +272,22 @@ private:
   std::vector<RepeatingEvent> repeating_events;
 
 public:
+  /** Returns a unique tag to a newly created repeating event.*/
   size_t GetRepeatingEventTag(std::string event_name);
+  /** Returns a unique tag to the latest version of an existing repeating event.*/
   size_t GetExistingRepeatingEventTag(std::string event_name);
+  /**Logs an event with the supplied event information.*/
   void LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventInfo>& ev_info);
+  /**Logs an event without any event information.*/
   void LogEvent(size_t ev_tag, EventType ev_type);
+  /**Returns a string representation of the event history associated with
+   * the tag. Each event entry will be prepended by the location id and
+   * the program timestamp in seconds. This method uses the
+   * ChiLog::EventInfo::GetString method to append information. This allows
+   * derived classes to implement more sophisticated outputs.*/
   std::string PrintEventHistory(size_t ev_tag);
+  /**Processes an event given an event operation. See ChiLog for further
+   * reference.*/
   double ProcessEvent(size_t ev_tag, EventOperation ev_operation);
 };
 } // namespace chi

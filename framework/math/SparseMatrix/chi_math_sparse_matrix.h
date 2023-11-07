@@ -22,22 +22,33 @@ public:
   std::vector<std::vector<double>> rowI_values_;
 
 public:
+  /**Constructor with number of rows and columns constructor.*/
   SparseMatrix(size_t num_rows, size_t num_cols);
+  /**Copy constructor.*/
   SparseMatrix(const SparseMatrix& in_matrix);
 
   size_t NumRows() const { return row_size_; }
   size_t NumCols() const { return col_size_; }
 
+  /**Inserts a value into the matrix.*/
   void Insert(size_t i, size_t j, double value);
+  /**Inserts-Adds a value into the matrix with duplicate check.*/
   void InsertAdd(size_t i, size_t j, double value);
+  /**Returns the value in the matrix at the given location. This
+   * is a rather inefficient routine. Use the columns and values
+   * rather than directly this function.*/
   double ValueIJ(size_t i, size_t j) const;
+  /**Sets the diagonal of the matrix using a vector.*/
   void SetDiagonal(const std::vector<double>& diag);
 
+  /**Sorts the column indices of each row for faster lookup.*/
   void Compress();
 
+  /**Prints the sparse matrix to string.*/
   std::string PrintStr() const;
 
 private:
+  /**Constructor with number of rows constructor.*/
   void CheckInitialized() const;
 
 public:

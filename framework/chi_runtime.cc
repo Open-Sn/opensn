@@ -38,7 +38,6 @@ chi::ChiLog& Chi::log = chi::ChiLog::GetInstance();
 chi::MPI_Info& Chi::mpi = chi::MPI_Info::GetInstance();
 chi::Timer Chi::program_timer;
 
-/** Global stack of handlers */
 std::vector<chi_mesh::MeshHandlerPtr> Chi::meshhandler_stack;
 int Chi::current_mesh_handler = -1;
 
@@ -80,10 +79,6 @@ const std::string Chi::run_time::command_line_help_string_ =
   "     --dump-object-registry      Dumps the object registry.\n"
   "\n\n\n";
 
-/**Parses input arguments.
-\param argc int    Number of arguments supplied.
-\param argv char** Array of strings representing each argument.
- */
 void
 Chi::run_time::ParseArguments(int argc, char** argv)
 {
@@ -170,11 +165,6 @@ Chi::run_time::ParseArguments(int argc, char** argv)
 #endif
 }
 
-/**Initializes all necessary items for ChiTech.
-\param argc int    Number of arguments supplied.
-\param argv char** Array of strings representing each argument.
-\param communicator MPI_Comm The main communicator, used system wide.
- */
 int
 Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
 {
@@ -202,7 +192,6 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
   return 0;
 }
 
-/**Initializes PetSc for use by all entities.*/
 int
 Chi::run_time::InitPetSc(int argc, char** argv)
 {
@@ -216,8 +205,6 @@ Chi::run_time::InitPetSc(int argc, char** argv)
   return 0;
 }
 
-/**Finalizes ChiTech.
- * */
 void
 Chi::Finalize()
 {
@@ -240,7 +227,6 @@ Chi::Finalize()
   MPI_Finalize();
 }
 
-/**Runs the interactive chitech engine*/
 int
 Chi::RunInteractive(int argc, char** argv)
 {
@@ -285,7 +271,6 @@ Chi::RunInteractive(int argc, char** argv)
   return 0;
 }
 
-/**Runs ChiTech in pure batch mode. Start then finish.*/
 int
 Chi::RunBatch(int argc, char** argv)
 {
@@ -340,21 +325,18 @@ Chi::RunBatch(int argc, char** argv)
   return error_code;
 }
 
-/** Exits the program appropriately.*/
 void
 Chi::Exit(int error_code)
 {
   MPI_Abort(mpi.comm, error_code);
 }
 
-/** Gets the ChiTech-version string.*/
 std::string
 Chi::GetVersionStr()
 {
   return PROJECT_VERSION;
 }
 
-/**Builds a `RegistryStatuses` structure*/
 chi::RegistryStatuses
 Chi::GetStatusOfRegistries()
 {

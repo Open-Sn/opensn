@@ -3,12 +3,6 @@
 #include "framework/mesh/MeshHandler/chi_meshhandler.h"
 #include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-/**Exports the mesh to a wavefront.obj format.
-\param FileName char Base name of the file to be used.
-\param ExportByMaterial bool Default: False. Flag indicating whether to export
-                     the extruder's surface mesh by material.
-\ingroup LuaMeshHandler
-*/
 int
 chiMeshHandlerExportMeshToObj(lua_State* L)
 {
@@ -31,10 +25,6 @@ chiMeshHandlerExportMeshToObj(lua_State* L)
   return 0;
 }
 
-/**Exports the mesh to vtu format.
-\param FileName char Base name of the file to be used.
-\ingroup LuaMeshHandler
-*/
 int
 chiMeshHandlerExportMeshToVTK(lua_State* L)
 {
@@ -54,14 +44,6 @@ chiMeshHandlerExportMeshToVTK(lua_State* L)
   return 0;
 }
 
-/**Exports the mesh to exodus format (.e extensions).
-\param FileName char Base name of the file to be used.
-\param suppress_nodesets bool Optional. Flag to suppress exporting nodesets.
-                              Default = `false`.
-\param suppress_sidesets bool Optional. Flag to suppress exporting sidesets.
-                              Default = `false`.
-\ingroup LuaMeshHandler
-*/
 int
 chiMeshHandlerExportMeshToExodus(lua_State* L)
 {

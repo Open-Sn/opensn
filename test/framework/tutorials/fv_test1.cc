@@ -15,6 +15,8 @@
 namespace chi_unit_sim_tests
 {
 
+/**This is a simple test of the Finite Volume spatial discretization applied
+ * to Laplace's problem. */
 chi::ParameterBlock chiSimTest01_FV(const chi::InputParameters& params);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_sim_tests,
@@ -22,8 +24,6 @@ RegisterWrapperFunction(/*namespace_name=*/chi_unit_sim_tests,
                         /*syntax_function=*/nullptr,
                         /*actual_function=*/chiSimTest01_FV);
 
-/**This is a simple test of the Finite Volume spatial discretization applied
- * to Laplace's problem. */
 chi::ParameterBlock
 chiSimTest01_FV(const chi::InputParameters&)
 {

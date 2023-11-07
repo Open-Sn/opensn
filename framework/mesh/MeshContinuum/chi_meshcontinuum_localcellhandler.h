@@ -21,7 +21,9 @@ private:
   }
 
 public:
+  /**Returns a reference to a local cell, given a local cell index.*/
   chi_mesh::Cell& operator[](uint64_t cell_local_index);
+  /**Returns a const reference to a local cell, given a local cell index.*/
   const chi_mesh::Cell& operator[](uint64_t cell_local_index) const;
 
   /**Internal iterator class.*/

@@ -109,7 +109,6 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
                           << " Done computing sweep ordering.\n\n";
 }
 
-/**Builds the task dependency graph.*/
 void
 chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   const std::vector<std::vector<int>>& global_dependencies, bool cycle_allowance_flag)

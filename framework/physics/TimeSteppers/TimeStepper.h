@@ -57,7 +57,8 @@ public:
   void SetMinimumTimeStepSize(double dt_min);
 
   /**Advances the controller's state. The most basic action here is to
-   * advance time and the time index.*/
+   * advance time and the time index. If the solver is at or beyond its end time
+   * then it will return false. Otherwise it will advance and return true.*/
   virtual void Advance();
 
   /**Adapts according to the timestep status. If it could provide a change

@@ -116,8 +116,6 @@ PostProcessor::NumericPrecision() const
   return print_precision_;
 }
 
-/**Pushes onto the post-processor stack and adds a subscription to
- * `chi_physics::PhysicsEventPublisher` singleton.*/
 void
 PostProcessor::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
 {
@@ -178,8 +176,6 @@ PostProcessor::PrintScope() const
   return subscribed_events_for_printing_;
 }
 
-/**Converts a scalar value into a string format based on this post-processor's
- * numeric specifications.*/
 std::string
 PostProcessor::ConvertScalarValueToString(const ParameterBlock& value) const
 {

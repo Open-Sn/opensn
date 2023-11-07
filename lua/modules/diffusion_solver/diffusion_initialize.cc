@@ -4,13 +4,6 @@
 
 #include "framework/chi_runtime.h"
 
-/** Initialize the Diffusion solver.
- *
-\param SolverHandle int Handle to an existing diffusion solver.
-
-\return Success bool Returns if initialization failed.
-\ingroup LuaDiffusion
-\author Jan*/
 int
 chiDiffusionInitialize(lua_State* L)
 {

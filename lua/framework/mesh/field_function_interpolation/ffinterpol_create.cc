@@ -18,22 +18,6 @@ RegisterLuaConstantAsIs(LINE, chi_data_types::Varying(2));
 RegisterLuaConstantAsIs(VOLUME, chi_data_types::Varying(3));
 RegisterLuaConstantAsIs(POINT, chi_data_types::Varying(4));
 
-/** Creates a new field function interpolation.
- *
-\param FFITypeIndex int Type of field function interpolation.
-
-##_
-
-###FFITypeIndex\n
-POINT           = A point probe. \n
-SLICE           = Two dimensional slice of the mesh. \n
-LINE            = Line defined by two points.\n
-VOLUME          = Volume either referring to the entire volume or that of a
-                  logical volume assigned to the interpolator.\n
-
-\return Handle int Handle to the created interpolation.
-\ingroup LuaFFInterpol
-\author Jan*/
 int
 chiFFInterpolationCreate(lua_State* L)
 {

@@ -21,6 +21,7 @@
 namespace chi_unit_sim_tests
 {
 
+/**PWLD Sweep. */
 chi::ParameterBlock chiSimTest91_PWLD(const chi::InputParameters&);
 
 RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
@@ -28,7 +29,6 @@ RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
                         /*syntax_function=*/nullptr,
                         /*actual_function=*/chiSimTest91_PWLD);
 
-/**PWLD Sweep. */
 chi::ParameterBlock
 chiSimTest91_PWLD(const chi::InputParameters&)
 {

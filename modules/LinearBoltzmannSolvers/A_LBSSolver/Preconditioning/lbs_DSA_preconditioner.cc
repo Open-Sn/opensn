@@ -4,7 +4,6 @@
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
-/**Applies WGDSA or TGDSA to the given input vector.*/
 int
 lbs::WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
@@ -58,7 +57,6 @@ lbs::WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   return 0;
 }
 
-/**Applies WGDSA or TGDSA to the given input vector.*/
 int
 lbs::WGDSA_TGDSA_PreConditionerMult2(lbs::WGSContext<Mat, Vec, KSP>& gs_context_ptr,
                                      Vec phi_input,

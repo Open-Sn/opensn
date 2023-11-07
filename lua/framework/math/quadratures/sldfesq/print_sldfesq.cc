@@ -12,27 +12,6 @@
 
 RegisterLuaFunctionAsIs(chiPrintToPythonSLDFESQAngularQuadrature);
 
-/** Outputs the quadrature information to python format.
-\param handle int Handle to the reference quadrature.
-\param file_name_prefix string Prefix to be used in front of file.
-
-##_
-
-###Example:
-Example of printing a quadrature:
-Example with refinement level 2 and a triple directional refinement:
-\code
-pquad = chiCreateSLDFESQAngularQuadrature(2)
-chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},45.0*math.pi/180,false)
-chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},23.0*math.pi/180,false)
-chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},12.0*math.pi/180,false)
-chiPrintToPythonSLDFESQAngularQuadrature(pquad,"YQuad_");
-\endcode
-
-\image html "SLDFESQr.png" width=500px
-
-\ingroup LuaSLDFESQ
-\author Jan */
 int
 chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
 {

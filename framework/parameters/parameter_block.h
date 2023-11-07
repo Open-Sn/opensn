@@ -123,12 +123,15 @@ public:
   std::string TypeName() const;
   std::string Name() const;
   const chi_data_types::Varying& Value() const;
+  /**Returns the number of parameters in a block. This is normally
+   * only useful for the ARRAY type.*/
   size_t NumParameters() const;
   /**Returns the sub-parameters of this block.*/
   const std::vector<ParameterBlock>& Parameters() const;
   /**Returns whether or not the block has a value. If this block has
    * sub-parameters it should not have a value. This is a good way to
-   * check if the block is actually a single value.*/
+   * check if the block is actually a single value because some
+   * Parameter blocks can be passed as empty.*/
   bool HasValue() const;
 
   // Mutators
@@ -312,6 +315,7 @@ public:
    * tree and print values into the reference string.*/
   void RecursiveDumpToString(std::string& outstr, const std::string& offset = "") const;
 
+  /**Print the block tree structure into a designated string.*/
   void RecursiveDumpToJSON(std::string& outstr) const;
 };
 

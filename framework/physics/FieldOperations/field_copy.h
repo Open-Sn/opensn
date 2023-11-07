@@ -21,8 +21,10 @@ private:
   std::shared_ptr<const FieldFunctionGridBased> from_ff_;
 
 public:
+  /**Returns the input parameters.*/
   static chi::InputParameters GetInputParameters();
 
+  /**Constructor.*/
   explicit FieldCopyOperation(const chi::InputParameters& params);
 
   void Execute() override;

@@ -5,15 +5,6 @@
 namespace lbs::common_lua_utils
 {
 
-/**Initializes or reinitializes the materials. This normally happens
- * automatically during solver initialization but if the user wants to
- * swap/change XSs during the run then this will allow the material structures
- * to now deal with the new/changed materials.
- *
-\param SolverIndex int Handle to the solver maintaining the information.
-
-\ingroup LBSLuaFunctions
-\author Jan*/
 int
 chiLBSInitializeMaterials(lua_State* L)
 {

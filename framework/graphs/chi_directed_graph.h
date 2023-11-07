@@ -18,10 +18,18 @@ public:
     std::vector<bool> vertex_valid_flags_;
 
   public:
+    /** Adds a vertex to the graph with a supplied id.*/
     void AddVertex(size_t id, void* context);
+    /** Adds a vertex to the graph where the ID is assigned to
+     * the number of vertices already loaded on the graph.
+     * For example, if there are 3 vertices on the graph (with
+     * IDs 0 through 2) then the next vertex (this one) will
+     * be assigned and ID of 3.*/
     void AddVertex(void* context);
+    /** Removes a vertex from the graph.*/
     void RemoveVertex(size_t v);
 
+    /** Accesses a vertex from the graph.*/
     GraphVertex& operator[](size_t v);
 
     /**Internal iterator class for vertex accessor.*/
@@ -101,10 +109,23 @@ public:
 
   VertexAccessor vertices;
 
+  /** Adds a vertex to the graph. By default <I>context</I> is
+   * assumed to be nullptr.*/
   void AddVertex(size_t id, void* context = nullptr);
+  /** Adds a vertex to the graph. By default <I>context</I> is
+   * assumed to be nullptr and <I>id</I> is assumed to be assigned
+   * automatically. In
+   * the latter case the vertex id will be the same as the order
+   * in which it was added (0,1,2,3,etc ... will have id's 0,1,2,3,etc)*/
   void AddVertex(void* context = nullptr);
+  /** Removes a vertex from the graph. This method does not
+   * free any context related data.*/
   void RemoveVertex(size_t v);
+  /** Adds an edge to the graph. Range checks are supplied by the
+   * vertex accessor.*/
   bool AddEdge(size_t from, size_t to, double weight = 1.0);
+  /**Remove an edge from the graph. Range checks are supplied by the
+   * vertex accessor.*/
   void RemoveEdge(size_t from, size_t to);
 
   size_t GetNumSinks()
@@ -124,8 +145,14 @@ public:
   }
 
 private:
+  /** Depth-First-Search main recursive algorithm. This is the recursive
+   * portion of the method below this one
+   * (chi_graph::DirectedGraph::DepthFirstSearch).*/
   void DFSAlgorithm(std::vector<size_t>& traversal, std::vector<bool>& visited, size_t cur_vid);
 
+  /**SCC main recursive algorithm. This is the recursive call for the
+   * method defined below this one
+   * (chi_graph::DirectedGraph::FindStronglyConnectedConnections).*/
   void SCCAlgorithm(size_t u,
                     int& time,
                     std::vector<int>& disc,
@@ -135,18 +162,44 @@ private:
                     std::vector<std::vector<size_t>>& SCCs);
 
 public:
+  /**Find strongly connected components. This method is the implementation
+   * of Tarjan's algorithm [1].
+   *
+   * [1] Tarjan R.E. "Depth-first search and linear graph algorithms",
+   *     SIAM Journal on Computing, 1972.
+   *
+   * It returns collections of vertices that form strongly connected
+   * components excluding singletons.*/
   std::vector<std::vector<size_t>> FindStronglyConnectedComponents();
 
+  /** Generates a topological sort. This method is the implementation
+   * of Kahn's algorithm [1].
+   *
+   * [1] Kahn, Arthur B. (1962), "Topological sorting of large networks",
+   *     Communications of the ACM, 5 (11): 558–562
+   *
+   * \return Returns the vertex ids sorted topologically. If this
+   *         vector is empty the algorithm failed because it detected
+   *         cyclic dependencies.*/
   std::vector<size_t> GenerateTopologicalSort();
 
+  /**Finds a sequence that minimizes the Feedback Arc Set (FAS). This
+   * algorithm implements the algorithm depicted in [1].
+   *
+   * [1] Eades P., Lin X., Smyth W.F., "Fast & Effective heuristic for
+   *     the feedback arc set problem", Information Processing Letters,
+   *     Volume 47. 1993.*/
   std::vector<size_t> FindApproxMinimumFAS();
 
+  /**Prints the graph in Graphviz format.*/
   void PrintGraphviz(int location_mask = 0);
 
+  /**Prints a sub-graph in Graphviz format.*/
   void PrintSubGraphviz(const std::vector<int>& verts_to_print, int location_mask = 0);
 
   std::vector<std::pair<size_t, size_t>> RemoveCyclicDependencies();
 
+  /**Clears all the data structures associated with the graph.*/
   void Clear();
 
   ~DirectedGraph();

@@ -23,6 +23,7 @@ public:
 
   void Initialize() override;
   void Execute() override;
+  /**Gets the value of the field function evaluation at the point.*/
   double GetPointValue() const;
 
 public:

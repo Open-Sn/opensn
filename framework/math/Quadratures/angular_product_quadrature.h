@@ -41,11 +41,19 @@ protected:
 public:
   ~ProductQuadrature() override = default;
 
+  /**Initializes the quadrature with custom angles and weights.*/
   void AssembleCosines(const std::vector<double>& azimuthal,
                        const std::vector<double>& polar,
                        const std::vector<double>& in_weights,
                        bool verbose);
 
+  /**Optimizes the angular quadrature for polar symmetry by removing
+   * all the direction with downward pointing polar angles.
+   *
+   * \param normalization float. (Optional) The default is a negative number
+   *                             which does not apply any normalization. If a
+   *                             positive number is provided, the weights will be
+   *                             normalized to sum to this number.*/
   void OptimizeForPolarSymmetry(double normalization) override;
   /**Obtains the abscissae index given the indices of the
    * polar angle index and the azimuthal angle index.*/
@@ -64,24 +72,28 @@ public:
 class chi_math::AngularQuadratureProdGL : public chi_math::ProductQuadrature
 {
 public:
+  /**Constructor for Angular Gauss-Legendre.*/
   explicit AngularQuadratureProdGL(int Np, bool verbose = false);
 };
 
 class chi_math::AngularQuadratureProdGLL : public chi_math::ProductQuadrature
 {
 public:
+  /**Constructor for Angular Gauss-Legendre-Legendre.*/
   explicit AngularQuadratureProdGLL(int Na, int Np, bool verbose = false);
 };
 
 class chi_math::AngularQuadratureProdGLC : public chi_math::ProductQuadrature
 {
 public:
+  /**Constructor for Angular Gauss-Legendre-Chebyshev.*/
   explicit AngularQuadratureProdGLC(int Na, int Np, bool verbose = false);
 };
 
 class chi_math::AngularQuadratureProdCustom : public chi_math::ProductQuadrature
 {
 public:
+  /**Constructor for Custom Angular Product Quadrature.*/
   AngularQuadratureProdCustom(const std::vector<double>& azimuthal,
                               const std::vector<double>& polar,
                               const std::vector<double>& in_weights,

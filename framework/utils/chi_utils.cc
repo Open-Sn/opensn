@@ -74,14 +74,6 @@ AssertReadibleFile(const std::string& file_name)
   file.close();
 }
 
-/**Print the percentage completed based on the given interval.
- *
- * The function divides 100% into `num_intvls` intervals. If an
- * iteration passes an interval boundary then that interval percentage
- * will be printed.
- *
- * Specifying 10 intervals will print after each 10% is completed.
- * Specifying 4 intervals will print after each 25% is completed.*/
 std::string
 PrintIterationProgress(const size_t current_iteration,
                        const size_t total_num_iterations,

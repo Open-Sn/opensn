@@ -9,22 +9,10 @@
 namespace lbs
 {
 
-/**Constructor.*/
 SourceFunction::SourceFunction(const LBSSolver& lbs_solver) : lbs_solver_(lbs_solver)
 {
 }
 
-/**Sets the source moments for the groups in the current group set.
- *
- * \param groupset The groupset the under consideration.
- * \param destination_q A vector to contribute the source to.
- * \param phi_local The primary STL vector to operate off.
- * \param source_flags Flags for adding specific terms into the
- *        destination vector. Available flags are for applying
- *        the material source, across/within-group scattering,
- *        and across/within-groups fission.
- *
- * */
 void
 SourceFunction::operator()(LBSGroupset& groupset,
                            std::vector<double>& destination_q,
@@ -167,7 +155,6 @@ SourceFunction::AddSourceMoments() const
   return fixed_src_moments_[g_];
 }
 
-/**Adds delayed particle precursor sources.*/
 double
 SourceFunction::AddDelayedFission(const PrecursorList& precursors,
                                   const std::vector<double>& nu_delayed_sigma_f,
@@ -190,7 +177,6 @@ SourceFunction::AddDelayedFission(const PrecursorList& precursors,
   return value;
 }
 
-/**Adds point sources to the source moments.*/
 void
 SourceFunction::AddPointSources(LBSGroupset& groupset,
                                 std::vector<double>& destination_q,

@@ -10,7 +10,6 @@ namespace chi_physics::field_operations
 
 RegisterChiObject(chi_physics::field_operations, MultiFieldOperation);
 
-/**Returns the input parameters.*/
 chi::InputParameters
 MultiFieldOperation::GetInputParameters()
 {
@@ -41,7 +40,6 @@ MultiFieldOperation::GetInputParameters()
   return params;
 }
 
-/**Constructor.*/
 MultiFieldOperation::MultiFieldOperation(const chi::InputParameters& params)
   : FieldOperation(params),
     result_field_handle_(params.GetParamValue<size_t>("result_field_handle")),
@@ -119,7 +117,6 @@ MultiFieldOperation::MultiFieldOperation(const chi::InputParameters& params)
                          std::to_string(result_component_references_.size()) + " value(s).");
 }
 
-/**Constructor.*/
 void
 MultiFieldOperation::Execute()
 {

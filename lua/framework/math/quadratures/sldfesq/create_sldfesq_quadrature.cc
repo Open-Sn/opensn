@@ -9,25 +9,6 @@
 
 RegisterLuaFunctionAsIs(chiCreateSLDFESQAngularQuadrature);
 
-/** Creates a Simplified Linear Discontinuous Finite Element (SLDFE)
-quadrature based on Spherical Quadrilaterals (SQ). Hence SLDFE-SQ.
-\param initial_refinement_level int Initial refinement level, \f$n\f$ to
-       be used. The total number of angles will be \f$ 8{\times}12(n+1)^2 \f$.
-
-##_
-
-###Example:
-Example with refinement level 2.
-\code
-pquad = chiCreateSLDFESQAngularQuadrature(2)
-\endcode
-
-\image html "SLDFESQBasen2.png" width=500px
-With direction points:
-\image html "SLDFESQBasen2Oct2.png" width=500px
-
-\ingroup LuaSLDFESQ
-\author Jan */
 int
 chiCreateSLDFESQAngularQuadrature(lua_State* L)
 {

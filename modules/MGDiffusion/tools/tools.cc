@@ -6,7 +6,6 @@
 
 #include "framework/chi_runtime.h"
 
-/**My personal monitor monitor.*/
 PetscErrorCode
 mg_diffusion::MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
 {

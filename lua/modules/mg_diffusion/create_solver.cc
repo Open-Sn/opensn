@@ -8,11 +8,6 @@
 namespace mg_diffusion::mgd_lua_utils
 {
 
-/** Creates a Multigroup CFEM Diffusion solver.
-
-\return Handle int Handle to the created solver.
-\ingroup LuaDiffusion
-*/
 int
 chiCFEMMGDiffusionSolverCreate(lua_State* L)
 {

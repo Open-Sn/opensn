@@ -6,14 +6,12 @@
 namespace chi_mesh
 {
 
-/**Returns the number of bins.*/
 size_t
 GridFaceHistogram::NumberOfFaceHistogramBins() const
 {
   return face_categories_.size();
 }
 
-/**Finds which bin holds the given number of vertices*/
 size_t
 GridFaceHistogram::MapFaceHistogramBins(size_t num_face_verts) const
 {
@@ -27,7 +25,6 @@ GridFaceHistogram::MapFaceHistogramBins(size_t num_face_verts) const
   return 0;
 }
 
-/**Finds the amount of vertices per face for the given bin.*/
 size_t
 GridFaceHistogram::GetFaceHistogramBinDOFSize(size_t bin_number) const
 {

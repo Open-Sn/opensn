@@ -8,12 +8,12 @@
 namespace chi::lua_utils
 {
 
+/**Returns the program time as determined from the home location (involves a
+ * collective broadcast).*/
 int chiProgramTime(lua_State* L);
 
 RegisterLuaFunctionAsIs(chiProgramTime);
 
-/**Returns the program time as determined from the home location (involves a
- * collective broadcast).*/
 int
 chiProgramTime(lua_State* L)
 {

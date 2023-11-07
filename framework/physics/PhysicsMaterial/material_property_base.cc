@@ -2,7 +2,6 @@
 
 #ifdef OPENSN_WITH_LUA
 
-/** Base class method for pushing lua table.*/
 void
 chi_physics::MaterialProperty::PushLuaTable(lua_State* L) const
 {

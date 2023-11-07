@@ -13,14 +13,6 @@
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportToObj);
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportPolyFile);
 
-//  Create
-/** Exports mesh as a .obj format.
- *
-\param SurfaceHandle int Handle to the surface on which the operation is to be
-performed. \param FileName char* Path to the file to be exported.
-
-\ingroup LuaSurfaceMesh
-\author Jan*/
 int
 chiSurfaceMeshExportToObj(lua_State* L)
 {
@@ -43,14 +35,6 @@ chiSurfaceMeshExportToObj(lua_State* L)
   return 0;
 }
 
-//  Create
-/** Exports mesh as a .poly format.
- *
-\param SurfaceHandle int Handle to the surface on which the operation is to be
-performed. \param FileName char* Path and basename to the file to be exported.
-
-\ingroup LuaSurfaceMesh
-\author Jan*/
 int
 chiSurfaceMeshExportPolyFile(lua_State* L)
 {

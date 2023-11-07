@@ -12,26 +12,6 @@ RegisterLuaFunctionAsIs(chiUnpartitionedMeshUploadVertex);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshUploadCell);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshFinalizeEmpty);
 
-/**Uploads a vertex.
- *
-\param handle int Handle to mesh.
-\param x      double x-coordinate.
-\param y      double y-coordinate.
-\param z      double z-coordinate.
-
-## _
-
-###Example
-Example usage
-\code
-chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
-chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
-\endcode
-
-\ingroup LuaUnpartitionedMesh
- */
 int
 chiUnpartitionedMeshUploadVertex(lua_State* L)
 {
@@ -60,61 +40,6 @@ chiUnpartitionedMeshUploadVertex(lua_State* L)
   return 1;
 }
 
-/**Uploads a cell
-
-\param handle int Handle to mesh.
-\param cell_table lua_table A Lua-table containing fields of data. See
- cell_table below.
-
-## _
-
-###cell_table
-A lua-table with the following fields:
-- `type` <I>string</I>. The value of this field contains the cell's primary
-type. The value can be "SLAB", "POLYGON" or "POLYHEDRON".
-- `sub_type` <I>string</I>. The value of this field constains the cell's
- secondary type. The value can be "SLAB", "POLYGON", "TRIANGLE",
- "QUADRILATERAL", "POLYHEDRON", "TETRAHEDRON" or "HEXAHEDRON".
-- `num_faces` <I>int</I>. The value of this field represent the number of faces
- specified for this cell. Each face is contained in a field "faceX" where X is
- the face index.
-- `material_id` <I>int</I>. (Optional) The value of this field holds a material
- identifier. If not provided, will be defaulted to -1.
-- `faceX` <I>table</I>. A field holding a lua-table containing the vertex-ids
- of face X. There must be `num_faces` of these fields, i.e., "face0", "face1",
-etc.
-
-###Example
-Example usage
-\code
-chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
-chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
-
-chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 1)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 1)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 1)
-chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 1)
-
-cell = {}
-cell.type        = "POLYHEDRON"
-cell.sub_type    = "HEXAHEDRON"
-cell.num_faces   = 6
-cell.material_id = 0
-cell.face0 = {1,2,6,5}
-cell.face1 = {0,4,7,3}
-cell.face2 = {2,3,7,6}
-cell.face3 = {0,1,5,4}
-cell.face4 = {4,5,6,7}
-cell.face5 = {0,3,2,1}
-
-chiUnpartitionedMeshUploadCell(umesh, cell, true)
-chiUnpartitionedMeshFinalizeEmpty(umesh)
-\endcode
-
-\ingroup LuaUnpartitionedMesh
- */
 int
 chiUnpartitionedMeshUploadCell(lua_State* L)
 {
@@ -215,44 +140,6 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
   return 1;
 }
 
-/**Finalizes a mesh. This usually involves computing centroids and
- * establishing connectivity.
- *
-\param handle int Handle to mesh.
-
-## _
-
-###Example
-Example usage
-\code
-chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
-chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
-
-chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 1)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 1)
-chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 1)
-chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 1)
-
-cell = {}
-cell.type        = "POLYHEDRON"
-cell.sub_type    = "HEXAHEDRON"
-cell.num_faces   = 6
-cell.material_id = 0
-cell.face0 = {1,2,6,5}
-cell.face1 = {0,4,7,3}
-cell.face2 = {2,3,7,6}
-cell.face3 = {0,1,5,4}
-cell.face4 = {4,5,6,7}
-cell.face5 = {0,3,2,1}
-
-chiUnpartitionedMeshUploadCell(umesh, cell, true)
-chiUnpartitionedMeshFinalizeEmpty(umesh)
-\endcode
-
-\ingroup LuaUnpartitionedMesh
- */
 int
 chiUnpartitionedMeshFinalizeEmpty(lua_State* L)
 {

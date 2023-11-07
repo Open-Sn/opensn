@@ -61,12 +61,6 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(const chi::InputParameters& par
   }
 }
 
-/**Populates the abscissae and weights for a Gauss-Legendre
- * quadrature given the degree \f$ p \f$ of the mononomial such that
- * the quadrature rule integrates exactly the weighted integrand
- * \f$ \rho(x) x^{p} \f$, with \f$ \rho(x) := 1 \f$,
- * on the interval \f$ [-1;+1] \f$.
- * The number of points generated will be ceil((O+1)/2).*/
 QuadratureGaussLegendre::QuadratureGaussLegendre(QuadratureOrder in_order,
                                                  bool verbose,
                                                  unsigned int max_iters,
@@ -77,9 +71,6 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(QuadratureOrder in_order,
   Initialize(N, verbose, max_iters, tol);
 }
 
-/**Populates the abscissae and weights for a Gauss-Legendre
- * quadrature given the number of desired quadrature points. The
- * order of the quadrature will be 2N-1.*/
 QuadratureGaussLegendre::QuadratureGaussLegendre(unsigned int N,
                                                  bool verbose,
                                                  unsigned int max_iters,
@@ -89,8 +80,6 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(unsigned int N,
   Initialize(N, verbose, max_iters, tol);
 }
 
-/**Populates the abscissae and weights for a Gauss-Legendre
- * quadrature given the number of desired quadrature points.*/
 void
 QuadratureGaussLegendre::Initialize(unsigned int N,
                                     bool verbose,
@@ -130,22 +119,6 @@ QuadratureGaussLegendre::Initialize(unsigned int N,
   range_ = {-1, +1};
 }
 
-/** Finds the roots of the Legendre polynomial.
- *
- * The algorithm is that depicted in:
- *
- * [1] Barrera-Figueroa, et al., "Multiple root finder algorithm for Legendre
- *     and Chebyshev polynomials via Newton's method", Annales Mathematicae et
- *     Informaticae, 33 (2006) pp. 3-13.
- *
- * \param N Is the order of the polynomial.
- * \param roots Is a reference to the roots.
- * \param max_iters Maximum newton iterations to perform for each root.
- *        Default: 1000.
- * \param tol Tolerance at which the newton iteration will be terminated.
- *        Default: 1.0e-12.
- *
- * \author Jan*/
 std::vector<double>
 QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, double tol)
 {

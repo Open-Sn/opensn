@@ -19,43 +19,6 @@ RegisterLuaConstantAsIs(GAUSS_LEGENDRE_LEGENDRE, chi_data_types::Varying(3));
 RegisterLuaConstantAsIs(GAUSS_LEGENDRE_CHEBYSHEV, chi_data_types::Varying(4));
 RegisterLuaConstantAsIs(CUSTOM_QUADRATURE, chi_data_types::Varying(5));
 
-/** Creates a Product-quadrature.
- *
-\param QuadratureType int Quadrature identifier.
-\param values varying Varying options based on the quadrature type.
-
-##_
-
-###QuadratureType:
-GAUSS_LEGENDRE\n
- Gauss-Legendre quadrature for the polar angles and no quadrature rule
- for the azimuthal angle. Suitable only for 1D simulations. Expects
- to be followed by the number of angles Np. Optionally a verbosity flag
- can be added.\n\n
-
-GAUSS_LEGENDRE_LEGENDRE\n
- Gauss-Legendre quadrature for both the polar and azimuthal dimension.
- Expects to be followed by number of Azimuthal and Polar angles.
- Optionally a verbosity flag can be added.\n\n
-
-GAUSS_LEGENDRE_CHEBYSHEV\n
- Gauss-Legendre quadrature for the polar angle but Gauss-Chebyshev
- for the azimuthal angle.
- Expects to be followed by number of Azimuthal and Polar angles.
- Optionally a verbosity flag can be added.\n\n
-
-CUSTOM_QUADRATURE\n
- Expects to be followed by three lua tables. The first table is an array,
- of length Na, of the azimuthal angles (radians). The second table is an array,
- of length Np, of the polar angles (radians). The third table is an array, of
- length Na*Np, and contains the weight associated with each angle pair.
- Optionally a verbosity flag can be added.\n\n
-
-
-\return Returns a unique handle to the created product quadrature rule
-
-\ingroup LuaQuadrature
-\author Jan*/
 int
 chiCreateProductQuadrature(lua_State* L)
 {

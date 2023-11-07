@@ -6,10 +6,6 @@
 
 RegisterLuaFunctionAsIs(chiVolumeMesherSetMatIDToAll);
 
-/** Sets all cell-material id's to the supplied value.
-\param material_id int The id.
-\ingroup LuaVolumeMesher
-*/
 int
 chiVolumeMesherSetMatIDToAll(lua_State* L)
 {

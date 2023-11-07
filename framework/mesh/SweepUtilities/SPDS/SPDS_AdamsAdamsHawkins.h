@@ -15,6 +15,7 @@ public:
   const std::vector<STDG>& GetGlobalSweepPlanes() const { return global_sweep_planes_; }
 
 private:
+  /**Builds the task dependency graph.*/
   void BuildTaskDependencyGraph(const std::vector<std::vector<int>>& global_dependencies,
                                 bool cycle_allowance_flag);
 

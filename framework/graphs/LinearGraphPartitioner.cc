@@ -40,7 +40,6 @@ LinearGraphPartitioner::LinearGraphPartitioner(const InputParameters& params)
 {
 }
 
-/**Given a graph. Returns the partition ids of each row in the graph.*/
 std::vector<int64_t>
 LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
                                   const std::vector<chi_mesh::Vector3>&,

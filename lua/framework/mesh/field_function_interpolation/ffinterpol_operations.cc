@@ -9,12 +9,6 @@
 RegisterLuaFunctionAsIs(chiFFInterpolationInitialize);
 RegisterLuaFunctionAsIs(chiFFInterpolationExecute);
 
-/** Initialize interpolator.
- *
-\param FFIHandle int Handle to the field function interpolation.
-
-\ingroup LuaFFInterpol
-\author Jan*/
 int
 chiFFInterpolationInitialize(lua_State* L)
 {
@@ -31,12 +25,6 @@ chiFFInterpolationInitialize(lua_State* L)
   return 0;
 }
 
-/** Execute interpolator.
- *
-\param FFIHandle int Handle to the field function interpolation.
-
-\ingroup LuaFFInterpol
-\author Jan*/
 int
 chiFFInterpolationExecute(lua_State* L)
 {

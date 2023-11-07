@@ -13,7 +13,6 @@
 
 RegisterLuaFunctionAsIs(chiCountMeshInLogicalVolume);
 
-/**Counts the number of cells with a logical volume.*/
 int
 chiCountMeshInLogicalVolume(lua_State* L)
 {

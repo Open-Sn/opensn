@@ -24,6 +24,8 @@ struct ResponseFunctionDesignation
   {
   }
 
+  /** Calls the lua function associated with the response function and
+   * returns a multigroup vector of the source values.*/
   std::vector<double> GetMGResponse(const chi_mesh::Cell& cell, size_t num_groups) const;
 };
 

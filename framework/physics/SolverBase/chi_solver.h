@@ -19,6 +19,7 @@ class TimeStepper;
 class Solver : public ChiObject
 {
 public:
+  /**Returns the input parameters.*/
   static chi::InputParameters GetInputParameters();
   explicit Solver(std::string in_text_name);
   Solver(std::string in_text_name, std::initializer_list<BasicOption> in_options);
@@ -37,13 +38,28 @@ public:
   TimeStepper& GetTimeStepper();
   const TimeStepper& GetTimeStepper() const;
 
+  /**Initialize function.*/
   virtual void Initialize();
+  /**Execution function.*/
   virtual void Execute();
+  /**Step function*/
   virtual void Step();
+  /**Advance time values function.*/
   virtual void Advance();
 
   /**Generalized query for information supporting varying returns.*/
   virtual chi::ParameterBlock GetInfo(const chi::ParameterBlock& params) const;
+  /**\addtogroup SolverBase
+   *
+   * \section Properties Properties that can be set
+   * The following properties can be set via the lua call
+   * `chi_lua::chiSolverSetProperties`
+   * \copydoc chi_physics::Solver::SetProperties
+   *
+   * Base solver settable properties:
+   * - `dt`, Timestep size
+   * - `time`, Current time
+   */
   virtual void SetProperties(const chi::ParameterBlock& params);
   /**PreCheck call to GetInfo.*/
   chi::ParameterBlock GetInfoWithPreCheck(const chi::ParameterBlock& params) const;

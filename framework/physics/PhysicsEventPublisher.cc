@@ -13,7 +13,6 @@ PhysicsEventPublisher::PhysicsEventPublisher() : chi::EventPublisher("Physics")
 {
 }
 
-/**Access to the singleton*/
 PhysicsEventPublisher&
 PhysicsEventPublisher::GetInstance()
 {

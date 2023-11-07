@@ -6,7 +6,6 @@
 #include <sstream>
 #include <algorithm>
 
-/** Adds a vertex to the graph with a supplied id.*/
 void
 chi::DirectedGraph::VertexAccessor::AddVertex(size_t id, void* context)
 {
@@ -14,11 +13,6 @@ chi::DirectedGraph::VertexAccessor::AddVertex(size_t id, void* context)
   vertex_valid_flags_.push_back(true);
 }
 
-/** Adds a vertex to the graph where the ID is assigned to
- * the number of vertices already loaded on the graph.
- * For example, if there are 3 vertices on the graph (with
- * IDs 0 through 2) then the next vertex (this one) will
- * be assigned and ID of 3.*/
 void
 chi::DirectedGraph::VertexAccessor::AddVertex(void* context)
 {
@@ -26,7 +20,6 @@ chi::DirectedGraph::VertexAccessor::AddVertex(void* context)
   vertex_valid_flags_.push_back(true);
 }
 
-/** Removes a vertex from the graph.*/
 void
 chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
 {
@@ -56,7 +49,6 @@ chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
   vertex_valid_flags_[v] = false;
 }
 
-/** Accesses a vertex from the graph.*/
 chi::GraphVertex&
 chi::DirectedGraph::VertexAccessor::operator[](size_t v)
 {
@@ -66,35 +58,24 @@ chi::DirectedGraph::VertexAccessor::operator[](size_t v)
   return vertices_[v];
 }
 
-/** Adds a vertex to the graph. By default <I>context</I> is
- * assumed to be nullptr.*/
 void
 chi::DirectedGraph::AddVertex(size_t id, void* context /*=nullptr*/)
 {
   vertices.AddVertex(id, context);
 }
 
-/** Adds a vertex to the graph. By default <I>context</I> is
- * assumed to be nullptr and <I>id</I> is assumed to be assigned
- * automatically. In
- * the latter case the vertex id will be the same as the order
- * in which it was added (0,1,2,3,etc ... will have id's 0,1,2,3,etc)*/
 void
 chi::DirectedGraph::AddVertex(void* context /*=nullptr*/)
 {
   vertices.AddVertex(context);
 }
 
-/** Removes a vertex from the graph. This method does not
- * free any context related data.*/
 void
 chi::DirectedGraph::RemoveVertex(size_t v)
 {
   vertices.RemoveVertex(v);
 }
 
-/** Adds an edge to the graph. Range checks are supplied by the
- * vertex accessor.*/
 bool
 chi::DirectedGraph::AddEdge(size_t from, size_t to, double weight)
 {
@@ -107,8 +88,6 @@ chi::DirectedGraph::AddEdge(size_t from, size_t to, double weight)
   return true;
 }
 
-/**Remove an edge from the graph. Range checks are supplied by the
- * vertex accessor.*/
 void
 chi::DirectedGraph::RemoveEdge(size_t from, size_t to)
 {
@@ -116,9 +95,6 @@ chi::DirectedGraph::RemoveEdge(size_t from, size_t to)
   vertices[to].us_edge.erase(from);
 }
 
-/** Depth-First-Search main recursive algorithm. This is the recursive
- * portion of the method below this one
- * (chi_graph::DirectedGraph::DepthFirstSearch).*/
 void
 chi::DirectedGraph::DFSAlgorithm(std::vector<size_t>& traversal,
                                  std::vector<bool>& visited,
@@ -131,9 +107,6 @@ chi::DirectedGraph::DFSAlgorithm(std::vector<size_t>& traversal,
     if (not visited[v]) DFSAlgorithm(traversal, visited, v);
 }
 
-/**SCC main recursive algorithm. This is the recursive call for the
- * method defined below this one
- * (chi_graph::DirectedGraph::FindStronglyConnectedConnections).*/
 void
 chi::DirectedGraph::SCCAlgorithm(size_t u,
                                  int& time,
@@ -178,14 +151,6 @@ chi::DirectedGraph::SCCAlgorithm(size_t u,
   }
 }
 
-/**Find strongly connected components. This method is the implementation
- * of Tarjan's algorithm [1].
- *
- * [1] Tarjan R.E. "Depth-first search and linear graph algorithms",
- *     SIAM Journal on Computing, 1972.
- *
- * It returns collections of vertices that form strongly connected
- * components excluding singletons.*/
 std::vector<std::vector<size_t>>
 chi::DirectedGraph::FindStronglyConnectedComponents()
 {
@@ -206,15 +171,6 @@ chi::DirectedGraph::FindStronglyConnectedComponents()
   return SCCs;
 }
 
-/** Generates a topological sort. This method is the implementation
- * of Kahn's algorithm [1].
- *
- * [1] Kahn, Arthur B. (1962), "Topological sorting of large networks",
- *     Communications of the ACM, 5 (11): 558–562
- *
- * \return Returns the vertex ids sorted topologically. If this
- *         vector is empty the algorithm failed because it detected
- *         cyclic dependencies.*/
 std::vector<size_t>
 chi::DirectedGraph::GenerateTopologicalSort()
 {
@@ -268,12 +224,6 @@ endofalgo:
   return L;
 }
 
-/**Finds a sequence that minimizes the Feedback Arc Set (FAS). This
- * algorithm implements the algorithm depicted in [1].
- *
- * [1] Eades P., Lin X., Smyth W.F., "Fast & Effective heuristic for
- *     the feedback arc set problem", Information Processing Letters,
- *     Volume 47. 1993.*/
 std::vector<size_t>
 chi::DirectedGraph::FindApproxMinimumFAS()
 {
@@ -342,7 +292,6 @@ chi::DirectedGraph::FindApproxMinimumFAS()
   return s;
 }
 
-/**Prints the graph in Graphviz format.*/
 void
 chi::DirectedGraph::PrintGraphviz(int location_mask)
 {
@@ -370,7 +319,6 @@ chi::DirectedGraph::PrintGraphviz(int location_mask)
   std::cout << o.str();
 }
 
-/**Prints a sub-graph in Graphviz format.*/
 void
 chi::DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int location_mask)
 {
@@ -524,14 +472,12 @@ chi::DirectedGraph::RemoveCyclicDependencies()
   return edges_to_remove;
 }
 
-/**Clears all the data structures associated with the graph.*/
 void
 chi::DirectedGraph::Clear()
 {
   vertices.clear();
 }
 
-/**Destructor.*/
 chi::DirectedGraph::~DirectedGraph()
 {
   Clear();

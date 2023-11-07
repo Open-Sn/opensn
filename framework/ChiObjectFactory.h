@@ -73,9 +73,12 @@ public:
   ChiObjectFactory(const ChiObjectFactory&&) = delete;
   ChiObjectFactory& operator=(const ChiObjectFactory&) = delete;
 
+  /**Access to the singleton*/
   static ChiObjectFactory& GetInstance() noexcept;
 
+  /**Returns a constant reference to the object registry.*/
   const std::map<std::string, ObjectRegistryEntry>& Registry() const;
+  /**Checks if the object registry has a specific text key.*/
   bool RegistryHasKey(const std::string& key) const;
 
   template <typename T, typename base_T>
@@ -126,7 +129,12 @@ public:
     return 0;
   }
 
+  /**Makes an object with the given parameters and places on the global
+   * object stack. Returns a handle to the object. The object type is
+   * obtained from a string parameter name `chi_obj_type`.*/
   size_t MakeRegisteredObject(const chi::ParameterBlock& params) const;
+  /**Makes an object with the given parameters and places on the global
+   * object stack. Returns a handle to the object.*/
   size_t MakeRegisteredObjectOfType(const std::string& type,
                                     const chi::ParameterBlock& params) const;
 
@@ -158,6 +166,8 @@ private:
     return std::make_shared<T>(params);
   }
 
+  /**Checks that the registry key is available and throws a
+   * `std::logical_error` if it is not.*/
   void AssertRegistryKeyAvailable(const std::string& key,
                                   const std::string& calling_function) const;
 };

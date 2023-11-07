@@ -10,24 +10,6 @@
 
 RegisterLuaFunctionAsIs(chiOptimizeAngularQuadratureForPolarSymmetry);
 
-/**Optimizes the indicated angular quadrature for polar symmetry.
- *
-\param handle        int. Handle to the quadrature to be optimized.
-\param normalization double. (Optional) The normalization to be applied to the
-                     modified quadrature. Any negative number will inhibit
-                     renormalization. [Default=-1.0]
-
- ## _
-
- ###Example:
- Example:
-\code
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)
-chiOptimizeAngularQuadratureForPolarSymmetry(pqaud, 4.0*math.pi)
-\endcode
-
-\ingroup LuaQuadrature
-\author Jan */
 int
 chiOptimizeAngularQuadratureForPolarSymmetry(lua_State* L)
 {

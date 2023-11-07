@@ -318,7 +318,6 @@ ParallelSTLVector::Shift(double a)
     values_[i] += a;
 }
 
-/**Returns the specified norm of the vector.*/
 double
 ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
 {

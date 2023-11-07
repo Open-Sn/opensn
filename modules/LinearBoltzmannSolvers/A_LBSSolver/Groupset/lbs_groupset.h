@@ -81,15 +81,20 @@ public:
 
   // lbs_groupset.cc
   static chi::InputParameters GetInputParameters();
+  /**Input parameters based constructor.*/
   explicit LBSGroupset(const chi::InputParameters& params, int id, const LBSSolver& lbs_solver);
   LBSGroupset() : LBSGroupset(-1){};
   explicit LBSGroupset(int id) : id_(id) {}
 
+  /**Computes the discrete to moment operator.*/
   void BuildDiscMomOperator(unsigned int scattering_order, GeometryType geometry_type);
+  /**Computes the moment to discrete operator.*/
   void BuildMomDiscOperator(unsigned int scattering_order, GeometryType geometry_type);
+  /**Constructs the groupset subsets.*/
   void BuildSubsets();
 
 public:
+  /**Constructs the groupset subsets.*/
   void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
 };
 } // namespace lbs

@@ -3,7 +3,7 @@
 #include <string>
 #include <chrono>
 
-//################################################################### CLASS DEF
+// ################################################################### CLASS DEF
 namespace chi
 {
 /** Timer object.*/
@@ -13,12 +13,19 @@ private:
   std::chrono::steady_clock::time_point start_time_;
 
 public:
-  // 00
+  /** Default constructor.*/
   Timer() noexcept;
-  // 01
+  /** Resets the timer to zero.*/
   void Reset();
+  /** Gets the current timer value in milliseconds.*/
   double GetTime() const;
+  /**
+   * Obtains a string in the format of hh:mm::ss.
+   */
   std::string GetTimeString() const;
+  /**
+   * Obtains a string in the format YYYY-MM-DD hh:mm:ss
+   */
   static std::string GetLocalDateTimeString();
 };
 

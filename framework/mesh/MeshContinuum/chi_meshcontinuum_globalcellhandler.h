@@ -32,14 +32,24 @@ private:
   }
 
 public:
+  /**Adds a new cell to grid registry.*/
   void push_back(std::unique_ptr<chi_mesh::Cell> new_cell);
+  /**Returns a reference to a cell given its global cell index.*/
   chi_mesh::Cell& operator[](uint64_t cell_global_index);
+  /**Returns a const reference to a cell given its global cell index.*/
   const chi_mesh::Cell& operator[](uint64_t cell_global_index) const;
 
   size_t GetNumGhosts() const { return global_cell_id_to_foreign_id_map.size(); }
 
+  /**Returns the cell global ids of all ghost cells. These are cells that
+   * neighbors to this partition's cells but are on a different
+   * partition.*/
   std::vector<uint64_t> GetGhostGlobalIDs() const;
 
+  /**Returns the local storage address of a ghost cell. If the
+   * ghost is not truly a ghost then -1 is returned, but is wasteful and
+   * therefore the user of this function should implement code
+   * to prevent it.*/
   uint64_t GetGhostLocalID(uint64_t cell_global_index) const;
 };
 

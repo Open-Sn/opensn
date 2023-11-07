@@ -15,6 +15,7 @@ namespace chi_math::spatial_discretization
 class PieceWiseLinearBase : public FiniteElementBase
 {
 protected:
+  /**Constructor*/
   explicit PieceWiseLinearBase(const chi_mesh::MeshContinuum& grid,
                                QuadratureOrder q_order,
                                SDMType sdm_type,

@@ -10,7 +10,6 @@
 namespace chi_physics
 {
 
-/**Returns the input parameters.*/
 chi::InputParameters
 Solver::GetInputParameters()
 {
@@ -191,18 +190,6 @@ Solver::GetInfoWithPreCheck(const chi::ParameterBlock& params) const
   return GetInfo(params);
 }
 
-/**\addtogroup SolverBase
- *
- * \section Properties Properties that can be set
- * The following properties can be set via the lua call
- * `chi_lua::chiSolverSetProperties`
- * \copydoc chi_physics::Solver::SetProperties*/
-
-/**
-Base solver settable properties:
-* - `dt`, Timestep size
-* - `time`, Current time
-* */
 void
 Solver::SetProperties(const chi::ParameterBlock& params)
 {

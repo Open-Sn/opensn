@@ -16,10 +16,6 @@
 
 RegisterLuaFunctionAsIs(chiVolumeMesherExecute);
 
-/** Executes the volume meshing pipeline.
-
-\ingroup LuaVolumeMesher
-\author Jan*/
 int
 chiVolumeMesherExecute(lua_State* L)
 {
