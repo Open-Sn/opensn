@@ -6,7 +6,7 @@
 #include "framework/logging/log.h"
 
 #include <iostream>
-#include "meshhandler_lua.h"
+#include "mesh_handler_lua.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiMeshHandlerCreate);

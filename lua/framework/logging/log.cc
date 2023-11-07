@@ -3,7 +3,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#include "chi_log_lua.h"
+#include "log_lua.h"
 #include "framework/console/console.h"
 
 namespace chi_log_utils::lua_utils

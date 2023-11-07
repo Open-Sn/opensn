@@ -8,7 +8,7 @@
 
 #include "framework/runtime.h"
 
-#include "meshcutting_lua.h"
+#include "mesh_cutting_lua.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiCountMeshInLogicalVolume);

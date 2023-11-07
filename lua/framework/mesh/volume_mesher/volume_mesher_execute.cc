@@ -8,7 +8,7 @@
 
 #include "framework/utils/timer.h"
 
-#include "volumemesher_lua.h"
+#include "volume_mesher_lua.h"
 #include "framework/console/console.h"
 
 #include <iomanip>

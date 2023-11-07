@@ -8,7 +8,7 @@
 #include "framework/mesh/logical_volume/logical_volume.h"
 
 #include <iostream>
-#include "volumemesher_lua.h"
+#include "volume_mesher_lua.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiVolumeMesherSetProperty);

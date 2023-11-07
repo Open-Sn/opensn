@@ -1,4 +1,4 @@
-#include "lua_meshmodifiers.h"
+#include "lua_mesh_modifiers.h"
 
 #include "framework/runtime.h"
 

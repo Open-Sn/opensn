@@ -1,4 +1,4 @@
-#include "lbs_DO_lua_utils.h"
+#include "lbs_do_lua_utils.h"
 
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
 

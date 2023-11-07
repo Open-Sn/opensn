@@ -4,7 +4,7 @@
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "fieldfunctions_lua.h"
+#include "field_functions_lua.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiExportFieldFunctionToVTK);

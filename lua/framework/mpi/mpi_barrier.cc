@@ -1,7 +1,7 @@
 #include "framework/lua.h"
 
 #include "framework/runtime.h"
-#include "chi_mpi_lua.h"
+#include "mpi_lua.h"
 #include "framework/console/console.h"
 
 namespace chi_mpi_utils

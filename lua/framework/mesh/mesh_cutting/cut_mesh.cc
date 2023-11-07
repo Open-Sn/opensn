@@ -4,7 +4,7 @@
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 
-#include "meshcutting_lua.h"
+#include "mesh_cutting_lua.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiCutMesh);

@@ -4,7 +4,7 @@
 #include "framework/event_system/system_wide_event_publisher.h"
 #include "framework/event_system/event.h"
 #include "framework/event_system/event_codes.h"
-#include "lua/modules/chi_modules_lua.h"
+#include "lua/modules/modules_lua.h"
 
 int
 main(int argc, char** argv)

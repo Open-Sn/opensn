@@ -6,7 +6,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#include "lua_mesh_orthomacros.h"
+#include "lua_mesh_ortho_macros.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned1DOrthoMesh);

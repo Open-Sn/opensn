@@ -1,4 +1,4 @@
-#include "chi_modules_lua.h"
+#include "modules_lua.h"
 #include "framework/object_factory.h"
 
 #include "diffusion_solver/diffusion_lua.h"

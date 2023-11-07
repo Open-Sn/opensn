@@ -4,7 +4,7 @@
 #include "framework/event_system/system_wide_event_publisher.h"
 #include "framework/event_system/event.h"
 #include "framework/event_system/event_codes.h"
-#include "modules/chi_modules_lua.h"
+#include "modules/modules_lua.h"
 
 /** Program entry point.
 

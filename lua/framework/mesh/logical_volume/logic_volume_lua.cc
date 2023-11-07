@@ -11,7 +11,7 @@
 
 #define scint static_cast<int>
 
-#include "logicvolume_lua.h"
+#include "logic_volume_lua.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiLogicalVolumeCreate);

@@ -1,6 +1,6 @@
 #include "framework/console/console.h"
 #ifdef OPENSN_WITH_LUA
-#include "lua/modules/chi_modules_lua.h"
+#include "lua/modules/modules_lua.h"
 #include "framework/lua.h"
 #endif
 #include "config.h"

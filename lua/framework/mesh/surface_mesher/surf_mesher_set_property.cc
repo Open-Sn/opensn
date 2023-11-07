@@ -5,7 +5,7 @@
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "surfmesher_lua.h"
+#include "surf_mesher_lua.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiSurfaceMesherSetProperty);

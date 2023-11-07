@@ -9,7 +9,7 @@
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "volumemesher_lua.h"
+#include "volume_mesher_lua.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiVolumeMesherCreate);

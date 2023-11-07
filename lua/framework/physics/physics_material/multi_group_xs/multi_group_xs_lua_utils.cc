@@ -6,7 +6,7 @@
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "multigroup_xs_lua_utils.h"
+#include "multi_group_xs_lua_utils.h"
 #include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiPhysicsTransportXSCreate);
