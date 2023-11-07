@@ -69,7 +69,7 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
   RegisterKernel("FEMRZUpwindSurfaceIntegrals",
                  std::bind(&SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals, this));
 
-  // ================================== Setup callbacks
+  // Setup callbacks
   cell_data_callbacks_.push_back(std::bind(&SweepChunkPWLRZ::CellDataCallback, this));
 
   direction_data_callbacks_and_kernels_ = {std::bind(&SweepChunkPWLRZ::DirectionDataCallback, this),

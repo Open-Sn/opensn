@@ -60,7 +60,7 @@ int
 chiCreateProductQuadrature(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  //============================================= Parse argument
+  // Parse argument
   int ident = lua_tonumber(L, 1);
   bool verbose = false;
 

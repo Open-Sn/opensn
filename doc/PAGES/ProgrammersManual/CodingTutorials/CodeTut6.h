@@ -18,7 +18,9 @@
 In this tutorial we look at the multigroup discrete ordinates (DO) equations,
 otherwise known as the \f$ S_N \f$ equations. For a complete tutorial, on how
 these equations are derived, please consult
-<a href="https://github.com/doctor-janv/whitepapers/blob/main/ChiTech-LBS-TheoryManual/ChiTech-LBS-TheoryManual_v_1_13.pdf">this whitepaper</a>.
+<a
+href="https://github.com/doctor-janv/whitepapers/blob/main/ChiTech-LBS-TheoryManual/ChiTech-LBS-TheoryManual_v_1_13.pdf">this
+whitepaper</a>.
 
 We start with the equations themselves
 \f[
@@ -214,7 +216,7 @@ during the sweep.
 
 We define the following code once we obtained a reference to the grid
 \code
-//============================================= Make Orthogonal mapping
+// Make Orthogonal mapping
 const auto  ijk_info         = grid.GetIJKInfo();
 const auto& ijk_mapping      = grid.MakeIJKToGlobalIDMapping();
 const auto  cell_ortho_sizes = grid.MakeCellOrthoSizes();
@@ -242,7 +244,7 @@ We finally also assign the dimensionality of the mesh to an integer `dimension`.
 \section CodeTut6Sec4 4 Creating an angular quadrature
 The base class for angular quadratures is `chi_math::AngularQuadrature`.
 \code
-//============================================= Make an angular quadrature
+// Make an angular quadrature
 std::shared_ptr<chi_math::AngularQuadrature> quadrature;
 if (dimension == 1)
   quadrature = std::make_shared<chi_math::AngularQuadratureProdGL>(8);
@@ -288,7 +290,7 @@ when normalizing the quadrature.
 Since we now have the angular quadrature we can compute the Moment-To-Discrete
 and Discrete-To-Moment operator.
 \code
-//============================================= Set/Get params
+// Set/Get params
 const size_t scat_order = 1;
 const size_t num_groups = 20;
 
@@ -312,7 +314,7 @@ structure `m_ell_em_map` which contains a list of
 \section CodeTut6Sec5 5 Auxialiary items
 We define the auxiliary items as follows
 \code
-//============================================= Make Unknown Managers
+// Make Unknown Managers
 const auto VecN = chi_math::UnknownType::VECTOR_N;
 using Unknown = chi_math::Unknown;
 
@@ -327,11 +329,11 @@ const size_t num_local_psi_dofs = sdm.GetNumLocalDOFs(psi_uk_man);
 
 chi::log.Log() << "End ukmanagers." << std::endl;
 
-//============================================= Make XSs
+// Make XSs
 chi_physics::TransportCrossSections xs;
 xs.MakeFromCHIxsFile("tests/xs_graphite_pure.cxs");
 
-//============================================= Initializes vectors
+// Initializes vectors
 std::vector<double> phi_old(num_local_phi_dofs,0.0);
 std::vector<double> psi(num_local_psi_dofs, 0.0);
 auto source_moments = phi_old;
@@ -340,7 +342,7 @@ auto q_source       = phi_old;
 
 chi::log.Log() << "End vectors." << std::endl;
 
-//============================================= Make material source term
+// Make material source term
 for (const auto& cell : grid.local_cells)
 {
   const auto& cc = cell.centroid;
@@ -365,7 +367,7 @@ cross sections via the class `chi_physics::TransportCrossSections`.
 
 We then define the unknown vectors.
 \code
-//============================================= Initializes vectors
+// Initializes vectors
 std::vector<double> phi_old(num_local_phi_dofs,0.0);
 std::vector<double> psi(num_local_psi_dofs, 0.0);
 auto source_moments = phi_old;
@@ -377,7 +379,7 @@ chi::log.Log() << "End vectors." << std::endl;
 
 Finally, we hardcode the source distribution
 \code
-//============================================= Make material source term
+// Make material source term
 for (const auto& cell : grid.local_cells)
 {
   const auto& cc = cell.centroid;
@@ -399,7 +401,7 @@ for (const auto& cell : grid.local_cells)
 
 \section CodeTut6Sec6 6 Defining a cell-by-cell sweep chunk
 \code
-//============================================= Define sweep chunk
+// Define sweep chunk
 typedef chi_data_types::NDArray<double> IJKArrayDbl;
 IJKArrayDbl psi_ds_x(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});
 IJKArrayDbl psi_ds_y(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});
@@ -621,7 +623,7 @@ hence why this tutorial is based on orthogonal meshes.
 \section CodeTut6Sec8 8 The Classic Richardson iterative scheme
 Yup, as easy as this:
 \code
-//============================================= Classic Richardson iteration
+// Classic Richardson iteration
 chi::log.Log() << "Starting iterations" << std::endl;
 for (size_t iter=0; iter<200; ++iter)
 {
@@ -774,7 +776,7 @@ copy the scalar flux, with the `phi_old` vector, which has the unknown structure
 define by `phi_uk_man` to another vector `m0_phi` with a different unknown
 structure. We do this with the following code
 \code
-//============================================= Localize zeroth moment
+// Localize zeroth moment
 //This routine extracts a single moment vector
 //from the vector that contains multiple moments
 const chi_math::UnknownManager m0_uk_man(
@@ -795,7 +797,7 @@ This code should be self explanatory.
 Finally we create, update and export the field function like we did with the
 other tutorials.
 \code
-//============================================= Create Field Function
+// Create Field Function
 auto phi_ff = std::make_shared<chi_physics::FieldFunction>(
   "Phi",                                           //Text name
   sdm_ptr,                                         //Spatial Discr.
@@ -839,13 +841,13 @@ int main(int argc, char* argv[])
   if (chi::mpi.process_count != 1)
     throw std::logic_error(fname + ": Is serial only.");
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make Orthogonal mapping
+  // Make Orthogonal mapping
   const auto  ijk_info         = grid.GetIJKInfo();
   const auto& ijk_mapping      = grid.MakeIJKToGlobalIDMapping();
   const auto  cell_ortho_sizes = grid.MakeCellOrthoSizes();
@@ -863,7 +865,7 @@ int main(int argc, char* argv[])
   if (grid.Attributes() & Dim2) dimension = 2;
   if (grid.Attributes() & Dim3) dimension = 3;
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::SpatialDiscretization_FV::New(grid_ptr);
   const auto& sdm = *sdm_ptr;
@@ -876,7 +878,7 @@ int main(int argc, char* argv[])
   chi::log.Log() << "Num local nodes: " << num_local_nodes;
   chi::log.Log() << "Num globl nodes: " << num_globl_nodes;
 
-  //============================================= Make an angular quadrature
+  // Make an angular quadrature
   std::shared_ptr<chi_math::AngularQuadrature> quadrature;
   if (dimension == 1)
     quadrature = std::make_shared<chi_math::AngularQuadratureProdGL>(8);
@@ -892,7 +894,7 @@ int main(int argc, char* argv[])
                                    "of the mesh.");
   chi::log.Log() << "Quadrature created." << std::endl;
 
-  //============================================= Set/Get params
+  // Set/Get params
   const size_t scat_order = 1;
   const size_t num_groups = 20;
 
@@ -909,7 +911,7 @@ int main(int argc, char* argv[])
   chi::log.Log() << "End Set/Get params." << std::endl;
   chi::log.Log() << "Num Moments: " << num_moments << std::endl;
 
-  //============================================= Make Unknown Managers
+  // Make Unknown Managers
   const auto VecN = chi_math::UnknownType::VECTOR_N;
   using Unknown = chi_math::Unknown;
 
@@ -924,11 +926,11 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "End ukmanagers." << std::endl;
 
-  //============================================= Make XSs
+  // Make XSs
   chi_physics::TransportCrossSections xs;
   xs.MakeFromCHIxsFile("tests/xs_graphite_pure.cxs");
 
-  //============================================= Initializes vectors
+  // Initializes vectors
   std::vector<double> phi_old(num_local_phi_dofs,0.0);
   std::vector<double> psi(num_local_psi_dofs, 0.0);
   auto source_moments = phi_old;
@@ -937,7 +939,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "End vectors." << std::endl;
 
-  //============================================= Make material source term
+  // Make material source term
   for (const auto& cell : grid.local_cells)
   {
     const auto& cc = cell.centroid;
@@ -956,7 +958,7 @@ int main(int argc, char* argv[])
     }//if inside box
   }//for cell
 
-  //============================================= Define sweep chunk
+  // Define sweep chunk
   typedef chi_data_types::NDArray<double> IJKArrayDbl;
   IJKArrayDbl psi_ds_x(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});
   IJKArrayDbl psi_ds_y(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});
@@ -1041,7 +1043,7 @@ int main(int argc, char* argv[])
   };
 
 
-  //============================================= Define sweep for all dirs
+  // Define sweep for all dirs
   auto Sweep = [&num_dirs,&quadrature,Nx,Ny,Nz,&SweepChunk,&xs]()
   {
     for (size_t d=0; d<num_dirs; ++d)
@@ -1064,7 +1066,7 @@ int main(int argc, char* argv[])
     }//for d
   };
 
-  //============================================= Classic Richardson iteration
+  // Classic Richardson iteration
   chi::log.Log() << "Starting iterations" << std::endl;
   for (size_t iter=0; iter<200; ++iter)
   {
@@ -1093,7 +1095,7 @@ int main(int argc, char* argv[])
       break;
   }//for iteration
 
-  //============================================= Localize zeroth moment
+  // Localize zeroth moment
   //This routine extracts a single moment vector
   //from the vector that contains multiple moments
   const chi_math::UnknownManager m0_uk_man(
@@ -1109,7 +1111,7 @@ int main(int argc, char* argv[])
                                  m0_uk_man,   //to dof-structure
                                  0);          //to unknown-id
 
-  //============================================= Create Field Function
+  // Create Field Function
   auto phi_ff = std::make_shared<chi_physics::FieldFunction>(
     "Phi",                                           //Text name
     sdm_ptr,                                         //Spatial Discr.

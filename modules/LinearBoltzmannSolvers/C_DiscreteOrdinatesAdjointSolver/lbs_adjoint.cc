@@ -15,7 +15,6 @@ lbs::TestFunction()
 std::array<double, 2>
 lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose /*=false*/)
 {
-  //=============================================
   // Custom function to implement the non-linear equations
   // that make up the system to solve the a and b coefficients
   // of an exponential representation of the form exp(a + b*mu).
@@ -71,13 +70,13 @@ lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose /*=f
     }
   };
 
-  //======================================== Convert P1 moments to phi and J
+  // Convert P1 moments to phi and J
   double phi = P1_moments[0];
   double J_x = P1_moments[1];
   double J_y = P1_moments[2];
   double J_z = P1_moments[3];
 
-  //======================================== Compute initial ratio size_J/phi
+  // Compute initial ratio size_J/phi
   double size_J_i = chi_math::Vec2Norm({J_x, J_y, J_z});
   double ratio_i = size_J_i / phi;
 

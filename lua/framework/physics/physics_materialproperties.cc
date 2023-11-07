@@ -83,10 +83,10 @@ chiPhysicsMaterialAddProperty(lua_State* L)
   const char* provided_name = "";
   if (numArgs == 3) { provided_name = lua_tostring(L, 3); }
 
-  //============================================= Get reference to material
+  // Get reference to material
   auto cur_material = Chi::GetStackItemPtr(Chi::material_stack, material_index, fname);
 
-  //============================================= Process property
+  // Process property
   using MatProperty = chi_physics::PropertyType;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SCALAR_VALUE
   if (property_index == static_cast<int>(MatProperty::SCALAR_VALUE))
@@ -108,7 +108,7 @@ chiPhysicsMaterialAddProperty(lua_State* L)
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TRANSPORT_XSECTIONS
   else if (property_index == static_cast<int>(MatProperty::TRANSPORT_XSECTIONS))
   {
-    //================================= Check for duplicate
+    // Check for duplicate
     for (int p = 0; p < cur_material->properties_.size(); p++)
     {
       if (cur_material->properties_[p]->Type() == MatProperty::TRANSPORT_XSECTIONS)
@@ -143,7 +143,7 @@ chiPhysicsMaterialAddProperty(lua_State* L)
   }
   else if (property_index == static_cast<int>(MatProperty::ISOTROPIC_MG_SOURCE))
   {
-    //================================= Check for duplicate
+    // Check for duplicate
     for (int p = 0; p < cur_material->properties_.size(); p++)
     {
       if (cur_material->properties_[p]->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
@@ -306,11 +306,10 @@ chiPhysicsMaterialSetProperty(lua_State* L)
 
   int operation_index = lua_tonumber(L, 3);
 
-  //============================================= Get reference to material
+  // Get reference to material
   auto cur_material = Chi::GetStackItemPtr(Chi::material_stack, material_index, fname);
 
-  //============================================= If user supplied name then
-  //                                              find property index
+  // If user supplied name then find property index
   if (!lua_isnumber(L, 2))
   {
     for (auto& property : cur_material->properties_)
@@ -318,14 +317,14 @@ chiPhysicsMaterialSetProperty(lua_State* L)
         property_index = static_cast<int>(property->Type());
   }
 
-  //============================================= Process property
+  // Process property
   using MatProperty = chi_physics::PropertyType;
   using OpType = chi_physics::OperationType;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SCALAR_VALUE
   if (property_index == static_cast<int>(MatProperty::SCALAR_VALUE))
   {
     int location_of_prop = -1;
-    //================================= Check if the material has this property
+    // Check if the material has this property
     if (lua_isnumber(L, 2))
     {
       for (int p = 0; p < cur_material->properties_.size(); p++)
@@ -338,13 +337,13 @@ chiPhysicsMaterialSetProperty(lua_State* L)
           location_of_prop = p;
     }
 
-    //================================= If the property is valid
+    // If the property is valid
     if (location_of_prop >= 0)
     {
       auto prop = std::static_pointer_cast<chi_physics::ScalarValue>(
         cur_material->properties_[location_of_prop]);
 
-      //========================== Process operation
+      // Process operation
       if (operation_index == static_cast<int>(OpType::SINGLE_VALUE))
       {
         double value = lua_tonumber(L, 4);
@@ -373,7 +372,7 @@ chiPhysicsMaterialSetProperty(lua_State* L)
   else if (property_index == static_cast<int>(MatProperty::TRANSPORT_XSECTIONS))
   {
     int location_of_prop = -1;
-    //================================= Check if the material has this property
+    // Check if the material has this property
     if (lua_isnumber(L, 2))
     {
       for (int p = 0; p < cur_material->properties_.size(); p++)
@@ -395,13 +394,13 @@ chiPhysicsMaterialSetProperty(lua_State* L)
       }
     }
 
-    //================================= If the property is valid
+    // If the property is valid
     if (location_of_prop >= 0)
     {
       auto prop = std::static_pointer_cast<chi_physics::SingleStateMGXS>(
         cur_material->properties_[location_of_prop]);
 
-      //========================== Process operation
+      // Process operation
       if (operation_index == static_cast<int>(OpType::SIMPLEXS0))
       {
         if (numArgs != 5) LuaPostArgAmountError("chiPhysicsMaterialSetProperty", 5, numArgs);
@@ -475,7 +474,7 @@ chiPhysicsMaterialSetProperty(lua_State* L)
   else if (property_index == static_cast<int>(MatProperty::ISOTROPIC_MG_SOURCE))
   {
     int location_of_prop = -1;
-    //================================= Check if the material has this property
+    // Check if the material has this property
     if (lua_isnumber(L, 2))
     {
       for (int p = 0; p < cur_material->properties_.size(); p++)
@@ -497,7 +496,7 @@ chiPhysicsMaterialSetProperty(lua_State* L)
       }
     }
 
-    //================================= If the property is valid
+    // If the property is valid
     if (location_of_prop >= 0)
     {
       auto prop = std::static_pointer_cast<chi_physics::IsotropicMultiGrpSource>(
@@ -599,11 +598,10 @@ chiPhysicsMaterialGetProperty(lua_State* L)
     property_index_name = std::string(temp_name);
   }
 
-  //============================================= Get reference to material
+  // Get reference to material
   auto cur_material = Chi::GetStackItemPtr(Chi::material_stack, material_index, fname);
 
-  //============================================= If user supplied name then
-  //                                              find property index
+  // If user supplied name then find property index
   if (!lua_isnumber(L, 2))
   {
     for (auto& property : cur_material->properties_)
@@ -611,7 +609,7 @@ chiPhysicsMaterialGetProperty(lua_State* L)
         property_index = static_cast<int>(property->Type());
   }
 
-  //============================================= Process property
+  // Process property
   bool property_polulated = false;
   for (auto& property : cur_material->properties_)
   {

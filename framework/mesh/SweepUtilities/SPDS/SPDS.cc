@@ -66,8 +66,7 @@ chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
     size_t f = 0;
     for (auto& face : cell.faces_)
     {
-      //======================================= Determine if the face
-      //                                        is incident
+      // Determine if the face is incident
       FaceOrientation orientation = FOPARALLEL;
       const double mu = omega.Dot(face.normal_);
 
@@ -129,7 +128,7 @@ chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
     } // for face
   }
 
-  //============================================= Make directed connections
+  // Make directed connections
   for (auto& cell : grid_.local_cells)
   {
     const uint64_t c = cell.local_id_;
@@ -137,14 +136,13 @@ chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
     for (auto& face : cell.faces_)
     {
       const double mu = omega.Dot(face.normal_);
-      //======================================= If outgoing determine if
-      //                                        it is to a local cell
+      // If outgoing determine if it is to a local cell
       if (cell_face_orientations_[cell.local_id_][f] == FOOUTGOING)
       {
-        //================================ If it is a cell and not bndry
+        // If it is a cell and not bndry
         if (face.has_neighbor_)
         {
-          //========================= If it is in the current location
+          // If it is in the current location
           if (face.IsNeighborLocal(grid_))
           {
             double weight = mu * face.ComputeFaceArea(grid_);
@@ -154,11 +152,10 @@ chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
             location_successors.insert(face.GetNeighborPartitionID(grid_));
         }
       }
-      //======================================= If not outgoing determine
-      //                                        what it is dependent on
+      // If not outgoing determine what it is dependent on
       else
       {
-        //================================if it is a cell and not bndry
+        // if it is a cell and not bndry
         if (face.has_neighbor_ and not face.IsNeighborLocal(grid_))
           location_dependencies.insert(face.GetNeighborPartitionID(grid_));
       }

@@ -33,21 +33,21 @@ CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
 {
   ChiLogicalErrorIf(vertices.empty(), "Empty vertex list.");
 
-  //======================================== Get current mesh handler
+  // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
-  //======================================== Reorient 1D verts along z
+  // Reorient 1D verts along z
   std::vector<Vertex> zverts;
   zverts.reserve(vertices.size());
   for (double z_coord : vertices)
     zverts.emplace_back(0.0, 0.0, z_coord);
 
-  //======================================== Create unpartitioned mesh
+  // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
   umesh->GetMeshAttributes() = DIMENSION_1 | ORTHOGONAL;
 
-  //======================================== Create vertices
+  // Create vertices
   size_t Nz = vertices.size();
 
   umesh->GetMeshOptions().ortho_Nx = 1;
@@ -60,7 +60,7 @@ CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
   for (auto& vertex : zverts)
     umesh->GetVertices().push_back(vertex);
 
-  //======================================== Create cells
+  // Create cells
   for (size_t c = 0; c < (zverts.size() - 1); ++c)
   {
     auto cell = new UnpartitionedMesh::LightWeightCell(CellType::SLAB, CellType::SLAB);
@@ -87,7 +87,7 @@ CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
 
   Chi::unpartitionedmesh_stack.push_back(umesh);
 
-  //======================================== Create meshers
+  // Create meshers
   handler.SetSurfaceMesher(std::make_shared<SurfaceMesherPredefined>());
   handler.SetVolumeMesher(std::make_shared<VolumeMesherPredefinedUnpartitioned>(umesh));
 
@@ -102,15 +102,15 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
 {
   ChiLogicalErrorIf(vertices_1d_x.empty() or vertices_1d_y.empty(), "Empty vertex list.");
 
-  //======================================== Get current mesh handler
+  // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
-  //======================================== Create unpartitioned mesh
+  // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
   umesh->GetMeshAttributes() = DIMENSION_2 | ORTHOGONAL;
 
-  //======================================== Create vertices
+  // Create vertices
   size_t Nx = vertices_1d_x.size();
   size_t Ny = vertices_1d_y.size();
 
@@ -135,7 +135,7 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
     } // for j
   }   // for i
 
-  //======================================== Create cells
+  // Create cells
   auto& vmap = vertex_ij_to_i_map;
   for (size_t i = 0; i < (Ny - 1); ++i)
   {
@@ -180,7 +180,7 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
 
   Chi::unpartitionedmesh_stack.push_back(umesh);
 
-  //======================================== Create meshers
+  // Create meshers
   handler.SetSurfaceMesher(std::make_shared<SurfaceMesherPredefined>());
   handler.SetVolumeMesher(std::make_shared<VolumeMesherPredefinedUnpartitioned>(umesh));
 
@@ -197,15 +197,15 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
   ChiLogicalErrorIf(vertices_1d_x.empty() or vertices_1d_y.empty() or vertices_1d_z.empty(),
                     "Empty vertex list.");
 
-  //======================================== Get current mesh handler
+  // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
-  //======================================== Create unpartitioned mesh
+  // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
   umesh->GetMeshAttributes() = DIMENSION_3 | ORTHOGONAL;
 
-  //======================================== Create vertices
+  // Create vertices
   size_t Nx = vertices_1d_x.size();
   size_t Ny = vertices_1d_y.size();
   size_t Nz = vertices_1d_z.size();
@@ -245,7 +245,7 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
     }   // for j
   }     // for i
 
-  //======================================== Create cells
+  // Create cells
   auto& vmap = vertex_ijk_to_i_map;
   for (size_t i = 0; i < (Ny - 1); ++i)
   {
@@ -337,7 +337,7 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
 
   Chi::unpartitionedmesh_stack.push_back(umesh);
 
-  //======================================== Create meshers
+  // Create meshers
   handler.SetSurfaceMesher(std::make_shared<SurfaceMesherPredefined>());
   handler.SetVolumeMesher(std::make_shared<VolumeMesherPredefinedUnpartitioned>(umesh));
 

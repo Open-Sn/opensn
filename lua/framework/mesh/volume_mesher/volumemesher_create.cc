@@ -51,13 +51,13 @@ chiVolumeMesherCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
-  //============================================= Arguments check
+  // Arguments check
   const int num_args = lua_gettop(L);
   if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Mesher type
+  // Mesher type
   const auto mesher_type = static_cast<chi_mesh::VolumeMesherType>(lua_tointeger(L, 1));
 
   std::shared_ptr<chi_mesh::VolumeMesher> new_mesher = nullptr;

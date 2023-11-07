@@ -131,35 +131,34 @@ chiFFInterpolationSetProperty(lua_State* L)
   const std::string fname = "chiFFInterpolationSetProperty";
   int numArgs = lua_gettop(L);
 
-  //================================================== Get handle to field
-  // function
+  // Get handle to field function
   const size_t ffihandle = lua_tonumber(L, 1);
 
   auto p_ffi = Chi::GetStackItemPtr(Chi::field_func_interpolation_stack, ffihandle, fname);
 
-  //================================================== Process properties
+  // Process properties
   using namespace chi_mesh::ff_interpolation;
   auto property = static_cast<Property>(lua_tonumber(L, 2));
-  //======================================== Check point properties
+  // Check point properties
   if (property == Property::PROBEPOINT)
     if (p_ffi->Type() != chi_mesh::ff_interpolation::Type::POINT)
       throw std::logic_error(
         "Point property" + std::to_string(static_cast<int>(property)) +
         " used in chiFFInterpolationSetProperty but FFI is not a point-probe.");
 
-  //======================================== Check slice properties
+  // Check slice properties
   if ((property >= Property::SLICEPOINT) && (property <= Property::SLICEBINORM))
     if (p_ffi->Type() != chi_mesh::ff_interpolation::Type::SLICE)
       throw std::logic_error("Slice property" + std::to_string(static_cast<int>(property)) +
                              " used in chiFFInterpolationSetProperty but FFI is not a slice.");
 
-  //======================================== Check Line properties
+  // Check Line properties
   if ((property >= Property::FIRSTPOINT) && (property <= Property::NUMBEROFPOINTS))
     if (p_ffi->Type() != chi_mesh::ff_interpolation::Type::LINE)
       throw std::logic_error("Line property " + std::to_string(static_cast<int>(property)) +
                              " used in chiFFInterpolationSetProperty but FFI is not a line.");
 
-  //========================================= Generic
+  // Generic
   if (property == Property::ADD_FIELD_FUNCTION)
   {
     int ffhandle = lua_tonumber(L, 3);

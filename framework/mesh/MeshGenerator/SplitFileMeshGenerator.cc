@@ -76,7 +76,7 @@ SplitFileMeshGenerator::Execute()
 
   if (Chi::mpi.location_id == 0 and (not read_only_))
   {
-    //======================================== Execute all input generators
+    // Execute all input generators
     // Note these could be empty
     std::unique_ptr<UnpartitionedMesh> current_umesh = nullptr;
     for (auto mesh_generator_ptr : inputs_)
@@ -85,7 +85,7 @@ SplitFileMeshGenerator::Execute()
       current_umesh = std::move(new_umesh);
     }
 
-    //======================================== Generate final umesh
+    // Generate final umesh
     current_umesh = GenerateUnpartitionedMesh(std::move(current_umesh));
 
     Chi::log.Log() << "Writing split-mesh with " << num_parts << " parts";
@@ -209,8 +209,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     if (verbosity_level_ >= 2)
       Chi::log.Log() << "Writing part " << pid << " num_local_cells=" << local_cells_needed.size();
 
-    //================================================ Write mesh attributes
-    //                                                 and general info
+    // Write mesh attributes and general info
     const auto& mesh_options = umesh.GetMeshOptions();
 
     chi::WriteBinaryValue(ofile, num_parts); // int
@@ -222,7 +221,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
 
     chi::WriteBinaryValue(ofile, raw_vertices.size()); // size_t
 
-    //================================================ Write the boundary map
+    // Write the boundary map
     const auto& bndry_map = mesh_options.boundary_id_map;
     chi::WriteBinaryValue(ofile, bndry_map.size()); // size_t
     for (const auto& [bid, bname] : bndry_map)
@@ -233,12 +232,11 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       ofile.write(bname.data(), scint(num_chars)); // characters
     }
 
-    //================================================ Write how many cells
-    //                                                 and vertices in file
+    // Write how many cells and vertices in file
     chi::WriteBinaryValue(ofile, cells_needed.size());    // size_t
     chi::WriteBinaryValue(ofile, vertices_needed.size()); // size_t
 
-    //================================================ Write cells
+    // Write cells
     const size_t BUFFER_SIZE = 4096 * 2;
     chi_data_types::ByteArray serial_data;
     serial_data.Data().reserve(BUFFER_SIZE * 2);
@@ -266,7 +264,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       serial_data.Clear();
     }
 
-    //================================================ Write vertices
+    // Write vertices
     t_verts.TimeSectionBegin();
     for (const uint64_t vid : vertices_needed)
     {
@@ -336,8 +334,7 @@ SplitFileMeshGenerator::ReadSplitMesh()
 
   ChiLogicalErrorIf(not ifile.is_open(), "Failed to open " + file_path.string());
 
-  //================================================== Read mesh attributes
-  //                                                   and general info
+  // Read mesh attributes and general info
   const size_t file_num_parts = chi::ReadBinaryValue<int>(ifile);
 
   ChiLogicalErrorIf(Chi::mpi.process_count != file_num_parts,
@@ -353,7 +350,7 @@ SplitFileMeshGenerator::ReadSplitMesh()
 
   info_block.num_global_vertices_ = chi::ReadBinaryValue<size_t>(ifile);
 
-  //================================================== Read boundary map
+  // Read boundary map
   const size_t num_bndries = chi::ReadBinaryValue<size_t>(ifile);
   for (size_t b = 0; b < num_bndries; ++b)
   {
@@ -365,12 +362,11 @@ SplitFileMeshGenerator::ReadSplitMesh()
     info_block.boundary_id_map_.insert(std::make_pair(bid, bname));
   }
 
-  //================================================ Write how many cells
-  //                                                 and vertices in file
+  // Write how many cells and vertices in file
   const size_t num_cells = chi::ReadBinaryValue<size_t>(ifile);
   const size_t num_vertices = chi::ReadBinaryValue<size_t>(ifile);
 
-  //================================================== Read the cells
+  // Read the cells
   for (size_t c = 0; c < num_cells; ++c)
   {
     const int cell_pid = chi::ReadBinaryValue<int>(ifile);
@@ -404,7 +400,7 @@ SplitFileMeshGenerator::ReadSplitMesh()
     cells.insert(std::make_pair(CellPIDGID(cell_pid, cell_gid), std::move(new_cell)));
   } // for cell c
 
-  //================================================== Read the vertices
+  // Read the vertices
   for (size_t v = 0; v < num_vertices; ++v)
   {
     const uint64_t vid = chi::ReadBinaryValue<uint64_t>(ifile);

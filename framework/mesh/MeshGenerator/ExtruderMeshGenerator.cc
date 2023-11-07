@@ -123,7 +123,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   ChiLogicalErrorIf(template_vertices.empty(), "Input mesh has no vertices.");
   ChiLogicalErrorIf(template_cells.empty(), "Input mesh has no cells.");
 
-  //============================================= Check cells
+  // Check cells
   for (const auto& template_cell_ptr : template_cells)
   {
     const auto& template_cell = *template_cell_ptr;
@@ -148,7 +148,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
 
   auto umesh = std::make_unique<UnpartitionedMesh>();
 
-  //============================================= Update boundary maps
+  // Update boundary maps
   auto& umesh_bndry_map = umesh->GetMeshOptions().boundary_id_map;
   umesh_bndry_map = input_umesh->GetMeshOptions().boundary_id_map;
 
@@ -157,7 +157,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   const uint64_t zmin_bndry_id = umesh->MakeBoundaryID(bottom_boundary_name_);
   umesh_bndry_map[zmin_bndry_id] = bottom_boundary_name_;
 
-  //============================================= Setup z-levels
+  // Setup z-levels
   double current_z = 0.0;
   std::vector<double> z_levels = {current_z};
   for (const auto& layer : layers_)
@@ -167,14 +167,14 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
       z_levels.push_back(current_z += dz);
   }
 
-  //============================================= Build vertices
+  // Build vertices
   typedef chi_mesh::Vector3 Vec3;
   auto& extruded_vertices = umesh->GetVertices();
   for (const double z_level : z_levels)
     for (const auto& template_vertex : template_vertices)
       extruded_vertices.push_back(Vec3(template_vertex.x, template_vertex.y, z_level));
 
-  //============================================= Build cells
+  // Build cells
   size_t k = 0;
   for (const auto& layer : layers_)
   {
@@ -183,7 +183,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
       size_t tc_counter = 0;
       for (const auto& template_cell : template_cells)
       {
-        //================================== Determine cell sub-type
+        // Determine cell sub-type
         CellType extruded_subtype;
         // clang-format off
         switch (template_cell->sub_type)
@@ -194,14 +194,14 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
         }
         // clang-format on
 
-        //================================== Create new cell
+        // Create new cell
         auto new_cell_ptr =
           new UnpartitionedMesh::LightWeightCell(CellType::POLYHEDRON, extruded_subtype);
         auto& new_cell = *new_cell_ptr;
 
         new_cell.material_id = template_cell->material_id;
 
-        //================================== Build vertices
+        // Build vertices
         const size_t tc_num_verts = template_cell->vertex_ids.size();
         new_cell.vertex_ids.reserve(2 * tc_num_verts);
         for (const auto tc_vid : template_cell->vertex_ids)
@@ -209,7 +209,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
         for (const auto tc_vid : template_cell->vertex_ids)
           new_cell.vertex_ids.push_back(tc_vid + (k + 1) * num_template_vertices);
 
-        //================================== Create side faces
+        // Create side faces
         for (const auto& tc_face : template_cell->faces)
         {
           UnpartitionedMesh::LightWeightFace new_face;
@@ -236,7 +236,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
           new_cell.faces.push_back(std::move(new_face));
         } // for tc face
 
-        //================================== Create top and bottom faces
+        // Create top and bottom faces
         // Top face
         {
           UnpartitionedMesh::LightWeightFace new_face;

@@ -94,7 +94,7 @@ TransientSolver::Initialize()
 
   beta_ = std::accumulate(betas_.begin(), betas_.end(), /*init_val=*/0.0);
 
-  // ============================= Initializing linalg items
+  // Initializing linalg items
   const auto& J = num_precursors_;
   A_ = chi_math::DynamicMatrix<double>(J + 1, J + 1, 0.0);
   I_ = A_;
@@ -102,7 +102,7 @@ TransientSolver::Initialize()
 
   x_t_ = chi_math::DynamicVector<double>(J + 1, 0.0);
 
-  // ============================= Assembling system
+  // Assembling system
   A_[0][0] = beta_ * (rho_ - 1.0) / gen_time_;
   for (size_t j = 1; j <= J; ++j)
   {
@@ -114,7 +114,7 @@ TransientSolver::Initialize()
   q_.resize(J + 1, 0.0);
   q_[0] = source_strength_;
 
-  // ============================= Initializing x
+  // Initializing x
   // If there is a source and the reactivity is < 0 then
   // there exists a unique solution.
   if (source_strength_ > 0.0 and rho_ < 0.0)

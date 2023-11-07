@@ -32,21 +32,21 @@ For this tutorial we defined it just before the matrix assembly.
 auto CallLuaXYZFunction = [&L](const std::string& lua_func_name,
                                const chi_mesh::Vector3& xyz)
 {
-  //============= Load lua function
+  // Load lua function
   lua_getglobal(L, lua_func_name.c_str());
 
-  //============= Error check lua function
+  // Error check lua function
   if (not lua_isfunction(L, -1))
     throw std::logic_error("CallLuaXYZFunction attempted to access lua-function, " +
                            lua_func_name + ", but it seems the function"
                                            " could not be retrieved.");
 
-  //============= Push arguments
+  // Push arguments
   lua_pushnumber(L, xyz.x);
   lua_pushnumber(L, xyz.y);
   lua_pushnumber(L, xyz.z);
 
-  //============= Call lua function
+  // Call lua function
   //3 arguments, 1 result (double), 0=original error object
   double lua_return = 0.0;
   if (lua_pcall(L,3,1,0) == 0)
@@ -112,11 +112,9 @@ error of the FEM solution, \f$ \phi_{FEM} \f$, compared to the MS,
 We again here use the quadrature rules to obtain this integral as
 \f[
 \int_V \biggr( \phi_{MMS}(\mathbf{x}) - \phi_{FEM}(\mathbf{x})\biggr)^2 dV = \sum_c \sum_n^{N_V}
-w_n \biggr( \phi_{MMS}(\mathbf{x}_n) - \phi_{FEM}(\tilde{\mathbf{x}}_n)\biggr)^2 \ | J(\tilde{\mathbf{x}}_n |
-\f]
-for which we use the code
-\code
-//============================================= Compute error
+w_n \biggr( \phi_{MMS}(\mathbf{x}_n) - \phi_{FEM}(\tilde{\mathbf{x}}_n)\biggr)^2 \ |
+J(\tilde{\mathbf{x}}_n | \f] for which we use the code \code
+// Compute error
 //First get ghosted values
 const auto field_wg = ff->GetGhostedFieldVector();
 
@@ -127,7 +125,7 @@ for (const auto& cell : grid.local_cells)
   const size_t num_nodes = cell_mapping.NumNodes();
   const auto qp_data = cell_mapping.MakeVolumeQuadraturePointData();
 
-  //======================= Grab nodal phi values
+  // Grab nodal phi values
   std::vector<double> nodal_phi(num_nodes,0.0);
   for (size_t j=0; j < num_nodes; ++j)
   {
@@ -135,7 +133,7 @@ for (const auto& cell : grid.local_cells)
     nodal_phi[j] = field_wg[imap];
   }//for j
 
-  //======================= Quadrature loop
+  // Quadrature loop
   for (size_t qp : qp_data.QuadraturePointIndices())
   {
     double phi_fem = 0.0;
@@ -214,13 +212,13 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Coding Tutorial 4";
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::SpatialDiscretization_PWLC::New(grid_ptr);
   const auto& sdm = *sdm_ptr;
@@ -233,7 +231,7 @@ int main(int argc, char* argv[])
   chi::log.Log() << "Num local DOFs: " << num_local_dofs;
   chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
   const auto N = static_cast<int64_t>(num_globl_dofs);
   Mat A;
@@ -251,25 +249,25 @@ int main(int argc, char* argv[])
                                            nodal_nnz_in_diag,
                                            nodal_nnz_off_diag);
 
-  //============================================= Source lambda
+  // Source lambda
   auto CallLuaXYZFunction = [&L](const std::string& lua_func_name,
                                  const chi_mesh::Vector3& xyz)
   {
-    //============= Load lua function
+    // Load lua function
     lua_getglobal(L, lua_func_name.c_str());
 
-    //============= Error check lua function
+    // Error check lua function
     if (not lua_isfunction(L, -1))
       throw std::logic_error("CallLuaXYZFunction attempted to access lua-function, " +
                              lua_func_name + ", but it seems the function"
                                              " could not be retrieved.");
 
-    //============= Push arguments
+    // Push arguments
     lua_pushnumber(L, xyz.x);
     lua_pushnumber(L, xyz.y);
     lua_pushnumber(L, xyz.z);
 
-    //============= Call lua function
+    // Call lua function
     //3 arguments, 1 result (double), 0=original error object
     double lua_return = 0.0;
     if (lua_pcall(L,3,1,0) == 0)
@@ -287,7 +285,7 @@ int main(int argc, char* argv[])
     return lua_return;
   };
 
-  //============================================= Assemble the system
+  // Assemble the system
   chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
@@ -317,7 +315,7 @@ int main(int argc, char* argv[])
                        qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
     }//for i
 
-    //======================= Flag nodes for being on dirichlet boundary
+    // Flag nodes for being on dirichlet boundary
     std::vector<bool> node_boundary_flag(num_nodes, false);
     const size_t num_faces = cell.faces.size();
     for (size_t f=0; f<num_faces; ++f)
@@ -333,12 +331,12 @@ int main(int argc, char* argv[])
       }//for fi
     }//for face f
 
-    //======================= Develop node mapping
+    // Develop node mapping
     std::vector<int64_t> imap(num_nodes, 0); //node-mapping
     for (size_t i=0; i<num_nodes; ++i)
       imap[i] = sdm.MapDOF(cell, i);
 
-    //======================= Assembly into system
+    // Assembly into system
     for (size_t i=0; i<num_nodes; ++i)
     {
       if (node_boundary_flag[i]) //if dirichlet node
@@ -373,7 +371,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   chi::log.Log() << "Solving: ";
   auto petsc_solver =
     chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
@@ -384,16 +382,16 @@ int main(int argc, char* argv[])
       1.0e-6,          //Relative residual tolerance
       1000);            //Max iterations
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp,b,x);
 
   chi::log.Log() << "Done solving";
 
-  //============================================= Extract PETSc vector
+  // Extract PETSc vector
   std::vector<double> field;
   sdm.LocalizePETScVector(x,field,OneDofPerNode);
 
-  //============================================= Clean up
+  // Clean up
   KSPDestroy(&petsc_solver.ksp);
 
   VecDestroy(&x);
@@ -402,7 +400,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Done cleanup";
 
-  //============================================= Create Field Function
+  // Create Field Function
   auto ff = std::make_shared<chi_physics::FieldFunction>(
     "Phi",                                           //Text name
     sdm_ptr,                                         //Spatial Discr.
@@ -413,7 +411,7 @@ int main(int argc, char* argv[])
 
   ff->ExportToVTK("CodeTut4_PWLC");
 
-  //============================================= Compute error
+  // Compute error
   //First get ghosted values
   const auto field_wg = ff->GetGhostedFieldVector();
 
@@ -424,7 +422,7 @@ int main(int argc, char* argv[])
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto qp_data = cell_mapping.MakeVolumeQuadraturePointData();
 
-    //======================= Grab nodal phi values
+    // Grab nodal phi values
     std::vector<double> nodal_phi(num_nodes,0.0);
     for (size_t j=0; j < num_nodes; ++j)
     {
@@ -432,7 +430,7 @@ int main(int argc, char* argv[])
       nodal_phi[j] = field_wg[jmap];
     }//for j
 
-    //======================= Quadrature loop
+    // Quadrature loop
     for (size_t qp : qp_data.QuadraturePointIndices())
     {
       double phi_fem = 0.0;

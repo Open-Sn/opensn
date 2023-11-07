@@ -60,7 +60,7 @@ Solver::Initialize()
                  << Chi::program_timer.GetTimeString() << " " << TextName()
                  << ": Initializing CFEM Multigroup Diffusion solver ";
 
-  //============================================= Get grid
+  // Get grid
   grid_ptr_ = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
@@ -68,7 +68,7 @@ Solver::Initialize()
 
   Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //================================================== Add unique material ids
+  // Add unique material ids
   std::set<int> unique_material_ids;
   int invalid_mat_cell_count = 0;
   for (auto& cell : grid.local_cells)
@@ -89,14 +89,14 @@ Solver::Initialize()
     Chi::log.LogAllWarning() << "Number of invalid material cells: " << invalid_mat_cell_count;
   }
 
-  //================================================== Initialize materials
+  // Initialize materials
   mg_diffusion::Solver::Initialize_Materials(unique_material_ids);
 
-  //============================================= BIDs
+  // BIDs
   auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
   mg_diffusion::Solver::Set_BCs(globl_unique_bndry_ids);
 
-  //============================================= Make SDM
+  // Make SDM
   sdm_ptr_ = chi_math::spatial_discretization::PieceWiseLinearContinuous::New(*grid_ptr_);
   const auto& sdm = *sdm_ptr_;
 
@@ -107,7 +107,7 @@ Solver::Initialize()
   Chi::log.Log() << "Num local DOFs: " << num_local_dofs_;
   Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs_;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs_);
   const auto N = static_cast<int64_t>(num_globl_dofs_);
 
@@ -162,13 +162,12 @@ Solver::Initialize()
 
   if (do_two_grid_) mg_diffusion::Solver::Compute_TwoGrid_VolumeFractions();
 
-  //============================================= Create Mats and ExtVecs
+  // Create Mats and ExtVecs
   mg_diffusion::Solver::Assemble_A_bext();
 
-  //============================================= Volume fraction for two-grid
-  //                                              update
+  // Volume fraction for two-grid update
 
-  //============================================= Field Function
+  // Field Function
   if (field_functions_.empty())
   {
     for (uint g = 0; g < mg_diffusion::Solver::num_groups_; ++g)
@@ -209,7 +208,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     auto current_material = Chi::GetStackItemPtr(Chi::material_stack, mat_id, __FUNCTION__);
     materials_list << "Material id " << mat_id;
 
-    //====================================== Check valid ids
+    // Check valid ids
     if (mat_id < 0)
     {
       throw std::logic_error("MG-diff-InitMaterials: Cells encountered with no assigned material.");
@@ -220,7 +219,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
                              "material id that matches no material in physics material library.");
     }
 
-    //====================================== Extract properties
+    // Extract properties
     using MatProperty = chi_physics::PropertyType;
     bool found_transport_xs = false;
     for (const auto& property : current_material->properties_)
@@ -250,7 +249,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
       } // P0 source
     }   // for property
 
-    //====================================== Check valid property
+    // Check valid property
     if (!found_transport_xs)
     {
       Chi::log.LogAllError() << "MG-Diff-InitMaterials: Found no transport cross-section property "
@@ -258,7 +257,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
                              << "material \"" << current_material->name_ << "\".";
       Chi::Exit(EXIT_FAILURE);
     }
-    //====================================== Check number of groups legal
+    // Check number of groups legal
     if (matid_to_xs_map[mat_id]->NumGroups() != num_groups_)
     {
       Chi::log.LogAllError() << "MG-Diff-InitMaterials: Found material \""
@@ -269,7 +268,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
       Chi::Exit(EXIT_FAILURE);
     }
 
-    //====================================== Check number of moments
+    // Check number of moments
     if (matid_to_xs_map[mat_id]->ScatteringOrder() > 1)
     {
       Chi::log.Log0Warning() << "MG-Diff-InitMaterials: Found material \""
@@ -517,7 +516,7 @@ Solver::Assemble_A_bext()
   const auto& grid = *grid_ptr_;
   const auto& sdm = *sdm_ptr_;
 
-  //============================================= Assemble the system
+  // Assemble the system
   unsigned int i_two_grid = do_two_grid_ ? 1 : 0;
 
   for (const auto& cell : grid.local_cells)
@@ -574,7 +573,7 @@ Solver::Assemble_A_bext()
         rhs_cell[g][i] = entry_rhsi * (qext->source_value_g_[g]);
     } // for i
 
-    //======================= Deal with BC (all based on variations of Robin)
+    // Deal with BC (all based on variations of Robin)
     const size_t num_faces = cell.faces_.size();
     for (size_t f = 0; f < num_faces; ++f)
     {
@@ -640,12 +639,12 @@ Solver::Assemble_A_bext()
       }         // if Robin
     }           // for face f
 
-    //======================= Develop node mapping
+    // Develop node mapping
     std::vector<int64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
       imap[i] = sdm.MapDOF(cell, i);
 
-    //======================= Assembly into system
+    // Assembly into system
     for (uint g = 0; g < num_groups_; ++g)
       for (size_t i = 0; i < num_nodes; ++i)
         VecSetValue(bext_[g], imap[i], rhs_cell[g][i], ADD_VALUES);
@@ -690,7 +689,7 @@ Solver::Execute()
 {
   Chi::log.Log() << "\nExecuting CFEM Multigroup Diffusion solver";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   // setup KSP once for all
   petsc_solver_ = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
     A_.front(),                                        // Matrix
@@ -717,14 +716,14 @@ Solver::Execute()
   // unsigned int lfg = mg_diffusion::Solver::last_fast_group;
   // unsigned int ng = mg_diffusion::Solver::num_groups;
 
-  //============================================= Solve fast groups:
+  // Solve fast groups:
   for (unsigned int g = 0; g < last_fast_group_; ++g)
   {
     mg_diffusion::Solver::Assemble_RHS(g, iverbose);
     mg_diffusion::Solver::SolveOneGroupProblem(g, iverbose);
   }
 
-  //============================================= Solve thermal groups:
+  // Solve thermal groups:
   unsigned int thermal_iteration = 0;
   // max # of thermal iterations
   int64_t max_thermal_iters = basic_options_("max_thermal_iters").IntegerValue();

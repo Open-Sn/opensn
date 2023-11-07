@@ -56,13 +56,13 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
   const bool export_vtk = params.Has("export_vtk") && params.GetParamValue<bool>("export_vtk");
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make SDM method
+  // Make SDM method
   const auto sdm_type = params.GetParamValue<std::string>("sdm_type");
 
   std::shared_ptr<chi_math::SpatialDiscretization> sdm_ptr;
@@ -85,7 +85,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
   Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
   Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
   const auto N = static_cast<int64_t>(num_globl_dofs);
   Mat A;
@@ -101,7 +101,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
   chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
-  //============================================= Assemble the system
+  // Assemble the system
   Chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
@@ -118,7 +118,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
     MatDbl Acell(num_nodes, VecDbl(num_nodes, 0.0));
     VecDbl cell_rhs(num_nodes, 0.0);
 
-    //======================= Assemble continuous kernels
+    // Assemble continuous kernels
     {
       const auto& shape = qp_data.ShapeValues();
       const auto& shape_grad = qp_data.ShapeGradValues();
@@ -160,7 +160,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
         const size_t acf = Grid::MapCellFace(cell, adj_cell, f);
         const double hp = HPerpendicular(adj_cell_mapping, acf);
 
-        //========================= Compute kappa
+        // Compute kappa
         double kappa = 1.0;
         if (cell.Type() == chi_mesh::CellType::SLAB)
           kappa = 2.0 * penalty_factor * (D / hp + D / hm) * 0.5;
@@ -169,7 +169,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
         if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
           kappa = 4.0 * penalty_factor * (D / hp + D / hm) * 0.5;
 
-        //========================= Assembly penalty terms
+        // Assembly penalty terms
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
@@ -198,7 +198,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
           } // for fj
         }   // for fi
 
-        //========================= Assemble gradient terms
+        // Assemble gradient terms
         // For the following comments we use the notation:
         // Dk = 0.5* n dot nabla bk
 
@@ -263,13 +263,13 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
       {
         const double bc_value = 0.0;
 
-        //========================= Compute kappa
+        // Compute kappa
         double kappa = 1.0;
         if (cell.Type() == chi_mesh::CellType::SLAB) kappa = 4.0 * penalty_factor * D / hm;
         if (cell.Type() == chi_mesh::CellType::POLYGON) kappa = 4.0 * penalty_factor * D / hm;
         if (cell.Type() == chi_mesh::CellType::POLYHEDRON) kappa = 8.0 * penalty_factor * D / hm;
 
-        //========================= Assembly penalty terms
+        // Assembly penalty terms
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
@@ -291,7 +291,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
           } // for fj
         }   // for fi
 
-        //========================= Assemble gradient terms
+        // Assemble gradient terms
         // For the following comments we use the notation:
         // Dk = n dot nabla bk
 
@@ -319,12 +319,12 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
       }     // boundary face
     }       // for face
 
-    //======================= Develop node mapping
+    // Develop node mapping
     std::vector<int64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
       imap[i] = sdm.MapDOF(cell, i);
 
-    //======================= Assembly into system
+    // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)
     {
       for (size_t j = 0; j < num_nodes; ++j)
@@ -343,7 +343,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
   Chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
   auto petsc_solver =
     chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,                // Matrix
@@ -375,14 +375,14 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
   PCSetFromOptions(pc);
   KSPSetFromOptions(petsc_solver.ksp);
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp, b, x);
 
   const char* reason;
   KSPGetConvergedReasonString(petsc_solver.ksp, &reason);
   Chi::log.Log() << "Done solving " << reason;
 
-  //============================================= Extract PETSc vector
+  // Extract PETSc vector
   std::vector<double> field;
   sdm.LocalizePETScVector(x, field, OneDofPerNode);
 
@@ -395,7 +395,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
   Chi::log.Log() << "Nodal max = " << global_max;
 
-  //============================================= Clean up
+  // Clean up
   KSPDestroy(&petsc_solver.ksp);
 
   VecDestroy(&x);
@@ -404,7 +404,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
   Chi::log.Log() << "Done cleanup";
 
-  //============================================= Create Field Function
+  // Create Field Function
   if (export_vtk)
   {
     auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(

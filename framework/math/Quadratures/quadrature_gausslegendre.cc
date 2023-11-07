@@ -106,12 +106,12 @@ QuadratureGaussLegendre::Initialize(unsigned int N,
                           "with "
                        << N << " q-points";
 
-      //========================= Compute the roots
+      // Compute the roots
       auto roots = FindRoots(N, max_iters, tol);
       for (auto v : roots)
         qpoints_.emplace_back(v);
 
-      //========================= Compute the weights
+      // Compute the weights
       weights_.resize(N, 1.0);
       for (size_t k = 0; k < qpoints_.size(); k++)
       {
@@ -149,7 +149,7 @@ QuadratureGaussLegendre::Initialize(unsigned int N,
 std::vector<double>
 QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, double tol)
 {
-  //======================================== Populate init guess
+  // Populate init guess
   // This initial guess proved to be quite important
   // at higher N since the roots start to get
   // squeezed to -1 and 1.
@@ -180,7 +180,7 @@ QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, doubl
     if (Legendre(N, x_i) * Legendre(N, x_ip1) < 0.0) xk[++counter] = (x_ip1 + x_i) / 2.0;
   }
 
-  //======================================== Apply algorithm
+  // Apply algorithm
   // Refer to equation 4.3 in [1]. Sum 1 (S1) is used in the
   // computation of B at x_k. Sum 2 (S2) is used in equation 4.3.
   // Equation 4.3 is broken up into pieces as follows:
@@ -196,20 +196,20 @@ QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, doubl
       double fp = dLegendredx(N, xold);    // First derivative
       double fpp = d2Legendredx2(N, xold); // Second derivative
 
-      //===================== Compute sum 1
+      // Compute sum 1
       double S1 = 0.0;
       for (int i = 0; i <= (k - 1); i++)
         S1 += 1.0 / (xk[k] - xk[i]);
 
-      //===================== Compute B at x_k
+      // Compute B at x_k
       double B_xk = fp - f * S1;
 
-      //===================== Compute sum 2
+      // Compute sum 2
       double S2 = 0.0;
       for (int i = 0; i <= (k - 1); i++)
         S2 += 1.0 / (xk[k] - xk[i]) / (xk[k] - xk[i]);
 
-      //===================== Compute final formula
+      // Compute final formula
       double a = fpp + f * S2;
       double b = B_xk * B_xk + fp * fp - f * a;
       double c = 2.0 * f * B_xk / b;

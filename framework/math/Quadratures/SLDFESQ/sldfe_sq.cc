@@ -17,13 +17,12 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
   timer.Reset();
   initial_level_ = level;
 
-  //======================================== Define constants
+  // Define constants
   const chi_mesh::Vector3 ihat = chi_mesh::Vector3(1.0, 0.0, 0.0);
   const chi_mesh::Vector3 jhat = chi_mesh::Vector3(0.0, 1.0, 0.0);
   const chi_mesh::Vector3 khat = chi_mesh::Vector3(0.0, 0.0, 1.0);
 
-  //======================================== Build rotation matrices
-  //                                         for cube faces
+  // Build rotation matrices for cube faces
   chi_mesh::Matrix3x3 Rxface;
   Rxface.SetColJVec(0, jhat);
   Rxface.SetColJVec(1, khat);
@@ -37,23 +36,20 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
   chi_mesh::Matrix3x3 Rzface;
   Rzface.SetDiagonalVec(1.0, 1.0, 1.0);
 
-  //======================================== Set translation vectors
-  //                                         for cube faces
+  // Set translation vectors for cube faces
   auto txface = a * ihat;
   auto tyface = a * jhat;
   auto tzface = a * khat;
 
-  //======================================== Generate general diagonal
-  //                                         spacings in xy-tilde coordinates
+  // Generate general diagonal spacings in xy-tilde coordinates
   GenerateDiagonalSpacings(level);
 
-  //======================================== Generate vertices for each face
-  //                                         of inscribed cube
+  // Generate vertices for each face of inscribed cube
   GenerateReferenceFaceVertices(Rxface, txface, level);
   GenerateReferenceFaceVertices(Ryface, tyface, level);
   GenerateReferenceFaceVertices(Rzface, tzface, level);
 
-  //======================================== Compute areas
+  // Compute areas
   double total_area = 0.0;
   double area_max = -100.0;
   double area_min = 100.0;
@@ -75,7 +71,7 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
   if (negative_weights_found)
     Chi::log.Log0Warning() << "SLDFESQ Quadrature detected negative weights.";
 
-  //======================================== Print Statistics
+  // Print Statistics
   double time = timer.GetTime() / 1000.0;
   Chi::log.Log0Verbose1() << "Number of dirs/octant: " << initial_octant_SQs_.size();
   Chi::log.Log0Verbose1() << "Total weight         : " << total_area;
@@ -85,7 +81,7 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
 
   CopyToAllOctants();
 
-  //======================================== Populate quadriture points
+  // Populate quadriture points
   PopulateQuadratureAbscissae();
 
   Chi::log.Log0Verbose1() << "Time taken           : " << time;
@@ -94,13 +90,13 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
 void
 SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
 {
-  //======================================== Define constants
+  // Define constants
   const int Ns = (level + 1); // Number of subdivisions
   const int Np = Ns + 1;      // Number of diagonal points
 
   const auto ihat = chi_mesh::Vector3(1.0, 0.0, 0.0);
 
-  //======================================== Define rotation matrix
+  // Define rotation matrix
   chi_mesh::Matrix3x3 Rihat;
   auto n = chi_mesh::Vector3(0.0, -1.0 / sqrt(2), 1.0 / sqrt(2));
   auto& t = ihat;
@@ -110,7 +106,7 @@ SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
   Rihat.SetColJVec(1, b);
   Rihat.SetColJVec(2, n);
 
-  //======================================== Generate p-points
+  // Generate p-points
   std::vector<chi_mesh::Vector3> p_points(Np);
   double dphi = acos(a) / Ns;
   double alpha = 0.10005;
@@ -123,7 +119,7 @@ SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
     p_points[i] = Rihat * chi_mesh::Vector3(cos(phi), sin(phi), 0.0);
   }
 
-  //======================================== Compute tilde points
+  // Compute tilde points
   std::vector<chi_mesh::Vector3> tilde_points(Np);
   for (int i = 0; i < Np; ++i)
   {
@@ -148,7 +144,7 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(
 
   QuadratureGaussLegendre legendre(QuadratureOrder::THIRTYSECOND);
 
-  //============================================= Generate xy_tilde values
+  // Generate xy_tilde values
   std::vector<VertList> vertices_xy_tilde_ij;
   vertices_xy_tilde_ij.resize(Np, VertList(Np));
   for (int i = 0; i < Np; ++i)
@@ -156,7 +152,7 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(
       vertices_xy_tilde_ij[i][j] =
         chi_mesh::Vertex(diagonal_vertices_[i].x, diagonal_vertices_[j].y, 0.0);
 
-  //============================================= Generate SQs
+  // Generate SQs
   for (int i = 0; i < Ns; ++i)
   {
     for (int j = 0; j < Ns; ++j)
@@ -166,22 +162,22 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(
       sq.rotation_matrix = rotation_matrix;
       sq.translation_vector = translation;
 
-      //==================================== Set xy-tilde vertices
+      // Set xy-tilde vertices
       sq.vertices_xy_tilde[0] = vertices_xy_tilde_ij[i][j];
       sq.vertices_xy_tilde[1] = vertices_xy_tilde_ij[i + 1][j];
       sq.vertices_xy_tilde[2] = vertices_xy_tilde_ij[i + 1][j + 1];
       sq.vertices_xy_tilde[3] = vertices_xy_tilde_ij[i][j + 1];
       auto& vxy = sq.vertices_xy_tilde;
 
-      //==================================== Set xyz_prime vertices
+      // Set xyz_prime vertices
       for (int v = 0; v < 4; ++v)
         sq.vertices_xyz_prime[v] = rotation_matrix * vxy[v] + translation;
 
-      //==================================== Set xyz vertices
+      // Set xyz vertices
       for (int v = 0; v < 4; ++v)
         sq.vertices_xyz[v] = sq.vertices_xyz_prime[v].Normalized();
 
-      //==================================== Compute SQ xyz-centroid
+      // Compute SQ xyz-centroid
       for (auto& vertex : sq.vertices_xyz)
         sq.centroid_xyz += vertex;
       sq.centroid_xyz /= 4;
@@ -191,7 +187,7 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(
       auto v1 = sq.vertices_xyz[0];
       auto v2 = sq.vertices_xyz[1];
 
-      //==================================== Correction orientation
+      // Correction orientation
       if ((v1 - v0).Cross(v2 - v0).Dot(v0) < 0.0)
       {
         std::reverse(sq.vertices_xy_tilde.begin(), sq.vertices_xy_tilde.end());
@@ -199,13 +195,13 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(
         std::reverse(sq.vertices_xyz.begin(), sq.vertices_xyz.end());
       }
 
-      //==================================== Compute area
+      // Compute area
       sq.area = ComputeSphericalQuadrilateralArea(sq.vertices_xyz);
 
-      //==================================== Set octant modifier
+      // Set octant modifier
       sq.octant_modifier = chi_mesh::Vector3(1.0, 1.0, 1.0);
 
-      //==================================== Develop LDFE values
+      // Develop LDFE values
       DevelopSQLDFEValues(sq, legendre);
 
       initial_octant_SQs_.push_back(sq);
@@ -248,7 +244,7 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(
 {
   auto& SA_i = sub_sub_sqr_areas;
 
-  //============================================= Declare algorithm utilities
+  // Declare algorithm utilities
   FUNCTION_WEIGHT_FROM_RHO ComputeWeights(
     *this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
   double d = 1.0 / sqrt(3.0);
@@ -257,10 +253,10 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(
   DynamicVector<double> delta = {epsilon, epsilon, epsilon, epsilon};
   DynamicVector<double> drho_df = {0.0, 0.0, 0.0, 0.0};
 
-  //============================================= Compute initial weights
+  // Compute initial weights
   auto weights = ComputeWeights(rho);
 
-  //============================================= Apply algorithm
+  // Apply algorithm
   Chi::log.Log() << "=================================================== ";
   for (int k = 0; k < 150; ++k) // iteration
   {
@@ -293,7 +289,7 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(
       rho_change_total -= 1.0 * drho_df[i] * (weights[i] - SA_i[i]);
     }
 
-    //================================= Update weights
+    // Update weights
     weights = ComputeWeights(rho);
     double change = 0.0;
     for (int i = 0; i < 4; ++i)
@@ -331,19 +327,19 @@ void
 SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
                                                   QuadratureGaussLegendre& legendre)
 {
-  //============================================= Determine sq tilde center
+  // Determine sq tilde center
   chi_mesh::Vertex sq_tilde_center;
   for (const auto& v : sq.vertices_xy_tilde)
     sq_tilde_center += v;
   sq_tilde_center /= 4;
 
-  //============================================= Determine off-set vectors
+  // Determine off-set vectors
   auto& vc = sq_tilde_center;
   std::array<chi_mesh::Vector3, 4> vctoi;
   for (int v = 0; v < 4; ++v)
     vctoi[v] = sq.vertices_xy_tilde[v] - vc;
 
-  //============================================= Determine sub-sub-squares
+  // Determine sub-sub-squares
   std::array<std::array<chi_mesh::Vertex, 4>, 4> sub_sub_square_xy_tilde;
   std::map<std::string, chi_mesh::Vertex> vm;
 
@@ -362,20 +358,19 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
   sst[2] = {vm["c"], vm["12"], vm["2"], vm["23"]};
   sst[3] = {vm["03"], vm["c"], vm["23"], vm["3"]};
 
-  //============================================= Determine sub-sub-square
-  //                                              xyz
+  // Determine sub-sub-square xyz
   std::array<std::array<chi_mesh::Vertex, 4>, 4> sub_sub_square_xyz;
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       sub_sub_square_xyz[i][j] =
         (sq.rotation_matrix * sub_sub_square_xy_tilde[i][j] + sq.translation_vector).Normalized();
 
-  //============================================= Compute sub-sub-square area
+  // Compute sub-sub-square area
   std::array<double, 4> SA_i = {0.0, 0.0, 0.0, 0.0};
   for (int i = 0; i < 4; ++i)
     SA_i[i] = ComputeSphericalQuadrilateralArea(sub_sub_square_xyz[i]);
 
-  //============================================= Apply optimization
+  // Apply optimization
   if (qp_optimization_type_ == QuadraturePointOptimization::CENTROID)
     for (int i = 0; i < 4; ++i)
     {
@@ -398,14 +393,13 @@ SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(
 {
   const auto num_verts = 4;
 
-  //======================================== Compute centroid
+  // Compute centroid
   chi_mesh::Vertex centroid_xyz;
   for (auto& v : vertices_xyz)
     centroid_xyz += v;
   centroid_xyz /= num_verts;
 
-  //======================================== Compute area via
-  //                                         spherical excess
+  // Compute area via spherical excess
   double area = 0.0;
   auto v0 = centroid_xyz.Normalized();
   for (int v = 0; v < num_verts; ++v)
@@ -415,7 +409,7 @@ SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(
 
     if ((v1 - v0).Cross(v2 - v0).Dot(v0) < 0.0) std::swap(v1, v2);
 
-    //====================================== Lambda for spherical excess
+    // Lambda for spherical excess
     auto GetSphericalExcess =
       [](const chi_mesh::Vector3& vA, const chi_mesh::Vector3& vB, const chi_mesh::Vector3& vC)
     {
@@ -451,14 +445,14 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
   const std::vector<QuadraturePointXYZ>& legendre_qpoints,
   const std::vector<double>& legendre_qweights)
 {
-  //=================================== Lambda to evaluate LDFE shape func
+  // Lambda to evaluate LDFE shape func
   auto EvaluateShapeFunction = [](DynamicVector<double>& shape_coeffs, chi_mesh::Vector3& mu_eta_xi)
   {
     return shape_coeffs[0] + shape_coeffs[1] * mu_eta_xi[0] + shape_coeffs[2] * mu_eta_xi[1] +
            shape_coeffs[3] * mu_eta_xi[2];
   };
 
-  //=================================== Determine integration bounds
+  // Determine integration bounds
   double x_tilde_max = 0.0;
   double x_tilde_min = 1.0;
   double y_tilde_max = 0.0;
@@ -472,7 +466,7 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
     y_tilde_min = std::fmin(y_tilde_min, v.y);
   }
 
-  //=================================== Integrate Legendre Quadrature
+  // Integrate Legendre Quadrature
   std::array<double, 4> integral = {0.0, 0.0, 0.0, 0.0};
   int Nq = legendre_qpoints.size();
   double dx_tilde = (x_tilde_max - x_tilde_min);
@@ -482,19 +476,19 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
   {
     for (int j = 0; j < Nq; ++j)
     {
-      //========================== Determine xy_tilde
+      // Determine xy_tilde
       double x_tilde = x_tilde_min + (1.0 + legendre_qpoints[j][0]) * dx_tilde / 2.0;
       double y_tilde = y_tilde_min + (1.0 + legendre_qpoints[i][0]) * dy_tilde / 2.0;
       chi_mesh::Vector3 xy_tilde(x_tilde, y_tilde, 0.0);
 
-      //========================== Map to xyz
+      // Map to xyz
       auto xyz = (sq.rotation_matrix * xy_tilde + sq.translation_vector).Normalized();
 
-      //========================== Determine Jacobian
+      // Determine Jacobian
       double r = sqrt(x_tilde * x_tilde + y_tilde * y_tilde + a * a);
       double detJ = (a / (r * r * r)) * dx_tilde * dy_tilde / 4.0;
 
-      //========================== Evaluate shape funcs and add to integral
+      // Evaluate shape funcs and add to integral
       for (int k = 0; k < 4; ++k)
         integral[k] += EvaluateShapeFunction(shape_coeffs[k], xyz) * detJ * legendre_qweights[i] *
                        legendre_qweights[j];
@@ -510,14 +504,14 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
   deployed_SQs_.clear(); // just to be sure
   deployed_SQs_.reserve(initial_octant_SQs_.size() * 8);
 
-  //======================================== Define modifying variables
+  // Define modifying variables
   chi_mesh::Vector3 octant_mod(1.0, 1.0, 1.0);
 
-  //======================================== Top NE octant, no change
+  // Top NE octant, no change
   for (auto& sq : initial_octant_SQs_)
     deployed_SQs_.push_back(sq);
 
-  //======================================== Top NW octant
+  // Top NW octant
   octant_mod = chi_mesh::Vector3(-1.0, 1.0, 1.0);
   for (auto& sq : initial_octant_SQs_)
   {
@@ -534,7 +528,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
     deployed_SQs_.push_back(new_sq);
   }
 
-  //======================================== Top SW octant
+  // Top SW octant
   octant_mod = chi_mesh::Vector3(-1.0, -1.0, 1.0);
   for (auto& sq : initial_octant_SQs_)
   {
@@ -551,7 +545,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
     deployed_SQs_.push_back(new_sq);
   }
 
-  //======================================== Top SE octant
+  // Top SE octant
   octant_mod = chi_mesh::Vector3(1.0, -1.0, 1.0);
   for (auto& sq : initial_octant_SQs_)
   {
@@ -568,7 +562,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
     deployed_SQs_.push_back(new_sq);
   }
 
-  //======================================== Bot NE octant
+  // Bot NE octant
   octant_mod = chi_mesh::Vector3(1.0, 1.0, -1.0);
   for (auto& sq : initial_octant_SQs_)
   {
@@ -585,7 +579,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
     deployed_SQs_.push_back(new_sq);
   }
 
-  //======================================== Bot NW octant
+  // Bot NW octant
   octant_mod = chi_mesh::Vector3(-1.0, 1.0, -1.0);
   for (auto& sq : initial_octant_SQs_)
   {
@@ -602,7 +596,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
     deployed_SQs_.push_back(new_sq);
   }
 
-  //======================================== Bot SW octant
+  // Bot SW octant
   octant_mod = chi_mesh::Vector3(-1.0, -1.0, -1.0);
   for (auto& sq : initial_octant_SQs_)
   {
@@ -619,7 +613,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
     deployed_SQs_.push_back(new_sq);
   }
 
-  //======================================== Bot SE octant
+  // Bot SE octant
   octant_mod = chi_mesh::Vector3(1.0, -1.0, -1.0);
   for (auto& sq : initial_octant_SQs_)
   {
@@ -636,7 +630,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
     deployed_SQs_.push_back(new_sq);
   }
 
-  //======================================== Make history entry
+  // Make history entry
   deployed_SQs_history_.push_back(deployed_SQs_);
 }
 
@@ -974,14 +968,13 @@ SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, QuadratureGaus
 {
   std::array<SphericalQuadrilateral, 4> new_sqs;
 
-  //============================================= Determine sq tilde center
+  // Determine sq tilde center
   chi_mesh::Vertex sq_tilde_center;
   for (const auto& v : sq.vertices_xy_tilde)
     sq_tilde_center += v;
   sq_tilde_center /= 4;
 
-  //============================================= Determine sub-sub-squares
-  //                                              Tilde coordinates
+  // Determine sub-sub-squares Tilde coordinates
   std::array<std::array<chi_mesh::Vertex, 4>, 4> sub_sub_square_xy_tilde;
   std::map<std::string, chi_mesh::Vertex> vm;
 
@@ -1003,18 +996,17 @@ SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, QuadratureGaus
   for (int i = 0; i < 4; ++i)
     new_sqs[i].vertices_xy_tilde = sst[i];
 
-  //============================================= Determine xyz-prime
+  // Determine xyz-prime
   for (int i = 0; i < 4; ++i)
     for (int v = 0; v < 4; ++v)
       new_sqs[i].vertices_xyz_prime[v] = sq.rotation_matrix * sst[i][v] + sq.translation_vector;
 
-  //============================================= Compute xyz
+  // Compute xyz
   for (int i = 0; i < 4; ++i)
     for (int v = 0; v < 4; ++v)
       new_sqs[i].vertices_xyz[v] = new_sqs[i].vertices_xyz_prime[v].Normalized();
 
-  //============================================= Compute SQ xyz-centroid,
-  //                                              R,T,area, ldfe
+  // Compute SQ xyz-centroid, R,T,area, ldfe
   for (int i = 0; i < 4; ++i)
   {
     for (int v = 0; v < 4; ++v)

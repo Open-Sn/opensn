@@ -14,25 +14,22 @@
 - \ref CodeTut1Sec9
 
 \section CodeTut1Sec1 1 Poisson's equation
-<a href="https://en.wikipedia.org/wiki/Poisson%27s_equation">The Poisson's equation</a> states the following, for
-\f$ \phi, q \in \mathcal{R} \f$,
-\f{eqnarray*}{
--\boldsymbol{\nabla} \cdot \bigr(\boldsymbol{\nabla} \phi(\mathbf{x})\bigr) = q(\mathbf{x}), \quad \quad \quad (\mathbf{x})\in\mathcal{D} \\
-\phi(\mathbf{x}) = 0, \quad \quad \quad \mathbf{x}\in \partial \mathcal{D}
-\f}
-where \f$ \boldsymbol{\nabla} \cdot \bigr( \bigr) \f$ denotes the divergence-operator
-and \f$ \boldsymbol{\nabla} \f$ denotes the gradient-operator, i.e.
-\f$ \boldsymbol{\nabla} \phi \f$ denotes the gradient of \f$ \phi \f$. The
-boundary conditions here state that \f$ \phi=0 \f$ on the boundary.
+<a href="https://en.wikipedia.org/wiki/Poisson%27s_equation">The Poisson's equation</a> states the
+following, for \f$ \phi, q \in \mathcal{R} \f$, \f{eqnarray*}{
+-\boldsymbol{\nabla} \cdot \bigr(\boldsymbol{\nabla} \phi(\mathbf{x})\bigr) = q(\mathbf{x}), \quad
+\quad \quad (\mathbf{x})\in\mathcal{D} \\ \phi(\mathbf{x}) = 0, \quad \quad \quad \mathbf{x}\in
+\partial \mathcal{D} \f} where \f$ \boldsymbol{\nabla} \cdot \bigr( \bigr) \f$ denotes the
+divergence-operator and \f$ \boldsymbol{\nabla} \f$ denotes the gradient-operator, i.e. \f$
+\boldsymbol{\nabla} \phi \f$ denotes the gradient of \f$ \phi \f$. The boundary conditions here
+state that \f$ \phi=0 \f$ on the boundary.
 
 
 
 
 \subsection CodeTut1Sec1_1 1.1 Our specific problem
-For our specific problem we will choose \f$ q(\mathbf{x})=1 \f$ and \f$ \mathcal{D} \f$ a cartesian domain,
-either 1D, 2D or 3D, with each dimension always between \f$ -1,+1 \f$. We can generate the mesh for this
-problem using an input file
-\code
+For our specific problem we will choose \f$ q(\mathbf{x})=1 \f$ and \f$ \mathcal{D} \f$ a cartesian
+domain, either 1D, 2D or 3D, with each dimension always between \f$ -1,+1 \f$. We can generate the
+mesh for this problem using an input file \code
 --############################################### Setup mesh
 chiMeshHandlerCreate()
 
@@ -55,7 +52,8 @@ chiVolumeMesherExecute();
 chiVolumeMesherSetMatIDToAll(0)
 \endcode
 This code can be used to generate any of the following meshes,
-\image html CodingTutorials/OrthoMesh_1D_2D_3D.png "[From left to right] 1D, 2D, 3D orthogonal mesh" width=1200px
+\image html CodingTutorials/OrthoMesh_1D_2D_3D.png "[From left to right] 1D, 2D, 3D orthogonal mesh"
+width=1200px
 
 
 
@@ -101,8 +99,9 @@ the gradient of \f$ \phi \f$ at face \f$ f \f$ as
 \ \frac{\mathbf{x}_{PN}}{||\mathbf{x}_{PN}||}.
 \f}
 Note that this is essentially a scalar component
- \f$ \frac{df}{ds} = \frac{\phi_N - \phi_P}{||\mathbf{x}_{PN}||}\f$ after which we give it a direction
-by normalizing \f$ \mathbf{x}_{PN} \f$ as \f$ \frac{\mathbf{x}_{PN}}{||\mathbf{x}_{PN}||} \f$.
+ \f$ \frac{df}{ds} = \frac{\phi_N - \phi_P}{||\mathbf{x}_{PN}||}\f$ after which we give it a
+direction by normalizing \f$ \mathbf{x}_{PN} \f$ as \f$ \frac{\mathbf{x}_{PN}}{||\mathbf{x}_{PN}||}
+\f$.
 
 Our discretized equations now become
 
@@ -266,7 +265,7 @@ Next we add the following lines of code:
 \code
 chi::log.Log() << "Coding Tutorial 1";
 
-//============================================= Get grid
+// Get grid
 auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
 const auto& grid = *grid_ptr;
 
@@ -355,7 +354,7 @@ To access this discretization we must first include the header for
 
 Next we add the following lines of code
 \code
-//============================================= Make SDM
+// Make SDM
 typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
 SDMPtr sdm_ptr = chi_math::SpatialDiscretization_FV::New(grid_ptr);
 const auto& sdm = *sdm_ptr;
@@ -431,7 +430,7 @@ the header
 
 Next we add the following code:
 \code
-//============================================= Initializes Mats and Vecs
+// Initializes Mats and Vecs
 const auto n = static_cast<int64_t>(num_local_dofs);
 const auto N = static_cast<int64_t>(num_globl_dofs);
 Mat A;
@@ -474,7 +473,7 @@ pattern using `chi_math::PETScUtils::InitMatrixSparsity`.
 \section CodeTut1Sec6 6 Assembling the matrix and right-hand-side
 The code to assemble the matrix is as follows.
 \code
-//============================================= Assemble the system
+// Assemble the system
 chi::log.Log() << "Assembling system: ";
 for (const auto& cell : grid.local_cells)
 {
@@ -635,7 +634,7 @@ VecAssemblyEnd(b);
 \section CodeTut1Sec7 7 Solving the system with a Krylov Subspace solver
 Most of the following code is self explanatory.
 \code
-//============================================= Create Krylov Solver
+// Create Krylov Solver
 chi::log.Log() << "Solving: ";
 auto petsc_solver =
   chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
@@ -646,7 +645,7 @@ auto petsc_solver =
     1.0e-6,          //Relative residual tolerance
     1000);            //Max iterations
 
-//============================================= Solve
+// Solve
 KSPSolve(petsc_solver.ksp,b,x);
 
 chi::log.Log() << "Done solving";
@@ -660,11 +659,11 @@ After this solve-step we want to get an STL representation of the PETSc vector s
 that we can think about visualizing the solution. We can get a local copy of the
 PETSc vector using the code
 \code
-//============================================= Extract PETSc vector
+// Extract PETSc vector
 std::vector<double> field(num_local_dofs, 0.0);
 sdm.LocalizePETScVector(x,field,OneDofPerNode);
 
-//============================================= Clean up
+// Clean up
 KSPDestroy(&petsc_solver.ksp);
 
 VecDestroy(&x);
@@ -693,7 +692,7 @@ need to include the header
 
 Next we create the field function using the code
 \code
-//============================================= Create Field Function
+// Create Field Function
 auto ff = std::make_shared<chi_physics::FieldFunction>(
   "Phi",
   sdm_ptr,
@@ -727,10 +726,12 @@ visualization tools such as `Visit` and `Paraview` to visualize the solution.
 
 For this tutorial we used Paraview.
 
-\image html CodingTutorials/Solution_1D_2D_3D.png "[From left to right] 1D, 2D, 3D solutions with a coarse mesh" width=1200px
+\image html CodingTutorials/Solution_1D_2D_3D.png "[From left to right] 1D, 2D, 3D solutions with a
+coarse mesh" width=1200px
 
 And on a finer mesh, with the 3D case being 1 million cells:
-\image html CodingTutorials/Solution_1D_2D_3D_fine.png "[From left to right] 1D, 2D, 3D solutions with a fine mesh" width=1200px
+\image html CodingTutorials/Solution_1D_2D_3D_fine.png "[From left to right] 1D, 2D, 3D solutions
+with a fine mesh" width=1200px
 
 
 
@@ -756,13 +757,13 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Coding Tutorial 1";
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::SpatialDiscretization_FV::New(grid_ptr);
   const auto& sdm = *sdm_ptr;
@@ -775,7 +776,7 @@ int main(int argc, char* argv[])
   chi::log.Log() << "Num local DOFs: " << num_local_dofs;
   chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
   const auto N = static_cast<int64_t>(num_globl_dofs);
   Mat A;
@@ -793,7 +794,7 @@ int main(int argc, char* argv[])
                                            nodal_nnz_in_diag,
                                            nodal_nnz_off_diag);
 
-  //============================================= Assemble the system
+  // Assemble the system
   chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
@@ -846,7 +847,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   chi::log.Log() << "Solving: ";
   auto petsc_solver =
     chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
@@ -857,16 +858,16 @@ int main(int argc, char* argv[])
       1.0e-6,          //Relative residual tolerance
       1000);            //Max iterations
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp,b,x);
 
   chi::log.Log() << "Done solving";
 
-  //============================================= Extract PETSc vector
+  // Extract PETSc vector
   std::vector<double> field(num_local_dofs, 0.0);
   sdm.LocalizePETScVector(x,field,OneDofPerNode);
 
-  //============================================= Clean up
+  // Clean up
   KSPDestroy(&petsc_solver.ksp);
 
   VecDestroy(&x);
@@ -875,7 +876,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Done cleanup";
 
-  //============================================= Create Field Function
+  // Create Field Function
   auto ff = std::make_shared<chi_physics::FieldFunction>(
     "Phi",
     sdm_ptr,

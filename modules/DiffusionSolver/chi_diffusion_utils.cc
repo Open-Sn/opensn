@@ -36,14 +36,14 @@ PetscErrorCode
 chi_diffusion::DiffusionConvergenceTestNPT(
   KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
 {
-  //======================================================= Compute rhs norm
+  // Compute rhs norm
   Vec Rhs;
   KSPGetRhs(ksp, &Rhs);
   double rhs_norm;
   VecNorm(Rhs, NORM_2, &rhs_norm);
   if (rhs_norm < 1.0e-25) rhs_norm = 1.0;
 
-  //======================================================= Compute test
+  // Compute test
   // criterion
   double tol;
   int64_t maxIts;

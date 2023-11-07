@@ -93,7 +93,7 @@ chi_math::SparseMatrix::SetDiagonal(const std::vector<double>& diag)
   CheckInitialized();
 
   size_t num_rows = rowI_values_.size();
-  //============================================= Check size
+  // Check size
   if (diag.size() != rowI_values_.size())
   {
     Chi::log.LogAllError() << "Incompatible matrix-vector size encountered "
@@ -101,7 +101,7 @@ chi_math::SparseMatrix::SetDiagonal(const std::vector<double>& diag)
     Chi::Exit(EXIT_FAILURE);
   }
 
-  //============================================= Assign values
+  // Assign values
   for (size_t i = 0; i < num_rows; i++)
   {
     auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), i);
@@ -157,8 +157,7 @@ chi_math::SparseMatrix::Compress()
     auto& indices = rowI_indices_[i];
     auto& values = rowI_values_[i];
 
-    //====================================== Copy row indexes and values into
-    //                                       vector of pairs
+    // Copy row indexes and values into vector of pairs
     std::vector<std::pair<size_t, double>> target;
     target.reserve(indices.size());
 
@@ -169,7 +168,7 @@ chi_math::SparseMatrix::Compress()
       target.emplace_back(*index, *value);
     }
 
-    //====================================== Define compare operator
+    // Define compare operator
     struct
     {
       bool operator()(std::pair<size_t, double> a, std::pair<size_t, double> b)
@@ -181,7 +180,7 @@ chi_math::SparseMatrix::Compress()
     // Sort
     std::stable_sort(target.begin(), target.end(), compare_index);
 
-    //====================================== Copy back
+    // Copy back
     indices.clear();
     values.clear();
     for (auto& iv_pair : target)

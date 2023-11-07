@@ -231,16 +231,16 @@ chiLBSSetProperty(lua_State* L)
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
-  //============================================= Get property index
+  // Get property index
   LuaCheckNilValue(fname, L, 2);
 
   const int property = lua_tonumber(L, 2);
 
-  //============================================= Handle properties
+  // Handle properties
   if (scpcode(property) == PropertyCode::DISCRETIZATION_METHOD)
   {
     LuaCheckNilValue(fname, L, 3);

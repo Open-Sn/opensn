@@ -67,17 +67,17 @@ chiFVDiffusionSetBCProperty(lua_State* L)
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
 
-  //==========================sss=================== Get solver
+  // Get solver
   LuaCheckNumberValue(fname, L, 1);
   const int solver_index = lua_tonumber(L, 1);
 
   auto& solver = Chi::GetStackItem<fv_diffusion::Solver>(Chi::object_stack, solver_index, fname);
 
-  //============================================= Get property index
+  // Get property index
   LuaCheckStringValue(fname, L, 2);
   const std::string property_name = lua_tostring(L, 2);
 
-  //============================================= Handle properties
+  // Handle properties
   if (property_name == "boundary_type")
   {
     if (num_args < 4)

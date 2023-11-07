@@ -156,8 +156,7 @@ SweepChunk::KernelFEMSTDMassTerms()
   const auto& M = *M_;
   const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
 
-  // ============================= Contribute source moments
-  // q = M_n^T * q_moms
+  // Contribute source moments q = M_n^T * q_moms
   for (int i = 0; i < cell_num_nodes_; ++i)
   {
     double temp_src = 0.0;
@@ -169,7 +168,7 @@ SweepChunk::KernelFEMSTDMassTerms()
     source_[i] = temp_src;
   } // for i
 
-  // ============================= Mass Matrix and Source
+  // Mass Matrix and Source
   // Atemp  = Amat + sigma_tgr * M
   // b     += M * q
   for (int i = 0; i < cell_num_nodes_; ++i)

@@ -14,7 +14,7 @@ namespace chi_mesh::sweep_management
 AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data)
   : FLUDS(num_groups, num_angles, common_data.GetSPDS()), common_data_(common_data)
 {
-  //============================== Adjusting for different group aggregate
+  // Adjusting for different group aggregate
   for (auto& val : common_data_.local_psi_n_block_stride)
     local_psi_Gn_block_strideG.push_back(val * num_groups_);
 

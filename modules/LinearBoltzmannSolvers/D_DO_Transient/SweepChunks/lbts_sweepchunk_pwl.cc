@@ -113,8 +113,7 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
   const bool fixed_src_active = surface_source_active;
   //  const bool fixed_src_active = true;
 
-  // ========================================================== Loop over each
-  // cell
+  // Loop over each cell
   size_t num_loc_cells = spds.spls.item_id.size();
   for (size_t spls_index = 0; spls_index < num_loc_cells; ++spls_index)
   {
@@ -137,14 +136,13 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
     for (size_t gsg = 0; gsg < gs_ss_size; ++gsg)
       tau_gsg[gsg] = inv_velg[gs_gi + gsg] * inv_theta * inv_dt;
 
-    // =================================================== Get Cell matrices
+    // Get Cell matrices
     const auto& G = fe_intgrl_values.G_matrix;
     const auto& M = fe_intgrl_values.M_matrix;
     const auto& M_surf = fe_intgrl_values.face_M_matrices;
     const auto& IntS_shapeI = fe_intgrl_values.face_Si_vectors;
 
-    // =================================================== Loop over angles in
-    // set
+    // Loop over angles in set
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
     const size_t as_num_angles = angle_set->angles.size();
@@ -156,7 +154,7 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
       const chi_mesh::Vector3& omega = groupset_.quadrature_->omegas_[angle_num];
       const double wt = groupset_.quadrature_->weights_[angle_num];
 
-      // ============================================ Gradient matrix
+      // Gradient matrix
       for (int i = 0; i < num_nodes; ++i)
         for (int j = 0; j < num_nodes; ++j)
           Amat_[i][j] = omega.Dot(G[i][j]);
@@ -164,7 +162,7 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
       for (int gsg = 0; gsg < gs_ss_size; ++gsg)
         b_[gsg].assign(num_nodes, 0.0);
 
-      // ============================================ Upwinding structure
+      // Upwinding structure
       Upwinder upwind{*fluds,
                       angle_set,
                       spls_index,
@@ -181,7 +179,7 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
                       gs_ss_begin,
                       surface_source_active};
 
-      // ============================================ Surface integrals
+      // Surface integrals
       int in_face_counter = -1;
       for (int f = 0; f < num_faces; ++f)
       {
@@ -224,13 +222,12 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
         }   // for face i
       }     // for f
 
-      // ========================================== Looping over groups
+      // Looping over groups
       for (int gsg = 0; gsg < gs_ss_size; ++gsg)
       {
         const int g = gs_gi + gsg;
 
-        // ============================= Contribute source moments
-        // q = M_n^T * q_moms
+        // Contribute source moments q = M_n^T * q_moms
         for (int i = 0; i < num_nodes; ++i)
         {
           double temp_src = 0.0;
@@ -244,7 +241,7 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
           source_[i] = temp_src;
         } // for i
 
-        // ============================= Mass Matrix and Source
+        // Mass Matrix and Source
         // Atemp  = Amat + sigma_tgr * M
         // b     += M * q
         const double sigma_tgr = sigma_tg[g] + tau_gsg[gsg];
@@ -260,11 +257,11 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
           b_[gsg][i] += temp;
         } // for i
 
-        // ============================= Solve system
+        // Solve system
         chi_math::GaussElimination(Atemp_, b_[gsg], num_nodes);
       }
 
-      // ============================= Accumulate flux
+      // Accumulate flux
       for (int m = 0; m < num_moments_; ++m)
       {
         const double wn_d2m = d2m_op[m][angle_num];
@@ -279,7 +276,7 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
       for (auto& callback : moment_callbacks)
         callback(this, angle_set);
 
-      // ============================= Save angular fluxes if needed
+      // Save angular fluxes if needed
       if (save_angular_flux_)
       {
         for (int i = 0; i < num_nodes; ++i)
@@ -297,7 +294,7 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
         if (face_incident_flags[f]) continue;
         double mu = face_mu_values[f];
 
-        // ============================= Set flags and counters
+        // Set flags and counters
         out_face_counter++;
         const auto& face = cell.faces_[f];
         const bool local = transport_view.IsFaceLocal(f);

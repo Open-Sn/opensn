@@ -21,7 +21,7 @@ chi::ParameterBlock
 chi_math_Test00(const chi::InputParameters& params)
 {
   Chi::log.Log() << "GOLD_BEGIN";
-  //======================================================= Dynamic Vector
+  // Dynamic Vector
   {
     Chi::log.Log() << "Testing chi_math::DynamicVector\n";
 
@@ -29,7 +29,7 @@ chi_math_Test00(const chi::InputParameters& params)
 
     Chi::log.Log() << vec.PrintStr();
   }
-  //======================================================= Dynamic Matrix
+  // Dynamic Matrix
   {
     Chi::log.Log() << "Testing chi_math::DynamicMatrix\n";
     chi_math::DynamicMatrix<double> mat(5, 7, 1.0);
@@ -37,7 +37,7 @@ chi_math_Test00(const chi::InputParameters& params)
     Chi::log.Log() << mat.PrintStr();
   }
 
-  //======================================================= SparseMatrix
+  // SparseMatrix
   {
     chi_math::SparseMatrix matrix(4, 4);
     auto& mat = matrix;

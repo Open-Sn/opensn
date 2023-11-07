@@ -52,13 +52,13 @@ chiSimTest06_WDD(const chi::InputParameters&)
 
   if (Chi::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make Orthogonal mapping
+  // Make Orthogonal mapping
   const auto ijk_info = grid.GetIJKInfo();
   const auto& ijk_mapping = grid.MakeIJKToGlobalIDMapping();
   const auto cell_ortho_sizes = grid.MakeCellOrthoSizes();
@@ -76,7 +76,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
   if (grid.Attributes() & Dim2) dimension = 2;
   if (grid.Attributes() & Dim3) dimension = 3;
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::spatial_discretization::FiniteVolume::New(grid);
   const auto& sdm = *sdm_ptr;
@@ -89,7 +89,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
   Chi::log.Log() << "Num local nodes: " << num_local_nodes;
   Chi::log.Log() << "Num globl nodes: " << num_globl_nodes;
 
-  //============================================= Make an angular quadrature
+  // Make an angular quadrature
   std::shared_ptr<chi_math::AngularQuadrature> quadrature;
   if (dimension == 1) quadrature = std::make_shared<chi_math::AngularQuadratureProdGL>(8);
   else if (dimension == 2)
@@ -104,7 +104,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
                                    "of the mesh.");
   Chi::log.Log() << "Quadrature created." << std::endl;
 
-  //============================================= Set/Get params
+  // Set/Get params
   const size_t scat_order = 1;
   const size_t num_groups = 20;
 
@@ -121,7 +121,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
   Chi::log.Log() << "End Set/Get params." << std::endl;
   Chi::log.Log() << "Num Moments: " << num_moments << std::endl;
 
-  //============================================= Make Unknown Managers
+  // Make Unknown Managers
   const auto VecN = chi_math::UnknownType::VECTOR_N;
   using Unknown = chi_math::Unknown;
 
@@ -136,11 +136,11 @@ chiSimTest06_WDD(const chi::InputParameters&)
 
   Chi::log.Log() << "End ukmanagers." << std::endl;
 
-  //============================================= Make XSs
+  // Make XSs
   chi_physics::SingleStateMGXS xs;
   xs.MakeFromChiXSFile("xs_graphite_pure.cxs");
 
-  //============================================= Initializes vectors
+  // Initializes vectors
   std::vector<double> phi_old(num_local_phi_dofs, 0.0);
   std::vector<double> psi(num_local_psi_dofs, 0.0);
   auto source_moments = phi_old;
@@ -149,7 +149,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
 
   Chi::log.Log() << "End vectors." << std::endl;
 
-  //============================================= Make material source term
+  // Make material source term
   for (const auto& cell : grid.local_cells)
   {
     const auto& cc = cell.centroid_;
@@ -167,7 +167,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
     }   // if inside box
   }     // for cell
 
-  //============================================= Define sweep chunk
+  // Define sweep chunk
   typedef chi_data_types::NDArray<double> IJKArrayDbl;
   IJKArrayDbl psi_ds_x(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
   IJKArrayDbl psi_ds_y(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
@@ -262,7 +262,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
     } // for g
   };
 
-  //============================================= Define sweep for all dirs
+  // Define sweep for all dirs
   auto Sweep = [&num_dirs, &quadrature, Nx, Ny, Nz, &SweepChunk, &xs]()
   {
     for (size_t d = 0; d < num_dirs; ++d)
@@ -287,7 +287,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
     } // for d
   };
 
-  //============================================= Classic Richardson iteration
+  // Classic Richardson iteration
   Chi::log.Log() << "Starting iterations" << std::endl;
   for (size_t iter = 0; iter < 200; ++iter)
   {
@@ -313,7 +313,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
     if (rel_change < 1.0e-6 and iter > 0) break;
   } // for iteration
 
-  //============================================= Localize zeroth moment
+  // Localize zeroth moment
   // This routine extracts a single moment vector
   // from the vector that contains multiple moments
   const chi_math::UnknownManager m0_uk_man(
@@ -329,7 +329,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
                                  m0_uk_man,  // to dof-structure
                                  0);         // to unknown-id
 
-  //============================================= Create Field Function
+  // Create Field Function
   auto phi_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
     "Phi",                                                         // Text name
     sdm_ptr,                                                       // Spatial Discr.

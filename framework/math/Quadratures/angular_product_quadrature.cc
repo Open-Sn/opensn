@@ -41,7 +41,7 @@ chi_math::ProductQuadrature::AssembleCosines(const std::vector<double>& azimutha
       Chi::log.Log() << ang;
   }
 
-  //================================================== Create angle pairs
+  // Create angle pairs
   map_directions_.clear();
   for (unsigned int j = 0; j < Np; ++j)
     map_directions_.emplace(j, std::vector<unsigned int>());
@@ -78,7 +78,7 @@ chi_math::ProductQuadrature::AssembleCosines(const std::vector<double>& azimutha
     }
   }
 
-  //================================================== Create omega list
+  // Create omega list
   omegas_.clear();
   for (const auto& qpoint : abscissae_)
   {
@@ -153,19 +153,19 @@ chi_math::AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verb
 {
   chi_math::QuadratureGaussLegendre gl_polar(Nphemi * 2);
 
-  //================================================= Create azimuthal angles
+  // Create azimuthal angles
   azimu_ang_.clear();
   azimu_ang_.emplace_back(0.0);
 
-  //================================================== Create polar angles
+  // Create polar angles
   polar_ang_.clear();
   for (unsigned int j = 0; j < (Nphemi * 2); ++j)
     polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints_[j][0]));
 
-  //================================================== Create combined weights
+  // Create combined weights
   auto& weights = gl_polar.weights_;
 
-  //================================================== Initialize
+  // Initialize
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 
@@ -175,23 +175,23 @@ chi_math::AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, boo
   chi_math::QuadratureGaussLegendre gl_polar(Np * 2);
   chi_math::QuadratureGaussLegendre gl_azimu(Na * 4);
 
-  //================================================= Create azimuthal angles
+  // Create azimuthal angles
   azimu_ang_.clear();
   for (unsigned int i = 0; i < (Na * 4); ++i)
     azimu_ang_.emplace_back(M_PI * gl_azimu.qpoints_[i][0] + M_PI);
 
-  //================================================== Create polar angles
+  // Create polar angles
   polar_ang_.clear();
   for (unsigned int j = 0; j < (Np * 2); ++j)
     polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints_[j][0]));
 
-  //================================================== Create combined weights
+  // Create combined weights
   std::vector<double> weights;
   for (unsigned int i = 0; i < azimu_ang_.size(); ++i)
     for (unsigned int j = 0; j < polar_ang_.size(); ++j)
       weights.emplace_back(M_PI * gl_azimu.weights_[i] * gl_polar.weights_[j]);
 
-  //================================================== Initialize
+  // Initialize
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 
@@ -201,23 +201,23 @@ chi_math::AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, boo
   chi_math::QuadratureGaussLegendre gl_polar(Np * 2);
   chi_math::QuadratureGaussChebyshev gc_azimu(Na * 4);
 
-  //================================================= Create azimuthal angles
+  // Create azimuthal angles
   azimu_ang_.clear();
   for (unsigned int i = 0; i < (Na * 4); ++i)
     azimu_ang_.emplace_back(M_PI * (2 * (i + 1) - 1) / (Na * 4));
 
-  //================================================== Create polar angles
+  // Create polar angles
   polar_ang_.clear();
   for (unsigned int j = 0; j < (Np * 2); ++j)
     polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints_[j][0]));
 
-  //================================================== Create combined weights
+  // Create combined weights
   std::vector<double> weights;
   for (unsigned int i = 0; i < azimu_ang_.size(); ++i)
     for (unsigned int j = 0; j < polar_ang_.size(); ++j)
       weights.emplace_back(2 * gc_azimu.weights_[i] * gl_polar.weights_[j]);
 
-  //================================================== Initialize
+  // Initialize
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 

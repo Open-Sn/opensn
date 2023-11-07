@@ -267,13 +267,13 @@ chiSolverGetFieldFunctionList(lua_State* L)
   const int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError("chiGetFieldFunctionList", 1, num_args);
 
-  //======================================================= Getting solver
+  // Getting solver
   const int solver_handle = lua_tonumber(L, 1);
 
   const auto& solver =
     Chi::GetStackItem<chi_physics::Solver>(Chi::object_stack, solver_handle, fname);
 
-  //============================================= Push up new table
+  // Push up new table
   lua_newtable(L);
   for (size_t ff = 0; ff < solver.GetFieldFunctions().size(); ff++)
   {

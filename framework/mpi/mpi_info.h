@@ -8,7 +8,6 @@ class Chi;
 namespace chi
 {
 
-//################################################################### Class def
 /**An object for storing various MPI states.*/
 class MPI_Info
 {

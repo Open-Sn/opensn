@@ -37,7 +37,7 @@ chiCreateLineQuadrature(lua_State* L)
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
 
-  //============================================= Parse argument
+  // Parse argument
   int ident = lua_tonumber(L, 1);
   int N = lua_tonumber(L, 2);
   bool verbose = false;

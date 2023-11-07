@@ -13,14 +13,14 @@
 
 #include "framework/math/SpatialDiscretization/FiniteVolume/FiniteVolume.h"
 
-//============================================= constructor
+// constructor
 fv_diffusion::Solver::Solver(const std::string& in_solver_name)
   : chi_physics::Solver(in_solver_name,
                         {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
 {
 }
 
-//============================================= destructor
+// destructor
 fv_diffusion::Solver::~Solver()
 {
   VecDestroy(&x_);
@@ -28,7 +28,7 @@ fv_diffusion::Solver::~Solver()
   MatDestroy(&A_);
 }
 
-//============================================= Initialize
+// Initialize
 void
 fv_diffusion::Solver::Initialize()
 {
@@ -37,7 +37,7 @@ fv_diffusion::Solver::Initialize()
                  << Chi::program_timer.GetTimeString() << " " << TextName()
                  << ": Initializing CFEM Diffusion solver ";
 
-  //============================================= Get grid
+  // Get grid
   grid_ptr_ = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
@@ -45,7 +45,7 @@ fv_diffusion::Solver::Initialize()
 
   Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= BIDs
+  // BIDs
   auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
 
   const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
@@ -116,7 +116,7 @@ fv_diffusion::Solver::Initialize()
     }
   } // for bndry
 
-  //============================================= Make SDM
+  // Make SDM
   sdm_ptr_ = chi_math::spatial_discretization::FiniteVolume::New(*grid_ptr_);
   const auto& sdm = *sdm_ptr_;
 
@@ -127,7 +127,7 @@ fv_diffusion::Solver::Initialize()
   Chi::log.Log() << "Num local DOFs: " << num_local_dofs_;
   Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs_;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs_);
   const auto N = static_cast<int64_t>(num_globl_dofs_);
 
@@ -160,7 +160,7 @@ fv_diffusion::Solver::Initialize()
 
 } // end initialize
 
-//========================================================== Execute
+// Execute
 void
 fv_diffusion::Solver::Execute()
 {
@@ -173,7 +173,7 @@ fv_diffusion::Solver::Execute()
   lua_State* L = Chi::console.GetConsoleState();
 #endif
 
-  //============================================= Assemble the system
+  // Assemble the system
   // P ~ Present cell
   // N ~ Neighbor cell
   Chi::log.Log() << "Assembling system: ";
@@ -265,7 +265,7 @@ fv_diffusion::Solver::Execute()
 
   Chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
   auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
     A_,                                                // Matrix
@@ -276,7 +276,7 @@ fv_diffusion::Solver::Execute()
     basic_options_("max_iters").IntegerValue()         // Max iterations
   );
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp, b_, x_);
 
   UpdateFieldFunctions();

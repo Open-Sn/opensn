@@ -26,7 +26,7 @@ chiLBSGetScalarFieldFunctionList(lua_State* L)
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNumberValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
   const auto& lbs_solver =
     Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
@@ -46,7 +46,7 @@ chiLBSGetScalarFieldFunctionList(lua_State* L)
     ChiLogicalError("Scalar field function lookup error");
   };
 
-  //======================================== Building table of handles
+  // Building table of handles
   lua_newtable(L);
   lua_Integer count = 0;
 

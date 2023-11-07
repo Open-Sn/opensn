@@ -39,7 +39,7 @@ AGSLinearSolver<Mat, Vec, KSP>::SetSystem()
   VecSet(x_, 0.0);
   VecDuplicate(x_, &b_);
 
-  //============================================= Create the matrix-shell
+  // Create the matrix-shell
   MatCreateShell(PETSC_COMM_WORLD,
                  sc_int64_t(num_local_dofs_),
                  sc_int64_t(num_local_dofs_),
@@ -48,10 +48,10 @@ AGSLinearSolver<Mat, Vec, KSP>::SetSystem()
                  &(*context_ptr_),
                  &A_);
 
-  //============================================= Set the action-operator
+  // Set the action-operator
   MatShellSetOperation(A_, MATOP_MULT, (void (*)())chi_math::LinearSolverMatrixAction<Mat, Vec>);
 
-  //============================================= Set solver operators
+  // Set solver operators
   KSPSetOperators(solver_, A_, A_);
   KSPSetUp(solver_);
 }

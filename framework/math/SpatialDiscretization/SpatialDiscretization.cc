@@ -94,8 +94,7 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const chi_mesh::Cell& cel
   const size_t num_faces = cell.faces_.size();
   const size_t num_nodes = cell_mapping.NumNodes();
 
-  //====================================== Determine which nodes are on the
-  //                                       boundary
+  // Determine which nodes are on the boundary
   std::set<uint32_t> boundary_nodes;
   for (size_t f = 0; f < num_faces; ++f)
   {
@@ -107,7 +106,7 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const chi_mesh::Cell& cel
     }
   } // for f
 
-  //====================================== Determine non-boundary nodes
+  // Determine non-boundary nodes
   std::set<uint32_t> internal_nodes;
   for (size_t i = 0; i < num_nodes; ++i)
     if (boundary_nodes.find(i) == boundary_nodes.end()) internal_nodes.insert(i);

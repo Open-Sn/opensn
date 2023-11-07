@@ -19,7 +19,7 @@ int
 chiLBSWriteFluxMoments(lua_State* L)
 {
   const std::string fname = "chiLBSWriteFluxMoments";
-  //============================================= Get arguments
+  // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
 
@@ -29,7 +29,7 @@ chiLBSWriteFluxMoments(lua_State* L)
   const int solver_handle = lua_tonumber(L, 1);
   const std::string file_base = lua_tostring(L, 2);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
   lbs_solver.WriteFluxMoments(file_base, lbs_solver.PhiOldLocal());
@@ -51,7 +51,7 @@ int
 chiLBSCreateAndWriteSourceMoments(lua_State* L)
 {
   const std::string fname = "chiLBSCreateAndWriteSourceMoments";
-  //============================================= Get arguments
+  // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
 
@@ -61,7 +61,7 @@ chiLBSCreateAndWriteSourceMoments(lua_State* L)
   const int solver_handle = lua_tonumber(L, 1);
   const std::string file_base = lua_tostring(L, 2);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
   auto source_moments = lbs_solver.MakeSourceMomentsFromPhi();
@@ -89,7 +89,7 @@ int
 chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
 {
   const std::string fname = "chiLBSReadFluxMomentsAndMakeSourceMoments";
-  //============================================= Get arguments
+  // Get arguments
   const int num_args = lua_gettop(L);
   if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);
 
@@ -106,7 +106,7 @@ chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
     single_file_flag = lua_toboolean(L, 3);
   }
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.ExtSrcMomentsLocal(), single_file_flag);
@@ -139,7 +139,7 @@ int
 chiLBSReadSourceMoments(lua_State* L)
 {
   const std::string fname = "chiLBSReadSourceMoments";
-  //============================================= Get arguments
+  // Get arguments
   const int num_args = lua_gettop(L);
   if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);
 
@@ -156,7 +156,7 @@ chiLBSReadSourceMoments(lua_State* L)
     single_file_flag = lua_toboolean(L, 3);
   }
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.ExtSrcMomentsLocal(), single_file_flag);
@@ -181,7 +181,7 @@ int
 chiLBSReadFluxMoments(lua_State* L)
 {
   const std::string fname = "chiLBSReadFluxMoments";
-  //============================================= Get arguments
+  // Get arguments
   const int num_args = lua_gettop(L);
   if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);
 
@@ -198,7 +198,7 @@ chiLBSReadFluxMoments(lua_State* L)
     single_file_flag = lua_toboolean(L, 3);
   }
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.PhiOldLocal(), single_file_flag);

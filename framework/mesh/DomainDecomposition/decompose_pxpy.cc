@@ -9,7 +9,7 @@ typedef std::vector<int> IntVec;
 #include "framework/chi_runtime.h"
 #include "framework/logging/chi_log.h"
 
-//================================================== Define LBF-Calc funtion
+// Define LBF-Calc funtion
 /**Makes a centroid based load balance factor calculation.
  *
  * \author Jan*/
@@ -74,13 +74,13 @@ chi_mesh::ComputeLBF(std::vector<Vector3>& points,
 void
 chi_mesh::DecomposeSurfaceMeshPxPy(const chi_mesh::SurfaceMesh& smesh, int px, int py)
 {
-  //================================================== Collect centroids
+  // Collect centroids
   size_t num_pfaces = smesh.GetPolygons().size();
   std::vector<chi_mesh::Vector3> centroids(num_pfaces);
   for (int pf = 0; pf < num_pfaces; pf++)
     centroids[pf] = smesh.GetPolygons()[pf]->face_centroid;
 
-  //================================================== Define sort operators
+  // Define sort operators
   struct
   {
     bool operator()(chi_mesh::Vector3 a, chi_mesh::Vector3 b)
@@ -99,7 +99,7 @@ chi_mesh::DecomposeSurfaceMeshPxPy(const chi_mesh::SurfaceMesh& smesh, int px, i
     }
   } compare_y;
 
-  //================================================== Create sorts
+  // Create sorts
   std::vector<chi_mesh::Vector3> centroids_sortedx;
   std::vector<chi_mesh::Vector3> centroids_sortedy;
   std::copy(centroids.begin(), centroids.end(), std::back_inserter(centroids_sortedx));
@@ -110,7 +110,7 @@ chi_mesh::DecomposeSurfaceMeshPxPy(const chi_mesh::SurfaceMesh& smesh, int px, i
   std::vector<double> x_cuts(px - 1);
   std::vector<DblVec> y_cuts_per_x_bin(px, DblVec(py - 1));
 
-  //================================================== Populate xbins
+  // Populate xbins
   int dx = std::ceil(centroids.size() / (double)px);
   for (int x = 0; x < px; x++)
   {
@@ -120,7 +120,7 @@ chi_mesh::DecomposeSurfaceMeshPxPy(const chi_mesh::SurfaceMesh& smesh, int px, i
     if (x == (px - 1)) x_bins[x].second = centroids_sortedx.size() - 1;
   }
 
-  //================================================== Populate x-cuts
+  // Populate x-cuts
   for (int x = 0; x < (px - 1); x++)
   {
     int up_bounds_x = x * dx + dx - 1;
@@ -132,8 +132,7 @@ chi_mesh::DecomposeSurfaceMeshPxPy(const chi_mesh::SurfaceMesh& smesh, int px, i
     Chi::log.Log() << "X-cut" << x << " " << x_cuts[x];
   }
 
-  //================================================== Balance according to each
-  //                                                   x-bin
+  // Balance according to each x-bin
   double min_lbf = 1000.0; // Minimum load balance factor
   int min_bin = 0;
   for (int x = 0; x < px; x++)
@@ -167,7 +166,7 @@ chi_mesh::DecomposeSurfaceMeshPxPy(const chi_mesh::SurfaceMesh& smesh, int px, i
     Chi::log.Log() << "Load balance factor: " << lbf;
   } // for x
 
-  //================================================== Write y-cuts
+  // Write y-cuts
   for (int y = 0; y < (py - 1); y++)
   {
     Chi::log.Log() << "Y-cut" << y << " " << y_cuts_per_x_bin[min_bin][y];

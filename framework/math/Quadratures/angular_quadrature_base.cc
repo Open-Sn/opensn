@@ -92,7 +92,7 @@ chi_math::AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scatteri
   }
   d2m_op_built_ = true;
 
-  //=================================== Verbose printout
+  // Verbose printout
   std::stringstream outs;
   outs << "\nQuadrature d2m operator:\n";
   for (int n = 0; n < num_angles; n++)
@@ -141,7 +141,7 @@ chi_math::AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scatteri
   } // for m
   m2d_op_built_ = true;
 
-  //=================================== Verbose printout
+  // Verbose printout
   std::stringstream outs;
 
   outs << "\nQuadrature m2d operator:\n";
@@ -219,7 +219,7 @@ chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& 
     Chi::Exit(EXIT_FAILURE);
   }
 
-  //================================================== Create angle pairs
+  // Create angle pairs
   std::stringstream ostr;
   double weight_sum = 0.0;
 
@@ -246,7 +246,7 @@ chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& 
     }
   }
 
-  //================================================== Create omega list
+  // Create omega list
   for (const auto& qpoint : abscissae_)
   {
     chi_mesh::Vector3 new_omega;

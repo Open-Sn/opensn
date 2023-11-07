@@ -16,19 +16,19 @@ lbs::DiscOrdTransientSolver::PostStepCallBackFunction() const
   auto& L = chi::console.GetConsoleState();
   const auto& lua_func_name = transient_options_.console_call_back_function;
 
-  //============= Load lua function
+  // Load lua function
   lua_getglobal(L, lua_func_name.c_str());
 
-  //============= Error check lua function
+  // Error check lua function
   if (not lua_isfunction(L, -1))
     throw std::logic_error(fname + " attempted to access lua-function, " + lua_func_name +
                            ", but it seems the function"
                            " could not be retrieved.");
 
-  //============= Push arguments
+  // Push arguments
   // There are no arguments
 
-  //============= Call lua function
+  // Call lua function
   // 0 arguments, 0 result (double), 0=original error object
   double lua_return;
   if (lua_pcall(L, 0, 0, 0) == 0) {}

@@ -39,7 +39,7 @@ chiFFInterpolationCreate(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //================================================== Process types
+  // Process types
   int ffitype = lua_tonumber(L, 1);
   if (ffitype == scint(chi_mesh::ff_interpolation::Type::POINT))
   {

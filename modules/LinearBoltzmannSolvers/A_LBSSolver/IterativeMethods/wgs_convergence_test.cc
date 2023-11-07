@@ -17,11 +17,11 @@ namespace lbs
 PetscErrorCode
 GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
 {
-  //======================================== Get data context
+  // Get data context
   WGSContext<Mat, Vec, KSP>* context;
   KSPGetApplicationContext(ksp, &context);
 
-  //======================================== Set rhs norm
+  // Set rhs norm
   double residual_scale = 1.0;
   switch (context->residual_scale_type)
   {
@@ -41,14 +41,14 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
       break;
   }
 
-  //======================================== Compute test criterion
+  // Compute test criterion
   double tol;
   int64_t maxIts;
   KSPGetTolerances(ksp, nullptr, &tol, nullptr, &maxIts);
 
   double scaled_residual = rnorm * residual_scale;
 
-  //======================================== Print iteration information
+  // Print iteration information
   std::string offset;
   if (context->groupset_.apply_wgdsa_ || context->groupset_.apply_tgdsa_)
     offset = std::string("    ");

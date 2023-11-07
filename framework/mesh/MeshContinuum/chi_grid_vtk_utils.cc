@@ -287,8 +287,7 @@ ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
 {
   const std::string fname = "ConsolidateGridBlocks";
 
-  //======================================== Determine if all blocks have
-  //                                         global-ids
+  // Determine if all blocks have global-ids
   bool has_global_ids = true;
   for (auto& ugrid_name : ugrid_blocks)
   {
@@ -306,7 +305,7 @@ ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
 
   if (has_global_ids) Chi::log.Log() << fname << ": blocks have global-id arrays";
 
-  //======================================== Consolidate the blocks
+  // Consolidate the blocks
   auto append = vtkSmartPointer<vtkAppendFilter>::New();
   for (auto& ugrid : ugrid_blocks)
     append->AddInputData(ugrid.first);
@@ -443,8 +442,7 @@ BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
   const size_t total_cell_count = ugrid->GetNumberOfCells();
   std::vector<int> material_ids(total_cell_count, -1);
 
-  //======================================== Determine if reading
-  //                                         cell identifiers
+  // Determine if reading cell identifiers
   vtkDataArray* cell_id_array_ptr;
   if (field_name.empty())
   {
@@ -516,7 +514,7 @@ end_error_checks:
 vtkNew<vtkUnstructuredGrid>
 PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous /*=true*/)
 {
-  //============================================= Instantiate VTK items
+  // Instantiate VTK items
   vtkNew<vtkUnstructuredGrid> ugrid;
   vtkNew<vtkPoints> points;
   vtkNew<vtkIntArray> material_array;
@@ -524,7 +522,7 @@ PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous /*=true
 
   points->SetDataType(VTK_DOUBLE);
 
-  //============================================= Set names
+  // Set names
   material_array->SetName("Material");
   partition_id_array->SetName("Partition");
 
@@ -568,12 +566,12 @@ PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous /*=true
 void
 WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_name)
 {
-  //============================================= Construct file name
+  // Construct file name
   std::string base_filename = std::string(file_base_name);
   std::string location_filename =
     base_filename + std::string("_") + std::to_string(Chi::mpi.location_id) + std::string(".vtu");
 
-  //============================================= Write master file
+  // Write master file
   if (Chi::mpi.location_id == 0)
   {
     std::string pvtu_file_name = base_filename + std::string(".pvtu");
@@ -591,7 +589,7 @@ WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_
   }
   Chi::mpi.Barrier();
 
-  //============================================= Serial output each piece
+  // Serial output each piece
   auto grid_writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
 
   grid_writer->SetInputData(ugrid);

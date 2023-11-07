@@ -76,7 +76,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
     const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
 
-    //=========================================== Mark dirichlet nodes
+    // Mark dirichlet nodes
     typedef std::pair<bool, double> DirichFlagVal;
     std::vector<DirichFlagVal> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
@@ -97,7 +97,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
     for (size_t g = 0; g < num_groups; ++g)
     {
-      //==================================== Get coefficient and nodal src
+      // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
       const double sigr_g = xs.sigR[g];
 
@@ -105,7 +105,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       for (size_t j = 0; j < num_nodes; j++)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
-      //==================================== Assemble continuous terms
+      // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; i++)
       {
         if (node_is_dirichlet[i].first) continue;
@@ -130,7 +130,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
 
-      //==================================== Assemble face terms
+      // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces_[f];
@@ -265,7 +265,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 
     const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
 
-    //=========================================== Mark dirichlet nodes
+    // Mark dirichlet nodes
     typedef std::pair<bool, double> DirichFlagVal;
     std::vector<DirichFlagVal> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
@@ -286,12 +286,12 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 
     for (size_t g = 0; g < num_groups; ++g)
     {
-      //==================================== Get coefficient and nodal src
+      // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; j++)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
-      //==================================== Assemble continuous terms
+      // Assemble continuous terms
       const double Dg = xs.Dg[g];
       const double sigr_g = xs.sigR[g];
 
@@ -316,7 +316,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
 
-      //==================================== Assemble face terms
+      // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces_[f];
@@ -333,7 +333,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
           {
             const double bc_value = bc.values[0];
 
-            //========================= Assembly penalty terms
+            // Assembly penalty terms
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
@@ -403,7 +403,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     const auto& cell_M_matrix = unit_cell_matrices.M_matrix;
     const auto& cell_Vi = unit_cell_matrices.Vi_vectors;
 
-    //=========================================== Mark dirichlet nodes
+    // Mark dirichlet nodes
     std::vector<bool> node_is_dirichlet(num_nodes, false);
     for (size_t f = 0; f < num_faces; ++f)
     {
@@ -423,12 +423,12 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
 
     for (size_t g = 0; g < num_groups; ++g)
     {
-      //==================================== Get coefficient and nodal src
+      // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; j++)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
-      //==================================== Assemble continuous terms
+      // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; i++)
       {
         if (node_is_dirichlet[i]) continue;
@@ -440,7 +440,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
 
-      //==================================== Assemble face terms
+      // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces_[f];
@@ -457,7 +457,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
           {
             const double bc_value = bc.values[0];
 
-            //========================= Assembly penalty terms
+            // Assembly penalty terms
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);

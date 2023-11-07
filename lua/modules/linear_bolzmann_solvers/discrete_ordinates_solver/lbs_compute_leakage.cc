@@ -31,7 +31,7 @@ chiLBSComputeLeakage(lua_State* L)
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
 
   auto& lbs_solver =
@@ -44,7 +44,7 @@ chiLBSComputeLeakage(lua_State* L)
 
   const auto leakage = lbs_solver.ComputeLeakage(groupset_id, boundary_id);
 
-  //============================================= Push up the table
+  // Push up the table
   lua_newtable(L);
 
   for (int i = 0; i < static_cast<int>(leakage.size()); ++i)

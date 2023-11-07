@@ -53,7 +53,7 @@ NLKEigenDiffSolver::SetSystemSize()
 void
 NLKEigenDiffSolver::SetSystem()
 {
-  //============================================= Create the vectors
+  // Create the vectors
   x_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_globl_dofs_);
   VecDuplicate(x_, &r_);
 }
@@ -100,7 +100,7 @@ NLKEigenDiffSolver::PostSolveCallback()
   lbs_solver.GSProjectBackPhi0(front_gs, phi_lp1_temp, phi_new_local);
   lbs_solver.GSScopedCopyPrimarySTLvectors(front_gs, phi_new_local, phi_old_local);
 
-  //============================================= Compute final k_eff
+  // Compute final k_eff
   double k_eff = nl_context_ptr->kresid_func_context_.k_eff;
 
   const double production = lbs_solver.ComputeFissionProduction(phi_old_local);
@@ -109,7 +109,7 @@ NLKEigenDiffSolver::PostSolveCallback()
   PetscInt number_of_func_evals;
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
 
-  //================================================== Print summary
+  // Print summary
   if (nl_context_ptr->verbosity_level_ >= 1)
     Chi::log.Log() << "        Final lambda-eigenvalue    :        " << std::fixed << std::setw(10)
                    << std::setprecision(7) << k_eff << " (num_DOps:" << number_of_func_evals << ")"

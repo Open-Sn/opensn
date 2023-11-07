@@ -28,8 +28,7 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
 {
   static_assert(std::is_integral<K>::value, "Integral datatype required.");
 
-  //============================================= Make sendcounts and
-  //                                              senddispls
+  // Make sendcounts and senddispls
   std::vector<int> sendcounts(Chi::mpi.process_count, 0);
   std::vector<int> senddispls(Chi::mpi.process_count, 0);
   {
@@ -42,8 +41,7 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
     }
   }
 
-  //============================================= Communicate sendcounts to
-  //                                              get recvcounts
+  // Communicate sendcounts to get recvcounts
   std::vector<int> recvcounts(Chi::mpi.process_count, 0);
 
   MPI_Alltoall(sendcounts.data(), // sendbuf
@@ -54,9 +52,7 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
                MPI_INT,       // recvcount, recvtype
                communicator); // communicator
 
-  //============================================= Populate recvdispls,
-  //                                              sender_pids_set, and
-  //                                              total_recv_count
+  // Populate recvdispls, sender_pids_set, and total_recv_count
   // All three these quantities are constructed
   // from recvcounts.
   std::vector<int> recvdispls(Chi::mpi.process_count, 0);
@@ -74,17 +70,17 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
     total_recv_count = displacement;
   }
 
-  //============================================= Make sendbuf
+  // Make sendbuf
   // The data for each partition is now loaded
   // into a single buffer
   std::vector<T> sendbuf;
   for (const auto& pid_data_pair : pid_data_pairs)
     sendbuf.insert(sendbuf.end(), pid_data_pair.second.begin(), pid_data_pair.second.end());
 
-  //============================================= Make recvbuf
+  // Make recvbuf
   std::vector<T> recvbuf(total_recv_count);
 
-  //============================================= Communicate serial data
+  // Communicate serial data
   MPI_Alltoallv(sendbuf.data(),    // sendbuf
                 sendcounts.data(), // sendcounts
                 senddispls.data(), // senddispls

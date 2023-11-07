@@ -105,7 +105,7 @@ chiLogicalVolumeCreate(lua_State* L)
 
   auto& object_maker = ChiObjectFactory::GetInstance();
 
-  //================================================== Sphere at origin
+  // Sphere at origin
   if (type_index == LVSPHERE_ORIGIN)
   {
     if (num_args != 2)
@@ -131,7 +131,7 @@ chiLogicalVolumeCreate(lua_State* L)
     return 1;
   }
 
-  //================================================== Sphere at arb loc
+  // Sphere at arb loc
   else if (type_index == LVSPHERE)
   {
     if (num_args != 5)
@@ -164,7 +164,7 @@ chiLogicalVolumeCreate(lua_State* L)
     return 1;
   }
 
-  //================================================== RPP
+  // RPP
   else if (type_index == LVRPP)
   {
     if (num_args != 7)
@@ -201,7 +201,7 @@ chiLogicalVolumeCreate(lua_State* L)
     return 1;
   }
 
-  //================================================== RCC
+  // RCC
   else if (type_index == LVRCC)
   {
     if (num_args != 8)
@@ -243,7 +243,7 @@ chiLogicalVolumeCreate(lua_State* L)
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
   }
-  //================================================== SURFACE
+  // SURFACE
   else if (type_index == LVSURFACE)
   {
     if (num_args != 2) LuaPostArgAmountError("chiMeshCreateLogicalVolume:SURFACE", 2, num_args);
@@ -268,7 +268,7 @@ chiLogicalVolumeCreate(lua_State* L)
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
   }
-  //================================================== BOOLEAN
+  // BOOLEAN
   else if (type_index == LVBOOLEAN)
   {
     // if (num_args % 2 != 0)
@@ -284,7 +284,7 @@ chiLogicalVolumeCreate(lua_State* L)
     // int num_pairs = num_args / 2;
     // for (int p = 0; p < num_pairs; p++)
     //{
-    //   //==================================== Checking first part of pair
+    //   // Checking first part of pair
     //   if (not lua_isboolean(L, 2 * p))
     //   {
     //     chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
@@ -294,7 +294,7 @@ chiLogicalVolumeCreate(lua_State* L)
     //                             "Boolean. Found not to be";
     //     chi::Exit(EXIT_FAILURE);
     //   }
-    //   //==================================== Checking second part of pair
+    //   // Checking second part of pair
     //   if (not lua_isnumber(L, 2 * p + 1))
     //   {
     //     chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
@@ -342,7 +342,7 @@ chiLogicalVolumeCreate(lua_State* L)
     int num_pairs = num_args / 2;
     for (int p = 0; p < num_pairs; p++)
     {
-      //==================================== Checking first part of pair
+      // Checking first part of pair
       if (not lua_isboolean(L, 2 * p))
       {
         Chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
@@ -352,7 +352,7 @@ chiLogicalVolumeCreate(lua_State* L)
                                 "Boolean. Found not to be";
         Chi::Exit(EXIT_FAILURE);
       }
-      //==================================== Checking second part of pair
+      // Checking second part of pair
       if (not lua_isnumber(L, 2 * p + 1))
       {
         Chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
@@ -388,7 +388,7 @@ chiLogicalVolumeCreate(lua_State* L)
     return 1;
   }
 
-  //================================================== Unrecognized option
+  // Unrecognized option
   else
   {
     Chi::log.Log0Error() << "Unrecognized volume type used in "

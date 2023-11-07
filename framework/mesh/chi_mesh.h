@@ -27,23 +27,23 @@ struct PolyFace;
 
 struct SPDS;
 
-//=================================== Cells
+// Cells
 class Cell;
 
-//=================================== Field function interpolation
+// Field function interpolation
 class FieldFunctionInterpolation;
 class FieldFunctionInterpolationSlice;
 class FieldFunctionInterpolationLine;
 class FieldFunctionInterpolationVolume;
 
-//=================================== Meshes
+// Meshes
 class SurfaceMesh;
 class UnpartitionedMesh;
 class MeshContinuum;
 typedef std::shared_ptr<MeshContinuum> MeshContinuumPtr;
 typedef std::shared_ptr<const MeshContinuum> MeshContinuumConstPtr;
 
-//=================================== Logical Volumes
+// Logical Volumes
 class LogicalVolume;
 class SphereLogicalVolume;
 class RPPLogicalVolume;
@@ -51,15 +51,15 @@ class RCCLogicalVolume;
 class SurfaceMeshLogicalVolume;
 class BooleanLogicalVolume;
 
-//=================================== Mesh handler
+// Mesh handler
 class MeshHandler;
 
-//=================================== Surface Meshers
+// Surface Meshers
 class SurfaceMesher;
 class SurfaceMesherPassthrough;
 class SurfaceMesherPredefined;
 
-//==================================== Volume meshers
+// Volume meshers
 class VolumeMesher;
 class VolumeMesherExtruder;
 class VolumeMesherPredefinedUnpartitioned;
@@ -96,7 +96,7 @@ MeshHandler& GetCurrentHandler();
  */
 size_t PushNewHandlerAndGetIndex();
 
-//=================================== Domain decompositions
+// Domain decompositions
 double
 ComputeLBF(std::vector<Vector3>& points, std::vector<double>& x_cuts, std::vector<double>& y_cuts);
 void DecomposeSurfaceMeshPxPy(const SurfaceMesh& smesh, int Px, int Py);

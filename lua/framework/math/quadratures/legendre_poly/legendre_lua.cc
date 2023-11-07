@@ -17,7 +17,7 @@ RegisterLuaFunctionAsIs(chiYlm);
 int
 chiLegendre(lua_State* L)
 {
-  //================================================== Retrieve arguments
+  // Retrieve arguments
   int N = lua_tonumber(L, 1);
   double x = lua_tonumber(L, 2);
 
@@ -36,7 +36,7 @@ chiLegendre(lua_State* L)
 int
 chiLegendreDerivative(lua_State* L)
 {
-  //================================================== Retrieve arguments
+  // Retrieve arguments
   int N = lua_tonumber(L, 1);
   double x = lua_tonumber(L, 2);
 

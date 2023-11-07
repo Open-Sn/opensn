@@ -12,7 +12,7 @@
 int
 chiMeshHandlerExportMeshToObj(lua_State* L)
 {
-  //============================================= Check arguments
+  // Check arguments
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
   if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
@@ -22,7 +22,7 @@ chiMeshHandlerExportMeshToObj(lua_State* L)
   bool per_material = false;
   if (num_args == 2) per_material = lua_toboolean(L, 2);
 
-  //============================================= Get current handler
+  // Get current handler
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
   auto& grid = cur_hndlr.GetGrid();
@@ -38,14 +38,14 @@ chiMeshHandlerExportMeshToObj(lua_State* L)
 int
 chiMeshHandlerExportMeshToVTK(lua_State* L)
 {
-  //============================================= Check arguments
+  // Check arguments
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
 
   const std::string file_name = lua_tostring(L, 1);
 
-  //============================================= Get current handler
+  // Get current handler
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
   auto& grid = cur_hndlr.GetGrid();
@@ -65,7 +65,7 @@ chiMeshHandlerExportMeshToVTK(lua_State* L)
 int
 chiMeshHandlerExportMeshToExodus(lua_State* L)
 {
-  //============================================= Check arguments
+  // Check arguments
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
   if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
@@ -86,7 +86,7 @@ chiMeshHandlerExportMeshToExodus(lua_State* L)
     suppress_sidesets = lua_toboolean(L, 3);
   }
 
-  //============================================= Get current handler
+  // Get current handler
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
   auto& grid = cur_hndlr.GetGrid();

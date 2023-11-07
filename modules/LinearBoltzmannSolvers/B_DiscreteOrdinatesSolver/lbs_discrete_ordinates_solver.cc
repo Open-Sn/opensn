@@ -530,7 +530,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
   Chi::mpi.Barrier();
   Chi::log.Log() << "\n********** Computing balance\n";
 
-  //======================================== Get material source
+  // Get material source
   // This is done using the SetSource routine
   // because it allows a lot of flexibility.
   auto mat_src = phi_old_local_;
@@ -546,8 +546,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
     LBSSolver::GSScopedCopyPrimarySTLvectors(groupset, q_moments_local_, mat_src);
   }
 
-  //======================================== Compute absorption, material-source
-  //                                         and in-flow
+  // Compute absorption, material-source and in-flow
   double local_out_flow = 0.0;
   double local_in_flow = 0.0;
   double local_absorption = 0.0;
@@ -561,7 +560,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
     const auto& IntV_shapeI = fe_intgrl_values.Vi_vectors;
     const auto& IntS_shapeI = fe_intgrl_values.face_Si_vectors;
 
-    //====================================== Inflow
+    // Inflow
     // This is essentially an integration over
     // all faces, all angles, and all groups.
     // Only the cosines that are negative are
@@ -598,14 +597,14 @@ DiscreteOrdinatesSolver::ComputeBalance()
       }         // for groupset
     }           // for f
 
-    //====================================== Outflow
+    // Outflow
     // The group-wise outflow was determined
     // during a solve so here we just
     // consolidate it.
     for (int g = 0; g < num_groups_; ++g)
       local_out_flow += transport_view.GetOutflow(g);
 
-    //====================================== Absorption and Src
+    // Absorption and Src
     // Isotropic flux based absorption and source
     const auto& xs = transport_view.XS();
     const auto& sigma_a = xs.SigmaAbsorption();
@@ -621,7 +620,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
       } // for g
   }     // for cell
 
-  //======================================== Consolidate local balances
+  // Consolidate local balances
   double local_balance = local_production + local_in_flow - local_absorption - local_out_flow;
   double local_gain = local_production + local_in_flow;
 
@@ -665,7 +664,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const int groupset_id, const uint64_t bo
 {
   const std::string fname = "lbs::SteadySolver::ComputeLeakage";
 
-  //================================================== Perform checks
+  // Perform checks
   if (groupset_id < 0 or groupset_id >= groupsets_.size())
     throw std::invalid_argument(fname + ": Invalid groupset_id specified.");
 
@@ -673,7 +672,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const int groupset_id, const uint64_t bo
     throw std::logic_error(fname + ": Requires options.save_angular_flux to be"
                                    " true.");
 
-  //================================================== Get info
+  // Get info
   const auto& sdm = *discretization_;
   const auto& groupset = groupsets_.at(groupset_id);
   const auto& psi_uk_man = groupset.psi_uk_man_;
@@ -685,7 +684,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const int groupset_id, const uint64_t bo
   const int gsf = groupset.groups_.back().id_;
   const int gs_num_groups = gsf + 1 - gsi;
 
-  //================================================== Start integration
+  // Start integration
   std::vector<double> local_leakage(gs_num_groups, 0.0);
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -742,7 +741,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 {
   Chi::log.Log() << Chi::program_timer.GetTimeString() << " Initializing sweep datastructures.\n";
 
-  //=================================== Perform checks
+  // Perform checks
   {
     auto& mesh_handler = chi_mesh::GetCurrentHandler();
     auto& mesher = mesh_handler.GetVolumeMesher();
@@ -759,7 +758,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     } // for groupset
   }
 
-  //=================================== Define sweep ordering groups
+  // Define sweep ordering groups
   quadrature_unq_so_grouping_map_.clear();
   std::map<AngQuadPtr, bool> quadrature_allow_cycles_map_;
   for (auto& groupset : groupsets_)
@@ -772,7 +771,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
       quadrature_allow_cycles_map_[groupset.quadrature_] = groupset.allow_cycles_;
   }
 
-  //=================================== Build sweep orderings
+  // Build sweep orderings
   quadrature_spds_map_.clear();
   for (const auto& [quadrature, info] : quadrature_unq_so_grouping_map_)
   {
@@ -812,7 +811,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     }
   } // quadrature info-pack
 
-  //=================================== Build FLUDS templates
+  // Build FLUDS templates
   quadrature_fluds_commondata_map_.clear();
   for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
   {
@@ -847,15 +846,15 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const chi_mesh::MeshContinuum
 {
   const std::string fname = __FUNCTION__;
 
-  //================================================== Checks
+  // Checks
   LogicCheck(quadrature.omegas_.empty(), ": Quadrature with no omegas cannot be used.")
     LogicCheck(quadrature.weights_.empty(), ": Quadrature with no weights cannot be used.")
 
-    //================================================== Build groupings
+    // Build groupings
     UniqueSOGroupings unq_so_grps;
   switch (agg_type)
   {
-    //=========================================== Single
+    // Single
     // The easiest aggregation type. Every direction
     // either has/is assumed to have a unique sweep
     // ordering. Hence there is only group holding ALL
@@ -868,7 +867,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const chi_mesh::MeshContinuum
       break;
     } // case agg_type SINGLE
 
-      //=========================================== Polar
+      // Polar
       // The following conditions allow for polar
       // angle aggregation.
     case AngleAggregationType::POLAR:
@@ -930,7 +929,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const chi_mesh::MeshContinuum
       break;
     } // case agg_type POLAR
 
-      //====================================== Azimuthal
+      // Azimuthal
     case AngleAggregationType::AZIMUTHAL:
     {
       // Check geometry types
@@ -977,8 +976,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const chi_mesh::MeshContinuum
                                           "aggregation type.");
   } // switch angle aggregation type
 
-  //================================================== Map directions to sweep
-  //                                                   orderings
+  // Map directions to sweep orderings
   DirIDToSOMap dir_id_to_so_map;
   {
     size_t so_grouping_id = 0;
@@ -1009,7 +1007,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   const size_t gs_num_grps = groupset.groups_.size();
   const size_t gs_num_ss = groupset.grp_subset_infos_.size();
 
-  //=========================================== Passing the sweep boundaries
+  // Passing the sweep boundaries
   //                                            to the angle aggregation
   typedef chi_mesh::sweep_management::AngleAggregation AngleAgg;
   groupset.angle_agg_ = std::make_shared<AngleAgg>(

@@ -91,7 +91,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
       front_gs, output, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
 
-  //================================================== Start power iterations
+  // Start power iterations
   primary_ags_solver->SetVerbosity(lbs_solver.Options().verbose_ags_iterations);
   int nit = 0;
   bool converged = false;
@@ -105,8 +105,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
     auto Sffull = q_moments_local;
     nl_diff_context->Sf_ = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
 
-    //====================================== This solves the inners for
-    // transport
+    // This solves the inners for transport
     // produces phi at l+1/2
     primary_ags_solver->Setup();
     primary_ags_solver->Solve();
@@ -124,7 +123,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
     frons_wgs_context->ApplyInverseTransportOperator(NO_FLAGS_SET);
     lbs_solver.GSScopedCopyPrimarySTLvectors(front_gs, phi_new_local, phi_old_local);
 
-    //====================================== Non-Linear Acceleration solve
+    // Non-Linear Acceleration solve
     nl_diff_context->phi_lph_ip1_ = lbs_solver.WGSCopyOnlyPhi0(front_gs, phi_new_local);
 
     nl_diff_context->kresid_func_context_.k_eff = k_eff; // sets mu_k
@@ -142,17 +141,17 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
       k_eff = F_new / F_prev * k_eff;
     }
 
-    //======================================== Compute reactivity
+    // Compute reactivity
     double reactivity = (k_eff - 1.0) / k_eff;
 
-    //======================================== Check convergence, bookkeeping
+    // Check convergence, bookkeeping
     k_eff_change = fabs(k_eff - k_eff_prev) / k_eff;
     k_eff_prev = k_eff;
     nit += 1;
 
     if (k_eff_change < std::max(tolerance, 1.0e-12)) converged = true;
 
-    //======================================== Print iteration summary
+    // Print iteration summary
     if (lbs_solver.Options().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
@@ -168,7 +167,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
     if (converged) break;
   } // for k iterations
 
-  //================================================== Print summary
+  // Print summary
   Chi::log.Log() << "\n";
   Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
   Chi::log.Log() << "        Final change          :        " << std::setprecision(6)

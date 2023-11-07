@@ -13,9 +13,7 @@ MultiGroupXS::ExportToChiXSFile(const std::string& file_name,
 {
   Chi::log.Log() << "Exporting transport cross section to file: " << file_name;
 
-  //============================================================
   // Define utility functions
-  //============================================================
 
   /**Lambda to print a 1D-xs*/
   auto Print1DXS = [](std::ofstream& ofile,
@@ -46,16 +44,10 @@ MultiGroupXS::ExportToChiXSFile(const std::string& file_name,
     ofile << prefix << "_END\n";
   };
 
-  //============================================================
   // Open the output file
-  //============================================================
-
   std::ofstream ofile(file_name);
 
-  //============================================================
   // Write the header info
-  //============================================================
-
   std::vector<double> nu, nu_prompt, nu_delayed;
   const auto& sigma_f = SigmaFission();
   const auto& nu_sigma_f = NuSigmaF();
@@ -183,7 +175,7 @@ MultiGroupXS::ExportToChiXSFile(const std::string& file_name,
 void
 MultiGroupXS::PushLuaTable(lua_State* L) const
 {
-  //================================================== General data
+  // General data
   lua_newtable(L);
   lua_pushstring(L, "is_empty");
   lua_pushboolean(L, false);
@@ -205,7 +197,7 @@ MultiGroupXS::PushLuaTable(lua_State* L) const
   lua_pushboolean(L, IsFissionable());
   lua_settable(L, -3);
 
-  //================================================== 1D cross sections
+  // 1D cross sections
   auto Push1DXS = [L](const std::vector<double>& xs, const std::string& name)
   {
     lua_pushstring(L, name.c_str());
@@ -230,7 +222,7 @@ MultiGroupXS::PushLuaTable(lua_State* L) const
   Push1DXS(NuDelayedSigmaF(), "nu_delayed_sigma_f");
   Push1DXS(InverseVelocity(), "inv_velocity");
 
-  //================================================== Emission spectra
+  // Emission spectra
   std::vector<std::vector<double>> chi_delayed;
   for (unsigned int g = 0; g < NumGroups(); ++g)
   {
@@ -262,7 +254,7 @@ MultiGroupXS::PushLuaTable(lua_State* L) const
   }
   lua_settable(L, -3);
 
-  //================================================== Precursor data
+  // Precursor data
   lua_pushstring(L, "precursor_decay_constants");
   lua_newtable(L);
   {
@@ -289,7 +281,7 @@ MultiGroupXS::PushLuaTable(lua_State* L) const
   }
   lua_settable(L, -3);
 
-  //================================================== Transfer matrices
+  // Transfer matrices
   lua_pushstring(L, "transfer_matrix");
   lua_newtable(L);
   {
@@ -323,7 +315,7 @@ MultiGroupXS::PushLuaTable(lua_State* L) const
   }
   lua_settable(L, -3);
 
-  //================================================== Production matrix
+  // Production matrix
   lua_pushstring(L, "production_matrix");
   lua_newtable(L);
   {
@@ -346,7 +338,7 @@ MultiGroupXS::PushLuaTable(lua_State* L) const
   }
   lua_settable(L, -3);
 
-  //================================================== Push diffusion quantities
+  // Push diffusion quantities
   Push1DXS(DiffusionCoefficient(), "diffusion_coeff");
   Push1DXS(SigmaRemoval(), "sigma_removal");
   Push1DXS(SigmaSGtoG(), "sigma_s_gtog");

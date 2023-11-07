@@ -89,7 +89,7 @@ chiLBSSetPhiFromFieldFunction(lua_State* L)
 
   } // for each specification
 
-  // ============================================ Now call the function
+  // Now call the function
   lbs_solver.SetPhiFromFieldFunctions(phi_option, moment_indices, group_indices);
 
   return 0;

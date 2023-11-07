@@ -126,10 +126,10 @@ PieceWiseLinearSlabMapping::GradShapeValues(const chi_mesh::Vector3& xyz,
 finite_element::VolumetricQuadraturePointData
 PieceWiseLinearSlabMapping::MakeVolumetricQuadraturePointData() const
 {
-  //=================================== Determine number of internal qpoints
+  // Determine number of internal qpoints
   size_t ttl_num_vol_qpoints = volume_quadrature_.qpoints_.size();
 
-  //=================================== Declare necessary vars
+  // Declare necessary vars
   std::vector<unsigned int> V_quadrature_point_indices;
   VecVec3 V_qpoints_xyz;
   std::vector<VecDbl> V_shape_value;
@@ -137,7 +137,7 @@ PieceWiseLinearSlabMapping::MakeVolumetricQuadraturePointData() const
   VecDbl V_JxW;
   size_t V_num_nodes;
 
-  //=================================== Init volumetric quadrature
+  // Init volumetric quadrature
   V_quadrature_point_indices.reserve(ttl_num_vol_qpoints);
   for (unsigned int qp = 0; qp < ttl_num_vol_qpoints; ++qp)
     V_quadrature_point_indices.push_back(qp);
@@ -192,12 +192,12 @@ PieceWiseLinearSlabMapping::MakeSurfaceQuadraturePointData(size_t face_index) co
 {
   const bool ON_SURFACE = true;
 
-  //=================================== Init surface quadrature
+  // Init surface quadrature
   size_t num_srf_qpoints = 1;
 
   const unsigned int f = face_index;
 
-  //=================================== Declare necessary vars
+  // Declare necessary vars
   std::vector<unsigned int> F_quadrature_point_indices;
   VecVec3 F_qpoints_xyz;
   std::vector<VecDbl> F_shape_value;

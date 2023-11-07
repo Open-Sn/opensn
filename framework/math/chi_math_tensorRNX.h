@@ -51,7 +51,6 @@ struct TensorRNX
     return *this;
   }
 
-  //=========================================== Element access
   template <int R2>
   struct RecursiveAccessor
   {
@@ -117,7 +116,6 @@ struct TensorRNX<2, N, NumberFormat>
   /**Return reference to vector at given row.*/
   VectorNX<N, NumberFormat>& operator()(const int i) { return entries.at(i); }
 
-  //=========================================== Addition
   /**Component-wise addition.
    * \f$ \vec{\vec{W}} = \vec{\vec{X}} + \vec{\vec{Y}} \f$*/
   TensorRNX<2, N, NumberFormat> operator+(const TensorRNX<2, N, NumberFormat>& that) const
@@ -148,7 +146,6 @@ struct TensorRNX<2, N, NumberFormat>
     return *this;
   }
 
-  //============================================= Subtraction
   /**Component-wise subtraction.
    * \f$ \vec{\vec{W}} = \vec{\vec{X}} - \vec{\vec{Y}} \f$*/
   TensorRNX<2, N, NumberFormat> operator-(const TensorRNX<2, N, NumberFormat>& that) const
@@ -179,7 +176,6 @@ struct TensorRNX<2, N, NumberFormat>
     return *this;
   }
 
-  //============================================= Multiplication
   /**Component-wise multiplication by scalar.
    * \f$ \vec{\vec{W}} = \vec{\vec{X}}\alpha \f$ */
   TensorRNX<2, N, NumberFormat> operator*(const double value) const
@@ -206,7 +202,6 @@ struct TensorRNX<2, N, NumberFormat>
     return *this;
   }
 
-  //============================================= Division
   /**Component-wise division by scalar.
    *  \f$ \vec{\vec{W}} = \vec{\vec{X}}\frac{1}{\alpha} \f$*/
   TensorRNX<2, N, NumberFormat> operator/(const double value) const
@@ -233,7 +228,6 @@ struct TensorRNX<2, N, NumberFormat>
     return *this;
   }
 
-  //============================================= Transpose
   /**Classical transpose of the tensor.
    * \f$ W_{ij} = T_{ji} \f$*/
   TensorRNX<2, N, NumberFormat> Transpose() const
@@ -249,7 +243,6 @@ struct TensorRNX<2, N, NumberFormat>
     return new_t;
   }
 
-  //============================================= Tensor dot product
   /**Tensor dot-product with a vector.*/
   VectorNX<N, NumberFormat> Dot(const VectorNX<N, NumberFormat>& v) const
   {
@@ -263,7 +256,6 @@ struct TensorRNX<2, N, NumberFormat>
     return new_vec;
   }
 
-  //============================================= Get Diagonal
   /**Obtains the diagonal of a rank-2 tensor as a vector.*/
   VectorNX<N, NumberFormat> Diag() const
   {
@@ -291,7 +283,6 @@ struct TensorRNX<2, N, NumberFormat>
     return val;
   }
 
-  //=========================================== Printing
   /**Prints the tensor to a string and then returns the string.*/
   std::string PrintS() const
   {

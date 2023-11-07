@@ -28,11 +28,11 @@ chiLBSAddPointSource(lua_State* L)
   LuaCheckNilValue(fname, L, 4);
   LuaCheckNilValue(fname, L, 5);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
-  //============================================= Get other arguments
+  // Get other arguments
   const double x = lua_tonumber(L, 2);
   const double y = lua_tonumber(L, 3);
   const double z = lua_tonumber(L, 4);
@@ -66,7 +66,7 @@ chiLBSClearPointSources(lua_State* L)
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
@@ -92,7 +92,7 @@ chiLBSInitializePointSources(lua_State* L)
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 

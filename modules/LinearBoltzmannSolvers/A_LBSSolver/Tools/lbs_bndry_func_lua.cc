@@ -23,7 +23,7 @@ lbs::BoundaryFunctionToLua::Evaluate(
   double time)
 {
   const std::string fname = "LinearBoltzmann::BoundaryFunctionToLua";
-  //======================================== Utility lambdas
+  // Utility lambdas
   auto PushVector3AsTable = [](lua_State* L, const chi_mesh::Vector3& vec)
   {
     lua_newtable(L);
@@ -66,17 +66,17 @@ lbs::BoundaryFunctionToLua::Evaluate(
     lua_settable(L, -3);
   };
 
-  //======================================== Get lua function
+  // Get lua function
   lua_State* L = Chi::console.GetConsoleState();
   lua_getglobal(L, m_lua_function_name.c_str());
 
-  //======================================== Error check lua function
+  // Error check lua function
   if (not lua_isfunction(L, -1))
     throw std::logic_error(fname + " attempted to access lua-function, " + m_lua_function_name +
                            ", but it seems the function"
                            " could not be retrieved.");
 
-  //======================================== Push arguments
+  // Push arguments
   lua_pushinteger(L, static_cast<lua_Integer>(cell_global_id));
   lua_pushinteger(L, static_cast<lua_Integer>(cell_material_id));
 
@@ -134,7 +134,7 @@ lbs::BoundaryFunctionToLua::Evaluate(
 
   lua_pop(L, 1); // pop the table, or error code
 
-  //======================================== Error check psi vector
+  // Error check psi vector
   size_t num_angles = quadrature_angle_indices.size();
   size_t num_groups = group_indices.size();
 

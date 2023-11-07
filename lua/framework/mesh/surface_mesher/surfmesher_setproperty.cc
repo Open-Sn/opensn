@@ -28,10 +28,10 @@ chiSurfaceMesherSetProperty(lua_State* L)
 
   auto surf_mesher = cur_hndlr.GetSurfaceMesher();
 
-  //================================================== Get property number
+  // Get property number
   int property_num = lua_tonumber(L, 1);
 
-  //================================================== Area constraint
+  // Area constraint
   if (property_num == 1) // MAX_AREA
   {
     Chi::log.Log0Warning() << "Deprecated and removed feature"

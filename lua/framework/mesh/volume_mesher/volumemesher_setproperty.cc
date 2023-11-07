@@ -106,11 +106,11 @@ int
 chiVolumeMesherSetProperty(lua_State* L)
 {
   const std::string fname = "chiVolumeMesherSetProperty";
-  //============================================= Get current mesh handler
+  // Get current mesh handler
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
   auto& volume_mesher = cur_hndlr.GetVolumeMesher();
 
-  //============================================= Get property index
+  // Get property index
   const int num_args = lua_gettop(L);
   if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
@@ -121,7 +121,7 @@ chiVolumeMesherSetProperty(lua_State* L)
 
   typedef chi_mesh::VolumeMesherProperty VMP;
 
-  //============================================= Selects property
+  // Selects property
   if (property_index == VMP::FORCE_POLYGONS)
   {
     bool force_condition = lua_toboolean(L, 2);
@@ -297,7 +297,7 @@ chiVolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
   LuaCheckNilValue(__FUNCTION__, L, 2);
   LuaCheckNilValue(__FUNCTION__, L, 3);
 
-  //============================================= Get current mesh handler
+  // Get current mesh handler
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
   auto& vol_mesher = cur_hndlr.GetVolumeMesher();
 

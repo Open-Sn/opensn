@@ -30,7 +30,6 @@ struct chi_mesh::TensorRank2Dim3
   /**Element access.*/
   chi_mesh::Vector3& operator[](int index) { return t[index]; }
 
-  //============================================= Addition
   /**Component-wise addition.
    * \f$ \vec{\vec{W}} = \vec{\vec{X}} + \vec{\vec{Y}} \f$*/
   TensorRank2Dim3 operator+(const TensorRank2Dim3& that) const
@@ -54,7 +53,6 @@ struct chi_mesh::TensorRank2Dim3
     return *this;
   }
 
-  //============================================= Subtraction
   /**Component-wise subtraction.
    * \f$ \vec{\vec{W}} = \vec{\vec{X}} - \vec{\vec{Y}} \f$*/
   TensorRank2Dim3 operator-(const TensorRank2Dim3& that) const
@@ -78,7 +76,6 @@ struct chi_mesh::TensorRank2Dim3
     return *this;
   }
 
-  //============================================= Multiplication
   /**Component-wise multiplication by scalar.
    * \f$ \vec{\vec{W}} = \vec{\vec{X}}\alpha \f$ */
   TensorRank2Dim3 operator*(const double value) const
@@ -102,7 +99,6 @@ struct chi_mesh::TensorRank2Dim3
     return *this;
   }
 
-  //============================================= Division
   /**Component-wise division by scalar.
    *  \f$ \vec{\vec{W}} = \vec{\vec{X}}\frac{1}{\alpha} \f$*/
   TensorRank2Dim3 operator/(const double value) const
@@ -126,7 +122,6 @@ struct chi_mesh::TensorRank2Dim3
     return *this;
   }
 
-  //============================================= Transpose
   /**Classical transpose of the tensor.
    * \f$ W_{ij} = T_{ji} \f$*/
   TensorRank2Dim3 Transpose()
@@ -139,14 +134,12 @@ struct chi_mesh::TensorRank2Dim3
     return new_t;
   }
 
-  //============================================= Tensor dot product
   /**
    * Dot product of rank-2 tensor with a vector.
    * \f$ \vec{w} = \vec{\vec{T}} \bullet \vec{x} \f$
    */
   Vector3 Dot(const chi_mesh::Vector3& v) const;
 
-  //============================================= Get Diagonal
   /**
    * Returns the diagonal of a rank-2 dim-3 tensor as a vector3.
    * \f$ \vec{w} = \text{diag} \vec{\vec{T}} \f$
@@ -164,7 +157,6 @@ struct chi_mesh::TensorRank2Dim3
     return val;
   }
 
-  //============================================= Printing
   /**Prints the vector to a string and then returns the string.*/
   std::string PrintS()
   {

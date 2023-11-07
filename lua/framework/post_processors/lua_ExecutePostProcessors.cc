@@ -41,7 +41,7 @@ ExecutePostProcessors(const InputParameters& params)
 
   std::vector<PostProcessor*> pp_list;
 
-  //=================================== List of names supplied
+  // List of names supplied
   if (first_param_type == ParameterBlockType::STRING)
   {
     const auto name_list = arg_array.GetVectorValue<std::string>();
@@ -63,7 +63,7 @@ ExecutePostProcessors(const InputParameters& params)
                              "\" not found in the stack of post-processors");
     }
   }
-  //=================================== List of handles supplied
+  // List of handles supplied
   else if (first_param_type == ParameterBlockType::INTEGER)
   {
     const auto handle_list = arg_array.GetVectorValue<size_t>();

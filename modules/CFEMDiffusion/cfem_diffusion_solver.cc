@@ -35,7 +35,7 @@ Solver::Initialize()
                  << Chi::program_timer.GetTimeString() << " " << TextName()
                  << ": Initializing CFEM Diffusion solver ";
 
-  //============================================= Get grid
+  // Get grid
   grid_ptr_ = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
@@ -43,7 +43,7 @@ Solver::Initialize()
 
   Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= BIDs
+  // BIDs
   auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
 
   const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
@@ -114,7 +114,7 @@ Solver::Initialize()
     }
   } // for bndry
 
-  //============================================= Make SDM
+  // Make SDM
   sdm_ptr_ = chi_math::spatial_discretization::PieceWiseLinearContinuous::New(*grid_ptr_);
   const auto& sdm = *sdm_ptr_;
 
@@ -125,7 +125,7 @@ Solver::Initialize()
   Chi::log.Log() << "Num local DOFs: " << num_local_dofs_;
   Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs_;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs_);
   const auto N = static_cast<int64_t>(num_globl_dofs_);
 
@@ -169,7 +169,7 @@ Solver::Execute()
   lua_State* L = Chi::console.GetConsoleState();
 #endif
 
-  //============================================= Assemble the system
+  // Assemble the system
   Chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
@@ -203,7 +203,7 @@ Solver::Execute()
     } // for i
 #endif
 
-    //======================= Flag nodes for being on a boundary
+    // Flag nodes for being on a boundary
     std::vector<int> dirichlet_count(num_nodes, 0);
     std::vector<double> dirichlet_value(num_nodes, 0.0);
 
@@ -278,12 +278,12 @@ Solver::Execute()
 
     } // for face f
 
-    //======================= Develop node mapping
+    // Develop node mapping
     std::vector<int64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
       imap[i] = sdm.MapDOF(cell, i);
 
-    //======================= Assembly into system
+    // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)
     {
       if (dirichlet_count[i] > 0) // if Dirichlet boundary node
@@ -319,7 +319,7 @@ Solver::Execute()
 
   Chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
   auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
     A_,                                                // Matrix
@@ -330,7 +330,7 @@ Solver::Execute()
     basic_options_("max_iters").IntegerValue()         // Max iterations
   );
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp, b_, x_);
 
   UpdateFieldFunctions();
@@ -345,23 +345,23 @@ Solver::CallLua_iXYZFunction(lua_State* L,
                              const int imat,
                              const chi_mesh::Vector3& xyz)
 {
-  //============= Load lua function
+  // Load lua function
   lua_getglobal(L, lua_func_name.c_str());
 
-  //============= Error check lua function
+  // Error check lua function
   if (not lua_isfunction(L, -1))
     throw std::logic_error("CallLua_iXYZFunction attempted to access lua-function, " +
                            lua_func_name +
                            ", but it seems the function"
                            " could not be retrieved.");
 
-  //============= Push arguments
+  // Push arguments
   lua_pushinteger(L, imat);
   lua_pushnumber(L, xyz.x);
   lua_pushnumber(L, xyz.y);
   lua_pushnumber(L, xyz.z);
 
-  //============= Call lua function
+  // Call lua function
   // 4 arguments, 1 result (double), 0=original error object
   double lua_return;
   if (lua_pcall(L, 4, 1, 0) == 0)

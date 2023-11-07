@@ -75,22 +75,22 @@ XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const chi::InputParamet
     diff_accel_diffusion_petsc_options_(
       params.GetParamValue<std::string>("diff_accel_diffusion_petsc_options"))
 {
-  ////=========================================== Make UnknownManager
+  //// Make UnknownManager
   // const size_t num_gs_groups = front_gs_.groups_.size();
   // chi_math::UnknownManager uk_man;
   // uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_gs_groups);
   //
-  ////=========================================== Make boundary conditions
+  //// Make boundary conditions
   // auto bcs = acceleration::TranslateBCs(lbs_solver_.SweepBoundaries(),
   //                                       /*vaccum_bcs_are_dirichlet=*/true);
   //
-  ////=========================================== Make xs map
+  //// Make xs map
   // auto matid_2_mgxs_map =
   //   acceleration::PackGroupsetXS(lbs_solver_.GetMatID2XSMap(),
   //                                front_gs_.groups_.front().id_,
   //                                front_gs_.groups_.back().id_);
   //
-  ////=========================================== Create solver
+  //// Create solver
   // const auto& sdm = lbs_solver_.SpatialDiscretization();
   // const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
   //
@@ -163,20 +163,20 @@ XXPowerIterationKEigenSCDSA::Initialize()
 {
   XXPowerIterationKEigen::Initialize();
 
-  //=========================================== Make UnknownManager
+  // Make UnknownManager
   const size_t num_gs_groups = front_gs_.groups_.size();
   chi_math::UnknownManager uk_man;
   uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_gs_groups);
 
-  //=========================================== Make boundary conditions
+  // Make boundary conditions
   auto bcs = acceleration::TranslateBCs(lbs_solver_.SweepBoundaries(),
                                         /*vaccum_bcs_are_dirichlet=*/true);
 
-  //=========================================== Make xs map
+  // Make xs map
   auto matid_2_mgxs_map = acceleration::PackGroupsetXS(
     lbs_solver_.GetMatID2XSMap(), front_gs_.groups_.front().id_, front_gs_.groups_.back().id_);
 
-  //=========================================== Create solver
+  // Create solver
   const auto& sdm = lbs_solver_.SpatialDiscretization();
   const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
 
@@ -256,19 +256,19 @@ XXPowerIterationKEigenSCDSA::Execute()
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
 
-  //================================================== Start power iterations
+  // Start power iterations
   int nit = 0;
   bool converged = false;
   while (nit < max_iters_)
   {
-    //================================= Set the fission source
+    // Set the fission source
     SetLBSFissionSource(phi_old_local_, /*additive=*/false);
     Scale(q_moments_local_, 1.0 / k_eff_);
 
     auto Sf_ell = q_moments_local_;
     auto Sf0_ell = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
-    //================================= This solves the inners for transport
+    // This solves the inners for transport
     primary_ags_solver_->Setup();
     primary_ags_solver_->Solve();
 
@@ -283,7 +283,7 @@ XXPowerIterationKEigenSCDSA::Execute()
 
     auto phi0_lph_ip1 = CopyOnlyPhi0(front_gs_, phi_new_local_);
 
-    //====================================== Power Iteration Acceleration
+    // Power Iteration Acceleration
     SetLBSScatterSourcePhi0(phi0_lph_ip1 - phi0_lph_i, /*additive=*/false);
     auto Ss_res = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
@@ -357,18 +357,18 @@ XXPowerIterationKEigenSCDSA::Execute()
     const double production = lbs_solver_.ComputeFissionProduction(phi_old_local_);
     lbs_solver_.ScalePhiVector(PhiSTLOption::PHI_OLD, lambda_kp1 / production);
 
-    //================================= Recompute k-eigenvalue
+    // Recompute k-eigenvalue
     k_eff_ = lambda_kp1;
     double reactivity = (k_eff_ - 1.0) / k_eff_;
 
-    //================================= Check convergence, bookkeeping
+    // Check convergence, bookkeeping
     k_eff_change = fabs(k_eff_ - k_eff_prev) / k_eff_;
     k_eff_prev = k_eff_;
     nit += 1;
 
     if (k_eff_change < std::max(k_tolerance_, 1.0e-12)) converged = true;
 
-    //================================= Print iteration summary
+    // Print iteration summary
     if (lbs_solver_.Options().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
@@ -384,7 +384,7 @@ XXPowerIterationKEigenSCDSA::Execute()
     if (converged) break;
   } // for k iterations
 
-  //================================================== Print summary
+  // Print summary
   Chi::log.Log() << "\n";
   Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
   Chi::log.Log() << "        Final change          :        " << std::setprecision(6)
@@ -588,7 +588,7 @@ XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
   std::map<int64_t, int64_t> cfem_dof_global2local_map;
 
-  //================================================== Local cells first
+  // Local cells first
   std::set<uint64_t> partition_bndry_vertex_id_set;
   for (const auto& cell : grid.local_cells)
   {
@@ -623,7 +623,7 @@ XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
             partition_bndry_vertex_id_set.insert(vid);
   } // for local cell
 
-  //================================================== Ghost cells
+  // Ghost cells
   const auto ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
   const auto& vid_set = partition_bndry_vertex_id_set;
   for (const auto global_id : ghost_cell_ids)
@@ -658,14 +658,14 @@ XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
     }     // for node i
   }       // for ghost cell
 
-  //================================================== Compute nodal averages
+  // Compute nodal averages
   {
     const size_t num_vals = cont_input.size();
     for (size_t k = 0; k < num_vals; ++k)
       cont_input[k] /= cont_input_ctr[k];
   }
 
-  //================================================== Project back to dfem
+  // Project back to dfem
   auto output = input;
   for (const auto& cell : grid.local_cells)
   {

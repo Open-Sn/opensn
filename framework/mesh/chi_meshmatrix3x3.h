@@ -221,7 +221,7 @@ struct chi_mesh::Matrix3x3
     Matrix3x3 oM;
     Matrix3x3 oMT;
 
-    //================================= Compute matrix of minors
+    // Compute matrix of minors
     for (int i = 0; i < 3; i++)
     {
       for (int j = 0; j < 3; j++)
@@ -230,7 +230,7 @@ struct chi_mesh::Matrix3x3
       }
     }
 
-    //================================= Compute matrix of cofactors
+    // Compute matrix of cofactors
     int sign = -1;
     for (int i = 0; i < 3; i++)
     {
@@ -241,10 +241,10 @@ struct chi_mesh::Matrix3x3
       }
     }
 
-    //================================= Compute the transpose
+    // Compute the transpose
     oMT = oM.Transpose();
 
-    //================================= Get determinant
+    // Get determinant
     double det = Det();
 
     return oMT * (1.0 / det);

@@ -18,15 +18,14 @@ void
 FieldFunctionInterpolationSlice::Initialize()
 {
   Chi::log.Log0Verbose1() << "Initializing slice interpolator.";
-  //================================================== Check grid available
+  // Check grid available
   if (field_functions_.empty())
     throw std::logic_error("Unassigned field function in slice "
                            "field function interpolator.");
 
   const auto& grid = field_functions_.front()->GetSpatialDiscretization().Grid();
 
-  //================================================== Find cells intersecting
-  //                                                   plane
+  // Find cells intersecting plane
   std::vector<uint64_t> intersecting_cell_indices;
 
   for (const auto& cell : grid.local_cells)
@@ -75,8 +74,7 @@ FieldFunctionInterpolationSlice::Initialize()
                              "to Slice Initialize.");
   } // for local cell
 
-  //================================================== Computing cell
-  //                                                   intersections
+  // Computing cell intersections
   for (const uint64_t cell_local_index : intersecting_cell_indices)
   {
     const auto& cell = grid.local_cells[cell_local_index];
@@ -86,7 +84,7 @@ FieldFunctionInterpolationSlice::Initialize()
       FFICellIntersection cell_isds;
       cell_isds.ref_cell_local_id = cell_local_index;
 
-      //========================================= Loop over vertices
+      // Loop over vertices
       for (uint64_t v0gi : cell.vertex_ids_)
       {
         FFIFaceEdgeIntersection face_isds;
@@ -98,14 +96,14 @@ FieldFunctionInterpolationSlice::Initialize()
         cell_isds.intersections.push_back(face_isds);
       }
 
-      //========================================= Set intersection center
+      // Set intersection center
       cell_isds.intersection_centre = cell.centroid_;
 
-      //========================================= Set straight 2D center
+      // Set straight 2D center
       // This is normally transformed for the 3D case
       cell_isds.intersection_2d_centre = cell.centroid_;
 
-      //========================================= Same for 2D points
+      // Same for 2D points
       size_t num_points = cell_isds.intersections.size();
       for (size_t p = 0; p < num_points; p++)
       {
@@ -119,17 +117,16 @@ FieldFunctionInterpolationSlice::Initialize()
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
     else if (cell.Type() == CellType::POLYHEDRON)
     {
-      //========================================= Initialize cell intersection
-      //                                          data structure
+      // Initialize cell intersection data structure
       FFICellIntersection cell_isds;
       cell_isds.ref_cell_local_id = cell_local_index;
 
-      //========================================= Loop over faces
+      // Loop over faces
       size_t num_faces = cell.faces_.size();
       for (size_t f = 0; f < num_faces; f++)
       {
         const auto& face = cell.faces_[f];
-        //================================== Loop over edges
+        // Loop over edges
         size_t num_edges = face.vertex_ids_.size();
         for (size_t e = 0; e < num_edges; e++)
         {
@@ -143,11 +140,11 @@ FieldFunctionInterpolationSlice::Initialize()
           Vertex interstion_point; // Placeholder
           std::pair<double, double> weights;
 
-          //=========================== Check if intersects plane
+          // Check if intersects plane
           if (CheckPlaneLineIntersect(
                 this->normal_, this->plane_point_, v0, v1, interstion_point, &weights))
           {
-            //==================== Check for duplicate
+            // Check for duplicate
             bool duplicate_found = false;
             for (auto& existing_face_isds : cell_isds.intersections)
             {
@@ -159,7 +156,7 @@ FieldFunctionInterpolationSlice::Initialize()
               }
             }
 
-            //==================== No duplicate
+            // No duplicate
             if (!duplicate_found)
             {
               FFIFaceEdgeIntersection face_isds;
@@ -171,9 +168,7 @@ FieldFunctionInterpolationSlice::Initialize()
         }   // for edge
       }     // for face
 
-      //====================================
-
-      //==================================== Computing intersection centre
+      // Computing intersection centre
       size_t num_points = cell_isds.intersections.size();
       if (num_points > 0)
       {
@@ -192,14 +187,14 @@ FieldFunctionInterpolationSlice::Initialize()
                                     "intersected. Slice FF interp.";
       }
 
-      //==================================== Computing 2D transforms
+      // Computing 2D transforms
       Vector3 vref = cell_isds.intersection_centre - plane_point_;
 
       cell_isds.intersection_2d_centre.x = vref.Dot(tangent_);
       cell_isds.intersection_2d_centre.y = vref.Dot(binorm_);
       cell_isds.intersection_2d_centre.z = vref.Dot(normal_);
 
-      //==================================== Points
+      // Points
       std::vector<FFIFaceEdgeIntersection> unsorted_points;
       for (int p = 0; p < num_points; p++)
       {
@@ -213,7 +208,7 @@ FieldFunctionInterpolationSlice::Initialize()
       }
       cell_isds.intersections.clear();
 
-      //==================================== Sort points clockwise
+      // Sort points clockwise
       // The first point is retrieved from the unused stack.
       // Subsequent points are only added if they form a
       // convex line wrt the right hand rule.

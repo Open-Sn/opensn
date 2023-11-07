@@ -22,7 +22,7 @@ FieldFunction::GetInputParameters()
                               "The number of components to attach to the variable. "
                               "Only effective when \"type\" is VectorN.");
 
-  //=============== Constrain values
+  // Constrain values
   using namespace chi_data_types;
   params.ConstrainParameterRange(
     "unknown_type", AllowableRangeList::New({"Scalar", "Vector2", "Vector3", "VectorN"}));

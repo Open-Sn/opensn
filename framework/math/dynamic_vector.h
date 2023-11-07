@@ -86,7 +86,7 @@ public:
     return *this;
   }
 
-  //============================================= Element access
+  // Element access
   NumberFormat& operator[](size_t i) { return elements_[i]; }
   const NumberFormat& operator[](size_t i) const { return elements_[i]; }
 
@@ -115,7 +115,7 @@ public:
 
   bool empty() const noexcept { return elements_.empty(); }
 
-  //============================================= Iterator access
+  // Iterator access
   typename std::vector<NumberFormat>::iterator begin() { return elements_.begin(); }
 
   typename std::vector<NumberFormat>::iterator end() { return elements_.end(); }
@@ -127,7 +127,6 @@ public:
     if (a != b) { throw std::length_error("Mismatched sizes of DVectorNX"); }
   }
 
-  //============================================= Addition
   /**Component-wise addition of two vectors.
    * \f$ \vec{w} = \vec{x} + \vec{y} \f$*/
   DynamicVector operator+(const DynamicVector& rhs) const
@@ -151,7 +150,6 @@ public:
     return *this;
   }
 
-  //=========================================== Subtraction
   /**Component-wise subtraction.
    * \f$ \vec{w} = \vec{x} - \vec{y} \f$*/
   DynamicVector operator-(const DynamicVector& rhs) const
@@ -175,7 +173,6 @@ public:
     return *this;
   }
 
-  //=========================================== Multiplication
   /**Vector component-wise multiplication by scalar.
    * \f$ \vec{w} = \vec{x} \alpha \f$*/
   DynamicVector operator*(const NumberFormat value) const
@@ -220,7 +217,6 @@ public:
     return *this;
   }
 
-  //=========================================== Division
   /**Vector component-wise division by scalar.
    * \f$ w_i = \frac{x_i}{\alpha} \f$*/
   DynamicVector operator/(const NumberFormat value) const
@@ -265,7 +261,6 @@ public:
     return *this;
   }
 
-  //============================================= Operations
   /**Vector dot-product.
    * \f$ \vec{w} = \vec{x} \bullet \vec{y} \f$ */
   NumberFormat Dot(const DynamicVector& rhs) const

@@ -221,7 +221,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   if (Chi::log.GetVerbosity() >= 2)
     Chi::log.Log0Verbose2() << "Number of parameters " << params.NumParameters();
 
-  // ================================== Check required parameters
+  // Check required parameters
   // Loops over all input-parameters that have been
   // classed as being required. Input-parameters that
   // have any form of deprecation is ignored.
@@ -245,7 +245,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 
   if (not err_stream.str().empty()) ThrowInputError;
 
-  // ================================== Check unused parameters
+  // Check unused parameters
   // Loops over all candidate-parameters and
   // checks whether they have an assignable
   // input-parameter or if they have been renamed.
@@ -267,7 +267,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     if (not err_stream.str().empty()) ThrowInputError;
   }
 
-  // ================================== Check deprecation warnings
+  // Check deprecation warnings
   // Loops over all candidate-parameters and
   // checks whether they have deprecation warnings.
   {
@@ -285,7 +285,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     }
   }
 
-  // ================================== Check deprecation errors
+  // Check deprecation errors
   // Loops over all candidate-parameters and
   // checks whether they have deprecation errors.
   {
@@ -305,7 +305,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     }
   }
 
-  // ================================== Now attempt to assign values
+  // Now attempt to assign values
   for (auto& param : params.Parameters())
   {
     const auto& param_name = param.Name();
@@ -314,7 +314,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 
     auto& input_param = GetParam(param_name);
 
-    // ====================== Check types match
+    // Check types match
     if (param.Type() != input_param.Type())
     {
       if (type_mismatch_allowed_tags_.count(param_name) == 0)
@@ -327,7 +327,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
       } // if not mismatch allowed
     }   // if type mismatch
 
-    // ====================== Check constraint
+    // Check constraint
     if (constraint_tags_.count(input_param.Name()) != 0)
     {
       const auto& constraint = constraint_tags_.at(input_param.Name());

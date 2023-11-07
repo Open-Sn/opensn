@@ -35,11 +35,11 @@ chiSurfaceMesherCreate(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //============================================= Get argument
+  // Get argument
   LuaCheckNilValue("chiSurfaceMesherCreate", L, 1);
   int type = lua_tonumber(L, 1);
 
-  //============================================= Create the surface mesher
+  // Create the surface mesher
   std::shared_ptr<chi_mesh::SurfaceMesher> new_mesher = nullptr;
   if (type == (int)chi_mesh::SurfaceMesherType::Predefined)
   {

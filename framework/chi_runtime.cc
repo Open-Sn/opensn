@@ -32,7 +32,7 @@
 #include <unistd.h>
 #endif
 
-//=============================================== Global variables
+// Global variables
 chi::Console& Chi::console = chi::Console::GetInstance();
 chi::ChiLog& Chi::log = chi::ChiLog::GetInstance();
 chi::MPI_Info& Chi::mpi = chi::MPI_Info::GetInstance();
@@ -56,7 +56,7 @@ std::vector<ChiObjectPtr> Chi::object_stack;
 std::vector<chi_math::SpatialDiscretizationPtr> Chi::sdm_stack;
 std::vector<chi::PostProcessorPtr> Chi::postprocessor_stack;
 
-//================================ run_time quantities
+// run_time quantities
 bool Chi::run_time::termination_posted_ = false;
 std::string Chi::run_time::input_file_name_;
 bool Chi::run_time::sim_option_interactive_ = true;
@@ -116,12 +116,12 @@ Chi::run_time::ParseArguments(int argc, char** argv)
       Chi::run_time::dump_registry_ = true;
       Chi::run_time::termination_posted_ = true;
     }
-    //================================================ No-graphics option
+    // No-graphics option
     else if (argument.find("-b") != std::string::npos)
     {
       Chi::run_time::sim_option_interactive_ = false;
     } //-b
-    //================================================ Verbosity
+    // Verbosity
     else if (argument.find("-v") != std::string::npos)
     {
       if ((i + 1) >= argc)
@@ -158,9 +158,8 @@ Chi::run_time::ParseArguments(int argc, char** argv)
     else if (argument.find('=') != std::string::npos)
     {
       Chi::console.GetCommandBuffer().push_back(argument);
-    } //=
-
-  } // for argument
+    }
+  }
 
 #ifdef OPENSN_WITH_LUA
   if (Chi::run_time::dump_registry_)

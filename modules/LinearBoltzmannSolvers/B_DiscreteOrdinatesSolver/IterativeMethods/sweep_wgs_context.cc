@@ -127,9 +127,7 @@ template <>
 void
 SweepWGSContext<Mat, Vec, KSP>::PostSolveCallback()
 {
-  //================================================== Perform final sweep
-  //                                                   with converged phi and
-  //                                                   delayed psi dofs
+  // Perform final sweep with converged phi and delayed psi dofs
   if (groupset_.iterative_method_ != IterativeMethod::KRYLOV_RICHARDSON)
   {
     lbs_ss_solver_.ZeroOutflowBalanceVars(groupset_);
@@ -145,7 +143,7 @@ SweepWGSContext<Mat, Vec, KSP>::PostSolveCallback()
       groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
   }
 
-  //==================================================== Print solution info
+  // Print solution info
   {
     double sweep_time = sweep_scheduler_.GetAverageSweepTime();
     double chunk_overhead_ratio = 1.0 - sweep_scheduler_.GetAngleSetTimings()[2];

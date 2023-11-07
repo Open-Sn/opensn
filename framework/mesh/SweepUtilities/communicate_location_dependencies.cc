@@ -11,7 +11,7 @@ chi_mesh::sweep_management::CommunicateLocationDependencies(
 {
   int P = Chi::mpi.process_count;
 
-  //============================================= Communicate location dep
+  // Communicate location dep
   // counts
   std::vector<int> depcount_per_loc(P, 0);
   int current_loc_dep_count = location_dependencies.size();
@@ -23,7 +23,7 @@ chi_mesh::sweep_management::CommunicateLocationDependencies(
                 MPI_INT,        // Recv count and type
                 Chi::mpi.comm); // Communicator
 
-  //============================================= Broadcast dependencies
+  // Broadcast dependencies
   std::vector<int> raw_depvec_displs(P, 0);
   int recv_buf_size = depcount_per_loc[0];
   for (int locI = 1; locI < P; ++locI)

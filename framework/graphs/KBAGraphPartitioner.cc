@@ -54,13 +54,13 @@ KBAGraphPartitioner::KBAGraphPartitioner(const InputParameters& params)
   {
     const auto& cuts = *cuts_ptr;
 
-    //======================= Check number of items
+    // Check number of items
     if (cuts.size() != (n - 1))
       ChiInvalidArgument("The number of cuts supplied for \"" + name + "cuts\" is not equal to n" +
                          name + "-1.");
     if (cuts.empty()) continue;
 
-    //======================= Check monitonically increasing
+    // Check monitonically increasing
     {
       double prev_value = 0.0;
       for (const double cut_value : *cuts_ptr)

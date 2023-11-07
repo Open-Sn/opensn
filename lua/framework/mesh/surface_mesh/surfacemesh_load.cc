@@ -56,7 +56,7 @@ chiSurfaceMeshImportFromOBJFile(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
-  //============================================= Get arguments
+  // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
@@ -106,7 +106,7 @@ chiSurfaceMeshImportFromTriangleFiles(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //============================================= Get arguments
+  // Get arguments
   int num_args = lua_gettop(L);
   int handle = lua_tonumber(L, 1);
 
@@ -129,7 +129,7 @@ chiSurfaceMeshImportFromMshFiles(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //============================================= Get arguments
+  // Get arguments
   int num_args = lua_gettop(L);
   int handle = lua_tonumber(L, 1);
 

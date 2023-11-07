@@ -12,8 +12,7 @@ lbs::DiscOrdTransientSolver::SetTransientSweepChunk(LBSGroupset& groupset)
   else
     theta = 0.5;
 
-  //================================================== Setting up required
-  //                                                   sweep chunks
+  // Setting up required sweep chunks
   auto sweep_chunk =
     std::make_shared<SweepChunkPWLTransientTheta>(grid_ptr_,             // Spatial grid of cells
                                                   *discretization_,      // Spatial discretization

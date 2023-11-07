@@ -46,7 +46,7 @@ MeshGenerator::MeshGenerator(const chi::InputParameters& params)
     scale_(params.GetParamValue<double>("scale")),
     replicated_(params.GetParamValue<bool>("replicated_mesh"))
 {
-  //============================================= Convert input handles
+  // Convert input handles
   auto input_handles = params.GetParamVectorValue<size_t>("inputs");
 
   for (const size_t input_handle : input_handles)
@@ -56,7 +56,7 @@ MeshGenerator::MeshGenerator(const chi::InputParameters& params)
     inputs_.push_back(&mesh_generator);
   }
 
-  //============================================= Set partitioner
+  // Set partitioner
   size_t partitioner_handle;
   if (params.ParametersAtAssignment().Has("partitioner"))
     partitioner_handle = params.GetParamValue<size_t>("partitioner");
@@ -80,7 +80,7 @@ MeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> inpu
 void
 MeshGenerator::Execute()
 {
-  //======================================== Execute all input generators
+  // Execute all input generators
   // Note these could be empty
   std::unique_ptr<UnpartitionedMesh> current_umesh = nullptr;
   for (auto mesh_generator_ptr : inputs_)
@@ -89,7 +89,7 @@ MeshGenerator::Execute()
     current_umesh = std::move(new_umesh);
   }
 
-  //======================================== Generate final umesh and convert it
+  // Generate final umesh and convert it
   current_umesh = GenerateUnpartitionedMesh(std::move(current_umesh));
 
   std::vector<int64_t> cell_pids;
@@ -99,7 +99,7 @@ MeshGenerator::Execute()
 
   auto grid_ptr = SetupMesh(std::move(current_umesh), cell_pids);
 
-  //======================================== Assign the mesh to a VolumeMesher
+  // Assign the mesh to a VolumeMesher
   auto new_mesher = std::make_shared<chi_mesh::VolumeMesher>(VolumeMesherType::UNPARTITIONED);
   new_mesher->SetContinuum(grid_ptr);
 
@@ -184,7 +184,7 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_parti
 
   ChiLogicalErrorIf(num_raw_cells == 0, "No cells in final input mesh");
 
-  //============================================= Build cell graph and centroids
+  // Build cell graph and centroids
   typedef std::vector<uint64_t> CellGraphNode;
   typedef std::vector<CellGraphNode> CellGraph;
   CellGraph cell_graph;
@@ -207,7 +207,7 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_parti
   // Note A: We do not add the diagonal here. If we do it, ParMETIS seems
   // to produce sub-optimal partitions
 
-  //============================================= Execute partitioner
+  // Execute partitioner
   std::vector<int64_t> cell_pids =
     partitioner_->Partition(cell_graph, cell_centroids, num_partitions);
 
@@ -236,7 +236,7 @@ std::shared_ptr<MeshContinuum>
 MeshGenerator::SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
                          const std::vector<int64_t>& cell_pids)
 {
-  //============================================= Convert mesh
+  // Convert mesh
   auto grid_ptr = chi_mesh::MeshContinuum::New();
 
   grid_ptr->GetBoundaryIDMap() = input_umesh_ptr->GetMeshOptions().boundary_id_map;
@@ -282,8 +282,7 @@ MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm
 {
   size_t data_count = Chi::mpi.location_id == root ? cell_pids.size() : 0;
 
-  //======================================== Broadcast data_count to all
-  //                                         locations
+  // Broadcast data_count to all locations
   MPI_Bcast(&data_count,   // buffer [IN/OUT]
             1,             // count
             MPI_UINT64_T,  // data type
@@ -292,8 +291,7 @@ MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm
 
   if (Chi::mpi.location_id != root) cell_pids.assign(data_count, 0);
 
-  //======================================== Broadcast partitioning to all
-  //                                         locations
+  // Broadcast partitioning to all locations
   MPI_Bcast(cell_pids.data(),             // buffer [IN/OUT]
             static_cast<int>(data_count), // count
             MPI_LONG_LONG_INT,            // data type

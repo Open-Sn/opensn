@@ -36,8 +36,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
                                  int number_of_parts)
 {
   Chi::log.Log0Verbose1() << "Partitioning with PETScGraphPartitioner";
-  //================================================== Determine avg num faces
-  //                                                   per cell
+  // Determine avg num faces per cell
   // This is done so we can reserve size better
   const size_t num_raw_cells = graph.size();
   size_t num_raw_faces = 0;
@@ -46,11 +45,11 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
   size_t avg_num_face_per_cell =
     std::ceil(static_cast<double>(num_raw_faces) / static_cast<double>(num_raw_cells));
 
-  //================================================== Start building indices
+  // Start building indices
   std::vector<int64_t> cell_pids(num_raw_cells, 0);
   if (num_raw_cells > 1)
   {
-    //======================================== Build indices
+    // Build indices
     std::vector<int64_t> i_indices(num_raw_cells + 1, 0);
     std::vector<int64_t> j_indices;
     j_indices.reserve(num_raw_cells * avg_num_face_per_cell);
@@ -73,7 +72,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
 
     Chi::log.Log0Verbose1() << "Done building indices.";
 
-    //======================================== Copy to raw arrays
+    // Copy to raw arrays
     int64_t* i_indices_raw;
     int64_t* j_indices_raw;
     PetscMalloc(i_indices.size() * sizeof(int64_t), &i_indices_raw);
@@ -87,7 +86,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
 
     Chi::log.Log0Verbose1() << "Done copying to raw indices.";
 
-    //========================================= Create adjacency matrix
+    // Create adjacency matrix
     Mat Adj; // Adjacency matrix
     MatCreateMPIAdj(PETSC_COMM_SELF,
                     (int64_t)num_raw_cells,
@@ -99,7 +98,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
 
     Chi::log.Log0Verbose1() << "Done creating adjacency matrix.";
 
-    //========================================= Create partitioning
+    // Create partitioning
     MatPartitioning part;
     IS is, isg;
     MatPartitioningCreate(MPI_COMM_SELF, &part);
@@ -112,7 +111,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     ISPartitioningToNumbering(is, &isg);
     Chi::log.Log0Verbose1() << "Done building paritioned index set.";
 
-    //========================================= Get cell global indices
+    // Get cell global indices
     const int64_t* cell_pids_raw;
     ISGetIndices(is, &cell_pids_raw);
     for (size_t i = 0; i < num_raw_cells; ++i)

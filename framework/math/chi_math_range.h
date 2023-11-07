@@ -5,7 +5,6 @@
 
 namespace chi_math
 {
-//###################################################################
 /**Returns a range of number according to the logic of the parameters.
  *
  * \param start First number in the sequence.

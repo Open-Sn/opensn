@@ -36,7 +36,7 @@ CBC_SweepChunk::CBC_SweepChunk(std::vector<double>& destination_phi,
                std::make_unique<CBC_SweepDependencyInterface>()),
     cbc_sweep_depinterf_(dynamic_cast<CBC_SweepDependencyInterface&>(sweep_dependency_interface_))
 {
-  // ================================== Register kernels
+  // Register kernels
   RegisterKernel("FEMVolumetricGradTerm",
                  std::bind(&SweepChunk::KernelFEMVolumetricGradientTerm, this));
   RegisterKernel("FEMUpwindSurfaceIntegrals",
@@ -45,7 +45,7 @@ CBC_SweepChunk::CBC_SweepChunk(std::vector<double>& destination_phi,
   RegisterKernel("KernelPhiUpdate", std::bind(&SweepChunk::KernelPhiUpdate, this));
   RegisterKernel("KernelPsiUpdate", std::bind(&SweepChunk::KernelPsiUpdate, this));
 
-  // ================================== Setup callbacks
+  // Setup callbacks
   cell_data_callbacks_ = {};
 
   direction_data_callbacks_and_kernels_ = {Kernel("FEMVolumetricGradTerm")};
@@ -95,7 +95,7 @@ CBC_SweepChunk::SetCell(const chi_mesh::Cell* cell_ptr,
   cell_num_faces_ = cell_->faces_.size();
   cell_num_nodes_ = cell_mapping_->NumNodes();
 
-  // =============================================== Get Cell matrices
+  // Get Cell matrices
   const auto& fe_intgrl_values = unit_cell_matrices_[cell_local_id_];
   G_ = &fe_intgrl_values.G_matrix;
   M_ = &fe_intgrl_values.M_matrix;
@@ -134,18 +134,18 @@ CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
     sweep_dependency_interface_.angle_set_index_ = as_ss_idx;
     sweep_dependency_interface_.angle_num_ = direction_num_;
 
-    // ======================================== Reset right-handside
+    // Reset right-handside
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
       b_[gsg].assign(cell_num_nodes_, 0.0);
 
     ExecuteKernels(direction_data_callbacks_and_kernels_);
 
-    // ======================================== Update face orientations
+    // Update face orientations
     face_mu_values_.assign(cell_num_faces_, 0.0);
     for (int f = 0; f < cell_num_faces_; ++f)
       face_mu_values_[f] = omega_.Dot(cell_->faces_[f].normal_);
 
-    // ======================================== Surface integrals
+    // Surface integrals
     for (int f = 0; f < cell_num_faces_; ++f)
     {
       const auto& face = cell_->faces_[f];
@@ -162,8 +162,7 @@ CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
       ExecuteKernels(surface_integral_kernels_);
     } // for f
 
-    // ======================================== Looping over groups,
-    //                                          Assembling mass terms
+    // Looping over groups, assembling mass terms
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
     {
       g_ = gs_gi_ + gsg;
@@ -172,20 +171,19 @@ CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
 
       ExecuteKernels(mass_term_kernels_);
 
-      // ================================= Solve system
+      // Solve system
       chi_math::GaussElimination(Atemp_, b_[gsg], scint(cell_num_nodes_));
     }
 
-    // ======================================== Flux updates
+    // Flux updates
     ExecuteKernels(flux_update_kernels_);
 
-    // ======================================== Perform outgoing
-    //                                          surface operations
+    // Perform outgoing surface operations
     for (int f = 0; f < cell_num_faces_; ++f)
     {
       if (face_orientations[f] != FaceOrientation::OUTGOING) continue;
 
-      // ================================= Set flags and counters
+      // Set flags and counters
       const auto& face = cell_->faces_[f];
       const bool local = cell_transport_view_->IsFaceLocal(f);
       const bool boundary = not face.has_neighbor_;

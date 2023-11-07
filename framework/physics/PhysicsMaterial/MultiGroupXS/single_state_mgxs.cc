@@ -159,10 +159,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
                                "data, all fissionable cross sections must specify delayed "
                                "neutron data.");
 
-  //============================================================
   // Initialize the data
-  //============================================================
-
   num_groups_ = n_grps;
   num_precursors_ = n_precs;
   scattering_order_ = 0;
@@ -197,10 +194,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
     }
   }
 
-  //============================================================
   // Combine the data
-  //============================================================
-
   unsigned int precursor_count = 0;
   for (size_t x = 0; x < xsecs.size(); ++x)
   {
@@ -211,10 +205,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
     double ff_i = 0.0;
     if (xsecs[x]->IsFissionable()) ff_i = N_i / Nf_total;
 
-    //============================================================
     // Combine cross sections
-    //============================================================
-
     const auto& sig_t = xsecs[x]->SigmaTotal();
     const auto& sig_a = xsecs[x]->SigmaAbsorption();
     const auto& sig_f = xsecs[x]->SigmaFission();
@@ -244,9 +235,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
       }
     } // for g
 
-    //============================================================
     // Combine precursor data
-    //============================================================
 
     // Here, all precursors across all materials are stored. The decay
     // constants and delayed spectrum are what they are, however, some
@@ -272,10 +261,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
       precursor_count += xsecs[x]->NumPrecursors();
     }
 
-    //============================================================
     // Set inverse velocity data
-    //============================================================
-
     if (x == 0 && !xsecs[x]->InverseVelocity().empty()) inv_velocity_ = xsecs[x]->InverseVelocity();
     else if (xsecs[x]->InverseVelocity() != inv_velocity_)
       throw std::logic_error("Invalid cross sections encountered.\n"
@@ -283,9 +269,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
                              "structure. This implies that the inverse speeds for "
                              "each of the cross sections must be equivalent.");
 
-    //============================================================
     // Combine transfer matrices
-    //============================================================
 
     // This step is somewhat tricky. The cross sections aren't guaranteed
     // to have the same sparsity patterns and therefore simply adding them
@@ -317,9 +301,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
 {
   Clear();
 
-  //============================================================
   // Open Chi XS file
-  //============================================================
 
   Chi::log.Log() << "Reading Chi cross section file \"" << file_name << "\"\n";
 
@@ -331,9 +313,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
                              "\"" +
                              file_name + "\" in call to " + std::string(__FUNCTION__));
 
-  //============================================================
   // Define utility functions for parsing
-  //============================================================
 
   /// Lambda for reading group structure data.
   auto ReadGroupStructure = [](const std::string& keyword,
@@ -514,9 +494,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
   auto HasNonZero = [](const std::vector<double>& vec)
   { return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; }); };
 
-  //============================================================
   // Read the Chi XS file
-  //============================================================
 
   // TODO: Determine whether or not to allow specification of a
   //       data block without any data. Currently, if a data block
@@ -578,9 +556,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
       auto& f = file;
       auto& fw = word;
 
-      //============================================================
       // Group Structure Data
-      //============================================================
 
       if (fw == "GROUP_STRUCTURE_BEGIN")
         ReadGroupStructure("GROUP_STRUCTURE", e_bounds_, num_groups_, f, ls, ln);
@@ -606,9 +582,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
           inv_velocity_[g] = 1.0 / inv_velocity_[g];
       }
 
-      //==================================================
       // Cross Section Data
-      //==================================================
 
       if (fw == "SIGMA_T_BEGIN")
       {
@@ -660,9 +634,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
                                  "Negative values are not permitted.");
       } // if nu_sigma_f
 
-      //==================================================
       // Neutrons Per Fission
-      //==================================================
 
       if (fw == "NU_BEGIN")
       {
@@ -760,9 +732,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
         }
       } // if beta
 
-      //==================================================
       // Fission/Emission Spectra
-      //==================================================
 
       if (fw == "CHI_BEGIN")
       {
@@ -833,9 +803,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
         }
       } // if delayed chi
 
-      //==================================================
       // Delayed Neutron Precursor Data
-      //==================================================
 
       if (num_precursors_ > 0)
       {
@@ -870,9 +838,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
         }
       }
 
-      //==================================================
       // Transfer Data
-      //==================================================
 
       if (fw == "TRANSFER_MOMENTS_BEGIN")
         ReadTransferMatrices(
@@ -917,9 +883,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
   if (sigma_a_.empty()) ComputeAbsorption();
   ComputeDiffusionParameters();
 
-  //============================================================
   // Compute and check fission data
-  //============================================================
 
   // determine if the material is fissionable
   is_fissionable_ =
@@ -1156,9 +1120,7 @@ SingleStateMGXS::ComputeDiffusionParameters()
   const auto& S = transfer_matrices_;
   for (unsigned int g = 0; g < num_groups_; ++g)
   {
-    //============================================================
     // Determine transport correction
-    //============================================================
 
     double sig_1 = 0.0;
     if (S.size() > 1)
@@ -1176,9 +1138,7 @@ SingleStateMGXS::ComputeDiffusionParameters()
       } // for gp
     }   // if moment 1 available
 
-    //============================================================
     // Compute diffusion coefficient
-    //============================================================
 
     if (sig_1 >= sigma_t_[g])
     {
@@ -1193,9 +1153,7 @@ SingleStateMGXS::ComputeDiffusionParameters()
     // cap the value for when sig_t - sig_1 is near zero
     diffusion_coeff_[g] = std::fmin(1.0e12, 1.0 / 3.0 / (sigma_t_[g] - sig_1));
 
-    //============================================================
     // Determine within group scattering
-    //============================================================
 
     if (!S.empty())
     {
@@ -1209,9 +1167,7 @@ SingleStateMGXS::ComputeDiffusionParameters()
         }
     }
 
-    //============================================================
     // Compute removal cross section
-    //============================================================
 
     sigma_removal_[g] = std::max(0.0, sigma_t_[g] - sigma_s_gtog_[g]);
   } // for g

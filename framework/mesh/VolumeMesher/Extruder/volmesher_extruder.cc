@@ -16,7 +16,7 @@ namespace chi_mesh
 void
 VolumeMesherExtruder::CreateLocalNodes(MeshContinuum& template_grid, MeshContinuum& grid)
 {
-  //================================================== For each layer
+  // For each layer
   std::set<uint64_t> vertex_ids_with_local_scope;
   for (size_t iz = 0; iz < (vertex_layers_.size() - 1); iz++)
   {
@@ -41,8 +41,7 @@ VolumeMesherExtruder::CreateLocalNodes(MeshContinuum& template_grid, MeshContinu
     } // for template cell
   }   // for layer
 
-  //============================================= Now add all nodes
-  //                                              that are local or neighboring
+  // Now add all nodes that are local or neighboring
   uint64_t vid = 0;
   for (auto layer_z_level : vertex_layers_)
   {
@@ -68,31 +67,30 @@ VolumeMesherExtruder::Execute()
                  << " VolumeMesherExtruder executed. Memory in use = " << Chi::GetMemoryUsageInMB()
                  << " MB" << std::endl;
 
-  //================================================== Loop over all regions
+  // Loop over all regions
   Chi::log.Log0Verbose1() << "VolumeMesherExtruder: Processing Region" << std::endl;
 
-  //=========================================== Create new continuum
+  // Create new continuum
   auto grid = MeshContinuum::New();
   auto temp_grid = MeshContinuum::New();
 
   SetContinuum(grid);
   SetGridAttributes(DIMENSION_3 | EXTRUDED);
 
-  //================================== Setup layers
+  // Setup layers
   // populates vertex-layers
   Chi::log.Log0Verbose1() << "VolumeMesherExtruder: Setting up layers" << std::endl;
   SetupLayers();
 
-  //================================== Process templates
+  // Process templates
   if (template_type_ == TemplateType::UNPARTITIONED_MESH)
   {
     Chi::log.Log0Verbose1() << "VolumeMesherExtruder: Processing unpartitioned mesh" << std::endl;
 
-    //================================== Get node_z_incr
+    // Get node_z_incr
     node_z_index_incr_ = template_unpartitioned_mesh_->GetVertices().size();
 
-    //================================== Create baseline polygons in template
-    //                                   continuum
+    // Create baseline polygons in template continuum
     Chi::log.Log0Verbose1() << "VolumeMesherExtruder: Creating template cells" << std::endl;
     CreatePolygonCells(*template_unpartitioned_mesh_, temp_grid);
 
@@ -105,15 +103,14 @@ VolumeMesherExtruder::Execute()
 
   Chi::log.Log0Verbose1() << "VolumeMesherExtruder: Done creating local nodes" << std::endl;
 
-  //================================== Insert top and bottom boundary
-  //                                   id map
+  // Insert top and bottom boundary id map
   auto& grid_bndry_id_map = grid->GetBoundaryIDMap();
   zmax_bndry_id = grid->MakeBoundaryID("ZMAX");
   grid_bndry_id_map[zmax_bndry_id] = "ZMAX";
   zmin_bndry_id = grid->MakeBoundaryID("ZMIN");
   grid_bndry_id_map[zmin_bndry_id] = "ZMIN";
 
-  //================================== Create extruded item_id
+  // Create extruded item_id
   Chi::log.Log() << "VolumeMesherExtruder: Extruding cells" << std::endl;
   Chi::mpi.Barrier();
   ExtrudeCells(*temp_grid, *grid);
@@ -126,7 +123,7 @@ VolumeMesherExtruder::Execute()
 
   Chi::log.Log() << "VolumeMesherExtruder: Cells extruded = " << total_global_cells << std::endl;
 
-  //================================== Checking partitioning parameters
+  // Checking partitioning parameters
   if (options.partition_type != KBA_STYLE_XYZ)
   {
     Chi::log.LogAllError() << "Any partitioning scheme other than KBA_STYLE_XYZ is currently not"
@@ -150,7 +147,7 @@ VolumeMesherExtruder::Execute()
 
   Chi::log.LogAllVerbose1() << "Building local cell indices";
 
-  //================================== Print info
+  // Print info
   Chi::log.LogAllVerbose1() << "### LOCATION[" << Chi::mpi.location_id
                             << "] amount of local cells=" << grid->local_cells.size();
 
@@ -164,18 +161,18 @@ void
 VolumeMesherExtruder::ExtrudeCells(MeshContinuum& template_grid, MeshContinuum& grid)
 {
   const Vector3 khat(0.0, 0.0, 1.0);
-  //================================================== Start extrusion
+  // Start extrusion
   size_t num_global_cells = 0;
   for (size_t iz = 0; iz < (vertex_layers_.size() - 1); iz++)
   {
     for (const auto& template_cell : template_grid.local_cells)
     {
-      //========================================= Check template cell type
+      // Check template cell type
       if (template_cell.Type() != CellType::POLYGON)
         throw std::logic_error("Extruder::ExtrudeCells: "
                                "Template cell error. Not of base type POLYGON");
 
-      //========================================= Check cell not inverted
+      // Check cell not inverted
       {
         const auto& v0 = template_cell.centroid_;
         const auto& v1 = template_grid.vertices[template_cell.vertex_ids_[0]];
@@ -215,9 +212,7 @@ VolumeMesherExtruder::ExtrudeCells(MeshContinuum& template_grid, MeshContinuum& 
 void
 VolumeMesherExtruder::SetupLayers(int default_layer_count)
 {
-  //================================================== Create default layers if
-  // no
-  //                                                   input layers are provided
+  // Create default layers if no input layers are provided
   if (input_layers_.empty())
   {
     Chi::log.Log0Warning() << "VolumeMesherExtruder: No extrusion layers have been specified. "
@@ -284,8 +279,7 @@ VolumeMesherExtruder::HasLocalScope(const Cell& template_cell,
                                     const MeshContinuum& template_continuum,
                                     size_t z_level)
 {
-  //======================================== Check if the template cell
-  //                                         is in the current partition
+  // Check if the template cell is in the current partition
   {
     auto& centroid = template_cell.centroid_;
     auto projected_centroid = ProjectCentroidToLevel(centroid, z_level);
@@ -297,7 +291,7 @@ VolumeMesherExtruder::HasLocalScope(const Cell& template_cell,
   const size_t z_level_below = z_level - 1;
   const size_t z_level_above = z_level + 1;
 
-  //======================================== Build z-levels to search
+  // Build z-levels to search
   std::vector<size_t> z_levels_to_search;
   z_levels_to_search.reserve(3);
 
@@ -305,8 +299,7 @@ VolumeMesherExtruder::HasLocalScope(const Cell& template_cell,
   if (z_level != 0) z_levels_to_search.push_back(z_level_below);
   if (z_level != (last_z_level - 1)) z_levels_to_search.push_back(z_level_above);
 
-  //======================================== Search template cell's
-  //                                         lateral neighbors
+  // Search template cell's lateral neighbors
   const auto& vertex_subs = template_unpartitioned_mesh_->GetVertextCellSubscriptions();
   for (uint64_t vid : template_cell.vertex_ids_)
     for (uint64_t cid : vertex_subs[vid])
@@ -324,8 +317,7 @@ VolumeMesherExtruder::HasLocalScope(const Cell& template_cell,
       }
     } // for cid
 
-  //======================================== Search template cell's
-  //                                         longitudinal neighbors
+  // Search template cell's longitudinal neighbors
   for (size_t z : z_levels_to_search)
   {
     if (z == z_level) continue;
@@ -348,7 +340,7 @@ VolumeMesherExtruder::MakeExtrudedCell(const Cell& template_cell,
 {
   const size_t tc_num_verts = template_cell.vertex_ids_.size();
 
-  //========================================= Determine cell sub-type
+  // Determine cell sub-type
   CellType extruded_subtype;
   switch (template_cell.SubType())
   {
@@ -362,14 +354,14 @@ VolumeMesherExtruder::MakeExtrudedCell(const Cell& template_cell,
       extruded_subtype = CellType::POLYHEDRON;
   }
 
-  //========================================= Create polyhedron
+  // Create polyhedron
   auto cell = std::make_unique<Cell>(CellType::POLYHEDRON, extruded_subtype);
   cell->global_id_ = cell_global_id;
   // cell->local_id set when added to mesh
   cell->partition_id_ = partition_id;
   cell->centroid_ = ProjectCentroidToLevel(template_cell.centroid_, z_level);
 
-  //========================================= Populate cell v-indices
+  // Populate cell v-indices
   cell->vertex_ids_.reserve(2 * tc_num_verts);
   for (auto tc_vid : template_cell.vertex_ids_)
     cell->vertex_ids_.push_back(tc_vid + z_level * node_z_index_incr_);
@@ -377,7 +369,7 @@ VolumeMesherExtruder::MakeExtrudedCell(const Cell& template_cell,
   for (auto tc_vid : template_cell.vertex_ids_)
     cell->vertex_ids_.push_back(tc_vid + (z_level + 1) * node_z_index_incr_);
 
-  //========================================= Create side faces
+  // Create side faces
   for (auto& face : template_cell.faces_)
   {
     CellFace newFace;
@@ -419,8 +411,8 @@ VolumeMesherExtruder::MakeExtrudedCell(const Cell& template_cell,
     cell->faces_.push_back(newFace);
   } // for side faces
 
-  //========================================= Create top and bottom faces
-  //=============================== Bottom face
+  // Create top and bottom faces
+  // Bottom face
   {
     CellFace newFace;
     // Vertices
@@ -459,7 +451,7 @@ VolumeMesherExtruder::MakeExtrudedCell(const Cell& template_cell,
     cell->faces_.push_back(newFace);
   }
 
-  //=============================== Top face
+  // Top face
   {
     CellFace newFace;
     // Vertices

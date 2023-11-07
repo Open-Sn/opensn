@@ -27,7 +27,7 @@ chiDecomposeSurfaceMeshPxPy(lua_State* L)
 
   if (num_args != 3) LuaPostArgAmountError("chiDecomposeSurfaceMeshPxPy", 3, num_args);
 
-  //================================================== Extract arguments
+  // Extract arguments
   int surface_hndl = lua_tonumber(L, 1);
   int px = lua_tonumber(L, 2);
   int py = lua_tonumber(L, 3);

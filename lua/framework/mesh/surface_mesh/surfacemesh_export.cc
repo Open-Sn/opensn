@@ -26,7 +26,7 @@ chiSurfaceMeshExportToObj(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //============================================= Get arguments
+  // Get arguments
   int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError("chiSurfaceMeshExportObj", 2, num_args);
 
@@ -56,7 +56,7 @@ chiSurfaceMeshExportPolyFile(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //============================================= Get arguments
+  // Get arguments
   int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError("chiSurfaceMeshExportPolyFile", 2, num_args);
 

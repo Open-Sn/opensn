@@ -99,7 +99,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
 
   using namespace chi_math;
 
-  //================================================== Start power iterations
+  // Start power iterations
   primary_ags_solver->SetVerbosity(lbs_solver.Options().verbose_ags_iterations);
   int nit = 0;
   bool converged = false;
@@ -113,8 +113,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
     auto Sf_all_moments = q_moments_local;
     auto Sf = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
 
-    //====================================== This solves the inners for
-    // transport
+    // This solves the inners for transport
     // produces phi at l+1/2
     for (auto& wgs_solver : lbs_solver.GetWGSSolvers())
     {
@@ -133,7 +132,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
 
     auto phi0_lph_ip1 = lbs_solver.WGSCopyOnlyPhi0(front_gs, phi_new_local);
 
-    //====================================== Power Iteration Acceleration solve
+    // Power Iteration Acceleration solve
     VecDbl epsilon_k(phi0_l.size(), 0.0);
     auto epsilon_kp1 = epsilon_k;
 
@@ -202,18 +201,18 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
     const double production = lbs_solver.ComputeFissionProduction(phi_old_local);
     lbs_solver.ScalePhiVector(PhiSTLOption::PHI_OLD, lambda_kp1 / production);
 
-    //======================================== Recompute k-eigenvalue
+    // Recompute k-eigenvalue
     k_eff = lambda_kp1;
     double reactivity = (k_eff - 1.0) / k_eff;
 
-    //======================================== Check convergence, bookkeeping
+    // Check convergence, bookkeeping
     k_eff_change = fabs(k_eff - k_eff_prev) / k_eff;
     k_eff_prev = k_eff;
     nit += 1;
 
     if (k_eff_change < std::max(tolerance, 1.0e-12)) converged = true;
 
-    //======================================== Print iteration summary
+    // Print iteration summary
     if (lbs_solver.Options().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
@@ -229,7 +228,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
     if (converged) break;
   } // for k iterations
 
-  //================================================== Print summary
+  // Print summary
   Chi::log.Log() << "\n";
   Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
   Chi::log.Log() << "        Final change          :        " << std::setprecision(6)

@@ -24,7 +24,7 @@ chiLBSInitializeMaterials(lua_State* L)
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
 
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);

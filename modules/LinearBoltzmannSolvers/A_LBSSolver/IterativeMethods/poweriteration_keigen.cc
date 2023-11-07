@@ -45,7 +45,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
 
-  //================================================== Start power iterations
+  // Start power iterations
   primary_ags_solver->SetVerbosity(lbs_solver.Options().verbose_ags_iterations);
   int nit = 0;
   bool converged = false;
@@ -60,16 +60,16 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
 
     chi_math::Scale(q_moments_local, 1.0 / k_eff);
 
-    //============================ This solves the inners for transport
+    // This solves the inners for transport
     primary_ags_solver->Setup();
     primary_ags_solver->Solve();
 
-    //======================================== Recompute k-eigenvalue
+    // Recompute k-eigenvalue
     double F_new = lbs_solver.ComputeFissionProduction(phi_new_local);
     k_eff = F_new / F_prev * k_eff;
     double reactivity = (k_eff - 1.0) / k_eff;
 
-    //======================================== Check convergence, bookkeeping
+    // Check convergence, bookkeeping
     k_eff_change = fabs(k_eff - k_eff_prev) / k_eff;
     k_eff_prev = k_eff;
     F_prev = F_new;
@@ -77,7 +77,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
 
     if (k_eff_change < std::max(tolerance, 1.0e-12)) converged = true;
 
-    //======================================== Print iteration summary
+    // Print iteration summary
     if (lbs_solver.Options().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
@@ -93,7 +93,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
     if (converged) break;
   } // for k iterations
 
-  //================================================== Print summary
+  // Print summary
   Chi::log.Log() << "\n";
   Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
   Chi::log.Log() << "        Final change          :        " << std::setprecision(6)

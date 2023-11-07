@@ -217,7 +217,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
     throw std::logic_error(fname + ": Cannot be used with empty field-function"
                                    " list");
 
-  //============================================= Setup master and check slaves
+  // Setup master and check slaves
   const auto& master_ff_ptr = ff_list.front();
   const auto& master_ff = *master_ff_ptr;
 
@@ -227,12 +227,12 @@ FieldFunctionGridBased::ExportMultipleToVTK(
         throw std::logic_error(fname +
                                ": Cannot be used with field functions based on different grids.");
 
-  //============================================= Get grid
+  // Get grid
   const auto& grid = master_ff.sdm_->Grid();
 
   auto ugrid = chi_mesh::PrepareVtkUnstructuredGrid(grid);
 
-  //============================================= Upload cell/point data
+  // Upload cell/point data
   auto cell_data = ugrid->GetCellData();
   auto point_data = ugrid->GetPointData();
   for (const auto& ff_ptr : ff_list)
@@ -363,8 +363,7 @@ FieldFunctionGridBased::GetPointValue(const chi_mesh::Vector3& point) const
     }       // for cell
   }         // if in bounding box
 
-  //============================================= Communicate number of
-  //                                              point hits
+  // Communicate number of point hits
   size_t globl_num_point_hits;
   MPI_Allreduce(&local_num_point_hits, // sendbuf
                 &globl_num_point_hits, // recvbuf

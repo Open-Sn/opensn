@@ -116,7 +116,7 @@ LuaPopulateVectorFrom1DArray(const std::string& func_name,
 {
   LuaCheckTableValue(func_name, L, table_arg_index);
 
-  //=================================== Get the table as map
+  // Get the table as map
   std::map<int, double> vec_map;
   lua_pushnil(L);
   while (lua_next(L, table_arg_index) != 0)
@@ -131,7 +131,7 @@ LuaPopulateVectorFrom1DArray(const std::string& func_name,
     lua_pop(L, 1);
   }
 
-  //=================================== Populate vector
+  // Populate vector
   {
     const size_t vec_size = vec_map.size();
     vec.clear();

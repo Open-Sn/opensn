@@ -55,7 +55,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
     if (Chi::mpi.location_id == 0 and verbose)
       std::cout << "Sweep angle " << n << " " << omega_n.PrintStr() << std::endl;
 
-    //====================================== Determine sweep ordering
+    // Determine sweep ordering
     if (omega_n.x > 0.0) iorder = chi_math::Range<int>(0, Nx);
     else
       iorder = chi_math::Range<int>(Nx - 1, -1, -1);
@@ -68,7 +68,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
     else
       korder = chi_math::Range<int>(Nz - 1, -1, -1);
 
-    //====================================== Sweep cells
+    // Sweep cells
     IJKArrayDbl psi_ds_x(mesh_divs);
     IJKArrayDbl psi_ds_y(mesh_divs);
     IJKArrayDbl psi_ds_z(mesh_divs);

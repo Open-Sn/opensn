@@ -9,7 +9,6 @@
 class chi::DirectedGraph
 {
 public:
-  //============================================= Vertex accessor definition
   /**Allows semi-sane access to vertices even if
    * they are removed from the graph.*/
   class VertexAccessor
@@ -99,7 +98,6 @@ public:
       vertex_valid_flags_.clear();
     }
   };
-  //============================================= End of Vertex accessor def
 
   VertexAccessor vertices;
 

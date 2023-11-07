@@ -139,7 +139,7 @@ chiPhysicsTransportXSSet(lua_State* L)
     Chi::Exit(EXIT_FAILURE);
   }
 
-  //========================== Process operation
+  // Process operation
   using OpType = chi_physics::OperationType;
   if (operation_index == static_cast<int>(OpType::SIMPLEXS0))
   {
@@ -277,7 +277,7 @@ chiPhysicsTransportXSMakeCombined(lua_State* L)
   std::vector<std::pair<int, double>> combinations;
   combinations.reserve(table_len);
 
-  //======================================== Process table
+  // Process table
   for (int v = 0; v < table_len; ++v)
   {
     lua_pushnumber(L, v + 1);
@@ -309,12 +309,12 @@ chiPhysicsTransportXSMakeCombined(lua_State* L)
     lua_pop(L, 1); // pop off table
   }
 
-  //======================================== Print out table
+  // Print out table
   Chi::log.Log() << "Generating XS with following combination:";
   for (auto& elem : combinations)
     Chi::log.Log() << "  Element handle: " << elem.first << " scalar value: " << elem.second;
 
-  //======================================== Make the new cross section
+  // Make the new cross section
   auto new_xs = std::make_shared<chi_physics::SingleStateMGXS>();
 
   new_xs->MakeCombined(combinations);
@@ -371,7 +371,7 @@ chiPhysicsTransportXSSetCombined(lua_State* L)
   LuaCheckNilValue(__FUNCTION__, L, 2);
   LuaCheckTableValue(__FUNCTION__, L, 2);
 
-  //======================================== Process handle
+  // Process handle
   int xs_handle = lua_tonumber(L, 1);
 
   std::shared_ptr<chi_physics::SingleStateMGXS> xs;
@@ -387,7 +387,7 @@ chiPhysicsTransportXSSetCombined(lua_State* L)
     Chi::Exit(EXIT_FAILURE);
   }
 
-  //======================================== Process table
+  // Process table
   size_t table_len = lua_rawlen(L, 2);
 
   std::vector<std::pair<int, double>> combinations;
@@ -424,7 +424,7 @@ chiPhysicsTransportXSSetCombined(lua_State* L)
     lua_pop(L, 1); // pop off table
   }
 
-  //======================================== Print out table
+  // Print out table
   Chi::log.Log() << "Setting XS with following combination:";
   for (auto& elem : combinations)
     Chi::log.Log() << "  Element handle: " << elem.first << " scalar value: " << elem.second;
@@ -451,7 +451,7 @@ chiPhysicsTransportXSExportToChiTechFormat(lua_State* L)
   LuaCheckNilValue(__FUNCTION__, L, 1);
   LuaCheckNilValue(__FUNCTION__, L, 2);
 
-  //======================================== Process handle
+  // Process handle
   int handle = lua_tonumber(L, 1);
 
   std::shared_ptr<chi_physics::MultiGroupXS> xs;

@@ -52,7 +52,7 @@ FieldCopyOperation::FieldCopyOperation(const chi::InputParameters& params)
     to_field_handle_(params.GetParamValue<size_t>("to")),
     from_field_handle_(params.GetParamValue<size_t>("from"))
 {
-  //============================================= Get field functions
+  // Get field functions
   {
     auto to_base_ptr =
       Chi::GetStackItemPtr(Chi::field_function_stack, to_field_handle_, __FUNCTION__);
@@ -75,8 +75,7 @@ FieldCopyOperation::FieldCopyOperation(const chi::InputParameters& params)
                       "FieldFunctionGridBased");
   }
 
-  // ============================================ Check number of components
-  //                                              are compatible
+  // Check number of components are compatible
   const auto& user_supplied_params = params.ParametersAtAssignment();
 
   if (user_supplied_params.Has("to_components") and
@@ -115,7 +114,7 @@ FieldCopyOperation::FieldCopyOperation(const chi::InputParameters& params)
     }
   }
 
-  //============================================= Check grids are compatible
+  // Check grids are compatible
   ChiInvalidArgumentIf(std::addressof(to_ff_->GetSpatialDiscretization().Grid()) !=
                          std::addressof(from_ff_->GetSpatialDiscretization().Grid()),
                        "Currently the two field functions must operate on the "

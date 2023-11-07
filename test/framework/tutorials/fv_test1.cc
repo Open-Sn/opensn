@@ -29,13 +29,13 @@ chiSimTest01_FV(const chi::InputParameters&)
 {
   Chi::log.Log() << "Coding Tutorial 1";
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::spatial_discretization::FiniteVolume::New(grid);
   const auto& sdm = *sdm_ptr;
@@ -48,7 +48,7 @@ chiSimTest01_FV(const chi::InputParameters&)
   Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
   Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
   const auto N = static_cast<int64_t>(num_globl_dofs);
   Mat A;
@@ -64,7 +64,7 @@ chiSimTest01_FV(const chi::InputParameters&)
 
   chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
-  //============================================= Assemble the system
+  // Assemble the system
   Chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
@@ -117,7 +117,7 @@ chiSimTest01_FV(const chi::InputParameters&)
 
   Chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
   auto petsc_solver =
     chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,              // Matrix
@@ -127,16 +127,16 @@ chiSimTest01_FV(const chi::InputParameters&)
                                                         1.0e-6, // Relative residual tolerance
                                                         1000);  // Max iterations
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp, b, x);
 
   Chi::log.Log() << "Done solving";
 
-  //============================================= Extract PETSc vector
+  // Extract PETSc vector
   std::vector<double> field(num_local_dofs, 0.0);
   sdm.LocalizePETScVector(x, field, OneDofPerNode);
 
-  //============================================= Clean up
+  // Clean up
   KSPDestroy(&petsc_solver.ksp);
 
   VecDestroy(&x);
@@ -145,7 +145,7 @@ chiSimTest01_FV(const chi::InputParameters&)
 
   Chi::log.Log() << "Done cleanup";
 
-  //============================================= Create Field Function
+  // Create Field Function
   auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
     "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::SCALAR));
 

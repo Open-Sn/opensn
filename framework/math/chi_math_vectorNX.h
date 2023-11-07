@@ -98,7 +98,6 @@ struct VectorNX
     return *this;
   }
 
-  //=========================================== Addition
   /**Component-wise addition of two vectors.
    * \f$ \vec{w} = \vec{x} + \vec{y} \f$*/
   VectorNX operator+(const VectorNX& rhs) const
@@ -141,7 +140,6 @@ struct VectorNX
     return *this;
   }
 
-  //=========================================== Subtraction
   /**Component-wise subtraction.
    * \f$ \vec{w} = \vec{x} - \vec{y} \f$*/
   VectorNX operator-(const VectorNX& rhs) const
@@ -163,7 +161,6 @@ struct VectorNX
     return *this;
   }
 
-  //=========================================== Multiplication
   /**Vector component-wise multiplication by scalar.
    * \f$ \vec{w} = \vec{x} \alpha \f$*/
   VectorNX operator*(const NumberFormat value) const
@@ -206,7 +203,6 @@ struct VectorNX
     return *this;
   }
 
-  //=========================================== Division
   /**Vector component-wise division by scalar.
    * \f$ w_i = \frac{x_i}{\alpha} \f$*/
   VectorNX operator/(const NumberFormat value) const
@@ -249,14 +245,13 @@ struct VectorNX
     return *this;
   }
 
-  //=========================================== Element access
   /**Returns a copy of the value at the given index.*/
   NumberFormat operator[](int i) const { return elements[i]; }
 
   /**Returns a reference of the value at the given index.*/
   NumberFormat& operator()(int i) { return elements[i]; }
 
-  //=========================================== Tensor product
+  // Tensor product
   TensorRNX<2, N, NumberFormat> OTimes(const VectorNX<N, NumberFormat>& that) const
   {
     TensorRNX<2, N, NumberFormat> out_tensor;
@@ -267,7 +262,7 @@ struct VectorNX
     return out_tensor;
   }
 
-  //=========================================== Tensor dot product
+  // Tensor dot product
   VectorNX<N, NumberFormat> Dot(const TensorRNX<2, N, NumberFormat>& that) const
   {
     VectorNX<N, NumberFormat> new_vec;
@@ -277,7 +272,6 @@ struct VectorNX
     return new_vec;
   }
 
-  //=========================================== Operations
   /**Vector cross-product.
    * \f$ \vec{w} = \vec{x} \times \vec{y} \f$*/
   VectorNX<3, NumberFormat> Cross(const VectorNX<2, NumberFormat>& rhs)

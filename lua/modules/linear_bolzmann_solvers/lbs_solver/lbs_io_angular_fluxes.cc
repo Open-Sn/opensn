@@ -23,7 +23,7 @@ int
 chiLBSWriteGroupsetAngularFlux(lua_State* L)
 {
   const std::string fname = "chiLBSWriteGroupsetAngularFlux";
-  //============================================= Get arguments
+  // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
 
@@ -35,10 +35,10 @@ chiLBSWriteGroupsetAngularFlux(lua_State* L)
   const int grpset_index = lua_tonumber(L, 2);
   const std::string file_base = lua_tostring(L, 3);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
-  //============================================= Obtain pointer to groupset
+  // Obtain pointer to groupset
   lbs::LBSGroupset* groupset = nullptr;
   try
   {
@@ -72,7 +72,7 @@ int
 chiLBSReadGroupsetAngularFlux(lua_State* L)
 {
   const std::string fname = "chiLBSReadGroupsetAngularFlux";
-  //============================================= Get arguments
+  // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
 
@@ -84,10 +84,10 @@ chiLBSReadGroupsetAngularFlux(lua_State* L)
   const int grpset_index = lua_tonumber(L, 2);
   const std::string file_base = lua_tostring(L, 3);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
-  //============================================= Obtain pointer to groupset
+  // Obtain pointer to groupset
   lbs::LBSGroupset* groupset = nullptr;
   try
   {

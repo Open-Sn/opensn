@@ -36,7 +36,7 @@ DiscOrdTransientSolver::Initialize()
     chi::log.Log() << TextName() << buff;
   }
 
-  //======================================== Compute auxiliary vectors
+  // Compute auxiliary vectors
   fission_rate_local_.resize(grid_ptr_->local_cells.size(), 0.0);
   phi_prev_local_ = phi_old_local_;
   precursor_prev_local_ = precursor_new_local_;
@@ -54,7 +54,7 @@ DiscOrdTransientSolver::Initialize()
     chi::log.Log() << TextName() << buff;
   }
 
-  //================================================== Initialize source func
+  // Initialize source func
   auto src_function = std::make_shared<TransientSourceFunction>(*this, this->dt_, this->method);
 
   using namespace std::placeholders;
@@ -100,9 +100,7 @@ DiscOrdTransientSolver::Step()
 
   for (auto& groupset : groupsets_)
   {
-    //======================================== Converge the scattering source
-    //                                         with a fixed fission source
-    //                                         and temporal source
+    // Converge the scattering source with a fixed fission source and temporal source
     q_moments_local_.assign(q_moments_local_.size(), 0.0);
     auto sweep_chunk = SetTransientSweepChunk(groupset);
 
@@ -122,7 +120,7 @@ DiscOrdTransientSolver::Step()
     Chi::mpi.Barrier();
   }
 
-  //======================================== Compute t^{n+1} value
+  // Compute t^{n+1} value
   {
     const auto& BackwardEuler = chi_math::SteppingMethod::IMPLICIT_EULER;
     const auto& CrankNicolson = chi_math::SteppingMethod::CRANK_NICOLSON;
@@ -145,7 +143,7 @@ DiscOrdTransientSolver::Step()
 
   const double FR_new = ComputeFissionProduction(phi_new_local_);
 
-  //============================================= Print end of timestep
+  // Print end of timestep
   if (transient_options_.verbosity_level >= 1)
   {
     char buff[200];

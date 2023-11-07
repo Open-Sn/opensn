@@ -136,7 +136,7 @@ LagrangeBaseMapping::MakeVolumetricQuadraturePointData() const
   typedef std::vector<Vec3> VecVec3;
   const size_t num_qpoints = volume_quadrature_.qpoints_.size();
 
-  //=================================== Declare necessary vars
+  // Declare necessary vars
   std::vector<unsigned int> quadrature_point_indices;
   VecVec3 qpoints_xyz;
   std::vector<VecDbl> shape_value;
@@ -201,7 +201,7 @@ LagrangeBaseMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
   typedef std::vector<Vec3> VecVec3;
   const size_t num_qpoints = surface_quadrature.qpoints_.size();
 
-  //=================================== Declare necessary vars
+  // Declare necessary vars
   std::vector<unsigned int> quadrature_point_indices;
   VecVec3 qpoints_xyz;
   std::vector<VecDbl> shape_value;

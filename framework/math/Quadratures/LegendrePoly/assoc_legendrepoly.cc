@@ -18,13 +18,13 @@ chi_math::AssocLegendre(unsigned int ell, int m, double x)
 {
   if (abs(m) > ell) return 0.0;
 
-  //===== ell=0, m=0
+  // ell=0, m=0
   if (ell == 0) return 1.0;
 
-  //===== ell=1, m=0,
+  // ell=1, m=0,
   double Pn = x;
 
-  //===== ell=1, m=1
+  // ell=1, m=1
   double Pnpos = -sqrt(1.0 - x * x);
 
   if (ell == 1)

@@ -91,7 +91,7 @@ the header
 
 Next we add the following code:
 \code
-//============================================= Make ghosted vectors
+// Make ghosted vectors
 std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
 
 chi_math::VectorGhostCommunicator vgc(num_local_dofs,
@@ -263,7 +263,7 @@ Visualizing the gradient is conceptually simple. We simply create a
 field-function that will export all three the components of the gradient together.
 Then we use paraview to make arrow glyphs for visualization.
 \code
-//============================================= Create Field Function
+// Create Field Function
 auto ff_grad = std::make_shared<chi_physics::FieldFunction>(
   "GradPhi",
   sdm_ptr,
@@ -309,13 +309,13 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Coding Tutorial 2";
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::SpatialDiscretization_FV::New(grid_ptr);
   const auto& sdm = *sdm_ptr;
@@ -328,7 +328,7 @@ int main(int argc, char* argv[])
   chi::log.Log() << "Num local DOFs: " << num_local_dofs;
   chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
   const auto N = static_cast<int64_t>(num_globl_dofs);
   Mat A;
@@ -346,7 +346,7 @@ int main(int argc, char* argv[])
                                            nodal_nnz_in_diag,
                                            nodal_nnz_off_diag);
 
-  //============================================= Assemble the system
+  // Assemble the system
   chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
@@ -399,7 +399,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   chi::log.Log() << "Solving: ";
   auto petsc_solver =
     chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
@@ -410,16 +410,16 @@ int main(int argc, char* argv[])
       1.0e-6,          //Relative residual tolerance
       1000);            //Max iterations
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp,b,x);
 
   chi::log.Log() << "Done solving";
 
-  //============================================= Extract PETSc vector
+  // Extract PETSc vector
   std::vector<double> field(num_local_dofs, 0.0);
   sdm.LocalizePETScVector(x,field,OneDofPerNode);
 
-  //============================================= Clean up
+  // Clean up
   KSPDestroy(&petsc_solver.ksp);
 
   VecDestroy(&x);
@@ -428,7 +428,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Done cleanup";
 
-  //============================================= Create Field Function
+  // Create Field Function
   auto ff = std::make_shared<chi_physics::FieldFunction>(
     "Phi",
     sdm_ptr,
@@ -439,7 +439,7 @@ int main(int argc, char* argv[])
 
   ff->ExportToVTK("CodeTut2_FV");
 
-  //============================================= Make ghosted vectors
+  // Make ghosted vectors
   std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
 
   chi_math::VectorGhostCommunicator vgc(num_local_dofs,
@@ -450,7 +450,7 @@ int main(int argc, char* argv[])
 
   vgc.CommunicateGhostEntries(field_wg);
 
-  //============================================= Setup gradient unknown structure
+  // Setup gradient unknown structure
   chi_math::UnknownManager grad_uk_man(
     {chi_math::Unknown(chi_math::UnknownType::VECTOR_3)});
 
@@ -502,7 +502,7 @@ int main(int argc, char* argv[])
     grad_phi[zmap] = grad_phi_P.z;
   }//for cell
 
-  //============================================= Create Field Function
+  // Create Field Function
   auto ff_grad = std::make_shared<chi_physics::FieldFunction>(
     "GradPhi",
     sdm_ptr,

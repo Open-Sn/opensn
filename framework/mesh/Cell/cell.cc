@@ -131,7 +131,7 @@ int
 chi_mesh::CellFace::GetNeighborAssociatedFace(const chi_mesh::MeshContinuum& grid) const
 {
   const auto& cur_face = *this; // just for readability
-  //======================================== Check index validity
+  // Check index validity
   if (not cur_face.has_neighbor_)
   {
     std::stringstream outstr;
@@ -147,7 +147,7 @@ chi_mesh::CellFace::GetNeighborAssociatedFace(const chi_mesh::MeshContinuum& gri
   std::set<uint64_t> cfvids(cur_face.vertex_ids_.begin(),
                             cur_face.vertex_ids_.end()); // cur_face vertex ids
 
-  //======================================== Loop over adj cell faces
+  // Loop over adj cell faces
   int af = -1;
   for (const auto& adj_face : adj_cell.faces_)
   {
@@ -162,7 +162,7 @@ chi_mesh::CellFace::GetNeighborAssociatedFace(const chi_mesh::MeshContinuum& gri
     }
   }
 
-  //======================================== Check associated face validity
+  // Check associated face validity
   if (associated_face < 0)
   {
     std::stringstream outstr;

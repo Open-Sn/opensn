@@ -30,7 +30,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   const auto& k_l = nl_context_ptr->k_l;
   const auto& Sf = nl_context_ptr->Sf_;
 
-  //============================================= Lambdas
+  // Lambdas
   auto SetLBSFissionSource =
     [&active_set_source_function, &front_gs](const VecDbl& input, VecDbl& output)
   {
@@ -90,7 +90,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     return lbs_solver.ComputeFissionProduction(phi_temp);
   };
 
-  //============================================= Business end
+  // Business end
   using namespace chi_math;
 
   auto delta_phi = nl_context_ptr->PhiVecToSTLVec(phi);

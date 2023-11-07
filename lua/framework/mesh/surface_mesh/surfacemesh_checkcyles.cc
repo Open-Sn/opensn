@@ -55,13 +55,13 @@ chiComputeLoadBalancing(lua_State* L)
   int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError("chiComputeLoadBalancing", 3, num_args);
 
-  //======================================== Get reference surface mesh
+  // Get reference surface mesh
   int surf_handle = lua_tonumber(L, 1);
 
   auto& cur_surf =
     Chi::GetStackItem<chi_mesh::SurfaceMesh>(Chi::surface_mesh_stack, surf_handle, __FUNCTION__);
 
-  //======================================== Extract x-cuts
+  // Extract x-cuts
   if (!lua_istable(L, 2))
   {
     Chi::log.LogAllError() << "In call to chiComputeLoadBalancing: "
@@ -80,7 +80,7 @@ chiComputeLoadBalancing(lua_State* L)
     lua_pop(L, 1);
   }
 
-  //======================================== Extract y-cuts
+  // Extract y-cuts
   if (!lua_istable(L, 3))
   {
     Chi::log.LogAllError() << "In call to chiComputeLoadBalancing: "
@@ -99,7 +99,7 @@ chiComputeLoadBalancing(lua_State* L)
     lua_pop(L, 1);
   }
 
-  //======================================== Call compute balance
+  // Call compute balance
   std::stable_sort(x_cuts.begin(), x_cuts.end());
   std::stable_sort(y_cuts.begin(), y_cuts.end());
   cur_surf.ComputeLoadBalancing(x_cuts, y_cuts);
