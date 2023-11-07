@@ -16,7 +16,6 @@
 
 RegisterLuaFunctionAsIs(chiVolumeMesherExecute);
 
-// #############################################################################
 /** Executes the volume meshing pipeline.
 
 \ingroup LuaVolumeMesher

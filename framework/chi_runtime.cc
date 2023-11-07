@@ -80,7 +80,6 @@ const std::string Chi::run_time::command_line_help_string_ =
   "     --dump-object-registry      Dumps the object registry.\n"
   "\n\n\n";
 
-// ############################################### Argument parser
 /**Parses input arguments.
 \param argc int    Number of arguments supplied.
 \param argv char** Array of strings representing each argument.
@@ -172,7 +171,6 @@ Chi::run_time::ParseArguments(int argc, char** argv)
 #endif
 }
 
-// ############################################### Initialize ChiTech
 /**Initializes all necessary items for ChiTech.
 \param argc int    Number of arguments supplied.
 \param argv char** Array of strings representing each argument.
@@ -219,7 +217,6 @@ Chi::run_time::InitPetSc(int argc, char** argv)
   return 0;
 }
 
-// ############################################### Finalize ChiTech
 /**Finalizes ChiTech.
  * */
 void
@@ -244,7 +241,6 @@ Chi::Finalize()
   MPI_Finalize();
 }
 
-// ############################################### Interactive interface
 /**Runs the interactive chitech engine*/
 int
 Chi::RunInteractive(int argc, char** argv)
@@ -290,7 +286,6 @@ Chi::RunInteractive(int argc, char** argv)
   return 0;
 }
 
-// ############################################### Batch interface
 /**Runs ChiTech in pure batch mode. Start then finish.*/
 int
 Chi::RunBatch(int argc, char** argv)
@@ -346,7 +341,6 @@ Chi::RunBatch(int argc, char** argv)
   return error_code;
 }
 
-// ###################################################################
 /** Exits the program appropriately.*/
 void
 Chi::Exit(int error_code)
@@ -354,7 +348,6 @@ Chi::Exit(int error_code)
   MPI_Abort(mpi.comm, error_code);
 }
 
-// ###################################################################
 /** Gets the ChiTech-version string.*/
 std::string
 Chi::GetVersionStr()
@@ -362,7 +355,6 @@ Chi::GetVersionStr()
   return PROJECT_VERSION;
 }
 
-// ###################################################################
 /**Builds a `RegistryStatuses` structure*/
 chi::RegistryStatuses
 Chi::GetStatusOfRegistries()

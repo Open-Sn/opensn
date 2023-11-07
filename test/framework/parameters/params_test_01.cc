@@ -8,7 +8,6 @@
 namespace chi_unit_testsB
 {
 
-// ##################################################################
 RegisterChiObject(chi_unit_testsB, TestObject);
 
 chi::InputParameters
@@ -68,7 +67,6 @@ TestObject::TestObject(const chi::InputParameters& params)
                  << "solver_type=" << solver_type_;
 }
 
-// ##################################################################
 RegisterChiObject(chi_unit_testsB, TestSubObject);
 
 chi::InputParameters
@@ -95,7 +93,6 @@ TestSubObject::TestSubObject(const chi::InputParameters& params)
                  << "num_groups=" << num_groups_;
 }
 
-// ##################################################################
 RegisterChiObject(chi_unit_testsB, ChildTestObject);
 
 chi::InputParameters

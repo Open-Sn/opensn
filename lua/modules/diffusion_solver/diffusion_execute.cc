@@ -3,7 +3,6 @@
 
 #include "framework/chi_runtime.h"
 
-// #############################################################################
 /** Initialize the Diffusion solver.
  *
 \param SolverHandle int Handle to an existing diffusion solver.

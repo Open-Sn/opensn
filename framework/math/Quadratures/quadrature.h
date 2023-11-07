@@ -27,7 +27,6 @@ typedef chi_mesh::Vector3 QuadraturePointXYZ;
 class Quadrature;
 } // namespace chi_math
 
-// ######################################################### Class def
 /**Parent class for quadratures.*/
 class chi_math::Quadrature : public ChiObject
 {

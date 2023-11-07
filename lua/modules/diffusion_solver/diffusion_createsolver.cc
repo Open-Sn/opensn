@@ -7,7 +7,6 @@
 #include "framework/chi_runtime.h"
 #include "framework/logging/chi_log.h"
 
-// #############################################################################
 /** Creates a Diffusion solver.
 
 \return Handle int Handle to the created solver.

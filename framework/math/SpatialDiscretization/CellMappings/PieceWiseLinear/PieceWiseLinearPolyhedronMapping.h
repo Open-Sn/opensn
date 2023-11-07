@@ -29,9 +29,9 @@ public:
   finite_element::SurfaceQuadraturePointData
   MakeSurfaceQuadraturePointData(size_t face_index) const override;
 
-  // ############################################### Actual shape functions
-  //                                                 as function of cartesian
-  //                                                 coordinates
+  /**
+   * Actual shape functions as function of cartesian coordinates
+   */
   double ShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
 
   chi_mesh::Vector3 GradShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
@@ -42,10 +42,9 @@ public:
                        std::vector<chi_mesh::Vector3>& gradshape_values) const override;
 
 private:
-  // ################################################## Define standard
-  //                                                    tetrahedron linear shape
-  //                                                    functions
-  // 01a_reftet.cc
+  /**
+   * Define standard tetrahedron linear shape functions
+   */
   static double TetShape(uint32_t index, const chi_mesh::Vector3& qpoint, bool on_surface = false);
 
   static double TetGradShape_x(uint32_t index);

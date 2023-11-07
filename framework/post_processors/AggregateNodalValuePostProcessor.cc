@@ -40,7 +40,6 @@ AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(const InputPa
 {
 }
 
-// ##################################################################
 void
 AggregateNodalValuePostProcessor::Initialize()
 {
@@ -68,7 +67,6 @@ AggregateNodalValuePostProcessor::Initialize()
   initialized_ = true;
 }
 
-// ##################################################################
 void
 AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 {

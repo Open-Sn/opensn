@@ -6,7 +6,6 @@
 namespace chi_mesh::sweep_management
 {
 
-// ########################################################################
 /**Implementation of the Adams-Adams-Hawkins Flux data structure.*/
 class AAH_FLUDS : public FLUDS
 {

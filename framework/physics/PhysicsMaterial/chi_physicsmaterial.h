@@ -9,7 +9,6 @@
 namespace chi_physics
 {
 
-// ###################################################################
 /** Base class for materials used in physics simulations.*/
 class Material
 {

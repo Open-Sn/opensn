@@ -12,7 +12,6 @@ RegisterLuaFunctionAsIs(chiUnpartitionedMeshUploadVertex);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshUploadCell);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshFinalizeEmpty);
 
-// ###################################################################
 /**Uploads a vertex.
  *
 \param handle int Handle to mesh.
@@ -61,7 +60,6 @@ chiUnpartitionedMeshUploadVertex(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Uploads a cell
 
 \param handle int Handle to mesh.
@@ -217,7 +215,6 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Finalizes a mesh. This usually involves computing centroids and
  * establishing connectivity.
  *

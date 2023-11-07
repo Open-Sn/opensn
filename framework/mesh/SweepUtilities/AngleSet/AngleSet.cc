@@ -5,7 +5,6 @@
 namespace chi_mesh::sweep_management
 {
 
-// ###################################################################
 /**AngleSet constructor.*/
 AngleSet::AngleSet(size_t id,
                    size_t num_groups,
@@ -24,7 +23,6 @@ AngleSet::AngleSet(size_t id,
 {
 }
 
-// ###################################################################
 /**Returns the angleset's unique id.*/
 size_t
 AngleSet::GetID() const
@@ -32,7 +30,6 @@ AngleSet::GetID() const
   return id_;
 }
 
-// ###################################################################
 /**Returns a reference to the associated spds.*/
 const SPDS&
 AngleSet::GetSPDS() const
@@ -40,7 +37,6 @@ AngleSet::GetSPDS() const
   return spds_;
 }
 
-// ###################################################################
 /**Returns a reference to the associated fluds_.*/
 FLUDS&
 AngleSet::GetFLUDS()
@@ -48,7 +44,6 @@ AngleSet::GetFLUDS()
   return *fluds_;
 }
 
-// ###################################################################
 /**Return the reference group subset number.*/
 size_t
 AngleSet::GetRefGroupSubset() const
@@ -56,7 +51,6 @@ AngleSet::GetRefGroupSubset() const
   return ref_group_subset_;
 }
 
-// ###################################################################
 /**Returns the angle indices associated with this angleset.*/
 const std::vector<size_t>&
 AngleSet::GetAngleIndices() const
@@ -64,7 +58,6 @@ AngleSet::GetAngleIndices() const
   return angles_;
 }
 
-// ###################################################################
 /**Returns the angle indices associated with this angleset.*/
 std::map<uint64_t, AngleSet::SweepBndryPtr>&
 AngleSet::GetBoundaries()

@@ -8,7 +8,6 @@
 namespace chi_mesh::sweep_management
 {
 
-// ###################################################################
 /**Contains multiple levels*/
 class SPDS
 {

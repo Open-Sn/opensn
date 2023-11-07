@@ -115,7 +115,6 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const chi_mesh::Cell& cel
   return {internal_nodes, boundary_nodes};
 }
 
-// ###################################################################
 /**For each cell, for each face of that cell, for each node on that face,
  * maps to which local node on the adjacent cell that node position corresponds.
  *
@@ -209,7 +208,6 @@ chi_math::SpatialDiscretization::MakeInternalFaceNodeMappings(
   return cell_adj_mapping;
 }
 
-// ###################################################################
 /**Copy part of vector A to vector B. Suppose vector A's entries are
  * managed `chi_math::UnknownManager` A (`uk_manA`) and that the
  * entries of the vector B are managed by `chi_math::UnknownManager` B
@@ -275,7 +273,6 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
   }
 }
 
-// ###################################################################
 /**Develops a localized view of a petsc vector.*/
 void
 SpatialDiscretization::LocalizePETScVector(Vec petsc_vector,
@@ -287,7 +284,6 @@ SpatialDiscretization::LocalizePETScVector(Vec petsc_vector,
   chi_math::PETScUtils::CopyVecToSTLvector(petsc_vector, local_vector, num_local_dofs);
 }
 
-// ###################################################################
 /**Develops a localized view of a petsc vector.*/
 void
 SpatialDiscretization::LocalizePETScVectorWithGhosts(

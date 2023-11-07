@@ -15,7 +15,6 @@ RegisterLuaFunctionAsIs(chiSurfaceMeshCreate);
  * \ingroup LuaMesh
  */
 
-// #############################################################################
 /** Creates a new empty surface mesh.
 
 ### Example

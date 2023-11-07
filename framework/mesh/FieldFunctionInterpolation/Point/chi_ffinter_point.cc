@@ -7,7 +7,6 @@
 #include "framework/chi_runtime.h"
 #include "framework/mpi/chi_mpi.h"
 
-// ###################################################################
 /**Initializes the point interpolator.*/
 void
 chi_mesh::FieldFunctionInterpolationPoint::Initialize()
@@ -71,7 +70,6 @@ chi_mesh::FieldFunctionInterpolationPoint::Initialize()
     }
 }
 
-// ###################################################################
 /**Executes the point interpolator.*/
 void
 chi_mesh::FieldFunctionInterpolationPoint::Execute()
@@ -108,7 +106,6 @@ chi_mesh::FieldFunctionInterpolationPoint::Execute()
     point_value_ += node_dof_values[i] * shape_values[i];
 }
 
-// ###################################################################
 /**Gets the value of the field function evaluation at the point.*/
 double
 chi_mesh::FieldFunctionInterpolationPoint::GetPointValue() const

@@ -19,7 +19,6 @@ RegisterLuaConstantAsIs(VOLUMEMESHER_UNPARTITIONED, chi_data_types::Varying(6));
 RegisterLuaConstant(ExtruderTemplateType, SURFACE_MESH, chi_data_types::Varying(1));
 RegisterLuaConstant(ExtruderTemplateType, UNPARTITIONED_MESH, chi_data_types::Varying(2));
 
-// #############################################################################
 /** Creates a new volume mesher.
  *
 \param Type int Volume Remesher type.

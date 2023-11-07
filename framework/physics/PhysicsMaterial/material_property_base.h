@@ -15,7 +15,6 @@ enum class PropertyType
   ISOTROPIC_MG_SOURCE = 11
 };
 
-// ###################################################################
 /** Base class for material properties.*/
 class MaterialProperty
 {

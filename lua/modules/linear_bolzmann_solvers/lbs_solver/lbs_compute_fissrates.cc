@@ -5,7 +5,6 @@
 namespace lbs::common_lua_utils
 {
 
-// ###################################################################
 /**Computes and returns the fission rate.
  *
 \param SolverIndex int Handle to the solver maintaining the information.

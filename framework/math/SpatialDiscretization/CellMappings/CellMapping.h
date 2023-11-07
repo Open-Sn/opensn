@@ -5,7 +5,6 @@
 #include <vector>
 #include <functional>
 
-// ################################################################### Fwd
 // Decls.
 namespace chi_mesh
 {
@@ -22,7 +21,6 @@ class SurfaceQuadraturePointData;
 
 namespace chi_math
 {
-// ################################################################### Class def
 /**Base class for all cell mappings.
  * \ingroup doc_CellMappings*/
 class CellMapping

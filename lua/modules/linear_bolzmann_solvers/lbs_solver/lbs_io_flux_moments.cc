@@ -6,7 +6,6 @@
 namespace lbs::common_lua_utils
 {
 
-// ###################################################################
 /**Writes the flux-moments of a LBS solution to file (phi_old_local).
 
 \param SolverIndex int Handle to the solver for which the group
@@ -38,7 +37,6 @@ chiLBSWriteFluxMoments(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Creates scattered source-moments, based on a LBS solution, and writes them
  * to file.
 
@@ -72,7 +70,6 @@ chiLBSCreateAndWriteSourceMoments(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Reads flux-moments from a file and creates a scattering source from these
  * moments to be used instead of a regular material/boundary source.
 
@@ -123,7 +120,6 @@ chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Reads the source-moments from a file to a specific
 ext_src_moments_local-vector
  * to be used instead of a regular material/boundary source.
@@ -168,7 +164,6 @@ chiLBSReadSourceMoments(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Reads flux-moments from a file to phi_old_local (the initial flux solution).
 
 \param SolverIndex int Handle to the solver for which the group

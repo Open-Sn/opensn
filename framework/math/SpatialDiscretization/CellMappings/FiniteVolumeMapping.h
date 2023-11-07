@@ -8,7 +8,6 @@
 
 #include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-// ######################################################### Class def
 namespace chi_math::cell_mapping
 {
 

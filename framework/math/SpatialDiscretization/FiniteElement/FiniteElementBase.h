@@ -4,7 +4,6 @@
 #include "framework/math/UnknownManager/unknown_manager.h"
 #include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 
-// ###################################################################
 namespace chi_math::spatial_discretization
 {
 /**Base Finite Element spatial discretization class.

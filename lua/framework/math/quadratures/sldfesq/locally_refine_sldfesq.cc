@@ -10,7 +10,6 @@
 
 RegisterLuaFunctionAsIs(chiLocallyRefineSLDFESQAngularQuadrature);
 
-// ###################################################################
 /** Applies a local refinement of angles.
 \param handle int. Handle to the reference quadrature.
 \param reference_direction vec3 Reference vector. \f$ \vec{r} \f$

@@ -18,7 +18,6 @@ RegisterLuaConstantAsIs(LINE, chi_data_types::Varying(2));
 RegisterLuaConstantAsIs(VOLUME, chi_data_types::Varying(3));
 RegisterLuaConstantAsIs(POINT, chi_data_types::Varying(4));
 
-// #############################################################################
 /** Creates a new field function interpolation.
  *
 \param FFITypeIndex int Type of field function interpolation.

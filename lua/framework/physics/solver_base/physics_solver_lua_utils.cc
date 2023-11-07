@@ -24,7 +24,6 @@ RegisterLuaFunctionAsIs(chiSolverGetFieldFunctionList);
 RegisterLuaFunctionAsIs(chiSolverGetInfo);
 RegisterLuaFunctionAsIs(chiSolverSetProperties);
 
-// #############################################################################
 /**Generic lua routine for the creation of solvers.
  * \param params ParameterBlock. A single block with at least one field
  *                   \"type\", which contains a registered solver type.
@@ -56,7 +55,6 @@ chiSolverCreate(lua_State* L)
   return 1;
 }
 
-// #############################################################################
 /** Initializes the solver at the given handle.
 
 \param solver_handle int Handle to the solver.
@@ -82,7 +80,6 @@ chiSolverInitialize(lua_State* L)
   return 0;
 }
 
-// #############################################################################
 /** Executes the solver at the given handle.
 
 \param solver_handle int Handle to the solver.
@@ -108,7 +105,6 @@ chiSolverExecute(lua_State* L)
   return 0;
 }
 
-// #############################################################################
 /** Performs a single timestep for the solver at the given handle.
 
 \param solver_handle int Handle to the solver.
@@ -134,7 +130,6 @@ chiSolverStep(lua_State* L)
   return 0;
 }
 
-// #############################################################################
 /** Advances the time values of the solver at the given handle.
 
 \param solver_handle int Handle to the solver.
@@ -160,7 +155,6 @@ chiSolverAdvance(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /** Sets a basic option of a solver.
 
 \param solver_handle int Handle to the reference solver.
@@ -235,7 +229,6 @@ chiSolverSetBasicOption(lua_State* L)
   return 0;
 }
 
-// #############################################################################
 /** Returns the text name of the solver.
 
 \param solver_handle int Handle to the solver.
@@ -262,7 +255,6 @@ chiSolverGetName(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Obtains a named list of the field functions associated with a solver.
 
 \param SolverHandle int A handle to the reference solver.
@@ -311,7 +303,6 @@ chiSolverGetFieldFunctionList(lua_State* L)
   return 2;
 }
 
-// #############################################################################
 /** Returns arbitrary info specific for each solver.
 
 \param solver_handle int Handle to the solver.

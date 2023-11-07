@@ -7,7 +7,6 @@
 
 #include "framework/mpi/chi_mpi.h"
 
-// ###################################################################
 /**Customized monitor for PETSc Krylov sub-space solvers.*/
 PetscErrorCode
 chi_diffusion::KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* monitordestroy)
@@ -32,7 +31,6 @@ chi_diffusion::KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* mo
   return 0;
 }
 
-// ###################################################################
 /**Customized convergence test.*/
 PetscErrorCode
 chi_diffusion::DiffusionConvergenceTestNPT(

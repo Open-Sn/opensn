@@ -10,7 +10,6 @@
 
 RegisterLuaFunctionAsIs(chiOptimizeAngularQuadratureForPolarSymmetry);
 
-// ###################################################################
 /**Optimizes the indicated angular quadrature for polar symmetry.
  *
 \param handle        int. Handle to the quadrature to be optimized.

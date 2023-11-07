@@ -5,7 +5,6 @@
 #include <memory>
 #include <array>
 
-// ################################################################### Fwd decls
 namespace chi_mesh::sweep_management
 {
 class SweepBoundary;

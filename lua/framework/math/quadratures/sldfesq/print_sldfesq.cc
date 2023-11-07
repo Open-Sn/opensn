@@ -12,7 +12,6 @@
 
 RegisterLuaFunctionAsIs(chiPrintToPythonSLDFESQAngularQuadrature);
 
-// ###################################################################
 /** Outputs the quadrature information to python format.
 \param handle int Handle to the reference quadrature.
 \param file_name_prefix string Prefix to be used in front of file.

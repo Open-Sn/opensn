@@ -2,7 +2,6 @@
 
 #include "framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
 
-// ###################################################################
 /**Manages the workstages of a single angleset group.*/
 class chi_mesh::sweep_management::AngleSetGroup
 {

@@ -6,7 +6,6 @@
 
 #include "framework/math/SpatialDiscretization/CellMappings/CellMapping.h"
 
-// ###################################################################
 namespace chi_math::cell_mapping
 {
 /** Base class for all cell piece-wise linear cell-mappings.

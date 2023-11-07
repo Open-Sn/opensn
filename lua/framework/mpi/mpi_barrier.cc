@@ -9,7 +9,6 @@ namespace chi_mpi_utils
 
 RegisterLuaFunctionAsIs(chiMPIBarrier);
 
-// #############################################################################
 /** Blocks until all processes in the communicator have reached this routine.
 
 \ingroup chiMPI

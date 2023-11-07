@@ -748,7 +748,6 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const chi_mesh::Cell& cell, const S
         int locJ = face.GetNeighborPartitionID(grid);
         int prelocI = spds.MapLocJToPrelocI(locJ);
 
-        // ###########################################################
         if (prelocI >= 0)
         {
           //============================== Find the cell in prelocI cell views
@@ -830,7 +829,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const chi_mesh::Cell& cell, const S
           nonlocal_inc_face_prelocI_slot_dof.push_back(inc_face_prelocI_info);
           delayed_nonlocal_inc_face_prelocI_slot_dof.push_back(empty_delayed_info);
         } // If not delayed predecessor
-        // ###########################################################
+
         else
         {
           int delayed_preLocI = abs(prelocI) - 1;

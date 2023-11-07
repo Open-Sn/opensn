@@ -2,7 +2,6 @@
 
 #include "framework/math/Quadratures/quadrature_gausslegendre.h"
 
-// ###################################################################
 /**Initialzes a set of points for a quadrature integration over
  * the volume of a hexahedron.*/
 chi_math::QuadratureHexahedron::QuadratureHexahedron(QuadratureOrder order) : Quadrature(order)

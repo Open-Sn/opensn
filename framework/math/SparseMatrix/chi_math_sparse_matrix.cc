@@ -6,7 +6,6 @@
 #include <iomanip>
 #include <algorithm>
 
-// ###################################################################
 /**Constructor with number of rows and columns constructor.*/
 chi_math::SparseMatrix::SparseMatrix(size_t num_rows, size_t num_cols)
   : row_size_(num_rows), col_size_(num_cols)
@@ -15,7 +14,6 @@ chi_math::SparseMatrix::SparseMatrix(size_t num_rows, size_t num_cols)
   rowI_indices_.resize(num_rows, std::vector<size_t>());
 }
 
-// ###################################################################
 /**Copy constructor.*/
 chi_math::SparseMatrix::SparseMatrix(const chi_math::SparseMatrix& in_matrix)
   : row_size_(in_matrix.NumRows()), col_size_(in_matrix.NumCols())
@@ -30,7 +28,6 @@ chi_math::SparseMatrix::SparseMatrix(const chi_math::SparseMatrix& in_matrix)
   }
 }
 
-// ###################################################################
 /**Inserts a value into the matrix.*/
 void
 chi_math::SparseMatrix::Insert(size_t i, size_t j, double value)
@@ -60,7 +57,6 @@ chi_math::SparseMatrix::Insert(size_t i, size_t j, double value)
   }
 }
 
-// ###################################################################
 /**Inserts-Adds a value into the matrix with duplicate check.*/
 void
 chi_math::SparseMatrix::InsertAdd(size_t i, size_t j, double value)
@@ -90,7 +86,6 @@ chi_math::SparseMatrix::InsertAdd(size_t i, size_t j, double value)
   }
 }
 
-// ###################################################################
 /**Sets the diagonal of the matrix using a vector.*/
 void
 chi_math::SparseMatrix::SetDiagonal(const std::vector<double>& diag)
@@ -125,7 +120,6 @@ chi_math::SparseMatrix::SetDiagonal(const std::vector<double>& diag)
   } // for i
 }
 
-// ###################################################################
 /**Returns the value in the matrix at the given location. This
  * is a rather inefficient routine. Use the columns and values
  * rather than directly this function.*/
@@ -154,7 +148,6 @@ chi_math::SparseMatrix::ValueIJ(size_t i, size_t j) const
   return retval;
 }
 
-// ###################################################################
 /**Sorts the column indices of each row for faster lookup.*/
 void
 chi_math::SparseMatrix::Compress()
@@ -199,7 +192,6 @@ chi_math::SparseMatrix::Compress()
   }
 }
 
-// ###################################################################
 /**Prints the sparse matrix to string.*/
 std::string
 chi_math::SparseMatrix::PrintStr() const
@@ -227,7 +219,6 @@ chi_math::SparseMatrix::PrintStr() const
   return out.str();
 }
 
-// ###################################################################
 /**Constructor with number of rows constructor.*/
 void
 chi_math::SparseMatrix::CheckInitialized() const
@@ -239,7 +230,6 @@ chi_math::SparseMatrix::CheckInitialized() const
   }
 }
 
-// ###################################################################
 //  Iterator routines
 namespace chi_math
 {

@@ -202,7 +202,6 @@ chi_data_types::Varying::CheckTypeMatch(const VaryingDataType type_A,
                            VaryingDataTypeStringName(type_B_required));
 }
 
-// ###################################################################
 // Constructors
 /**Constructor for an arbitrary sequence of bytes value.*/
 chi_data_types::Varying::Varying(const std::vector<std::byte>& value)
@@ -246,7 +245,6 @@ chi_data_types::Varying::operator=(const Varying& other)
   return *this;
 }
 
-// ###################################################################
 //  Assignments
 /**Assigns an arbitrary sequence of bytes value.*/
 chi_data_types::Varying&
@@ -266,7 +264,6 @@ chi_data_types::Varying::operator=(const std::string& value)
   return *this;
 }
 
-// ###################################################################
 //  Get values
 /**Returns the string value if valid. Otherwise throws std::logic_error.*/
 std::string
@@ -304,7 +301,6 @@ chi_data_types::Varying::FloatValue() const
   return data_->FloatValue();
 }
 
-// ###################################################################
 /**Returns the raw byte size associated with the type.*/
 size_t
 chi_data_types::Varying::ByteSize() const
@@ -312,7 +308,6 @@ chi_data_types::Varying::ByteSize() const
   return data_->Size();
 }
 
-// ###################################################################
 /**Returns a string value for the value.*/
 std::string
 chi_data_types::Varying::PrintStr(bool with_type /*=false*/) const
@@ -331,7 +326,6 @@ chi_data_types::Varying::PrintStr(bool with_type /*=false*/) const
   return outstr.str();
 }
 
-// ###################################################################
 /**Stream operator*/
 std::ostream&
 operator<<(std::ostream& outstr, const chi_data_types::Varying& value)

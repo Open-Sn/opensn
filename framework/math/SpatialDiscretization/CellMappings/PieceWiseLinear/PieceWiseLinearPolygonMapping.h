@@ -48,9 +48,9 @@ public:
                        std::vector<chi_mesh::Vector3>& gradshape_values) const override;
 
 private:
-  // ################################################## Define standard
-  //                                                    triangle linear shape
-  //                                                    functions
+  /**
+   * Define standard triangle linear shape functions
+   */
   static double TriShape(uint32_t index, const chi_mesh::Vector3& qpoint, bool on_surface = false);
 
   /**

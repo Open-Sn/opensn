@@ -10,7 +10,6 @@ namespace chi
 class DirectedGraph;
 }
 
-// ###################################################################
 namespace chi_mesh
 {
 namespace sweep_management

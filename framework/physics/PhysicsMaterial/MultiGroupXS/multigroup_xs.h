@@ -6,7 +6,6 @@
 namespace chi_physics
 {
 
-// ######################################################################
 class MultiGroupXS : public MaterialProperty
 {
 public:

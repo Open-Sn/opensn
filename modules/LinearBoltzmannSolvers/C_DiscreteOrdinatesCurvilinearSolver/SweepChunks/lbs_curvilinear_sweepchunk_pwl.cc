@@ -8,7 +8,6 @@
 namespace lbs
 {
 
-// ##################################################################
 /**Constructor.*/
 SweepChunkPWLRZ::SweepChunkPWLRZ(
   const chi_mesh::MeshContinuum& grid,
@@ -86,7 +85,6 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
     std::bind(&SweepChunkPWLRZ::PostCellDirSweepCallback, this));
 }
 
-// ##################################################################
 /**Cell data callback.*/
 void
 SweepChunkPWLRZ::CellDataCallback()
@@ -96,7 +94,6 @@ SweepChunkPWLRZ::CellDataCallback()
   Maux_ = &fe_intgrl_values_secondary.M_matrix;
 }
 
-// ##################################################################
 /**Direction data callback.*/
 void
 SweepChunkPWLRZ::DirectionDataCallback()
@@ -115,7 +112,6 @@ SweepChunkPWLRZ::DirectionDataCallback()
     curvilinear_product_quadrature->GetStreamingOperatorFactor()[direction_num_];
 }
 
-// ##################################################################
 /**Applies diamond differencing on azimuthal directions.*/
 void
 SweepChunkPWLRZ::PostCellDirSweepCallback()
@@ -130,7 +126,6 @@ SweepChunkPWLRZ::PostCellDirSweepCallback()
   }
 }
 
-// ##################################################################
 /**Assembles the volumetric gradient term.*/
 void
 SweepChunkPWLRZ::KernelFEMRZVolumetricGradientTerm()
@@ -148,7 +143,6 @@ SweepChunkPWLRZ::KernelFEMRZVolumetricGradientTerm()
     }
 }
 
-// ##################################################################
 /**Performs the integral over the surface of a face.*/
 void
 SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals()

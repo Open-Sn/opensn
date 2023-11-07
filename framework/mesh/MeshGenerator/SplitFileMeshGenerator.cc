@@ -21,7 +21,6 @@ namespace chi_mesh
 
 RegisterChiObject(chi_mesh, SplitFileMeshGenerator);
 
-// ##################################################################
 chi::InputParameters
 SplitFileMeshGenerator::GetInputParameters()
 {
@@ -59,7 +58,6 @@ SplitFileMeshGenerator::GetInputParameters()
   return params;
 }
 
-// ##################################################################
 SplitFileMeshGenerator::SplitFileMeshGenerator(const chi::InputParameters& params)
   : MeshGenerator(params),
     num_parts_(params.GetParamValue<int>("num_partitions")),
@@ -70,7 +68,6 @@ SplitFileMeshGenerator::SplitFileMeshGenerator(const chi::InputParameters& param
 {
 }
 
-// ##################################################################
 void
 SplitFileMeshGenerator::Execute()
 {
@@ -128,7 +125,6 @@ SplitFileMeshGenerator::Execute()
   Chi::mpi.Barrier();
 }
 
-// ##################################################################
 void
 SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
                                        const UnpartitionedMesh& umesh,
@@ -303,7 +299,6 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
   } // for p
 }
 
-// ##################################################################
 void
 SplitFileMeshGenerator::SerializeCell(const UnpartitionedMesh::LightWeightCell& cell,
                                       chi_data_types::ByteArray& serial_buffer)

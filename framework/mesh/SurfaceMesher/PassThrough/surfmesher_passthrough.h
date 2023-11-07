@@ -2,7 +2,6 @@
 
 #include "framework/mesh/SurfaceMesher/surfacemesher.h"
 
-// ######################################################### Class def
 /**Surface mesher that will not modify the mesh.
 Meant for loading 2D meshes and just connecting boundaries
 to elements.*/

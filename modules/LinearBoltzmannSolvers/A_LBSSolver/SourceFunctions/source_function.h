@@ -12,7 +12,6 @@ namespace lbs
 class LBSSolver;
 class LBSGroupset;
 
-// ###################################################################
 /**Implements a customizable source function using virtual methods.
  * This base class will function well for steady simulations and kEigenvalue
  * simulations. It needs some customization for adjoint and transient.*/

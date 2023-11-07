@@ -15,7 +15,6 @@
 
 RegisterLuaFunctionAsIs(chiFFInterpolationGetValue);
 
-// #############################################################################
 /** Gets the value(s) associated with an interpolation provided the
  * interpolation type has an associated value.
  *

@@ -7,7 +7,7 @@
 #include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
 #ifdef OPENSN_WITH_LUA
-// ###################################################################
+
 /**Calls a lua function with xyz coordinates.
  * \param L The lua state.
  * \param lua_func_name The name used to define this lua function in the lua
@@ -56,7 +56,6 @@ fv_diffusion::Solver::CallLua_iXYZFunction(lua_State* L,
 }
 #endif
 
-// ###################################################################
 /**Updates the field functions with the latest data.*/
 void
 fv_diffusion::Solver::UpdateFieldFunctions()

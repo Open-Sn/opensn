@@ -27,7 +27,6 @@ enum class CellType
 
 std::string CellTypeName(CellType type);
 
-// ######################################################### Class def
 /** In this paradigm a face is an object which largely
  * is considered to be planar (meaning all the vertices
  * lay in the same plane).*/
@@ -57,7 +56,6 @@ public:
   void RecomputeCentroid(const chi_mesh::MeshContinuum& grid);
 };
 
-// ######################################################### Class def
 /**Generic mesh cell object*/
 class Cell
 {

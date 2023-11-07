@@ -9,7 +9,6 @@
 
 RegisterLuaFunctionAsIs(chiFFInterpolationExportPython);
 
-// ###################################################################
 /** Export interpolation to python line,contour plot depending on the
  * type of interpolation.
  *

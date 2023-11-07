@@ -232,7 +232,6 @@ TransientSolver::GetInfo(const chi::ParameterBlock& params) const
     ChiInvalidArgument("Unsupported info name \"" + param_name + "\".");
 }
 
-// ##################################################################
 /**Returns the population at the previous time step.*/
 double
 TransientSolver::PopulationPrev() const
@@ -280,7 +279,6 @@ TransientSolver::SolutionNew() const
   return x_tp1_.elements_;
 }
 
-// ##################################################################
 /**Sets the value of rho.*/
 void
 TransientSolver::SetRho(double value)

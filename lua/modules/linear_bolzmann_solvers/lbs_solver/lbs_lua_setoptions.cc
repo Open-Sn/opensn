@@ -9,7 +9,6 @@
 namespace lbs::common_lua_utils
 {
 
-// ##################################################################
 RegisterWrapperFunction(/*namespace_in_lua=*/lbs,
                         /*name_in_lua=*/SetOptions,
                         /*syntax_function=*/GetSyntax_SetOptions,

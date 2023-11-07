@@ -13,7 +13,6 @@ PhysicsEventPublisher::PhysicsEventPublisher() : chi::EventPublisher("Physics")
 {
 }
 
-// ###################################################################
 /**Access to the singleton*/
 PhysicsEventPublisher&
 PhysicsEventPublisher::GetInstance()
@@ -22,7 +21,6 @@ PhysicsEventPublisher::GetInstance()
   return singleton;
 }
 
-// ###################################################################
 void
 PhysicsEventPublisher::PublishEvent(const chi::Event& event)
 {
@@ -31,7 +29,6 @@ PhysicsEventPublisher::PublishEvent(const chi::Event& event)
   chi::SystemWideEventPublisher::GetInstance().PublishEvent(event);
 }
 
-// ###################################################################
 void
 PhysicsEventPublisher::SolverInitialize(Solver& solver)
 {
@@ -57,7 +54,6 @@ PhysicsEventPublisher::SolverInitialize(Solver& solver)
   }
 }
 
-// ###################################################################
 void
 PhysicsEventPublisher::SolverExecute(Solver& solver)
 {
@@ -82,7 +78,6 @@ PhysicsEventPublisher::SolverExecute(Solver& solver)
   }
 }
 
-// ###################################################################
 void
 PhysicsEventPublisher::SolverStep(Solver& solver)
 {
@@ -107,7 +102,6 @@ PhysicsEventPublisher::SolverStep(Solver& solver)
   }
 }
 
-// ###################################################################
 void
 PhysicsEventPublisher::SolverAdvance(Solver& solver)
 {

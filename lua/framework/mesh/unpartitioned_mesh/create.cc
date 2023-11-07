@@ -20,7 +20,6 @@ RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromWavefrontOBJ);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromMshFormat);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromExodusII);
 
-// ###################################################################
 /**Creates an empty unpartitioned mesh. An empty unpartitioned mesh
  * is meant to be manipulated with calls to chiUnpartitionedMeshUploadVertex()
  * and chiUnpartitionedMeshUploadCell(). It essentially supports building a mesh
@@ -47,7 +46,6 @@ chiCreateEmptyUnpartitionedMesh(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Destroy an unpartitioned mesh. This routine should be called for
  * memory sensitive simulations because each process will have a full
  * copy of this data.
@@ -84,7 +82,6 @@ chiDestroyUnpartitionedMesh(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Creates an unpartitioned mesh from VTK Unstructured mesh files.
 
 \param file_name char Filename of the .vtu file.
@@ -140,7 +137,6 @@ chiUnpartitionedMeshFromVTU(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Creates an unpartitioned mesh from VTK Partitioned Unstructured mesh files
  * (.pvtu).
 
@@ -197,7 +193,6 @@ chiUnpartitionedMeshFromPVTU(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Creates an unpartitioned mesh from starccm+ exported
 Ensight Gold mesh files.
 
@@ -251,7 +246,6 @@ chiUnpartitionedMeshFromEnsightGold(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Creates an unpartitioned mesh from a wavefront .obj file.
 
 \param file_name char Filename of the .case file.
@@ -301,7 +295,6 @@ chiUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Creates an unpartitioned mesh from a .msh file.
 
 \param file_name char Filename of the .msh file.
@@ -351,7 +344,6 @@ chiUnpartitionedMeshFromMshFormat(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Creates an unpartitioned mesh from ExodusII format.
 
 \param file_name char Filename of the .case file.

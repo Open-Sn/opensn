@@ -90,7 +90,6 @@ struct CSTMemory
 class ChiObject;
 typedef std::shared_ptr<ChiObject> ChiObjectPtr;
 
-// ###################################################################
 /**General utilities in ChiTech*/
 class Chi
 {
@@ -129,7 +128,6 @@ public:
    */
   static double GetMemoryUsageInMB();
 
-  // #######################################################
   /**Data block for run-time quantities.*/
   class run_time
   {
@@ -154,7 +152,6 @@ public:
     run_time operator=(const run_time&) = delete; // Deleted assigment operator
   };
 
-  // #######################################################
   /**Customized exceptions.*/
   class RecoverableException : public std::runtime_error
   {

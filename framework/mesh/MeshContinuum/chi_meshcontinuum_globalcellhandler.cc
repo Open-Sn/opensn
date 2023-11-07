@@ -4,7 +4,6 @@
 #include "framework/mpi/chi_mpi.h"
 #include "framework/logging/chi_log.h"
 
-// ###################################################################
 /**Adds a new cell to grid registry.*/
 void
 chi_mesh::GlobalCellHandler::push_back(std::unique_ptr<chi_mesh::Cell> new_cell)
@@ -31,7 +30,6 @@ chi_mesh::GlobalCellHandler::push_back(std::unique_ptr<chi_mesh::Cell> new_cell)
   }
 }
 
-// ###################################################################
 /**Returns a reference to a cell given its global cell index.*/
 chi_mesh::Cell&
 chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index)
@@ -55,7 +53,6 @@ chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index)
   throw std::invalid_argument(ostr.str());
 }
 
-// ###################################################################
 /**Returns a const reference to a cell given its global cell index.*/
 const chi_mesh::Cell&
 chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index) const
@@ -79,7 +76,6 @@ chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index) const
   throw std::invalid_argument(ostr.str());
 }
 
-// ###################################################################
 /**Returns the cell global ids of all ghost cells. These are cells that
  * neighbors to this partition's cells but are on a different
  * partition.*/
@@ -95,7 +91,6 @@ chi_mesh::GlobalCellHandler::GetGhostGlobalIDs() const
   return ids;
 }
 
-// ###################################################################
 /**Returns the local storage address of a ghost cell. If the
  * ghost is not truly a ghost then -1 is returned, but is wasteful and
  * therefore the user of this function should implement code

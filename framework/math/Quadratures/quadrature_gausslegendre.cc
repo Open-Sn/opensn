@@ -61,7 +61,6 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(const chi::InputParameters& par
   }
 }
 
-// ###################################################################
 /**Populates the abscissae and weights for a Gauss-Legendre
  * quadrature given the degree \f$ p \f$ of the mononomial such that
  * the quadrature rule integrates exactly the weighted integrand
@@ -78,7 +77,6 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(QuadratureOrder in_order,
   Initialize(N, verbose, max_iters, tol);
 }
 
-// ###################################################################
 /**Populates the abscissae and weights for a Gauss-Legendre
  * quadrature given the number of desired quadrature points. The
  * order of the quadrature will be 2N-1.*/
@@ -91,7 +89,6 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(unsigned int N,
   Initialize(N, verbose, max_iters, tol);
 }
 
-// ###################################################################
 /**Populates the abscissae and weights for a Gauss-Legendre
  * quadrature given the number of desired quadrature points.*/
 void
@@ -133,7 +130,6 @@ QuadratureGaussLegendre::Initialize(unsigned int N,
   range_ = {-1, +1};
 }
 
-// ###################################################################
 /** Finds the roots of the Legendre polynomial.
  *
  * The algorithm is that depicted in:

@@ -23,7 +23,6 @@ RegisterLuaConstantAsIs(SIMPLEXS1, chi_data_types::Varying(21));
 RegisterLuaConstantAsIs(EXISTING, chi_data_types::Varying(22));
 RegisterLuaConstantAsIs(CHI_XSFILE, chi_data_types::Varying(23));
 
-// ###################################################################
 /**Creates a stand-alone transport cross section.
  *
  *
@@ -57,7 +56,6 @@ chiPhysicsTransportXSCreate(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Sets the properties of a transport cross section.
 
  \param XS_handle int Handle to the cross section to be modified.
@@ -179,7 +177,6 @@ chiPhysicsTransportXSSet(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Obtains a lua table of all the cross section values.
 
  \param XS_handle int Handle to the cross section to be modified.
@@ -227,7 +224,6 @@ chiPhysicsTransportXSGet(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Makes a combined cross section from multiple other cross sections.
 
  \param Combinations table A lua-table with each element another table
@@ -329,7 +325,6 @@ chiPhysicsTransportXSMakeCombined(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Sets a combined cross section from multiple other cross sections. This
  function can be called multiple times on the same cross section handle.
 
@@ -439,7 +434,6 @@ chiPhysicsTransportXSSetCombined(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /** Exports a cross section to ChiTech format.
  *
 \param XS_handle int Handle to the cross section to be exported.

@@ -8,7 +8,6 @@
 namespace lbs::common_lua_utils
 {
 
-// ###################################################################
 /**Obtains a list of field functions, related only to scalar flux,
 from the transport solver.
 

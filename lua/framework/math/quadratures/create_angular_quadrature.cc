@@ -11,7 +11,6 @@
 
 RegisterLuaFunctionAsIs(chiCreateCustomAngularQuadrature);
 
-// ########################################################## Create empty system
 /** Creates an angular quadrature.
  *
 \param azimuthal_angles array A lua table with N entries each being an azimuthal

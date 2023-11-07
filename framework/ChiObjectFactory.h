@@ -52,7 +52,6 @@
 
 class ChiObject;
 
-// ##################################################################
 /**Singleton object for handling the registration and making of ChiObjects.*/
 class ChiObjectFactory
 {

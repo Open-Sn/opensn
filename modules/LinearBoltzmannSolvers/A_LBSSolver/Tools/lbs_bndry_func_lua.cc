@@ -7,7 +7,6 @@
 #include "framework/logging/chi_log.h"
 #include "framework/console/chi_console.h"
 
-// ###################################################################
 /**Customized boundary function by calling a lua routine.*/
 std::vector<double>
 lbs::BoundaryFunctionToLua::Evaluate(

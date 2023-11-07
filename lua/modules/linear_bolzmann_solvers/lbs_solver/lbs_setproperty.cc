@@ -31,7 +31,6 @@ enum class PropertyCode : int
   USE_PRECURSORS = 12,
 };
 
-// ###################################################################
 /**Set LBS property.
 \param SolverIndex int Handle to the solver for which the set is to be created.
 \param PropertyIndex int Code for a specific property.

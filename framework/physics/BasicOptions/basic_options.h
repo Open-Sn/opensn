@@ -4,7 +4,7 @@
 
 namespace chi_physics
 {
-// ###################################################################
+
 /**Class for option.*/
 class BasicOption
 {
@@ -43,7 +43,6 @@ public:
   void SetFloatValue(const double& in_float_value) { value_ = in_float_value; }
 };
 
-// ###################################################################
 /**Class for basic options*/
 class BasicOptions
 {

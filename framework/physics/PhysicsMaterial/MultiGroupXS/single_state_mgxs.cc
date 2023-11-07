@@ -335,7 +335,6 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
   // Define utility functions for parsing
   //============================================================
 
-  // ##################################################
   /// Lambda for reading group structure data.
   auto ReadGroupStructure = [](const std::string& keyword,
                                std::vector<std::vector<double>>& destination,
@@ -377,7 +376,6 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
     }
   };
 
-  // ##################################################
   /// Lambda for reading vector data.
   auto Read1DData = [](const std::string& keyword,
                        std::vector<double>& destination,
@@ -416,7 +414,6 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
     }
   };
 
-  // ##################################################
   /// Lambda for reading 2D data
   auto Read2DData = [](const std::string& keyword,
                        const std::string& entry_prefix,
@@ -462,7 +459,6 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
     }
   };
 
-  // ##################################################
   /// Lambda for reading transfer matrix data.
   auto ReadTransferMatrices = [](const std::string& keyword,
                                  std::vector<chi_math::SparseMatrix>& destination,
@@ -506,17 +502,14 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
     }
   };
 
-  // ##################################################
   /// Lambda for checking for all non-negative values.
   auto IsNonNegative = [](const std::vector<double>& vec)
   { return not std::any_of(vec.begin(), vec.end(), [](double x) { return x < 0.0; }); };
 
-  // ##################################################
   /// Lambda for checking for all strictly positive values.
   auto IsPositive = [](const std::vector<double>& vec)
   { return not std::any_of(vec.begin(), vec.end(), [](double x) { return x <= 0.0; }); };
 
-  // ##################################################
   /// Lambda for checking for any non-zero values.
   auto HasNonZero = [](const std::vector<double>& vec)
   { return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; }); };

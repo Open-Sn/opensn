@@ -7,7 +7,6 @@ namespace chi_math
 class QuadratureGaussLegendre;
 }
 
-// ######################################################### Class Def
 /**Gauss-Legendre quadrature.*/
 class chi_math::QuadratureGaussLegendre : public chi_math::Quadrature
 {

@@ -4,7 +4,6 @@
 #include "framework/math/UnknownManager/unknown_manager.h"
 #include "petscksp.h"
 
-// ############################################### Forward declarations
 namespace chi_mesh
 {
 class MeshContinuum;

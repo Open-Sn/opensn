@@ -7,7 +7,6 @@ namespace chi_math
 class QuadratureTetrahedron;
 }
 
-// ###################################################################
 /**Quadrature set for tetrahedrons.*/
 class chi_math::QuadratureTetrahedron : public chi_math::Quadrature
 {

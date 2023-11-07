@@ -12,7 +12,6 @@
 #include <vector>
 #include <utility>
 
-// ######################################################### Forward decls
 namespace chi_math
 {
 class SpatialDiscretization;
@@ -23,7 +22,6 @@ class GhostedParallelSTLVector;
 namespace chi_physics
 {
 
-// ################################################################### Class def
 /***/
 class FieldFunctionGridBased : public FieldFunction
 {

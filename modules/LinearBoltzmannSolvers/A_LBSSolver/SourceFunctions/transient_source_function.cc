@@ -1,6 +1,5 @@
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/transient_source_function.h"
 
-// ###################################################################
 /**Constructor for the transient source function. The only difference
  * as compared to a steady source function is the treatment of delayed
  * fission.*/
@@ -11,7 +10,6 @@ lbs::TransientSourceFunction::TransientSourceFunction(const LBSSolver& lbs_solve
 {
 }
 
-// ###################################################################
 /**Customized delayed fission source..*/
 double
 lbs::TransientSourceFunction::AddDelayedFission(const PrecursorList& precursors,

@@ -6,7 +6,6 @@
 #include "framework/event_system/EventCodes.h"
 #include "modules/chi_modules_lua.h"
 
-// ######################################################### Program entry point
 /** Program entry point.
 
 \param argc int    Number of arguments supplied.

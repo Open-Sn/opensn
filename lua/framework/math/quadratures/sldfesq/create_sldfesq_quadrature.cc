@@ -9,7 +9,6 @@
 
 RegisterLuaFunctionAsIs(chiCreateSLDFESQAngularQuadrature);
 
-// ###################################################################
 /** Creates a Simplified Linear Discontinuous Finite Element (SLDFE)
 quadrature based on Spherical Quadrilaterals (SQ). Hence SLDFE-SQ.
 \param initial_refinement_level int Initial refinement level, \f$n\f$ to

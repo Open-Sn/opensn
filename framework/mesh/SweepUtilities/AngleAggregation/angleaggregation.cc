@@ -14,7 +14,6 @@
                    "reflected boundary, or ii) the reflecting boundary is not "                    \
                    "aligned with any reflecting axis of the quadrature.")
 
-// ###################################################################
 /** Sets up the angle-aggregation object. */
 chi_mesh::sweep_management::AngleAggregation::AngleAggregation(
   const std::map<uint64_t, SweepBndryPtr>& in_sim_boundaries,
@@ -35,7 +34,6 @@ chi_mesh::sweep_management::AngleAggregation::AngleAggregation(
   is_setup = true;
 }
 
-// ###################################################################
 /** Resets all the outgoing intra-location and inter-location
  * cyclic interfaces.*/
 void
@@ -51,7 +49,6 @@ chi_mesh::sweep_management::AngleAggregation::ZeroOutgoingDelayedPsi()
       chi_math::Set(angset->GetFLUDS().DelayedLocalPsi(), 0.0);
 }
 
-// ###################################################################
 /** Resets all the incoming intra-location and inter-location
  * cyclic interfaces.*/
 void
@@ -87,7 +84,6 @@ chi_mesh::sweep_management::AngleAggregation::ZeroIncomingDelayedPsi()
         chi_math::Set(loc_vector, 0.0);
 }
 
-// ###################################################################
 /** Initializes reflecting boundary conditions. */
 void
 chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
@@ -238,7 +234,6 @@ chi_mesh::sweep_management::AngleAggregation::InitializeReflectingBCs()
     Chi::log.Log0Verbose1() << "Reflecting boundary conditions initialized.";
 }
 
-// ###################################################################
 /** Returns a pair of numbers containing the number of
  * delayed angular unknowns both locally and globally, respectively. */
 std::pair<size_t, size_t>
@@ -288,7 +283,6 @@ chi_mesh::sweep_management::AngleAggregation::GetNumDelayedAngularDOFs()
   return number_angular_unknowns;
 }
 
-// ###################################################################
 /** Assembles angular unknowns into the reference vector. */
 void
 chi_mesh::sweep_management::AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index,
@@ -335,7 +329,6 @@ chi_mesh::sweep_management::AngleAggregation::AppendNewDelayedAngularDOFsToArray
         }
 }
 
-// ###################################################################
 /** Assembles angular unknowns into the reference vector. */
 void
 chi_mesh::sweep_management::AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index,
@@ -382,7 +375,6 @@ chi_mesh::sweep_management::AngleAggregation::AppendOldDelayedAngularDOFsToArray
         }
 }
 
-// ###################################################################
 /** Assembles angular unknowns into the reference vector. */
 void
 chi_mesh::sweep_management::AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index,
@@ -429,7 +421,6 @@ chi_mesh::sweep_management::AngleAggregation::SetOldDelayedAngularDOFsFromArray(
         }
 }
 
-// ###################################################################
 /** Assembles angular unknowns into the reference vector. */
 void
 chi_mesh::sweep_management::AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index,
@@ -476,7 +467,6 @@ chi_mesh::sweep_management::AngleAggregation::SetNewDelayedAngularDOFsFromArray(
         }
 }
 
-// ###################################################################
 /**Gets the current values of the angular unknowns as an STL vector.*/
 std::vector<double>
 chi_mesh::sweep_management::AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
@@ -520,7 +510,6 @@ chi_mesh::sweep_management::AngleAggregation::GetNewDelayedAngularDOFsAsSTLVecto
   return psi_vector;
 }
 
-// ###################################################################
 /**Gets the current values of the angular unknowns as an STL vector.*/
 void
 chi_mesh::sweep_management::AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(
@@ -567,7 +556,6 @@ chi_mesh::sweep_management::AngleAggregation::SetNewDelayedAngularDOFsFromSTLVec
           val = stl_vector[index++];
 }
 
-// ###################################################################
 /**Gets the current values of the angular unknowns as an STL vector.*/
 std::vector<double>
 chi_mesh::sweep_management::AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
@@ -611,7 +599,6 @@ chi_mesh::sweep_management::AngleAggregation::GetOldDelayedAngularDOFsAsSTLVecto
   return psi_vector;
 }
 
-// ###################################################################
 /**Gets the current values of the angular unknowns as an STL vector.*/
 void
 chi_mesh::sweep_management::AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(
@@ -658,7 +645,6 @@ chi_mesh::sweep_management::AngleAggregation::SetOldDelayedAngularDOFsFromSTLVec
           val = stl_vector[index++];
 }
 
-// ###################################################################
 /**Copies the old delayed angular fluxes to the new.*/
 void
 chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiOld2New()
@@ -688,7 +674,6 @@ chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiOld2New()
         angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld();
 }
 
-// ###################################################################
 /**Copies the new delayed angular fluxes to the old.*/
 void
 chi_mesh::sweep_management::AngleAggregation::SetDelayedPsiNew2Old()

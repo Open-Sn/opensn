@@ -15,7 +15,6 @@ namespace chi
 
 RegisterChiObject(chi, CellVolumeIntegralPostProcessor);
 
-// ##################################################################
 InputParameters
 CellVolumeIntegralPostProcessor::GetInputParameters()
 {
@@ -37,7 +36,6 @@ CellVolumeIntegralPostProcessor::GetInputParameters()
   return params;
 }
 
-// ##################################################################
 CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
     chi_physics::GridBasedFieldFunctionInterface(params),
@@ -47,7 +45,6 @@ CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputPara
   value_ = ParameterBlock("", 0.0);
 }
 
-// ##################################################################
 void
 CellVolumeIntegralPostProcessor::Initialize()
 {
@@ -75,7 +72,6 @@ CellVolumeIntegralPostProcessor::Initialize()
   initialized_ = true;
 }
 
-// ##################################################################
 void
 CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 {

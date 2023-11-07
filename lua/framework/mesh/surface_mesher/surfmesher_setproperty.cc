@@ -11,7 +11,6 @@
 RegisterLuaFunctionAsIs(chiSurfaceMesherSetProperty);
 RegisterLuaConstantAsIs(MAX_AREA, chi_data_types::Varying(1));
 
-// #############################################################################
 /** Sets a property of a surface mesher.
 
 \param PropertyNumber int Handle of the property to be set.

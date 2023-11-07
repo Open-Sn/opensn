@@ -6,7 +6,7 @@
 
 namespace chi_mesh
 {
-// ##################################################
+
 /**Handles all global index queries.*/
 class GlobalCellHandler
 {

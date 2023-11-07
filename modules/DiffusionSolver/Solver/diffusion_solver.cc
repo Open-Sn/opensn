@@ -71,7 +71,7 @@ Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
   sourceQ.resize(cell_dofs, 0.0);
   sigmaa.resize(cell_dofs, 0.0);
 
-  // ####################################################### REGULAR MATERIAL
+  // REGULAR MATERIAL
   if (material_mode_ == DIFFUSION_MATERIALS_REGULAR)
   {
     // We absolutely need the diffusion coefficient so process error
@@ -122,9 +122,9 @@ Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
     }
   } // regular
 
-  // ####################################################### TRANSPORT XS D
-  //                                                         TRANSPORT XS SIGA
-  //                                                         SCALAR       Q
+  // TRANSPORT XS D
+  // TRANSPORT XS SIGA
+  // SCALAR       Q
   else if (material_mode_ == DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTR)
   {
     //====================================== Setting D and Sigma_a
@@ -361,7 +361,7 @@ Solver::Initialize(bool verbose)
   VecSet(x_, 0.0);
   VecSet(b_, 0.0);
 
-  // ################################################## Create matrix
+  // Create matrix
   ierr_ = MatCreate(PETSC_COMM_WORLD, &A_);
   CHKERRQ(ierr_);
   ierr_ = MatSetSizes(A_,

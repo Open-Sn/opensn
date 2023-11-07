@@ -11,7 +11,6 @@
 
 RegisterLuaFunctionAsIs(chiGetFieldFunctionHandleByName);
 
-// ###################################################################
 /**Gets a field-function handle by name.
 \param FFname string Name of the field function.
 

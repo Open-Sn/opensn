@@ -9,7 +9,6 @@
 namespace chi_mesh
 {
 
-// ###################################################################
 /** Class for defining base logical volumes.*/
 class LogicalVolume : public ChiObject
 {

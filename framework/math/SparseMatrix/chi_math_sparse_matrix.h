@@ -2,7 +2,6 @@
 
 #include "framework/math/chi_math.h"
 
-// ###################################################################
 /**Sparse matrix utility. This is a basic CSR type sparse matrix
  * which allows efficient matrix storage and multiplication. It is
  * not intended for solving linear systems (use PETSc for that instead).

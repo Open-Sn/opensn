@@ -201,7 +201,6 @@ CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
   } // for n
 }
 
-// ##################################################################
 void
 CBC_SweepDependencyInterface::SetupIncomingFace(
   int face_id, size_t num_face_nodes, uint64_t neighbor_id, bool on_local_face, bool on_boundary)

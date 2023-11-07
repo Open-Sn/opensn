@@ -5,7 +5,7 @@
 
 namespace chi_mesh
 {
-// ###################################################################
+
 /** A line based interpolation function.*/
 class FieldFunctionInterpolationPoint : public FieldFunctionInterpolation
 {

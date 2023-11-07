@@ -8,7 +8,6 @@
 namespace lbs
 {
 
-// ##################################################################
 /**Simple utility structure for controlling counters and calls
  * to upstream data.*/
 struct AAH_SweepDependencyInterface : public SweepDependencyInterface
@@ -26,7 +25,6 @@ struct AAH_SweepDependencyInterface : public SweepDependencyInterface
   double* GetDownwindPsi(int face_node_local_idx) const override;
 };
 
-// ##################################################################
 /**The new sweep chunk class.*/
 class AAH_SweepChunk : public SweepChunk
 {

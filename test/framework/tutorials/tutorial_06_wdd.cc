@@ -343,7 +343,6 @@ chiSimTest06_WDD(const chi::InputParameters&)
   return chi::ParameterBlock();
 }
 
-// ###################################################################
 double
 ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
                         const chi_math::SpatialDiscretization& sdm,
@@ -395,7 +394,6 @@ ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
   return pw_change;
 }
 
-// ###################################################################
 /***/
 std::vector<double>
 SetSource(const chi_mesh::MeshContinuum& grid,

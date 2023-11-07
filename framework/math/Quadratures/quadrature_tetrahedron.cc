@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <cassert>
 
-// ###################################################################
 /**Initialzes a set of points for a quadrature integration over
  * the volume of a tetrahedron.*/
 chi_math::QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : Quadrature(order)

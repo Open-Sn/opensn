@@ -537,7 +537,7 @@ PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous /*=true
       vertex_map[v] = v;
   }
 
-  // ############################################# Populate cell information
+  // Populate cell information
   int64_t node_count = 0;
   for (const auto& cell : grid.local_cells)
   {

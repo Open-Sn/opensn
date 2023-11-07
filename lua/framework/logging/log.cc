@@ -27,7 +27,6 @@ RegisterLuaConstantAsIs(LOG_ALLVERBOSE_0, chi_data_types::Varying(10));
 RegisterLuaConstantAsIs(LOG_ALLVERBOSE_1, chi_data_types::Varying(11));
 RegisterLuaConstantAsIs(LOG_ALLVERBOSE_2, chi_data_types::Varying(12));
 
-// ###################################################################
 /** Sets the verbosity level of the Logger.
  * This lua command will overwrite the currently set value.
 
@@ -50,7 +49,6 @@ chiLogSetVerbosity(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Logs a message depending on the log type specified.
 
 \param LogType int Can be any of the log types specified below.
@@ -148,7 +146,6 @@ chiLogProcessEvent(lua_State* L)
   return 1;
 }
 
-// ##################################################################
 /**Prints the performance graph.
  * \params rank int Optional argument to print the graph for a specific rank.
  *

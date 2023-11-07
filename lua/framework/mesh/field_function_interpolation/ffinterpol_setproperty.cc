@@ -42,7 +42,6 @@ RegisterLuaConstantAsIs(LINE_SECONDPOINT, chi_data_types::Varying(12));
 RegisterLuaConstantAsIs(LINE_NUMBEROFPOINTS, chi_data_types::Varying(13));
 RegisterLuaConstantAsIs(LINE_CUSTOM_ARRAY, chi_data_types::Varying(14));
 
-// #############################################################################
 /** Creates a new field function interpolation.
  *
 \param FFIHandle int Handle to the field function interpolation.

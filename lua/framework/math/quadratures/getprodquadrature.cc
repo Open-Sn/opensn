@@ -11,8 +11,6 @@
 
 RegisterLuaFunctionAsIs(chiGetProductQuadrature);
 
-// ########################################################## Get product
-//  quadrature
 /** Get the values of a product quadrature
 
 \param QuadHandle int Handle to an existing product quadrature.

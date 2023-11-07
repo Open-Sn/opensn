@@ -13,7 +13,6 @@
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportToObj);
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportPolyFile);
 
-// #############################################################################
 //  Create
 /** Exports mesh as a .obj format.
  *
@@ -44,7 +43,6 @@ chiSurfaceMeshExportToObj(lua_State* L)
   return 0;
 }
 
-// #############################################################################
 //  Create
 /** Exports mesh as a .poly format.
  *

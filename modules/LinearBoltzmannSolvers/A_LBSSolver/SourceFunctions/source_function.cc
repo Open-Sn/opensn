@@ -9,13 +9,11 @@
 namespace lbs
 {
 
-// ###################################################################
 /**Constructor.*/
 SourceFunction::SourceFunction(const LBSSolver& lbs_solver) : lbs_solver_(lbs_solver)
 {
 }
 
-// ###################################################################
 /**Sets the source moments for the groups in the current group set.
  *
  * \param groupset The groupset the under consideration.
@@ -169,7 +167,6 @@ SourceFunction::AddSourceMoments() const
   return fixed_src_moments_[g_];
 }
 
-// ###################################################################
 /**Adds delayed particle precursor sources.*/
 double
 SourceFunction::AddDelayedFission(const PrecursorList& precursors,
@@ -193,7 +190,6 @@ SourceFunction::AddDelayedFission(const PrecursorList& precursors,
   return value;
 }
 
-// ###################################################################
 /**Adds point sources to the source moments.*/
 void
 SourceFunction::AddPointSources(LBSGroupset& groupset,

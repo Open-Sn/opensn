@@ -57,7 +57,6 @@ public:
   virtual ~SweepDependencyInterface() = default;
 };
 
-// ##################################################################
 /**Base class for LBS sweepers*/
 class SweepChunk : public chi_mesh::sweep_management::SweepChunk
 {

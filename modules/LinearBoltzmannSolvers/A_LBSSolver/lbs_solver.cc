@@ -1678,7 +1678,6 @@ LBSSolver::InitializeSolverSchemes()
   }
 }
 
-// ###################################################################
 /**Initializes the Within-Group DSA solver. */
 void
 lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet /*=true*/)
@@ -1725,7 +1724,6 @@ lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet /
   }
 }
 
-// ###################################################################
 /**Cleans up memory consuming items. */
 void
 lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
@@ -1733,7 +1731,6 @@ lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
   if (groupset.apply_wgdsa_) groupset.wgdsa_solver_ = nullptr;
 }
 
-// ###################################################################
 /**Creates a vector from a lbs primary stl vector where only the
  * scalar moments are mapped to the DOFs needed by WGDSA.*/
 std::vector<double>
@@ -1771,7 +1768,6 @@ lbs::LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<d
   return output_phi_local;
 }
 
-// ###################################################################
 /**From the WGDSA DOFs, projects the scalar moments back into a
  * primary STL vector.*/
 void
@@ -1805,7 +1801,6 @@ lbs::LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
   }   // for cell
 }
 
-// ###################################################################
 /**Assembles a delta-phi vector on the first moment.*/
 void
 lbs::LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
@@ -1941,7 +1936,6 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
   }
 }
 
-// ###################################################################
 /**Cleans up memory consuming items. */
 void
 lbs::LBSSolver::CleanUpTGDSA(LBSGroupset& groupset)

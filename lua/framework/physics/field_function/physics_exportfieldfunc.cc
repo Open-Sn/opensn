@@ -10,7 +10,6 @@
 RegisterLuaFunctionAsIs(chiExportFieldFunctionToVTK);
 RegisterLuaFunctionAsIs(chiExportMultiFieldFunctionToVTK);
 
-// #############################################################################
 /** Exports a field function to VTK format.
  *
 \param FFHandle int Global handle to the field function.
@@ -41,7 +40,6 @@ chiExportFieldFunctionToVTK(lua_State* L)
   return 0;
 }
 
-// #############################################################################
 /** Exports all the field functions in a list to VTK format.
  *  *
 \param listFFHandles table Global handles or names to the field functions

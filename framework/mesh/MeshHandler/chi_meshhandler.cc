@@ -4,7 +4,6 @@
 
 #include "framework/logging/chi_log.h"
 
-// ###################################################################
 /**Obtains a pointer to the last created grid. This method will
  * get a smart-pointer to a grid object. If a volume-mesher has not
  * been created, or if a grid is not available, this method will
@@ -27,7 +26,6 @@ chi_mesh::MeshHandler::GetGrid() const
   return grid_ptr;
 }
 
-// ###################################################################
 /**Obtains a reference to the surface mesher.*/
 chi_mesh::SurfaceMesher&
 chi_mesh::MeshHandler::GetSurfaceMesher()
@@ -39,7 +37,6 @@ chi_mesh::MeshHandler::GetSurfaceMesher()
   return *surface_mesher_;
 }
 
-// ###################################################################
 /**Obtains a reference to the surface mesher.*/
 chi_mesh::VolumeMesher&
 chi_mesh::MeshHandler::GetVolumeMesher()
@@ -51,7 +48,6 @@ chi_mesh::MeshHandler::GetVolumeMesher()
   return *volume_mesher_;
 }
 
-// ###################################################################
 /**Obtains a reference to the surface mesher.*/
 const chi_mesh::SurfaceMesher&
 chi_mesh::MeshHandler::GetSurfaceMesher() const
@@ -63,7 +59,6 @@ chi_mesh::MeshHandler::GetSurfaceMesher() const
   return *surface_mesher_;
 }
 
-// ###################################################################
 /**Obtains a reference to the surface mesher.*/
 const chi_mesh::VolumeMesher&
 chi_mesh::MeshHandler::GetVolumeMesher() const

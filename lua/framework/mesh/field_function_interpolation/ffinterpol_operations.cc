@@ -9,7 +9,6 @@
 RegisterLuaFunctionAsIs(chiFFInterpolationInitialize);
 RegisterLuaFunctionAsIs(chiFFInterpolationExecute);
 
-// ###################################################################
 /** Initialize interpolator.
  *
 \param FFIHandle int Handle to the field function interpolation.
@@ -33,7 +32,6 @@ chiFFInterpolationInitialize(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /** Execute interpolator.
  *
 \param FFIHandle int Handle to the field function interpolation.

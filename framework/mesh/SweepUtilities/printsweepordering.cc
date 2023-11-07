@@ -11,7 +11,6 @@
 
 #include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
 
-// ###################################################################
 /**Print a sweep ordering to file.*/
 void
 chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS* sweep_order,

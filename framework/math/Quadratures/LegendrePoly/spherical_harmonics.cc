@@ -3,7 +3,6 @@
 #include "framework/math/chi_math.h"
 #include <cmath>
 
-// ###################################################################
 /**Implementation of the tesseral spherical harmonics.
  *
  * This code has a whitepaper associated with it

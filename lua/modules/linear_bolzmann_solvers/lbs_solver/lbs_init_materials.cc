@@ -5,7 +5,6 @@
 namespace lbs::common_lua_utils
 {
 
-// ###################################################################
 /**Initializes or reinitializes the materials. This normally happens
  * automatically during solver initialization but if the user wants to
  * swap/change XSs during the run then this will allow the material structures

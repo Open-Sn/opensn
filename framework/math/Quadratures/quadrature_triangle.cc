@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <cassert>
 
-// ###################################################################
 /**Initializes quadratures for use on triangles.*/
 chi_math::QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order)
 {

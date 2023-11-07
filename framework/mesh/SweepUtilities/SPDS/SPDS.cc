@@ -10,7 +10,6 @@
 
 #include <algorithm>
 
-// ###################################################################
 /** Given a location J index, maps to a predecessor location.*/
 int
 chi_mesh::sweep_management::SPDS::MapLocJToPrelocI(int locJ) const
@@ -30,7 +29,6 @@ chi_mesh::sweep_management::SPDS::MapLocJToPrelocI(int locJ) const
   return 0;
 }
 
-// ###################################################################
 /** Given a location J index, maps to a dependent location.*/
 int
 chi_mesh::sweep_management::SPDS::MapLocJToDeplocI(int locJ) const
@@ -45,7 +43,6 @@ chi_mesh::sweep_management::SPDS::MapLocJToDeplocI(int locJ) const
   return 0;
 }
 
-// ###################################################################
 /**Populates cell relationships*/
 void
 chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
@@ -170,7 +167,6 @@ chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
   }   // for cell
 }
 
-// ###################################################################
 void
 chi_mesh::sweep_management::SPDS::PrintedGhostedGraph() const
 {

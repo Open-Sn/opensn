@@ -10,8 +10,6 @@
 
 RegisterLuaFunctionAsIs(chiCreateLineQuadrature);
 
-// ########################################################## Create empty
-// system
 /** Creates a quadrature.
  *
 \param QuadratureType int Quadrature identifier.

@@ -53,7 +53,6 @@ QuadratureGaussChebyshev::QuadratureGaussChebyshev(const chi::InputParameters& p
   }
 }
 
-// ###################################################################
 /**Populates the abscissae and weights for a Gauss-Chebyshev
  * quadrature given the number of desired quadrature points. The
  * order of the quadrature will be 2N-1.*/
@@ -63,7 +62,6 @@ QuadratureGaussChebyshev::QuadratureGaussChebyshev(unsigned int N, bool verbose)
   Initialize(N);
 }
 
-// ###################################################################
 /**Populates the abscissae and weights for a Gauss-Chebyshev
  * quadrature given the number of desired quadrature points.*/
 void

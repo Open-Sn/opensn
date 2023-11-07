@@ -219,7 +219,6 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
   }   // for cell
 }
 
-// ##################################################################
 const double*
 AAH_SweepDependencyInterface::GetUpwindPsi(int face_node_local_idx) const
 {

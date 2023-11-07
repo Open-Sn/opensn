@@ -7,7 +7,7 @@
 
 namespace lbs::acceleration
 {
-// ###################################################################
+
 /***/
 TwoGridCollapsedInfo
 MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseScheme scheme)

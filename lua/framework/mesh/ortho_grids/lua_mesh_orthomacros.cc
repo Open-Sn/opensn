@@ -13,7 +13,6 @@ RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned1DOrthoMesh);
 RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned2DOrthoMesh);
 RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned3DOrthoMesh);
 
-// ###################################################################
 /** Creates a 1D Mesh from an array of 1D vertices.
 
 \param x_nodes array_float An Array of floating point numbers denoting
@@ -79,7 +78,6 @@ chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L)
   return 2;
 }
 
-// ###################################################################
 /** Creates a 2D Orthogonal Mesh from arrays of 1D vertices.
 
 \param x_nodes array_float An Array of floating point numbers denoting
@@ -165,7 +163,6 @@ chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L)
   return 2;
 }
 
-// ###################################################################
 /** Creates a 3D Orthogonal Mesh from arrays of 1D vertices. The
  * underlying mesher is an extruder.
 

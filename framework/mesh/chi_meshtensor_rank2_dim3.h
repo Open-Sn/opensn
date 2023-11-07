@@ -2,7 +2,6 @@
 
 #include "framework/mesh/chi_meshvector.h"
 
-// ###################################################################
 /**General rank 2 tensor to be used with Vector3*/
 struct chi_mesh::TensorRank2Dim3
 {

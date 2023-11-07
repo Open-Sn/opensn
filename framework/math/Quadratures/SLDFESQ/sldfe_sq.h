@@ -19,7 +19,6 @@ struct SphericalQuadrilateral;
 struct FUNCTION_WEIGHT_FROM_RHO;
 class Quadrature;
 
-// ####################################################### Util Func
 /**Base Functor to inherit from to change the function
  * to integrate in one of the integration utilities.*/
 struct BaseFunctor
@@ -28,7 +27,6 @@ struct BaseFunctor
 };
 } // namespace SimplifiedLDFESQ
 
-// ################################################################### Util Func
 /**Serves as a general data structure for a
  * spherical quadrilateral (SQ).*/
 struct SimplifiedLDFESQ::SphericalQuadrilateral
@@ -49,7 +47,6 @@ struct SimplifiedLDFESQ::SphericalQuadrilateral
   chi_mesh::Vector3 octant_modifier;
 };
 
-// ################################################################### Class def
 /** Piecewise-linear Finite element quadrature using quadrilaterals.*/
 class SimplifiedLDFESQ::Quadrature : public AngularQuadrature
 {
@@ -227,7 +224,6 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
     }
   }
 
-  // ###########################################
   /**Computes the quadrature point locations
    * from rho, followed by the shape-function coefficients and
    * then the integral of the shape function to get the weights.*/

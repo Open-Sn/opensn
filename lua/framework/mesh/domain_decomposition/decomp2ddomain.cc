@@ -11,7 +11,6 @@ RegisterLuaFunctionAsIs(chiDecomposeSurfaceMeshPxPy);
  * \ingroup LuaMesh
  */
 
-// #############################################################################
 /** Decomposes a surface mesh into block px py elements.
  * \image html "InProgressImage.png" width=200px
  *

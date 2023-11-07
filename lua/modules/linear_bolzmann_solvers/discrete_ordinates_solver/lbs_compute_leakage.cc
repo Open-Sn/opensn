@@ -11,7 +11,6 @@ namespace lbs::disc_ord_lua_utils
 
 RegisterLuaFunctionAsIs(chiLBSComputeLeakage);
 
-// ###################################################################
 /**Computes the leakage for the specified groupset and boundary id.
  *
 \param SolverIndex int Handle to the solver.

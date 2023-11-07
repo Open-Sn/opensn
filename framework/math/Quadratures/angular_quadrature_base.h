@@ -26,7 +26,6 @@ struct chi_math::QuadraturePointPhiTheta
   QuadraturePointPhiTheta(const double phi, const double theta) : phi(phi), theta(theta) {}
 };
 
-// ################################################################### Class def
 /**Base class for angular quadratures.*/
 class chi_math::AngularQuadrature
 {

@@ -7,7 +7,6 @@
 namespace chi_math
 {
 
-// #################################################################
 /**Different types of variables.*/
 enum class UnknownType
 {
@@ -25,7 +24,6 @@ enum class UnknownStorageType
   BLOCK = 2
 };
 
-// #################################################################
 /**Basic class for an variable.*/
 class Unknown
 {
@@ -113,7 +111,6 @@ public:
   unsigned int NumComponents() const { return num_components_; }
 };
 
-// ###################################################################
 /**General object for the management of unknowns in mesh-based
  * mathematical model.*/
 class UnknownManager

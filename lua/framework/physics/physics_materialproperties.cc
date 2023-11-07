@@ -20,7 +20,6 @@ RegisterLuaConstantAsIs(SCALAR_VALUE, chi_data_types::Varying(1));
 RegisterLuaConstantAsIs(TRANSPORT_XSECTIONS, chi_data_types::Varying(10));
 RegisterLuaConstantAsIs(ISOTROPIC_MG_SOURCE, chi_data_types::Varying(11));
 
-// #############################################################################
 /** Adds a material property to a material.
  *
 \param MaterialHandle int Index to the reference material.
@@ -179,7 +178,6 @@ chiPhysicsMaterialAddProperty(lua_State* L)
   return 0;
 }
 
-// #############################################################################
 /** Sets a material property for a given material.
  *
 \param MaterialHandle int Index to the reference material.
@@ -574,7 +572,6 @@ chiPhysicsMaterialSetProperty(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /** Returns a rich lua data-structure of the required property.
  *
 \param MaterialHandle int Index to the reference material.

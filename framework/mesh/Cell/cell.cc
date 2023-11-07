@@ -7,7 +7,6 @@
 #include "framework/logging/chi_log.h"
 #include "framework/mpi/chi_mpi.h"
 
-// ###################################################################
 /**Provides the text name associated with a cell type.*/
 std::string
 chi_mesh::CellTypeName(const CellType type)
@@ -45,7 +44,6 @@ chi_mesh::CellTypeName(const CellType type)
   return "NONE";
 }
 
-// ###################################################################
 /**Copy constructor*/
 chi_mesh::Cell::Cell(const Cell& other)
   : cell_type_(other.cell_type_),
@@ -60,7 +58,6 @@ chi_mesh::Cell::Cell(const Cell& other)
 {
 }
 
-// ###################################################################
 /**Move constructor*/
 chi_mesh::Cell::Cell(Cell&& other) noexcept
   : cell_type_(other.cell_type_),
@@ -75,7 +72,6 @@ chi_mesh::Cell::Cell(Cell&& other) noexcept
 {
 }
 
-// ###################################################################
 /**Copy operator.*/
 chi_mesh::Cell&
 chi_mesh::Cell::operator=(const Cell& other)
@@ -91,7 +87,6 @@ chi_mesh::Cell::operator=(const Cell& other)
   return *this;
 }
 
-// ###################################################################
 /**Determines the neighbor's partition and whether its local or not.*/
 bool
 chi_mesh::CellFace::IsNeighborLocal(const chi_mesh::MeshContinuum& grid) const
@@ -104,7 +99,6 @@ chi_mesh::CellFace::IsNeighborLocal(const chi_mesh::MeshContinuum& grid) const
   return (adj_cell.partition_id_ == static_cast<uint64_t>(Chi::mpi.location_id));
 }
 
-// ###################################################################
 /**Determines the neighbor's partition.*/
 int
 chi_mesh::CellFace::GetNeighborPartitionID(const chi_mesh::MeshContinuum& grid) const
@@ -117,7 +111,6 @@ chi_mesh::CellFace::GetNeighborPartitionID(const chi_mesh::MeshContinuum& grid) 
   return static_cast<int>(adj_cell.partition_id_);
 }
 
-// ###################################################################
 /**Determines the neighbor's local id.*/
 uint64_t
 chi_mesh::CellFace::GetNeighborLocalID(const chi_mesh::MeshContinuum& grid) const
@@ -133,7 +126,6 @@ chi_mesh::CellFace::GetNeighborLocalID(const chi_mesh::MeshContinuum& grid) cons
   return adj_cell.local_id_;
 }
 
-// ###################################################################
 /**Determines the neighbor's associated face.*/
 int
 chi_mesh::CellFace::GetNeighborAssociatedFace(const chi_mesh::MeshContinuum& grid) const
@@ -189,7 +181,6 @@ chi_mesh::CellFace::GetNeighborAssociatedFace(const chi_mesh::MeshContinuum& gri
   return associated_face;
 }
 
-// ###################################################################
 /**Computes the face area.*/
 double
 chi_mesh::CellFace::ComputeFaceArea(const chi_mesh::MeshContinuum& grid) const
@@ -230,7 +221,6 @@ chi_mesh::CellFace::ComputeFaceArea(const chi_mesh::MeshContinuum& grid) const
   }
 }
 
-// ###################################################################
 /**Serializes a face into a vector of bytes.*/
 chi_data_types::ByteArray
 chi_mesh::CellFace::Serialize() const
@@ -249,7 +239,6 @@ chi_mesh::CellFace::Serialize() const
   return raw;
 }
 
-// ###################################################################
 /**Deserializes a face from a set of raw data*/
 chi_mesh::CellFace
 chi_mesh::CellFace::DeSerialize(const chi_data_types::ByteArray& raw, size_t& address)
@@ -270,7 +259,6 @@ chi_mesh::CellFace::DeSerialize(const chi_data_types::ByteArray& raw, size_t& ad
   return face;
 }
 
-// ###################################################################
 /**Provides string information of the face.*/
 std::string
 chi_mesh::CellFace::ToString() const
@@ -292,7 +280,6 @@ chi_mesh::CellFace::ToString() const
   return outstr.str();
 }
 
-// ###################################################################
 /**Recomputes the face centroid assuming the mesh vertices
  * have been transformed.*/
 void
@@ -304,7 +291,6 @@ chi_mesh::CellFace::RecomputeCentroid(const chi_mesh::MeshContinuum& grid)
   centroid_ /= static_cast<double>(vertex_ids_.size());
 }
 
-// ###################################################################
 /**Serializes a cell into a vector of bytes.*/
 chi_data_types::ByteArray
 chi_mesh::Cell::Serialize() const
@@ -331,7 +317,6 @@ chi_mesh::Cell::Serialize() const
   return raw;
 }
 
-// ###################################################################
 /**Deserializes a cell from a vector of bytes.*/
 chi_mesh::Cell
 chi_mesh::Cell::DeSerialize(const chi_data_types::ByteArray& raw, size_t& address)
@@ -366,7 +351,6 @@ chi_mesh::Cell::DeSerialize(const chi_data_types::ByteArray& raw, size_t& addres
   return cell;
 }
 
-// ###################################################################
 /**Provides string information of the cell.*/
 std::string
 chi_mesh::Cell::ToString() const
@@ -398,7 +382,6 @@ chi_mesh::Cell::ToString() const
   return outstr.str();
 }
 
-// ###################################################################
 /**Recomputes the cell centroid and all face centroids assuming
  * the mesh vertices have been transformed.*/
 void

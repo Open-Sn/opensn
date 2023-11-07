@@ -9,7 +9,6 @@
 
 RegisterLuaFunctionAsIs(chiCutMesh);
 
-// ###################################################################
 /**Cuts a mesh.
 
  \param PlanePoint Vec3 A 3 element lua-table containing the reference

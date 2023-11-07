@@ -14,7 +14,6 @@ namespace chi_physics
 class FieldFunctionGridBased;
 class TimeStepper;
 
-// ######################################################### Solver parent class
 /**\defgroup SolverBase Base class for all solvers
  * \ingroup doc_PhysicsSolver*/
 class Solver : public ChiObject

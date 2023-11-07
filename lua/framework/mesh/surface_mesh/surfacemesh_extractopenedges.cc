@@ -6,7 +6,6 @@
 
 #include "framework/logging/chi_log.h"
 
-// #############################################################################
 /** Exports all open edges of a surface mesh to file. This is used mostly
  * for graphical error checking.
  *

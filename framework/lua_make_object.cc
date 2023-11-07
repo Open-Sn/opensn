@@ -13,7 +13,6 @@ int chiMakeObjectType(lua_State* L);
 RegisterLuaFunctionAsIs(chiMakeObject);
 RegisterLuaFunctionAsIs(chiMakeObjectType);
 
-// #############################################################################
 /**Generic lua routine for the creation of objects.
  * \param params ParameterBlock A single block tree that requires a parameter
  *  called chi_obj_type that indicates the type of object to make.
@@ -39,7 +38,6 @@ chiMakeObject(lua_State* L)
   return 1;
 }
 
-// #############################################################################
 /**Generic lua routine for the creation of objects.
  * \param type string The type to create.
  * \param params ParameterBlock A single block tree.

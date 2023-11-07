@@ -13,7 +13,6 @@
 namespace chi_math
 {
 
-// ######################################################################
 VectorGhostCommunicator::VectorGhostCommunicator(const uint64_t local_size,
                                                  const uint64_t global_size,
                                                  const std::vector<int64_t>& ghost_ids,
@@ -144,7 +143,6 @@ VectorGhostCommunicator::VectorGhostCommunicator(VectorGhostCommunicator&& other
 {
 }
 
-// ######################################################################
 int64_t
 VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
 {
@@ -158,7 +156,6 @@ VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
   return scint64_t(local_size_) + k;
 }
 
-// ######################################################################
 void
 VectorGhostCommunicator::CommunicateGhostEntries(std::vector<double>& ghosted_vector) const
 {
@@ -200,7 +197,6 @@ VectorGhostCommunicator::CommunicateGhostEntries(std::vector<double>& ghosted_ve
       recv_data[cached_parallel_data_.ghost_to_recv_map_.at(ghost_ids_[k])];
 }
 
-// ######################################################################
 std::vector<double>
 VectorGhostCommunicator::MakeGhostedVector() const
 {
@@ -208,7 +204,6 @@ VectorGhostCommunicator::MakeGhostedVector() const
   return std::vector<double>(ghosted_size, 0.0);
 }
 
-// ######################################################################
 std::vector<double>
 VectorGhostCommunicator::MakeGhostedVector(const std::vector<double>& local_vector) const
 {
@@ -223,7 +218,6 @@ VectorGhostCommunicator::MakeGhostedVector(const std::vector<double>& local_vect
   return vec;
 }
 
-// ###################################################################
 int
 VectorGhostCommunicator::FindOwnerPID(const int64_t global_id) const
 {

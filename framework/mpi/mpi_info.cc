@@ -5,7 +5,6 @@
 namespace chi
 {
 
-// ###################################################################
 /**Access to the singleton*/
 MPI_Info&
 MPI_Info::GetInstance() noexcept

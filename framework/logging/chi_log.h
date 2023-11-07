@@ -8,7 +8,6 @@
 #include <vector>
 #include <memory>
 
-// ###################################################################
 namespace chi
 {
 /**Object for controlling logging.
@@ -279,7 +278,6 @@ public:
 };
 } // namespace chi
 
-// ###################################################################
 /** */
 struct chi::ChiLog::EventInfo
 {
@@ -299,7 +297,6 @@ struct chi::ChiLog::EventInfo
   virtual std::string GetString() { return arb_info; }
 };
 
-// ###################################################################
 /** Object used by repeating events.*/
 struct chi::ChiLog::Event
 {
@@ -313,7 +310,6 @@ struct chi::ChiLog::Event
   }
 };
 
-// ###################################################################
 /**Repeating event object.*/
 class chi::ChiLog::RepeatingEvent
 {

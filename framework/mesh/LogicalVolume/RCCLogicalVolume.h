@@ -5,7 +5,6 @@
 namespace chi_mesh
 {
 
-// ###################################################################
 /**Right Circular Cylinder (RCC) logical volume.
  *
  * Determining whether a point is within an RCC is tricky.

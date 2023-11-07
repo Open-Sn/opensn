@@ -35,7 +35,6 @@ RegisterLuaFunctionAsIs(chiVolumeMesherSetKBACutsX);
 RegisterLuaFunctionAsIs(chiVolumeMesherSetKBACutsY);
 RegisterLuaFunctionAsIs(chiVolumeMesherSetKBACutsZ);
 
-// #############################################################################
 /** Sets a volume mesher property.
 
 \param PropertyIndex int Index of the property to change. See below
@@ -279,7 +278,6 @@ chiVolumeMesherSetProperty(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Sets the Px, Py and Pz partititioning parameters for a
  * KBA-type partitioning. This also fixes the process count required to
  * a total of Px*Py*Pz.
@@ -314,7 +312,6 @@ chiVolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Sets the x-cuts for KBA type partitioning with a lua array.
 \ingroup LuaVolumeMesher
  */
@@ -335,7 +332,6 @@ chiVolumeMesherSetKBACutsX(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Sets the y-cuts for KBA type partitioning with a lua array.
 \ingroup LuaVolumeMesher
  */
@@ -356,7 +352,6 @@ chiVolumeMesherSetKBACutsY(lua_State* L)
   return 0;
 }
 
-// ###################################################################
 /**Sets the z-cuts for KBA type partitioning with a lua array.
 \ingroup LuaVolumeMesher
  */

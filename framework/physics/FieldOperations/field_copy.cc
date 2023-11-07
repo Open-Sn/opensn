@@ -9,7 +9,6 @@ namespace chi_physics::field_operations
 
 RegisterChiObject(chi_physics::field_operations, FieldCopyOperation);
 
-// ##################################################################
 /**Returns the input parameters.*/
 chi::InputParameters
 FieldCopyOperation::GetInputParameters()
@@ -47,7 +46,6 @@ FieldCopyOperation::GetInputParameters()
   return params;
 }
 
-// ##################################################################
 /**Constructor.*/
 FieldCopyOperation::FieldCopyOperation(const chi::InputParameters& params)
   : FieldOperation(params),

@@ -29,7 +29,6 @@ namespace lbs
 
 class LBSSolver;
 
-// ################################################################### Class def
 /**Group set functioning as a collection of groups*/
 class LBSGroupset : public ChiObject
 {

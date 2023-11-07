@@ -105,7 +105,6 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const chi::InputParameters& params)
   } // layer_block in layers_param
 }
 
-// ##################################################################
 std::unique_ptr<UnpartitionedMesh>
 ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {

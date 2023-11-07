@@ -5,7 +5,6 @@
 #include "framework/chi_lua.h"
 #endif
 
-// ############################################### Forward declarations
 namespace chi_mesh
 {
 class MeshContinuum;
@@ -23,7 +22,6 @@ namespace lbs
 struct UnitCellMatrices;
 }
 
-// ############################################### Namespace lbs::acceleration
 namespace lbs::acceleration
 {
 

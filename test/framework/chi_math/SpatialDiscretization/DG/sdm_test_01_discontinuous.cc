@@ -421,7 +421,6 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
   return chi::ParameterBlock{};
 }
 
-// ###################################################################
 /**Maps a face, in a discontinuous sense, using the spatial discretization.*/
 int
 MapFaceNodeDisc(const chi_math::CellMapping& cur_cell_mapping,

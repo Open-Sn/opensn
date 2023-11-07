@@ -15,7 +15,6 @@ template <class NumberFormat>
 class DynamicVector;
 }
 
-// ###################################################################
 /** General dynamic vector utility.*/
 template <class NumberFormat>
 class chi_math::DynamicVector

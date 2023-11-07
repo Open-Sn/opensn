@@ -5,7 +5,6 @@
 namespace chi_math
 {
 
-// ######################################################### Class Def
 /**Gauss-Chebyshev quadrature.*/
 class QuadratureGaussChebyshev : public chi_math::Quadrature
 {

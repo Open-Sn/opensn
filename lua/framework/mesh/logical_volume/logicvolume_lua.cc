@@ -23,7 +23,6 @@ RegisterLuaConstantAsIs(SURFACE, chi_data_types::Varying(9));
 RegisterLuaConstantAsIs(BOOLEAN, chi_data_types::Varying(10));
 RegisterLuaFunctionAsIs(chiLogicalVolumePointSense);
 
-// ###################################################################
 /** Creates a logical volume.
 
 \param TypeIndex int Volume type.
@@ -400,7 +399,6 @@ chiLogicalVolumeCreate(lua_State* L)
   return 1;
 }
 
-// ###################################################################
 /**Evaluates whether a point is within the logical volume.
 \param LVHandle int Handle to the logical volume.
 \param Point_x double X-coordinate of the point.

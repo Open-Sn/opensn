@@ -4,7 +4,6 @@
 #include "framework/logging/chi_log.h"
 #include "framework/mpi/chi_mpi.h"
 
-// ###################################################################
 /**Communicates location by location dependencies.*/
 void
 chi_mesh::sweep_management::CommunicateLocationDependencies(

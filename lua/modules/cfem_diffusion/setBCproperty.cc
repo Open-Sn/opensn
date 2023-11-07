@@ -8,7 +8,6 @@
 namespace cfem_diffusion::cfem_diffusion_lua_utils
 {
 
-// #############################################################################
 /** Sets a property of a Diffusion solver. Please also consult the whitepaper
  * for the Diffusion solver (<a
  * href="../../whitepages/DiffusionSolver/DiffusionSolver.pdf">

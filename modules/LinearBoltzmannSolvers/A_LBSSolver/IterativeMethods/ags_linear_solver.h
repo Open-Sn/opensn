@@ -6,7 +6,6 @@
 namespace lbs
 {
 
-// ################################################################### Class def
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
 template <class MatType, class VecType, class SolverType>
 class AGSLinearSolver : public chi_math::LinearSolver<MatType, VecType, SolverType>

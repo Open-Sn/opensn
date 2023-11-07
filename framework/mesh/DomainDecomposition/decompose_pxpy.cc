@@ -70,7 +70,6 @@ chi_mesh::ComputeLBF(std::vector<Vector3>& points,
   return max_points_per_bin / average;
 }
 
-// ###################################################################
 /** Decomposes a 2D surface mesh using the centroids in a Px-Py fashion.*/
 void
 chi_mesh::DecomposeSurfaceMeshPxPy(const chi_mesh::SurfaceMesh& smesh, int px, int py)

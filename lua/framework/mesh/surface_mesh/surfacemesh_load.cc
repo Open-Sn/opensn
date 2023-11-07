@@ -11,7 +11,6 @@
 RegisterLuaFunctionAsIs(chiSurfaceMeshImportFromOBJFile);
 RegisterLuaFunctionAsIs(chiSurfaceMeshImportFromTriangleFiles);
 
-// #############################################################################
 //  Create Window
 /** Loads mesh data from a wavefront object.
  *
@@ -90,7 +89,6 @@ chiSurfaceMeshImportFromOBJFile(lua_State* L)
   return 1;
 }
 
-// #############################################################################
 //  Create Window
 /** Loads mesh data from a wavefront object.
  *

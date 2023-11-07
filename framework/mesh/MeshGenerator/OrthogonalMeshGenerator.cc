@@ -92,7 +92,6 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const chi::InputParameters& par
   } // for node_set in node_sets_
 }
 
-// ##################################################################
 std::unique_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
@@ -110,7 +109,6 @@ OrthogonalMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<Unpartitioned
       ""); // This will never get triggered because of the checks in constructor
 }
 
-// ##################################################################
 std::unique_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double>& vertices)
 {
@@ -177,7 +175,6 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   return umesh;
 }
 
-// ##################################################################
 std::unique_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double>& vertices_1d_x,
                                                         const std::vector<double>& vertices_1d_y)
@@ -278,7 +275,6 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   return umesh;
 }
 
-// ##################################################################
 std::unique_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double>& vertices_1d_x,
                                                         const std::vector<double>& vertices_1d_y,

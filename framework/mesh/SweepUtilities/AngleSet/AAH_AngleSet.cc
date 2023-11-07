@@ -8,7 +8,6 @@
 namespace chi_mesh::sweep_management
 {
 
-// ###################################################################
 /**AngleSet constructor.*/
 AAH_AngleSet::AAH_AngleSet(size_t id,
                            size_t in_numgrps,
@@ -24,7 +23,6 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
 {
 }
 
-// ###################################################################
 /**Initializes delayed upstream data. This method gets called
  * when a sweep scheduler is constructed.*/
 void
@@ -33,7 +31,6 @@ AAH_AngleSet::InitializeDelayedUpstreamData()
   async_comm_.InitializeDelayedUpstreamData();
 }
 
-// ###################################################################
 /**This function advances the work stages of an angleset.*/
 AngleSetStatus
 AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
@@ -83,7 +80,6 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
     return AngleSetStatus::READY_TO_EXECUTE;
 }
 
-// ###################################################################
 /***/
 AngleSetStatus
 AAH_AngleSet::FlushSendBuffers()
@@ -95,7 +91,6 @@ AAH_AngleSet::FlushSendBuffers()
   return AngleSetStatus::MESSAGES_PENDING;
 }
 
-// ###################################################################
 /**Returns the maximum buffer size from the sweepbuffer.*/
 int
 AAH_AngleSet::GetMaxBufferMessages() const
@@ -103,7 +98,6 @@ AAH_AngleSet::GetMaxBufferMessages() const
   return async_comm_.max_num_mess;
 }
 
-// ###################################################################
 /**Sets the maximum buffer size for the sweepbuffer.*/
 void
 AAH_AngleSet::SetMaxBufferMessages(int new_max)
@@ -111,7 +105,6 @@ AAH_AngleSet::SetMaxBufferMessages(int new_max)
   async_comm_.max_num_mess = new_max;
 }
 
-// ###################################################################
 /**Resets the sweep buffer.*/
 void
 AAH_AngleSet::ResetSweepBuffers()
@@ -120,7 +113,6 @@ AAH_AngleSet::ResetSweepBuffers()
   executed_ = false;
 }
 
-// ###################################################################
 /**Instructs the sweep buffer to receive delayed data.*/
 bool
 AAH_AngleSet::ReceiveDelayedData()
@@ -128,7 +120,6 @@ AAH_AngleSet::ReceiveDelayedData()
   return async_comm_.ReceiveDelayedData(static_cast<int>(this->GetID()));
 }
 
-// ###################################################################
 /**Returns a pointer to a boundary flux data.*/
 const double*
 AAH_AngleSet::PsiBndry(uint64_t bndry_map,
@@ -150,7 +141,6 @@ AAH_AngleSet::PsiBndry(uint64_t bndry_map,
     cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
 }
 
-// ###################################################################
 /**Returns a pointer to outbound boundary flux data.*/
 double*
 AAH_AngleSet::ReflectingPsiOutBoundBndry(uint64_t bndry_map,

@@ -24,7 +24,6 @@ class AngularQuadratureProdGLC;
 class AngularQuadratureProdCustom;
 } // namespace chi_math
 
-// ######################################################### Class def
 /** Class for product quadratures*/
 class chi_math::ProductQuadrature : public chi_math::AngularQuadrature
 {
@@ -62,28 +61,24 @@ public:
   }
 };
 
-// ######################################################### Class def
 class chi_math::AngularQuadratureProdGL : public chi_math::ProductQuadrature
 {
 public:
   explicit AngularQuadratureProdGL(int Np, bool verbose = false);
 };
 
-// ######################################################### Class def
 class chi_math::AngularQuadratureProdGLL : public chi_math::ProductQuadrature
 {
 public:
   explicit AngularQuadratureProdGLL(int Na, int Np, bool verbose = false);
 };
 
-// ######################################################### Class def
 class chi_math::AngularQuadratureProdGLC : public chi_math::ProductQuadrature
 {
 public:
   explicit AngularQuadratureProdGLC(int Na, int Np, bool verbose = false);
 };
 
-// ######################################################### Class def
 class chi_math::AngularQuadratureProdCustom : public chi_math::ProductQuadrature
 {
 public:

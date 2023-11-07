@@ -2,7 +2,6 @@
 
 #include <sstream>
 
-// ###################################################################
 /**Gets the string value of a converged reason.*/
 std::string
 chi_physics::GetPETScConvergedReasonstring(KSPConvergedReason reason)

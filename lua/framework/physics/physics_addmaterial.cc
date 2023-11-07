@@ -9,7 +9,6 @@
 
 RegisterLuaFunctionAsIs(chiPhysicsAddMaterial);
 
-// #############################################################################
 /** Adds a material to the problem. Materials are added to the global
  * physics handler and is therefore accessible across all meshes and solvers.
  *

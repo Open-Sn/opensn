@@ -13,7 +13,6 @@
 RegisterLuaFunctionAsIs(chiSurfaceMeshCheckCycles);
 RegisterLuaFunctionAsIs(chiComputeLoadBalancing);
 
-// #############################################################################
 /** Builds sweep ordering for a number of angles and checks whether any
  * cyclic dependencies are encountered.
  *
@@ -41,7 +40,6 @@ chiSurfaceMeshCheckCycles(lua_State* L)
   return 0;
 }
 
-// #############################################################################
 /** Computes load balancing parameters for given predictive x and y cuts
  * without actually performing cuts.
  *

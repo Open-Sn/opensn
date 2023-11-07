@@ -21,7 +21,6 @@ namespace chi
 
 const std::vector<std::string> InputParameters::system_ignored_param_names_ = {"chi_obj_type"};
 
-// #################################################################
 InputParameters&
 InputParameters::operator+=(InputParameters other)
 {
@@ -105,7 +104,6 @@ InputParameters::operator+=(InputParameters other)
   return *this;
 }
 
-// #################################################################
 /**Sets the object type string for more descriptive error messages.*/
 void
 InputParameters::SetObjectType(const std::string& obj_type)
@@ -113,7 +111,6 @@ InputParameters::SetObjectType(const std::string& obj_type)
   class_name_ = obj_type;
 }
 
-// #################################################################
 /**Returns the object type string.*/
 std::string
 InputParameters::ObjectType() const
@@ -121,7 +118,6 @@ InputParameters::ObjectType() const
   return class_name_;
 }
 
-// #################################################################
 /**Sets a link to the documentation of a different object.*/
 void
 InputParameters::LinkParameterToBlock(const std::string& param_name, const std::string& block_name)
@@ -131,7 +127,6 @@ InputParameters::LinkParameterToBlock(const std::string& param_name, const std::
   parameter_link_[param_name] = block_name;
 }
 
-// #################################################################
 /**Gets any linkage information of a parameter.*/
 std::string
 InputParameters::GetParameterDocumentationLink(const std::string& param_name) const
@@ -140,7 +135,6 @@ InputParameters::GetParameterDocumentationLink(const std::string& param_name) co
   return {};
 }
 
-// #################################################################
 /**Returns the parameter's doc string.*/
 std::string
 InputParameters::GetParameterDocString(const std::string& param_name)
@@ -150,7 +144,6 @@ InputParameters::GetParameterDocString(const std::string& param_name)
   return parameter_doc_string_.at(param_name);
 }
 
-// #################################################################
 /**Determines if a parameter is ignored.*/
 bool
 InputParameters::IsParameterIgnored(const std::string& param_name)
@@ -165,7 +158,6 @@ InputParameters::IsParameterIgnored(const std::string& param_name)
   return ignored;
 }
 
-// #################################################################
 /**Specialization for block type parameters.*/
 void
 InputParameters::AddOptionalParameterBlock(const std::string& name,
@@ -179,7 +171,6 @@ InputParameters::AddOptionalParameterBlock(const std::string& name,
   parameter_doc_string_[name] = doc_string;
 }
 
-// #################################################################
 /**Specialization for block type parameters.*/
 void
 InputParameters::AddOptionalParameterArray(const std::string& name,
@@ -196,7 +187,6 @@ InputParameters::AddOptionalParameterArray(const std::string& name,
   parameter_doc_string_[name] = doc_string;
 }
 
-// #################################################################
 /**Specialization for block type parameters.*/
 void
 InputParameters::AddRequiredParameterBlock(const std::string& name, const std::string& doc_string)
@@ -207,7 +197,6 @@ InputParameters::AddRequiredParameterBlock(const std::string& name, const std::s
   parameter_doc_string_[name] = doc_string;
 }
 
-// #################################################################
 /**Specialization for array type parameters.*/
 void
 InputParameters::AddRequiredParameterArray(const std::string& name, const std::string& doc_string)
@@ -219,7 +208,6 @@ InputParameters::AddRequiredParameterArray(const std::string& name, const std::s
   parameter_doc_string_[name] = doc_string;
 }
 
-// #################################################################
 /**Returns an error string if the check has not passed. This method
  * first checks whether all the required parameters are supplied. Then
  * it checks that all the parameters supplied actually maps to valid parameters.
@@ -358,7 +346,6 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   if (not err_stream.str().empty()) ThrowInputError;
 }
 
-// ##################################################################
 /**Marks a parameters as deprecated but will only produce a warning.*/
 void
 InputParameters::MarkParamaterDeprecatedWarning(const std::string& param_name,
@@ -369,7 +356,6 @@ InputParameters::MarkParamaterDeprecatedWarning(const std::string& param_name,
     ExceptionParamNotPresent(param_name);
 }
 
-// ##################################################################
 /**Marks a parameters as deprecated and will produce an error if the parameter
  * is specified.*/
 void
@@ -381,7 +367,6 @@ InputParameters::MarkParamaterDeprecatedError(const std::string& param_name,
     ExceptionParamNotPresent(param_name);
 }
 
-// ##################################################################
 /**Marks a parameters as renamed and will produce an error if the parameter
  * is specified.*/
 void
@@ -393,7 +378,6 @@ InputParameters::MarkParamaterRenamed(const std::string& param_name,
     ExceptionParamNotPresent(param_name);
 }
 
-// ##################################################################
 /**Creates a range based constraint for a given parameter.*/
 void
 InputParameters::ConstrainParameterRange(const std::string& param_name,
@@ -412,7 +396,6 @@ InputParameters::ConstrainParameterRange(const std::string& param_name,
     ExceptionParamNotPresent(param_name);
 }
 
-// ##################################################################
 /**Useful for accepting varying datatypes or making a choice based
  * upon the type of a parameter.*/
 void
@@ -422,7 +405,6 @@ InputParameters::SetParameterTypeMismatchAllowed(const std::string& param_name)
   type_mismatch_allowed_tags_[param_name] = true;
 }
 
-// ##################################################################
 /**Dumps the input parameters to stdout.*/
 void
 InputParameters::DumpParameters() const

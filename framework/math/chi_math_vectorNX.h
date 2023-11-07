@@ -25,7 +25,7 @@ struct TensorRNX;
 
 namespace chi_math
 {
-// #################################################################
+
 /**Generalized vector notion.
  * \author Jerry, Jan.*/
 template <int N, class NumberFormat>

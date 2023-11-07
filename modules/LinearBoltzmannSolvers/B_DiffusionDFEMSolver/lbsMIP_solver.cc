@@ -12,7 +12,6 @@ namespace lbs
 
 RegisterChiObject(lbs, DiffusionDFEMSolver);
 
-// ##################################################################
 chi::InputParameters
 DiffusionDFEMSolver::GetInputParameters()
 {
@@ -26,12 +25,10 @@ DiffusionDFEMSolver::GetInputParameters()
   return params;
 }
 
-// ##################################################################
 DiffusionDFEMSolver::DiffusionDFEMSolver(const chi::InputParameters& params) : LBSSolver(params)
 {
 }
 
-// ##################################################################
 /**Destructor to cleanup TGDSA*/
 DiffusionDFEMSolver::~DiffusionDFEMSolver()
 {
@@ -39,7 +36,6 @@ DiffusionDFEMSolver::~DiffusionDFEMSolver()
     CleanUpTGDSA(groupset);
 }
 
-// ##################################################################
 /**Initializing.*/
 void
 DiffusionDFEMSolver::Initialize()
@@ -62,7 +58,6 @@ DiffusionDFEMSolver::Initialize()
   LBSSolver::InitializeSolverSchemes();
 }
 
-// ##################################################################
 /**Initializes Within-GroupSet solvers.*/
 void
 DiffusionDFEMSolver::InitializeWGSSolvers()

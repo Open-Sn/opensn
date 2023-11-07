@@ -25,7 +25,6 @@ namespace chi_lua
 
 typedef chi::ParameterBlock ParamBlock;
 
-// ###################################################################
 //  NOLINTBEGIN(misc-no-recursion)
 /**This function recursively processes table values. If the value is
  * a primitive type the recursion stops and the parameter block, which is
@@ -81,7 +80,6 @@ TableParserAsParameterBlock::RecursivelyParseTableValues(lua_State* L,
 }
 // NOLINTEND(misc-no-recursion)
 
-// ###################################################################
 //  NOLINTBEGIN(misc-no-recursion)
 /**This function operates on table keys recursively. It has a specific
  * behavior if it detects an array.*/
@@ -127,7 +125,6 @@ TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
 }
 // NOLINTEND(misc-no-recursion)
 
-// ###################################################################
 /**This is the root command for parsing a table as a parameter block.
  * Example table:
 \code
@@ -163,7 +160,6 @@ TableParserAsParameterBlock::ParseTable(lua_State* L, int table_stack_index)
   return param_block;
 }
 
-// ###################################################################
 //  NOLINTBEGIN(misc-no-recursion)
 /**If the `level` parameter is left as default then the zeroth level of
  * the parameter block will have its individual parameters exported as single

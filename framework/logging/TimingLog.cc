@@ -68,8 +68,6 @@ TimingLog::GetTimingBlock(const std::string& name)
   return *iter->second;
 }
 
-// ##################################################################
-
 TimingBlock::TimingBlock(const std::string& name) : name_(name)
 {
 }

@@ -43,7 +43,6 @@ class TimeIntegration;
 namespace lbs
 {
 
-// ################################################################### Class def
 /**Base class for all Linear Boltzmann Solvers.*/
 class LBSSolver : public chi_physics::Solver
 {

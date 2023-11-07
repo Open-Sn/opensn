@@ -9,7 +9,6 @@
 namespace chi_data_types
 {
 
-// ##################################################################
 /**Base class for an allowable range.*/
 class AllowableRange
 {
@@ -47,7 +46,6 @@ public:
   virtual ~AllowableRange() = default;
 };
 
-// ##################################################################
 /**Range comprising a list of values.*/
 class AllowableRangeList : public AllowableRange
 {
@@ -100,7 +98,6 @@ protected:
 
 class AllowableRangeLowHighLimit;
 
-// ##################################################################
 /**Lower limit range.*/
 class AllowableRangeLowLimit : public AllowableRange
 {
@@ -140,7 +137,6 @@ protected:
   }
 };
 
-// ##################################################################
 /**Upper limit range.*/
 class AllowableRangeHighLimit : public AllowableRange
 {
@@ -180,7 +176,6 @@ protected:
   }
 };
 
-// ##################################################################
 /**Upper and lower limit range.*/
 class AllowableRangeLowHighLimit : public AllowableRange
 {

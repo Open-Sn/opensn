@@ -5,7 +5,6 @@
 namespace chi_physics
 {
 
-// ###################################################################
 /** Basic thermal conductivity material property.*/
 class IsotropicMultiGrpSource : public chi_physics::MaterialProperty
 {

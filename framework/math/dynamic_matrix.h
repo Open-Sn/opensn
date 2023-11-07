@@ -14,7 +14,6 @@ class DynamicMatrix;
 
 #include "framework/math/dynamic_vector.h"
 
-// ###################################################################
 /**General dynamic matrix utility.*/
 template <class NumberFormat>
 class chi_math::DynamicMatrix
