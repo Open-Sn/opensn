@@ -4,10 +4,10 @@
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_residual_func.h"
 
-#include "framework/math/PETScUtils/petsc_utils.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 #include <petscsnes.h>
 

@@ -1,11 +1,11 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 #include "unpartition_mesh_lua_utils.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 namespace chi_mesh::unpartition_mesh_lua_utils
 {

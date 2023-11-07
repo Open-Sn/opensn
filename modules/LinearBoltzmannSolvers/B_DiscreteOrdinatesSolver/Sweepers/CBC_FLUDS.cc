@@ -1,8 +1,8 @@
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDS.h"
 
-#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
-#include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "framework/mesh/sweep_utilities/spds/spds.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace lbs
 {

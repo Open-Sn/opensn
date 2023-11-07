@@ -1,10 +1,10 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/mesh/SurfaceMesh/chi_surfacemesh.h"
+#include "framework/mesh/surface_mesh/surface_mesh.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
-#include "framework/logging/chi_log.h"
+#include "framework/logging/log.h"
 
 /** Exports all open edges of a surface mesh to file. This is used mostly
  * for graphical error checking.

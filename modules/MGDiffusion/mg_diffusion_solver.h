@@ -1,15 +1,15 @@
 #pragma once
 
-#include "framework/physics/SolverBase/chi_solver.h"
-#include "framework/math/PETScUtils/petsc_utils.h"
+#include "framework/physics/solver_base/solver.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 
 #include "modules/MGDiffusion/mg_diffusion_bndry.h"
-#include "framework/utils/chi_timer.h"
+#include "framework/utils/timer.h"
 
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
-#include "framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
-#include "framework/physics/PhysicsMaterial/material_property_isotropic_mg_src.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
+#include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 
 #include <map>
 

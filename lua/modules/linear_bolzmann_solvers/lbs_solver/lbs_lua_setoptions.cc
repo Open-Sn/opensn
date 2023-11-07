@@ -2,9 +2,9 @@
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "framework/console/chi_console.h"
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/console/console.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 namespace lbs::common_lua_utils
 {

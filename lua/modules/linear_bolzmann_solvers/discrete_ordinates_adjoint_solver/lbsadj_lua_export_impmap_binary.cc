@@ -2,9 +2,9 @@
 
 #include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 namespace lbs::adjoint_lua_utils
 {

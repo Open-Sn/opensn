@@ -4,7 +4,7 @@
 
 #include <stdexcept>
 
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 namespace lbs::adjoint_lua_utils
 {

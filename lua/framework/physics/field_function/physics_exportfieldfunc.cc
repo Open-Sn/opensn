@@ -1,11 +1,11 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/field_function/field_function_grid_based.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 #include "fieldfunctions_lua.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiExportFieldFunctionToVTK);
 RegisterLuaFunctionAsIs(chiExportMultiFieldFunctionToVTK);

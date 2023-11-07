@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/NonLinearSolver/NonLinearSolverContext.h"
+#include "framework/math/nonlinear_solver/nonlinear_solver_context.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/snes_k_residual_func_context.h"

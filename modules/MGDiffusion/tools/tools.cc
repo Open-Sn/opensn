@@ -1,10 +1,10 @@
 #include "modules/MGDiffusion/tools/tools.h"
-#include "framework/logging/chi_log.h"
+#include "framework/logging/log.h"
 #include "modules/MGDiffusion/mg_diffusion_solver.h"
 
 #include <iomanip>
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
 PetscErrorCode
 mg_diffusion::MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)

@@ -1,9 +1,9 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
 #include "modules/DFEMDiffusion/dfem_diffusion_solver.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 int
 chiDFEMDiffusionSetBCProperty(lua_State* L)

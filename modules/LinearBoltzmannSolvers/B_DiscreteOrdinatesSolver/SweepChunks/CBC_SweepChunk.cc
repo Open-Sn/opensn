@@ -1,9 +1,9 @@
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/CBC_SweepChunk.h"
 
-#include "framework/mesh/Cell/cell.h"
+#include "framework/mesh/cell/cell.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDS.h"
 
 #define scint static_cast<int>

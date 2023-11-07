@@ -1,7 +1,7 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/mesh_handler/mesh_handler.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 int
 chiMeshHandlerExportMeshToObj(lua_State* L)

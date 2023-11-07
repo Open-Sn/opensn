@@ -1,11 +1,11 @@
 #pragma once
 
 #if 0
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
-#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
 
-#include "framework/mesh/SweepUtilities/sweepchunk_base.h"
+#include "framework/mesh/sweep_utilities/sweep_chunk_base.h"
 
 #include "Ca_DO_SteadyState/lbs_DO_steady_state.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"

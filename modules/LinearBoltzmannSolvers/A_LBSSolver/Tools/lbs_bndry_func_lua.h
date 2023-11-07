@@ -1,6 +1,6 @@
 #pragma once
 #ifdef OPENSN_WITH_LUA
-#include "framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
+#include "framework/mesh/sweep_utilities/sweep_boundary/sweep_boundary.h"
 
 #include <string>
 #include <utility>

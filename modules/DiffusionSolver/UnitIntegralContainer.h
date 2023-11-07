@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "framework/mesh/chi_mesh.h"
+#include "framework/mesh/mesh.h"
 
 namespace chi_math
 {

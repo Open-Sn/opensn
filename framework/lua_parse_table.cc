@@ -1,10 +1,10 @@
 #ifdef OPENSN_WITH_LUA
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log_exceptions.h"
+#include "framework/runtime.h"
+#include "framework/logging/log_exceptions.h"
 
-#include "framework/data_types/chi_data_types.h"
+#include "framework/data_types/data_types.h"
 #include "framework/parameters/parameter_block.h"
 
 #define ExceptionLuaNilValue                                                                       \

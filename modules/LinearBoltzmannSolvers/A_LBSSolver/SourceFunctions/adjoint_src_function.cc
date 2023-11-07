@@ -1,7 +1,7 @@
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/adjoint_src_function.h"
 
 #include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace lbs
 {

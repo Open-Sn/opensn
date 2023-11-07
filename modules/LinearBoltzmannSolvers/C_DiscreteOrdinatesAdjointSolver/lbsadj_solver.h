@@ -3,7 +3,7 @@
 #include <utility>
 
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
-#include "framework/math/chi_math.h"
+#include "framework/math/math.h"
 
 #ifdef OPENSN_WITH_LUA
 #include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/ResponseFunction/lbs_adj_response_function.h"

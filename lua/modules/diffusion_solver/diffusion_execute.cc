@@ -1,7 +1,7 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 #include "modules/DiffusionSolver/Solver/diffusion_solver.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
 int
 chiDiffusionExecute(lua_State* L)

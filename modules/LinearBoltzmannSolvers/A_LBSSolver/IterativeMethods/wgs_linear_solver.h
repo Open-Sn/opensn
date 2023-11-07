@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/LinearSolver/linear_solver.h"
+#include "framework/math/linear_solver/linear_solver.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 

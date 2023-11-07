@@ -1,7 +1,7 @@
 #include "framework/parameters/input_parameters.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 #include <sstream>
 #include <algorithm>

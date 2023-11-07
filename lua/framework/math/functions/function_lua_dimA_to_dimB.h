@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/Functions/function_dimA_to_dimB.h"
+#include "framework/math/functions/function_dimA_to_dimB.h"
 
 namespace chi_math::functions
 {

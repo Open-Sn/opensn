@@ -1,15 +1,15 @@
 #include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
 #include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbs_adjoint.h"
-#include "framework/ChiObjectFactory.h"
+#include "framework/object_factory.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/adjoint_src_function.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
-#include "framework/physics/PhysicsMaterial/MultiGroupXS/adjoint_mgxs.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "framework/mesh/LogicalVolume/LogicalVolume.h"
-#include "framework/math/chi_math_vectorNX.h"
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
-#include "framework/mpi/chi_mpi.h"
+#include "framework/physics/physics_material/multi_group_xs/adjoint_mgxs.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
+#include "framework/math/math_vector_nx.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+#include "framework/mpi/mpi.h"
 #include <utility>
 #include <fstream>
 

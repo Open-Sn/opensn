@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/mesh/SweepUtilities/FLUDS/FLUDS.h"
+#include "framework/mesh/sweep_utilities/fluds/fluds.h"
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDSCommonData.h"
 
 #include <map>

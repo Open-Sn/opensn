@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/NonLinearSolver/NonLinearSolver.h"
+#include "framework/math/nonlinear_solver/nonlinear_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_context.h"
 
 namespace lbs

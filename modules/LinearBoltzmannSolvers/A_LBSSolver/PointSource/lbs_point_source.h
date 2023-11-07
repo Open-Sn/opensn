@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "framework/mesh/chi_mesh.h"
+#include "framework/mesh/mesh.h"
 
 namespace lbs
 {

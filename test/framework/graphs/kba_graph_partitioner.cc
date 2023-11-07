@@ -1,12 +1,12 @@
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
-#include "framework/graphs/KBAGraphPartitioner.h"
-#include "framework/ChiObjectFactory.h"
+#include "framework/graphs/kba_graph_partitioner.h"
+#include "framework/object_factory.h"
 
-#include "framework/mesh/chi_mesh.h"
+#include "framework/mesh/mesh.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 namespace chi_unit_tests
 {

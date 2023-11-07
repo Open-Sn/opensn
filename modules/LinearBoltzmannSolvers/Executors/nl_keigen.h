@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/physics/SolverBase/chi_solver.h"
+#include "framework/physics/solver_base/solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_solver.h"
 

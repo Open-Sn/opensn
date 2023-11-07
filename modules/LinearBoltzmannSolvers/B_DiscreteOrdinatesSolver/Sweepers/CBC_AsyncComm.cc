@@ -1,14 +1,14 @@
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AsyncComm.h"
 
-#include "framework/mpi/chi_mpi_commset.h"
+#include "framework/mpi/mpi_comm_set.h"
 
-#include "framework/mesh/SweepUtilities/FLUDS/FLUDS.h"
-#include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/sweep_utilities/fluds/fluds.h"
+#include "framework/mesh/sweep_utilities/spds/spds.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDS.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 #define uint unsigned int
 

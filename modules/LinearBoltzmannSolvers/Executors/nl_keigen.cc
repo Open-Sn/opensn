@@ -1,7 +1,7 @@
 #include "modules/LinearBoltzmannSolvers/Executors/nl_keigen.h"
 
-#include "framework/ChiObjectFactory.h"
-#include "framework/logging/chi_log.h"
+#include "framework/object_factory.h"
+#include "framework/logging/log.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/poweriteration_keigen.h"
 

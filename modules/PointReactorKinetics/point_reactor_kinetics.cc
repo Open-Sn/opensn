@@ -1,12 +1,12 @@
 #include "modules/PointReactorKinetics/point_reactor_kinetics.h"
 
-#include "framework/physics/TimeSteppers/TimeStepper.h"
-#include "framework/physics/PhysicsEventPublisher.h"
+#include "framework/physics/time_steppers/time_stepper.h"
+#include "framework/physics/physics_event_publisher.h"
 
-#include "framework/ChiObjectFactory.h"
+#include "framework/object_factory.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 #include <numeric>
 

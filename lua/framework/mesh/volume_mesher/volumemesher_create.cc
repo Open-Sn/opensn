@@ -1,16 +1,16 @@
-#include "framework/chi_lua.h"
-#include "framework/mesh/VolumeMesher/Extruder/volmesher_extruder.h"
-#include "framework/mesh/VolumeMesher/PredefinedUnpartitioned/volmesher_predefunpart.h"
+#include "framework/lua.h"
+#include "framework/mesh/volume_mesher/extruder/volmesher_extruder.h"
+#include "framework/mesh/volume_mesher/predefined_unpartitioned/volmesher_predefunpart.h"
 
-#include "framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
+#include "framework/mesh/mesh_handler/mesh_handler.h"
+#include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 
 #include <iostream>
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 #include "volumemesher_lua.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiVolumeMesherCreate);
 RegisterLuaConstantAsIs(VOLUMEMESHER_EXTRUDER, chi_data_types::Varying(4));

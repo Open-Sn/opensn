@@ -1,6 +1,6 @@
 #include "modules/LinearBoltzmannSolvers/Executors/lbs_steady_state.h"
 
-#include "framework/ChiObjectFactory.h"
+#include "framework/object_factory.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
 

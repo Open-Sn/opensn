@@ -1,7 +1,7 @@
 #pragma once
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
-#include "framework/math/UnknownManager/unknown_manager.h"
+#include "framework/math/unknown_manager/unknown_manager.h"
 #include "petscksp.h"
 
 namespace chi_mesh

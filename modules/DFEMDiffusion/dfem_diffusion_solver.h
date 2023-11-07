@@ -1,12 +1,12 @@
 #pragma once
 
-#include "framework/physics/SolverBase/chi_solver.h"
-#include "framework/math/PETScUtils/petsc_utils.h"
+#include "framework/physics/solver_base/solver.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "modules/DFEMDiffusion/dfem_diffusion_bndry.h"
-#include "framework/utils/chi_timer.h"
-#include "framework/console/chi_console.h"
-#include "framework/math/UnknownManager/unknown_manager.h"
-#include "framework/mesh/chi_mesh.h"
+#include "framework/utils/timer.h"
+#include "framework/console/console.h"
+#include "framework/math/unknown_manager/unknown_manager.h"
+#include "framework/mesh/mesh.h"
 #include <map>
 
 namespace chi_mesh

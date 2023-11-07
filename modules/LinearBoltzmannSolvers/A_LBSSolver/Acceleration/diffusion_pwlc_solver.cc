@@ -1,12 +1,12 @@
 #include "diffusion_pwlc_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
-#include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
-#include "framework/utils/chi_timer.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
 
 #define DefaultBCDirichlet                                                                         \
   BoundaryCondition                                                                                \

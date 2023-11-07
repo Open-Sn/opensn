@@ -1,13 +1,13 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 #include <iostream>
-#include "framework/mesh/SurfaceMesher/Predefined/surfmesher_predefined.h"
+#include "framework/mesh/surface_mesher/predefined/surfmesher_predefined.h"
 
-#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/mesh_handler/mesh_handler.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 #include "surfmesher_lua.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiSurfaceMesherCreate);
 RegisterLuaConstantAsIs(SURFACEMESHER_PREDEFINED, chi_data_types::Varying(1));

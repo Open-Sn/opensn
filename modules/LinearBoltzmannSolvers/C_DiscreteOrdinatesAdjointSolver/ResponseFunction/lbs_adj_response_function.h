@@ -4,7 +4,7 @@
 
 #include <utility>
 
-#include "framework/mesh/Cell/cell.h"
+#include "framework/mesh/cell/cell.h"
 
 namespace lbs
 {

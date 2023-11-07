@@ -1,6 +1,6 @@
 #include "modules/LinearBoltzmannSolvers/B_DiffusionDFEMSolver/lbsMIP_solver.h"
 
-#include "framework/ChiObjectFactory.h"
+#include "framework/object_factory.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/source_function.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"

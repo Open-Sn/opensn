@@ -1,8 +1,8 @@
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/snes_k_residual_func_context.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
-#include "framework/utils/chi_timer.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
 
 #include <petscsnes.h>
 #include <iomanip>

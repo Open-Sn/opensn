@@ -1,13 +1,13 @@
 #pragma once
 
-#include "framework/physics/SolverBase/chi_solver.h"
+#include "framework/physics/solver_base/solver.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
-#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
-#include "framework/math/LinearSolver/linear_solver.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "framework/math/linear_solver/linear_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
-#include "framework/mesh/SweepUtilities/sweep_namespace.h"
-#include "framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
+#include "framework/mesh/sweep_utilities/sweep_namespace.h"
+#include "framework/mesh/sweep_utilities/sweep_boundary/sweep_boundary.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/PointSource/lbs_point_source.h"
 

@@ -1,10 +1,10 @@
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/source_function.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 namespace lbs
 {

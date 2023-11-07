@@ -2,7 +2,7 @@
 
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/SweepChunk.h"
 
-#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
 namespace lbs

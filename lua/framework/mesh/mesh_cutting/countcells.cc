@@ -1,15 +1,15 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/mesh/chi_mesh.h"
-#include "framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/mesh.h"
+#include "framework/mesh/mesh_handler/mesh_handler.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
-#include "framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
 #include "meshcutting_lua.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiCountMeshInLogicalVolume);
 

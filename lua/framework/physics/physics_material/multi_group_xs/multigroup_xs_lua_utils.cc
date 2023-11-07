@@ -1,13 +1,13 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 #include <iostream>
 
-#include "framework/physics/chi_physics_namespace.h"
-#include "framework/physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
+#include "framework/physics/physics_namespace.h"
+#include "framework/physics/physics_material/multi_group_xs/single_state_mgxs.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 #include "multigroup_xs_lua_utils.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiPhysicsTransportXSCreate);
 RegisterLuaFunctionAsIs(chiPhysicsTransportXSSet);

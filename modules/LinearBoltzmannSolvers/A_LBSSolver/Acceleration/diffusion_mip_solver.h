@@ -2,7 +2,7 @@
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
 #ifdef OPENSN_WITH_LUA
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 #endif
 
 namespace chi_mesh

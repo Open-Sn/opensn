@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
+#include "framework/mesh/sweep_utilities/angle_set/angle_set.h"
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AsyncComm.h"
 
 namespace lbs

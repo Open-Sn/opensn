@@ -2,7 +2,7 @@
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
-#include "framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 
 #include <memory>
 #include <utility>

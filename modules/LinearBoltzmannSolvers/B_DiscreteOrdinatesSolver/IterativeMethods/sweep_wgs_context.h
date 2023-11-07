@@ -2,7 +2,7 @@
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
-#include "framework/mesh/SweepUtilities/SweepScheduler/sweepscheduler.h"
+#include "framework/mesh/sweep_utilities/sweep_scheduler/sweep_scheduler.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"

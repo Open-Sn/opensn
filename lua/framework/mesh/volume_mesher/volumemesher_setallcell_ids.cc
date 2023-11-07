@@ -1,8 +1,8 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "volumemesher_lua.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiVolumeMesherSetMatIDToAll);
 

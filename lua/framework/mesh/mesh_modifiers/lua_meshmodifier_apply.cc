@@ -1,10 +1,10 @@
 #include "lua_meshmodifiers.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
-#include "framework/mesh/MeshModifiers/MeshModifier.h"
+#include "framework/mesh/mesh_modifiers/mesh_modifier.h"
 
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 namespace chi_mesh::lua_utils
 {

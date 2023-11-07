@@ -1,11 +1,11 @@
 #ifdef OPENSN_WITH_LUA
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Tools/lbs_bndry_func_lua.h"
 
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
-#include "framework/console/chi_console.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+#include "framework/console/console.h"
 
 std::vector<double>
 lbs::BoundaryFunctionToLua::Evaluate(

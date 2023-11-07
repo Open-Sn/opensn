@@ -1,15 +1,15 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "framework/mesh/SurfaceMesher/surfacemesher.h"
-#include "framework/mesh/VolumeMesher/Extruder/volmesher_extruder.h"
+#include "framework/mesh/mesh_handler/mesh_handler.h"
+#include "framework/mesh/surface_mesher/surface_mesher.h"
+#include "framework/mesh/volume_mesher/extruder/volmesher_extruder.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/runtime.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
 
 #include <iostream>
 #include "volumemesher_lua.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiVolumeMesherSetProperty);
 

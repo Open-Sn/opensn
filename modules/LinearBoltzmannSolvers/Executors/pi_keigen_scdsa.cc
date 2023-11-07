@@ -1,14 +1,14 @@
 #include "modules/LinearBoltzmannSolvers/Executors/pi_keigen_scdsa.h"
-#include "framework/ChiObjectFactory.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/object_factory.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_pwlc_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
-#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
-#include "framework/math/VectorGhostCommunicator/vector_ghost_communicator.h"
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
-#include "framework/utils/chi_timer.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
+#include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
 #include <iomanip>
 
 namespace lbs

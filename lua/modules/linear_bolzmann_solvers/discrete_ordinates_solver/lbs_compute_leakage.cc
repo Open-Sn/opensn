@@ -2,9 +2,9 @@
 
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
 
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
 namespace lbs::disc_ord_lua_utils
 {

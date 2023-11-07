@@ -2,12 +2,12 @@
 
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AsyncComm.h"
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_SPDS.h"
-#include "framework/mesh/SweepUtilities/sweepchunk_base.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "framework/math/chi_math_range.h"
+#include "framework/mesh/sweep_utilities/sweep_chunk_base.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/math/math_range.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 namespace lbs
 {

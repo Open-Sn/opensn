@@ -2,13 +2,13 @@
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
-#include "framework/mpi/chi_mpi.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+#include "framework/mpi/mpi.h"
 
 #include <fstream>
 
-#include "framework/ChiObjectFactory.h"
+#include "framework/object_factory.h"
 
 namespace lbs
 {

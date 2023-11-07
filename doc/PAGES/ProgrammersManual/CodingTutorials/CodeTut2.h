@@ -104,7 +104,7 @@ vgc.CommunicateGhostEntries(field_wg);
 \endcode
 The first item on the agenda is "what ghost data to include in a local vector?".
 To obtain the relevant ghost DOF-ids we ask the SD to provide us with the necessary
-information with a call to `chi_math::SpatialDiscretization::GetGhostDOFIndices`.
+information with a call to `chi_math::spatial_discretization::GetGhostDOFIndices`.
 Note this routine requires as a parameter a structure of unknowns, which is why
 we supply the configuration `OneDofPerNode`.
 
@@ -130,9 +130,9 @@ at how we are going to access the ghost values.
 
 
 \section CodeTut2Sec4 4 Accessing ghosted data
-As a reminder, consider that a call to `chi_math::SpatialDiscretization::MapDOF`
+As a reminder, consider that a call to `chi_math::spatial_discretization::MapDOF`
 provides the <b>global-id</b> of a DOF whereas
-`chi_math::SpatialDiscretization::MapDOFLocal` provides the <b>local-id</b> of a DOF.
+`chi_math::spatial_discretization::MapDOFLocal` provides the <b>local-id</b> of a DOF.
 Ghost data is, by its nature, not normally a local quantity. Therefore, one would
 assume that a call to `MapDOFLocal` would provide an invalid address for
 ghost-DOFs, however, there is a catch. The id provided by `MapDOFLocal` maps to a

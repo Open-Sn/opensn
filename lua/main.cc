@@ -1,9 +1,9 @@
-#include "framework/chi_runtime.h"
-#include "framework/console/chi_console.h"
-#include "framework/logging/chi_log.h"
-#include "framework/event_system/SystemWideEventPublisher.h"
-#include "framework/event_system/Event.h"
-#include "framework/event_system/EventCodes.h"
+#include "framework/runtime.h"
+#include "framework/console/console.h"
+#include "framework/logging/log.h"
+#include "framework/event_system/system_wide_event_publisher.h"
+#include "framework/event_system/event.h"
+#include "framework/event_system/event_codes.h"
 #include "modules/chi_modules_lua.h"
 
 /** Program entry point.

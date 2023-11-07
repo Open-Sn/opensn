@@ -1,12 +1,12 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/math/Quadratures/angular_quadrature_base.h"
+#include "framework/math/quadratures/angular_quadrature_base.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 #include "quadratures_lua.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiOptimizeAngularQuadratureForPolarSymmetry);
 

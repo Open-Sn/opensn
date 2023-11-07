@@ -3,13 +3,13 @@
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_convergence_test.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "framework/math/PETScUtils/petsc_utils.h"
-#include "framework/math/LinearSolver/linear_matrix_action_Ax.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
+#include "framework/math/linear_solver/linear_matrix_action_Ax.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
-#include "framework/utils/chi_timer.h"
+#include "framework/utils/timer.h"
 
 #include <petscksp.h>
 #include <memory>

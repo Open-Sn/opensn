@@ -20,7 +20,7 @@ const int64_t imap = m_sdm.MapDOF(cell,i,m_uk_man,0,g);
 The two function calls, `MapDOF` with 2 arguments and `MapDOF` with 5 arguments,
 are both methods of the base-class `chi_math::SpatialDiscretization`.
 
-The two overloaded methods, `chi_math::SpatialDiscretization::MapDOF` return the
+The two overloaded methods, `chi_math::spatial_discretization::MapDOF` return the
 global index of a degree-of-freedom (DOF). The counterparts to `MapDOF` are the
 `MapDOFLocal` methods that provide the local index of a DOF.
 

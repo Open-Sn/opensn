@@ -2,10 +2,10 @@
 
 #include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/runtime.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
 
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 namespace lbs::adjoint_lua_utils
 {

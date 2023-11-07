@@ -1,6 +1,6 @@
 #include "framework/logging/stringstream_color.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
 std::string
 chi::StringStreamColor(StringSteamColorCode code)

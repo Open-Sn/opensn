@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/mesh/SweepUtilities/sweepchunk_base.h"
+#include "framework/mesh/sweep_utilities/sweep_chunk_base.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
 namespace chi_math

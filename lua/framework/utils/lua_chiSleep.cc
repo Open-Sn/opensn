@@ -1,8 +1,8 @@
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/utils/chi_timer.h"
+#include "framework/utils/timer.h"
 
 namespace chi::lua_utils
 {

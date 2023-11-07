@@ -1,9 +1,9 @@
 #include "params_test_01.h"
 
-#include "framework/ChiObjectFactory.h"
+#include "framework/object_factory.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 namespace chi_unit_testsB
 {

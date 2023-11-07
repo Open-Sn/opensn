@@ -1,7 +1,7 @@
 #pragma once
 
-#include "framework/physics/SolverBase/chi_solver.h"
-#include "framework/math/chi_math.h"
+#include "framework/physics/solver_base/solver.h"
+#include "framework/math/math.h"
 #include "framework/math/dynamic_matrix.h"
 #include "framework/math/dynamic_vector.h"
 

@@ -1,9 +1,9 @@
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
-#include "framework/utils/chi_timer.h"
+#include "framework/utils/timer.h"
 
 namespace chi_unit_tests
 {

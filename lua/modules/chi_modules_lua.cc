@@ -1,5 +1,5 @@
 #include "chi_modules_lua.h"
-#include "framework/ChiObjectFactory.h"
+#include "framework/object_factory.h"
 
 #include "diffusion_solver/diffusion_lua.h"
 #include "cfem_diffusion/ds_lua_utils.h"

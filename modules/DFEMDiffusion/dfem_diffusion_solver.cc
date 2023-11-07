@@ -1,14 +1,14 @@
 #include "modules/DFEMDiffusion/dfem_diffusion_solver.h"
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
-#include "framework/utils/chi_timer.h"
-#include "framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
+#include "framework/mesh/mesh_handler/mesh_handler.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/DFEMDiffusion/dfem_diffusion_bndry.h"
-#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
-#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/physics/field_function/field_function_grid_based.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #ifdef OPENSN_WITH_LUA
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 #endif
 
 #define scdouble static_cast<double>

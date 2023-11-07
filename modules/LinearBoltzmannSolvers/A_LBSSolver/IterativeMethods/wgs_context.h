@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/LinearSolver/linear_solver_context.h"
+#include "framework/math/linear_solver/linear_solver_context.h"
 
 #include <vector>
 #include <functional>

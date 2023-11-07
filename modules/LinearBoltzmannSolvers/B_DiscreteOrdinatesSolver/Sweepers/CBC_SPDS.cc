@@ -1,13 +1,13 @@
 #include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_SPDS.h"
 
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "framework/mesh/SweepUtilities/sweep_namespace.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/sweep_utilities/sweep_namespace.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
-#include "framework/graphs/chi_directed_graph.h"
-#include "framework/utils/chi_timer.h"
+#include "framework/graphs/directed_graph.h"
+#include "framework/utils/timer.h"
 
 namespace lbs
 {

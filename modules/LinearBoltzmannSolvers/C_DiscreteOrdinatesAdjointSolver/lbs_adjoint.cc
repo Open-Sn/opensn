@@ -1,10 +1,10 @@
 #include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbs_adjoint.h"
 
-#include "framework/math/chi_math.h"
-#include "framework/math/SerialNewtonIteration/serial_newton_iteration.h"
+#include "framework/math/math.h"
+#include "framework/math/serial_newton_iteration/serial_newton_iteration.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 void
 lbs::TestFunction()

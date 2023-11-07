@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/mesh/SweepUtilities/FLUDS/FLUDSCommonData.h"
+#include "framework/mesh/sweep_utilities/fluds/fluds_common_data.h"
 
 #include <cinttypes>
 

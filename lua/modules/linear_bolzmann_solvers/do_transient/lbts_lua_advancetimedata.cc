@@ -1,7 +1,7 @@
 #include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 #if 0
 #define PropertyArgCntErr(prop_name)                                                               \

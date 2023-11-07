@@ -5,9 +5,9 @@
 #include <map>
 #include <vector>
 
-#include "framework/mesh/SweepUtilities/Communicators/AsyncComm.h"
+#include "framework/mesh/sweep_utilities/communicators/async_comm.h"
 
-#include "framework/mpi/chi_mpi.h"
+#include "framework/mpi/mpi.h"
 #include "framework/data_types/byte_array.h"
 
 namespace chi

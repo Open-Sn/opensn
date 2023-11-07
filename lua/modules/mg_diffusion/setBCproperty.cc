@@ -1,9 +1,9 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
 #include "modules/MGDiffusion/mg_diffusion_solver.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 namespace mg_diffusion::mgd_lua_utils
 {

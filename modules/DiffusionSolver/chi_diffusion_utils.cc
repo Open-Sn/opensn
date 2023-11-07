@@ -2,10 +2,10 @@
 
 #include <iomanip>
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
-#include "framework/mpi/chi_mpi.h"
+#include "framework/mpi/mpi.h"
 
 PetscErrorCode
 chi_diffusion::KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* monitordestroy)

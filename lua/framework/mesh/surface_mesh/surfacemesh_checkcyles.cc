@@ -1,14 +1,14 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
 #include <iostream>
 #include <algorithm>
-#include "framework/mesh/SurfaceMesh/chi_surfacemesh.h"
-#include "framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "framework/chi_runtime.h"
+#include "framework/mesh/surface_mesh/surface_mesh.h"
+#include "framework/mesh/mesh_handler/mesh_handler.h"
+#include "framework/runtime.h"
 
-#include "framework/logging/chi_log.h"
+#include "framework/logging/log.h"
 #include "lua_surface_mesh.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiSurfaceMeshCheckCycles);
 RegisterLuaFunctionAsIs(chiComputeLoadBalancing);

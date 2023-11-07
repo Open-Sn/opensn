@@ -1,23 +1,23 @@
 #pragma once
 
-#include "framework/ChiObject.h"
+#include "framework/object.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_group.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/lbs_iterativemethods.h"
 
-#include "framework/math/Quadratures/LegendrePoly/legendrepoly.h"
-#include "framework/math/Quadratures/angular_quadrature_base.h"
-#include "framework/math/UnknownManager/unknown_manager.h"
+#include "framework/math/quadratures/legendre_poly/legendrepoly.h"
+#include "framework/math/quadratures/angular_quadrature_base.h"
+#include "framework/math/unknown_manager/unknown_manager.h"
 
-#include "framework/mesh/SweepUtilities/AngleAggregation/angleaggregation.h"
+#include "framework/mesh/sweep_utilities/angle_aggregation/angle_aggregation.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
-#include "framework/physics/chi_physics_namespace.h"
+#include "framework/physics/physics_namespace.h"
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
 
-#include "framework/utils/chi_utils.h"
+#include "framework/utils/utils.h"
 
 namespace lbs::acceleration
 {

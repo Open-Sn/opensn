@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
 /** \defgroup LuaDomainDecomposition Domain decomposition
  * \ingroup LuaMesh

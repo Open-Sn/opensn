@@ -2,7 +2,7 @@
 
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/nl_keigen_acc_context.h"
 
-#include "framework/logging/chi_log.h"
+#include "framework/logging/log.h"
 
 namespace lbs::acceleration
 {
