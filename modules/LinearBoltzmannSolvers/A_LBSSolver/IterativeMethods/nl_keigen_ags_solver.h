@@ -18,7 +18,7 @@ public:
   {
   }
 
-  virtual ~NLKEigenvalueAGSSolver() override = default;
+  ~NLKEigenvalueAGSSolver() override = default;
 
 protected:
   void PreSetupCallback() override;

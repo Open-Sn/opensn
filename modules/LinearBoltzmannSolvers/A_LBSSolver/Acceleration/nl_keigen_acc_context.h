@@ -59,7 +59,7 @@ struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec, SNES>
     VecRestoreArray(phi, &phi_raw);
   }
 
-  virtual ~NLKEigenDiffContext() override = default;
+  ~NLKEigenDiffContext() override = default;
 };
 
 } // namespace lbs::acceleration

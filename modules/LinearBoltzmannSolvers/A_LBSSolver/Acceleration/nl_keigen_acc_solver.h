@@ -19,7 +19,7 @@ public:
   {
   }
 
-  virtual ~NLKEigenDiffSolver() override = default;
+  ~NLKEigenDiffSolver() override = default;
 
 protected:
   void SetMonitor() override;

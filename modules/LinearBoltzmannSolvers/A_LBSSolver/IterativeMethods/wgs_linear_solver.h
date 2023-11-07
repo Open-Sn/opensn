@@ -41,9 +41,9 @@ protected:
   void SetConvergenceTest() override;
 
   /// Customized via context
-  virtual void SetSystemSize() override;
+  void SetSystemSize() override;
   /// Generic
-  virtual void SetSystem() override;
+  void SetSystem() override;
 
   /// Customized via context
   void SetPreconditioner() override;
@@ -62,7 +62,7 @@ protected:
   void PostSolveCallback() override;
 
 public:
-  virtual ~WGSLinearSolver() override;
+  ~WGSLinearSolver() override;
 };
 
 } // namespace lbs

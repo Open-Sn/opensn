@@ -29,7 +29,7 @@ struct NLKEigenAGSContext : public chi_math::NonLinearSolverContext<VecType, Sol
   {
   }
 
-  virtual ~NLKEigenAGSContext() override = default;
+  ~NLKEigenAGSContext() override = default;
 };
 
 } // namespace lbs
