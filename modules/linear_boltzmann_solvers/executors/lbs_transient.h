@@ -1,0 +1,29 @@
+#pragma once
+
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
+
+namespace chi_math
+{
+class TimeIntegration;
+}
+
+namespace lbs
+{
+
+class TransientSolver : public chi_physics::Solver
+{
+protected:
+  LBSSolver& lbs_solver_;
+  std::shared_ptr<chi_math::TimeIntegration> time_integration_;
+
+public:
+  static chi::InputParameters GetInputParameters();
+  explicit TransientSolver(const chi::InputParameters& params);
+
+  void Initialize() override;
+  void Execute() override;
+  void Step() override;
+  void Advance() override;
+};
+
+} // namespace lbs

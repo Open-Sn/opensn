@@ -1,6 +1,6 @@
 #include "framework/lua.h"
 
-#include "modules/DiffusionSolver/Solver/diffusion_solver.h"
+#include "modules/diffusion_solver/solver/diffusion_solver.h"
 
 #include "framework/runtime.h"
 

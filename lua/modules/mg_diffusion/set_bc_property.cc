@@ -1,6 +1,6 @@
 #include "framework/lua.h"
 
-#include "modules/MGDiffusion/mg_diffusion_solver.h"
+#include "modules/mg_diffusion/mg_diffusion_solver.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

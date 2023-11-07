@@ -1,4 +1,4 @@
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 
 #include "framework/runtime.h"
 

@@ -1,6 +1,6 @@
 #include "framework/lua.h"
 
-#include "modules/DFEMDiffusion/dfem_diffusion_solver.h"
+#include "modules/dfem_diffusion/dfem_diffusion_solver.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

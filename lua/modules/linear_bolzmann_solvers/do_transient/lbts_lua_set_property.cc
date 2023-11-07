@@ -1,4 +1,4 @@
-#include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
+#include "modules/linear_boltzmann_solvers/d_do_transient/lbts_transient_solver.h"
 #if 0
 #include "framework/chi_runtime.h"
 #include "framework/logging/chi_log.h"

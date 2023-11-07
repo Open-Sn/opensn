@@ -1,9 +1,9 @@
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 
 #include "framework/math/quadratures/angular_product_quadrature.h"
 
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_group.h"
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_group.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

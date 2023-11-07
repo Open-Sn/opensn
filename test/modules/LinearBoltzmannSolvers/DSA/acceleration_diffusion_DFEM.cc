@@ -3,9 +3,9 @@
 
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/acceleration.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion_mip_solver.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 
 #include "framework/physics/field_function/field_function_grid_based.h"
 

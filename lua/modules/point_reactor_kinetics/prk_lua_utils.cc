@@ -1,7 +1,7 @@
 #include "framework/lua.h"
 #include "framework/console/console.h"
 
-#include "modules/PointReactorKinetics/point_reactor_kinetics.h"
+#include "modules/point_reactor_kinetics/point_reactor_kinetics.h"
 #include "prk_lua_utils.h"
 
 #include "framework/runtime.h"

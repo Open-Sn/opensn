@@ -1,6 +1,6 @@
 #include "framework/lua.h"
 
-#include "modules/FVDiffusion/fv_diffusion_solver.h"
+#include "modules/fv_diffusion/fv_diffusion_solver.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

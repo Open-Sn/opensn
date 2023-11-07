@@ -1,6 +1,6 @@
 #include "lbsadj_lua_utils.h"
 
-#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
+#include "modules/linear_boltzmann_solvers/c_discrete_ordinates_adjoint_solver/lbs_adj_solver.h"
 
 #include "framework/runtime.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
