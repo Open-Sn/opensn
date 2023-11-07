@@ -1,0 +1,152 @@
+[
+  {
+    "file": "keigenvalue_transport_1d_1g.lua",
+    "comment": "1D KSolver LinearBSolver Test - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.99954,
+        "tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_1a_qblock.lua",
+    "comment": "2D 2G KEigenvalue::Solver test using Power Iteration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "Iteration    21",
+        "wordnum": 11,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.5969127,
+        "tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_1b_qblock.lua",
+    "comment": "2D 2G KEigenvalue::Solver test using NonLinearK",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Iteration     3",
+        "wordnum": 8,
+        "gold": 0.5969127,
+        "tol": 1e-07
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.5969127,
+        "tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_1c_qblock.lua",
+    "comment": "2D 2G KEigenvalue::Solver test using Power Iteration with SCDSA",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "Iteration    19",
+        "wordnum": 11,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.5969127,
+        "tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_1g_cbc.lua",
+    "comment": "1D KSolver LinearBSolver Test - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.99954,
+        "tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_1a_qblock_cbc.lua",
+    "comment": "2D 2G KEigenvalue::Solver test using Power Iteration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "Iteration    21",
+        "wordnum": 11,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.5969127,
+        "tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_1b_qblock_cbc.lua",
+    "comment": "2D 2G KEigenvalue::Solver test using NonLinearK",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Iteration     3",
+        "wordnum": 8,
+        "gold": 0.5969127,
+        "tol": 1e-07
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.5969127,
+        "tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_1c_qblock_cbc.lua",
+    "comment": "2D 2G KEigenvalue::Solver test using Power Iteration with SCDSA",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "Iteration    18",
+        "wordnum": 11,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.5969127,
+        "tol": 1e-07
+      }
+    ]
+  }
+]

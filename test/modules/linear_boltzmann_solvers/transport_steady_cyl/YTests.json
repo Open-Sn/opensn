@@ -1,0 +1,34 @@
+[
+  {
+    "file": "transport_2d_cyl_1_monoenergetic.lua",
+    "comment": "2D LinearBSolver Cylindrical Test mono-energetic - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 1.0,
+        "tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_2_multigroup.lua",
+    "comment": "2D LinearBSolver Cylindrical Test multi-group - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-valueG1=",
+        "goldvalue": 1.0,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-valueG2=",
+        "goldvalue": 0.25,
+        "tol": 1e-09
+      }
+    ]
+  }
+]

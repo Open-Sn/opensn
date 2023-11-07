@@ -1,0 +1,158 @@
+[
+  {
+    "file": "diffusion_1d.lua",
+    "comment": "1D Diffusion Test - CFEM",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 2.5,
+        "tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "diffusion_1d_kba.lua",
+    "comment": "1D Diffusion Test KBA partitioning - CFEM",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 2.5,
+        "tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "diffusion_1d_ip.lua",
+    "comment": "1D Diffusion Test - DFEM",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 0.5006523128,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "diffusion_2d_1_poly.lua",
+    "comment": "2D Diffusion Test - CFEM",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 0.2948,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "diffusion_2d_1_poly_ip.lua",
+    "comment": "2D Diffusion Test - DFEM",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 2.5,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "diffusion_2d_2_unstructured.lua",
+    "comment": "2D Diffusion Test Unstr. Mesh - CFEM",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 0.30384,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "diffusion_2d_2_unstructured_ip.lua",
+    "comment": "2D Diffusion Test Unstr. Mesh - DFEM",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 0.29685,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "diffusion_3d_1_poly.lua",
+    "comment": "3D Diffusion Test - CFEM",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 0.2948,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "diffusion_3d_1_poly_ip.lua",
+    "comment": "3D Diffusion Test - DFEM",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 0.29492,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "diffusion_3d_2_ortho.lua",
+    "comment": "3D Diffusion Test Ortho Mesh - CFEM",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 0.2948,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "diffusion_3d_3_unstructured.lua",
+    "comment": "3D Diffusion Test Unstr. Mesh - CFEM",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 0.29499,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "diffusion_3d_3_unstructured_ip.lua",
+    "comment": "3D Diffusion Test Unstr. Mesh - DFEM",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value=",
+        "goldvalue": 0.29632,
+        "tol": 0.0001
+      }
+    ]
+  }
+]

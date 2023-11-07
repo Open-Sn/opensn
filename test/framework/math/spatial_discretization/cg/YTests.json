@@ -1,0 +1,130 @@
+[
+  {
+    "file" : "sdm_test_01a_pwlc_1d_ortho.lua", "num_procs" : 4, "checks" :
+    [
+      { "type" :  "ErrorCode", "error_code" :  0},
+      {
+        "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.5, "tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file" : "sdm_test_01b_pwlc_2d_ortho.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.294697, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_01c_pwlc_3d_ortho.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.225042, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_01d_pwlc_2d_tri.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.303836, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_01e_pwlc_3d_prism.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.189312, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_01f_pwlc_3d_hex.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.221298, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_01g_pwlc_3d_tets.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.226633, "tol": 1e-05
+    }
+  ]
+  },
+
+
+  {
+    "file" : "sdm_test_03a_lagc_1d_ortho.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.5, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_03b_lagc_2d_ortho.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.294709, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_03c_lagc_3d_ortho.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.225233, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_03d_lagc_2d_tri.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.303836, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_03e_lagc_3d_prism.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.190197, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_03f_lagc_3d_hex.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.222503, "tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_03g_lagc_3d_tets.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.226633, "tol": 1e-05
+    }
+  ]
+  }
+]
