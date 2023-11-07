@@ -23,8 +23,8 @@ LagrangeContinuous::LagrangeContinuous(const chi_mesh::MeshContinuum& grid,
 
 std::shared_ptr<LagrangeContinuous>
 LagrangeContinuous::New(const chi_mesh::MeshContinuum& grid,
-                        QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
-                        CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
+                        QuadratureOrder q_order,
+                        CoordinateSystemType cs_type)
 
 {
   const auto LagrangeC = SpatialDiscretizationType::LAGRANGE_CONTINUOUS;
@@ -516,7 +516,7 @@ LagrangeContinuous::MapDOF(const chi_mesh::Cell& cell,
                            const unsigned int node,
                            const chi_math::UnknownManager& unknown_manager,
                            const unsigned int unknown_id,
-                           const unsigned int component /*=0*/) const
+                           const unsigned int component) const
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 
@@ -553,7 +553,7 @@ LagrangeContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
                                 const unsigned int node,
                                 const chi_math::UnknownManager& unknown_manager,
                                 const unsigned int unknown_id,
-                                const unsigned int component /*=0*/) const
+                                const unsigned int component) const
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 

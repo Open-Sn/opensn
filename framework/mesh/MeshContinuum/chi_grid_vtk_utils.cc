@@ -283,7 +283,7 @@ FindHighestDimension(std::vector<vtkUGridPtrAndName>& ugrid_blocks)
 
 vtkUGridPtr
 ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
-                      const std::string& block_id_array_name /*="BlockID"*/)
+                      const std::string& block_id_array_name)
 {
   const std::string fname = "ConsolidateGridBlocks";
 
@@ -512,7 +512,7 @@ end_error_checks:
 }
 
 vtkNew<vtkUnstructuredGrid>
-PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous /*=true*/)
+PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous)
 {
   // Instantiate VTK items
   vtkNew<vtkUnstructuredGrid> ugrid;

@@ -574,7 +574,7 @@ Solver::MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
                         size_t ccf,
                         size_t acf,
                         size_t ccfi,
-                        double epsilon /*=1.0e-12*/)
+                        double epsilon)
 {
   const auto& sdm = *sdm_ptr_;
 

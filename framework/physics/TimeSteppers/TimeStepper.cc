@@ -145,7 +145,7 @@ TimeStepper::Advance()
 }
 
 std::string
-TimeStepper::StringTimeInfo(bool old_time /*=false*/) const
+TimeStepper::StringTimeInfo(bool old_time) const
 {
   const double time = old_time ? time_ : time_ + dt_;
   std::stringstream outstr;

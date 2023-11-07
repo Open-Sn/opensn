@@ -334,7 +334,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 
 void
 InputParameters::MarkParamaterDeprecatedWarning(const std::string& param_name,
-                                                const std::string& deprecation_message /*=""*/)
+                                                const std::string& deprecation_message)
 {
   if (Has(param_name)) deprecation_warning_tags_[param_name] = deprecation_message;
   else
@@ -343,7 +343,7 @@ InputParameters::MarkParamaterDeprecatedWarning(const std::string& param_name,
 
 void
 InputParameters::MarkParamaterDeprecatedError(const std::string& param_name,
-                                              const std::string& deprecation_message /*=""*/)
+                                              const std::string& deprecation_message)
 {
   if (Has(param_name)) deprecation_error_tags_[param_name] = deprecation_message;
   else

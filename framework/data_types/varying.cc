@@ -294,7 +294,7 @@ chi_data_types::Varying::ByteSize() const
 }
 
 std::string
-chi_data_types::Varying::PrintStr(bool with_type /*=false*/) const
+chi_data_types::Varying::PrintStr(bool with_type) const
 {
   std::stringstream outstr;
 

@@ -13,7 +13,7 @@ lbs::TestFunction()
 }
 
 std::array<double, 2>
-lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose /*=false*/)
+lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
 {
   // Custom function to implement the non-linear equations
   // that make up the system to solve the a and b coefficients

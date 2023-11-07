@@ -24,8 +24,8 @@ PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(const chi_mesh::MeshC
 
 std::shared_ptr<PieceWiseLinearDiscontinuous>
 PieceWiseLinearDiscontinuous::New(const chi_mesh::MeshContinuum& grid,
-                                  QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
-                                  CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
+                                  QuadratureOrder q_order,
+                                  CoordinateSystemType cs_type)
 
 {
   const auto PWLD = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;

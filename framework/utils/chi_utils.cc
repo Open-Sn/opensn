@@ -31,7 +31,7 @@ StringTrim(const std::string& s)
 }
 
 std::vector<std::string>
-StringSplit(const std::string& input, const std::string& delim /*=" "*/)
+StringSplit(const std::string& input, const std::string& delim)
 {
   constexpr size_t NPOS = std::string::npos;
   std::vector<std::string> output;
@@ -77,7 +77,7 @@ AssertReadibleFile(const std::string& file_name)
 std::string
 PrintIterationProgress(const size_t current_iteration,
                        const size_t total_num_iterations,
-                       const unsigned int num_intvls /*=10*/)
+                       const unsigned int num_intvls)
 {
   typedef unsigned int uint;
 

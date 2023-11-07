@@ -27,9 +27,7 @@ FiniteVolume::FiniteVolume(const chi_mesh::MeshContinuum& grid,
 }
 
 std::shared_ptr<FiniteVolume>
-FiniteVolume::New(
-  const chi_mesh::MeshContinuum& in_grid,
-  chi_math::CoordinateSystemType in_cs_type /* = chi_math::CoordinateSystemType::CARTESIAN*/)
+FiniteVolume::New(const chi_mesh::MeshContinuum& in_grid, chi_math::CoordinateSystemType in_cs_type)
 {
   // First try to find an existing spatial discretization that matches the
   // one requested.

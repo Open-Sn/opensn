@@ -77,7 +77,7 @@ PopulatePolygonFromVertices(const MeshContinuum& mesh,
 bool
 CheckPolygonQuality(const MeshContinuum& mesh,
                     const chi_mesh::Cell& cell,
-                    const bool check_convexity /*=false*/)
+                    const bool check_convexity)
 {
   const chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
 
@@ -322,7 +322,7 @@ CutPolygon(const std::vector<ECI>& cut_edges,
 bool
 CheckPolyhedronQuality(const MeshContinuum& mesh,
                        const chi_mesh::Cell& cell,
-                       const bool check_convexity /*=false*/)
+                       const bool check_convexity)
 {
   const auto& C = cell.centroid_;
 
@@ -567,7 +567,7 @@ Cut3DCell(const std::vector<ECI>& global_cut_edges,
           double float_compare,
           MeshContinuum& mesh,
           chi_mesh::Cell& cell,
-          bool verbose /*=false*/)
+          bool verbose)
 {
   const auto& p = plane_point;
   const auto& n = plane_normal;
@@ -881,8 +881,8 @@ void
 CutMeshWithPlane(MeshContinuum& mesh,
                  const Vector3& plane_point,
                  const Vector3& plane_normal,
-                 double merge_tolerance /*=1.0e-3*/,
-                 double float_compare /*=1.0e-10*/)
+                 double merge_tolerance,
+                 double float_compare)
 {
   const std::string function_name = __FUNCTION__;
 

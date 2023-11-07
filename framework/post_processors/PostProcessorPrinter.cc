@@ -327,7 +327,7 @@ void
 PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
                                           const std::vector<const PostProcessor*>& pp_list,
                                           const Event& event,
-                                          bool per_column_sizes /*=false*/) const
+                                          bool per_column_sizes) const
 {
   if (pp_list.empty()) return;
   // Establish unique time history sizes

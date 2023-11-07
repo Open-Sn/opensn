@@ -241,9 +241,7 @@ SurfaceMesh::UpdateInternalConnectivity()
 }
 
 int
-SurfaceMesh::ImportFromOBJFile(const std::string& fileName,
-                               bool as_poly /*=false*/,
-                               const Vector3& transform /*={0,0,0}*/)
+SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const Vector3& transform)
 {
 
   // Opening the file

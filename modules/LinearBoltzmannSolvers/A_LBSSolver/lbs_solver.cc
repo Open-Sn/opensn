@@ -1638,7 +1638,7 @@ LBSSolver::InitializeSolverSchemes()
 }
 
 void
-lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet /*=true*/)
+lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 {
   if (groupset.apply_wgdsa_)
   {
@@ -2408,7 +2408,7 @@ LBSSolver::WriteFluxMoments(const std::string& file_base, const std::vector<doub
 void
 LBSSolver::ReadFluxMoments(const std::string& file_base,
                            std::vector<double>& flux_moments,
-                           bool single_file /*=false*/)
+                           bool single_file)
 {
   std::string file_name = file_base + std::to_string(Chi::mpi.location_id) + ".data";
   if (single_file) file_name = file_base + ".data";

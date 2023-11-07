@@ -130,7 +130,7 @@ TableParserAsParameterBlock::ParseTable(lua_State* L, int table_stack_index)
 
 //  NOLINTBEGIN(misc-no-recursion)
 void
-PushParameterBlock(lua_State* L, const chi::ParameterBlock& block, int level /*=0*/)
+PushParameterBlock(lua_State* L, const chi::ParameterBlock& block, int level)
 {
   using namespace chi;
 

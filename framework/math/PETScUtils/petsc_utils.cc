@@ -198,7 +198,7 @@ KSPMonitorStraight(KSP ksp, PetscInt n, PetscReal rnorm, void*)
 }
 
 void
-CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL /*=true*/)
+CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL)
 {
   if (resize_STL)
   {
@@ -219,7 +219,7 @@ CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL /
 }
 
 void
-CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool resize_STL /*=true*/)
+CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool resize_STL)
 {
   if (resize_STL)
   {

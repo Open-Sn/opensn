@@ -12,7 +12,7 @@ namespace chi
 {
 
 TimingBlock&
-TimingLog::CreateTimingBlock(const std::string& name, const std::string& parent_name /*=""*/)
+TimingLog::CreateTimingBlock(const std::string& name, const std::string& parent_name)
 {
   ChiInvalidArgumentIf(timing_blocks_.count(name) != 0,
                        "TimingBlock with name \"" + name +
@@ -48,7 +48,7 @@ TimingLog::CreateTimingBlock(const std::string& name, const std::string& parent_
 }
 
 TimingBlock&
-TimingLog::CreateOrGetTimingBlock(const std::string& name, const std::string& parent_name /*=""*/)
+TimingLog::CreateOrGetTimingBlock(const std::string& name, const std::string& parent_name)
 {
   auto iter = timing_blocks_.find(name);
 

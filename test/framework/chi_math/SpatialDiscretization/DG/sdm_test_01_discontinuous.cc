@@ -422,7 +422,7 @@ MapFaceNodeDisc(const chi_math::CellMapping& cur_cell_mapping,
                 size_t ccf,
                 size_t acf,
                 size_t ccfi,
-                double epsilon /*=1.0e-12*/)
+                double epsilon)
 {
   const int i = cur_cell_mapping.MapFaceNode(ccf, ccfi);
   const auto& node_i_loc = cc_node_locs[i];

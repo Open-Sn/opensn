@@ -353,7 +353,7 @@ chi::Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespa
                                                       const std::string& name_in_lua,
                                                       WrapperGetInParamsFunc syntax_function,
                                                       WrapperCallFunc actual_function,
-                                                      bool ignore_null_call_func /*=false*/)
+                                                      bool ignore_null_call_func)
 {
   const std::string name =
     (namespace_name.empty()) ? name_in_lua : namespace_name + "::" + name_in_lua;

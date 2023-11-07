@@ -30,7 +30,7 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                                        std::map<uint64_t, BoundaryCondition> bcs,
                                        MatID2XSMap map_mat_id_2_xs,
                                        const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                                       const bool verbose /*=false*/)
+                                       const bool verbose)
   : DiffusionSolver(std::move(text_name),
                     sdm,
                     uk_man,
@@ -1246,7 +1246,7 @@ DiffusionMIPSolver::MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
                                     size_t ccf,
                                     size_t acf,
                                     size_t ccfi,
-                                    double epsilon /*=1.0e-12*/)
+                                    double epsilon)
 {
   const auto& cur_cell_mapping = sdm_.GetCellMapping(cur_cell);
   const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);

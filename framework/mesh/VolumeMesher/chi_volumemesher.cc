@@ -33,8 +33,7 @@ VolumeMesher::GetContinuum()
 }
 
 void
-VolumeMesher::SetGridAttributes(MeshAttributes new_attribs,
-                                std::array<size_t, 3> ortho_Nis /*={0,0,0}*/)
+VolumeMesher::SetGridAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis)
 {
   grid_ptr_->SetAttributes(new_attribs, ortho_Nis);
 }

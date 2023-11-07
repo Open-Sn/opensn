@@ -9,8 +9,7 @@
 namespace lbs::acceleration
 {
 std::map<uint64_t, BoundaryCondition>
-TranslateBCs(const std::map<uint64_t, SwpBndryPtr>& sweep_boundaries,
-             bool vaccum_bcs_are_dirichlet /*=true*/)
+TranslateBCs(const std::map<uint64_t, SwpBndryPtr>& sweep_boundaries, bool vaccum_bcs_are_dirichlet)
 {
   typedef chi_mesh::sweep_management::BoundaryType SwpBndryType;
   typedef lbs::acceleration::BoundaryCondition BC;

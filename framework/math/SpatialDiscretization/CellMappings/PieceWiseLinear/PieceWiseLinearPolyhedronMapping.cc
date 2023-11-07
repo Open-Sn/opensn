@@ -169,7 +169,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
 double
 PieceWiseLinearPolyhedronMapping::TetShape(uint32_t index,
                                            const chi_mesh::Vector3& qpoint,
-                                           bool on_surface /*=false*/)
+                                           bool on_surface)
 {
   double value = 0.0;
 
@@ -222,7 +222,7 @@ PieceWiseLinearPolyhedronMapping::FaceSideShape(uint32_t face_index,
                                                 uint32_t side_index,
                                                 uint32_t i,
                                                 const chi_mesh::Vector3& qpoint,
-                                                bool on_surface /*=false*/) const
+                                                bool on_surface) const
 {
   double value = 0.0;
   int index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;

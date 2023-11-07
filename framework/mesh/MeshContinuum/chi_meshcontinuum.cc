@@ -119,8 +119,8 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
 
 void
 MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
-                                   bool suppress_node_sets /*= false*/,
-                                   bool suppress_side_sets /*= false*/) const
+                                   bool suppress_node_sets,
+                                   bool suppress_side_sets) const
 {
   const std::string fname = "MeshContinuum::ExportCellsToExodus";
   Chi::log.Log() << "Exporting mesh to Exodus file with base " << file_base_name;

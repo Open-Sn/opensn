@@ -181,7 +181,7 @@ DiffusionSolver::Initialize()
 }
 
 void
-DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess /*=false*/)
+DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 {
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
   Vec x;
@@ -255,7 +255,7 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess /*=
 }
 
 void
-DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess /*=false*/)
+DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 {
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
   Vec x;

@@ -26,7 +26,7 @@ chi::ChiLog::ChiLog() noexcept
 }
 
 chi::LogStream
-chi::ChiLog::Log(LOG_LVL level /*=LOG_0*/)
+chi::ChiLog::Log(LOG_LVL level)
 {
   switch (level)
   {

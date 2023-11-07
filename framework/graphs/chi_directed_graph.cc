@@ -59,13 +59,13 @@ chi::DirectedGraph::VertexAccessor::operator[](size_t v)
 }
 
 void
-chi::DirectedGraph::AddVertex(size_t id, void* context /*=nullptr*/)
+chi::DirectedGraph::AddVertex(size_t id, void* context)
 {
   vertices.AddVertex(id, context);
 }
 
 void
-chi::DirectedGraph::AddVertex(void* context /*=nullptr*/)
+chi::DirectedGraph::AddVertex(void* context)
 {
   vertices.AddVertex(context);
 }

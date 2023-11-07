@@ -8,8 +8,7 @@ namespace chi_physics
 {
 
 void
-MultiGroupXS::ExportToChiXSFile(const std::string& file_name,
-                                const double fission_scaling /* = 1.0 */) const
+MultiGroupXS::ExportToChiXSFile(const std::string& file_name, const double fission_scaling) const
 {
   Chi::log.Log() << "Exporting transport cross section to file: " << file_name;
 

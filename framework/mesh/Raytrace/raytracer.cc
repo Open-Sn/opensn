@@ -14,7 +14,7 @@ RayTracer::Grid() const
 }
 
 RayTracerOutputInformation
-RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth /*=0*/)
+RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth)
 {
   if (not cell_sizes_.empty()) SetTolerancesFromCellSize(cell_sizes_[cell.local_id_]);
 
@@ -391,7 +391,7 @@ CheckPlaneLineIntersect(const Normal& plane_normal,
                         const Vector3& line_point_0,
                         const Vector3& line_point_1,
                         Vector3& intersection_point,
-                        std::pair<double, double>* weights /*=nullptr*/)
+                        std::pair<double, double>* weights)
 {
   Vector3 v0 = line_point_0 - plane_point;
   Vector3 v1 = line_point_1 - plane_point;

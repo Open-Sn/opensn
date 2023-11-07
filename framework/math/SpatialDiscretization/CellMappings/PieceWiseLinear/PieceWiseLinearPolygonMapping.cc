@@ -92,7 +92,7 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
 double
 PieceWiseLinearPolygonMapping::TriShape(uint32_t index,
                                         const chi_mesh::Vector3& qpoint,
-                                        bool on_surface /*false*/)
+                                        bool on_surface)
 {
   double xi;
   double eta;
@@ -121,7 +121,7 @@ double
 PieceWiseLinearPolygonMapping::SideShape(uint32_t side,
                                          uint32_t i,
                                          const chi_mesh::Vector3& qpoint,
-                                         bool on_surface /*=false*/) const
+                                         bool on_surface) const
 {
   int index = node_to_side_map_[i][side];
   double value = 0.0;

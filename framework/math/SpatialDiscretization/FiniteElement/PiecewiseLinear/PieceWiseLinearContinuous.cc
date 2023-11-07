@@ -25,8 +25,8 @@ PieceWiseLinearContinuous::PieceWiseLinearContinuous(const chi_mesh::MeshContinu
 
 std::shared_ptr<PieceWiseLinearContinuous>
 PieceWiseLinearContinuous::New(const chi_mesh::MeshContinuum& grid,
-                               QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
-                               CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
+                               QuadratureOrder q_order,
+                               CoordinateSystemType cs_type)
 
 {
   const auto PWLC = SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS;
@@ -521,7 +521,7 @@ PieceWiseLinearContinuous::MapDOF(const chi_mesh::Cell& cell,
                                   const unsigned int node,
                                   const chi_math::UnknownManager& unknown_manager,
                                   const unsigned int unknown_id,
-                                  const unsigned int component /*=0*/) const
+                                  const unsigned int component) const
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 
@@ -558,7 +558,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
                                        const unsigned int node,
                                        const chi_math::UnknownManager& unknown_manager,
                                        const unsigned int unknown_id,
-                                       const unsigned int component /*=0*/) const
+                                       const unsigned int component) const
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 

@@ -24,8 +24,8 @@ LagrangeDiscontinuous::LagrangeDiscontinuous(const chi_mesh::MeshContinuum& grid
 
 std::shared_ptr<LagrangeDiscontinuous>
 LagrangeDiscontinuous::New(const chi_mesh::MeshContinuum& grid,
-                           QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
-                           CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
+                           QuadratureOrder q_order,
+                           CoordinateSystemType cs_type)
 
 {
   const auto LagrangeD = SpatialDiscretizationType::LAGRANGE_DISCONTINUOUS;

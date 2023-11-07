@@ -10,7 +10,7 @@ chi_math::NewtonIteration(const NonLinearFunction& non_linear_function,
                           const VecDbl& x_0,
                           const unsigned int max_iters,
                           const double epsilon,
-                          const bool verbose /*=false*/)
+                          const bool verbose)
 {
   // Verbose printing lambda
   auto PrintIterationInfo =

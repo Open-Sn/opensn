@@ -169,7 +169,7 @@ XXPowerIterationKEigen::SetLBSFissionSource(const VecDbl& input, const bool addi
 void
 XXPowerIterationKEigen::SetLBSScatterSource(const VecDbl& input,
                                             const bool additive,
-                                            const bool suppress_wg_scat /*=false*/)
+                                            const bool suppress_wg_scat)
 {
   if (not additive) chi_math::Set(q_moments_local_, 0.0);
   active_set_source_function_(front_gs_,

@@ -115,8 +115,7 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const chi_mesh::Cell& cel
 }
 
 std::vector<std::vector<std::vector<int>>>
-chi_math::SpatialDiscretization::MakeInternalFaceNodeMappings(
-  const double tolerance /*=1.0e-12*/) const
+chi_math::SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) const
 {
   typedef std::vector<int> FaceAdjMapping;
   typedef std::vector<FaceAdjMapping> PerFaceAdjMapping;
