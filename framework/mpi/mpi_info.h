@@ -33,8 +33,10 @@ public:
   static MPI_Info& GetInstance() noexcept;
 
 public:
-  MPI_Info(const MPI_Info&) = delete;           // Deleted copy constructor
-  MPI_Info operator=(const MPI_Info&) = delete; // Deleted assigment operator
+  /// Deleted copy constructor
+  MPI_Info(const MPI_Info&) = delete;
+  /// Deleted assigment operator
+  MPI_Info operator=(const MPI_Info&) = delete;
 
 public:
   /**Sets the active communicator*/

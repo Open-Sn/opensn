@@ -205,8 +205,8 @@ public:
     LOG_ALLERROR = 9,      ///< Error for any location
     LOG_ALLVERBOSE_0 = 10, ///< Default verbosity level
     LOG_ALLVERBOSE_1 = 11, ///< Used only if verbosity level equals 1
-    LOG_ALLVERBOSE_2 = 12
-  }; ///< Used only if verbosity level equals 2
+    LOG_ALLVERBOSE_2 = 12  ///< Used only if verbosity level equals 2
+  };
 
 private:
   DummyStream dummy_stream_;

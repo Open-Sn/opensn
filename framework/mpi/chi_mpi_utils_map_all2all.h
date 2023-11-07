@@ -44,19 +44,14 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
   // Communicate sendcounts to get recvcounts
   std::vector<int> recvcounts(Chi::mpi.process_count, 0);
 
-  MPI_Alltoall(sendcounts.data(), // sendbuf
-               1,
-               MPI_INT,           // sendcount, sendtype
-               recvcounts.data(), // recvbuf
-               1,
-               MPI_INT,       // recvcount, recvtype
-               communicator); // communicator
+  MPI_Alltoall(sendcounts.data(), 1, MPI_INT, recvcounts.data(), 1, MPI_INT, communicator);
 
   // Populate recvdispls, sender_pids_set, and total_recv_count
   // All three these quantities are constructed
   // from recvcounts.
   std::vector<int> recvdispls(Chi::mpi.process_count, 0);
-  std::set<K> sender_pids_set; // set of neighbor-partitions sending data
+  // set of neighbor-partitions sending data
+  std::set<K> sender_pids_set;
   size_t total_recv_count;
   {
     int displacement = 0;
@@ -81,15 +76,15 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
   std::vector<T> recvbuf(total_recv_count);
 
   // Communicate serial data
-  MPI_Alltoallv(sendbuf.data(),    // sendbuf
-                sendcounts.data(), // sendcounts
-                senddispls.data(), // senddispls
-                data_mpi_type,     // sendtype
-                recvbuf.data(),    // recvbuf
-                recvcounts.data(), // recvcounts
-                recvdispls.data(), // recvdispls
-                data_mpi_type,     // recvtype
-                communicator);     // comm
+  MPI_Alltoallv(sendbuf.data(),
+                sendcounts.data(),
+                senddispls.data(),
+                data_mpi_type,
+                recvbuf.data(),
+                recvcounts.data(),
+                recvdispls.data(),
+                data_mpi_type,
+                communicator);
 
   std::map<K, std::vector<T>> output_data;
   {

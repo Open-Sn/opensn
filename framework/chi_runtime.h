@@ -147,9 +147,12 @@ public:
 
   public:
   public:
-    run_time() = delete;                          // Deleted constructor
-    run_time(const run_time&) = delete;           // Deleted copy constructor
-    run_time operator=(const run_time&) = delete; // Deleted assigment operator
+    /// Deleted constructor
+    run_time() = delete;
+    /// Deleted copy constructor
+    run_time(const run_time&) = delete;
+    /// Deleted assigment operator
+    run_time operator=(const run_time&) = delete;
   };
 
   /**Customized exceptions.*/
@@ -173,9 +176,12 @@ public:
   };
 
 public:
-  Chi() = delete;                     // Deleted constructor
-  Chi(const Chi&) = delete;           // Deleted copy constructor
-  Chi operator=(const Chi&) = delete; // Deleted assigment operator
+  /// Deleted constructor
+  Chi() = delete;
+  /// Deleted copy constructor
+  Chi(const Chi&) = delete;
+  /// Deleted assigment operator
+  Chi operator=(const Chi&) = delete;
 
 public:
   static int RunInteractive(int argc, char** argv);

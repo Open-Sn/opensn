@@ -197,8 +197,10 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   DynamicMatrix<double> A;
   DynamicMatrix<double> A_inv;
   std::array<DynamicVector<double>, 4> c_coeffs;
-  std::vector<QuadraturePointXYZ>& lqp; // Legendre quadrature points
-  std::vector<double>& lqw;             // Legendre quadrature weights
+  /// Legendre quadrature points
+  std::vector<QuadraturePointXYZ>& lqp;
+  /// Legendre quadrature weights
+  std::vector<double>& lqw;
 
   FUNCTION_WEIGHT_FROM_RHO(SimplifiedLDFESQ::Quadrature& in_sldfesq,
                            chi_mesh::Vertex& in_centroid_xy_tilde,

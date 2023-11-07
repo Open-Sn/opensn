@@ -150,4 +150,4 @@ public:
   void Clear();
 
   ~DirectedGraph();
-}; // CHI_DIRECTED_GRAPH_H
+};

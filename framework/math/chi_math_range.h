@@ -34,7 +34,8 @@ Range(T start, T end, D delta = 1)
     if (forward and i >= end) terminate = true;
     if (not forward and i <= end) terminate = true;
 
-    if (not forward and i > start) terminate = true; // Wrap-around check
+    // Wrap-around check
+    if (not forward and i > start) terminate = true;
   }
 
   return sequence;

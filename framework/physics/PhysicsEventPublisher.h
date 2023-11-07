@@ -12,9 +12,11 @@ class PhysicsEventPublisher : public chi::EventPublisher
 {
 public:
   static PhysicsEventPublisher& GetInstance();
-  PhysicsEventPublisher(const PhysicsEventPublisher&) = delete; // Deleted copy constructor
+  /// Deleted copy constructor
+  PhysicsEventPublisher(const PhysicsEventPublisher&) = delete;
   PhysicsEventPublisher
-  operator=(const PhysicsEventPublisher&) = delete; // Deleted assignment operator
+  /// Deleted assignment operator
+  operator=(const PhysicsEventPublisher&) = delete;
 
   void PublishEvent(const chi::Event& event) override;
 

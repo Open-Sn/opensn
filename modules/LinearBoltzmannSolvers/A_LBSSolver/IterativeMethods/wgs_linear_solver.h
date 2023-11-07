@@ -35,29 +35,33 @@ public:
   }
 
 protected:
-  void PreSetupCallback() override; // Customized via context
-  /*virtual void SetOptions();*/
-  /*virtual void SetSolverContext();*/ // Generic
-  void SetConvergenceTest() override;  // Generic
-  /*virtual void SetMonitor();*/
+  /// Customized via context
+  void PreSetupCallback() override;
+  /// Generic
+  void SetConvergenceTest() override;
 
-  virtual void SetSystemSize() override; // Customized via context
-  virtual void SetSystem() override;     // Generic
+  /// Customized via context
+  virtual void SetSystemSize() override;
+  /// Generic
+  virtual void SetSystem() override;
 
-  void SetPreconditioner() override; // Customized via context
+  /// Customized via context
+  void SetPreconditioner() override;
 
-  void PostSetupCallback() override; // Customized via context
-public:
-  /*virtual void Setup();*/
+  /// Customized via context
+  void PostSetupCallback() override;
 
 protected:
-  void PreSolveCallback() override;  // Customized via context
-  void SetRHS() override;            // Generic + with context elements
-  void SetInitialGuess() override;   // Generic
-  void PostSolveCallback() override; // Generic + with context elements
-public:
-  /*virtual void Solve();*/
+  /// Customized via context
+  void PreSolveCallback() override;
+  /// Generic + with context elements
+  void SetRHS() override;
+  /// Generic
+  void SetInitialGuess() override;
+  /// Generic + with context elements
+  void PostSolveCallback() override;
 
+public:
   virtual ~WGSLinearSolver() override;
 };
 

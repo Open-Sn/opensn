@@ -125,7 +125,7 @@ public:
     RowIterator end() { return {*this, ref_col_vals_.size()}; }
   };
 
-  RowIteratorContext Row(size_t row_id); // See .cc file
+  RowIteratorContext Row(size_t row_id);
 
   class ConstRowIteratorContext
   {

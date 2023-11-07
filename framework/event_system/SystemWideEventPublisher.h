@@ -10,9 +10,11 @@ class SystemWideEventPublisher : public chi::EventPublisher
 public:
   static SystemWideEventPublisher& GetInstance();
 
-  SystemWideEventPublisher(const SystemWideEventPublisher&) = delete; // Deleted copy constructor
+  /// Deleted copy constructor
+  SystemWideEventPublisher(const SystemWideEventPublisher&) = delete;
   SystemWideEventPublisher
-  operator=(const SystemWideEventPublisher&) = delete; // Deleted assignment operator
+  /// Deleted assignment operator
+  operator=(const SystemWideEventPublisher&) = delete;
 
   void PublishEvent(const chi::Event& event) override;
 
