@@ -10,10 +10,7 @@ namespace chi_unit_tests
 
 chi::ParameterBlock LogTimingInfoTest(const chi::InputParameters&);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/LogTimingInfoTest,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/LogTimingInfoTest);
+RegisterWrapperFunction(chi_unit_tests, LogTimingInfoTest, nullptr, LogTimingInfoTest);
 
 chi::ParameterBlock
 LogTimingInfoTest(const chi::InputParameters&)

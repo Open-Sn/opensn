@@ -102,7 +102,7 @@ XXPowerIterationKEigen::Execute()
   while (nit < max_iters_)
   {
     // Set the fission source
-    SetLBSFissionSource(phi_old_local_, /*additive=*/false);
+    SetLBSFissionSource(phi_old_local_, false);
     Scale(q_moments_local_, 1.0 / k_eff_);
 
     // This solves the inners for transport

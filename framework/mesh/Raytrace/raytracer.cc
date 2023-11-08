@@ -24,26 +24,11 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
   bool backward_tolerance_hit = false;
 
   if (cell.Type() == CellType::SLAB)
-    TraceSlab(cell,
-              pos_i,
-              omega_i,
-              intersection_found /*byRef*/,
-              backward_tolerance_hit /*byRef*/,
-              oi /*byRef*/);
+    TraceSlab(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else if (cell.Type() == CellType::POLYGON)
-    TracePolygon(cell,
-                 pos_i,
-                 omega_i,
-                 intersection_found /*byRef*/,
-                 backward_tolerance_hit /*byRef*/,
-                 oi /*byRef*/);
+    TracePolygon(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else if (cell.Type() == CellType::POLYHEDRON)
-    TracePolyhedron(cell,
-                    pos_i,
-                    omega_i,
-                    intersection_found /*byRef*/,
-                    backward_tolerance_hit /*byRef*/,
-                    oi /*byRef*/);
+    TracePolyhedron(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else
     throw std::logic_error("Unsupported cell type encountered in call to "
                            "RayTrace.");

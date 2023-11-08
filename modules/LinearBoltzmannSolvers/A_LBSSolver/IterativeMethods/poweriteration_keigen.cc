@@ -54,8 +54,8 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
     chi_math::Set(q_moments_local, 0.0);
     for (auto& groupset : groupsets)
       active_set_source_function(groupset,
-                                 q_moments_local, // output
-                                 phi_old_local,   // input
+                                 q_moments_local,
+                                 phi_old_local,
                                  APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 
     chi_math::Scale(q_moments_local, 1.0 / k_eff);

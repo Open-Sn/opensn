@@ -10,10 +10,10 @@ namespace chi
 InputParameters GetSyntax_ExecutePostProcessors();
 ParameterBlock ExecutePostProcessors(const InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_in_lua=*/chi,
-                        /*name_in_lua=*/ExecutePostProcessors,
-                        /*syntax_function=*/GetSyntax_ExecutePostProcessors,
-                        /*actual_function=*/ExecutePostProcessors);
+RegisterWrapperFunction(chi,
+                        ExecutePostProcessors,
+                        GetSyntax_ExecutePostProcessors,
+                        ExecutePostProcessors);
 
 InputParameters
 GetSyntax_ExecutePostProcessors()

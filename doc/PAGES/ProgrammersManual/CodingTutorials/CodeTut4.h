@@ -147,11 +147,7 @@ for (const auto& cell : grid.local_cells)
 }//for cell
 
 double global_error = 0.0;
-MPI_Allreduce(&local_error,     //sendbuf
-              &global_error,    //recvbuf
-              1, MPI_DOUBLE,    //count+datatype
-              MPI_SUM,          //operation
-              Chi::mpi.comm);  //communicator
+MPI_Allreduce(&local_error, &global_error, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
 global_error = std::sqrt(global_error);
 

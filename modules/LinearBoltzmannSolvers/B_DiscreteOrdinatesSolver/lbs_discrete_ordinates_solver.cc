@@ -172,8 +172,8 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
       *this,
       groupset,
       active_set_source_function_,
-      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES,                       // lhs_scope
-      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES, // rhs_scope
+      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES,
+      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES,
       options_.verbose_inner_iterations,
       sweep_chunk);
 
@@ -630,12 +630,12 @@ DiscreteOrdinatesSolver::ComputeBalance()
 
   std::vector<double> globl_balance_table(table_size, 0.0);
 
-  MPI_Allreduce(local_balance_table.data(), // sendbuf
-                globl_balance_table.data(), // recvbuf
+  MPI_Allreduce(local_balance_table.data(),
+                globl_balance_table.data(),
                 table_size,
-                MPI_DOUBLE,     // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+                MPI_DOUBLE,
+                MPI_SUM,
+                Chi::mpi.comm);
 
   double globl_absorption = globl_balance_table.at(0);
   double globl_production = globl_balance_table.at(1);
@@ -726,12 +726,8 @@ DiscreteOrdinatesSolver::ComputeLeakage(const int groupset_id, const uint64_t bo
   }   // for cell
 
   std::vector<double> global_leakage(gs_num_groups, 0.0);
-  MPI_Allreduce(local_leakage.data(),  // sendbuf
-                global_leakage.data(), // recvbuf,
-                gs_num_groups,
-                MPI_DOUBLE,     // count+datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    local_leakage.data(), global_leakage.data(), gs_num_groups, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   return global_leakage;
 }
@@ -1135,18 +1131,17 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
 {
   if (sweep_type_ == "AAH")
   {
-    auto sweep_chunk =
-      std::make_shared<AAH_SweepChunk>(*grid_ptr_,                   // Spatial grid of cells
-                                       *discretization_,             // Spatial discretization
-                                       unit_cell_matrices_,          // Unit cell matrices
-                                       cell_transport_views_,        // Cell transport views
-                                       phi_new_local_,               // Destination phi
-                                       psi_new_local_[groupset.id_], // Destination psi
-                                       q_moments_local_,             // Source moments
-                                       groupset,                     // Reference groupset
-                                       matid_to_xs_map_,             // Material cross-sections
-                                       num_moments_,
-                                       max_cell_dof_count_);
+    auto sweep_chunk = std::make_shared<AAH_SweepChunk>(*grid_ptr_,
+                                                        *discretization_,
+                                                        unit_cell_matrices_,
+                                                        cell_transport_views_,
+                                                        phi_new_local_,
+                                                        psi_new_local_[groupset.id_],
+                                                        q_moments_local_,
+                                                        groupset,
+                                                        matid_to_xs_map_,
+                                                        num_moments_,
+                                                        max_cell_dof_count_);
 
     return sweep_chunk;
   }

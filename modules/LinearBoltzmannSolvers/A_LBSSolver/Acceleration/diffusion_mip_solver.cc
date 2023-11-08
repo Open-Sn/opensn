@@ -38,7 +38,7 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                     std::move(map_mat_id_2_xs),
                     unit_cell_matrices,
                     verbose,
-                    /*requires_ghosts=*/false)
+                    false)
 {
   using SDM_TYPE = chi_math::SpatialDiscretizationType;
   const auto& PWLD = SDM_TYPE ::PIECEWISE_LINEAR_DISCONTINUOUS;

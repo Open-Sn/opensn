@@ -21,10 +21,7 @@ namespace chi_unit_sim_tests
  * to Laplace's problem. */
 chi::ParameterBlock chiSimTest02_FV(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_sim_tests,
-                        /*name_in_lua=*/chiSimTest02_FV,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chiSimTest02_FV);
+RegisterWrapperFunction(chi_unit_sim_tests, chiSimTest02_FV, nullptr, chiSimTest02_FV);
 
 chi::ParameterBlock
 chiSimTest02_FV(const chi::InputParameters&)
@@ -121,13 +118,8 @@ chiSimTest02_FV(const chi::InputParameters&)
 
   // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver =
-    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,              // Matrix
-                                                        "FVDiffSolver", // Solver name
-                                                        KSPCG,          // Solver type
-                                                        PCGAMG,         // Preconditioner type
-                                                        1.0e-6, // Relative residual tolerance
-                                                        1000);  // Max iterations
+  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
+    A, "FVDiffSolver", KSPCG, PCGAMG, 1.0e-6, 1000);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);

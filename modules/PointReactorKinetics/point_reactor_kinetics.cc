@@ -89,7 +89,7 @@ TransientSolver::Initialize()
                                         "deduced from precursor data because "
                                         "the data lists are of different size.");
 
-  beta_ = std::accumulate(betas_.begin(), betas_.end(), /*init_val=*/0.0);
+  beta_ = std::accumulate(betas_.begin(), betas_.end(), 0.0);
 
   // Initializing linalg items
   const auto& J = num_precursors_;

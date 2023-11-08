@@ -107,13 +107,8 @@ PieceWiseLinearContinuous::OrderNodes()
   // Communicate node counts
   const uint64_t local_num_nodes = local_node_ids.size();
   locJ_block_size_.assign(Chi::mpi.process_count, 0);
-  MPI_Allgather(&local_num_nodes, // sendbuf
-                1,
-                MPI_UINT64_T,            // sendcount, sendtype
-                locJ_block_size_.data(), // recvbuf
-                1,
-                MPI_UINT64_T,   // recvcount, recvtype
-                Chi::mpi.comm); // comm
+  MPI_Allgather(
+    &local_num_nodes, 1, MPI_UINT64_T, locJ_block_size_.data(), 1, MPI_UINT64_T, Chi::mpi.comm);
 
   // Build block addresses
   locJ_block_address_.assign(Chi::mpi.process_count, 0);

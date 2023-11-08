@@ -27,13 +27,7 @@ BuildLocationExtents(uint64_t local_size, MPI_Comm comm)
   const int process_count = GetProcessCount(comm);
   // Get the local vector sizes per process
   std::vector<uint64_t> local_sizes(process_count, 0);
-  MPI_Allgather(&local_size, // sendbuf
-                1,
-                MPI_UINT64_T,       // sendcount + sendtype
-                local_sizes.data(), // recvbuf
-                1,
-                MPI_UINT64_T, // recvcount + recvtype
-                comm);        // communicator
+  MPI_Allgather(&local_size, 1, MPI_UINT64_T, local_sizes.data(), 1, MPI_UINT64_T, comm);
 
   // With the vector sizes per processor, now the offsets for each
   // processor can be defined using a cumulative sum per processor.

@@ -20,10 +20,7 @@ namespace chi_unit_sim_tests
  * to Laplace's problem but with a manufactured solution. */
 chi::ParameterBlock chiSimTest04_PWLC(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chiSimTest04_PWLC,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chiSimTest04_PWLC);
+RegisterWrapperFunction(chi_unit_tests, chiSimTest04_PWLC, nullptr, chiSimTest04_PWLC);
 
 chi::ParameterBlock
 chiSimTest04_PWLC(const chi::InputParameters& params)
@@ -186,13 +183,8 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
 
   // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver =
-    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,                // Matrix
-                                                        "PWLCDiffSolver", // Solver name
-                                                        KSPCG,            // Solver type
-                                                        PCGAMG,           // Preconditioner type
-                                                        1.0e-6, // Relative residual tolerance
-                                                        1000);  // Max iterations
+  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
+    A, "PWLCDiffSolver", KSPCG, PCGAMG, 1.0e-6, 1000);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);
@@ -214,10 +206,7 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
 
   // Create Field Function
   auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",                                           // Text name
-    sdm_ptr,                                         // Spatial Discr.
-    chi_math::Unknown(chi_math::UnknownType::SCALAR) // Unknown
-  );
+    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::SCALAR));
 
   ff->UpdateFieldVector(field);
 
@@ -256,12 +245,7 @@ chiSimTest04_PWLC(const chi::InputParameters& params)
   } // for cell
 
   double global_error = 0.0;
-  MPI_Allreduce(&local_error,  // sendbuf
-                &global_error, // recvbuf
-                1,
-                MPI_DOUBLE,     // count+datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+  MPI_Allreduce(&local_error, &global_error, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   global_error = std::sqrt(global_error);
 

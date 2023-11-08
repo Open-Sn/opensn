@@ -326,9 +326,7 @@ Solver::Initialize(bool verbose)
 
     using namespace chi_math;
     auto initial_field_function = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      text_name,                     // Text name
-      sdm_ptr,                       // Spatial Discretization
-      Unknown(UnknownType::SCALAR)); // Unknown/Variable
+      text_name, sdm_ptr, Unknown(UnknownType::SCALAR));
 
     field_functions_.push_back(initial_field_function);
     Chi::field_function_stack.push_back(initial_field_function);

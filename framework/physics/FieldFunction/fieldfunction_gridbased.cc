@@ -364,20 +364,12 @@ FieldFunctionGridBased::GetPointValue(const chi_mesh::Vector3& point) const
 
   // Communicate number of point hits
   size_t globl_num_point_hits;
-  MPI_Allreduce(&local_num_point_hits, // sendbuf
-                &globl_num_point_hits, // recvbuf
-                1,
-                MPIU_SIZE_T,    // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+  MPI_Allreduce(
+    &local_num_point_hits, &globl_num_point_hits, 1, MPIU_SIZE_T, MPI_SUM, Chi::mpi.comm);
 
   std::vector<double> globl_point_value(num_components, 0.0);
-  MPI_Allreduce(local_point_value.data(), // sendbuf
-                globl_point_value.data(), // recvbuf
-                1,
-                MPI_DOUBLE,     // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+  MPI_Allreduce(
+    local_point_value.data(), globl_point_value.data(), 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   chi_math::Scale(globl_point_value, 1.0 / static_cast<double>(globl_num_point_hits));
 

@@ -374,7 +374,7 @@ ParameterBlock::RecursiveDumpToJSON(std::string& outstr) const
 {
   if (HasValue())
   {
-    outstr += value_ptr_->PrintStr(/*with_type=*/false);
+    outstr += value_ptr_->PrintStr(false);
     return;
   }
 

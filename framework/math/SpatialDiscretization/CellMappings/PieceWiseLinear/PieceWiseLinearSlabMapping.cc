@@ -10,10 +10,7 @@ PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(
   const chi_mesh::Cell& slab_cell,
   const chi_mesh::MeshContinuum& ref_grid,
   const chi_math::QuadratureLine& volume_quadrature)
-  : PieceWiseLinearBaseMapping(ref_grid,
-                               slab_cell,
-                               2, // num_nodes
-                               MakeFaceNodeMapping(slab_cell)),
+  : PieceWiseLinearBaseMapping(ref_grid, slab_cell, 2, MakeFaceNodeMapping(slab_cell)),
     volume_quadrature_(volume_quadrature)
 {
   v0i_ = slab_cell.vertex_ids_[0];
@@ -155,10 +152,8 @@ PieceWiseLinearSlabMapping::MakeVolumetricQuadraturePointData() const
     for (const auto& qpoint : volume_quadrature_.qpoints_)
     {
       node_shape_value.push_back(SlabShape(i, qpoint));
-      node_shape_grad.emplace_back(0.0,               // x
-                                   0.0,               // y
-                                   SlabGradShape(i)); // z
-    }                                                 // for qp
+      node_shape_grad.emplace_back(0.0, 0.0, SlabGradShape(i));
+    } // for qp
 
     V_shape_value.push_back(node_shape_value);
     V_shape_grad.push_back(node_shape_grad);
@@ -229,10 +224,8 @@ PieceWiseLinearSlabMapping::MakeSurfaceQuadraturePointData(size_t face_index) co
     for (const auto& qpoint : {chi_mesh::Vector3(0.0, 0.0, 0.0)})
     {
       node_shape_value.push_back(SlabShape(i, qpoint, ON_SURFACE, f));
-      node_shape_grad.emplace_back(0.0,               // x
-                                   0.0,               // y
-                                   SlabGradShape(i)); // z
-    }                                                 // for qp
+      node_shape_grad.emplace_back(0.0, 0.0, SlabGradShape(i));
+    } // for qp
     F_shape_value.push_back(node_shape_value);
     F_shape_grad.push_back(node_shape_grad);
   } // for i

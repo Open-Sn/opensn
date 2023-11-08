@@ -73,10 +73,7 @@ chiPRKSetParam(lua_State* L)
   return 0;
 }
 
-RegisterWrapperFunction(/*namespace_in_lua=*/prk,
-                        /*name_in_lua=*/SetParam,
-                        /*syntax_function=*/GetSyntax_SetParam,
-                        /*actual_function=*/SetParam);
+RegisterWrapperFunction(prk, SetParam, GetSyntax_SetParam, SetParam);
 
 chi::InputParameters
 GetSyntax_SetParam()
@@ -123,10 +120,7 @@ SetParam(const chi::InputParameters& params)
   return chi::ParameterBlock(); // Return empty param block
 }
 
-RegisterWrapperFunction(/*namespace_in_lua=*/prk,
-                        /*name_in_lua=*/GetParam,
-                        /*syntax_function=*/GetParamSyntax,
-                        /*actual_function=*/GetParam);
+RegisterWrapperFunction(prk, GetParam, GetParamSyntax, GetParam);
 
 chi::InputParameters
 GetParamSyntax()

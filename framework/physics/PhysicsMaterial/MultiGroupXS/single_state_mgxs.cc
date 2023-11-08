@@ -316,9 +316,11 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
   // Define utility functions for parsing
 
   /// Lambda for reading group structure data.
+  ///
+  /// \param G Number of groups
   auto ReadGroupStructure = [](const std::string& keyword,
                                std::vector<std::vector<double>>& destination,
-                               const unsigned int G, // # of groups
+                               const unsigned int G,
                                std::ifstream& file,
                                std::istringstream& line_stream,
                                unsigned int& line_number)
@@ -440,10 +442,13 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
   };
 
   /// Lambda for reading transfer matrix data.
+  ///
+  /// \param M Number of moments
+  /// \param G Number of groups
   auto ReadTransferMatrices = [](const std::string& keyword,
                                  std::vector<chi_math::SparseMatrix>& destination,
-                                 const unsigned int M, // # of moments
-                                 const unsigned int G, // # of groups
+                                 const unsigned int M,
+                                 const unsigned int G,
                                  std::ifstream& file,
                                  std::istringstream& line_stream,
                                  unsigned int& line_number)

@@ -85,13 +85,13 @@ CBC_ASynchronousCommunicator::SendData()
     if (not buffer_item.send_initiated_)
     {
       const int locJ = buffer_item.destination_;
-      chi::MPI_Info::Call(MPI_Isend(buffer_item.data_array_.Data().data(),            // buf
-                                    static_cast<int>(buffer_item.data_array_.Size()), // count
-                                    MPI_BYTE,                                         //
-                                    comm_set_.MapIonJ(locJ, locJ),                    // destination
-                                    static_cast<int>(angle_set_id_),                  // tag
-                                    comm_set_.LocICommunicator(locJ),                 // comm
-                                    &buffer_item.mpi_request_));                      // request
+      chi::MPI_Info::Call(MPI_Isend(buffer_item.data_array_.Data().data(),
+                                    static_cast<int>(buffer_item.data_array_.Size()),
+                                    MPI_BYTE,
+                                    comm_set_.MapIonJ(locJ, locJ),
+                                    static_cast<int>(angle_set_id_),
+                                    comm_set_.LocICommunicator(locJ),
+                                    &buffer_item.mpi_request_));
       buffer_item.send_initiated_ = true;
     }
 
@@ -120,24 +120,24 @@ CBC_ASynchronousCommunicator::ReceiveData()
   {
     int message_available = 0;
     MPI_Status status;
-    chi::MPI_Info::Call(MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),    // source
-                                   static_cast<int>(angle_set_id_),                  // tag
-                                   comm_set_.LocICommunicator(Chi::mpi.location_id), // comm
-                                   &message_available,                               // flag
-                                   &status));                                        // status
+    chi::MPI_Info::Call(MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+                                   static_cast<int>(angle_set_id_),
+                                   comm_set_.LocICommunicator(Chi::mpi.location_id),
+                                   &message_available,
+                                   &status));
 
     if (message_available)
     {
       int num_items;
       MPI_Get_count(&status, MPI_BYTE, &num_items);
       std::vector<std::byte> recv_buffer(num_items);
-      chi::MPI_Info::Call(MPI_Recv(recv_buffer.data(),                               // recv_buffer
-                                   num_items,                                        // count
-                                   MPI_BYTE,                                         // datatype
-                                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),    // src
-                                   status.MPI_TAG,                                   // tag
-                                   comm_set_.LocICommunicator(Chi::mpi.location_id), // comm
-                                   MPI_STATUS_IGNORE));                              // status
+      chi::MPI_Info::Call(MPI_Recv(recv_buffer.data(),
+                                   num_items,
+                                   MPI_BYTE,
+                                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+                                   status.MPI_TAG,
+                                   comm_set_.LocICommunicator(Chi::mpi.location_id),
+                                   MPI_STATUS_IGNORE));
 
       chi_data_types::ByteArray data_array(recv_buffer);
 

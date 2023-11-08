@@ -11,10 +11,8 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   const chi_mesh::MeshContinuum& ref_grid,
   const chi_math::QuadratureTriangle& volume_quadrature,
   const chi_math::QuadratureLine& surface_quadrature)
-  : PieceWiseLinearBaseMapping(ref_grid,
-                               poly_cell,
-                               poly_cell.vertex_ids_.size(), // num_nodes
-                               MakeFaceNodeMapping(poly_cell)),
+  : PieceWiseLinearBaseMapping(
+      ref_grid, poly_cell, poly_cell.vertex_ids_.size(), MakeFaceNodeMapping(poly_cell)),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature)
 {
@@ -327,11 +325,9 @@ PieceWiseLinearPolygonMapping::MakeVolumetricQuadraturePointData() const
       for (const auto& qpoint : volume_quadrature_.qpoints_)
       {
         node_shape_value.push_back(SideShape(s, i, qpoint));
-        node_shape_grad.emplace_back(SideGradShape_x(s, i), // x
-                                     SideGradShape_y(s, i), // y
-                                     0.0);                  // z
-      }                                                     // for qp
-    }                                                       // for side
+        node_shape_grad.emplace_back(SideGradShape_x(s, i), SideGradShape_y(s, i), 0.0);
+      } // for qp
+    }   // for side
 
     V_shape_value.push_back(node_shape_value);
     V_shape_grad.push_back(node_shape_grad);
@@ -403,10 +399,8 @@ PieceWiseLinearPolygonMapping::MakeSurfaceQuadraturePointData(size_t face_index)
     for (const auto& qpoint : surface_quadrature_.qpoints_)
     {
       node_shape_value.push_back(SideShape(s, i, qpoint, ON_SURFACE));
-      node_shape_grad.emplace_back(SideGradShape_x(s, i), // x
-                                   SideGradShape_y(s, i), // y
-                                   0.0);                  // z
-    }                                                     // for qp
+      node_shape_grad.emplace_back(SideGradShape_x(s, i), SideGradShape_y(s, i), 0.0);
+    } // for qp
     F_shape_value.push_back(node_shape_value);
     F_shape_grad.push_back(node_shape_grad);
   } // for i

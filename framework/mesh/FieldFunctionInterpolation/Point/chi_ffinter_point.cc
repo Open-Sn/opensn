@@ -25,13 +25,7 @@ chi_mesh::FieldFunctionInterpolationPoint::Initialize()
 
   const int local_count = static_cast<int>(cells_potentially_owning_point.size());
   std::vector<int> locI_count(Chi::mpi.process_count, 0);
-  MPI_Allgather(&local_count, // sendbuf
-                1,
-                MPI_INT,           // sendcount + sendtype
-                locI_count.data(), // recvbuf + recvtype
-                1,
-                MPI_INT,        // recvcount + recvtype
-                Chi::mpi.comm); // communicator
+  MPI_Allgather(&local_count, 1, MPI_INT, locI_count.data(), 1, MPI_INT, Chi::mpi.comm);
 
   std::vector<int> recvdispls(Chi::mpi.process_count, 0);
 
@@ -44,14 +38,14 @@ chi_mesh::FieldFunctionInterpolationPoint::Initialize()
 
   const auto& sendbuf = cells_potentially_owning_point;
   std::vector<uint64_t> recvbuf(running_count, 0);
-  MPI_Allgatherv(sendbuf.data(), // sendbuf
+  MPI_Allgatherv(sendbuf.data(),
                  local_count,
-                 MPI_UINT64_T,      // sendcount + sendtype
-                 recvbuf.data(),    // recvbuf
-                 locI_count.data(), // recvcount
-                 recvdispls.data(), // recvdispl
-                 MPI_UINT64_T,      // recvtype
-                 Chi::mpi.comm);    // communicator
+                 MPI_UINT64_T,
+                 recvbuf.data(),
+                 locI_count.data(),
+                 recvdispls.data(),
+                 MPI_UINT64_T,
+                 Chi::mpi.comm);
 
   if (recvbuf.empty()) throw std::logic_error(fname + ": No cell identified containing the point.");
 
@@ -108,12 +102,7 @@ double
 chi_mesh::FieldFunctionInterpolationPoint::GetPointValue() const
 {
   double global_point_value;
-  MPI_Allreduce(&point_value_,       // sendbuf
-                &global_point_value, // recvbuf
-                1,
-                MPI_DOUBLE,     // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+  MPI_Allreduce(&point_value_, &global_point_value, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   return global_point_value;
 }

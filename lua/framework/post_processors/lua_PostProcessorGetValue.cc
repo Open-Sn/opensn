@@ -11,10 +11,10 @@ namespace chi
 InputParameters GetSyntax_PostProcessorGetValue();
 ParameterBlock PostProcessorGetValue(const InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_in_lua=*/chi,
-                        /*name_in_lua=*/PostProcessorGetValue,
-                        /*syntax_function=*/GetSyntax_PostProcessorGetValue,
-                        /*actual_function=*/PostProcessorGetValue);
+RegisterWrapperFunction(chi,
+                        PostProcessorGetValue,
+                        GetSyntax_PostProcessorGetValue,
+                        PostProcessorGetValue);
 
 InputParameters
 GetSyntax_PostProcessorGetValue()

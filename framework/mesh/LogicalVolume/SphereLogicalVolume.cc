@@ -20,7 +20,7 @@ SphereLogicalVolume::GetInputParameters()
   params.AddOptionalParameter("z", 0.0, "Z-location of the volume.");
 
   using namespace chi_data_types;
-  params.ConstrainParameterRange("r", AllowableRangeLowLimit::New(0.0, /*low_closed=*/false));
+  params.ConstrainParameterRange("r", AllowableRangeLowLimit::New(0.0, false));
 
   return params;
 }

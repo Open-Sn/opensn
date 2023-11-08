@@ -14,20 +14,20 @@ lbs::DiscOrdTransientSolver::SetTransientSweepChunk(LBSGroupset& groupset)
 
   // Setting up required sweep chunks
   auto sweep_chunk =
-    std::make_shared<SweepChunkPWLTransientTheta>(grid_ptr_,             // Spatial grid of cells
-                                                  *discretization_,      // Spatial discretization
-                                                  unit_cell_matrices_,   // Unit cell matrices
-                                                  cell_transport_views_, // Cell transport views
-                                                  phi_new_local_,        // Destination phi
-                                                  psi_new_local_[groupset.id_], // Destination psi
+    std::make_shared<SweepChunkPWLTransientTheta>(grid_ptr_,
+                                                  *discretization_,
+                                                  unit_cell_matrices_,
+                                                  cell_transport_views_,
+                                                  phi_new_local_,
+                                                  psi_new_local_[groupset.id_],
 
                                                   psi_prev_local_[groupset.id_],
                                                   theta,
                                                   dt_,
 
-                                                  q_moments_local_, // Source moments
-                                                  groupset,         // Reference groupset
-                                                  matid_to_xs_map_, // Material cross-sections
+                                                  q_moments_local_,
+                                                  groupset,
+                                                  matid_to_xs_map_,
                                                   num_moments_,
                                                   max_cell_dof_count_);
 

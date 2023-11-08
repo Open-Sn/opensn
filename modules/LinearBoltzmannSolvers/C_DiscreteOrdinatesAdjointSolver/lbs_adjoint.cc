@@ -120,11 +120,7 @@ lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose /*=f
   else
   {
     CustomF custom_function({J_x, J_y, J_z});
-    auto solution = chi_math::NewtonIteration(custom_function, // Non-linear function
-                                              {1.0, 0.1},      // Initial guess
-                                              100,             // Max iterations
-                                              1.0e-8,          // Tolerance
-                                              verbose);        // Verbose output?
+    auto solution = chi_math::NewtonIteration(custom_function, {1.0, 0.1}, 100, 1.0e-8, verbose);
 
     double a = solution[0];
     double b = solution[1];

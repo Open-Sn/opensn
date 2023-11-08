@@ -18,10 +18,7 @@ namespace chi_unit_sim_tests
  * to Laplace's problem. */
 chi::ParameterBlock chiSimTest03_PWLC(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_sim_tests,
-                        /*name_in_lua=*/chiSimTest03_PWLC,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chiSimTest03_PWLC);
+RegisterWrapperFunction(chi_unit_sim_tests, chiSimTest03_PWLC, nullptr, chiSimTest03_PWLC);
 
 chi::ParameterBlock
 chiSimTest03_PWLC(const chi::InputParameters&)
@@ -140,13 +137,8 @@ chiSimTest03_PWLC(const chi::InputParameters&)
 
   // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver =
-    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,                // Matrix
-                                                        "PWLCDiffSolver", // Solver name
-                                                        KSPCG,            // Solver type
-                                                        PCGAMG,           // Preconditioner type
-                                                        1.0e-6, // Relative residual tolerance
-                                                        1000);  // Max iterations
+  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
+    A, "PWLCDiffSolver", KSPCG, PCGAMG, 1.0e-6, 1000);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);
@@ -168,10 +160,7 @@ chiSimTest03_PWLC(const chi::InputParameters&)
 
   // Create Field Function
   auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",                                           // Text name
-    sdm_ptr,                                         // Spatial Discr.
-    chi_math::Unknown(chi_math::UnknownType::SCALAR) // Unknown
-  );
+    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::SCALAR));
 
   ff->UpdateFieldVector(field);
 

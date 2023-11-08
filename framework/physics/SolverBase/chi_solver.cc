@@ -65,9 +65,7 @@ Solver::InitTimeStepper(const chi::InputParameters& params)
   if (user_params.Has("timestepper"))
   {
     auto stepper = Chi::GetStackItemPtrAsType<TimeStepper>(
-      /*stack=*/Chi::object_stack,
-      /*handle=*/params.GetParamValue<size_t>("timestepper"),
-      /*calling_function_name=*/__FUNCTION__);
+      Chi::object_stack, params.GetParamValue<size_t>("timestepper"), __FUNCTION__);
 
     stepper->SetTimeStepSize(params.GetParamValue<double>("dt"));
     stepper->SetTime(params.GetParamValue<double>("time"));

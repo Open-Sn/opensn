@@ -125,11 +125,7 @@ CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
           succesors.push_back(grid.cells[face.neighbor_id_].local_id_);
       }
 
-    task_list_.push_back({num_dependencies,
-                          succesors,
-                          /*reference_id_=*/cell.local_id_,
-                          /*cell_ptr_=*/&cell,
-                          /*completed_=*/false});
+    task_list_.push_back({num_dependencies, succesors, cell.local_id_, &cell, false});
   } // for cell in SPLS
 
   Chi::mpi.Barrier();

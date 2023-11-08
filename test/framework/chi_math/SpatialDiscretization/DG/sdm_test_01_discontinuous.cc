@@ -20,10 +20,10 @@ namespace chi_unit_tests
 chi::InputParameters chi_math_SDM_Test02Syntax();
 chi::ParameterBlock chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chi_math_SDM_Test02_DisContinuous,
-                        /*syntax_function=*/chi_math_SDM_Test02Syntax,
-                        /*actual_function=*/chi_math_SDM_Test02_DisContinuous);
+RegisterWrapperFunction(chi_unit_tests,
+                        chi_math_SDM_Test02_DisContinuous,
+                        chi_math_SDM_Test02Syntax,
+                        chi_math_SDM_Test02_DisContinuous);
 
 chi::InputParameters
 chi_math_SDM_Test02Syntax()
@@ -346,13 +346,8 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
 
   // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver =
-    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,                // Matrix
-                                                        "PWLCDiffSolver", // Solver name
-                                                        KSPCG,            // Solver type
-                                                        PCHYPRE,          // Preconditioner type
-                                                        1.0e-6, // Relative residual tolerance
-                                                        1000);  // Max iterations
+  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
+    A, "PWLCDiffSolver", KSPCG, PCHYPRE, 1.0e-6, 1000);
 
   PC pc;
   KSPGetPC(petsc_solver.ksp, &pc);
@@ -409,10 +404,7 @@ chi_math_SDM_Test02_DisContinuous(const chi::InputParameters& input_parameters)
   if (export_vtk)
   {
     auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      "Phi",                                           // Text name
-      sdm_ptr,                                         // Spatial Discr.
-      chi_math::Unknown(chi_math::UnknownType::SCALAR) // Unknown
-    );
+      "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::SCALAR));
 
     ff->UpdateFieldVector(field);
 

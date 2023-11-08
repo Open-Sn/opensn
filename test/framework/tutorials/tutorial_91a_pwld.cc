@@ -24,10 +24,7 @@ namespace chi_unit_sim_tests
 /**PWLD Sweep. */
 chi::ParameterBlock chiSimTest91_PWLD(const chi::InputParameters&);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chiSimTest91_PWLD,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chiSimTest91_PWLD);
+RegisterWrapperFunction(chi_unit_tests, chiSimTest91_PWLD, nullptr, chiSimTest91_PWLD);
 
 chi::ParameterBlock
 chiSimTest91_PWLD(const chi::InputParameters&)
@@ -491,18 +488,12 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   std::vector<std::shared_ptr<chi_physics::FieldFunctionGridBased>> ff_list;
 
   ff_list.push_back(std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",                                                         // Text name
-    sdm_ptr,                                                       // Spatial Discr.
-    chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups) // Unknown
-    ));
+    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups)));
 
   const std::vector<std::string> dim_strings = {"x", "y", "z"};
   for (const std::string& dim : dim_strings)
     ff_list.push_back(std::make_shared<chi_physics::FieldFunctionGridBased>(
-      "J-" + dim,                                                    // Text name
-      sdm_ptr,                                                       // Spatial Discr.
-      chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups) // Unknown
-      ));
+      "J-" + dim, sdm_ptr, chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups)));
 
   // Localize zeroth moment
   // This routine extracts a single moment vector
@@ -516,12 +507,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   std::vector<double> my_phi(num_m0_dofs, 0.0); // Y(1,-1) - Y-component
   std::vector<double> mz_phi(num_m0_dofs, 0.0); // Y(1,0)  - Z-component
 
-  sdm.CopyVectorWithUnknownScope(phi_old,    // from vector
-                                 m0_phi,     // to vector
-                                 phi_uk_man, // from dof-structure
-                                 0,          // from unknown-id
-                                 m0_uk_man,  // to dof-structure
-                                 0);         // to unknown-id
+  sdm.CopyVectorWithUnknownScope(phi_old, m0_phi, phi_uk_man, 0, m0_uk_man, 0);
 
   ff_list[0]->UpdateFieldVector(m0_phi);
 

@@ -52,7 +52,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
   front_gs.apply_wgdsa_ = true;
   front_gs.wgdsa_tol_ = basic_options("PISA_MIP_L_ABS_TOL").FloatValue();
   front_gs.wgdsa_max_iters_ = static_cast<int>(basic_options("PISA_MIP_L_MAX_ITS").IntegerValue());
-  lbs_solver.InitWGDSA(front_gs, /*vaccum_bcs_are_dirichlet=*/false);
+  lbs_solver.InitWGDSA(front_gs, false);
   front_gs.apply_wgdsa_ = false;
 
   int pisa_verbose_level = static_cast<int>(basic_options("PISA_VERBOSE_LEVEL").IntegerValue());
@@ -99,7 +99,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
   {
     nl_diff_context->phi_l_ = lbs_solver.WGSCopyOnlyPhi0(front_gs, phi_old_local);
 
-    SetLBSFissionSource(/*input*/ phi_old_local, /*output*/ q_moments_local);
+    SetLBSFissionSource(phi_old_local, q_moments_local);
     chi_math::Scale(q_moments_local, 1.0 / k_eff);
 
     auto Sffull = q_moments_local;

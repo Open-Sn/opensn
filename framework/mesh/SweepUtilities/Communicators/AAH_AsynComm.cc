@@ -265,7 +265,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
       {
         int message_available = 0;
         MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                   max_num_mess * angle_set_num + m, // tag
+                   max_num_mess * angle_set_num + m,
                    comm_set_.LocICommunicator(Chi::mpi.location_id),
                    &message_available,
                    MPI_STATUS_IGNORE);
@@ -286,7 +286,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
                                   static_cast<int>(message_size),
                                   MPI_DOUBLE,
                                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                                  max_num_mess * angle_set_num + m, // tag
+                                  max_num_mess * angle_set_num + m,
                                   comm_set_.LocICommunicator(Chi::mpi.location_id),
                                   MPI_STATUS_IGNORE);
 
@@ -345,7 +345,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
       {
         int message_available = 0;
         MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                   max_num_mess * angle_set_num + m, // tag
+                   max_num_mess * angle_set_num + m,
                    comm_set_.LocICommunicator(Chi::mpi.location_id),
                    &message_available,
                    MPI_STATUS_IGNORE);
@@ -366,7 +366,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
                                   static_cast<int>(message_size),
                                   MPI_DOUBLE,
                                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                                  max_num_mess * angle_set_num + m, // tag
+                                  max_num_mess * angle_set_num + m,
                                   comm_set_.LocICommunicator(Chi::mpi.location_id),
                                   MPI_STATUS_IGNORE);
 
@@ -423,7 +423,7 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
                 static_cast<int>(message_size),
                 MPI_DOUBLE,
                 comm_set_.MapIonJ(locJ, locJ),
-                max_num_mess * angle_set_num + m, // tag
+                max_num_mess * angle_set_num + m,
                 comm_set_.LocICommunicator(locJ),
                 &deplocI_message_request[deplocI][m]);
     } // for message

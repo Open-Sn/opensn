@@ -18,10 +18,10 @@ ParameterBlock PostProcessorPrinterSetOptions(const InputParameters& params);
 
 RegisterSyntaxBlock(chi, PostProcessorPrinterOptions, PostProcessorPrinterOptions);
 
-RegisterWrapperFunction(/*namespace_in_lua=*/chi,
-                        /*name_in_lua=*/PostProcessorPrinterSetOptions,
-                        /*syntax_function=*/GetSyntax_PPPrinterSetOptions,
-                        /*actual_function=*/PostProcessorPrinterSetOptions);
+RegisterWrapperFunction(chi,
+                        PostProcessorPrinterSetOptions,
+                        GetSyntax_PPPrinterSetOptions,
+                        PostProcessorPrinterSetOptions);
 
 InputParameters
 PostProcessorPrinterOptions()

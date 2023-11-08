@@ -12,10 +12,10 @@ namespace chi
 InputParameters GetSyntax_PrintPostProcessors();
 ParameterBlock PrintPostProcessors(const InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_in_lua=*/chi,
-                        /*name_in_lua=*/PrintPostProcessors,
-                        /*syntax_function=*/GetSyntax_PrintPostProcessors,
-                        /*actual_function=*/PrintPostProcessors);
+RegisterWrapperFunction(chi,
+                        PrintPostProcessors,
+                        GetSyntax_PrintPostProcessors,
+                        PrintPostProcessors);
 
 InputParameters
 GetSyntax_PrintPostProcessors()

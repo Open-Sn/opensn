@@ -20,11 +20,7 @@ chiProgramTime(lua_State* L)
   double time;
   if (Chi::mpi.location_id == 0) time = Chi::program_timer.GetTime() / 1000.0;
 
-  MPI_Bcast(&time,          // send/recv buffer
-            1,              // count
-            MPI_DOUBLE,     // datatype
-            0,              // root
-            Chi::mpi.comm); // communicator
+  MPI_Bcast(&time, 1, MPI_DOUBLE, 0, Chi::mpi.comm);
 
   lua_pushnumber(L, time);
   return 1;

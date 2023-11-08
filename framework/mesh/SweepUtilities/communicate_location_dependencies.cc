@@ -14,13 +14,8 @@ chi_mesh::sweep_management::CommunicateLocationDependencies(
   // counts
   std::vector<int> depcount_per_loc(P, 0);
   int current_loc_dep_count = location_dependencies.size();
-  MPI_Allgather(&current_loc_dep_count, // Send Buffer
-                1,
-                MPI_INT,                 // Send count and type
-                depcount_per_loc.data(), // Recv Buffer
-                1,
-                MPI_INT,        // Recv count and type
-                Chi::mpi.comm); // Communicator
+  MPI_Allgather(
+    &current_loc_dep_count, 1, MPI_INT, depcount_per_loc.data(), 1, MPI_INT, Chi::mpi.comm);
 
   // Broadcast dependencies
   std::vector<int> raw_depvec_displs(P, 0);
@@ -33,14 +28,14 @@ chi_mesh::sweep_management::CommunicateLocationDependencies(
 
   std::vector<int> raw_dependencies(recv_buf_size, 0);
 
-  MPI_Allgatherv(location_dependencies.data(),      // Send buffer
-                 int(location_dependencies.size()), // Send count
-                 MPI_INT,                           // Send type
-                 raw_dependencies.data(),           // Recv buffer
-                 depcount_per_loc.data(),           // Recv counts array
-                 raw_depvec_displs.data(),          // Recv displs
-                 MPI_INT,                           // Recv type
-                 Chi::mpi.comm);                    // Communicator
+  MPI_Allgatherv(location_dependencies.data(),
+                 int(location_dependencies.size()),
+                 MPI_INT,
+                 raw_dependencies.data(),
+                 depcount_per_loc.data(),
+                 raw_depvec_displs.data(),
+                 MPI_INT,
+                 Chi::mpi.comm);
 
   for (int locI = 0; locI < P; ++locI)
   {

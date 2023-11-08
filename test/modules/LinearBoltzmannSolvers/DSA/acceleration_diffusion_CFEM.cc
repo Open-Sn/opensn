@@ -19,10 +19,10 @@ namespace chi_unit_sim_tests
 
 chi::ParameterBlock acceleration_Diffusion_CFEM(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/acceleration_Diffusion_CFEM,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/acceleration_Diffusion_CFEM);
+RegisterWrapperFunction(chi_unit_tests,
+                        acceleration_Diffusion_CFEM,
+                        nullptr,
+                        acceleration_Diffusion_CFEM);
 
 chi::ParameterBlock
 acceleration_Diffusion_CFEM(const chi::InputParameters&)
@@ -141,16 +141,15 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
       }   // for i
     }     // for f
 
-    unit_cell_matrices[cell.local_id_] =
-      lbs::UnitCellMatrices{IntV_gradshapeI_gradshapeJ, // K-matrix
-                            {},                         // G-matrix
-                            IntV_shapeI_shapeJ,         // M-matrix
-                            IntV_shapeI,                // Vi-vectors
+    unit_cell_matrices[cell.local_id_] = lbs::UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
+                                                               {},
+                                                               IntV_shapeI_shapeJ,
+                                                               IntV_shapeI,
 
-                            IntS_shapeI_shapeJ,     // face M-matrices
-                            IntS_shapeI_gradshapeJ, // face G-matrices
-                            IntS_shapeI};           // face Si-vectors
-  }                                                 // for cell
+                                                               IntS_shapeI_shapeJ,
+                                                               IntS_shapeI_gradshapeJ,
+                                                               IntS_shapeI};
+  } // for cell
 
   // Make solver
   lbs::acceleration::DiffusionPWLCSolver solver(

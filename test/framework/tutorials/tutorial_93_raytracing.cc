@@ -18,10 +18,7 @@ namespace chi_unit_sim_tests
 
 chi::ParameterBlock chiSimTest93_RayTracing(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chiSimTest93_RayTracing,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chiSimTest93_RayTracing);
+RegisterWrapperFunction(chi_unit_tests, chiSimTest93_RayTracing, nullptr, chiSimTest93_RayTracing);
 
 chi::ParameterBlock
 chiSimTest93_RayTracing(const chi::InputParameters&)
@@ -140,18 +137,12 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
     const double theta = phi_theta.second;
 
     std::vector<double> segment_lengths;
-    chi_mesh::PopulateRaySegmentLengths(grid,             // input
-                                        cell,             // input
-                                        positionA,        // input
-                                        positionB,        // input
-                                        omega,            // input
-                                        segment_lengths); // output
+    chi_mesh::PopulateRaySegmentLengths(grid, cell, positionA, positionB, omega, segment_lengths);
 
     std::vector<double> shape_values_k;   // At s_k
     std::vector<double> shape_values_kp1; // At s_{k+1}
 
-    cell_mapping.ShapeValues(positionA,       // input
-                             shape_values_k); // output
+    cell_mapping.ShapeValues(positionA, shape_values_k);
 
     double d_run_sum = 0.0;
     for (const auto& segment_length_k : segment_lengths)
@@ -237,12 +228,7 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
     if (n % size_t(num_particles / 10.0) == 0) std::cout << "#particles = " << n << "\n";
     // Create the particle
     const auto omega = SampleRandomDirection();
-    Particle particle{source_pos,     // position
-                      omega,          // direction
-                      0,              // e_group
-                      1.0,            // weight
-                      source_cell_id, // cell_id
-                      true};          // alive
+    Particle particle{source_pos, omega, 0, 1.0, source_cell_id, true};
 
     while (particle.alive)
     {
@@ -256,11 +242,11 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
 
       // Make tally contribution
       ContributePWLDTally(cell,
-                          particle.position,     // positionA
-                          end_of_track_position, // positionB
-                          particle.direction,    // omega
-                          particle.energy_group, // g
-                          particle.weight);      // weight at A
+                          particle.position,
+                          end_of_track_position,
+                          particle.direction,
+                          particle.energy_group,
+                          particle.weight);
 
       // Process cell transfer
       //                                or death
@@ -331,10 +317,7 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
   std::vector<std::shared_ptr<chi_physics::FieldFunctionGridBased>> ff_list;
 
   ff_list.push_back(std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",                                                         // Text name
-    sdm_ptr,                                                       // Spatial Discr.
-    chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups) // Unknown
-    ));
+    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups)));
 
   // Localize zeroth moment
   // This routine extracts a single moment vector
@@ -345,12 +328,7 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
 
   std::vector<double> m0_phi(num_m0_dofs, 0.0);
 
-  sdm.CopyVectorWithUnknownScope(phi_tally,  // from vector
-                                 m0_phi,     // to vector
-                                 phi_uk_man, // from dof-structure
-                                 0,          // from unknown-id
-                                 m0_uk_man,  // to dof-structure
-                                 0);         // to unknown-id
+  sdm.CopyVectorWithUnknownScope(phi_tally, m0_phi, phi_uk_man, 0, m0_uk_man, 0);
 
   ff_list[0]->UpdateFieldVector(m0_phi);
 

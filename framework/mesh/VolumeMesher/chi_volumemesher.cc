@@ -342,12 +342,8 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
   }
 
   int global_num_cells_modified;
-  MPI_Allreduce(&num_cells_modified,        // sendbuf
-                &global_num_cells_modified, // recvbuf
-                1,
-                MPI_INT,        // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    &num_cells_modified, &global_num_cells_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
 
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Done setting material id from logical volume. "
@@ -387,12 +383,8 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
   }
 
   int global_num_faces_modified;
-  MPI_Allreduce(&num_faces_modified,        // sendbuf
-                &global_num_faces_modified, // recvbuf
-                1,
-                MPI_INT,        // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    &num_faces_modified, &global_num_faces_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
 
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
     grid_bndry_id_map[bndry_id] = bndry_name;
@@ -505,12 +497,8 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
   } // for ghost cell id
 
   int globl_num_cells_modified;
-  MPI_Allreduce(&local_num_cells_modified, // sendbuf
-                &globl_num_cells_modified, // recvbuf
-                1,
-                MPI_INT,        // count+datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    &local_num_cells_modified, &globl_num_cells_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
 
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Done setting material id from lua function. "
@@ -620,12 +608,8 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
   }     // for ghost cell id
 
   int globl_num_faces_modified;
-  MPI_Allreduce(&local_num_faces_modified, // sendbuf
-                &globl_num_faces_modified, // recvbuf
-                1,
-                MPI_INT,        // count+datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    &local_num_faces_modified, &globl_num_faces_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
 
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Done setting boundary id from lua function. "

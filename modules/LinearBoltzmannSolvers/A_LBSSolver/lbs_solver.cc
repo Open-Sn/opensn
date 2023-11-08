@@ -49,13 +49,9 @@ namespace lbs
 {
 // RegisterChiObject(lbs, LBSSolver); Should not be constructible
 
-RegisterSyntaxBlock(/*namespace_name=*/lbs,
-                    /*block_name=*/OptionsBlock,
-                    /*syntax_function=*/LBSSolver::OptionsBlock);
+RegisterSyntaxBlock(lbs, OptionsBlock, LBSSolver::OptionsBlock);
 
-RegisterSyntaxBlock(/*namespace_in_lua=*/lbs,
-                    /*name_in_lua=*/BoundaryOptionsBlock,
-                    /*syntax_function=*/LBSSolver::BoundaryOptionsBlock);
+RegisterSyntaxBlock(lbs, BoundaryOptionsBlock, LBSSolver::BoundaryOptionsBlock);
 
 LBSSolver::LBSSolver(const std::string& text_name) : chi_physics::Solver(text_name)
 {
@@ -1087,14 +1083,14 @@ LBSSolver::ComputeUnitIntegrals()
       }   // for i
     }     // for f
 
-    return UnitCellMatrices{IntV_gradshapeI_gradshapeJ, // K-matrix
-                            IntV_shapeI_gradshapeJ,     // G-matrix
-                            IntV_shapeI_shapeJ,         // M-matrix
-                            IntV_shapeI,                // Vi-vectors
+    return UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
+                            IntV_shapeI_gradshapeJ,
+                            IntV_shapeI_shapeJ,
+                            IntV_shapeI,
 
-                            IntS_shapeI_shapeJ,     // face M-matrices
-                            IntS_shapeI_gradshapeJ, // face G-matrices
-                            IntS_shapeI};           // face Si-vectors
+                            IntS_shapeI_shapeJ,
+                            IntS_shapeI_gradshapeJ,
+                            IntS_shapeI};
   };
 
   const size_t num_local_cells = grid_ptr_->local_cells.size();
@@ -1113,12 +1109,8 @@ LBSSolver::ComputeUnitIntegrals()
                                           unit_ghost_cell_matrices_.size()};
   std::array<size_t, 2> num_globl_ucms = {0, 0};
 
-  MPI_Allreduce(num_local_ucms.data(), // sendbuf
-                num_globl_ucms.data(), // recvbuf
-                2,
-                MPIU_SIZE_T,    // count+datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    num_local_ucms.data(), num_globl_ucms.data(), 2, MPIU_SIZE_T, MPI_SUM, Chi::mpi.comm);
 
   Chi::mpi.Barrier();
   Chi::log.Log() << "Ghost cell unit cell-matrix ratio: "
@@ -1382,9 +1374,7 @@ LBSSolver::InitializeFieldFunctions()
       const std::string text_name = std::string(buff);
 
       auto group_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-        text_name,                     // Field name
-        discretization_,               // Spatial discretization
-        Unknown(UnknownType::SCALAR)); // Unknown/Variable
+        text_name, discretization_, Unknown(UnknownType::SCALAR));
 
       Chi::field_function_stack.push_back(group_ff);
       field_functions_.push_back(group_ff);
@@ -1405,9 +1395,7 @@ LBSSolver::InitializeFieldFunctions()
     if (options_.field_function_prefix_option == "solver_name") prefix = TextName() + "_";
 
     auto power_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      prefix + "power_generation",   // Field name
-      discretization_,               // Spatial discretization
-      Unknown(UnknownType::SCALAR)); // Unknown/Variable
+      prefix + "power_generation", discretization_, Unknown(UnknownType::SCALAR));
 
     Chi::field_function_stack.push_back(power_ff);
     field_functions_.push_back(power_ff);
@@ -1433,13 +1421,7 @@ LBSSolver::InitializeBoundaries()
     const int local_num_unique_bids = static_cast<int>(local_unique_bids.size());
     std::vector<int> recvcounts(Chi::mpi.process_count, 0);
 
-    MPI_Allgather(&local_num_unique_bids, // sendbuf
-                  1,
-                  MPI_INT,           // sendcount+type
-                  recvcounts.data(), // recvbuf
-                  1,
-                  MPI_INT,        // recvcount+type
-                  Chi::mpi.comm); // comm
+    MPI_Allgather(&local_num_unique_bids, 1, MPI_INT, recvcounts.data(), 1, MPI_INT, Chi::mpi.comm);
 
     std::vector<int> recvdispls(Chi::mpi.process_count, 0);
 
@@ -1452,14 +1434,14 @@ LBSSolver::InitializeBoundaries()
 
     std::vector<uint64_t> recvbuf(running_displacement, 0);
 
-    MPI_Allgatherv(local_unique_bids.data(), // sendbuf
-                   local_num_unique_bids,    // sendcount
-                   MPI_UINT64_T,             // sendtype
-                   recvbuf.data(),           // recvbuf
-                   recvcounts.data(),        // recvcounts
-                   recvdispls.data(),        // recvdispls
-                   MPI_UINT64_T,             // recvtype
-                   Chi::mpi.comm);           // comm
+    MPI_Allgatherv(local_unique_bids.data(),
+                   local_num_unique_bids,
+                   MPI_UINT64_T,
+                   recvbuf.data(),
+                   recvcounts.data(),
+                   recvdispls.data(),
+                   MPI_UINT64_T,
+                   Chi::mpi.comm);
 
     globl_unique_bids_set = local_unique_bids_set; // give it a head start
 
@@ -1521,21 +1503,10 @@ LBSSolver::InitializeBoundaries()
         std::vector<int> locJ_has_bid(Chi::mpi.process_count, 1);
         std::vector<double> locJ_n_val(Chi::mpi.process_count * 3, 0.0);
 
-        MPI_Allgather(&local_has_bid, // sendbuf
-                      1,
-                      MPI_INT,             // sendcount + datatype
-                      locJ_has_bid.data(), // recvbuf
-                      1,
-                      MPI_INT,        // recvcount + datatype
-                      Chi::mpi.comm); // communicator
+        MPI_Allgather(&local_has_bid, 1, MPI_INT, locJ_has_bid.data(), 1, MPI_INT, Chi::mpi.comm);
 
-        MPI_Allgather(&local_normal, // sendbuf
-                      3,
-                      MPI_DOUBLE,        // sendcount + datatype
-                      locJ_n_val.data(), // recvbuf
-                      3,
-                      MPI_DOUBLE,     // recvcount + datatype
-                      Chi::mpi.comm); // communicator
+        MPI_Allgather(
+          &local_normal, 3, MPI_DOUBLE, locJ_n_val.data(), 3, MPI_DOUBLE, Chi::mpi.comm);
 
         Vec3 global_normal;
         for (int j = 0; j < Chi::mpi.process_count; ++j)
@@ -1591,7 +1562,7 @@ LBSSolver::InitializePointSources()
         const auto& I = cell_matrices.Vi_vectors;
 
         std::vector<double> shape_values;
-        cell_view.ShapeValues(point_source.Location(), shape_values /**ByRef*/);
+        cell_view.ShapeValues(point_source.Location(), shape_values);
 
         const auto M_inv = chi_math::Inverse(M);
 
@@ -2048,12 +2019,7 @@ LBSSolver::WriteRestartData(const std::string& folder_name, const std::string& f
   // Wait for all processes then check success status
   Chi::mpi.Barrier();
   bool global_succeeded = true;
-  MPI_Allreduce(&location_succeeded, // Send buffer
-                &global_succeeded,   // Recv buffer
-                1,                   // count
-                MPI_CXX_BOOL,        // Data type
-                MPI_LAND,            // Operation - Logical and
-                Chi::mpi.comm);      // Communicator
+  MPI_Allreduce(&location_succeeded, &global_succeeded, 1, MPI_CXX_BOOL, MPI_LAND, Chi::mpi.comm);
 
   // Write status message
   if (global_succeeded)
@@ -2124,12 +2090,7 @@ LBSSolver::ReadRestartData(const std::string& folder_name, const std::string& fi
   // Wait for all processes then check success status
   Chi::mpi.Barrier();
   bool global_succeeded = true;
-  MPI_Allreduce(&location_succeeded, // Send buffer
-                &global_succeeded,   // Recv buffer
-                1,                   // count
-                MPI_CXX_BOOL,        // Data type
-                MPI_LAND,            // Operation - Logical and
-                Chi::mpi.comm);      // Communicator
+  MPI_Allreduce(&location_succeeded, &global_succeeded, 1, MPI_CXX_BOOL, MPI_LAND, Chi::mpi.comm);
 
   // Write status message
   if (global_succeeded) Chi::log.Log() << "Successfully read restart data";
@@ -2716,12 +2677,7 @@ LBSSolver::UpdateFieldFunctions()
     if (options_.power_normalization > 0.0)
     {
       double globl_total_power;
-      MPI_Allreduce(&local_total_power, // sendbuf
-                    &globl_total_power, // recvbuf
-                    1,
-                    MPI_DOUBLE,     // count + datatype
-                    MPI_SUM,        // operation
-                    Chi::mpi.comm); // communicator
+      MPI_Allreduce(&local_total_power, &globl_total_power, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
       chi_math::Scale(data_vector_local, options_.power_normalization / globl_total_power);
     }
@@ -2821,12 +2777,7 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
 
   // Allreduce global production
   double global_production = 0.0;
-  MPI_Allreduce(&local_production,  // sendbuf
-                &global_production, // recvbuf
-                1,
-                MPI_DOUBLE,     // count+datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+  MPI_Allreduce(&local_production, &global_production, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   return global_production;
 }
@@ -2866,12 +2817,7 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
 
   // Allreduce global production
   double global_fission_rate = 0.0;
-  MPI_Allreduce(&local_fission_rate,  // sendbuf
-                &global_fission_rate, // recvbuf
-                1,
-                MPI_DOUBLE,     // count+datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+  MPI_Allreduce(&local_fission_rate, &global_fission_rate, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   return global_fission_rate;
 }
@@ -2934,11 +2880,7 @@ LBSSolver::SetPhiVectorScalarValues(std::vector<double>& phi_vector, double valu
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      cint64_t dof_map = sdm.MapDOFLocal(cell,
-                                         i,
-                                         flux_moments_uk_man_,
-                                         /*m*/ 0,
-                                         /*g*/ 0);
+      cint64_t dof_map = sdm.MapDOFLocal(cell, i, flux_moments_uk_man_, 0, 0);
 
       double* phi = &phi_vector[dof_map];
 

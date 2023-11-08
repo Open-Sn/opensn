@@ -158,20 +158,12 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
 
   if (Chi::mpi.location_id == 0) edge_buffer_size = static_cast<int>(raw_edges_to_remove.size());
 
-  MPI_Bcast(&edge_buffer_size, // Buffer
-            1,
-            MPI_INT,        // Count and datatype
-            0,              // Root location
-            Chi::mpi.comm); // Communicator
+  MPI_Bcast(&edge_buffer_size, 1, MPI_INT, 0, Chi::mpi.comm);
 
   // Broadcast edges
   if (Chi::mpi.location_id != 0) raw_edges_to_remove.resize(edge_buffer_size, -1);
 
-  MPI_Bcast(raw_edges_to_remove.data(), // Buffer
-            edge_buffer_size,
-            MPI_INT,        // Count and datatype
-            0,              // Root location
-            Chi::mpi.comm); // Communicator
+  MPI_Bcast(raw_edges_to_remove.data(), edge_buffer_size, MPI_INT, 0, Chi::mpi.comm);
 
   // De-serialize edges
   if (Chi::mpi.location_id != 0)
@@ -228,20 +220,12 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
 
   if (Chi::mpi.location_id == 0) topsort_buffer_size = glob_linear_sweep_order.size();
 
-  MPI_Bcast(&topsort_buffer_size, // Buffer
-            1,
-            MPI_INT,        // Count and datatype
-            0,              // Root location
-            Chi::mpi.comm); // Communicator
+  MPI_Bcast(&topsort_buffer_size, 1, MPI_INT, 0, Chi::mpi.comm);
 
   // Broadcast topological sort
   if (Chi::mpi.location_id != 0) glob_linear_sweep_order.resize(topsort_buffer_size, -1);
 
-  MPI_Bcast(glob_linear_sweep_order.data(), // Buffer
-            topsort_buffer_size,
-            MPI_INT,        // Count and datatype
-            0,              // Root location
-            Chi::mpi.comm); // Communicator
+  MPI_Bcast(glob_linear_sweep_order.data(), topsort_buffer_size, MPI_INT, 0, Chi::mpi.comm);
 
   // Compute reorder mapping
   // This mapping allows us to punch in

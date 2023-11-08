@@ -10,10 +10,10 @@ namespace chi_math
 chi::InputParameters GetSyntax_Get1DQuadratureData();
 chi::ParameterBlock Get1DQuadratureData(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_in_lua=*/chi_math,
-                        /*name_in_lua=*/Get1DQuadratureData,
-                        /*syntax_function=*/GetSyntax_Get1DQuadratureData,
-                        /*actual_function=*/Get1DQuadratureData);
+RegisterWrapperFunction(chi_math,
+                        Get1DQuadratureData,
+                        GetSyntax_Get1DQuadratureData,
+                        Get1DQuadratureData);
 
 chi::InputParameters
 GetSyntax_Get1DQuadratureData()

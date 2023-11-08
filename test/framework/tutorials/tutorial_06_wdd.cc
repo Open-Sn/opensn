@@ -38,10 +38,7 @@ std::vector<double> SetSource(const chi_mesh::MeshContinuum& grid,
 /**WDD Sweep. */
 chi::ParameterBlock chiSimTest06_WDD(const chi::InputParameters&);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_testsB,
-                        /*name_in_lua=*/chiSimTest06_WDD,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chiSimTest06_WDD);
+RegisterWrapperFunction(chi_unit_testsB, chiSimTest06_WDD, nullptr, chiSimTest06_WDD);
 
 chi::ParameterBlock
 chiSimTest06_WDD(const chi::InputParameters&)
@@ -176,7 +173,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
   typedef chi_mesh::Vector3 Vec3;
   auto SweepChunk = [&ijk_info,
                      &ijk_mapping,
-                     &cell_ortho_sizes, // ortho-quantities
+                     &cell_ortho_sizes,
                      &grid,
                      &sdm,
                      &num_moments,
@@ -322,19 +319,11 @@ chiSimTest06_WDD(const chi::InputParameters&)
 
   std::vector<double> m0_phi(num_m0_dofs, 0.0);
 
-  sdm.CopyVectorWithUnknownScope(phi_old,    // from vector
-                                 m0_phi,     // to vector
-                                 phi_uk_man, // from dof-structure
-                                 0,          // from unknown-id
-                                 m0_uk_man,  // to dof-structure
-                                 0);         // to unknown-id
+  sdm.CopyVectorWithUnknownScope(phi_old, m0_phi, phi_uk_man, 0, m0_uk_man, 0);
 
   // Create Field Function
   auto phi_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",                                                         // Text name
-    sdm_ptr,                                                       // Spatial Discr.
-    chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups) // Unknown
-  );
+    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups));
 
   phi_ff->UpdateFieldVector(m0_phi);
 

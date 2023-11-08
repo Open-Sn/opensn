@@ -9,10 +9,10 @@
 namespace chi_mesh::lua_utils
 {
 
-RegisterWrapperFunction(/*namespace_in_lua=*/chi_mesh,
-                        /*name_in_lua=*/MeshModifiersApply,
-                        /*syntax_function=*/MeshModifiersApply_Syntax,
-                        /*actual_function=*/MeshModifiersApply);
+RegisterWrapperFunction(chi_mesh,
+                        MeshModifiersApply,
+                        MeshModifiersApply_Syntax,
+                        MeshModifiersApply);
 
 chi::InputParameters
 MeshModifiersApply_Syntax()

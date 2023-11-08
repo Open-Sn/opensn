@@ -54,11 +54,9 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     [&front_gs, &lbs_solver, &phi_temp, &SetLBSFissionSource, &q_moments_local](const VecDbl& input)
   {
     chi_math::Set(phi_temp, 0.0);
-    lbs_solver.GSProjectBackPhi0(front_gs,
-                                 /*in*/ input,
-                                 /*out*/ phi_temp);
+    lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
 
-    SetLBSFissionSource(/*input*/ phi_temp, /*output*/ q_moments_local);
+    SetLBSFissionSource(phi_temp, q_moments_local);
 
     auto output = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
     return output;
@@ -69,12 +67,9 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
                                                                                 bool suppress_wgs)
   {
     chi_math::Set(phi_temp, 0.0);
-    lbs_solver.GSProjectBackPhi0(front_gs,
-                                 /*in*/ input,
-                                 /*out*/ phi_temp);
+    lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
 
-    SetLBSScatterSource(
-      /*input*/ phi_temp, /*output*/ q_moments_local, suppress_wgs);
+    SetLBSScatterSource(phi_temp, q_moments_local, suppress_wgs);
 
     auto output = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
     return output;
@@ -83,9 +78,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto Phi0FissionProdL2Norm = [&front_gs, &lbs_solver, &phi_temp](const VecDbl& input)
   {
     chi_math::Set(phi_temp, 0.0);
-    lbs_solver.GSProjectBackPhi0(front_gs,
-                                 /*in*/ input,
-                                 /*out*/ phi_temp);
+    lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
 
     return lbs_solver.ComputeFissionProduction(phi_temp);
   };
@@ -96,15 +89,15 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto delta_phi = nl_context_ptr->PhiVecToSTLVec(phi);
   auto epsilon = delta_phi;
 
-  auto Ss_res = SetPhi0ScatterSource(phi_lph_ip1 - phi_lph_i, /*suppress_wgs=*/false);
-  auto Sscat = SetPhi0ScatterSource(delta_phi, /*suppress_wgs=*/true);
+  auto Ss_res = SetPhi0ScatterSource(phi_lph_ip1 - phi_lph_i, false);
+  auto Sscat = SetPhi0ScatterSource(delta_phi, true);
 
   auto Sfaux = SetPhi0FissionSource(delta_phi + phi_lph_ip1);
   double lambda = Phi0FissionProdL2Norm(delta_phi + phi_lph_ip1);
   Scale(Sfaux, 1.0 / lambda);
 
   diff_solver.Assemble_b(Sscat + Sfaux + Ss_res - Sf);
-  diff_solver.Solve(epsilon, /*use_initial_guess=*/true);
+  diff_solver.Solve(epsilon, true);
 
   nl_context_ptr->STLVecToPhiVec(epsilon - delta_phi, r);
 

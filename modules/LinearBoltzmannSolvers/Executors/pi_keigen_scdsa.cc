@@ -169,8 +169,7 @@ XXPowerIterationKEigenSCDSA::Initialize()
   uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_gs_groups);
 
   // Make boundary conditions
-  auto bcs = acceleration::TranslateBCs(lbs_solver_.SweepBoundaries(),
-                                        /*vaccum_bcs_are_dirichlet=*/true);
+  auto bcs = acceleration::TranslateBCs(lbs_solver_.SweepBoundaries(), true);
 
   // Make xs map
   auto matid_2_mgxs_map = acceleration::PackGroupsetXS(
@@ -244,7 +243,7 @@ XXPowerIterationKEigenSCDSA::Execute()
     [this, &phi_temp](const VecDbl& input, const bool additive, const bool suppress_wg_scat = false)
   {
     ProjectBackPhi0(front_gs_, input, phi_temp);
-    SetLBSScatterSource(/*in*/ phi_temp, additive, suppress_wg_scat);
+    SetLBSScatterSource(phi_temp, additive, suppress_wg_scat);
   };
 
   const size_t tag_SCDSA_solve_time = Chi::log.GetRepeatingEventTag("SCDSA_solve_time");
@@ -262,7 +261,7 @@ XXPowerIterationKEigenSCDSA::Execute()
   while (nit < max_iters_)
   {
     // Set the fission source
-    SetLBSFissionSource(phi_old_local_, /*additive=*/false);
+    SetLBSFissionSource(phi_old_local_, false);
     Scale(q_moments_local_, 1.0 / k_eff_);
 
     auto Sf_ell = q_moments_local_;
@@ -277,14 +276,14 @@ XXPowerIterationKEigenSCDSA::Execute()
 
     // Now we produce lph_ip1 = l + 1/2, i+1
     q_moments_local_ = Sf_ell; // Restore 1/k F phi_l
-    SetLBSScatterSource(phi_new_local_, /*additive=*/true);
+    SetLBSScatterSource(phi_new_local_, true);
 
     front_wgs_context_->ApplyInverseTransportOperator(NO_FLAGS_SET); // Sweep
 
     auto phi0_lph_ip1 = CopyOnlyPhi0(front_gs_, phi_new_local_);
 
     // Power Iteration Acceleration
-    SetLBSScatterSourcePhi0(phi0_lph_ip1 - phi0_lph_i, /*additive=*/false);
+    SetLBSScatterSourcePhi0(phi0_lph_ip1 - phi0_lph_i, false);
     auto Ss_res = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
     double production_k = lbs_solver_.ComputeFissionProduction(phi_new_local_);
@@ -297,13 +296,11 @@ XXPowerIterationKEigenSCDSA::Execute()
 
     for (size_t k = 0; k < accel_pi_max_its_; ++k)
     {
-      ProjectBackPhi0(front_gs_,
-                      /*in*/ epsilon_k + phi0_lph_ip1,
-                      /*out*/ phi_temp);
+      ProjectBackPhi0(front_gs_, epsilon_k + phi0_lph_ip1, phi_temp);
 
       // double production_k = lbs_solver_.ComputeFissionProduction(phi_temp);
 
-      SetLBSFissionSource(phi_temp, /*additive=*/false);
+      SetLBSFissionSource(phi_temp, false);
       Scale(q_moments_local_, 1.0 / lambda_k);
 
       auto Sfaux = CopyOnlyPhi0(front_gs_, q_moments_local_);
@@ -312,24 +309,20 @@ XXPowerIterationKEigenSCDSA::Execute()
       // am leaving this at 1 iteration here for further investigation.
       for (int i = 0; i < 1; ++i)
       {
-        SetLBSScatterSourcePhi0(epsilon_k,
-                                /*additive=*/false,
-                                /*suppress_wg_scat=*/true);
+        SetLBSScatterSourcePhi0(epsilon_k, false, true);
 
         auto Ss = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
         // Solve the diffusion system
         Chi::log.LogEvent(tag_SCDSA_solve_time, chi::ChiLog::EventType::EVENT_BEGIN);
         diffusion_solver_->Assemble_b(Ss + Sfaux + Ss_res - Sf0_ell);
-        diffusion_solver_->Solve(epsilon_kp1, /*use_initial_guess=*/true);
+        diffusion_solver_->Solve(epsilon_kp1, true);
         Chi::log.LogEvent(tag_SCDSA_solve_time, chi::ChiLog::EventType::EVENT_END);
 
         epsilon_k = epsilon_kp1;
       }
 
-      ProjectBackPhi0(front_gs_,
-                      /*in*/ epsilon_kp1 + phi0_lph_ip1,
-                      /*out*/ phi_old_local_);
+      ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_ip1, phi_old_local_);
 
       double production_kp1 = lbs_solver_.ComputeFissionProduction(phi_old_local_);
 
@@ -347,12 +340,8 @@ XXPowerIterationKEigenSCDSA::Execute()
       production_k = production_kp1;
     } // acceleration
 
-    ProjectBackPhi0(front_gs_,
-                    /*in*/ epsilon_kp1 + phi0_lph_ip1,
-                    /*out*/ phi_new_local_);
-    lbs_solver_.GSScopedCopyPrimarySTLvectors(front_gs_,
-                                              /*in*/ phi_new_local_,
-                                              /*out*/ phi_old_local_);
+    ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_ip1, phi_new_local_);
+    lbs_solver_.GSScopedCopyPrimarySTLvectors(front_gs_, phi_new_local_, phi_old_local_);
 
     const double production = lbs_solver_.ComputeFissionProduction(phi_old_local_);
     lbs_solver_.ScalePhiVector(PhiSTLOption::PHI_OLD, lambda_kp1 / production);

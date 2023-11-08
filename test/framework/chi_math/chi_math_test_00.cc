@@ -12,10 +12,7 @@ namespace chi_unit_tests
 
 chi::ParameterBlock chi_math_Test00(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chi_math_Test00,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chi_math_Test00);
+RegisterWrapperFunction(chi_unit_tests, chi_math_Test00, nullptr, chi_math_Test00);
 
 chi::ParameterBlock
 chi_math_Test00(const chi::InputParameters& params)

@@ -155,8 +155,8 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
       *this,
       groupset,
       active_set_source_function_,
-      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES | SUPPRESS_WG_SCATTER, // lhs_scope
-      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES, // rhs_scope
+      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES | SUPPRESS_WG_SCATTER,
+      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES,
       options_.verbose_inner_iterations);
 
     auto wgs_solver = std::make_shared<WGSLinearSolver<Mat, Vec, KSP>>(mip_wgs_context_ptr);

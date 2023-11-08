@@ -11,9 +11,7 @@ namespace chi_unit_tests
 {
 int chi_ParameterBlock_Test00(lua_State* L);
 
-RegisterLuaFunction(/*function_ptr=*/chi_ParameterBlock_Test00,
-                    /*namespace_name=*/chi_unit_tests,
-                    /*func_name=*/chi_ParameterBlock_Test00);
+RegisterLuaFunction(chi_ParameterBlock_Test00, chi_unit_tests, chi_ParameterBlock_Test00);
 
 int
 chi_ParameterBlock_Test00(lua_State* L)

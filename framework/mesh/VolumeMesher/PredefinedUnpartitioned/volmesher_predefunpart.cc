@@ -224,11 +224,7 @@ VolumeMesherPredefinedUnpartitioned::KBA(const UnpartitionedMesh& umesh)
   } // if home location
 
   // Broadcast partitioning to all locations
-  MPI_Bcast(cell_pids.data(),                // buffer [IN/OUT]
-            static_cast<int>(num_raw_cells), // count
-            MPI_LONG_LONG_INT,               // data type
-            0,                               // root
-            Chi::mpi.comm);                  // communicator
+  MPI_Bcast(cell_pids.data(), static_cast<int>(num_raw_cells), MPI_LONG_LONG_INT, 0, Chi::mpi.comm);
   Chi::log.Log() << "Done partitioning mesh.";
 
   return cell_pids;
@@ -329,11 +325,7 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
   }   // if home location
 
   // Broadcast partitioning to all locations
-  MPI_Bcast(cell_pids.data(),                // buffer [IN/OUT]
-            static_cast<int>(num_raw_cells), // count
-            MPI_LONG_LONG_INT,               // data type
-            0,                               // root
-            Chi::mpi.comm);                  // communicator
+  MPI_Bcast(cell_pids.data(), static_cast<int>(num_raw_cells), MPI_LONG_LONG_INT, 0, Chi::mpi.comm);
   Chi::log.Log() << "Done partitioning mesh.";
 
   return cell_pids;

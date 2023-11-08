@@ -79,13 +79,13 @@ LagrangeDiscontinuous::OrderNodes()
 
   // Allgather node_counts
   locJ_block_size_.assign(Chi::mpi.process_count, 0);
-  MPI_Allgather(&local_node_count, // sendbuf
+  MPI_Allgather(&local_node_count,
                 1,
-                MPI_UNSIGNED_LONG_LONG,  // sendcount, sendtype
-                locJ_block_size_.data(), // recvbuf
+                MPI_UNSIGNED_LONG_LONG,
+                locJ_block_size_.data(),
                 1,
-                MPI_UNSIGNED_LONG_LONG, // recvcount, recvtype
-                Chi::mpi.comm);         // comm
+                MPI_UNSIGNED_LONG_LONG,
+                Chi::mpi.comm);
 
   // Assign
   // local_block_address

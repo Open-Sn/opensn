@@ -182,9 +182,7 @@ Solver::Initialize()
 
       using namespace chi_math;
       auto initial_field_function = std::make_shared<chi_physics::FieldFunctionGridBased>(
-        text_name,                     // Text name
-        sdm_ptr_,                      // Spatial Discretization
-        Unknown(UnknownType::SCALAR)); // Unknown Manager
+        text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
       field_functions_.push_back(initial_field_function);
       Chi::field_function_stack.push_back(initial_field_function);
@@ -692,13 +690,12 @@ Solver::Execute()
   // Create Krylov Solver
   // setup KSP once for all
   petsc_solver_ = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A_.front(),                                        // Matrix
-    TextName(),                                        // Solver name
-    KSPCG,                                             // Solver type
-    PCGAMG,                                            // Preconditioner type
-    basic_options_("residual_tolerance").FloatValue(), // Relative residual tolerance
-    basic_options_("max_inner_iters").IntegerValue()   // Max # of inner iterations
-  );
+    A_.front(),
+    TextName(),
+    KSPCG,
+    PCGAMG,
+    basic_options_("residual_tolerance").FloatValue(),
+    basic_options_("max_inner_iters").IntegerValue());
 
   KSPSetApplicationContext(petsc_solver_.ksp, (void*)&my_app_context_);
   KSPMonitorCancel(petsc_solver_.ksp);

@@ -919,7 +919,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
     }
     else if (cell.Type() == CellType::POLYHEDRON)
     {
-      if (not CheckPolyhedronQuality(mesh, cell, /*check_convexity*/ true)) ++num_bad_quality_cells;
+      if (not CheckPolyhedronQuality(mesh, cell, true)) ++num_bad_quality_cells;
     }
     else
       throw std::logic_error(function_name + ": Called for a mesh containing"

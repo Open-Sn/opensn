@@ -18,10 +18,7 @@ namespace chi_unit_tests
 
 chi::ParameterBlock chi_data_types_Test00(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chi_data_types_Test00,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chi_data_types_Test00);
+RegisterWrapperFunction(chi_unit_tests, chi_data_types_Test00, nullptr, chi_data_types_Test00);
 
 chi::ParameterBlock
 chi_data_types_Test00(const chi::InputParameters&)

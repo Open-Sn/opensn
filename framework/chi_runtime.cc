@@ -170,9 +170,9 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
 {
   int location_id = 0, number_processes = 1;
 
-  MPI_Init(&argc, &argv);                         /* starts MPI */
-  MPI_Comm_rank(communicator, &location_id);      /* get cur process id */
-  MPI_Comm_size(communicator, &number_processes); /* get num of processes */
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(communicator, &location_id);
+  MPI_Comm_size(communicator, &number_processes);
 
   mpi.SetCommunicator(communicator);
   mpi.SetLocationID(location_id);

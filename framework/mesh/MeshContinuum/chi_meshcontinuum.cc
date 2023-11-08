@@ -107,10 +107,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
 
   for (int locI = 0; locI < Chi::mpi.process_count; locI++)
   {
-    int err = MPI_Comm_create_group(Chi::mpi.comm,
-                                    location_groups[locI],
-                                    0, // tag
-                                    &communicators[locI]);
+    int err = MPI_Comm_create_group(Chi::mpi.comm, location_groups[locI], 0, &communicators[locI]);
 
     if (err != MPI_SUCCESS) { Chi::log.Log0Verbose1() << "Communicator creation failed."; }
   }
@@ -653,13 +650,8 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
   //                                       how many bndry-ids they have
   std::vector<int> locI_bndry_count(Chi::mpi.process_count, 0);
 
-  MPI_Allgather(&local_num_bndry_ids,    // sendbuf
-                1,                       // sendcount
-                MPI_INT,                 // sendtype
-                locI_bndry_count.data(), // recvbuf
-                1,                       // recvcount
-                MPI_INT,                 // recvtype
-                Chi::mpi.comm);          // communicator
+  MPI_Allgather(
+    &local_num_bndry_ids, 1, MPI_INT, locI_bndry_count.data(), 1, MPI_INT, Chi::mpi.comm);
 
   // Build a displacement list, in prep for gathering all bndry-ids
   std::vector<int> locI_bndry_ids_displs(Chi::mpi.process_count, 0);
@@ -673,14 +665,14 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
   // Everyone now sends everyone their boundary-ids
   std::vector<uint64_t> globl_bndry_ids(total_num_global_bndry_ids);
 
-  MPI_Allgatherv(local_bndry_ids.data(),       // sendbuf
-                 local_num_bndry_ids,          // sendcount
-                 MPI_UNSIGNED_LONG_LONG,       // sendtype
-                 globl_bndry_ids.data(),       // recvbuf
-                 locI_bndry_count.data(),      // recvcounts
-                 locI_bndry_ids_displs.data(), // displs
-                 MPI_UNSIGNED_LONG_LONG,       // recvtype
-                 Chi::mpi.comm);               // communicator
+  MPI_Allgatherv(local_bndry_ids.data(),
+                 local_num_bndry_ids,
+                 MPI_UNSIGNED_LONG_LONG,
+                 globl_bndry_ids.data(),
+                 locI_bndry_count.data(),
+                 locI_bndry_ids_displs.data(),
+                 MPI_UNSIGNED_LONG_LONG,
+                 Chi::mpi.comm);
 
   std::set<uint64_t> globl_bndry_ids_set(globl_bndry_ids.begin(), globl_bndry_ids.end());
 
@@ -951,12 +943,7 @@ MeshContinuum::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 
   size_t global_count = 0;
 
-  MPI_Allreduce(&local_count,           // sendbuf
-                &global_count,          // recvbuf
-                1,                      // count
-                MPI_UNSIGNED_LONG_LONG, // datatype
-                MPI_SUM,                // op
-                Chi::mpi.comm);         // communicator
+  MPI_Allreduce(&local_count, &global_count, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
 
   return global_count;
 }

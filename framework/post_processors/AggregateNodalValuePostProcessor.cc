@@ -123,36 +123,21 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   if (operation_ == "max")
   {
     double globl_max_value;
-    MPI_Allreduce(&local_max_value, // sendbuf
-                  &globl_max_value, // recvbuf
-                  1,
-                  MPI_DOUBLE,     // count + datatype
-                  MPI_MAX,        // op
-                  Chi::mpi.comm); // communicator
+    MPI_Allreduce(&local_max_value, &globl_max_value, 1, MPI_DOUBLE, MPI_MAX, Chi::mpi.comm);
 
     value_ = ParameterBlock("", globl_max_value);
   }
   else if (operation_ == "min")
   {
     double globl_min_value;
-    MPI_Allreduce(&local_min_value, // sendbuf
-                  &globl_min_value, // recvbuf
-                  1,
-                  MPI_DOUBLE,     // count + datatype
-                  MPI_MIN,        // op
-                  Chi::mpi.comm); // communicator
+    MPI_Allreduce(&local_min_value, &globl_min_value, 1, MPI_DOUBLE, MPI_MIN, Chi::mpi.comm);
 
     value_ = ParameterBlock("", globl_min_value);
   }
   else if (operation_ == "avg")
   {
     double globl_accumulation;
-    MPI_Allreduce(&local_accumulation, // sendbuf
-                  &globl_accumulation, // recvbuf
-                  1,
-                  MPI_DOUBLE,     // count + datatype
-                  MPI_SUM,        // op
-                  Chi::mpi.comm); // communicator
+    MPI_Allreduce(&local_accumulation, &globl_accumulation, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
     const size_t num_globl_dofs =
       ref_ff.GetSpatialDiscretization().GetNumGlobalDOFs(ref_ff.GetUnknownManager());

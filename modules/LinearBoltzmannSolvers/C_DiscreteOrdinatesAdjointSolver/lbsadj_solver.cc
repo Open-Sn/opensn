@@ -126,12 +126,8 @@ DiscreteOrdinatesAdjointSolver::InitQOIs()
     size_t num_local_subs = qoi_cell_subscription.size();
     size_t num_globl_subs = 0;
 
-    MPI_Allreduce(&num_local_subs, // sendbuf
-                  &num_globl_subs, // recvbuf
-                  1,
-                  MPI_UNSIGNED_LONG_LONG, // count + datatype
-                  MPI_SUM,                // operation
-                  Chi::mpi.comm);         // communicator
+    MPI_Allreduce(
+      &num_local_subs, &num_globl_subs, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
 
     Chi::log.Log() << "LBAdjointSolver: Number of cells subscribed to " << qoi_designation.name
                    << " = " << num_globl_subs;
@@ -449,12 +445,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
 
   double global_integral = 0.0;
 
-  MPI_Allreduce(&local_integral,  // sendbuf
-                &global_integral, // recvbuf
-                1,
-                MPI_DOUBLE,     // count, datatype
-                MPI_SUM,        // op
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(&local_integral, &global_integral, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   return global_integral;
 }

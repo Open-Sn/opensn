@@ -125,40 +125,24 @@ MeshGenerator::ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid)
   const size_t num_local_cells = grid.local_cells.size();
   size_t num_global_cells = 0;
 
-  MPI_Allreduce(&num_local_cells,       // sendbuf
-                &num_global_cells,      // recvbuf
-                1,                      // count
-                MPI_UNSIGNED_LONG_LONG, // datatype
-                MPI_SUM,                // operation
-                Chi::mpi.comm);         // communicator
+  MPI_Allreduce(
+    &num_local_cells, &num_global_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
 
   size_t max_num_local_cells;
-  MPI_Allreduce(&num_local_cells,       // sendbuf
-                &max_num_local_cells,   // recvbuf
-                1,                      // count
-                MPI_UNSIGNED_LONG_LONG, // datatype
-                MPI_MAX,                // operation
-                Chi::mpi.comm);         // communicator
+  MPI_Allreduce(
+    &num_local_cells, &max_num_local_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_MAX, Chi::mpi.comm);
 
   size_t min_num_local_cells;
-  MPI_Allreduce(&num_local_cells,       // sendbuf
-                &min_num_local_cells,   // recvbuf
-                1,                      // count
-                MPI_UNSIGNED_LONG_LONG, // datatype
-                MPI_MIN,                // operation
-                Chi::mpi.comm);         // communicator
+  MPI_Allreduce(
+    &num_local_cells, &min_num_local_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_MIN, Chi::mpi.comm);
 
   const size_t avg_num_local_cells = num_global_cells / Chi::mpi.process_count;
   const size_t num_local_ghosts = grid.cells.GetNumGhosts();
   const double local_ghost_to_local_cell_ratio = double(num_local_ghosts) / double(num_local_cells);
 
   double average_ghost_ratio;
-  MPI_Allreduce(&local_ghost_to_local_cell_ratio, // sendbuf
-                &average_ghost_ratio,             // recvbuf
-                1,                                // count
-                MPI_DOUBLE,                       // datatype
-                MPI_SUM,                          // operation
-                Chi::mpi.comm);                   // communicator
+  MPI_Allreduce(
+    &local_ghost_to_local_cell_ratio, &average_ghost_ratio, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   average_ghost_ratio /= Chi::mpi.process_count;
 
@@ -283,20 +267,12 @@ MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm
   size_t data_count = Chi::mpi.location_id == root ? cell_pids.size() : 0;
 
   // Broadcast data_count to all locations
-  MPI_Bcast(&data_count,   // buffer [IN/OUT]
-            1,             // count
-            MPI_UINT64_T,  // data type
-            root,          // root
-            communicator); // communicator
+  MPI_Bcast(&data_count, 1, MPI_UINT64_T, root, communicator);
 
   if (Chi::mpi.location_id != root) cell_pids.assign(data_count, 0);
 
   // Broadcast partitioning to all locations
-  MPI_Bcast(cell_pids.data(),             // buffer [IN/OUT]
-            static_cast<int>(data_count), // count
-            MPI_LONG_LONG_INT,            // data type
-            root,                         // root
-            communicator);                // communicator
+  MPI_Bcast(cell_pids.data(), static_cast<int>(data_count), MPI_LONG_LONG_INT, root, communicator);
 }
 
 bool
