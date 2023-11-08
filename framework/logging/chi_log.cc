@@ -6,8 +6,6 @@
 
 #include <sstream>
 
-// ###################################################################
-/**Access to the singleton*/
 chi::ChiLog&
 chi::ChiLog::GetInstance() noexcept
 {
@@ -15,8 +13,6 @@ chi::ChiLog::GetInstance() noexcept
   return instance;
 }
 
-// ###################################################################
-/** Default constructor*/
 chi::ChiLog::ChiLog() noexcept
 {
   verbosity_ = 0;
@@ -29,10 +25,8 @@ chi::ChiLog::ChiLog() noexcept
     Chi::program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
 }
 
-// ###################################################################
-/** Makes a log entry.*/
 chi::LogStream
-chi::ChiLog::Log(LOG_LVL level /*=LOG_0*/)
+chi::ChiLog::Log(LOG_LVL level)
 {
   switch (level)
   {
@@ -160,24 +154,18 @@ chi::ChiLog::Log(LOG_LVL level /*=LOG_0*/)
   }
 }
 
-// ###################################################################
-/** Sets the verbosity level.*/
 void
 chi::ChiLog::SetVerbosity(int int_level)
 {
   verbosity_ = std::min(int_level, 2);
 }
 
-// ###################################################################
-/** Gets the current verbosity level.*/
 int
 chi::ChiLog::GetVerbosity() const
 {
   return verbosity_;
 }
 
-// ###################################################################
-/** Returns a unique tag to a newly created repeating event.*/
 size_t
 chi::ChiLog::GetRepeatingEventTag(std::string event_name)
 {
@@ -191,8 +179,6 @@ chi::ChiLog::GetRepeatingEventTag(std::string event_name)
   return repeating_events.size() - 1;
 }
 
-// ###################################################################
-/** Returns a unique tag to the latest version of an existing repeating event.*/
 size_t
 chi::ChiLog::GetExistingRepeatingEventTag(std::string event_name)
 {
@@ -203,8 +189,6 @@ chi::ChiLog::GetExistingRepeatingEventTag(std::string event_name)
   ChiLogicalError("Tag could not be found for repeating event name \"" + event_name + "\"");
 }
 
-// ###################################################################
-/**Logs an event with the supplied event information.*/
 void
 chi::ChiLog::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventInfo>& ev_info)
 {
@@ -215,8 +199,6 @@ chi::ChiLog::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<Ev
   ref_rep_event.Events().emplace_back(Chi::program_timer.GetTime(), ev_type, ev_info);
 }
 
-// ###################################################################
-/**Logs an event without any event information.*/
 void
 chi::ChiLog::LogEvent(size_t ev_tag, EventType ev_type)
 {
@@ -227,12 +209,6 @@ chi::ChiLog::LogEvent(size_t ev_tag, EventType ev_type)
   ref_rep_event.Events().emplace_back(Chi::program_timer.GetTime(), ev_type, nullptr);
 }
 
-// ###################################################################
-/**Returns a string representation of the event history associated with
- * the tag. Each event entry will be prepended by the location id and
- * the program timestamp in seconds. This method uses the
- * ChiLog::EventInfo::GetString method to append information. This allows
- * derived classes to implement more sophisticated outputs.*/
 std::string
 chi::ChiLog::PrintEventHistory(size_t ev_tag)
 {
@@ -272,9 +248,6 @@ chi::ChiLog::PrintEventHistory(size_t ev_tag)
   return outstr.str();
 }
 
-// ###################################################################
-/**Processes an event given an event operation. See ChiLog for further
- * reference.*/
 double
 chi::ChiLog::ProcessEvent(size_t ev_tag, chi::ChiLog::EventOperation ev_operation)
 {

@@ -12,9 +12,9 @@ main(int argc, char** argv)
   int location_id = 0, number_processes = 1;
   MPI_Comm communicator = MPI_COMM_WORLD;
 
-  MPI_Init(&argc, &argv);                         /* starts MPI */
-  MPI_Comm_rank(communicator, &location_id);      /* get cur process id */
-  MPI_Comm_size(communicator, &number_processes); /* get num of processes */
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(communicator, &location_id);
+  MPI_Comm_size(communicator, &number_processes);
 
   Chi::mpi.SetCommunicator(communicator);
   Chi::mpi.SetLocationID(location_id);

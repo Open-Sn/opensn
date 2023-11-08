@@ -15,7 +15,6 @@ namespace prk
 
 RegisterChiObject(prk, TransientSolver);
 
-/**Sets input parameters.*/
 chi::InputParameters
 TransientSolver::GetInputParameters()
 {
@@ -54,7 +53,6 @@ TransientSolver::GetInputParameters()
   return params;
 }
 
-/**Constructor.*/
 TransientSolver::TransientSolver(const chi::InputParameters& params)
   : chi_physics::Solver(params.GetParamValue<std::string>("name")),
     lambdas_(params.GetParamVectorValue<double>("precursor_lambdas")),
@@ -82,7 +80,6 @@ TransientSolver::TransientSolver(const chi::InputParameters& params)
   }
 }
 
-/**Initialize function.*/
 void
 TransientSolver::Initialize()
 {
@@ -92,9 +89,9 @@ TransientSolver::Initialize()
                                         "deduced from precursor data because "
                                         "the data lists are of different size.");
 
-  beta_ = std::accumulate(betas_.begin(), betas_.end(), /*init_val=*/0.0);
+  beta_ = std::accumulate(betas_.begin(), betas_.end(), 0.0);
 
-  // ============================= Initializing linalg items
+  // Initializing linalg items
   const auto& J = num_precursors_;
   A_ = chi_math::DynamicMatrix<double>(J + 1, J + 1, 0.0);
   I_ = A_;
@@ -102,7 +99,7 @@ TransientSolver::Initialize()
 
   x_t_ = chi_math::DynamicVector<double>(J + 1, 0.0);
 
-  // ============================= Assembling system
+  // Assembling system
   A_[0][0] = beta_ * (rho_ - 1.0) / gen_time_;
   for (size_t j = 1; j <= J; ++j)
   {
@@ -114,7 +111,7 @@ TransientSolver::Initialize()
   q_.resize(J + 1, 0.0);
   q_[0] = source_strength_;
 
-  // ============================= Initializing x
+  // Initializing x
   // If there is a source and the reactivity is < 0 then
   // there exists a unique solution.
   if (source_strength_ > 0.0 and rho_ < 0.0)
@@ -141,7 +138,6 @@ TransientSolver::Initialize()
   Chi::log.Log() << "Final: " << x_t_.PrintStr();
 }
 
-/**Execution function.*/
 void
 TransientSolver::Execute()
 {
@@ -154,7 +150,6 @@ TransientSolver::Execute()
   }
 }
 
-/**Step function*/
 void
 TransientSolver::Step()
 {
@@ -191,7 +186,6 @@ TransientSolver::Step()
   if (period_tph_ < 0.0 and period_tph_ < -1.0e6) period_tph_ = -1.0e6;
 }
 
-/**Advance time values function.*/
 void
 TransientSolver::Advance()
 {
@@ -232,75 +226,54 @@ TransientSolver::GetInfo(const chi::ParameterBlock& params) const
     ChiInvalidArgument("Unsupported info name \"" + param_name + "\".");
 }
 
-// ##################################################################
-/**Returns the population at the previous time step.*/
 double
 TransientSolver::PopulationPrev() const
 {
   return x_t_[0];
 }
-/**Returns the population at the next time step.*/
+
 double
 TransientSolver::PopulationNew() const
 {
   return x_tp1_[0];
 }
 
-/**Returns the period computed for the last time step.*/
 double
 TransientSolver::Period() const
 {
   return period_tph_;
 }
 
-/**Returns the time computed for the last time step.*/
 double
 TransientSolver::TimePrev() const
 {
   return timestepper_->Time();
 }
 
-/**Returns the time computed for the next time step.*/
 double
 TransientSolver::TimeNew() const
 {
   return timestepper_->Time() + timestepper_->TimeStepSize();
 }
 
-/**Returns the solution at the previous time step.*/
 std::vector<double>
 TransientSolver::SolutionPrev() const
 {
   return x_t_.elements_;
 }
-/**Returns the solution at the next time step.*/
+
 std::vector<double>
 TransientSolver::SolutionNew() const
 {
   return x_tp1_.elements_;
 }
 
-// ##################################################################
-/**Sets the value of rho.*/
 void
 TransientSolver::SetRho(double value)
 {
   rho_ = value;
 }
 
-/**\addtogroup prk
- *
- * \section Properties Properties that can be set
- * The following properties can be set via the lua call
- * `chi_lua::chiSolverSetProperties`
- * \copydoc prk::TransientSolver::SetProperties
- * */
-
-/** PRK Transient solver settable properties:
-* - `rho`, The current reactivity
-
-Parents:
-\copydoc chi_physics::Solver::SetProperties*/
 void
 TransientSolver::SetProperties(const chi::ParameterBlock& params)
 {

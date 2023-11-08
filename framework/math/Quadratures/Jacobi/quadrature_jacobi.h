@@ -5,7 +5,6 @@
 namespace chi_math
 {
 
-// ###################################################################
 /**Jacobi quadrature.*/
 class QuadratureJacobi : public chi_math::Quadrature
 {

@@ -11,17 +11,6 @@ namespace lbs::disc_ord_lua_utils
 
 RegisterLuaFunctionAsIs(chiLBSComputeLeakage);
 
-// ###################################################################
-/**Computes the leakage for the specified groupset and boundary id.
- *
-\param SolverIndex int Handle to the solver.
-\param GroupSetHandle int Handle to the groupset.
-\param BoundaryID int Id of the boundary for which leakage is to be computed.
-
-\return The leakage on a per group basis.
-
-\ingroup LBSLuaFunctions
-\author Jan*/
 int
 chiLBSComputeLeakage(lua_State* L)
 {
@@ -32,7 +21,7 @@ chiLBSComputeLeakage(lua_State* L)
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
 
   auto& lbs_solver =
@@ -45,7 +34,7 @@ chiLBSComputeLeakage(lua_State* L)
 
   const auto leakage = lbs_solver.ComputeLeakage(groupset_id, boundary_id);
 
-  //============================================= Push up the table
+  // Push up the table
   lua_newtable(L);
 
   for (int i = 0; i < static_cast<int>(leakage.size()); ++i)

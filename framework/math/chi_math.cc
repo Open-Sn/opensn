@@ -29,16 +29,16 @@ OmegaToPhiThetaSafe(const chi_mesh::Vector3& omega)
 
   double theta = acos(mu);
 
-  //===== Handling omega aligned to k_hat
+  // Handling omega aligned to k_hat
   if (std::fabs(omega_hat.z) < 1.0e-16) return {0.0, theta};
 
   double cos_phi = omega_hat.x / sin(theta);
   cos_phi = std::min(cos_phi, 1.0);
   cos_phi = std::max(cos_phi, -1.0);
 
-  //===== Computing varphi for NE and NW quadrant
+  // Computing varphi for NE and NW quadrant
   if (omega_hat.y >= 0.0) return {acos(cos_phi), theta};
-  //===== Computing varphi for SE and SW quadrant
+  // Computing varphi for SE and SW quadrant
   else
     return {2.0 * M_PI - acos(cos_phi), theta};
 }

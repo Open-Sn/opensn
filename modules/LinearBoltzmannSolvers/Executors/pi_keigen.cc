@@ -96,25 +96,25 @@ XXPowerIterationKEigen::Execute()
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
 
-  //================================================== Start power iterations
+  // Start power iterations
   int nit = 0;
   bool converged = false;
   while (nit < max_iters_)
   {
-    //================================= Set the fission source
-    SetLBSFissionSource(phi_old_local_, /*additive=*/false);
+    // Set the fission source
+    SetLBSFissionSource(phi_old_local_, false);
     Scale(q_moments_local_, 1.0 / k_eff_);
 
-    //================================= This solves the inners for transport
+    // This solves the inners for transport
     primary_ags_solver_->Setup();
     primary_ags_solver_->Solve();
 
-    //================================= Recompute k-eigenvalue
+    // Recompute k-eigenvalue
     double F_new = lbs_solver_.ComputeFissionProduction(phi_new_local_);
     k_eff_ = F_new / F_prev * k_eff_;
     double reactivity = (k_eff_ - 1.0) / k_eff_;
 
-    //================================= Check convergence, bookkeeping
+    // Check convergence, bookkeeping
     k_eff_change = fabs(k_eff_ - k_eff_prev) / k_eff_;
     k_eff_prev = k_eff_;
     F_prev = F_new;
@@ -122,7 +122,7 @@ XXPowerIterationKEigen::Execute()
 
     if (k_eff_change < std::max(k_tolerance_, 1.0e-12)) converged = true;
 
-    //================================= Print iteration summary
+    // Print iteration summary
     if (lbs_solver_.Options().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
@@ -138,7 +138,7 @@ XXPowerIterationKEigen::Execute()
     if (converged) break;
   } // for k iterations
 
-  //================================================== Print summary
+  // Print summary
   Chi::log.Log() << "\n";
   Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
   Chi::log.Log() << "        Final change          :        " << std::setprecision(6)
@@ -169,7 +169,7 @@ XXPowerIterationKEigen::SetLBSFissionSource(const VecDbl& input, const bool addi
 void
 XXPowerIterationKEigen::SetLBSScatterSource(const VecDbl& input,
                                             const bool additive,
-                                            const bool suppress_wg_scat /*=false*/)
+                                            const bool suppress_wg_scat)
 {
   if (not additive) chi_math::Set(q_moments_local_, 0.0);
   active_set_source_function_(front_gs_,

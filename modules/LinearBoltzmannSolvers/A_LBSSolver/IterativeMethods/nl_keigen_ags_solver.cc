@@ -71,7 +71,7 @@ template <>
 void
 NLKEigenvalueAGSSolver<SNESTypes>::SetSystem()
 {
-  //============================================= Create the vectors
+  // Create the vectors
   x_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_globl_dofs_);
   VecDuplicate(x_, &r_);
 }
@@ -113,18 +113,18 @@ NLKEigenvalueAGSSolver<SNESTypes>::PostSolveCallback()
 
   auto& lbs_solver = nl_context_ptr->lbs_solver_;
 
-  //============================================= Unpack solution
+  // Unpack solution
   const auto& groups = lbs_solver.Groups();
   lbs_solver.SetPrimarySTLvectorFromGroupScopedPETScVec(
     groups.front().id_, groups.back().id_, x_, lbs_solver.PhiOldLocal());
 
-  //============================================= Compute final k_eff
+  // Compute final k_eff
   double k_eff = lbs_solver.ComputeFissionProduction(lbs_solver.PhiOldLocal());
 
   PetscInt number_of_func_evals;
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
 
-  //================================================== Print summary
+  // Print summary
   Chi::log.Log() << "\n"
                  << "        Final k-eigenvalue    :        " << std::fixed << std::setw(10)
                  << std::setprecision(7) << k_eff << " (num_TrOps:" << number_of_func_evals << ")"

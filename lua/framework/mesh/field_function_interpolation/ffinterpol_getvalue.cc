@@ -15,20 +15,6 @@
 
 RegisterLuaFunctionAsIs(chiFFInterpolationGetValue);
 
-// #############################################################################
-/** Gets the value(s) associated with an interpolation provided the
- * interpolation type has an associated value.
- *
-\param FFIHandle int Handle to the field function interpolation.
-
-###Note:
-Currently only the POINT, LINE and VOLUME interpolation supports obtaining a
-value. For the POINT and VOLUME types a single value is returned. For the LINE
-type a table of tables is returned with the first index being the field function
-(in the order it was assigned) and the second index being the point index.
-
-\ingroup LuaFFInterpol
-\author Jan*/
 int
 chiFFInterpolationGetValue(lua_State* L)
 {
@@ -37,8 +23,7 @@ chiFFInterpolationGetValue(lua_State* L)
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError("chiFFInterpolationGetValue", 1, num_args);
 
-  //================================================== Get handle to field
-  // function
+  // Get handle to field function
   const size_t ffihandle = lua_tonumber(L, 1);
 
   auto p_ffi = Chi::GetStackItemPtr(Chi::field_func_interpolation_stack, ffihandle, fname);

@@ -9,7 +9,7 @@
 
 namespace chi
 {
-// #################################################################
+
 std::string
 StringLTrim(const std::string& s)
 {
@@ -17,7 +17,6 @@ StringLTrim(const std::string& s)
   return (start == std::string::npos) ? "" : s.substr(start);
 }
 
-// #################################################################
 std::string
 StringRTrim(const std::string& s)
 {
@@ -25,16 +24,14 @@ StringRTrim(const std::string& s)
   return (end == std::string::npos) ? "" : s.substr(0, end + 1);
 }
 
-// #################################################################
 std::string
 StringTrim(const std::string& s)
 {
   return StringRTrim(StringLTrim(s));
 }
 
-// #################################################################
 std::vector<std::string>
-StringSplit(const std::string& input, const std::string& delim /*=" "*/)
+StringSplit(const std::string& input, const std::string& delim)
 {
   constexpr size_t NPOS = std::string::npos;
   std::vector<std::string> output;
@@ -54,7 +51,6 @@ StringSplit(const std::string& input, const std::string& delim /*=" "*/)
   return output;
 }
 
-// #################################################################
 std::string
 StringUpToFirstReverse(const std::string& input, const std::string& search_string)
 {
@@ -78,19 +74,10 @@ AssertReadibleFile(const std::string& file_name)
   file.close();
 }
 
-// ###################################################################
-/**Print the percentage completed based on the given interval.
- *
- * The function divides 100% into `num_intvls` intervals. If an
- * iteration passes an interval boundary then that interval percentage
- * will be printed.
- *
- * Specifying 10 intervals will print after each 10% is completed.
- * Specifying 4 intervals will print after each 25% is completed.*/
 std::string
 PrintIterationProgress(const size_t current_iteration,
                        const size_t total_num_iterations,
-                       const unsigned int num_intvls /*=10*/)
+                       const unsigned int num_intvls)
 {
   typedef unsigned int uint;
 

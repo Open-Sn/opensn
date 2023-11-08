@@ -32,13 +32,12 @@
 #include <unistd.h>
 #endif
 
-//=============================================== Global variables
+// Global variables
 chi::Console& Chi::console = chi::Console::GetInstance();
 chi::ChiLog& Chi::log = chi::ChiLog::GetInstance();
 chi::MPI_Info& Chi::mpi = chi::MPI_Info::GetInstance();
 chi::Timer Chi::program_timer;
 
-/** Global stack of handlers */
 std::vector<chi_mesh::MeshHandlerPtr> Chi::meshhandler_stack;
 int Chi::current_mesh_handler = -1;
 
@@ -56,7 +55,7 @@ std::vector<ChiObjectPtr> Chi::object_stack;
 std::vector<chi_math::SpatialDiscretizationPtr> Chi::sdm_stack;
 std::vector<chi::PostProcessorPtr> Chi::postprocessor_stack;
 
-//================================ run_time quantities
+// run_time quantities
 bool Chi::run_time::termination_posted_ = false;
 std::string Chi::run_time::input_file_name_;
 bool Chi::run_time::sim_option_interactive_ = true;
@@ -80,11 +79,6 @@ const std::string Chi::run_time::command_line_help_string_ =
   "     --dump-object-registry      Dumps the object registry.\n"
   "\n\n\n";
 
-// ############################################### Argument parser
-/**Parses input arguments.
-\param argc int    Number of arguments supplied.
-\param argv char** Array of strings representing each argument.
- */
 void
 Chi::run_time::ParseArguments(int argc, char** argv)
 {
@@ -117,12 +111,12 @@ Chi::run_time::ParseArguments(int argc, char** argv)
       Chi::run_time::dump_registry_ = true;
       Chi::run_time::termination_posted_ = true;
     }
-    //================================================ No-graphics option
+    // No-graphics option
     else if (argument.find("-b") != std::string::npos)
     {
       Chi::run_time::sim_option_interactive_ = false;
     } //-b
-    //================================================ Verbosity
+    // Verbosity
     else if (argument.find("-v") != std::string::npos)
     {
       if ((i + 1) >= argc)
@@ -159,9 +153,8 @@ Chi::run_time::ParseArguments(int argc, char** argv)
     else if (argument.find('=') != std::string::npos)
     {
       Chi::console.GetCommandBuffer().push_back(argument);
-    } //=
-
-  } // for argument
+    }
+  }
 
 #ifdef OPENSN_WITH_LUA
   if (Chi::run_time::dump_registry_)
@@ -172,20 +165,14 @@ Chi::run_time::ParseArguments(int argc, char** argv)
 #endif
 }
 
-// ############################################### Initialize ChiTech
-/**Initializes all necessary items for ChiTech.
-\param argc int    Number of arguments supplied.
-\param argv char** Array of strings representing each argument.
-\param communicator MPI_Comm The main communicator, used system wide.
- */
 int
 Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
 {
   int location_id = 0, number_processes = 1;
 
-  MPI_Init(&argc, &argv);                         /* starts MPI */
-  MPI_Comm_rank(communicator, &location_id);      /* get cur process id */
-  MPI_Comm_size(communicator, &number_processes); /* get num of processes */
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(communicator, &location_id);
+  MPI_Comm_size(communicator, &number_processes);
 
   mpi.SetCommunicator(communicator);
   mpi.SetLocationID(location_id);
@@ -205,7 +192,6 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
   return 0;
 }
 
-/**Initializes PetSc for use by all entities.*/
 int
 Chi::run_time::InitPetSc(int argc, char** argv)
 {
@@ -219,9 +205,6 @@ Chi::run_time::InitPetSc(int argc, char** argv)
   return 0;
 }
 
-// ############################################### Finalize ChiTech
-/**Finalizes ChiTech.
- * */
 void
 Chi::Finalize()
 {
@@ -244,8 +227,6 @@ Chi::Finalize()
   MPI_Finalize();
 }
 
-// ############################################### Interactive interface
-/**Runs the interactive chitech engine*/
 int
 Chi::RunInteractive(int argc, char** argv)
 {
@@ -290,8 +271,6 @@ Chi::RunInteractive(int argc, char** argv)
   return 0;
 }
 
-// ############################################### Batch interface
-/**Runs ChiTech in pure batch mode. Start then finish.*/
 int
 Chi::RunBatch(int argc, char** argv)
 {
@@ -346,24 +325,18 @@ Chi::RunBatch(int argc, char** argv)
   return error_code;
 }
 
-// ###################################################################
-/** Exits the program appropriately.*/
 void
 Chi::Exit(int error_code)
 {
   MPI_Abort(mpi.comm, error_code);
 }
 
-// ###################################################################
-/** Gets the ChiTech-version string.*/
 std::string
 Chi::GetVersionStr()
 {
   return PROJECT_VERSION;
 }
 
-// ###################################################################
-/**Builds a `RegistryStatuses` structure*/
 chi::RegistryStatuses
 Chi::GetStatusOfRegistries()
 {

@@ -327,10 +327,10 @@ void
 PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
                                           const std::vector<const PostProcessor*>& pp_list,
                                           const Event& event,
-                                          bool per_column_sizes /*=false*/) const
+                                          bool per_column_sizes) const
 {
   if (pp_list.empty()) return;
-  //======================================== Establish unique time history sizes
+  // Establish unique time history sizes
   std::set<size_t> unq_time_histsizes;
 
   for (const auto& pp : pp_list)
@@ -339,8 +339,7 @@ PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
     unq_time_histsizes.insert(time_histsize);
   }
 
-  //======================================== Subscribe pps to unique time
-  //                                         hist sizes
+  // Subscribe pps to unique time hist sizes
   std::map<size_t, std::vector<const PostProcessor*>> pp_timehist_size_subs;
   for (size_t time_histsize : unq_time_histsizes)
   {
@@ -349,7 +348,7 @@ PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
       if (pp->GetTimeHistory().size() == time_histsize) subs.push_back(pp);
   }
 
-  //======================================== For each timeline. Build the table
+  // For each timeline. Build the table
   for (const auto& [timehistsize, pp_sub_list] : pp_timehist_size_subs)
   {
     if (pp_sub_list.empty()) continue;
@@ -506,7 +505,7 @@ PostProcessorPrinter::PrintScalarPPsToCSV(std::ofstream& csvfile,
 {
   csvfile << "Scalar Post-Processors\n";
 
-  //======================================== Establish unique time history sizes
+  // Establish unique time history sizes
   std::set<size_t> unq_time_histsizes;
 
   for (const auto& pp : pp_list)
@@ -515,8 +514,7 @@ PostProcessorPrinter::PrintScalarPPsToCSV(std::ofstream& csvfile,
     unq_time_histsizes.insert(time_histsize);
   }
 
-  //======================================== Subscribe pps to unique time
-  //                                         hist sizes
+  // Subscribe pps to unique time hist sizes
   std::map<size_t, std::vector<const PostProcessor*>> pp_timehist_size_subs;
   for (size_t time_histsize : unq_time_histsizes)
   {
@@ -525,7 +523,7 @@ PostProcessorPrinter::PrintScalarPPsToCSV(std::ofstream& csvfile,
       if (pp->GetTimeHistory().size() == time_histsize) subs.push_back(pp);
   }
 
-  //======================================== For each timeline. Build the table
+  // For each timeline. Build the table
   for (const auto& [timehistsize, pp_sub_list] : pp_timehist_size_subs)
   {
     const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, pp_sub_list);

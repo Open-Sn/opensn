@@ -18,6 +18,6 @@ class FieldFunctionGridBased;
 class FieldFunctionGridBased;
 class Solver;
 
-// 03 Utils
+/**Gets the string value of a converged reason.*/
 std::string GetPETScConvergedReasonstring(KSPConvergedReason reason);
 } // namespace chi_physics

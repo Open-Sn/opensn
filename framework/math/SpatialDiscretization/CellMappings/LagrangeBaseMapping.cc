@@ -27,15 +27,6 @@ LagrangeBaseMapping::LagrangeBaseMapping(const chi_mesh::MeshContinuum& grid,
 {
 }
 
-/** This section just determines a mapping of face dofs
-to cell dofs. This is pretty simple since we can
-just loop over each face dof then subsequently
-loop over cell dofs, if the face dof node index equals
-the cell dof node index then the mapping is assigned.
-
-This mapping is not used by any of the methods in
-    this class but is used by methods requiring the
-      surface integrals of the shape functions.*/
 std::vector<std::vector<int>>
 LagrangeBaseMapping::MakeFaceNodeMapping(const chi_mesh::Cell& cell)
 {
@@ -136,7 +127,7 @@ LagrangeBaseMapping::MakeVolumetricQuadraturePointData() const
   typedef std::vector<Vec3> VecVec3;
   const size_t num_qpoints = volume_quadrature_.qpoints_.size();
 
-  //=================================== Declare necessary vars
+  // Declare necessary vars
   std::vector<unsigned int> quadrature_point_indices;
   VecVec3 qpoints_xyz;
   std::vector<VecDbl> shape_value;
@@ -201,7 +192,7 @@ LagrangeBaseMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
   typedef std::vector<Vec3> VecVec3;
   const size_t num_qpoints = surface_quadrature.qpoints_.size();
 
-  //=================================== Declare necessary vars
+  // Declare necessary vars
   std::vector<unsigned int> quadrature_point_indices;
   VecVec3 qpoints_xyz;
   std::vector<VecDbl> shape_value;

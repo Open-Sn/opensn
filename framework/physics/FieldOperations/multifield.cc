@@ -10,8 +10,6 @@ namespace chi_physics::field_operations
 
 RegisterChiObject(chi_physics::field_operations, MultiFieldOperation);
 
-// ##################################################################
-/**Returns the input parameters.*/
 chi::InputParameters
 MultiFieldOperation::GetInputParameters()
 {
@@ -42,15 +40,13 @@ MultiFieldOperation::GetInputParameters()
   return params;
 }
 
-// ##################################################################
-/**Constructor.*/
 MultiFieldOperation::MultiFieldOperation(const chi::InputParameters& params)
   : FieldOperation(params),
     result_field_handle_(params.GetParamValue<size_t>("result_field_handle")),
     dependent_field_handles_(params.GetParamVectorValue<size_t>("dependent_field_handles")),
     function_handle_(params.GetParamValue<size_t>("function_handle"))
 {
-  //============================================= Make component references
+  // Make component references
   const auto& user_supplied_params = params.ParametersAtAssignment();
   if (user_supplied_params.Has("dependent_component_references"))
   {
@@ -72,7 +68,7 @@ MultiFieldOperation::MultiFieldOperation(const chi::InputParameters& params)
   else
     result_component_references_ = {0};
 
-  //============================================= Process handles
+  // Process handles
   auto ff_base_ptr =
     Chi::GetStackItemPtr(Chi::field_function_stack, result_field_handle_, __FUNCTION__);
 
@@ -121,8 +117,6 @@ MultiFieldOperation::MultiFieldOperation(const chi::InputParameters& params)
                          std::to_string(result_component_references_.size()) + " value(s).");
 }
 
-// ##################################################################
-/**Constructor.*/
 void
 MultiFieldOperation::Execute()
 {

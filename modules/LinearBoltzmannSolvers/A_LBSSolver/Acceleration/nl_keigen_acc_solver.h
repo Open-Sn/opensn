@@ -22,27 +22,16 @@ public:
   virtual ~NLKEigenDiffSolver() override = default;
 
 protected:
-  /*void PreSetupCallback();*/
-  /*void SetOptions();*/
-  /*void SetSolverContext();*/
-  /*void SetConvergenceTest();*/
   void SetMonitor() override;
-  /*void SetPreconditioner();*/
 
   void SetSystemSize() override;
   void SetSystem() override;
   void SetFunction() override;
   void SetJacobian() override;
-  /*void PostSetupCallback();*/
-public:
-  /*void Setup();*/
 
 protected:
-  /*void PreSolveCallback();*/
   void SetInitialGuess() override;
   void PostSolveCallback() override;
-  // public:
-  //   void Solve();
 };
 
 } // namespace lbs::acceleration

@@ -43,49 +43,42 @@ TimeStepper::TimeStepper(const chi::InputParameters& params)
 {
 }
 
-/**Overridable method to get the timestep size.*/
 double
 TimeStepper::TimeStepSize() const
 {
   return dt_;
 }
 
-/**Returns the current controller time.*/
 double
 TimeStepper::Time() const
 {
   return time_;
 }
 
-/**Returns the current time index.*/
 size_t
 TimeStepper::TimeStepIndex() const
 {
   return t_index_;
 }
 
-/**Returns the current controller start_time.*/
 double
 TimeStepper::StartTime() const
 {
   return start_time_;
 }
 
-/**Returns the current controller end_time.*/
 double
 TimeStepper::EndTime() const
 {
   return end_time_;
 }
 
-/**Returns the current controller max time steps.*/
 double
 TimeStepper::MaxTimeSteps() const
 {
   return max_time_steps_;
 }
 
-/**If start_time <= time <= end_time, this will return true.*/
 bool
 TimeStepper::IsActive() const
 {
@@ -99,7 +92,6 @@ TimeStepper::IsActive() const
   return active;
 }
 
-/**Manually set the time step size.*/
 void
 TimeStepper::SetTimeStepSize(double dt)
 {
@@ -108,21 +100,18 @@ TimeStepper::SetTimeStepSize(double dt)
   dt_ = std::min(end_time_ - time_, dt_);
 }
 
-/**Manually set the current time.*/
 void
 TimeStepper::SetTime(double time)
 {
   time_ = time;
 }
 
-/**Manually set the start_time.*/
 void
 TimeStepper::SetStartTime(double time)
 {
   start_time_ = time;
 }
 
-/**Manually set the end_time.*/
 void
 TimeStepper::SetEndTime(double time)
 {
@@ -130,24 +119,18 @@ TimeStepper::SetEndTime(double time)
   dt_ = last_dt_;
 }
 
-/**Manually set the maximum number of time steps. A negative number disables
- * this check.*/
 void
 TimeStepper::SetMaxTimeSteps(int n)
 {
   max_time_steps_ = n;
 }
 
-/**Manually sets the minimum time step size.*/
 void
 TimeStepper::SetMinimumTimeStepSize(double dt_min)
 {
   dt_min_ = dt_min;
 }
 
-/**Advances the controller's state. The most basic action here is to
- * advance time and the time index. If the solver is at or beyond its end time
- * then it will return false. Otherwise it will advance and return true.*/
 void
 TimeStepper::Advance()
 {
@@ -162,7 +145,7 @@ TimeStepper::Advance()
 }
 
 std::string
-TimeStepper::StringTimeInfo(bool old_time /*=false*/) const
+TimeStepper::StringTimeInfo(bool old_time) const
 {
   const double time = old_time ? time_ : time_ + dt_;
   std::stringstream outstr;

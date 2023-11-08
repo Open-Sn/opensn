@@ -13,14 +13,12 @@
 
 RegisterLuaFunctionAsIs(chiCountMeshInLogicalVolume);
 
-// ###################################################################
-/**Counts the number of cells with a logical volume.*/
 int
 chiCountMeshInLogicalVolume(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
-  //======================================== Arg checking
+  // Arg checking
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 

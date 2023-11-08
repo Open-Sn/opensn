@@ -28,8 +28,7 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
 {
   static_assert(std::is_integral<K>::value, "Integral datatype required.");
 
-  //============================================= Make sendcounts and
-  //                                              senddispls
+  // Make sendcounts and senddispls
   std::vector<int> sendcounts(Chi::mpi.process_count, 0);
   std::vector<int> senddispls(Chi::mpi.process_count, 0);
   {
@@ -42,25 +41,17 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
     }
   }
 
-  //============================================= Communicate sendcounts to
-  //                                              get recvcounts
+  // Communicate sendcounts to get recvcounts
   std::vector<int> recvcounts(Chi::mpi.process_count, 0);
 
-  MPI_Alltoall(sendcounts.data(), // sendbuf
-               1,
-               MPI_INT,           // sendcount, sendtype
-               recvcounts.data(), // recvbuf
-               1,
-               MPI_INT,       // recvcount, recvtype
-               communicator); // communicator
+  MPI_Alltoall(sendcounts.data(), 1, MPI_INT, recvcounts.data(), 1, MPI_INT, communicator);
 
-  //============================================= Populate recvdispls,
-  //                                              sender_pids_set, and
-  //                                              total_recv_count
+  // Populate recvdispls, sender_pids_set, and total_recv_count
   // All three these quantities are constructed
   // from recvcounts.
   std::vector<int> recvdispls(Chi::mpi.process_count, 0);
-  std::set<K> sender_pids_set; // set of neighbor-partitions sending data
+  // set of neighbor-partitions sending data
+  std::set<K> sender_pids_set;
   size_t total_recv_count;
   {
     int displacement = 0;
@@ -74,26 +65,26 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
     total_recv_count = displacement;
   }
 
-  //============================================= Make sendbuf
+  // Make sendbuf
   // The data for each partition is now loaded
   // into a single buffer
   std::vector<T> sendbuf;
   for (const auto& pid_data_pair : pid_data_pairs)
     sendbuf.insert(sendbuf.end(), pid_data_pair.second.begin(), pid_data_pair.second.end());
 
-  //============================================= Make recvbuf
+  // Make recvbuf
   std::vector<T> recvbuf(total_recv_count);
 
-  //============================================= Communicate serial data
-  MPI_Alltoallv(sendbuf.data(),    // sendbuf
-                sendcounts.data(), // sendcounts
-                senddispls.data(), // senddispls
-                data_mpi_type,     // sendtype
-                recvbuf.data(),    // recvbuf
-                recvcounts.data(), // recvcounts
-                recvdispls.data(), // recvdispls
-                data_mpi_type,     // recvtype
-                communicator);     // comm
+  // Communicate serial data
+  MPI_Alltoallv(sendbuf.data(),
+                sendcounts.data(),
+                senddispls.data(),
+                data_mpi_type,
+                recvbuf.data(),
+                recvcounts.data(),
+                recvdispls.data(),
+                data_mpi_type,
+                communicator);
 
   std::map<K, std::vector<T>> output_data;
   {

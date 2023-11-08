@@ -117,7 +117,7 @@ DiffusionSolver::Initialize()
   Chi::mpi.Barrier();
   Chi::log.Log() << "Sparsity pattern";
   Chi::mpi.Barrier();
-  //============================================= Create Matrix
+  // Create Matrix
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
   sdm_.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, uk_man_);
@@ -130,7 +130,7 @@ DiffusionSolver::Initialize()
   Chi::log.Log() << "Done matrix creation";
   Chi::mpi.Barrier();
 
-  //============================================= Create RHS
+  // Create RHS
   if (not requires_ghosts_)
     rhs_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_global_dofs_);
   else
@@ -144,14 +144,14 @@ DiffusionSolver::Initialize()
   Chi::log.Log() << "Done vector creation";
   Chi::mpi.Barrier();
 
-  //============================================= Create KSP
+  // Create KSP
   KSPCreate(PETSC_COMM_WORLD, &ksp_);
   KSPSetOptionsPrefix(ksp_, text_name_.c_str());
   KSPSetType(ksp_, KSPCG);
 
   KSPSetTolerances(ksp_, 1.e-50, options.residual_tolerance, 1.0e50, options.max_iters);
 
-  //============================================= Set Pre-conditioner
+  // Set Pre-conditioner
   PC pc;
   KSPGetPC(ksp_, &pc);
   //  PCSetType(pc, PCGAMG);
@@ -181,7 +181,7 @@ DiffusionSolver::Initialize()
 }
 
 void
-DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess /*=false*/)
+DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 {
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
   Vec x;
@@ -224,10 +224,10 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess /*=
     VecRestoreArray(x, &x_raw);
   }
 
-  //============================================= Solve
+  // Solve
   KSPSolve(ksp_, rhs_, x);
 
-  //============================================= Print convergence info
+  // Print convergence info
   if (options.verbose)
   {
     double sol_norm;
@@ -241,8 +241,7 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess /*=
     Chi::log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
   }
 
-  //============================================= Transfer petsc solution to
-  //                                              vector
+  // Transfer petsc solution to vector
   if (requires_ghosts_)
   {
     chi_math::PETScUtils::CommunicateGhostEntries(x);
@@ -251,12 +250,12 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess /*=
   else
     sdm_.LocalizePETScVector(x, solution, uk_man_);
 
-  //============================================= Cleanup x
+  // Cleanup x
   VecDestroy(&x);
 }
 
 void
-DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess /*=false*/)
+DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 {
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
   Vec x;
@@ -291,10 +290,10 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess /*=false*/)
 
   if (use_initial_guess) { VecCopy(petsc_solution, x); }
 
-  //============================================= Solve
+  // Solve
   KSPSolve(ksp_, rhs_, x);
 
-  //============================================= Print convergence info
+  // Print convergence info
   if (options.verbose)
   {
     double sol_norm;
@@ -308,11 +307,10 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess /*=false*/)
     Chi::log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
   }
 
-  //============================================= Transfer petsc solution to
-  //                                              vector
+  // Transfer petsc solution to vector
   VecCopy(x, petsc_solution);
 
-  //============================================= Cleanup x
+  // Cleanup x
   VecDestroy(&x);
 }
 

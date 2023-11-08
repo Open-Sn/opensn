@@ -5,12 +5,6 @@
 #include "framework/chi_runtime.h"
 #include "framework/logging/chi_log.h"
 
-// #############################################################################
-/** Creates a DFEM Diffusion solver based on the interior penalty method.
-
-\return Handle int Handle to the created solver.
-\ingroup LuaDiffusion
-*/
 int
 chiDFEMDiffusionSolverCreate(lua_State* L)
 {

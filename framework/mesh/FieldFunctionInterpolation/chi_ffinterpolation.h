@@ -52,7 +52,7 @@ enum class Property : int
 namespace chi_mesh
 {
 
-//###################################################################
+// ###################################################################
 /** Base class for field-function interpolation objects.*/
 class FieldFunctionInterpolation
 {
@@ -71,7 +71,9 @@ public:
 
   ff_interpolation::Type Type() const { return type_; }
 
+  /**Initializes the point interpolator.*/
   virtual void Initialize(){};
+  /**Executes the point interpolator.*/
   virtual void Execute(){};
 
   virtual std::string GetDefaultFileBaseName() const = 0;

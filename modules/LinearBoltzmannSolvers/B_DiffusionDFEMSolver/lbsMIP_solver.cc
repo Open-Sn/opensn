@@ -12,7 +12,6 @@ namespace lbs
 
 RegisterChiObject(lbs, DiffusionDFEMSolver);
 
-// ##################################################################
 chi::InputParameters
 DiffusionDFEMSolver::GetInputParameters()
 {
@@ -26,21 +25,16 @@ DiffusionDFEMSolver::GetInputParameters()
   return params;
 }
 
-// ##################################################################
 DiffusionDFEMSolver::DiffusionDFEMSolver(const chi::InputParameters& params) : LBSSolver(params)
 {
 }
 
-// ##################################################################
-/**Destructor to cleanup TGDSA*/
 DiffusionDFEMSolver::~DiffusionDFEMSolver()
 {
   for (auto& groupset : groupsets_)
     CleanUpTGDSA(groupset);
 }
 
-// ##################################################################
-/**Initializing.*/
 void
 DiffusionDFEMSolver::Initialize()
 {
@@ -54,32 +48,29 @@ DiffusionDFEMSolver::Initialize()
   active_set_source_function_ =
     std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4);
 
-  //================================================== Initialize groupsets
-  //                                                   preconditioning
+  // Initialize groupsets preconditioning
   for (auto& groupset : groupsets_)
     InitTGDSA(groupset);
 
   LBSSolver::InitializeSolverSchemes();
 }
 
-// ##################################################################
-/**Initializes Within-GroupSet solvers.*/
 void
 DiffusionDFEMSolver::InitializeWGSSolvers()
 {
-  //============================================= Initialize groupset solvers
+  // Initialize groupset solvers
   gs_mip_solvers_.assign(groupsets_.size(), nullptr);
   const size_t num_groupsets = groupsets_.size();
   for (size_t gs = 0; gs < num_groupsets; ++gs)
   {
     const auto& groupset = groupsets_[gs];
 
-    //=========================================== Make UnknownManager
+    // Make UnknownManager
     const size_t gs_G = groupset.groups_.size();
     chi_math::UnknownManager uk_man;
     uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, gs_G);
 
-    //=========================================== Make boundary conditions
+    // Make boundary conditions
     typedef chi_mesh::sweep_management::BoundaryType SwpBndryType;
     typedef lbs::acceleration::BoundaryCondition BC;
     typedef lbs::acceleration::BCType BCType;
@@ -103,7 +94,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
       }
     } // for sweep-boundary
 
-    //=========================================== Make xs map
+    // Make xs map
     typedef lbs::acceleration::Multigroup_D_and_sigR MGXS;
     typedef std::map<int, lbs::acceleration::Multigroup_D_and_sigR> MatID2XSMap;
     MatID2XSMap matid_2_mgxs_map;
@@ -130,7 +121,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
       matid_2_mgxs_map.insert(std::make_pair(mat_id, MGXS{Dg, sigR}));
     }
 
-    //=========================================== Create solver
+    // Create solver
     const auto& sdm = *discretization_;
 
     auto solver =
@@ -164,8 +155,8 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
       *this,
       groupset,
       active_set_source_function_,
-      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES | SUPPRESS_WG_SCATTER, // lhs_scope
-      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES, // rhs_scope
+      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES | SUPPRESS_WG_SCATTER,
+      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES,
       options_.verbose_inner_iterations);
 
     auto wgs_solver = std::make_shared<WGSLinearSolver<Mat, Vec, KSP>>(mip_wgs_context_ptr);

@@ -61,14 +61,12 @@ SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const chi::InputParameters& p
   }
 }
 
-// ###################################################################
-/**Logical operation for surface mesh.*/
 bool
 SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
 {
   double tolerance = 1.0e-5;
 
-  //============================================= Boundbox check
+  // Boundbox check
   double x = point.x;
   double y = point.y;
   double z = point.z;
@@ -77,7 +75,7 @@ SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
   if (not((y >= ybounds_[0]) and (y <= ybounds_[1]))) return false;
   if (not((z >= zbounds_[0]) and (z <= zbounds_[1]))) return false;
 
-  //============================================= Cheapshot pass
+  // Cheapshot pass
   // This pass purely checks if the point have a
   // negative sense with all the faces of the surface.
   // If it does then .. bonus .. we don't need to do
@@ -102,7 +100,7 @@ SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
   // if (!cheap_pass) return false;
   if (cheap_pass) return true;
 
-  //============================================= Expensive pass
+  // Expensive pass
   // Getting to here means the cheap pass produced
   // a negative and now we need to do more work.
   for (size_t f = 0; f < surf_mesh->GetTriangles().size(); f++)
@@ -133,14 +131,14 @@ SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
         chi_mesh::Vertex v1 = surf_mesh->GetVertices()[v1_i];
         chi_mesh::Vertex v2 = surf_mesh->GetVertices()[v2_i];
 
-        //=========================== Check if the line intersects plane
+        // Check if the line intersects plane
         chi_mesh::Vertex intp; // Intersection point
         std::pair<double, double> weights;
         bool intersects_plane = chi_mesh::CheckPlaneLineIntersect(
           surf_mesh->GetTriangles()[fi].geometric_normal, v0, point, fc, intp, &weights);
         if (!intersects_plane) continue;
 
-        //=========================== Check if the line intersects the triangle
+        // Check if the line intersects the triangle
         bool intersects_triangle = true;
 
         // Compute the legs
@@ -172,7 +170,7 @@ SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
 
         if (!intersects_triangle) continue;
 
-        //============================ Determine the sense with the triangle
+        // Determine the sense with the triangle
         double sense_with_this_tri = p_to_fc.Dot(surf_mesh->GetTriangles()[fi].geometric_normal);
         double distance_to_triangle = weights.second * distance_to_face;
 

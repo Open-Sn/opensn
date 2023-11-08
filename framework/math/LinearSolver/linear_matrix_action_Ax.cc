@@ -12,9 +12,7 @@ LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
   LinearSolverContext<Mat, Vec>* context;
   MatShellGetContext(matrix, &context);
 
-  context->MatrixAction(matrix,
-                        vector,  // inputs
-                        action); // output
+  context->MatrixAction(matrix, vector, action);
 
   return 0;
 }

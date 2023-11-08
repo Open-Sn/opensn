@@ -12,16 +12,13 @@ namespace chi_unit_tests
 
 chi::ParameterBlock chi_math_Test00(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chi_math_Test00,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chi_math_Test00);
+RegisterWrapperFunction(chi_unit_tests, chi_math_Test00, nullptr, chi_math_Test00);
 
 chi::ParameterBlock
 chi_math_Test00(const chi::InputParameters& params)
 {
   Chi::log.Log() << "GOLD_BEGIN";
-  //======================================================= Dynamic Vector
+  // Dynamic Vector
   {
     Chi::log.Log() << "Testing chi_math::DynamicVector\n";
 
@@ -29,7 +26,7 @@ chi_math_Test00(const chi::InputParameters& params)
 
     Chi::log.Log() << vec.PrintStr();
   }
-  //======================================================= Dynamic Matrix
+  // Dynamic Matrix
   {
     Chi::log.Log() << "Testing chi_math::DynamicMatrix\n";
     chi_math::DynamicMatrix<double> mat(5, 7, 1.0);
@@ -37,7 +34,7 @@ chi_math_Test00(const chi::InputParameters& params)
     Chi::log.Log() << mat.PrintStr();
   }
 
-  //======================================================= SparseMatrix
+  // SparseMatrix
   {
     chi_math::SparseMatrix matrix(4, 4);
     auto& mat = matrix;

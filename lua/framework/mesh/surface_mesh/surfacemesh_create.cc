@@ -11,22 +11,6 @@
 
 RegisterLuaFunctionAsIs(chiSurfaceMeshCreate);
 
-/** \defgroup LuaSurfaceMesh Surface Meshes
- * \ingroup LuaMesh
- */
-
-// #############################################################################
-/** Creates a new empty surface mesh.
-
-### Example
-Example usage:
-\code
-surfmesh = chiSurfaceMeshCreate()
-\endcode
-
-\return Handle int Handle to the created surface mesh.
-\ingroup LuaSurfaceMesh
-\author Jan*/
 int
 chiSurfaceMeshCreate(lua_State* L)
 {

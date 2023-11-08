@@ -14,27 +14,24 @@
 namespace chi_unit_sim_tests
 {
 
-chi::ParameterBlock chiSimTest03_PWLC(const chi::InputParameters& params);
-
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_sim_tests,
-                        /*name_in_lua=*/chiSimTest03_PWLC,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chiSimTest03_PWLC);
-
 /**This is a simple test of the Finite Volume spatial discretization applied
  * to Laplace's problem. */
+chi::ParameterBlock chiSimTest03_PWLC(const chi::InputParameters& params);
+
+RegisterWrapperFunction(chi_unit_sim_tests, chiSimTest03_PWLC, nullptr, chiSimTest03_PWLC);
+
 chi::ParameterBlock
 chiSimTest03_PWLC(const chi::InputParameters&)
 {
   Chi::log.Log() << "Coding Tutorial 3";
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::spatial_discretization::PieceWiseLinearContinuous::New(grid);
   const auto& sdm = *sdm_ptr;
@@ -47,7 +44,7 @@ chiSimTest03_PWLC(const chi::InputParameters&)
   Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
   Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
   const auto N = static_cast<int64_t>(num_globl_dofs);
   Mat A;
@@ -63,7 +60,7 @@ chiSimTest03_PWLC(const chi::InputParameters&)
 
   chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
-  //============================================= Assemble the system
+  // Assemble the system
   Chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
@@ -89,7 +86,7 @@ chiSimTest03_PWLC(const chi::InputParameters&)
         cell_rhs[i] += 1.0 * qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
     } // for i
 
-    //======================= Flag nodes for being on dirichlet boundary
+    // Flag nodes for being on dirichlet boundary
     std::vector<bool> node_boundary_flag(num_nodes, false);
     const size_t num_faces = cell.faces_.size();
     for (size_t f = 0; f < num_faces; ++f)
@@ -105,12 +102,12 @@ chiSimTest03_PWLC(const chi::InputParameters&)
       } // for fi
     }   // for face f
 
-    //======================= Develop node mapping
+    // Develop node mapping
     std::vector<int64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
       imap[i] = sdm.MapDOF(cell, i);
 
-    //======================= Assembly into system
+    // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)
     {
       if (node_boundary_flag[i]) // if dirichlet node
@@ -138,26 +135,21 @@ chiSimTest03_PWLC(const chi::InputParameters&)
 
   Chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver =
-    chi_math::PETScUtils::CreateCommonKrylovSolverSetup(A,                // Matrix
-                                                        "PWLCDiffSolver", // Solver name
-                                                        KSPCG,            // Solver type
-                                                        PCGAMG,           // Preconditioner type
-                                                        1.0e-6, // Relative residual tolerance
-                                                        1000);  // Max iterations
+  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
+    A, "PWLCDiffSolver", KSPCG, PCGAMG, 1.0e-6, 1000);
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp, b, x);
 
   Chi::log.Log() << "Done solving";
 
-  //============================================= Extract PETSc vector
+  // Extract PETSc vector
   std::vector<double> field;
   sdm.LocalizePETScVector(x, field, OneDofPerNode);
 
-  //============================================= Clean up
+  // Clean up
   KSPDestroy(&petsc_solver.ksp);
 
   VecDestroy(&x);
@@ -166,12 +158,9 @@ chiSimTest03_PWLC(const chi::InputParameters&)
 
   Chi::log.Log() << "Done cleanup";
 
-  //============================================= Create Field Function
+  // Create Field Function
   auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi",                                           // Text name
-    sdm_ptr,                                         // Spatial Discr.
-    chi_math::Unknown(chi_math::UnknownType::SCALAR) // Unknown
-  );
+    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::SCALAR));
 
   ff->UpdateFieldVector(field);
 

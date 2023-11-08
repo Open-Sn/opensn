@@ -19,10 +19,10 @@ namespace chi_unit_sim_tests
 
 chi::ParameterBlock acceleration_Diffusion_CFEM(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/acceleration_Diffusion_CFEM,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/acceleration_Diffusion_CFEM);
+RegisterWrapperFunction(chi_unit_tests,
+                        acceleration_Diffusion_CFEM,
+                        nullptr,
+                        acceleration_Diffusion_CFEM);
 
 chi::ParameterBlock
 acceleration_Diffusion_CFEM(const chi::InputParameters&)
@@ -30,13 +30,13 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
   typedef std::map<int, lbs::acceleration::Multigroup_D_and_sigR> MatID2XSMap;
   Chi::log.Log() << "chiSimTest92_DSA";
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::spatial_discretization::PieceWiseLinearContinuous::New(grid);
   const auto& sdm = *sdm_ptr;
@@ -49,7 +49,7 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
   Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
   Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
-  //============================================= Make Boundary conditions
+  // Make Boundary conditions
   typedef lbs::acceleration::BoundaryCondition BC;
   std::map<uint64_t, BC> bcs;
   // bcs[0] = {lbs::acceleration::BCType::DIRICHLET,{1.0,0,0}},
@@ -71,7 +71,7 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
   std::vector<lbs::UnitCellMatrices> unit_cell_matrices;
   unit_cell_matrices.resize(grid.local_cells.size());
 
-  //============================================= Build unit integrals
+  // Build unit integrals
   typedef std::vector<chi_mesh::Vector3> VecVec3;
   typedef std::vector<VecVec3> MatVec3;
   for (const auto& cell : grid.local_cells)
@@ -141,18 +141,17 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
       }   // for i
     }     // for f
 
-    unit_cell_matrices[cell.local_id_] =
-      lbs::UnitCellMatrices{IntV_gradshapeI_gradshapeJ, // K-matrix
-                            {},                         // G-matrix
-                            IntV_shapeI_shapeJ,         // M-matrix
-                            IntV_shapeI,                // Vi-vectors
+    unit_cell_matrices[cell.local_id_] = lbs::UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
+                                                               {},
+                                                               IntV_shapeI_shapeJ,
+                                                               IntV_shapeI,
 
-                            IntS_shapeI_shapeJ,     // face M-matrices
-                            IntS_shapeI_gradshapeJ, // face G-matrices
-                            IntS_shapeI};           // face Si-vectors
-  }                                                 // for cell
+                                                               IntS_shapeI_shapeJ,
+                                                               IntS_shapeI_gradshapeJ,
+                                                               IntS_shapeI};
+  } // for cell
 
-  //============================================= Make solver
+  // Make solver
   lbs::acceleration::DiffusionPWLCSolver solver(
     "SimTest92b_DSA_PWLC", sdm, OneDofPerNode, bcs, matid_2_xs_map, unit_cell_matrices, true);
   solver.options.ref_solution_lua_function = "MMS_phi";
@@ -165,18 +164,18 @@ acceleration_Diffusion_CFEM(const chi::InputParameters&)
 
   Chi::log.Log() << "Done constructing solver" << std::endl;
 
-  //============================================= Assemble and solve
+  // Assemble and solve
   std::vector<double> q_vector(num_local_dofs, 1.0);
   std::vector<double> x_vector(num_local_dofs, 0.0);
 
   solver.AssembleAand_b(q_vector);
   solver.Solve(x_vector);
 
-  //============================================= Assemble and solve again
+  // Assemble and solve again
   solver.Assemble_b(q_vector);
   solver.Solve(x_vector);
 
-  //============================================= Make Field-Function
+  // Make Field-Function
   auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
     "Phi", sdm_ptr, OneDofPerNode.unknowns_.front());
 

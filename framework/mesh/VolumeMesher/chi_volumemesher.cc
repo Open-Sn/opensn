@@ -33,8 +33,7 @@ VolumeMesher::GetContinuum()
 }
 
 void
-VolumeMesher::SetGridAttributes(MeshAttributes new_attribs,
-                                std::array<size_t, 3> ortho_Nis /*={0,0,0}*/)
+VolumeMesher::SetGridAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis)
 {
   grid_ptr_->SetAttributes(new_attribs, ortho_Nis);
 }
@@ -52,11 +51,11 @@ VolumeMesher::GetCellXYPartitionID(Cell* cell)
 
   if (Chi::mpi.process_count == 1) { return ij_id; }
 
-  //================================================== Get the current handler
+  // Get the current handler
   auto& mesh_handler = GetCurrentHandler();
   auto& vol_mesher = mesh_handler.GetVolumeMesher();
 
-  //====================================== Sanity check on partitioning
+  // Sanity check on partitioning
   size_t num_x_subsets = vol_mesher.options.xcuts.size() + 1;
   size_t num_y_subsets = vol_mesher.options.ycuts.size() + 1;
 
@@ -80,7 +79,7 @@ VolumeMesher::GetCellXYPartitionID(Cell* cell)
   size_t subsets_per_partitionx = num_x_subsets / vol_mesher.options.partition_x;
   size_t subsets_per_partitiony = num_y_subsets / vol_mesher.options.partition_y;
 
-  //====================================== Determine x-partition
+  // Determine x-partition
   int x = -1;
   int xcount = -1;
   for (size_t i = subsets_per_partitionx - 1; i < vol_mesher.options.xcuts.size();
@@ -95,7 +94,7 @@ VolumeMesher::GetCellXYPartitionID(Cell* cell)
   }
   if (x < 0) { x = vol_mesher.options.partition_x - 1; }
 
-  //====================================== Determine y-partition
+  // Determine y-partition
   int y = -1;
   int ycount = -1;
   for (size_t i = subsets_per_partitiony - 1; i < vol_mesher.options.ycuts.size();
@@ -110,7 +109,7 @@ VolumeMesher::GetCellXYPartitionID(Cell* cell)
   }
   if (y < 0) { y = vol_mesher.options.partition_y - 1; }
 
-  //====================================== Set partitioning
+  // Set partitioning
   ij_id.first = x;
   ij_id.second = y;
 
@@ -125,10 +124,10 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
 
   if (Chi::mpi.process_count == 1) { return ijk_id; }
 
-  //================================================== Get ij indices
+  // Get ij indices
   std::pair<int, int> ij_id = GetCellXYPartitionID(cell);
 
-  //================================================== Get the current handler
+  // Get the current handler
   auto& mesh_handler = GetCurrentHandler();
   auto& vol_mesher = mesh_handler.GetVolumeMesher();
 
@@ -143,7 +142,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
   {
     auto extruder = dynamic_cast<VolumeMesherExtruder&>(vol_mesher);
     const auto& vertex_layers = extruder.GetVertexLayers();
-    //====================================== Create virtual cuts
+    // Create virtual cuts
     if (vol_mesher.options.zcuts.empty())
     {
       size_t num_sub_layers = vertex_layers.size() - 1;
@@ -176,7 +175,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
       }
     }
 
-    //====================================== Scan cuts for location
+    // Scan cuts for location
     double zmin = -1.0e-16;
     for (int k = 0; k < (vol_mesher.options.zcuts.size()); k++)
     {
@@ -210,7 +209,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
                                   "mesher.");
     }
 
-    //====================================== Scan cuts for location
+    // Scan cuts for location
     std::vector<double> temp_zcuts = vol_mesher.options.zcuts;
     double zmin = -1.0e16;
     double zmax = 1.0e16;
@@ -239,7 +238,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
     } // for k
   }   // if typeid
 
-  //================================================== Report unallocated
+  // Report unallocated
   // item_id
   if (!found_partition)
   {
@@ -254,7 +253,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
 void
 VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPtr& grid)
 {
-  //=================================== Copy nodes
+  // Copy nodes
   {
     uint64_t id = 0;
     for (const auto& vertex : umesh.GetVertices())
@@ -273,7 +272,7 @@ VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPt
       Chi::Exit(EXIT_FAILURE);
     }
 
-    //====================================== Make cell
+    // Make cell
     auto cell = std::make_unique<Cell>(CellType::POLYGON, raw_cell->sub_type);
 
     cell->global_id_ = num_cells;
@@ -307,7 +306,7 @@ VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPt
       cell->faces_.push_back(new_face);
     }
 
-    //====================================== Push to grid
+    // Push to grid
     grid->cells.push_back(std::move(cell));
     ++num_cells;
   } // for raw_cell
@@ -318,10 +317,10 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
 {
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Setting material id from logical volume.";
-  //============================================= Get current mesh handler
+  // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
-  //============================================= Get back mesh
+  // Get back mesh
   MeshContinuumPtr vol_cont = handler.GetGrid();
 
   int num_cells_modified = 0;
@@ -342,12 +341,8 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
   }
 
   int global_num_cells_modified;
-  MPI_Allreduce(&num_cells_modified,        // sendbuf
-                &global_num_cells_modified, // recvbuf
-                1,
-                MPI_INT,        // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    &num_cells_modified, &global_num_cells_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
 
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Done setting material id from logical volume. "
@@ -361,17 +356,17 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
 {
   Chi::log.Log() << Chi::program_timer.GetTimeString()
                  << " Setting boundary id from logical volume.";
-  //============================================= Get current mesh handler
+  // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
-  //============================================= Get back mesh
+  // Get back mesh
   MeshContinuumPtr vol_cont = handler.GetGrid();
 
-  //============================================= Check if name already has id
+  // Check if name already has id
   auto& grid_bndry_id_map = vol_cont->GetBoundaryIDMap();
   uint64_t bndry_id = vol_cont->MakeBoundaryID(bndry_name);
 
-  //============================================= Loop over cells
+  // Loop over cells
   int num_faces_modified = 0;
   for (auto& cell : vol_cont->local_cells)
   {
@@ -387,12 +382,8 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
   }
 
   int global_num_faces_modified;
-  MPI_Allreduce(&num_faces_modified,        // sendbuf
-                &global_num_faces_modified, // recvbuf
-                1,
-                MPI_INT,        // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    &num_faces_modified, &global_num_faces_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
 
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
     grid_bndry_id_map[bndry_id] = bndry_name;
@@ -408,10 +399,10 @@ VolumeMesher::SetMatIDToAll(int mat_id)
   Chi::log.Log() << Chi::program_timer.GetTimeString() << " Setting material id " << mat_id
                  << " to all cells.";
 
-  //============================================= Get current mesh handler
+  // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
-  //============================================= Get back mesh
+  // Get back mesh
   auto vol_cont = handler.GetGrid();
 
   for (auto& cell : vol_cont->local_cells)
@@ -435,14 +426,14 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Setting material id from lua function.";
 
-  //============================================= Define console call
+  // Define console call
   auto L = Chi::console.GetConsoleState();
   auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const Cell& cell)
   {
-    //============= Load lua function
+    // Load lua function
     lua_getglobal(L, lua_fname.c_str());
 
-    //============= Error check lua function
+    // Error check lua function
     if (not lua_isfunction(L, -1))
       throw std::logic_error(fname + " attempted to access lua-function, " + lua_fname +
                              ", but it seems the function"
@@ -450,13 +441,13 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
 
     const auto& xyz = cell.centroid_;
 
-    //============= Push arguments
+    // Push arguments
     lua_pushnumber(L, xyz.x);
     lua_pushnumber(L, xyz.y);
     lua_pushnumber(L, xyz.z);
     lua_pushinteger(L, cell.material_id_);
 
-    //============= Call lua function
+    // Call lua function
     // 4 arguments, 1 result (double), 0=original error object
     int lua_return;
     if (lua_pcall(L, 4, 1, 0) == 0)
@@ -473,10 +464,10 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
     return lua_return;
   };
 
-  //============================================= Get current mesh handler
+  // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
-  //============================================= Get back mesh
+  // Get back mesh
   MeshContinuum& grid = *handler.GetGrid();
 
   int local_num_cells_modified = 0;
@@ -505,12 +496,8 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
   } // for ghost cell id
 
   int globl_num_cells_modified;
-  MPI_Allreduce(&local_num_cells_modified, // sendbuf
-                &globl_num_cells_modified, // recvbuf
-                1,
-                MPI_INT,        // count+datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    &local_num_cells_modified, &globl_num_cells_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
 
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Done setting material id from lua function. "
@@ -530,14 +517,14 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Setting boundary id from lua function.";
 
-  //============================================= Define console call
+  // Define console call
   auto L = Chi::console.GetConsoleState();
   auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const CellFace& face)
   {
-    //============= Load lua function
+    // Load lua function
     lua_getglobal(L, lua_fname.c_str());
 
-    //============= Error check lua function
+    // Error check lua function
     if (not lua_isfunction(L, -1))
       throw std::logic_error(fname + " attempted to access lua-function, " + lua_fname +
                              ", but it seems the function"
@@ -546,7 +533,7 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
     const auto& xyz = face.centroid_;
     const auto& n = face.normal_;
 
-    //============= Push arguments
+    // Push arguments
     lua_pushnumber(L, xyz.x);
     lua_pushnumber(L, xyz.y);
     lua_pushnumber(L, xyz.z);
@@ -555,7 +542,7 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
     lua_pushnumber(L, n.z);
     lua_pushinteger(L, static_cast<lua_Integer>(face.neighbor_id_));
 
-    //============= Call lua function
+    // Call lua function
     // 7 arguments, 1 result (string), 0=original error object
     std::string lua_return_bname;
     if (lua_pcall(L, 7, 1, 0) == 0)
@@ -573,13 +560,13 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
     return lua_return_bname;
   };
 
-  //============================================= Get current mesh handler
+  // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
-  //============================================= Get back mesh
+  // Get back mesh
   MeshContinuum& grid = *handler.GetGrid();
 
-  //============================================= Check if name already has id
+  // Check if name already has id
   auto& grid_bndry_id_map = grid.GetBoundaryIDMap();
 
   int local_num_faces_modified = 0;
@@ -620,12 +607,8 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
   }     // for ghost cell id
 
   int globl_num_faces_modified;
-  MPI_Allreduce(&local_num_faces_modified, // sendbuf
-                &globl_num_faces_modified, // recvbuf
-                1,
-                MPI_INT,        // count+datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(
+    &local_num_faces_modified, &globl_num_faces_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
 
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Done setting boundary id from lua function. "
@@ -638,10 +621,10 @@ VolumeMesher::SetupOrthogonalBoundaries()
 {
   Chi::log.Log() << Chi::program_timer.GetTimeString() << " Setting orthogonal boundaries.";
 
-  //============================================= Get current mesh handler
+  // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
-  //============================================= Get back mesh
+  // Get back mesh
   auto vol_cont = handler.GetGrid();
 
   const Vector3 ihat(1.0, 0.0, 0.0);

@@ -16,7 +16,6 @@
 namespace lbs
 {
 
-/**General print out of information.*/
 template <>
 void
 SweepWGSContext<Mat, Vec, KSP>::PreSetupCallback()
@@ -48,7 +47,6 @@ SweepWGSContext<Mat, Vec, KSP>::PreSetupCallback()
   }
 }
 
-/**Sets the preconditioner application function.*/
 template <>
 void
 SweepWGSContext<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
@@ -69,7 +67,6 @@ SweepWGSContext<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
   KSPSetUp(ksp);
 }
 
-/**For sweeping we add lagged angular fluxes to the size of the vectors.*/
 template <>
 std::pair<int64_t, int64_t>
 SweepWGSContext<Mat, Vec, KSP>::SystemSize()
@@ -99,8 +96,6 @@ SweepWGSContext<Mat, Vec, KSP>::SystemSize()
   return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};
 }
 
-/**With a right-hand side built. This routine applies the inverse
- * of the transport operator to this right-hand side.*/
 template <>
 void
 SweepWGSContext<Mat, Vec, KSP>::ApplyInverseTransportOperator(int scope)
@@ -118,18 +113,11 @@ SweepWGSContext<Mat, Vec, KSP>::ApplyInverseTransportOperator(int scope)
   sweep_scheduler_.Sweep();
 }
 
-/**This method implements an additional sweep for two reasons:
- * The first is to compute balance parameters, and the second
- * is to allow for the calculation of proper angular fluxes. The
- * latter is needed because some krylov methods do not necessarily
- * provide the true angular flux at each iteration.*/
 template <>
 void
 SweepWGSContext<Mat, Vec, KSP>::PostSolveCallback()
 {
-  //================================================== Perform final sweep
-  //                                                   with converged phi and
-  //                                                   delayed psi dofs
+  // Perform final sweep with converged phi and delayed psi dofs
   if (groupset_.iterative_method_ != IterativeMethod::KRYLOV_RICHARDSON)
   {
     lbs_ss_solver_.ZeroOutflowBalanceVars(groupset_);
@@ -145,7 +133,7 @@ SweepWGSContext<Mat, Vec, KSP>::PostSolveCallback()
       groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
   }
 
-  //==================================================== Print solution info
+  // Print solution info
   {
     double sweep_time = sweep_scheduler_.GetAverageSweepTime();
     double chunk_overhead_ratio = 1.0 - sweep_scheduler_.GetAngleSetTimings()[2];

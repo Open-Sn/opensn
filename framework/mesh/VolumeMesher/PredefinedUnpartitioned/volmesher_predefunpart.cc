@@ -106,7 +106,7 @@ VolumeMesherPredefinedUnpartitioned::Execute()
                  << " VolumeMesherPredefinedUnpartitioned executing. Memory in use = "
                  << Chi::GetMemoryUsageInMB() << " MB" << std::endl;
 
-  //======================================== Check partitioning params
+  // Check partitioning params
   if (options.partition_type == KBA_STYLE_XYZ)
   {
     int Px = this->options.partition_x;
@@ -125,13 +125,13 @@ VolumeMesherPredefinedUnpartitioned::Execute()
     }
   }
 
-  //======================================== Get unpartitioned mesh
+  // Get unpartitioned mesh
   ChiLogicalErrorIf(umesh_ptr_ == nullptr, "nullptr encountered for unparitioned mesh");
 
   Chi::log.Log() << "Computed centroids";
   Chi::mpi.Barrier();
 
-  //======================================== Apply partitioning scheme
+  // Apply partitioning scheme
   std::vector<int64_t> cell_pids;
   auto grid = MeshContinuum::New();
 
@@ -141,7 +141,7 @@ VolumeMesherPredefinedUnpartitioned::Execute()
   else
     cell_pids = PARMETIS(*umesh_ptr_);
 
-  //======================================== Load up the cells
+  // Load up the cells
   auto& vertex_subs = umesh_ptr_->GetVertextCellSubscriptions();
   size_t cell_globl_id = 0;
   for (auto raw_cell : umesh_ptr_->GetRawCells())
@@ -171,7 +171,7 @@ VolumeMesherPredefinedUnpartitioned::Execute()
                      umesh_ptr_->GetMeshOptions().ortho_Ny,
                      umesh_ptr_->GetMeshOptions().ortho_Nz});
 
-  //======================================== Concluding messages
+  // Concluding messages
   Chi::log.LogAllVerbose1() << "### LOCATION[" << Chi::mpi.location_id
                             << "] amount of local cells=" << grid->local_cells.size();
 
@@ -194,8 +194,7 @@ VolumeMesherPredefinedUnpartitioned::KBA(const UnpartitionedMesh& umesh)
 
   const size_t num_raw_cells = umesh.GetNumberOfCells();
 
-  //======================================== Lambda to get partition-id
-  //                                         from centroid
+  // Lambda to get partition-id from centroid
   auto GetPIDFromCentroid = [](const Vertex& centroid)
   {
     auto& handler = GetCurrentHandler();
@@ -215,8 +214,7 @@ VolumeMesherPredefinedUnpartitioned::KBA(const UnpartitionedMesh& umesh)
     return nzi * Px * Py + nyi * Px + nxi;
   };
 
-  //======================================== Determine cell partition-IDs
-  //                                         only on home location
+  // Determine cell partition-IDs only on home location
   std::vector<int64_t> cell_pids(num_raw_cells, 0);
   if (Chi::mpi.location_id == 0)
   {
@@ -225,13 +223,8 @@ VolumeMesherPredefinedUnpartitioned::KBA(const UnpartitionedMesh& umesh)
       cell_pids[cell_id++] = GetPIDFromCentroid(raw_cell->centroid);
   } // if home location
 
-  //======================================== Broadcast partitioning to all
-  //                                         locations
-  MPI_Bcast(cell_pids.data(),                // buffer [IN/OUT]
-            static_cast<int>(num_raw_cells), // count
-            MPI_LONG_LONG_INT,               // data type
-            0,                               // root
-            Chi::mpi.comm);                  // communicator
+  // Broadcast partitioning to all locations
+  MPI_Bcast(cell_pids.data(), static_cast<int>(num_raw_cells), MPI_LONG_LONG_INT, 0, Chi::mpi.comm);
   Chi::log.Log() << "Done partitioning mesh.";
 
   return cell_pids;
@@ -242,7 +235,7 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
 {
   Chi::log.Log() << "Partitioning mesh with ParMETIS.";
 
-  //================================================== Determine avg num faces
+  // Determine avg num faces
   //                                                   per cell
   const size_t num_raw_cells = umesh.GetNumberOfCells();
   size_t num_raw_faces = 0;
@@ -251,13 +244,13 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
   size_t avg_num_face_per_cell =
     std::ceil(static_cast<double>(num_raw_faces) / static_cast<double>(num_raw_cells));
 
-  //================================================== Start building indices
+  // Start building indices
   std::vector<int64_t> cell_pids(num_raw_cells, 0);
   if (Chi::mpi.location_id == 0)
   {
     if (num_raw_cells > 1)
     {
-      //======================================== Build indices
+      // Build indices
       std::vector<int64_t> i_indices(num_raw_cells + 1, 0);
       std::vector<int64_t> j_indices;
       j_indices.reserve(num_raw_cells * avg_num_face_per_cell);
@@ -281,7 +274,7 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
 
       Chi::log.Log0Verbose1() << "Done building indices.";
 
-      //======================================== Copy to raw arrays
+      // Copy to raw arrays
       int64_t* i_indices_raw;
       int64_t* j_indices_raw;
       PetscMalloc(i_indices.size() * sizeof(int64_t), &i_indices_raw);
@@ -295,7 +288,7 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
 
       Chi::log.Log0Verbose1() << "Done copying to raw indices.";
 
-      //========================================= Create adjacency matrix
+      // Create adjacency matrix
       Mat Adj; // Adjacency matrix
       MatCreateMPIAdj(PETSC_COMM_SELF,
                       (int64_t)num_raw_cells,
@@ -307,7 +300,7 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
 
       Chi::log.Log0Verbose1() << "Done creating adjacency matrix.";
 
-      //========================================= Create partitioning
+      // Create partitioning
       MatPartitioning part;
       IS is, isg;
       MatPartitioningCreate(MPI_COMM_SELF, &part);
@@ -320,7 +313,7 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
       ISPartitioningToNumbering(is, &isg);
       Chi::log.Log0Verbose1() << "Done building paritioned index set.";
 
-      //========================================= Get cell global indices
+      // Get cell global indices
       const int64_t* cell_pids_raw;
       ISGetIndices(is, &cell_pids_raw);
       for (size_t i = 0; i < num_raw_cells; ++i)
@@ -331,13 +324,8 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
     } // if more than 1 cell
   }   // if home location
 
-  //======================================== Broadcast partitioning to all
-  //                                         locations
-  MPI_Bcast(cell_pids.data(),                // buffer [IN/OUT]
-            static_cast<int>(num_raw_cells), // count
-            MPI_LONG_LONG_INT,               // data type
-            0,                               // root
-            Chi::mpi.comm);                  // communicator
+  // Broadcast partitioning to all locations
+  MPI_Bcast(cell_pids.data(), static_cast<int>(num_raw_cells), MPI_LONG_LONG_INT, 0, Chi::mpi.comm);
   Chi::log.Log() << "Done partitioning mesh.";
 
   return cell_pids;

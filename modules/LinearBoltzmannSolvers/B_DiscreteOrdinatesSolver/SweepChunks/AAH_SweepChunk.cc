@@ -32,7 +32,7 @@ AAH_SweepChunk::AAH_SweepChunk(const chi_mesh::MeshContinuum& grid,
                max_num_cell_dofs,
                std::make_unique<AAH_SweepDependencyInterface>())
 {
-  // ================================== Register kernels
+  // Register kernels
   RegisterKernel("FEMVolumetricGradTerm",
                  std::bind(&SweepChunk::KernelFEMVolumetricGradientTerm, this));
   RegisterKernel("FEMUpwindSurfaceIntegrals",
@@ -41,7 +41,7 @@ AAH_SweepChunk::AAH_SweepChunk(const chi_mesh::MeshContinuum& grid,
   RegisterKernel("KernelPhiUpdate", std::bind(&SweepChunk::KernelPhiUpdate, this));
   RegisterKernel("KernelPsiUpdate", std::bind(&SweepChunk::KernelPsiUpdate, this));
 
-  // ================================== Setup callbacks
+  // Setup callbacks
   cell_data_callbacks_ = {};
 
   direction_data_callbacks_and_kernels_ = {Kernel("FEMVolumetricGradTerm")};
@@ -77,8 +77,7 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
   aah_sweep_depinterf.fluds_ =
     &dynamic_cast<chi_mesh::sweep_management::AAH_FLUDS&>(angle_set.GetFLUDS());
 
-  // ====================================================== Loop over each
-  //                                                        cell
+  // Loop over each cell
   const auto& spds = angle_set.GetSPDS();
   const auto& spls = spds.GetSPLS().item_id;
   const size_t num_spls = spls.size();
@@ -100,7 +99,7 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
 
     aah_sweep_depinterf.spls_index = spls_index;
 
-    // =============================================== Get Cell matrices
+    // Get Cell matrices
     const auto& fe_intgrl_values = unit_cell_matrices_[cell_local_id_];
     G_ = &fe_intgrl_values.G_matrix;
     M_ = &fe_intgrl_values.M_matrix;
@@ -110,7 +109,7 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
     for (auto& callback : cell_data_callbacks_)
       callback();
 
-    // =============================================== Loop over angles in set
+    // Loop over angles in set
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
 
@@ -130,24 +129,24 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;
 
-      // ======================================== Reset right-handside
+      // Reset right-handside
       for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
         b_[gsg].assign(cell_num_nodes_, 0.0);
 
       ExecuteKernels(direction_data_callbacks_and_kernels_);
 
-      // ======================================== Upwinding structure
+      // Upwinding structure
       aah_sweep_depinterf.in_face_counter = 0;
       aah_sweep_depinterf.preloc_face_counter = 0;
       aah_sweep_depinterf.out_face_counter = 0;
       aah_sweep_depinterf.deploc_face_counter = 0;
 
-      // ======================================== Update face orientations
+      // Update face orientations
       face_mu_values_.assign(cell_num_faces_, 0.0);
       for (int f = 0; f < cell_num_faces_; ++f)
         face_mu_values_[f] = omega_.Dot(cell_->faces_[f].normal_);
 
-      // ======================================== Surface integrals
+      // Surface integrals
       int in_face_counter = -1;
       for (int f = 0; f < cell_num_faces_; ++f)
       {
@@ -172,8 +171,7 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
         ExecuteKernels(surface_integral_kernels_);
       } // for f
 
-      // ======================================== Looping over groups,
-      //                                          Assembling mass terms
+      // Looping over groups, assembling mass terms
       for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
       {
         g_ = gs_gi_ + gsg;
@@ -182,21 +180,20 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
 
         ExecuteKernels(mass_term_kernels_);
 
-        // ================================= Solve system
+        // Solve system
         chi_math::GaussElimination(Atemp_, b_[gsg], scint(cell_num_nodes_));
       }
 
-      // ======================================== Flux updates
+      // Flux updates
       ExecuteKernels(flux_update_kernels_);
 
-      // ======================================== Perform outgoing
-      //                                               surface operations
+      // Perform outgoing surface operations
       int out_face_counter = -1;
       for (int f = 0; f < cell_num_faces_; ++f)
       {
         if (face_orientations[f] != FaceOrientation::OUTGOING) continue;
 
-        // ================================= Set flags and counters
+        // Set flags and counters
         out_face_counter++;
         const auto& face = cell_->faces_[f];
         const bool local = cell_transport_view_->IsFaceLocal(f);
@@ -219,7 +216,6 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
   }   // for cell
 }
 
-// ##################################################################
 const double*
 AAH_SweepDependencyInterface::GetUpwindPsi(int face_node_local_idx) const
 {

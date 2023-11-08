@@ -5,7 +5,6 @@
 namespace chi_physics
 {
 
-// ###################################################################
 /**Simple scalar material property.*/
 class ScalarValue : public chi_physics::MaterialProperty
 {

@@ -11,17 +11,6 @@
 
 RegisterLuaFunctionAsIs(chiGetFieldFunctionHandleByName);
 
-// ###################################################################
-/**Gets a field-function handle by name.
-\param FFname string Name of the field function.
-
-\return handle If the field-function was found and a handle identified the valid
-               handle will be returned (i.e., a natural number >= 0). If the
-               field-function by the given name was not found then the function
-               will return null.
-
-\ingroup LuaFieldFunc
- */
 int
 chiGetFieldFunctionHandleByName(lua_State* L)
 {

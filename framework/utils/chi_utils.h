@@ -9,6 +9,14 @@
 /**Miscellaneous utilities. These utilities should have no dependencies.*/
 namespace chi
 {
+/**Print the percentage completed based on the given interval.
+ *
+ * The function divides 100% into `num_intvls` intervals. If an
+ * iteration passes an interval boundary then that interval percentage
+ * will be printed.
+ *
+ * Specifying 10 intervals will print after each 10% is completed.
+ * Specifying 4 intervals will print after each 25% is completed.*/
 std::string PrintIterationProgress(size_t current_iteration,
                                    size_t total_num_iterations,
                                    unsigned int num_intvls = 10);

@@ -18,17 +18,14 @@ namespace chi_unit_tests
 
 chi::ParameterBlock chi_data_types_Test00(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chi_data_types_Test00,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chi_data_types_Test00);
+RegisterWrapperFunction(chi_unit_tests, chi_data_types_Test00, nullptr, chi_data_types_Test00);
 
 chi::ParameterBlock
 chi_data_types_Test00(const chi::InputParameters&)
 {
   bool passed = true;
 
-  //======================================================= Byte array
+  // Byte array
   // write/read
   Chi::log.Log() << "GOLD_BEGIN";
   Chi::log.Log() << "Testing chi_data_types::ByteArray Write and Read\n";
@@ -72,7 +69,7 @@ chi_data_types_Test00(const chi::InputParameters&)
     Chi::log.Log() << std::string("chi_data_types::ByteArray "
                                   "Write/Read ... Passed\n");
 
-  //======================================================= Testing Byte array
+  // Testing Byte array
   // serialization
   Chi::log.Log() << "Testing chi_data_types::ByteArray "
                     "Serialization/DeSerialization\n";
@@ -274,7 +271,7 @@ chi_data_types_Test00(const chi::InputParameters&)
     Chi::log.Log() << "chi_data_types::ByteArray"
                       "Serialization/DeSerialization ... Passed\n";
 
-  //======================================================= Testing NDArray
+  // Testing NDArray
   //
   Chi::log.Log() << "Testing chi_data_types::NDArray\n";
   std::stringstream dummy;

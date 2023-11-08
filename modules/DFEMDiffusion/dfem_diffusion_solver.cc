@@ -46,7 +46,7 @@ Solver::Initialize()
                  << Chi::program_timer.GetTimeString() << " " << TextName()
                  << ": Initializing DFEM Diffusion solver ";
 
-  //============================================= Get grid
+  // Get grid
   grid_ptr_ = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
@@ -54,7 +54,7 @@ Solver::Initialize()
 
   Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= BIDs
+  // BIDs
   auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
 
   const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
@@ -125,7 +125,7 @@ Solver::Initialize()
     }
   } // for bndry
 
-  //============================================= Make SDM
+  // Make SDM
   sdm_ptr_ = chi_math::spatial_discretization::PieceWiseLinearDiscontinuous::New(*grid_ptr_);
   const auto& sdm = *sdm_ptr_;
 
@@ -137,7 +137,7 @@ Solver::Initialize()
   Chi::log.Log() << "Num local DOFs: " << num_local_dofs_;
   Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs_;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs_);
   const auto N = static_cast<int64_t>(num_globl_dofs_);
 
@@ -160,9 +160,7 @@ Solver::Initialize()
 
     using namespace chi_math;
     auto initial_field_function = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      text_name,                     // Text name
-      sdm_ptr_,                      // Spatial Discretization
-      Unknown(UnknownType::SCALAR)); // Unknown/Variable
+      text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
     field_functions_.push_back(initial_field_function);
     Chi::field_function_stack.push_back(initial_field_function);
@@ -181,7 +179,7 @@ Solver::Execute()
   lua_State* L = Chi::console.GetConsoleState();
 #endif
 
-  //============================================= Assemble the system
+  // Assemble the system
   // is this needed?
   VecSet(b_, 0.0);
 
@@ -198,7 +196,7 @@ Solver::Execute()
     MatDbl Acell(num_nodes, VecDbl(num_nodes, 0.0));
     VecDbl cell_rhs(num_nodes, 0.0);
 
-    //==================================== Assemble volumetric terms
+    // Assemble volumetric terms
 #ifdef OPENSN_WITH_LUA
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -226,7 +224,7 @@ Solver::Execute()
     } // for i
 #endif
 
-    //==================================== Assemble face terms
+    // Assemble face terms
     const size_t num_faces = cell.faces_.size();
     for (size_t f = 0; f < num_faces; ++f)
     {
@@ -250,13 +248,13 @@ Solver::Execute()
 
         const auto imat_neigh = adj_cell.material_id_;
 
-        //========================= Compute Ckappa IP
+        // Compute Ckappa IP
         double Ckappa = 1.0;
         if (cell.Type() == chi_mesh::CellType::SLAB) Ckappa = 2.0;
         if (cell.Type() == chi_mesh::CellType::POLYGON) Ckappa = 2.0;
         if (cell.Type() == chi_mesh::CellType::POLYHEDRON) Ckappa = 4.0;
 
-          //========================= Assembly penalty terms
+          // Assembly penalty terms
 #ifdef OPENSN_WITH_LUA
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
@@ -286,7 +284,7 @@ Solver::Execute()
         }   // for fi
 #endif
 
-        //========================= Assemble gradient terms
+        // Assemble gradient terms
         // For the following comments we use the notation:
         // Dk = 0.5* n dot nabla bk
 
@@ -400,13 +398,13 @@ Solver::Execute()
         else if (bndry.type_ == BoundaryType::Dirichlet)
         {
           const double bc_value = bndry.values_[0];
-          //========================= Compute kappa
+          // Compute kappa
           double Ckappa = 2.0;
           if (cell.Type() == chi_mesh::CellType::SLAB) Ckappa = 4.0; // fmax(4.0*Dg/hm,0.25);
           if (cell.Type() == chi_mesh::CellType::POLYGON) Ckappa = 4.0;
           if (cell.Type() == chi_mesh::CellType::POLYHEDRON) Ckappa = 8.0;
 
-            //========================= Assembly penalty terms
+            // Assembly penalty terms
 #ifdef OPENSN_WITH_LUA
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
@@ -431,7 +429,7 @@ Solver::Execute()
           }   // for fi
 #endif
 
-          //========================= Assemble gradient terms
+          // Assemble gradient terms
           // For the following comments we use the notation:
           // Dk = 0.5* n dot nabla bk
 
@@ -484,18 +482,17 @@ Solver::Execute()
 
   Chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
   auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A_,                                                // Matrix
-    TextName(),                                        // Solver name
-    KSPCG,                                             // Solver type
-    PCGAMG,                                            // Preconditioner type
-    basic_options_("residual_tolerance").FloatValue(), // Relative residual tolerance
-    basic_options_("max_iters").IntegerValue()         // Max iterations
-  );
+    A_,
+    TextName(),
+    KSPCG,
+    PCGAMG,
+    basic_options_("residual_tolerance").FloatValue(),
+    basic_options_("max_iters").IntegerValue());
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp, b_, x_);
 
   Chi::log.Log() << "Done solving";
@@ -577,7 +574,7 @@ Solver::MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
                         size_t ccf,
                         size_t acf,
                         size_t ccfi,
-                        double epsilon /*=1.0e-12*/)
+                        double epsilon)
 {
   const auto& sdm = *sdm_ptr_;
 
@@ -605,23 +602,23 @@ Solver::CallLua_iXYZFunction(lua_State* L,
                              const int imat,
                              const chi_mesh::Vector3& xyz)
 {
-  //============= Load lua function
+  // Load lua function
   lua_getglobal(L, lua_func_name.c_str());
 
-  //============= Error check lua function
+  // Error check lua function
   if (not lua_isfunction(L, -1))
     throw std::logic_error("CallLua_iXYZFunction attempted to access lua-function, " +
                            lua_func_name +
                            ", but it seems the function"
                            " could not be retrieved.");
 
-  //============= Push arguments
+  // Push arguments
   lua_pushinteger(L, imat);
   lua_pushnumber(L, xyz.x);
   lua_pushnumber(L, xyz.y);
   lua_pushnumber(L, xyz.z);
 
-  //============= Call lua function
+  // Call lua function
   // 4 arguments, 1 result (double), 0=original error object
   double lua_return;
   if (lua_pcall(L, 4, 1, 0) == 0)

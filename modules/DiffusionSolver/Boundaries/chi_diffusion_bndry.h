@@ -14,7 +14,6 @@ enum class BoundaryType : int
 };
 }
 
-// ###################################################################
 /**Parent class for diffusion boundaries*/
 class chi_diffusion::Boundary
 {
@@ -24,7 +23,6 @@ public:
   explicit Boundary(BoundaryType in_bndry_type) : type_(in_bndry_type) {}
 };
 
-// ###################################################################
 /**Reflecting boundary condition.*/
 class chi_diffusion::BoundaryReflecting : public chi_diffusion::Boundary
 {
@@ -32,7 +30,6 @@ public:
   BoundaryReflecting() : Boundary(BoundaryType::Reflecting) {}
 };
 
-// ###################################################################
 /**Dirichlet boundary.*/
 class chi_diffusion::BoundaryDirichlet : public chi_diffusion::Boundary
 {
@@ -47,7 +44,6 @@ public:
   }
 };
 
-// ###################################################################
 /**Robin boundary condition. This type of boundary condition doubles
  * for any boundary condition of the form
  *

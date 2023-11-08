@@ -25,13 +25,13 @@ lbs::DiscOrdTransientSolver::ComputeBeta()
     // skip cell if not fissionable
     if (not xs.IsFissionable()) continue;
 
-    //============================= Loop over groupsets
+    // Loop over groupsets
     for (const auto& groupset : groupsets_)
     {
       auto gs_i = static_cast<size_t>(groupset.groups_.front().id_);
       auto gs_f = static_cast<size_t>(groupset.groups_.back().id_);
 
-      //============================= Loop over groupset groups
+      // Loop over groupset groups
       for (size_t g = gs_i; g <= gs_f; ++g)
         for (unsigned int j = 0; j < num_precursors; ++j)
         {
@@ -44,7 +44,7 @@ lbs::DiscOrdTransientSolver::ComputeBeta()
     }
   }
 
-  //============================================= Allreduce global DNPR
+  // Allreduce global DNPR
   double DNPR = 0.0;
   MPI_Allreduce(&localDNPR, &DNPR, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 

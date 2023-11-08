@@ -5,7 +5,6 @@
 namespace chi_mesh
 {
 
-// ###################################################################
 /**Boolean volume*/
 class BooleanLogicalVolume : public LogicalVolume
 {

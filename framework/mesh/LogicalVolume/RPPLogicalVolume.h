@@ -5,7 +5,6 @@
 namespace chi_mesh
 {
 
-// ###################################################################
 /**Rectangular Parallel Piped (RPP) logical volume*/
 class RPPLogicalVolume : public LogicalVolume
 {

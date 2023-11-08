@@ -10,24 +10,6 @@
 
 RegisterLuaFunctionAsIs(chiCreateLineQuadrature);
 
-// ########################################################## Create empty
-// system
-/** Creates a quadrature.
- *
-\param QuadratureType int Quadrature identifier.
-\param NumberOfPoints int Number of quadrature points.
-\param VerboseFlag bool As the name implies. Default: false.
-
-##_
-
-###QuadratureType:\n
- GAUSS_LEGENDRE = Gauss-Legendre quadrature.
- GAUSS_CHEBYSHEV = Gauss-Chebyshev quadrature.
-
-\return Returns a unique handle to the created quadrature rule
-
-\ingroup LuaQuadrature
-\author Jan*/
 int
 chiCreateLineQuadrature(lua_State* L)
 {
@@ -39,7 +21,7 @@ chiCreateLineQuadrature(lua_State* L)
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
 
-  //============================================= Parse argument
+  // Parse argument
   int ident = lua_tonumber(L, 1);
   int N = lua_tonumber(L, 2);
   bool verbose = false;

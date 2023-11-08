@@ -8,15 +8,6 @@
 namespace fv_diffusion::fv_diffusion_lua_utils
 {
 
-// #############################################################################
-/** Creates a Finite Volume Diffusion solver.
-
-\param solver_name string Optional. Text name for the solver.
-                          [Default:"FVDiffusionSolver"]
-
-\return Handle int Handle to the created solver.
-\ingroup LuaDiffusion
-*/
 int
 chiFVDiffusionSolverCreate(lua_State* L)
 {

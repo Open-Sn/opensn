@@ -15,8 +15,6 @@ namespace lbs
 RegisterChiObjectParametersOnly(lbs, LBSGroupset);
 }
 
-// ##################################################################
-/***/
 chi::InputParameters
 lbs::LBSGroupset::GetInputParameters()
 {
@@ -100,7 +98,7 @@ lbs::LBSGroupset::GetInputParameters()
   params.AddOptionalParameter(
     "tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
 
-  // ============================================ Constraints
+  // Constraints
   using namespace chi_data_types;
 
   params.ConstrainParameterRange(
@@ -128,8 +126,6 @@ lbs::LBSGroupset::GetInputParameters()
   return params;
 }
 
-// ##################################################################
-/**Input parameters based constructor.*/
 lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
                               const int id,
                               const LBSSolver& lbs_solver)
@@ -137,7 +133,7 @@ lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
 {
   const std::string fname = __FUNCTION__;
 
-  // ============================================ Add groups
+  // Add groups
   const auto groups_from_to = params.GetParamVectorValue<size_t>("groups_from_to");
   ChiInvalidArgumentIf(groups_from_to.size() != 2,
                        "Parameter \"groups_from_to\" can only have 2 entries");
@@ -161,12 +157,12 @@ lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
 
   master_num_grp_subsets_ = params.GetParamValue<int>("groupset_num_subsets");
 
-  // ============================================ Add quadrature
+  // Add quadrature
   const size_t quad_handle = params.GetParamValue<size_t>("angular_quadrature_handle");
   quadrature_ = Chi::GetStackItemPtr<chi_math::AngularQuadrature>(
     Chi::angular_quadrature_stack, quad_handle, fname);
 
-  // ============================================ Angle aggregation
+  // Angle aggregation
   const auto angle_agg_typestr = params.GetParamValue<std::string>("angle_aggregation_type");
   if (angle_agg_typestr == "polar") angleagg_method_ = AngleAggregationType::POLAR;
   else if (angle_agg_typestr == "single")
@@ -176,7 +172,7 @@ lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
 
   master_num_ang_subsets_ = params.GetParamValue<int>("angle_aggregation_num_subsets");
 
-  // ============================================ Inner solver
+  // Inner solver
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
   if (inner_linear_method == "richardson") iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
   else if (inner_linear_method == "gmres")
@@ -188,10 +184,10 @@ lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
   residual_tolerance_ = params.GetParamValue<double>("l_abs_tol");
   max_iterations_ = params.GetParamValue<int>("l_max_its");
 
-  // ============================================ Misc.
+  // Misc.
   log_sweep_events_ = params.GetParamValue<bool>("log_sweep_events");
 
-  // ============================================ DSA
+  // DSA
   apply_wgdsa_ = params.GetParamValue<bool>("apply_wgdsa");
   apply_tgdsa_ = params.GetParamValue<bool>("apply_tgdsa");
 
@@ -208,8 +204,6 @@ lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
   tgdsa_string_ = params.GetParamValue<std::string>("tgdsa_petsc_options");
 }
 
-// ##################################################################
-/**Computes the discrete to moment operator.*/
 void
 lbs::LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order,
                                        lbs::GeometryType geometry_type)
@@ -231,8 +225,6 @@ lbs::LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order,
   }
 }
 
-// ##################################################################
-/**Computes the moment to discrete operator.*/
 void
 lbs::LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order,
                                        lbs::GeometryType geometry_type)
@@ -254,8 +246,6 @@ lbs::LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order,
   }
 }
 
-// ##################################################################
-/**Constructs the groupset subsets.*/
 void
 lbs::LBSGroupset::BuildSubsets()
 {
@@ -271,8 +261,6 @@ lbs::LBSGroupset::BuildSubsets()
   }
 }
 
-// ##################################################################
-/**Constructs the groupset subsets.*/
 void
 lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name)
 {
@@ -284,7 +272,7 @@ lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name
   ofile << "Groupset Sweep information "
         << "location " << Chi::mpi.location_id << "\n";
 
-  //======================================== Print all anglesets
+  // Print all anglesets
   for (int q = 0; q < angle_agg_->angle_set_groups.size(); ++q)
   {
     ofile << "Angle-set group " << q << ":\n";
@@ -307,7 +295,7 @@ lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name
     }
   }
 
-  //======================================== Print event history
+  // Print event history
   ofile << Chi::log.PrintEventHistory(ev_tag);
 
   ofile.close();

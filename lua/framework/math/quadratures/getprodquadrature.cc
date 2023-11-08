@@ -11,17 +11,6 @@
 
 RegisterLuaFunctionAsIs(chiGetProductQuadrature);
 
-// ########################################################## Get product
-//  quadrature
-/** Get the values of a product quadrature
-
-\param QuadHandle int Handle to an existing product quadrature.
-
-\return Table A lua table with each entry being another table with entries
-       .weight .polar .azimuthal.
-
-\ingroup LuaQuadrature
-\author Jan*/
 int
 chiGetProductQuadrature(lua_State* L)
 {

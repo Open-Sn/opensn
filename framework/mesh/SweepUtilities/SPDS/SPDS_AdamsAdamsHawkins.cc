@@ -24,7 +24,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
 
   size_t num_loc_cells = grid.local_cells.size();
 
-  //============================================= Populate Cell Relationships
+  // Populate Cell Relationships
   Chi::log.Log0Verbose1() << "Populating cell relationships";
   std::vector<std::set<std::pair<int, double>>> cell_successors(num_loc_cells);
   std::set<int> location_successors;
@@ -41,7 +41,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
   for (auto v : location_dependencies)
     location_dependencies_.push_back(v);
 
-  //============================================= Build graph
+  // Build graph
   chi::DirectedGraph local_DG;
 
   // Add vertex for each local cell
@@ -53,7 +53,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
     for (auto& successor : cell_successors[c])
       local_DG.AddEdge(c, successor.first, successor.second);
 
-  //============================================= Remove local cycles if allowed
+  // Remove local cycles if allowed
   if (verbose_) PrintedGhostedGraph();
 
   if (cycle_allowance_flag)
@@ -68,7 +68,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
     }
   }
 
-  //============================================= Generate topological sorting
+  // Generate topological sorting
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Generating topological sorting for local sweep ordering";
   auto so_temp = local_DG.GenerateTopologicalSort();
@@ -109,8 +109,6 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
                           << " Done computing sweep ordering.\n\n";
 }
 
-// ###################################################################
-/**Builds the task dependency graph.*/
 void
 chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   const std::vector<std::vector<int>>& global_dependencies, bool cycle_allowance_flag)
@@ -120,22 +118,22 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   std::vector<int> raw_edges_to_remove;
   chi::DirectedGraph TDG;
 
-  //============================================= Build graph on home location
+  // Build graph on home location
   if (Chi::mpi.location_id == 0)
   {
     Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                             << " Building Task Dependency Graphs.";
 
-    //====================================== Add vertices to the graph
+    // Add vertices to the graph
     for (int loc = 0; loc < Chi::mpi.process_count; loc++)
       TDG.AddVertex();
 
-    //====================================== Add dependencies
+    // Add dependencies
     for (int loc = 0; loc < Chi::mpi.process_count; loc++)
       for (int dep = 0; dep < global_dependencies[loc].size(); dep++)
         TDG.AddEdge(global_dependencies[loc][dep], loc);
 
-    //====================================== Remove cyclic dependencies
+    // Remove cyclic dependencies
     if (cycle_allowance_flag)
     {
       Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
@@ -145,7 +143,7 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
         edges_to_remove.emplace_back(v0, v1);
     }
 
-    //====================================== Serialize edges to be removed
+    // Serialize edges to be removed
     raw_edges_to_remove.resize(edges_to_remove.size() * 2, 0);
     int i = 0;
     for (const auto& edge : edges_to_remove)
@@ -155,27 +153,19 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     }
   } // if home
 
-  //============================================= Broadcast edge buffer size
+  // Broadcast edge buffer size
   int edge_buffer_size = 0;
 
   if (Chi::mpi.location_id == 0) edge_buffer_size = static_cast<int>(raw_edges_to_remove.size());
 
-  MPI_Bcast(&edge_buffer_size, // Buffer
-            1,
-            MPI_INT,        // Count and datatype
-            0,              // Root location
-            Chi::mpi.comm); // Communicator
+  MPI_Bcast(&edge_buffer_size, 1, MPI_INT, 0, Chi::mpi.comm);
 
-  //============================================= Broadcast edges
+  // Broadcast edges
   if (Chi::mpi.location_id != 0) raw_edges_to_remove.resize(edge_buffer_size, -1);
 
-  MPI_Bcast(raw_edges_to_remove.data(), // Buffer
-            edge_buffer_size,
-            MPI_INT,        // Count and datatype
-            0,              // Root location
-            Chi::mpi.comm); // Communicator
+  MPI_Bcast(raw_edges_to_remove.data(), edge_buffer_size, MPI_INT, 0, Chi::mpi.comm);
 
-  //============================================= De-serialize edges
+  // De-serialize edges
   if (Chi::mpi.location_id != 0)
   {
     edges_to_remove.resize(edge_buffer_size / 2, std::pair<int, int>(0, 0));
@@ -187,7 +177,7 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     }
   }
 
-  //============================================= Remove edges
+  // Remove edges
   for (auto& edge_to_remove : edges_to_remove)
   {
     int rlocI = edge_to_remove.first;
@@ -206,7 +196,7 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     if (rlocI == Chi::mpi.location_id) delayed_location_successors_.push_back(locI);
   }
 
-  //============================================= Generate topological sort
+  // Generate topological sort
   std::vector<int> glob_linear_sweep_order;
   if (Chi::mpi.location_id == 0)
   {
@@ -225,27 +215,19 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     }
   }
 
-  //============================================= Broadcasting topsort size
+  // Broadcasting topsort size
   int topsort_buffer_size = 0;
 
   if (Chi::mpi.location_id == 0) topsort_buffer_size = glob_linear_sweep_order.size();
 
-  MPI_Bcast(&topsort_buffer_size, // Buffer
-            1,
-            MPI_INT,        // Count and datatype
-            0,              // Root location
-            Chi::mpi.comm); // Communicator
+  MPI_Bcast(&topsort_buffer_size, 1, MPI_INT, 0, Chi::mpi.comm);
 
-  //============================================= Broadcast topological sort
+  // Broadcast topological sort
   if (Chi::mpi.location_id != 0) glob_linear_sweep_order.resize(topsort_buffer_size, -1);
 
-  MPI_Bcast(glob_linear_sweep_order.data(), // Buffer
-            topsort_buffer_size,
-            MPI_INT,        // Count and datatype
-            0,              // Root location
-            Chi::mpi.comm); // Communicator
+  MPI_Bcast(glob_linear_sweep_order.data(), topsort_buffer_size, MPI_INT, 0, Chi::mpi.comm);
 
-  //============================================= Compute reorder mapping
+  // Compute reorder mapping
   // This mapping allows us to punch in
   // the location id and find what its
   // id is in the TDG
@@ -257,7 +239,7 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     glob_order_mapping[loc] = k;
   }
 
-  //============================================= Determine sweep order ranks
+  // Determine sweep order ranks
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Determining sweep order ranks.";
 
@@ -284,7 +266,7 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     }
   }
 
-  //============================================= Generate TDG structure
+  // Generate TDG structure
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Generating TDG structure.";
   for (int r = 0; r <= abs_max_rank; r++)
   {

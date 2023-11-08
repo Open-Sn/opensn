@@ -295,8 +295,9 @@ else if (dimension == 3)
 \endcode
 The interesting items here includes the `scattering_order` and the map from
 linear moment index to harmonic indices, `m_to_ell_em_map`. See the
-<a href="https://github.com/doctor-janv/whitepapers/blob/main/ChiTech-LBS-TheoryManual/ChiTech-LBS-TheoryManual_v_1_13.pdf">LBS Whitepaper</a>
-for the detail of this but in a nutshell... Only some of the harmonics are relevant
+<a
+href="https://github.com/doctor-janv/whitepapers/blob/main/ChiTech-LBS-TheoryManual/ChiTech-LBS-TheoryManual_v_1_13.pdf">LBS
+Whitepaper</a> for the detail of this but in a nutshell... Only some of the harmonics are relevant
 in certain dimensions.
 
 
@@ -462,20 +463,20 @@ auto ContributePWLDTally = [&sdm,&grid,&phi_tally,&phi_uk_man,&sigma_t,
       {
         const int64_t dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
 
-        //================= Apply harmonic weight
+        // Apply harmonic weight
         const auto& ell_em = m_to_ell_em_map.at(m);
         const int ell = ell_em.first;
         const int em = ell_em.second;
 
         double w_harmonic = chi_math::Ylm(ell, em, phi, theta);
 
-        //================= Apply exponential attenuation weight
+        // Apply exponential attenuation weight
         double w_exp  = (C0 / sigma_t) * (1.0 - exp(-sigma_t * ell_k)) +
                         (C1 / (sigma_t * sigma_t)) *
                         (1.0 - (1 + sigma_t * ell_k) * exp(-sigma_t * ell_k));
                w_exp *= weight / (ell_k * ell_k);
 
-        //================= Combine
+        // Combine
         double w_avg = w_harmonic * w_exp;
 
         phi_tally[dof_map] += ell_k * w_avg ;
@@ -653,7 +654,7 @@ for (size_t n=0; n<num_particles; ++n)
 {
   if (n % size_t(num_particles/10.0) == 0)
     std::cout << "#particles = " << n << "\n";
-  //====================================== Create the particle
+  // Create the particle
   const auto omega = SampleRandomDirection();
   Particle particle{source_pos,     //position
                     omega,          //direction
@@ -664,18 +665,17 @@ for (size_t n=0; n<num_particles; ++n)
 
   while (particle.alive)
   {
-    //=============================== Get the current cell
+    // Get the current cell
     const auto& cell = grid.cells[particle.cell_id];
 
-    //=============================== Perform the trace
-    //                                to the next surface
+    // Perform the trace to the next surface
     auto destination_info = ray_tracer.TraceRay(cell,
                                                 particle.position,
                                                 particle.direction);
 
     const Vec3& end_of_track_position = destination_info.pos_f;
 
-    //=============================== Make tally contribution
+    // Make tally contribution
     const int g = particle.energy_group;
     if (sdm.type == PWLD)
       ContributePWLDTally(cell,
@@ -685,7 +685,7 @@ for (size_t n=0; n<num_particles; ++n)
                           g,                     //
                           particle.weight);      //weight at A
 
-    //=============================== Process cell transfer
+    // Process cell transfer
     //                                or death
     if (not destination_info.particle_lost)
     {
@@ -741,11 +741,10 @@ this loop is
 \code
 while (particle.alive)
 {
-  //=============================== Get the current cell
+  // Get the current cell
   const auto& cell = grid.cells[particle.cell_id];
 
-  //=============================== Perform the trace
-  //                                to the next surface
+  // Perform the trace to the next surface
   auto destination_info = ray_tracer.TraceRay(cell,
                                               particle.position,
                                               particle.direction);
@@ -805,8 +804,7 @@ to the project fashion we want.
 \code
 for (const auto& cell : grid.local_cells)
 {
-  //====================================== Compute mass matrix
-  //                                       and its inverse
+  // Compute mass matrix and its inverse
   const auto& cell_mapping = sdm.GetCellMapping(cell);
   const auto& qp_data = cell_mapping.MakeVolumeQuadraturePointData();
   const size_t num_nodes = cell_mapping.NumNodes();
@@ -820,7 +818,7 @@ for (const auto& cell : grid.local_cells)
 
   auto M_inv = chi_math::Inverse(M);
 
-  //====================================== Apply projection
+  // Apply projection
   VecDbl b(num_nodes, 0.0);
   for (size_t m=0; m<num_moments; ++m)
     for (size_t g=0; g<num_groups; ++g)
@@ -847,8 +845,7 @@ The first portion of the loop is simply housekeeping again
 \code
 for (const auto& cell : grid.local_cells)
 {
-  //====================================== Compute mass matrix
-  //                                       and its inverse
+  // Compute mass matrix and its inverse
   const auto& cell_mapping = sdm.GetCellMapping(cell);
   const auto& qp_data = cell_mapping.MakeVolumeQuadraturePointData();
   const size_t num_nodes = cell_mapping.NumNodes();
@@ -905,7 +902,7 @@ data and set the nodal values of the tally to the uncollided projected flux.
 \section CodeTut93Sec8 8 Exporting field functions
 Creating the field functions is similar to what we did in previous tutorials
 \code
-//============================================= Create Field Functions
+// Create Field Functions
 std::vector<std::shared_ptr<chi_physics::FieldFunction>> ff_list;
 
 ff_list.push_back(std::make_shared<chi_physics::FieldFunction>(
@@ -914,7 +911,7 @@ ff_list.push_back(std::make_shared<chi_physics::FieldFunction>(
   chi_math::Unknown(chi_math::UnknownType::VECTOR_N,num_groups) //Unknown
 ));
 
-//============================================= Localize zeroth moment
+// Localize zeroth moment
 //This routine extracts a single moment vector
 //from the vector that contains multiple moments
 const chi_math::UnknownManager m0_uk_man(
@@ -933,7 +930,7 @@ sdm.CopyVectorWithUnknownScope(phi_tally,     //from vector
 ff_list[0]->UpdateFieldVector(m0_phi);
 
 
-//============================================= Update field function
+// Update field function
 chi_physics::FieldFunction::FFList const_ff_list;
 for (const auto& ff_ptr : ff_list)
   const_ff_list.push_back(ff_ptr);
@@ -975,7 +972,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
   const std::string fname = "chiSimTest93_RayTracing";
   chi::log.Log() << "chiSimTest93_RayTracing";
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
@@ -985,7 +982,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
                         (grid.Attributes() & chi_mesh::DIMENSION_2)? 2 :
                         (grid.Attributes() & chi_mesh::DIMENSION_3)? 3 : 0;
 
-  //============================================= Set parameters
+  // Set parameters
   const size_t num_groups = 1;
   const size_t scattering_order = 1;
   const auto& L = scattering_order;
@@ -1009,7 +1006,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
       for (int m=-ell; m<=ell; m++)
         m_to_ell_em_map.emplace_back(ell,m);
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::SpatialDiscretization_PWLD::New(grid_ptr);
   const auto& sdm = *sdm_ptr;
@@ -1024,11 +1021,10 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
   chi::log.Log() << "Num local FEM DOFs: " << num_fem_local_dofs;
   chi::log.Log() << "Num globl FEM DOFs: " << num_fem_globl_dofs;
 
-  //============================================= Define tallies
+  // Define tallies
   std::vector<double> phi_tally(num_fem_local_dofs, 0.0);
 
-  //============================================= Define particle
-  //                                              data structure
+  // Define particle data structure
   typedef chi_mesh::Vector3 Vec3;
   struct Particle
   {
@@ -1042,8 +1038,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
     bool alive = true;
   };
 
-  //============================================= Define source position
-  //                                              and find cell containing it
+  // Define source position and find cell containing it
   const Vec3 source_pos = {0.0,0.0,0.0};
 
   chi_mesh::Cell const* source_cell_ptr = nullptr;
@@ -1059,7 +1054,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
 
   const uint64_t source_cell_id = source_cell_ptr->global_id;
 
-  //============================================= Define lambdas
+  // Define lambdas
   chi_math::RandomNumberGenerator rng;
   auto SampleRandomDirection = [&rng]()
   {
@@ -1124,20 +1119,20 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
         {
           const int64_t dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
 
-          //================= Apply harmonic weight
+          // Apply harmonic weight
           const auto& ell_em = m_to_ell_em_map.at(m);
           const int ell = ell_em.first;
           const int em = ell_em.second;
 
           double w_harmonic = chi_math::Ylm(ell, em, phi, theta);
 
-          //================= Apply exponential attenuation weight
+          // Apply exponential attenuation weight
           double w_exp  = (C0 / sigma_t) * (1.0 - exp(-sigma_t * ell_k)) +
                           (C1 / (sigma_t * sigma_t)) *
                           (1.0 - (1 + sigma_t * ell_k) * exp(-sigma_t * ell_k));
                  w_exp *= weight / (ell_k * ell_k);
 
-          //================= Combine
+          // Combine
           double w_avg = w_harmonic * w_exp;
 
           phi_tally[dof_map] += ell_k * w_avg ;
@@ -1169,20 +1164,20 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
             chi_mesh::Vector3(xmax, ymax, zmax)).Norm();
   };
 
-  //============================================= Create raytracer
+  // Create raytracer
   std::vector<double> cell_sizes(grid.local_cells.size(), 0.0);
   for (const auto& cell : grid.local_cells)
     cell_sizes[cell.local_id] = GetCellApproximateSize(cell);
 
   chi_mesh::RayTracer ray_tracer(grid, cell_sizes);
 
-  //============================================= Run rays
+  // Run rays
   const size_t num_particles = 1'000'000;
   for (size_t n=0; n<num_particles; ++n)
   {
     if (n % size_t(num_particles/10.0) == 0)
       std::cout << "#particles = " << n << "\n";
-    //====================================== Create the particle
+    // Create the particle
     const auto omega = SampleRandomDirection();
     Particle particle{source_pos,     //position
                       omega,          //direction
@@ -1193,18 +1188,17 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
 
     while (particle.alive)
     {
-      //=============================== Get the current cell
+      // Get the current cell
       const auto& cell = grid.cells[particle.cell_id];
 
-      //=============================== Perform the trace
-      //                                to the next surface
+      // Perform the trace to the next surface
       auto destination_info = ray_tracer.TraceRay(cell,
                                                   particle.position,
                                                   particle.direction);
 
       const Vec3& end_of_track_position = destination_info.pos_f;
 
-      //=============================== Make tally contribution
+      // Make tally contribution
       ContributePWLDTally(cell,
                           particle.position,     //positionA
                           end_of_track_position, //positionB
@@ -1212,8 +1206,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
                           particle.energy_group, //g
                           particle.weight);      //weight at A
 
-      //=============================== Process cell transfer
-      //                                or death
+      // Process cell transfer or death
       if (not destination_info.particle_lost)
       {
         const auto& f = destination_info.destination_face_index;
@@ -1241,11 +1234,10 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
 
   }//for ray n
 
-  //============================================= Post process tallies
+  // Post process tallies
   for (const auto& cell : grid.local_cells)
   {
-    //====================================== Compute mass matrix
-    //                                       and its inverse
+    // Compute mass matrix and its inverse
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto& qp_data = cell_mapping.MakeVolumeQuadraturePointData();
     const size_t num_nodes = cell_mapping.NumNodes();
@@ -1259,7 +1251,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
 
     auto M_inv = chi_math::Inverse(M);
 
-    //====================================== Apply projection
+    // Apply projection
     VecDbl T(num_nodes, 0.0);
     for (size_t m=0; m<num_moments; ++m)
       for (size_t g=0; g<num_groups; ++g)
@@ -1281,7 +1273,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
 
   }//for cell
 
-  //============================================= Create Field Functions
+  // Create Field Functions
   std::vector<std::shared_ptr<chi_physics::FieldFunction>> ff_list;
 
   ff_list.push_back(std::make_shared<chi_physics::FieldFunction>(
@@ -1290,7 +1282,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
     chi_math::Unknown(chi_math::UnknownType::VECTOR_N,num_groups) //Unknown
   ));
 
-  //============================================= Localize zeroth moment
+  // Localize zeroth moment
   //This routine extracts a single moment vector
   //from the vector that contains multiple moments
   const chi_math::UnknownManager m0_uk_man(
@@ -1309,7 +1301,7 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
   ff_list[0]->UpdateFieldVector(m0_phi);
 
 
-  //============================================= Update field function
+  // Update field function
   chi_physics::FieldFunction::FFList const_ff_list;
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);

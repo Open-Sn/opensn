@@ -7,7 +7,6 @@
 namespace chi
 {
 
-// ################################################################### Class def
 /**Simple implementation a communicator set.
  * Definitions:
  * P = total amount of processors.

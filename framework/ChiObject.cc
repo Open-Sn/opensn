@@ -1,6 +1,5 @@
 #include "framework/ChiObject.h"
 
-/**Returns the input parameters.*/
 chi::InputParameters
 ChiObject::GetInputParameters()
 {

@@ -13,11 +13,6 @@ namespace prk::lua_utils
 RegisterLuaFunctionAsIs(chiPRKGetParam);
 RegisterLuaFunctionAsIs(chiPRKSetParam);
 
-/**Gets a parameter from the prk::TransientSolver.
-*
-* \param handle int Handle of the solver.
-* \param param_name  string Name of the parameter to retrieve.
-\return Varying*/
 int
 chiPRKGetParam(lua_State* L)
 {
@@ -49,12 +44,6 @@ chiPRKGetParam(lua_State* L)
   return 1;
 }
 
-/**Gets a parameter from the prk::TransientSolver.
-*
-* \param handle int Handle of the solver.
-* \param param_name  string Name of the parameter to retrieve.
-* \param value Varying The value to be set to the parameter.
-\return Varying*/
 int
 chiPRKSetParam(lua_State* L)
 {
@@ -84,11 +73,7 @@ chiPRKSetParam(lua_State* L)
   return 0;
 }
 
-// ##################################################################
-RegisterWrapperFunction(/*namespace_in_lua=*/prk,
-                        /*name_in_lua=*/SetParam,
-                        /*syntax_function=*/GetSyntax_SetParam,
-                        /*actual_function=*/SetParam);
+RegisterWrapperFunction(prk, SetParam, GetSyntax_SetParam, SetParam);
 
 chi::InputParameters
 GetSyntax_SetParam()
@@ -135,11 +120,7 @@ SetParam(const chi::InputParameters& params)
   return chi::ParameterBlock(); // Return empty param block
 }
 
-// ##################################################################
-RegisterWrapperFunction(/*namespace_in_lua=*/prk,
-                        /*name_in_lua=*/GetParam,
-                        /*syntax_function=*/GetParamSyntax,
-                        /*actual_function=*/GetParam);
+RegisterWrapperFunction(prk, GetParam, GetParamSyntax, GetParam);
 
 chi::InputParameters
 GetParamSyntax()

@@ -164,7 +164,16 @@ public:
    * Executes the loop for the console.
    */
   void RunConsoleLoop(char* fileName = nullptr) const;
+
+  /**
+   * Executes the given file in the Lua engine.
+   * \author Jan
+   */
   int ExecuteFile(const std::string& fileName, int argc, char** argv) const;
+
+  /**
+   * Pushes location id and number of processes to lua state.
+   */
   void PostMPIInfo(int location_id, int number_of_processes) const;
 
 private:
@@ -177,20 +186,26 @@ private:
 public:
 #ifdef OPENSN_WITH_LUA
   /**
-   * Adds a lua_CFunction to the registry.
+   * Adds a lua_CFunction to the registry. The registry of functions gets parsed into the lua
+   * console when `chi::Initialize` is called. This particular function will strip the namespace
+   * from the the parameter `raw_name_in_lua` and cause the function to be registered in the
+   * global namespace of the lua console.
    */
   static char AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_in_lua,
                                                    lua_CFunction function_ptr);
 
   /**
-   * Adds a lua_CFunction to the registry. With namespace-table analogy.
+   * Adds a lua_CFunction to the registry. The registry of functions gets parsed into the lua
+   * console when `chi::Initialize` is called. The full path of the function will be derived from
+   * `namespace_name` + "::" + `function_name`.
    */
   static char AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_ptr,
                                                        const std::string& namespace_name,
                                                        const std::string& function_name);
 
   /**
-   * Adds a constant to the lua state.
+   * \brief Adds a constant to the lua state. Prepending the constant within a namespace is
+   * optional.
    */
   static char AddLuaConstantToRegistry(const std::string& namespace_name,
                                        const std::string& constant_name,
@@ -219,18 +234,26 @@ public:
                                                 lua_CFunction function_ptr);
 
   /**
-   * Formats a namespace structure as a table, but the last entry is a function call.
+   * Sets/Forms a table structure that mimics the namespace structure of a string. For example
+   * the string "sing::sob::nook::Tigger" will be assigned a table structure
+   * `sing.sob.nook.Tigger = "sing::sob::nook::Tigger"`. Then finally assigns lua call to this
+   * table.
    */
   static void SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_name);
 
   /**
-   * Formats a namespace structure as a table, but the last entry contains a "Create" function and
-   * a type.
+   * Sets/Forms a table structure that mimics the namespace structure of a string. For example
+   * the string "sing::sob::nook::Tigger" will be assigned a table structure
+   * `sing.sob.nook.Tigger = "sing::sob::nook::Tigger"`.
    */
   static void SetObjectNamespaceTableStructure(const std::string& full_lua_name);
 
   /**
-   * Makes sure a table structure exists for the list of table names.
+   * Fleshes out a path in a table tree. For example, given "fee::foo::fah::koo, this routine will
+   * make sure that fee.foo.fah.koo is defined as a table tree structure. The routine will create
+   * a table structure where one is needed and leave existing ones alone.
+   *
+   * At the end of the routine the last table in the structure will be on top of the stack.
    */
   static void FleshOutLuaTableStructure(const std::vector<std::string>& table_names);
 
@@ -253,7 +276,8 @@ public:
   static int LuaWrapperCall(lua_State* L);
 
   /**
-   * Dumps the object registry to stdout.
+   * Makes a formatted output, readible by the documentation scripts, of all the lua wrapper
+   * functions.
    */
   void DumpRegister() const;
 

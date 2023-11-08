@@ -23,7 +23,7 @@ CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
 
   size_t num_loc_cells = grid.local_cells.size();
 
-  //============================================= Populate Cell Relationships
+  // Populate Cell Relationships
   Chi::log.Log0Verbose1() << "Populating cell relationships";
   std::vector<std::set<std::pair<int, double>>> cell_successors(num_loc_cells);
   std::set<int> location_successors;
@@ -40,7 +40,7 @@ CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
   for (auto v : location_dependencies)
     location_dependencies_.push_back(v);
 
-  //============================================= Build graph
+  // Build graph
   chi::DirectedGraph local_DG;
 
   // Add vertex for each local cell
@@ -52,7 +52,7 @@ CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
     for (auto& successor : cell_successors[c])
       local_DG.AddEdge(c, successor.first, successor.second);
 
-  //============================================= Remove local cycles if allowed
+  // Remove local cycles if allowed
   if (verbose_) PrintedGhostedGraph();
 
   if (cycle_allowance_flag)
@@ -67,7 +67,7 @@ CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
     }
   }
 
-  //============================================= Generate topological sorting
+  // Generate topological sorting
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Generating topological sorting for local sweep ordering";
   auto so_temp = local_DG.GenerateTopologicalSort();
@@ -125,11 +125,7 @@ CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
           succesors.push_back(grid.cells[face.neighbor_id_].local_id_);
       }
 
-    task_list_.push_back({num_dependencies,
-                          succesors,
-                          /*reference_id_=*/cell.local_id_,
-                          /*cell_ptr_=*/&cell,
-                          /*completed_=*/false});
+    task_list_.push_back({num_dependencies, succesors, cell.local_id_, &cell, false});
   } // for cell in SPLS
 
   Chi::mpi.Barrier();

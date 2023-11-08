@@ -76,7 +76,7 @@ PartitionerPredicate::Execute()
 
   ChiInvalidArgumentIf(not grid_ff_ptr, "Could not find the associated resulting field function");
 
-  //============================================= Build cell graph and centroids
+  // Build cell graph and centroids
   const auto& sdm = grid_ff_ptr->GetSpatialDiscretization();
   const auto& grid = sdm.Grid();
 
@@ -101,7 +101,7 @@ PartitionerPredicate::Execute()
     }
   }
 
-  //============================================= Create partition
+  // Create partition
   auto cell_pids =
     partitioner_.Partition(cell_graph, cell_centroids, static_cast<int>(num_partitions_));
 

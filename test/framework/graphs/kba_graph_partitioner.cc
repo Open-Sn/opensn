@@ -13,10 +13,10 @@ namespace chi_unit_tests
 
 chi::ParameterBlock TestKBAGraphPartitioner00(const chi::InputParameters&);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/TestKBAGraphPartitioner00,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/TestKBAGraphPartitioner00);
+RegisterWrapperFunction(chi_unit_tests,
+                        TestKBAGraphPartitioner00,
+                        nullptr,
+                        TestKBAGraphPartitioner00);
 
 chi::ParameterBlock
 TestKBAGraphPartitioner00(const chi::InputParameters&)

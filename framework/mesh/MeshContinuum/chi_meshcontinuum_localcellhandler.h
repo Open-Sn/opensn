@@ -5,7 +5,6 @@
 namespace chi_mesh
 {
 
-// ##################################################
 /**Stores references to global cells to enable an iterator.*/
 class LocalCellHandler
 {
@@ -22,10 +21,11 @@ private:
   }
 
 public:
+  /**Returns a reference to a local cell, given a local cell index.*/
   chi_mesh::Cell& operator[](uint64_t cell_local_index);
+  /**Returns a const reference to a local cell, given a local cell index.*/
   const chi_mesh::Cell& operator[](uint64_t cell_local_index) const;
 
-  // ##################################### iterator Class Definition
   /**Internal iterator class.*/
   class iterator
   {

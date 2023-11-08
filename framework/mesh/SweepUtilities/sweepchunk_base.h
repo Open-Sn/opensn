@@ -4,7 +4,6 @@
 
 #include <functional>
 
-// ###################################################################
 /**Sweep work function*/
 class chi_mesh::sweep_management::SweepChunk
 {

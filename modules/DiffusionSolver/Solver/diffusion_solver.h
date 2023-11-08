@@ -55,14 +55,21 @@ public:
 
   bool common_items_initialized_ = false;
 
-  Vec x_ = nullptr;   // approx solution
-  Vec b_ = nullptr;   // RHS
-  Mat A_ = nullptr;   // linear system matrix
-  KSP ksp_ = nullptr; // linear solver context
-  PC pc_ = nullptr;   // preconditioner context
+  /// approx solution
+  Vec x_ = nullptr;
+  /// RHS
+  Vec b_ = nullptr;
+  /// linear system matrix
+  Mat A_ = nullptr;
+  /// linear solver context
+  KSP ksp_ = nullptr;
+  /// preconditioner context
+  PC pc_ = nullptr;
 
-  PetscReal norm_ = 0.0;    /* norm of solution error */
-  PetscErrorCode ierr_ = 0; // General error code
+  /// norm of solution error
+  PetscReal norm_ = 0.0;
+  /// General error code
+  PetscErrorCode ierr_ = 0;
 
   size_t local_dof_count_ = 0;
   size_t global_dof_count_ = 0;

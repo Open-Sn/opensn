@@ -15,7 +15,6 @@ enum class PropertyType
   ISOTROPIC_MG_SOURCE = 11
 };
 
-// ###################################################################
 /** Base class for material properties.*/
 class MaterialProperty
 {
@@ -34,6 +33,7 @@ public:
   virtual double GetScalarValue() { return 0.0; }
 
 #ifdef OPENSN_WITH_LUA
+  /** Base class method for pushing lua table.*/
   virtual void PushLuaTable(lua_State* L) const;
 #endif
 };

@@ -4,7 +4,6 @@
 
 #include <map>
 
-// ###################################################################
 /**General implementation of a directed-graph vertex.*/
 struct chi::GraphVertex
 {

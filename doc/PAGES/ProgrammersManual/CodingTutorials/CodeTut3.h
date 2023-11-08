@@ -14,25 +14,22 @@
 
 
 \section CodeTut3Sec1 1 Poisson's equation
-<a href="https://en.wikipedia.org/wiki/Poisson%27s_equation">The Poisson's equation</a> states the following, for
-\f$ \phi, q \in \mathcal{R} \f$,
-\f{eqnarray*}{
--\boldsymbol{\nabla} \boldsymbol{\cdot} \bigr(\boldsymbol{\nabla} \phi(\mathbf{x})\bigr) = q(\mathbf{x}), \quad \quad \quad (\mathbf{x})\in\mathcal{D} \\
-\phi(\mathbf{x}) = 0, \quad \quad \quad \mathbf{x}\in \partial \mathcal{D}
-\f}
-where \f$ \boldsymbol{\nabla} \boldsymbol{\cdot} \bigr( \bigr) \f$ denotes the divergence-operator
-and \f$ \boldsymbol{\nabla} \f$ denotes the gradient-operator, i.e.
-\f$ \boldsymbol{\nabla} \phi \f$ denotes the gradient of \f$ \phi \f$. The
+<a href="https://en.wikipedia.org/wiki/Poisson%27s_equation">The Poisson's equation</a> states the
+following, for \f$ \phi, q \in \mathcal{R} \f$, \f{eqnarray*}{
+-\boldsymbol{\nabla} \boldsymbol{\cdot} \bigr(\boldsymbol{\nabla} \phi(\mathbf{x})\bigr) =
+q(\mathbf{x}), \quad \quad \quad (\mathbf{x})\in\mathcal{D} \\ \phi(\mathbf{x}) = 0, \quad \quad
+\quad \mathbf{x}\in \partial \mathcal{D} \f} where \f$ \boldsymbol{\nabla} \boldsymbol{\cdot} \bigr(
+\bigr) \f$ denotes the divergence-operator and \f$ \boldsymbol{\nabla} \f$ denotes the
+gradient-operator, i.e. \f$ \boldsymbol{\nabla} \phi \f$ denotes the gradient of \f$ \phi \f$. The
 boundary conditions here state that \f$ \phi=0 \f$ on the boundary.
 
 
 
 
 \subsection CodeTut3Sec1_1 1.1 Our specific problem
-For our specific problem we will choose \f$ q(\mathbf{x})=1 \f$ and \f$ \mathcal{D} \f$ a cartesian domain,
-either 1D, 2D or 3D, with each dimension always between \f$ -1,+1 \f$. We can generate the mesh for this
-problem using an input file
-\code
+For our specific problem we will choose \f$ q(\mathbf{x})=1 \f$ and \f$ \mathcal{D} \f$ a cartesian
+domain, either 1D, 2D or 3D, with each dimension always between \f$ -1,+1 \f$. We can generate the
+mesh for this problem using an input file \code
 --############################################### Setup mesh
 chiMeshHandlerCreate()
 
@@ -55,7 +52,8 @@ chiVolumeMesherExecute();
 chiVolumeMesherSetMatIDToAll(0)
 \endcode
 This code can be used to generate any of the following meshes,
-\image html CodingTutorials/OrthoMesh_1D_2D_3D.png "[From left to right] 1D, 2D, 3D orthogonal mesh" width=1200px
+\image html CodingTutorials/OrthoMesh_1D_2D_3D.png "[From left to right] 1D, 2D, 3D orthogonal mesh"
+width=1200px
 
 
 
@@ -66,7 +64,8 @@ weighting the Poisson equation with a trial space function, \f$ t_i(\mathbf{x}) 
 is a unique node in the problem, and then integrate over the volume of the
 domain
 \f[
--\int_V t_i \boldsymbol{\nabla} \boldsymbol{\cdot} \bigr(\boldsymbol{\nabla} \phi(\mathbf{x})\bigr) dV
+-\int_V t_i \boldsymbol{\nabla} \boldsymbol{\cdot} \bigr(\boldsymbol{\nabla} \phi(\mathbf{x})\bigr)
+dV
  =
 \int_V t_i q(\mathbf{x}) dV.
 \f]
@@ -170,8 +169,8 @@ With these mathematical formulations defined we can write
  |J(\tilde{\mathbf{x}}_n)|
 \biggr]
  &=
-\sum_c \sum_n^{N_V} w_n b_i(\tilde{\mathbf{x}}_n) q(\tilde{\mathbf{x}}_n \to \mathbf{x}) |J(\tilde{\mathbf{x}}_n)|
-\f}
+\sum_c \sum_n^{N_V} w_n b_i(\tilde{\mathbf{x}}_n) q(\tilde{\mathbf{x}}_n \to \mathbf{x})
+|J(\tilde{\mathbf{x}}_n)| \f}
 
 
 \section CodeTut3Sec2 2 Setting up the problem
@@ -189,7 +188,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Coding Tutorial 3";
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
@@ -210,7 +209,7 @@ include the header
 
 Next we add the following code
 \code
-//============================================= Make SDM
+// Make SDM
 typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
 SDMPtr sdm_ptr = chi_math::SpatialDiscretization_PWLC::New(grid_ptr);
 const auto& sdm = *sdm_ptr;
@@ -227,7 +226,7 @@ chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 The initialization of the matrices and vectors remain exactly the same as in
 the Finite Volume tutorial:
 \code
-//============================================= Initializes Mats and Vecs
+// Initializes Mats and Vecs
 const auto n = static_cast<int64_t>(num_local_dofs);
 const auto N = static_cast<int64_t>(num_globl_dofs);
 Mat A;
@@ -262,11 +261,9 @@ equation
  |J(\tilde{\mathbf{x}}_n)|
 \biggr]
  &=
-\sum_c \sum_n^{N_V} w_n b_i(\tilde{\mathbf{x}}_n) q(\tilde{\mathbf{x}}_n \to \mathbf{x}) |J(\tilde{\mathbf{x}}_n)|
-\f}
-For which the first portion of the code is
-\code
-for (const auto& cell : grid.local_cells)
+\sum_c \sum_n^{N_V} w_n b_i(\tilde{\mathbf{x}}_n) q(\tilde{\mathbf{x}}_n \to \mathbf{x})
+|J(\tilde{\mathbf{x}}_n)| \f} For which the first portion of the code is \code for (const auto& cell
+: grid.local_cells)
 {
   const auto& cell_mapping = sdm.GetCellMapping(cell);
   const auto  qp_data      = cell_mapping.MakeVolumeQuadraturePointData();
@@ -385,7 +382,7 @@ then flag that node as being on a boundary.
 Finally, we now assemble the local cell-matrix and local RHS into the global
 system.
 \code
-//======================= Assembly into system
+// Assembly into system
 for (size_t i=0; i<num_nodes; ++i)
 {
   if (node_boundary_flag[i]) //if dirichlet node
@@ -431,7 +428,7 @@ Solving the system and visualizing it is the same as was done for the Finite
 Volume tutorial. The matrix is still Symmetric Positive Definite (SPD) so we
 use the same solver/precondtioner setup.
 \code
-//============================================= Create Krylov Solver
+// Create Krylov Solver
 chi::log.Log() << "Solving: ";
 auto petsc_solver =
   chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
@@ -442,16 +439,16 @@ auto petsc_solver =
     1.0e-6,          //Relative residual tolerance
     1000);            //Max iterations
 
-//============================================= Solve
+// Solve
 KSPSolve(petsc_solver.ksp,b,x);
 
 chi::log.Log() << "Done solving";
 
-//============================================= Extract PETSc vector
+// Extract PETSc vector
 std::vector<double> field;
 sdm.LocalizePETScVector(x,field,OneDofPerNode);
 
-//============================================= Clean up
+// Clean up
 KSPDestroy(&petsc_solver.ksp);
 
 VecDestroy(&x);
@@ -460,7 +457,7 @@ MatDestroy(&A);
 
 chi::log.Log() << "Done cleanup";
 
-//============================================= Create Field Function
+// Create Field Function
 auto ff = std::make_shared<chi_physics::FieldFunction>(
   "Phi",                                           //Text name
   sdm_ptr,                                         //Spatial Discr.
@@ -472,7 +469,8 @@ ff->UpdateFieldVector(field);
 ff->ExportToVTK("CodeTut3_PWLC");
 \endcode
 
-\image html CodingTutorials/Tut3_Solution.png "Solution for a 2D mesh with a flat and warped view" width=900px
+\image html CodingTutorials/Tut3_Solution.png "Solution for a 2D mesh with a flat and warped view"
+width=900px
 
 
 
@@ -497,13 +495,13 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Coding Tutorial 3";
 
-  //============================================= Get grid
+  // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
   chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  //============================================= Make SDM
+  // Make SDM
   typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
   SDMPtr sdm_ptr = chi_math::SpatialDiscretization_PWLC::New(grid_ptr);
   const auto& sdm = *sdm_ptr;
@@ -516,7 +514,7 @@ int main(int argc, char* argv[])
   chi::log.Log() << "Num local DOFs: " << num_local_dofs;
   chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
-  //============================================= Initializes Mats and Vecs
+  // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
   const auto N = static_cast<int64_t>(num_globl_dofs);
   Mat A;
@@ -534,7 +532,7 @@ int main(int argc, char* argv[])
                                            nodal_nnz_in_diag,
                                            nodal_nnz_off_diag);
 
-  //============================================= Assemble the system
+  // Assemble the system
   chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
@@ -562,7 +560,7 @@ int main(int argc, char* argv[])
         cell_rhs[i] += 1.0 * qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
     }//for i
 
-    //======================= Flag nodes for being on dirichlet boundary
+    // Flag nodes for being on dirichlet boundary
     std::vector<bool> node_boundary_flag(num_nodes, false);
     const size_t num_faces = cell.faces.size();
     for (size_t f=0; f<num_faces; ++f)
@@ -578,12 +576,12 @@ int main(int argc, char* argv[])
       }//for fi
     }//for face f
 
-    //======================= Develop node mapping
+    // Develop node mapping
     std::vector<int64_t> imap(num_nodes, 0); //node-mapping
     for (size_t i=0; i<num_nodes; ++i)
       imap[i] = sdm.MapDOF(cell, i);
 
-    //======================= Assembly into system
+    // Assembly into system
     for (size_t i=0; i<num_nodes; ++i)
     {
       if (node_boundary_flag[i]) //if dirichlet node
@@ -612,7 +610,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Done global assembly";
 
-  //============================================= Create Krylov Solver
+  // Create Krylov Solver
   chi::log.Log() << "Solving: ";
   auto petsc_solver =
     chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
@@ -623,16 +621,16 @@ int main(int argc, char* argv[])
       1.0e-6,          //Relative residual tolerance
       1000);            //Max iterations
 
-  //============================================= Solve
+  // Solve
   KSPSolve(petsc_solver.ksp,b,x);
 
   chi::log.Log() << "Done solving";
 
-  //============================================= Extract PETSc vector
+  // Extract PETSc vector
   std::vector<double> field;
   sdm.LocalizePETScVector(x,field,OneDofPerNode);
 
-  //============================================= Clean up
+  // Clean up
   KSPDestroy(&petsc_solver.ksp);
 
   VecDestroy(&x);
@@ -641,7 +639,7 @@ int main(int argc, char* argv[])
 
   chi::log.Log() << "Done cleanup";
 
-  //============================================= Create Field Function
+  // Create Field Function
   auto ff = std::make_shared<chi_physics::FieldFunction>(
     "Phi",                                           //Text name
     sdm_ptr,                                         //Spatial Discr.

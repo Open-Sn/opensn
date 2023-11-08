@@ -6,9 +6,6 @@
 #include <stdexcept>
 #include <cassert>
 
-// ###################################################################
-/**Initialzes a set of points for a quadrature integration over
- * the volume of a tetrahedron.*/
 chi_math::QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : Quadrature(order)
 {
   double x = 0.0, y = 0.0, z = 0.0;
@@ -166,9 +163,6 @@ chi_math::QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : 
   } // switch order
 }
 
-/** The Keast rules are for tets. This function takes permutation
-points and weights in a specific format as input and fills the
-_points and _weights vectors.*/
 void
 chi_math::QuadratureTetrahedron::KeastRule(const std::vector<std::vector<double>>& rule_data,
                                            const unsigned int n_pts)

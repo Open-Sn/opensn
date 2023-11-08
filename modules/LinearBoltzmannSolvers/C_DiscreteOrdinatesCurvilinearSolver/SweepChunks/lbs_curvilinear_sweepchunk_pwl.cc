@@ -8,8 +8,6 @@
 namespace lbs
 {
 
-// ##################################################################
-/**Constructor.*/
 SweepChunkPWLRZ::SweepChunkPWLRZ(
   const chi_mesh::MeshContinuum& grid,
   const chi_math::SpatialDiscretization& discretization_primary,
@@ -70,7 +68,7 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
   RegisterKernel("FEMRZUpwindSurfaceIntegrals",
                  std::bind(&SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals, this));
 
-  // ================================== Setup callbacks
+  // Setup callbacks
   cell_data_callbacks_.push_back(std::bind(&SweepChunkPWLRZ::CellDataCallback, this));
 
   direction_data_callbacks_and_kernels_ = {std::bind(&SweepChunkPWLRZ::DirectionDataCallback, this),
@@ -86,8 +84,6 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
     std::bind(&SweepChunkPWLRZ::PostCellDirSweepCallback, this));
 }
 
-// ##################################################################
-/**Cell data callback.*/
 void
 SweepChunkPWLRZ::CellDataCallback()
 {
@@ -96,8 +92,6 @@ SweepChunkPWLRZ::CellDataCallback()
   Maux_ = &fe_intgrl_values_secondary.M_matrix;
 }
 
-// ##################################################################
-/**Direction data callback.*/
 void
 SweepChunkPWLRZ::DirectionDataCallback()
 {
@@ -115,8 +109,6 @@ SweepChunkPWLRZ::DirectionDataCallback()
     curvilinear_product_quadrature->GetStreamingOperatorFactor()[direction_num_];
 }
 
-// ##################################################################
-/**Applies diamond differencing on azimuthal directions.*/
 void
 SweepChunkPWLRZ::PostCellDirSweepCallback()
 {
@@ -130,8 +122,6 @@ SweepChunkPWLRZ::PostCellDirSweepCallback()
   }
 }
 
-// ##################################################################
-/**Assembles the volumetric gradient term.*/
 void
 SweepChunkPWLRZ::KernelFEMRZVolumetricGradientTerm()
 {
@@ -148,8 +138,6 @@ SweepChunkPWLRZ::KernelFEMRZVolumetricGradientTerm()
     }
 }
 
-// ##################################################################
-/**Performs the integral over the surface of a face.*/
 void
 SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals()
 {

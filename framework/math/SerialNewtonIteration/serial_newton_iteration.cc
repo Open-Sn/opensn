@@ -5,15 +5,14 @@
 
 #include <iomanip>
 
-/**Newton iteration.*/
 VecDbl
 chi_math::NewtonIteration(const NonLinearFunction& non_linear_function,
                           const VecDbl& x_0,
                           const unsigned int max_iters,
                           const double epsilon,
-                          const bool verbose /*=false*/)
+                          const bool verbose)
 {
-  //=================================== Verbose printing lambda
+  // Verbose printing lambda
   auto PrintIterationInfo =
     [](unsigned int i, const VecDbl& x_i, const VecDbl& F_x_i, double L2_norm_F_x_i)
   {
@@ -29,7 +28,7 @@ chi_math::NewtonIteration(const NonLinearFunction& non_linear_function,
     Chi::log.Log() << output.str();
   };
 
-  //=================================== Declare and init variables
+  // Declare and init variables
   VecDbl x_i = x_0;
   VecDbl F_x_i = non_linear_function.F(x_i);
   MatDbl J_x_i_inv = chi_math::Inverse(non_linear_function.J(x_i));
@@ -38,7 +37,7 @@ chi_math::NewtonIteration(const NonLinearFunction& non_linear_function,
 
   if (verbose) PrintIterationInfo(0, x_i, F_x_i, L2_norm_F_x_i);
 
-  //=================================== Perform iterations
+  // Perform iterations
   unsigned int i = 0;
   while (L2_norm_F_x_i >= epsilon and i < max_iters)
   {

@@ -30,7 +30,7 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                                        std::map<uint64_t, BoundaryCondition> bcs,
                                        MatID2XSMap map_mat_id_2_xs,
                                        const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                                       const bool verbose /*=false*/)
+                                       const bool verbose)
   : DiffusionSolver(std::move(text_name),
                     sdm,
                     uk_man,
@@ -38,7 +38,7 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                     std::move(map_mat_id_2_xs),
                     unit_cell_matrices,
                     verbose,
-                    /*requires_ghosts=*/false)
+                    false)
 {
   using SDM_TYPE = chi_math::SpatialDiscretizationType;
   const auto& PWLD = SDM_TYPE ::PIECEWISE_LINEAR_DISCONTINUOUS;
@@ -78,10 +78,10 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
     const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
 
-    //=========================================== For component/group
+    // For component/group
     for (size_t g = 0; g < num_groups; ++g)
     {
-      //==================================== Get coefficient and nodal src
+      // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
       const double sigr_g = xs.sigR[g];
 
@@ -89,7 +89,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
       for (size_t j = 0; j < num_nodes; j++)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
-      //==================================== Assemble continuous terms
+      // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; i++)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
@@ -125,7 +125,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
 
-      //==================================== Assemble face terms
+      // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces_[f];
@@ -148,7 +148,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id_);
           const double adj_Dg = adj_xs.Dg[g];
 
-          //========================= Compute kappa
+          // Compute kappa
           double kappa = 1.0;
           if (cell.Type() == chi_mesh::CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
@@ -157,7 +157,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
 
-          //========================= Assembly penalty terms
+          // Assembly penalty terms
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
             const int i = cell_mapping.MapFaceNode(f, fi);
@@ -181,7 +181,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             } // for fj
           }   // for fi
 
-          //========================= Assemble gradient terms
+          // Assemble gradient terms
           // For the following comments we use the notation:
           // Dk = 0.5* n dot nabla bk
 
@@ -243,7 +243,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           {
             const double bc_value = bc.values[0];
 
-            //========================= Compute kappa
+            // Compute kappa
             double kappa = 1.0;
             if (cell.Type() == chi_mesh::CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
@@ -252,7 +252,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
-            //========================= Assembly penalty terms
+            // Assembly penalty terms
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
@@ -285,7 +285,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               } // for fj
             }   // for fi
 
-            //========================= Assemble gradient terms
+            // Assemble gradient terms
             // For the following comments we use the notation:
             // Dk = n dot nabla bk
 
@@ -423,17 +423,17 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
     const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
 
-    //=========================================== For component/group
+    // For component/group
     for (size_t g = 0; g < num_groups; ++g)
     {
-      //==================================== Get coefficient and nodal src
+      // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
 
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; j++)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
-      //==================================== Assemble continuous terms
+      // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; i++)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
@@ -459,7 +459,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
 
-      //==================================== Assemble face terms
+      // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces_[f];
@@ -478,7 +478,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
           {
             const double bc_value = bc.values[0];
 
-            //========================= Compute kappa
+            // Compute kappa
             double kappa = 1.0;
             if (cell.Type() == chi_mesh::CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
@@ -487,7 +487,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
             if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
-            //========================= Assembly penalty terms
+            // Assembly penalty terms
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
@@ -518,7 +518,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
               } // for fj
             }   // for fi
 
-            //========================= Assemble gradient terms
+            // Assemble gradient terms
             // For the following comments we use the notation:
             // Dk = 0.5* n dot nabla bk
 
@@ -626,7 +626,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
     for (size_t g = 0; g < num_groups; ++g)
     {
-      //==================================== Get coefficient and nodal src
+      // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
       const double sigr_g = xs.sigR[g];
 
@@ -634,7 +634,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
       for (size_t j = 0; j < num_nodes; j++)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
-      //==================================== Assemble continuous terms
+      // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; i++)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
@@ -653,7 +653,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
 
-      //==================================== Assemble face terms
+      // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces_[f];
@@ -679,7 +679,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id_);
           const double adj_Dg = adj_xs.Dg[g];
 
-          //========================= Compute kappa
+          // Compute kappa
           double kappa = 1.0;
           if (cell.Type() == chi_mesh::CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
@@ -688,7 +688,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
 
-          //========================= Assembly penalty terms
+          // Assembly penalty terms
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
             const int i = cell_mapping.MapFaceNode(f, fi);
@@ -709,7 +709,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
             } // for fj
           }   // for fi
 
-          //========================= Assemble gradient terms
+          // Assemble gradient terms
           // For the following comments we use the notation:
           // Dk = 0.5* n dot nabla bk
 
@@ -763,7 +763,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           {
             const double bc_value = bc.values[0];
 
-            //========================= Compute kappa
+            // Compute kappa
             double kappa = 1.0;
             if (cell.Type() == chi_mesh::CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
@@ -772,7 +772,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
             if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
-            //========================= Assembly penalty terms
+            // Assembly penalty terms
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
@@ -791,7 +791,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
               } // for fj
             }   // for fi
 
-            //========================= Assemble gradient terms
+            // Assemble gradient terms
             // For the following comments we use the notation:
             // Dk = n dot nabla bk
 
@@ -913,14 +913,14 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
     for (size_t g = 0; g < num_groups; ++g)
     {
-      //==================================== Get coefficient and nodal src
+      // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
 
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; j++)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
-      //==================================== Assemble continuous terms
+      // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; i++)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
@@ -931,7 +931,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
 
-      //==================================== Assemble face terms
+      // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces_[f];
@@ -953,7 +953,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
           {
             const double bc_value = bc.values[0];
 
-            //========================= Compute kappa
+            // Compute kappa
             double kappa = 1.0;
             if (cell.Type() == chi_mesh::CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
@@ -962,7 +962,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
             if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
-            //========================= Assembly penalty terms
+            // Assembly penalty terms
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
@@ -979,7 +979,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
               } // for fj
             }   // for fi
 
-            //========================= Assemble gradient terms
+            // Assemble gradient terms
             // For the following comments we use the notation:
             // Dk = n dot nabla bk
 
@@ -1059,14 +1059,14 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
     for (size_t g = 0; g < num_groups; ++g)
     {
-      //==================================== Get coefficient and nodal src
+      // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
 
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; j++)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
-      //==================================== Assemble continuous terms
+      // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; i++)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
@@ -1077,7 +1077,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
 
-      //==================================== Assemble face terms
+      // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces_[f];
@@ -1099,7 +1099,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
           {
             const double bc_value = bc.values[0];
 
-            //========================= Compute kappa
+            // Compute kappa
             double kappa = 1.0;
             if (cell.Type() == chi_mesh::CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
@@ -1108,7 +1108,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
             if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
-            //========================= Assembly penalty terms
+            // Assembly penalty terms
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
@@ -1125,7 +1125,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
               } // for fj
             }   // for fi
 
-            //========================= Assemble gradient terms
+            // Assemble gradient terms
             // For the following comments we use the notation:
             // Dk = n dot nabla bk
 
@@ -1246,7 +1246,7 @@ DiffusionMIPSolver::MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
                                     size_t ccf,
                                     size_t acf,
                                     size_t ccfi,
-                                    double epsilon /*=1.0e-12*/)
+                                    double epsilon)
 {
   const auto& cur_cell_mapping = sdm_.GetCellMapping(cur_cell);
   const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
@@ -1274,21 +1274,21 @@ DiffusionMIPSolver::CallLuaXYZFunction(lua_State* L,
 {
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
                             "CallLuaXYZFunction";
-  //============= Load lua function
+  // Load lua function
   lua_getglobal(L, lua_func_name.c_str());
 
-  //============= Error check lua function
+  // Error check lua function
   if (not lua_isfunction(L, -1))
     throw std::logic_error(fname + " attempted to access lua-function, " + lua_func_name +
                            ", but it seems the function"
                            " could not be retrieved.");
 
-  //============= Push arguments
+  // Push arguments
   lua_pushnumber(L, xyz.x);
   lua_pushnumber(L, xyz.y);
   lua_pushnumber(L, xyz.z);
 
-  //============= Call lua function
+  // Call lua function
   // 3 arguments, 1 result (double), 0=original error object
   double lua_return;
   if (lua_pcall(L, 3, 1, 0) == 0)

@@ -6,16 +6,6 @@
 namespace lbs::common_lua_utils
 {
 
-// ###################################################################
-/**Adds a point source to an LBS solver.
-\param SolverIndex int Handle to the solver.
-\param Location_x double X-location.
-\param Location_y double Y-location.
-\param Location_z double Z-location.
-\param Strength table Source strength as a multigroup vector.
-
- \ingroup LBSLuaFunctions
- */
 int
 chiLBSAddPointSource(lua_State* L)
 {
@@ -29,11 +19,11 @@ chiLBSAddPointSource(lua_State* L)
   LuaCheckNilValue(fname, L, 4);
   LuaCheckNilValue(fname, L, 5);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
-  //============================================= Get other arguments
+  // Get other arguments
   const double x = lua_tonumber(L, 2);
   const double y = lua_tonumber(L, 3);
   const double z = lua_tonumber(L, 4);
@@ -52,13 +42,6 @@ chiLBSAddPointSource(lua_State* L)
   return 0;
 }
 
-// ###################################################################
-/**Clears all the point sources from the solver. This is mostly
- * useful for adjoint response calculations.
-\param SolverIndex int Handle to the solver.
-
- \ingroup LBSLuaFunctions
- */
 int
 chiLBSClearPointSources(lua_State* L)
 {
@@ -68,7 +51,7 @@ chiLBSClearPointSources(lua_State* L)
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 
@@ -79,13 +62,6 @@ chiLBSClearPointSources(lua_State* L)
   return 0;
 }
 
-// ###################################################################
-/**Initializes the point sources. This is mostly
- * useful for adjoint response calculations.
-\param SolverIndex int Handle to the solver.
-
- \ingroup LBSLuaFunctions
- */
 int
 chiLBSInitializePointSources(lua_State* L)
 {
@@ -95,7 +71,7 @@ chiLBSInitializePointSources(lua_State* L)
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
   auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
 

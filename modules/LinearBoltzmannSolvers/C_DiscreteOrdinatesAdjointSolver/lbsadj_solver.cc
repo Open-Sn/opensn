@@ -61,15 +61,14 @@ DiscreteOrdinatesAdjointSolver::Initialize()
   MakeAdjointXSs();
   InitQOIs();
 
-  //================================================== Initialize source func
+  // Initialize source func
   auto src_function = std::make_shared<AdjointSourceFunction>(*this);
 
   using namespace std::placeholders;
   active_set_source_function_ =
     std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4);
 
-  //================================================== Initialize groupsets for
-  //                                                   sweeping
+  // Initialize groupsets for sweeping
   InitializeSweepDataStructures();
   for (auto& groupset : groupsets_)
   {
@@ -114,7 +113,7 @@ void
 DiscreteOrdinatesAdjointSolver::InitQOIs()
 {
 #ifdef OPENSN_WITH_LUA
-  //============================================= Initialize QOIs
+  // Initialize QOIs
   for (auto& qoi_pair : response_functions_)
   {
     const auto& qoi_designation = qoi_pair.first;
@@ -127,12 +126,8 @@ DiscreteOrdinatesAdjointSolver::InitQOIs()
     size_t num_local_subs = qoi_cell_subscription.size();
     size_t num_globl_subs = 0;
 
-    MPI_Allreduce(&num_local_subs, // sendbuf
-                  &num_globl_subs, // recvbuf
-                  1,
-                  MPI_UNSIGNED_LONG_LONG, // count + datatype
-                  MPI_SUM,                // operation
-                  Chi::mpi.comm);         // communicator
+    MPI_Allreduce(
+      &num_local_subs, &num_globl_subs, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
 
     Chi::log.Log() << "LBAdjointSolver: Number of cells subscribed to " << qoi_designation.name
                    << " = " << num_globl_subs;
@@ -148,7 +143,7 @@ DiscreteOrdinatesAdjointSolver::Execute()
   primary_ags_solver_->Setup();
   primary_ags_solver_->Solve();
 
-  //============================================= Apply post processing
+  // Apply post processing
   Chi::log.Log() << "LBAdjointSolver: post-processing.";
   std::set<int> set_group_numbers;
   for (const auto& groupset : groupsets_)
@@ -157,9 +152,7 @@ DiscreteOrdinatesAdjointSolver::Execute()
 
   const auto& m_to_ell_em_map = groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap();
 
-  //============================================= Reorient phi-moments for
-  // reverse
-  //                                              angle
+  // Reorient phi-moments for reverse angle
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_view = cell_transport_views_[cell.local_id_];
@@ -209,8 +202,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
 {
   const std::string fname = __FUNCTION__;
 
-  //============================================= Determine cell averaged
-  //                                              importance map
+  // Determine cell averaged importance map
   std::set<int> set_group_numbers;
   for (const auto& groupset : groupsets_)
     for (const auto& group : groupset.groups_)
@@ -236,7 +228,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
       VecOfMGVec4 nodal_p1_moments(num_nodes);
       for (int i = 0; i < num_nodes; ++i)
       {
-        //==================================== Get multigroup p1_moments
+        // Get multigroup p1_moments
         MGVec4 p1_moments(set_group_numbers.size(), VecDbl{0.0, 0.0, 0.0, 0.0});
         for (int m = 0; m < std::max(static_cast<int>(num_moments_), 4); ++m)
         {
@@ -257,8 +249,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
         nodal_p1_moments[i] = std::move(p1_moments);
       } // for node i
 
-      //=========================================== Determine nodal average
-      //                                            p1_moments
+      // Determine nodal average p1_moments
       for (int g : set_group_numbers)
       {
         chi_math::VectorN<4> cell_p1_avg(VecDbl{0.0, 0.0, 0.0, 0.0});
@@ -277,8 +268,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
     }   // for cell
   }
 
-  //============================================= Determine cell-based
-  //                                              exponential-representations
+  // Determine cell-based exponential-representations
   typedef std::pair<double, double> ABCoeffsPair;
   typedef std::vector<ABCoeffsPair> VecOfABCoeffsPair;
   typedef std::vector<VecOfABCoeffsPair> ExpReps;
@@ -303,7 +293,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   const auto loc0_io_flags = locJ_io_flags | std::ofstream::trunc;
   const bool is_home = (Chi::mpi.location_id == 0);
 
-  //======================================== Build header
+  // Build header
   std::string header_info = "Chi-Tech LinearBoltzmann: Importance map file\n"
                             "Header size: 500 bytes\n"
                             "Structure(type-info):\n"
@@ -327,7 +317,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   strncpy(header_bytes, header_info.c_str(), std::min(header_size, 399));
   header_bytes[399] = '\0';
 
-  //================================================== Process each location
+  // Process each location
   uint64_t num_global_cells = grid_ptr_->GetGlobalNumberOfCells();
   for (int locationJ = 0; locationJ < Chi::mpi.process_count; ++locationJ)
   {
@@ -391,7 +381,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
 {
   double local_integral = 0.0;
 
-  //============================================= Material sources
+  // Material sources
   for (const auto& cell : grid_ptr_->local_cells)
   {
     if (matid_to_src_map_.count(cell.material_id_) == 0) continue; // Skip if no src
@@ -420,7 +410,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
     }     // for group
   }       // for cell
 
-  //============================================= Point sources
+  // Point sources
   for (const auto& point_source : point_sources_)
   {
     const auto& info_list = point_source.ContainingCellsInfo();
@@ -455,12 +445,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
 
   double global_integral = 0.0;
 
-  MPI_Allreduce(&local_integral,  // sendbuf
-                &global_integral, // recvbuf
-                1,
-                MPI_DOUBLE,     // count, datatype
-                MPI_SUM,        // op
-                Chi::mpi.comm); // comm
+  MPI_Allreduce(&local_integral, &global_integral, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   return global_integral;
 }

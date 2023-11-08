@@ -15,7 +15,7 @@ void
 FieldFunctionInterpolationVolume::Initialize()
 {
   Chi::log.Log0Verbose1() << "Initializing volume interpolator.";
-  //================================================== Check grid available
+  // Check grid available
   if (field_functions_.empty())
     throw std::logic_error("Unassigned field function in volume field "
                            "function interpolator.");
@@ -26,7 +26,7 @@ FieldFunctionInterpolationVolume::Initialize()
 
   const auto& grid = field_functions_.front()->GetSpatialDiscretization().Grid();
 
-  //================================================== Find cells inside volume
+  // Find cells inside volume
   for (const auto& cell : grid.local_cells)
     if (logical_volume_->Inside(cell.centroid_))
       cell_local_ids_inside_logvol_.push_back(cell.local_id_);

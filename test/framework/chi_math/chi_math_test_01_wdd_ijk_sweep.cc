@@ -16,10 +16,10 @@ namespace chi_unit_tests
 
 chi::ParameterBlock chi_math_Test01_WDD_IJK_Sweep(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chi_math_Test01_WDD_IJK_Sweep,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chi_math_Test01_WDD_IJK_Sweep);
+RegisterWrapperFunction(chi_unit_tests,
+                        chi_math_Test01_WDD_IJK_Sweep,
+                        nullptr,
+                        chi_math_Test01_WDD_IJK_Sweep);
 
 typedef chi_data_types::NDArray<double> IJKArrayDbl;
 
@@ -55,7 +55,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
     if (Chi::mpi.location_id == 0 and verbose)
       std::cout << "Sweep angle " << n << " " << omega_n.PrintStr() << std::endl;
 
-    //====================================== Determine sweep ordering
+    // Determine sweep ordering
     if (omega_n.x > 0.0) iorder = chi_math::Range<int>(0, Nx);
     else
       iorder = chi_math::Range<int>(Nx - 1, -1, -1);
@@ -68,7 +68,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
     else
       korder = chi_math::Range<int>(Nz - 1, -1, -1);
 
-    //====================================== Sweep cells
+    // Sweep cells
     IJKArrayDbl psi_ds_x(mesh_divs);
     IJKArrayDbl psi_ds_y(mesh_divs);
     IJKArrayDbl psi_ds_z(mesh_divs);
@@ -130,8 +130,7 @@ chi_math_Test01_WDD_IJK_Sweep(const chi::InputParameters&)
 
   auto pquad = std::make_shared<chi_math::AngularQuadratureProdGL>(1, verbose);
 
-  pquad->BuildDiscreteToMomentOperator(/*scattering_order=*/0,
-                                       /*dimension=*/1);
+  pquad->BuildDiscreteToMomentOperator(0, 1);
 
   auto phi = WDD_IJK_Sweep2(mesh_divisions, mesh_lengths, bcs, sigma_t, q, *pquad, verbose);
 

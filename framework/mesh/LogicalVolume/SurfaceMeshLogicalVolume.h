@@ -5,7 +5,6 @@
 namespace chi_mesh
 {
 
-// ###################################################################
 /**SurfaceMesh volume*/
 class SurfaceMeshLogicalVolume : public LogicalVolume
 {

@@ -4,8 +4,6 @@
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
-// ###################################################################
-/**Applies TGDSA to the given input vector.*/
 int
 lbs::MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
@@ -18,11 +16,11 @@ lbs::MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   lbs::LBSSolver& solver = gs_context_ptr->lbs_solver_;
   LBSGroupset& groupset = gs_context_ptr->groupset_;
 
-  //============================================= Copy PETSc vector to STL
+  // Copy PETSc vector to STL
   auto& phi_delta = gs_context_ptr->lbs_solver_.PhiNewLocal();
   solver.SetPrimarySTLvectorFromGSPETScVec(groupset, phi_input, PhiSTLOption::PHI_NEW);
 
-  //============================================= Apply TGDSA
+  // Apply TGDSA
   if (groupset.apply_tgdsa_)
   {
     std::vector<double> delta_phi_local;
@@ -32,7 +30,7 @@ lbs::MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
     solver.DisAssembleTGDSADeltaPhiVector(groupset, delta_phi_local, phi_delta);
   }
 
-  //============================================= Copy STL vector to PETSc Vec
+  // Copy STL vector to PETSc Vec
   solver.SetGSPETScVecFromPrimarySTLvector(groupset, pc_output, PhiSTLOption::PHI_NEW);
 
   return 0;

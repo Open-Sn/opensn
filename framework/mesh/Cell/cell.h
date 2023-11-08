@@ -25,9 +25,9 @@ enum class CellType
   POINT = 99
 };
 
+/**Provides the text name associated with a cell type.*/
 std::string CellTypeName(CellType type);
 
-// ######################################################### Class def
 /** In this paradigm a face is an object which largely
  * is considered to be planar (meaning all the vertices
  * lay in the same plane).*/
@@ -42,22 +42,30 @@ public:
                                      ///< Otherwise contains boundary_id.
 
 public:
+  /**Determines the neighbor's partition and whether its local or not.*/
   bool IsNeighborLocal(const chi_mesh::MeshContinuum& grid) const;
+  /**Determines the neighbor's partition.*/
   int GetNeighborPartitionID(const chi_mesh::MeshContinuum& grid) const;
+  /**Determines the neighbor's local id.*/
   uint64_t GetNeighborLocalID(const chi_mesh::MeshContinuum& grid) const;
+  /**Determines the neighbor's associated face.*/
   int GetNeighborAssociatedFace(const chi_mesh::MeshContinuum& grid) const;
 
 public:
+  /**Computes the face area.*/
   double ComputeFaceArea(const chi_mesh::MeshContinuum& grid) const;
 
+  /**Serializes a face into a vector of bytes.*/
   chi_data_types::ByteArray Serialize() const;
+  /**Deserializes a face from a set of raw data*/
   static CellFace DeSerialize(const chi_data_types::ByteArray& raw, size_t& address);
+  /**Provides string information of the face.*/
   std::string ToString() const;
 
+  /**Recomputes the face centroid assuming the mesh vertices have been transformed.*/
   void RecomputeCentroid(const chi_mesh::MeshContinuum& grid);
 };
 
-// ######################################################### Class def
 /**Generic mesh cell object*/
 class Cell
 {
@@ -76,13 +84,16 @@ public:
   std::vector<CellFace> faces_;
 
 public:
+  /**Copy constructor*/
   Cell(const Cell& other);
+  /**Move constructor*/
   Cell(Cell&& other) noexcept;
   explicit Cell(CellType in_cell_type, CellType in_cell_sub_type)
     : cell_type_(in_cell_type), cell_sub_type_(in_cell_sub_type)
   {
   }
 
+  /**Copy operator.*/
   Cell& operator=(const Cell& other);
 
   virtual ~Cell() = default;
@@ -91,10 +102,15 @@ public:
   CellType Type() const { return cell_type_; }
   CellType SubType() const { return cell_sub_type_; }
 
+  /**Serializes a cell into a vector of bytes.*/
   chi_data_types::ByteArray Serialize() const;
+  /**Deserializes a cell from a vector of bytes.*/
   static Cell DeSerialize(const chi_data_types::ByteArray& raw, size_t& address);
+  /**Provides string information of the cell.*/
   std::string ToString() const;
 
+  /**Recomputes the cell centroid and all face centroids assuming
+   * the mesh vertices have been transformed.*/
   void RecomputeCentroidsAndNormals(const chi_mesh::MeshContinuum& grid);
 };
 

@@ -16,10 +16,14 @@ protected:
   const chi_mesh::Normal normal_;
   bool opposing_reflected_ = false;
 
-  typedef std::vector<double> DOFVec;   // Groups per DOF
-  typedef std::vector<DOFVec> FaceVec;  // DOFs per face
-  typedef std::vector<FaceVec> CellVec; // Faces per cell
-  typedef std::vector<CellVec> AngVec;  // Cell per angle
+  /// Groups per DOF
+  typedef std::vector<double> DOFVec;
+  /// DOFs per face
+  typedef std::vector<DOFVec> FaceVec;
+  /// Faces per cell
+  typedef std::vector<FaceVec> CellVec;
+  /// Cell per angle
+  typedef std::vector<CellVec> AngVec;
 
   // angle,cell,face,dof,group
   // Populated by angle aggregation

@@ -3,13 +3,11 @@
 #include "framework/math/Quadratures/quadrature_gausslegendre.h"
 #include "framework/math/Quadratures/Jacobi/quadrature_jacobi.h"
 
-// ###################################################################
-/**Initialize conical quadrature for a triangle.*/
 void
 chi_math::QuadratureConical::Initialize_Conical_Product_Tri()
 {
   QuadratureGaussLegendre legendre((QuadratureOrder)std::floor(((int)order_ + 1) / 2.0));
-  QuadratureJacobi jacobiA(order_, /*alpha=*/1, /*beta=*/0);
+  QuadratureJacobi jacobiA(order_, 1, 0);
 
   legendre.SetRange({0, 1});
 
@@ -30,14 +28,12 @@ chi_math::QuadratureConical::Initialize_Conical_Product_Tri()
     }
 }
 
-// ###################################################################
-/**Initialize conical quadrature for a tetrahedron.*/
 void
 chi_math::QuadratureConical::Initialize_Conical_Product_Tet()
 {
   QuadratureGaussLegendre legendre((QuadratureOrder)std::floor(((int)order_ + 1) / 2.0));
-  QuadratureJacobi jacobiA(order_, /*alpha=*/1, /*beta=*/0);
-  QuadratureJacobi jacobiB(order_, /*alpha=*/2, /*beta=*/0);
+  QuadratureJacobi jacobiA(order_, 1, 0);
+  QuadratureJacobi jacobiB(order_, 2, 0);
 
   legendre.SetRange({0, 1});
 

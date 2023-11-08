@@ -39,9 +39,12 @@ public:
   size_t num_local_dofs_ = 0;
   size_t num_globl_dofs_ = 0;
 
-  Vec x_ = nullptr; // approx solution
-  Vec b_ = nullptr; // RHS
-  Mat A_ = nullptr; // linear system matrix
+  /// approx solution
+  Vec x_ = nullptr;
+  /// RHS
+  Vec b_ = nullptr;
+  /// linear system matrix
+  Mat A_ = nullptr;
 
   typedef std::pair<fv_diffusion::BoundaryType, std::vector<double>> BoundaryInfo;
   typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
@@ -56,10 +59,19 @@ public:
   void Execute() override;
 
 #ifdef OPENSN_WITH_LUA
+  /**Calls a lua function with xyz coordinates.
+   * \param L The lua state.
+   * \param lua_func_name The name used to define this lua function in the lua
+   *                      state.
+   * \param imat The material ID of the cell
+   * \param xyz The xyz coordinates of the point where the function is called.
+   *
+   * \return The function evaluation.*/
   static double
   CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
 #endif
 
+  /**Updates the field functions with the latest data.*/
   void UpdateFieldFunctions();
 };
 

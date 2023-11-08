@@ -9,11 +9,7 @@
 namespace lbs::common_lua_utils
 {
 
-// ##################################################################
-RegisterWrapperFunction(/*namespace_in_lua=*/lbs,
-                        /*name_in_lua=*/SetOptions,
-                        /*syntax_function=*/GetSyntax_SetOptions,
-                        /*actual_function=*/SetOptions);
+RegisterWrapperFunction(lbs, SetOptions, GetSyntax_SetOptions, SetOptions);
 
 chi::InputParameters
 GetSyntax_SetOptions()

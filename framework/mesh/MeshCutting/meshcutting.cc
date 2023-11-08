@@ -77,7 +77,7 @@ PopulatePolygonFromVertices(const MeshContinuum& mesh,
 bool
 CheckPolygonQuality(const MeshContinuum& mesh,
                     const chi_mesh::Cell& cell,
-                    const bool check_convexity /*=false*/)
+                    const bool check_convexity)
 {
   const chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
 
@@ -97,7 +97,7 @@ CheckPolygonQuality(const MeshContinuum& mesh,
     if (v01.Cross(v02).Dot(khat) < 0.0) return false;
   } // for edge
 
-  //============================================= Optional convexity check
+  // Optional convexity check
   if (check_convexity) {}
 
   return true;
@@ -140,10 +140,7 @@ CutPolygon(const std::vector<ECI>& cut_edges,
     return std::make_pair(false, *result);
   };
 
-  //============================================= Create and set vertex and edge
-  //                                              cut flags for the current
-  //                                              cell. Also populate
-  //                                              edge_cut_info
+  // Create and set vertex and edge cut flags for the current cell. Also populate edge_cut_info
   size_t num_verts = cell.vertex_ids_.size();
   size_t num_edges = num_verts;
 
@@ -163,7 +160,7 @@ CutPolygon(const std::vector<ECI>& cut_edges,
     edge_cut_info[e].vertex_ids = edge;
   } // populate flags
 
-  //============================================= Lamda for edge loop
+  // Lamda for edge loop
   enum class CurVertex
   {
     AT_FIRST,
@@ -267,9 +264,7 @@ CutPolygon(const std::vector<ECI>& cut_edges,
 
   typedef std::pair<std::vector<uint64_t>, CurCutInfo> LoopInfo;
 
-  //============================================= Process all edges and create
-  //                                              edge loops with associated
-  //                                              cells
+  // Process all edges and create edge loops with associated cells
   std::vector<std::vector<uint64_t>> loops_to_add_to_mesh;
   std::vector<CurCutInfo> cut_history;
   for (size_t e = 0; e < num_edges; ++e)
@@ -303,8 +298,7 @@ CutPolygon(const std::vector<ECI>& cut_edges,
     loops_to_add_to_mesh.push_back(verts_to_next_cut);
   } // for e
 
-  //================================================== Add derivative cells to
-  //                                                   mesh
+  // Add derivative cells to mesh
 
   // Take the back cell and paste onto
   // the current cell reference
@@ -328,7 +322,7 @@ CutPolygon(const std::vector<ECI>& cut_edges,
 bool
 CheckPolyhedronQuality(const MeshContinuum& mesh,
                        const chi_mesh::Cell& cell,
-                       const bool check_convexity /*=false*/)
+                       const bool check_convexity)
 {
   const auto& C = cell.centroid_;
 
@@ -356,7 +350,7 @@ CheckPolyhedronQuality(const MeshContinuum& mesh,
     }
   } // for face
 
-  //============================================= Optional convexity check
+  // Optional convexity check
   if (check_convexity)
   {
     std::vector<std::vector<uint64_t>> proxy_faces;
@@ -430,7 +424,7 @@ FindNonManifoldEdges(const std::vector<std::vector<uint64_t>>& proxy_faces)
   // and call 10 edges a good estimate.
   non_manifold_edges.reserve(10);
 
-  //=================================== Build edges for each proxy face
+  // Build edges for each proxy face
   // This saves us some readability later on
   const size_t num_proxy_faces = proxy_faces.size();
   std::vector<std::vector<Edge>> faces_edges;
@@ -444,9 +438,7 @@ FindNonManifoldEdges(const std::vector<std::vector<uint64_t>>& proxy_faces)
     faces_edges.push_back(std::move(face_edges));
   } // for proxy face
 
-  //=================================== Search each proxy face edge for
-  //                                    being attached to an edge of any
-  //                                    other proxy face
+  // Search each proxy face edge for being attached to an edge of any other proxy face
   for (size_t cf = 0; cf < num_proxy_faces; ++cf)
   {
     for (const auto& cur_edge : faces_edges[cf])
@@ -480,8 +472,7 @@ StitchEdgesEndToEnd(const std::vector<Edge>& edges)
   std::vector<Edge> stitched_nm_edges;
   stitched_nm_edges.reserve(edges.size());
 
-  //=================================== Declaring two queues used to
-  //                                    stitch
+  // Declaring two queues used to stitch
   std::queue<Edge> unused_candidate_edges;
   std::queue<Edge> unused_noncandidate_edges;
 
@@ -494,8 +485,7 @@ StitchEdgesEndToEnd(const std::vector<Edge>& edges)
   stitched_nm_edges.push_back(unused_candidate_edges.front());
   unused_candidate_edges.pop();
 
-  //=================================== Attempt to add all candidate edges
-  //                                    to the stitch
+  // Attempt to add all candidate edges to the stitch
   const size_t num_candidates = unused_candidate_edges.size();
   for (size_t k = 0; k < num_candidates; ++k)
   {
@@ -539,7 +529,7 @@ PopulatePolyhedronFromFaces(const MeshContinuum& mesh,
     if (find_result == cell_vertex_ids.end()) cell_vertex_ids.push_back(new_id);
   };
 
-  //======================================== Build faces
+  // Build faces
   cell.faces_.clear();
   cell.faces_.reserve(raw_faces.size());
   for (auto& raw_face : raw_faces)
@@ -559,7 +549,7 @@ PopulatePolyhedronFromFaces(const MeshContinuum& mesh,
     cell.faces_.push_back(std::move(new_face));
   } // for raw face
 
-  //======================================== Compute cell centroid
+  // Compute cell centroid
   chi_mesh::Vector3 cell_centroid;
   for (uint64_t vid : cell_vertex_ids)
     cell_centroid += mesh.vertices[vid];
@@ -577,7 +567,7 @@ Cut3DCell(const std::vector<ECI>& global_cut_edges,
           double float_compare,
           MeshContinuum& mesh,
           chi_mesh::Cell& cell,
-          bool verbose /*=false*/)
+          bool verbose)
 {
   const auto& p = plane_point;
   const auto& n = plane_normal;
@@ -641,8 +631,7 @@ Cut3DCell(const std::vector<ECI>& global_cut_edges,
 
   if (verbose) Chi::log.Log() << "Checkpoint 1";
 
-  //============================================= Determine cut-edges relevant
-  //                                              to this cell
+  // Determine cut-edges relevant to this cell
   std::vector<ECI> local_cut_edges;
   const std::set<uint64_t> local_vertex_id_set(cell.vertex_ids_.begin(), cell.vertex_ids_.end());
 
@@ -662,7 +651,7 @@ Cut3DCell(const std::vector<ECI>& global_cut_edges,
     Chi::log.Log() << outstr.str();
   }
 
-  //============================================= Determine cut- and uncut-faces
+  // Determine cut- and uncut-faces
   // A face is cut if its vertices have a
   // differing sense wrt to the plane.
   std::vector<size_t> cut_faces_indices;
@@ -717,7 +706,7 @@ Cut3DCell(const std::vector<ECI>& global_cut_edges,
     Chi::log.Log() << outstr.str();
   }
 
-  //============================================= Split cut-faces into fragments
+  // Split cut-faces into fragments
   // We create a map here for each cut-face.
   // We map the cut-face-index to a fragment sense-wise.
   std::map<size_t, std::vector<uint64_t>> cut_faces_fragments_A;
@@ -811,7 +800,7 @@ Cut3DCell(const std::vector<ECI>& global_cut_edges,
     Chi::log.Log() << outstr.str();
   }
 
-  //============================================= Make proxy-faces from data
+  // Make proxy-faces from data
   /**This lambda can be applied to uncut faces and cut-face fragments
    * to give a collection of proxy faces.*/
   auto MakeProxyFaces = [NumberInList_t, cut_faces_indices, FlipEdge, PopulateFragment](
@@ -819,8 +808,7 @@ Cut3DCell(const std::vector<ECI>& global_cut_edges,
                           const std::vector<size_t>& uncut_faces_indices,
                           const std::map<size_t, std::vector<uint64_t>>& cut_face_fragments)
   {
-    //================================= Build proxy faces based on uncut-faces
-    //                                  and cut faces
+    // Build proxy faces based on uncut-faces and cut faces
     std::vector<std::vector<uint64_t>> proxy_faces;
     proxy_faces.reserve(parent_cell.faces_.size());
 
@@ -833,7 +821,7 @@ Cut3DCell(const std::vector<ECI>& global_cut_edges,
       ++f;
     } // for face f
 
-    //================================= Now build the interface proxy-face
+    // Now build the interface proxy-face
     // Find non-manifold edges
     auto non_manifold_edges = FindNonManifoldEdges(proxy_faces);
 
@@ -893,8 +881,8 @@ void
 CutMeshWithPlane(MeshContinuum& mesh,
                  const Vector3& plane_point,
                  const Vector3& plane_normal,
-                 double merge_tolerance /*=1.0e-3*/,
-                 double float_compare /*=1.0e-10*/)
+                 double merge_tolerance,
+                 double float_compare)
 {
   const std::string function_name = __FUNCTION__;
 
@@ -904,11 +892,8 @@ CutMeshWithPlane(MeshContinuum& mesh,
   Chi::log.Log() << "Cutting mesh with plane. "
                  << "Ref. Point: " << p.PrintS() << " Normal: " << n.PrintS();
 
-  //============================================= Snap vertices to plane within
-  //                                              merge tolerance to avoid
-  //                                              creating small cells or
-  //                                              cutting parallel faces
-  // Order N, num_vertices
+  // Snap vertices to plane within merge tolerance to avoid creating small cells or cutting parallel
+  // faces Order N, num_vertices
   size_t num_verts_snapped = 0;
   for (auto& id_vertex : mesh.vertices)
   {
@@ -924,7 +909,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
 
   Chi::log.Log() << "Number of vertices snapped to plane: " << num_verts_snapped;
 
-  //============================================= Perform quality checks
+  // Perform quality checks
   size_t num_bad_quality_cells = 0;
   for (const auto& cell : mesh.local_cells)
   {
@@ -934,7 +919,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
     }
     else if (cell.Type() == CellType::POLYHEDRON)
     {
-      if (not CheckPolyhedronQuality(mesh, cell, /*check_convexity*/ true)) ++num_bad_quality_cells;
+      if (not CheckPolyhedronQuality(mesh, cell, true)) ++num_bad_quality_cells;
     }
     else
       throw std::logic_error(function_name + ": Called for a mesh containing"
@@ -944,7 +929,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
     throw std::logic_error(function_name + ": Called for a mesh containing " +
                            std::to_string(num_bad_quality_cells) + " bad quality cells.");
 
-  //============================================= Determine cells to cut
+  // Determine cells to cut
   // Order N, num_cells
   // A cell is a candidate for cutting if its
   // vertices lay on both sides of the plane.
@@ -973,10 +958,10 @@ CutMeshWithPlane(MeshContinuum& mesh,
   }   // for cell
   Chi::log.Log() << "Number of cells to cut: " << cells_to_cut.size();
 
-  //============================================= Two-D algorithm
+  // Two-D algorithm
   if (mesh.local_cells[0].Type() == CellType::POLYGON)
   {
-    //====================================== Determine cut vertices
+    // Determine cut vertices
     std::set<uint64_t> cut_vertices;
     {
       for (auto& cell_ptr : cells_to_cut)
@@ -990,7 +975,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
 
     Chi::log.Log() << "Number of cut vertices: " << cut_vertices.size();
 
-    //====================================== Build unique edges
+    // Build unique edges
     size_t num_edges_cut = 0;
     std::set<Edge> edges_set;
     for (auto& cell_ptr : cells_to_cut)
@@ -1008,7 +993,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
 
     uint64_t new_vertex_address = mesh.GetGlobalVertexCount();
 
-    //====================================== Determine cut edges
+    // Determine cut edges
     std::vector<ECI> cut_edges;
     {
       for (auto& edge : edges_set)
@@ -1034,7 +1019,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
 
     Chi::log.Log() << "Number of cut edges: " << num_edges_cut;
 
-    //====================================== Process cells that are cut
+    // Process cells that are cut
     for (auto& cell_ptr : cells_to_cut)
     {
       auto& cell = *cell_ptr;
@@ -1043,10 +1028,10 @@ CutMeshWithPlane(MeshContinuum& mesh,
     } // for cell_ptr
   }   // two-D
 
-  //============================================= Three-D algorithm
+  // Three-D algorithm
   if (mesh.local_cells[0].Type() == CellType::POLYHEDRON)
   {
-    //====================================== Determine cut vertices
+    // Determine cut vertices
     std::set<uint64_t> cut_vertices;
     {
       for (auto& cell_ptr : cells_to_cut)
@@ -1058,7 +1043,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
         } // for vid
     }     // populate cut_vertices
 
-    //====================================== Build unique edges
+    // Build unique edges
     size_t num_edges_cut = 0;
     std::set<Edge> edges_set;
     for (auto& cell_ptr : cells_to_cut)
@@ -1080,7 +1065,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
 
     uint64_t new_vertex_address = mesh.GetGlobalVertexCount();
 
-    //====================================== Determine cut edges
+    // Determine cut edges
     std::vector<ECI> cut_edges;
     {
       for (auto& edge : edges_set)
@@ -1106,7 +1091,7 @@ CutMeshWithPlane(MeshContinuum& mesh,
 
     Chi::log.Log() << "Number of cut edges: " << num_edges_cut;
 
-    //====================================== Process cells that are cut
+    // Process cells that are cut
     for (auto& cell_ptr : cells_to_cut)
     {
       Cut3DCell(cut_edges, cut_vertices, plane_point, plane_normal, float_compare, mesh, *cell_ptr);

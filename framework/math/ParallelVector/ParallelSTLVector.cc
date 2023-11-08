@@ -318,7 +318,6 @@ ParallelSTLVector::Shift(double a)
     values_[i] += a;
 }
 
-/**Returns the specified norm of the vector.*/
 double
 ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
 {
@@ -330,12 +329,7 @@ ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
         std::accumulate(values_.begin(), values_.begin() + scint(local_size_), 0.0);
 
       double global_norm_val;
-      MPI_Allreduce(&local_norm_val,  // sendbuf
-                    &global_norm_val, // recvbuf
-                    1,                // sendcount
-                    MPI_DOUBLE,       // sendtype
-                    MPI_SUM,          // operation
-                    comm_);           // communicator
+      MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_SUM, comm_);
 
       return global_norm_val;
     }
@@ -348,12 +342,7 @@ ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
         local_norm_val += value * value;
       }
       double global_norm_val;
-      MPI_Allreduce(&local_norm_val,  // sendbuf
-                    &global_norm_val, // recvbuf
-                    1,                // sendcount
-                    MPI_DOUBLE,       // sendtype
-                    MPI_SUM,          // operation
-                    comm_);           // communicator
+      MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_SUM, comm_);
 
       return std::sqrt(global_norm_val);
     }
@@ -363,12 +352,7 @@ ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
         *std::max_element(values_.begin(), values_.begin() + scint(local_size_));
 
       double global_norm_val;
-      MPI_Allreduce(&local_norm_val,  // sendbuf
-                    &global_norm_val, // recvbuf
-                    1,                // sendcount
-                    MPI_DOUBLE,       // sendtype
-                    MPI_MAX,          // operation
-                    comm_);           // communicator
+      MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_MAX, comm_);
 
       return global_norm_val;
     }
@@ -497,13 +481,7 @@ ParallelSTLVector::DefineExtents(uint64_t local_size, int comm_size, MPI_Comm co
 {
   // Get the local vector sizes per processor
   std::vector<uint64_t> local_sizes(comm_size, 0);
-  MPI_Allgather(&local_size,        // sendbuf
-                1,                  // sendcount
-                MPI_UINT64_T,       // sendcount
-                local_sizes.data(), // recvbuf
-                1,                  // recvcount
-                MPI_UINT64_T,       // recvtype
-                communicator);      // communicator
+  MPI_Allgather(&local_size, 1, MPI_UINT64_T, local_sizes.data(), 1, MPI_UINT64_T, communicator);
 
   // With the vector sizes per processor, now the offsets for each
   // processor can be defined using a cumulative sum per processor.

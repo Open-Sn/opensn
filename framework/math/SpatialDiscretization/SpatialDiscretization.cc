@@ -94,8 +94,7 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const chi_mesh::Cell& cel
   const size_t num_faces = cell.faces_.size();
   const size_t num_nodes = cell_mapping.NumNodes();
 
-  //====================================== Determine which nodes are on the
-  //                                       boundary
+  // Determine which nodes are on the boundary
   std::set<uint32_t> boundary_nodes;
   for (size_t f = 0; f < num_faces; ++f)
   {
@@ -107,7 +106,7 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const chi_mesh::Cell& cel
     }
   } // for f
 
-  //====================================== Determine non-boundary nodes
+  // Determine non-boundary nodes
   std::set<uint32_t> internal_nodes;
   for (size_t i = 0; i < num_nodes; ++i)
     if (boundary_nodes.find(i) == boundary_nodes.end()) internal_nodes.insert(i);
@@ -115,45 +114,8 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const chi_mesh::Cell& cel
   return {internal_nodes, boundary_nodes};
 }
 
-// ###################################################################
-/**For each cell, for each face of that cell, for each node on that face,
- * maps to which local node on the adjacent cell that node position corresponds.
- *
-\param tolerance double. Tolerance to use to determine if two node locations are
-                         equal. [Default: 1.0e-12]
- *
- * For example consider two adjacent quadrilaterals.
-
-\verbatim
-o--------o--------o                       o--------o
-|3      2|3      2|                       |    2   |
-|  101   |   102  | , face ids for both:  |3      1|
-|0      1|0      1|                       |    0   |
-o--------o--------o                       o--------o
-internal face for cell 101 is face-1, ccw orientated
---o
- 1|
-  |
- 0|
---o
-internal face for cell 102 is face-3, ccw orientated
-o-
-|0
-|
-|1
-o-
-
-mapping[101][1][0] = 0
-mapping[101][1][1] = 3
-
-mapping[102][3][0] = 2
-mapping[102][3][1] = 1
-\endverbatim
-
-*/
 std::vector<std::vector<std::vector<int>>>
-chi_math::SpatialDiscretization::MakeInternalFaceNodeMappings(
-  const double tolerance /*=1.0e-12*/) const
+chi_math::SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) const
 {
   typedef std::vector<int> FaceAdjMapping;
   typedef std::vector<FaceAdjMapping> PerFaceAdjMapping;
@@ -209,22 +171,6 @@ chi_math::SpatialDiscretization::MakeInternalFaceNodeMappings(
   return cell_adj_mapping;
 }
 
-// ###################################################################
-/**Copy part of vector A to vector B. Suppose vector A's entries are
- * managed `chi_math::UnknownManager` A (`uk_manA`) and that the
- * entries of the vector B are managed by `chi_math::UnknownManager` B
- * (`uk_manB`). This function copies the entries associated with an unknown with
- * id `uk_id_A` in `uk_manA` from vector A to vector B such that the entries
- * in vector B are aligned with the entries of an unknown with id `uk_id_B` in
- * `uk_manB`. All the components are copied.
- *
-\param from_vector Vector to copy from.
-\param to_vector Vector to copy to.
-\param from_vec_uk_structure Unknown manager for vector A.
-\param from_vec_uk_id Unknown-id in unknown manager A.
-\param to_vec_uk_structure Unknown manager for vector B.
-\param to_vec_uk_id Unknown-id in unknown manager B.
- */
 void
 SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& from_vector,
                                                   std::vector<double>& to_vector,
@@ -275,8 +221,6 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
   }
 }
 
-// ###################################################################
-/**Develops a localized view of a petsc vector.*/
 void
 SpatialDiscretization::LocalizePETScVector(Vec petsc_vector,
                                            std::vector<double>& local_vector,
@@ -287,8 +231,6 @@ SpatialDiscretization::LocalizePETScVector(Vec petsc_vector,
   chi_math::PETScUtils::CopyVecToSTLvector(petsc_vector, local_vector, num_local_dofs);
 }
 
-// ###################################################################
-/**Develops a localized view of a petsc vector.*/
 void
 SpatialDiscretization::LocalizePETScVectorWithGhosts(
   Vec petsc_vector,

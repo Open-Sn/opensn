@@ -20,21 +20,6 @@ RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromWavefrontOBJ);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromMshFormat);
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromExodusII);
 
-// ###################################################################
-/**Creates an empty unpartitioned mesh. An empty unpartitioned mesh
- * is meant to be manipulated with calls to chiUnpartitionedMeshUploadVertex()
- * and chiUnpartitionedMeshUploadCell(). It essentially supports building a mesh
- * manually.
- *
-##_
-
-###Example
-Example usage
-\code
-umesh = chiCreateEmptyUnpartitionedMesh()
-\endcode
-
-\ingroup LuaUnpartitionedMesh*/
 int
 chiCreateEmptyUnpartitionedMesh(lua_State* L)
 {
@@ -47,22 +32,6 @@ chiCreateEmptyUnpartitionedMesh(lua_State* L)
   return 1;
 }
 
-// ###################################################################
-/**Destroy an unpartitioned mesh. This routine should be called for
- * memory sensitive simulations because each process will have a full
- * copy of this data.
- *
-\param handle int Handle to mesh.
-
-##_
-
-###Example
-Example usage
-\code
-chiDestroyUnpartitionedMesh(umesh)
-\endcode
-
-\ingroup LuaUnpartitionedMesh*/
 int
 chiDestroyUnpartitionedMesh(lua_State* L)
 {
@@ -84,33 +53,6 @@ chiDestroyUnpartitionedMesh(lua_State* L)
   return 0;
 }
 
-// ###################################################################
-/**Creates an unpartitioned mesh from VTK Unstructured mesh files.
-
-\param file_name char Filename of the .vtu file.
-\param field char Name of the cell data field from which to read
-                  material and boundary identifiers (optional).
-
-\ingroup LuaUnpartitionedMesh
-
-##_
-
-### Example
-An example mesh creation below:
-\code
-chiMeshHandlerCreate()
-
-umesh = chiUnpartitionedMeshFromVTU("ZMeshTest_0.vtu")
-
-chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
-chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
-
-chiSurfaceMesherExecute()
-chiVolumeMesherExecute()
-\endcode
-
-
-\return Handle A handle to the newly created UnpartitionedMesh*/
 int
 chiUnpartitionedMeshFromVTU(lua_State* L)
 {
@@ -140,34 +82,6 @@ chiUnpartitionedMeshFromVTU(lua_State* L)
   return 1;
 }
 
-// ###################################################################
-/**Creates an unpartitioned mesh from VTK Partitioned Unstructured mesh files
- * (.pvtu).
-
-\param file_name char Filename of the .vtu file.
-\param field char Name of the cell data field from which to read
-                  material and boundary identifiers (optional).
-
-\ingroup LuaUnpartitionedMesh
-
-##_
-
-### Example
-An example mesh creation below:
-\code
-chiMeshHandlerCreate()
-
-umesh = chiUnpartitionedMeshFromPVTU("ZMeshTest_0.vtu")
-
-chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
-chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
-
-chiSurfaceMesherExecute()
-chiVolumeMesherExecute()
-\endcode
-
-
-\return Handle A handle to the newly created UnpartitionedMesh*/
 int
 chiUnpartitionedMeshFromPVTU(lua_State* L)
 {
@@ -197,32 +111,6 @@ chiUnpartitionedMeshFromPVTU(lua_State* L)
   return 1;
 }
 
-// ###################################################################
-/**Creates an unpartitioned mesh from starccm+ exported
-Ensight Gold mesh files.
-
-\param file_name char Filename of the .case file.
-\param scale float Scale to apply to the mesh
-
-\ingroup LuaUnpartitionedMesh
-
-##_
-
-### Example
-An example mesh creation below:
-\code
-chiMeshHandlerCreate()
-
-umesh = chiUnpartitionedMeshFromEnsightGold("resources/TestObjects/Sphere.case")
-
-chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
-chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
-
-chiSurfaceMesherExecute()
-chiVolumeMesherExecute()
-\endcode
-
-\return Handle A handle to the newly created UnpartitionedMesh*/
 int
 chiUnpartitionedMeshFromEnsightGold(lua_State* L)
 {
@@ -251,31 +139,6 @@ chiUnpartitionedMeshFromEnsightGold(lua_State* L)
   return 1;
 }
 
-// ###################################################################
-/**Creates an unpartitioned mesh from a wavefront .obj file.
-
-\param file_name char Filename of the .case file.
-
-\ingroup LuaUnpartitionedMesh
-
-##_
-
-### Example
-An example mesh creation below:
-\code
-chiMeshHandlerCreate()
-
-umesh =
-chiUnpartitionedMeshFromWavefrontOBJ("resources/TestObjects/TriangleMesh2x2.obj")
-
-chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
-chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
-
-chiSurfaceMesherExecute()
-chiVolumeMesherExecute()
-\endcode
-
-\return Handle A handle to the newly created UnpartitionedMesh*/
 int
 chiUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 {
@@ -301,31 +164,6 @@ chiUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
   return 1;
 }
 
-// ###################################################################
-/**Creates an unpartitioned mesh from a .msh file.
-
-\param file_name char Filename of the .msh file.
-
-\ingroup LuaUnpartitionedMesh
-
-##_
-
-### Example
-An example mesh creation below:
-\code
-chiMeshHandlerCreate()
-
-umesh = chiUnpartitionedMeshFromMshFormat("File.msh")
-
-chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
-chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
-
-chiSurfaceMesherExecute()
-chiVolumeMesherExecute()
-\endcode
-
-
-\return Handle A handle to the newly created UnpartitionedMesh*/
 int
 chiUnpartitionedMeshFromMshFormat(lua_State* L)
 {
@@ -351,31 +189,6 @@ chiUnpartitionedMeshFromMshFormat(lua_State* L)
   return 1;
 }
 
-// ###################################################################
-/**Creates an unpartitioned mesh from ExodusII format.
-
-\param file_name char Filename of the .case file.
-\param scale float Scale to apply to the mesh
-
-\ingroup LuaUnpartitionedMesh
-
-##_
-
-### Example
-An example mesh creation below:
-\code
-chiMeshHandlerCreate()
-
-umesh = chiUnpartitionedMeshFromExodusII("resources/TestObjects/Mesh.e")
-
-chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
-chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
-
-chiSurfaceMesherExecute()
-chiVolumeMesherExecute()
-\endcode
-
-\return Handle A handle to the newly created UnpartitionedMesh*/
 int
 chiUnpartitionedMeshFromExodusII(lua_State* L)
 {

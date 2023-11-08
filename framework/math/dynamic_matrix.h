@@ -14,7 +14,6 @@ class DynamicMatrix;
 
 #include "framework/math/dynamic_vector.h"
 
-// ###################################################################
 /**General dynamic matrix utility.*/
 template <class NumberFormat>
 class chi_math::DynamicMatrix
@@ -96,7 +95,7 @@ public:
     return *this;
   }
 
-  //============================================= Element access
+  // Element access
   std::vector<NumberFormat>& operator[](size_t i) { return elements_[i]; }
 
   std::vector<NumberFormat>& at(size_t i) { return elements_.at(i); }
@@ -134,7 +133,7 @@ public:
 
   bool empty() const noexcept { return elements_.empty(); }
 
-  //============================================= Iterator access
+  // Iterator access
   typename std::vector<std::vector<NumberFormat>>::iterator begin() { return elements_.begin(); }
 
   typename std::vector<std::vector<NumberFormat>>::iterator end() { return elements_.end(); }
@@ -163,7 +162,6 @@ private:
   }
 
 public:
-  //============================================= Addition
   /**Component-wise addition of two matrices.
    * \f$ \vec{w} = \vec{x} + \vec{y} \f$*/
   DynamicMatrix operator+(const DynamicMatrix& rhs) const
@@ -191,7 +189,6 @@ public:
     return *this;
   }
 
-  //=========================================== Subtraction
   /**Component-wise subtraction.
    * \f$ \vec{w} = \vec{x} - \vec{y} \f$*/
   DynamicMatrix operator-(const DynamicMatrix& rhs) const
@@ -219,7 +216,6 @@ public:
     return *this;
   }
 
-  //=========================================== Multiplication
   /**Vector component-wise multiplication by scalar.
    * \f$ \vec{w} = \vec{x} \alpha \f$*/
   DynamicMatrix operator*(const NumberFormat value) const
@@ -297,7 +293,6 @@ public:
     return newV;
   }
 
-  //=========================================== Division
   /**Vector component-wise division by scalar.
    * \f$ w_i = \frac{x_i}{\alpha} \f$*/
   DynamicMatrix operator/(const NumberFormat value) const
@@ -323,7 +318,6 @@ public:
     return *this;
   }
 
-  //============================================= Operations
   /**Obtains the inverse with Gauss-Elimination.*/
   DynamicMatrix Inverse() const
   {

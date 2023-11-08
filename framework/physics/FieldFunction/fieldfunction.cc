@@ -5,8 +5,6 @@
 namespace chi_physics
 {
 
-// ##################################################################
-/**Returns required input parameters.*/
 chi::InputParameters
 FieldFunction::GetInputParameters()
 {
@@ -23,7 +21,7 @@ FieldFunction::GetInputParameters()
                               "The number of components to attach to the variable. "
                               "Only effective when \"type\" is VectorN.");
 
-  //=============== Constrain values
+  // Constrain values
   using namespace chi_data_types;
   params.ConstrainParameterRange(
     "unknown_type", AllowableRangeList::New({"Scalar", "Vector2", "Vector3", "VectorN"}));
@@ -33,8 +31,6 @@ FieldFunction::GetInputParameters()
   return params;
 }
 
-// ##################################################################
-/**ObjectMaker based constructor.*/
 FieldFunction::FieldFunction(const chi::InputParameters& params)
   : ChiObject(params),
     text_name_(params.GetParamValue<std::string>("name")),
@@ -52,15 +48,11 @@ FieldFunction::FieldFunction(const chi::InputParameters& params)
 {
 }
 
-// ##################################################################
-/**Conventional constructor.*/
 FieldFunction::FieldFunction(const std::string& text_name, chi_math::Unknown unknown)
   : text_name_(text_name), unknown_(std::move(unknown)), unknown_manager_({unknown_})
 {
 }
 
-// ##################################################################
-/**Stack change to `chi::field_function_stack.*/
 void
 FieldFunction::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
 {

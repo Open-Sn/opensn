@@ -42,14 +42,14 @@ chiLBTSGetProperty(lua_State* L)
   const int num_args = lua_gettop(L);
   if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
-  //============================================= Get the solver
+  // Get the solver
   LuaCheckNilValue(fname, L, 1);
   const int solver_handle = lua_tointeger(L, 1);
 
   auto& solver =
     chi::GetStackItem<lbs::DiscOrdTransientSolver>(chi::object_stack, solver_handle, fname);
 
-  //============================================= Get the property
+  // Get the property
   LuaCheckStringValue(fname, L, 2);
   const std::string property = lua_tostring(L, 2);
 

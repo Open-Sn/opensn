@@ -52,7 +52,6 @@ FieldFunctionGridBased::GetInputParameters()
   return params;
 }
 
-/**ObjectMaker based constructor.*/
 FieldFunctionGridBased::FieldFunctionGridBased(const chi::InputParameters& params)
   : FieldFunction(params),
     sdm_(MakeSpatialDiscretization(params)),
@@ -217,7 +216,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
     throw std::logic_error(fname + ": Cannot be used with empty field-function"
                                    " list");
 
-  //============================================= Setup master and check slaves
+  // Setup master and check slaves
   const auto& master_ff_ptr = ff_list.front();
   const auto& master_ff = *master_ff_ptr;
 
@@ -227,12 +226,12 @@ FieldFunctionGridBased::ExportMultipleToVTK(
         throw std::logic_error(fname +
                                ": Cannot be used with field functions based on different grids.");
 
-  //============================================= Get grid
+  // Get grid
   const auto& grid = master_ff.sdm_->Grid();
 
   auto ugrid = chi_mesh::PrepareVtkUnstructuredGrid(grid);
 
-  //============================================= Upload cell/point data
+  // Upload cell/point data
   auto cell_data = ugrid->GetCellData();
   auto point_data = ugrid->GetPointData();
   for (const auto& ff_ptr : ff_list)
@@ -363,23 +362,14 @@ FieldFunctionGridBased::GetPointValue(const chi_mesh::Vector3& point) const
     }       // for cell
   }         // if in bounding box
 
-  //============================================= Communicate number of
-  //                                              point hits
+  // Communicate number of point hits
   size_t globl_num_point_hits;
-  MPI_Allreduce(&local_num_point_hits, // sendbuf
-                &globl_num_point_hits, // recvbuf
-                1,
-                MPIU_SIZE_T,    // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+  MPI_Allreduce(
+    &local_num_point_hits, &globl_num_point_hits, 1, MPIU_SIZE_T, MPI_SUM, Chi::mpi.comm);
 
   std::vector<double> globl_point_value(num_components, 0.0);
-  MPI_Allreduce(local_point_value.data(), // sendbuf
-                globl_point_value.data(), // recvbuf
-                1,
-                MPI_DOUBLE,     // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+  MPI_Allreduce(
+    local_point_value.data(), globl_point_value.data(), 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   chi_math::Scale(globl_point_value, 1.0 / static_cast<double>(globl_num_point_hits));
 

@@ -12,7 +12,6 @@ namespace lbs
 class LBSSolver;
 class LBSGroupset;
 
-// ###################################################################
 /**Implements a customizable source function using virtual methods.
  * This base class will function well for steady simulations and kEigenvalue
  * simulations. It needs some customization for adjoint and transient.*/
@@ -39,9 +38,21 @@ protected:
   std::vector<double> default_zero_src_;
 
 public:
+  /**Constructor.*/
   explicit SourceFunction(const LBSSolver& lbs_solver);
   virtual ~SourceFunction() = default;
 
+  /**Sets the source moments for the groups in the current group set.
+   *
+   * \param groupset The groupset the under consideration.
+   * \param destination_q A vector to contribute the source to.
+   * \param phi_local The primary STL vector to operate off.
+   * \param source_flags Flags for adding specific terms into the
+   *        destination vector. Available flags are for applying
+   *        the material source, across/within-group scattering,
+   *        and across/within-groups fission.
+   *
+   */
   virtual void operator()(LBSGroupset& groupset,
                           std::vector<double>& destination_q,
                           const std::vector<double>& phi,
@@ -50,6 +61,7 @@ public:
   virtual double AddSourceMoments() const;
 
   typedef std::vector<chi_physics::MultiGroupXS::Precursor> PrecursorList;
+  /**Adds delayed particle precursor sources.*/
   virtual double AddDelayedFission(const PrecursorList& precursors,
                                    const std::vector<double>& nu_delayed_sigma_f,
                                    const double* phi) const;
@@ -62,6 +74,7 @@ public:
     AddPointSources(groupset, destination_q, phi, source_flags);
   }
 
+  /**Adds point sources to the source moments.*/
   void AddPointSources(LBSGroupset& groupset,
                        std::vector<double>& destination_q,
                        const std::vector<double>& phi,

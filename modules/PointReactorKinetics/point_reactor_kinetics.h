@@ -27,7 +27,9 @@ private:
   double period_tph_ = 0.0;
 
 public:
+  /**Sets input parameters.*/
   static chi::InputParameters GetInputParameters();
+  /**Constructor.*/
   explicit TransientSolver(const chi::InputParameters& params);
 
   void Initialize() override;
@@ -38,16 +40,38 @@ public:
   chi::ParameterBlock GetInfo(const chi::ParameterBlock& params) const override;
 
   // Getters and Setters
+
+  /**Returns the population at the previous time step.*/
   double PopulationPrev() const;
+  /**Returns the population at the next time step.*/
   double PopulationNew() const;
+  /**Returns the period computed for the last time step.*/
   double Period() const;
+  /**Returns the time computed for the last time step.*/
   double TimePrev() const;
+  /**Returns the time computed for the next time step.*/
   double TimeNew() const;
+  /**Returns the solution at the previous time step.*/
   std::vector<double> SolutionPrev() const;
+  /**Returns the solution at the next time step.*/
   std::vector<double> SolutionNew() const;
 
+  /**\addtogroup prk
+   *
+   * \section Properties Properties that can be set
+   * The following properties can be set via the lua call
+   * `chi_lua::chiSolverSetProperties`
+   * \copydoc prk::TransientSolver::SetProperties
+   *
+   * PRK Transient solver settable properties:
+   * - `rho`, The current reactivity
+   *
+   * Parents:
+   * \copydoc chi_physics::Solver::SetProperties
+   */
   void SetProperties(const chi::ParameterBlock& params) override;
 
+  /**Sets the value of rho.*/
   void SetRho(double value);
 };
 } // namespace prk

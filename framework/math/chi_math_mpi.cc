@@ -15,12 +15,7 @@ Vec2NormMPI(const VecDbl& x, MPI_Comm comm)
     local_sum += x[i] * x[i];
 
   double global_sum;
-  MPI_Allreduce(&local_sum,  // sendbuf
-                &global_sum, // recvbuf
-                1,
-                MPI_DOUBLE, // count + datatype
-                MPI_SUM,    // operation
-                comm);      // communicator
+  MPI_Allreduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, comm);
 
   return sqrt(global_sum);
 }

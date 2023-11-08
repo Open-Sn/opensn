@@ -7,13 +7,13 @@
 namespace chi::lua_utils
 {
 
+/**Makes the program sleep for the specified time in milliseconds.
+ * \param time int Time in milliseconds to sleep for.
+ * */
 int chiSleep(lua_State* L);
 
 RegisterLuaFunctionAsIs(chiSleep);
 
-/**Makes the program sleep for the specified time in milliseconds.
- * \param time int Time in milliseconds to sleep for.
- * */
 int
 chiSleep(lua_State* L)
 {

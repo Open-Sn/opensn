@@ -14,7 +14,7 @@ RayTracer::Grid() const
 }
 
 RayTracerOutputInformation
-RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth /*=0*/)
+RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth)
 {
   if (not cell_sizes_.empty()) SetTolerancesFromCellSize(cell_sizes_[cell.local_id_]);
 
@@ -24,26 +24,11 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
   bool backward_tolerance_hit = false;
 
   if (cell.Type() == CellType::SLAB)
-    TraceSlab(cell,
-              pos_i,
-              omega_i,
-              intersection_found /*byRef*/,
-              backward_tolerance_hit /*byRef*/,
-              oi /*byRef*/);
+    TraceSlab(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else if (cell.Type() == CellType::POLYGON)
-    TracePolygon(cell,
-                 pos_i,
-                 omega_i,
-                 intersection_found /*byRef*/,
-                 backward_tolerance_hit /*byRef*/,
-                 oi /*byRef*/);
+    TracePolygon(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else if (cell.Type() == CellType::POLYHEDRON)
-    TracePolyhedron(cell,
-                    pos_i,
-                    omega_i,
-                    intersection_found /*byRef*/,
-                    backward_tolerance_hit /*byRef*/,
-                    oi /*byRef*/);
+    TracePolyhedron(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else
     throw std::logic_error("Unsupported cell type encountered in call to "
                            "RayTrace.");
@@ -303,7 +288,7 @@ RayTracer::TracePolygon(const Cell& cell,
     if ((D < backward_tolerance_) and intersects) backward_tolerance_hit = true;
   } // for faces
 
-  //======================================== Determine closest intersection
+  // Determine closest intersection
   if (not perform_concavity_checks_ and not face_intersections.empty())
     oi = face_intersections.back();
   else if (perform_concavity_checks_ and not face_intersections.empty())
@@ -380,7 +365,7 @@ RayTracer::TracePolyhedron(const Cell& cell,
     if (intersection_found and (not perform_concavity_checks_)) break;
   } // for faces
 
-  //======================================== Determine closest intersection
+  // Determine closest intersection
   if (not perform_concavity_checks_ and not triangle_intersections.empty())
     oi = triangle_intersections.back();
   else if (perform_concavity_checks_ and not triangle_intersections.empty())
@@ -406,7 +391,7 @@ CheckPlaneLineIntersect(const Normal& plane_normal,
                         const Vector3& line_point_0,
                         const Vector3& line_point_1,
                         Vector3& intersection_point,
-                        std::pair<double, double>* weights /*=nullptr*/)
+                        std::pair<double, double>* weights)
 {
   Vector3 v0 = line_point_0 - plane_point;
   Vector3 v1 = line_point_1 - plane_point;
@@ -590,7 +575,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
   track_length = segment_lengths.front();
   distance_set.insert(track_length);
 
-  //======================================== Determine intersection points
+  // Determine intersection points
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
   // Since there are no segments within a slab we will only have
   // a single segment length. It is already pushed
@@ -636,7 +621,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
       f++;
       auto& vfc = face.centroid_;
 
-      //===================== Face center to vertex segments
+      // Face center to vertex segments
       for (auto vi : face.vertex_ids_)
       {
         auto& vert = grid.vertices[vi];
@@ -653,7 +638,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
         }
       } // for edge
 
-      //===================== Face edge to cell center segments
+      // Face edge to cell center segments
       for (int v = 0; v < face.vertex_ids_.size(); ++v)
       {
         uint64_t vid_0 = face.vertex_ids_[v];
@@ -678,7 +663,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
     }   // for face
   }
 
-  //======================================== Populate segment lengths
+  // Populate segment lengths
   // if there are N segments intersected then there will always be
   // N+1 distances.
   segment_lengths.clear();

@@ -19,7 +19,6 @@ struct SphericalQuadrilateral;
 struct FUNCTION_WEIGHT_FROM_RHO;
 class Quadrature;
 
-// ####################################################### Util Func
 /**Base Functor to inherit from to change the function
  * to integrate in one of the integration utilities.*/
 struct BaseFunctor
@@ -28,7 +27,6 @@ struct BaseFunctor
 };
 } // namespace SimplifiedLDFESQ
 
-// ################################################################### Util Func
 /**Serves as a general data structure for a
  * spherical quadrilateral (SQ).*/
 struct SimplifiedLDFESQ::SphericalQuadrilateral
@@ -49,7 +47,6 @@ struct SimplifiedLDFESQ::SphericalQuadrilateral
   chi_mesh::Vector3 octant_modifier;
 };
 
-// ################################################################### Class def
 /** Piecewise-linear Finite element quadrature using quadrilaterals.*/
 class SimplifiedLDFESQ::Quadrature : public AngularQuadrature
 {
@@ -200,8 +197,10 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   DynamicMatrix<double> A;
   DynamicMatrix<double> A_inv;
   std::array<DynamicVector<double>, 4> c_coeffs;
-  std::vector<QuadraturePointXYZ>& lqp; // Legendre quadrature points
-  std::vector<double>& lqw;             // Legendre quadrature weights
+  /// Legendre quadrature points
+  std::vector<QuadraturePointXYZ>& lqp;
+  /// Legendre quadrature weights
+  std::vector<double>& lqw;
 
   FUNCTION_WEIGHT_FROM_RHO(SimplifiedLDFESQ::Quadrature& in_sldfesq,
                            chi_mesh::Vertex& in_centroid_xy_tilde,
@@ -217,7 +216,7 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
       lqp(in_legendre_quadrature.qpoints_),
       lqw(in_legendre_quadrature.weights_)
   {
-    //============================ Init RHS
+    // Init RHS
     for (int i = 0; i < 4; ++i)
     {
       rhs[i] = std::vector<double>(4);
@@ -227,13 +226,12 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
     }
   }
 
-  // ###########################################
   /**Computes the quadrature point locations
    * from rho, followed by the shape-function coefficients and
    * then the integral of the shape function to get the weights.*/
   std::array<double, 4> operator()(const DynamicVector<double>& rho)
   {
-    //=============================== Determine qpoints from rho
+    // Determine qpoints from rho
     std::array<chi_mesh::Vector3, 4> qpoints;
     for (int i = 0; i < 4; ++i)
     {
@@ -242,14 +240,14 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
       qpoints[i] = xyz_prime.Normalized();
     }
 
-    //=============================== Assemble A
+    // Assemble A
     for (int i = 0; i < 4; ++i)
       A[i] = {1.0, qpoints[i][0], qpoints[i][1], qpoints[i][2]};
 
-    //=============================== Compute A-inverse
+    // Compute A-inverse
     A_inv = Inverse(A.elements_);
 
-    //=============================== Compute coefficients
+    // Compute coefficients
     for (int i = 0; i < 4; ++i)
       c_coeffs[i] = A_inv * rhs[i];
 

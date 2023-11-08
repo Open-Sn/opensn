@@ -82,7 +82,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   const auto& spds = fluds_.GetSPDS();
   auto& aah_fluds = dynamic_cast<AAH_FLUDS&>(fluds_);
 
-  //============================================= Predecessor locations
+  // Predecessor locations
   size_t num_dependencies = spds.GetLocationDependencies().size();
 
   prelocI_message_count.resize(num_dependencies, 0);
@@ -126,7 +126,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     prelocI_message_received.emplace_back(message_count, false);
   } // for prelocI
 
-  //============================================= Delayed Predecessor locations
+  // Delayed Predecessor locations
   size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
 
   delayed_prelocI_message_count.resize(num_delayed_dependencies, 0);
@@ -171,7 +171,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     delayed_prelocI_message_received.emplace_back(message_count, false);
   }
 
-  //============================================= Successor locations
+  // Successor locations
   size_t num_successors = spds.GetLocationSuccessors().size();
 
   deplocI_message_count.resize(num_successors, 0);
@@ -216,8 +216,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     deplocI_message_request.emplace_back(message_count, MPI_Request());
   }
 
-  //================================================== All reduce to get
-  //                                                   maximum message count
+  // All reduce to get maximum message count
   int angset_max_message_count = 0;
   for (size_t prelocI = 0; prelocI < num_dependencies; prelocI++)
     angset_max_message_count = std::max(prelocI_message_count[prelocI], angset_max_message_count);
@@ -253,7 +252,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
   const auto& delayed_location_dependencies = spds.GetDelayedLocationDependencies();
   const size_t num_delayed_loc_deps = delayed_location_dependencies.size();
 
-  //======================================== Receive delayed data
+  // Receive delayed data
   bool all_messages_received = true;
   for (size_t prelocI = 0; prelocI < num_delayed_loc_deps; prelocI++)
   {
@@ -266,7 +265,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
       {
         int message_available = 0;
         MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                   max_num_mess * angle_set_num + m, // tag
+                   max_num_mess * angle_set_num + m,
                    comm_set_.LocICommunicator(Chi::mpi.location_id),
                    &message_available,
                    MPI_STATUS_IGNORE);
@@ -277,7 +276,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
           continue;
         }
 
-        //============================ Receive upstream data
+        // Receive upstream data
         auto& upstream_psi = fluds_.DelayedPrelocIOutgoingPsi()[prelocI];
 
         u_ll_int block_addr = delayed_prelocI_message_blockpos[prelocI][m];
@@ -287,7 +286,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
                                   static_cast<int>(message_size),
                                   MPI_DOUBLE,
                                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                                  max_num_mess * angle_set_num + m, // tag
+                                  max_num_mess * angle_set_num + m,
                                   comm_set_.LocICommunicator(Chi::mpi.location_id),
                                   MPI_STATUS_IGNORE);
 
@@ -324,7 +323,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 {
   const auto& spds = fluds_.GetSPDS();
 
-  //============================== Resize FLUDS non-local incoming Data
+  // Resize FLUDS non-local incoming Data
   const size_t num_loc_deps = spds.GetLocationDependencies().size();
   if (!upstream_data_initialized)
   {
@@ -333,8 +332,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
     upstream_data_initialized = true;
   }
 
-  //============================== Assume all data is available and now try
-  //                               to receive all of it
+  // Assume all data is available and now try to receive all of it
   bool ready_to_execute = true;
   for (size_t prelocI = 0; prelocI < num_loc_deps; prelocI++)
   {
@@ -347,7 +345,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
       {
         int message_available = 0;
         MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                   max_num_mess * angle_set_num + m, // tag
+                   max_num_mess * angle_set_num + m,
                    comm_set_.LocICommunicator(Chi::mpi.location_id),
                    &message_available,
                    MPI_STATUS_IGNORE);
@@ -358,7 +356,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
           continue;
         } // if message is not available
 
-        //============================ Receive upstream data
+        // Receive upstream data
         auto& upstream_psi = fluds_.PrelocIOutgoingPsi()[prelocI];
 
         u_ll_int block_addr = prelocI_message_blockpos[prelocI][m];
@@ -368,7 +366,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
                                   static_cast<int>(message_size),
                                   MPI_DOUBLE,
                                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                                  max_num_mess * angle_set_num + m, // tag
+                                  max_num_mess * angle_set_num + m,
                                   comm_set_.LocICommunicator(Chi::mpi.location_id),
                                   MPI_STATUS_IGNORE);
 
@@ -425,7 +423,7 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
                 static_cast<int>(message_size),
                 MPI_DOUBLE,
                 comm_set_.MapIonJ(locJ, locJ),
-                max_num_mess * angle_set_num + m, // tag
+                max_num_mess * angle_set_num + m,
                 comm_set_.LocICommunicator(locJ),
                 &deplocI_message_request[deplocI][m]);
     } // for message
@@ -439,14 +437,14 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
   {
     const auto& spds = fluds_.GetSPDS();
 
-    //============================ Resize FLUDS local outgoing Data
+    // Resize FLUDS local outgoing Data
     fluds_.AllocateInternalLocalPsi(num_groups_, num_angles_);
 
-    //============================ Resize FLUDS non-local outgoing Data
+    // Resize FLUDS non-local outgoing Data
     const size_t num_loc_sucs = spds.GetLocationSuccessors().size();
     fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, num_loc_sucs);
 
-    //================================================ Make a memory query
+    // Make a memory query
     double memory_mb = Chi::GetMemoryUsageInMB();
 
     std::shared_ptr<chi::ChiLog::EventInfo> memory_event_info =

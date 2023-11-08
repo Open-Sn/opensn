@@ -10,11 +10,6 @@
 
 RegisterLuaFunctionAsIs(chiSurfaceMesherExecute);
 
-// #############################################################################
-/** Executes the surface meshing pipeline.
-
-\ingroup LuaSurfaceMesher
-\author Jan*/
 int
 chiSurfaceMesherExecute(lua_State* L)
 {

@@ -3,8 +3,6 @@
 #include "framework/chi_runtime.h"
 #include "framework/logging/chi_log.h"
 
-// ###################################################################
-/**Access to the singleton*/
 ChiObjectFactory&
 ChiObjectFactory::GetInstance() noexcept
 {
@@ -12,26 +10,18 @@ ChiObjectFactory::GetInstance() noexcept
   return singleton;
 }
 
-// ###################################################################
-/**Returns a constant reference to the object registry.*/
 const std::map<std::string, ChiObjectFactory::ObjectRegistryEntry>&
 ChiObjectFactory::Registry() const
 {
   return object_registry_;
 }
 
-// ###################################################################
-/**Checks if the object registry has a specific text key.*/
 bool
 ChiObjectFactory::RegistryHasKey(const std::string& key) const
 {
   return object_registry_.count(key) > 0;
 }
 
-// ###################################################################
-/**Makes an object with the given parameters and places on the global
- * object stack. Returns a handle to the object. The object type is
- * obtained from a string parameter name `chi_obj_type`.*/
 size_t
 ChiObjectFactory::MakeRegisteredObject(const chi::ParameterBlock& params) const
 {
@@ -50,9 +40,6 @@ ChiObjectFactory::MakeRegisteredObject(const chi::ParameterBlock& params) const
   return MakeRegisteredObjectOfType(type, params);
 }
 
-// ###################################################################
-/**Makes an object with the given parameters and places on the global
- * object stack. Returns a handle to the object.*/
 size_t
 ChiObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
                                              const chi::ParameterBlock& params) const
@@ -94,8 +81,6 @@ ChiObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
   return new_object->StackID();
 }
 
-// ##################################################################
-/**Returns the input parameters of a registered object.*/
 chi::InputParameters
 ChiObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
 {
@@ -108,8 +93,6 @@ ChiObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
   return reg_entry.get_in_params_func();
 }
 
-// ##################################################################
-/**Dumps the registry to stdout.*/
 void
 ChiObjectFactory::DumpRegister() const
 {
@@ -134,9 +117,6 @@ ChiObjectFactory::DumpRegister() const
   Chi::log.Log() << "\n\n";
 }
 
-// ##################################################################
-/**Checks that the registry key is available and throws a
- * `std::logical_error` if it is not.*/
 void
 ChiObjectFactory::AssertRegistryKeyAvailable(const std::string& key,
                                              const std::string& calling_function) const

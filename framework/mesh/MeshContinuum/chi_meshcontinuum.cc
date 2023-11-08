@@ -27,11 +27,11 @@ namespace chi_mesh
 std::shared_ptr<chi::ChiMPICommunicatorSet>
 MeshContinuum::MakeMPILocalCommunicatorSet() const
 {
-  //================================================== Build the communicator
+  // Build the communicator
   Chi::log.Log0Verbose1() << "Building communicator.";
   std::set<int> local_graph_edges;
 
-  //================================================== Loop over local cells
+  // Loop over local cells
   // Populate local_graph_edges
   local_graph_edges.insert(Chi::mpi.location_id); // add current location
   for (auto& cell : local_cells)
@@ -44,13 +44,12 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
     } // for f
   }   // for local cells
 
-  //============================================= Convert set to vector
+  // Convert set to vector
   // This is just done for convenience because MPI
   // needs a contiguous array
   std::vector<int> local_connections(local_graph_edges.begin(), local_graph_edges.end());
 
-  //============================================= Broadcast local connection
-  // size
+  // Broadcast local connection size
   Chi::log.Log0Verbose1() << "Communicating local connections.";
 
   std::vector<std::vector<int>> global_graph(Chi::mpi.process_count, std::vector<int>());
@@ -71,7 +70,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
     }
   }
 
-  //============================================= Broadcast local connections
+  // Broadcast local connections
   for (int locI = 0; locI < Chi::mpi.process_count; locI++)
   {
     // If chi::mpi.location_id == locI then this call will
@@ -86,7 +85,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
 
   Chi::log.Log0Verbose1() << "Done communicating local connections.";
 
-  //============================================= Build groups
+  // Build groups
   MPI_Group world_group;
   MPI_Comm_group(Chi::mpi.comm, &world_group);
 
@@ -101,17 +100,14 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
                    &location_groups[locI]);
   }
 
-  //============================================= Build communicators
+  // Build communicators
   std::vector<MPI_Comm> communicators;
   Chi::log.Log0Verbose1() << "Building communicators.";
   communicators.resize(Chi::mpi.process_count, MPI_Comm());
 
   for (int locI = 0; locI < Chi::mpi.process_count; locI++)
   {
-    int err = MPI_Comm_create_group(Chi::mpi.comm,
-                                    location_groups[locI],
-                                    0, // tag
-                                    &communicators[locI]);
+    int err = MPI_Comm_create_group(Chi::mpi.comm, location_groups[locI], 0, &communicators[locI]);
 
     if (err != MPI_SUCCESS) { Chi::log.Log0Verbose1() << "Communicator creation failed."; }
   }
@@ -123,8 +119,8 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
 
 void
 MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
-                                   bool suppress_node_sets /*= false*/,
-                                   bool suppress_side_sets /*= false*/) const
+                                   bool suppress_node_sets,
+                                   bool suppress_side_sets) const
 {
   const std::string fname = "MeshContinuum::ExportCellsToExodus";
   Chi::log.Log() << "Exporting mesh to Exodus file with base " << file_base_name;
@@ -135,7 +131,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
 
   const auto& grid = *this;
 
-  //============================================= Check block consistency
+  // Check block consistency
   std::map<int, CellType> block_id_map;
   for (const auto& cell : local_cells)
   {
@@ -150,8 +146,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
     }
   }
 
-  //============================================= Create unstructured meshes
-  //                                              for each material-type pair
+  // Create unstructured meshes for each material-type pair
   vtkNew<vtkMultiBlockDataSet> grid_blocks;
   int max_dimension = 0;
   {
@@ -169,7 +164,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
     vtkNew<vtkIntArray> block_id_list;
     block_id_list->SetName("BlockID");
 
-    //============================ Load vertices
+    // Load vertices
     std::vector<uint64_t> vertex_map(grid.GetGlobalVertexCount(), 0);
     const size_t num_verts = grid.GetGlobalVertexCount();
     for (size_t v = 0; v < num_verts; ++v)
@@ -183,7 +178,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
       global_node_id_list->InsertNextValue(scvtkid(v + 1));
     }
 
-    //============================ Load cells
+    // Load cells
     for (const auto& cell : grid.local_cells)
     {
       if (cell.SubType() == CellType::POLYGON or cell.SubType() == CellType::POLYHEDRON)
@@ -199,7 +194,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
       global_elem_id_list->InsertNextValue(scvtkid(cell.global_id_ + 1));
     } // for local cells
 
-    //============================ Set arrays
+    // Set arrays
     ugrid->SetPoints(points);
     ugrid->GetPointData()->AddArray(global_node_id_list);
     ugrid->GetCellData()->AddArray(global_elem_id_list);
@@ -208,7 +203,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
     ugrid->GetPointData()->SetActiveGlobalIds("GlobalNodeId");
     ugrid->GetCellData()->SetActiveGlobalIds("GlobalElementId");
 
-    //============================ Set block
+    // Set block
     grid_blocks->SetBlock(0, ugrid);
 
     Chi::log.Log() << "Writing grid block "
@@ -216,8 +211,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
                    << " Number of points: " << ugrid->GetNumberOfPoints();
   } // end of grid_blocks assignment
 
-  //============================================= Separate faces by boundary
-  //                                              id
+  // Separate faces by boundary id
   struct FaceInfo
   {
     CellFace const* face_ptr;
@@ -259,7 +253,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
     }
   }
 
-  //============================================= Make NodeSets and/or SideSets
+  // Make NodeSets and/or SideSets
   vtkNew<vtkMultiBlockDataSet> nodesets_blocks;
   vtkNew<vtkMultiBlockDataSet> sidesets_blocks;
   for (const auto& [bndry_id, face_list] : boundary_id_faces_map)
@@ -267,7 +261,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
     const std::string block_name = grid.GetBoundaryIDMap().at(bndry_id);
     Chi::log.Log0Verbose1() << "bid: " + std::to_string(bndry_id) + " name=\"" + block_name + "\"";
 
-    //====================================== NodeSet
+    // NodeSet
     {
       vtkNew<vtkUnstructuredGrid> ugrid;
       vtkNew<vtkPoints> points;
@@ -277,13 +271,13 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
       vtkNew<vtkIdTypeArray> node_global_ids;
       node_global_ids->SetName("GlobalNodeId");
 
-      //========================== Build vertex set
+      // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
         for (uint64_t vid : face_info.face_ptr->vertex_ids_)
           vid_set.insert(vid);
 
-      //========================== Build vertex map
+      // Build vertex map
       std::vector<uint64_t> vertex_map(grid.GetGlobalVertexCount(), 0);
       {
         uint64_t mapped_id = 0;
@@ -291,7 +285,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
           vertex_map[vid] = mapped_id++;
       }
 
-      //========================== Load vertices
+      // Load vertices
       for (uint64_t vid : vid_set)
       {
         const auto& vertex = grid.vertices[vid];
@@ -302,7 +296,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
         node_global_ids->InsertNextValue(scvtkid(vid + 1));
       }
 
-      //========================== Load cells
+      // Load cells
       for (uint64_t vid : vid_set)
       {
         std::vector<vtkIdType> cell_vids = {scvtkid(vertex_map[vid])};
@@ -322,7 +316,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
                      << " Number of points: " << ugrid->GetNumberOfPoints();
     }
 
-    //====================================== SideSet
+    // SideSet
     {
       vtkNew<vtkUnstructuredGrid> ugrid;
       vtkNew<vtkPoints> points;
@@ -334,13 +328,13 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
       src_cell_global_ids->SetName("SourceElementId");
       src_cell_face_id->SetName("SourceElementSide");
 
-      //========================== Build vertex set
+      // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
         for (uint64_t vid : face_info.face_ptr->vertex_ids_)
           vid_set.insert(vid);
 
-      //========================== Build vertex map
+      // Build vertex map
       std::vector<uint64_t> vertex_map(grid.GetGlobalVertexCount(), 0);
       {
         uint64_t mapped_id = 0;
@@ -348,14 +342,14 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
           vertex_map[vid] = mapped_id++;
       }
 
-      //========================== Load vertices
+      // Load vertices
       for (uint64_t vid : vid_set)
       {
         const auto& vertex = grid.vertices[vid];
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
       }
 
-      //========================== Load faces
+      // Load faces
       for (const auto& face_info : face_list)
       {
         UploadFaceGeometry(*face_info.face_ptr, vertex_map, ugrid);
@@ -376,7 +370,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
     } // End of side-set
   }
 
-  //============================================= Write the file
+  // Write the file
   unsigned int next_block = 0;
   vtkNew<vtkMultiBlockDataSet> main_block;
   main_block->SetBlock(next_block++, grid_blocks);
@@ -451,7 +445,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
       Chi::Exit(EXIT_FAILURE);
     }
 
-    //====================================== Develop list of faces and nodes
+    // Develop list of faces and nodes
     std::set<int> nodes_set;
     std::vector<CellFace> faces_to_export;
     for (auto& cell : local_cells)
@@ -471,13 +465,13 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
       }     // if polyhedron
     }       // for local cell
 
-    //====================================== Write header
+    // Write header
     fprintf(of, "# Exported mesh file from Extrusion script\n");
     std::string str_file_name(fileName);
     std::string file_base_name = str_file_name.substr(0, str_file_name.find('.'));
     fprintf(of, "o %s\n", file_base_name.c_str());
 
-    //====================================== Develop node mapping and write them
+    // Develop node mapping and write them
     std::vector<int> node_mapping(GetGlobalVertexCount(), -1);
 
     int node_counter = 0;
@@ -492,13 +486,13 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
       fprintf(of, "v %9.6f %9.6f %9.6f\n", cur_v.x, cur_v.y, cur_v.z);
     }
 
-    //====================================== Write face normals
+    // Write face normals
     for (const auto& face : faces_to_export)
     {
       fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
     }
 
-    //====================================== Write faces
+    // Write faces
     int normal_counter = 0;
     for (const auto& face : faces_to_export)
     {
@@ -518,7 +512,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PER MATERIAL
   else
   {
-    //========================================= Get base name
+    // Get base name
     std::string str_file_name(fileName);
     std::string file_base_name = str_file_name.substr(0, str_file_name.find('.'));
 
@@ -540,7 +534,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
         Chi::Exit(EXIT_FAILURE);
       }
 
-      //====================================== Develop list of faces and nodes
+      // Develop list of faces and nodes
       std::set<int> nodes_set;
       std::vector<CellFace> faces_to_export;
       for (const auto& cell : local_cells)
@@ -576,11 +570,11 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
         }       // if polyhedron
       }         // for local cell
 
-      //====================================== Write header
+      // Write header
       fprintf(of, "# Exported mesh file from Extrusion script\n");
       fprintf(of, "o %s\n", mat_base_name.c_str());
 
-      //====================================== Develop node mapping and write
+      // Develop node mapping and write
       // them
       std::vector<int> node_mapping(GetGlobalVertexCount(), -1);
 
@@ -596,13 +590,13 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
         fprintf(of, "v %9.6f %9.6f %9.6f\n", cur_v.x, cur_v.y, cur_v.z);
       }
 
-      //====================================== Write face normals
+      // Write face normals
       for (const auto& face : faces_to_export)
       {
         fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
       }
 
-      //====================================== Write faces
+      // Write faces
       int normal_counter = 0;
       for (const auto& face : faces_to_export)
       {
@@ -642,30 +636,24 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
   Chi::mpi.Barrier();
   Chi::log.Log() << "Identifying unique boundary-ids.";
 
-  //====================================== Develop local bndry-id set
+  // Develop local bndry-id set
   std::set<uint64_t> local_bndry_ids_set;
   for (auto& cell : local_cells)
     for (auto& face : cell.faces_)
       if (not face.has_neighbor_) local_bndry_ids_set.insert(face.neighbor_id_);
 
-  //====================================== Vectorify it and get local count
+  // Vectorify it and get local count
   std::vector<uint64_t> local_bndry_ids(local_bndry_ids_set.begin(), local_bndry_ids_set.end());
   int local_num_bndry_ids = (int)local_bndry_ids.size();
 
-  //====================================== Everyone now tells everyone
+  // Everyone now tells everyone
   //                                       how many bndry-ids they have
   std::vector<int> locI_bndry_count(Chi::mpi.process_count, 0);
 
-  MPI_Allgather(&local_num_bndry_ids,    // sendbuf
-                1,                       // sendcount
-                MPI_INT,                 // sendtype
-                locI_bndry_count.data(), // recvbuf
-                1,                       // recvcount
-                MPI_INT,                 // recvtype
-                Chi::mpi.comm);          // communicator
+  MPI_Allgather(
+    &local_num_bndry_ids, 1, MPI_INT, locI_bndry_count.data(), 1, MPI_INT, Chi::mpi.comm);
 
-  //====================================== Build a displacement list, in prep
-  //                                       for gathering all bndry-ids
+  // Build a displacement list, in prep for gathering all bndry-ids
   std::vector<int> locI_bndry_ids_displs(Chi::mpi.process_count, 0);
   size_t total_num_global_bndry_ids = locI_bndry_count[0];
   for (int locI = 1; locI < Chi::mpi.process_count; ++locI)
@@ -674,18 +662,17 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
     total_num_global_bndry_ids += locI_bndry_count[locI];
   }
 
-  //====================================== Everyone now sends everyone
-  //                                       they're boundary-ids
+  // Everyone now sends everyone their boundary-ids
   std::vector<uint64_t> globl_bndry_ids(total_num_global_bndry_ids);
 
-  MPI_Allgatherv(local_bndry_ids.data(),       // sendbuf
-                 local_num_bndry_ids,          // sendcount
-                 MPI_UNSIGNED_LONG_LONG,       // sendtype
-                 globl_bndry_ids.data(),       // recvbuf
-                 locI_bndry_count.data(),      // recvcounts
-                 locI_bndry_ids_displs.data(), // displs
-                 MPI_UNSIGNED_LONG_LONG,       // recvtype
-                 Chi::mpi.comm);               // communicator
+  MPI_Allgatherv(local_bndry_ids.data(),
+                 local_num_bndry_ids,
+                 MPI_UNSIGNED_LONG_LONG,
+                 globl_bndry_ids.data(),
+                 locI_bndry_count.data(),
+                 locI_bndry_ids_displs.data(),
+                 MPI_UNSIGNED_LONG_LONG,
+                 Chi::mpi.comm);
 
   std::set<uint64_t> globl_bndry_ids_set(globl_bndry_ids.begin(), globl_bndry_ids.end());
 
@@ -697,7 +684,7 @@ std::shared_ptr<GridFaceHistogram>
 MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_tolerance) const
 {
   std::vector<std::pair<size_t, size_t>> face_categories_list;
-  //================================================== Fill histogram
+  // Fill histogram
   std::vector<size_t> face_size_histogram;
   for (const auto& cell : local_cells)
     for (const auto& face : cell.faces_)
@@ -705,12 +692,12 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
 
   std::stable_sort(face_size_histogram.begin(), face_size_histogram.end());
 
-  //================================================== Determine total face dofs
+  // Determine total face dofs
   size_t total_face_dofs_count = 0;
   for (auto face_size : face_size_histogram)
     total_face_dofs_count += face_size;
 
-  //================================================== Compute average and ratio
+  // Compute average and ratio
   size_t smallest_face = face_size_histogram.front();
   size_t largest_face = face_size_histogram.back();
   size_t total_num_faces = face_size_histogram.size();
@@ -725,7 +712,7 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   outstr << "\nMax to avg ratio = " << (double)largest_face / average_dofs_per_face;
   Chi::log.LogAllVerbose2() << outstr.str();
 
-  //================================================== Determine number of bins
+  // Determine number of bins
   size_t last_bin_num_faces = total_num_faces;
   if (((double)largest_face / average_dofs_per_face) > master_tolerance)
   {
@@ -734,7 +721,7 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
                               << ", therefore a binned histogram "
                               << "will be constructed.";
 
-    //====================================== Build categories
+    // Build categories
     size_t running_total_face_dofs = 0;
     size_t running_face_count = 0;
     size_t running_face_size = face_size_histogram[0];
@@ -759,7 +746,7 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   }
   face_categories_list.emplace_back(largest_face, last_bin_num_faces);
 
-  //================================================== Verbose print bins
+  // Verbose print bins
   outstr.str(std::string());
   outstr << "A total of " << face_categories_list.size() << " bins were created:\n";
 
@@ -817,7 +804,7 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
                                       std::vector<short>& dof_mapping) const
 {
   const int associated_face = cur_face.GetNeighborAssociatedFace(*this);
-  //======================================== Check face validity
+  // Check face validity
   ChiLogicalErrorIf(not cur_face.has_neighbor_,
                     "Invalid cell index encountered in call to "
                     "MeshContinuum::FindAssociatedVertices. Index "
@@ -859,7 +846,7 @@ void
 MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
                                           std::vector<short>& dof_mapping) const
 {
-  //======================================== Check face validity
+  // Check face validity
   ChiLogicalErrorIf(not cur_face.has_neighbor_,
                     "Invalid cell index encountered in call to "
                     "MeshContinuum::FindAssociatedVertices. Index "
@@ -956,12 +943,7 @@ MeshContinuum::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 
   size_t global_count = 0;
 
-  MPI_Allreduce(&local_count,           // sendbuf
-                &global_count,          // recvbuf
-                1,                      // count
-                MPI_UNSIGNED_LONG_LONG, // datatype
-                MPI_SUM,                // op
-                Chi::mpi.comm);         // communicator
+  MPI_Allreduce(&local_count, &global_count, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
 
   return global_count;
 }

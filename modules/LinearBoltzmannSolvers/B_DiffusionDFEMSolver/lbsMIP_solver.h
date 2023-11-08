@@ -18,7 +18,6 @@ public:
   static chi::InputParameters GetInputParameters();
   explicit DiffusionDFEMSolver(const chi::InputParameters& params);
   ~DiffusionDFEMSolver() override;
-  // 01
   void Initialize() override;
   void InitializeWGSSolvers() override;
 };

@@ -11,10 +11,10 @@ namespace chi_unit_tests
 
 chi::ParameterBlock chi_math_Test02_ParallelVector(const chi::InputParameters& params);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/chi_math_Test02_ParallelVector,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/chi_math_Test02_ParallelVector);
+RegisterWrapperFunction(chi_unit_tests,
+                        chi_math_Test02_ParallelVector,
+                        nullptr,
+                        chi_math_Test02_ParallelVector);
 
 chi::ParameterBlock
 chi_math_Test02_ParallelVector(const chi::InputParameters&)
@@ -23,7 +23,6 @@ chi_math_Test02_ParallelVector(const chi::InputParameters&)
 
   ChiLogicalErrorIf(Chi::mpi.process_count != 2, "Requires 2 processors");
 
-  //==================================================
   Chi::log.Log() << "Testing chi_math::ParallelSTLVector" << std::endl;
 
   ParallelSTLVector vec(5, 10, Chi::mpi.comm);
@@ -35,7 +34,6 @@ chi_math_Test02_ParallelVector(const chi::InputParameters&)
 
   Chi::log.LogAll() << "vec after assembly: " << vec.PrintStr() << std::endl;
 
-  //==================================================
   Chi::log.Log() << "Testing chi_math::GhostedParallelSTLVector" << std::endl;
 
   const int64_t ghost_id = Chi::mpi.location_id == 0 ? 5 : 4;
@@ -68,7 +66,6 @@ chi_math_Test02_ParallelVector(const chi::InputParameters&)
     Chi::log.LogAll() << "Ghost vec make-local values: " << outstr.str();
   }
 
-  //==================================================
   Chi::log.LogAll() << "Parallel vector norm-1: " << vec.ComputeNorm(chi_math::NormType::L1_NORM);
   Chi::log.LogAll() << "Parallel vector norm-2: " << vec.ComputeNorm(chi_math::NormType::L2_NORM);
   Chi::log.LogAll() << "Parallel vector norm-inf: "
@@ -81,7 +78,6 @@ chi_math_Test02_ParallelVector(const chi::InputParameters&)
   Chi::log.LogAll() << "Ghost vector norm-inf: "
                     << ghost_vec.ComputeNorm(chi_math::NormType::LINF_NORM);
 
-  //==================================================
   Chi::log.Log() << "Testing chi_math::ParallelSTLVector "
                  << "ADD_VALUE and CopyValues" << std::endl;
   ParallelSTLVector vec2(5, 10, Chi::mpi.comm);
@@ -95,7 +91,6 @@ chi_math_Test02_ParallelVector(const chi::InputParameters&)
 
   Chi::log.LogAll() << "vec2 after assembly: " << vec2.PrintStr() << std::endl;
 
-  //==================================================
   Chi::log.Log() << "Testing chi_math::ParallelSTLVector "
                  << "SetValues" << std::endl;
   ParallelSTLVector vec3(5, 10, Chi::mpi.comm);
@@ -107,7 +102,6 @@ chi_math_Test02_ParallelVector(const chi::InputParameters&)
 
   Chi::log.LogAll() << "vec3 after assembly: " << vec3.PrintStr() << std::endl;
 
-  //==================================================
   Chi::log.Log() << "Testing chi_math::GhostedParallelSTLVector "
                  << "Constructed from VectorGhostCommunicator and "
                     "other utilities"

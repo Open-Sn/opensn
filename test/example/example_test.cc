@@ -8,10 +8,7 @@ namespace chi_unit_tests
 
 chi::ParameterBlock ExampleTest(const chi::InputParameters&);
 
-RegisterWrapperFunction(/*namespace_name=*/chi_unit_tests,
-                        /*name_in_lua=*/ExampleTest,
-                        /*syntax_function=*/nullptr,
-                        /*actual_function=*/ExampleTest);
+RegisterWrapperFunction(chi_unit_tests, ExampleTest, nullptr, ExampleTest);
 
 chi::ParameterBlock
 ExampleTest(const chi::InputParameters&)

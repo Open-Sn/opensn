@@ -16,12 +16,12 @@ void
 chi_mesh::FieldFunctionInterpolationLine::Initialize()
 {
   Chi::log.Log0Verbose1() << "Initializing line interpolator.";
-  //================================================== Check for empty FF-list
+  // Check for empty FF-list
   if (field_functions_.empty())
     throw std::logic_error("Unassigned field function in line "
                            "field function interpolator.");
 
-  //================================================== Create points;
+  // Create points;
   const chi_mesh::Vector3 vif = pf_ - pi_;
   delta_d_ = vif.Norm() / (number_of_points_ - 1);
 
@@ -31,7 +31,7 @@ chi_mesh::FieldFunctionInterpolationLine::Initialize()
   for (int k = 1; k < (number_of_points_); k++)
     interpolation_points_.push_back(pi_ + omega * delta_d_ * k);
 
-  //====================================================== Loop over contexts
+  // Loop over contexts
   const size_t num_ff = field_functions_.size();
   for (size_t ff = 0; ff < num_ff; ff++)
   {
@@ -45,8 +45,7 @@ chi_mesh::FieldFunctionInterpolationLine::Initialize()
     ff_context.interpolation_points_ass_cell.assign(number_of_points_, 0);
     ff_context.interpolation_points_has_ass_cell.assign(number_of_points_, false);
 
-    //================================================== Find a home for each
-    //                                                   point
+    // Find a home for each point
     for (const auto& cell : grid.local_cells)
     {
       for (int p = 0; p < number_of_points_; p++)

@@ -15,7 +15,6 @@ namespace chi
 
 RegisterChiObject(chi, CellVolumeIntegralPostProcessor);
 
-// ##################################################################
 InputParameters
 CellVolumeIntegralPostProcessor::GetInputParameters()
 {
@@ -37,7 +36,6 @@ CellVolumeIntegralPostProcessor::GetInputParameters()
   return params;
 }
 
-// ##################################################################
 CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
     chi_physics::GridBasedFieldFunctionInterface(params),
@@ -47,7 +45,6 @@ CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputPara
   value_ = ParameterBlock("", 0.0);
 }
 
-// ##################################################################
 void
 CellVolumeIntegralPostProcessor::Initialize()
 {
@@ -75,7 +72,6 @@ CellVolumeIntegralPostProcessor::Initialize()
   initialized_ = true;
 }
 
-// ##################################################################
 void
 CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 {
@@ -128,22 +124,12 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
   }   // for cell-id
 
   double globl_integral;
-  MPI_Allreduce(&local_integral, // sendbuf
-                &globl_integral, // recvbuf
-                1,
-                MPI_DOUBLE,     // count + datatype
-                MPI_SUM,        // operation
-                Chi::mpi.comm); // communicator
+  MPI_Allreduce(&local_integral, &globl_integral, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
   if (not compute_volume_average_) value_ = ParameterBlock("", globl_integral);
   else
   {
     double globl_volume;
-    MPI_Allreduce(&local_volume, // sendbuf
-                  &globl_volume, // recvbuf
-                  1,
-                  MPI_DOUBLE,     // count + datatype
-                  MPI_SUM,        // operation
-                  Chi::mpi.comm); // communicator
+    MPI_Allreduce(&local_volume, &globl_volume, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
     value_ = ParameterBlock("", globl_integral / globl_volume);
   }

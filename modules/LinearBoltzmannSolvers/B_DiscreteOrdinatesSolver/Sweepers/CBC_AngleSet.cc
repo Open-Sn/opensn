@@ -114,8 +114,6 @@ CBC_AngleSet::AngleSetAdvance(chi_mesh::sweep_management::SweepChunk& sweep_chun
   return Status::NOT_FINISHED;
 }
 
-// ###################################################################
-/**Resets the sweep buffer.*/
 void
 CBC_AngleSet::ResetSweepBuffers()
 {
@@ -125,8 +123,6 @@ CBC_AngleSet::ResetSweepBuffers()
   executed_ = false;
 }
 
-// ###################################################################
-/**Returns a pointer to a boundary flux data.*/
 const double*
 CBC_AngleSet::PsiBndry(uint64_t bndry_map,
                        unsigned int angle_num,
@@ -147,8 +143,6 @@ CBC_AngleSet::PsiBndry(uint64_t bndry_map,
     cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
 }
 
-// ###################################################################
-/**Returns a pointer to outbound boundary flux data.*/
 double*
 CBC_AngleSet::ReflectingPsiOutBoundBndry(uint64_t bndry_map,
                                          unsigned int angle_num,

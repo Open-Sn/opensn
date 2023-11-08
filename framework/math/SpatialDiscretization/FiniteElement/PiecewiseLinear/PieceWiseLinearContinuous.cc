@@ -25,8 +25,8 @@ PieceWiseLinearContinuous::PieceWiseLinearContinuous(const chi_mesh::MeshContinu
 
 std::shared_ptr<PieceWiseLinearContinuous>
 PieceWiseLinearContinuous::New(const chi_mesh::MeshContinuum& grid,
-                               QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
-                               CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
+                               QuadratureOrder q_order,
+                               CoordinateSystemType cs_type)
 
 {
   const auto PWLC = SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS;
@@ -61,15 +61,14 @@ void
 PieceWiseLinearContinuous::OrderNodes()
 {
   const std::string fname = __FUNCTION__;
-  //============================================= Build set of local scope nodes
+  // Build set of local scope nodes
   // ls_node_id = local scope node id
   std::set<uint64_t> ls_node_ids_set;
   for (const auto& cell : ref_grid_.local_cells)
     for (uint64_t node_id : cell.vertex_ids_)
       ls_node_ids_set.insert(node_id);
 
-  //============================================ Build node partition
-  //                                             subscriptions
+  // Build node partition subscriptions
   // psub = partition subscription
   // Multiple partitions can subscribe to a given
   // node. We build this list here.
@@ -90,8 +89,7 @@ PieceWiseLinearContinuous::OrderNodes()
       ls_node_ids_psubs[vid].insert(ghost_cell.partition_id_);
   } // for ghost_id
 
-  //============================================= Build lists of local- and
-  //                                              non-local nodes
+  // Build lists of local- and non-local nodes
   // The lowest partition-# owns a node.
   std::vector<uint64_t> local_node_ids;
   std::map<uint64_t, std::vector<uint64_t>> nonlocal_node_ids_map;
@@ -106,18 +104,13 @@ PieceWiseLinearContinuous::OrderNodes()
       nonlocal_node_ids_map[smallest_partition_id].push_back(node_id);
   }
 
-  //============================================= Communicate node counts
+  // Communicate node counts
   const uint64_t local_num_nodes = local_node_ids.size();
   locJ_block_size_.assign(Chi::mpi.process_count, 0);
-  MPI_Allgather(&local_num_nodes, // sendbuf
-                1,
-                MPI_UINT64_T,            // sendcount, sendtype
-                locJ_block_size_.data(), // recvbuf
-                1,
-                MPI_UINT64_T,   // recvcount, recvtype
-                Chi::mpi.comm); // comm
+  MPI_Allgather(
+    &local_num_nodes, 1, MPI_UINT64_T, locJ_block_size_.data(), 1, MPI_UINT64_T, Chi::mpi.comm);
 
-  //============================================= Build block addresses
+  // Build block addresses
   locJ_block_address_.assign(Chi::mpi.process_count, 0);
   uint64_t global_num_nodes = 0;
   for (int j = 0; j < Chi::mpi.process_count; ++j)
@@ -131,18 +124,18 @@ PieceWiseLinearContinuous::OrderNodes()
   local_base_block_size_ = local_num_nodes;
   globl_base_block_size_ = global_num_nodes;
 
-  //============================================= Build node mapping for local
+  // Build node mapping for local
   //                                              nodes
   node_mapping_.clear();
   for (uint64_t i = 0; i < local_num_nodes; ++i)
     node_mapping_[local_node_ids[i]] = static_cast<int64_t>(local_block_address_ + i);
 
-  //============================================= Communicate nodes in need
+  // Communicate nodes in need
   //                                              of mapping
   std::map<uint64_t, std::vector<uint64_t>> query_node_ids =
     chi_mpi_utils::MapAllToAll(nonlocal_node_ids_map, MPI_UINT64_T);
 
-  //============================================= Map the query nodes
+  // Map the query nodes
   std::map<uint64_t, std::vector<int64_t>> mapped_node_ids;
   for (const auto& key_value : query_node_ids)
   {
@@ -158,12 +151,11 @@ PieceWiseLinearContinuous::OrderNodes()
       }
   } // for query location and nodes
 
-  //============================================= Communicate back the mappings
+  // Communicate back the mappings
   std::map<uint64_t, std::vector<int64_t>> nonlocal_node_ids_map_mapped =
     chi_mpi_utils::MapAllToAll(mapped_node_ids, MPI_INT64_T);
 
-  //============================================= Processing the mapping for
-  //                                              non-local nodes
+  // Processing the mapping for non-local nodes
   ghost_node_mapping_.clear();
   try
   {
@@ -202,7 +194,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
 {
   //**************************************** DEFINE UTILITIES
 
-  //=================================== Dof-handler
+  // Dof-handler
   /**Utility mappings*/
   struct DOFHandler
   {
@@ -263,7 +255,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
 
   //**************************************** END OF UTILITIES
 
-  //======================================== Build local sparsity pattern
+  // Build local sparsity pattern
   Chi::log.Log0Verbose1() << "Building local sparsity pattern.";
   std::vector<std::vector<int64_t>> nodal_connections(local_base_block_size_);
 
@@ -302,7 +294,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
     }     // for i
   }       // for cell
 
-  //======================================== Build non-local sparsity pattern
+  // Build non-local sparsity pattern
   Chi::log.Log0Verbose1() << "Building non-local sparsity pattern.";
 
   // In this process we build a list
@@ -326,7 +318,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
         ROWJLINKS new_ir_link;
         ROWJLINKS* cur_ir_link = &new_ir_link;
 
-        //============================= Check if ir already there
+        // Check if ir already there
         bool ir_already_there = false;
         for (auto& ir_link : ir_links)
           if (ir == ir_link.first)
@@ -336,7 +328,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
             break;
           }
 
-        //============================= Now add links
+        // Now add links
         auto& node_links = cur_ir_link->second;
         for (unsigned int j = 0; j < cell_mapping.NumNodes(); ++j)
         {
@@ -348,7 +340,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
             node_links.push_back(jr);
         } // for j
 
-        //============================= If its not add it
+        // If its not add it
         if (not ir_already_there)
         {
           cur_ir_link->first = ir;
@@ -359,10 +351,10 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
     }   // for i
   }     // for cell
 
-  //======================================== Build communication structure
+  // Build communication structure
   Chi::log.Log0Verbose1() << "Building communication structure.";
 
-  //=================================== Step 1
+  // Step 1
   // We now serialize the non-local data
   std::vector<std::vector<int64_t>> locI_serialized(Chi::mpi.process_count);
 
@@ -376,7 +368,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
       locI_serialized[locI].push_back(jr); // col num
   }
 
-  //=================================== Step 2
+  // Step 2
   // Establish the size of the serialized data
   // to send to each location and communicate
   // to get receive count.
@@ -395,7 +387,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
 
   MPI_Alltoall(sendcount.data(), 1, MPI_INT, recvcount.data(), 1, MPI_INT, Chi::mpi.comm);
 
-  //=================================== Step 3
+  // Step 3
   // We now establish send displacements and
   // receive displacements.
   std::vector<int> send_displs(Chi::mpi.process_count, 0);
@@ -417,7 +409,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
     recv_displ_c += recv_count;
   }
 
-  //======================================== Communicate data
+  // Communicate data
   Chi::log.Log0Verbose1() << "Communicating non-local rows.";
 
   // We now initialize the buffers and
@@ -442,7 +434,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
                 MPI_INT64_T,
                 Chi::mpi.comm);
 
-  //======================================== Deserialze data
+  // Deserialze data
   Chi::log.Log0Verbose1() << "Deserialize data.";
 
   std::vector<ROWJLINKS> foreign_ir_links;
@@ -461,7 +453,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
     foreign_ir_links.push_back(std::move(new_links));
   }
 
-  //======================================== Adding to sparsity pattern
+  // Adding to sparsity pattern
   for (const auto& ir_linkage : foreign_ir_links)
   {
     const int64_t ir = ir_linkage.first;
@@ -484,8 +476,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
 
   Chi::mpi.Barrier();
 
-  //======================================== Spacing according to unknown
-  //                                         manager
+  // Spacing according to unknown manager
   auto backup_nnz_in_diag = nodal_nnz_in_diag;
   auto backup_nnz_off_diag = nodal_nnz_off_diag;
 
@@ -530,7 +521,7 @@ PieceWiseLinearContinuous::MapDOF(const chi_mesh::Cell& cell,
                                   const unsigned int node,
                                   const chi_math::UnknownManager& unknown_manager,
                                   const unsigned int unknown_id,
-                                  const unsigned int component /*=0*/) const
+                                  const unsigned int component) const
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 
@@ -567,7 +558,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
                                        const unsigned int node,
                                        const chi_math::UnknownManager& unknown_manager,
                                        const unsigned int unknown_id,
-                                       const unsigned int component /*=0*/) const
+                                       const unsigned int component) const
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 

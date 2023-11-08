@@ -75,22 +75,22 @@ XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const chi::InputParamet
     diff_accel_diffusion_petsc_options_(
       params.GetParamValue<std::string>("diff_accel_diffusion_petsc_options"))
 {
-  ////=========================================== Make UnknownManager
+  //// Make UnknownManager
   // const size_t num_gs_groups = front_gs_.groups_.size();
   // chi_math::UnknownManager uk_man;
   // uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_gs_groups);
   //
-  ////=========================================== Make boundary conditions
+  //// Make boundary conditions
   // auto bcs = acceleration::TranslateBCs(lbs_solver_.SweepBoundaries(),
   //                                       /*vaccum_bcs_are_dirichlet=*/true);
   //
-  ////=========================================== Make xs map
+  //// Make xs map
   // auto matid_2_mgxs_map =
   //   acceleration::PackGroupsetXS(lbs_solver_.GetMatID2XSMap(),
   //                                front_gs_.groups_.front().id_,
   //                                front_gs_.groups_.back().id_);
   //
-  ////=========================================== Create solver
+  //// Create solver
   // const auto& sdm = lbs_solver_.SpatialDiscretization();
   // const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
   //
@@ -163,20 +163,19 @@ XXPowerIterationKEigenSCDSA::Initialize()
 {
   XXPowerIterationKEigen::Initialize();
 
-  //=========================================== Make UnknownManager
+  // Make UnknownManager
   const size_t num_gs_groups = front_gs_.groups_.size();
   chi_math::UnknownManager uk_man;
   uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_gs_groups);
 
-  //=========================================== Make boundary conditions
-  auto bcs = acceleration::TranslateBCs(lbs_solver_.SweepBoundaries(),
-                                        /*vaccum_bcs_are_dirichlet=*/true);
+  // Make boundary conditions
+  auto bcs = acceleration::TranslateBCs(lbs_solver_.SweepBoundaries(), true);
 
-  //=========================================== Make xs map
+  // Make xs map
   auto matid_2_mgxs_map = acceleration::PackGroupsetXS(
     lbs_solver_.GetMatID2XSMap(), front_gs_.groups_.front().id_, front_gs_.groups_.back().id_);
 
-  //=========================================== Create solver
+  // Create solver
   const auto& sdm = lbs_solver_.SpatialDiscretization();
   const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
 
@@ -244,7 +243,7 @@ XXPowerIterationKEigenSCDSA::Execute()
     [this, &phi_temp](const VecDbl& input, const bool additive, const bool suppress_wg_scat = false)
   {
     ProjectBackPhi0(front_gs_, input, phi_temp);
-    SetLBSScatterSource(/*in*/ phi_temp, additive, suppress_wg_scat);
+    SetLBSScatterSource(phi_temp, additive, suppress_wg_scat);
   };
 
   const size_t tag_SCDSA_solve_time = Chi::log.GetRepeatingEventTag("SCDSA_solve_time");
@@ -256,19 +255,19 @@ XXPowerIterationKEigenSCDSA::Execute()
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
 
-  //================================================== Start power iterations
+  // Start power iterations
   int nit = 0;
   bool converged = false;
   while (nit < max_iters_)
   {
-    //================================= Set the fission source
-    SetLBSFissionSource(phi_old_local_, /*additive=*/false);
+    // Set the fission source
+    SetLBSFissionSource(phi_old_local_, false);
     Scale(q_moments_local_, 1.0 / k_eff_);
 
     auto Sf_ell = q_moments_local_;
     auto Sf0_ell = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
-    //================================= This solves the inners for transport
+    // This solves the inners for transport
     primary_ags_solver_->Setup();
     primary_ags_solver_->Solve();
 
@@ -277,14 +276,14 @@ XXPowerIterationKEigenSCDSA::Execute()
 
     // Now we produce lph_ip1 = l + 1/2, i+1
     q_moments_local_ = Sf_ell; // Restore 1/k F phi_l
-    SetLBSScatterSource(phi_new_local_, /*additive=*/true);
+    SetLBSScatterSource(phi_new_local_, true);
 
     front_wgs_context_->ApplyInverseTransportOperator(NO_FLAGS_SET); // Sweep
 
     auto phi0_lph_ip1 = CopyOnlyPhi0(front_gs_, phi_new_local_);
 
-    //====================================== Power Iteration Acceleration
-    SetLBSScatterSourcePhi0(phi0_lph_ip1 - phi0_lph_i, /*additive=*/false);
+    // Power Iteration Acceleration
+    SetLBSScatterSourcePhi0(phi0_lph_ip1 - phi0_lph_i, false);
     auto Ss_res = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
     double production_k = lbs_solver_.ComputeFissionProduction(phi_new_local_);
@@ -297,13 +296,11 @@ XXPowerIterationKEigenSCDSA::Execute()
 
     for (size_t k = 0; k < accel_pi_max_its_; ++k)
     {
-      ProjectBackPhi0(front_gs_,
-                      /*in*/ epsilon_k + phi0_lph_ip1,
-                      /*out*/ phi_temp);
+      ProjectBackPhi0(front_gs_, epsilon_k + phi0_lph_ip1, phi_temp);
 
       // double production_k = lbs_solver_.ComputeFissionProduction(phi_temp);
 
-      SetLBSFissionSource(phi_temp, /*additive=*/false);
+      SetLBSFissionSource(phi_temp, false);
       Scale(q_moments_local_, 1.0 / lambda_k);
 
       auto Sfaux = CopyOnlyPhi0(front_gs_, q_moments_local_);
@@ -312,24 +309,20 @@ XXPowerIterationKEigenSCDSA::Execute()
       // am leaving this at 1 iteration here for further investigation.
       for (int i = 0; i < 1; ++i)
       {
-        SetLBSScatterSourcePhi0(epsilon_k,
-                                /*additive=*/false,
-                                /*suppress_wg_scat=*/true);
+        SetLBSScatterSourcePhi0(epsilon_k, false, true);
 
         auto Ss = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
         // Solve the diffusion system
         Chi::log.LogEvent(tag_SCDSA_solve_time, chi::ChiLog::EventType::EVENT_BEGIN);
         diffusion_solver_->Assemble_b(Ss + Sfaux + Ss_res - Sf0_ell);
-        diffusion_solver_->Solve(epsilon_kp1, /*use_initial_guess=*/true);
+        diffusion_solver_->Solve(epsilon_kp1, true);
         Chi::log.LogEvent(tag_SCDSA_solve_time, chi::ChiLog::EventType::EVENT_END);
 
         epsilon_k = epsilon_kp1;
       }
 
-      ProjectBackPhi0(front_gs_,
-                      /*in*/ epsilon_kp1 + phi0_lph_ip1,
-                      /*out*/ phi_old_local_);
+      ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_ip1, phi_old_local_);
 
       double production_kp1 = lbs_solver_.ComputeFissionProduction(phi_old_local_);
 
@@ -347,28 +340,24 @@ XXPowerIterationKEigenSCDSA::Execute()
       production_k = production_kp1;
     } // acceleration
 
-    ProjectBackPhi0(front_gs_,
-                    /*in*/ epsilon_kp1 + phi0_lph_ip1,
-                    /*out*/ phi_new_local_);
-    lbs_solver_.GSScopedCopyPrimarySTLvectors(front_gs_,
-                                              /*in*/ phi_new_local_,
-                                              /*out*/ phi_old_local_);
+    ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_ip1, phi_new_local_);
+    lbs_solver_.GSScopedCopyPrimarySTLvectors(front_gs_, phi_new_local_, phi_old_local_);
 
     const double production = lbs_solver_.ComputeFissionProduction(phi_old_local_);
     lbs_solver_.ScalePhiVector(PhiSTLOption::PHI_OLD, lambda_kp1 / production);
 
-    //================================= Recompute k-eigenvalue
+    // Recompute k-eigenvalue
     k_eff_ = lambda_kp1;
     double reactivity = (k_eff_ - 1.0) / k_eff_;
 
-    //================================= Check convergence, bookkeeping
+    // Check convergence, bookkeeping
     k_eff_change = fabs(k_eff_ - k_eff_prev) / k_eff_;
     k_eff_prev = k_eff_;
     nit += 1;
 
     if (k_eff_change < std::max(k_tolerance_, 1.0e-12)) converged = true;
 
-    //================================= Print iteration summary
+    // Print iteration summary
     if (lbs_solver_.Options().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
@@ -384,7 +373,7 @@ XXPowerIterationKEigenSCDSA::Execute()
     if (converged) break;
   } // for k iterations
 
-  //================================================== Print summary
+  // Print summary
   Chi::log.Log() << "\n";
   Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
   Chi::log.Log() << "        Final change          :        " << std::setprecision(6)
@@ -588,7 +577,7 @@ XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
   std::map<int64_t, int64_t> cfem_dof_global2local_map;
 
-  //================================================== Local cells first
+  // Local cells first
   std::set<uint64_t> partition_bndry_vertex_id_set;
   for (const auto& cell : grid.local_cells)
   {
@@ -623,7 +612,7 @@ XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
             partition_bndry_vertex_id_set.insert(vid);
   } // for local cell
 
-  //================================================== Ghost cells
+  // Ghost cells
   const auto ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
   const auto& vid_set = partition_bndry_vertex_id_set;
   for (const auto global_id : ghost_cell_ids)
@@ -658,14 +647,14 @@ XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
     }     // for node i
   }       // for ghost cell
 
-  //================================================== Compute nodal averages
+  // Compute nodal averages
   {
     const size_t num_vals = cont_input.size();
     for (size_t k = 0; k < num_vals; ++k)
       cont_input[k] /= cont_input_ctr[k];
   }
 
-  //================================================== Project back to dfem
+  // Project back to dfem
   auto output = input;
   for (const auto& cell : grid.local_cells)
   {

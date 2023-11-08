@@ -7,10 +7,6 @@
 namespace lbs
 {
 
-// ###################################################################
-/**This function evaluates the flux moments based k-eigenvalue transport
- * residual of the form
-\f$ r(\phi) = DL^{-1} (\frac{1}{k} F\phi + MS \phi) - \phi \f$.*/
 PetscErrorCode
 NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
@@ -30,11 +26,11 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   for (const auto& groupset : lbs_solver.Groupsets())
     groupset_ids.push_back(groupset.id_);
 
-  //============================================= Disassemble phi vector
+  // Disassemble phi vector
   lbs_solver.SetPrimarySTLvectorFromMultiGSPETScVecFrom(
     groupset_ids, phi, lbs::PhiSTLOption::PHI_OLD);
 
-  //============================================= Compute 1/k F phi
+  // Compute 1/k F phi
   chi_math::Set(q_moments_local, 0.0);
   for (auto& groupset : lbs_solver.Groupsets())
     active_set_source_function(groupset,
@@ -45,7 +41,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   const double k_eff = lbs_solver.ComputeFissionProduction(phi_old_local);
   chi_math::Scale(q_moments_local, 1.0 / k_eff);
 
-  //============================================= Now add MS phi
+  // Now add MS phi
   for (auto& groupset : lbs_solver.Groupsets())
   {
     auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
@@ -57,7 +53,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
                                  (supress_wgs ? lbs::SUPPRESS_WG_SCATTER : lbs::NO_FLAGS_SET));
   }
 
-  //============================================= Sweep all the groupsets
+  // Sweep all the groupsets
   // After this phi_new = DLinv(MSD phi + 1/k FD phi)
   for (auto& groupset : lbs_solver.Groupsets())
   {
@@ -65,7 +61,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     wgs_context.ApplyInverseTransportOperator(lbs::NO_FLAGS_SET);
   }
 
-  //============================================= Reassemble PETSc vector
+  // Reassemble PETSc vector
   // We use r as a proxy for delta-phi here since
   // we are anycase going to subtract phi from it.
   lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(groupset_ids, r, lbs::PhiSTLOption::PHI_NEW);
@@ -82,8 +78,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     lbs::WGDSA_TGDSA_PreConditionerMult2(wgs_context, r, r);
   }
 
-  //============================================= Assign k to the context
-  //                                              so monitors can work
+  // Assign k to the context so monitors can work
   function_context.k_eff = k_eff;
 
   return 0;

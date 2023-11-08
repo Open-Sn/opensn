@@ -5,11 +5,11 @@
 namespace chi_mesh::sweep_management
 {
 
-// ###################################################################
 /**Manages the workstages of a single angle set.*/
 class AAH_AngleSet : public AngleSet
 {
 public:
+  /**AngleSet constructor.*/
   AAH_AngleSet(size_t id,
                size_t in_numgrps,
                size_t in_ref_subset,

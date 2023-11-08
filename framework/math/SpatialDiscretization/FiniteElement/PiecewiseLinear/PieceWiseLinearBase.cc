@@ -12,8 +12,7 @@
 
 namespace chi_math::spatial_discretization
 {
-// ###################################################################
-/**Constructor*/
+
 PieceWiseLinearBase::PieceWiseLinearBase(const chi_mesh::MeshContinuum& grid,
                                          QuadratureOrder q_order,
                                          SDMType sdm_type,

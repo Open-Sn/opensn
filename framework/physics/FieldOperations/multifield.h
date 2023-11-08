@@ -25,8 +25,10 @@ private:
   std::shared_ptr<const chi_math::FunctionDimAToDimB> function_ptr_;
 
 public:
+  /**Returns the input parameters.*/
   static chi::InputParameters GetInputParameters();
 
+  /**Constructor.*/
   explicit MultiFieldOperation(const chi::InputParameters& params);
 
   void Execute() override;

@@ -6,7 +6,6 @@
 namespace lbs
 {
 
-// ################################################################### Class def
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
 template <class MatType, class VecType, class SolverType>
 class AGSLinearSolver : public chi_math::LinearSolver<MatType, VecType, SolverType>
@@ -44,26 +43,19 @@ public:
   void SetVerbosity(bool verbose_y_n) { verbose_ = verbose_y_n; }
 
 protected:
-  /*void PreSetupCallback() override;  */ // Customized via context
-  /*virtual void SetOptions();         */
-  /*void SetSolverContext() override;  */ // Generic
-  /*void SetConvergenceTest() override;*/ // Generic
-  /*virtual void SetMonitor();         */
-
-  virtual void SetSystemSize() override; // Customized via context
-  virtual void SetSystem() override;     // Generic
-  void SetPreconditioner() override;     // Customized via context
-
-  /*void PostSetupCallback() override;*/ // Customized via context
-
-public:
-  /*virtual void Setup();*/
+  /// Customized via context
+  virtual void SetSystemSize() override;
+  /// Generic
+  virtual void SetSystem() override;
+  /// Customized via context
+  void SetPreconditioner() override;
 
 protected:
-  /*void PreSolveCallback() override;*/  // Customized via context
-  void SetRHS() override;                // Generic + with context elements
-  void SetInitialGuess() override;       // Generic
-  /*void PostSolveCallback() override;*/ // Generic + with context elements
+  /// Generic + with context elements
+  void SetRHS() override;
+  /// Generic
+  void SetInitialGuess() override;
+
 public:
   void Solve() override;
 

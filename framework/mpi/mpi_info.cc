@@ -5,8 +5,6 @@
 namespace chi
 {
 
-// ###################################################################
-/**Access to the singleton*/
 MPI_Info&
 MPI_Info::GetInstance() noexcept
 {
@@ -14,14 +12,12 @@ MPI_Info::GetInstance() noexcept
   return singleton;
 }
 
-/**Sets the active communicator*/
 void
 MPI_Info::SetCommunicator(MPI_Comm new_communicator)
 {
   communicator_ = new_communicator;
 }
 
-/**Sets the rank.*/
 void
 MPI_Info::SetLocationID(int in_location_id)
 {
@@ -29,7 +25,6 @@ MPI_Info::SetLocationID(int in_location_id)
   location_id_set_ = true;
 }
 
-/**Sets the number of processes in the communicator.*/
 void
 MPI_Info::SetProcessCount(int in_process_count)
 {

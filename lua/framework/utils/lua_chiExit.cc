@@ -7,12 +7,12 @@
 namespace chi::lua_utils
 {
 
+/**Gracefully exits ChiTech.
+ * \param return_code int Return code, defaults to 0 (Success).*/
 int chiExit(lua_State* L);
 
 RegisterLuaFunctionAsIs(chiExit);
 
-/**Gracefully exits ChiTech.
- * \param return_code int Return code, defaults to 0 (Success).*/
 int
 chiExit(lua_State* L)
 {

@@ -59,7 +59,9 @@ public:
   }
 
 public:
+  /**Sets the object type string for more descriptive error messages.*/
   void SetObjectType(const std::string& obj_type);
+  /**Returns the object type string.*/
   std::string ObjectType() const;
 
   /**Sets the class name to be applied to this object. If not used a
@@ -80,10 +82,12 @@ public:
   /**Gets any linkage information of a parameter.*/
   std::string GetParameterDocumentationLink(const std::string& param_name) const;
 
+  /**Returns the parameter's doc string.*/
   std::string GetParameterDocString(const std::string& param_name);
 
 private:
   using ParameterBlock::AddParameter;
+  /**Determines if a parameter is ignored.*/
   static bool IsParameterIgnored(const std::string& param_name);
 
 public:
@@ -95,6 +99,7 @@ public:
     parameter_doc_string_[name] = doc_string;
   }
 
+  /**Specialization for block type parameters.*/
   void AddOptionalParameterBlock(const std::string& name,
                                  const ParameterBlock& block,
                                  const std::string& doc_string);
@@ -109,6 +114,7 @@ public:
     parameter_doc_string_[name] = doc_string;
   }
 
+  /**Specialization for block type parameters.*/
   void AddOptionalParameterArray(const std::string& name,
                                  const std::vector<ParameterBlock>& array,
                                  const std::string& doc_string);
@@ -121,8 +127,10 @@ public:
     parameter_doc_string_[name] = doc_string;
   }
 
+  /**Specialization for block type parameters.*/
   void AddRequiredParameterBlock(const std::string& name, const std::string& doc_string);
 
+  /**Specialization for array type parameters.*/
   void AddRequiredParameterArray(const std::string& name, const std::string& doc_string);
 
   template <typename T>
@@ -154,11 +162,17 @@ public:
    * to see if a user supplied an optional parameter or not.*/
   const ParameterBlock& ParametersAtAssignment() const { return param_block_at_assignment_; }
 
+  /**Marks a parameters as deprecated but will only produce a warning.*/
   void MarkParamaterDeprecatedWarning(const std::string& param_name,
                                       const std::string& deprecation_message = "");
+  /**Marks a parameters as deprecated and will produce an error if the parameter
+   * is specified.*/
   void MarkParamaterDeprecatedError(const std::string& param_name,
                                     const std::string& deprecation_message = "");
+  /**Marks a parameters as renamed and will produce an error if the parameter
+   * is specified.*/
   void MarkParamaterRenamed(const std::string& param_name, const std::string& renaming_description);
+  /**Creates a range based constraint for a given parameter.*/
   void ConstrainParameterRange(const std::string& param_name, AllowableRangePtr allowable_range);
   /**\brief Sets a tag for the given parameter that will allow its type to be
    * mismatched upon assignment.*/

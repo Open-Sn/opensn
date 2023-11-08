@@ -11,53 +11,12 @@
 RegisterLuaFunctionAsIs(chiSurfaceMeshImportFromOBJFile);
 RegisterLuaFunctionAsIs(chiSurfaceMeshImportFromTriangleFiles);
 
-// #############################################################################
-//  Create Window
-/** Loads mesh data from a wavefront object.
- *
-\param SurfaceHandle int Handle to the surface on which the operation is to be
-performed. \param FileName string Path to the file to be imported. \param
-polyflag bool (Optional)Flag indicating whether triangles are to be read as
-polygons. [Default: true (read as polygons)]. \param transform table3 (Optional)
-Translation vector to move all the vertices. [Default: none].
-
-### Note:
-If the intent of a surface mesh is to serve as a 3D logical volume then
-the `polyFlag` parameter should be set to false.
-
-### Example
-Example usage:
-\code
--- Basic example
-surfmesh1 = chiSurfaceMeshCreate()
-chiSurfaceMeshImportFromOBJFile(surfmesh1, "MeshFile1.obj")
-
--- Surface mesh used as Logical volume
-lv_surfmesh1 = chiSurfaceMeshCreate()
-chiSurfaceMeshImportFromOBJFile(lv_surfmesh1, "MeshFile3D.obj", false)
-
-lv1 = chiLogicalVolumeCreate(SURFACE, lv_surfmesh1)
-
--- Surface mesh with transform
-dx = 1.5
-dy = -2.5
-lv_surfmesh2 = chiSurfaceMeshCreate()
-chiSurfaceMeshImportFromOBJFile(lv_surfmesh2, "MeshFile3D.obj", false,
-{dx,dy,0.0})
-
-lv2 = chiLogicalVolumeCreate(SURFACE, lv_surfmesh2)
-\endcode
-
-\return success bool Return true if file was successfully loaded and false
- otherwise.
-\ingroup LuaSurfaceMesh
-\author Jan*/
 int
 chiSurfaceMeshImportFromOBJFile(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
-  //============================================= Get arguments
+  // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
@@ -90,25 +49,12 @@ chiSurfaceMeshImportFromOBJFile(lua_State* L)
   return 1;
 }
 
-// #############################################################################
-//  Create Window
-/** Loads mesh data from a wavefront object.
- *
-\param SurfaceHandle int Handle to the surface on which the operation is to be
-performed. \param FileName char* Path to the file to be imported. \param
-polyflag bool (Optional)Flag indicating whether triangles are to be read as
-polygons. [Default: true)
-
-\return success bool Return true if file was successfully loaded and false
- otherwise.
-\ingroup LuaSurfaceMesh
-\author Jan*/
 int
 chiSurfaceMeshImportFromTriangleFiles(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //============================================= Get arguments
+  // Get arguments
   int num_args = lua_gettop(L);
   int handle = lua_tonumber(L, 1);
 
@@ -131,7 +77,7 @@ chiSurfaceMeshImportFromMshFiles(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //============================================= Get arguments
+  // Get arguments
   int num_args = lua_gettop(L);
   int handle = lua_tonumber(L, 1);
 

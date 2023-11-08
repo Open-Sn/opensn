@@ -50,7 +50,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
   front_gs.apply_wgdsa_ = true;
   front_gs.wgdsa_tol_ = basic_options("PISA_MIP_L_ABS_TOL").FloatValue();
   front_gs.wgdsa_max_iters_ = static_cast<int>(basic_options("PISA_MIP_L_MAX_ITS").IntegerValue());
-  lbs_solver.InitWGDSA(front_gs, /*vaccum_bcs_are_dirichlet=*/false);
+  lbs_solver.InitWGDSA(front_gs, false);
   front_gs.apply_wgdsa_ = false;
 
   bool pisa_verbose_level = static_cast<int>(basic_options("PISA_VERBOSE_LEVEL").IntegerValue());
@@ -94,12 +94,12 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
       const VecDbl& input, const bool additive, const bool suppress_wgs = false)
   {
     lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
-    SetLBSScatterSource(/*in*/ phi_temp, additive, suppress_wgs);
+    SetLBSScatterSource(phi_temp, additive, suppress_wgs);
   };
 
   using namespace chi_math;
 
-  //================================================== Start power iterations
+  // Start power iterations
   primary_ags_solver->SetVerbosity(lbs_solver.Options().verbose_ags_iterations);
   int nit = 0;
   bool converged = false;
@@ -107,14 +107,13 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
   {
     auto phi0_l = lbs_solver.WGSCopyOnlyPhi0(front_gs, phi_old_local);
 
-    SetLBSFissionSource(phi_old_local, /*additive=*/false);
+    SetLBSFissionSource(phi_old_local, false);
     Scale(q_moments_local, 1.0 / k_eff);
 
     auto Sf_all_moments = q_moments_local;
     auto Sf = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
 
-    //====================================== This solves the inners for
-    // transport
+    // This solves the inners for transport
     // produces phi at l+1/2
     for (auto& wgs_solver : lbs_solver.GetWGSSolvers())
     {
@@ -127,13 +126,13 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
 
     // Now we produce lph_ip1 = l + 1/2, i+1
     q_moments_local = Sf_all_moments; // Restore 1/k F phi_l
-    SetLBSScatterSource(phi_new_local, /*additive=*/true);
+    SetLBSScatterSource(phi_new_local, true);
 
     frons_wgs_context->ApplyInverseTransportOperator(NO_FLAGS_SET); // Sweep
 
     auto phi0_lph_ip1 = lbs_solver.WGSCopyOnlyPhi0(front_gs, phi_new_local);
 
-    //====================================== Power Iteration Acceleration solve
+    // Power Iteration Acceleration solve
     VecDbl epsilon_k(phi0_l.size(), 0.0);
     auto epsilon_kp1 = epsilon_k;
 
@@ -142,18 +141,16 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
 
     for (size_t k = 0; k < pisa_pi_max_its; ++k)
     {
-      lbs_solver.GSProjectBackPhi0(front_gs,
-                                   /*in*/ epsilon_k + phi0_lph_ip1,
-                                   /*out*/ phi_temp);
+      lbs_solver.GSProjectBackPhi0(front_gs, epsilon_k + phi0_lph_ip1, phi_temp);
 
       double production_k = lbs_solver.ComputeFissionProduction(phi_temp);
 
-      SetLBSFissionSource(phi_temp, /*additive=*/false);
+      SetLBSFissionSource(phi_temp, false);
       Scale(q_moments_local, 1.0 / lambda_k);
 
       auto Sfaux = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
 
-      SetLBSScatterSourcePhi0(phi0_lph_ip1 - phi0_lph_i, /*additive=*/false);
+      SetLBSScatterSourcePhi0(phi0_lph_ip1 - phi0_lph_i, false);
 
       auto Ss_res = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
 
@@ -161,22 +158,18 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
       // am leaving this at 1 iteration here for further investigation.
       for (int i = 0; i < 1; ++i)
       {
-        SetLBSScatterSourcePhi0(epsilon_k,
-                                /*additive=*/false,
-                                /*suppress_wgs=*/true);
+        SetLBSScatterSourcePhi0(epsilon_k, false, true);
 
         auto Ss = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
 
         // Solve the diffusion system
         diff_solver.Assemble_b(Ss + Sfaux + Ss_res - Sf);
-        diff_solver.Solve(epsilon_kp1, /*use_initial_guess=*/true);
+        diff_solver.Solve(epsilon_kp1, true);
 
         epsilon_k = epsilon_kp1;
       }
 
-      lbs_solver.GSProjectBackPhi0(front_gs,
-                                   /*in*/ epsilon_kp1 + phi0_lph_ip1,
-                                   /*out*/ phi_old_local);
+      lbs_solver.GSProjectBackPhi0(front_gs, epsilon_kp1 + phi0_lph_ip1, phi_old_local);
       double production_kp1 = lbs_solver.ComputeFissionProduction(phi_old_local);
 
       lambda_kp1 = production_kp1 / (production_k / lambda_k);
@@ -192,28 +185,24 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
       epsilon_k = epsilon_kp1;
     } // acceleration
 
-    lbs_solver.GSProjectBackPhi0(front_gs,
-                                 /*in*/ epsilon_kp1 + phi0_lph_ip1,
-                                 /*out*/ phi_new_local);
-    lbs_solver.GSScopedCopyPrimarySTLvectors(front_gs,
-                                             /*in*/ phi_new_local,
-                                             /*out*/ phi_old_local);
+    lbs_solver.GSProjectBackPhi0(front_gs, epsilon_kp1 + phi0_lph_ip1, phi_new_local);
+    lbs_solver.GSScopedCopyPrimarySTLvectors(front_gs, phi_new_local, phi_old_local);
 
     const double production = lbs_solver.ComputeFissionProduction(phi_old_local);
     lbs_solver.ScalePhiVector(PhiSTLOption::PHI_OLD, lambda_kp1 / production);
 
-    //======================================== Recompute k-eigenvalue
+    // Recompute k-eigenvalue
     k_eff = lambda_kp1;
     double reactivity = (k_eff - 1.0) / k_eff;
 
-    //======================================== Check convergence, bookkeeping
+    // Check convergence, bookkeeping
     k_eff_change = fabs(k_eff - k_eff_prev) / k_eff;
     k_eff_prev = k_eff;
     nit += 1;
 
     if (k_eff_change < std::max(tolerance, 1.0e-12)) converged = true;
 
-    //======================================== Print iteration summary
+    // Print iteration summary
     if (lbs_solver.Options().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
@@ -229,7 +218,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
     if (converged) break;
   } // for k iterations
 
-  //================================================== Print summary
+  // Print summary
   Chi::log.Log() << "\n";
   Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
   Chi::log.Log() << "        Final change          :        " << std::setprecision(6)

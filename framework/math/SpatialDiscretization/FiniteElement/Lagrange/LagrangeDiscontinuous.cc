@@ -24,8 +24,8 @@ LagrangeDiscontinuous::LagrangeDiscontinuous(const chi_mesh::MeshContinuum& grid
 
 std::shared_ptr<LagrangeDiscontinuous>
 LagrangeDiscontinuous::New(const chi_mesh::MeshContinuum& grid,
-                           QuadratureOrder q_order /*=QuadratureOrder::SECOND*/,
-                           CoordinateSystemType cs_type /*=CoordinateSystemType::CARTESIAN*/)
+                           QuadratureOrder q_order,
+                           CoordinateSystemType cs_type)
 
 {
   const auto LagrangeD = SpatialDiscretizationType::LAGRANGE_DISCONTINUOUS;
@@ -63,12 +63,10 @@ LagrangeDiscontinuous::OrderNodes()
   chi::Timer t_stage[6];
 
   t_stage[0].Reset();
-  //================================================== Check cell views avail
+  // Check cell views avail
   size_t num_loc_cells = ref_grid_.local_cells.size();
 
-  //================================================== Get local DOF count
-  //                                                   and set
-  //                                                   cell_local_block_address
+  // Get local DOF count and set cell_local_block_address
   cell_local_block_address_.resize(num_loc_cells, 0);
 
   uint64_t local_node_count = 0;
@@ -79,17 +77,17 @@ LagrangeDiscontinuous::OrderNodes()
     local_node_count += cell_mapping.NumNodes();
   }
 
-  //================================================== Allgather node_counts
+  // Allgather node_counts
   locJ_block_size_.assign(Chi::mpi.process_count, 0);
-  MPI_Allgather(&local_node_count, // sendbuf
+  MPI_Allgather(&local_node_count,
                 1,
-                MPI_UNSIGNED_LONG_LONG,  // sendcount, sendtype
-                locJ_block_size_.data(), // recvbuf
+                MPI_UNSIGNED_LONG_LONG,
+                locJ_block_size_.data(),
                 1,
-                MPI_UNSIGNED_LONG_LONG, // recvcount, recvtype
-                Chi::mpi.comm);         // comm
+                MPI_UNSIGNED_LONG_LONG,
+                Chi::mpi.comm);
 
-  //================================================== Assign
+  // Assign
   // local_block_address
   uint64_t running_block_address = 0;
   for (int locI = 0; locI < Chi::mpi.process_count; ++locI)
@@ -104,8 +102,7 @@ LagrangeDiscontinuous::OrderNodes()
   local_base_block_size_ = local_node_count;
   globl_base_block_size_ = global_node_count;
 
-  //================================================== Collect ghost cell ids
-  //                                                   needing block addresses
+  // Collect ghost cell ids needing block addresses
   std::map<int, std::vector<uint64_t>> ghost_cell_ids_consolidated;
 
   for (uint64_t global_id : ref_grid_.cells.GetGhostGlobalIDs())
@@ -118,12 +115,11 @@ LagrangeDiscontinuous::OrderNodes()
     locI_cell_id_list.push_back(cell.global_id_);
   }
 
-  //================================================== AllToAll to get query
-  //                                                   cell-ids
+  // AllToAll to get query cell-ids
   const std::map<int, std::vector<uint64_t>> query_ghost_cell_ids_consolidated =
     chi_mpi_utils::MapAllToAll(ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
 
-  //================================================== Map all query cell-ids
+  // Map all query cell-ids
   std::map<int, std::vector<uint64_t>> mapped_ghost_cell_ids_consolidated;
   for (const auto& [pid, cell_id_list] : query_ghost_cell_ids_consolidated)
   {
@@ -139,12 +135,11 @@ LagrangeDiscontinuous::OrderNodes()
     }
   }
 
-  //================================================== Communicate back the
-  // mapping
+  // Communicate back the mapping
   const std::map<int, std::vector<uint64_t>> global_id_mapping =
     chi_mpi_utils::MapAllToAll(mapped_ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
 
-  //================================================== Process global id mapping
+  // Process global id mapping
   for (const auto& [pid, mapping_list] : global_id_mapping)
   {
     const auto& global_id_list = ghost_cell_ids_consolidated.at(pid);
@@ -158,7 +153,7 @@ LagrangeDiscontinuous::OrderNodes()
                                                 static_cast<int64_t>(mapping_list[k]));
   }
 
-  //================================================== Print info
+  // Print info
   Chi::log.LogAllVerbose2() << "Local dof count, start, total " << local_node_count << " "
                             << local_block_address_ << " " << global_node_count;
 }
@@ -183,14 +178,14 @@ LagrangeDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_d
     const auto& cell_mapping = GetCellMapping(cell);
     size_t num_nodes = cell_mapping.NumNodes();
 
-    //==================================== Self connection
+    // Self connection
     for (int i = 0; i < num_nodes; ++i)
     {
       int64_t ir = cell_local_block_address_[lc] + i;
       nodal_nnz_in_diag[ir] += static_cast<int64_t>(num_nodes);
     }
 
-    //==================================== Local adjacent cell connections
+    // Local adjacent cell connections
     for (auto& face : cell.faces_)
     {
       if (face.has_neighbor_ and face.IsNeighborLocal(ref_grid_))
@@ -214,7 +209,7 @@ LagrangeDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_d
   {
     const auto& cell_mapping = GetCellMapping(cell);
 
-    //==================================== Local adjacent cell connections
+    // Local adjacent cell connections
     for (auto& face : cell.faces_)
     {
       if (face.has_neighbor_ and (not face.IsNeighborLocal(ref_grid_)))
@@ -232,8 +227,7 @@ LagrangeDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_d
     ++lc;
   } // for local cell
 
-  //============================================= Spacing according to unknown
-  //                                              manager
+  // Spacing according to unknown manager
   auto backup_nnz_in_diag = nodal_nnz_in_diag;
   auto backup_nnz_off_diag = nodal_nnz_off_diag;
 

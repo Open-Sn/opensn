@@ -25,7 +25,7 @@ chiLBTSAdvanceTimeData(lua_State* L)
   const int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
 
-  //============================================= Get the solver
+  // Get the solver
   LuaCheckNilValue(fname, L, 1);
   const int solver_handle = lua_tointeger(L, 1);
 

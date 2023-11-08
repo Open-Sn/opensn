@@ -66,12 +66,12 @@ Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
 
   auto material = Chi::GetStackItemPtr(Chi::material_stack, mat_id, __FUNCTION__);
 
-  //====================================== Process material properties
+  // Process material properties
   diffCoeff.resize(cell_dofs, 1.0);
   sourceQ.resize(cell_dofs, 0.0);
   sigmaa.resize(cell_dofs, 0.0);
 
-  // ####################################################### REGULAR MATERIAL
+  // REGULAR MATERIAL
   if (material_mode_ == DIFFUSION_MATERIALS_REGULAR)
   {
     // We absolutely need the diffusion coefficient so process error
@@ -122,12 +122,12 @@ Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
     }
   } // regular
 
-  // ####################################################### TRANSPORT XS D
-  //                                                         TRANSPORT XS SIGA
-  //                                                         SCALAR       Q
+  // TRANSPORT XS D
+  // TRANSPORT XS SIGA
+  // SCALAR       Q
   else if (material_mode_ == DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTR)
   {
-    //====================================== Setting D and Sigma_a
+    // Setting D and Sigma_a
     bool transportxs_found = false;
     for (int p = 0; p < material->properties_.size(); p++)
     {
@@ -148,7 +148,7 @@ Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
       Chi::Exit(EXIT_FAILURE);
     }
 
-    //====================================== Setting Q
+    // Setting Q
     if ((property_map_q < material->properties_.size()) && (property_map_q >= 0))
     {
       if (std::dynamic_pointer_cast<chi_physics::ScalarValue>(
@@ -310,13 +310,12 @@ Solver::Initialize(bool verbose)
   MPI_Barrier(Chi::mpi.comm);
   auto& sdm = discretization_;
 
-  //============================================= Get DOF counts
+  // Get DOF counts
   local_dof_count_ = sdm->GetNumLocalDOFs(unknown_manager_);
   global_dof_count_ = sdm->GetNumGlobalDOFs(unknown_manager_);
   Chi::log.Log() << TextName() << ": Global number of DOFs=" << global_dof_count_;
 
-  //================================================== Initialize discretization
-  //                                                   method
+  // Initialize discretization method
   if (field_functions_.empty())
   {
     auto& sdm_ptr = discretization_;
@@ -327,15 +326,13 @@ Solver::Initialize(bool verbose)
 
     using namespace chi_math;
     auto initial_field_function = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      text_name,                     // Text name
-      sdm_ptr,                       // Spatial Discretization
-      Unknown(UnknownType::SCALAR)); // Unknown/Variable
+      text_name, sdm_ptr, Unknown(UnknownType::SCALAR));
 
     field_functions_.push_back(initial_field_function);
     Chi::field_function_stack.push_back(initial_field_function);
   } // if not ff set
 
-  //================================================== Determine nodal DOF
+  // Determine nodal DOF
   Chi::log.Log() << "Building sparsity pattern.";
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
@@ -345,7 +342,7 @@ Solver::Initialize(bool verbose)
                  << ": Diffusion Solver initialization time " << t_init.GetTime() / 1000.0
                  << std::endl;
 
-  //================================================== Initialize x and b
+  // Initialize x and b
   ierr_ = VecCreate(PETSC_COMM_WORLD, &x_);
   CHKERRQ(ierr_);
   ierr_ = PetscObjectSetName((PetscObject)x_, "Solution");
@@ -361,7 +358,7 @@ Solver::Initialize(bool verbose)
   VecSet(x_, 0.0);
   VecSet(b_, 0.0);
 
-  // ################################################## Create matrix
+  // Create matrix
   ierr_ = MatCreate(PETSC_COMM_WORLD, &A_);
   CHKERRQ(ierr_);
   ierr_ = MatSetSizes(A_,
@@ -373,25 +370,25 @@ Solver::Initialize(bool verbose)
   ierr_ = MatSetType(A_, MATMPIAIJ);
   CHKERRQ(ierr_);
 
-  //================================================== Allocate matrix memory
+  // Allocate matrix memory
   Chi::log.Log() << "Setting matrix preallocation.";
   MatMPIAIJSetPreallocation(A_, 0, nodal_nnz_in_diag.data(), 0, nodal_nnz_off_diag.data());
   MatSetOption(A_, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE);
   MatSetOption(A_, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE);
   MatSetUp(A_);
 
-  //================================================== Set up solver
+  // Set up solver
   ierr_ = KSPCreate(PETSC_COMM_WORLD, &ksp_);
   ierr_ = KSPSetOperators(ksp_, A_, A_);
   ierr_ = KSPSetType(ksp_, KSPCG);
 
-  //================================================== Set up preconditioner
+  // Set up preconditioner
   ierr_ = KSPGetPC(ksp_, &pc_);
   PCSetType(pc_, PCHYPRE);
 
   PCHYPRESetType(pc_, "boomeramg");
 
-  //================================================== Setting Hypre parameters
+  // Setting Hypre parameters
   // The default HYPRE parameters used for polyhedra
   // seemed to have caused a lot of trouble for Slab
   // geometries. This section makes some custom options
@@ -443,7 +440,7 @@ Solver::Initialize(bool verbose)
   PetscOptionsInsertString(nullptr, options_string_.c_str());
   PCSetFromOptions(pc_);
 
-  //=================================== Set up monitor
+  // Set up monitor
   if (verbose) ierr_ = KSPMonitorSet(ksp_, &KSPMonitorAChiTech, nullptr, nullptr);
 
   KSPSetConvergenceTest(ksp_, &DiffusionConvergenceTestNPT, nullptr, nullptr);
@@ -476,8 +473,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
                    << ": Assembling A locally";
 
-  //================================================== Loop over locally owned
-  //                                                   cells
+  // Loop over locally owned cells
   auto fem_method = basic_options_("discretization_method").StringValue();
   if (fem_method == "PWLC")
   {
@@ -507,7 +503,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
                    << ": Done Assembling A locally";
   MPI_Barrier(Chi::mpi.comm);
 
-  //=================================== Call matrix assembly
+  // Call matrix assembly
   if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
                    << ": Communicating matrix assembly";
@@ -519,7 +515,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
     MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY);
     MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY);
 
-    //================================= Matrix symmetry check
+    // Matrix symmetry check
     //    PetscBool is_symmetric;
     //    ierr = MatIsSymmetric(A,1.0e-4,&is_symmetric);
     //    if (!is_symmetric)
@@ -528,7 +524,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
     //        << "Assembled matrix is not symmetric";
     //    }
 
-    //================================= Matrix diagonal check
+    // Matrix diagonal check
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName() << ": Diagonal check";
     PetscBool missing_diagonal;
     PetscInt row;
@@ -537,7 +533,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
       Chi::log.LogAllError() << Chi::program_timer.GetTimeString() << " " << TextName()
                              << ": Missing diagonal detected";
 
-    //================================= Matrix sparsity info
+    // Matrix sparsity info
     MatInfo info;
     ierr_ = MatGetInfo(A_, MAT_GLOBAL_SUM, &info);
 
@@ -556,7 +552,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
 
   time_assembly_ = t_assembly_.GetTime() / 1000.0;
 
-  //=================================== Execute solve
+  // Execute solve
   if (suppress_solve)
   {
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
@@ -575,7 +571,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
     KSPSolve(ksp_, b_, x_);
     time_solve_ = t_solve_.GetTime() / 1000.0;
 
-    //=================================== Populate field vector
+    // Populate field vector
     //    if (fem_method == "PWLD_MIP" or fem_method == "PWLD_MIP_GAGG")
     //    {
     //      const double* x_ref;
@@ -587,14 +583,14 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
     //      VecRestoreArrayRead(x,&x_ref);
     //    }
 
-    //=================================== Get convergence reason
+    // Get convergence reason
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
     if (verbose_info_ || reason != KSP_CONVERGED_RTOL)
       Chi::log.Log() << "Convergence reason: "
                      << chi_physics::GetPETScConvergedReasonstring(reason);
 
-    //=================================== Location wise view
+    // Location wise view
     if (Chi::mpi.location_id == 0)
     {
       int64_t its;
@@ -629,14 +625,14 @@ Solver::CFEM_Assemble_A_and_b(chi_mesh::Cell& cell, int group)
 
   size_t num_nodes = fe_intgrl_values.NumNodes();
 
-  //======================================== Process material id
+  // Process material id
   std::vector<double> D(num_nodes, 1.0);
   std::vector<double> q(num_nodes, 1.0);
   std::vector<double> siga(num_nodes, 0.0);
 
   GetMaterialProperties(cell, num_nodes, D, q, siga, group);
 
-  //======================================== Init cell matrix info
+  // Init cell matrix info
   typedef std::vector<double> Row;
   typedef std::vector<Row> Matrix;
 
@@ -649,7 +645,7 @@ Solver::CFEM_Assemble_A_and_b(chi_mesh::Cell& cell, int group)
   std::vector<int64_t> dof_global_row_ind(num_nodes, -1);
   std::vector<int64_t> dof_global_col_ind(num_nodes, -1);
 
-  //========================================= Loop over DOFs
+  // Loop over DOFs
   for (int i = 0; i < num_nodes; i++)
   {
     dof_global_row_ind[i] = pwl_sdm->MapDOF(cell, i);
@@ -662,13 +658,12 @@ Solver::CFEM_Assemble_A_and_b(chi_mesh::Cell& cell, int group)
       cell_matrix[i][j] = mat_entry;
     } // for j
 
-    //====================== Develop RHS entry
+    // Develop RHS entry
     cell_rhs[i] = q[i] * fe_intgrl_values.IntV_shapeI(i);
   } // for i
   dof_global_col_ind = dof_global_row_ind;
 
-  //======================================== Apply Dirichlet,Vacuum, Neumann and
-  //                                         Robin BCs
+  // Apply Dirichlet,Vacuum, Neumann and Robin BCs
   // Dirichlets are just collected
   std::vector<int> dirichlet_count(num_nodes, 0);
   std::vector<double> dirichlet_value(num_nodes, 0.0);
@@ -724,7 +719,7 @@ Solver::CFEM_Assemble_A_and_b(chi_mesh::Cell& cell, int group)
 
   } // for face
 
-  //======================================== Apply dirichlet BCs
+  // Apply dirichlet BCs
   // Compute average dirichlet value
   for (int i = 0; i < num_nodes; ++i)
     dirichlet_value[i] /= (dirichlet_count[i] > 0) ? dirichlet_count[i] : 1;
@@ -754,14 +749,14 @@ Solver::CFEM_Assemble_A_and_b(chi_mesh::Cell& cell, int group)
     }
   }
 
-  //======================================== Make contiguous copy of matrix
+  // Make contiguous copy of matrix
   std::vector<double> cell_matrix_cont(num_nodes * num_nodes, 0.0);
   int n = 0;
   for (int i = 0; i < num_nodes; ++i)
     for (int j = 0; j < num_nodes; ++j)
       cell_matrix_cont[n++] = cell_matrix[i][j];
 
-  //======================================== Add to global
+  // Add to global
   MatSetValues(A_,
                num_nodes,
                dof_global_row_ind.data(),
@@ -785,7 +780,7 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
 
   size_t num_nodes = fe_intgrl_values.NumNodes();
 
-  //====================================== Process material id
+  // Process material id
   int mat_id = cell.material_id_;
 
   std::vector<double> D(num_nodes, 1.0);
@@ -794,13 +789,13 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
 
   GetMaterialProperties(cell, num_nodes, D, q, siga, component);
 
-  //========================================= Loop over DOFs
+  // Loop over DOFs
   for (int i = 0; i < num_nodes; i++)
   {
     int ir = pwl_sdm->MapDOF(cell, i, unknown_manager_, 0, component);
     double rhsvalue = 0.0;
 
-    //====================== Develop matrix entry
+    // Develop matrix entry
     for (int j = 0; j < num_nodes; j++)
     {
       int jr = pwl_sdm->MapDOF(cell, j, unknown_manager_, 0, component);
@@ -814,18 +809,18 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
       rhsvalue += q[j] * fe_intgrl_values.IntV_shapeI_shapeJ(i, j);
     } // for j
 
-    //====================== Apply RHS entry
+    // Apply RHS entry
     VecSetValue(b_, ir, rhsvalue, ADD_VALUES);
 
   } // for i
 
-  //========================================= Loop over faces
+  // Loop over faces
   int num_faces = cell.faces_.size();
   for (unsigned int f = 0; f < num_faces; f++)
   {
     auto& face = cell.faces_[f];
 
-    //================================== Get face normal
+    // Get face normal
     chi_mesh::Vector3 n = face.normal_;
 
     int num_face_dofs = face.vertex_ids_.size();
@@ -835,10 +830,10 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
       const auto& adj_cell = grid_ptr_->cells[face.neighbor_id_];
       const auto& adj_fe_intgrl_values = unit_integrals_.at(adj_cell.global_id_);
 
-      //========================= Get the current map to the adj cell's face
+      // Get the current map to the adj cell's face
       unsigned int fmap = MapCellFace(cell, adj_cell, f);
 
-      //========================= Compute penalty coefficient
+      // Compute penalty coefficient
       double hp = HPerpendicular(adj_cell, adj_fe_intgrl_values, fmap);
       double hm = HPerpendicular(cell, fe_intgrl_values, f);
 
@@ -847,7 +842,7 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
       GetMaterialProperties(
         adj_cell, adj_fe_intgrl_values.NumNodes(), adj_D, adj_Q, adj_sigma, component);
 
-      //========================= Compute surface average D
+      // Compute surface average D
       double D_avg = 0.0;
       double intS = 0.0;
       for (int fi = 0; fi < num_face_dofs; fi++)
@@ -858,7 +853,7 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
       }
       D_avg /= intS;
 
-      //========================= Compute surface average D_adj
+      // Compute surface average D_adj
       double adj_D_avg = 0.0;
       double adj_intS = 0.0;
       for (int fi = 0; fi < num_face_dofs; fi++)
@@ -870,7 +865,7 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
       }
       adj_D_avg /= adj_intS;
 
-      //========================= Compute kappa
+      // Compute kappa
       double kappa = 1.0;
       if (cell.Type() == chi_mesh::CellType::SLAB)
         kappa = fmax(2.0 * (adj_D_avg / hp + D_avg / hm), 0.25);
@@ -879,7 +874,7 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
       if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
         kappa = fmax(4.0 * (adj_D_avg / hp + D_avg / hm), 0.25);
 
-      //========================= Assembly penalty terms
+      // Assembly penalty terms
       for (int fi = 0; fi < num_face_dofs; fi++)
       {
         int i = fe_intgrl_values.FaceDofMapping(f, fi);
@@ -900,7 +895,7 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
 
       } // for fi
 
-      //========================= Assemble gradient terms
+      // Assemble gradient terms
       // For the following comments we use the notation:
       // Dk = 0.5* n dot nabla bk
 
@@ -952,10 +947,10 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
       {
         auto dc_boundary = (BoundaryDirichlet&)*boundaries_.at(ir_boundary_index);
 
-        //========================= Compute penalty coefficient
+        // Compute penalty coefficient
         double hm = HPerpendicular(cell, fe_intgrl_values, f);
 
-        //========================= Compute surface average D
+        // Compute surface average D
         double D_avg = 0.0;
         double intS = 0.0;
         for (int fi = 0; fi < num_face_dofs; fi++)
@@ -971,7 +966,7 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
         if (cell.Type() == chi_mesh::CellType::POLYGON) kappa = fmax(4.0 * (D_avg / hm), 0.25);
         if (cell.Type() == chi_mesh::CellType::POLYHEDRON) kappa = fmax(8.0 * (D_avg / hm), 0.25);
 
-        //========================= Assembly penalty terms
+        // Assembly penalty terms
         for (int fi = 0; fi < num_face_dofs; fi++)
         {
           int i = fe_intgrl_values.FaceDofMapping(f, fi);
@@ -1048,7 +1043,7 @@ Solver::PWLD_Assemble_b(const chi_mesh::Cell& cell, int component)
 
   size_t num_nodes = fe_intgrl_values.NumNodes();
 
-  //====================================== Process material id
+  // Process material id
   int mat_id = cell.material_id_;
 
   std::vector<double> D(num_nodes, 1.0);
@@ -1057,17 +1052,17 @@ Solver::PWLD_Assemble_b(const chi_mesh::Cell& cell, int component)
 
   GetMaterialProperties(cell, num_nodes, D, q, siga, component);
 
-  //========================================= Loop over DOFs
+  // Loop over DOFs
   for (int i = 0; i < num_nodes; i++)
   {
     int ir = pwl_sdm->MapDOF(cell, i, unknown_manager_, 0, component);
 
-    //====================== Develop rhs entry
+    // Develop rhs entry
     double rhsvalue = 0.0;
     for (int j = 0; j < num_nodes; j++)
       rhsvalue += q[j] * fe_intgrl_values.IntV_shapeI_shapeJ(i, j);
 
-    //====================== Apply RHS entry
+    // Apply RHS entry
     VecSetValue(b_, ir, rhsvalue, ADD_VALUES);
 
   } // for i

@@ -30,7 +30,8 @@ where the variable `int a` is initialized, before the `main` function starts,
 using a function call, which happens during the static initialization phase of
 the program.
 
-\subsection DevManParametersSec1_1 Rigging static initialization for object factories or object makers
+\subsection DevManParametersSec1_1 Rigging static initialization for object factories or object
+makers
 
 We can use the rather odd dynamics of singleton objects to create a static
 registry of function creation calls during static initialization. In the code
@@ -68,7 +69,6 @@ public:
   ChildObject() : Object(999) {}
 };
 
-//===============================================
 typedef std::function<Object*()> CreationFunction;
 class ObjectMaker // Singleton
 {
@@ -106,7 +106,6 @@ private:
   ObjectMaker& operator=(const ObjectMaker&) = delete;
 };
 
-//===============================================
 // This is where we statically register an object
 static int abc12345 = ObjectMaker::RegisterObject<Object>("Parent");
 static int abc12346 = ObjectMaker::RegisterObject<ChildObject>("Child");
@@ -143,7 +142,8 @@ end we have the base object, `ChiObject`, and the factory, `ChiObjectFactory`.
 Also, instead of using raw pointers, we use shared pointers for all
 objects that can be statically registered.
 
-\image html "DeveloperManual/StaticRegistration/StaticRegistration.png" "The factory pattern" width=900px
+\image html "DeveloperManual/StaticRegistration/StaticRegistration.png" "The factory pattern"
+width=900px
 
 We developed a separate system to
 control object construction parameters (more on this later). Additionally,

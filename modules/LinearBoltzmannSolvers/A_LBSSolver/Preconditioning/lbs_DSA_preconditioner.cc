@@ -4,8 +4,6 @@
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 #include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
-// ###################################################################
-/**Applies WGDSA or TGDSA to the given input vector.*/
 int
 lbs::WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
@@ -18,49 +16,39 @@ lbs::WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   lbs::LBSSolver& lbs_solver = gs_context_ptr->lbs_solver_;
   LBSGroupset& groupset = gs_context_ptr->groupset_;
 
-  //============================================= Copy PETSc vector to STL
+  // Copy PETSc vector to STL
   auto& phi_new_local = gs_context_ptr->lbs_solver_.PhiNewLocal();
   lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, phi_input, PhiSTLOption::PHI_NEW);
 
-  //============================================= Apply WGDSA
+  // Apply WGDSA
   if (groupset.apply_wgdsa_)
   {
     std::vector<double> delta_phi_local;
-    lbs_solver.AssembleWGDSADeltaPhiVector(groupset,
-                                           phi_new_local,    // From
-                                           delta_phi_local); // To
+    lbs_solver.AssembleWGDSADeltaPhiVector(groupset, phi_new_local, delta_phi_local);
 
     groupset.wgdsa_solver_->Assemble_b(delta_phi_local);
     groupset.wgdsa_solver_->Solve(delta_phi_local);
 
-    lbs_solver.DisAssembleWGDSADeltaPhiVector(groupset,
-                                              delta_phi_local, // From
-                                              phi_new_local);  // To
+    lbs_solver.DisAssembleWGDSADeltaPhiVector(groupset, delta_phi_local, phi_new_local);
   }
-  //============================================= Apply TGDSA
+  // Apply TGDSA
   if (groupset.apply_tgdsa_)
   {
     std::vector<double> delta_phi_local;
-    lbs_solver.AssembleTGDSADeltaPhiVector(groupset,
-                                           phi_new_local,    // From
-                                           delta_phi_local); // To
+    lbs_solver.AssembleTGDSADeltaPhiVector(groupset, phi_new_local, delta_phi_local);
 
     groupset.tgdsa_solver_->Assemble_b(delta_phi_local);
     groupset.tgdsa_solver_->Solve(delta_phi_local);
 
-    lbs_solver.DisAssembleTGDSADeltaPhiVector(groupset,
-                                              delta_phi_local, // From
-                                              phi_new_local);  // To
+    lbs_solver.DisAssembleTGDSADeltaPhiVector(groupset, delta_phi_local, phi_new_local);
   }
 
-  //============================================= Copy STL vector to PETSc Vec
+  // Copy STL vector to PETSc Vec
   lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, pc_output, PhiSTLOption::PHI_NEW);
 
   return 0;
 }
 
-// ###################################################################
-/**Applies WGDSA or TGDSA to the given input vector.*/
 int
 lbs::WGDSA_TGDSA_PreConditionerMult2(lbs::WGSContext<Mat, Vec, KSP>& gs_context_ptr,
                                      Vec phi_input,
@@ -70,42 +58,34 @@ lbs::WGDSA_TGDSA_PreConditionerMult2(lbs::WGSContext<Mat, Vec, KSP>& gs_context_
   lbs::LBSSolver& lbs_solver = gs_context_ptr.lbs_solver_;
   LBSGroupset& groupset = gs_context_ptr.groupset_;
 
-  //============================================= Copy PETSc vector to STL
+  // Copy PETSc vector to STL
   auto& phi_new_local = gs_context_ptr.lbs_solver_.PhiNewLocal();
   lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, phi_input, PhiSTLOption::PHI_NEW);
 
-  //============================================= Apply WGDSA
+  // Apply WGDSA
   if (groupset.apply_wgdsa_)
   {
     std::vector<double> delta_phi_local;
-    lbs_solver.AssembleWGDSADeltaPhiVector(groupset,
-                                           phi_new_local,    // From
-                                           delta_phi_local); // To
+    lbs_solver.AssembleWGDSADeltaPhiVector(groupset, phi_new_local, delta_phi_local);
 
     groupset.wgdsa_solver_->Assemble_b(delta_phi_local);
     groupset.wgdsa_solver_->Solve(delta_phi_local);
 
-    lbs_solver.DisAssembleWGDSADeltaPhiVector(groupset,
-                                              delta_phi_local, // From
-                                              phi_new_local);  // To
+    lbs_solver.DisAssembleWGDSADeltaPhiVector(groupset, delta_phi_local, phi_new_local);
   }
-  //============================================= Apply TGDSA
+  // Apply TGDSA
   if (groupset.apply_tgdsa_)
   {
     std::vector<double> delta_phi_local;
-    lbs_solver.AssembleTGDSADeltaPhiVector(groupset,
-                                           phi_new_local,    // From
-                                           delta_phi_local); // To
+    lbs_solver.AssembleTGDSADeltaPhiVector(groupset, phi_new_local, delta_phi_local);
 
     groupset.tgdsa_solver_->Assemble_b(delta_phi_local);
     groupset.tgdsa_solver_->Solve(delta_phi_local);
 
-    lbs_solver.DisAssembleTGDSADeltaPhiVector(groupset,
-                                              delta_phi_local, // From
-                                              phi_new_local);  // To
+    lbs_solver.DisAssembleTGDSADeltaPhiVector(groupset, delta_phi_local, phi_new_local);
   }
 
-  //============================================= Copy STL vector to PETSc Vec
+  // Copy STL vector to PETSc Vec
   lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, pc_output, PhiSTLOption::PHI_NEW);
 
   return 0;

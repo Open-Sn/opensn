@@ -10,7 +10,6 @@
 namespace chi_physics
 {
 
-/**Returns the input parameters.*/
 chi::InputParameters
 Solver::GetInputParameters()
 {
@@ -66,9 +65,7 @@ Solver::InitTimeStepper(const chi::InputParameters& params)
   if (user_params.Has("timestepper"))
   {
     auto stepper = Chi::GetStackItemPtrAsType<TimeStepper>(
-      /*stack=*/Chi::object_stack,
-      /*handle=*/params.GetParamValue<size_t>("timestepper"),
-      /*calling_function_name=*/__FUNCTION__);
+      Chi::object_stack, params.GetParamValue<size_t>("timestepper"), __FUNCTION__);
 
     stepper->SetTimeStepSize(params.GetParamValue<double>("dt"));
     stepper->SetTime(params.GetParamValue<double>("time"));
@@ -191,18 +188,6 @@ Solver::GetInfoWithPreCheck(const chi::ParameterBlock& params) const
   return GetInfo(params);
 }
 
-/**\addtogroup SolverBase
- *
- * \section Properties Properties that can be set
- * The following properties can be set via the lua call
- * `chi_lua::chiSolverSetProperties`
- * \copydoc chi_physics::Solver::SetProperties*/
-
-/**
-Base solver settable properties:
-* - `dt`, Timestep size
-* - `time`, Current time
-* */
 void
 Solver::SetProperties(const chi::ParameterBlock& params)
 {

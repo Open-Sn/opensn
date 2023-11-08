@@ -7,8 +7,6 @@
 
 #include <unistd.h>
 
-// ###################################################################
-/**Constructor for a sub interval*/
 chi_math::CDFSampler::SubIntvl::SubIntvl(std::string offset,
                                          int ibin,
                                          int fbin,
@@ -54,12 +52,10 @@ chi_math::CDFSampler::SubIntvl::SubIntvl(std::string offset,
   }
 }
 
-// ###################################################################
-/**Default constructor.*/
 chi_math::CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor, int final_res)
   : ref_cdf_(in_cdf)
 {
-  //=================================== Setting sub-division factor
+  // Setting sub-division factor
   if (subdiv_factor >= 1) this->subdiv_factor_ = subdiv_factor;
   else
   {
@@ -70,7 +66,7 @@ chi_math::CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor,
       this->subdiv_factor_ = 10; // sqrt(in_cdf.size());
   }
 
-  //=================================== Setting final resolution
+  // Setting final resolution
   if (final_res >= 3) this->final_res_ = final_res;
   else { this->final_res_ = 100; }
 
@@ -78,7 +74,7 @@ chi_math::CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor,
   //    << "Factors: " << this->subdiv_factor
   //    << " " << this->final_res;
 
-  //=================================== Sub-dividing the interval
+  // Sub-dividing the interval
   size_t cdf_size = in_cdf.size();
   size_t intvl_size = ceil(cdf_size / (double)this->subdiv_factor_);
 
@@ -105,31 +101,29 @@ chi_math::CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor,
   }
 }
 
-// ###################################################################
-/**Initiates the sampling process.*/
 int
 chi_math::CDFSampler::Sample(double x)
 {
   int ret_val = -1;
   int cdf_size = ref_cdf_.size();
 
-  //============================================= Check bracket lo and hi
+  // Check bracket lo and hi
   if (x <= ref_cdf_[0]) ret_val = 0;
   else if (x >= ref_cdf_[cdf_size - 1])
     ret_val = cdf_size - 1;
-  //============================================= Check internal
+  // Check internal
   else
   {
     std::pair<int, int> range(0, cdf_size - 1);
 
-    //================================= Sample sub-intvls for range
+    // Sample sub-intvls for range
     int num_sub_intvls = sub_intvls_.size();
     for (int s = 0; s < num_sub_intvls; s++)
     {
       if (sub_intvls_[s]->Sample(x, range)) break;
     }
 
-    //================================= Sample range
+    // Sample range
     //    chi::log.Log()
     //      << "Sampling " << x
     //      << " in range " << range.first << "-" << range.second;
@@ -162,12 +156,10 @@ chi_math::CDFSampler::Sample(double x)
   return ret_val;
 }
 
-// ###################################################################
-/**Sampling a sub-interval.*/
 bool
 chi_math::CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
 {
-  //======================================== If this was an inhibited intvl
+  // If this was an inhibited intvl
   if (inhibited)
   {
     if (cbin_i == 0)
@@ -189,8 +181,7 @@ chi_math::CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
       return true;
     }
   }
-  //======================================== If not inhibited
-  //                                         sample sub-intvls
+  // If not inhibited sample sub-intvls
   else
   {
     int num_sub_intvls = sub_intvls.size();
@@ -203,39 +194,6 @@ chi_math::CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
   return false;
 }
 
-// ###################################################################
-/**Sample a Cumulative Distribution Function (CDF) given a probability.
- *
- * The supplied vector should contain the upper bin boundary for each
- * bin and will return the bin associated with the bin that brackets
- * the supplied probability.
- *
- * Example:
- * Suppose we sample bins 0-9. Suppose also that the probalities for each
- * bin is as follows:
- * - 0.1 bin 0
- * - 0.1 bin 1
- * - 0.5 bin 5
- * - 0.3 bin 8
- *
- * The CDF for this probability distribution will look like this
- * - bin 0 = 0.1
- * - bin 1 = 0.2
- * - bin 2 = 0.2
- * - bin 3 = 0.2
- * - bin 4 = 0.2
- * - bin 5 = 0.7
- * - bin 6 = 0.7
- * - bin 7 = 0.7
- * - bin 8 = 1.0
- * - bin 9 = 1.0
- *
- * Supplying a random number between 0 and 1 should indicate sampling one
- * of the bins 0,1,5 or 8. The most inefficient way to do this is to
- * linearly loop through the cdf and check \f$ cdf_{i-1} \ge \theta < cdf_i \f$.
- *  An optimized version of this sampling would be to perform a recursive
- *  block search which starts with a course view of the cdf and then gradually
- *  refines the view until the final linear search can be performed.*/
 int
 chi_math::SampleCDF(double x, std::vector<double> cdf_bin)
 {
@@ -245,7 +203,7 @@ chi_math::SampleCDF(double x, std::vector<double> cdf_bin)
   size_t lookup_i = 0;
   size_t lookup_f = cdf_size - 1;
 
-  //======================================== Initial coursest level
+  // Initial coursest level
   size_t indA = 0;
   size_t indB = std::ceil(cdf_size / 2.0) - 1;
   size_t indC = cdf_size - 1;
@@ -257,7 +215,7 @@ chi_math::SampleCDF(double x, std::vector<double> cdf_bin)
   //  chi::log.Log() << "************ new prob x=" << x
   //   << " " << indA << " " << indB << " " << indC;
   //  refine_limit_reached = true;
-  //======================================== Recursively refine
+  // Recursively refine
   int refine_count = 0;
   while (!refine_limit_reached)
   {
@@ -298,7 +256,7 @@ chi_math::SampleCDF(double x, std::vector<double> cdf_bin)
   //  chi::log.Log()
   //    << "Final lookup range=" << lookup_i << "-" << lookup_f << " " << x;
 
-  //======================================== Perform final lookup
+  // Perform final lookup
   int ret_val = -1;
 
   if (x <= cdf_bin[0]) ret_val = 0;

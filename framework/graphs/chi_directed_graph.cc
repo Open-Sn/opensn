@@ -6,8 +6,6 @@
 #include <sstream>
 #include <algorithm>
 
-// ###################################################################
-/** Adds a vertex to the graph with a supplied id.*/
 void
 chi::DirectedGraph::VertexAccessor::AddVertex(size_t id, void* context)
 {
@@ -15,11 +13,6 @@ chi::DirectedGraph::VertexAccessor::AddVertex(size_t id, void* context)
   vertex_valid_flags_.push_back(true);
 }
 
-/** Adds a vertex to the graph where the ID is assigned to
- * the number of vertices already loaded on the graph.
- * For example, if there are 3 vertices on the graph (with
- * IDs 0 through 2) then the next vertex (this one) will
- * be assigned and ID of 3.*/
 void
 chi::DirectedGraph::VertexAccessor::AddVertex(void* context)
 {
@@ -27,8 +20,6 @@ chi::DirectedGraph::VertexAccessor::AddVertex(void* context)
   vertex_valid_flags_.push_back(true);
 }
 
-// ###################################################################
-/** Removes a vertex from the graph.*/
 void
 chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
 {
@@ -36,7 +27,7 @@ chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
 
   auto& vertex = vertices_[v];
 
-  //=================================== Get adjacent vertices
+  // Get adjacent vertices
   auto num_us = vertex.us_edge.size();
   auto num_ds = vertex.ds_edge.size();
   std::vector<size_t> adj_verts;
@@ -48,7 +39,7 @@ chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
   for (size_t u : vertex.ds_edge)
     adj_verts.push_back(u);
 
-  //=================================== Remove v from all u
+  // Remove v from all u
   for (size_t u : adj_verts)
   {
     vertices_[u].us_edge.erase(v);
@@ -58,8 +49,6 @@ chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
   vertex_valid_flags_[v] = false;
 }
 
-// ###################################################################
-/** Accesses a vertex from the graph.*/
 chi::GraphVertex&
 chi::DirectedGraph::VertexAccessor::operator[](size_t v)
 {
@@ -69,39 +58,24 @@ chi::DirectedGraph::VertexAccessor::operator[](size_t v)
   return vertices_[v];
 }
 
-// ###################################################################
-/** Adds a vertex to the graph. By default <I>context</I> is
- * assumed to be nullptr.*/
 void
-chi::DirectedGraph::AddVertex(size_t id, void* context /*=nullptr*/)
+chi::DirectedGraph::AddVertex(size_t id, void* context)
 {
   vertices.AddVertex(id, context);
 }
 
-// ###################################################################
-/** Adds a vertex to the graph. By default <I>context</I> is
- * assumed to be nullptr and <I>id</I> is assumed to be assigned
- * automatically. In
- * the latter case the vertex id will be the same as the order
- * in which it was added (0,1,2,3,etc ... will have id's 0,1,2,3,etc)*/
 void
-chi::DirectedGraph::AddVertex(void* context /*=nullptr*/)
+chi::DirectedGraph::AddVertex(void* context)
 {
   vertices.AddVertex(context);
 }
 
-// ###################################################################
-/** Removes a vertex from the graph. This method does not
- * free any context related data.*/
 void
 chi::DirectedGraph::RemoveVertex(size_t v)
 {
   vertices.RemoveVertex(v);
 }
 
-// ###################################################################
-/** Adds an edge to the graph. Range checks are supplied by the
- * vertex accessor.*/
 bool
 chi::DirectedGraph::AddEdge(size_t from, size_t to, double weight)
 {
@@ -114,9 +88,6 @@ chi::DirectedGraph::AddEdge(size_t from, size_t to, double weight)
   return true;
 }
 
-// ###################################################################
-/**Remove an edge from the graph. Range checks are supplied by the
- * vertex accessor.*/
 void
 chi::DirectedGraph::RemoveEdge(size_t from, size_t to)
 {
@@ -124,10 +95,6 @@ chi::DirectedGraph::RemoveEdge(size_t from, size_t to)
   vertices[to].us_edge.erase(from);
 }
 
-// ###################################################################
-/** Depth-First-Search main recursive algorithm. This is the recursive
- * portion of the method below this one
- * (chi_graph::DirectedGraph::DepthFirstSearch).*/
 void
 chi::DirectedGraph::DFSAlgorithm(std::vector<size_t>& traversal,
                                  std::vector<bool>& visited,
@@ -140,10 +107,6 @@ chi::DirectedGraph::DFSAlgorithm(std::vector<size_t>& traversal,
     if (not visited[v]) DFSAlgorithm(traversal, visited, v);
 }
 
-// ###################################################################
-/**SCC main recursive algorithm. This is the recursive call for the
- * method defined below this one
- * (chi_graph::DirectedGraph::FindStronglyConnectedConnections).*/
 void
 chi::DirectedGraph::SCCAlgorithm(size_t u,
                                  int& time,
@@ -188,15 +151,6 @@ chi::DirectedGraph::SCCAlgorithm(size_t u,
   }
 }
 
-// ###################################################################
-/**Find strongly connected components. This method is the implementation
- * of Tarjan's algorithm [1].
- *
- * [1] Tarjan R.E. "Depth-first search and linear graph algorithms",
- *     SIAM Journal on Computing, 1972.
- *
- * It returns collections of vertices that form strongly connected
- * components excluding singletons.*/
 std::vector<std::vector<size_t>>
 chi::DirectedGraph::FindStronglyConnectedComponents()
 {
@@ -217,16 +171,6 @@ chi::DirectedGraph::FindStronglyConnectedComponents()
   return SCCs;
 }
 
-// ###################################################################
-/** Generates a topological sort. This method is the implementation
- * of Kahn's algorithm [1].
- *
- * [1] Kahn, Arthur B. (1962), "Topological sorting of large networks",
- *     Communications of the ACM, 5 (11): 558–562
- *
- * \return Returns the vertex ids sorted topologically. If this
- *         vector is empty the algorithm failed because it detected
- *         cyclic dependencies.*/
 std::vector<size_t>
 chi::DirectedGraph::GenerateTopologicalSort()
 {
@@ -237,11 +181,10 @@ chi::DirectedGraph::GenerateTopologicalSort()
   L.reserve(vertices.size());
   S.reserve(vertices.size());
 
-  //======================================== Make a copy of the graph
+  // Make a copy of the graph
   auto cur_vertices = vertices;
 
-  //======================================== Identify vertices that
-  //                                         have no incoming edge
+  // Identify vertices that have no incoming edge
   for (auto& vertex : cur_vertices)
     if (vertex.us_edge.empty()) S.push_back(&vertex);
 
@@ -251,8 +194,7 @@ chi::DirectedGraph::GenerateTopologicalSort()
     goto endofalgo;
   }
 
-  //======================================== Repeatedly remove
-  //                                         vertices
+  // Repeatedly remove vertices
   while (not S.empty())
   {
     GraphVertex* node_n = S.back();
@@ -282,13 +224,6 @@ endofalgo:
   return L;
 }
 
-// ###################################################################
-/**Finds a sequence that minimizes the Feedback Arc Set (FAS). This
- * algorithm implements the algorithm depicted in [1].
- *
- * [1] Eades P., Lin X., Smyth W.F., "Fast & Effective heuristic for
- *     the feedback arc set problem", Information Processing Letters,
- *     Volume 47. 1993.*/
 std::vector<size_t>
 chi::DirectedGraph::FindApproxMinimumFAS()
 {
@@ -306,11 +241,11 @@ chi::DirectedGraph::FindApproxMinimumFAS()
 
   auto& TG = *this;
 
-  //==================================== Execute GR-algorithm
+  // Execute GR-algorithm
   std::vector<size_t> s1, s2, s;
   while (TG.vertices.GetNumValid() > 0)
   {
-    //======================== Remove sinks
+    // Remove sinks
     while (TG.GetNumSinks() > 0)
     {
       for (auto& u : TG.vertices)
@@ -322,7 +257,7 @@ chi::DirectedGraph::FindApproxMinimumFAS()
         }
     } // G contains sinks
 
-    //======================== Remove sources
+    // Remove sources
     while (TG.GetNumSources() > 0)
     {
       for (auto& u : TG.vertices)
@@ -334,7 +269,7 @@ chi::DirectedGraph::FindApproxMinimumFAS()
         }
     } // G contains sinks
 
-    //======================== Get max delta
+    // Get max delta
     std::pair<int, double> max_delta(-1, -100.0);
     for (auto& u : TG.vertices)
     {
@@ -342,12 +277,12 @@ chi::DirectedGraph::FindApproxMinimumFAS()
       if (delta > max_delta.second) max_delta = std::make_pair(u.id, delta);
     }
 
-    //======================== Remove max delta
+    // Remove max delta
     TG.RemoveVertex(max_delta.first);
     s1.push_back(max_delta.first);
   }
 
-  //========================== Make appr. minimum FAS sequence
+  // Make appr. minimum FAS sequence
   s.reserve(s1.size() + s2.size());
   for (size_t u : s1)
     s.push_back(u);
@@ -357,8 +292,6 @@ chi::DirectedGraph::FindApproxMinimumFAS()
   return s;
 }
 
-// ###################################################################
-/**Prints the graph in Graphviz format.*/
 void
 chi::DirectedGraph::PrintGraphviz(int location_mask)
 {
@@ -386,8 +319,6 @@ chi::DirectedGraph::PrintGraphviz(int location_mask)
   std::cout << o.str();
 }
 
-// ###################################################################
-/**Prints a sub-graph in Graphviz format.*/
 void
 chi::DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int location_mask)
 {
@@ -418,17 +349,16 @@ chi::DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int
   std::cout << o.str();
 }
 
-// ###################################################################
 std::vector<std::pair<size_t, size_t>>
 chi::DirectedGraph::RemoveCyclicDependencies()
 {
   std::vector<std::pair<size_t, size_t>> edges_to_remove;
 
-  //============================================= Utility lambdas
+  // Utility lambdas
   auto IsInList = [](std::vector<size_t>& list, size_t val)
   { return std::find(list.begin(), list.end(), val) != list.end(); };
 
-  //============================================= Find initial SCCs
+  // Find initial SCCs
   auto SCCs = FindStronglyConnectedComponents();
 
   int iter = 0;
@@ -437,18 +367,16 @@ chi::DirectedGraph::RemoveCyclicDependencies()
     if (Chi::log.GetVerbosity() >= chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2)
       Chi::log.LogAll() << "Inter cell cyclic dependency removal. Iteration " << ++iter;
 
-    //============================================= Remove bi-connected then
-    //                                              tri-connected SCCs then
-    //                                              n-connected
+    // Remove bi-connected then tri-connected SCCs then n-connected
     for (auto& subDG : SCCs)
     {
-      //====================================== If bi-connected
+      // If bi-connected
       if (subDG.size() == 2)
       {
         RemoveEdge(subDG.front(), subDG.back());
         edges_to_remove.emplace_back(subDG.front(), subDG.back());
       } // bi-connected
-        //====================================== If tri-connected
+        // If tri-connected
       else if (subDG.size() == 3)
       {
         bool found = false;
@@ -465,15 +393,15 @@ chi::DirectedGraph::RemoveCyclicDependencies()
           if (found) break;
         } // for u
       }   // tri-connected
-        //====================================== If n-connected
+        // If n-connected
       else
       {
-        //=============================== Add vertices to temporary graph
+        // Add vertices to temporary graph
         chi::DirectedGraph TG; // Temp Graph
         for (size_t k = 0; k < subDG.size(); ++k)
           TG.AddVertex();
 
-        //=============================== Add local connectivity
+        // Add local connectivity
         int mapping_u = 0;
         for (auto u : subDG)
         {
@@ -490,17 +418,16 @@ chi::DirectedGraph::RemoveCyclicDependencies()
           ++mapping_u;
         } // for u
 
-        //=============================== Make a copy of the graph verts
+        // Make a copy of the graph verts
         std::vector<chi::GraphVertex> verts_copy;
         verts_copy.reserve(TG.vertices.size());
         for (auto& v : TG.vertices)
           verts_copy.push_back(v);
 
-        //=============================== Solve the minimum Feedback
-        //                                     Arc Set (FAS) problem
+        // Solve the minimum Feedback Arc Set (FAS) problem
         auto s = TG.FindApproxMinimumFAS();
 
-        //========================== Build a sequence map
+        // Build a sequence map
         // This maps original sequence
         // to minFAS sequence. i.e. originally
         // we had v=0,1,2,3... and afterwards we
@@ -511,7 +438,7 @@ chi::DirectedGraph::RemoveCyclicDependencies()
         for (size_t u : s)
           smap[u] = count++;
 
-        //========================== Build edges to remove
+        // Build edges to remove
         std::vector<std::pair<int, int>> edges_to_rem;
         for (auto& u : verts_copy)
         {
@@ -534,7 +461,7 @@ chi::DirectedGraph::RemoveCyclicDependencies()
       } // n-connected
     }   // for sub-DG
 
-    //============================================= Find SSCs again
+    // Find SSCs again
     // This step is like an insurance policy for if
     // something came through. There should be no SSCs
     // after the minFAS process, however, we just look
@@ -545,16 +472,12 @@ chi::DirectedGraph::RemoveCyclicDependencies()
   return edges_to_remove;
 }
 
-// ###################################################################
-/**Clears all the data structures associated with the graph.*/
 void
 chi::DirectedGraph::Clear()
 {
   vertices.clear();
 }
 
-// ###################################################################
-/**Destructor.*/
 chi::DirectedGraph::~DirectedGraph()
 {
   Clear();

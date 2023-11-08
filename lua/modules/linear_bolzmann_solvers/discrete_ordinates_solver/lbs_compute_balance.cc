@@ -11,14 +11,6 @@ namespace lbs::disc_ord_lua_utils
 
 RegisterLuaFunctionAsIs(chiLBSComputeBalance);
 
-// ###################################################################
-/**Computes balance tables and prints it to the console.
- *
-\param SolverIndex int Handle to the solver for which the list is to be
-obtained.
-
-\ingroup LBSLuaFunctions
-\author Jan*/
 int
 chiLBSComputeBalance(lua_State* L)
 {
@@ -29,7 +21,7 @@ chiLBSComputeBalance(lua_State* L)
 
   LuaCheckNilValue(fname, L, 1);
 
-  //============================================= Get pointer to solver
+  // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
 
   auto& lbs_solver =

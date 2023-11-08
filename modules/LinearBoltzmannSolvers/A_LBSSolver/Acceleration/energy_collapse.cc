@@ -7,8 +7,7 @@
 
 namespace lbs::acceleration
 {
-// ###################################################################
-/***/
+
 TwoGridCollapsedInfo
 MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseScheme scheme)
 {
@@ -18,8 +17,7 @@ MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseSche
   const auto& sigma_t = xs.SigmaTotal();
   const auto& diffusion_coeff = xs.DiffusionCoefficient();
 
-  //============================================= Make a Dense matrix from
-  //                                              sparse transfer matrix
+  // Make a Dense matrix from sparse transfer matrix
   if (xs.TransferMatrices().empty())
     throw std::logic_error(fname + ": list of scattering matrices empty.");
 
@@ -30,8 +28,7 @@ MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseSche
     for (const auto& [row_g, gprime, sigma] : isotropic_transfer_matrix.Row(g))
       S[g][gprime] = sigma;
 
-  //============================================= Compiling the A and B matrices
-  //                                              for different methods
+  // Compiling the A and B matrices for different methods
   MatDbl A(num_groups, VecDbl(num_groups, 0.0));
   MatDbl B(num_groups, VecDbl(num_groups, 0.0));
   for (int g = 0; g < num_groups; g++)
@@ -53,7 +50,7 @@ MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseSche
     }
   } // for g
 
-  //============================================= Correction for zero xs groups
+  // Correction for zero xs groups
   // Some cross-sections developed from monte-carlo
   // methods can result in some of the groups
   // having zero cross-sections. In that case
@@ -70,11 +67,10 @@ MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseSche
   double collapsed_sig_a = 0.0;
   std::vector<double> spectrum(num_groups, 1.0);
 
-  //============================================= Perform power iteration
+  // Perform power iteration
   double rho = chi_math::PowerIteration(C, E, 1000, 1.0e-12);
 
-  //======================================== Compute two-grid diffusion
-  // quantities
+  // Compute two-grid diffusion quantities
   double sum = 0.0;
   for (int g = 0; g < num_groups; g++)
     sum += std::fabs(E[g]);
@@ -92,7 +88,7 @@ MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseSche
       collapsed_sig_a -= S[g][gp] * spectrum[gp];
   }
 
-  //======================================== Verbose output the spectrum
+  // Verbose output the spectrum
   Chi::log.Log0Verbose1() << "Fundamental eigen-value: " << rho;
   std::stringstream outstr;
   for (auto& xi : spectrum)

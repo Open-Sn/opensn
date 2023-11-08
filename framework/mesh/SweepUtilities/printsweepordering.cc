@@ -11,8 +11,6 @@
 
 #include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
 
-// ###################################################################
-/**Print a sweep ordering to file.*/
 void
 chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS* sweep_order,
                                                MeshContinuumPtr vol_continuum)
@@ -23,7 +21,7 @@ chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS*
   //  chi_mesh::MeshHandler* cur_handler = GetCurrentHandler();
   //  chi_mesh::VolumeMesher* mesher     = cur_handler->volume_mesher;
   //
-  //  //======================================================= Making
+  //  // Making
   //  containers std::vector<int> rank_of_cell; for (int c=0;
   //  c<vol_continuum->cells.size(); c++)
   //  {
@@ -36,7 +34,7 @@ chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS*
   //  omega.z = cos(polar);
   //
   //
-  //  //======================================================= Traverse the
+  //  // Traverse the
   //  graph int max_rank=-1;
   //
   //  for (int ci=0; ci<sweep_order->spls_->item_id.size(); ci++)
@@ -46,13 +44,13 @@ chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS*
   //
   //    for (int e=0; e < cell->faces.size(); e++)
   //    {
-  //      //======================================= Determine if the face
+  //      // Determine if the face
   //      //                                        is incident
   //      bool is_incoming = false;
   //      double dot_normal = omega.Dot(cell->faces[e].normal);
   //      if (dot_normal<0.0) {is_incoming = true;}
   //
-  //      //======================================= If incoming determine if
+  //      // If incoming determine if
   //      //                                        it is locally dependent
   //      if (is_incoming)
   //      {
@@ -83,7 +81,7 @@ chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS*
   //
   //  printf("Max rank=%d\n",max_rank);
   //
-  //  //======================================================= Sort ranks into
+  //  // Sort ranks into
   //  //                                                        flags
   //  std::vector<int>* ranked_cells;
   //  std::vector<std::vector<int>*> ranks;

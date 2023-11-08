@@ -47,12 +47,19 @@ public:
 
 protected:
   // operations
+
+  /**Cell data callback.*/
   void CellDataCallback();
+  /**Direction data callback.*/
   void DirectionDataCallback();
+  /**Applies diamond differencing on azimuthal directions.*/
   void PostCellDirSweepCallback();
 
   // rz kernels
+
+  /**Assembles the volumetric gradient term.*/
   void KernelFEMRZVolumetricGradientTerm();
+  /**Performs the integral over the surface of a face.*/
   void KernelFEMRZUpwindSurfaceIntegrals();
 };
 

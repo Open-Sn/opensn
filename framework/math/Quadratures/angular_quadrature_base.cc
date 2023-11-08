@@ -8,14 +8,6 @@
 #include <iomanip>
 #include <numeric>
 
-// ###################################################################
-/**Optimizes the angular quadrature for polar symmetry by removing
- * all the direction with downward pointing polar angles.
- *
- * \param normalization float. (Optional) The default is a negative number
- *                             which does not apply any normalization. If a
- *                             positive number is provided, the weights will be
- *                             normalized to sum to this number.*/
 void
 chi_math::AngularQuadrature::OptimizeForPolarSymmetry(const double normalization)
 {
@@ -43,9 +35,6 @@ chi_math::AngularQuadrature::OptimizeForPolarSymmetry(const double normalization
   omegas_ = std::move(new_omegas);
 }
 
-// ###################################################################
-/**Populates a map of moment m to the Spherical Harmonic indices
- * required.*/
 void
 chi_math::AngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimension)
 {
@@ -64,8 +53,6 @@ chi_math::AngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, 
         m_to_ell_em_map_.emplace_back(ell, m);
 }
 
-// ###################################################################
-/**Computes the discrete to moment operator.*/
 void
 chi_math::AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
                                                            int dimension)
@@ -95,7 +82,7 @@ chi_math::AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scatteri
   }
   d2m_op_built_ = true;
 
-  //=================================== Verbose printout
+  // Verbose printout
   std::stringstream outs;
   outs << "\nQuadrature d2m operator:\n";
   for (int n = 0; n < num_angles; n++)
@@ -112,8 +99,6 @@ chi_math::AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scatteri
   Chi::log.Log0Verbose1() << outs.str();
 }
 
-// ###################################################################
-/**Computes the moment to discrete operator.*/
 void
 chi_math::AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order,
                                                            int dimension)
@@ -145,7 +130,7 @@ chi_math::AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scatteri
   } // for m
   m2d_op_built_ = true;
 
-  //=================================== Verbose printout
+  // Verbose printout
   std::stringstream outs;
 
   outs << "\nQuadrature m2d operator:\n";
@@ -163,11 +148,6 @@ chi_math::AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scatteri
   Chi::log.Log0Verbose1() << outs.str();
 }
 
-// ###################################################################
-/**Returns a reference to the precomputed d2m operator. This will
- * throw a std::logic_error if the operator has not been built yet.
- * The operator is accessed as [m][d], where m is the moment index
- * and d is the direction index.*/
 std::vector<std::vector<double>> const&
 chi_math::AngularQuadrature::GetDiscreteToMomentOperator() const
 {
@@ -179,11 +159,6 @@ chi_math::AngularQuadrature::GetDiscreteToMomentOperator() const
   return d2m_op_;
 }
 
-// ###################################################################
-/**Returns a reference to the precomputed m2d operator. This will
- * throw a std::logic_error if the operator has not been built yet.
- * The operator is accessed as [m][d], where m is the moment index
- * and d is the direction index.*/
 std::vector<std::vector<double>> const&
 chi_math::AngularQuadrature::GetMomentToDiscreteOperator() const
 {
@@ -195,9 +170,6 @@ chi_math::AngularQuadrature::GetMomentToDiscreteOperator() const
   return m2d_op_;
 }
 
-// ###################################################################
-/**Returns a reference to the precomputed harmonic index map. This will
- * throw a std::logic_error if the map has not been built yet.*/
 const std::vector<chi_math::AngularQuadrature::HarmonicIndices>&
 chi_math::AngularQuadrature::GetMomentToHarmonicsIndexMap() const
 {
@@ -209,8 +181,6 @@ chi_math::AngularQuadrature::GetMomentToHarmonicsIndexMap() const
   return m_to_ell_em_map_;
 }
 
-// ###################################################################
-/**Constructor using custom directions.*/
 chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
                                                            std::vector<double>& polar,
                                                            std::vector<double>& in_weights,
@@ -227,7 +197,7 @@ chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& 
     Chi::Exit(EXIT_FAILURE);
   }
 
-  //================================================== Create angle pairs
+  // Create angle pairs
   std::stringstream ostr;
   double weight_sum = 0.0;
 
@@ -254,7 +224,7 @@ chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& 
     }
   }
 
-  //================================================== Create omega list
+  // Create omega list
   for (const auto& qpoint : abscissae_)
   {
     chi_mesh::Vector3 new_omega;

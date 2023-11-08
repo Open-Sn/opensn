@@ -6,15 +6,11 @@
 namespace lbs
 {
 
-// ###################################################################
-/**Constructor for an adjoint source function.*/
 AdjointSourceFunction::AdjointSourceFunction(const LBSSolver& lbs_solver)
   : SourceFunction(lbs_solver)
 {
 }
 
-// ###################################################################
-/**Adds Quantities of Interest to the nodal sources.*/
 void
 AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
                                                std::vector<double>& destination_q,

@@ -6,11 +6,14 @@
 namespace chi_mesh::sweep_management
 {
 
-// ########################################################################
 /**Implementation of the Adams-Adams-Hawkins Flux data structure.*/
 class AAH_FLUDS : public FLUDS
 {
 public:
+  /**This constructor initializes an auxiliary FLUDS based
+   * on a primary FLUDS. The restriction here is that the
+   * auxiliary FLUDS has the exact same sweep ordering as the
+   * primary FLUDS.*/
   AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data);
 
 private:
@@ -34,11 +37,24 @@ private:
   std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_old_;
 
 public:
+  /**Given a sweep ordering index, the outgoing face counter,
+   * the outgoing face dof, this function computes the location
+   * of this position's upwind psi in the local upwind psi vector
+   * and returns a reference to it.*/
   double* OutgoingPsi(int cell_so_index, int outb_face_counter, int face_dof, int n);
+  /**Given a sweep ordering index, the incoming face counter,
+   * the incoming face dof, this function computes the location
+   * where to store this position's outgoing psi and returns a reference
+   * to it.*/
   double* UpwindPsi(int cell_so_index, int inc_face_counter, int face_dof, int g, int n);
 
+  /**Given a outbound face counter this method returns a pointer
+   * to the location*/
   double* NLOutgoingPsi(int outb_face_count, int face_dof, int n);
 
+  /**Given a sweep ordering index, the incoming face counter,
+   * the incoming face dof, this function computes the location
+   * where to obtain the position's upwind psi.*/
   double* NLUpwindPsi(int nonl_inc_face_counter, int face_dof, int g, int n);
 
   size_t GetPrelocIFaceDOFCount(int prelocI) const;

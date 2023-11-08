@@ -331,11 +331,11 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
   Chi::log.Log() << "Computing RZ secondary unit integrals.\n";
   const auto& sdm = *discretization_;
 
-  //======================================== Define spatial weighting functions
+  // Define spatial weighting functions
   std::function<double(const chi_mesh::Vector3&)> swf =
     chi_math::SpatialDiscretization::CylindricalRZSpatialWeightFunction;
 
-  //======================================== Define lambda for cell-wise comps
+  // Define lambda for cell-wise comps
   auto ComputeCellUnitIntegrals = [&sdm, &swf](const chi_mesh::Cell& cell)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -352,21 +352,21 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
       {
         for (const auto& qp : vol_qp_data.QuadraturePointIndices())
         {
-          IntV_shapeI_shapeJ[i][j] +=
-            swf(vol_qp_data.QPointXYZ(qp)) * vol_qp_data.ShapeValue(i, qp) *
-            vol_qp_data.ShapeValue(j, qp) * vol_qp_data.JxW(qp); // M-matrix
-        }                                                        // for qp
-      }                                                          // for j
-    }                                                            // for i
+          IntV_shapeI_shapeJ[i][j] += swf(vol_qp_data.QPointXYZ(qp)) *
+                                      vol_qp_data.ShapeValue(i, qp) *
+                                      vol_qp_data.ShapeValue(j, qp) * vol_qp_data.JxW(qp);
+        } // for qp
+      }   // for j
+    }     // for i
 
-    return lbs::UnitCellMatrices{{},                 // K-matrix
-                                 {},                 // G-matrix
-                                 IntV_shapeI_shapeJ, // M-matrix
-                                 {},                 // Vi-vectors
+    return lbs::UnitCellMatrices{{},
+                                 {},
+                                 IntV_shapeI_shapeJ,
+                                 {},
 
-                                 {},  // face M-matrices
-                                 {},  // face G-matrices
-                                 {}}; // face Si-vectors
+                                 {},
+                                 {},
+                                 {}};
   };
 
   const size_t num_local_cells = grid_ptr_->local_cells.size();

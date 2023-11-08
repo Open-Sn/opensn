@@ -5,7 +5,6 @@
 #include "framework/mesh/Cell/cell.h"
 #include <array>
 
-// ###################################################################
 namespace chi_math::cell_mapping
 {
 
@@ -24,9 +23,9 @@ public:
   finite_element::SurfaceQuadraturePointData
   MakeSurfaceQuadraturePointData(size_t face_index) const override;
 
-  // ################################################## Define standard
-  //                                                    slab linear shape
-  //                                                    functions
+  /**
+   * Define standard slab linear shape functions
+   */
   double SlabShape(uint32_t index,
                    const chi_mesh::Vector3& qpoint,
                    bool on_surface = false,
@@ -34,9 +33,9 @@ public:
 
   double SlabGradShape(uint32_t index) const;
 
-  // ############################################### Actual shape functions
-  //                                                 as function of cartesian
-  //                                                 coordinates
+  /**
+   * Actual shape functions as function of cartesian coordinates
+   */
   double ShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
 
   chi_mesh::Vector3 GradShapeValue(int i, const chi_mesh::Vector3& xyz) const override;

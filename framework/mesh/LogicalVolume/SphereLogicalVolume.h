@@ -5,7 +5,6 @@
 namespace chi_mesh
 {
 
-// ###################################################################
 /**Spherical logical volume.*/
 class SphereLogicalVolume : public LogicalVolume
 {

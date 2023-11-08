@@ -27,7 +27,7 @@ OrthogonalMeshGenerator::GetInputParameters()
 OrthogonalMeshGenerator::OrthogonalMeshGenerator(const chi::InputParameters& params)
   : MeshGenerator(params)
 {
-  //======================================== Parse the node_sets param
+  // Parse the node_sets param
   if (params.ParametersAtAssignment().Has("node_sets"))
   {
     auto& node_sets_param = params.GetParam("node_sets");
@@ -42,7 +42,7 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const chi::InputParameters& par
     }
   }
 
-  //======================================== Check they were not empty and <=3
+  // Check they were not empty and <=3
   ChiInvalidArgumentIf(node_sets_.empty(),
                        "No nodes have been provided. At least one node set must be provided");
 
@@ -60,7 +60,7 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const chi::InputParameters& par
     ++ns;
   }
 
-  //======================================== Check each node_set
+  // Check each node_set
   size_t set_number = 0;
   for (const auto& node_set : node_sets_)
   {
@@ -92,7 +92,6 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const chi::InputParameters& par
   } // for node_set in node_sets_
 }
 
-// ##################################################################
 std::unique_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
@@ -110,13 +109,12 @@ OrthogonalMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<Unpartitioned
       ""); // This will never get triggered because of the checks in constructor
 }
 
-// ##################################################################
 std::unique_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double>& vertices)
 {
   auto umesh = std::make_unique<UnpartitionedMesh>();
 
-  //======================================== Reorient 1D verts along z
+  // Reorient 1D verts along z
   std::vector<Vertex> zverts;
   zverts.reserve(vertices.size());
   for (double z_coord : vertices)
@@ -124,7 +122,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
 
   umesh->GetMeshAttributes() = DIMENSION_1 | ORTHOGONAL;
 
-  //======================================== Create vertices
+  // Create vertices
   size_t Nz = vertices.size();
 
   umesh->GetMeshOptions().ortho_Nx = 1;
@@ -137,7 +135,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   for (auto& vertex : zverts)
     umesh->GetVertices().push_back(vertex);
 
-  //======================================== Create cells
+  // Create cells
   const size_t max_cz = zverts.size() - 2;
   for (size_t c = 0; c < (zverts.size() - 1); ++c)
   {
@@ -177,7 +175,6 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   return umesh;
 }
 
-// ##################################################################
 std::unique_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double>& vertices_1d_x,
                                                         const std::vector<double>& vertices_1d_y)
@@ -186,7 +183,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
 
   umesh->GetMeshAttributes() = DIMENSION_2 | ORTHOGONAL;
 
-  //======================================== Create vertices
+  // Create vertices
   const size_t Nx = vertices_1d_x.size();
   const size_t Ny = vertices_1d_y.size();
 
@@ -221,7 +218,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
         cells_ij_to_i_map[i][j] = k++;
   }
 
-  //======================================== Create cells
+  // Create cells
   auto& vmap = vertex_ij_to_i_map;
   auto& cmap = cells_ij_to_i_map;
   const size_t max_j = Nx - 2;
@@ -278,7 +275,6 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   return umesh;
 }
 
-// ##################################################################
 std::unique_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double>& vertices_1d_x,
                                                         const std::vector<double>& vertices_1d_y,
@@ -288,7 +284,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
 
   umesh->GetMeshAttributes() = DIMENSION_3 | ORTHOGONAL;
 
-  //======================================== Create vertices
+  // Create vertices
   size_t Nx = vertices_1d_x.size();
   size_t Ny = vertices_1d_y.size();
   size_t Nz = vertices_1d_z.size();
@@ -342,7 +338,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
           cells_ijk_to_i_map[i][j][k] = c++;
   }
 
-  //======================================== Create cells
+  // Create cells
   auto& vmap = vertex_ijk_to_i_map;
   auto& cmap = cells_ijk_to_i_map;
   const size_t max_j = Nx - 2;

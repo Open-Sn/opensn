@@ -8,51 +8,6 @@
 namespace mg_diffusion::mgd_lua_utils
 {
 
-// #############################################################################
-/** Sets a property of a Diffusion solver. Please also consult the whitepaper
- * for the Diffusion solver (<a
- * href="../../whitepages/DiffusionSolver/DiffusionSolver.pdf">
- * Diffusion Whitepaper</a>)
-
-\n\n Additional basic options can be set as indicated in \ref
-LuaDiffusionBasicOptions
-
-\param SolverHandle int Handle to an existing diffusion solver.
-\param PropertyName string Name for a specific property.
-\param Values varying Number of inputs associated with the index.<br>
-
-##_
-
-###PropertyName\n
-"boundary_type"\n
- Boundary type. Expects boundary index then <B>BoundaryTypeName</B>
- then type value.\n\n
-
-\code
-chiCFEMMGDiffusionSetBCProperty(solver,"boundary_type",bdID,"vacuum")
-\endcode
-
-### BoundaryTypeName
-reflecting\n
- Reflecting boundary conditions. Synonymous with Neumann with a
- derivative of 0.0.
-             \f[ -D \hat{n}\cdot \nabla \phi = 0 \f]\n\n
-
-neumann\n
- Constant derivative boundary condition. Expects to be followed
- by a constant \f$ f \f$ representing
-                    \f[ -D \hat{n}\cdot \nabla \phi = f \f]\n\n
-
-vacuum\n
- Vacuum boundary conditions. More appropriate to neutron diffusion.
-   \f[ \frac{1}{4}\phi + \frac{1}{2} D \hat{n}\cdot \nabla \phi = 0 \f]\n\n
-
-robin\n
- Robin boundary condition of the form
-                   \f[ a \phi + b D \hat{n}\cdot \nabla \phi = f \f]\n\n
-
-\ingroup LuaDiffusion
-\author Jean*/
 int
 chiCFEMMGDiffusionSetBCProperty(lua_State* L)
 {
@@ -63,17 +18,17 @@ chiCFEMMGDiffusionSetBCProperty(lua_State* L)
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
 
-  //==========================sss=================== Get solver
+  // Get solver
   LuaCheckNumberValue(fname, L, 1);
   const int solver_index = lua_tonumber(L, 1);
 
   auto& solver = Chi::GetStackItem<mg_diffusion::Solver>(Chi::object_stack, solver_index, fname);
 
-  //============================================= Get property index
+  // Get property index
   LuaCheckStringValue(fname, L, 2);
   const std::string property_name = lua_tostring(L, 2);
 
-  //============================================= Handle properties
+  // Handle properties
   if (property_name == "boundary_type")
   {
     if (num_args < 4)

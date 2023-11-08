@@ -25,24 +25,23 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
 
   if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH) InitializeAlgoDOG();
 
-  //=================================== Initialize delayed upstream data
+  // Initialize delayed upstream data
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
       angset->InitializeDelayedUpstreamData();
 
-  //=================================== Get local max num messages accross
-  //                                    anglesets
+  // Get local max num messages accross anglesets
   int local_max_num_messages = 0;
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
       local_max_num_messages = std::max(angset->GetMaxBufferMessages(), local_max_num_messages);
 
-  //=================================== Reconcile all local maximums
+  // Reconcile all local maximums
   int global_max_num_messages = 0;
   MPI_Allreduce(
     &local_max_num_messages, &global_max_num_messages, 1, MPI_INT, MPI_MAX, Chi::mpi.comm);
 
-  //=================================== Propogate items back to sweep buffers
+  // Propogate items back to sweep buffers
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
       angset->SetMaxBufferMessages(global_max_num_messages);
@@ -57,15 +56,13 @@ SweepScheduler::GetSweepChunk()
 void
 SweepScheduler::InitializeAlgoDOG()
 {
-  //================================================== Load all anglesets
-  //                                                   in preperation for
-  //                                                   sorting
-  //======================================== Loop over angleset groups
+  // Load all anglesets in preperation for sorting
+  // Loop over angleset groups
   for (size_t q = 0; q < angle_agg_.angle_set_groups.size(); q++)
   {
     TAngleSetGroup& angleset_group = angle_agg_.angle_set_groups[q];
 
-    //================================= Loop over anglesets in group
+    // Loop over anglesets in group
     size_t num_anglesets = angleset_group.AngleSets().size();
     for (size_t as = 0; as < num_anglesets; as++)
     {
@@ -74,7 +71,7 @@ SweepScheduler::InitializeAlgoDOG()
 
       const TLEVELED_GRAPH& leveled_graph = spds.GetGlobalSweepPlanes();
 
-      //========================== Find location depth
+      // Find location depth
       int loc_depth = -1;
       for (size_t level = 0; level < leveled_graph.size(); level++)
       {
@@ -88,7 +85,7 @@ SweepScheduler::InitializeAlgoDOG()
         } // for locations in plane
       }   // for sweep planes
 
-      //========================== Set up rule values
+      // Set up rule values
       if (loc_depth >= 0)
       {
         RULE_VALUES new_rule_vals(angleset);
@@ -111,7 +108,7 @@ SweepScheduler::InitializeAlgoDOG()
     } // for anglesets
   }   // for quadrants/anglesetgroups
 
-  //================================================== Init sort functions
+  // Init sort functions
   struct
   {
     bool operator()(const RULE_VALUES& a, const RULE_VALUES& b)
@@ -146,7 +143,7 @@ SweepScheduler::InitializeAlgoDOG()
     }
   } compare_omega_z;
 
-  //================================================== Sort
+  // Sort
   std::stable_sort(rule_values_.begin(), rule_values_.end(), compare_D);
   std::stable_sort(rule_values_.begin(), rule_values_.end(), compare_omega_x);
   std::stable_sort(rule_values_.begin(), rule_values_.end(), compare_omega_y);
@@ -165,7 +162,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 
   Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::SINGLE_OCCURRENCE, ev_info);
 
-  //==================================================== Loop till done
+  // Loop till done
   bool finished = false;
   size_t scheduled_angleset = 0;
   while (!finished)
@@ -175,7 +172,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
     {
       auto angleset = rule_value.angle_set;
 
-      //=============================== Query angleset status
+      // Query angleset status
       // Status will here be one of the following:
       //  - RECEIVING.
       //      Meaning it is either waiting for messages or actively receiving it
@@ -186,7 +183,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       Status status =
         angleset->AngleSetAdvance(sweep_chunk, sweep_timing_events_tag_, ExePerm::NO_EXEC_IF_READY);
 
-      //=============================== Execute if ready and allowed
+      // Execute if ready and allowed
       // If this angleset is the one scheduled to run
       // and it is ready then it will be given permission
       if (status == Status::READY_TO_EXECUTE)
@@ -216,7 +213,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
     } // for each angleset rule
   }   // while not finished
 
-  //================================================== Receive delayed data
+  // Receive delayed data
   Chi::mpi.Barrier();
   bool received_delayed_data = false;
   while (not received_delayed_data)
@@ -233,7 +230,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       }
   }
 
-  //================================================== Reset all
+  // Reset all
   for (auto& angle_set_group : angle_agg_.angle_set_groups)
     for (auto& angle_set : angle_set_group.AngleSets())
       angle_set->ResetSweepBuffers();
@@ -261,7 +258,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 
   Chi::log.LogEvent(sweep_event_tag_, chi::ChiLog::EventType::SINGLE_OCCURRENCE, ev_info_i);
 
-  //================================================== Loop over AngleSetGroups
+  // Loop over AngleSetGroups
   AngleSetStatus completion_status = AngleSetStatus::NOT_FINISHED;
   while (completion_status == AngleSetStatus::NOT_FINISHED)
   {
@@ -277,7 +274,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
       } // for angleset
   }     // while not finished
 
-  //================================================== Receive delayed data
+  // Receive delayed data
   Chi::mpi.Barrier();
   bool received_delayed_data = false;
   while (not received_delayed_data)
@@ -294,7 +291,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
       }
   }
 
-  //================================================== Reset all
+  // Reset all
   for (auto& angle_set_group : angle_agg_.angle_set_groups)
     for (auto& angle_set : angle_set_group.AngleSets())
       angle_set->ResetSweepBuffers();

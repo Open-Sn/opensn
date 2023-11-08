@@ -13,21 +13,12 @@
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportToObj);
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportPolyFile);
 
-// #############################################################################
-//  Create
-/** Exports mesh as a .obj format.
- *
-\param SurfaceHandle int Handle to the surface on which the operation is to be
-performed. \param FileName char* Path to the file to be exported.
-
-\ingroup LuaSurfaceMesh
-\author Jan*/
 int
 chiSurfaceMeshExportToObj(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //============================================= Get arguments
+  // Get arguments
   int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError("chiSurfaceMeshExportObj", 2, num_args);
 
@@ -44,21 +35,12 @@ chiSurfaceMeshExportToObj(lua_State* L)
   return 0;
 }
 
-// #############################################################################
-//  Create
-/** Exports mesh as a .poly format.
- *
-\param SurfaceHandle int Handle to the surface on which the operation is to be
-performed. \param FileName char* Path and basename to the file to be exported.
-
-\ingroup LuaSurfaceMesh
-\author Jan*/
 int
 chiSurfaceMeshExportPolyFile(lua_State* L)
 {
   auto& cur_hndlr = chi_mesh::GetCurrentHandler();
 
-  //============================================= Get arguments
+  // Get arguments
   int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError("chiSurfaceMeshExportPolyFile", 2, num_args);
 

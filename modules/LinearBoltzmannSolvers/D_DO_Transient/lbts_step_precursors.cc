@@ -18,10 +18,10 @@ lbs::DiscOrdTransientSolver::StepPrecursors()
 
   const double eff_dt = theta * dt_;
 
-  //============================================= Clear destination vector
+  // Clear destination vector
   precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
 
-  //================================================== Loop over local cells
+  // Loop over local cells
   // Uses phi_new and precursor_prev_local to compute
   // precursor_new_local(theta-flavor)
   for (auto& cell : grid_ptr_->local_cells)
@@ -30,12 +30,12 @@ lbs::DiscOrdTransientSolver::StepPrecursors()
     const auto& transport_view = cell_transport_views_[cell.local_id_];
     const double cell_volume = transport_view.Volume();
 
-    //==================== Obtain xs
+    // Obtain xs
     const auto& xs = matid_to_xs_map_.at(cell.material_id_);
     const auto& precursors = xs->Precursors();
     const auto& nu_delayed_sigma_f = xs->NuDelayedSigmaF();
 
-    //======================================== Compute delayed fission rate
+    // Compute delayed fission rate
     double delayed_fission = 0.0;
     for (int i = 0; i < transport_view.NumNodes(); ++i)
     {
@@ -46,7 +46,7 @@ lbs::DiscOrdTransientSolver::StepPrecursors()
         delayed_fission += nu_delayed_sigma_f[g] * phi_new_local_[uk_map + g] * node_V_fraction;
     }
 
-    //========================================= Loop over precursors
+    // Loop over precursors
     const auto& max_precursors = max_precursors_per_material_;
     for (unsigned int j = 0; j < xs->NumPrecursors(); ++j)
     {
@@ -63,7 +63,7 @@ lbs::DiscOrdTransientSolver::StepPrecursors()
     }
   } // for cell
 
-  //======================================== Compute t^{n+1} value
+  // Compute t^{n+1} value
   {
     auto& Cj = precursor_new_local_;
     const auto& Cj_prev = precursor_prev_local_;

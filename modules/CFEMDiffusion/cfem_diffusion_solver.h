@@ -41,9 +41,12 @@ public:
   size_t num_local_dofs_ = 0;
   size_t num_globl_dofs_ = 0;
 
-  Vec x_ = nullptr; // approx solution
-  Vec b_ = nullptr; // RHS
-  Mat A_ = nullptr; // linear system matrix
+  /// approx solution
+  Vec x_ = nullptr;
+  /// RHS
+  Vec b_ = nullptr;
+  /// linear system matrix
+  Mat A_ = nullptr;
 
   typedef std::pair<BoundaryType, std::vector<double>> BoundaryInfo;
   typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;

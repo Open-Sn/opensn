@@ -51,12 +51,11 @@ RCCLogicalVolume::Inside(const chi_mesh::Vector3& point) const
   const Vec3 cyl_unit_dir = cyl_dir_vec.Normalized(); // aka cud
   const double cyl_length = cyl_dir_vec.Norm();
 
-  //====================================== Check if point is within
-  //                                       normal extents
+  // Check if point is within normal extents
   const double p0r_dot_cud = p0r.Dot(cyl_unit_dir);
   if (p0r_dot_cud < 0.0 or p0r_dot_cud > cyl_length) return false;
 
-  //====================================== Building rotation matrix
+  // Building rotation matrix
   // This rotation matrix must be such that,
   // when a coordinate system is rotated with it,
   // the new normal vector points along the
@@ -75,12 +74,10 @@ RCCLogicalVolume::Inside(const chi_mesh::Vector3& point) const
     tangent = tangent / tangent.Norm();
   }
 
-  //====================================== Project p0r onto the binorm and
-  //                                       tangent
+  // Project p0r onto the binorm and tangent
   const Vec3 p0r_projected(p0r.Dot(tangent), p0r.Dot(binorm), 0.0);
 
-  //====================================== Determine if point is within
-  // cylinder
+  // Determine if point is within cylinder
   if (p0r_projected.NormSquare() <= r_ * r_) return true;
   else
     return false;

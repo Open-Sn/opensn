@@ -8,7 +8,6 @@ class Chi;
 namespace chi
 {
 
-//################################################################### Class def
 /**An object for storing various MPI states.*/
 class MPI_Info
 {
@@ -31,11 +30,14 @@ private:
   MPI_Info() = default;
 
 public:
+  /**Access to the singleton*/
   static MPI_Info& GetInstance() noexcept;
 
 public:
-  MPI_Info(const MPI_Info&) = delete;           // Deleted copy constructor
-  MPI_Info operator=(const MPI_Info&) = delete; // Deleted assigment operator
+  /// Deleted copy constructor
+  MPI_Info(const MPI_Info&) = delete;
+  /// Deleted assigment operator
+  MPI_Info operator=(const MPI_Info&) = delete;
 
 public:
   /**Sets the active communicator*/

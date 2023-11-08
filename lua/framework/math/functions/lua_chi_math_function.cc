@@ -9,15 +9,16 @@
 namespace chi_math::functions::lua_utils
 {
 
+/**Evaluates a function of base type `FunctionXYZDimAToDimB`.
+ * \param handle int. Handle to the function to evaluate.
+ * \param params Varying. Table or individual arguments.
+ *
+ * \return Varying Either a single number or a table of output values.
+ */
 int chiFunctionDimAToDimBEvaluate(lua_State* L);
 
 RegisterLuaFunctionAsIs(chiFunctionDimAToDimBEvaluate);
 
-/**Evaluates a function of base type `FunctionXYZDimAToDimB`.
-\param handle int. Handle to the function to evaluate.
-\param params Varying. Table or individual arguments.
-
-\return Varying Either a single number or a table of output values.*/
 int
 chiFunctionDimAToDimBEvaluate(lua_State* L)
 {
@@ -25,14 +26,14 @@ chiFunctionDimAToDimBEvaluate(lua_State* L)
   const int num_args = lua_gettop(L);
   if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
-  // ================================== Getting function object
+  // Getting function object
   LuaCheckNilValue(fname, L, 1);
   const size_t handle = lua_tointeger(L, 1);
 
   const auto& function =
     Chi::GetStackItem<chi_math::FunctionDimAToDimB>(Chi::object_stack, handle, fname);
 
-  // ================================== Getting params
+  // Getting params
   std::vector<double> params;
   if (lua_istable(L, 2))
   {
@@ -51,10 +52,10 @@ chiFunctionDimAToDimBEvaluate(lua_State* L)
     }
   }
 
-  // ================================== Calling function
+  // Calling function
   const std::vector<double> values = function.Evaluate(params);
 
-  //=================================== Parse outputs
+  // Parse outputs
   if (values.size() == 1)
   {
     lua_pushnumber(L, values.front());

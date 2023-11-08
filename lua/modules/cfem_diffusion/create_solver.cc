@@ -8,12 +8,6 @@
 namespace cfem_diffusion::cfem_diffusion_lua_utils
 {
 
-// #############################################################################
-/** Creates a CFEM Diffusion solver.
-
-\return Handle int Handle to the created solver.
-\ingroup LuaDiffusion
-*/
 int
 chiCFEMDiffusionSolverCreate(lua_State* L)
 {

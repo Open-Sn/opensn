@@ -9,27 +9,6 @@
 
 RegisterLuaFunctionAsIs(chiPhysicsAddMaterial);
 
-// #############################################################################
-/** Adds a material to the problem. Materials are added to the global
- * physics handler and is therefore accessible across all meshes and solvers.
- *
-\param Name char (Optional) Material name.
-
-\return MaterialHandle int Handle to the created material.
-
-
-##_
-
-### Example\n
-Example lua code:
-\code
-materials = {}
-materials[1] = chiPhysicsAddMaterial("Test Material");
-\endcode
-
-
-\ingroup LuaPhysicsMaterials
-\author Jan*/
 int
 chiPhysicsAddMaterial(lua_State* L)
 {

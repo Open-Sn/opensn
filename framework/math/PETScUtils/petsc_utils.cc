@@ -128,14 +128,14 @@ PetscErrorCode
 RelativeResidualConvergenceTest(
   KSP ksp, PetscInt, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
 {
-  //============================== Compute rhs norm
+  // Compute rhs norm
   Vec Rhs;
   KSPGetRhs(ksp, &Rhs);
   double rhs_norm;
   VecNorm(Rhs, NORM_2, &rhs_norm);
   if (rhs_norm < 1.0e-12) rhs_norm = 1.0;
 
-  //============================== Compute test criterion
+  // Compute test criterion
   double tol;
   int64_t maxIts;
   KSPGetTolerances(ksp, nullptr, &tol, nullptr, &maxIts);
@@ -198,7 +198,7 @@ KSPMonitorStraight(KSP ksp, PetscInt n, PetscReal rnorm, void*)
 }
 
 void
-CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL /*=true*/)
+CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL)
 {
   if (resize_STL)
   {
@@ -219,7 +219,7 @@ CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL /
 }
 
 void
-CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool resize_STL /*=true*/)
+CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool resize_STL)
 {
   if (resize_STL)
   {
@@ -265,7 +265,7 @@ CopyGlobalVecToSTLvector(Vec x,
                          const std::vector<int64_t>& global_indices,
                          std::vector<double>& data)
 {
-  //=================================== Populating local indices
+  // Populating local indices
   size_t N = global_indices.size();
   std::vector<int64_t> local_indices(N, 0);
   size_t counter = 0;
@@ -275,12 +275,12 @@ CopyGlobalVecToSTLvector(Vec x,
     ++counter;
   }
 
-  //=================================== Creating PETSc vector
+  // Creating PETSc vector
   Vec local_vec;
   VecCreateSeq(PETSC_COMM_SELF, global_indices.size() + 1, &local_vec);
   VecSet(local_vec, 0.0);
 
-  //=================================== Create and transfer index sets
+  // Create and transfer index sets
   IS global_set;
   IS local_set;
   ISCreateGeneral(PETSC_COMM_SELF, N, global_indices.data(), PETSC_COPY_VALUES, &global_set);
@@ -290,7 +290,7 @@ CopyGlobalVecToSTLvector(Vec x,
   VecScatterBegin(scat, x, local_vec, INSERT_VALUES, SCATTER_FORWARD);
   VecScatterEnd(scat, x, local_vec, INSERT_VALUES, SCATTER_FORWARD);
 
-  //=================================== Copy to STL
+  // Copy to STL
   data.clear();
   data.resize(N, 0.0);
   const double* x_ref;
@@ -300,7 +300,7 @@ CopyGlobalVecToSTLvector(Vec x,
 
   VecRestoreArrayRead(x, &x_ref);
 
-  //=================================== Cleanup
+  // Cleanup
   ISDestroy(&global_set);
   ISDestroy(&local_set);
 

@@ -8,7 +8,6 @@
 namespace chi_mesh::sweep_management
 {
 
-// ###################################################################
 /**Contains multiple levels*/
 class SPDS
 {
@@ -36,7 +35,9 @@ public:
     return cell_face_orientations_;
   }
 
+  /** Given a location J index, maps to a predecessor location.*/
   int MapLocJToPrelocI(int locJ) const;
+  /** Given a location J index, maps to a dependent location.*/
   int MapLocJToDeplocI(int locJ) const;
 
   virtual ~SPDS() = default;

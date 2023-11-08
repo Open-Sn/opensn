@@ -6,7 +6,6 @@ namespace chi_math::finite_element
 {
 typedef std::vector<chi_mesh::Vector3> VecVec3;
 
-// #############################################
 /**Stored relevant quadrature point information
  * for volumetric integrals.*/
 class VolumetricQuadraturePointData
@@ -44,7 +43,6 @@ protected:
   size_t num_nodes_ = 0;
 };
 
-// #############################################
 /**Stores relevant quadrature point information
  * for surface integrals.*/
 class SurfaceQuadraturePointData : public VolumetricQuadraturePointData

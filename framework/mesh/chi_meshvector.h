@@ -7,8 +7,6 @@ namespace chi_mesh
 {
 struct TensorRank2Dim3;
 
-//=============================================== General 3D vector structure
-
 /**
  * General 3 element vector structure.
  * \author Jan
@@ -127,7 +125,6 @@ struct Vector3
     return *this;
   }
 
-  //============================================= Addition
   /**Component-wise addition of two vectors.
    * \f$ \vec{w} = \vec{x} + \vec{y} \f$*/
   Vector3 operator+(const Vector3& that) const
@@ -174,7 +171,6 @@ struct Vector3
     return *this;
   }
 
-  //============================================= Subtraction
   /**Component-wise subtraction.
    * \f$ \vec{w} = \vec{x} - \vec{y} \f$*/
   Vector3 operator-(const Vector3& that) const
@@ -198,7 +194,6 @@ struct Vector3
     return *this;
   }
 
-  //============================================= Multiplication
   /**Vector component-wise multiplication by scalar.
    * \f$ \vec{w} = \vec{x} \alpha \f$*/
   Vector3 operator*(const double value) const
@@ -245,7 +240,6 @@ struct Vector3
     return *this;
   }
 
-  //============================================= Division
   /**Vector component-wise division by scalar.
    * \f$ w_i = \frac{x_i}{\alpha} \f$*/
   Vector3 operator/(const double value) const
@@ -292,7 +286,6 @@ struct Vector3
     return *this;
   }
 
-  //============================================= Element access
   /**Returns a copy of the value at the given index.*/
   double operator[](const size_t i) const
   {
@@ -317,21 +310,18 @@ struct Vector3
     return this->x;
   }
 
-  //============================================= Tensor product
   /**
    * Tensor product of two vectors.
    * \f$ \vec{\vec{T}} = \vec{x} \otimes \vec{y} \f$
    */
   TensorRank2Dim3 OTimes(const Vector3& that) const;
 
-  //============================================= Tensor dot product
   /**
    * Dot product of vector and a rank-2 tensor.
    * \f$ \vec{w} = \vec{x} \bullet \vec{\vec{T}} \f$
    */
   Vector3 Dot(const TensorRank2Dim3& that) const;
 
-  //============================================= Operations
   /**
    * Vector cross-product.
    * \f$ \vec{w} = \vec{x} \times \vec{y} \f$

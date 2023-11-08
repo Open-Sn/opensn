@@ -192,7 +192,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
   const size_t num_raw_cells = raw_cells_.size();
   const size_t num_raw_vertices = vertices_.size();
 
-  //======================================== Reset all cell neighbors
+  // Reset all cell neighbors
   int num_bndry_faces = 0;
   for (auto& cell : raw_cells_)
     for (auto& face : cell->faces)
@@ -205,7 +205,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
   Chi::log.Log() << Chi::program_timer.GetTimeString() << " Establishing cell connectivity.";
 
-  //======================================== Establish internal connectivity
+  // Establish internal connectivity
   // Populate vertex subscriptions to internal cells
   vertex_cell_subscriptions_.resize(num_raw_vertices);
   {
@@ -277,7 +277,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
   Chi::log.Log() << Chi::program_timer.GetTimeString()
                  << " Establishing cell boundary connectivity.";
 
-  //======================================== Establish boundary connectivity
+  // Establish boundary connectivity
   // Make list of internal cells on the boundary
   std::vector<LightWeightCell*> internal_cells_on_boundary;
   for (auto& cell : raw_cells_)
@@ -627,7 +627,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
     auto cell_gids = vtkIdTypeArray::SafeDownCast(cell_gids_ptr);
     auto pnts_gids = vtkIdTypeArray::SafeDownCast(pnts_gids_ptr);
 
-    //=========================================== Determine id offset
+    // Determine id offset
     // We do this because some mesh formats (like ExodusII)
     // are indexed with a 1 base instead of 0
     int cid_offset = 0, pid_offset = 0;
@@ -645,12 +645,12 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
       pid_offset -= static_cast<int>(min_pid);
     } // build offset
 
-    //=========================================== Build node map
+    // Build node map
     std::vector<vtkIdType> node_map(total_point_count, 0);
     for (vtkIdType p = 0; p < total_point_count; ++p)
       node_map[p] = pnts_gids->GetValue(p) + pid_offset;
 
-    //=========================================== Load cells
+    // Load cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
     {
       auto vtk_cell = ugrid.GetCell(static_cast<vtkIdType>(c));
@@ -685,7 +685,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
       cells[cell_gid] = raw_cell;
     } // for cell c
 
-    //=========================================== Load points
+    // Load points
     for (vtkIdType p = 0; p < total_point_count; ++p)
     {
       auto point = ugrid.GetPoint(static_cast<vtkIdType>(p));
@@ -698,11 +698,11 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
       vertices.at(point_gid) = vertex;
     } // for point p
 
-    //=========================================== Check all cells assigned
+    // Check all cells assigned
     for (vtkIdType c = 0; c < total_cell_count; ++c)
       if (cells[c] == nullptr) throw std::logic_error(fname + ": Cell pointer not assigned ");
 
-    //=========================================== Check all points assigned
+    // Check all points assigned
     for (vtkIdType p = 0; p < total_point_count; ++p)
       if (vertices[p] == nullptr) throw std::logic_error(fname + ": Vertex pointer not assigned");
 
@@ -713,7 +713,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
   } // If global-ids available
   else
   {
-    //======================================== Push cells
+    // Push cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
     {
       auto vtk_cell = ugrid.GetCell(static_cast<vtkIdType>(c));
@@ -734,7 +734,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
       raw_cells_.back()->material_id = block_id_array->GetValue(c);
     } // for c
 
-    //======================================== Push points
+    // Push points
     for (size_t p = 0; p < total_point_count; ++p)
     {
       auto point = ugrid.GetPoint(static_cast<vtkIdType>(p));
@@ -747,7 +747,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
     }
   } // if no global-ids
 
-  //================================================== Determine bound box
+  // Determine bound box
   for (size_t p = 0; p < total_point_count; ++p)
   {
     const auto& vertex = vertices_[p];
@@ -779,7 +779,7 @@ void
 UnpartitionedMesh::SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bndry_grid_blocks)
 {
   const double EPSILON = 1.0e-12;
-  //======================================== Build boundary faces
+  // Build boundary faces
   std::vector<LightWeightFace*> bndry_faces;
   for (auto& cell_ptr : raw_cells_)
     for (auto& face : cell_ptr->faces)
@@ -787,13 +787,13 @@ UnpartitionedMesh::SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bnd
 
   Chi::log.Log() << "Number of boundary faces: " << bndry_faces.size();
 
-  //======================================== Build boundary vertex ids
+  // Build boundary vertex ids
   std::set<uint64_t> bndry_vids_set;
   for (const auto& face_ptr : bndry_faces)
     for (const auto vid : face_ptr->vertex_ids)
       bndry_vids_set.insert(vid);
 
-  //======================================== Process each boundary block
+  // Process each boundary block
   uint64_t bndry_id = 0;
   for (const auto& ugrid_name : bndry_grid_blocks)
   {
@@ -801,7 +801,7 @@ UnpartitionedMesh::SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bnd
 
     mesh_options_.boundary_id_map[bndry_id] = ugrid_name.second;
 
-    //================================= Build vertex map
+    // Build vertex map
     bool mapping_failed = false;
     std::vector<size_t> vertex_map(ugrid->GetNumberOfPoints(), 0);
     for (size_t p = 0; p < ugrid->GetNumberOfPoints(); ++p)
@@ -831,13 +831,13 @@ UnpartitionedMesh::SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bnd
 
     if (mapping_failed) continue;
 
-    //================================= Build vertex subscriptions
+    // Build vertex subscriptions
     std::map<uint64_t, std::set<size_t>> vertex_face_subs;
     for (size_t f = 0; f < bndry_faces.size(); ++f)
       for (const auto vid : bndry_faces[f]->vertex_ids)
         vertex_face_subs[vid].insert(f);
 
-    //================================= Process each cell in bndry block
+    // Process each cell in bndry block
     size_t num_faces_boundarified = 0;
     auto& bndry_block = ugrid_name.first;
     size_t num_bndry_block_cells = bndry_block->GetNumberOfCells();
@@ -845,8 +845,7 @@ UnpartitionedMesh::SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bnd
     {
       auto bndry_cell = bndry_block->GetCell(static_cast<vtkIdType>(bc));
 
-      //========================== Build list of face candidates
-      //                           and vertex set
+      // Build list of face candidates and vertex set
       std::set<size_t> face_ids_short_list;
       std::set<uint64_t> bndry_cell_id_set;
       size_t num_points = bndry_cell->GetNumberOfPoints();
@@ -884,13 +883,13 @@ UnpartitionedMesh::ReadFromVTU(const UnpartitionedMesh::Options& options)
 {
   Chi::log.Log() << "Reading VTU file: " << options.file_name << ".";
 
-  //======================================== Attempt to open file
+  // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
   if (!file.is_open()) throw ErrorReadingFile(ReadFromVTU);
   file.close();
 
-  //======================================== Read the file
+  // Read the file
   mesh_options_ = options;
   auto reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
   reader->SetFileName(options.file_name.c_str());
@@ -900,13 +899,13 @@ UnpartitionedMesh::ReadFromVTU(const UnpartitionedMesh::Options& options)
   reader->UpdateInformation();
   reader->Update();
 
-  //======================================== Get all the grid blocks
+  // Get all the grid blocks
   // For vtu files this is very simple. The
   // output of the reader is an UnstructuredGrid.
   auto ugrid_main = vtkUGridPtr(reader->GetOutput());
   std::vector<vtkUGridPtrAndName> grid_blocks = {{ugrid_main, ""}};
 
-  //======================================== Get the main + bndry blocks
+  // Get the main + bndry blocks
   const int max_dimension = FindHighestDimension(grid_blocks);
   Chi::log.Log0Verbose1() << "Maximum dimension : " << max_dimension << "\n";
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
@@ -914,18 +913,18 @@ UnpartitionedMesh::ReadFromVTU(const UnpartitionedMesh::Options& options)
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
     GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
-  //======================================== Process blocks
+  // Process blocks
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks, mesh_options_.material_id_fieldname);
 
-  //======================================== Copy Data
+  // Copy Data
   CopyUGridCellsAndPoints(*ugrid, options.scale, max_dimension);
 
-  //======================================== Set material ids
+  // Set material ids
   const auto material_ids =
     BuildCellMaterialIDsFromField(ugrid, options.material_id_fieldname, options.file_name);
   SetMaterialIDsFromList(material_ids);
 
-  //======================================== Always do this
+  // Always do this
   MeshAttributes dimension = NONE;
   switch (max_dimension)
   {
@@ -955,13 +954,13 @@ UnpartitionedMesh::ReadFromPVTU(const UnpartitionedMesh::Options& options)
 {
   Chi::log.Log() << "Reading PVTU file: " << options.file_name << ".";
 
-  //======================================== Attempt to open file
+  // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
   if (!file.is_open()) throw ErrorReadingFile(ReadFromVTU);
   file.close();
 
-  //======================================== Read the file
+  // Read the file
   mesh_options_ = options;
   auto reader = vtkSmartPointer<vtkXMLPUnstructuredGridReader>::New();
   reader->SetFileName(options.file_name.c_str());
@@ -971,13 +970,13 @@ UnpartitionedMesh::ReadFromPVTU(const UnpartitionedMesh::Options& options)
   reader->UpdateInformation();
   reader->Update();
 
-  //======================================== Get all the grid blocks
+  // Get all the grid blocks
   // For vtu files this is very simple. The
   // output of the reader is an UnstructuredGrid.
   auto ugrid_main = vtkUGridPtr(reader->GetOutput());
   std::vector<vtkUGridPtrAndName> grid_blocks = {{ugrid_main, ""}};
 
-  //======================================== Get the main + bndry blocks
+  // Get the main + bndry blocks
   const int max_dimension = FindHighestDimension(grid_blocks);
   Chi::log.Log0Verbose1() << "Maximum dimension : " << max_dimension << "\n";
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
@@ -985,18 +984,18 @@ UnpartitionedMesh::ReadFromPVTU(const UnpartitionedMesh::Options& options)
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
     GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
-  //======================================== Process blocks
+  // Process blocks
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks);
 
-  //======================================== Copy Data
+  // Copy Data
   CopyUGridCellsAndPoints(*ugrid, options.scale, max_dimension);
 
-  //======================================== Set material ids
+  // Set material ids
   const auto material_ids =
     BuildCellMaterialIDsFromField(ugrid, options.material_id_fieldname, options.file_name);
   SetMaterialIDsFromList(material_ids);
 
-  //======================================== Always do this
+  // Always do this
   MeshAttributes dimension = NONE;
   switch (max_dimension)
   {
@@ -1026,13 +1025,13 @@ UnpartitionedMesh::ReadFromEnsightGold(const UnpartitionedMesh::Options& options
 {
   Chi::log.Log() << "Reading Ensight-Gold file: " << options.file_name << ".";
 
-  //======================================== Attempt to open file
+  // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
   if (!file.is_open()) throw ErrorReadingFile(ReadFromEnsightGold);
   file.close();
 
-  //======================================== Read the file
+  // Read the file
   mesh_options_ = options;
   auto reader = vtkSmartPointer<vtkEnSightGoldBinaryReader>::New();
   reader->SetCaseFileName(options.file_name.c_str());
@@ -1042,7 +1041,7 @@ UnpartitionedMesh::ReadFromEnsightGold(const UnpartitionedMesh::Options& options
   reader->UpdateInformation();
   reader->Update();
 
-  //======================================== Get all the grid blocks
+  // Get all the grid blocks
   auto multiblock = reader->GetOutput();
 
   std::vector<vtkUGridPtrAndName> grid_blocks;
@@ -1069,7 +1068,7 @@ UnpartitionedMesh::ReadFromEnsightGold(const UnpartitionedMesh::Options& options
     iter_a->GoToNextItem();
   }
 
-  //======================================== Get the main + bndry blocks
+  // Get the main + bndry blocks
   const int max_dimension = FindHighestDimension(grid_blocks);
   Chi::log.Log0Verbose1() << "Maximum dimension : " << max_dimension << "\n";
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
@@ -1077,15 +1076,15 @@ UnpartitionedMesh::ReadFromEnsightGold(const UnpartitionedMesh::Options& options
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
     GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
-  //======================================== Process blocks
+  // Process blocks
   SetBlockIDArrays(domain_grid_blocks);
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks);
 
-  //======================================== Copy Data
+  // Copy Data
   // Material-IDs will get set form block-id arrays
   CopyUGridCellsAndPoints(*ugrid, options.scale, max_dimension);
 
-  //======================================== Always do this
+  // Always do this
   MeshAttributes dimension = NONE;
   switch (max_dimension)
   {
@@ -1107,7 +1106,7 @@ UnpartitionedMesh::ReadFromEnsightGold(const UnpartitionedMesh::Options& options
   ComputeCentroidsAndCheckQuality();
   BuildMeshConnectivity();
 
-  //======================================== Set boundary ids
+  // Set boundary ids
   SetBoundaryIDsFromBlocks(bndry_grid_blocks);
 
   Chi::log.Log() << "Done reading Ensight-Gold file: " << options.file_name << ".";
@@ -1118,7 +1117,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
 {
   const std::string fname = "UnpartitionedMesh::ReadFromWavefrontOBJ";
 
-  //======================================================= Opening the file
+  // Opening the file
   std::ifstream file;
   file.open(options.file_name);
   if (!file.is_open())
@@ -1142,13 +1141,13 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   std::vector<BlockData> block_data;
   std::vector<Vertex> file_vertices;
 
-  //======================================================= Reading every line
+  // Reading every line
   std::string file_line;
   std::string delimiter = " ";
   int material_id = -1;
   while (std::getline(file, file_line))
   {
-    //================================================ Get the first word
+    // Get the first word
     size_t beg_of_word = file_line.find_first_not_of(delimiter);
     size_t end_of_word = file_line.find(delimiter, beg_of_word - beg_of_word);
     std::string first_word = file_line.substr(beg_of_word, end_of_word);
@@ -1170,18 +1169,18 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
       ++material_id;
     }
 
-    //================================================ Keyword "v" for Vertex
+    // Keyword "v" for Vertex
     if (first_word == "v")
     {
       Vertex newVertex;
       for (int k = 1; k <= 3; k++)
       {
-        //================================== Extract sub word
+        // Extract sub word
         beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
         end_of_word = file_line.find(delimiter, beg_of_word);
         sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
 
-        //================================== Convert word to number
+        // Convert word to number
         try
         {
           double numValue = std::stod(sub_word);
@@ -1193,19 +1192,19 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
             newVertex.z = numValue;
         }
 
-        //================================== Catch conversion error
+        // Catch conversion error
         catch (const std::invalid_argument& ia)
         {
           Chi::log.Log0Warning() << "Failed to convert vertex in line " << file_line << std::endl;
         }
 
-        //================================== Stop word extraction on line end
+        // Stop word extraction on line end
         if (end_of_word == std::string::npos) { break; }
       }
       file_vertices.push_back(newVertex);
     } // if (first_word == "v")
 
-    //===================================================== Keyword "f" for face
+    // Keyword "f" for face
     if (first_word == "f")
     {
       size_t number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
@@ -1221,20 +1220,20 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
       // Populate vertex-ids
       for (size_t k = 1; k <= number_of_verts; k++)
       {
-        //================================== Extract sub word
+        // Extract sub word
         beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
         end_of_word = file_line.find(delimiter, beg_of_word);
         sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
 
-        //============================= Extract locations of hiphens
+        // Extract locations of hiphens
         size_t first_dash = sub_word.find('/');
         size_t last_dash = sub_word.find_last_of('/');
 
-        //============================= Extract the words ass. vertex and normal
+        // Extract the words ass. vertex and normal
         std::string vert_word = sub_word.substr(0, first_dash - 0);
         std::string norm_word = sub_word.substr(last_dash + 1, sub_word.length() - last_dash - 1);
 
-        //============================= Convert word to number (Vertex)
+        // Convert word to number (Vertex)
         try
         {
           int numValue = std::stoi(vert_word);
@@ -1246,7 +1245,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
                                  << std::endl;
         }
 
-        //============================= Stop word extraction on line end
+        // Stop word extraction on line end
         if (end_of_word == std::string::npos) { break; }
       }
 
@@ -1271,18 +1270,18 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
       block_data.back().cells.push_back(cell);
     } // if (first_word == "f")
 
-    //===================================================== Keyword "l" for edge
+    // Keyword "l" for edge
     if (first_word == "l")
     {
       Edge edge;
       for (int k = 1; k <= 2; ++k)
       {
-        //================================== Extract sub word
+        // Extract sub word
         beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
         end_of_word = file_line.find(delimiter, beg_of_word);
         sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
 
-        //================================== Convert word to number
+        // Convert word to number
         try
         {
           int vertex_id = std::stoi(sub_word);
@@ -1290,7 +1289,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
           if (k == 2) edge.second = vertex_id - 1;
         }
 
-        //================================== Catch conversion error
+        // Catch conversion error
         catch (const std::invalid_argument& ia)
         {
           Chi::log.Log0Warning() << "Failed to text to integer in line " << file_line << std::endl;
@@ -1308,7 +1307,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   file.close();
   Chi::log.Log0Verbose0() << "Max material id: " << material_id;
 
-  //======================================================= Error checks
+  // Error checks
   for (const auto& block : block_data)
     for (const auto& cell : block.cells)
       for (const auto vid : cell->vertex_ids)
@@ -1319,7 +1318,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
             " not in list of vertices read (size=" + std::to_string(file_vertices.size()) + ").");
       }
 
-  //======================================================= Filter blocks
+  // Filter blocks
   std::vector<size_t> bndry_block_ids;
   size_t num_cell_blocks = 0;
   size_t main_block_id = 0;
@@ -1340,7 +1339,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
                            "If you exported this mesh from blender, be sure to export "
                            "\"selection only\"");
 
-  //======================================================= Process blocks
+  // Process blocks
   std::vector<Vertex> cell_vertices;
   {
     // Initial map is straight
@@ -1424,13 +1423,13 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   this->vertices_ = cell_vertices;
   this->raw_cells_ = block_data[main_block_id].cells;
 
-  //======================================================= Always do this
+  // Always do this
   attributes_ = DIMENSION_2 | UNSTRUCTURED;
 
   ComputeCentroidsAndCheckQuality();
   BuildMeshConnectivity();
 
-  //======================================================= Set boundary ids
+  // Set boundary ids
   if (bndry_block_ids.empty()) { mesh_options_.boundary_id_map[0] = "Default Boundary"; }
   else
   {
@@ -1479,7 +1478,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
 {
   const std::string fname = "UnpartitionedMesh::ReadFromMsh";
 
-  //===================================================== Opening the file
+  // Opening the file
   std::ifstream file;
   file.open(options.file_name);
   if (!file.is_open())
@@ -1492,15 +1491,14 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   Chi::log.Log() << "Making Unpartitioned mesh from msh format file " << options.file_name;
   Chi::mpi.Barrier();
 
-  //===================================================== Declarations
+  // Declarations
   std::string file_line;
   std::istringstream iss;
   const std::string node_section_name = "$Nodes";
   const std::string elements_section_name = "$Elements";
   const std::string format_section_name = "$MeshFormat";
 
-  //=================================================== Check the format of this
-  // input
+  // Check the format of this input
   // Role file forward until "$MeshFormat" line is encountered.
   while (std::getline(file, file_line))
     if (format_section_name == file_line) break;
@@ -1512,9 +1510,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   else if (format != 2.2)
     throw std::logic_error(fname + ": Currently, only msh format 2.2 is supported.");
 
-  //=================================================== Find section with node
-  //                                                    information and then
-  //                                                    read the nodes
+  // Find section with node information and then read the nodes
   file.seekg(0);
   while (std::getline(file, file_line))
     if (node_section_name == file_line) break;
@@ -1543,7 +1539,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
                                      "coordinates.");
   }
 
-  //================================================== Define utility lambdas
+  // Define utility lambdas
   /**Lambda for reading nodes.*/
   auto ReadNodes = [&iss, &fname](int num_nodes)
   {
@@ -1612,7 +1608,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
     return cell_type;
   };
 
-  //================================================== Determine mesh type 2D/3D
+  // Determine mesh type 2D/3D
   // Only 2D and 3D meshes are supported. If the mesh
   // is 1D then no elements will be read but the state
   // would still be safe.
@@ -1660,8 +1656,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
       throw std::logic_error(fname + ": Unsupported element encountered.");
   } // for n
 
-  //================================================== Return to the element
-  //                                                   listing section
+  // Return to the element listing section
   // Now we will actually read the elements.
   file.seekg(0);
   while (std::getline(file, file_line))
@@ -1707,8 +1702,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
     else
       continue;
 
-    //====================================== Make the cell on either the volume
-    //                                       or the boundary
+    // Make the cell on either the volume or the boundary
     LightWeightCell* raw_cell = nullptr;
     if (mesh_is_2D_assumption)
     {
@@ -1747,7 +1741,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
     cell.material_id = physical_reg;
     cell.vertex_ids = ReadNodes(num_cell_nodes);
 
-    //====================================== Populate faces
+    // Populate faces
     if (elem_type == 1) // 2-node edge
     {
       LightWeightFace face0;
@@ -1805,7 +1799,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
 
   file.close();
 
-  //======================================== Remap material-ids
+  // Remap material-ids
   std::set<int> material_ids_set_as_read;
   std::map<int, int> material_mapping;
 
@@ -1834,7 +1828,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   for (auto& cell : raw_boundary_cells_)
     cell->material_id = boundary_mapping[cell->material_id];
 
-  //======================================== Always do this
+  // Always do this
   MeshAttributes dimension = DIMENSION_2;
   if (not mesh_is_2D_assumption) dimension = DIMENSION_3;
 
@@ -1848,19 +1842,18 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
                  << "Number of cells read: " << raw_cells_.size();
 }
 
-/**Reads an Exodus unstructured mesh.*/
 void
 UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
 {
   Chi::log.Log() << "Reading Exodus file: " << options.file_name << ".";
 
-  //======================================== Attempt to open file
+  // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
   if (!file.is_open()) throw ErrorReadingFile(ReadFromExodus);
   file.close();
 
-  //======================================== Read the file
+  // Read the file
   mesh_options_ = options;
   auto reader = vtkSmartPointer<vtkExodusIIReader>::New();
   reader->SetFileName(options.file_name.c_str());
@@ -1889,7 +1882,7 @@ UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
   reader->SetGenerateGlobalElementIdArray(true);
   reader->Update();
 
-  //======================================== Get all the grid blocks
+  // Get all the grid blocks
   // This part was quite difficult. I eventually found how to do
   // this from this post:
   // https://public.kitware.com/pipermail/vtkusers/2010-December/064921.html
@@ -1922,7 +1915,7 @@ UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
     iter_a->GoToNextItem();
   }
 
-  //======================================== Get the main + bndry blocks
+  // Get the main + bndry blocks
   const int max_dimension = FindHighestDimension(grid_blocks);
   Chi::log.Log0Verbose1() << "Maximum dimension : " << max_dimension << "\n";
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
@@ -1930,15 +1923,15 @@ UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
     GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
-  //======================================== Process blocks
+  // Process blocks
   SetBlockIDArrays(domain_grid_blocks);
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks);
 
-  //======================================== Copy Data
+  // Copy Data
   // Material-IDs will get set form block-id arrays
   CopyUGridCellsAndPoints(*ugrid, options.scale, max_dimension);
 
-  //======================================== Always do this
+  // Always do this
   MeshAttributes dimension = NONE;
   switch (max_dimension)
   {
@@ -1960,13 +1953,12 @@ UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
   ComputeCentroidsAndCheckQuality();
   BuildMeshConnectivity();
 
-  //======================================== Set boundary ids
+  // Set boundary ids
   SetBoundaryIDsFromBlocks(bndry_grid_blocks);
 
   Chi::log.Log() << "Done reading Exodus file: " << options.file_name << ".";
 }
 
-/**Makes a cell from proxy information and pushes the cell to the mesh.*/
 void
 UnpartitionedMesh::PushProxyCell(const std::string& type_str,
                                  const std::string& sub_type_str,
