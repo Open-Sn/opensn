@@ -70,7 +70,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-   "--mpicmd", default="mpiexec -n ", type=str, required=False,
+   "--mpi-cmd", default="mpiexec -n ", type=str, required=False,
    help="MPI application launcher command"
 )
 
