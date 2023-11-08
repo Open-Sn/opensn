@@ -69,6 +69,11 @@ parser.add_argument(
     help="Controls verbose failure"
 )
 
+parser.add_argument(
+   "--mpicmd", default="mpiexec -n ", type=str, required=False,
+   help="MPI application launcher command"
+)
+
 parser.add_argument("-w", "--weights", default=3, type=int, required=False,
                     help="Test weight configuration. Single numeric value < 7,"
                          " converted to binary gives the long, intermediate, "

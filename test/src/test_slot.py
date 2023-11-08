@@ -27,8 +27,7 @@ class TestSlot:
         if test.skip != "":
             return
 
-        cmd = "mpiexec "
-        cmd += "-np " + str(test.num_procs) + " "
+        cmd =  self.argv.mpicmd + " " + str(test.num_procs) + " "
         cmd += self.argv.exe + " "
         cmd += test.filename + " "
         cmd += "--suppress_color "
