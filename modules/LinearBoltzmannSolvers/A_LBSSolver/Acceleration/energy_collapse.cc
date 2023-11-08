@@ -1,9 +1,9 @@
-#include "acceleration.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
 
-#include "physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace lbs::acceleration
 {

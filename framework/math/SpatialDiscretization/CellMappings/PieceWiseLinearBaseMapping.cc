@@ -1,9 +1,9 @@
-#include "math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
 
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_math::cell_mapping
 {

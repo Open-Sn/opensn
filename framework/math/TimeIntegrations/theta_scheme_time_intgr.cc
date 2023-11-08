@@ -1,6 +1,6 @@
-#include "theta_scheme_time_intgr.h"
+#include "framework/math/TimeIntegrations/theta_scheme_time_intgr.h"
 
-#include "ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 #define scint static_cast<int>
 

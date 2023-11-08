@@ -1,10 +1,10 @@
 #pragma once
 
-#include "chi_math_incdef.h"
+#include "framework/math/chi_math_incdef.h"
 
-#include "Quadratures/quadrature.h"
-#include "Quadratures/angular_quadrature_base.h"
-#include "UnknownManager/unknown_manager.h"
+#include "framework/math/Quadratures/quadrature.h"
+#include "framework/math/Quadratures/angular_quadrature_base.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
 
 #include <memory>
 

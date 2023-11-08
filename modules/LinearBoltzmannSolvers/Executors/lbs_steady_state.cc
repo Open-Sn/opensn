@@ -1,8 +1,8 @@
-#include "lbs_steady_state.h"
+#include "modules/LinearBoltzmannSolvers/Executors/lbs_steady_state.h"
 
-#include "ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "A_LBSSolver/IterativeMethods/ags_linear_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
 
 namespace lbs
 {

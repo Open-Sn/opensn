@@ -1,13 +1,13 @@
-#include "volmesher_extruder.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/SurfaceMesher/surfacemesher.h"
-#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
-#include "utils/chi_timer.h"
-#include "console/chi_console.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
+#include "framework/mesh/VolumeMesher/Extruder/volmesher_extruder.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/SurfaceMesher/surfacemesher.h"
+#include "framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/console/chi_console.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
 #include <iostream>
 
 namespace chi_mesh
@@ -65,8 +65,8 @@ void
 VolumeMesherExtruder::Execute()
 {
   Chi::log.Log() << Chi::program_timer.GetTimeString()
-                 << " VolumeMesherExtruder executed. Memory in use = "
-                 << chi::Console::GetMemoryUsageInMB() << " MB" << std::endl;
+                 << " VolumeMesherExtruder executed. Memory in use = " << Chi::GetMemoryUsageInMB()
+                 << " MB" << std::endl;
 
   //================================================== Loop over all regions
   Chi::log.Log0Verbose1() << "VolumeMesherExtruder: Processing Region" << std::endl;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "event_system/EventPublisher.h"
+#include "framework/event_system/EventPublisher.h"
 
 namespace chi_physics
 {

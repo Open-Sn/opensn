@@ -1,11 +1,11 @@
-#include "PlugIn.h"
+#include "framework/interfaces/PlugIn.h"
 
-#include "ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_utils.h"
-#include "console/chi_console.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_utils.h"
+#include "framework/console/chi_console.h"
 
 #include <dlfcn.h>
 
@@ -57,7 +57,9 @@ Plugin::Plugin(const InputParameters& params)
     func();
   }
 
+#ifdef OPENSN_WITH_LUA
   Chi::console.UpdateConsoleBindings(registry_statuses);
+#endif
 }
 
 Plugin::~Plugin()

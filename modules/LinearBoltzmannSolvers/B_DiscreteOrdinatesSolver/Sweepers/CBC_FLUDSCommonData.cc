@@ -1,7 +1,7 @@
-#include "CBC_FLUDSCommonData.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDSCommonData.h"
 
-#include "mesh/SweepUtilities/SPDS/SPDS.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 namespace lbs
 {

@@ -1,5 +1,6 @@
-#include "lbts_transient_solver.h"
+#include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
 
+#if 0
 //###################################################################
 /**Performs a timestep of the precursors.*/
 void
@@ -72,3 +73,4 @@ lbs::DiscOrdTransientSolver::StepPrecursors()
       Cj[i] = inv_theta * (Cj[i] + (theta - 1.0) * Cj_prev[i]);
   }
 }
+#endif

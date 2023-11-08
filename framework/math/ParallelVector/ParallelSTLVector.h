@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ParallelVector.h"
-#include "math/chi_math.h"
+#include "framework/math/ParallelVector/ParallelVector.h"
+#include "framework/math/chi_math.h"
 
 #include <vector>
 #include <cstdint>

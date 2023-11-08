@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CellMapping.h"
-#include "math/SerialNewtonIteration/serial_newton_iteration.h"
+#include "framework/math/SpatialDiscretization/CellMappings/CellMapping.h"
+#include "framework/math/SerialNewtonIteration/serial_newton_iteration.h"
 
-#include "mesh/chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 
 namespace chi_math
 {

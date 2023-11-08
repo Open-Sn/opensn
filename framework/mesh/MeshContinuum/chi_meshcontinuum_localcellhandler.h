@@ -1,11 +1,11 @@
 #pragma once
 
-#include "mesh/Cell/cell.h"
+#include "framework/mesh/Cell/cell.h"
 
 namespace chi_mesh
 {
 
-//##################################################
+// ##################################################
 /**Stores references to global cells to enable an iterator.*/
 class LocalCellHandler
 {
@@ -25,7 +25,7 @@ public:
   chi_mesh::Cell& operator[](uint64_t cell_local_index);
   const chi_mesh::Cell& operator[](uint64_t cell_local_index) const;
 
-  //##################################### iterator Class Definition
+  // ##################################### iterator Class Definition
   /**Internal iterator class.*/
   class iterator
   {

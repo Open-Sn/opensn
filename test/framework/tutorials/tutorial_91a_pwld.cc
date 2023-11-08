@@ -1,20 +1,20 @@
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "math/Quadratures/angular_quadrature_base.h"
-#include "math/Quadratures/angular_product_quadrature.h"
-#include "math/chi_math_range.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/math/Quadratures/angular_quadrature_base.h"
+#include "framework/math/Quadratures/angular_product_quadrature.h"
+#include "framework/math/chi_math_range.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/single_state_mgxs.h"
 
-#include "data_types/ndarray.h"
+#include "framework/data_types/ndarray.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 #include <iomanip>
 

@@ -1,15 +1,17 @@
-#include "chi_volumemesher.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/VolumeMesher/Extruder/volmesher_extruder.h"
-#include "mesh/UnpartitionedMesh/unpartitioned_mesh.h"
-#include "mesh/LogicalVolume/LogicalVolume.h"
-#include "console/chi_console.h"
-#include "utils/chi_timer.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
-#include "chi_lua.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/VolumeMesher/Extruder/volmesher_extruder.h"
+#include "framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
+#include "framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/console/chi_console.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
+#ifdef OPENSN_WITH_LUA
+#include "framework/chi_lua.h"
+#endif
 
 namespace chi_mesh
 {
@@ -424,6 +426,7 @@ VolumeMesher::SetMatIDToAll(int mat_id)
                  << " to all cells";
 }
 
+#ifdef OPENSN_WITH_LUA
 void
 VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
 {
@@ -513,7 +516,9 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
                           << " Done setting material id from lua function. "
                           << "Number of cells modified = " << globl_num_cells_modified << ".";
 }
+#endif
 
+#ifdef OPENSN_WITH_LUA
 void
 VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
 {
@@ -626,6 +631,7 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
                           << " Done setting boundary id from lua function. "
                           << "Number of cells modified = " << globl_num_faces_modified << ".";
 }
+#endif
 
 void
 VolumeMesher::SetupOrthogonalBoundaries()

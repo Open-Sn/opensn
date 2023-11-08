@@ -1,9 +1,9 @@
 #pragma once
 
-#include "math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
-#include "math/Quadratures/quadrature_tetrahedron.h"
-#include "math/Quadratures/quadrature_triangle.h"
-#include "mesh/Cell/cell.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
+#include "framework/math/Quadratures/quadrature_tetrahedron.h"
+#include "framework/math/Quadratures/quadrature_triangle.h"
+#include "framework/mesh/Cell/cell.h"
 
 namespace chi_math::cell_mapping
 {

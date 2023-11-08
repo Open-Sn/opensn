@@ -1,9 +1,9 @@
-#include "quadrature_conical.h"
+#include "framework/math/Quadratures/Conical/quadrature_conical.h"
 
-#include "math/Quadratures/quadrature_gausslegendre.h"
-#include "math/Quadratures/Jacobi/quadrature_jacobi.h"
+#include "framework/math/Quadratures/quadrature_gausslegendre.h"
+#include "framework/math/Quadratures/Jacobi/quadrature_jacobi.h"
 
-//###################################################################
+// ###################################################################
 /**Initialize conical quadrature for a triangle.*/
 void
 chi_math::QuadratureConical::Initialize_Conical_Product_Tri()
@@ -30,7 +30,7 @@ chi_math::QuadratureConical::Initialize_Conical_Product_Tri()
     }
 }
 
-//###################################################################
+// ###################################################################
 /**Initialize conical quadrature for a tetrahedron.*/
 void
 chi_math::QuadratureConical::Initialize_Conical_Product_Tet()

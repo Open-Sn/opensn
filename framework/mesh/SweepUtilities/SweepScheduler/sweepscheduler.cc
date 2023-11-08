@@ -1,9 +1,9 @@
-#include "sweepscheduler.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "mesh/SweepUtilities/SPDS/SPDS_AdamsAdamsHawkins.h"
-#include "mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
-#include "chi_mpi.h"
+#include "framework/mesh/SweepUtilities/SweepScheduler/sweepscheduler.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mesh/SweepUtilities/SPDS/SPDS_AdamsAdamsHawkins.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
+#include "framework/mpi/chi_mpi.h"
 #include <sstream>
 #include <algorithm>
 

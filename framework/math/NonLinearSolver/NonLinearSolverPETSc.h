@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NonLinearSolver.h"
+#include "framework/math/NonLinearSolver/NonLinearSolver.h"
 
 #include <petscsnes.h>
 

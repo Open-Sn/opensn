@@ -1,10 +1,10 @@
-#include "math/ParallelVector/ParallelSTLVector.h"
-#include "math/ParallelVector/GhostedParallelSTLVector.h"
+#include "framework/math/ParallelVector/ParallelSTLVector.h"
+#include "framework/math/ParallelVector/GhostedParallelSTLVector.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_unit_tests
 {

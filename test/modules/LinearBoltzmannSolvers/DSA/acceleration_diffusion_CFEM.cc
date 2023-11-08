@@ -1,18 +1,18 @@
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearContinuous.h"
 
-#include "A_LBSSolver/Acceleration/acceleration.h"
-#include "A_LBSSolver/Acceleration/diffusion_pwlc_solver.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_pwlc_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_unit_sim_tests
 {

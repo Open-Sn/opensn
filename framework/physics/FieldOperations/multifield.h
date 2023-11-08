@@ -1,8 +1,8 @@
 #pragma once
 
-#include "field_operation.h"
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "math/Functions/function_dimA_to_dimB.h"
+#include "framework/physics/FieldOperations/field_operation.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/math/Functions/function_dimA_to_dimB.h"
 
 namespace chi_physics::field_operations
 {

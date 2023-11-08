@@ -1,8 +1,7 @@
-#include "PieceWiseLinearPolyhedronMapping.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "chi_log.h"
-#include "math/SpatialDiscretization/CellMappings/PieceWiseLinearBaseMapping.h"
-#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolyhedronMapping.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/logging/chi_log.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
 
 namespace chi_math::cell_mapping
 {

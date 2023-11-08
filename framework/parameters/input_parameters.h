@@ -1,7 +1,7 @@
 #pragma once
 
-#include "parameter_block.h"
-#include "data_types/allowable_range.h"
+#include "framework/parameters/parameter_block.h"
+#include "framework/data_types/allowable_range.h"
 
 #include <map>
 

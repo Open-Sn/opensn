@@ -1,9 +1,9 @@
 #pragma once
 
-#include "physics/SolverBase/chi_solver.h"
-#include "math/chi_math.h"
-#include "math/dynamic_matrix.h"
-#include "math/dynamic_vector.h"
+#include "framework/physics/SolverBase/chi_solver.h"
+#include "framework/math/chi_math.h"
+#include "framework/math/dynamic_matrix.h"
+#include "framework/math/dynamic_vector.h"
 
 namespace prk
 {

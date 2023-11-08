@@ -1,6 +1,6 @@
 #pragma once
 
-#include "quadrature_gausslegendre.h"
+#include "framework/math/Quadratures/quadrature_gausslegendre.h"
 
 namespace chi_math
 {

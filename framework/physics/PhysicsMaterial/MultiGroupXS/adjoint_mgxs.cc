@@ -1,4 +1,4 @@
-#include "adjoint_mgxs.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/adjoint_mgxs.h"
 
 chi_physics::AdjointMGXS::AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
 {

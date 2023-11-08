@@ -1,12 +1,12 @@
-#include "AAH_AsynComm.h"
-#include "mesh/SweepUtilities/AngleSet/AngleSet.h"
-#include "mesh/SweepUtilities/SPDS/SPDS.h"
-#include "mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
-#include "mpi/chi_mpi_commset.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
-#include "console/chi_console.h"
+#include "framework/mesh/SweepUtilities/Communicators/AAH_AsynComm.h"
+#include "framework/mesh/SweepUtilities/AngleSet/AngleSet.h"
+#include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
+#include "framework/mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
+#include "framework/mpi/chi_mpi_commset.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_mesh::sweep_management
 {
@@ -447,7 +447,7 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
     fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, num_loc_sucs);
 
     //================================================ Make a memory query
-    double memory_mb = chi::Console::GetMemoryUsageInMB();
+    double memory_mb = Chi::GetMemoryUsageInMB();
 
     std::shared_ptr<chi::ChiLog::EventInfo> memory_event_info =
       std::make_shared<chi::ChiLog::EventInfo>(memory_mb);

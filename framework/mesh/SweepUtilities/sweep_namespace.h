@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 #include <set>
 
 #include <memory>

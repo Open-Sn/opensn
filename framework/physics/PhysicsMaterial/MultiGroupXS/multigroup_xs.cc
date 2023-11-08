@@ -1,7 +1,7 @@
-#include "multigroup_xs.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
 #include <iostream>
 
 namespace chi_physics
@@ -179,6 +179,7 @@ MultiGroupXS::ExportToChiXSFile(const std::string& file_name,
                           << file_name;
 }
 
+#ifdef OPENSN_WITH_LUA
 void
 MultiGroupXS::PushLuaTable(lua_State* L) const
 {
@@ -350,5 +351,6 @@ MultiGroupXS::PushLuaTable(lua_State* L) const
   Push1DXS(SigmaRemoval(), "sigma_removal");
   Push1DXS(SigmaSGtoG(), "sigma_s_gtog");
 }
+#endif
 
 } // namespace chi_physics

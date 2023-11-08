@@ -1,13 +1,13 @@
-#include "lbs_curvilinear_solver.h"
-#include "ChiObjectFactory.h"
-#include "math/Quadratures/cylindrical_angular_quadrature.h"
-#include "math/Quadratures/spherical_angular_quadrature.h"
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "SweepChunks/lbs_curvilinear_sweepchunk_pwl.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "console/chi_console.h"
+#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesCurvilinearSolver/lbs_curvilinear_solver.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/math/Quadratures/cylindrical_angular_quadrature.h"
+#include "framework/math/Quadratures/spherical_angular_quadrature.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesCurvilinearSolver/SweepChunks/lbs_curvilinear_sweepchunk_pwl.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/console/chi_console.h"
 #include <iomanip>
 
 namespace lbs
@@ -377,7 +377,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
 
   Chi::mpi.Barrier();
   Chi::log.Log() << "Secondary Cell matrices computed.         Process memory = "
-                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB";
+                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
 }
 
 std::shared_ptr<SweepChunk>

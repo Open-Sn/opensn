@@ -1,7 +1,7 @@
-#include "ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 // ###################################################################
 /**Access to the singleton*/

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "math/LinearSolver/linear_solver.h"
-#include "ags_context.h"
+#include "framework/math/LinearSolver/linear_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_context.h"
 
 namespace lbs
 {
 
-//################################################################### Class def
+// ################################################################### Class def
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
 template <class MatType, class VecType, class SolverType>
 class AGSLinearSolver : public chi_math::LinearSolver<MatType, VecType, SolverType>

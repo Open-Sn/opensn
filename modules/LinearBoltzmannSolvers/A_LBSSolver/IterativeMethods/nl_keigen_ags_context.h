@@ -1,9 +1,9 @@
 #pragma once
 
-#include "math/NonLinearSolver/NonLinearSolverContext.h"
+#include "framework/math/NonLinearSolver/NonLinearSolverContext.h"
 
-#include "A_LBSSolver/lbs_solver.h"
-#include "A_LBSSolver/IterativeMethods/snes_k_residual_func_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/snes_k_residual_func_context.h"
 
 #include <vector>
 #include <cstdint>

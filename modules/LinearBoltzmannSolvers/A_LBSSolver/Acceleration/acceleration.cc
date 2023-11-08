@@ -1,10 +1,10 @@
-#include "acceleration.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
 
-#include "mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
-#include "physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
 
-#include "chi_runtime.h"
-#include "chi_log_exceptions.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log_exceptions.h"
 
 namespace lbs::acceleration
 {

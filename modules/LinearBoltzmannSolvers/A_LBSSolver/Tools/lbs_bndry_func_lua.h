@@ -1,6 +1,6 @@
 #pragma once
-
-#include "mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
+#ifdef OPENSN_WITH_LUA
+#include "framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
 
 #include <string>
 #include <utility>
@@ -34,3 +34,4 @@ public:
 };
 
 } // namespace lbs
+#endif

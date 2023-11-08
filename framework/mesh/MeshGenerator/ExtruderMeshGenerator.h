@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MeshGenerator.h"
+#include "framework/mesh/MeshGenerator/MeshGenerator.h"
 
 namespace chi_mesh
 {

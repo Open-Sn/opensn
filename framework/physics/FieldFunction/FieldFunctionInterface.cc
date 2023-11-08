@@ -1,9 +1,9 @@
-#include "FieldFunctionInterface.h"
+#include "framework/physics/FieldFunction/FieldFunctionInterface.h"
 
-#include "physics/FieldFunction/fieldfunction.h"
+#include "framework/physics/FieldFunction/fieldfunction.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_physics
 {

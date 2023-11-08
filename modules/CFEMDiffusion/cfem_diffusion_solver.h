@@ -1,16 +1,16 @@
 #pragma once
 
-#include "physics/SolverBase/chi_solver.h"
-#include "math/PETScUtils/petsc_utils.h"
+#include "framework/physics/SolverBase/chi_solver.h"
+#include "framework/math/PETScUtils/petsc_utils.h"
 
-#include "cfem_diffusion_bndry.h"
-#include "utils/chi_timer.h"
+#include "modules/CFEMDiffusion/cfem_diffusion_bndry.h"
+#include "framework/utils/chi_timer.h"
 
-#include "console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 #include <map>
 
-#include "mesh/chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 
 namespace chi_mesh
 {
@@ -57,6 +57,7 @@ public:
 
   void Execute() override;
 
+#ifdef OPENSN_WITH_LUA
   /**Calls a lua function with xyz coordinates.
    * \param L The lua state.
    * \param lua_func_name The name used to define this lua function in the lua
@@ -67,6 +68,7 @@ public:
    * \return The function evaluation.*/
   static double
   CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
+#endif
 
   /**
    * Updates the field functions with the latest data.

@@ -1,10 +1,13 @@
-#include "console/chi_console.h"
-#include "chi_lua.h"
-#include "fv_diffusion_solver.h"
+#include "framework/console/chi_console.h"
+#ifdef OPENSN_WITH_LUA
+#include "framework/chi_lua.h"
+#endif
+#include "modules/FVDiffusion/fv_diffusion_solver.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-//###################################################################
+#ifdef OPENSN_WITH_LUA
+// ###################################################################
 /**Calls a lua function with xyz coordinates.
  * \param L The lua state.
  * \param lua_func_name The name used to define this lua function in the lua
@@ -51,8 +54,9 @@ fv_diffusion::Solver::CallLua_iXYZFunction(lua_State* L,
 
   return lua_return;
 }
+#endif
 
-//###################################################################
+// ###################################################################
 /**Updates the field functions with the latest data.*/
 void
 fv_diffusion::Solver::UpdateFieldFunctions()

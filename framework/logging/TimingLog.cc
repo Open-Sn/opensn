@@ -1,10 +1,10 @@
-#include "TimingLog.h"
+#include "framework/logging/TimingLog.h"
 
-#include "utils/chi_timer.h"
+#include "framework/utils/chi_timer.h"
 
-#include "chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-#include "chi_log_exceptions.h"
+#include "framework/logging/chi_log_exceptions.h"
 
 #include <sstream>
 

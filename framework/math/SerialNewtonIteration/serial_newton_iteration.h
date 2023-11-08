@@ -3,7 +3,7 @@
 #include <vector>
 #include <cassert>
 
-#include "math/chi_math.h"
+#include "framework/math/chi_math.h"
 
 namespace chi_math
 {

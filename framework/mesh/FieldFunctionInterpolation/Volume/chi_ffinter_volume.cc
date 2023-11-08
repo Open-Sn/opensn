@@ -1,12 +1,12 @@
-#include "chi_ffinter_volume.h"
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "math/VectorGhostCommunicator/vector_ghost_communicator.h"
-#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "console/chi_console.h"
+#include "framework/mesh/FieldFunctionInterpolation/Volume/chi_ffinter_volume.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/math/VectorGhostCommunicator/vector_ghost_communicator.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_mesh
 {
@@ -83,8 +83,10 @@ FieldFunctionInterpolationVolume::Execute()
         ff_value += qp_data.ShapeValue(j, qp) * node_dof_values[j];
 
       double function_value = ff_value;
+#ifdef OPENSN_WITH_LUA
       if (op_type_ >= Operation::OP_SUM_LUA and op_type_ <= Operation::OP_MAX_LUA)
         function_value = CallLuaFunction(ff_value, cell.material_id_);
+#endif
 
       local_volume += qp_data.JxW(qp);
       local_sum += function_value * qp_data.JxW(qp);
@@ -117,6 +119,7 @@ FieldFunctionInterpolationVolume::Execute()
   }
 }
 
+#ifdef OPENSN_WITH_LUA
 double
 FieldFunctionInterpolationVolume::CallLuaFunction(double ff_value, int mat_id) const
 {
@@ -133,5 +136,6 @@ FieldFunctionInterpolationVolume::CallLuaFunction(double ff_value, int mat_id) c
 
   return ret_val;
 }
+#endif
 
 } // namespace chi_mesh

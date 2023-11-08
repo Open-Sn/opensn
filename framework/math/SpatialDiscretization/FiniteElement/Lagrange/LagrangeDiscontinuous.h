@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LagrangeBase.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/Lagrange/LagrangeBase.h"
 
 namespace chi_math::spatial_discretization
 {

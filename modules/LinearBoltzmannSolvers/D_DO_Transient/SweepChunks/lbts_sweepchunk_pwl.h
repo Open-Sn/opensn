@@ -1,13 +1,14 @@
 #pragma once
 
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#if 0
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
 
-#include "mesh/SweepUtilities/sweepchunk_base.h"
+#include "framework/mesh/SweepUtilities/sweepchunk_base.h"
 
 #include "Ca_DO_SteadyState/lbs_DO_steady_state.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
 namespace lbs
 {
@@ -81,3 +82,4 @@ public:
   };
 };
 } // namespace lbs
+#endif

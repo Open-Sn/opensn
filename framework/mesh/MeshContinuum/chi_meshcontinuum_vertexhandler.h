@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mesh/chi_meshvector.h"
+#include "framework/mesh/chi_meshvector.h"
 
 #include <map>
 

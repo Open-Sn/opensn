@@ -1,9 +1,8 @@
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
-#include "utils/chi_timer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
 
-#include "stringstream_color.h"
+#include "framework/logging/stringstream_color.h"
 
 #include <sstream>
 

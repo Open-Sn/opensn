@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/SpatialDiscretization/CellMappings/LagrangeBaseMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/LagrangeBaseMapping.h"
 
 namespace chi_math::cell_mapping
 {

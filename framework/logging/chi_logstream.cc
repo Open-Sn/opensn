@@ -1,6 +1,6 @@
-#include "chi_logstream.h"
+#include "framework/logging/chi_logstream.h"
 
-#include "stringstream_color.h"
+#include "framework/logging/stringstream_color.h"
 
 chi::LogStream::~LogStream()
 {

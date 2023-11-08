@@ -2,8 +2,9 @@
 
 #include <string>
 #include <vector>
-
-#include "chi_lua.h"
+#ifdef OPENSN_WITH_LUA
+#include "framework/chi_lua.h"
+#endif
 
 namespace chi_physics
 {
@@ -14,7 +15,7 @@ enum class PropertyType
   ISOTROPIC_MG_SOURCE = 11
 };
 
-//###################################################################
+// ###################################################################
 /** Base class for material properties.*/
 class MaterialProperty
 {
@@ -32,7 +33,9 @@ public:
 
   virtual double GetScalarValue() { return 0.0; }
 
+#ifdef OPENSN_WITH_LUA
   virtual void PushLuaTable(lua_State* L) const;
+#endif
 };
 
 } // namespace chi_physics

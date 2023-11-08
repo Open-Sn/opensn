@@ -1,6 +1,6 @@
-#include "ParallelVector.h"
+#include "framework/math/ParallelVector/ParallelVector.h"
 
-#include "mpi/chi_mpi_utils.h"
+#include "framework/mpi/chi_mpi_utils.h"
 
 namespace chi_math
 {

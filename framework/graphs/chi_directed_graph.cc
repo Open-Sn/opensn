@@ -1,13 +1,12 @@
-#include "chi_directed_graph.h"
+#include "framework/graphs/chi_directed_graph.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 #include <sstream>
 #include <algorithm>
 
-//###################################################################
+// ###################################################################
 /** Adds a vertex to the graph with a supplied id.*/
 void
 chi::DirectedGraph::VertexAccessor::AddVertex(size_t id, void* context)
@@ -28,7 +27,7 @@ chi::DirectedGraph::VertexAccessor::AddVertex(void* context)
   vertex_valid_flags_.push_back(true);
 }
 
-//###################################################################
+// ###################################################################
 /** Removes a vertex from the graph.*/
 void
 chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
@@ -59,7 +58,7 @@ chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
   vertex_valid_flags_[v] = false;
 }
 
-//###################################################################
+// ###################################################################
 /** Accesses a vertex from the graph.*/
 chi::GraphVertex&
 chi::DirectedGraph::VertexAccessor::operator[](size_t v)
@@ -70,7 +69,7 @@ chi::DirectedGraph::VertexAccessor::operator[](size_t v)
   return vertices_[v];
 }
 
-//###################################################################
+// ###################################################################
 /** Adds a vertex to the graph. By default <I>context</I> is
  * assumed to be nullptr.*/
 void
@@ -79,7 +78,7 @@ chi::DirectedGraph::AddVertex(size_t id, void* context /*=nullptr*/)
   vertices.AddVertex(id, context);
 }
 
-//###################################################################
+// ###################################################################
 /** Adds a vertex to the graph. By default <I>context</I> is
  * assumed to be nullptr and <I>id</I> is assumed to be assigned
  * automatically. In
@@ -91,7 +90,7 @@ chi::DirectedGraph::AddVertex(void* context /*=nullptr*/)
   vertices.AddVertex(context);
 }
 
-//###################################################################
+// ###################################################################
 /** Removes a vertex from the graph. This method does not
  * free any context related data.*/
 void
@@ -100,7 +99,7 @@ chi::DirectedGraph::RemoveVertex(size_t v)
   vertices.RemoveVertex(v);
 }
 
-//###################################################################
+// ###################################################################
 /** Adds an edge to the graph. Range checks are supplied by the
  * vertex accessor.*/
 bool
@@ -115,7 +114,7 @@ chi::DirectedGraph::AddEdge(size_t from, size_t to, double weight)
   return true;
 }
 
-//###################################################################
+// ###################################################################
 /**Remove an edge from the graph. Range checks are supplied by the
  * vertex accessor.*/
 void
@@ -125,7 +124,7 @@ chi::DirectedGraph::RemoveEdge(size_t from, size_t to)
   vertices[to].us_edge.erase(from);
 }
 
-//###################################################################
+// ###################################################################
 /** Depth-First-Search main recursive algorithm. This is the recursive
  * portion of the method below this one
  * (chi_graph::DirectedGraph::DepthFirstSearch).*/
@@ -141,7 +140,7 @@ chi::DirectedGraph::DFSAlgorithm(std::vector<size_t>& traversal,
     if (not visited[v]) DFSAlgorithm(traversal, visited, v);
 }
 
-//###################################################################
+// ###################################################################
 /**SCC main recursive algorithm. This is the recursive call for the
  * method defined below this one
  * (chi_graph::DirectedGraph::FindStronglyConnectedConnections).*/
@@ -189,7 +188,7 @@ chi::DirectedGraph::SCCAlgorithm(size_t u,
   }
 }
 
-//###################################################################
+// ###################################################################
 /**Find strongly connected components. This method is the implementation
  * of Tarjan's algorithm [1].
  *
@@ -218,7 +217,7 @@ chi::DirectedGraph::FindStronglyConnectedComponents()
   return SCCs;
 }
 
-//###################################################################
+// ###################################################################
 /** Generates a topological sort. This method is the implementation
  * of Kahn's algorithm [1].
  *
@@ -283,7 +282,7 @@ endofalgo:
   return L;
 }
 
-//###################################################################
+// ###################################################################
 /**Finds a sequence that minimizes the Feedback Arc Set (FAS). This
  * algorithm implements the algorithm depicted in [1].
  *
@@ -358,7 +357,7 @@ chi::DirectedGraph::FindApproxMinimumFAS()
   return s;
 }
 
-//###################################################################
+// ###################################################################
 /**Prints the graph in Graphviz format.*/
 void
 chi::DirectedGraph::PrintGraphviz(int location_mask)
@@ -387,7 +386,7 @@ chi::DirectedGraph::PrintGraphviz(int location_mask)
   std::cout << o.str();
 }
 
-//###################################################################
+// ###################################################################
 /**Prints a sub-graph in Graphviz format.*/
 void
 chi::DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int location_mask)
@@ -419,7 +418,7 @@ chi::DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int
   std::cout << o.str();
 }
 
-//###################################################################
+// ###################################################################
 std::vector<std::pair<size_t, size_t>>
 chi::DirectedGraph::RemoveCyclicDependencies()
 {
@@ -546,7 +545,7 @@ chi::DirectedGraph::RemoveCyclicDependencies()
   return edges_to_remove;
 }
 
-//###################################################################
+// ###################################################################
 /**Clears all the data structures associated with the graph.*/
 void
 chi::DirectedGraph::Clear()
@@ -554,7 +553,7 @@ chi::DirectedGraph::Clear()
   vertices.clear();
 }
 
-//###################################################################
+// ###################################################################
 /**Destructor.*/
 chi::DirectedGraph::~DirectedGraph()
 {

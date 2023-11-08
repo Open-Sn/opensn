@@ -1,12 +1,12 @@
-#include "AggregateNodalValuePostProcessor.h"
+#include "framework/post_processors/AggregateNodalValuePostProcessor.h"
 
-#include "ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/LogicalVolume/LogicalVolume.h"
-#include "event_system/Event.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/event_system/Event.h"
 
 namespace chi
 {

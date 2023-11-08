@@ -1,8 +1,8 @@
-#include "meshcutting.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/Raytrace/raytracer.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/mesh/MeshCutting/meshcutting.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/Raytrace/raytracer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 #include <algorithm>
 #include <functional>
 #include <queue>

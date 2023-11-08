@@ -1,7 +1,7 @@
-#include "chi_grid_face_histogram.h"
+#include "framework/mesh/MeshContinuum/chi_grid_face_histogram.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_mesh
 {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ChiObject.h"
-#include "physics/chi_physics_namespace.h"
+#include "framework/ChiObject.h"
+#include "framework/physics/chi_physics_namespace.h"
 
-#include "physics/BasicOptions/basic_options.h"
-#include "parameters/parameter_block.h"
+#include "framework/physics/BasicOptions/basic_options.h"
+#include "framework/parameters/parameter_block.h"
 
 #include <iostream>
 #include <utility>

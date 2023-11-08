@@ -1,12 +1,12 @@
-#include "tools.h"
-#include "chi_log.h"
-#include "../mg_diffusion_solver.h"
+#include "modules/MGDiffusion/tools/tools.h"
+#include "framework/logging/chi_log.h"
+#include "modules/MGDiffusion/mg_diffusion_solver.h"
 
 #include <iomanip>
 
-#include "chi_runtime.h"
+#include "framework/chi_runtime.h"
 
-//###################################################################
+// ###################################################################
 /**My personal monitor monitor.*/
 PetscErrorCode
 mg_diffusion::MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)

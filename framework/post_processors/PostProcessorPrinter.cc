@@ -1,11 +1,11 @@
-#include "PostProcessorPrinter.h"
-#include "event_system/SystemWideEventPublisher.h"
-#include "event_system/EventSubscriber.h"
-#include "event_system/Event.h"
-#include "post_processors/PostProcessor.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_utils.h"
+#include "framework/post_processors/PostProcessorPrinter.h"
+#include "framework/event_system/SystemWideEventPublisher.h"
+#include "framework/event_system/EventSubscriber.h"
+#include "framework/event_system/Event.h"
+#include "framework/post_processors/PostProcessor.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_utils.h"
 #include <set>
 #include <algorithm>
 

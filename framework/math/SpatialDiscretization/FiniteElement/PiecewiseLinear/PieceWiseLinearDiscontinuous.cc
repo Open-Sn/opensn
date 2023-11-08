@@ -1,11 +1,11 @@
-#include "PieceWiseLinearDiscontinuous.h"
-#include "math/UnknownManager/unknown_manager.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "utils/chi_timer.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
-#include "chi_mpi_utils.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/mpi/chi_mpi_utils.h"
 
 #define sc_int64 static_cast<int64_t>
 

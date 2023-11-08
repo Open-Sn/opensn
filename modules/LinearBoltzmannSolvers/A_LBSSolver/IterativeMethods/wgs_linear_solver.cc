@@ -1,15 +1,15 @@
-#include "wgs_linear_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
 
-#include "wgs_convergence_test.h"
-#include "A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_convergence_test.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "math/PETScUtils/petsc_utils.h"
-#include "math/LinearSolver/linear_matrix_action_Ax.h"
+#include "framework/math/PETScUtils/petsc_utils.h"
+#include "framework/math/LinearSolver/linear_matrix_action_Ax.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "utils/chi_timer.h"
+#include "framework/utils/chi_timer.h"
 
 #include <petscksp.h>
 #include <memory>

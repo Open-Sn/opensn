@@ -1,8 +1,8 @@
 #pragma once
 
-#include "MeshModifier.h"
+#include "framework/mesh/MeshModifiers/MeshModifier.h"
 
-#include "mesh/chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 
 namespace chi_mesh
 {

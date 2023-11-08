@@ -1,6 +1,6 @@
 #pragma once
 
-#include "field_operation.h"
+#include "framework/physics/FieldOperations/field_operation.h"
 
 namespace chi
 {

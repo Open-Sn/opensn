@@ -1,10 +1,10 @@
-#include "diffusion.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "math/PETScUtils/petsc_utils.h"
-#include "physics/chi_physics_namespace.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/math/PETScUtils/petsc_utils.h"
+#include "framework/physics/chi_physics_namespace.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace lbs::acceleration
 {

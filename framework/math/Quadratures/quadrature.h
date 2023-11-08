@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ChiObject.h"
-#include "mesh/chi_mesh.h"
+#include "framework/ChiObject.h"
+#include "framework/mesh/chi_mesh.h"
 
 #include <vector>
 

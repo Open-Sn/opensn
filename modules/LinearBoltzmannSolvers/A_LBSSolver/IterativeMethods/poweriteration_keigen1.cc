@@ -1,13 +1,13 @@
-#include "A_LBSSolver/lbs_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
 
-#include "A_LBSSolver/IterativeMethods/ags_linear_solver.h"
-#include "A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
 
-#include "A_LBSSolver/Acceleration/diffusion_mip_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
 
 #include <iomanip>
 

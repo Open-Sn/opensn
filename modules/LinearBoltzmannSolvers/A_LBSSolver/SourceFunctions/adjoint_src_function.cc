@@ -1,19 +1,19 @@
-#include "adjoint_src_function.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/adjoint_src_function.h"
 
-#include "C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
 namespace lbs
 {
 
-//###################################################################
+// ###################################################################
 /**Constructor for an adjoint source function.*/
 AdjointSourceFunction::AdjointSourceFunction(const LBSSolver& lbs_solver)
   : SourceFunction(lbs_solver)
 {
 }
 
-//###################################################################
+// ###################################################################
 /**Adds Quantities of Interest to the nodal sources.*/
 void
 AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
@@ -30,6 +30,7 @@ AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
 
   const auto& adjoint_solver = *adjoint_solver_ptr;
 
+#ifdef OPENSN_WITH_LUA
   const auto& response_functions = adjoint_solver.GetResponseFunctions();
   const auto& basic_options = adjoint_solver.GetBasicOptions();
   const auto& cell_transport_views = adjoint_solver.GetCellTransportViews();
@@ -64,6 +65,7 @@ AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
         }   // for local cell-id of qoi
       }     // if ref-qoi
     }       // for qoi
+#endif
 }
 
 } // namespace lbs

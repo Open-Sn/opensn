@@ -1,4 +1,4 @@
-#include "GraphPartitioner.h"
+#include "framework/graphs/GraphPartitioner.h"
 
 namespace chi
 {

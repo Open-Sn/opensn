@@ -1,11 +1,11 @@
 #pragma once
 
-#include "quadrature.h"
+#include "framework/math/Quadratures/quadrature.h"
 
 namespace chi_math
 {
 
-//######################################################### Class Def
+// ######################################################### Class Def
 /**Gauss-Chebyshev quadrature.*/
 class QuadratureGaussChebyshev : public chi_math::Quadrature
 {

@@ -1,13 +1,13 @@
-#include "chi_ffinter_point.h"
+#include "framework/mesh/FieldFunctionInterpolation/Point/chi_ffinter_point.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "chi_runtime.h"
-#include "chi_mpi.h"
+#include "framework/chi_runtime.h"
+#include "framework/mpi/chi_mpi.h"
 
-//###################################################################
+// ###################################################################
 /**Initializes the point interpolator.*/
 void
 chi_mesh::FieldFunctionInterpolationPoint::Initialize()
@@ -71,7 +71,7 @@ chi_mesh::FieldFunctionInterpolationPoint::Initialize()
     }
 }
 
-//###################################################################
+// ###################################################################
 /**Executes the point interpolator.*/
 void
 chi_mesh::FieldFunctionInterpolationPoint::Execute()
@@ -108,7 +108,7 @@ chi_mesh::FieldFunctionInterpolationPoint::Execute()
     point_value_ += node_dof_values[i] * shape_values[i];
 }
 
-//###################################################################
+// ###################################################################
 /**Gets the value of the field function evaluation at the point.*/
 double
 chi_mesh::FieldFunctionInterpolationPoint::GetPointValue() const

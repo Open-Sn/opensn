@@ -1,6 +1,6 @@
 #pragma once
 
-#include "multigroup_xs.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/multigroup_xs.h"
 
 namespace chi_physics
 {

@@ -1,11 +1,11 @@
-#include "LagrangeContinuous.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "chi_log_exceptions.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
-#include "utils/chi_timer.h"
-#include "mpi/chi_mpi_utils_map_all2all.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/Lagrange/LagrangeContinuous.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/logging/chi_log_exceptions.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/mpi/chi_mpi_utils_map_all2all.h"
 #include <algorithm>
 
 #define sc_int64 static_cast<int64_t>

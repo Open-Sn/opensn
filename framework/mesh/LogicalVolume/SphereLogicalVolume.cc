@@ -1,6 +1,6 @@
-#include "SphereLogicalVolume.h"
+#include "framework/mesh/LogicalVolume/SphereLogicalVolume.h"
 
-#include "ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 namespace chi_mesh
 {

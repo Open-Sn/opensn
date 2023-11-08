@@ -1,6 +1,6 @@
 #pragma once
 
-#include "parameters/input_parameters.h"
+#include "framework/parameters/input_parameters.h"
 
 namespace chi_physics
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "math/Quadratures/curvilinear_angular_quadrature.h"
+#include "framework/math/Quadratures/curvilinear_angular_quadrature.h"
 
-#include "math/Quadratures/quadrature.h"
+#include "framework/math/Quadratures/quadrature.h"
 
 namespace chi_math
 {

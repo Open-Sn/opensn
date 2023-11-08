@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ChiObject.h"
-#include "event_system/EventSubscriber.h"
+#include "framework/ChiObject.h"
+#include "framework/event_system/EventSubscriber.h"
 
 namespace chi
 {

@@ -1,13 +1,13 @@
 #include "diffusion_mip_solver.h"
-#include "acceleration.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "A_LBSSolver/lbs_structs.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
-#include "console/chi_console.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/QuadraturePointData.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/console/chi_console.h"
 #include <utility>
 
 #define DefaultBCDirichlet                                                                         \
@@ -58,7 +58,9 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                                    "Check that Initialize has been called.");
   if (options.verbose) Chi::log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
 
+#ifdef OPENSN_WITH_LUA
   lua_State* L = Chi::console.GetConsoleState();
+#endif
   const auto& source_function = options.source_lua_function;
   const auto& solution_function = options.ref_solution_lua_function;
 
@@ -113,9 +115,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
         if (not source_function.empty())
         {
+#ifdef OPENSN_WITH_LUA
           for (size_t qp : qp_data.QuadraturePointIndices())
             entry_rhs_i += CallLuaXYZFunction(L, source_function, qp_data.QPointXYZ(qp)) *
                            qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
+#endif
         }
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -267,11 +271,13 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
                 if (not solution_function.empty())
                 {
+#ifdef OPENSN_WITH_LUA
                   aij_bc_value = 0.0;
                   for (size_t qp : fqp_data.QuadraturePointIndices())
                     aij_bc_value +=
                       kappa * CallLuaXYZFunction(L, solution_function, fqp_data.QPointXYZ(qp)) *
                       fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
+#endif
                 }
 
                 MatSetValue(A_, imap, jmmap, aij, ADD_VALUES);
@@ -303,6 +309,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
                 if (not solution_function.empty())
                 {
+#ifdef OPENSN_WITH_LUA
                   chi_mesh::Vector3 vec_aij_mms;
                   for (size_t qp : fqp_data.QuadraturePointIndices())
                     vec_aij_mms +=
@@ -310,6 +317,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                       (fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
                        fqp_data.ShapeValue(i, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp));
                   aij_bc_value = -Dg * n_f.Dot(vec_aij_mms);
+#endif
                 }
 
                 MatSetValue(A_, imap, jmap, aij, ADD_VALUES);
@@ -397,7 +405,9 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                                    "Check that Initialize has been called.");
   if (options.verbose) Chi::log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
 
+#ifdef OPENSN_WITH_LUA
   lua_State* L = Chi::console.GetConsoleState();
+#endif
   const auto& source_function = options.source_lua_function;
   const auto& solution_function = options.ref_solution_lua_function;
 
@@ -439,9 +449,11 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
           }   // for j
         else
         {
+#ifdef OPENSN_WITH_LUA
           for (size_t qp : qp_data.QuadraturePointIndices())
             entry_rhs_i += CallLuaXYZFunction(L, source_function, qp_data.QPointXYZ(qp)) *
                            qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
+#endif
         }
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -494,10 +506,12 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 if (not solution_function.empty())
                 {
                   aij_bc_value = 0.0;
+#ifdef OPENSN_WITH_LUA
                   for (size_t qp : fqp_data.QuadraturePointIndices())
                     aij_bc_value +=
                       kappa * CallLuaXYZFunction(L, solution_function, fqp_data.QPointXYZ(qp)) *
                       fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
+#endif
                 }
 
                 VecSetValue(rhs_, imap, aij_bc_value, ADD_VALUES);
@@ -526,6 +540,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
                 if (not solution_function.empty())
                 {
+#ifdef OPENSN_WITH_LUA
                   chi_mesh::Vector3 vec_aij_mms;
                   for (size_t qp : fqp_data.QuadraturePointIndices())
                     vec_aij_mms +=
@@ -533,6 +548,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                       (fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
                        fqp_data.ShapeValue(i, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp));
                   aij_bc_value = -Dg * n_f.Dot(vec_aij_mms);
+#endif
                 }
 
                 VecSetValue(rhs_, imap, aij_bc_value, ADD_VALUES);
@@ -1250,6 +1266,7 @@ DiffusionMIPSolver::MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
     "lbs::acceleration::DiffusionMIPSolver::MapFaceNodeDisc: Mapping failure.");
 }
 
+#ifdef OPENSN_WITH_LUA
 double
 DiffusionMIPSolver::CallLuaXYZFunction(lua_State* L,
                                        const std::string& lua_func_name,
@@ -1287,5 +1304,6 @@ DiffusionMIPSolver::CallLuaXYZFunction(lua_State* L,
 
   return lua_return;
 }
+#endif
 
 } // namespace lbs::acceleration

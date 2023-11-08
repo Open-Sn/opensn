@@ -1,7 +1,7 @@
-#include "mat_prop_scalarfuncXYZTV.h"
+#include "framework/materials/mat_prop_scalarfuncXYZTV.h"
 
-#include "ChiObjectFactory.h"
-#include "chi_runtime.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/chi_runtime.h"
 
 namespace chi
 {

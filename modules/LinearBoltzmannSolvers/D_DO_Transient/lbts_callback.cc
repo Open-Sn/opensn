@@ -1,7 +1,7 @@
-#include "lbts_transient_solver.h"
-
-#include "chi_runtime.h"
-#include "console/chi_console.h"
+#include "modules/LinearBoltzmannSolvers/D_DO_Transient/lbts_transient_solver.h"
+#if 0
+#include "framework/chi_runtime.h"
+#include "framework/console/chi_console.h"
 
 /**Provides a callback interface to lua after each timestep. Users,
  * can setup all sorts of controls like adaptive timestepping and
@@ -38,3 +38,4 @@ lbs::DiscOrdTransientSolver::PostStepCallBackFunction() const
 
   //  lua_pop(L,1); //pop the double, or error code
 }
+#endif

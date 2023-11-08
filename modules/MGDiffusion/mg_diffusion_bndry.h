@@ -1,6 +1,6 @@
 #pragma once
 
-#include "array"
+#include <array>
 
 namespace mg_diffusion
 {

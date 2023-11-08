@@ -9,35 +9,35 @@
 #   script depends on the arguments passed:
 #   
 #   1. If called without arguments, CMake scripts for a release (optimized) build
-#      of ChiTech will be generated in the directory chi_build. Additional
+#      of openSn will be generated in the directory `build`. Additional
 #      arguments will be passed to and interpreted by the CMake generator.
 #
 #   2. If called with the single argument from the following list:
 #         Debug, Release, RelWithDebInfo, MinSizeRel,
-#      scripts for the corresponding build of ChiTech will be generated in
-#      chi_build. See the CMake documentation (CMAKE_BUILD_TYPE) for more
+#      scripts for the corresponding build of openSn will be generated in
+#      `build`. See the CMake documentation (CMAKE_BUILD_TYPE) for more
 #      information about the available build types.
 #
 #   3. If called with the single argument 'clean', the CMake build directory
-#      (chi_build) will be removed and the script will stop. If additional
+#      (`build`) will be removed and the script will stop. If additional
 #      arguments are supplied after 'clean', after removing the build directory, 
 #      the script will behave as in case 2.
 #
 # EXAMPLES:
 #   ./configure.sh clean Release
-#      regenerate the CMake scripts for a Release build of ChiTech from scratch
+#      regenerate the CMake scripts for a Release build of openSn from scratch
 #      (invalidating CMake cache that stores previously used settings)
 #
 #   ./configure.sh -DCMAKE_VERBOSE_MAKEFILE=1
-#      generate the CMake scripts for a Release build of ChiTech (using CMake
+#      generate the CMake scripts for a Release build of openSn (using CMake
 #      cache if available); the 'make' command will be verbose_info (showing, e.g.,
 #      what compiler flags are being used)
 #
 #   ./configure.sh Debug -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=$PWD/bin/Debug
-#      generate the CMake scripts for a Debug build of ChiTech (using CMake
-#      cache if available); the 'make' command will place the ChiTech executable
+#      generate the CMake scripts for a Debug build of openSn (using CMake
+#      cache if available); the 'make' command will place the openSn executable
 #      into the specified directory (instead of the default 'bin' subdirectory of
-#      ChiTech root directory).
+#      openSn root directory).
 #
 
 is_cmake_build_type() {
@@ -50,7 +50,7 @@ is_cmake_build_type() {
 }
 
 CMAKE_ARGS=                 # additional CMake arguments
-DO_CLEAN="No"               # if yes, remove the chi_build directory before generating CMake
+DO_CLEAN="No"               # if yes, remove the `build` directory before generating CMake
 DO_CMAKE="Yes"              # by default, run CMake generator after configuring
 CMAKE_BUILD_TYPE="Release"  # by default, configure the Release build
 
@@ -80,13 +80,12 @@ for arg in "$@"; do
 done
 
 if [ $DO_CLEAN = "Yes" ]; then
-  # If chi_build directory exists, remove it
-  if [ -d "chi_build" ]; then
-    rm -r chi_build
+  # If `build` directory exists, remove it
+  if [ -d "build" ]; then
+    rm -r build
   fi
 fi
 
 if [ $DO_CMAKE = "Yes" ]; then
-  mkdir -p chi_build && cd chi_build && \
-  cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} ${CMAKE_ARGS} ../ && cd ..
+  cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} ${CMAKE_ARGS} -B build -S .
 fi

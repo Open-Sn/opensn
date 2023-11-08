@@ -1,9 +1,9 @@
 #pragma once
 
-#include "mesh/SweepUtilities/sweep_namespace.h"
-#include "chi_mpi.h"
+#include "framework/mesh/SweepUtilities/sweep_namespace.h"
+#include "framework/mpi/chi_mpi.h"
 
-#include "AsyncComm.h"
+#include "framework/mesh/SweepUtilities/Communicators/AsyncComm.h"
 
 typedef unsigned long long int u_ll_int;
 

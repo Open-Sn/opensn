@@ -1,6 +1,6 @@
-#include "surfmesher_predefined.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/mesh/SurfaceMesher/Predefined/surfmesher_predefined.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_mesh
 {

@@ -1,8 +1,8 @@
-#include "boundary_aniso_hetero.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "math/Quadratures/angular_quadrature_base.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_aniso_hetero.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/math/Quadratures/angular_quadrature_base.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_mesh::sweep_management
 {

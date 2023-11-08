@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SweepChunk.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/SweepChunk.h"
 
 namespace lbs
 {

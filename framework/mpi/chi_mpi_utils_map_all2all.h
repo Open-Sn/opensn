@@ -5,8 +5,8 @@
 
 #include <type_traits>
 
-#include "chi_runtime.h"
-#include "chi_mpi.h"
+#include "framework/chi_runtime.h"
+#include "framework/mpi/chi_mpi.h"
 
 namespace chi_mpi_utils
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../chi_mesh.h"
-#include "data_types/chi_data_types.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/data_types/chi_data_types.h"
 #include <tuple>
 
 // Appending cell types to namespace
@@ -27,7 +27,7 @@ enum class CellType
 
 std::string CellTypeName(CellType type);
 
-//######################################################### Class def
+// ######################################################### Class def
 /** In this paradigm a face is an object which largely
  * is considered to be planar (meaning all the vertices
  * lay in the same plane).*/
@@ -57,7 +57,7 @@ public:
   void RecomputeCentroid(const chi_mesh::MeshContinuum& grid);
 };
 
-//######################################################### Class def
+// ######################################################### Class def
 /**Generic mesh cell object*/
 class Cell
 {

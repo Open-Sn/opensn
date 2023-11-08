@@ -1,6 +1,6 @@
 #pragma once
 
-#include "time_integration.h"
+#include "framework/math/TimeIntegrations/time_integration.h"
 
 namespace chi_math
 {

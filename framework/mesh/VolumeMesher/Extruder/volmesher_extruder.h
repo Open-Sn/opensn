@@ -1,8 +1,8 @@
 #pragma once
 
 #include <utility>
-#include "mesh/VolumeMesher/chi_volumemesher.h"
-#include "mesh/Cell/cell.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/Cell/cell.h"
 
 namespace chi_mesh
 {

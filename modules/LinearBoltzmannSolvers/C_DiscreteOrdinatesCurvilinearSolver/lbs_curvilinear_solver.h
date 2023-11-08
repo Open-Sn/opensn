@@ -1,8 +1,8 @@
 #pragma once
 
-#include "B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
-#include "B_DiscreteOrdinatesSolver/SweepChunks/SweepChunk.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/SweepChunk.h"
 
 namespace lbs
 {

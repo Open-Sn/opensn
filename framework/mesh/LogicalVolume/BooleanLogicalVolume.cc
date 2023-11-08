@@ -1,6 +1,6 @@
-#include "BooleanLogicalVolume.h"
+#include "framework/mesh/LogicalVolume/BooleanLogicalVolume.h"
 
-#include "ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 namespace chi_mesh
 {

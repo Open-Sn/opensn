@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/NonLinearSolver/NonLinearSolver.h"
-#include "nl_keigen_ags_context.h"
+#include "framework/math/NonLinearSolver/NonLinearSolver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/nl_keigen_ags_context.h"
 
 namespace lbs
 {

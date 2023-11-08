@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pi_keigen.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
+#include "modules/LinearBoltzmannSolvers/Executors/pi_keigen.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion.h"
 
 namespace chi_math
 {

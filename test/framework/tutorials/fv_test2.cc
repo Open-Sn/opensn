@@ -1,18 +1,18 @@
-#include "mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
 
-#include "math/SpatialDiscretization/FiniteVolume/FiniteVolume.h"
-#include "math/PETScUtils/petsc_utils.h"
+#include "framework/math/SpatialDiscretization/FiniteVolume/FiniteVolume.h"
+#include "framework/math/PETScUtils/petsc_utils.h"
 
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-#include "math/VectorGhostCommunicator/vector_ghost_communicator.h"
+#include "framework/math/VectorGhostCommunicator/vector_ghost_communicator.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "console/chi_console.h"
+#include "framework/console/chi_console.h"
 
 namespace chi_unit_sim_tests
 {

@@ -3,12 +3,12 @@
 #include <memory>
 #include <array>
 
-#include "../chi_mesh.h"
-#include "chi_meshcontinuum_localcellhandler.h"
-#include "chi_meshcontinuum_globalcellhandler.h"
-#include "chi_meshcontinuum_vertexhandler.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum_localcellhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum_globalcellhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum_vertexhandler.h"
 
-#include "chi_mpi.h"
+#include "framework/mpi/chi_mpi.h"
 
 namespace chi_data_types
 {

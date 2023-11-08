@@ -1,28 +1,34 @@
 /** @file Runtime file*/
-#include "chi_runtime.h"
-#include "chi_configuration.h"
+#include "framework/chi_runtime.h"
+#include "config.h"
 
-#include "console/chi_console.h"
-#include "math/chi_math.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/console/chi_console.h"
+#include "framework/math/chi_math.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
 
-#include "physics/chi_physics_namespace.h"
+#include "framework/physics/chi_physics_namespace.h"
 
-#include "post_processors/PostProcessor.h"
+#include "framework/post_processors/PostProcessor.h"
 
-#include "event_system/SystemWideEventPublisher.h"
-#include "event_system/EventCodes.h"
-#include "event_system/Event.h"
+#include "framework/event_system/SystemWideEventPublisher.h"
+#include "framework/event_system/EventCodes.h"
+#include "framework/event_system/Event.h"
 
-#include "ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
-#include "chi_mpi.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
 
 #include <iostream>
 
 #ifndef NDEBUG
+#include <unistd.h>
+#endif
+
+#if defined(__MACH__)
+#include <mach/mach.h>
+#else
 #include <unistd.h>
 #endif
 
@@ -157,11 +163,13 @@ Chi::run_time::ParseArguments(int argc, char** argv)
 
   } // for argument
 
+#ifdef OPENSN_WITH_LUA
   if (Chi::run_time::dump_registry_)
   {
     ChiObjectFactory::GetInstance().DumpRegister();
     Chi::console.DumpRegister();
   }
+#endif
 }
 
 // ############################################### Initialize ChiTech
@@ -183,7 +191,6 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
   mpi.SetLocationID(location_id);
   mpi.SetProcessCount(number_processes);
 
-  Chi::console.LoadRegisteredLuaItems();
   Chi::console.PostMPIInfo(location_id, number_processes);
 
   run_time::ParseArguments(argc, argv);
@@ -366,11 +373,66 @@ Chi::GetStatusOfRegistries()
   for (const auto& [key, _] : object_factory.Registry())
     stats.objfactory_keys_.push_back(key);
 
+#ifdef OPENSN_WITH_LUA
   for (const auto& [key, _] : console.GetLuaFunctionRegistry())
     stats.console_lua_func_keys_.push_back(key);
 
   for (const auto& [key, _] : console.GetFunctionWrapperRegistry())
     stats.console_lua_wrapper_keys_.push_back(key);
+#endif
 
   return stats;
+}
+
+chi::CSTMemory
+Chi::GetMemoryUsage()
+{
+  double mem = 0.0;
+#if defined(__MACH__)
+  struct mach_task_basic_info info;
+  mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+  long long int bytes;
+  if (task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &count) != KERN_SUCCESS)
+  {
+    bytes = 0;
+  }
+  bytes = info.resident_size;
+  mem = (double)bytes;
+#else
+  long long int llmem = 0;
+  long long int rss = 0;
+
+  std::string ignore;
+  std::ifstream ifs("/proc/self/stat", std::ios_base::in);
+  ifs >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >>
+    ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >>
+    ignore >> ignore >> ignore >> ignore >> llmem >> rss;
+
+  long long int page_size_bytes = sysconf(_SC_PAGE_SIZE);
+  mem = rss * page_size_bytes;
+  /*
+  FILE* fp = NULL;
+  if((fp = fopen( "/proc/self/statm", "r" )) == NULL)
+    return 0;
+  if(fscanf(fp, "%*s%*s%*s%*s%*s%lld", &llmem) != 1)
+  {
+    fclose(fp);
+    return 0;
+  }
+  fclose(fp);*/
+
+  // mem = llmem * (long long int)sysconf(_SC_PAGESIZE);
+#endif
+
+  chi::CSTMemory mem_struct(mem);
+
+  return mem_struct;
+}
+
+double
+Chi::GetMemoryUsageInMB()
+{
+  chi::CSTMemory mem_struct = GetMemoryUsage();
+
+  return mem_struct.memory_mbytes;
 }

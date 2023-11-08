@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LogicalVolume.h"
+#include "framework/mesh/LogicalVolume/LogicalVolume.h"
 
 namespace chi_mesh
 {

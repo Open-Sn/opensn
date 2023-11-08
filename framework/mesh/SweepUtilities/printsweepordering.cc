@@ -1,17 +1,17 @@
-#include "../chi_mesh.h"
-#include "../MeshContinuum/chi_meshcontinuum.h"
-#include "sweep_namespace.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/SweepUtilities/sweep_namespace.h"
 #include <fstream>
 
-#include "../MeshHandler/chi_meshhandler.h"
-#include "mesh/Cell/cell.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/Cell/cell.h"
 
-#include "../MeshContinuum/chi_meshcontinuum.h"
-#include "../VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
 
-#include "mesh/SweepUtilities/SPDS/SPDS.h"
+#include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
 
-//###################################################################
+// ###################################################################
 /**Print a sweep ordering to file.*/
 void
 chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS* sweep_order,

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "mesh/chi_mesh.h"
-#include "math/Quadratures/quadrature.h"
-#include "math/chi_math.h"
-#include "math/UnknownManager/unknown_manager.h"
-#include "mesh/Cell/cell.h"
-#include "math/SpatialDiscretization/CellMappings/CellMapping.h"
+#include "framework/mesh/chi_mesh.h"
+#include "framework/math/Quadratures/quadrature.h"
+#include "framework/math/chi_math.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
+#include "framework/mesh/Cell/cell.h"
+#include "framework/math/SpatialDiscretization/CellMappings/CellMapping.h"
 
 #include <petscksp.h>
 

@@ -1,8 +1,8 @@
-#include "LagrangeWedgeMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeWedgeMapping.h"
 
-#include "mesh/Cell/cell.h"
+#include "framework/mesh/Cell/cell.h"
 
-#include "chi_log_exceptions.h"
+#include "framework/logging/chi_log_exceptions.h"
 
 namespace chi_math::cell_mapping
 {

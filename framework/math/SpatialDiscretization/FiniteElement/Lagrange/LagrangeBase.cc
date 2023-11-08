@@ -1,18 +1,18 @@
-#include "LagrangeBase.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/Lagrange/LagrangeBase.h"
 
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "math/SpatialDiscretization/CellMappings/Lagrange/LagrangeSlabMapping.h"
-#include "math/SpatialDiscretization/CellMappings/Lagrange/LagrangeQuadMapping.h"
-#include "math/SpatialDiscretization/CellMappings/Lagrange/LagrangeTriangleMapping.h"
-#include "math/SpatialDiscretization/CellMappings/Lagrange/LagrangeHexMapping.h"
-#include "math/SpatialDiscretization/CellMappings/Lagrange/LagrangeWedgeMapping.h"
-#include "math/SpatialDiscretization/CellMappings/Lagrange/LagrangeTetMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeSlabMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeQuadMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeTriangleMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeHexMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeWedgeMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/Lagrange/LagrangeTetMapping.h"
 
-#include "math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolygonMapping.h"
-#include "math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolyhedronMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolygonMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/PieceWiseLinear/PieceWiseLinearPolyhedronMapping.h"
 
-#include "chi_log_exceptions.h"
+#include "framework/logging/chi_log_exceptions.h"
 
 namespace chi_math::spatial_discretization
 {

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "mesh/SweepUtilities/sweep_namespace.h"
-#include "mesh/SweepUtilities/SPDS/SPDS.h"
-#include "mesh/SweepUtilities/AngleSetGroup/anglesetgroup.h"
+#include "framework/mesh/SweepUtilities/sweep_namespace.h"
+#include "framework/mesh/SweepUtilities/SPDS/SPDS.h"
+#include "framework/mesh/SweepUtilities/AngleSetGroup/anglesetgroup.h"
 
-#include "math/Quadratures/angular_quadrature_base.h"
+#include "framework/math/Quadratures/angular_quadrature_base.h"
 
 #include <memory>
 
-//###################################################################
+// ###################################################################
 /**Angle aggregation has to cater for running the 8 corners of a 3D
  * partitioning, the 4 corners of a 2D partitioning (the latter 2 both being
  * polar angle aggregation) as well as single angle aggregation.

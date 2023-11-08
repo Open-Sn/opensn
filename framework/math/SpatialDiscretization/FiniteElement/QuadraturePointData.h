@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/chi_math.h"
+#include "framework/math/chi_math.h"
 
 namespace chi_math::finite_element
 {

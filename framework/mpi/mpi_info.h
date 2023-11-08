@@ -37,7 +37,7 @@ public:
   MPI_Info(const MPI_Info&) = delete;           // Deleted copy constructor
   MPI_Info operator=(const MPI_Info&) = delete; // Deleted assigment operator
 
-protected:
+public:
   /**Sets the active communicator*/
   void SetCommunicator(MPI_Comm new_communicator);
   /**Sets the rank.*/

@@ -1,9 +1,9 @@
-#include "varying.h"
+#include "framework/data_types/varying.h"
 
 #include <algorithm>
 #include <sstream>
 
-#include "chi_log_exceptions.h"
+#include "framework/logging/chi_log_exceptions.h"
 
 /**Provides a string-name for an enumerated VaryingDataType.*/
 std::string

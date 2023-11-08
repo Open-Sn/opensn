@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_data_types.h"
+#include "framework/data_types/chi_data_types.h"
 
 #include <cstddef>
 #include <iostream>

@@ -1,8 +1,8 @@
-#include "LogicalVolumeInterface.h"
+#include "framework/mesh/LogicalVolume/LogicalVolumeInterface.h"
 
-#include "LogicalVolume.h"
+#include "framework/mesh/LogicalVolume/LogicalVolume.h"
 
-#include "chi_runtime.h"
+#include "framework/chi_runtime.h"
 
 namespace chi_mesh
 {

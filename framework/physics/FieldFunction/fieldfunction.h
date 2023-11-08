@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ChiObject.h"
-#include "math/UnknownManager/unknown_manager.h"
-#include "mesh/chi_mesh.h"
+#include "framework/ChiObject.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
+#include "framework/mesh/chi_mesh.h"
 
 namespace chi_mesh
 {

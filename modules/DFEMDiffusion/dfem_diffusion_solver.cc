@@ -1,13 +1,15 @@
-#include "dfem_diffusion_solver.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "dfem_diffusion_bndry.h"
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "chi_lua.h"
+#include "modules/DFEMDiffusion/dfem_diffusion_solver.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "modules/DFEMDiffusion/dfem_diffusion_bndry.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#ifdef OPENSN_WITH_LUA
+#include "framework/chi_lua.h"
+#endif
 
 #define scdouble static_cast<double>
 
@@ -175,7 +177,9 @@ Solver::Execute()
   const auto& grid = *grid_ptr_;
   const auto& sdm = *sdm_ptr_;
 
+#ifdef OPENSN_WITH_LUA
   lua_State* L = Chi::console.GetConsoleState();
+#endif
 
   //============================================= Assemble the system
   // is this needed?
@@ -195,6 +199,7 @@ Solver::Execute()
     VecDbl cell_rhs(num_nodes, 0.0);
 
     //==================================== Assemble volumetric terms
+#ifdef OPENSN_WITH_LUA
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const int64_t imap = sdm.MapDOF(cell, i);
@@ -219,6 +224,7 @@ Solver::Execute()
                        qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
       VecSetValue(b_, imap, entry_rhs_i, ADD_VALUES);
     } // for i
+#endif
 
     //==================================== Assemble face terms
     const size_t num_faces = cell.faces_.size();
@@ -250,7 +256,8 @@ Solver::Execute()
         if (cell.Type() == chi_mesh::CellType::POLYGON) Ckappa = 2.0;
         if (cell.Type() == chi_mesh::CellType::POLYHEDRON) Ckappa = 4.0;
 
-        //========================= Assembly penalty terms
+          //========================= Assembly penalty terms
+#ifdef OPENSN_WITH_LUA
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
@@ -277,6 +284,7 @@ Solver::Execute()
             MatSetValue(A_, imap, jpmap, -aij, ADD_VALUES);
           } // for fj
         }   // for fi
+#endif
 
         //========================= Assemble gradient terms
         // For the following comments we use the notation:
@@ -286,6 +294,7 @@ Solver::Execute()
         // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
 
         // loop over node of current cell (gradient of b_i)
+#ifdef OPENSN_WITH_LUA
         for (int i = 0; i < num_nodes; ++i)
         {
           const int64_t imap = sdm.MapDOF(cell, i);
@@ -334,6 +343,7 @@ Solver::Execute()
             MatSetValue(A_, ipmap, jmap, -aij, ADD_VALUES);
           } // for j
         }   // for fi
+#endif
 
       } // internal face
       else
@@ -396,7 +406,8 @@ Solver::Execute()
           if (cell.Type() == chi_mesh::CellType::POLYGON) Ckappa = 4.0;
           if (cell.Type() == chi_mesh::CellType::POLYHEDRON) Ckappa = 8.0;
 
-          //========================= Assembly penalty terms
+            //========================= Assembly penalty terms
+#ifdef OPENSN_WITH_LUA
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
             const uint i = cell_mapping.MapFaceNode(f, fi);
@@ -418,12 +429,14 @@ Solver::Execute()
               VecSetValue(b_, imap, aij_bc_value, ADD_VALUES);
             } // for fj
           }   // for fi
+#endif
 
           //========================= Assemble gradient terms
           // For the following comments we use the notation:
           // Dk = 0.5* n dot nabla bk
 
           // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
+#ifdef OPENSN_WITH_LUA
           for (size_t i = 0; i < num_nodes; i++)
           {
             const int64_t imap = sdm.MapDOF(cell, i);
@@ -444,8 +457,9 @@ Solver::Execute()
 
               MatSetValue(A_, imap, jmap, aij, ADD_VALUES);
               VecSetValue(b_, imap, aij_bc_value, ADD_VALUES);
-            }   // for fj
-          }     // for i
+            } // for fj
+          }   // for i
+#endif
         }       // Dirichlet BC
         else {} // else BC
       }         // boundary face
@@ -584,6 +598,7 @@ Solver::MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
   throw std::logic_error("Solver::MapFaceNodeDisc: Mapping failure.");
 }
 
+#ifdef OPENSN_WITH_LUA
 double
 Solver::CallLua_iXYZFunction(lua_State* L,
                              const std::string& lua_func_name,
@@ -622,6 +637,7 @@ Solver::CallLua_iXYZFunction(lua_State* L,
 
   return lua_return;
 }
+#endif
 
 void
 Solver::UpdateFieldFunctions()

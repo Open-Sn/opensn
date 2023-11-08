@@ -1,9 +1,9 @@
 #pragma once
 
-#include "SweepChunk.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/SweepChunk.h"
 
-#include "math/SpatialDiscretization/SpatialDiscretization.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
 namespace lbs
 {

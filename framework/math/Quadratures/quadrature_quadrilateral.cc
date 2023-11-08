@@ -1,8 +1,8 @@
-#include "quadrature_quadrilateral.h"
+#include "framework/math/Quadratures/quadrature_quadrilateral.h"
 
-#include "quadrature_gausslegendre.h"
+#include "framework/math/Quadratures/quadrature_gausslegendre.h"
 
-//###################################################################
+// ###################################################################
 /**Initialzes a set of points for a quadrature integration over
  * the volume of a quadrilateral.*/
 chi_math::QuadratureQuadrilateral::QuadratureQuadrilateral(QuadratureOrder order)

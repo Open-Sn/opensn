@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ChiObject.h"
+#include "framework/ChiObject.h"
 
 namespace chi_physics
 {

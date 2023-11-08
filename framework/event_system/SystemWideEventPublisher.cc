@@ -1,4 +1,4 @@
-#include "SystemWideEventPublisher.h"
+#include "framework/event_system/SystemWideEventPublisher.h"
 
 namespace chi
 {

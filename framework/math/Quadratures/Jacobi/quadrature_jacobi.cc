@@ -1,4 +1,4 @@
-#include "quadrature_jacobi.h"
+#include "framework/math/Quadratures/Jacobi/quadrature_jacobi.h"
 
 #include <stdexcept>
 #include <string>

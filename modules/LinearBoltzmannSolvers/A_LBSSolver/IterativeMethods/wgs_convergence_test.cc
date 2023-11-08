@@ -1,19 +1,19 @@
-#include "wgs_convergence_test.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_convergence_test.h"
 
-#include "wgs_context.h"
-#include "LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-#include "utils/chi_timer.h"
+#include "framework/utils/chi_timer.h"
 
 #include <iomanip>
 
 namespace lbs
 {
 
-//###################################################################
+// ###################################################################
 /**Customized convergence test.*/
 PetscErrorCode
 GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)

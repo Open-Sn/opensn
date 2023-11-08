@@ -1,7 +1,7 @@
-#include "AAH_SweepChunk.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/AAH_SweepChunk.h"
 
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
 
 #define scint static_cast<int>
 

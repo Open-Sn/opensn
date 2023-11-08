@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mesh/chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 
 namespace chi
 {

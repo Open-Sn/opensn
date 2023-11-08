@@ -1,12 +1,12 @@
 #pragma once
 
-#include "physics/PhysicsMaterial/material_property_base.h"
-#include "math/SparseMatrix/chi_math_sparse_matrix.h"
+#include "framework/physics/PhysicsMaterial/material_property_base.h"
+#include "framework/math/SparseMatrix/chi_math_sparse_matrix.h"
 
 namespace chi_physics
 {
 
-//######################################################################
+// ######################################################################
 class MultiGroupXS : public MaterialProperty
 {
 public:
@@ -33,10 +33,12 @@ public:
    */
   void ExportToChiXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
 
+#ifdef OPENSN_WITH_LUA
   /**
    * Pushes all of the relevant items of the transport xs to a lua table.
    */
   void PushLuaTable(lua_State* L) const override;
+#endif
 
   virtual const unsigned int NumGroups() const = 0;
 

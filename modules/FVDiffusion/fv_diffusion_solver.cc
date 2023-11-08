@@ -1,17 +1,17 @@
-#include "fv_diffusion_solver.h"
+#include "modules/FVDiffusion/fv_diffusion_solver.h"
 
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "utils/chi_timer.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
 
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "fv_diffusion_bndry.h"
+#include "modules/FVDiffusion/fv_diffusion_bndry.h"
 
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
-#include "math/SpatialDiscretization/FiniteVolume/FiniteVolume.h"
+#include "framework/math/SpatialDiscretization/FiniteVolume/FiniteVolume.h"
 
 //============================================= constructor
 fv_diffusion::Solver::Solver(const std::string& in_solver_name)
@@ -169,7 +169,9 @@ fv_diffusion::Solver::Execute()
   const auto& grid = *grid_ptr_;
   const auto& sdm = *sdm_ptr_;
 
+#ifdef OPENSN_WITH_LUA
   lua_State* L = Chi::console.GetConsoleState();
+#endif
 
   //============================================= Assemble the system
   // P ~ Present cell
@@ -183,6 +185,7 @@ fv_diffusion::Solver::Execute()
 
     const auto imat = cell_P.material_id_;
 
+#ifdef OPENSN_WITH_LUA
     const double sigma_a = CallLua_iXYZFunction(L, "Sigma_a", imat, x_cc_P);
     const double q_ext = CallLua_iXYZFunction(L, "Q_ext", imat, x_cc_P);
     const double D_P = CallLua_iXYZFunction(L, "D_coef", imat, x_cc_P);
@@ -250,7 +253,8 @@ fv_diffusion::Solver::Execute()
         } // if Dirichlet
       }   // bndry face
     }     // for f
-  }       // for cell
+#endif
+  } // for cell
 
   Chi::log.Log() << "Global assembly";
 

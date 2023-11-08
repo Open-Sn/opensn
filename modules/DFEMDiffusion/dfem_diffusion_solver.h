@@ -1,12 +1,12 @@
 #pragma once
 
-#include "physics/SolverBase/chi_solver.h"
-#include "math/PETScUtils/petsc_utils.h"
-#include "dfem_diffusion_bndry.h"
-#include "utils/chi_timer.h"
-#include "console/chi_console.h"
-#include "math/UnknownManager/unknown_manager.h"
-#include "mesh/chi_mesh.h"
+#include "framework/physics/SolverBase/chi_solver.h"
+#include "framework/math/PETScUtils/petsc_utils.h"
+#include "modules/DFEMDiffusion/dfem_diffusion_bndry.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/console/chi_console.h"
+#include "framework/math/UnknownManager/unknown_manager.h"
+#include "framework/mesh/chi_mesh.h"
 #include <map>
 
 namespace chi_mesh
@@ -78,6 +78,7 @@ public:
                       size_t ccfi,
                       double epsilon = 1.0e-12);
 
+#ifdef OPENSN_WITH_LUA
   /**
    * Calls a lua function with xyz coordinates.
    * \param L The lua state.
@@ -89,6 +90,7 @@ public:
    * \return The function evaluation.*/
   static double
   CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
+#endif
 
   /**
    * Updates the field functions with the latest data.

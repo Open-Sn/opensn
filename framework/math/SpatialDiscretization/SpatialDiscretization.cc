@@ -1,9 +1,9 @@
-#include "SpatialDiscretization.h"
+#include "framework/math/SpatialDiscretization/SpatialDiscretization.h"
 
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "math/PETScUtils/petsc_utils.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/math/PETScUtils/petsc_utils.h"
 
-#include "chi_log.h"
+#include "framework/logging/chi_log.h"
 
 namespace chi_math
 {

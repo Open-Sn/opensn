@@ -1,6 +1,6 @@
-#include "GridBasedFieldFunctionInterface.h"
+#include "framework/physics/FieldFunction/GridBasedFieldFunctionInterface.h"
 
-#include "fieldfunction_gridbased.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
 
 namespace chi_physics
 {

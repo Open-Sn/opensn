@@ -1,25 +1,27 @@
-#include "lbs_solver.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "console/chi_console.h"
-#include "mpi/chi_mpi.h"
-#include "ChiObjectFactory.h"
-#include "IterativeMethods/wgs_context.h"
-#include "IterativeMethods/ags_context.h"
-#include "IterativeMethods/ags_linear_solver.h"
-#include "Acceleration/diffusion_mip_solver.h"
-#include "Groupset/lbs_groupset.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
-#include "mesh/SweepUtilities/SweepBoundary/boundary_vacuum.h"
-#include "mesh/SweepUtilities/SweepBoundary/boundary_iso_homo.h"
-#include "mesh/SweepUtilities/SweepBoundary/boundary_aniso_hetero.h"
-#include "math/TimeIntegrations/time_integration.h"
-#include "math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
-#include "physics/PhysicsMaterial/chi_physicsmaterial.h"
-#include "physics/FieldFunction/fieldfunction_gridbased.h"
-#include "Tools/lbs_bndry_func_lua.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/console/chi_console.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/ChiObjectFactory.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_reflecting.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_vacuum.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_iso_homo.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/boundary_aniso_hetero.h"
+#include "framework/math/TimeIntegrations/time_integration.h"
+#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/physics/PhysicsMaterial/chi_physicsmaterial.h"
+#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#ifdef OPENSN_WITH_LUA
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Tools/lbs_bndry_func_lua.h"
+#endif
 #include <algorithm>
 #include <iomanip>
 #include <sys/stat.h>
@@ -1125,7 +1127,7 @@ LBSSolver::ComputeUnitIntegrals()
   Chi::log.Log() << "Ghost cell unit cell-matrix ratio: "
                  << (double)num_globl_ucms[1] * 100 / (double)num_globl_ucms[0] << "%";
   Chi::log.Log() << "Cell matrices computed.                   Process memory = "
-                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB";
+                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
 }
 
 void
@@ -1356,8 +1358,7 @@ LBSSolver::InitializeParrays()
 
   Chi::mpi.Barrier();
   Chi::log.Log() << "Done with parallel arrays.                Process memory = "
-                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB"
-                 << std::endl;
+                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB" << std::endl;
 }
 
 void
@@ -1501,8 +1502,13 @@ LBSSolver::InitializeBoundaries()
         sweep_boundaries_[bid] = mk_shrd(SweepIncHomoBndry)(G, mg_q);
       else if (bndry_pref.type == BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS)
       {
+#ifdef OPENSN_WITH_LUA
         sweep_boundaries_[bid] = mk_shrd(SweepAniHeteroBndry)(
           G, std::make_unique<BoundaryFunctionToLua>(bndry_pref.source_function), bid);
+#else
+        // hard exit since this is a missing capability
+        exit(-1);
+#endif
       }
       else if (bndry_pref.type == lbs::BoundaryType::REFLECTING)
       {

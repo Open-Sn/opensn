@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chi_mpi_utils_map_all2all.h"
+#include "framework/mpi/chi_mpi_utils_map_all2all.h"
 
 namespace chi_mpi_utils
 {

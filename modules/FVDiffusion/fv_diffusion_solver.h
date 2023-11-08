@@ -1,14 +1,14 @@
 #pragma once
 
-#include "physics/SolverBase/chi_solver.h"
-#include "math/PETScUtils/petsc_utils.h"
+#include "framework/physics/SolverBase/chi_solver.h"
+#include "framework/math/PETScUtils/petsc_utils.h"
 
-#include "fv_diffusion_bndry.h"
-#include "utils/chi_timer.h"
+#include "modules/FVDiffusion/fv_diffusion_bndry.h"
+#include "framework/utils/chi_timer.h"
 
-#include "console/chi_console.h"
+#include "framework/console/chi_console.h"
 
-#include "mesh/chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 
 #include <map>
 
@@ -55,8 +55,10 @@ public:
   void Initialize() override;
   void Execute() override;
 
+#ifdef OPENSN_WITH_LUA
   static double
   CallLua_iXYZFunction(lua_State* L, const std::string&, int, const chi_mesh::Vector3&);
+#endif
 
   void UpdateFieldFunctions();
 };

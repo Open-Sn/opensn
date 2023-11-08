@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sweep_boundary.h"
+#include "framework/mesh/SweepUtilities/SweepBoundary/sweep_boundary.h"
 #include <vector>
 #include <limits>
 

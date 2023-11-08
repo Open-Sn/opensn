@@ -1,4 +1,4 @@
-#include "chi_math.h"
+#include "framework/math/chi_math.h"
 #include <assert.h>
 
 namespace chi_math

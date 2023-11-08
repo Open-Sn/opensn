@@ -1,14 +1,14 @@
-#include "angular_product_quadrature.h"
-#include "quadrature_gausslegendre.h"
-#include "quadrature_gausschebyshev.h"
+#include "framework/math/Quadratures/angular_product_quadrature.h"
+#include "framework/math/Quadratures/quadrature_gausslegendre.h"
+#include "framework/math/Quadratures/quadrature_gausschebyshev.h"
 
 #include <cmath>
 #include <sstream>
 
-#include "chi_runtime.h"
-#include "chi_log.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
 
-//###################################################################
+// ###################################################################
 /**Initializes the quadrature with custom angles and weights.*/
 void
 chi_math::ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
@@ -100,7 +100,7 @@ chi_math::ProductQuadrature::AssembleCosines(const std::vector<double>& azimutha
   }
 }
 
-//###################################################################
+// ###################################################################
 /**Optimizes the angular quadrature for polar symmetry by removing
  * all the direction with downward pointing polar angles.
  *
@@ -149,7 +149,7 @@ chi_math::ProductQuadrature::OptimizeForPolarSymmetry(const double normalization
   azimu_ang_ = new_azimu_ang;
 }
 
-//###################################################################
+// ###################################################################
 /**Constructor for Angular Gauss-Legendre.*/
 chi_math::AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose)
   : chi_math::ProductQuadrature()
@@ -172,7 +172,7 @@ chi_math::AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verb
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 
-//###################################################################
+// ###################################################################
 /**Constructor for Angular Gauss-Legendre-Legendre.*/
 chi_math::AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, bool verbose)
 {
@@ -199,7 +199,7 @@ chi_math::AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, boo
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 
-//###################################################################
+// ###################################################################
 /**Constructor for Angular Gauss-Legendre-Chebyshev.*/
 chi_math::AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, bool verbose)
 {
@@ -226,7 +226,7 @@ chi_math::AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, boo
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 
-//###################################################################
+// ###################################################################
 /**Constructor for Custom Angular Product Quadrature.*/
 chi_math::AngularQuadratureProdCustom::AngularQuadratureProdCustom(
   const std::vector<double>& azimuthal,

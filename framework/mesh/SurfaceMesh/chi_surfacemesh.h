@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <vector>
 
-#include "../chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 
 namespace chi_mesh
 {

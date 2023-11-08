@@ -2,9 +2,9 @@
 
 #include <utility>
 
-#include "mesh/chi_mesh.h"
+#include "framework/mesh/chi_mesh.h"
 
-#include "CellMapping.h"
+#include "framework/math/SpatialDiscretization/CellMappings/CellMapping.h"
 
 // ###################################################################
 namespace chi_math::cell_mapping

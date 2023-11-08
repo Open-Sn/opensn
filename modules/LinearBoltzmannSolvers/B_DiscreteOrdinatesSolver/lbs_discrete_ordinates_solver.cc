@@ -1,31 +1,31 @@
-#include "lbs_discrete_ordinates_solver.h"
-#include "ChiObjectFactory.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/VolumeMesher/chi_volumemesher.h"
-#include "mesh/SweepUtilities/SPDS/SPDS_AdamsAdamsHawkins.h"
-#include "mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
-#include "mesh/SweepUtilities/AngleSet/AAH_AngleSet.h"
-#include "math/Quadratures/angular_quadrature_base.h"
-#include "math/Quadratures/angular_product_quadrature.h"
-#include "B_DiscreteOrdinatesSolver/IterativeMethods/sweep_wgs_context.h"
-#include "A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
-#include "A_LBSSolver/SourceFunctions/source_function.h"
-#include "A_LBSSolver/Groupset/lbs_groupset.h"
-#include "A_LBSSolver/lbs_structs.h"
-#include "Sweepers/CBC_SPDS.h"
-#include "Sweepers/CBC_FLUDSCommonData.h"
-#include "Sweepers/CBC_FLUDS.h"
-#include "Sweepers/CBC_AngleSet.h"
-#include "SweepChunks/AAH_SweepChunk.h"
-#include "SweepChunks/CBC_SweepChunk.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
-#include "utils/chi_timer.h"
-#include "utils/chi_utils.h"
-#include "console/chi_console.h"
-#include "chi_log_exceptions.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/lbs_discrete_ordinates_solver.h"
+#include "framework/ChiObjectFactory.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/SweepUtilities/SPDS/SPDS_AdamsAdamsHawkins.h"
+#include "framework/mesh/SweepUtilities/FLUDS/AAH_FLUDS.h"
+#include "framework/mesh/SweepUtilities/AngleSet/AAH_AngleSet.h"
+#include "framework/math/Quadratures/angular_quadrature_base.h"
+#include "framework/math/Quadratures/angular_product_quadrature.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/IterativeMethods/sweep_wgs_context.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/wgs_linear_solver.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/source_function.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_SPDS.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDSCommonData.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_FLUDS.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/Sweepers/CBC_AngleSet.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/AAH_SweepChunk.h"
+#include "modules/LinearBoltzmannSolvers/B_DiscreteOrdinatesSolver/SweepChunks/CBC_SweepChunk.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/utils/chi_utils.h"
+#include "framework/console/chi_console.h"
+#include "framework/logging/chi_log_exceptions.h"
 #include <iomanip>
 
 #define ParallelParmetisNeedsCycles                                                                \
@@ -1100,7 +1100,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   if (options_.verbose_inner_iterations)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " Initialized Angle Aggregation.   "
                    << "         Process memory = " << std::setprecision(3)
-                   << chi::Console::GetMemoryUsageInMB() << " MB.";
+                   << Chi::GetMemoryUsageInMB() << " MB.";
 
   Chi::mpi.Barrier();
 }
@@ -1115,7 +1115,7 @@ DiscreteOrdinatesSolver::ResetSweepOrderings(LBSGroupset& groupset)
   Chi::mpi.Barrier();
 
   Chi::log.Log() << "SPDS and FLUDS reset complete.            Process memory = "
-                 << std::setprecision(3) << chi::Console::GetMemoryUsageInMB() << " MB";
+                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
 
   double local_app_memory = Chi::log.ProcessEvent(chi::ChiLog::StdTags::MAX_MEMORY_USAGE,
                                                   chi::ChiLog::EventOperation::MAX_VALUE);

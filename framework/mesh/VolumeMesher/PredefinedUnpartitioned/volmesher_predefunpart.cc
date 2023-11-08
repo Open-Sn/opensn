@@ -1,14 +1,14 @@
-#include "volmesher_predefunpart.h"
-#include "mesh/Cell/cell.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/SurfaceMesher/surfacemesher.h"
-#include "mesh/VolumeMesher/chi_volumemesher.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
-#include "utils/chi_timer.h"
-#include "console/chi_console.h"
+#include "framework/mesh/VolumeMesher/PredefinedUnpartitioned/volmesher_predefunpart.h"
+#include "framework/mesh/Cell/cell.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/SurfaceMesher/surfacemesher.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
+#include "framework/utils/chi_timer.h"
+#include "framework/console/chi_console.h"
 #include "petsc.h"
 
 namespace chi_mesh
@@ -104,7 +104,7 @@ VolumeMesherPredefinedUnpartitioned::Execute()
 {
   Chi::log.Log() << Chi::program_timer.GetTimeString()
                  << " VolumeMesherPredefinedUnpartitioned executing. Memory in use = "
-                 << chi::Console::GetMemoryUsageInMB() << " MB" << std::endl;
+                 << Chi::GetMemoryUsageInMB() << " MB" << std::endl;
 
   //======================================== Check partitioning params
   if (options.partition_type == KBA_STYLE_XYZ)

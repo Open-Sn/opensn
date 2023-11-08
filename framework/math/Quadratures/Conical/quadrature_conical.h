@@ -1,11 +1,11 @@
 #pragma once
 
-#include "math/Quadratures/quadrature.h"
+#include "framework/math/Quadratures/quadrature.h"
 
 namespace chi_math
 {
 
-//###################################################################
+// ###################################################################
 /**Jacobi quadrature.*/
 class QuadratureConical : public chi_math::Quadrature
 {

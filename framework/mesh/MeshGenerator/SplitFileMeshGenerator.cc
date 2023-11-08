@@ -1,16 +1,16 @@
-#include "SplitFileMeshGenerator.h"
+#include "framework/mesh/MeshGenerator/SplitFileMeshGenerator.h"
 
-#include "data_types/byte_array.h"
-#include "utils/chi_utils.h"
+#include "framework/data_types/byte_array.h"
+#include "framework/utils/chi_utils.h"
 
-#include "mesh/MeshHandler/chi_meshhandler.h"
-#include "mesh/VolumeMesher/chi_volumemesher.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/MeshHandler/chi_meshhandler.h"
+#include "framework/mesh/VolumeMesher/chi_volumemesher.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
 
-#include "chi_log.h"
-#include "utils/chi_timer.h"
+#include "framework/logging/chi_log.h"
+#include "framework/utils/chi_timer.h"
 
-#include "ChiObjectFactory.h"
+#include "framework/ChiObjectFactory.h"
 
 #include <filesystem>
 

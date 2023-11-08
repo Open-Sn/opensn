@@ -1,7 +1,7 @@
 #pragma once
 
-#include "physics/chi_physics_namespace.h"
-#include "material_property_base.h"
+#include "framework/physics/chi_physics_namespace.h"
+#include "framework/physics/PhysicsMaterial/material_property_base.h"
 
 #include <vector>
 #include <memory>
@@ -9,7 +9,7 @@
 namespace chi_physics
 {
 
-//###################################################################
+// ###################################################################
 /** Base class for materials used in physics simulations.*/
 class Material
 {

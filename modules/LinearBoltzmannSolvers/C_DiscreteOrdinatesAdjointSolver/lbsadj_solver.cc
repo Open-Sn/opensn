@@ -1,15 +1,15 @@
-#include "lbsadj_solver.h"
-#include "lbs_adjoint.h"
-#include "ChiObjectFactory.h"
-#include "A_LBSSolver/SourceFunctions/adjoint_src_function.h"
-#include "A_LBSSolver/IterativeMethods/ags_linear_solver.h"
-#include "physics/PhysicsMaterial/MultiGroupXS/adjoint_mgxs.h"
-#include "mesh/MeshContinuum/chi_meshcontinuum.h"
-#include "mesh/LogicalVolume/LogicalVolume.h"
-#include "math/chi_math_vectorNX.h"
-#include "chi_runtime.h"
-#include "chi_log.h"
-#include "chi_mpi.h"
+#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbsadj_solver.h"
+#include "modules/LinearBoltzmannSolvers/C_DiscreteOrdinatesAdjointSolver/lbs_adjoint.h"
+#include "framework/ChiObjectFactory.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/SourceFunctions/adjoint_src_function.h"
+#include "modules/LinearBoltzmannSolvers/A_LBSSolver/IterativeMethods/ags_linear_solver.h"
+#include "framework/physics/PhysicsMaterial/MultiGroupXS/adjoint_mgxs.h"
+#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/LogicalVolume/LogicalVolume.h"
+#include "framework/math/chi_math_vectorNX.h"
+#include "framework/chi_runtime.h"
+#include "framework/logging/chi_log.h"
+#include "framework/mpi/chi_mpi.h"
 #include <utility>
 #include <fstream>
 
@@ -45,11 +45,13 @@ DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const std::string
   basic_options_.AddOption<std::string>("REFERENCE_RF", std::string());
 }
 
+#ifdef OPENSN_WITH_LUA
 const std::vector<lbs::DiscreteOrdinatesAdjointSolver::RespFuncAndSubs>&
 DiscreteOrdinatesAdjointSolver::GetResponseFunctions() const
 {
   return response_functions_;
 }
+#endif
 
 void
 DiscreteOrdinatesAdjointSolver::Initialize()
@@ -111,6 +113,7 @@ DiscreteOrdinatesAdjointSolver::MakeAdjointXSs()
 void
 DiscreteOrdinatesAdjointSolver::InitQOIs()
 {
+#ifdef OPENSN_WITH_LUA
   //============================================= Initialize QOIs
   for (auto& qoi_pair : response_functions_)
   {
@@ -134,6 +137,7 @@ DiscreteOrdinatesAdjointSolver::InitQOIs()
     Chi::log.Log() << "LBAdjointSolver: Number of cells subscribed to " << qoi_designation.name
                    << " = " << num_globl_subs;
   }
+#endif
 }
 
 void
@@ -184,6 +188,7 @@ DiscreteOrdinatesAdjointSolver::AddResponseFunction(
   std::shared_ptr<chi_mesh::LogicalVolume> logical_volume,
   const std::string& lua_function_name)
 {
+#ifdef OPENSN_WITH_LUA
   // Make the designation
   ResponseFunctionDesignation qoi_designation(
     qoi_name, std::move(logical_volume), lua_function_name);
@@ -193,6 +198,10 @@ DiscreteOrdinatesAdjointSolver::AddResponseFunction(
   response_functions_.emplace_back(qoi_designation, cell_rf_subscriptions);
 
   return response_functions_.size() - 1;
+#else
+  // hard exit since this is a mssing capability
+  exit(-1);
+#endif
 }
 
 void
