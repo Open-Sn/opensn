@@ -6,6 +6,7 @@
 
 #include "framework/logging/chi_log.h"
 #include "framework/ChiObjectFactory.h"
+#include <inttypes.h>
 
 namespace chi
 {
@@ -233,7 +234,7 @@ PostProcessor::ConvertScalarValueToString(const ParameterBlock& value) const
   {
     const auto intval = value.GetValue<int64_t>();
     char buffer[30];
-    snprintf(buffer, 30, "%lld", intval);
+    snprintf(buffer, 30, "%" PRId64, intval);
     value_string = buffer;
   }
 
