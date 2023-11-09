@@ -58,7 +58,7 @@ SolverInfoPostProcessor::Execute(const Event& event_context)
   SetType(FigureTypeFromValue(value_));
 
   const int event_code = event_context.Code();
-  if (event_code == 32 /*SolverInitialized*/ or event_code == 38 /*SolverAdvanced*/)
+  if (event_code == Event::SolverInitialized or event_code == Event::SolverAdvanced)
   {
     TimeHistoryEntry entry{
       solver_.GetTimeStepper().TimeStepIndex(), solver_.GetTimeStepper().Time(), value_};

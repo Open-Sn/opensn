@@ -3,11 +3,11 @@
 namespace chi
 {
 
-Event::Event(const std::string& name, int code) : name_(name), code_(code), params_()
+Event::Event(const std::string& name, EventCode code) : name_(name), code_(code), params_()
 {
 }
 
-Event::Event(const std::string& name, int code, const ParameterBlock& parameter_block)
+Event::Event(const std::string& name, EventCode code, const ParameterBlock& parameter_block)
   : name_(name), code_(code), params_(parameter_block)
 {
 }
@@ -17,15 +17,23 @@ Event::Name() const
 {
   return name_;
 }
-int
+
+Event::EventCode
 Event::Code() const
 {
   return code_;
 }
+
 const ParameterBlock&
 Event::Parameters() const
 {
   return params_;
+}
+
+bool
+Event::IsSolverEvent() const
+{
+  return (code_ >= SolverPreInitialize) && (code_ <= SolverAdvanced);
 }
 
 } // namespace chi

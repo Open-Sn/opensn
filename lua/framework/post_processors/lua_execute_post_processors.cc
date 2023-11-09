@@ -78,7 +78,7 @@ ExecutePostProcessors(const InputParameters& params)
     ChiInvalidArgument("The array is of type ARRAY<" + ParameterBlockTypeName(first_param_type) +
                        ">. Only ARRAY<STRING> or ARRAY<INTEGER> is allowed.");
 
-  Event blank_event("ManualExecutation", 0);
+  Event blank_event("ManualExecutation", Event::Unknown);
   for (auto& pp : pp_list)
     pp->Execute(blank_event);
 

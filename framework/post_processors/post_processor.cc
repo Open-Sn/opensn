@@ -144,7 +144,7 @@ PostProcessor::ReceiveEventUpdate(const Event& event)
 
   if (it != subscribed_events_for_execution_.end())
   {
-    if (event.Code() >= 31 and event.Code() <= 38 and not solvername_filter_.empty())
+    if (event.IsSolverEvent() and not solvername_filter_.empty())
     {
       if (event.Parameters().GetParamValue<std::string>("solver_name") != solvername_filter_)
         return;
