@@ -12,7 +12,7 @@
 #include "framework/utils/timer.h"
 #include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 #include "modules/mg_diffusion/mg_diffusion_bndry.h"
-#include "modules/mg_diffusion/tools/tools.h"
+#include "modules/mg_diffusion/tools.h"
 #include <iomanip>
 
 namespace mg_diffusion
