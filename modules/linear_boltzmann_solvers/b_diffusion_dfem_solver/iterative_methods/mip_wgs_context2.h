@@ -17,8 +17,8 @@ struct MIPWGSContext2 : public WGSContext
   MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
                  LBSGroupset& groupset,
                  const SetSourceFunction& set_source_function,
-                 int lhs_scope,
-                 int rhs_scope,
+                 SourceFlags lhs_scope,
+                 SourceFlags rhs_scope,
                  bool log_info);
 
   void PreSetupCallback() override;
@@ -27,7 +27,7 @@ struct MIPWGSContext2 : public WGSContext
 
   std::pair<int64_t, int64_t> SystemSize() override;
 
-  void ApplyInverseTransportOperator(int scope) override;
+  void ApplyInverseTransportOperator(SourceFlags scope) override;
 
   void PostSolveCallback() override;
 };

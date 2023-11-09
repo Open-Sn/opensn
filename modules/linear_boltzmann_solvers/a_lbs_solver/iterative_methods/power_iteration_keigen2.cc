@@ -120,7 +120,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
                                phi_new_local,
                                APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES);
 
-    frons_wgs_context->ApplyInverseTransportOperator(NO_FLAGS_SET);
+    frons_wgs_context->ApplyInverseTransportOperator(SourceFlags());
     lbs_solver.GSScopedCopyPrimarySTLvectors(front_gs, phi_new_local, phi_old_local);
 
     // Non-Linear Acceleration solve

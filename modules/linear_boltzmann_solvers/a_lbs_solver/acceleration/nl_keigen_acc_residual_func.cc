@@ -43,11 +43,9 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     [&active_set_source_function, &front_gs](const VecDbl& input, VecDbl& output, bool suppress_wgs)
   {
     chi_math::Set(output, 0.0);
-    active_set_source_function(front_gs,
-                               output,
-                               input,
-                               APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
-                                 (suppress_wgs ? SUPPRESS_WG_SCATTER : NO_FLAGS_SET));
+    SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
+    if (suppress_wgs) source_flags |= SUPPRESS_WG_SCATTER;
+    active_set_source_function(front_gs, output, input, source_flags);
   };
 
   auto SetPhi0FissionSource =

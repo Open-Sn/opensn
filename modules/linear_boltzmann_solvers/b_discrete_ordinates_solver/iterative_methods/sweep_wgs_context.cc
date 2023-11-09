@@ -20,8 +20,8 @@ SweepWGSContext::SweepWGSContext(
   DiscreteOrdinatesSolver& lbs_solver,
   LBSGroupset& groupset,
   const SetSourceFunction& set_source_function,
-  int lhs_scope,
-  int rhs_scope,
+  SourceFlags lhs_scope,
+  SourceFlags rhs_scope,
   bool log_info,
   std::shared_ptr<chi_mesh::sweep_management::SweepChunk> sweep_chunk)
   : WGSContext(lbs_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
@@ -113,7 +113,7 @@ SweepWGSContext::SystemSize()
 }
 
 void
-SweepWGSContext::ApplyInverseTransportOperator(int scope)
+SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 {
   ++counter_applications_of_inv_op_;
   const bool use_bndry_source_flag =
@@ -136,7 +136,7 @@ SweepWGSContext::PostSolveCallback()
   {
     lbs_ss_solver_.ZeroOutflowBalanceVars(groupset_);
 
-    const int scope = lhs_src_scope_ | rhs_src_scope_;
+    const auto scope = lhs_src_scope_ | rhs_src_scope_;
 
     set_source_function_(groupset_, lbs_solver_.QMomentsLocal(), lbs_solver_.PhiOldLocal(), scope);
     sweep_scheduler_.SetDestinationPhi(lbs_solver_.PhiNewLocal());

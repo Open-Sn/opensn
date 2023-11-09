@@ -17,9 +17,9 @@ void
 SourceFunction::operator()(LBSGroupset& groupset,
                            std::vector<double>& destination_q,
                            const std::vector<double>& phi_local,
-                           int source_flags)
+                           SourceFlags source_flags)
 {
-  if (source_flags & NO_FLAGS_SET) return;
+  if (source_flags.Empty()) return;
 
   const size_t source_event_tag = lbs_solver_.GetSourceEventTag();
   Chi::log.LogEvent(source_event_tag, chi::ChiLog::EventType::EVENT_BEGIN);
@@ -181,7 +181,7 @@ void
 SourceFunction::AddPointSources(LBSGroupset& groupset,
                                 std::vector<double>& destination_q,
                                 const std::vector<double>&,
-                                int source_flags)
+                                SourceFlags source_flags)
 {
   const bool apply_fixed_src = (source_flags & APPLY_FIXED_SOURCES);
 

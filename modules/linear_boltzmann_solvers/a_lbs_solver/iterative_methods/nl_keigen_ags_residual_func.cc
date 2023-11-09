@@ -46,11 +46,9 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   {
     auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
     const bool supress_wgs = wgs_context.lhs_src_scope_ & lbs::SUPPRESS_WG_SCATTER;
-    active_set_source_function(groupset,
-                               q_moments_local,
-                               phi_old_local,
-                               lbs::APPLY_AGS_SCATTER_SOURCES | lbs::APPLY_WGS_SCATTER_SOURCES |
-                                 (supress_wgs ? lbs::SUPPRESS_WG_SCATTER : lbs::NO_FLAGS_SET));
+    SourceFlags source_flags = lbs::APPLY_AGS_SCATTER_SOURCES | lbs::APPLY_WGS_SCATTER_SOURCES;
+    if (supress_wgs) source_flags |= lbs::SUPPRESS_WG_SCATTER;
+    active_set_source_function(groupset, q_moments_local, phi_old_local, source_flags);
   }
 
   // Sweep all the groupsets
@@ -58,7 +56,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   for (auto& groupset : lbs_solver.Groupsets())
   {
     auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
-    wgs_context.ApplyInverseTransportOperator(lbs::NO_FLAGS_SET);
+    wgs_context.ApplyInverseTransportOperator(lbs::SourceFlags());
   }
 
   // Reassemble PETSc vector

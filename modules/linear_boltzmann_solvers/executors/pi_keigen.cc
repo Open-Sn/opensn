@@ -69,10 +69,8 @@ XXPowerIterationKEigen::Initialize()
 
     ChiLogicalErrorIf(not wgs_context, ": Cast failed");
 
-    wgs_context->lhs_src_scope_ =
-      wgs_context->lhs_src_scope_ & (~APPLY_WGS_FISSION_SOURCES); // lhs_scope
-    wgs_context->rhs_src_scope_ =
-      wgs_context->rhs_src_scope_ & (~APPLY_AGS_FISSION_SOURCES); // rhs_scope
+    wgs_context->lhs_src_scope_.Unset(APPLY_WGS_FISSION_SOURCES); // lhs_scope
+    wgs_context->rhs_src_scope_.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
   }
 
   primary_ags_solver_->SetVerbosity(lbs_solver_.Options().verbose_ags_iterations);
@@ -171,11 +169,9 @@ XXPowerIterationKEigen::SetLBSScatterSource(const VecDbl& input,
                                             const bool suppress_wg_scat)
 {
   if (not additive) chi_math::Set(q_moments_local_, 0.0);
-  active_set_source_function_(front_gs_,
-                              q_moments_local_,
-                              input,
-                              APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
-                                (suppress_wg_scat ? SUPPRESS_WG_SCATTER : NO_FLAGS_SET));
+  SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
+  if (suppress_wg_scat) source_flags |= SUPPRESS_WG_SCATTER;
+  active_set_source_function_(front_gs_, q_moments_local_, input, source_flags);
 }
 
 } // namespace lbs

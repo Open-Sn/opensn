@@ -15,7 +15,7 @@ void
 AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
                                                std::vector<double>& destination_q,
                                                const std::vector<double>&,
-                                               int source_flags)
+                                               SourceFlags source_flags)
 {
   const std::string fname = "AdjointSourceFunction::AddVolumetricQOISources";
 

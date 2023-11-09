@@ -21,8 +21,8 @@ namespace lbs
 MIPWGSContext2::MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
                                LBSGroupset& groupset,
                                const SetSourceFunction& set_source_function,
-                               int lhs_scope,
-                               int rhs_scope,
+                               SourceFlags lhs_scope,
+                               SourceFlags rhs_scope,
                                bool log_info)
   : WGSContext(lbs_mip_ss_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
     lbs_mip_ss_solver_(lbs_mip_ss_solver)
@@ -88,7 +88,7 @@ MIPWGSContext2::SystemSize()
 }
 
 void
-MIPWGSContext2::ApplyInverseTransportOperator(int scope)
+MIPWGSContext2::ApplyInverseTransportOperator(SourceFlags scope)
 {
   ++counter_applications_of_inv_op_;
   auto& mip_solver = *lbs_mip_ss_solver_.gs_mip_solvers_[groupset_.id_];

@@ -17,16 +17,16 @@ struct WGSContext : public chi_math::LinearSolverContext
   LBSSolver& lbs_solver_;
   LBSGroupset& groupset_;
   const SetSourceFunction& set_source_function_;
-  int lhs_src_scope_;
-  int rhs_src_scope_;
+  SourceFlags lhs_src_scope_;
+  SourceFlags rhs_src_scope_;
   bool log_info_ = true;
   size_t counter_applications_of_inv_op_ = 0;
 
   WGSContext(LBSSolver& lbs_solver,
              LBSGroupset& groupset,
              const SetSourceFunction& set_source_function,
-             int lhs_scope,
-             int rhs_scope,
+             SourceFlags lhs_scope,
+             SourceFlags rhs_scope,
              bool log_info);
 
   virtual void PreSetupCallback(){};
@@ -42,7 +42,7 @@ struct WGSContext : public chi_math::LinearSolverContext
   /**This operation applies the inverse of the transform operator in the form
    * Ay = x where the the vector x's underlying implementing is always LBS's
    * q_moments_local vextor.*/
-  virtual void ApplyInverseTransportOperator(int scope) = 0;
+  virtual void ApplyInverseTransportOperator(SourceFlags scope) = 0;
 
   virtual void PostSolveCallback(){};
 };

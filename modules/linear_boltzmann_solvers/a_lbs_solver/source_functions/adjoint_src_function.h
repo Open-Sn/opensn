@@ -18,7 +18,7 @@ public:
   void AddAdditionalSources(LBSGroupset& groupset,
                             std::vector<double>& destination_q,
                             const std::vector<double>& phi,
-                            int source_flags) override
+                            SourceFlags source_flags) override
   {
     // Inhibit -> AddPointSources
     // Add     -> AddVolumetricQOISources
@@ -29,7 +29,7 @@ public:
   void AddVolumetricQOISources(LBSGroupset& groupset,
                                std::vector<double>& destination_q,
                                const std::vector<double>& phi,
-                               int source_flags);
+                               SourceFlags source_flags);
 };
 
 } // namespace lbs

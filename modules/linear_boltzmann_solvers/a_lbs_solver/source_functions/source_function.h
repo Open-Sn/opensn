@@ -56,7 +56,7 @@ public:
   virtual void operator()(LBSGroupset& groupset,
                           std::vector<double>& destination_q,
                           const std::vector<double>& phi,
-                          int source_flags);
+                          SourceFlags source_flags);
 
   virtual double AddSourceMoments() const;
 
@@ -69,7 +69,7 @@ public:
   virtual void AddAdditionalSources(LBSGroupset& groupset,
                                     std::vector<double>& destination_q,
                                     const std::vector<double>& phi,
-                                    int source_flags)
+                                    SourceFlags source_flags)
   {
     AddPointSources(groupset, destination_q, phi, source_flags);
   }
@@ -78,7 +78,7 @@ public:
   void AddPointSources(LBSGroupset& groupset,
                        std::vector<double>& destination_q,
                        const std::vector<double>& phi,
-                       int source_flags);
+                       SourceFlags source_flags);
 };
 
 } // namespace lbs
