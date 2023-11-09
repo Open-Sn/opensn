@@ -25,8 +25,8 @@ public:
     SolverAdvanced = 38
   };
 
-  Event(const std::string& name, EventCode code);
-  Event(const std::string& name, EventCode code, const ParameterBlock& parameter_block);
+  Event(const std::string& name);
+  Event(const std::string& name, const ParameterBlock& parameter_block);
   const std::string& Name() const;
   EventCode Code() const;
   const ParameterBlock& Parameters() const;
@@ -43,6 +43,16 @@ protected:
   const std::string name_;
   const EventCode code_;
   const ParameterBlock params_;
+
+public:
+  /**
+   * Gets the standard event code associated with the event name.
+   *
+   * \param event_name Event name
+   * \return Event code (`ECode`) associated with the event name. If no code is found then
+   * `Unknown`.
+   */
+  static Event::EventCode GetStandardCode(const std::string& event_name);
 };
 
 } // namespace chi

@@ -3,7 +3,6 @@
 #include "framework/logging/log.h"
 #include "framework/event_system/system_wide_event_publisher.h"
 #include "framework/event_system/event.h"
-#include "framework/event_system/event_codes.h"
 #include "lua/modules/modules_lua.h"
 
 int
@@ -29,8 +28,7 @@ main(int argc, char** argv)
 
   auto& t_main = Chi::log.CreateTimingBlock("ChiTech");
   t_main.TimeSectionBegin();
-  chi::SystemWideEventPublisher::GetInstance().PublishEvent(
-    chi::Event("ProgramStart", chi::GetStandardEventCode("ProgramStart")));
+  chi::SystemWideEventPublisher::GetInstance().PublishEvent(chi::Event("ProgramStart"));
 
   int error_code;
   if (Chi::run_time::sim_option_interactive_) error_code = Chi::RunInteractive(argc, argv);
