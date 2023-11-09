@@ -44,9 +44,9 @@ public:
 
 protected:
   /// Customized via context
-  virtual void SetSystemSize() override;
+  void SetSystemSize() override;
   /// Generic
-  virtual void SetSystem() override;
+  void SetSystem() override;
   /// Customized via context
   void SetPreconditioner() override;
 
@@ -60,7 +60,7 @@ public:
   void Solve() override;
 
 public:
-  virtual ~AGSLinearSolver() override;
+  ~AGSLinearSolver() override;
 };
 
 } // namespace lbs

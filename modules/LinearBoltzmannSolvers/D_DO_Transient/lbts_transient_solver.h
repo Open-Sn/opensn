@@ -67,7 +67,7 @@ public:
   // precursors
   void StepPrecursors();
 
-  virtual ~DiscOrdTransientSolver() override;
+  ~DiscOrdTransientSolver() override;
 };
 
 } // namespace lbs
