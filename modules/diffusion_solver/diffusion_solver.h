@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework/mesh/cell/cell.h"
-#include "modules/diffusion_solver/boundaries/diffusion_bndry.h"
+#include "modules/diffusion_solver/diffusion_bndry.h"
 #include "modules/diffusion_solver/unit_integral_container.h"
 #include "modules/diffusion_solver/diffusion.h"
 #include "framework/physics/solver_base/solver.h"
