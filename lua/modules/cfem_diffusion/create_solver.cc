@@ -1,9 +1,9 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "modules/CFEMDiffusion/cfem_diffusion_solver.h"
+#include "modules/cfem_diffusion/cfem_diffusion_solver.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 namespace cfem_diffusion::cfem_diffusion_lua_utils
 {

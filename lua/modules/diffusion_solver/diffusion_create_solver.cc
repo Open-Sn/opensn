@@ -1,0 +1,32 @@
+#include "framework/lua.h"
+
+#include "modules/diffusion_solver/solver/diffusion_solver.h"
+
+#include "framework/runtime.h"
+
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+
+int
+chiDiffusionCreateSolver(lua_State* L)
+{
+  const std::string fname = __FUNCTION__;
+  int num_args = lua_gettop(L);
+
+  std::string solver_name = "DiffusionSolver";
+
+  if (num_args == 1)
+  {
+    LuaCheckStringValue(fname, L, 1);
+    solver_name = lua_tostring(L, 1);
+  }
+
+  auto new_solver = std::make_shared<chi_diffusion::Solver>(solver_name);
+
+  Chi::object_stack.push_back(new_solver);
+
+  lua_pushinteger(L, static_cast<lua_Integer>(Chi::object_stack.size() - 1));
+
+  Chi::log.LogAllVerbose1() << "chiDiffusionCreateSolver: Diffusion solver created" << std::endl;
+  return 1;
+}

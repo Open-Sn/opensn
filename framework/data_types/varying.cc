@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <sstream>
 
-#include "framework/logging/chi_log_exceptions.h"
+#include "framework/logging/log_exceptions.h"
 
 std::string
 chi_data_types::VaryingDataTypeStringName(chi_data_types::VaryingDataType type)

@@ -1,15 +1,15 @@
 #include "framework/data_types/byte_array.h"
 #include "framework/data_types/ndarray.h"
-#include "framework/mesh/Cell/cell.h"
+#include "framework/mesh/cell/cell.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
-#include "framework/mpi/chi_mpi.h"
+#include "framework/mpi/mpi.h"
 
-#include "framework/mpi/chi_mpi_utils_map_all2all.h"
+#include "framework/mpi/mpi_utils_map_all2all.h"
 
 #include <map>
 

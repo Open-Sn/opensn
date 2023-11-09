@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <sstream>
 
-#include "framework/math/chi_math.h"
+#include "framework/math/math.h"
 
 namespace chi_math
 {

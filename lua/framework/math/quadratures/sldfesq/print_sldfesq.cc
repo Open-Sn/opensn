@@ -1,13 +1,13 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
-#include "framework/math/Quadratures/SLDFESQ/sldfe_sq.h"
+#include "framework/math/quadratures/sldfesq/sldfe_sq.h"
 
-#include "framework/logging/chi_log.h"
+#include "framework/logging/log.h"
 
-#include "framework/mpi/chi_mpi.h"
-#include "framework/console/chi_console.h"
+#include "framework/mpi/mpi.h"
+#include "framework/console/console.h"
 #include "sldfe_lua.h"
 
 RegisterLuaFunctionAsIs(chiPrintToPythonSLDFESQAngularQuadrature);

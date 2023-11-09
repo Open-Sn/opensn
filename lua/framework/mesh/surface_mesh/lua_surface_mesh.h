@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
 /** \defgroup LuaSurfaceMesh Surface Meshes
  * \ingroup LuaMesh

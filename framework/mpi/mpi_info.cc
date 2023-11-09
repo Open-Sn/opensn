@@ -1,6 +1,6 @@
 #include "framework/mpi/mpi_info.h"
 
-#include "framework/logging/chi_log_exceptions.h"
+#include "framework/logging/log_exceptions.h"
 
 namespace chi
 {

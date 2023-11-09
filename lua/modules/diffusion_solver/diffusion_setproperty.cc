@@ -1,11 +1,11 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "modules/DiffusionSolver/Solver/diffusion_solver.h"
+#include "modules/diffusion_solver/solver/diffusion_solver.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 int
 chiDiffusionSetProperty(lua_State* L)

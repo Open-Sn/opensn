@@ -1,18 +1,18 @@
-#include "framework/mesh/MeshHandler/chi_meshhandler.h"
-#include "framework/mesh/MeshContinuum/chi_meshcontinuum.h"
+#include "framework/mesh/mesh_handler/mesh_handler.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
-#include "framework/math/SpatialDiscretization/FiniteElement/PiecewiseLinear/PieceWiseLinearDiscontinuous.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/acceleration.h"
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Acceleration/diffusion_mip_solver.h"
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_structs.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/acceleration.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion_mip_solver.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 
-#include "framework/physics/FieldFunction/fieldfunction_gridbased.h"
+#include "framework/physics/field_function/field_function_grid_based.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 namespace chi_unit_sim_tests
 {

@@ -23,5 +23,5 @@ are in units of \f$ [s^{-1}]\f$ and the delayed neutron fractions,
 fraction, \f[ \label{Eq:3} \beta_{eff} = \sum_{j=0}^{J-1} \beta_j \f] and \f$
 \Lambda_0 \f$ is the neutron generation time.
 
-Consult the whitepaper for this solver at `modules/PointReactorKinetics/doc`.
+Consult the whitepaper for this solver at `modules/point_reactor_kinetics/doc`.
 */

@@ -1,8 +1,8 @@
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
-#include "modules/LinearBoltzmannSolvers/A_LBSSolver/Groupset/lbs_groupset.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 
 namespace lbs::common_lua_utils
 {

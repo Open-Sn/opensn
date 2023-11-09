@@ -1,8 +1,8 @@
 #pragma once
 
-#include "framework/mesh/UnpartitionedMesh/unpartitioned_mesh.h"
+#include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
 namespace chi_mesh::unpartition_mesh_lua_utils
 {

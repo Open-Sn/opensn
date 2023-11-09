@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/ChiObject.h"
+#include "framework/object.h"
 #include "framework/parameters/input_parameters.h"
 
 namespace chi_unit_testsB

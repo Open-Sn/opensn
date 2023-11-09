@@ -536,7 +536,7 @@ const auto& cell_mapping = sdm.GetCellMapping(cell);
 \endcode
 We can also immediately map the cell's \f$ \phi_P \f$ global location in the
 parallel matrix/vector by making a call to
-`chi_math::SpatialDiscretization::MapDOF`.
+`chi_math::spatial_discretization::MapDOF`.
 \code
 const int64_t imap = sdm.MapDOF(cell,0);
 \endcode

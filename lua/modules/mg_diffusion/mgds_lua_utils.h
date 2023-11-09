@@ -1,7 +1,7 @@
 #pragma once
 
-#include "framework/chi_lua.h"
-#include "modules/MGDiffusion/mg_diffusion_solver.h"
+#include "framework/lua.h"
+#include "modules/mg_diffusion/mg_diffusion_solver.h"
 
 namespace mg_diffusion::mgd_lua_utils
 {

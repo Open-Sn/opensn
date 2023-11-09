@@ -1,10 +1,10 @@
-#include "framework/chi_lua.h"
+#include "framework/lua.h"
 
-#include "framework/mesh/FieldFunctionInterpolation/chi_ffinterpolation.h"
+#include "framework/mesh/field_function_interpolation/ffinterpolation.h"
 
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 #include "ffinterpol_lua.h"
-#include "framework/console/chi_console.h"
+#include "framework/console/console.h"
 
 RegisterLuaFunctionAsIs(chiFFInterpolationInitialize);
 RegisterLuaFunctionAsIs(chiFFInterpolationExecute);
