@@ -1,4 +1,4 @@
-#include "modules/diffusion_solver/solver/diffusion_solver.h"
+#include "modules/diffusion_solver/diffusion_solver.h"
 #include "framework/logging/log.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"

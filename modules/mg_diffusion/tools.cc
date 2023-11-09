@@ -1,4 +1,4 @@
-#include "modules/mg_diffusion/tools/tools.h"
+#include "modules/mg_diffusion/tools.h"
 #include "framework/logging/log.h"
 #include "modules/mg_diffusion/mg_diffusion_solver.h"
 

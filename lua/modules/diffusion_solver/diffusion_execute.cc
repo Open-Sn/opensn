@@ -1,5 +1,5 @@
 #include "framework/lua.h"
-#include "modules/diffusion_solver/solver/diffusion_solver.h"
+#include "modules/diffusion_solver/diffusion_solver.h"
 
 #include "framework/runtime.h"
 

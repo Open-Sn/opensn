@@ -3,10 +3,10 @@
 
 #include "framework/physics/field_function/field_function_grid_based.h"
 
-#include "framework/mesh/field_function_interpolation/point/ffinter_point.h"
-#include "framework/mesh/field_function_interpolation/slice/ffinter_slice.h"
-#include "framework/mesh/field_function_interpolation/line/ffinter_line.h"
-#include "framework/mesh/field_function_interpolation/volume/ffinter_volume.h"
+#include "framework/mesh/field_function_interpolation/ffinter_point.h"
+#include "framework/mesh/field_function_interpolation/ffinter_slice.h"
+#include "framework/mesh/field_function_interpolation/ffinter_line.h"
+#include "framework/mesh/field_function_interpolation/ffinter_volume.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
