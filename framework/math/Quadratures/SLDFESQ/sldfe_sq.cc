@@ -836,7 +836,6 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
   }
   cell_file.close();
 
-  double total_weight = 0.0;
   points_file.open(output_filename_prefix_ + "points.txt");
   {
     for (auto& sq : deployed_SQs_)
@@ -848,7 +847,6 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
         for (int i = 0; i < 3; ++i)
           points_file << point[i] << " ";
         points_file << sq.sub_sqr_weights[ss];
-        total_weight += sq.sub_sqr_weights[ss];
         points_file << "\n";
       }
     }
