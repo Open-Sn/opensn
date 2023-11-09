@@ -1,4 +1,4 @@
-#include "framework/mesh/field_function_interpolation/line/ffinter_line.h"
+#include "framework/mesh/field_function_interpolation/ffinter_line.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/vector_ghost_communicator//vector_ghost_communicator.h"
 #include "framework/physics/field_function/field_function_grid_based.h"

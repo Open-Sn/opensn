@@ -1,4 +1,4 @@
-#include "framework/mesh/field_function_interpolation/slice/ffinter_slice.h"
+#include "framework/mesh/field_function_interpolation/ffinter_slice.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/mesh/raytrace/raytracer.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
