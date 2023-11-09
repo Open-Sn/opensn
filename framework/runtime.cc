@@ -11,7 +11,6 @@
 #include "framework/post_processors/post_processor.h"
 
 #include "framework/event_system/system_wide_event_publisher.h"
-#include "framework/event_system/event_codes.h"
 #include "framework/event_system/event.h"
 
 #include "framework/object_factory.h"
@@ -186,8 +185,7 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
 
   auto& t_main = Chi::log.CreateTimingBlock("ChiTech");
   t_main.TimeSectionBegin();
-  chi::SystemWideEventPublisher::GetInstance().PublishEvent(
-    chi::Event("ProgramStart", chi::GetStandardEventCode("ProgramStart")));
+  chi::SystemWideEventPublisher::GetInstance().PublishEvent(chi::Event("ProgramStart"));
 
   return 0;
 }
@@ -210,8 +208,7 @@ Chi::Finalize()
 {
   auto& t_main = Chi::log.GetTimingBlock("ChiTech");
   t_main.TimeSectionEnd();
-  chi::SystemWideEventPublisher::GetInstance().PublishEvent(
-    chi::Event("ProgramExecuted", chi::GetStandardEventCode("ProgramExecuted")));
+  chi::SystemWideEventPublisher::GetInstance().PublishEvent(chi::Event("ProgramExecuted"));
   meshhandler_stack.clear();
 
   surface_mesh_stack.clear();
