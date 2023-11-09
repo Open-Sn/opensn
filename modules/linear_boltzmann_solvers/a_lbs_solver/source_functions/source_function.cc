@@ -17,7 +17,7 @@ void
 SourceFunction::operator()(LBSGroupset& groupset,
                            std::vector<double>& destination_q,
                            const std::vector<double>& phi_local,
-                           SourceFlags source_flags)
+                           int source_flags)
 {
   if (source_flags & NO_FLAGS_SET) return;
 
@@ -181,7 +181,7 @@ void
 SourceFunction::AddPointSources(LBSGroupset& groupset,
                                 std::vector<double>& destination_q,
                                 const std::vector<double>&,
-                                SourceFlags source_flags)
+                                int source_flags)
 {
   const bool apply_fixed_src = (source_flags & APPLY_FIXED_SOURCES);
 

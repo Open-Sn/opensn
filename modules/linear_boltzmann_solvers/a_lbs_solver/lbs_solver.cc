@@ -368,13 +368,13 @@ LBSSolver::GetWGSSolvers()
   return wgs_solvers_;
 }
 
-WGSContext<Mat, Vec, KSP>&
+WGSContext&
 LBSSolver::GetWGSContext(int groupset_id)
 {
   auto& wgs_solver = wgs_solvers_[groupset_id];
   auto& raw_context = wgs_solver->GetContext();
 
-  typedef WGSContext<Mat, Vec, KSP> LBSWGSContext;
+  typedef WGSContext LBSWGSContext;
   auto wgs_context_ptr = std::dynamic_pointer_cast<LBSWGSContext>(raw_context);
 
   ChiLogicalErrorIf(not wgs_context_ptr, "Failed to cast WGSContext");
@@ -1624,9 +1624,9 @@ LBSSolver::InitializeSolverSchemes()
   // Default AGS scheme
   if (options_.ags_scheme.empty())
   {
-    auto ags_context = std::make_shared<AGSContext<Mat, Vec, KSP>>(*this, wgs_solvers_);
+    auto ags_context = std::make_shared<AGSContext>(*this, wgs_solvers_);
 
-    auto ags_solver = std::make_shared<AGSLinearSolver<Mat, Vec, KSP>>(
+    auto ags_solver = std::make_shared<AGSLinearSolver>(
       "richardson", ags_context, groupsets_.front().id_, groupsets_.back().id_);
     ags_solver->ToleranceOptions().maximum_iterations = 1;
     ags_solver->SetVerbosity(options_.verbose_ags_iterations);

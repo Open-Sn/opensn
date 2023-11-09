@@ -10,7 +10,7 @@ lbs::WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   void* context;
   PCShellGetContext(pc, &context);
 
-  auto gs_context_ptr = (lbs::WGSContext<Mat, Vec, KSP>*)(context);
+  auto gs_context_ptr = (lbs::WGSContext*)(context);
 
   // Shorten some names
   lbs::LBSSolver& lbs_solver = gs_context_ptr->lbs_solver_;
@@ -50,9 +50,7 @@ lbs::WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 }
 
 int
-lbs::WGDSA_TGDSA_PreConditionerMult2(lbs::WGSContext<Mat, Vec, KSP>& gs_context_ptr,
-                                     Vec phi_input,
-                                     Vec pc_output)
+lbs::WGDSA_TGDSA_PreConditionerMult2(lbs::WGSContext& gs_context_ptr, Vec phi_input, Vec pc_output)
 {
   // Shorten some names
   lbs::LBSSolver& lbs_solver = gs_context_ptr.lbs_solver_;

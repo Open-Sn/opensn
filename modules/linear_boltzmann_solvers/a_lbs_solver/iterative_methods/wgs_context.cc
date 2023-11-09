@@ -1,15 +1,28 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
-
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
-
-#include <petscksp.h>
 
 namespace lbs
 {
 
-template <>
+WGSContext::WGSContext(LBSSolver& lbs_solver,
+                       LBSGroupset& groupset,
+                       const SetSourceFunction& set_source_function,
+                       int lhs_scope,
+                       int rhs_scope,
+                       bool log_info)
+  : chi_math::LinearSolverContext(),
+    lbs_solver_(lbs_solver),
+    groupset_(groupset),
+    set_source_function_(set_source_function),
+    lhs_src_scope_(lhs_scope),
+    rhs_src_scope_(rhs_scope),
+    log_info_(log_info)
+{
+  this->residual_scale_type = chi_math::ResidualScaleType::RHS_PRECONDITIONED_NORM;
+}
+
 int
-WGSContext<Mat, Vec, KSP>::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
+WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
 {
   WGSContext* gs_context_ptr;
   MatShellGetContext(matrix, &gs_context_ptr);

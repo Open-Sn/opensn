@@ -111,7 +111,7 @@ class LBSGroupset;
 typedef std::function<void(LBSGroupset& groupset,
                            std::vector<double>& destination_q,
                            const std::vector<double>& phi,
-                           SourceFlags source_flags)>
+                           int source_flags)>
   SetSourceFunction;
 
 class AGSSchemeEntry;

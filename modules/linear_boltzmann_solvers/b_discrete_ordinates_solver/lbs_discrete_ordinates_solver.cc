@@ -168,7 +168,7 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
   {
     std::shared_ptr<SweepChunk> sweep_chunk = SetSweepChunk(groupset);
 
-    auto sweep_wgs_context_ptr = std::make_shared<SweepWGSContext<Mat, Vec, KSP>>(
+    auto sweep_wgs_context_ptr = std::make_shared<SweepWGSContext>(
       *this,
       groupset,
       active_set_source_function_,
@@ -177,7 +177,7 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
       options_.verbose_inner_iterations,
       sweep_chunk);
 
-    auto wgs_solver = std::make_shared<WGSLinearSolver<Mat, Vec, KSP>>(sweep_wgs_context_ptr);
+    auto wgs_solver = std::make_shared<WGSLinearSolver>(sweep_wgs_context_ptr);
 
     wgs_solvers_.push_back(wgs_solver);
   } // for groupset

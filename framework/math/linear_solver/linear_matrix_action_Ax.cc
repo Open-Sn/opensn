@@ -5,11 +5,10 @@
 namespace chi_math
 {
 
-template <>
 int
 LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
 {
-  LinearSolverContext<Mat, Vec>* context;
+  LinearSolverContext* context;
   MatShellGetContext(matrix, &context);
 
   context->MatrixAction(matrix, vector, action);

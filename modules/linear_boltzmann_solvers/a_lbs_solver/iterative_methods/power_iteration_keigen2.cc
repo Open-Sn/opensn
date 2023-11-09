@@ -24,7 +24,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
   for (auto& wgs_solver : lbs_solver.GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(context);
+    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
 
     if (not wgs_context) throw std::logic_error(fname + ": Cast failed.");
 
@@ -47,7 +47,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
   auto& front_gs = groupsets.front();
   auto& front_wgs_solver = lbs_solver.GetWGSSolvers()[front_gs.id_];
   auto frons_wgs_context =
-    std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(front_wgs_solver->GetContext());
+    std::dynamic_pointer_cast<lbs::WGSContext>(front_wgs_solver->GetContext());
 
   front_gs.apply_wgdsa_ = true;
   front_gs.wgdsa_tol_ = basic_options("PISA_MIP_L_ABS_TOL").FloatValue();

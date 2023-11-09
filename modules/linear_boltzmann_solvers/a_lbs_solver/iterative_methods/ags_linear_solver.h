@@ -7,16 +7,10 @@ namespace lbs
 {
 
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
-template <class MatType, class VecType, class SolverType>
-class AGSLinearSolver : public chi_math::LinearSolver<MatType, VecType, SolverType>
+class AGSLinearSolver : public chi_math::LinearSolver
 {
-protected:
-  int groupspan_first_id_ = 0;
-  int groupspan_last_id_ = 0;
-  bool verbose_ = false;
-
 public:
-  typedef std::shared_ptr<AGSContext<MatType, VecType, SolverType>> AGSContextPtr;
+  typedef std::shared_ptr<AGSContext> AGSContextPtr;
 
   /**Constructor.
    * \param iterative_method string Across Groupset iterative method.
@@ -29,38 +23,30 @@ public:
                   int groupspan_first_id,
                   int groupspan_last_id,
                   bool verbose = true)
-    : chi_math::LinearSolver<MatType, VecType, SolverType>(std::move(iterative_method),
-                                                           ags_context_ptr),
+    : chi_math::LinearSolver(std::move(iterative_method), ags_context_ptr),
       groupspan_first_id_(groupspan_first_id),
       groupspan_last_id_(groupspan_last_id),
       verbose_(verbose)
   {
   }
+  ~AGSLinearSolver() override;
 
   int GroupSpanFirstID() const { return groupspan_first_id_; }
   int GroupSpanLastID() const { return groupspan_last_id_; }
   bool IsVerbose() const { return verbose_; }
   void SetVerbosity(bool verbose_y_n) { verbose_ = verbose_y_n; }
-
-protected:
-  /// Customized via context
-  void SetSystemSize() override;
-  /// Generic
-  void SetSystem() override;
-  /// Customized via context
-  void SetPreconditioner() override;
-
-protected:
-  /// Generic + with context elements
-  void SetRHS() override;
-  /// Generic
-  void SetInitialGuess() override;
-
-public:
   void Solve() override;
 
-public:
-  ~AGSLinearSolver() override;
+protected:
+  void SetSystemSize() override;
+  void SetSystem() override;
+  void SetPreconditioner() override;
+  void SetRHS() override;
+  void SetInitialGuess() override;
+
+  int groupspan_first_id_ = 0;
+  int groupspan_last_id_ = 0;
+  bool verbose_ = false;
 };
 
 } // namespace lbs

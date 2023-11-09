@@ -16,9 +16,27 @@
 namespace lbs
 {
 
-template <>
+SweepWGSContext::SweepWGSContext(
+  DiscreteOrdinatesSolver& lbs_solver,
+  LBSGroupset& groupset,
+  const SetSourceFunction& set_source_function,
+  int lhs_scope,
+  int rhs_scope,
+  bool log_info,
+  std::shared_ptr<chi_mesh::sweep_management::SweepChunk> sweep_chunk)
+  : WGSContext(lbs_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
+    sweep_chunk_(std::move(sweep_chunk)),
+    sweep_scheduler_(lbs_solver.SweepType() == "AAH"
+                       ? chi_mesh::sweep_management::SchedulingAlgorithm::DEPTH_OF_GRAPH
+                       : chi_mesh::sweep_management::SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
+                     *groupset.angle_agg_,
+                     *sweep_chunk_),
+    lbs_ss_solver_(lbs_solver)
+{
+}
+
 void
-SweepWGSContext<Mat, Vec, KSP>::PreSetupCallback()
+SweepWGSContext::PreSetupCallback()
 {
   if (log_info_)
   {
@@ -47,9 +65,8 @@ SweepWGSContext<Mat, Vec, KSP>::PreSetupCallback()
   }
 }
 
-template <>
 void
-SweepWGSContext<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
+SweepWGSContext::SetPreconditioner(KSP& solver)
 {
   auto& ksp = solver;
 
@@ -67,9 +84,8 @@ SweepWGSContext<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
   KSPSetUp(ksp);
 }
 
-template <>
 std::pair<int64_t, int64_t>
-SweepWGSContext<Mat, Vec, KSP>::SystemSize()
+SweepWGSContext::SystemSize()
 {
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
@@ -96,9 +112,8 @@ SweepWGSContext<Mat, Vec, KSP>::SystemSize()
   return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};
 }
 
-template <>
 void
-SweepWGSContext<Mat, Vec, KSP>::ApplyInverseTransportOperator(int scope)
+SweepWGSContext::ApplyInverseTransportOperator(int scope)
 {
   ++counter_applications_of_inv_op_;
   const bool use_bndry_source_flag =
@@ -113,9 +128,8 @@ SweepWGSContext<Mat, Vec, KSP>::ApplyInverseTransportOperator(int scope)
   sweep_scheduler_.Sweep();
 }
 
-template <>
 void
-SweepWGSContext<Mat, Vec, KSP>::PostSolveCallback()
+SweepWGSContext::PostSolveCallback()
 {
   // Perform final sweep with converged phi and delayed psi dofs
   if (groupset_.iterative_method_ != IterativeMethod::KRYLOV_RICHARDSON)

@@ -65,7 +65,7 @@ XXPowerIterationKEigen::Initialize()
   for (auto& wgs_solver : lbs_solver_.GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(context);
+    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
 
     ChiLogicalErrorIf(not wgs_context, ": Cast failed");
 
@@ -78,8 +78,7 @@ XXPowerIterationKEigen::Initialize()
   primary_ags_solver_->SetVerbosity(lbs_solver_.Options().verbose_ags_iterations);
 
   front_wgs_solver_ = lbs_solver_.GetWGSSolvers().at(front_gs_.id_);
-  front_wgs_context_ =
-    std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(front_wgs_solver_->GetContext());
+  front_wgs_context_ = std::dynamic_pointer_cast<lbs::WGSContext>(front_wgs_solver_->GetContext());
 
   ChiLogicalErrorIf(not front_wgs_context_, ": Casting failure");
 

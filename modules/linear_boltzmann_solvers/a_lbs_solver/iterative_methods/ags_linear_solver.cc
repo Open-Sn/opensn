@@ -14,27 +14,27 @@
 
 #define sc_int64_t static_cast<int64_t>
 
-#define GetAGSContextPtr(x) std::dynamic_pointer_cast<AGSContext<Mat, Vec, KSP>>(x)
+#define GetAGSContextPtr(x) std::dynamic_pointer_cast<AGSContext>(x)
+
 namespace lbs
 {
 
-template <>
 void
-AGSLinearSolver<Mat, Vec, KSP>::SetSystemSize()
+AGSLinearSolver::SetSystemSize()
 {
   auto ags_context_ptr = GetAGSContextPtr(context_ptr_);
 
   const auto sizes = ags_context_ptr->SystemSize();
 
   num_local_dofs_ = sizes.first;
-  num_globl_dofs_ = sizes.second;
+  num_global_dofs_ = sizes.second;
 }
 
-template <>
 void
-AGSLinearSolver<Mat, Vec, KSP>::SetSystem()
+AGSLinearSolver::SetSystem()
 {
-  x_ = chi_math::PETScUtils::CreateVector(sc_int64_t(num_local_dofs_), sc_int64_t(num_globl_dofs_));
+  x_ =
+    chi_math::PETScUtils::CreateVector(sc_int64_t(num_local_dofs_), sc_int64_t(num_global_dofs_));
 
   VecSet(x_, 0.0);
   VecDuplicate(x_, &b_);
@@ -43,43 +43,39 @@ AGSLinearSolver<Mat, Vec, KSP>::SetSystem()
   MatCreateShell(PETSC_COMM_WORLD,
                  sc_int64_t(num_local_dofs_),
                  sc_int64_t(num_local_dofs_),
-                 sc_int64_t(num_globl_dofs_),
-                 sc_int64_t(num_globl_dofs_),
+                 sc_int64_t(num_global_dofs_),
+                 sc_int64_t(num_global_dofs_),
                  &(*context_ptr_),
                  &A_);
 
   // Set the action-operator
-  MatShellSetOperation(A_, MATOP_MULT, (void (*)())chi_math::LinearSolverMatrixAction<Mat, Vec>);
+  MatShellSetOperation(A_, MATOP_MULT, (void (*)())chi_math::LinearSolverMatrixAction);
 
   // Set solver operators
-  KSPSetOperators(solver_, A_, A_);
-  KSPSetUp(solver_);
+  KSPSetOperators(ksp_, A_, A_);
+  KSPSetUp(ksp_);
 }
 
-template <>
 void
-AGSLinearSolver<Mat, Vec, KSP>::SetPreconditioner()
+AGSLinearSolver::SetPreconditioner()
 {
   auto ags_context_ptr = GetAGSContextPtr(context_ptr_);
 
-  ags_context_ptr->SetPreconditioner(solver_);
+  ags_context_ptr->SetPreconditioner(ksp_);
 }
 
-template <>
 void
-AGSLinearSolver<Mat, Vec, KSP>::SetRHS()
+AGSLinearSolver::SetRHS()
 {
 }
 
-template <>
 void
-AGSLinearSolver<Mat, Vec, KSP>::SetInitialGuess()
+AGSLinearSolver::SetInitialGuess()
 {
 }
 
-template <>
 void
-AGSLinearSolver<Mat, Vec, KSP>::Solve()
+AGSLinearSolver::Solve()
 {
   auto ags_context_ptr = GetAGSContextPtr(context_ptr_);
   auto& lbs_solver = ags_context_ptr->lbs_solver_;
@@ -128,8 +124,7 @@ AGSLinearSolver<Mat, Vec, KSP>::Solve()
   VecDestroy(&x_old);
 }
 
-template <>
-AGSLinearSolver<Mat, Vec, KSP>::~AGSLinearSolver()
+AGSLinearSolver::~AGSLinearSolver()
 {
   MatDestroy(&A_);
 }

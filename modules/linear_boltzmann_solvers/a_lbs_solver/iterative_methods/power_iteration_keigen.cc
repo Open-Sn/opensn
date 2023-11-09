@@ -20,7 +20,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   for (auto& wgs_solver : lbs_solver.GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(context);
+    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
 
     if (not wgs_context) throw std::logic_error(fname + ": Cast failed.");
 
@@ -38,7 +38,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   auto& front_gs = groupsets.front();
   auto& front_wgs_solver = lbs_solver.GetWGSSolvers()[front_gs.id_];
   auto frons_wgs_context =
-    std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(front_wgs_solver->GetContext());
+    std::dynamic_pointer_cast<lbs::WGSContext>(front_wgs_solver->GetContext());
 
   double F_prev = 1.0;
   k_eff = 1.0;

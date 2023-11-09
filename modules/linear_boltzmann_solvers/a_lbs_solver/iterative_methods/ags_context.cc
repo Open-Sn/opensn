@@ -1,18 +1,14 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/ags_context.h"
-
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
 
-#include <petscksp.h>
-
-#define GetGSContextPtr(x) std::dynamic_pointer_cast<WGSContext<Mat, Vec, KSP>>(x)
+#define GetGSContextPtr(x) std::dynamic_pointer_cast<WGSContext>(x)
 
 namespace lbs
 {
 
-template <>
 std::pair<int64_t, int64_t>
-AGSContext<Mat, Vec, KSP>::SystemSize()
+AGSContext::SystemSize()
 {
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
@@ -35,15 +31,13 @@ AGSContext<Mat, Vec, KSP>::SystemSize()
   return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};
 }
 
-template <>
 void
-AGSContext<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
+AGSContext::SetPreconditioner(KSP& solver)
 {
 }
 
-template <>
 int
-AGSContext<Mat, Vec, KSP>::MatrixAction(Mat& matrix, Vec& vector, Vec& action)
+AGSContext::MatrixAction(Mat& matrix, Vec& vector, Vec& action)
 {
 
   return 0;

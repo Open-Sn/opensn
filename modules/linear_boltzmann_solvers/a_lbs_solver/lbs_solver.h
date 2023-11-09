@@ -15,11 +15,8 @@
 
 namespace lbs
 {
-template <class MatType, class VecType, class SolverType>
 class AGSLinearSolver;
-template <class MatType, class VecType, class SolverType>
 class WGSLinearSolver;
-template <class MatType, class VecType, class SolverType>
 struct WGSContext;
 } // namespace lbs
 
@@ -47,14 +44,10 @@ namespace lbs
 class LBSSolver : public chi_physics::Solver
 {
 public:
-  typedef std::shared_ptr<AGSLinearSolver<Mat, Vec, KSP>> AGSLinSolverPtr;
-  typedef std::shared_ptr<chi_math::LinearSolver<Mat, Vec, KSP>> LinSolvePtr;
+  typedef std::shared_ptr<AGSLinearSolver> AGSLinSolverPtr;
+  typedef std::shared_ptr<chi_math::LinearSolver> LinSolvePtr;
 
 public:
-  /**
-   * Returns the input parameters for this object.
-   */
-  static chi::InputParameters GetInputParameters();
   explicit LBSSolver(const std::string& text_name);
   /**
    * Input parameters based construction.
@@ -269,7 +262,7 @@ public:
 
   std::vector<LinSolvePtr>& GetWGSSolvers();
 
-  WGSContext<Mat, Vec, KSP>& GetWGSContext(int groupset_id);
+  WGSContext& GetWGSContext(int groupset_id);
 
   /**
    * Gets the local and global number of iterative unknowns. This normally is only the flux moments,
@@ -563,6 +556,12 @@ protected:
   static void CleanUpWGDSA(LBSGroupset& groupset);
   /**Cleans up memory consuming items. */
   static void CleanUpTGDSA(LBSGroupset& groupset);
+
+public:
+  /**
+   * Returns the input parameters for this object.
+   */
+  static chi::InputParameters GetInputParameters();
 };
 
 } // namespace lbs
