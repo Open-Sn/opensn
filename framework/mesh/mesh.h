@@ -19,7 +19,6 @@ typedef Vector3 Normal;
 typedef Vector3 Vertex;
 
 struct Matrix3x3;
-struct TensorRank2Dim3;
 
 struct Face;
 struct Edge;
@@ -149,7 +148,6 @@ size_t CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
 
 #include "framework/mesh/mesh_vector.h"
 #include "framework/mesh/mesh_matrix3x3.h"
-#include "framework/mesh/mesh_tensor_rank2_dim3.h"
 #include "framework/mesh/mesh_face.h"
 #include "framework/mesh/mesh_edge_loops.h"
 
