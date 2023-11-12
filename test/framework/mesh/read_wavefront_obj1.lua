@@ -22,7 +22,7 @@ meshgen1 = chi_mesh.MeshGenerator.Create
   {
     chi_mesh.FromFileMeshGenerator.Create
     ({
-      filename = "ReactorPinMesh.obj"
+      filename = "reactor_pin_mesh.obj"
     })
   }
 })
