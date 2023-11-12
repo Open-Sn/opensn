@@ -71,7 +71,7 @@ endif()
 
 
 # libopensn
-file(GLOB_RECURSE LIBOPENSN_SRCS
+file(GLOB_RECURSE LIBOPENSN_SRCS CONFIGURE_DEPENDS
     framework/*.cc
     modules/*.cc
 )
