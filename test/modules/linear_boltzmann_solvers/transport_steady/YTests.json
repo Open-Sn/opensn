@@ -397,7 +397,7 @@
         "tol": 1.0e-9
       }
     ],
-    "skip": "Failing because of shared SplitMesh directory.  - WDH"
+    "skip": "Failing because of shared 'split_mesh' directory.  - WDH"
   },
   {
     "file": "transport_3d_6b_split_mesh.lua",

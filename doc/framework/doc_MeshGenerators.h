@@ -142,7 +142,7 @@ inputs like any other mesh generator but instead of building the mesh on each
 processor only the home location builds the mesh. Thereafter the mesh is
 partitioned and each processors' local-cells, ghost-cells, and relevant vertices
 are written to separate binary files. The default folder, into which these files
-are written, is named "SplitMesh" and the default file names for the meshes are
+are written, is named "split_mesh" and the default file names for the meshes are
 "split_mesh_x.cmesh", where the x represents the processors rank. Both the
 folder name and file name prefixes (i.e. the "split_mesh" part) can be altered
 via input parameters.
@@ -167,7 +167,7 @@ chi_mesh.MeshGenerator.Execute(meshgen1)
 \endcode
 
 The examples below will create, in the current working directory, the folder
-`SplitMesh` and within it `split_mesh_0.cmesh`, `split_mesh_1.cmesh`, etc.
+`split_mesh` and within it `split_mesh_0.cmesh`, `split_mesh_1.cmesh`, etc.
 
 ### SplitFile Example B
 
