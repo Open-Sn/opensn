@@ -6,15 +6,13 @@
 namespace lbs
 {
 
-template <class MatType, class VecType, class SolverType>
-class NLKEigenvalueAGSSolver : public chi_math::NonLinearSolver<MatType, VecType, SolverType>
+class NLKEigenvalueAGSSolver : public chi_math::NonLinearSolver
 {
 public:
-  typedef NLKEigenAGSContext<VecType, SolverType> NLKAGSContext;
-  typedef std::shared_ptr<NLKAGSContext> NLKAGSContextPtr;
+  typedef std::shared_ptr<NLKEigenAGSContext> NLKAGSContextPtr;
 
   explicit NLKEigenvalueAGSSolver(NLKAGSContextPtr nlk_ags_context_ptr)
-    : chi_math::NonLinearSolver<MatType, VecType, SolverType>(nlk_ags_context_ptr)
+    : chi_math::NonLinearSolver(nlk_ags_context_ptr)
   {
   }
 

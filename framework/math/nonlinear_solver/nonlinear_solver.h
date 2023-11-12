@@ -2,31 +2,23 @@
 
 #include "framework/math/nonlinear_solver/nonlinear_solver_context.h"
 #include "framework/math/nonlinear_solver/nonlinear_solver_options.h"
-
 #include <string>
-
 #include <memory>
 #include <utility>
+#include <petscsnes.h>
 
 namespace chi_math
 {
 
 /**Implementation of a general non-linear solver.*/
-template <class MatType, class VecType, class SolverType>
 class NonLinearSolver
 {
 public:
-  typedef NonLinearSolverContext<VecType, SolverType> NLSolverContext;
-  typedef std::shared_ptr<NLSolverContext> NLSolverContextPtr;
+  typedef std::shared_ptr<NonLinearSolverContext> NLSolverContextPtr;
 
   explicit NonLinearSolver(
     NLSolverContextPtr context_ptr,
-    const chi::InputParameters& params = NonLinearSolverOptions::GetInputParameters())
-    : solver_name_(params.GetParamValue<std::string>("name")),
-      context_ptr_(context_ptr),
-      options_(params)
-  {
-  }
+    const chi::InputParameters& params = NonLinearSolverOptions::GetInputParameters());
   virtual ~NonLinearSolver();
 
   NonLinearSolverOptions& ToleranceOptions() { return options_; }
@@ -66,11 +58,11 @@ protected:
 
   NLSolverContextPtr context_ptr_ = nullptr;
 
-  MatType J_;
-  MatType P_;
-  VecType r_;
-  VecType x_;
-  SolverType nl_solver_;
+  Mat J_;
+  Mat P_;
+  Vec r_;
+  Vec x_;
+  SNES nl_solver_;
 
   int64_t num_local_dofs_ = 0;
   int64_t num_globl_dofs_ = 0;

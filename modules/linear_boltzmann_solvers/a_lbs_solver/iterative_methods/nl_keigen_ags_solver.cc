@@ -13,20 +13,18 @@
 
 #include <iomanip>
 
-#define SNESTypes Mat, Vec, SNES
 #define CheckContext(x)                                                                            \
   if (not x)                                                                                       \
   throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": context casting failure")
 #define GetNLKAGSContextPtr(x)                                                                     \
-  std::dynamic_pointer_cast<NLKEigenAGSContext<Vec, SNES>>(x);                                     \
+  std::dynamic_pointer_cast<NLKEigenAGSContext>(x);                                                \
   CheckContext(x)
 
 namespace lbs
 {
 
-template <>
 void
-NLKEigenvalueAGSSolver<SNESTypes>::PreSetupCallback()
+NLKEigenvalueAGSSolver::PreSetupCallback()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
@@ -35,9 +33,8 @@ NLKEigenvalueAGSSolver<SNESTypes>::PreSetupCallback()
     nl_context_ptr->groupset_ids.push_back(groupset.id_);
 }
 
-template <>
 void
-NLKEigenvalueAGSSolver<SNESTypes>::SetMonitor()
+NLKEigenvalueAGSSolver::SetMonitor()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
@@ -54,9 +51,8 @@ NLKEigenvalueAGSSolver<SNESTypes>::SetMonitor()
   }
 }
 
-template <>
 void
-NLKEigenvalueAGSSolver<SNESTypes>::SetSystemSize()
+NLKEigenvalueAGSSolver::SetSystemSize()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
@@ -67,35 +63,31 @@ NLKEigenvalueAGSSolver<SNESTypes>::SetSystemSize()
   num_globl_dofs_ = static_cast<int64_t>(sizes.second);
 }
 
-template <>
 void
-NLKEigenvalueAGSSolver<SNESTypes>::SetSystem()
+NLKEigenvalueAGSSolver::SetSystem()
 {
   // Create the vectors
   x_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_globl_dofs_);
   VecDuplicate(x_, &r_);
 }
 
-template <>
 void
-NLKEigenvalueAGSSolver<SNESTypes>::SetFunction()
+NLKEigenvalueAGSSolver::SetFunction()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
   SNESSetFunction(nl_solver_, r_, NLKEigenResidualFunction, &nl_context_ptr->kresid_func_context_);
 }
 
-template <>
 void
-NLKEigenvalueAGSSolver<SNESTypes>::SetJacobian()
+NLKEigenvalueAGSSolver::SetJacobian()
 {
   MatCreateSNESMF(nl_solver_, &J_);
   SNESSetJacobian(nl_solver_, J_, J_, MatMFFDComputeJacobian, nullptr);
 }
 
-template <>
 void
-NLKEigenvalueAGSSolver<SNESTypes>::SetInitialGuess()
+NLKEigenvalueAGSSolver::SetInitialGuess()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 
@@ -105,9 +97,8 @@ NLKEigenvalueAGSSolver<SNESTypes>::SetInitialGuess()
   lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(groupset_ids, x_, PhiSTLOption::PHI_OLD);
 }
 
-template <>
 void
-NLKEigenvalueAGSSolver<SNESTypes>::PostSolveCallback()
+NLKEigenvalueAGSSolver::PostSolveCallback()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_);
 

@@ -1,15 +1,18 @@
-#include "framework/math/nonlinear_solver/nonlinear_solver_petsc.h"
-
-#include <petscsnes.h>
-
+#include "framework/math/nonlinear_solver/nonlinear_solver.h"
 #include "framework/logging/log.h"
 #include "framework/logging/stringstream_color.h"
 
 namespace chi_math
 {
 
-template <>
-NonLinearSolverPETSc::~NonLinearSolver()
+NonLinearSolver::NonLinearSolver(NLSolverContextPtr context_ptr, const chi::InputParameters& params)
+  : solver_name_(params.GetParamValue<std::string>("name")),
+    context_ptr_(context_ptr),
+    options_(params)
+{
+}
+
+NonLinearSolver::~NonLinearSolver()
 {
   SNESDestroy(&nl_solver_);
   VecDestroy(&x_);
@@ -17,9 +20,8 @@ NonLinearSolverPETSc::~NonLinearSolver()
   MatDestroy(&J_);
 }
 
-template <>
 void
-NonLinearSolverPETSc::ApplyToleranceOptions()
+NonLinearSolver::ApplyToleranceOptions()
 {
   SNESSetTolerances(nl_solver_,
                     options_.nl_abs_tol_,
@@ -39,52 +41,45 @@ NonLinearSolverPETSc::ApplyToleranceOptions()
   }
   KSPSetInitialGuessNonzero(ksp, PETSC_FALSE);
 }
-template <>
+
 void
-NonLinearSolverPETSc::PreSetupCallback()
+NonLinearSolver::PreSetupCallback()
 {
 }
 
-template <>
 void
-NonLinearSolverPETSc::SetOptions()
+NonLinearSolver::SetOptions()
 {
 }
 
-template <>
 void
-NonLinearSolverPETSc::SetSolverContext()
+NonLinearSolver::SetSolverContext()
 {
   SNESSetApplicationContext(nl_solver_, &(*context_ptr_));
 }
 
-template <>
 void
-NonLinearSolverPETSc::SetConvergenceTest()
+NonLinearSolver::SetConvergenceTest()
 {
 }
 
-template <>
 void
-NonLinearSolverPETSc::SetMonitor()
+NonLinearSolver::SetMonitor()
 {
 }
 
-template <>
 void
-NonLinearSolverPETSc::SetPreconditioner()
+NonLinearSolver::SetPreconditioner()
 {
 }
 
-template <>
 void
-NonLinearSolverPETSc::PostSetupCallback()
+NonLinearSolver::PostSetupCallback()
 {
 }
 
-template <>
 void
-NonLinearSolverPETSc::Setup()
+NonLinearSolver::Setup()
 {
   if (IsSystemSet()) return;
   this->PreSetupCallback();
@@ -128,21 +123,18 @@ NonLinearSolverPETSc::Setup()
   system_set_ = true;
 }
 
-template <>
 void
-NonLinearSolverPETSc::PreSolveCallback()
+NonLinearSolver::PreSolveCallback()
 {
 }
 
-template <>
 void
-NonLinearSolverPETSc::PostSolveCallback()
+NonLinearSolver::PostSolveCallback()
 {
 }
 
-template <>
 void
-NonLinearSolverPETSc::Solve()
+NonLinearSolver::Solve()
 {
   converged_ = false;
   converged_reason_string_ = "Reason not obtained";
@@ -163,9 +155,8 @@ NonLinearSolverPETSc::Solve()
   converged_reason_string_ = std::string(strreason);
 }
 
-template <>
 std::string
-NonLinearSolverPETSc::GetConvergedReasonString() const
+NonLinearSolver::GetConvergedReasonString() const
 {
   std::stringstream outstr;
   if (converged_)

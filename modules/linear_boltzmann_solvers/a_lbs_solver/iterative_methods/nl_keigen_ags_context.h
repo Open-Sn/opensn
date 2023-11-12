@@ -16,8 +16,7 @@ class LBSSolver;
 namespace lbs
 {
 
-template <class VecType, class SolverType>
-struct NLKEigenAGSContext : public chi_math::NonLinearSolverContext<VecType, SolverType>
+struct NLKEigenAGSContext : public chi_math::NonLinearSolverContext
 {
   LBSSolver& lbs_solver_;
   KResidualFunctionContext kresid_func_context_;

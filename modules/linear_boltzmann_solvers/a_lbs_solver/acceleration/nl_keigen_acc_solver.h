@@ -9,13 +9,13 @@
 namespace lbs::acceleration
 {
 
-class NLKEigenDiffSolver : public chi_math::NonLinearSolver<Mat, Vec, SNES>
+class NLKEigenDiffSolver : public chi_math::NonLinearSolver
 {
 public:
   typedef std::shared_ptr<NLKEigenDiffContext> NLKEigenDiffContextPtr;
 
   explicit NLKEigenDiffSolver(NLKEigenDiffContextPtr nlk_diff_context_ptr)
-    : chi_math::NonLinearSolver<Mat, Vec, SNES>(nlk_diff_context_ptr)
+    : chi_math::NonLinearSolver(nlk_diff_context_ptr)
   {
   }
 
