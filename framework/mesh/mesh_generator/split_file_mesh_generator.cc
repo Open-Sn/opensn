@@ -40,7 +40,7 @@ SplitFileMeshGenerator::GetInputParameters()
 
   params.AddOptionalParameter(
     "split_mesh_dir_path",
-    "SplitMesh",
+    "split_mesh",
     "Path of the directory to be created for containing the split meshes.");
 
   params.AddOptionalParameter(

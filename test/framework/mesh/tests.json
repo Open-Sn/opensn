@@ -1,0 +1,11 @@
+[
+  {
+    "file" : "read_wavefront_obj1.lua", "num_procs" : 4, "checks" :
+    [
+      {
+        "type" : "StrCompare",
+        "key" : "Global cell count             : 3242"
+      }
+    ]
+  }
+]

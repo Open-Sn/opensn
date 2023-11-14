@@ -1,0 +1,170 @@
+[
+  {
+    "file": "adjoint_2d_1a_forward.lua",
+    "comment": "2D Transport test with localized material source FWD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value=",
+        "goldvalue": 1.38397e-05,
+        "tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_2d_1b_adjoint.lua",
+    "comment": "2D Transport test with localized material source Adjoint generation",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "adjoint_2d_1c_response.lua",
+    "dependency": "adjoint_2d_1b_adjoint.lua",
+    "comment": "2D Transport test with localized material source Adjoint inner product",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Inner-product=",
+        "goldvalue": 1.38405e-05,
+        "tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_2d_2a_forward.lua",
+    "comment": "2D Transport test with point source FWD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value=",
+        "goldvalue": 2.90386e-05,
+        "tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_2d_2b_adjoint.lua",
+    "comment": "2D Transport test with point source Adjoint generation",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "adjoint_2d_2c_response.lua",
+    "dependency": "adjoint_2d_2b_adjoint.lua",
+    "comment": "2D Transport test with point source Adjoint response",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Inner-product=",
+        "goldvalue": 2.90543e-05,
+        "tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_2d_3a_forward.lua",
+    "comment": "2D Transport test with point source Multigroup FWD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[0]=",
+        "goldvalue": 1.12687e-06,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[1]=",
+        "goldvalue": 2.95934e-06,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[2]=",
+        "goldvalue": 3.92975e-06,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[3]=",
+        "goldvalue": 4.18474e-06,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[4]=",
+        "goldvalue": 3.89649e-06,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[5]=",
+        "goldvalue": 3.30482e-06,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[6]=",
+        "goldvalue": 1.54506e-06,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[7]=",
+        "goldvalue": 6.74868e-07,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[8]=",
+        "goldvalue": 3.06178e-07,
+        "tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QOI-value[9]=",
+        "goldvalue": 2.07284e-07,
+        "tol": 1.0
+      }
+    ]
+  },
+  {
+    "file": "adjoint_2d_3b_adjoint.lua",
+    "comment": "2D Transport test with point source Multigroup Adjoint generation",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "adjoint_2d_3c_response.lua",
+    "dependency": "adjoint_2d_3b_adjoint.lua",
+    "comment": "2D Transport test with point source Multigroup Adjoint Response",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Inner-product=",
+        "goldvalue": 3.30607e-06,
+        "tol": 1e-09
+      }
+    ]
+  }
+]

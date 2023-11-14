@@ -1,0 +1,424 @@
+[
+  {
+    "file": "transport_1d_1.lua",
+    "comment": "1D LinearBSolver Test - PWLD",
+    "num_procs": 3,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.49903,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.000718243,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_3a_dsa_ortho.lua",
+    "comment": "1D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    28",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    39",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    28",
+        "wordnum": 8,
+        "gold": 6.74299e-07,
+        "tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    39",
+        "wordnum": 8,
+        "gold": 8.73816e-07,
+        "tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_1_poly.lua",
+    "comment": "2D LinearBSolver Test - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.50758,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.000252527,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_2_unstructured.lua",
+    "comment": "2D LinearBSolver Test Unstructured grid - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.51187,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.00142458,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_3_poly_quad_mod.lua",
+    "comment": "2D LinearBSolver Test Polar-Optimized quadrature - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.50758,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.000252527,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_4a_dsa_ortho.lua",
+    "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    53",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    53",
+        "wordnum": 8,
+        "gold": 5.96018e-07,
+        "tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 8,
+        "gold": 5.96296e-07,
+        "tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_4b_dsa_ortho.lua",
+    "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    54",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    56",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    54",
+        "wordnum": 8,
+        "gold": 5.00021e-07,
+        "tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    56",
+        "wordnum": 8,
+        "gold": 9.73954e-07,
+        "tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_5_poly_a_ani_hetero_bndry.lua",
+    "comment": "2D LinearBSolver Test Anisotropic Hetero BC - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 3.18785,
+        "tol": 1e-05
+      }
+    ],
+    "skip": "Working on a solution - Jan"
+  },
+  {
+    "file": "transport_3d_1a_extruder.lua",
+    "comment": "3D LinearBSolver Test - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.52745,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.000376339,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1b_ortho.lua",
+    "comment": "3D LinearBSolver Test - PWLD Reflecting BC",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.52831,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.000804576,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1_poly_parmetis.lua",
+    "comment": "3D LinearBSolver Test Ortho Grid Parmetis - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.52745,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.000376339,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1_poly_qmom_part1.lua",
+    "comment": "3D LinearBSolver Test Source moment writing - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.10832,
+        "tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.0,
+        "tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1_poly_qmom_part2.lua",
+    "dependency" : "transport_3d_1_poly_qmom_part1.lua",
+    "comment": "3D LinearBSolver Test Source moment reading - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.000101701,
+        "tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 9.14681e-06,
+        "tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_2_unstructured.lua",
+    "comment": "3D LinearBSolver Test Extruded Unstructured - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.541465,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.000378243,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_3a_dsa_ortho.lua",
+    "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "num_procs": 4,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    54",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    63",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    54",
+        "wordnum": 8,
+        "gold": 7.92062e-07,
+        "tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    63",
+        "wordnum": 8,
+        "gold": 8.1975e-07,
+        "tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_4_cycles_1.lua",
+    "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.555349,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.000374343,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_5_cycles_2.lua",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh - PWLD",
+    "num_procs": 4,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 6.55396,
+        "tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 1.02943,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_6a_split_mesh.lua",
+    "comment": "3D LinearBSolver Test Split mesh configuration A",
+    "num_procs": 4,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum" : 4,
+        "gold": 1.131566e-01,
+        "tol": 1.0e-6
+      },
+      {
+        "type": "FloatCompare",
+        "key": "max-grp19(latest)",
+        "wordnum" : 4,
+        "gold": 7.340585e-04,
+        "tol": 1.0e-9
+      }
+    ],
+    "skip": "Failing because of shared 'split_mesh' directory.  - WDH"
+  },
+  {
+    "file": "transport_3d_6b_split_mesh.lua",
+    "comment": "3D LinearBSolver Test Split mesh configuration B",
+    "num_procs": 4,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum" : 4,
+        "gold": 1.131566e-01,
+        "tol": 1.0e-6
+      },
+      {
+        "type": "FloatCompare",
+        "key": "max-grp19(latest)",
+        "wordnum" : 4,
+        "gold": 7.340585e-04,
+        "tol": 1.0e-9
+      }
+    ]
+  }
+]

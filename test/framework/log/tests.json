@@ -1,0 +1,8 @@
+[
+  {
+    "file" : "timing_block_test.lua", "num_procs" : 2, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0}
+  ]
+  }
+]
