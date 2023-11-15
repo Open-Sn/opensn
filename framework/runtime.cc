@@ -70,10 +70,10 @@ const std::string Chi::run_time::command_line_help_string_ =
   "                                 Can be either 0, 1 or 2.\n"
   "     a=b                         Executes argument as a lua string. "
   "i.e. x=2 or y=[[\"string\"]]\n"
-  "     --allow_petsc_error_handler Allow petsc error handler.\n"
-  "     --supress_beg_end_timelog   Suppress time logs at the \n"
+  "     --allow-petsc-error-handler Allows petsc error handler.\n"
+  "     --suppress-beg-end-timelog  Suppresses time logs at the \n"
   "                                 beginning and end of execution.\n"
-  "     --suppress_color            Suppresses the printing of color.\n"
+  "     --suppress-color            Suppresses the printing of color.\n"
   "                                 useful for unit tests requiring a diff.\n"
   "     --dump-object-registry      Dumps the object registry.\n"
   "\n\n\n";
@@ -93,15 +93,15 @@ Chi::run_time::ParseArguments(int argc, char** argv)
       Chi::log.Log() << Chi::run_time::command_line_help_string_;
       Chi::run_time::termination_posted_ = true;
     }
-    else if (argument.find("--supress_beg_end_timelog") != std::string::npos)
+    else if (argument.find("--suppress-beg-end-timelog") != std::string::npos)
     {
       Chi::run_time::supress_beg_end_timelog_ = true;
     }
-    else if (argument.find("--allow_petsc_error_handler") != std::string::npos)
+    else if (argument.find("--allow-petsc-error-handler") != std::string::npos)
     {
       Chi::run_time::allow_petsc_error_handler_ = true;
     }
-    else if (argument.find("--suppress_color") != std::string::npos)
+    else if (argument.find("--suppress-color") != std::string::npos)
     {
       Chi::run_time::suppress_color_ = true;
     }

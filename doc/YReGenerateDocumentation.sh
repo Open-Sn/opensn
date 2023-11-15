@@ -30,7 +30,7 @@ if [ ! -f ./bin/ChiTech ]; then
   echo "Cannot update static registered items"
 else
   echo "Running ChiTech"
-  ./bin/ChiTech --suppress_color --dump-object-registry -v 2 > doc/generated_files/test.txt
+  ./bin/ChiTech --suppress-color --dump-object-registry -v 2 > doc/generated_files/test.txt
   python3 "doc/scripts/MakeInputParamsDocs.py"
 fi
 
@@ -61,4 +61,3 @@ else
   echo "Running DoxyGen"
   doxygen "doc/DoxyfileLua"
 fi
-
