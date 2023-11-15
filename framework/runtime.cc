@@ -50,6 +50,7 @@ std::vector<AngularQuadraturePtr> Chi::angular_quadrature_stack;
 std::vector<ChiObjectPtr> Chi::object_stack;
 std::vector<SpatialDiscretizationPtr> Chi::sdm_stack;
 std::vector<PostProcessorPtr> Chi::postprocessor_stack;
+std::vector<FunctionPtr> Chi::function_stack;
 
 // run_time quantities
 bool Chi::run_time::termination_posted_ = false;
@@ -216,6 +217,7 @@ Finalize()
   Chi::object_stack.clear();
   Chi::material_stack.clear();
   Chi::multigroup_xs_stack.clear();
+  Chi::function_stack.clear();
 
   PetscFinalize();
   MPI_Finalize();

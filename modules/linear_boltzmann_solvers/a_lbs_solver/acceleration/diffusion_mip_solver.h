@@ -1,9 +1,6 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion.h"
-#ifdef OPENSN_WITH_LUA
-#include "framework/lua.h"
-#endif
 
 namespace opensn
 {
@@ -12,6 +9,7 @@ class Cell;
 struct Vector3;
 class SpatialDiscretization;
 struct UnitCellMatrices;
+class ScalarSpatialFunction;
 
 namespace lbs
 {
@@ -30,6 +28,10 @@ public:
                      const std::vector<UnitCellMatrices>& unit_cell_matrices,
                      bool verbose);
   virtual ~DiffusionMIPSolver() = default;
+
+  void SetSourceFunction(std::shared_ptr<ScalarSpatialFunction> function);
+
+  void SetReferenceSolutionFunction(std::shared_ptr<ScalarSpatialFunction> function);
 
   /**
    * Assembles both the matrix and the RHS using quadrature points. These routines exist for
@@ -81,19 +83,9 @@ public:
                       size_t ccfi,
                       double epsilon = 1.0e-12);
 
-#ifdef OPENSN_WITH_LUA
-  /**
-   * Calls a lua function with xyz coordinates.
-   * \param L The lua state.
-   * \param lua_func_name The name used to define this lua function in the lua
-   *                      state.
-   * \param xyz The xyz coordinates of the point where the function is called.
-   *
-   * \return The function evaluation.
-   */
-  static double
-  CallLuaXYZFunction(lua_State* L, const std::string& lua_func_name, const Vector3& xyz);
-#endif
+private:
+  std::shared_ptr<ScalarSpatialFunction> source_function_;
+  std::shared_ptr<ScalarSpatialFunction> ref_solution_function_;
 };
 
 } // namespace lbs

@@ -21,9 +21,9 @@ enum class FieldFunctionInterpolationOperation : int
   OP_SUM = 10,
   OP_AVG = 11,
   OP_MAX = 12,
-  OP_SUM_LUA = 13,
-  OP_AVG_LUA = 14,
-  OP_MAX_LUA = 15,
+  OP_SUM_FUNC = 13,
+  OP_AVG_FUNC = 14,
+  OP_MAX_FUNC = 15,
 };
 
 enum class FieldFunctionInterpolationProperty : int

@@ -3,6 +3,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "framework/math/functions/scalar_spatial_function.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -25,6 +26,18 @@ namespace opensn
 {
 namespace lbs
 {
+
+void
+DiffusionMIPSolver::SetSourceFunction(std::shared_ptr<ScalarSpatialFunction> function)
+{
+  source_function_ = function;
+}
+
+void
+DiffusionMIPSolver::SetReferenceSolutionFunction(std::shared_ptr<ScalarSpatialFunction> function)
+{
+  ref_solution_function_ = function;
+}
 
 DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                                        const opensn::SpatialDiscretization& sdm,
@@ -59,12 +72,6 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
   if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
-
-#ifdef OPENSN_WITH_LUA
-  lua_State* L = console.GetConsoleState();
-#endif
-  const auto& source_function = options.source_lua_function;
-  const auto& solution_function = options.ref_solution_lua_function;
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -108,20 +115,18 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             entry_aij +=
               sigr_g * qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp) * qp_data.JxW(qp);
 
-            if (source_function.empty())
+            if (not source_function_)
               entry_rhs_i +=
                 qg[j] * qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp) * qp_data.JxW(qp);
           } // for qp
           MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
         } // for j
 
-        if (not source_function.empty())
+        if (source_function_)
         {
-#ifdef OPENSN_WITH_LUA
           for (size_t qp : qp_data.QuadraturePointIndices())
-            entry_rhs_i += CallLuaXYZFunction(L, source_function, qp_data.QPointXYZ(qp)) *
+            entry_rhs_i += source_function_->Evaluate(qp_data.QPointXYZ(qp)) *
                            qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
-#endif
         }
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -270,15 +275,13 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                          fqp_data.JxW(qp);
                 double aij_bc_value = aij * bc_value;
 
-                if (not solution_function.empty())
+                if (ref_solution_function_)
                 {
-#ifdef OPENSN_WITH_LUA
                   aij_bc_value = 0.0;
                   for (size_t qp : fqp_data.QuadraturePointIndices())
                     aij_bc_value +=
-                      kappa * CallLuaXYZFunction(L, solution_function, fqp_data.QPointXYZ(qp)) *
+                      kappa * ref_solution_function_->Evaluate(fqp_data.QPointXYZ(qp)) *
                       fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
-#endif
                 }
 
                 MatSetValue(A_, imap, jmmap, aij, ADD_VALUES);
@@ -308,17 +311,15 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
                 double aij_bc_value = aij * bc_value;
 
-                if (not solution_function.empty())
+                if (ref_solution_function_)
                 {
-#ifdef OPENSN_WITH_LUA
                   Vector3 vec_aij_mms;
                   for (size_t qp : fqp_data.QuadraturePointIndices())
                     vec_aij_mms +=
-                      CallLuaXYZFunction(L, solution_function, fqp_data.QPointXYZ(qp)) *
+                      ref_solution_function_->Evaluate(fqp_data.QPointXYZ(qp)) *
                       (fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
                        fqp_data.ShapeValue(i, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp));
                   aij_bc_value = -Dg * n_f.Dot(vec_aij_mms);
-#endif
                 }
 
                 MatSetValue(A_, imap, jmap, aij, ADD_VALUES);
@@ -405,12 +406,6 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                                    "Check that Initialize has been called.");
   if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-#ifdef OPENSN_WITH_LUA
-  lua_State* L = console.GetConsoleState();
-#endif
-  const auto& source_function = options.source_lua_function;
-  const auto& solution_function = options.ref_solution_lua_function;
-
   VecSet(rhs_, 0.0);
 
   for (const auto& cell : grid_.local_cells)
@@ -438,7 +433,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0; // entry may accumulate over j
-        if (source_function.empty())
+        if (not source_function_)
           for (size_t j = 0; j < num_nodes; j++)
           {
             for (size_t qp : qp_data.QuadraturePointIndices())
@@ -449,11 +444,9 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
           }   // for j
         else
         {
-#ifdef OPENSN_WITH_LUA
           for (size_t qp : qp_data.QuadraturePointIndices())
-            entry_rhs_i += CallLuaXYZFunction(L, source_function, qp_data.QPointXYZ(qp)) *
+            entry_rhs_i += source_function_->Evaluate(qp_data.QPointXYZ(qp)) *
                            qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
-#endif
         }
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -502,15 +495,13 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                          fqp_data.JxW(qp);
                 double aij_bc_value = aij * bc_value;
 
-                if (not solution_function.empty())
+                if (ref_solution_function_)
                 {
                   aij_bc_value = 0.0;
-#ifdef OPENSN_WITH_LUA
                   for (size_t qp : fqp_data.QuadraturePointIndices())
-                    aij_bc_value +=
-                      kappa * CallLuaXYZFunction(L, solution_function, fqp_data.QPointXYZ(qp)) *
-                      fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
-#endif
+                    aij_bc_value += kappa * source_function_->Evaluate(fqp_data.QPointXYZ(qp)) *
+                                    fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) *
+                                    fqp_data.JxW(qp);
                 }
 
                 VecSetValue(rhs_, imap, aij_bc_value, ADD_VALUES);
@@ -537,17 +528,15 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
                 double aij_bc_value = aij * bc_value;
 
-                if (not solution_function.empty())
+                if (ref_solution_function_)
                 {
-#ifdef OPENSN_WITH_LUA
                   Vector3 vec_aij_mms;
                   for (size_t qp : fqp_data.QuadraturePointIndices())
                     vec_aij_mms +=
-                      CallLuaXYZFunction(L, solution_function, fqp_data.QPointXYZ(qp)) *
+                      ref_solution_function_->Evaluate(fqp_data.QPointXYZ(qp)) *
                       (fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
                        fqp_data.ShapeValue(i, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp));
                   aij_bc_value = -Dg * n_f.Dot(vec_aij_mms);
-#endif
                 }
 
                 VecSetValue(rhs_, imap, aij_bc_value, ADD_VALUES);
@@ -1257,46 +1246,6 @@ DiffusionMIPSolver::MapFaceNodeDisc(const Cell& cur_cell,
   throw std::logic_error(
     "lbs::acceleration::DiffusionMIPSolver::MapFaceNodeDisc: Mapping failure.");
 }
-
-#ifdef OPENSN_WITH_LUA
-double
-DiffusionMIPSolver::CallLuaXYZFunction(lua_State* L,
-                                       const std::string& lua_func_name,
-                                       const Vector3& xyz)
-{
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
-                            "CallLuaXYZFunction";
-  // Load lua function
-  lua_getglobal(L, lua_func_name.c_str());
-
-  // Error check lua function
-  if (not lua_isfunction(L, -1))
-    throw std::logic_error(fname + " attempted to access lua-function, " + lua_func_name +
-                           ", but it seems the function"
-                           " could not be retrieved.");
-
-  // Push arguments
-  lua_pushnumber(L, xyz.x);
-  lua_pushnumber(L, xyz.y);
-  lua_pushnumber(L, xyz.z);
-
-  // Call lua function
-  // 3 arguments, 1 result (double), 0=original error object
-  double lua_return;
-  if (lua_pcall(L, 3, 1, 0) == 0)
-  {
-    LuaCheckNumberValue(fname, L, -1);
-    lua_return = lua_tonumber(L, -1);
-  }
-  else
-    throw std::logic_error(fname + " attempted to call lua-function, " + lua_func_name +
-                           ", but the call failed." + xyz.PrintStr());
-
-  lua_pop(L, 1); // pop the double, or error code
-
-  return lua_return;
-}
-#endif
 
 } // namespace lbs
 } // namespace opensn
