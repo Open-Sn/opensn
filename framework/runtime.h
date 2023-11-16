@@ -167,9 +167,6 @@ public:
   /**Builds a `RegistryStatuses` structure*/
   static RegistryStatuses GetStatusOfRegistries();
 
-  /** Gets the ChiTech-version string.*/
-  static std::string GetVersionStr();
-
 public:
   /**Attempts to retrieve an object of base-type `shared_ptr<T>` at the given
    * handle. It then attempts to cast it to type `shared_ptr<R>` and, if
@@ -275,6 +272,11 @@ public:
     }
   }
 };
+
+/**
+ * Gets the version string.
+ */
+std::string GetVersionStr();
 
 /**
  * Exits the program appropriately.

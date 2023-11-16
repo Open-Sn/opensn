@@ -229,7 +229,7 @@ Chi::RunInteractive(int argc, char** argv)
     log.Log() << Timer::GetLocalDateTimeString() << " Running ChiTech in interactive-mode with "
               << mpi.process_count << " processes.";
 
-    log.Log() << "ChiTech version " << Chi::GetVersionStr();
+    log.Log() << "ChiTech version " << GetVersionStr();
   }
 
   log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
@@ -272,7 +272,7 @@ Chi::RunBatch(int argc, char** argv)
     log.Log() << Timer::GetLocalDateTimeString() << " Running ChiTech in batch-mode with "
               << mpi.process_count << " processes.";
 
-    log.Log() << "ChiTech version " << Chi::GetVersionStr();
+    log.Log() << "ChiTech version " << GetVersionStr();
   }
 
   log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
@@ -325,7 +325,7 @@ Exit(int error_code)
 }
 
 std::string
-Chi::GetVersionStr()
+GetVersionStr()
 {
   return PROJECT_VERSION;
 }
