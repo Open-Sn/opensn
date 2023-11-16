@@ -306,7 +306,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
           err_stream << error_string << "\n";
           MPI_Error_string(error_code, error_string, &length_of_error_string);
           err_stream << error_string << "\n";
-          Chi::log.LogAllWarning() << err_stream.str();
+          log.LogAllWarning() << err_stream.str();
         }
       } // if not message already received
     }   // for message
@@ -385,7 +385,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
           err_stream << error_string << "\n";
           MPI_Error_string(error_code, error_string, &length_of_error_string);
           err_stream << error_string << "\n";
-          Chi::log.LogAllWarning() << err_stream.str();
+          log.LogAllWarning() << err_stream.str();
         }
       } // if not message already received
     }   // for message
@@ -449,7 +449,7 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
     std::shared_ptr<Logger::EventInfo> memory_event_info =
       std::make_shared<Logger::EventInfo>(memory_mb);
 
-    Chi::log.LogEvent(
+    log.LogEvent(
       Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventType::SINGLE_OCCURRENCE, memory_event_info);
 
     data_initialized = true;

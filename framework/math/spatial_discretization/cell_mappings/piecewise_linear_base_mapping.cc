@@ -45,8 +45,8 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const Cell& cell)
       } // for cell i
       if (mapping < 0)
       {
-        Chi::log.LogAllError() << "Unknown face mapping encountered. "
-                                  "pwl_polyhedron.h";
+        log.LogAllError() << "Unknown face mapping encountered. "
+                             "pwl_polyhedron.h";
         Chi::Exit(EXIT_FAILURE);
       }
       face_dof_mapping.push_back(mapping);

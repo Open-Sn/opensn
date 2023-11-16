@@ -26,7 +26,7 @@ SPDS::MapLocJToPrelocI(int locJ) const
     if (delayed_location_dependencies_[i] == locJ) { return -(i + 1); }
   }
 
-  Chi::log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToPrelocI.";
+  log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToPrelocI.";
   Chi::Exit(EXIT_FAILURE);
   return 0;
 }
@@ -39,7 +39,7 @@ SPDS::MapLocJToDeplocI(int locJ) const
     if (location_successors_[i] == locJ) { return i; }
   }
 
-  Chi::log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToDeplocI.";
+  log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToDeplocI.";
   Chi::Exit(EXIT_FAILURE);
   return 0;
 }

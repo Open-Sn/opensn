@@ -27,7 +27,7 @@ ObjectFactory::RegistryHasKey(const std::string& key) const
 size_t
 ObjectFactory::MakeRegisteredObject(const ParameterBlock& params) const
 {
-  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object with type from parameters";
+  if (log.GetVerbosity() >= 2) log.Log() << "Making object with type from parameters";
 
   const std::string fname = __PRETTY_FUNCTION__;
 
@@ -46,14 +46,14 @@ size_t
 ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
                                           const ParameterBlock& params) const
 {
-  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object with specified type";
+  if (log.GetVerbosity() >= 2) log.Log() << "Making object with specified type";
 
   const std::string fname = __PRETTY_FUNCTION__;
 
   if (object_registry_.count(type) == 0)
     throw std::logic_error(fname + ": No registered type \"" + type + "\" found.");
 
-  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object type " << type;
+  if (log.GetVerbosity() >= 2) log.Log() << "Making object type " << type;
 
   auto object_entry = object_registry_.at(type);
 
@@ -66,19 +66,18 @@ ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
   input_params.SetObjectType(type);
   input_params.SetErrorOriginScope(type);
 
-  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Assigning parameters for object " << type;
+  if (log.GetVerbosity() >= 2) log.Log() << "Assigning parameters for object " << type;
 
   input_params.AssignParameters(params);
 
-  if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Constructing object " << type;
+  if (log.GetVerbosity() >= 2) log.Log() << "Constructing object " << type;
 
   auto new_object = object_entry.constructor_func(input_params);
 
   new_object->PushOntoStack(new_object);
 
-  if (Chi::log.GetVerbosity() >= 2)
-    Chi::log.Log() << "Done making object type " << type << " with handle "
-                   << new_object->StackID();
+  if (log.GetVerbosity() >= 2)
+    log.Log() << "Done making object type " << type << " with handle " << new_object->StackID();
 
   return new_object->StackID();
 }
@@ -98,25 +97,25 @@ ObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
 void
 ObjectFactory::DumpRegister() const
 {
-  Chi::log.Log() << "\n\n";
+  log.Log() << "\n\n";
   for (const auto& [key, entry] : object_registry_)
   {
-    if (Chi::log.GetVerbosity() == 0)
+    if (log.GetVerbosity() == 0)
     {
-      Chi::log.Log() << key;
+      log.Log() << key;
       continue;
     }
 
-    Chi::log.Log() << "OBJECT_BEGIN " << key;
+    log.Log() << "OBJECT_BEGIN " << key;
 
-    if (entry.constructor_func == nullptr) Chi::log.Log() << "NOT_CONSTRUCTIBLE";
+    if (entry.constructor_func == nullptr) log.Log() << "NOT_CONSTRUCTIBLE";
 
     const auto in_params = entry.get_in_params_func();
     in_params.DumpParameters();
 
-    Chi::log.Log() << "OBJECT_END\n\n";
+    log.Log() << "OBJECT_END\n\n";
   }
-  Chi::log.Log() << "\n\n";
+  log.Log() << "\n\n";
 }
 
 void

@@ -17,7 +17,7 @@ namespace opensn
 void
 FieldFunctionInterpolationSlice::Initialize()
 {
-  Chi::log.Log0Verbose1() << "Initializing slice interpolator.";
+  log.Log0Verbose1() << "Initializing slice interpolator.";
   // Check grid available
   if (field_functions_.empty())
     throw std::logic_error("Unassigned field function in slice "
@@ -182,9 +182,9 @@ FieldFunctionInterpolationSlice::Initialize()
       }
       else
       {
-        Chi::log.LogAllWarning() << "No face intersections encountered "
-                                    "for a cell that is indicated as being "
-                                    "intersected. Slice FF interp.";
+        log.LogAllWarning() << "No face intersections encountered "
+                               "for a cell that is indicated as being "
+                               "intersected. Slice FF interp.";
       }
 
       // Computing 2D transforms
@@ -465,8 +465,8 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
 
   ofile.close();
 
-  Chi::log.Log() << "Exported Python files for field func \"" << field_functions_[0]->TextName()
-                 << "\" to base name \"" << base_name << "\" Successfully";
+  log.Log() << "Exported Python files for field func \"" << field_functions_[0]->TextName()
+            << "\" to base name \"" << base_name << "\" Successfully";
 }
 
 } // namespace opensn

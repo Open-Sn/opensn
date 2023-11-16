@@ -45,7 +45,7 @@ LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& grap
                                   const std::vector<Vector3>&,
                                   const int number_of_parts)
 {
-  Chi::log.Log0Verbose1() << "Partitioning with LinearGraphPartitioner";
+  log.Log0Verbose1() << "Partitioning with LinearGraphPartitioner";
 
   const std::vector<SubSetInfo> sub_sets = MakeSubSets(graph.size(), number_of_parts);
 
@@ -61,7 +61,7 @@ LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& grap
   else
     pids.assign(graph.size(), all_to_rank_);
 
-  Chi::log.Log0Verbose1() << "Done partitioning with LinearGraphPartitioner";
+  log.Log0Verbose1() << "Done partitioning with LinearGraphPartitioner";
   return pids;
 }
 

@@ -81,13 +81,13 @@ typedef std::shared_ptr<Object> ChiObjectPtr;
 
 extern Console& console;
 extern MPI_Info& mpi;
+extern Logger& log;
 
 /**General utilities in ChiTech*/
 class Chi
 {
 public:
   static Timer program_timer;
-  static Logger& log;
 
   /** Global stack of handlers */
   static std::vector<MeshHandlerPtr> meshhandler_stack;

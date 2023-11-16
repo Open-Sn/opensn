@@ -16,9 +16,9 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
   : scheduler_type_(in_scheduler_type),
     angle_agg_(in_angle_agg),
     sweep_chunk_(in_sweep_chunk),
-    sweep_event_tag_(Chi::log.GetRepeatingEventTag("Sweep Timing")),
+    sweep_event_tag_(log.GetRepeatingEventTag("Sweep Timing")),
     sweep_timing_events_tag_(
-      {Chi::log.GetRepeatingEventTag("Sweep Chunk Only Timing"), sweep_event_tag_})
+      {log.GetRepeatingEventTag("Sweep Chunk Only Timing"), sweep_event_tag_})
 
 {
   angle_agg_.InitializeReflectingBCs();
@@ -100,7 +100,7 @@ SweepScheduler::InitializeAlgoDOG()
       }
       else
       {
-        Chi::log.LogAllError() << "Location depth not found in Depth-Of-Graph algorithm.";
+        log.LogAllError() << "Location depth not found in Depth-Of-Graph algorithm.";
         Chi::Exit(EXIT_FAILURE);
       }
 
@@ -155,11 +155,11 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
   typedef ExecutionPermission ExePerm;
   typedef AngleSetStatus Status;
 
-  Chi::log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_BEGIN);
+  log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_BEGIN);
 
   auto ev_info = std::make_shared<Logger::EventInfo>(std::string("Sweep initiated"));
 
-  Chi::log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info);
+  log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info);
 
   // Loop till done
   bool finished = false;
@@ -193,7 +193,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 
         auto ev_info_i = std::make_shared<Logger::EventInfo>(message_i.str());
 
-        Chi::log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info_i);
+        log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info_i);
 
         status = angleset->AngleSetAdvance(sweep_chunk, sweep_timing_events_tag_, ExePerm::EXECUTE);
 
@@ -203,7 +203,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 
         auto ev_info_f = std::make_shared<Logger::EventInfo>(message_f.str());
 
-        Chi::log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info_f);
+        log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info_f);
 
         scheduled_angleset++; // Schedule the next angleset
       }
@@ -243,7 +243,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
     }
   }
 
-  Chi::log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_END);
+  log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_END);
 }
 
 void
@@ -251,11 +251,11 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 {
   typedef AngleSetStatus Status;
 
-  Chi::log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_BEGIN);
+  log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_BEGIN);
 
   auto ev_info_i = std::make_shared<Logger::EventInfo>(std::string("Sweep initiated"));
 
-  Chi::log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info_i);
+  log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info_i);
 
   // Loop over AngleSetGroups
   AngleSetStatus completion_status = AngleSetStatus::NOT_FINISHED;
@@ -304,7 +304,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
     }
   }
 
-  Chi::log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_END);
+  log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_END);
 }
 
 void
@@ -318,7 +318,7 @@ SweepScheduler::Sweep()
 double
 SweepScheduler::GetAverageSweepTime() const
 {
-  return Chi::log.ProcessEvent(sweep_event_tag_, Logger::EventOperation::AVERAGE_DURATION);
+  return log.ProcessEvent(sweep_event_tag_, Logger::EventOperation::AVERAGE_DURATION);
 }
 
 std::vector<double>
@@ -327,10 +327,10 @@ SweepScheduler::GetAngleSetTimings()
   std::vector<double> info;
 
   double total_sweep_time =
-    Chi::log.ProcessEvent(sweep_event_tag_, Logger::EventOperation::TOTAL_DURATION);
+    log.ProcessEvent(sweep_event_tag_, Logger::EventOperation::TOTAL_DURATION);
 
   double total_chunk_time =
-    Chi::log.ProcessEvent(sweep_timing_events_tag_[0], Logger::EventOperation::TOTAL_DURATION);
+    log.ProcessEvent(sweep_timing_events_tag_[0], Logger::EventOperation::TOTAL_DURATION);
 
   double ratio_sweep_to_chunk = total_chunk_time / total_sweep_time;
 

@@ -29,8 +29,8 @@ chi_data_types_Test00(const InputParameters&)
 
   // Byte array
   // write/read
-  opensn::Chi::log.Log() << "GOLD_BEGIN";
-  opensn::Chi::log.Log() << "Testing ByteArray Write and Read\n";
+  opensn::log.Log() << "GOLD_BEGIN";
+  opensn::log.Log() << "Testing ByteArray Write and Read\n";
   ByteArray barr;
 
   barr.Write<double>(1.01234567890123456789);
@@ -51,11 +51,11 @@ chi_data_types_Test00(const InputParameters&)
   seeker.Write<bool>(false);
   seeker.Write<double>(1.01234567890123456789);
 
-  opensn::Chi::log.Log() << "EndOfBuffer " << seeker.EndOfBuffer();
-  opensn::Chi::log.Log() << "Offset " << seeker.Offset();
+  opensn::log.Log() << "EndOfBuffer " << seeker.EndOfBuffer();
+  opensn::log.Log() << "Offset " << seeker.Offset();
   seeker.Seek(seeker.Size() - sizeof(double));
-  opensn::Chi::log.Log() << "OffsetAfterSeek " << seeker.Offset();
-  opensn::Chi::log.Log() << "Value check " << seeker.Read<double>();
+  opensn::log.Log() << "OffsetAfterSeek " << seeker.Offset();
+  opensn::log.Log() << "Value check " << seeker.Read<double>();
 
   if (dbl_value != 1.01234567890123456789 or int_value != -15600700 or dbl_value2 != 2.0987654321 or
       bl_value1 or !bl_value2 or vec3[0] != Vector3(3.0, 2.0, 1.0)[0] or
@@ -63,17 +63,17 @@ chi_data_types_Test00(const InputParameters&)
 
   {
     passed = false;
-    opensn::Chi::log.Log() << std::string("ByteArray"
-                                          " Write/Read ... Failed\n");
+    opensn::log.Log() << std::string("ByteArray"
+                                     " Write/Read ... Failed\n");
   }
   else
-    opensn::Chi::log.Log() << std::string("ByteArray "
-                                          "Write/Read ... Passed\n");
+    opensn::log.Log() << std::string("ByteArray "
+                                     "Write/Read ... Passed\n");
 
   // Testing Byte array
   // serialization
-  opensn::Chi::log.Log() << "Testing ByteArray "
-                            "Serialization/DeSerialization\n";
+  opensn::log.Log() << "Testing ByteArray "
+                       "Serialization/DeSerialization\n";
   if (opensn::mpi.process_count == 2)
   {
 
@@ -183,50 +183,50 @@ chi_data_types_Test00(const InputParameters&)
         if (rcell.Type() != pcell.Type())
         {
           passed = false;
-          opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
         if (rcell.SubType() != pcell.SubType())
         {
           passed = false;
-          opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
         if (rcell.global_id_ != pcell.global_id_)
         {
           passed = false;
-          opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
         if (rcell.local_id_ != pcell.local_id_)
         {
           passed = false;
-          opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
         if (rcell.partition_id_ != pcell.partition_id_)
         {
           passed = false;
-          opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
         if (rcell.material_id_ != pcell.material_id_)
         {
           passed = false;
-          opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
         if (rcell.vertex_ids_ != pcell.vertex_ids_)
         {
           passed = false;
-          opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
 
         if (rcell.faces_.size() != pcell.faces_.size())
         {
           passed = false;
-          opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
 
@@ -238,19 +238,19 @@ chi_data_types_Test00(const InputParameters&)
           if (rface.vertex_ids_ != pface.vertex_ids_)
           {
             passed = false;
-            opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+            opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
             break;
           }
           if (rface.has_neighbor_ != pface.has_neighbor_)
           {
             passed = false;
-            opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+            opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
             break;
           }
           if (rface.neighbor_id_ != pface.neighbor_id_)
           {
             passed = false;
-            opensn::Chi::log.Log0Error() << "Line: " << __LINE__ << "\n";
+            opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
             break;
           }
           ++f;
@@ -264,16 +264,16 @@ chi_data_types_Test00(const InputParameters&)
 
   if (not passed)
   {
-    opensn::Chi::log.Log() << "ByteArray "
-                              "Serialization/DeSerialization ... Failed\n";
+    opensn::log.Log() << "ByteArray "
+                         "Serialization/DeSerialization ... Failed\n";
   }
   else
-    opensn::Chi::log.Log() << "ByteArray"
-                              "Serialization/DeSerialization ... Passed\n";
+    opensn::log.Log() << "ByteArray"
+                         "Serialization/DeSerialization ... Passed\n";
 
   // Testing NDArray
   //
-  opensn::Chi::log.Log() << "Testing NDArray\n";
+  opensn::log.Log() << "Testing NDArray\n";
   std::stringstream dummy;
   // Constructor vector
   // rank()
@@ -390,9 +390,9 @@ chi_data_types_Test00(const InputParameters&)
     dummy << "Done10\n";
   }
 
-  opensn::Chi::log.Log() << dummy.str();
+  opensn::log.Log() << dummy.str();
 
-  opensn::Chi::log.Log() << "GOLD_END";
+  opensn::log.Log() << "GOLD_END";
 
   return ParameterBlock();
 }

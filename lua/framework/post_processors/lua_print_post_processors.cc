@@ -85,7 +85,7 @@ PrintPostProcessors(const InputParameters& params)
   auto& printer = PostProcessorPrinter::GetInstance();
 
   const std::string output = printer.GetPrintedPostProcessors(pp_list);
-  Chi::log.Log() << output;
+  log.Log() << output;
 
   return ParameterBlock{};
 }

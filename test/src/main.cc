@@ -28,7 +28,7 @@ main(int argc, char** argv)
 
   opensn::Chi::run_time::InitPetSc(argc, argv);
 
-  auto& t_main = opensn::Chi::log.CreateTimingBlock("ChiTech");
+  auto& t_main = opensn::log.CreateTimingBlock("ChiTech");
   t_main.TimeSectionBegin();
   opensn::SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 

@@ -98,7 +98,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order, 
     outs << "\n";
   }
 
-  Chi::log.Log0Verbose1() << outs.str();
+  log.Log0Verbose1() << outs.str();
 }
 
 void
@@ -146,7 +146,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order, 
     outs << "\n";
   }
 
-  Chi::log.Log0Verbose1() << outs.str();
+  log.Log0Verbose1() << outs.str();
 }
 
 std::vector<std::vector<double>> const&
@@ -193,8 +193,8 @@ AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
 
   if ((Na - Np != 0) or (Na - Nw != 0))
   {
-    Chi::log.LogAllError() << "AngularQuadrature::InitializeWithCustom: supplied"
-                              " vectors need to be of equal length.";
+    log.LogAllError() << "AngularQuadrature::InitializeWithCustom: supplied"
+                         " vectors need to be of equal length.";
     Chi::Exit(EXIT_FAILURE);
   }
 
@@ -238,8 +238,8 @@ AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
 
   if (verbose)
   {
-    Chi::log.Log() << ostr.str() << "\n"
-                   << "Weight sum=" << weight_sum;
+    log.Log() << ostr.str() << "\n"
+              << "Weight sum=" << weight_sum;
   }
 }
 

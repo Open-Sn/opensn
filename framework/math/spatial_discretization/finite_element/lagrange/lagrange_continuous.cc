@@ -224,14 +224,14 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
   // Writes a message on ir error
   auto IR_MAP_ERROR = []()
   {
-    Chi::log.LogAllError() << "PWL-MapCFEMDOF: ir Mapping error node ";
+    log.LogAllError() << "PWL-MapCFEMDOF: ir Mapping error node ";
     Chi::Exit(EXIT_FAILURE);
   };
 
   // Writes a message on jr error
   auto JR_MAP_ERROR = []()
   {
-    Chi::log.LogAllError() << "PWL-MapCFEMDOF: jr Mapping error node ";
+    log.LogAllError() << "PWL-MapCFEMDOF: jr Mapping error node ";
     Chi::Exit(EXIT_FAILURE);
   };
 
@@ -251,7 +251,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
   //**************************************** END OF UTILITIES
 
   // Build local sparsity pattern
-  Chi::log.Log0Verbose1() << "Building local sparsity pattern.";
+  log.Log0Verbose1() << "Building local sparsity pattern.";
   std::vector<std::vector<int64_t>> nodal_connections(local_base_block_size_);
 
   nodal_nnz_in_diag.clear();
@@ -290,7 +290,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
   }       // for cell
 
   // Build non-local sparsity pattern
-  Chi::log.Log0Verbose1() << "Building non-local sparsity pattern.";
+  log.Log0Verbose1() << "Building non-local sparsity pattern.";
 
   // In this process we build a list
   // of ir-nodes that are not local. Each ir-node needs to
@@ -347,7 +347,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
   }     // for cell
 
   // Build communication structure
-  Chi::log.Log0Verbose1() << "Building communication structure.";
+  log.Log0Verbose1() << "Building communication structure.";
 
   // Step 1
   // We now serialize the non-local data
@@ -375,7 +375,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
     sendcount[locI] = static_cast<int>(locI_data.size());
 
     if (opensn::mpi.location_id == 0)
-      Chi::log.LogAllVerbose1() << "To send to " << locI << " = " << sendcount[locI];
+      log.LogAllVerbose1() << "To send to " << locI << " = " << sendcount[locI];
 
     ++locI;
   }
@@ -405,7 +405,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
   }
 
   // Communicate data
-  Chi::log.Log0Verbose1() << "Communicating non-local rows.";
+  log.Log0Verbose1() << "Communicating non-local rows.";
 
   // We now initialize the buffers and
   // communicate the data
@@ -430,7 +430,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
                 mpi.comm);
 
   // Deserialze data
-  Chi::log.Log0Verbose1() << "Deserialize data.";
+  log.Log0Verbose1() << "Deserialize data.";
 
   std::vector<ROWJLINKS> foreign_ir_links;
 

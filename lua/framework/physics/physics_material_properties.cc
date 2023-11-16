@@ -30,8 +30,8 @@ chiPhysicsMaterialAddProperty(lua_State* L)
 
   if (!((numArgs >= 2) && (numArgs <= 3)))
   {
-    opensn::Chi::log.Log0Error() << "Incorrect amount of arguments "
-                                    "in chiPhysicsMaterialAddProperty";
+    opensn::log.Log0Error() << "Incorrect amount of arguments "
+                               "in chiPhysicsMaterialAddProperty";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -60,9 +60,9 @@ chiPhysicsMaterialAddProperty(lua_State* L)
     if (numArgs == 3) prop->property_name = std::string(provided_name);
 
     cur_material->properties_.push_back(prop);
-    opensn::Chi::log.Log0Verbose1() << "Scalar Value Property added to material"
-                                       " at index "
-                                    << material_index;
+    opensn::log.Log0Verbose1() << "Scalar Value Property added to material"
+                                  " at index "
+                               << material_index;
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TRANSPORT_XSECTIONS
   else if (property_index == static_cast<int>(MatProperty::TRANSPORT_XSECTIONS))
@@ -72,11 +72,11 @@ chiPhysicsMaterialAddProperty(lua_State* L)
     {
       if (cur_material->properties_[p]->Type() == MatProperty::TRANSPORT_XSECTIONS)
       {
-        opensn::Chi::log.Log0Error()
-          << "Material " << material_index << " \"" << cur_material->name_ << "\""
-          << " already has property "
-             "TRANSPORT_XSECTIONS"
-          << std::endl;
+        opensn::log.Log0Error() << "Material " << material_index << " \"" << cur_material->name_
+                                << "\""
+                                << " already has property "
+                                   "TRANSPORT_XSECTIONS"
+                                << std::endl;
         opensn::Chi::Exit(EXIT_FAILURE);
       }
     }
@@ -89,9 +89,9 @@ chiPhysicsMaterialAddProperty(lua_State* L)
     if (numArgs == 3) prop->property_name = std::string(provided_name);
 
     cur_material->properties_.push_back(prop);
-    opensn::Chi::log.Log0Verbose1() << "Transport cross-sections added to material"
-                                       " at index "
-                                    << material_index;
+    opensn::log.Log0Verbose1() << "Transport cross-sections added to material"
+                                  " at index "
+                               << material_index;
 
     opensn::Chi::multigroup_xs_stack.push_back(prop);
 
@@ -107,11 +107,11 @@ chiPhysicsMaterialAddProperty(lua_State* L)
     {
       if (cur_material->properties_[p]->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
       {
-        opensn::Chi::log.Log0Error()
-          << "Material " << material_index << " \"" << cur_material->name_ << "\""
-          << " already has property "
-             "ISOTROPIC_MG_SOURCE "
-          << property_index << std::endl;
+        opensn::log.Log0Error() << "Material " << material_index << " \"" << cur_material->name_
+                                << "\""
+                                << " already has property "
+                                   "ISOTROPIC_MG_SOURCE "
+                                << property_index << std::endl;
         opensn::Chi::Exit(EXIT_FAILURE);
       }
     }
@@ -124,13 +124,13 @@ chiPhysicsMaterialAddProperty(lua_State* L)
     if (numArgs == 3) prop->property_name = std::string(provided_name);
 
     cur_material->properties_.push_back(prop);
-    opensn::Chi::log.Log0Verbose1() << "Isotropic Multigroup Source added to material"
-                                       " at index "
-                                    << material_index;
+    opensn::log.Log0Verbose1() << "Isotropic Multigroup Source added to material"
+                                  " at index "
+                               << material_index;
   }
   else
   {
-    opensn::Chi::log.Log0Error()
+    opensn::log.Log0Error()
       << "Unsupported property type in call to chiPhysicsMaterialAddProperty.";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
@@ -146,8 +146,8 @@ chiPhysicsMaterialSetProperty(lua_State* L)
 
   if (numArgs < 3)
   {
-    opensn::Chi::log.Log0Error() << "Incorrect amount of arguments "
-                                    "in chiPhysicsMaterialSetProperty";
+    opensn::log.Log0Error() << "Incorrect amount of arguments "
+                               "in chiPhysicsMaterialSetProperty";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -206,23 +206,23 @@ chiPhysicsMaterialSetProperty(lua_State* L)
       {
         double value = lua_tonumber(L, 4);
         prop->value_ = value;
-        opensn::Chi::log.Log0Verbose1() << "Scalar value for material"
-                                           " at index "
-                                        << material_index << " set to " << value;
+        opensn::log.Log0Verbose1() << "Scalar value for material"
+                                      " at index "
+                                   << material_index << " set to " << value;
       }
       else
       {
-        opensn::Chi::log.Log0Error() << "ERROR: Unsupported operation for "
-                                        "SCALAR_VALUE."
-                                     << std::endl;
+        opensn::log.Log0Error() << "ERROR: Unsupported operation for "
+                                   "SCALAR_VALUE."
+                                << std::endl;
         opensn::Chi::Exit(EXIT_FAILURE);
       }
     }
     else
     {
-      opensn::Chi::log.Log0Error() << "ERROR: Material has no property "
-                                      "SCALAR_VALUE."
-                                   << std::endl;
+      opensn::log.Log0Error() << "ERROR: Material has no property "
+                                 "SCALAR_VALUE."
+                              << std::endl;
       opensn::Chi::Exit(EXIT_FAILURE);
     }
   } // if scalar value
@@ -301,9 +301,8 @@ chiPhysicsMaterialSetProperty(lua_State* L)
         }
         catch (const std::out_of_range& o)
         {
-          opensn::Chi::log.LogAllError()
-            << "ERROR: Invalid cross-section handle"
-            << " in call to chiPhysicsMaterialSetProperty." << std::endl;
+          opensn::log.LogAllError() << "ERROR: Invalid cross-section handle"
+                                    << " in call to chiPhysicsMaterialSetProperty." << std::endl;
           opensn::Chi::Exit(EXIT_FAILURE);
         }
         //        auto old_prop = prop;
@@ -315,17 +314,17 @@ chiPhysicsMaterialSetProperty(lua_State* L)
       }
       else
       {
-        opensn::Chi::log.LogAllError() << "Unsupported operation for "
-                                          "TRANSPORT_XSECTIONS."
-                                       << std::endl;
+        opensn::log.LogAllError() << "Unsupported operation for "
+                                     "TRANSPORT_XSECTIONS."
+                                  << std::endl;
         opensn::Chi::Exit(EXIT_FAILURE);
       }
     }
     else
     {
-      opensn::Chi::log.LogAllError() << "Material has no property "
-                                        "TRANSPORT_XSECTIONS."
-                                     << std::endl;
+      opensn::log.LogAllError() << "Material has no property "
+                                   "TRANSPORT_XSECTIONS."
+                                << std::endl;
       opensn::Chi::Exit(EXIT_FAILURE);
     }
   } // if thermal conductivity
@@ -368,10 +367,10 @@ chiPhysicsMaterialSetProperty(lua_State* L)
         double value = lua_tonumber(L, 4);
 
         prop->source_value_g_.resize(1, value);
-        opensn::Chi::log.Log0Verbose1() << "Isotropic Multigroup Source value "
-                                           "for material"
-                                           " at index "
-                                        << material_index << " set to " << value;
+        opensn::log.Log0Verbose1() << "Isotropic Multigroup Source value "
+                                      "for material"
+                                      " at index "
+                                   << material_index << " set to " << value;
       }
       else if (operation_index == static_cast<int>(OpType::FROM_ARRAY))
       {
@@ -379,11 +378,10 @@ chiPhysicsMaterialSetProperty(lua_State* L)
 
         if (!lua_istable(L, 4))
         {
-          opensn::Chi::log.LogAllError()
-            << "In call to chiPhysicsMaterialSetProperty: "
-            << "Material \"" << cur_material->name_ << "\", when setting "
-            << "ISOTROPIC_MG_SOURCE using operation FROM_ARRAY, the fourth "
-               "argument was detected not to be a lua table.";
+          opensn::log.LogAllError() << "In call to chiPhysicsMaterialSetProperty: "
+                                    << "Material \"" << cur_material->name_ << "\", when setting "
+                                    << "ISOTROPIC_MG_SOURCE using operation FROM_ARRAY, the fourth "
+                                       "argument was detected not to be a lua table.";
           opensn::Chi::Exit(EXIT_FAILURE);
         }
 
@@ -400,31 +398,31 @@ chiPhysicsMaterialSetProperty(lua_State* L)
 
         prop->source_value_g_.resize(table_len, 0.0);
         std::copy(values.begin(), values.end(), prop->source_value_g_.begin());
-        opensn::Chi::log.Log0Verbose1() << "Isotropic Multigroup Source populated "
-                                        << " with " << table_len << " values";
+        opensn::log.Log0Verbose1() << "Isotropic Multigroup Source populated "
+                                   << " with " << table_len << " values";
       }
       else
       {
-        opensn::Chi::log.LogAllError() << "Unsupported operation for "
-                                          "ISOTROPIC_MG_SOURCE."
-                                       << std::endl;
+        opensn::log.LogAllError() << "Unsupported operation for "
+                                     "ISOTROPIC_MG_SOURCE."
+                                  << std::endl;
         opensn::Chi::Exit(EXIT_FAILURE);
       }
     }
     else
     {
-      opensn::Chi::log.LogAllError() << "Material \"" << cur_material->name_
-                                     << "\" has no property "
-                                        "ISOTROPIC_MG_SOURCE."
-                                     << std::endl;
+      opensn::log.LogAllError() << "Material \"" << cur_material->name_
+                                << "\" has no property "
+                                   "ISOTROPIC_MG_SOURCE."
+                                << std::endl;
       opensn::Chi::Exit(EXIT_FAILURE);
     }
   }
   else
   {
-    opensn::Chi::log.LogAllError() << "Unsupported material property specified in "
-                                      "call to chiPhysicsMaterialSetProperty."
-                                   << property_index << std::endl;
+    opensn::log.LogAllError() << "Unsupported material property specified in "
+                                 "call to chiPhysicsMaterialSetProperty."
+                              << property_index << std::endl;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -473,9 +471,9 @@ chiPhysicsMaterialGetProperty(lua_State* L)
 
   if (not property_polulated)
   {
-    opensn::Chi::log.LogAllError() << "Invalid material property specified in "
-                                      "call to chiPhysicsMaterialGetProperty."
-                                   << property_index << std::endl;
+    opensn::log.LogAllError() << "Invalid material property specified in "
+                                 "call to chiPhysicsMaterialGetProperty."
+                              << property_index << std::endl;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 

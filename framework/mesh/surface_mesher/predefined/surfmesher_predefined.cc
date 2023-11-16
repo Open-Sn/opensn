@@ -8,7 +8,7 @@ namespace opensn
 void
 SurfaceMesherPredefined::Execute()
 {
-  Chi::log.Log0Verbose1() << "SurfaceMesherPredefined executed";
+  log.Log0Verbose1() << "SurfaceMesherPredefined executed";
 }
 
 } // namespace opensn

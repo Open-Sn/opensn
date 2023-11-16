@@ -100,7 +100,7 @@ XXNonLinearKEigen::Execute()
 
   lbs_solver_.UpdateFieldFunctions();
 
-  Chi::log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
+  log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
 
 } // namespace lbs

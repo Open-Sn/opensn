@@ -90,9 +90,9 @@ QuadratureGaussLegendre::Initialize(unsigned int N,
     default:
     {
       if (verbose)
-        Chi::log.Log() << "Initializing Gauss-Legendre Quadrature "
-                          "with "
-                       << N << " q-points";
+        log.Log() << "Initializing Gauss-Legendre Quadrature "
+                     "with "
+                  << N << " q-points";
 
       // Compute the roots
       auto roots = FindRoots(N, max_iters, tol);
@@ -108,7 +108,7 @@ QuadratureGaussLegendre::Initialize(unsigned int N,
           ((N + 1) * (N + 1) * Legendre(N + 1, qpoints_[k][0]) * Legendre(N + 1, qpoints_[k][0]));
 
         if (verbose)
-          Chi::log.Log() << "root[" << k << "]=" << qpoints_[k][0] << ", weight=" << weights_[k];
+          log.Log() << "root[" << k << "]=" << qpoints_[k][0] << ", weight=" << weights_[k];
       } // for abscissae
 
       break;
@@ -133,10 +133,10 @@ QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, doubl
   if (N > 2056)
   {
     num_search_intvls *= 10;
-    Chi::log.Log0Warning() << "QuadratureGaussLegendre::FindRoots: "
-                           << "The order of the polynomial for which to find the roots is "
-                           << "greater than 2056. Accuracy of the root finder will be diminished "
-                           << "along with a reduction in stability.";
+    log.Log0Warning() << "QuadratureGaussLegendre::FindRoots: "
+                      << "The order of the polynomial for which to find the roots is "
+                      << "greater than 2056. Accuracy of the root finder will be diminished "
+                      << "along with a reduction in stability.";
   }
 
   // For this code we simply check to see where the

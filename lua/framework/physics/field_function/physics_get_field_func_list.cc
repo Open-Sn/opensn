@@ -37,19 +37,19 @@ chiGetFieldFunctionHandleByName(lua_State* L)
 
   if (num_handles == 0)
   {
-    opensn::Chi::log.Log0Warning()
-      << fname << ": No field-functions were found that "
-      << "matched the requested name:\"" << ff_name << "\". A null handle will "
-      << "be returned." << std::endl;
+    opensn::log.Log0Warning() << fname << ": No field-functions were found that "
+                              << "matched the requested name:\"" << ff_name
+                              << "\". A null handle will "
+                              << "be returned." << std::endl;
 
     return 0;
   }
 
   if (num_handles > 1)
-    opensn::Chi::log.Log0Warning()
-      << fname << ": A total of " << num_handles << " field-functions were found that matched the "
-      << " requested name. Only the first match will be "
-      << " returned.";
+    opensn::log.Log0Warning() << fname << ": A total of " << num_handles
+                              << " field-functions were found that matched the "
+                              << " requested name. Only the first match will be "
+                              << " returned.";
 
   lua_pushinteger(L, static_cast<lua_Integer>(handles_that_matched.front()));
   return 1;

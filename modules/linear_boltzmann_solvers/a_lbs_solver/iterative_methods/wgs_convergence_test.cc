@@ -68,7 +68,7 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
     iter_info << " CONVERGED\n";
   }
 
-  if (context->log_info_) Chi::log.Log() << iter_info.str() << std::endl;
+  if (context->log_info_) log.Log() << iter_info.str() << std::endl;
 
   return KSP_CONVERGED_ITERATING;
 }

@@ -110,15 +110,15 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
     outstr << "P1 moments initial: " << 1.0 << " " << J_x << " " << J_y << " " << J_z << " |J|=";
     outstr << size_J_f << " ratio=" << ratio_f << "\n";
 
-    Chi::log.Log() << outstr.str();
+    log.Log() << outstr.str();
   }
 
   if (size_J_f < 1.0e-10)
   {
-    double a = log(phi / 4.0 / M_PI);
+    double a = std::log(phi / 4.0 / M_PI);
     double b = 0.0;
 
-    if (verbose) { Chi::log.Log() << "Solution: " << a << " " << b; }
+    if (verbose) { log.Log() << "Solution: " << a << " " << b; }
 
     return {a, b};
   }
@@ -130,7 +130,7 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
     double a = solution[0];
     double b = solution[1];
 
-    if (verbose) { Chi::log.Log() << "Solution: " << a << " " << b; }
+    if (verbose) { log.Log() << "Solution: " << a << " " << b; }
 
     return {a, b};
   }

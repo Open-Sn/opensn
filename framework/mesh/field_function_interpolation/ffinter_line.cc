@@ -15,7 +15,7 @@ namespace opensn
 void
 FieldFunctionInterpolationLine::Initialize()
 {
-  Chi::log.Log0Verbose1() << "Initializing line interpolator.";
+  log.Log0Verbose1() << "Initializing line interpolator.";
   // Check for empty FF-list
   if (field_functions_.empty())
     throw std::logic_error("Unassigned field function in line "
@@ -60,13 +60,13 @@ FieldFunctionInterpolationLine::Initialize()
     }   // for cell
   }     // for ff
 
-  Chi::log.Log0Verbose1() << "Finished initializing interpolator.";
+  log.Log0Verbose1() << "Finished initializing interpolator.";
 }
 
 void
 FieldFunctionInterpolationLine::Execute()
 {
-  Chi::log.Log0Verbose1() << "Executing line interpolator.";
+  log.Log0Verbose1() << "Executing line interpolator.";
   for (int ff = 0; ff < field_functions_.size(); ff++)
   {
     auto& ff_ctx = ff_contexts_[ff];
@@ -249,8 +249,8 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
 
   ofile.close();
 
-  Chi::log.Log() << "Exported Python files for field func \"" << field_functions_[0]->TextName()
-                 << "\" to base name \"" << base_name << "\" Successfully";
+  log.Log() << "Exported Python files for field func \"" << field_functions_[0]->TextName()
+            << "\" to base name \"" << base_name << "\" Successfully";
 }
 
 } // namespace opensn

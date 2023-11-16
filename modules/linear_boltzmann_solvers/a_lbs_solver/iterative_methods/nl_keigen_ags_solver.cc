@@ -117,10 +117,10 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
 
   // Print summary
-  Chi::log.Log() << "\n"
-                 << "        Final k-eigenvalue    :        " << std::fixed << std::setw(10)
-                 << std::setprecision(7) << k_eff << " (num_TrOps:" << number_of_func_evals << ")"
-                 << "\n";
+  log.Log() << "\n"
+            << "        Final k-eigenvalue    :        " << std::fixed << std::setw(10)
+            << std::setprecision(7) << k_eff << " (num_TrOps:" << number_of_func_evals << ")"
+            << "\n";
 }
 
 } // namespace lbs

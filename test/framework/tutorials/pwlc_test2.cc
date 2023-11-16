@@ -27,13 +27,13 @@ RegisterWrapperFunction(chi_unit_tests, chiSimTest04_PWLC, nullptr, chiSimTest04
 ParameterBlock
 chiSimTest04_PWLC(const InputParameters& params)
 {
-  opensn::Chi::log.Log() << "Coding Tutorial 4";
+  opensn::log.Log() << "Coding Tutorial 4";
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make SDM
   typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
@@ -45,8 +45,8 @@ chiSimTest04_PWLC(const InputParameters& params)
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  opensn::Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
-  opensn::Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
+  opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
+  opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
   // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
@@ -101,7 +101,7 @@ chiSimTest04_PWLC(const InputParameters& params)
   };
 
   // Assemble the system
-  opensn::Chi::log.Log() << "Assembling system: ";
+  opensn::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -174,24 +174,24 @@ chiSimTest04_PWLC(const InputParameters& params)
     } // for i
   }   // for cell
 
-  opensn::Chi::log.Log() << "Global assembly";
+  opensn::log.Log() << "Global assembly";
 
   MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
   VecAssemblyBegin(b);
   VecAssemblyEnd(b);
 
-  opensn::Chi::log.Log() << "Done global assembly";
+  opensn::log.Log() << "Done global assembly";
 
   // Create Krylov Solver
-  opensn::Chi::log.Log() << "Solving: ";
+  opensn::log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCGAMG, 1.0e-6, 1000);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);
 
-  opensn::Chi::log.Log() << "Done solving";
+  opensn::log.Log() << "Done solving";
 
   // Extract PETSc vector
   std::vector<double> field;
@@ -204,7 +204,7 @@ chiSimTest04_PWLC(const InputParameters& params)
   VecDestroy(&b);
   MatDestroy(&A);
 
-  opensn::Chi::log.Log() << "Done cleanup";
+  opensn::log.Log() << "Done cleanup";
 
   // Create Field Function
   auto ff = std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, Unknown(UnknownType::SCALAR));
@@ -250,8 +250,8 @@ chiSimTest04_PWLC(const InputParameters& params)
 
   global_error = std::sqrt(global_error);
 
-  opensn::Chi::log.Log() << "Error: " << std::scientific << global_error
-                         << " Num-cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Error: " << std::scientific << global_error
+                    << " Num-cells: " << grid.GetGlobalNumberOfCells();
 
   return ParameterBlock();
 }

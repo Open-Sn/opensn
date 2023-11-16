@@ -33,7 +33,7 @@ chiSurfaceMeshImportFromOBJFile(lua_State* L)
   auto& surface_mesh =
     opensn::Chi::GetStackItem<SurfaceMesh>(opensn::Chi::surface_mesh_stack, handle, __FUNCTION__);
 
-  opensn::Chi::log.Log0Verbose2() << fname << ": Loading Wavefront .obj file: " << std::endl;
+  opensn::log.Log0Verbose2() << fname << ": Loading Wavefront .obj file: " << std::endl;
 
   // Transform if necessary
   Vector3 Tvec(0.0, 0.0, 0.0);
@@ -43,7 +43,7 @@ chiSurfaceMeshImportFromOBJFile(lua_State* L)
     LuaPopulateVectorFrom1DArray(fname, L, 4, T);
     if (T.size() != 3) throw std::invalid_argument(fname + ": Argument 4. Table length not 3.");
     Tvec = Vector3(T[0], T[1], T[2]);
-    opensn::Chi::log.Log0Verbose2() << "Transform vector: " << Tvec.PrintStr();
+    opensn::log.Log0Verbose2() << "Transform vector: " << Tvec.PrintStr();
   }
 
   surface_mesh.ImportFromOBJFile(file_name, as_poly, Tvec);
@@ -96,7 +96,7 @@ chiSurfaceMeshImportFromMshFiles(lua_State* L)
   outtext << "chiSurfaceMeshImportFromMshFiles: "
              "Loading a gmsh ascii file: ";
   outtext << temp << std::endl;
-  opensn::Chi::log.LogAllVerbose2() << outtext.str();
+  opensn::log.LogAllVerbose2() << outtext.str();
   surface_mesh.ImportFromMshFiles(temp, as_poly);
 
   return 1;

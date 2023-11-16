@@ -10,7 +10,7 @@ namespace opensn
 void
 MultiGroupXS::ExportToChiXSFile(const std::string& file_name, const double fission_scaling) const
 {
-  Chi::log.Log() << "Exporting transport cross section to file: " << file_name;
+  log.Log() << "Exporting transport cross section to file: " << file_name;
 
   // Define utility functions
 
@@ -165,9 +165,9 @@ MultiGroupXS::ExportToChiXSFile(const std::string& file_name, const double fissi
 
   ofile.close();
 
-  Chi::log.Log0Verbose1() << "Done exporting transport "
-                             "cross section to file: "
-                          << file_name;
+  log.Log0Verbose1() << "Done exporting transport "
+                        "cross section to file: "
+                     << file_name;
 }
 
 #ifdef OPENSN_WITH_LUA

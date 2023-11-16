@@ -89,20 +89,19 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
                   << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
       if (converged) k_iter_info << " CONVERGED\n";
 
-      Chi::log.Log() << k_iter_info.str();
+      log.Log() << k_iter_info.str();
     }
 
     if (converged) break;
   } // for k iterations
 
   // Print summary
-  Chi::log.Log() << "\n";
-  Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
-  Chi::log.Log() << "        Final change          :        " << std::setprecision(6)
-                 << k_eff_change
-                 << " (num_TrOps:" << frons_wgs_context->counter_applications_of_inv_op_ << ")"
-                 << "\n";
-  Chi::log.Log() << "\n";
+  log.Log() << "\n";
+  log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
+  log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
+            << " (num_TrOps:" << frons_wgs_context->counter_applications_of_inv_op_ << ")"
+            << "\n";
+  log.Log() << "\n";
 }
 
 } // namespace lbs

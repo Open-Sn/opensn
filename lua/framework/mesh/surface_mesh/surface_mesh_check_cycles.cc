@@ -48,9 +48,8 @@ chiComputeLoadBalancing(lua_State* L)
   // Extract x-cuts
   if (!lua_istable(L, 2))
   {
-    opensn::Chi::log.LogAllError()
-      << "In call to chiComputeLoadBalancing: "
-      << " expected table for argument 2. Incompatible value supplied.";
+    opensn::log.LogAllError() << "In call to chiComputeLoadBalancing: "
+                              << " expected table for argument 2. Incompatible value supplied.";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -68,9 +67,8 @@ chiComputeLoadBalancing(lua_State* L)
   // Extract y-cuts
   if (!lua_istable(L, 3))
   {
-    opensn::Chi::log.LogAllError()
-      << "In call to chiComputeLoadBalancing: "
-      << " expected table for argument 3. Incompatible value supplied.";
+    opensn::log.LogAllError() << "In call to chiComputeLoadBalancing: "
+                              << " expected table for argument 3. Incompatible value supplied.";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 

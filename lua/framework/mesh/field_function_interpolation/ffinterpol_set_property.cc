@@ -183,10 +183,9 @@ chiFFInterpolationSetProperty(lua_State* L)
 
     if (num_points < 2)
     {
-      opensn::Chi::log.LogAllError()
-        << "Line property FFI_LINE_NUMBEROFPOINTS"
-        << " used in chiFFInterpolationSetProperty. Number of points must"
-        << " be greater than or equal to 2.";
+      opensn::log.LogAllError() << "Line property FFI_LINE_NUMBEROFPOINTS"
+                                << " used in chiFFInterpolationSetProperty. Number of points must"
+                                << " be greater than or equal to 2.";
       opensn::Chi::Exit(EXIT_FAILURE);
     }
     cur_ffi_line.GetNumberOfPoints() = num_points;
@@ -199,10 +198,9 @@ chiFFInterpolationSetProperty(lua_State* L)
 
     if (not lua_istable(L, 3))
     {
-      opensn::Chi::log.LogAllError()
-        << "Line property FFI_LINE_CUSTOM_ARRAY"
-        << " used in chiFFInterpolationSetProperty. Argument 3 is expected "
-           "to be an array.";
+      opensn::log.LogAllError() << "Line property FFI_LINE_CUSTOM_ARRAY"
+                                << " used in chiFFInterpolationSetProperty. Argument 3 is expected "
+                                   "to be an array.";
       opensn::Chi::Exit(EXIT_FAILURE);
     }
 
@@ -239,10 +237,9 @@ chiFFInterpolationSetProperty(lua_State* L)
 
     if (!((op_type >= OP_SUM) && (op_type <= OP_MAX_LUA)))
     {
-      opensn::Chi::log.LogAllError()
-        << "Volume property FFI_PROP_OPERATION"
-        << " used in chiFFInterpolationSetProperty. Unsupported OPERATON."
-        << " Supported types are OP_AVG and OP_SUM. " << op_type;
+      opensn::log.LogAllError() << "Volume property FFI_PROP_OPERATION"
+                                << " used in chiFFInterpolationSetProperty. Unsupported OPERATON."
+                                << " Supported types are OP_AVG and OP_SUM. " << op_type;
       opensn::Chi::Exit(EXIT_FAILURE);
     }
 
@@ -276,8 +273,7 @@ chiFFInterpolationSetProperty(lua_State* L)
   }
   else // Fall back
   {
-    opensn::Chi::log.LogAllError()
-      << "Invalid PropertyIndex used in chiFFInterpolationSetProperty.";
+    opensn::log.LogAllError() << "Invalid PropertyIndex used in chiFFInterpolationSetProperty.";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 

@@ -82,7 +82,7 @@ chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.ExtSrcMomentsLocal(), single_file_flag);
 
-  opensn::Chi::log.Log() << "Making source moments from flux file.";
+  opensn::log.Log() << "Making source moments from flux file.";
   auto temp_phi = lbs_solver.PhiOldLocal();
   lbs_solver.PhiOldLocal() = lbs_solver.ExtSrcMomentsLocal();
   lbs_solver.ExtSrcMomentsLocal() = lbs_solver.MakeSourceMomentsFromPhi();

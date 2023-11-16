@@ -154,8 +154,8 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   }
 
   // Print info
-  Chi::log.LogAllVerbose2() << "Local dof count, start, total " << local_node_count << " "
-                            << local_block_address_ << " " << global_node_count;
+  log.LogAllVerbose2() << "Local dof count, start, total " << local_node_count << " "
+                       << local_block_address_ << " " << global_node_count;
 }
 
 void
@@ -314,9 +314,9 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
 
     if (!found)
     {
-      Chi::log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
-                             << "with global index " << cell.global_id_ << " and partition-ID "
-                             << cell.partition_id_;
+      log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
+                        << "with global index " << cell.global_id_ << " and partition-ID "
+                        << cell.partition_id_;
       Chi::Exit(EXIT_FAILURE);
     }
 
@@ -380,9 +380,9 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
 
     if (!found)
     {
-      Chi::log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
-                             << "with global index " << cell.global_id_ << " and partition-ID "
-                             << cell.partition_id_;
+      log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
+                        << "with global index " << cell.global_id_ << " and partition-ID "
+                        << cell.partition_id_;
       Chi::Exit(EXIT_FAILURE);
     }
 

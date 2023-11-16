@@ -149,11 +149,11 @@ PostProcessor::ReceiveEventUpdate(const Event& event)
     }
 
     Execute(event);
-    if (Chi::log.GetVerbosity() >= 1)
-      Chi::log.Log0Verbose1() << "Post processor \"" << Name()
-                              << "\" executed on "
-                                 "event \""
-                              << event.Name() << "\".";
+    if (log.GetVerbosity() >= 1)
+      log.Log0Verbose1() << "Post processor \"" << Name()
+                         << "\" executed on "
+                            "event \""
+                         << event.Name() << "\".";
   }
 }
 

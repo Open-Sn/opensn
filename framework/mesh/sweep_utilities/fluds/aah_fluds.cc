@@ -48,9 +48,8 @@ AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, int face_dof, int n)
 {
   if (outb_face_counter > common_data_.nonlocal_outb_face_deplocI_slot.size())
   {
-    Chi::log.LogAllError() << "Invalid number of outb_face_counter " << outb_face_counter
-                           << " max allowed "
-                           << common_data_.nonlocal_outb_face_deplocI_slot.size();
+    log.LogAllError() << "Invalid number of outb_face_counter " << outb_face_counter
+                      << " max allowed " << common_data_.nonlocal_outb_face_deplocI_slot.size();
     Chi::Exit(EXIT_FAILURE);
   }
 
@@ -63,8 +62,8 @@ AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, int face_dof, int n)
 
   if ((index < 0) || (index > deplocI_outgoing_psi_[depLocI].size()))
   {
-    Chi::log.LogAllError() << "Invalid index " << index << " encountered in non-local outgoing Psi"
-                           << " max allowed " << deplocI_outgoing_psi_[depLocI].size();
+    log.LogAllError() << "Invalid index " << index << " encountered in non-local outgoing Psi"
+                      << " max allowed " << deplocI_outgoing_psi_[depLocI].size();
     Chi::Exit(EXIT_FAILURE);
   }
 

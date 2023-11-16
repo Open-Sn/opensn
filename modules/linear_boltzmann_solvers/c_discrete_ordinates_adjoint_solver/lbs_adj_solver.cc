@@ -81,7 +81,7 @@ DiscreteOrdinatesAdjointSolver::Initialize()
   }
 
   InitializeSolverSchemes(); // j
-  source_event_tag_ = Chi::log.GetRepeatingEventTag("Set Source");
+  source_event_tag_ = log.GetRepeatingEventTag("Set Source");
 }
 
 void
@@ -130,8 +130,8 @@ DiscreteOrdinatesAdjointSolver::InitQOIs()
 
     MPI_Allreduce(&num_local_subs, &num_globl_subs, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi.comm);
 
-    Chi::log.Log() << "LBAdjointSolver: Number of cells subscribed to " << qoi_designation.name
-                   << " = " << num_globl_subs;
+    log.Log() << "LBAdjointSolver: Number of cells subscribed to " << qoi_designation.name << " = "
+              << num_globl_subs;
   }
 #endif
 }
@@ -145,7 +145,7 @@ DiscreteOrdinatesAdjointSolver::Execute()
   primary_ags_solver_->Solve();
 
   // Apply post processing
-  Chi::log.Log() << "LBAdjointSolver: post-processing.";
+  log.Log() << "LBAdjointSolver: post-processing.";
   std::set<int> set_group_numbers;
   for (const auto& groupset : groupsets_)
     for (const auto& group : groupset.groups_)
@@ -287,7 +287,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
     }   // for cell
   }
 
-  Chi::log.Log() << "Exporting importance map to binary file " << file_name;
+  log.Log() << "Exporting importance map to binary file " << file_name;
 
   const auto locJ_io_flags = std::ofstream::binary | std::ofstream::out;
   const auto loc0_io_flags = locJ_io_flags | std::ofstream::trunc;
@@ -321,11 +321,11 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   uint64_t num_global_cells = grid_ptr_->GetGlobalNumberOfCells();
   for (int locationJ = 0; locationJ < opensn::mpi.process_count; ++locationJ)
   {
-    Chi::log.LogAll() << "  Barrier at " << locationJ;
+    log.LogAll() << "  Barrier at " << locationJ;
     opensn::mpi.Barrier();
     if (opensn::mpi.location_id != locationJ) continue;
 
-    Chi::log.LogAll() << "  Location " << locationJ << " appending data.";
+    log.LogAll() << "  Location " << locationJ << " appending data.";
 
     std::ofstream file(file_name, is_home ? loc0_io_flags : locJ_io_flags);
 
@@ -372,7 +372,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
     file.close();
   } // for location
 
-  Chi::log.LogAll() << "Done exporting importance map to binary file " << file_name;
+  log.LogAll() << "Done exporting importance map to binary file " << file_name;
   opensn::mpi.Barrier();
 }
 

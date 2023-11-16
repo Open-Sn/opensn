@@ -36,8 +36,8 @@ GridFaceHistogram::GetFaceHistogramBinDOFSize(size_t bin_number) const
   }
   catch (std::out_of_range& o)
   {
-    Chi::log.LogAllWarning() << "Fault detected in MeshContinuum::"
-                             << "GetFaceHistogramBinDOFSize.";
+    log.LogAllWarning() << "Fault detected in MeshContinuum::"
+                        << "GetFaceHistogramBinDOFSize.";
     return 0;
   }
 

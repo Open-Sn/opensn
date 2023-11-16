@@ -28,8 +28,8 @@ chiOptimizeAngularQuadratureForPolarSymmetry(lua_State* L)
     opensn::Chi::angular_quadrature_stack, handle, fname);
 
   if (normalization > 0.0)
-    opensn::Chi::log.Log() << "Optimizing angular quadrature for polar symmetry. using "
-                           << "normalization factor " << normalization << ".";
+    opensn::log.Log() << "Optimizing angular quadrature for polar symmetry. using "
+                      << "normalization factor " << normalization << ".";
 
   quadrature.OptimizeForPolarSymmetry(normalization);
 

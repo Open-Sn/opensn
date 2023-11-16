@@ -63,8 +63,8 @@ chiPhysicsTransportXSSet(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "ERROR: Invalid cross section handle"
-                                   << " in call to chiPhysicsTransportXSSet." << std::endl;
+    opensn::log.LogAllError() << "ERROR: Invalid cross section handle"
+                              << " in call to chiPhysicsTransportXSSet." << std::endl;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -99,8 +99,8 @@ chiPhysicsTransportXSSet(lua_State* L)
   }
   else
   {
-    opensn::Chi::log.LogAllError() << "Unsupported operation in "
-                                   << "chiPhysicsTransportXSSet. " << operation_index << std::endl;
+    opensn::log.LogAllError() << "Unsupported operation in "
+                              << "chiPhysicsTransportXSSet. " << operation_index << std::endl;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
   return 0;
@@ -129,8 +129,8 @@ chiPhysicsTransportXSGet(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "ERROR: Invalid cross section handle"
-                                   << " in call to " << __FUNCTION__ << "." << std::endl;
+    opensn::log.LogAllError() << "ERROR: Invalid cross section handle"
+                              << " in call to " << __FUNCTION__ << "." << std::endl;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -147,8 +147,8 @@ chiPhysicsTransportXSMakeCombined(lua_State* L)
 
   if (!lua_istable(L, 1))
   {
-    opensn::Chi::log.LogAllError() << "In call to chiPhysicsMakeCombinedTransportXS: "
-                                   << "Argument must be a lua table.";
+    opensn::log.LogAllError() << "In call to chiPhysicsMakeCombinedTransportXS: "
+                              << "Argument must be a lua table.";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -165,9 +165,9 @@ chiPhysicsTransportXSMakeCombined(lua_State* L)
 
     if (!lua_istable(L, -1))
     {
-      opensn::Chi::log.LogAllError() << "In call to chiPhysicsMakeCombinedTransportXS: "
-                                     << "The elements of the supplied table must themselves also"
-                                        "be lua tables of the xs handle and its scalar multiplier.";
+      opensn::log.LogAllError() << "In call to chiPhysicsMakeCombinedTransportXS: "
+                                << "The elements of the supplied table must themselves also"
+                                   "be lua tables of the xs handle and its scalar multiplier.";
       opensn::Chi::Exit(EXIT_FAILURE);
     }
 
@@ -190,10 +190,9 @@ chiPhysicsTransportXSMakeCombined(lua_State* L)
   }
 
   // Print out table
-  opensn::Chi::log.Log() << "Generating XS with following combination:";
+  opensn::log.Log() << "Generating XS with following combination:";
   for (auto& elem : combinations)
-    opensn::Chi::log.Log() << "  Element handle: " << elem.first
-                           << " scalar value: " << elem.second;
+    opensn::log.Log() << "  Element handle: " << elem.first << " scalar value: " << elem.second;
 
   // Make the new cross section
   auto new_xs = std::make_shared<SingleStateMGXS>();
@@ -232,8 +231,8 @@ chiPhysicsTransportXSSetCombined(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "ERROR: Invalid cross section handle"
-                                   << " in call to " << __FUNCTION__ << "." << std::endl;
+    opensn::log.LogAllError() << "ERROR: Invalid cross section handle"
+                              << " in call to " << __FUNCTION__ << "." << std::endl;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -250,9 +249,9 @@ chiPhysicsTransportXSSetCombined(lua_State* L)
 
     if (!lua_istable(L, -1))
     {
-      opensn::Chi::log.LogAllError() << "In call to " << __FUNCTION__ << ": "
-                                     << "The elements of the supplied table must themselves also"
-                                        "be lua tables of the xs handle and its scalar multiplier.";
+      opensn::log.LogAllError() << "In call to " << __FUNCTION__ << ": "
+                                << "The elements of the supplied table must themselves also"
+                                   "be lua tables of the xs handle and its scalar multiplier.";
       opensn::Chi::Exit(EXIT_FAILURE);
     }
 
@@ -275,10 +274,9 @@ chiPhysicsTransportXSSetCombined(lua_State* L)
   }
 
   // Print out table
-  opensn::Chi::log.Log() << "Setting XS with following combination:";
+  opensn::log.Log() << "Setting XS with following combination:";
   for (auto& elem : combinations)
-    opensn::Chi::log.Log() << "  Element handle: " << elem.first
-                           << " scalar value: " << elem.second;
+    opensn::log.Log() << "  Element handle: " << elem.first << " scalar value: " << elem.second;
 
   xs->MakeCombined(combinations);
 
@@ -305,8 +303,8 @@ chiPhysicsTransportXSExportToChiTechFormat(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "ERROR: Invalid cross section handle"
-                                   << " in call to " << __FUNCTION__ << "." << std::endl;
+    opensn::log.LogAllError() << "ERROR: Invalid cross section handle"
+                              << " in call to " << __FUNCTION__ << "." << std::endl;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 

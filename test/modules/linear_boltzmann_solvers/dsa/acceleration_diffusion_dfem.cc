@@ -30,13 +30,13 @@ ParameterBlock
 acceleration_Diffusion_DFEM(const InputParameters&)
 {
   typedef std::map<int, lbs::Multigroup_D_and_sigR> MatID2XSMap;
-  opensn::Chi::log.Log() << "chiSimTest92_DSA";
+  opensn::log.Log() << "chiSimTest92_DSA";
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make SDM
   typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
@@ -48,8 +48,8 @@ acceleration_Diffusion_DFEM(const InputParameters&)
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  opensn::Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
-  opensn::Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
+  opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
+  opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
   // Make Boundary conditions
   typedef lbs::BoundaryCondition BC;
@@ -155,7 +155,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
 
   solver.Initialize();
 
-  opensn::Chi::log.Log() << "Done constructing solver" << std::endl;
+  opensn::log.Log() << "Done constructing solver" << std::endl;
 
   // Assemble and solve
   std::vector<double> q_vector(num_local_dofs, 1.0);
@@ -215,8 +215,8 @@ acceleration_Diffusion_DFEM(const InputParameters&)
 
   global_error = std::sqrt(global_error);
 
-  opensn::Chi::log.Log() << "Error: " << std::scientific << global_error
-                         << " Num-cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Error: " << std::scientific << global_error
+                    << " Num-cells: " << grid.GetGlobalNumberOfCells();
 
   return ParameterBlock();
 }

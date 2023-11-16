@@ -88,10 +88,10 @@ SplitFileMeshGenerator::Execute()
     // Generate final umesh
     current_umesh = GenerateUnpartitionedMesh(std::move(current_umesh));
 
-    Chi::log.Log() << "Writing split-mesh with " << num_parts << " parts";
+    log.Log() << "Writing split-mesh with " << num_parts << " parts";
     const auto cell_pids = PartitionMesh(*current_umesh, num_parts);
     WriteSplitMesh(cell_pids, *current_umesh, num_parts);
-    Chi::log.Log() << "Split-mesh with " << num_parts << " parts successfully created";
+    log.Log() << "Split-mesh with " << num_parts << " parts successfully created";
   } // if home location
 
   // Other locations wait here for files to be written
@@ -99,7 +99,7 @@ SplitFileMeshGenerator::Execute()
 
   if (opensn::mpi.process_count == num_parts)
   {
-    Chi::log.Log() << "Reading split-mesh";
+    log.Log() << "Reading split-mesh";
     auto mesh_info = ReadSplitMesh();
 
     auto grid_ptr = SetupLocalMesh(mesh_info);
@@ -111,14 +111,14 @@ SplitFileMeshGenerator::Execute()
 
     auto& cur_hndlr = GetCurrentHandler();
     cur_hndlr.SetVolumeMesher(new_mesher);
-    Chi::log.Log() << "Done reading split-mesh files";
+    log.Log() << "Done reading split-mesh files";
   }
   else
   {
-    Chi::log.Log0Warning() << "After creating a split-mesh with mpi-processes < "
-                              "num_parts the program will now auto terminate. This is not an error "
-                              "and is the default behavior for the SplitFileMeshGenerator.\n"
-                           << Chi::log.GetTimingBlock("ChiTech").MakeGraphString();
+    log.Log0Warning() << "After creating a split-mesh with mpi-processes < "
+                         "num_parts the program will now auto terminate. This is not an error "
+                         "and is the default behavior for the SplitFileMeshGenerator.\n"
+                      << log.GetTimingBlock("ChiTech").MakeGraphString();
     Chi::Exit(EXIT_SUCCESS);
   }
 
@@ -146,14 +146,11 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
   const auto& raw_cells = umesh.GetRawCells();
   const auto& raw_vertices = umesh.GetVertices();
 
-  auto& t_write = Chi::log.CreateOrGetTimingBlock("FileMeshGenerator::WriteSplitMesh");
-  auto& t_sorting =
-    Chi::log.CreateOrGetTimingBlock("Sorting data", "FileMeshGenerator::WriteSplitMesh");
-  auto& t_cells =
-    Chi::log.CreateOrGetTimingBlock("WriteCells", "FileMeshGenerator::WriteSplitMesh");
-  auto& t_verts =
-    Chi::log.CreateOrGetTimingBlock("WriteVerts", "FileMeshGenerator::WriteSplitMesh");
-  auto& t_serialize = Chi::log.CreateOrGetTimingBlock("Serialize");
+  auto& t_write = log.CreateOrGetTimingBlock("FileMeshGenerator::WriteSplitMesh");
+  auto& t_sorting = log.CreateOrGetTimingBlock("Sorting data", "FileMeshGenerator::WriteSplitMesh");
+  auto& t_cells = log.CreateOrGetTimingBlock("WriteCells", "FileMeshGenerator::WriteSplitMesh");
+  auto& t_verts = log.CreateOrGetTimingBlock("WriteVerts", "FileMeshGenerator::WriteSplitMesh");
+  auto& t_serialize = log.CreateOrGetTimingBlock("Serialize");
 
   uint64_t aux_counter = 0;
   for (int pid = 0; pid < num_parts; ++pid)
@@ -207,7 +204,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     t_sorting.TimeSectionEnd();
 
     if (verbosity_level_ >= 2)
-      Chi::log.Log() << "Writing part " << pid << " num_local_cells=" << local_cells_needed.size();
+      log.Log() << "Writing part " << pid << " num_local_cells=" << local_cells_needed.size();
 
     // Write mesh attributes and general info
     const auto& mesh_options = umesh.GetMeshOptions();
@@ -290,8 +287,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     if (fraction_complete >= static_cast<double>(aux_counter + 1) * 0.1)
     {
       if (verbosity_level_ >= 1)
-        Chi::log.Log() << Chi::program_timer.GetTimeString() << " Surpassing part " << pid << " of "
-                       << num_parts << " (" << (aux_counter + 1) * 10 << "%)";
+        log.Log() << Chi::program_timer.GetTimeString() << " Surpassing part " << pid << " of "
+                  << num_parts << " (" << (aux_counter + 1) * 10 << "%)";
       ++aux_counter;
     }
   } // for p

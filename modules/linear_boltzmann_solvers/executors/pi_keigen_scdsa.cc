@@ -215,19 +215,19 @@ XXPowerIterationKEigenSCDSA::Initialize()
     ds->options.additional_options_string = diff_accel_diffusion_petsc_options_;
   }
 
-  Chi::log.Log() << "Initializing diffusion solver";
+  log.Log() << "Initializing diffusion solver";
   diffusion_solver_->Initialize();
   opensn::mpi.Barrier();
-  Chi::log.Log() << "Done Initializing diffusion solver";
+  log.Log() << "Done Initializing diffusion solver";
 
-  Chi::log.Log() << "Assembling A and b";
+  log.Log() << "Assembling A and b";
   std::vector<double> dummy_rhs;
   if (diffusion_solver_sdm_ == "pwld") dummy_rhs.assign(sdm.GetNumLocalDOFs(uk_man), 0.0);
   else
     dummy_rhs.assign(continuous_sdm_ptr_->GetNumLocalAndGhostDOFs(uk_man), 0.0);
 
   diffusion_solver_->AssembleAand_b(dummy_rhs);
-  Chi::log.Log() << "Done Assembling A and b";
+  log.Log() << "Done Assembling A and b";
 }
 
 void
@@ -244,8 +244,8 @@ XXPowerIterationKEigenSCDSA::Execute()
     SetLBSScatterSource(phi_temp, additive, suppress_wg_scat);
   };
 
-  const size_t tag_SCDSA_solve_time = Chi::log.GetRepeatingEventTag("SCDSA_solve_time");
-  const size_t tag_sweep_timing = Chi::log.GetRepeatingEventTag("Sweep Timing");
+  const size_t tag_SCDSA_solve_time = log.GetRepeatingEventTag("SCDSA_solve_time");
+  const size_t tag_sweep_timing = log.GetRepeatingEventTag("Sweep Timing");
 
   k_eff_ = 1.0;
   double k_eff_prev = 1.0;
@@ -310,10 +310,10 @@ XXPowerIterationKEigenSCDSA::Execute()
         auto Ss = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
         // Solve the diffusion system
-        Chi::log.LogEvent(tag_SCDSA_solve_time, Logger::EventType::EVENT_BEGIN);
+        log.LogEvent(tag_SCDSA_solve_time, Logger::EventType::EVENT_BEGIN);
         diffusion_solver_->Assemble_b(Ss + Sfaux + Ss_res - Sf0_ell);
         diffusion_solver_->Solve(epsilon_kp1, true);
-        Chi::log.LogEvent(tag_SCDSA_solve_time, Logger::EventType::EVENT_END);
+        log.LogEvent(tag_SCDSA_solve_time, Logger::EventType::EVENT_END);
 
         epsilon_k = epsilon_kp1;
       }
@@ -326,8 +326,8 @@ XXPowerIterationKEigenSCDSA::Execute()
 
       const double lambda_change = std::fabs(1.0 - lambda_kp1 / lambda_k);
       if (accel_pi_verbose_ >= 1)
-        Chi::log.Log() << "PISCDSA iteration " << k << " lambda " << lambda_kp1 << " lambda change "
-                       << lambda_change;
+        log.Log() << "PISCDSA iteration " << k << " lambda " << lambda_kp1 << " lambda change "
+                  << lambda_change;
 
       if (lambda_change < accel_pi_k_tol_) break;
 
@@ -363,27 +363,25 @@ XXPowerIterationKEigenSCDSA::Execute()
                   << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
       if (converged) k_iter_info << " CONVERGED\n";
 
-      Chi::log.Log() << k_iter_info.str();
+      log.Log() << k_iter_info.str();
     }
 
     if (converged) break;
   } // for k iterations
 
   // Print summary
-  Chi::log.Log() << "\n";
-  Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
-  Chi::log.Log() << "        Final change          :        " << std::setprecision(6)
-                 << k_eff_change
-                 << " (num_TrOps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
-                 << "\n"
-                 << "        Diffusion solve time  :        "
-                 << Chi::log.ProcessEvent(tag_SCDSA_solve_time,
-                                          Logger::EventOperation::TOTAL_DURATION) *
-                      1.0e-6
-                 << "s\n"
-                 << "        Total sweep time      :        "
-                 << Chi::log.ProcessEvent(tag_sweep_timing, Logger::EventOperation::TOTAL_DURATION);
-  Chi::log.Log() << "\n";
+  log.Log() << "\n";
+  log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
+  log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
+            << " (num_TrOps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
+            << "\n"
+            << "        Diffusion solve time  :        "
+            << log.ProcessEvent(tag_SCDSA_solve_time, Logger::EventOperation::TOTAL_DURATION) *
+                 1.0e-6
+            << "s\n"
+            << "        Total sweep time      :        "
+            << log.ProcessEvent(tag_sweep_timing, Logger::EventOperation::TOTAL_DURATION);
+  log.Log() << "\n";
 
   if (lbs_solver_.Options().use_precursors)
   {
@@ -393,7 +391,7 @@ XXPowerIterationKEigenSCDSA::Execute()
 
   lbs_solver_.UpdateFieldFunctions();
 
-  Chi::log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
+  log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
 
 std::vector<double>
@@ -490,12 +488,12 @@ XXPowerIterationKEigenSCDSA::GhostInfo
 XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization& sdm,
                                                       const UnknownManager& uk_man)
 {
-  Chi::log.Log() << "Making PWLD ghost communicator";
+  log.Log() << "Making PWLD ghost communicator";
 
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(uk_man);
   const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(uk_man);
 
-  Chi::log.Log() << "Number of global dofs" << num_globl_dofs;
+  log.Log() << "Number of global dofs" << num_globl_dofs;
 
   const size_t num_unknowns = uk_man.unknowns_.size();
 
@@ -541,7 +539,7 @@ XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretizatio
     }
   }
 
-  Chi::log.Log() << "Done making PWLD ghost communicator";
+  log.Log() << "Done making PWLD ghost communicator";
   return {vgc, ghost_global_id_2_local_map};
 }
 

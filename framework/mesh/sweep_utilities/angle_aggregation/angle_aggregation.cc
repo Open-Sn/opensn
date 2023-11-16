@@ -223,7 +223,7 @@ AngleAggregation::InitializeReflectingBCs()
   }   // for bndry
 
   if (reflecting_bcs_initialized)
-    Chi::log.Log0Verbose1() << "Reflecting boundary conditions initialized.";
+    log.Log0Verbose1() << "Reflecting boundary conditions initialized.";
 }
 
 std::pair<size_t, size_t>

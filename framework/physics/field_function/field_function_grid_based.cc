@@ -207,7 +207,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
   const std::vector<std::shared_ptr<const FieldFunctionGridBased>>& ff_list)
 {
   const std::string fname = "chi_physics::FieldFunction::ExportMultipleToVTK";
-  Chi::log.Log() << "Exporting field functions to VTK with file base \"" << file_base_name << "\"";
+  log.Log() << "Exporting field functions to VTK with file base \"" << file_base_name << "\"";
 
   if (ff_list.empty())
     throw std::logic_error(fname + ": Cannot be used with empty field-function"
@@ -298,7 +298,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 
   WritePVTUFiles(ugrid, file_base_name);
 
-  Chi::log.Log() << "Done exporting field functions to VTK.";
+  log.Log() << "Done exporting field functions to VTK.";
 }
 
 std::vector<double>

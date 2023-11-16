@@ -35,7 +35,7 @@ Plugin::GetInputParameters()
 Plugin::Plugin(const InputParameters& params)
   : Object(params), plugin_path_(params.GetParamValue<std::string>("plugin_path"))
 {
-  Chi::log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
+  log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
   RegistryStatuses registry_statuses = Chi::GetStatusOfRegistries();
 
   AssertReadibleFile(plugin_path_);

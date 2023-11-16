@@ -47,14 +47,14 @@ Console::FlushConsole()
       bool error = luaL_dostring(console_state_, command.c_str());
       if (error)
       {
-        Chi::log.LogAll() << lua_tostring(console_state_, -1);
+        log.LogAll() << lua_tostring(console_state_, -1);
         lua_pop(console_state_, 1);
       }
     }
   }
   catch (const std::exception& e)
   {
-    Chi::log.LogAllError() << e.what();
+    log.LogAllError() << e.what();
     Chi::Exit(EXIT_FAILURE);
   }
 #endif
@@ -127,8 +127,8 @@ Console::LuaWrapperCall(lua_State* L)
 void
 Console::RunConsoleLoop(char*) const
 {
-  Chi::log.Log() << "Console loop started. "
-                 << "Type \"exit\" to quit (or Ctl-C).";
+  log.Log() << "Console loop started. "
+            << "Type \"exit\" to quit (or Ctl-C).";
 
   /** Wrapper to an MPI_Bcast call for a single integer
    * broadcast from location 0. */
@@ -160,7 +160,7 @@ Console::RunConsoleLoop(char*) const
     bool error = luaL_dostring(console_state_, the_string.c_str());
     if (error)
     {
-      Chi::log.LogAll() << lua_tostring(console_state_, -1);
+      log.LogAll() << lua_tostring(console_state_, -1);
       lua_pop(console_state_, 1);
     }
   };
@@ -199,11 +199,11 @@ Console::RunConsoleLoop(char*) const
     }
     catch (const Chi::RecoverableException& e)
     {
-      Chi::log.LogAllError() << e.what();
+      log.LogAllError() << e.what();
     }
     catch (const std::exception& e)
     {
-      Chi::log.LogAllError() << e.what();
+      log.LogAllError() << e.what();
       Chi::Exit(EXIT_FAILURE);
     }
 #endif
@@ -211,7 +211,7 @@ Console::RunConsoleLoop(char*) const
 
   Chi::run_time::termination_posted_ = true;
 
-  Chi::log.Log() << "Console loop stopped successfully.";
+  log.Log() << "Console loop stopped successfully.";
 }
 
 int
@@ -236,7 +236,7 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
 
     if (error > 0)
     {
-      Chi::log.LogAllError() << "LuaError: " << lua_tostring(this->console_state_, -1);
+      log.LogAllError() << "LuaError: " << lua_tostring(this->console_state_, -1);
       return EXIT_FAILURE;
     }
   }
@@ -567,25 +567,25 @@ Console::SetLuaConstant(const std::string& constant_name, const Varying& value)
 void
 Console::DumpRegister() const
 {
-  Chi::log.Log() << "\n\n";
+  log.Log() << "\n\n";
   for (const auto& [key, entry] : function_wrapper_registry_)
   {
-    if (Chi::log.GetVerbosity() == 0)
+    if (log.GetVerbosity() == 0)
     {
-      Chi::log.Log() << key;
+      log.Log() << key;
       continue;
     }
 
-    Chi::log.Log() << "LUA_FUNCWRAPPER_BEGIN " << key;
+    log.Log() << "LUA_FUNCWRAPPER_BEGIN " << key;
 
-    if (not entry.call_func) Chi::log.Log() << "SYNTAX_BLOCK";
+    if (not entry.call_func) log.Log() << "SYNTAX_BLOCK";
 
     const auto in_params = entry.get_in_params_func();
     in_params.DumpParameters();
 
-    Chi::log.Log() << "LUA_FUNCWRAPPER_END\n\n";
+    log.Log() << "LUA_FUNCWRAPPER_END\n\n";
   }
-  Chi::log.Log() << "\n\n";
+  log.Log() << "\n\n";
 }
 #endif
 

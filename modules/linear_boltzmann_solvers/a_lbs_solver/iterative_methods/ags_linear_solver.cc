@@ -113,9 +113,9 @@ AGSLinearSolver::Solve()
     VecNorm(x_, NORM_2, &sol_norm);
 
     if (verbose_)
-      Chi::log.Log() << "********** AGS solver iteration " << std::setw(3) << iter << " "
-                     << " Relative change " << std::setw(10) << std::setprecision(4)
-                     << error_norm / sol_norm;
+      log.Log() << "********** AGS solver iteration " << std::setw(3) << iter << " "
+                << " Relative change " << std::setw(10) << std::setprecision(4)
+                << error_norm / sol_norm;
 
     lbs_solver.QMomentsLocal() = saved_qmoms; // Restore qmoms
 

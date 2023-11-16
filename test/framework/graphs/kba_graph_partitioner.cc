@@ -23,7 +23,7 @@ RegisterWrapperFunction(chi_unit_tests,
 ParameterBlock
 TestKBAGraphPartitioner00(const InputParameters&)
 {
-  opensn::Chi::log.Log() << "GOLD_BEGIN";
+  opensn::log.Log() << "GOLD_BEGIN";
 
   ParameterBlock input_parameters;
 
@@ -54,9 +54,9 @@ TestKBAGraphPartitioner00(const InputParameters&)
   auto cell_pids = partitioner.Partition(dummy_graph, centroids, 2 * 2 * 2);
 
   for (const int64_t pid : cell_pids)
-    opensn::Chi::log.Log() << pid;
+    opensn::log.Log() << pid;
 
-  opensn::Chi::log.Log() << "GOLD_END";
+  opensn::log.Log() << "GOLD_END";
 
   return ParameterBlock();
 }

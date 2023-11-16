@@ -63,7 +63,7 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
 
   auto umesh = std::make_unique<UnpartitionedMesh>();
 
-  Chi::log.Log() << "FromFileMeshGenerator: Generating UnpartitionedMesh";
+  log.Log() << "FromFileMeshGenerator: Generating UnpartitionedMesh";
 
   if (extension == ".obj") umesh->ReadFromWavefrontOBJ(options);
   else if (extension == ".msh")
@@ -81,7 +81,7 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
                        "\". Supported types limited to"
                        ".obj, .msh, .e, .vtu, .pvtu, .case.");
 
-  Chi::log.Log() << "FromFileMeshGenerator: Done generating UnpartitionedMesh";
+  log.Log() << "FromFileMeshGenerator: Done generating UnpartitionedMesh";
   return umesh;
 }
 

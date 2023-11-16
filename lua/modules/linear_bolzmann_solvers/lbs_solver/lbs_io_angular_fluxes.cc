@@ -37,8 +37,8 @@ chiLBSWriteGroupsetAngularFlux(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to " << fname;
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to " << fname;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -76,8 +76,8 @@ chiLBSReadGroupsetAngularFlux(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to " << fname;
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to " << fname;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 

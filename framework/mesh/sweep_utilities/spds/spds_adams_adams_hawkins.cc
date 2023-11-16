@@ -19,13 +19,13 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
                                                bool verbose)
   : SPDS(omega, grid, verbose)
 {
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Building sweep ordering for Omega = " << omega.PrintS();
+  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
+                     << " Building sweep ordering for Omega = " << omega.PrintS();
 
   size_t num_loc_cells = grid.local_cells.size();
 
   // Populate Cell Relationships
-  Chi::log.Log0Verbose1() << "Populating cell relationships";
+  log.Log0Verbose1() << "Populating cell relationships";
   std::vector<std::set<std::pair<int, double>>> cell_successors(num_loc_cells);
   std::set<int> location_successors;
   std::set<int> location_dependencies;
@@ -58,7 +58,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
 
   if (cycle_allowance_flag)
   {
-    Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Removing inter-cell cycles.";
+    log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Removing inter-cell cycles.";
 
     auto edges_to_remove = local_DG.RemoveCyclicDependencies();
 
@@ -69,8 +69,8 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
   }
 
   // Generate topological sorting
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Generating topological sorting for local sweep ordering";
+  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
+                     << " Generating topological sorting for local sweep ordering";
   auto so_temp = local_DG.GenerateTopologicalSort();
   spls_.item_id.clear();
   for (auto v : so_temp)
@@ -78,9 +78,9 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
 
   if (spls_.item_id.empty())
   {
-    Chi::log.LogAllError() << "Topological sorting for local sweep-ordering failed. "
-                           << "Cyclic dependencies detected. Cycles need to be allowed"
-                           << " by calling application.";
+    log.LogAllError() << "Topological sorting for local sweep-ordering failed. "
+                      << "Cyclic dependencies detected. Cycles need to be allowed"
+                      << " by calling application.";
     Chi::Exit(EXIT_FAILURE);
   }
 
@@ -90,8 +90,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
   // so that each location has the ability to build
   // the global task graph.
 
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Communicating sweep dependencies.";
+  log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Communicating sweep dependencies.";
 
   // auto& global_dependencies = sweep_order->global_dependencies;
   std::vector<std::vector<int>> global_dependencies;
@@ -105,8 +104,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
 
   opensn::mpi.Barrier();
 
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Done computing sweep ordering.\n\n";
+  log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Done computing sweep ordering.\n\n";
 }
 
 void
@@ -121,8 +119,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   // Build graph on home location
   if (opensn::mpi.location_id == 0)
   {
-    Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                            << " Building Task Dependency Graphs.";
+    log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Building Task Dependency Graphs.";
 
     // Add vertices to the graph
     for (int loc = 0; loc < opensn::mpi.process_count; loc++)
@@ -136,8 +133,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     // Remove cyclic dependencies
     if (cycle_allowance_flag)
     {
-      Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                              << " Removing intra-cellset cycles.";
+      log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Removing intra-cellset cycles.";
       auto edges_to_remove_temp = TDG.RemoveCyclicDependencies();
       for (const auto& [v0, v1] : edges_to_remove_temp)
         edges_to_remove.emplace_back(v0, v1);
@@ -200,17 +196,17 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   std::vector<int> glob_linear_sweep_order;
   if (opensn::mpi.location_id == 0)
   {
-    Chi::log.LogAllVerbose2() << Chi::program_timer.GetTimeString()
-                              << "   - Generating topological sort.";
+    log.LogAllVerbose2() << Chi::program_timer.GetTimeString()
+                         << "   - Generating topological sort.";
     auto so_temp = TDG.GenerateTopologicalSort();
     for (auto v : so_temp)
       glob_linear_sweep_order.emplace_back(v);
 
     if (glob_linear_sweep_order.empty())
     {
-      Chi::log.LogAllError() << "Topological sorting for global sweep-ordering failed. "
-                             << "Cyclic dependencies detected. Cycles need to be allowed"
-                             << " by calling application.";
+      log.LogAllError() << "Topological sorting for global sweep-ordering failed. "
+                        << "Cyclic dependencies detected. Cycles need to be allowed"
+                        << " by calling application.";
       Chi::Exit(EXIT_FAILURE);
     }
   }
@@ -240,8 +236,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   }
 
   // Determine sweep order ranks
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Determining sweep order ranks.";
+  log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Determining sweep order ranks.";
 
   std::vector<int> glob_sweep_order_rank(opensn::mpi.process_count, -1);
 
@@ -267,7 +262,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   }
 
   // Generate TDG structure
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Generating TDG structure.";
+  log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Generating TDG structure.";
   for (int r = 0; r <= abs_max_rank; r++)
   {
     STDG new_stdg;

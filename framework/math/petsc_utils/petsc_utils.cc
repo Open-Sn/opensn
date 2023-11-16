@@ -170,7 +170,7 @@ KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void*)
   buff << ksp_name << " iteration " << std::setw(4) << n << " - Residual " << std::scientific
        << std::setprecision(7) << rnorm / rhs_norm << std::endl;
 
-  Chi::log.Log() << buff.str();
+  log.Log() << buff.str();
 
   return 0;
 }
@@ -192,7 +192,7 @@ KSPMonitorStraight(KSP ksp, PetscInt n, PetscReal rnorm, void*)
   buff << ksp_name << " iteration " << std::setw(4) << n << " - Residual " << std::scientific
        << std::setprecision(7) << rnorm << std::endl;
 
-  Chi::log.Log() << buff.str();
+  log.Log() << buff.str();
 
   return 0;
 }

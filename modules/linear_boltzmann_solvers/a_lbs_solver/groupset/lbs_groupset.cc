@@ -253,8 +253,8 @@ lbs::LBSGroupset::BuildSubsets()
     size_t ss = 0;
     for (const auto& info : grp_subset_infos_)
     {
-      Chi::log.Log() << "Groupset " << id_ << " has group-subset " << ss << " " << info.ss_begin
-                     << "->" << info.ss_end;
+      log.Log() << "Groupset " << id_ << " has group-subset " << ss << " " << info.ss_begin << "->"
+                << info.ss_end;
       ++ss;
     }
   }
@@ -295,7 +295,7 @@ lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name
   }
 
   // Print event history
-  ofile << Chi::log.PrintEventHistory(ev_tag);
+  ofile << log.PrintEventHistory(ev_tag);
 
   ofile.close();
 }

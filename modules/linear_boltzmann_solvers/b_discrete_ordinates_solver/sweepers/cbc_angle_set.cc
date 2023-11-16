@@ -68,13 +68,13 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
       if (not cell_task.completed_) all_tasks_completed = false;
       if (cell_task.num_dependencies_ == 0 and not cell_task.completed_)
       {
-        Chi::log.LogEvent(timing_tags[0], Logger::EventType::EVENT_BEGIN);
+        log.LogEvent(timing_tags[0], Logger::EventType::EVENT_BEGIN);
         sweep_chunk.SetCell(cell_task.cell_ptr_, *this);
         sweep_chunk.Sweep(*this);
 
         for (uint64_t local_task_num : cell_task.successors_)
           --current_task_list_[local_task_num].num_dependencies_;
-        Chi::log.LogEvent(timing_tags[0], Logger::EventType::EVENT_END);
+        log.LogEvent(timing_tags[0], Logger::EventType::EVENT_END);
 
         cell_task.completed_ = true;
         a_task_executed = true;
@@ -88,13 +88,13 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
   //   if (not cell_task.completed_) all_tasks_completed = false;
   //   if (cell_task.num_dependencies_ == 0 and not cell_task.completed_)
   //   {
-  //     Chi::log.LogEvent(timing_tags[0], chi::Logger::EventType::EVENT_BEGIN);
+  //     log.LogEvent(timing_tags[0], chi::Logger::EventType::EVENT_BEGIN);
   //     sweep_chunk.SetCell(cell_task.cell_ptr_, *this);
   //     sweep_chunk.Sweep(*this);
   //
   //     for (uint64_t local_task_num : cell_task.successors_)
   //       --current_task_list_[local_task_num].num_dependencies_;
-  //     Chi::log.LogEvent(timing_tags[0], chi::Logger::EventType::EVENT_END);
+  //     log.LogEvent(timing_tags[0], chi::Logger::EventType::EVENT_END);
   //
   //     cell_task.completed_ = true;
   //     async_comm_.SendData();

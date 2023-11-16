@@ -51,9 +51,9 @@ MIPWGSContext2::PreSetupCallback()
       default:
         method_name = "KRYLOV_GMRES";
     }
-    Chi::log.Log() << "\n\n"
-                   << "********** Solving groupset " << groupset_.id_ << " with " << method_name
-                   << ".\n\n";
+    log.Log() << "\n\n"
+              << "********** Solving groupset " << groupset_.id_ << " with " << method_name
+              << ".\n\n";
   }
 }
 

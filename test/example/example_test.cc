@@ -15,7 +15,7 @@ RegisterWrapperFunction(chi_unit_tests, ExampleTest, nullptr, ExampleTest);
 ParameterBlock
 ExampleTest(const InputParameters&)
 {
-  opensn::Chi::log.Log() << "This is an example test";
+  opensn::log.Log() << "This is an example test";
 
   return ParameterBlock();
 }

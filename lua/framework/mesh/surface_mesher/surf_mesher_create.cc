@@ -39,8 +39,7 @@ chiSurfaceMesherCreate(lua_State* L)
 
   cur_hndlr.SetSurfaceMesher(new_mesher);
 
-  opensn::Chi::log.LogAllVerbose2()
-    << "chiSurfaceMesherCreate: Surface remesher created." << std::endl;
+  opensn::log.LogAllVerbose2() << "chiSurfaceMesherCreate: Surface remesher created." << std::endl;
 
   return 0;
 }

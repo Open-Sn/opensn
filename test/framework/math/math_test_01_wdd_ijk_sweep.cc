@@ -118,7 +118,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
 ParameterBlock
 chi_math_Test01_WDD_IJK_Sweep(const InputParameters&)
 {
-  opensn::Chi::log.Log() << "GOLD_BEGIN";
+  opensn::log.Log() << "GOLD_BEGIN";
   bool verbose = true;
   const std::array<size_t, 3> mesh_divisions = {1, 1, 10};
   const std::array<double, 3> mesh_lengths = {1.0, 1.0, 10.0};
@@ -143,7 +143,7 @@ chi_math_Test01_WDD_IJK_Sweep(const InputParameters&)
       std::cout << i << "\n";
   }
 
-  opensn::Chi::log.Log() << "GOLD_END";
+  opensn::log.Log() << "GOLD_END";
   return ParameterBlock();
 }
 

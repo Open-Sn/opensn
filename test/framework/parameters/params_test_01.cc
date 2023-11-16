@@ -62,8 +62,8 @@ TestObject::TestObject(const InputParameters& params)
     sub_obj1_(MakeInpParamsForObj(TestSubObject, params.GetParam("sub_obj1"))),
     sub_obj2_(MakeInpParamsForObj(TestSubObject, params.GetParam("sub_obj2")))
 {
-  opensn::Chi::log.Log() << "TestObject created "
-                         << "solver_type=" << solver_type_;
+  opensn::log.Log() << "TestObject created "
+                    << "solver_type=" << solver_type_;
 }
 
 RegisterChiObject(chi_unit_testsB, TestSubObject);
@@ -88,8 +88,8 @@ TestSubObject::GetInputParameters()
 TestSubObject::TestSubObject(const InputParameters& params)
   : num_groups_(params.GetParamValue<size_t>("num_groups"))
 {
-  opensn::Chi::log.Log() << "TestSubObject created "
-                         << "num_groups=" << num_groups_;
+  opensn::log.Log() << "TestSubObject created "
+                    << "num_groups=" << num_groups_;
 }
 
 RegisterChiObject(chi_unit_testsB, ChildTestObject);
@@ -117,8 +117,8 @@ ChildTestObject::GetInputParameters()
 ChildTestObject::ChildTestObject(const InputParameters& params)
   : TestObject(params), num_sub_groups_(params.GetParamValue<int>("num_sub_groups"))
 {
-  opensn::Chi::log.Log() << "ChildTestObject created "
-                         << "num_sub_groups=" << num_sub_groups_;
+  opensn::log.Log() << "ChildTestObject created "
+                    << "num_sub_groups=" << num_sub_groups_;
 }
 
 } // namespace unit_tests

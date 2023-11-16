@@ -84,7 +84,7 @@ chiLBSGroupsetAddGroups(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "chiLBSGroupsetAddGroups: Invalid handle to groupset\n";
+    opensn::log.LogAllError() << "chiLBSGroupsetAddGroups: Invalid handle to groupset\n";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
   if (groupset == nullptr) throw std::runtime_error("chiLBSGroupsetAddGroups: Bad trouble.");
@@ -92,9 +92,9 @@ chiLBSGroupsetAddGroups(lua_State* L)
   // Add the groups
   if (to < from)
   {
-    opensn::Chi::log.LogAllError() << "No groups added to groupset in chiLBSGroupsetAddGroups. "
-                                      "This is triggered when groups are added with the \"to\" "
-                                      "field being less than the \"from\" field.";
+    opensn::log.LogAllError() << "No groups added to groupset in chiLBSGroupsetAddGroups. "
+                                 "This is triggered when groups are added with the \"to\" "
+                                 "field being less than the \"from\" field.";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -108,8 +108,7 @@ chiLBSGroupsetAddGroups(lua_State* L)
     }
     catch (const std::out_of_range& o)
     {
-      opensn::Chi::log.LogAllError()
-        << "chiLBSGroupsetAddGroups: Invalid group added to groupset\n";
+      opensn::log.LogAllError() << "chiLBSGroupsetAddGroups: Invalid group added to groupset\n";
       opensn::Chi::Exit(EXIT_FAILURE);
     }
     if (group == nullptr) throw std::runtime_error("chiLBSGroupsetAddGroups: Bad trouble.");
@@ -147,8 +146,8 @@ chiLBSGroupsetSetQuadrature(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset"
-                                      "in chiLBSGroupsetSetQuadrature.";
+    opensn::log.LogAllError() << "Invalid handle to groupset"
+                                 "in chiLBSGroupsetSetQuadrature.";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
   if (groupset == nullptr) throw std::logic_error("chiLBSGroupsetSetQuadrature: Bad trouble");
@@ -161,9 +160,9 @@ chiLBSGroupsetSetQuadrature(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to Product Quadrature"
-                                      "in chiLBSGroupsetSetQuadrature. Handle provided: "
-                                   << prquad_index;
+    opensn::log.LogAllError() << "Invalid handle to Product Quadrature"
+                                 "in chiLBSGroupsetSetQuadrature. Handle provided: "
+                              << prquad_index;
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -173,18 +172,17 @@ chiLBSGroupsetSetQuadrature(lua_State* L)
   {
     auto prodquad = std::static_pointer_cast<ProductQuadrature>(ang_quad);
 
-    opensn::Chi::log.Log() << "Groupset " << grpset_index << " quadrature set to quadrature with "
-                           << prodquad->azimu_ang_.size() << " azimuthal angles and "
-                           << prodquad->polar_ang_.size() << " polar angles. ";
+    opensn::log.Log() << "Groupset " << grpset_index << " quadrature set to quadrature with "
+                      << prodquad->azimu_ang_.size() << " azimuthal angles and "
+                      << prodquad->polar_ang_.size() << " polar angles. ";
   }
   else if (ang_quad->type_ == AngularQuadratureType::Arbitrary)
   {
-    opensn::Chi::log.Log() << "Groupset " << grpset_index << " quadrature set to quadrature with "
-                           << ang_quad->abscissae_.size() << " number of angles.";
+    opensn::log.Log() << "Groupset " << grpset_index << " quadrature set to quadrature with "
+                      << ang_quad->abscissae_.size() << " number of angles.";
   }
   else
-    opensn::Chi::log.Log() << "Groupset " << grpset_index
-                           << " quadrature set unknown quadrature type";
+    opensn::log.Log() << "Groupset " << grpset_index << " quadrature set unknown quadrature type";
 
   return 0;
 }
@@ -216,8 +214,8 @@ chiLBSGroupsetSetAngleAggregationType(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetAngleAggregationType";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetAngleAggregationType";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -230,12 +228,12 @@ chiLBSGroupsetSetAngleAggregationType(lua_State* L)
     groupset->angleagg_method_ = opensn::lbs::AngleAggregationType::AZIMUTHAL;
   else
   {
-    opensn::Chi::log.LogAllError() << "Invalid aggregation type to groupset " << grpset_index
-                                   << " in call to chiLBSGroupsetSetAngleAggregationType";
+    opensn::log.LogAllError() << "Invalid aggregation type to groupset " << grpset_index
+                              << " in call to chiLBSGroupsetSetAngleAggregationType";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
-  opensn::Chi::log.Log() << "Groupset " << grpset_index << " Angle aggregation set to " << agg_type;
+  opensn::log.Log() << "Groupset " << grpset_index << " Angle aggregation set to " << agg_type;
 
   return 0;
 }
@@ -267,22 +265,22 @@ chiLBSGroupsetSetAngleAggDiv(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetAngleAggDiv";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetAngleAggDiv";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   // Bounds checking
   if (num_div <= 0)
   {
-    opensn::Chi::log.LogAllError() << "Invalid number of divisions "
-                                   << "in call to chiLBSGroupsetSetAngleAggDiv. Must be >= 1.";
+    opensn::log.LogAllError() << "Invalid number of divisions "
+                              << "in call to chiLBSGroupsetSetAngleAggDiv. Must be >= 1.";
   }
 
   groupset->master_num_ang_subsets_ = num_div;
 
-  opensn::Chi::log.Log() << "Groupset " << grpset_index << " angle aggregation divisions "
-                         << "set to " << num_div;
+  opensn::log.Log() << "Groupset " << grpset_index << " angle aggregation divisions "
+                    << "set to " << num_div;
 
   return 0;
 }
@@ -314,22 +312,22 @@ chiLBSGroupsetSetGroupSubsets(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetGroupSubsets";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetGroupSubsets";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   // Bounds checking
   if (num_div <= 0)
   {
-    opensn::Chi::log.LogAllError() << "Invalid number of subsets "
-                                   << "in call to chiLBSGroupsetSetGroupSubsets. Must be >= 1.";
+    opensn::log.LogAllError() << "Invalid number of subsets "
+                              << "in call to chiLBSGroupsetSetGroupSubsets. Must be >= 1.";
   }
 
   groupset->master_num_grp_subsets_ = num_div;
 
-  opensn::Chi::log.Log() << "Groupset " << grpset_index << " subset divisions "
-                         << "set to " << num_div;
+  opensn::log.Log() << "Groupset " << grpset_index << " subset divisions "
+                    << "set to " << num_div;
 
   return 0;
 }
@@ -361,8 +359,8 @@ chiLBSGroupsetSetIterativeMethod(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetGroupSubsets";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetGroupSubsets";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -416,8 +414,8 @@ chiLBSGroupsetSetIterativeMethod(lua_State* L)
     }
     else
     {
-      opensn::Chi::log.LogAllError() << "Unsupported iterative method specified in call to "
-                                     << "chiLBSGroupsetSetIterativeMethod.";
+      opensn::log.LogAllError() << "Unsupported iterative method specified in call to "
+                                << "chiLBSGroupsetSetIterativeMethod.";
       opensn::Chi::Exit(EXIT_FAILURE);
     }
   }
@@ -452,16 +450,15 @@ chiLBSGroupsetSetResidualTolerance(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetGroupSubsets";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetGroupSubsets";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   // Bounds checking
   if (resid_tol < 0)
   {
-    opensn::Chi::log.LogAllError()
-      << "Invalid residual tolerance specified. Must be greater >= 0.0";
+    opensn::log.LogAllError() << "Invalid residual tolerance specified. Must be greater >= 0.0";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -470,8 +467,8 @@ chiLBSGroupsetSetResidualTolerance(lua_State* L)
   char buff[100];
   snprintf(buff, 100, "%.4e", resid_tol);
 
-  opensn::Chi::log.Log() << "Groupset " << grpset_index << " residual tolerance "
-                         << "set to " << buff;
+  opensn::log.Log() << "Groupset " << grpset_index << " residual tolerance "
+                    << "set to " << buff;
 
   return 0;
 }
@@ -503,22 +500,22 @@ chiLBSGroupsetSetMaxIterations(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetMaxIterations";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetMaxIterations";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   // Bounds checking
   if (num_iter < 0)
   {
-    opensn::Chi::log.LogAllError() << "Invalid number of iterations "
-                                   << "in call to chiLBSGroupsetSetMaxIterations. Must be >= 0.";
+    opensn::log.LogAllError() << "Invalid number of iterations "
+                              << "in call to chiLBSGroupsetSetMaxIterations. Must be >= 0.";
   }
 
   groupset->max_iterations_ = num_iter;
 
-  opensn::Chi::log.Log() << "Groupset " << grpset_index << " max # iterations "
-                         << "set to " << num_iter;
+  opensn::log.Log() << "Groupset " << grpset_index << " max # iterations "
+                    << "set to " << num_iter;
 
   return 0;
 }
@@ -550,23 +547,22 @@ chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetGMRESRestartIntvl";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetGMRESRestartIntvl";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   // Bounds checking
   if (restart_intvl < 2)
   {
-    opensn::Chi::log.LogAllError()
-      << "Invalid GMRES restart interval specified "
-      << "in call to chiLBSGroupsetSetGMRESRestartIntvl. Must be >= 3.";
+    opensn::log.LogAllError() << "Invalid GMRES restart interval specified "
+                              << "in call to chiLBSGroupsetSetGMRESRestartIntvl. Must be >= 3.";
   }
 
   groupset->gmres_restart_intvl_ = restart_intvl;
 
-  opensn::Chi::log.Log() << "Groupset " << grpset_index << " GMRES restart interval set to "
-                         << "set to " << restart_intvl;
+  opensn::log.Log() << "Groupset " << grpset_index << " GMRES restart interval set to "
+                    << "set to " << restart_intvl;
 
   return 0;
 }
@@ -598,15 +594,15 @@ chiLBSGroupsetSetEnableSweepLog(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetEnableSweepLog";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetEnableSweepLog";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   groupset->log_sweep_events_ = log_flag;
 
-  opensn::Chi::log.Log() << "Groupset " << grpset_index << " flag for writing sweep log "
-                         << "set to " << log_flag;
+  opensn::log.Log() << "Groupset " << grpset_index << " flag for writing sweep log "
+                    << "set to " << log_flag;
 
   return 0;
 }
@@ -646,8 +642,8 @@ chiLBSGroupsetSetWGDSA(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetWGDSA";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetWGDSA";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -657,9 +653,9 @@ chiLBSGroupsetSetWGDSA(lua_State* L)
   groupset->wgdsa_verbose_ = verbose;
   groupset->wgdsa_string_ = std::string(petsc_string);
 
-  opensn::Chi::log.Log() << "Groupset " << grpset_index << " set to apply WGDSA with " << max_iters
-                         << " maximum iterations and a tolerance of " << resid_tol
-                         << ". PETSc-string: " << std::string(petsc_string);
+  opensn::log.Log() << "Groupset " << grpset_index << " set to apply WGDSA with " << max_iters
+                    << " maximum iterations and a tolerance of " << resid_tol
+                    << ". PETSc-string: " << std::string(petsc_string);
 
   return 0;
 }
@@ -699,8 +695,8 @@ chiLBSGroupsetSetTGDSA(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
-                                   << "in call to chiLBSGroupsetSetTGDSA";
+    opensn::log.LogAllError() << "Invalid handle to groupset "
+                              << "in call to chiLBSGroupsetSetTGDSA";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
@@ -710,9 +706,9 @@ chiLBSGroupsetSetTGDSA(lua_State* L)
   groupset->tgdsa_verbose_ = verbose;
   groupset->tgdsa_string_ = std::string(petsc_string);
 
-  opensn::Chi::log.Log() << "Groupset " << grpset_index << " set to apply TGDSA with " << max_iters
-                         << " maximum iterations and a tolerance of " << resid_tol
-                         << ". PETSc-string: " << std::string(petsc_string);
+  opensn::log.Log() << "Groupset " << grpset_index << " set to apply TGDSA with " << max_iters
+                    << " maximum iterations and a tolerance of " << resid_tol
+                    << ". PETSc-string: " << std::string(petsc_string);
 
   return 0;
 }

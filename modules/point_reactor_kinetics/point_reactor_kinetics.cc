@@ -64,20 +64,20 @@ TransientSolver::TransientSolver(const InputParameters& params)
     time_integration_(params.GetParamValue<std::string>("time_integration")),
     num_precursors_(lambdas_.size())
 {
-  Chi::log.Log() << "Created solver " << TextName();
+  log.Log() << "Created solver " << TextName();
   {
     std::stringstream outstr;
     outstr << "lambdas = ";
     for (double val : lambdas_)
       outstr << val << " ";
-    Chi::log.Log() << outstr.str();
+    log.Log() << outstr.str();
   }
   {
     std::stringstream outstr;
     outstr << "betas = ";
     for (double val : betas_)
       outstr << val << " ";
-    Chi::log.Log() << outstr.str();
+    log.Log() << outstr.str();
   }
 }
 
@@ -136,7 +136,7 @@ TransientSolver::Initialize()
     x_t_ = A_temp.Inverse() * b_temp;
   }
 
-  Chi::log.Log() << "Final: " << x_t_.PrintStr();
+  log.Log() << "Final: " << x_t_.PrintStr();
 }
 
 void
@@ -154,7 +154,7 @@ TransientSolver::Execute()
 void
 TransientSolver::Step()
 {
-  Chi::log.Log() << "Solver \"" + TextName() + "\" " + timestepper_->StringTimeInfo();
+  log.Log() << "Solver \"" + TextName() + "\" " + timestepper_->StringTimeInfo();
 
   const double dt = timestepper_->TimeStepSize();
 
@@ -181,7 +181,7 @@ TransientSolver::Step()
   else
     ChiLogicalError("Unsupported time integration scheme.");
 
-  period_tph_ = dt / log(x_tp1_[0] / x_t_[0]);
+  period_tph_ = dt / std::log(x_tp1_[0] / x_t_[0]);
 
   if (period_tph_ > 0.0 and period_tph_ > 1.0e6) period_tph_ = 1.0e6;
   if (period_tph_ < 0.0 and period_tph_ < -1.0e6) period_tph_ = -1.0e6;

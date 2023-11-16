@@ -29,15 +29,14 @@ chiGetProductQuadrature(lua_State* L)
       quad = std::static_pointer_cast<ProductQuadrature>(ang_quad);
     else
     {
-      opensn::Chi::log.LogAllError()
-        << "chiGetProductQuadrature: Provided quadrature handle points to "
-           "a quadrature that is not a product quadrature.";
+      opensn::log.LogAllError() << "chiGetProductQuadrature: Provided quadrature handle points to "
+                                   "a quadrature that is not a product quadrature.";
       opensn::Chi::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "chiGetProductQuadrature: Invalid quadrature handle.";
+    opensn::log.LogAllError() << "chiGetProductQuadrature: Invalid quadrature handle.";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 

@@ -26,9 +26,9 @@ chiSurfaceMesherSetProperty(lua_State* L)
   // Area constraint
   if (property_num == 1) // MAX_AREA
   {
-    opensn::Chi::log.Log0Warning() << "Deprecated and removed feature"
-                                      "property MAX_AREA in call"
-                                      " to chiSurfaceMesherSetProperty";
+    opensn::log.Log0Warning() << "Deprecated and removed feature"
+                                 "property MAX_AREA in call"
+                                 " to chiSurfaceMesherSetProperty";
   }
 
   return 0;

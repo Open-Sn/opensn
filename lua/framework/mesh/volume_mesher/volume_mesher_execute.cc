@@ -36,9 +36,9 @@ chiVolumeMesherExecute(lua_State* L)
              << mem_after.memory_mbytes - mem_before.memory_mbytes << " MB\n"
              << "Total process memory used after meshing " << mem_after.memory_mbytes << " MB";
 
-  opensn::Chi::log.Log() << opensn::Chi::program_timer.GetTimeString()
-                         << " chiVolumeMesherExecute: Volume meshing completed." << mem_string.str()
-                         << std::endl;
+  opensn::log.Log() << opensn::Chi::program_timer.GetTimeString()
+                    << " chiVolumeMesherExecute: Volume meshing completed." << mem_string.str()
+                    << std::endl;
 
   return 0;
 }

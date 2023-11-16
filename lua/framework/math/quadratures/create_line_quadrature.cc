@@ -37,7 +37,7 @@ chiCreateLineQuadrature(lua_State* L)
 
   if (ident == 1) // GAUSS_LEGENDRE
   {
-    opensn::Chi::log.Log() << "Creating Gauss-Legendre Quadrature\n";
+    opensn::log.Log() << "Creating Gauss-Legendre Quadrature\n";
 
     const size_t handle = obj_factory.MakeRegisteredObjectOfType("QuadratureGaussLegendre", params);
 
@@ -46,7 +46,7 @@ chiCreateLineQuadrature(lua_State* L)
   }
   else if (ident == 2) // GAUSS_CHEBYSHEV
   {
-    opensn::Chi::log.Log() << "Creating Gauss-Chebyshev Quadrature\n";
+    opensn::log.Log() << "Creating Gauss-Chebyshev Quadrature\n";
 
     const size_t handle =
       obj_factory.MakeRegisteredObjectOfType("chi_math::QuadratureGaussChebyshev", params);

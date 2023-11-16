@@ -112,9 +112,9 @@ NLKEigenDiffSolver::PostSolveCallback()
 
   // Print summary
   if (nl_context_ptr->verbosity_level_ >= 1)
-    Chi::log.Log() << "        Final lambda-eigenvalue    :        " << std::fixed << std::setw(10)
-                   << std::setprecision(7) << k_eff << " (num_DOps:" << number_of_func_evals << ")"
-                   << "\n";
+    log.Log() << "        Final lambda-eigenvalue    :        " << std::fixed << std::setw(10)
+              << std::setprecision(7) << k_eff << " (num_DOps:" << number_of_func_evals << ")"
+              << "\n";
 }
 
 } // namespace lbs

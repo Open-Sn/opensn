@@ -9,7 +9,7 @@ namespace opensn
 void
 SurfaceMesherPassthrough::Execute()
 {
-  Chi::log.Log0Verbose1() << "SurfaceMesherPassthrough executed";
+  log.Log0Verbose1() << "SurfaceMesherPassthrough executed";
 }
 
 } // namespace opensn

@@ -17,8 +17,8 @@ RegisterWrapperFunction(chi_unit_tests, chi_misc_utils_Test00, nullptr, chi_misc
 ParameterBlock
 chi_misc_utils_Test00(const InputParameters&)
 {
-  opensn::Chi::log.Log() << "GOLD_BEGIN";
-  opensn::Chi::log.Log() << "Testing chi_misc_utils::PrintIterationProgress\n";
+  opensn::log.Log() << "GOLD_BEGIN";
+  opensn::log.Log() << "Testing chi_misc_utils::PrintIterationProgress\n";
 
   const unsigned int I = 4;
   const size_t N = 39;
@@ -29,9 +29,9 @@ chi_misc_utils_Test00(const InputParameters&)
     progress << PrintIterationProgress(i, N, I);
   }
 
-  opensn::Chi::log.Log() << progress.str();
+  opensn::log.Log() << progress.str();
 
-  opensn::Chi::log.Log() << "GOLD_END";
+  opensn::log.Log() << "GOLD_END";
   return ParameterBlock();
 }
 

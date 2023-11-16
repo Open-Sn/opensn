@@ -14,12 +14,12 @@ namespace opensn
 /**Object for controlling logging.
    *
    * ## Part A: Output logs
-   * There are three levels of verbosity in ChiTech: Zero(Default), One and Two.
+   * There are three levels of verbosity in OpenSn: Zero(Default), One and Two.
    * These can be set on the command line via the switch -v followed by a
    * space and the number for the verbosity (0,1 or 2).
    *
    * \code
-   * ./bin/ChiTech InputFile.lua -v 1
+   * ./opensn InputFile.lua -v 1
    * \endcode
    *
    * The lua command `chiLogSetVerbosity(int_level)` achieves the same.\n\n
@@ -47,8 +47,8 @@ namespace opensn
    * global object.
    *
    * \code
-   * #include <chi::log.h>
-   * extern Logger& chi::log;
+   * #include "framework/logging/log.h"
+   * extern Logger& opensn::log;
    * \endcode
    *
    * A log is then written inside a piece of code as follows:
@@ -56,9 +56,9 @@ namespace opensn
    * \code
    * void PrintSomethingToLog()
    * {
-   *   chi::log.Log() << "This is printed on location 0 only";
-   *   chi::log.Log0Warning() << "This is a warning";
-   *   chi::log.Log0Error() << "This is an error";
+   *   opensn::log.Log() << "This is printed on location 0 only";
+   *   opensn::log.Log0Warning() << "This is a warning";
+   *   opensn::log.Log0Error() << "This is an error";
    * }
    * \endcode
    *
@@ -80,7 +80,7 @@ namespace opensn
    * Logger::GetRepeatingEventTag.
    *
    * \code
-   * size_t tag = chi::log.GetRepeatingEventTag(std::string("Sweep Timing"))
+   * size_t tag = opensn::log.GetRepeatingEventTag(std::string("Sweep Timing"))
    * \endcode
    *
    * Events can now be logged using
@@ -89,7 +89,7 @@ namespace opensn
    * multiple occurences using
    *
    * \code
-   * chi::log.LogEvent(tag,Logger::EventType::SINGLE_OCCURRENCE);
+   * opensn::log.LogEvent(tag,opensn::Logger::EventType::SINGLE_OCCURRENCE);
    * \endcode
    *
    * At the end of the block for which you wanted to log these events we can now
@@ -97,52 +97,49 @@ namespace opensn
    *
    * \code
    * double number_of_occ =
-  chi::log.ProcessEvent(tag,Logger::EventOperation::NUMBER_OF_OCCURRENCES);
+  opensn::log.ProcessEvent(tag,opensn::Logger::EventOperation::NUMBER_OF_OCCURRENCES);
    *\endcode
    *
    * Below is a complete example:
    *
   \code
-  size_t tag = chi::log.GetRepeatingEventTag(std::string());
+  size_t tag = opensn::log.GetRepeatingEventTag(std::string());
 
   for (int i=0; i<5; ++i)
-    chi::log.LogEvent(tag,Logger::EventType::SINGLE_OCCURRENCE);
+    opensn::log.LogEvent(tag,Logger::EventType::SINGLE_OCCURRENCE);
 
-  chi::log.LogAll()
-    << chi::log.ProcessEvent(tag,
+  opensn::log.LogAll()
+    << opensn::log.ProcessEvent(tag,
   Logger::EventOperation::NUMBER_OF_OCCURRENCES); \endcode \verbatim
   6
   \endverbatim
 
-   * Since chi::log is a global object this functionality is really powerful for
+   * Since opensn::log is a global object this functionality is really powerful for
    * use in modules or class objects where multiple methods can contribute to
-   * the same event track. For example an object can have an event tag as a
-  member
+   * the same event track. For example an object can have an event tag as a member
    * and initialize it at construction then all of the objects methods can
    * contribute to the event.
    *
    * ### Supplying event information
-   * In addition to the Logger::EventType the user can also supply a reference
-  to
+   * In addition to the Logger::EventType the user can also supply a reference to
    * a Logger::EventInfo structure. Be cautious with this though because each
    * event stored a double and a string which can look like a memory leak if
    * multiple events are pushed up with event information. Developers can supply
    * either a double or a string or both to an event info constructor to
-   * instantiate an instance. The event arb_value is by default 0.0 and the
-  event
+   * instantiate an instance. The event arb_value is by default 0.0 and the event
    * arb_info is by default an empty string. An example is shown below:
    *
   \code
-  size_t tag = chi::log.GetRepeatingEventTag(std::string());
+  size_t tag = opensn::log.GetRepeatingEventTag(std::string());
 
   for (int i=0; i<5; ++i)
   {
-    auto ev_info = std::make_shared<Logger::EventInfo>(i*2.0);
-    chi::log.LogEvent(tag,Logger::EventType::SINGLE_OCCURRENCE,ev_info);
+    auto ev_info = std::make_shared<opensn::Logger::EventInfo>(i*2.0);
+    opensn::log.LogEvent(tag,opensn::Logger::EventType::SINGLE_OCCURRENCE,ev_info);
   }
 
-  chi::log.LogAll()
-    << chi::log.ProcessEvent(tag, Logger::EventOperation::AVERAGE_VALUE);
+  opensn::log.LogAll()
+    << opensn::log.ProcessEvent(tag, opensn::Logger::EventOperation::AVERAGE_VALUE);
   \endcode
   \verbatim
   4.0
@@ -153,20 +150,19 @@ namespace opensn
    * For example:
    *
   \code
-  size_t tag = chi::log.GetRepeatingEventTag(std::string());
+  size_t tag = opensn::log.GetRepeatingEventTag(std::string());
 
-  chi::log.LogEvent(tag,
-                   Logger::EventType::SINGLE_OCCURRENCE,
-                   std::make_shared<Logger::EventInfo>(std::string("A"),2.0));
-  chi::log.LogEvent(tag,
-                   Logger::EventType::SINGLE_OCCURRENCE,
-                   std::make_shared<Logger::EventInfo>(std::string("B")));
-  chi::log.LogEvent(tag,
-                   Logger::EventType::SINGLE_OCCURRENCE,
-                   std::make_shared<Logger::EventInfo>(std::string("C"),2.0));
+  opensn::log.LogEvent(tag,
+                       opensn::Logger::EventType::SINGLE_OCCURRENCE,
+                       std::make_shared<opensnLogger::EventInfo>(std::string("A"),2.0));
+  opensn::log.LogEvent(tag,
+                       opensn::Logger::EventType::SINGLE_OCCURRENCE,
+                       std::make_shared<opensn::Logger::EventInfo>(std::string("B")));
+  opensn::log.LogEvent(tag,
+                       opensn::Logger::EventType::SINGLE_OCCURRENCE,
+                       std::make_shared<opensn::Logger::EventInfo>(std::string("C"),2.0));
 
-  chi::log.LogAll()
-    << chi::log.ProcessEvent(tag, Logger::EventOperation::AVERAGE_VALUE);
+  opensn::log.LogAll() << opensn::log.ProcessEvent(tag, Logger::EventOperation::AVERAGE_VALUE);
   \endcode
   \verbatim
   1.33333
@@ -174,12 +170,12 @@ namespace opensn
    *
    * To get a string value of the event history developers can use
    * Logger::PrintEventHistory along with the event tag. Just note that it will
-   * automatically be formatted for each location so no need to use chi::log to
+   * automatically be formatted for each location so no need to use opensn::log to
    * print it. Also, each event will be prepended with a program timestamp
    * in seconds.
    *
   \code
-  std::cout << chi::log.PrintEventHistory(tag);
+  std::cout << opensn::log.PrintEventHistory(tag);
   \endcode
   \verbatim
   1.33333

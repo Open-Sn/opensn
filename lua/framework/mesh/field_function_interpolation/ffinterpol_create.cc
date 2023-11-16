@@ -33,7 +33,7 @@ chiFFInterpolationCreate(lua_State* L)
 
     opensn::Chi::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::Chi::field_func_interpolation_stack.size() - 1;
-    opensn::Chi::log.LogAllVerbose2() << "Created point Field Function Interpolation";
+    opensn::log.LogAllVerbose2() << "Created point Field Function Interpolation";
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
   }
@@ -43,7 +43,7 @@ chiFFInterpolationCreate(lua_State* L)
 
     opensn::Chi::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::Chi::field_func_interpolation_stack.size() - 1;
-    opensn::Chi::log.LogAllVerbose2() << "Created slice Field Function Interpolation";
+    opensn::log.LogAllVerbose2() << "Created slice Field Function Interpolation";
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
   }
@@ -53,7 +53,7 @@ chiFFInterpolationCreate(lua_State* L)
 
     opensn::Chi::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::Chi::field_func_interpolation_stack.size() - 1;
-    opensn::Chi::log.LogAllVerbose2() << "Created line Field Function Interpolation";
+    opensn::log.LogAllVerbose2() << "Created line Field Function Interpolation";
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
   }
@@ -63,13 +63,13 @@ chiFFInterpolationCreate(lua_State* L)
 
     opensn::Chi::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::Chi::field_func_interpolation_stack.size() - 1;
-    opensn::Chi::log.LogAllVerbose2() << "Created Volume Field Function Interpolation";
+    opensn::log.LogAllVerbose2() << "Created Volume Field Function Interpolation";
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
   }
   else // Fall back
   {
-    opensn::Chi::log.LogAllError() << "Invalid FFITypeIndex used in chiFFInterpolationCreate.";
+    opensn::log.LogAllError() << "Invalid FFITypeIndex used in chiFFInterpolationCreate.";
     opensn::Chi::Exit(EXIT_FAILURE);
   }
   return 0;

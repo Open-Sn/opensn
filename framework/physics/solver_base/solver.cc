@@ -148,25 +148,25 @@ Solver::GetFieldFunctions() const
 void
 Solver::Initialize()
 {
-  Chi::log.Log() << "\"Initialize()\" method not defined for " << TextName();
+  log.Log() << "\"Initialize()\" method not defined for " << TextName();
 }
 
 void
 Solver::Execute()
 {
-  Chi::log.Log() << "\"Execute()\" method not defined for " << TextName();
+  log.Log() << "\"Execute()\" method not defined for " << TextName();
 }
 
 void
 Solver::Step()
 {
-  Chi::log.Log() << "\"Step()\" method not defined for " << TextName();
+  log.Log() << "\"Step()\" method not defined for " << TextName();
 }
 
 void
 Solver::Advance()
 {
-  Chi::log.Log() << "\"Advance()\" method not defined for " << TextName();
+  log.Log() << "\"Advance()\" method not defined for " << TextName();
 }
 
 ParameterBlock
@@ -180,8 +180,8 @@ Solver::GetInfoWithPreCheck(const ParameterBlock& params) const
 {
   if (not params.Has("name"))
   {
-    Chi::log.LogAllWarning() << "chi_physics::Solver::GetInfo called without "
-                                "\"name\" in the parameter list";
+    log.LogAllWarning() << "chi_physics::Solver::GetInfo called without "
+                           "\"name\" in the parameter list";
     return ParameterBlock{};
   }
   return GetInfo(params);

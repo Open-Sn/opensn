@@ -50,8 +50,8 @@ chiDestroyUnpartitionedMesh(lua_State* L)
   mesh_ptr->CleanUp();
   opensn::Chi::unpartitionedmesh_stack[handle] = nullptr;
 
-  opensn::Chi::log.Log() << "Unpartitioned mesh destroyed. Memory in use = "
-                         << opensn::Chi::GetMemoryUsageInMB() << " MB";
+  opensn::log.Log() << "Unpartitioned mesh destroyed. Memory in use = "
+                    << opensn::Chi::GetMemoryUsageInMB() << " MB";
   return 0;
 }
 

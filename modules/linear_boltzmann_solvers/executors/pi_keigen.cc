@@ -129,20 +129,19 @@ XXPowerIterationKEigen::Execute()
                   << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
       if (converged) k_iter_info << " CONVERGED\n";
 
-      Chi::log.Log() << k_iter_info.str();
+      log.Log() << k_iter_info.str();
     }
 
     if (converged) break;
   } // for k iterations
 
   // Print summary
-  Chi::log.Log() << "\n";
-  Chi::log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
-  Chi::log.Log() << "        Final change          :        " << std::setprecision(6)
-                 << k_eff_change
-                 << " (num_TrOps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
-                 << "\n";
-  Chi::log.Log() << "\n";
+  log.Log() << "\n";
+  log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
+  log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
+            << " (num_TrOps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
+            << "\n";
+  log.Log() << "\n";
 
   if (lbs_solver_.Options().use_precursors)
   {
@@ -152,7 +151,7 @@ XXPowerIterationKEigen::Execute()
 
   lbs_solver_.UpdateFieldFunctions();
 
-  Chi::log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
+  log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
 
 void

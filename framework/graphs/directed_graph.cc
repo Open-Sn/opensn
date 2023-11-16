@@ -56,8 +56,8 @@ GraphVertex&
 DirectedGraph::VertexAccessor::operator[](size_t v)
 {
   if (not vertex_valid_flags_[v])
-    Chi::log.LogAllError() << "opensn::DirectedGraph::VertexAccessor: "
-                              "Invalid vertex accessed. Vertex may have been removed.";
+    log.LogAllError() << "opensn::DirectedGraph::VertexAccessor: "
+                         "Invalid vertex accessed. Vertex may have been removed.";
   return vertices_[v];
 }
 
@@ -367,8 +367,8 @@ DirectedGraph::RemoveCyclicDependencies()
   int iter = 0;
   while (not SCCs.empty())
   {
-    if (Chi::log.GetVerbosity() >= Logger::LOG_LVL::LOG_0VERBOSE_2)
-      Chi::log.LogAll() << "Inter cell cyclic dependency removal. Iteration " << ++iter;
+    if (log.GetVerbosity() >= Logger::LOG_LVL::LOG_0VERBOSE_2)
+      log.LogAll() << "Inter cell cyclic dependency removal. Iteration " << ++iter;
 
     // Remove bi-connected then tri-connected SCCs then n-connected
     for (auto& subDG : SCCs)

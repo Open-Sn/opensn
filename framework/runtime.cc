@@ -36,7 +36,7 @@ namespace opensn
 
 // Global variables
 Console& console = Console::GetInstance();
-Logger& Chi::log = Logger::GetInstance();
+Logger& log = Logger::GetInstance();
 MPI_Info& mpi = MPI_Info::GetInstance();
 Timer Chi::program_timer;
 
@@ -89,11 +89,11 @@ Chi::run_time::ParseArguments(int argc, char** argv)
   {
     std::string argument(argv[i]);
 
-    Chi::log.Log() << "Parsing argument " << i << " " << argument;
+    log.Log() << "Parsing argument " << i << " " << argument;
 
     if (argument.find("-h") != std::string::npos or argument.find("--help") != std::string::npos)
     {
-      Chi::log.Log() << run_time::command_line_help_string_;
+      log.Log() << run_time::command_line_help_string_;
       run_time::termination_posted_ = true;
     }
     else if (argument.find("--suppress-beg-end-timelog") != std::string::npos)
@@ -186,7 +186,7 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
 
   Chi::run_time::InitPetSc(argc, argv);
 
-  auto& t_main = Chi::log.CreateTimingBlock("ChiTech");
+  auto& t_main = log.CreateTimingBlock("ChiTech");
   t_main.TimeSectionBegin();
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
@@ -209,7 +209,7 @@ Chi::run_time::InitPetSc(int argc, char** argv)
 void
 Chi::Finalize()
 {
-  auto& t_main = Chi::log.GetTimingBlock("ChiTech");
+  auto& t_main = log.GetTimingBlock("ChiTech");
   t_main.TimeSectionEnd();
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
   Chi::meshhandler_stack.clear();
@@ -232,16 +232,15 @@ Chi::RunInteractive(int argc, char** argv)
 {
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    Chi::Chi::log.Log() << Timer::GetLocalDateTimeString()
-                        << " Running ChiTech in interactive-mode with " << mpi.process_count
-                        << " processes.";
+    log.Log() << Timer::GetLocalDateTimeString() << " Running ChiTech in interactive-mode with "
+              << mpi.process_count << " processes.";
 
-    Chi::Chi::log.Log() << "ChiTech version " << Chi::GetVersionStr();
+    log.Log() << "ChiTech version " << Chi::GetVersionStr();
   }
 
-  Chi::log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
+  log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
 
-  Chi::log.LogAll();
+  log.LogAll();
 
   console.FlushConsole();
 
@@ -255,7 +254,7 @@ Chi::RunInteractive(int argc, char** argv)
     }
     catch (const std::exception& excp)
     {
-      Chi::log.LogAllError() << excp.what();
+      log.LogAllError() << excp.what();
       // No quitting if file execution fails
     }
   }
@@ -264,8 +263,8 @@ Chi::RunInteractive(int argc, char** argv)
 
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    Chi::log.Log() << "Final program time " << Chi::program_timer.GetTimeString();
-    Chi::log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution.";
+    log.Log() << "Final program time " << Chi::program_timer.GetTimeString();
+    log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution.";
   }
 
   return 0;
@@ -276,24 +275,24 @@ Chi::RunBatch(int argc, char** argv)
 {
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    Chi::log.Log() << Timer::GetLocalDateTimeString() << " Running ChiTech in batch-mode with "
-                   << mpi.process_count << " processes.";
+    log.Log() << Timer::GetLocalDateTimeString() << " Running ChiTech in batch-mode with "
+              << mpi.process_count << " processes.";
 
-    Chi::log.Log() << "ChiTech version " << Chi::GetVersionStr();
+    log.Log() << "ChiTech version " << Chi::GetVersionStr();
   }
 
-  Chi::log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
+  log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
 
-  if (argc <= 1) Chi::log.Log() << Chi::run_time::command_line_help_string_;
+  if (argc <= 1) log.Log() << Chi::run_time::command_line_help_string_;
   console.FlushConsole();
 
 #ifndef NDEBUG
-  Chi::log.Log() << "Waiting...";
+  log.Log() << "Waiting...";
   if (mpi.location_id == 0)
     for (int k = 0; k < 2; ++k)
     {
       usleep(1000000);
-      Chi::log.Log() << k;
+      log.Log() << k;
     }
 
   mpi.Barrier();
@@ -310,16 +309,16 @@ Chi::RunBatch(int argc, char** argv)
     }
     catch (const std::exception& excp)
     {
-      Chi::log.LogAllError() << excp.what();
+      log.LogAllError() << excp.what();
       Chi::Exit(EXIT_FAILURE);
     }
   }
 
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    Chi::log.Log() << "\nFinal program time " << Chi::program_timer.GetTimeString();
-    Chi::log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution of "
-                   << Chi::run_time::input_file_name_;
+    log.Log() << "\nFinal program time " << Chi::program_timer.GetTimeString();
+    log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution of "
+              << Chi::run_time::input_file_name_;
   }
 
   return error_code;

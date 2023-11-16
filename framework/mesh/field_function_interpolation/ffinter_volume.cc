@@ -14,7 +14,7 @@ namespace opensn
 void
 FieldFunctionInterpolationVolume::Initialize()
 {
-  Chi::log.Log0Verbose1() << "Initializing volume interpolator.";
+  log.Log0Verbose1() << "Initializing volume interpolator.";
   // Check grid available
   if (field_functions_.empty())
     throw std::logic_error("Unassigned field function in volume field "

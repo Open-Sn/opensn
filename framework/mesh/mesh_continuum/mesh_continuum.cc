@@ -28,7 +28,7 @@ std::shared_ptr<ChiMPICommunicatorSet>
 MeshContinuum::MakeMPILocalCommunicatorSet() const
 {
   // Build the communicator
-  Chi::log.Log0Verbose1() << "Building communicator.";
+  log.Log0Verbose1() << "Building communicator.";
   std::set<int> local_graph_edges;
 
   // Loop over local cells
@@ -50,7 +50,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   std::vector<int> local_connections(local_graph_edges.begin(), local_graph_edges.end());
 
   // Broadcast local connection size
-  Chi::log.Log0Verbose1() << "Communicating local connections.";
+  log.Log0Verbose1() << "Communicating local connections.";
 
   std::vector<std::vector<int>> global_graph(opensn::mpi.process_count, std::vector<int>());
   for (int locI = 0; locI < opensn::mpi.process_count; locI++)
@@ -83,7 +83,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
               mpi.comm);
   }
 
-  Chi::log.Log0Verbose1() << "Done communicating local connections.";
+  log.Log0Verbose1() << "Done communicating local connections.";
 
   // Build groups
   MPI_Group world_group;
@@ -102,17 +102,17 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
 
   // Build communicators
   std::vector<MPI_Comm> communicators;
-  Chi::log.Log0Verbose1() << "Building communicators.";
+  log.Log0Verbose1() << "Building communicators.";
   communicators.resize(opensn::mpi.process_count, MPI_Comm());
 
   for (int locI = 0; locI < opensn::mpi.process_count; locI++)
   {
     int err = MPI_Comm_create_group(mpi.comm, location_groups[locI], 0, &communicators[locI]);
 
-    if (err != MPI_SUCCESS) { Chi::log.Log0Verbose1() << "Communicator creation failed."; }
+    if (err != MPI_SUCCESS) { log.Log0Verbose1() << "Communicator creation failed."; }
   }
 
-  Chi::log.Log0Verbose1() << "Done building communicators.";
+  log.Log0Verbose1() << "Done building communicators.";
 
   return std::make_shared<ChiMPICommunicatorSet>(communicators, location_groups, world_group);
 }
@@ -123,7 +123,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
                                    bool suppress_side_sets) const
 {
   const std::string fname = "MeshContinuum::ExportCellsToExodus";
-  Chi::log.Log() << "Exporting mesh to Exodus file with base " << file_base_name;
+  log.Log() << "Exporting mesh to Exodus file with base " << file_base_name;
 
   if (opensn::mpi.process_count != 1)
     throw std::logic_error(fname + ": Currently this routine is only allowed "
@@ -206,9 +206,9 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
     // Set block
     grid_blocks->SetBlock(0, ugrid);
 
-    Chi::log.Log() << "Writing grid block "
-                   << " Number of cells: " << ugrid->GetNumberOfCells()
-                   << " Number of points: " << ugrid->GetNumberOfPoints();
+    log.Log() << "Writing grid block "
+              << " Number of cells: " << ugrid->GetNumberOfCells()
+              << " Number of points: " << ugrid->GetNumberOfPoints();
   } // end of grid_blocks assignment
 
   // Separate faces by boundary id
@@ -259,7 +259,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
   for (const auto& [bndry_id, face_list] : boundary_id_faces_map)
   {
     const std::string block_name = grid.GetBoundaryIDMap().at(bndry_id);
-    Chi::log.Log0Verbose1() << "bid: " + std::to_string(bndry_id) + " name=\"" + block_name + "\"";
+    log.Log0Verbose1() << "bid: " + std::to_string(bndry_id) + " name=\"" + block_name + "\"";
 
     // NodeSet
     {
@@ -311,9 +311,9 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
       nodesets_blocks->SetBlock(bndry_id, ugrid);
       nodesets_blocks->GetMetaData(bndry_id)->Set(vtkCompositeDataSet::NAME(), block_name);
 
-      Chi::log.Log() << "Writing nodeset block " << block_name
-                     << " Number of cells: " << ugrid->GetNumberOfCells()
-                     << " Number of points: " << ugrid->GetNumberOfPoints();
+      log.Log() << "Writing nodeset block " << block_name
+                << " Number of cells: " << ugrid->GetNumberOfCells()
+                << " Number of points: " << ugrid->GetNumberOfPoints();
     }
 
     // SideSet
@@ -364,9 +364,9 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
       sidesets_blocks->SetBlock(bndry_id, ugrid);
       sidesets_blocks->GetMetaData(bndry_id)->Set(vtkCompositeDataSet::NAME(), block_name);
 
-      Chi::log.Log() << "Writing sideset block " << block_name
-                     << " Number of cells: " << ugrid->GetNumberOfCells()
-                     << " Number of points: " << ugrid->GetNumberOfPoints();
+      log.Log() << "Writing sideset block " << block_name
+                << " Number of cells: " << ugrid->GetNumberOfCells()
+                << " Number of points: " << ugrid->GetNumberOfPoints();
     } // End of side-set
   }
 
@@ -376,13 +376,13 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
   main_block->SetBlock(next_block++, grid_blocks);
   if (not suppress_node_sets)
   {
-    Chi::log.Log0Verbose1() << "Exporting nodeset";
+    log.Log0Verbose1() << "Exporting nodeset";
     main_block->SetBlock(next_block, nodesets_blocks);
     main_block->GetMetaData(next_block++)->Set(vtkCompositeDataSet::NAME(), "Node Sets");
   }
   if (not suppress_side_sets)
   {
-    Chi::log.Log0Verbose1() << "Exporting sideset";
+    log.Log0Verbose1() << "Exporting sideset";
     main_block->SetBlock(next_block, sidesets_blocks);
     main_block->GetMetaData(next_block++)->Set(vtkCompositeDataSet::NAME(), "Side Sets");
   }
@@ -421,14 +421,14 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
 
   auto em = writer->GetModelMetadata();
 
-  Chi::log.Log() << "Num Blocks   :  " << em->GetNumberOfBlocks();
-  Chi::log.Log() << "Num Node Sets:  " << em->GetNumberOfNodeSets();
-  Chi::log.Log() << "Num Side Sets:  " << em->GetNumberOfSideSets();
-  Chi::log.Log() << "Dimension    :  " << em->GetDimension();
+  log.Log() << "Num Blocks   :  " << em->GetNumberOfBlocks();
+  log.Log() << "Num Node Sets:  " << em->GetNumberOfNodeSets();
+  log.Log() << "Num Side Sets:  " << em->GetNumberOfSideSets();
+  log.Log() << "Dimension    :  " << em->GetDimension();
 
   // writer->PrintSelf(std::cout, vtkIndent());
 
-  Chi::log.Log() << "Done exporting mesh to exodus.";
+  log.Log() << "Done exporting mesh to exodus.";
   opensn::mpi.Barrier();
 }
 
@@ -441,7 +441,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
 
     if (of == nullptr)
     {
-      Chi::log.LogAllError() << "Could not open file: " << std::string(fileName);
+      log.LogAllError() << "Could not open file: " << std::string(fileName);
       Chi::Exit(EXIT_FAILURE);
     }
 
@@ -507,7 +507,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
 
     fclose(of);
 
-    Chi::log.Log() << "Exported Volume mesh to " << str_file_name;
+    log.Log() << "Exported Volume mesh to " << str_file_name;
   } // Whole mesh
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PER MATERIAL
   else
@@ -518,8 +518,8 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
 
     if (Chi::material_stack.empty())
     {
-      Chi::log.Log0Warning() << "ExportCellsToObj: No mesh will be exported because there "
-                             << "are no physics materials present";
+      log.Log0Warning() << "ExportCellsToObj: No mesh will be exported because there "
+                        << "are no physics materials present";
     }
 
     for (int mat = 0; mat < Chi::material_stack.size(); mat++)
@@ -530,7 +530,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
 
       if (of == nullptr)
       {
-        Chi::log.LogAllError() << "Could not open file: " << mat_file_name;
+        log.LogAllError() << "Could not open file: " << mat_file_name;
         Chi::Exit(EXIT_FAILURE);
       }
 
@@ -611,7 +611,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
 
       fclose(of);
 
-      Chi::log.Log() << "Exported Material Volume mesh to " << mat_file_name;
+      log.Log() << "Exported Material Volume mesh to " << mat_file_name;
     } // for mat
   }   // if per material
 }
@@ -619,7 +619,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
 void
 MeshContinuum::ExportCellsToVTK(const std::string& file_base_name) const
 {
-  Chi::log.Log() << "Exporting mesh to VTK files with base " << file_base_name;
+  log.Log() << "Exporting mesh to VTK files with base " << file_base_name;
 
   const auto& grid = *this;
 
@@ -627,14 +627,14 @@ MeshContinuum::ExportCellsToVTK(const std::string& file_base_name) const
 
   WritePVTUFiles(ugrid, file_base_name);
 
-  Chi::log.Log() << "Done exporting mesh to VTK.";
+  log.Log() << "Done exporting mesh to VTK.";
 }
 
 std::vector<uint64_t>
 MeshContinuum::GetDomainUniqueBoundaryIDs() const
 {
   opensn::mpi.Barrier();
-  Chi::log.Log() << "Identifying unique boundary-ids.";
+  log.Log() << "Identifying unique boundary-ids.";
 
   // Develop local bndry-id set
   std::set<uint64_t> local_bndry_ids_set;
@@ -709,16 +709,16 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   outstr << "\nTotal faces = " << face_size_histogram.size();
   outstr << "\nAverage dofs/face = " << average_dofs_per_face;
   outstr << "\nMax to avg ratio = " << (double)largest_face / average_dofs_per_face;
-  Chi::log.LogAllVerbose2() << outstr.str();
+  log.LogAllVerbose2() << outstr.str();
 
   // Determine number of bins
   size_t last_bin_num_faces = total_num_faces;
   if (((double)largest_face / average_dofs_per_face) > master_tolerance)
   {
-    Chi::log.LogAllVerbose2() << "The ratio of max face dofs to average face dofs "
-                              << "is larger than " << master_tolerance
-                              << ", therefore a binned histogram "
-                              << "will be constructed.";
+    log.LogAllVerbose2() << "The ratio of max face dofs to average face dofs "
+                         << "is larger than " << master_tolerance
+                         << ", therefore a binned histogram "
+                         << "will be constructed.";
 
     // Build categories
     size_t running_total_face_dofs = 0;
@@ -756,7 +756,7 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
            << bins.first << "\n";
   }
 
-  Chi::log.LogAllVerbose2() << outstr.str();
+  log.LogAllVerbose2() << outstr.str();
 
   return std::make_shared<GridFaceHistogram>(face_categories_list);
 }
@@ -832,10 +832,10 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
 
     if (!found)
     {
-      Chi::log.LogAllError() << "Face DOF mapping failed in call to "
-                             << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
-                                "node."
-                             << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
+      log.LogAllError() << "Face DOF mapping failed in call to "
+                        << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
+                           "node."
+                        << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
       Chi::Exit(EXIT_FAILURE);
     }
   }
@@ -872,10 +872,10 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
 
     if (!found)
     {
-      Chi::log.LogAllError() << "Face DOF mapping failed in call to "
-                             << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
-                                "node."
-                             << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
+      log.LogAllError() << "Face DOF mapping failed in call to "
+                        << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
+                           "node."
+                        << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
       Chi::Exit(EXIT_FAILURE);
     }
   }
@@ -923,7 +923,7 @@ MeshContinuum::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list)
 {
   if (list.empty())
   {
-    Chi::log.LogAllError() << "ComputeCentroidFromListOfNodes, empty list";
+    log.LogAllError() << "ComputeCentroidFromListOfNodes, empty list";
     Chi::Exit(EXIT_FAILURE);
   }
   Vector3 centroid;

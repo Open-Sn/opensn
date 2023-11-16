@@ -28,8 +28,8 @@ chiPhysicsAddMaterial(lua_State* L)
   const size_t index = opensn::Chi::material_stack.size() - 1;
   lua_pushnumber(L, static_cast<lua_Number>(index));
 
-  opensn::Chi::log.Log0Verbose1() << "New material added at index " << index << " with name \""
-                                  << new_material->name_ << "\"";
+  opensn::log.Log0Verbose1() << "New material added at index " << index << " with name \""
+                             << new_material->name_ << "\"";
 
   return 1;
 }

@@ -23,9 +23,9 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
 
   if (Nw != Na * Np)
   {
-    Chi::log.LogAllError() << "Product Quadrature, InitializeWithCustom: mismatch in the amount "
-                              "angles and weights. Number of azimuthal angles times number "
-                              "polar angles must equal the amount of weights.";
+    log.LogAllError() << "Product Quadrature, InitializeWithCustom: mismatch in the amount "
+                         "angles and weights. Number of azimuthal angles times number "
+                         "polar angles must equal the amount of weights.";
     Chi::Exit(EXIT_FAILURE);
   }
 
@@ -34,13 +34,13 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
 
   if (verbose)
   {
-    Chi::log.Log() << "Azimuthal angles:";
+    log.Log() << "Azimuthal angles:";
     for (const auto& ang : azimu_ang_)
-      Chi::log.Log() << ang;
+      log.Log() << ang;
 
-    Chi::log.Log() << "Polar angles:";
+    log.Log() << "Polar angles:";
     for (const auto& ang : polar_ang_)
-      Chi::log.Log() << ang;
+      log.Log() << ang;
   }
 
   // Create angle pairs
@@ -91,13 +91,13 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
 
     omegas_.emplace_back(new_omega);
 
-    if (verbose) Chi::log.Log() << "Quadrature angle=" << new_omega.PrintS();
+    if (verbose) log.Log() << "Quadrature angle=" << new_omega.PrintS();
   }
 
   if (verbose)
   {
-    Chi::log.Log() << ostr.str() << "\n"
-                   << "Weight sum=" << weight_sum;
+    log.Log() << ostr.str() << "\n"
+              << "Weight sum=" << weight_sum;
   }
 }
 
@@ -223,9 +223,9 @@ AngularQuadratureProdCustom::AngularQuadratureProdCustom(const std::vector<doubl
 
   if (Nw != Na * Np)
   {
-    Chi::log.LogAllError() << "Product Quadrature, InitializeWithCustom: mismatch in the amount "
-                              "angles and weights. Number of azimuthal angles times number "
-                              "polar angles must equal the amount of weights.";
+    log.LogAllError() << "Product Quadrature, InitializeWithCustom: mismatch in the amount "
+                         "angles and weights. Number of azimuthal angles times number "
+                         "polar angles must equal the amount of weights.";
     Chi::Exit(EXIT_FAILURE);
   }
 

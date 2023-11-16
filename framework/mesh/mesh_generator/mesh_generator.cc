@@ -155,9 +155,9 @@ MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
   outstr << min_num_local_cells << "\n";
   outstr << "  Ghost-to-local ratio (avg)    : " << average_ghost_ratio;
 
-  Chi::log.Log() << "\n" << outstr.str() << "\n\n";
+  log.Log() << "\n" << outstr.str() << "\n\n";
 
-  Chi::log.LogAllVerbose2() << opensn::mpi.location_id << "Local cells=" << num_local_cells;
+  log.LogAllVerbose2() << opensn::mpi.location_id << "Local cells=" << num_local_cells;
 }
 
 std::vector<int64_t>
@@ -210,8 +210,8 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_parti
   }
   avg_num_cells /= num_partitions;
 
-  Chi::log.Log() << "Partitioner num_cells allocated max,min,avg = " << max_num_cells << ","
-                 << min_num_cells << "," << avg_num_cells;
+  log.Log() << "Partitioner num_cells allocated max,min,avg = " << max_num_cells << ","
+            << min_num_cells << "," << avg_num_cells;
 
   return cell_pids;
 }

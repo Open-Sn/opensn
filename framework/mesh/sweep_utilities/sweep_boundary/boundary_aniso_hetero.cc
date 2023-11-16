@@ -17,8 +17,8 @@ BoundaryIncidentHeterogeneous::HeterogeneousPsiIncoming(uint64_t cell_local_id,
 {
   if (local_cell_data_.empty())
   {
-    Chi::log.LogAllError() << "HeterogeneousPsiIncoming call made to a heterogeneous boundary "
-                              "with that information not yet set up.";
+    log.LogAllError() << "HeterogeneousPsiIncoming call made to a heterogeneous boundary "
+                         "with that information not yet set up.";
     exit(EXIT_FAILURE);
   }
 
