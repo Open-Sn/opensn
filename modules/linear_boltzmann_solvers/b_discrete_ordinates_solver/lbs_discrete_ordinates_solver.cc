@@ -1,5 +1,6 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 #include "framework/object_factory.h"
+#include "framework/memory_usage.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/volume_mesher/volume_mesher.h"
@@ -1087,7 +1088,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 
   if (options_.verbose_inner_iterations)
     log.Log() << Chi::program_timer.GetTimeString() << " Initialized Angle Aggregation.   "
-              << "         Process memory = " << std::setprecision(3) << Chi::GetMemoryUsageInMB()
+              << "         Process memory = " << std::setprecision(3) << GetMemoryUsageInMB()
               << " MB.";
 
   opensn::mpi.Barrier();
@@ -1103,7 +1104,7 @@ DiscreteOrdinatesSolver::ResetSweepOrderings(LBSGroupset& groupset)
   opensn::mpi.Barrier();
 
   log.Log() << "SPDS and FLUDS reset complete.            Process memory = " << std::setprecision(3)
-            << Chi::GetMemoryUsageInMB() << " MB";
+            << GetMemoryUsageInMB() << " MB";
 
   double local_app_memory =
     log.ProcessEvent(Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventOperation::MAX_VALUE);

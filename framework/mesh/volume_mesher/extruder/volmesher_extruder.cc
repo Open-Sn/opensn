@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"
+#include "framework/memory_usage.h"
 #include <iostream>
 
 namespace opensn
@@ -64,8 +65,8 @@ void
 VolumeMesherExtruder::Execute()
 {
   log.Log() << Chi::program_timer.GetTimeString()
-            << " VolumeMesherExtruder executed. Memory in use = " << Chi::GetMemoryUsageInMB()
-            << " MB" << std::endl;
+            << " VolumeMesherExtruder executed. Memory in use = " << GetMemoryUsageInMB() << " MB"
+            << std::endl;
 
   // Loop over all regions
   log.Log0Verbose1() << "VolumeMesherExtruder: Processing Region" << std::endl;

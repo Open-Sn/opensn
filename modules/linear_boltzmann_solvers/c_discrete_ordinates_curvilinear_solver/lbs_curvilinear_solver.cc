@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
+#include "framework/memory_usage.h"
 #include <iomanip>
 
 namespace opensn
@@ -378,7 +379,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
 
   opensn::mpi.Barrier();
   log.Log() << "Secondary Cell matrices computed.         Process memory = " << std::setprecision(3)
-            << Chi::GetMemoryUsageInMB() << " MB";
+            << GetMemoryUsageInMB() << " MB";
 }
 
 std::shared_ptr<SweepChunk>

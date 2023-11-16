@@ -7,6 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"
 #include "framework/console/console.h"
+#include "framework/memory_usage.h"
 
 namespace opensn
 {
@@ -444,7 +445,7 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
     fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, num_loc_sucs);
 
     // Make a memory query
-    double memory_mb = Chi::GetMemoryUsageInMB();
+    double memory_mb = GetMemoryUsageInMB();
 
     std::shared_ptr<Logger::EventInfo> memory_event_info =
       std::make_shared<Logger::EventInfo>(memory_mb);

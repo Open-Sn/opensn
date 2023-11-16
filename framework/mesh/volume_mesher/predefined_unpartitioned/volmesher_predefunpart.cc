@@ -8,7 +8,7 @@
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"
 #include "framework/utils/timer.h"
-#include "framework/console/console.h"
+#include "framework/memory_usage.h"
 #include "petsc.h"
 
 namespace opensn
@@ -104,7 +104,7 @@ VolumeMesherPredefinedUnpartitioned::Execute()
 {
   log.Log() << Chi::program_timer.GetTimeString()
             << " VolumeMesherPredefinedUnpartitioned executing. Memory in use = "
-            << Chi::GetMemoryUsageInMB() << " MB" << std::endl;
+            << GetMemoryUsageInMB() << " MB" << std::endl;
 
   // Check partitioning params
   if (options.partition_type == KBA_STYLE_XYZ)

@@ -1,5 +1,5 @@
 #include "framework/lua.h"
-
+#include "framework/memory_usage.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -51,7 +51,7 @@ chiDestroyUnpartitionedMesh(lua_State* L)
   opensn::Chi::unpartitionedmesh_stack[handle] = nullptr;
 
   opensn::log.Log() << "Unpartitioned mesh destroyed. Memory in use = "
-                    << opensn::Chi::GetMemoryUsageInMB() << " MB";
+                    << opensn::GetMemoryUsageInMB() << " MB";
   return 0;
 }
 

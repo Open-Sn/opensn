@@ -3,6 +3,7 @@
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
 #include "framework/mpi/mpi.h"
+#include "framework/memory_usage.h"
 #include "framework/object_factory.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/ags_context.h"
@@ -1112,7 +1113,7 @@ LBSSolver::ComputeUnitIntegrals()
   log.Log() << "Ghost cell unit cell-matrix ratio: "
             << (double)num_globl_ucms[1] * 100 / (double)num_globl_ucms[0] << "%";
   log.Log() << "Cell matrices computed.                   Process memory = " << std::setprecision(3)
-            << Chi::GetMemoryUsageInMB() << " MB";
+            << GetMemoryUsageInMB() << " MB";
 }
 
 void
@@ -1338,7 +1339,7 @@ LBSSolver::InitializeParrays()
 
   opensn::mpi.Barrier();
   log.Log() << "Done with parallel arrays.                Process memory = " << std::setprecision(3)
-            << Chi::GetMemoryUsageInMB() << " MB" << std::endl;
+            << GetMemoryUsageInMB() << " MB" << std::endl;
 }
 
 void
