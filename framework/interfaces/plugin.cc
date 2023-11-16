@@ -17,7 +17,7 @@ RegisterChiObject(chi, Plugin);
 InputParameters
 Plugin::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription(
@@ -33,7 +33,7 @@ Plugin::GetInputParameters()
 }
 
 Plugin::Plugin(const InputParameters& params)
-  : ChiObject(params), plugin_path_(params.GetParamValue<std::string>("plugin_path"))
+  : Object(params), plugin_path_(params.GetParamValue<std::string>("plugin_path"))
 {
   Chi::log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
   RegistryStatuses registry_statuses = Chi::GetStatusOfRegistries();

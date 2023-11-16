@@ -8,7 +8,7 @@ namespace opensn
 InputParameters
 FunctionDimAToDimB::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.AddRequiredParameter<size_t>(
     "input_dimension", "The dimension of the input values (excluding the position).");
@@ -20,7 +20,7 @@ FunctionDimAToDimB::GetInputParameters()
 }
 
 FunctionDimAToDimB::FunctionDimAToDimB(const InputParameters& params)
-  : ChiObject(params),
+  : Object(params),
     input_dimension_(params.GetParamValue<size_t>("input_dimension")),
     output_dimension_(params.GetParamValue<size_t>("output_dimension"))
 {

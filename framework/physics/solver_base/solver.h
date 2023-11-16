@@ -16,7 +16,7 @@ class TimeStepper;
 
 /**\defgroup SolverBase Base class for all solvers
  * \ingroup doc_PhysicsSolver*/
-class Solver : public ChiObject
+class Solver : public Object
 {
 public:
   /**Returns the input parameters.*/

@@ -6,10 +6,10 @@ namespace opensn
 InputParameters
 LogicalVolume::GetInputParameters()
 {
-  return ChiObject::GetInputParameters();
+  return Object::GetInputParameters();
 }
 
-LogicalVolume::LogicalVolume(const InputParameters& params) : ChiObject(params)
+LogicalVolume::LogicalVolume(const InputParameters& params) : Object(params)
 {
 }
 

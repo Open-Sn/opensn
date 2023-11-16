@@ -16,11 +16,11 @@
  * \code
  * RegisterChiObject(kaka, Zorba);
  * \endcode
- * \note Remember to include the header "ChiObject/ChiObjectFactory.h".*/
+ * \note Remember to include the header "Object/ChiObjectFactory.h".*/
 #define RegisterChiObject(namespace_name, object_name)                                             \
   static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
-    opensn::ChiObjectFactory::AddObjectToRegistry<object_name, ChiObject>(#namespace_name,         \
-                                                                          #object_name)
+    opensn::ChiObjectFactory::AddObjectToRegistry<object_name, Object>(#namespace_name,            \
+                                                                       #object_name)
 
 /**Macro for registering an object (parameters only) within the
  * ChiObjectFactory singleton.
@@ -31,7 +31,7 @@
  * RegisterChiObjectParametersOnly(kaka, Zorba);
  * \endcode
  *
- * \note Remember to include the header "ChiObject/object_maker.h"*/
+ * \note Remember to include the header "Object/object_maker.h"*/
 #define RegisterChiObjectParametersOnly(namespace_name, object_name)                               \
   static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
     opensn::ChiObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name,          \
@@ -47,7 +47,7 @@
  * RegisterSyntaxBlock(kaka, Zorba, ZorbaSyntaxFunction);
  * \endcode
  *
- * \note Remember to include the header "ChiObject/object_maker.h"*/
+ * \note Remember to include the header "Object/object_maker.h"*/
 #define RegisterSyntaxBlock(namespace_name, block_name, syntax_function)                           \
   static char ChiObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) =    \
     opensn::ChiObjectFactory::AddSyntaxBlockToRegistry(                                            \
@@ -56,13 +56,13 @@
 namespace opensn
 {
 
-class ChiObject;
+class Object;
 
 /**Singleton object for handling the registration and making of ChiObjects.*/
 class ChiObjectFactory
 {
 public:
-  using ObjectPtr = std::shared_ptr<ChiObject>;
+  using ObjectPtr = std::shared_ptr<Object>;
 
   using ObjectGetInParamsFunc = InputParameters (*)();
   using ObjectConstructorFunc = ObjectPtr (*)(const InputParameters&);

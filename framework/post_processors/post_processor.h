@@ -23,7 +23,7 @@ enum class PPNumericFormat : int
 };
 
 /**Base class for all post-processors.*/
-class PostProcessor : public ChiObject, public EventSubscriber
+class PostProcessor : public Object, public EventSubscriber
 {
 public:
   struct TimeHistoryEntry
@@ -44,9 +44,9 @@ public:
   /**Returns the numeric precision of the post-processor for printing.*/
   size_t NumericPrecision() const;
 
-  /**Calls the base ChiObject's method and adds a subscription to
+  /**Calls the base Object's method and adds a subscription to
    * `opensn::PhysicsEventPublisher` singleton.*/
-  void PushOntoStack(std::shared_ptr<ChiObject>& new_object) override;
+  void PushOntoStack(std::shared_ptr<Object>& new_object) override;
 
   void ReceiveEventUpdate(const Event& event) override;
 

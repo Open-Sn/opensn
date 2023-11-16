@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-class Plugin : public ChiObject
+class Plugin : public Object
 {
 public:
   static InputParameters GetInputParameters();

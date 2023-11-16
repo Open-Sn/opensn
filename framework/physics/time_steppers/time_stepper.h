@@ -13,7 +13,7 @@ enum class TimeStepStatus
 };
 
 /**Base class for all timestep controllers.*/
-class TimeStepper : public ChiObject
+class TimeStepper : public Object
 {
 public:
   /**Overridable method to get the timestep size.*/

@@ -76,8 +76,8 @@ struct CSTMemory
   CSTMemory& operator=(const CSTMemory& in_struct) = default;
 };
 
-class ChiObject;
-typedef std::shared_ptr<ChiObject> ChiObjectPtr;
+class Object;
+typedef std::shared_ptr<Object> ChiObjectPtr;
 
 /**General utilities in ChiTech*/
 class Chi
@@ -286,7 +286,7 @@ public:
    * \code
    * auto surf_mesh_ptr = Chi::GetStackItemPtr(
       Chi::object_stack, surf_mesh_hndle, fname);
-     // Returns std::shared_ptr<ChiObject>
+     // Returns std::shared_ptr<Object>
    * \endcode
    * */
   template <class T>

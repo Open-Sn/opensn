@@ -13,7 +13,7 @@ RegisterChiObject(chi_unit_testsB, TestObject);
 InputParameters
 TestObject::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription(

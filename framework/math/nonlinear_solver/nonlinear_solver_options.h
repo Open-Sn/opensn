@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-class NonLinearSolverOptions : public ChiObject
+class NonLinearSolverOptions : public Object
 {
 public:
   static InputParameters GetInputParameters();

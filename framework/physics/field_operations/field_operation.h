@@ -6,7 +6,7 @@ namespace opensn
 {
 
 /**The base field operation class.*/
-class FieldOperation : public ChiObject
+class FieldOperation : public Object
 {
 public:
   /**Returns the input parameters.*/

@@ -65,7 +65,7 @@ Get1DQuadratureData(const InputParameters& params)
 InputParameters
 Quadrature::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("\\defgroup chi_math__Quadrature\n"
                                "\\ingroup LuaQuadrature\n"
@@ -80,7 +80,7 @@ Quadrature::GetInputParameters()
 }
 
 Quadrature::Quadrature(const InputParameters& params)
-  : ChiObject(params),
+  : Object(params),
     order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order"))),
     verbose_(params.GetParamValue<bool>("verbose"))
 {

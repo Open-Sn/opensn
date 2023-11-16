@@ -13,7 +13,7 @@ namespace opensn
 InputParameters
 Solver::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.AddRequiredParameter<std::string>(
     "name",
@@ -50,7 +50,7 @@ Solver::Solver(std::string in_text_name, std::initializer_list<BasicOption> in_o
 }
 
 Solver::Solver(const InputParameters& params)
-  : ChiObject(params),
+  : Object(params),
     timestepper_(InitTimeStepper(params)),
     text_name_(params.GetParamValue<std::string>("name"))
 {

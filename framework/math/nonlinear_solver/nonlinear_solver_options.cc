@@ -10,7 +10,7 @@ RegisterChiObjectParametersOnly(chi_math, NonLinearSolverOptions);
 InputParameters
 NonLinearSolverOptions::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("Options available on NonLinearSolver");
   params.SetDocGroup("LuaMath");
@@ -59,7 +59,7 @@ NonLinearSolverOptions::GetInputParameters()
 }
 
 NonLinearSolverOptions::NonLinearSolverOptions(const InputParameters& params)
-  : ChiObject(params),
+  : Object(params),
     nl_method_(params.GetParamValue<std::string>("nl_method")),
     l_method_(params.GetParamValue<std::string>("l_method")),
     pc_options_(params.GetParam("pc_options")),

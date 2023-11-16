@@ -8,7 +8,7 @@ using namespace opensn;
 namespace unit_tests
 {
 
-class TestSubObject : public ChiObject
+class TestSubObject : public Object
 {
 private:
   const size_t num_groups_;
@@ -18,7 +18,7 @@ public:
   explicit TestSubObject(const InputParameters& params);
 };
 
-class TestObject : public ChiObject
+class TestObject : public Object
 {
 private:
   const std::string solver_type_;

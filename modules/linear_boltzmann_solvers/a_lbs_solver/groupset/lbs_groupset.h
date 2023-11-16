@@ -27,7 +27,7 @@ class DiffusionMIPSolver;
 class LBSSolver;
 
 /**Group set functioning as a collection of groups*/
-class LBSGroupset : public ChiObject
+class LBSGroupset : public Object
 {
 protected:
   typedef std::shared_ptr<AngleAggregation> AngleAggPtr;

@@ -6,7 +6,7 @@ namespace opensn
 {
 
 /**Base class for mesh modifiers*/
-class MeshModifier : public ChiObject
+class MeshModifier : public Object
 {
 public:
   explicit MeshModifier(const InputParameters& params);

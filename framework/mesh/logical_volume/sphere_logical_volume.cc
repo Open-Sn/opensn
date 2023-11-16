@@ -10,7 +10,7 @@ RegisterChiObject(chi_mesh, SphereLogicalVolume);
 InputParameters
 SphereLogicalVolume::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.SetDocGroup("LuaLogicVolumes");
 

@@ -19,7 +19,7 @@ RegisterChiObjectParametersOnly(lbs, LBSGroupset);
 InputParameters
 lbs::LBSGroupset::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription("Input Parameters for groupsets.");
@@ -128,7 +128,7 @@ lbs::LBSGroupset::GetInputParameters()
 lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
                               const int id,
                               const LBSSolver& lbs_solver)
-  : ChiObject(params), id_(id)
+  : Object(params), id_(id)
 {
   const std::string fname = __FUNCTION__;
 

@@ -6,12 +6,12 @@ namespace opensn
 InputParameters
 GraphPartitioner::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   return params;
 }
 
-GraphPartitioner::GraphPartitioner(const InputParameters& params) : ChiObject(params)
+GraphPartitioner::GraphPartitioner(const InputParameters& params) : Object(params)
 {
 }
 

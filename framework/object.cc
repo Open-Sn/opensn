@@ -4,33 +4,33 @@ namespace opensn
 {
 
 InputParameters
-ChiObject::GetInputParameters()
+Object::GetInputParameters()
 {
   return {}; // Returns an empty block
 }
 
-ChiObject::ChiObject()
+Object::Object()
 {
 }
 
-ChiObject::ChiObject(const InputParameters&)
+Object::Object(const InputParameters&)
 {
 }
 
 void
-ChiObject::SetStackID(size_t stack_id)
+Object::SetStackID(size_t stack_id)
 {
   stack_id_ = stack_id;
 }
 
 size_t
-ChiObject::StackID() const
+Object::StackID() const
 {
   return stack_id_;
 }
 
 void
-ChiObject::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
+Object::PushOntoStack(std::shared_ptr<Object>& new_object)
 {
   Chi::object_stack.push_back(new_object);
   new_object->SetStackID(Chi::object_stack.size() - 1);

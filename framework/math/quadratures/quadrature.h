@@ -27,7 +27,7 @@ typedef Vector3 QuadraturePointXYZ;
 class Quadrature;
 
 /**Parent class for quadratures.*/
-class Quadrature : public ChiObject
+class Quadrature : public Object
 {
 public:
   QuadratureOrder order_;

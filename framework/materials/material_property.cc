@@ -10,7 +10,7 @@ RegisterChiObject(chi_objects, MaterialProperty);
 InputParameters
 MaterialProperty::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.AddRequiredParameter<std::string>("name", "Text name associated with this property");
 

@@ -17,7 +17,7 @@ RegisterChiObject(chi_mesh, MeshGenerator);
 InputParameters
 MeshGenerator::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("The base class for all mesh generators");
   params.SetDocGroup("doc_MeshGenerators");
@@ -42,7 +42,7 @@ MeshGenerator::GetInputParameters()
 }
 
 MeshGenerator::MeshGenerator(const InputParameters& params)
-  : ChiObject(params),
+  : Object(params),
     scale_(params.GetParamValue<double>("scale")),
     replicated_(params.GetParamValue<bool>("replicated_mesh"))
 {

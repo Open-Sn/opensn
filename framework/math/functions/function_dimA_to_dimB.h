@@ -9,7 +9,7 @@ namespace opensn
 typedef std::function<double(double)> ScalarScalarFunction;
 typedef std::function<double(double, double, double, double)> ScalarXYZTFunction;
 
-class FunctionDimAToDimB : public ChiObject
+class FunctionDimAToDimB : public Object
 {
 private:
   const size_t input_dimension_;
