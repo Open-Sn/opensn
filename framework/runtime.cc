@@ -35,7 +35,7 @@ namespace opensn
 {
 
 // Global variables
-Console& Chi::console = Console::GetInstance();
+Console& console = Console::GetInstance();
 Logger& Chi::log = Logger::GetInstance();
 MPI_Info& mpi = MPI_Info::GetInstance();
 Timer Chi::program_timer;
@@ -180,7 +180,7 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
   mpi.SetLocationID(location_id);
   mpi.SetProcessCount(number_processes);
 
-  Chi::console.PostMPIInfo(location_id, number_processes);
+  console.PostMPIInfo(location_id, number_processes);
 
   Chi::run_time::ParseArguments(argc, argv);
 
@@ -243,7 +243,7 @@ Chi::RunInteractive(int argc, char** argv)
 
   Chi::log.LogAll();
 
-  Chi::console.FlushConsole();
+  console.FlushConsole();
 
   const auto& input_fname = Chi::run_time::input_file_name_;
 
@@ -251,7 +251,7 @@ Chi::RunInteractive(int argc, char** argv)
   {
     try
     {
-      Chi::console.ExecuteFile(input_fname, argc, argv);
+      console.ExecuteFile(input_fname, argc, argv);
     }
     catch (const std::exception& excp)
     {
@@ -260,7 +260,7 @@ Chi::RunInteractive(int argc, char** argv)
     }
   }
 
-  Chi::console.RunConsoleLoop();
+  console.RunConsoleLoop();
 
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
@@ -285,7 +285,7 @@ Chi::RunBatch(int argc, char** argv)
   Chi::log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
 
   if (argc <= 1) Chi::log.Log() << Chi::run_time::command_line_help_string_;
-  Chi::console.FlushConsole();
+  console.FlushConsole();
 
 #ifndef NDEBUG
   Chi::log.Log() << "Waiting...";
@@ -306,7 +306,7 @@ Chi::RunBatch(int argc, char** argv)
   {
     try
     {
-      error_code = Chi::console.ExecuteFile(input_fname, argc, argv);
+      error_code = console.ExecuteFile(input_fname, argc, argv);
     }
     catch (const std::exception& excp)
     {
@@ -347,10 +347,10 @@ Chi::GetStatusOfRegistries()
     stats.objfactory_keys_.push_back(key);
 
 #ifdef OPENSN_WITH_LUA
-  for (const auto& [key, _] : Chi::console.GetLuaFunctionRegistry())
+  for (const auto& [key, _] : console.GetLuaFunctionRegistry())
     stats.console_lua_func_keys_.push_back(key);
 
-  for (const auto& [key, _] : Chi::console.GetFunctionWrapperRegistry())
+  for (const auto& [key, _] : console.GetFunctionWrapperRegistry())
     stats.console_lua_wrapper_keys_.push_back(key);
 #endif
 

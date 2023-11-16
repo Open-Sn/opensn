@@ -40,7 +40,7 @@ std::vector<double>
 LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
 {
   const std::string fname = __PRETTY_FUNCTION__;
-  lua_State* L = opensn::Chi::console.GetConsoleState();
+  lua_State* L = opensn::console.GetConsoleState();
   lua_getglobal(L, lua_function_name_.c_str());
 
   ChiLogicalErrorIf(not lua_isfunction(L, -1),

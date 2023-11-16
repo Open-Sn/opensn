@@ -126,7 +126,7 @@ FieldFunctionInterpolationVolume::Execute()
 double
 FieldFunctionInterpolationVolume::CallLuaFunction(double ff_value, int mat_id) const
 {
-  lua_State* L = Chi::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
   double ret_val = 0.0;
 
   lua_getglobal(L, op_lua_func_.c_str());

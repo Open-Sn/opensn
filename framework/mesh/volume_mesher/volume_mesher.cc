@@ -425,7 +425,7 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
                           << " Setting material id from lua function.";
 
   // Define console call
-  auto L = Chi::console.GetConsoleState();
+  auto L = console.GetConsoleState();
   auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const Cell& cell)
   {
     // Load lua function
@@ -516,7 +516,7 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
                           << " Setting boundary id from lua function.";
 
   // Define console call
-  auto L = Chi::console.GetConsoleState();
+  auto L = console.GetConsoleState();
   auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const CellFace& face)
   {
     // Load lua function

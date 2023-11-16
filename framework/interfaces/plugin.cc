@@ -58,7 +58,7 @@ Plugin::Plugin(const InputParameters& params)
   }
 
 #ifdef OPENSN_WITH_LUA
-  Chi::console.UpdateConsoleBindings(registry_statuses);
+  console.UpdateConsoleBindings(registry_statuses);
 #endif
 }
 

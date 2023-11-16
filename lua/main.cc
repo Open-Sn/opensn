@@ -28,7 +28,7 @@ main(int argc, char** argv)
   opensn::mpi.SetProcessCount(number_processes);
 
   opensnlua::LoadRegisteredLuaItems();
-  opensn::Chi::console.PostMPIInfo(location_id, number_processes);
+  opensn::console.PostMPIInfo(location_id, number_processes);
 
   opensn::Chi::run_time::ParseArguments(argc, argv);
 

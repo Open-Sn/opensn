@@ -46,7 +46,7 @@ ResponseFunctionDesignation::GetMGResponse(const Cell& cell, const size_t num_gr
   }
 
   // Load lua function
-  lua_State* L = Chi::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
   lua_getglobal(L, lua_functional.c_str());
 
   // Error check lua function

@@ -17,9 +17,6 @@ namespace opensnlua
 void
 LoadRegisteredLuaItems()
 {
-  // Initializing console
-  auto console = opensn::Chi::console;
-
   auto& L = console.GetConsoleState();
 
   luaL_openlibs(L);

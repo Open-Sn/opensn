@@ -61,7 +61,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   if (options.verbose) Chi::log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
 
 #ifdef OPENSN_WITH_LUA
-  lua_State* L = Chi::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
 #endif
   const auto& source_function = options.source_lua_function;
   const auto& solution_function = options.ref_solution_lua_function;
@@ -407,7 +407,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
   if (options.verbose) Chi::log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
 
 #ifdef OPENSN_WITH_LUA
-  lua_State* L = Chi::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
 #endif
   const auto& source_function = options.source_lua_function;
   const auto& solution_function = options.ref_solution_lua_function;

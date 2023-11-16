@@ -176,7 +176,7 @@ Solver::Execute()
   const auto& sdm = *sdm_ptr_;
 
 #ifdef OPENSN_WITH_LUA
-  lua_State* L = Chi::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
 #endif
 
   // Assemble the system
