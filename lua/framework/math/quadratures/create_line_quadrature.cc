@@ -33,7 +33,7 @@ chiCreateLineQuadrature(lua_State* L)
   params.AddParameter("verbose", verbose);
   params.AddParameter("N", N);
 
-  auto& obj_factory = ChiObjectFactory::GetInstance();
+  auto& obj_factory = ObjectFactory::GetInstance();
 
   if (ident == 1) // GAUSS_LEGENDRE
   {

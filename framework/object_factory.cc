@@ -5,27 +5,27 @@
 namespace opensn
 {
 
-ChiObjectFactory&
-ChiObjectFactory::GetInstance() noexcept
+ObjectFactory&
+ObjectFactory::GetInstance() noexcept
 {
-  static ChiObjectFactory singleton;
+  static ObjectFactory singleton;
   return singleton;
 }
 
-const std::map<std::string, ChiObjectFactory::ObjectRegistryEntry>&
-ChiObjectFactory::Registry() const
+const std::map<std::string, ObjectFactory::ObjectRegistryEntry>&
+ObjectFactory::Registry() const
 {
   return object_registry_;
 }
 
 bool
-ChiObjectFactory::RegistryHasKey(const std::string& key) const
+ObjectFactory::RegistryHasKey(const std::string& key) const
 {
   return object_registry_.count(key) > 0;
 }
 
 size_t
-ChiObjectFactory::MakeRegisteredObject(const ParameterBlock& params) const
+ObjectFactory::MakeRegisteredObject(const ParameterBlock& params) const
 {
   if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object with type from parameters";
 
@@ -43,8 +43,8 @@ ChiObjectFactory::MakeRegisteredObject(const ParameterBlock& params) const
 }
 
 size_t
-ChiObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
-                                             const ParameterBlock& params) const
+ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
+                                          const ParameterBlock& params) const
 {
   if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object with specified type";
 
@@ -84,11 +84,11 @@ ChiObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
 }
 
 InputParameters
-ChiObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
+ObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
 {
   auto iter = object_registry_.find(type);
   ChiInvalidArgumentIf(iter == object_registry_.end(),
-                       "Object type \"" + type + "\" is not registered in ChiObjectFactory.");
+                       "Object type \"" + type + "\" is not registered in ObjectFactory.");
 
   auto& reg_entry = iter->second;
 
@@ -96,7 +96,7 @@ ChiObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
 }
 
 void
-ChiObjectFactory::DumpRegister() const
+ObjectFactory::DumpRegister() const
 {
   Chi::log.Log() << "\n\n";
   for (const auto& [key, entry] : object_registry_)
@@ -120,8 +120,8 @@ ChiObjectFactory::DumpRegister() const
 }
 
 void
-ChiObjectFactory::AssertRegistryKeyAvailable(const std::string& key,
-                                             const std::string& calling_function) const
+ObjectFactory::AssertRegistryKeyAvailable(const std::string& key,
+                                          const std::string& calling_function) const
 {
   if (RegistryHasKey(key))
     ChiLogicalError(calling_function + ": Attempted to register Object \"" + key +

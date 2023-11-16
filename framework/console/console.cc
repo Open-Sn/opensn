@@ -596,7 +596,7 @@ Console::UpdateConsoleBindings(const RegistryStatuses& old_statuses)
   auto ListHasValue = [](const std::vector<std::string>& list, const std::string& value)
   { return std::find(list.begin(), list.end(), value) != list.end(); };
 
-  const auto& object_factory = ChiObjectFactory::GetInstance();
+  const auto& object_factory = ObjectFactory::GetInstance();
   for (const auto& [key, _] : object_factory.Registry())
     if (not ListHasValue(old_statuses.objfactory_keys_, key)) SetObjectNamespaceTableStructure(key);
 

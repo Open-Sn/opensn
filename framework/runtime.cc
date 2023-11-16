@@ -161,7 +161,7 @@ Chi::run_time::ParseArguments(int argc, char** argv)
 #ifdef OPENSN_WITH_LUA
   if (run_time::dump_registry_)
   {
-    ChiObjectFactory::GetInstance().DumpRegister();
+    ObjectFactory::GetInstance().DumpRegister();
     console.DumpRegister();
   }
 #endif
@@ -342,7 +342,7 @@ Chi::GetStatusOfRegistries()
 {
   RegistryStatuses stats;
 
-  const auto& object_factory = ChiObjectFactory::GetInstance();
+  const auto& object_factory = ObjectFactory::GetInstance();
   for (const auto& [key, _] : object_factory.Registry())
     stats.objfactory_keys_.push_back(key);
 

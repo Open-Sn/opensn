@@ -37,7 +37,7 @@ chiSolverCreate(lua_State* L)
 
   const auto params = TableParserAsParameterBlock::ParseTable(L, 1);
 
-  const auto& object_maker = ChiObjectFactory::GetInstance();
+  const auto& object_maker = ObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObject(params);
 
   lua_pushinteger(L, static_cast<lua_Integer>(handle));

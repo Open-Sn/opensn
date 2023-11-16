@@ -76,7 +76,7 @@ Solver::InitTimeStepper(const InputParameters& params)
   }
   else
   {
-    auto& factory = ChiObjectFactory::GetInstance();
+    auto& factory = ObjectFactory::GetInstance();
 
     const std::string obj_type = "chi_physics::ConstantTimeStepper";
     auto valid_params = factory.GetRegisteredObjectParameters(obj_type);

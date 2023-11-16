@@ -50,7 +50,7 @@ chiLogicalVolumeCreate(lua_State* L)
   const int LVSURFACE = scint(LogicalVolumeType::LVSURFACE);
   const int LVBOOLEAN = scint(LogicalVolumeType::LVBOOLEAN);
 
-  auto& object_maker = ChiObjectFactory::GetInstance();
+  auto& object_maker = ObjectFactory::GetInstance();
 
   // Sphere at origin
   if (type_index == LVSPHERE_ORIGIN)
