@@ -10,7 +10,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_tests
+namespace unit_tests
 {
 
 ParameterBlock TestKBAGraphPartitioner00(const InputParameters&);
@@ -61,4 +61,4 @@ TestKBAGraphPartitioner00(const InputParameters&)
   return ParameterBlock();
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

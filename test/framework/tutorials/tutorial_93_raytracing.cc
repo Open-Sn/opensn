@@ -15,7 +15,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_sim_tests
+namespace unit_sim_tests
 {
 
 ParameterBlock chiSimTest93_RayTracing(const InputParameters& params);
@@ -342,4 +342,4 @@ chiSimTest93_RayTracing(const InputParameters&)
   return ParameterBlock();
 }
 
-} // namespace chi_unit_sim_tests
+} // namespace unit_sim_tests

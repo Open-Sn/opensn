@@ -9,7 +9,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_tests
+namespace unit_tests
 {
 int chi_ParameterBlock_Test00(lua_State* L);
 
@@ -117,4 +117,4 @@ chi_ParameterBlock_Test00(lua_State* L)
   return 0;
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

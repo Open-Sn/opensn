@@ -20,7 +20,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_sim_tests
+namespace unit_sim_tests
 {
 
 /**PWLD Sweep. */
@@ -534,4 +534,4 @@ chiSimTest91_PWLD(const InputParameters&)
   return ParameterBlock();
 }
 
-} // namespace chi_unit_sim_tests
+} // namespace unit_sim_tests

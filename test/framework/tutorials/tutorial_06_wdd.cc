@@ -20,7 +20,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_sim_testsB
+namespace unit_sim_tests
 {
 typedef AngularQuadrature::HarmonicIndices YlmIndices;
 double ComputeRelativePWChange(const MeshContinuum& grid,
@@ -434,4 +434,4 @@ SetSource(const MeshContinuum& grid,
   return source_moments;
 }
 
-} // namespace chi_unit_sim_testsB
+} // namespace unit_sim_tests

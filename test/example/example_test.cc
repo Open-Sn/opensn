@@ -5,7 +5,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_tests
+namespace unit_tests
 {
 
 ParameterBlock ExampleTest(const InputParameters&);
@@ -20,4 +20,4 @@ ExampleTest(const InputParameters&)
   return ParameterBlock();
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

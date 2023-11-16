@@ -5,7 +5,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_unit_testsB
+namespace unit_tests
 {
 
 RegisterChiObject(chi_unit_testsB, TestObject);
@@ -121,4 +121,4 @@ ChildTestObject::ChildTestObject(const InputParameters& params)
                          << "num_sub_groups=" << num_sub_groups_;
 }
 
-} // namespace chi_unit_testsB
+} // namespace unit_tests

@@ -7,7 +7,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_tests
+namespace unit_tests
 {
 
 ParameterBlock chi_misc_utils_Test00(const InputParameters& params);
@@ -35,4 +35,4 @@ chi_misc_utils_Test00(const InputParameters&)
   return ParameterBlock();
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

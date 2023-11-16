@@ -5,7 +5,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_testsB
+namespace unit_tests
 {
 
 class TestSubObject : public ChiObject
@@ -40,4 +40,4 @@ public:
   explicit ChildTestObject(const InputParameters& params);
 };
 
-} // namespace chi_unit_testsB
+} // namespace unit_tests

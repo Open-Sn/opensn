@@ -16,7 +16,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_sim_tests
+namespace unit_sim_tests
 {
 
 ParameterBlock acceleration_Diffusion_CFEM(const InputParameters& params);
@@ -185,4 +185,4 @@ acceleration_Diffusion_CFEM(const InputParameters&)
   return ParameterBlock();
 }
 
-} // namespace chi_unit_sim_tests
+} //  namespace unit_sim_tests

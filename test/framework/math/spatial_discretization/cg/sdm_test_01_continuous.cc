@@ -16,7 +16,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_tests
+namespace unit_tests
 {
 
 InputParameters chi_math_SDM_Test01Syntax();
@@ -225,4 +225,4 @@ chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   return ParameterBlock{};
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

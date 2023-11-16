@@ -16,7 +16,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_tests
+namespace unit_tests
 {
 
 InputParameters chi_math_SDM_Test02Syntax();
@@ -501,4 +501,4 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
   return hp;
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

@@ -13,7 +13,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_tests
+namespace unit_tests
 {
 
 ParameterBlock chi_math_Test01_WDD_IJK_Sweep(const InputParameters& params);
@@ -147,4 +147,4 @@ chi_math_Test01_WDD_IJK_Sweep(const InputParameters&)
   return ParameterBlock();
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

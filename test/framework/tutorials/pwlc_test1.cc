@@ -13,7 +13,7 @@
 
 using namespace opensn;
 
-namespace chi_unit_sim_tests
+namespace unit_sim_tests
 {
 
 /**This is a simple test of the Finite Volume spatial discretization applied
@@ -170,4 +170,4 @@ chiSimTest03_PWLC(const InputParameters&)
   return ParameterBlock();
 }
 
-} // namespace chi_unit_sim_tests
+} // namespace unit_sim_tests
