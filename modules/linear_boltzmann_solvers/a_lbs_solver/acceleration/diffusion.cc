@@ -116,21 +116,21 @@ DiffusionSolver::Initialize()
   if (options.verbose)
     Chi::log.Log() << text_name_ << ": Global number of DOFs=" << num_global_dofs_;
 
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   Chi::log.Log() << "Sparsity pattern";
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   // Create Matrix
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
   sdm_.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, uk_man_);
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   Chi::log.Log() << "Done Sparsity pattern";
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   A_ = CreateSquareMatrix(num_local_dofs_, num_global_dofs_);
   InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   Chi::log.Log() << "Done matrix creation";
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   // Create RHS
   if (not requires_ghosts_) rhs_ = CreateVector(num_local_dofs_, num_global_dofs_);
@@ -140,9 +140,9 @@ DiffusionSolver::Initialize()
                                   static_cast<int64_t>(sdm_.GetNumGhostDOFs(uk_man_)),
                                   sdm_.GetGhostDOFIndices(uk_man_));
 
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   Chi::log.Log() << "Done vector creation";
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   // Create KSP
   KSPCreate(PETSC_COMM_WORLD, &ksp_);

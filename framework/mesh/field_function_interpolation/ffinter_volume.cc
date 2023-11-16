@@ -99,7 +99,7 @@ FieldFunctionInterpolationVolume::Execute()
       op_type_ == FieldFunctionInterpolationOperation::OP_SUM_LUA)
   {
     double global_sum;
-    MPI_Allreduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
+    MPI_Allreduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
     op_value_ = global_sum;
   }
   if (op_type_ == FieldFunctionInterpolationOperation::OP_AVG or
@@ -108,7 +108,7 @@ FieldFunctionInterpolationVolume::Execute()
     double local_data[] = {local_volume, local_sum};
     double global_data[] = {0.0, 0.0};
 
-    MPI_Allreduce(&local_data, &global_data, 2, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
+    MPI_Allreduce(&local_data, &global_data, 2, MPI_DOUBLE, MPI_SUM, mpi.comm);
     double global_volume = global_data[0];
     double global_sum = global_data[1];
     op_value_ = global_sum / global_volume;
@@ -117,7 +117,7 @@ FieldFunctionInterpolationVolume::Execute()
       op_type_ == FieldFunctionInterpolationOperation::OP_MAX_LUA)
   {
     double global_value;
-    MPI_Allreduce(&local_max, &global_value, 1, MPI_DOUBLE, MPI_MAX, Chi::mpi.comm);
+    MPI_Allreduce(&local_max, &global_value, 1, MPI_DOUBLE, MPI_MAX, mpi.comm);
     op_value_ = global_value;
   }
 }

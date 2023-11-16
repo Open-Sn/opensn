@@ -79,11 +79,12 @@ struct CSTMemory
 class Object;
 typedef std::shared_ptr<Object> ChiObjectPtr;
 
+extern MPI_Info& mpi;
+
 /**General utilities in ChiTech*/
 class Chi
 {
 public:
-  static MPI_Info& mpi;
   static Timer program_timer;
   static Console& console;
   static Logger& log;

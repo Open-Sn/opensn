@@ -74,7 +74,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   } // for csoi
 
   Chi::log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   // Populate boundary dependencies
   for (auto bndry : location_boundary_dependency_set)
@@ -105,7 +105,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   delayed_local_psi_Gn_block_strideG = delayed_local_psi_Gn_block_stride * /*G=*/1;
 
   Chi::log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   // Clean up
   so_cell_outb_face_slot_indices.shrink_to_fit();
@@ -466,7 +466,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
               MPI_INT,
               locJ,
               101 + tag_index,
-              Chi::mpi.comm,
+              mpi.comm,
               &send_requests[deplocI]);
 
     // TODO: Watch eager limits on sent data
@@ -485,7 +485,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     int locJ = delayed_location_dependencies[prelocI];
 
     MPI_Status probe_status;
-    MPI_Probe(locJ, 101 + tag_index, Chi::mpi.comm, &probe_status);
+    MPI_Probe(locJ, 101 + tag_index, mpi.comm, &probe_status);
 
     int amount_to_receive = 0;
     MPI_Get_count(&probe_status, MPI_INT, &amount_to_receive);
@@ -498,7 +498,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
              MPI_INT,
              locJ,
              101 + tag_index,
-             Chi::mpi.comm,
+             mpi.comm,
              MPI_STATUS_IGNORE);
 
     DeSerializeCellInfo(
@@ -520,7 +520,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     int locJ = location_dependencies[prelocI];
 
     MPI_Status probe_status;
-    MPI_Probe(locJ, 101 + tag_index, Chi::mpi.comm, &probe_status);
+    MPI_Probe(locJ, 101 + tag_index, mpi.comm, &probe_status);
 
     int amount_to_receive = 0;
     MPI_Get_count(&probe_status, MPI_INT, &amount_to_receive);
@@ -533,7 +533,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
              MPI_INT,
              locJ,
              101 + tag_index,
-             Chi::mpi.comm,
+             mpi.comm,
              MPI_STATUS_IGNORE);
 
     DeSerializeCellInfo(
@@ -558,7 +558,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
               MPI_INT,
               locJ,
               101 + tag_index,
-              Chi::mpi.comm,
+              mpi.comm,
               &send_requests[deplocI]);
 
     // TODO: Watch eager limits on sent data

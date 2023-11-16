@@ -84,7 +84,7 @@ NonLinearSolver::Setup()
   if (IsSystemSet()) return;
   this->PreSetupCallback();
 
-  SNESCreate(Chi::mpi.comm, &nl_solver_);
+  SNESCreate(mpi.comm, &nl_solver_);
 
   SNESSetOptionsPrefix(nl_solver_, solver_name_.c_str());
 

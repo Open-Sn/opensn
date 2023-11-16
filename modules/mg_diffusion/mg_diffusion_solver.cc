@@ -284,7 +284,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
 
   Chi::log.Log() << "Materials Initialized:\n" << materials_list.str() << "\n";
 
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Compute last fast group
   // initialize last fast group

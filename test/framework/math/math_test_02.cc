@@ -23,13 +23,13 @@ chi_math_Test02_ParallelVector(const InputParameters&)
 {
   using namespace opensn;
 
-  ChiLogicalErrorIf(opensn::Chi::mpi.process_count != 2, "Requires 2 processors");
+  ChiLogicalErrorIf(opensn::mpi.process_count != 2, "Requires 2 processors");
 
   opensn::Chi::log.Log() << "Testing ParallelSTLVector" << std::endl;
 
-  ParallelSTLVector vec(5, 10, opensn::Chi::mpi.comm);
+  ParallelSTLVector vec(5, 10, opensn::mpi.comm);
 
-  if (opensn::Chi::mpi.location_id == 0) vec.SetValue(5, 2.0, VecOpType::SET_VALUE);
+  if (opensn::mpi.location_id == 0) vec.SetValue(5, 2.0, VecOpType::SET_VALUE);
   else
     vec.SetValue(0, 1.0, VecOpType::SET_VALUE);
   vec.Assemble();
@@ -38,12 +38,12 @@ chi_math_Test02_ParallelVector(const InputParameters&)
 
   opensn::Chi::log.Log() << "Testing GhostedParallelSTLVector" << std::endl;
 
-  const int64_t ghost_id = opensn::Chi::mpi.location_id == 0 ? 5 : 4;
-  GhostedParallelSTLVector ghost_vec(5, 10, {ghost_id}, opensn::Chi::mpi.comm);
+  const int64_t ghost_id = opensn::mpi.location_id == 0 ? 5 : 4;
+  GhostedParallelSTLVector ghost_vec(5, 10, {ghost_id}, opensn::mpi.comm);
 
   opensn::Chi::log.LogAll() << "Number of Ghosts: " << ghost_vec.NumGhosts() << std::endl;
 
-  if (opensn::Chi::mpi.location_id == 0) ghost_vec.SetValue(5, 2.0, VecOpType::SET_VALUE);
+  if (opensn::mpi.location_id == 0) ghost_vec.SetValue(5, 2.0, VecOpType::SET_VALUE);
   else
     ghost_vec.SetValue(4, 1.0, VecOpType::SET_VALUE);
   ghost_vec.Assemble();
@@ -79,11 +79,11 @@ chi_math_Test02_ParallelVector(const InputParameters&)
 
   opensn::Chi::log.Log() << "Testing ParallelSTLVector "
                          << "ADD_VALUE and CopyValues" << std::endl;
-  ParallelSTLVector vec2(5, 10, opensn::Chi::mpi.comm);
+  ParallelSTLVector vec2(5, 10, opensn::mpi.comm);
 
   vec2.CopyLocalValues(vec);
 
-  if (opensn::Chi::mpi.location_id == 0) vec2.SetValue(5, 2.0, VecOpType::ADD_VALUE);
+  if (opensn::mpi.location_id == 0) vec2.SetValue(5, 2.0, VecOpType::ADD_VALUE);
   else
     vec2.SetValue(0, 1.0, VecOpType::ADD_VALUE);
   vec2.Assemble();
@@ -92,9 +92,9 @@ chi_math_Test02_ParallelVector(const InputParameters&)
 
   opensn::Chi::log.Log() << "Testing ParallelSTLVector "
                          << "SetValues" << std::endl;
-  ParallelSTLVector vec3(5, 10, opensn::Chi::mpi.comm);
+  ParallelSTLVector vec3(5, 10, opensn::mpi.comm);
 
-  if (opensn::Chi::mpi.location_id == 0) vec3.SetValues({5, 6}, {2.0, 3.0}, VecOpType::ADD_VALUE);
+  if (opensn::mpi.location_id == 0) vec3.SetValues({5, 6}, {2.0, 3.0}, VecOpType::ADD_VALUE);
   else
     vec3.SetValues({0, 1}, {1.0, 4.0}, VecOpType::ADD_VALUE);
   vec3.Assemble();
@@ -107,18 +107,17 @@ chi_math_Test02_ParallelVector(const InputParameters&)
                          << std::endl;
 
   std::vector<int64_t> ghost_ids;
-  if (opensn::Chi::mpi.location_id == 0) ghost_ids = {5, 6};
+  if (opensn::mpi.location_id == 0) ghost_ids = {5, 6};
   else
     ghost_ids = {0, 1, 3};
-  VectorGhostCommunicator vgc(5, 10, ghost_ids, opensn::Chi::mpi.comm);
+  VectorGhostCommunicator vgc(5, 10, ghost_ids, opensn::mpi.comm);
 
   GhostedParallelSTLVector ghost_vec2(vgc);
 
   opensn::Chi::log.LogAll() << "ghost_vec2 local size with ghosts "
                             << ghost_vec2.LocalSizeWithGhosts() << std::endl;
 
-  if (opensn::Chi::mpi.location_id == 0)
-    ghost_vec2.SetValues({5, 6}, {6.0, 7.0}, VecOpType::ADD_VALUE);
+  if (opensn::mpi.location_id == 0) ghost_vec2.SetValues({5, 6}, {6.0, 7.0}, VecOpType::ADD_VALUE);
   else
     ghost_vec2.SetValues({0, 1, 3}, {1.0, 2.0, 4.0}, VecOpType::ADD_VALUE);
 
@@ -134,7 +133,7 @@ chi_math_Test02_ParallelVector(const InputParameters&)
     opensn::Chi::log.LogAll() << "ghost_vec2 ghost ids: " << outstr.str() << std::endl;
   }
 
-  if (opensn::Chi::mpi.location_id == 0)
+  if (opensn::mpi.location_id == 0)
     opensn::Chi::log.LogAll() << "ghost_vec2 mapghostA: " << ghost_vec2.MapGhostToLocal(6)
                               << std::endl;
   else
@@ -149,14 +148,14 @@ chi_math_Test02_ParallelVector(const InputParameters&)
     opensn::Chi::log.LogAll() << "ghost_vec2 MakeGhostedLocalVector: " << outstr.str() << std::endl;
   }
 
-  if (opensn::Chi::mpi.location_id == 0)
+  if (opensn::mpi.location_id == 0)
     opensn::Chi::log.LogAll() << "ghost_vec2 GetGlobalValue(local): "
                               << ghost_vec2.GetGlobalValue(3) << std::endl;
   else
     opensn::Chi::log.LogAll() << "ghost_vec2 GetGlobalValue(local): "
                               << ghost_vec2.GetGlobalValue(6) << std::endl;
 
-  if (opensn::Chi::mpi.location_id == 0)
+  if (opensn::mpi.location_id == 0)
     opensn::Chi::log.LogAll() << "ghost_vec2 GetGlobalValue(ghost): "
                               << ghost_vec2.GetGlobalValue(6) << std::endl;
   else

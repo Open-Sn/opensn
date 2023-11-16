@@ -74,7 +74,7 @@ chi_data_types_Test00(const InputParameters&)
   // serialization
   opensn::Chi::log.Log() << "Testing ByteArray "
                             "Serialization/DeSerialization\n";
-  if (opensn::Chi::mpi.process_count == 2)
+  if (opensn::mpi.process_count == 2)
   {
 
     std::map<int /*pid*/, ByteArray> send_data;
@@ -151,7 +151,7 @@ chi_data_types_Test00(const InputParameters&)
       }
     }
 
-    if (opensn::Chi::mpi.location_id == 0)
+    if (opensn::mpi.location_id == 0)
     {
       send_data[1].Append(poster_child_cell.Serialize());
       send_data[1].Append(poster_child_cell.Serialize().Data());

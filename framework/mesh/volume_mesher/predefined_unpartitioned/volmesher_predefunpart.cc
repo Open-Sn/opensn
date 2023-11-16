@@ -115,9 +115,10 @@ VolumeMesherPredefinedUnpartitioned::Execute()
 
     int desired_process_count = Px * Py * Pz;
 
-    if (desired_process_count != Chi::mpi.process_count)
+    if (desired_process_count != opensn::mpi.process_count)
     {
-      Chi::log.LogAllError() << "ERROR: Number of processors available (" << Chi::mpi.process_count
+      Chi::log.LogAllError() << "ERROR: Number of processors available ("
+                             << opensn::mpi.process_count
                              << ") does not match amount of processors "
                                 "required by partitioning parameters ("
                              << desired_process_count << ").";
@@ -129,7 +130,7 @@ VolumeMesherPredefinedUnpartitioned::Execute()
   ChiLogicalErrorIf(umesh_ptr_ == nullptr, "nullptr encountered for unparitioned mesh");
 
   Chi::log.Log() << "Computed centroids";
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   // Apply partitioning scheme
   std::vector<int64_t> cell_pids;
@@ -163,7 +164,7 @@ VolumeMesherPredefinedUnpartitioned::Execute()
   grid->SetGlobalVertexCount(umesh_ptr_->GetVertices().size());
 
   Chi::log.Log() << "Cells loaded.";
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   SetContinuum(grid);
   SetGridAttributes(umesh_ptr_->GetMeshAttributes(),
@@ -172,14 +173,14 @@ VolumeMesherPredefinedUnpartitioned::Execute()
                      umesh_ptr_->GetMeshOptions().ortho_Nz});
 
   // Concluding messages
-  Chi::log.LogAllVerbose1() << "### LOCATION[" << Chi::mpi.location_id
+  Chi::log.LogAllVerbose1() << "### LOCATION[" << opensn::mpi.location_id
                             << "] amount of local cells=" << grid->local_cells.size();
 
   size_t total_local_cells = grid->local_cells.size();
   size_t total_global_cells = 0;
 
   MPI_Allreduce(
-    &total_local_cells, &total_global_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
+    &total_local_cells, &total_global_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi.comm);
 
   Chi::log.Log() << "VolumeMesherPredefinedUnpartitioned: Cells created = " << total_global_cells
                  << std::endl;
@@ -216,7 +217,7 @@ VolumeMesherPredefinedUnpartitioned::KBA(const UnpartitionedMesh& umesh)
 
   // Determine cell partition-IDs only on home location
   std::vector<int64_t> cell_pids(num_raw_cells, 0);
-  if (Chi::mpi.location_id == 0)
+  if (opensn::mpi.location_id == 0)
   {
     uint64_t cell_id = 0;
     for (auto& raw_cell : umesh.GetRawCells())
@@ -224,7 +225,7 @@ VolumeMesherPredefinedUnpartitioned::KBA(const UnpartitionedMesh& umesh)
   } // if home location
 
   // Broadcast partitioning to all locations
-  MPI_Bcast(cell_pids.data(), static_cast<int>(num_raw_cells), MPI_LONG_LONG_INT, 0, Chi::mpi.comm);
+  MPI_Bcast(cell_pids.data(), static_cast<int>(num_raw_cells), MPI_LONG_LONG_INT, 0, mpi.comm);
   Chi::log.Log() << "Done partitioning mesh.";
 
   return cell_pids;
@@ -246,7 +247,7 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
 
   // Start building indices
   std::vector<int64_t> cell_pids(num_raw_cells, 0);
-  if (Chi::mpi.location_id == 0)
+  if (opensn::mpi.location_id == 0)
   {
     if (num_raw_cells > 1)
     {
@@ -306,7 +307,7 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
       MatPartitioningCreate(MPI_COMM_SELF, &part);
       MatPartitioningSetAdjacency(part, Adj);
       MatPartitioningSetType(part, "parmetis");
-      MatPartitioningSetNParts(part, Chi::mpi.process_count);
+      MatPartitioningSetNParts(part, opensn::mpi.process_count);
       MatPartitioningApply(part, &is);
       MatPartitioningDestroy(&part);
       MatDestroy(&Adj);
@@ -325,7 +326,7 @@ VolumeMesherPredefinedUnpartitioned::PARMETIS(const UnpartitionedMesh& umesh)
   }   // if home location
 
   // Broadcast partitioning to all locations
-  MPI_Bcast(cell_pids.data(), static_cast<int>(num_raw_cells), MPI_LONG_LONG_INT, 0, Chi::mpi.comm);
+  MPI_Bcast(cell_pids.data(), static_cast<int>(num_raw_cells), MPI_LONG_LONG_INT, 0, mpi.comm);
   Chi::log.Log() << "Done partitioning mesh.";
 
   return cell_pids;
@@ -340,7 +341,7 @@ VolumeMesherPredefinedUnpartitioned::CellHasLocalScope(
 {
   // First determine if the cell is a local cell
   int cell_pid = static_cast<int>(cell_partition_ids[cell_global_id]);
-  if (cell_pid == Chi::mpi.location_id) return true;
+  if (cell_pid == opensn::mpi.location_id) return true;
 
   // Now determine if the cell is a ghost cell
   for (uint64_t vid : lwcell.vertex_ids)
@@ -348,7 +349,7 @@ VolumeMesherPredefinedUnpartitioned::CellHasLocalScope(
     {
       if (cid == cell_global_id) continue;
       int adj_pid = static_cast<int>(cell_partition_ids[cid]);
-      if (adj_pid == Chi::mpi.location_id) return true;
+      if (adj_pid == opensn::mpi.location_id) return true;
     }
 
   return false;

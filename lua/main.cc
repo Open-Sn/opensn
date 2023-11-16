@@ -23,9 +23,9 @@ main(int argc, char** argv)
   MPI_Comm_rank(communicator, &location_id);
   MPI_Comm_size(communicator, &number_processes);
 
-  opensn::Chi::mpi.SetCommunicator(communicator);
-  opensn::Chi::mpi.SetLocationID(location_id);
-  opensn::Chi::mpi.SetProcessCount(number_processes);
+  opensn::mpi.SetCommunicator(communicator);
+  opensn::mpi.SetLocationID(location_id);
+  opensn::mpi.SetProcessCount(number_processes);
 
   opensnlua::LoadRegisteredLuaItems();
   opensn::Chi::console.PostMPIInfo(location_id, number_processes);

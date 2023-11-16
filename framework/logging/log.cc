@@ -36,9 +36,9 @@ Logger::Log(LOG_LVL level)
     case LOG_0VERBOSE_0:
     case LOG_0:
     {
-      if (Chi::mpi.location_id == 0)
+      if (opensn::mpi.location_id == 0)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         return {&std::cout, header};
       }
       else
@@ -49,9 +49,9 @@ Logger::Log(LOG_LVL level)
     }
     case LOG_0WARNING:
     {
-      if (Chi::mpi.location_id == 0)
+      if (opensn::mpi.location_id == 0)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_YELLOW) + "**WARNING** ";
         return {&std::cout, header};
       }
@@ -63,9 +63,9 @@ Logger::Log(LOG_LVL level)
     }
     case LOG_0ERROR:
     {
-      if (Chi::mpi.location_id == 0)
+      if (opensn::mpi.location_id == 0)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_RED) + "**!**ERROR**!** ";
         return {&std::cerr, header};
       }
@@ -78,9 +78,9 @@ Logger::Log(LOG_LVL level)
 
     case LOG_0VERBOSE_1:
     {
-      if ((Chi::mpi.location_id == 0) && (verbosity_ >= 1))
+      if ((opensn::mpi.location_id == 0) && (verbosity_ >= 1))
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_CYAN);
         return {&std::cout, header};
       }
@@ -92,9 +92,9 @@ Logger::Log(LOG_LVL level)
     }
     case Logger::LOG_LVL::LOG_0VERBOSE_2:
     {
-      if ((Chi::mpi.location_id == 0) && (verbosity_ >= 2))
+      if ((opensn::mpi.location_id == 0) && (verbosity_ >= 2))
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_MAGENTA);
         return {&std::cout, header};
       }
@@ -107,18 +107,18 @@ Logger::Log(LOG_LVL level)
     case LOG_ALLVERBOSE_0:
     case LOG_ALL:
     {
-      std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+      std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
       return {&std::cout, header};
     }
     case LOG_ALLWARNING:
     {
-      std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+      std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
       header += StringStreamColor(FG_YELLOW) + "**WARNING** ";
       return {&std::cout, header};
     }
     case LOG_ALLERROR:
     {
-      std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+      std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
       header += StringStreamColor(FG_RED) + "**!**ERROR**!** ";
       return {&std::cerr, header};
     }
@@ -127,7 +127,7 @@ Logger::Log(LOG_LVL level)
     {
       if (verbosity_ >= 1)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_CYAN);
         return {&std::cout, header};
       }
@@ -141,7 +141,7 @@ Logger::Log(LOG_LVL level)
     {
       if (verbosity_ >= 2)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_MAGENTA);
         return {&std::cout, header};
       }
@@ -222,7 +222,7 @@ Logger::PrintEventHistory(size_t ev_tag)
 
   for (auto& event : ref_rep_event.Events())
   {
-    outstr << "[" << Chi::mpi.location_id << "] ";
+    outstr << "[" << opensn::mpi.location_id << "] ";
 
     char buf[100];
     snprintf(buf, 100, "%16.9f", event.ev_time / 1000.0);

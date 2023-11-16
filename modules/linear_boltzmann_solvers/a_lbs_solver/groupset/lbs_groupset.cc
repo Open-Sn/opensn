@@ -269,7 +269,7 @@ lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name
   ofile.open(file_name, std::ofstream::out);
 
   ofile << "Groupset Sweep information "
-        << "location " << Chi::mpi.location_id << "\n";
+        << "location " << opensn::mpi.location_id << "\n";
 
   // Print all anglesets
   for (int q = 0; q < angle_agg_->angle_set_groups.size(); ++q)

@@ -388,7 +388,7 @@ chi_math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
     local_max = std::max(val, local_max);
 
   double global_max;
-  MPI_Allreduce(&local_max, &global_max, 1, MPI_DOUBLE, MPI_MAX, opensn::Chi::mpi.comm);
+  MPI_Allreduce(&local_max, &global_max, 1, MPI_DOUBLE, MPI_MAX, opensn::mpi.comm);
 
   opensn::Chi::log.Log() << "Nodal max = " << global_max;
 

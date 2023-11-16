@@ -163,14 +163,14 @@ SweepWGSContext::PostSolveCallback()
       Chi::log.Log() << "        Average sweep time (s):        " << sweep_time;
       Chi::log.Log() << "        Chunk-Overhead-Ratio  :        " << chunk_overhead_ratio;
       Chi::log.Log() << "        Sweep Time/Unknown (ns):       "
-                     << sweep_time * 1.0e9 * Chi::mpi.process_count /
+                     << sweep_time * 1.0e9 * opensn::mpi.process_count /
                           static_cast<double>(num_unknowns);
       Chi::log.Log() << "        Number of unknowns per sweep:  " << num_unknowns;
       Chi::log.Log() << "\n\n";
 
-      std::string sweep_log_file_name = std::string("GS_") + std::to_string(groupset_.id_) +
-                                        std::string("_SweepLog_") +
-                                        std::to_string(Chi::mpi.location_id) + std::string(".log");
+      std::string sweep_log_file_name =
+        std::string("GS_") + std::to_string(groupset_.id_) + std::string("_SweepLog_") +
+        std::to_string(opensn::mpi.location_id) + std::string(".log");
       groupset_.PrintSweepInfoFile(sweep_scheduler_.SweepEventTag(), sweep_log_file_name);
     }
   }

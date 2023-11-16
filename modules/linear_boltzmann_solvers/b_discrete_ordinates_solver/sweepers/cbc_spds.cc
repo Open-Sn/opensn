@@ -96,7 +96,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
 
   // auto& global_dependencies = sweep_order->global_dependencies;
   std::vector<std::vector<int>> global_dependencies;
-  global_dependencies.resize(Chi::mpi.process_count);
+  global_dependencies.resize(opensn::mpi.process_count);
 
   CommunicateLocationDependencies(location_dependencies_, global_dependencies);
 
@@ -129,7 +129,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
     task_list_.push_back({num_dependencies, succesors, cell.local_id_, &cell, false});
   } // for cell in SPLS
 
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
                           << " Done computing sweep ordering.\n\n";

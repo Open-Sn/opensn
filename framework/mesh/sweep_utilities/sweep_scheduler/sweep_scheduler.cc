@@ -38,8 +38,7 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
 
   // Reconcile all local maximums
   int global_max_num_messages = 0;
-  MPI_Allreduce(
-    &local_max_num_messages, &global_max_num_messages, 1, MPI_INT, MPI_MAX, Chi::mpi.comm);
+  MPI_Allreduce(&local_max_num_messages, &global_max_num_messages, 1, MPI_INT, MPI_MAX, mpi.comm);
 
   // Propogate items back to sweep buffers
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)
@@ -77,7 +76,7 @@ SweepScheduler::InitializeAlgoDOG()
       {
         for (size_t index = 0; index < leveled_graph[level].item_id.size(); index++)
         {
-          if (leveled_graph[level].item_id[index] == Chi::mpi.location_id)
+          if (leveled_graph[level].item_id[index] == opensn::mpi.location_id)
           {
             loc_depth = static_cast<int>(leveled_graph.size() - level);
             break;
@@ -190,7 +189,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       {
         std::stringstream message_i;
         message_i << "Angleset " << angleset->GetID() << " executed on location "
-                  << Chi::mpi.location_id;
+                  << opensn::mpi.location_id;
 
         auto ev_info_i = std::make_shared<Logger::EventInfo>(message_i.str());
 
@@ -200,7 +199,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 
         std::stringstream message_f;
         message_f << "Angleset " << angleset->GetID() << " finished on location "
-                  << Chi::mpi.location_id;
+                  << opensn::mpi.location_id;
 
         auto ev_info_f = std::make_shared<Logger::EventInfo>(message_f.str());
 
@@ -214,7 +213,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
   }   // while not finished
 
   // Receive delayed data
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   bool received_delayed_data = false;
   while (not received_delayed_data)
   {
@@ -275,7 +274,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
   }     // while not finished
 
   // Receive delayed data
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   bool received_delayed_data = false;
   while (not received_delayed_data)
   {

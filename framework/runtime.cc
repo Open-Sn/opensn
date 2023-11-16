@@ -37,7 +37,7 @@ namespace opensn
 // Global variables
 Console& Chi::console = Console::GetInstance();
 Logger& Chi::log = Logger::GetInstance();
-MPI_Info& Chi::mpi = MPI_Info::GetInstance();
+MPI_Info& mpi = MPI_Info::GetInstance();
 Timer Chi::program_timer;
 
 std::vector<MeshHandlerPtr> Chi::meshhandler_stack;
@@ -176,9 +176,9 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
   MPI_Comm_rank(communicator, &location_id);
   MPI_Comm_size(communicator, &number_processes);
 
-  Chi::mpi.SetCommunicator(communicator);
-  Chi::mpi.SetLocationID(location_id);
-  Chi::mpi.SetProcessCount(number_processes);
+  mpi.SetCommunicator(communicator);
+  mpi.SetLocationID(location_id);
+  mpi.SetProcessCount(number_processes);
 
   Chi::console.PostMPIInfo(location_id, number_processes);
 
@@ -233,7 +233,7 @@ Chi::RunInteractive(int argc, char** argv)
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
     Chi::Chi::log.Log() << Timer::GetLocalDateTimeString()
-                        << " Running ChiTech in interactive-mode with " << Chi::mpi.process_count
+                        << " Running ChiTech in interactive-mode with " << mpi.process_count
                         << " processes.";
 
     Chi::Chi::log.Log() << "ChiTech version " << Chi::GetVersionStr();
@@ -277,7 +277,7 @@ Chi::RunBatch(int argc, char** argv)
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
     Chi::log.Log() << Timer::GetLocalDateTimeString() << " Running ChiTech in batch-mode with "
-                   << Chi::mpi.process_count << " processes.";
+                   << mpi.process_count << " processes.";
 
     Chi::log.Log() << "ChiTech version " << Chi::GetVersionStr();
   }
@@ -289,14 +289,14 @@ Chi::RunBatch(int argc, char** argv)
 
 #ifndef NDEBUG
   Chi::log.Log() << "Waiting...";
-  if (Chi::mpi.location_id == 0)
+  if (mpi.location_id == 0)
     for (int k = 0; k < 2; ++k)
     {
       usleep(1000000);
       Chi::log.Log() << k;
     }
 
-  Chi::mpi.Barrier();
+  mpi.Barrier();
 #endif
 
   const auto& input_fname = Chi::run_time::input_file_name_;
@@ -328,7 +328,7 @@ Chi::RunBatch(int argc, char** argv)
 void
 Chi::Exit(int error_code)
 {
-  MPI_Abort(Chi::mpi.comm, error_code);
+  MPI_Abort(mpi.comm, error_code);
 }
 
 std::string

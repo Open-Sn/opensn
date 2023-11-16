@@ -124,12 +124,12 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
   }   // for cell-id
 
   double globl_integral;
-  MPI_Allreduce(&local_integral, &globl_integral, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
+  MPI_Allreduce(&local_integral, &globl_integral, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
   if (not compute_volume_average_) value_ = ParameterBlock("", globl_integral);
   else
   {
     double globl_volume;
-    MPI_Allreduce(&local_volume, &globl_volume, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
+    MPI_Allreduce(&local_volume, &globl_volume, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
 
     value_ = ParameterBlock("", globl_integral / globl_volume);
   }

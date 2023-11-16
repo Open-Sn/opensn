@@ -75,7 +75,7 @@ LagrangeContinuous::OrderNodes()
   typedef std::set<uint64_t> PSUBS;
   std::map<uint64_t, PSUBS> ls_node_ids_psubs;
   for (const uint64_t node_id : ls_node_ids_set)
-    ls_node_ids_psubs[node_id] = {static_cast<uint64_t>(Chi::mpi.location_id)};
+    ls_node_ids_psubs[node_id] = {static_cast<uint64_t>(opensn::mpi.location_id)};
 
   // Now we add the partitions associated with the
   // ghost cells.
@@ -93,31 +93,31 @@ LagrangeContinuous::OrderNodes()
   std::map<uint64_t, std::vector<uint64_t>> nonlocal_node_ids_map;
   for (const uint64_t node_id : ls_node_ids_set)
   {
-    uint64_t smallest_partition_id = Chi::mpi.location_id;
+    uint64_t smallest_partition_id = opensn::mpi.location_id;
     for (const uint64_t pid : ls_node_ids_psubs[node_id]) // pid = partition id
       smallest_partition_id = std::min(smallest_partition_id, pid);
 
-    if (smallest_partition_id == Chi::mpi.location_id) local_node_ids.push_back(node_id);
+    if (smallest_partition_id == opensn::mpi.location_id) local_node_ids.push_back(node_id);
     else
       nonlocal_node_ids_map[smallest_partition_id].push_back(node_id);
   }
 
   // Communicate node counts
   const uint64_t local_num_nodes = local_node_ids.size();
-  locJ_block_size_.assign(Chi::mpi.process_count, 0);
+  locJ_block_size_.assign(opensn::mpi.process_count, 0);
   MPI_Allgather(
-    &local_num_nodes, 1, MPI_UINT64_T, locJ_block_size_.data(), 1, MPI_UINT64_T, Chi::mpi.comm);
+    &local_num_nodes, 1, MPI_UINT64_T, locJ_block_size_.data(), 1, MPI_UINT64_T, mpi.comm);
 
   // Build block addresses
-  locJ_block_address_.assign(Chi::mpi.process_count, 0);
+  locJ_block_address_.assign(opensn::mpi.process_count, 0);
   uint64_t global_num_nodes = 0;
-  for (int j = 0; j < Chi::mpi.process_count; ++j)
+  for (int j = 0; j < opensn::mpi.process_count; ++j)
   {
     locJ_block_address_[j] = global_num_nodes;
     global_num_nodes += locJ_block_size_[j];
   }
 
-  local_block_address_ = locJ_block_address_[Chi::mpi.location_id];
+  local_block_address_ = locJ_block_address_[opensn::mpi.location_id];
 
   local_base_block_size_ = local_num_nodes;
   globl_base_block_size_ = global_num_nodes;
@@ -351,7 +351,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
 
   // Step 1
   // We now serialize the non-local data
-  std::vector<std::vector<int64_t>> locI_serialized(Chi::mpi.process_count);
+  std::vector<std::vector<int64_t>> locI_serialized(opensn::mpi.process_count);
 
   for (const auto& ir_linkage : ir_links)
   {
@@ -367,26 +367,26 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
   // Establish the size of the serialized data
   // to send to each location and communicate
   // to get receive count.
-  std::vector<int> sendcount(Chi::mpi.process_count, 0);
-  std::vector<int> recvcount(Chi::mpi.process_count, 0);
+  std::vector<int> sendcount(opensn::mpi.process_count, 0);
+  std::vector<int> recvcount(opensn::mpi.process_count, 0);
   int locI = 0;
   for (const auto& locI_data : locI_serialized)
   {
     sendcount[locI] = static_cast<int>(locI_data.size());
 
-    if (Chi::mpi.location_id == 0)
+    if (opensn::mpi.location_id == 0)
       Chi::log.LogAllVerbose1() << "To send to " << locI << " = " << sendcount[locI];
 
     ++locI;
   }
 
-  MPI_Alltoall(sendcount.data(), 1, MPI_INT, recvcount.data(), 1, MPI_INT, Chi::mpi.comm);
+  MPI_Alltoall(sendcount.data(), 1, MPI_INT, recvcount.data(), 1, MPI_INT, mpi.comm);
 
   // Step 3
   // We now establish send displacements and
   // receive displacements.
-  std::vector<int> send_displs(Chi::mpi.process_count, 0);
-  std::vector<int> recv_displs(Chi::mpi.process_count, 0);
+  std::vector<int> send_displs(opensn::mpi.process_count, 0);
+  std::vector<int> recv_displs(opensn::mpi.process_count, 0);
 
   int send_displ_c = 0;
   int recv_displ_c = 0;
@@ -427,7 +427,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
                 recvcount.data(),
                 recv_displs.data(),
                 MPI_INT64_T,
-                Chi::mpi.comm);
+                mpi.comm);
 
   // Deserialze data
   Chi::log.Log0Verbose1() << "Deserialize data.";
@@ -469,7 +469,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
     }
   }
 
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   // Spacing according to unknown manager
   auto backup_nnz_in_diag = nodal_nnz_in_diag;
@@ -531,7 +531,7 @@ LagrangeContinuous::MapDOF(const Cell& cell,
   int64_t address = -1;
   if (storage == UnknownStorageType::BLOCK)
   {
-    for (int locJ = 0; locJ < Chi::mpi.process_count; ++locJ)
+    for (int locJ = 0; locJ < opensn::mpi.process_count; ++locJ)
     {
       const int64_t local_id = global_id - sc_int64(locJ_block_address_[locJ]);
 
@@ -636,7 +636,7 @@ LagrangeContinuous::GetGhostDOFIndices(const UnknownManager& unknown_manager) co
         int64_t address = -1;
         if (storage == UnknownStorageType::BLOCK)
         {
-          for (int locJ = 0; locJ < Chi::mpi.process_count; ++locJ)
+          for (int locJ = 0; locJ < opensn::mpi.process_count; ++locJ)
           {
             const int64_t local_id = global_id - sc_int64(locJ_block_address_[locJ]);
 

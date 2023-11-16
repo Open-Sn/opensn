@@ -49,7 +49,7 @@ chiSimTest06_WDD(const InputParameters&)
 
   opensn::Chi::log.Log() << "chiSimTest06_WDD num_args = " << 0;
 
-  if (opensn::Chi::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
+  if (opensn::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();

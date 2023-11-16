@@ -376,7 +376,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
   for (const auto& cell : grid_ptr_->local_cells)
     secondary_unit_cell_matrices_[cell.local_id_] = ComputeCellUnitIntegrals(cell);
 
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   Chi::log.Log() << "Secondary Cell matrices computed.         Process memory = "
                  << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
 }

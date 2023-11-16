@@ -1127,7 +1127,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
     Chi::Exit(EXIT_FAILURE);
   }
 
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
   Chi::log.Log() << "Making Unpartitioned mesh from wavefront file " << options.file_name;
 
   typedef std::pair<uint64_t, uint64_t> Edge;
@@ -1489,7 +1489,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   }
 
   Chi::log.Log() << "Making Unpartitioned mesh from msh format file " << options.file_name;
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 
   // Declarations
   std::string file_line;

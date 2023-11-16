@@ -45,7 +45,7 @@ Solver::GetMaterialProperties(const Cell& cell,
                               int moment)
 {
   uint64_t cell_glob_index = cell.global_id_;
-  bool cell_is_local = (cell.partition_id_ == Chi::mpi.location_id);
+  bool cell_is_local = (cell.partition_id_ == opensn::mpi.location_id);
   uint64_t cell_local_id = cell.local_id_;
   int mat_id = cell.material_id_;
 
@@ -304,7 +304,7 @@ Solver::Initialize(bool verbose)
     unit_integrals_.insert(std::make_pair(global_id, UnitIntegralContainer::Make(cell_mapping)));
   }
 
-  MPI_Barrier(Chi::mpi.comm);
+  MPI_Barrier(mpi.comm);
   auto& sdm = discretization_;
 
   // Get DOF counts
@@ -497,7 +497,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   if (!suppress_assembly)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
                    << ": Done Assembling A locally";
-  MPI_Barrier(Chi::mpi.comm);
+  MPI_Barrier(mpi.comm);
 
   // Call matrix assembly
   if (verbose_info_ || Chi::log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
@@ -586,7 +586,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
       Chi::log.Log() << "Convergence reason: " << GetPETScConvergedReasonstring(reason);
 
     // Location wise view
-    if (Chi::mpi.location_id == 0)
+    if (opensn::mpi.location_id == 0)
     {
       int64_t its;
       ierr_ = KSPGetIterationNumber(ksp_, &its);
