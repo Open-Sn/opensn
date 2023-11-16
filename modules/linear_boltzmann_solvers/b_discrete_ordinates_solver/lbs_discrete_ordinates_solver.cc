@@ -737,7 +737,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const int groupset_id, const uint64_t bo
 void
 DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 {
-  log.Log() << Chi::program_timer.GetTimeString() << " Initializing sweep datastructures.\n";
+  log.Log() << program_timer.GetTimeString() << " Initializing sweep datastructures.\n";
 
   // Perform checks
   {
@@ -830,7 +830,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     }
   } // for quadrature spds-list pair
 
-  log.Log() << Chi::program_timer.GetTimeString() << " Done initializing sweep datastructures.\n";
+  log.Log() << program_timer.GetTimeString() << " Done initializing sweep datastructures.\n";
 }
 
 std::pair<UniqueSOGroupings, DirIDToSOMap>
@@ -1087,7 +1087,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg_->angle_set_groups.push_back(std::move(angle_set_group));
 
   if (options_.verbose_inner_iterations)
-    log.Log() << Chi::program_timer.GetTimeString() << " Initialized Angle Aggregation.   "
+    log.Log() << program_timer.GetTimeString() << " Initialized Angle Aggregation.   "
               << "         Process memory = " << std::setprecision(3) << GetMemoryUsageInMB()
               << " MB.";
 

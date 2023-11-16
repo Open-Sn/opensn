@@ -102,7 +102,7 @@ VolumeMesherPredefinedUnpartitioned::MakeCell(const UnpartitionedMesh::LightWeig
 void
 VolumeMesherPredefinedUnpartitioned::Execute()
 {
-  log.Log() << Chi::program_timer.GetTimeString()
+  log.Log() << program_timer.GetTimeString()
             << " VolumeMesherPredefinedUnpartitioned executing. Memory in use = "
             << GetMemoryUsageInMB() << " MB" << std::endl;
 

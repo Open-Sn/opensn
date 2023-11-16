@@ -36,7 +36,7 @@ fv_diffusion::Solver::Initialize()
 {
   const std::string fname = "fv_diffusion::Solver::Initialize";
   log.Log() << "\n"
-            << Chi::program_timer.GetTimeString() << " " << TextName()
+            << program_timer.GetTimeString() << " " << TextName()
             << ": Initializing CFEM Diffusion solver ";
 
   // Get grid

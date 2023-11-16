@@ -315,7 +315,7 @@ VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPt
 void
 VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int mat_id)
 {
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
+  log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Setting material id from logical volume.";
   // Get current mesh handler
   auto& handler = GetCurrentHandler();
@@ -343,7 +343,7 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
   int global_num_cells_modified;
   MPI_Allreduce(&num_cells_modified, &global_num_cells_modified, 1, MPI_INT, MPI_SUM, mpi.comm);
 
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
+  log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Done setting material id from logical volume. "
                      << "Number of cells modified = " << global_num_cells_modified << ".";
 }
@@ -353,7 +353,7 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
                                     bool sense,
                                     const std::string& bndry_name)
 {
-  log.Log() << Chi::program_timer.GetTimeString() << " Setting boundary id from logical volume.";
+  log.Log() << program_timer.GetTimeString() << " Setting boundary id from logical volume.";
   // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
@@ -385,15 +385,14 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
     grid_bndry_id_map[bndry_id] = bndry_name;
 
-  log.Log() << Chi::program_timer.GetTimeString()
-            << " Done setting boundary id from logical volume. "
+  log.Log() << program_timer.GetTimeString() << " Done setting boundary id from logical volume. "
             << "Number of faces modified = " << global_num_faces_modified << ".";
 }
 
 void
 VolumeMesher::SetMatIDToAll(int mat_id)
 {
-  log.Log() << Chi::program_timer.GetTimeString() << " Setting material id " << mat_id
+  log.Log() << program_timer.GetTimeString() << " Setting material id " << mat_id
             << " to all cells.";
 
   // Get current mesh handler
@@ -410,7 +409,7 @@ VolumeMesher::SetMatIDToAll(int mat_id)
     vol_cont->cells[ghost_id].material_id_ = mat_id;
 
   opensn::mpi.Barrier();
-  log.Log() << Chi::program_timer.GetTimeString() << " Done setting material id " << mat_id
+  log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
             << " to all cells";
 }
 
@@ -420,8 +419,7 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
 {
   const std::string fname = "VolumeMesher::SetMatIDFromLuaFunction";
 
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                     << " Setting material id from lua function.";
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Setting material id from lua function.";
 
   // Define console call
   auto L = console.GetConsoleState();
@@ -496,7 +494,7 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
   MPI_Allreduce(
     &local_num_cells_modified, &globl_num_cells_modified, 1, MPI_INT, MPI_SUM, mpi.comm);
 
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
+  log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Done setting material id from lua function. "
                      << "Number of cells modified = " << globl_num_cells_modified << ".";
 }
@@ -511,8 +509,7 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
   if (opensn::mpi.process_count != 1)
     throw std::logic_error(fname + ": Can for now only be used in serial.");
 
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                     << " Setting boundary id from lua function.";
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Setting boundary id from lua function.";
 
   // Define console call
   auto L = console.GetConsoleState();
@@ -607,7 +604,7 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
   MPI_Allreduce(
     &local_num_faces_modified, &globl_num_faces_modified, 1, MPI_INT, MPI_SUM, mpi.comm);
 
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
+  log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Done setting boundary id from lua function. "
                      << "Number of cells modified = " << globl_num_faces_modified << ".";
 }
@@ -616,7 +613,7 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
 void
 VolumeMesher::SetupOrthogonalBoundaries()
 {
-  log.Log() << Chi::program_timer.GetTimeString() << " Setting orthogonal boundaries.";
+  log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
 
   // Get current mesh handler
   auto& handler = GetCurrentHandler();
@@ -655,7 +652,7 @@ VolumeMesher::SetupOrthogonalBoundaries()
       } // if bndry
 
   opensn::mpi.Barrier();
-  log.Log() << Chi::program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
+  log.Log() << program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
 }
 
 void

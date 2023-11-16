@@ -123,7 +123,7 @@ XXPowerIterationKEigen::Execute()
     if (lbs_solver_.Options().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
-      k_iter_info << Chi::program_timer.GetTimeString() << " "
+      k_iter_info << program_timer.GetTimeString() << " "
                   << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
                   << std::setprecision(7) << k_eff_ << "  k_eff change " << std::setw(12)
                   << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;

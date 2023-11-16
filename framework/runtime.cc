@@ -32,7 +32,7 @@ namespace opensn
 Console& console = Console::GetInstance();
 Logger& log = Logger::GetInstance();
 MPI_Info& mpi = MPI_Info::GetInstance();
-Timer Chi::program_timer;
+Timer program_timer;
 
 std::vector<MeshHandlerPtr> Chi::meshhandler_stack;
 int Chi::current_mesh_handler = -1;
@@ -257,7 +257,7 @@ Chi::RunInteractive(int argc, char** argv)
 
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    log.Log() << "Final program time " << Chi::program_timer.GetTimeString();
+    log.Log() << "Final program time " << program_timer.GetTimeString();
     log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution.";
   }
 
@@ -310,7 +310,7 @@ Chi::RunBatch(int argc, char** argv)
 
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    log.Log() << "\nFinal program time " << Chi::program_timer.GetTimeString();
+    log.Log() << "\nFinal program time " << program_timer.GetTimeString();
     log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution of "
               << Chi::run_time::input_file_name_;
   }

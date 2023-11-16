@@ -44,7 +44,7 @@ Solver::Initialize()
 {
   const std::string fname = "Solver::Initialize";
   log.Log() << "\n"
-            << Chi::program_timer.GetTimeString() << " " << TextName()
+            << program_timer.GetTimeString() << " " << TextName()
             << ": Initializing DFEM Diffusion solver ";
 
   // Get grid

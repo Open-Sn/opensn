@@ -25,7 +25,7 @@ Logger::Logger() noexcept
   RepeatingEvent& ref_rep_event = repeating_events.back();
 
   ref_rep_event.Events().emplace_back(
-    Chi::program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
+    program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
 }
 
 LogStream
@@ -177,7 +177,7 @@ Logger::GetRepeatingEventTag(std::string event_name)
   RepeatingEvent& ref_rep_event = repeating_events.back();
 
   ref_rep_event.Events().emplace_back(
-    Chi::program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
+    program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
 
   return repeating_events.size() - 1;
 }
@@ -199,7 +199,7 @@ Logger::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventIn
 
   RepeatingEvent& ref_rep_event = repeating_events[ev_tag];
 
-  ref_rep_event.Events().emplace_back(Chi::program_timer.GetTime(), ev_type, ev_info);
+  ref_rep_event.Events().emplace_back(program_timer.GetTime(), ev_type, ev_info);
 }
 
 void
@@ -209,7 +209,7 @@ Logger::LogEvent(size_t ev_tag, EventType ev_type)
 
   RepeatingEvent& ref_rep_event = repeating_events[ev_tag];
 
-  ref_rep_event.Events().emplace_back(Chi::program_timer.GetTime(), ev_type, nullptr);
+  ref_rep_event.Events().emplace_back(program_timer.GetTime(), ev_type, nullptr);
 }
 
 std::string

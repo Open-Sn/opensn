@@ -64,7 +64,7 @@ VolumeMesherExtruder::CreateLocalNodes(MeshContinuum& template_grid, MeshContinu
 void
 VolumeMesherExtruder::Execute()
 {
-  log.Log() << Chi::program_timer.GetTimeString()
+  log.Log() << program_timer.GetTimeString()
             << " VolumeMesherExtruder executed. Memory in use = " << GetMemoryUsageInMB() << " MB"
             << std::endl;
 

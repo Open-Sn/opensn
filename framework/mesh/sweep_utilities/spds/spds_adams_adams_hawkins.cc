@@ -19,7 +19,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
                                                bool verbose)
   : SPDS(omega, grid, verbose)
 {
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
+  log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Building sweep ordering for Omega = " << omega.PrintS();
 
   size_t num_loc_cells = grid.local_cells.size();
@@ -58,7 +58,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
 
   if (cycle_allowance_flag)
   {
-    log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Removing inter-cell cycles.";
+    log.Log0Verbose1() << program_timer.GetTimeString() << " Removing inter-cell cycles.";
 
     auto edges_to_remove = local_DG.RemoveCyclicDependencies();
 
@@ -69,7 +69,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
   }
 
   // Generate topological sorting
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString()
+  log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Generating topological sorting for local sweep ordering";
   auto so_temp = local_DG.GenerateTopologicalSort();
   spls_.item_id.clear();
@@ -90,7 +90,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
   // so that each location has the ability to build
   // the global task graph.
 
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Communicating sweep dependencies.";
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Communicating sweep dependencies.";
 
   // auto& global_dependencies = sweep_order->global_dependencies;
   std::vector<std::vector<int>> global_dependencies;
@@ -104,7 +104,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
 
   opensn::mpi.Barrier();
 
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Done computing sweep ordering.\n\n";
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Done computing sweep ordering.\n\n";
 }
 
 void
@@ -119,7 +119,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   // Build graph on home location
   if (opensn::mpi.location_id == 0)
   {
-    log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Building Task Dependency Graphs.";
+    log.Log0Verbose1() << program_timer.GetTimeString() << " Building Task Dependency Graphs.";
 
     // Add vertices to the graph
     for (int loc = 0; loc < opensn::mpi.process_count; loc++)
@@ -133,7 +133,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     // Remove cyclic dependencies
     if (cycle_allowance_flag)
     {
-      log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Removing intra-cellset cycles.";
+      log.Log0Verbose1() << program_timer.GetTimeString() << " Removing intra-cellset cycles.";
       auto edges_to_remove_temp = TDG.RemoveCyclicDependencies();
       for (const auto& [v0, v1] : edges_to_remove_temp)
         edges_to_remove.emplace_back(v0, v1);
@@ -196,8 +196,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   std::vector<int> glob_linear_sweep_order;
   if (opensn::mpi.location_id == 0)
   {
-    log.LogAllVerbose2() << Chi::program_timer.GetTimeString()
-                         << "   - Generating topological sort.";
+    log.LogAllVerbose2() << program_timer.GetTimeString() << "   - Generating topological sort.";
     auto so_temp = TDG.GenerateTopologicalSort();
     for (auto v : so_temp)
       glob_linear_sweep_order.emplace_back(v);
@@ -236,7 +235,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   }
 
   // Determine sweep order ranks
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Determining sweep order ranks.";
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Determining sweep order ranks.";
 
   std::vector<int> glob_sweep_order_rank(opensn::mpi.process_count, -1);
 
@@ -262,7 +261,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   }
 
   // Generate TDG structure
-  log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Generating TDG structure.";
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Generating TDG structure.";
   for (int r = 0; r <= abs_max_rank; r++)
   {
     STDG new_stdg;

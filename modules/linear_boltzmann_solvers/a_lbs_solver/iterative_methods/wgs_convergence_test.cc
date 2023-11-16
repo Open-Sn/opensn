@@ -56,7 +56,7 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
     offset = std::string("    ");
 
   std::stringstream iter_info;
-  iter_info << Chi::program_timer.GetTimeString() << " " << offset << "WGS groups ["
+  iter_info << program_timer.GetTimeString() << " " << offset << "WGS groups ["
             << context->groupset_.groups_.front().id_ << "-"
             << context->groupset_.groups_.back().id_ << "]"
             << " Iteration " << std::setw(5) << n << " Residual " << std::setw(9)

@@ -58,7 +58,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
 #ifdef OPENSN_WITH_LUA
   lua_State* L = console.GetConsoleState();
@@ -386,7 +386,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
   KSPSetOperators(ksp_, A_, A_);
 
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
   PC pc;
   KSPGetPC(ksp_, &pc);
@@ -403,7 +403,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
 #ifdef OPENSN_WITH_LUA
   lua_State* L = console.GetConsoleState();
@@ -587,7 +587,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
   KSPSetOperators(ksp_, A_, A_);
 
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
   PC pc;
   KSPGetPC(ksp_, &pc);
@@ -604,7 +604,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -873,7 +873,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
   KSPSetOperators(ksp_, A_, A_);
 
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
   PC pc;
   KSPGetPC(ksp_, &pc);
@@ -890,7 +890,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -1020,7 +1020,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
 
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
 }
 
 void
@@ -1031,7 +1031,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -1166,7 +1166,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
 
-  if (options.verbose) log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
 }
 
 double

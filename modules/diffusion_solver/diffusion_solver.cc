@@ -263,7 +263,7 @@ int
 Solver::Initialize(bool verbose)
 {
   log.Log() << "\n"
-            << Chi::program_timer.GetTimeString() << " " << TextName()
+            << program_timer.GetTimeString() << " " << TextName()
             << ": Initializing Diffusion solver ";
   this->verbose_info_ = verbose;
 
@@ -334,7 +334,7 @@ Solver::Initialize(bool verbose)
   std::vector<int64_t> nodal_nnz_off_diag;
   sdm->BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, unknown_manager_);
 
-  log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+  log.Log() << program_timer.GetTimeString() << " " << TextName()
             << ": Diffusion Solver initialization time " << t_init.GetTime() / 1000.0 << std::endl;
 
   // Initialize x and b
@@ -465,8 +465,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   VecSet(b_, 0.0);
 
   if (!suppress_assembly)
-    log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
-              << ": Assembling A locally";
+    log.Log() << program_timer.GetTimeString() << " " << TextName() << ": Assembling A locally";
 
   // Loop over locally owned cells
   auto fem_method = basic_options_("discretization_method").StringValue();
@@ -494,19 +493,18 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   }
 
   if (!suppress_assembly)
-    log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+    log.Log() << program_timer.GetTimeString() << " " << TextName()
               << ": Done Assembling A locally";
   MPI_Barrier(mpi.comm);
 
   // Call matrix assembly
   if (verbose_info_ || log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
-    log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+    log.Log() << program_timer.GetTimeString() << " " << TextName()
               << ": Communicating matrix assembly";
 
   if (!suppress_assembly)
   {
-    log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
-              << ": Assembling A globally";
+    log.Log() << program_timer.GetTimeString() << " " << TextName() << ": Assembling A globally";
     MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY);
     MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY);
 
@@ -520,12 +518,12 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
     //    }
 
     // Matrix diagonal check
-    log.Log() << Chi::program_timer.GetTimeString() << " " << TextName() << ": Diagonal check";
+    log.Log() << program_timer.GetTimeString() << " " << TextName() << ": Diagonal check";
     PetscBool missing_diagonal;
     PetscInt row;
     MatMissingDiagonal(A_, &missing_diagonal, &row);
     if (missing_diagonal)
-      log.LogAllError() << Chi::program_timer.GetTimeString() << " " << TextName()
+      log.LogAllError() << program_timer.GetTimeString() << " " << TextName()
                         << ": Missing diagonal detected";
 
     // Matrix sparsity info
@@ -538,7 +536,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
               << "\nNumber of unneeded non-zeros = " << info.nz_unneeded;
   }
   if (verbose_info_ || log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
-    log.Log() << Chi::program_timer.GetTimeString() << " " << TextName() << ": Assembling x and b";
+    log.Log() << program_timer.GetTimeString() << " " << TextName() << ": Assembling x and b";
   VecAssemblyBegin(x_);
   VecAssemblyEnd(x_);
   VecAssemblyBegin(b_);
@@ -549,7 +547,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   // Execute solve
   if (suppress_solve)
   {
-    log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
+    log.Log() << program_timer.GetTimeString() << " " << TextName()
               << ": Setting up solver and preconditioner\n";
     PCSetUp(pc_);
     KSPSetUp(ksp_);
@@ -557,7 +555,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   else
   {
     if (verbose_info_ || log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
-      log.Log() << Chi::program_timer.GetTimeString() << " " << TextName() << ": Solving system\n";
+      log.Log() << program_timer.GetTimeString() << " " << TextName() << ": Solving system\n";
     t_solve_.Reset();
     PCSetUp(pc_);
     KSPSetUp(ksp_);
@@ -587,7 +585,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
     {
       int64_t its;
       ierr_ = KSPGetIterationNumber(ksp_, &its);
-      log.Log() << Chi::program_timer.GetTimeString() << " " << TextName() << "[g=" << gi_ << "-"
+      log.Log() << program_timer.GetTimeString() << " " << TextName() << "[g=" << gi_ << "-"
                 << gi_ + G_ - 1 << "]: Number of iterations =" << its;
 
       if (verbose_info_ || log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
