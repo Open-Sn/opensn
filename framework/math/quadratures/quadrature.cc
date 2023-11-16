@@ -4,21 +4,21 @@
 
 #include "framework/console/console.h"
 
-namespace chi_math
+namespace opensn
 {
 
-chi::InputParameters GetSyntax_Get1DQuadratureData();
-chi::ParameterBlock Get1DQuadratureData(const chi::InputParameters& params);
+InputParameters GetSyntax_Get1DQuadratureData();
+ParameterBlock Get1DQuadratureData(const InputParameters& params);
 
 RegisterWrapperFunction(chi_math,
                         Get1DQuadratureData,
                         GetSyntax_Get1DQuadratureData,
                         Get1DQuadratureData);
 
-chi::InputParameters
+InputParameters
 GetSyntax_Get1DQuadratureData()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   params.SetGeneralDescription("Lua wrapper function for getting the data from a quadrature.");
   params.SetDocGroup("LuaQuadrature");
@@ -28,17 +28,17 @@ GetSyntax_Get1DQuadratureData()
   return params;
 }
 
-chi::ParameterBlock
-Get1DQuadratureData(const chi::InputParameters& params)
+ParameterBlock
+Get1DQuadratureData(const InputParameters& params)
 {
-  chi::ParameterBlock output;
+  ParameterBlock output;
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& quad = Chi::GetStackItem<chi_math::Quadrature>(Chi::object_stack, handle, __FUNCTION__);
+  auto& quad = Chi::GetStackItem<Quadrature>(Chi::object_stack, handle, __FUNCTION__);
 
-  chi::ParameterBlock qpoints_block("qpoints");
-  chi::ParameterBlock weights_block("weights");
+  ParameterBlock qpoints_block("qpoints");
+  ParameterBlock weights_block("weights");
   {
     size_t k = 0;
     for (const auto& qpointXYZ : quad.qpoints_)
@@ -56,16 +56,16 @@ Get1DQuadratureData(const chi::InputParameters& params)
   output.AddParameter(qpoints_block);
   output.AddParameter(weights_block);
 
-  chi::ParameterBlock output_as_table;
+  ParameterBlock output_as_table;
   output_as_table.AddParameter(output);
 
   return output_as_table;
 }
 
-chi::InputParameters
+InputParameters
 Quadrature::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   params.SetGeneralDescription("\\defgroup chi_math__Quadrature\n"
                                "\\ingroup LuaQuadrature\n"
@@ -74,13 +74,12 @@ Quadrature::GetInputParameters()
   params.AddRequiredParameter<int>("order", "Quadrature order.");
   params.AddOptionalParameter("verbose", false, "Enables verbose operations");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("order", AllowableRangeLowHighLimit::New(0, 43));
 
   return params;
 }
 
-Quadrature::Quadrature(const chi::InputParameters& params)
+Quadrature::Quadrature(const InputParameters& params)
   : ChiObject(params),
     order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order"))),
     verbose_(params.GetParamValue<bool>("verbose"))
@@ -112,4 +111,4 @@ Quadrature::SetRange(const std::pair<double, double>& in_range)
   range_ = in_range;
 }
 
-} // namespace chi_math
+} // namespace opensn

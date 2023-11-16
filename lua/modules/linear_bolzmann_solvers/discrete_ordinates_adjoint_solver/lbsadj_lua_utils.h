@@ -2,7 +2,7 @@
 
 #include "framework/lua.h"
 
-namespace lbs::adjoint_lua_utils
+namespace opensnlua::lbs
 {
 int chiAdjointSolverCreate(lua_State* L);
 int chiAdjointSolverAddResponseFunction(lua_State* L);
@@ -27,4 +27,4 @@ int chiAdjointSolverReadFluxMomentsToBuffer(lua_State* L);
  * \param BufferHandle int The handle to the buffer-position to be applied.
  */
 int chiAdjointSolverApplyFluxMomentBuffer(lua_State* L);
-} // namespace lbs::adjoint_lua_utils
+} // namespace opensnlua::lbs

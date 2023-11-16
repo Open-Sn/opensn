@@ -1,6 +1,6 @@
 #pragma once
 
-namespace chi
+namespace opensn
 {
 
 class Event;
@@ -17,4 +17,4 @@ public:
   virtual ~EventSubscriber() = default;
 };
 
-} // namespace chi
+} // namespace opensn

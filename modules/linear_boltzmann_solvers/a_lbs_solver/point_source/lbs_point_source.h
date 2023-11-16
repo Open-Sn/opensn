@@ -4,13 +4,15 @@
 
 #include "framework/mesh/mesh.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 class PointSource
 {
 private:
-  const chi_mesh::Vector3 location_;
+  const Vector3 location_;
   const std::vector<double> groupwise_strength_;
 
 public:
@@ -26,12 +28,12 @@ private:
   std::vector<ContainingCellInfo> m_containing_cells_;
 
 public:
-  PointSource(const chi_mesh::Vector3& location, std::vector<double> strength)
+  PointSource(const Vector3& location, std::vector<double> strength)
     : location_(location), groupwise_strength_(std::move(strength))
   {
   }
 
-  const chi_mesh::Vector3& Location() const { return location_; }
+  const Vector3& Location() const { return location_; }
 
   const std::vector<double>& Strength() const { return groupwise_strength_; }
 
@@ -50,3 +52,4 @@ public:
 };
 
 } // namespace lbs
+} // namespace opensn

@@ -1,8 +1,11 @@
 #include <petscsnes.h>
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
 PetscErrorCode NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx);
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

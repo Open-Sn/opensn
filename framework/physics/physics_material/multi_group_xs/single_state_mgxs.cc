@@ -5,7 +5,7 @@
 #include <string>
 #include <numeric>
 
-namespace chi_physics
+namespace opensn
 {
 
 void
@@ -175,8 +175,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
   if (std::any_of(xsecs.begin(),
                   xsecs.end(),
                   [](const XSPtr& x) { return not x->TransferMatrices().empty(); }))
-    transfer_matrices_.assign(scattering_order_ + 1,
-                              chi_math::SparseMatrix(num_groups_, num_groups_));
+    transfer_matrices_.assign(scattering_order_ + 1, SparseMatrix(num_groups_, num_groups_));
 
   // init fission data
   if (is_fissionable_)
@@ -446,7 +445,7 @@ SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
   /// \param M Number of moments
   /// \param G Number of groups
   auto ReadTransferMatrices = [](const std::string& keyword,
-                                 std::vector<chi_math::SparseMatrix>& destination,
+                                 std::vector<SparseMatrix>& destination,
                                  const unsigned int M,
                                  const unsigned int G,
                                  std::ifstream& file,
@@ -1180,4 +1179,4 @@ SingleStateMGXS::ComputeDiffusionParameters()
   diffusion_initialized_ = true;
 }
 
-} // namespace chi_physics
+} // namespace opensn

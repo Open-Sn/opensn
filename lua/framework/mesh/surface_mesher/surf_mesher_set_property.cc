@@ -8,13 +8,15 @@
 #include "surf_mesher_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiSurfaceMesherSetProperty);
-RegisterLuaConstantAsIs(MAX_AREA, chi_data_types::Varying(1));
+RegisterLuaConstantAsIs(MAX_AREA, Varying(1));
 
 int
 chiSurfaceMesherSetProperty(lua_State* L)
 {
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = opensn::GetCurrentHandler();
 
   auto surf_mesher = cur_hndlr.GetSurfaceMesher();
 
@@ -24,9 +26,9 @@ chiSurfaceMesherSetProperty(lua_State* L)
   // Area constraint
   if (property_num == 1) // MAX_AREA
   {
-    Chi::log.Log0Warning() << "Deprecated and removed feature"
-                              "property MAX_AREA in call"
-                              " to chiSurfaceMesherSetProperty";
+    opensn::Chi::log.Log0Warning() << "Deprecated and removed feature"
+                                      "property MAX_AREA in call"
+                                      " to chiSurfaceMesherSetProperty";
   }
 
   return 0;

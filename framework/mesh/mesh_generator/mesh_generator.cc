@@ -9,15 +9,15 @@
 #include "framework/logging/log.h"
 #include "framework/mesh/cell/cell.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 RegisterChiObject(chi_mesh, MeshGenerator);
 
-chi::InputParameters
+InputParameters
 MeshGenerator::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   params.SetGeneralDescription("The base class for all mesh generators");
   params.SetDocGroup("doc_MeshGenerators");
@@ -41,7 +41,7 @@ MeshGenerator::GetInputParameters()
   return params;
 }
 
-MeshGenerator::MeshGenerator(const chi::InputParameters& params)
+MeshGenerator::MeshGenerator(const InputParameters& params)
   : ChiObject(params),
     scale_(params.GetParamValue<double>("scale")),
     replicated_(params.GetParamValue<bool>("replicated_mesh"))
@@ -63,12 +63,12 @@ MeshGenerator::MeshGenerator(const chi::InputParameters& params)
   else
   {
     auto& factory = ChiObjectFactory::GetInstance();
-    auto valid_params = chi::PETScGraphPartitioner::GetInputParameters();
+    auto valid_params = PETScGraphPartitioner::GetInputParameters();
     partitioner_handle =
-      factory.MakeRegisteredObjectOfType("chi::PETScGraphPartitioner", chi::ParameterBlock());
+      factory.MakeRegisteredObjectOfType("chi::PETScGraphPartitioner", ParameterBlock());
   }
   partitioner_ =
-    &Chi::GetStackItem<chi::GraphPartitioner>(Chi::object_stack, partitioner_handle, __FUNCTION__);
+    &Chi::GetStackItem<GraphPartitioner>(Chi::object_stack, partitioner_handle, __FUNCTION__);
 }
 
 std::unique_ptr<UnpartitionedMesh>
@@ -100,19 +100,19 @@ MeshGenerator::Execute()
   auto grid_ptr = SetupMesh(std::move(current_umesh), cell_pids);
 
   // Assign the mesh to a VolumeMesher
-  auto new_mesher = std::make_shared<chi_mesh::VolumeMesher>(VolumeMesherType::UNPARTITIONED);
+  auto new_mesher = std::make_shared<VolumeMesher>(VolumeMesherType::UNPARTITIONED);
   new_mesher->SetContinuum(grid_ptr);
 
-  if (Chi::current_mesh_handler < 0) chi_mesh::PushNewHandlerAndGetIndex();
+  if (Chi::current_mesh_handler < 0) PushNewHandlerAndGetIndex();
 
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = GetCurrentHandler();
   cur_hndlr.SetVolumeMesher(new_mesher);
 
   Chi::mpi.Barrier();
 }
 
 void
-MeshGenerator::SetGridAttributes(chi_mesh::MeshContinuum& grid,
+MeshGenerator::SetGridAttributes(MeshContinuum& grid,
                                  MeshAttributes new_attribs,
                                  std::array<size_t, 3> ortho_cells_per_dimension)
 {
@@ -120,7 +120,7 @@ MeshGenerator::SetGridAttributes(chi_mesh::MeshContinuum& grid,
 }
 
 void
-MeshGenerator::ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid)
+MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
 {
   const size_t num_local_cells = grid.local_cells.size();
   size_t num_global_cells = 0;
@@ -172,7 +172,7 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_parti
   typedef std::vector<uint64_t> CellGraphNode;
   typedef std::vector<CellGraphNode> CellGraph;
   CellGraph cell_graph;
-  std::vector<chi_mesh::Vector3> cell_centroids;
+  std::vector<Vector3> cell_centroids;
 
   cell_graph.reserve(num_raw_cells);
   cell_centroids.reserve(num_raw_cells);
@@ -221,7 +221,7 @@ MeshGenerator::SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
                          const std::vector<int64_t>& cell_pids)
 {
   // Convert mesh
-  auto grid_ptr = chi_mesh::MeshContinuum::New();
+  auto grid_ptr = MeshContinuum::New();
 
   grid_ptr->GetBoundaryIDMap() = input_umesh_ptr->GetMeshOptions().boundary_id_map;
 
@@ -277,7 +277,7 @@ MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm
 
 bool
 MeshGenerator::CellHasLocalScope(int location_id,
-                                 const chi_mesh::UnpartitionedMesh::LightWeightCell& lwcell,
+                                 const UnpartitionedMesh::LightWeightCell& lwcell,
                                  uint64_t cell_global_id,
                                  const std::vector<std::set<uint64_t>>& vertex_subscriptions,
                                  const std::vector<int64_t>& cell_partition_ids) const
@@ -299,13 +299,13 @@ MeshGenerator::CellHasLocalScope(int location_id,
   return false;
 }
 
-std::unique_ptr<chi_mesh::Cell>
+std::unique_ptr<Cell>
 MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
                          uint64_t global_id,
                          uint64_t partition_id,
                          const VertexListHelper& vertices)
 {
-  auto cell = std::make_unique<chi_mesh::Cell>(raw_cell.type, raw_cell.sub_type);
+  auto cell = std::make_unique<Cell>(raw_cell.type, raw_cell.sub_type);
   cell->centroid_ = raw_cell.centroid;
   cell->global_id_ = global_id;
   cell->partition_id_ = partition_id;
@@ -316,13 +316,13 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
   size_t face_counter = 0;
   for (auto& raw_face : raw_cell.faces)
   {
-    chi_mesh::CellFace newFace;
+    CellFace newFace;
 
     newFace.has_neighbor_ = raw_face.has_neighbor;
     newFace.neighbor_id_ = raw_face.neighbor;
 
     newFace.vertex_ids_ = raw_face.vertex_ids;
-    auto vfc = chi_mesh::Vertex(0.0, 0.0, 0.0);
+    auto vfc = Vertex(0.0, 0.0, 0.0);
     for (auto fvid : newFace.vertex_ids_)
       vfc = vfc + vertices.at(fvid);
     newFace.centroid_ = vfc / static_cast<double>(newFace.vertex_ids_.size());
@@ -332,9 +332,9 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       // A slab face is very easy. If it is the first face
       // the normal is -khat. If it is the second face then
       // it is +khat.
-      if (face_counter == 0) newFace.normal_ = chi_mesh::Vector3(0.0, 0.0, -1.0);
+      if (face_counter == 0) newFace.normal_ = Vector3(0.0, 0.0, -1.0);
       else
-        newFace.normal_ = chi_mesh::Vector3(0.0, 0.0, 1.0);
+        newFace.normal_ = Vector3(0.0, 0.0, 1.0);
     }
     else if (cell->Type() == CellType::POLYGON)
     {
@@ -345,7 +345,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       uint64_t fvid = newFace.vertex_ids_[0];
       auto vec_vvc = vertices.at(fvid) - newFace.centroid_;
 
-      newFace.normal_ = chi_mesh::Vector3(0.0, 0.0, 1.0).Cross(vec_vvc);
+      newFace.normal_ = Vector3(0.0, 0.0, 1.0).Cross(vec_vvc);
       newFace.normal_.Normalize();
     }
     else if (cell->Type() == CellType::POLYHEDRON)
@@ -384,4 +384,4 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
   return cell;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

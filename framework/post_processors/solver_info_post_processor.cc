@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObject(chi, SolverInfoPostProcessor);
@@ -21,7 +21,7 @@ SolverInfoPostProcessor::GetInputParameters()
   // clang-format off
   params.SetGeneralDescription(
 "A post processor that can get basic info for any object based on "
-"chi_physics::Solver. This solver's execution does not filter whether solver"
+"Solver. This solver's execution does not filter whether solver"
 "events are for the relevant solver. This is done to avoid differing "
 "time-histories.");
   // clang-format on
@@ -40,7 +40,7 @@ SolverInfoPostProcessor::GetInputParameters()
 
 SolverInfoPostProcessor::SolverInfoPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
-    solver_(Chi::GetStackItem<chi_physics::Solver>(
+    solver_(Chi::GetStackItem<Solver>(
       Chi::object_stack, params.GetParamValue<size_t>("solver"), __FUNCTION__)),
     info_(params.GetParam("info"))
 {
@@ -66,4 +66,4 @@ SolverInfoPostProcessor::Execute(const Event& event_context)
   }
 }
 
-} // namespace chi
+} // namespace opensn

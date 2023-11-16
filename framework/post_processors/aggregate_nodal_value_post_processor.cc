@@ -8,7 +8,7 @@
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/event_system/event.h"
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObject(chi, AggregateNodalValuePostProcessor);
@@ -17,8 +17,8 @@ InputParameters
 AggregateNodalValuePostProcessor::GetInputParameters()
 {
   InputParameters params = PostProcessor::GetInputParameters();
-  params += chi_physics::GridBasedFieldFunctionInterface::GetInputParameters();
-  params += chi_mesh::LogicalVolumeInterface::GetInputParameters();
+  params += GridBasedFieldFunctionInterface::GetInputParameters();
+  params += LogicalVolumeInterface::GetInputParameters();
 
   params.SetGeneralDescription("Gets the max/min/avg nodal value of a field function "
                                "among nodal values.");
@@ -26,7 +26,6 @@ AggregateNodalValuePostProcessor::GetInputParameters()
 
   params.AddRequiredParameter<std::string>("operation", "The required operation to be performed.");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("operation", AllowableRangeList::New({"max", "min", "avg"}));
 
   return params;
@@ -34,8 +33,8 @@ AggregateNodalValuePostProcessor::GetInputParameters()
 
 AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
-    chi_physics::GridBasedFieldFunctionInterface(params),
-    chi_mesh::LogicalVolumeInterface(params),
+    GridBasedFieldFunctionInterface(params),
+    LogicalVolumeInterface(params),
     operation_(params.GetParamValue<std::string>("operation"))
 {
 }
@@ -161,4 +160,4 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   }
 }
 
-} // namespace chi
+} // namespace opensn

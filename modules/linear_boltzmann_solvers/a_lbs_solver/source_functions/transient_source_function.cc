@@ -1,19 +1,24 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/source_functions/transient_source_function.h"
 
-lbs::TransientSourceFunction::TransientSourceFunction(const LBSSolver& lbs_solver,
-                                                      double& ref_dt,
-                                                      chi_math::SteppingMethod& method)
+namespace opensn
+{
+namespace lbs
+{
+
+TransientSourceFunction::TransientSourceFunction(const LBSSolver& lbs_solver,
+                                                 double& ref_dt,
+                                                 SteppingMethod& method)
   : SourceFunction(lbs_solver), dt_(ref_dt), method_(method)
 {
 }
 
 double
-lbs::TransientSourceFunction::AddDelayedFission(const PrecursorList& precursors,
-                                                const std::vector<double>& nu_delayed_sigma_f,
-                                                const double* phi) const
+TransientSourceFunction::AddDelayedFission(const PrecursorList& precursors,
+                                           const std::vector<double>& nu_delayed_sigma_f,
+                                           const double* phi) const
 {
-  const auto& BackwardEuler = chi_math::SteppingMethod::IMPLICIT_EULER;
-  const auto& CrankNicolson = chi_math::SteppingMethod::CRANK_NICOLSON;
+  const auto& BackwardEuler = SteppingMethod::IMPLICIT_EULER;
+  const auto& CrankNicolson = SteppingMethod::CRANK_NICOLSON;
 
   double theta;
   if (method_ == BackwardEuler) theta = 1.0;
@@ -50,3 +55,6 @@ lbs::TransientSourceFunction::AddDelayedFission(const PrecursorList& precursors,
 
   return value;
 }
+
+} // namespace lbs
+} // namespace opensn

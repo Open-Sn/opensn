@@ -4,20 +4,20 @@
 
 #define scint static_cast<int>
 
-namespace chi_math
+namespace opensn
 {
 
-chi::InputParameters
+InputParameters
 TimeIntegration::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   params.AddRequiredParameter<int>("method", "Integer representing time stepping scheme");
 
   return params;
 }
 
-TimeIntegration::TimeIntegration(const chi::InputParameters& params) : ChiObject(params)
+TimeIntegration::TimeIntegration(const InputParameters& params) : ChiObject(params)
 {
   const int method_option = params.GetParamValue<int>("method");
   if (method_option == scint(SteppingMethod::EXPLICIT_EULER))
@@ -38,4 +38,4 @@ TimeIntegration::Method() const
   return method_;
 }
 
-} // namespace chi_math
+} // namespace opensn

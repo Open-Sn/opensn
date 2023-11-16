@@ -2,12 +2,15 @@
 
 #include "framework/math/math.h"
 
+namespace opensn
+{
+
 /**Sparse matrix utility. This is a basic CSR type sparse matrix
  * which allows efficient matrix storage and multiplication. It is
  * not intended for solving linear systems (use PETSc for that instead).
  * It was originally developed for the transfer matrices of transport
  * cross-sections.*/
-class chi_math::SparseMatrix
+class SparseMatrix
 {
 private:
   size_t row_size_; ///< Maximum number of rows for this matrix
@@ -256,3 +259,5 @@ public:
   EntriesIterator begin();
   EntriesIterator end();
 };
+
+} // namespace opensn

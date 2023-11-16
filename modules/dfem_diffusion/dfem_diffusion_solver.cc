@@ -22,12 +22,13 @@
     }                                                                                              \
   }
 
+namespace opensn
+{
 namespace dfem_diffusion
 {
 
 Solver::Solver(const std::string& in_solver_name)
-  : chi_physics::Solver(in_solver_name,
-                        {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
+  : opensn::Solver(in_solver_name, {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
 {
 }
 
@@ -47,7 +48,7 @@ Solver::Initialize()
                  << ": Initializing DFEM Diffusion solver ";
 
   // Get grid
-  grid_ptr_ = chi_mesh::GetCurrentHandler().GetGrid();
+  grid_ptr_ = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
@@ -126,7 +127,7 @@ Solver::Initialize()
   } // for bndry
 
   // Make SDM
-  sdm_ptr_ = chi_math::spatial_discretization::PieceWiseLinearDiscontinuous::New(*grid_ptr_);
+  sdm_ptr_ = PieceWiseLinearDiscontinuous::New(*grid_ptr_);
   const auto& sdm = *sdm_ptr_;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
@@ -141,15 +142,15 @@ Solver::Initialize()
   const auto n = static_cast<int64_t>(num_local_dofs_);
   const auto N = static_cast<int64_t>(num_globl_dofs_);
 
-  A_ = chi_math::PETScUtils::CreateSquareMatrix(n, N);
-  x_ = chi_math::PETScUtils::CreateVector(n, N);
-  b_ = chi_math::PETScUtils::CreateVector(n, N);
+  A_ = CreateSquareMatrix(n, N);
+  x_ = CreateVector(n, N);
+  b_ = CreateVector(n, N);
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
   sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   if (field_functions_.empty())
   {
@@ -158,9 +159,8 @@ Solver::Initialize()
 
     std::string text_name = solver_name + "phi";
 
-    using namespace chi_math;
-    auto initial_field_function = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
+    auto initial_field_function =
+      std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
     field_functions_.push_back(initial_field_function);
     Chi::field_function_stack.push_back(initial_field_function);
@@ -235,7 +235,7 @@ Solver::Execute()
 
       const double hm = HPerpendicular(cell, f);
 
-      typedef chi_mesh::MeshContinuum Grid;
+      typedef MeshContinuum Grid;
 
       // interior face
       if (face.has_neighbor_)
@@ -250,9 +250,9 @@ Solver::Execute()
 
         // Compute Ckappa IP
         double Ckappa = 1.0;
-        if (cell.Type() == chi_mesh::CellType::SLAB) Ckappa = 2.0;
-        if (cell.Type() == chi_mesh::CellType::POLYGON) Ckappa = 2.0;
-        if (cell.Type() == chi_mesh::CellType::POLYHEDRON) Ckappa = 4.0;
+        if (cell.Type() == CellType::SLAB) Ckappa = 2.0;
+        if (cell.Type() == CellType::POLYGON) Ckappa = 2.0;
+        if (cell.Type() == CellType::POLYHEDRON) Ckappa = 4.0;
 
           // Assembly penalty terms
 #ifdef OPENSN_WITH_LUA
@@ -306,7 +306,7 @@ Solver::Execute()
               MapFaceNodeDisc(cell, adj_cell, cc_nodes, ac_nodes, f, acf, fj); // j-plus
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp);
 
-            chi_mesh::Vector3 vec_aij;
+            Vector3 vec_aij;
             for (size_t qp : fqp_data.QuadraturePointIndices())
               vec_aij += CallLua_iXYZFunction(L, "D_coef", imat, fqp_data.QPointXYZ(qp)) *
                          fqp_data.ShapeValue(jm, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp);
@@ -331,7 +331,7 @@ Solver::Execute()
           {
             const int64_t jmap = sdm.MapDOF(cell, j);
 
-            chi_mesh::Vector3 vec_aij;
+            Vector3 vec_aij;
             for (size_t qp : fqp_data.QuadraturePointIndices())
               vec_aij += CallLua_iXYZFunction(L, "D_coef", imat, fqp_data.QPointXYZ(qp)) *
                          fqp_data.ShapeValue(im, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
@@ -400,9 +400,9 @@ Solver::Execute()
           const double bc_value = bndry.values_[0];
           // Compute kappa
           double Ckappa = 2.0;
-          if (cell.Type() == chi_mesh::CellType::SLAB) Ckappa = 4.0; // fmax(4.0*Dg/hm,0.25);
-          if (cell.Type() == chi_mesh::CellType::POLYGON) Ckappa = 4.0;
-          if (cell.Type() == chi_mesh::CellType::POLYHEDRON) Ckappa = 8.0;
+          if (cell.Type() == CellType::SLAB) Ckappa = 4.0; // fmax(4.0*Dg/hm,0.25);
+          if (cell.Type() == CellType::POLYGON) Ckappa = 4.0;
+          if (cell.Type() == CellType::POLYHEDRON) Ckappa = 8.0;
 
             // Assembly penalty terms
 #ifdef OPENSN_WITH_LUA
@@ -443,7 +443,7 @@ Solver::Execute()
             {
               const int64_t jmap = sdm.MapDOF(cell, j);
 
-              chi_mesh::Vector3 vec_aij;
+              Vector3 vec_aij;
               for (size_t qp : fqp_data.QuadraturePointIndices())
                 vec_aij += (fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) +
                             fqp_data.ShapeValue(i, qp) * fqp_data.ShapeGrad(j, qp)) *
@@ -484,13 +484,13 @@ Solver::Execute()
 
   // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A_,
-    TextName(),
-    KSPCG,
-    PCGAMG,
-    basic_options_("residual_tolerance").FloatValue(),
-    basic_options_("max_iters").IntegerValue());
+  auto petsc_solver =
+    CreateCommonKrylovSolverSetup(A_,
+                                  TextName(),
+                                  KSPCG,
+                                  PCGAMG,
+                                  basic_options_("residual_tolerance").FloatValue(),
+                                  basic_options_("max_iters").IntegerValue());
 
   // Solve
   KSPSolve(petsc_solver.ksp, b_, x_);
@@ -504,7 +504,7 @@ Solver::Execute()
 }
 
 double
-Solver::HPerpendicular(const chi_mesh::Cell& cell, unsigned int f)
+Solver::HPerpendicular(const Cell& cell, unsigned int f)
 {
   const auto& sdm = *sdm_ptr_;
 
@@ -528,9 +528,9 @@ Solver::HPerpendicular(const chi_mesh::Cell& cell, unsigned int f)
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == chi_mesh::CellType::SLAB) hp = volume / 2.0;
+  if (cell.Type() == CellType::SLAB) hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
-  else if (cell.Type() == chi_mesh::CellType::POLYGON)
+  else if (cell.Type() == CellType::POLYGON)
   {
     if (num_faces == 3) hp = 2.0 * volume / face_area;
     else if (num_faces == 4)
@@ -548,7 +548,7 @@ Solver::HPerpendicular(const chi_mesh::Cell& cell, unsigned int f)
     }
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
-  else if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+  else if (cell.Type() == CellType::POLYHEDRON)
   {
     const double surface_area = ComputeSurfaceArea();
 
@@ -567,10 +567,10 @@ Solver::HPerpendicular(const chi_mesh::Cell& cell, unsigned int f)
 }
 
 int
-Solver::MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
-                        const chi_mesh::Cell& adj_cell,
-                        const std::vector<chi_mesh::Vector3>& cc_node_locs,
-                        const std::vector<chi_mesh::Vector3>& ac_node_locs,
+Solver::MapFaceNodeDisc(const Cell& cur_cell,
+                        const Cell& adj_cell,
+                        const std::vector<Vector3>& cc_node_locs,
+                        const std::vector<Vector3>& ac_node_locs,
                         size_t ccf,
                         size_t acf,
                         size_t ccfi,
@@ -600,7 +600,7 @@ double
 Solver::CallLua_iXYZFunction(lua_State* L,
                              const std::string& lua_func_name,
                              const int imat,
-                             const chi_mesh::Vector3& xyz)
+                             const Vector3& xyz)
 {
   // Load lua function
   lua_getglobal(L, lua_func_name.c_str());
@@ -644,3 +644,4 @@ Solver::UpdateFieldFunctions()
 }
 
 } // namespace dfem_diffusion
+} // namespace opensn

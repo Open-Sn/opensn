@@ -3,10 +3,13 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-unsigned int
-chi_math::UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
+namespace opensn
 {
-  auto& log = chi::ChiLog::GetInstance();
+
+unsigned int
+UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
+{
+  auto& log = ChiLog::GetInstance();
 
   unsigned int last_unknown_end = -1;
   if (not unknowns_.empty()) last_unknown_end = unknowns_.back().GetMapEnd();
@@ -62,9 +65,9 @@ chi_math::UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimensio
 }
 
 unsigned int
-chi_math::UnknownManager::MapUnknown(unsigned int unknown_id, unsigned int component) const
+UnknownManager::MapUnknown(unsigned int unknown_id, unsigned int component) const
 {
-  auto& log = chi::ChiLog::GetInstance();
+  auto& log = ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
@@ -75,7 +78,7 @@ chi_math::UnknownManager::MapUnknown(unsigned int unknown_id, unsigned int compo
 }
 
 unsigned int
-chi_math::UnknownManager::GetTotalUnknownStructureSize() const
+UnknownManager::GetTotalUnknownStructureSize() const
 {
   if (unknowns_.empty()) return 0;
 
@@ -83,9 +86,9 @@ chi_math::UnknownManager::GetTotalUnknownStructureSize() const
 }
 
 void
-chi_math::UnknownManager::SetUnknownNumOffBlockConnections(unsigned int unknown_id, int num_conn)
+UnknownManager::SetUnknownNumOffBlockConnections(unsigned int unknown_id, int num_conn)
 {
-  auto& log = chi::ChiLog::GetInstance();
+  auto& log = ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
@@ -100,11 +103,11 @@ chi_math::UnknownManager::SetUnknownNumOffBlockConnections(unsigned int unknown_
 }
 
 void
-chi_math::UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int unknown_id,
-                                                                    unsigned int component,
-                                                                    int num_conn)
+UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int unknown_id,
+                                                          unsigned int component,
+                                                          int num_conn)
 {
-  auto& log = chi::ChiLog::GetInstance();
+  auto& log = ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
@@ -126,10 +129,9 @@ chi_math::UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int
 }
 
 void
-chi_math::UnknownManager::SetUnknownTextName(unsigned int unknown_id,
-                                             const std::string& in_text_name)
+UnknownManager::SetUnknownTextName(unsigned int unknown_id, const std::string& in_text_name)
 {
-  auto& log = chi::ChiLog::GetInstance();
+  auto& log = ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
@@ -143,11 +145,11 @@ chi_math::UnknownManager::SetUnknownTextName(unsigned int unknown_id,
 }
 
 void
-chi_math::UnknownManager::SetUnknownComponentTextName(unsigned int unknown_id,
-                                                      unsigned int component,
-                                                      const std::string& in_text_name)
+UnknownManager::SetUnknownComponentTextName(unsigned int unknown_id,
+                                            unsigned int component,
+                                            const std::string& in_text_name)
 {
-  auto& log = chi::ChiLog::GetInstance();
+  auto& log = ChiLog::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
@@ -167,3 +169,5 @@ chi_math::UnknownManager::SetUnknownComponentTextName(unsigned int unknown_id,
 
   unknowns_[unknown_id].component_text_names_[component] = in_text_name;
 }
+
+} // namespace opensn

@@ -9,6 +9,8 @@
 
 #include <iomanip>
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -51,14 +53,14 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   bool converged = false;
   while (nit < max_iterations)
   {
-    chi_math::Set(q_moments_local, 0.0);
+    Set(q_moments_local, 0.0);
     for (auto& groupset : groupsets)
       active_set_source_function(groupset,
                                  q_moments_local,
                                  phi_old_local,
                                  APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 
-    chi_math::Scale(q_moments_local, 1.0 / k_eff);
+    Scale(q_moments_local, 1.0 / k_eff);
 
     // This solves the inners for transport
     primary_ags_solver->Setup();
@@ -104,3 +106,4 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
 }
 
 } // namespace lbs
+} // namespace opensn

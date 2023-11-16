@@ -12,7 +12,7 @@ class vtkUnstructuredGrid;
 template <class T>
 class vtkSmartPointer;
 
-namespace chi_mesh
+namespace opensn
 {
 class MeshContinuum;
 class Cell;
@@ -21,8 +21,8 @@ class CellFace;
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadCellGeometryDiscontinuous(const chi_mesh::MeshContinuum& grid,
-                                     const chi_mesh::Cell& cell,
+void UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
+                                     const Cell& cell,
                                      int64_t& node_counter,
                                      vtkNew<vtkPoints>& points,
                                      vtkNew<vtkUnstructuredGrid>& ugrid);
@@ -30,13 +30,13 @@ void UploadCellGeometryDiscontinuous(const chi_mesh::MeshContinuum& grid,
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadCellGeometryContinuous(const chi_mesh::Cell& cell,
+void UploadCellGeometryContinuous(const Cell& cell,
                                   const std::vector<uint64_t>& vertex_map,
                                   vtkNew<vtkUnstructuredGrid>& ugrid);
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadFaceGeometry(const chi_mesh::CellFace& cell_face,
+void UploadFaceGeometry(const CellFace& cell_face,
                         const std::vector<uint64_t>& vertex_map,
                         vtkNew<vtkUnstructuredGrid>& ugrid);
 
@@ -86,7 +86,7 @@ std::vector<int> BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
  * Uploads vertices and cells to an unstructured grid. This routine also uploads cell material ids
  * (sub-domain ids) and partition ids.
  */
-vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(const chi_mesh::MeshContinuum& grid,
+vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(const MeshContinuum& grid,
                                                        bool discontinuous = true);
 
 /**
@@ -94,4 +94,4 @@ vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(const chi_mesh::MeshConti
  */
 void WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_name);
 
-} // namespace chi_mesh
+} // namespace opensn

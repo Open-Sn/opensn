@@ -6,15 +6,15 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace lbs::common_lua_utils
+namespace opensnlua::lbs
 {
 
 RegisterWrapperFunction(lbs, SetOptions, GetSyntax_SetOptions, SetOptions);
 
-chi::InputParameters
+opensn::InputParameters
 GetSyntax_SetOptions()
 {
-  chi::InputParameters params;
+  opensn::InputParameters params;
 
   // clang-format off
   params.SetGeneralDescription("Set options from a large list of parameters");
@@ -31,8 +31,8 @@ GetSyntax_SetOptions()
   return params;
 }
 
-chi::ParameterBlock
-SetOptions(const chi::InputParameters& params)
+opensn::ParameterBlock
+SetOptions(const opensn::InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
 
@@ -40,14 +40,15 @@ SetOptions(const chi::InputParameters& params)
   params.RequireParameter("arg1");
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, handle, fname);
+  auto& lbs_solver =
+    opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(opensn::Chi::object_stack, handle, fname);
 
-  auto options_params = LBSSolver::OptionsBlock();
+  auto options_params = opensn::lbs::LBSSolver::OptionsBlock();
   options_params.AssignParameters(params.GetParam("arg1"));
 
   lbs_solver.SetOptions(options_params);
 
-  return chi::ParameterBlock();
+  return opensn::ParameterBlock();
 }
 
-} // namespace lbs::common_lua_utils
+} // namespace opensnlua::lbs

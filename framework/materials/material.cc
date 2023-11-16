@@ -2,7 +2,7 @@
 
 #include "framework/object_factory.h"
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObject(chi_objects, Material);
@@ -21,9 +21,8 @@ Material::GetInputParameters()
   return params;
 }
 
-Material::Material(const chi::InputParameters& params)
-  : name_(params.GetParamValue<std::string>("name"))
+Material::Material(const InputParameters& params) : name_(params.GetParamValue<std::string>("name"))
 {
 }
 
-} // namespace chi
+} // namespace opensn

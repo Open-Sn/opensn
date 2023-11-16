@@ -11,7 +11,7 @@
 typedef std::vector<double> VecDbl;
 typedef std::vector<VecDbl> MatDbl;
 
-namespace chi_math
+namespace opensn
 {
 class SparseMatrix;
 class UnknownManager;
@@ -95,7 +95,7 @@ double Factorial(int x);
  * Determines the azimuthal- and polar-angle associated with the given direction vector.
  * Returns a pair = [azimuthal-angle,polar-angle].
  */
-std::pair<double, double> OmegaToPhiThetaSafe(const chi_mesh::Vector3& omega);
+std::pair<double, double> OmegaToPhiThetaSafe(const Vector3& omega);
 
 /**
  * Prints the Vector.
@@ -260,4 +260,4 @@ MatDbl Inverse(const MatDbl& A);
  */
 double PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it = 2000, double tol = 1.0e-13);
 
-} // namespace chi_math
+} // namespace opensn

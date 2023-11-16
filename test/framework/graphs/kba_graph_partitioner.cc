@@ -8,22 +8,24 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
+using namespace opensn;
+
 namespace chi_unit_tests
 {
 
-chi::ParameterBlock TestKBAGraphPartitioner00(const chi::InputParameters&);
+ParameterBlock TestKBAGraphPartitioner00(const InputParameters&);
 
 RegisterWrapperFunction(chi_unit_tests,
                         TestKBAGraphPartitioner00,
                         nullptr,
                         TestKBAGraphPartitioner00);
 
-chi::ParameterBlock
-TestKBAGraphPartitioner00(const chi::InputParameters&)
+ParameterBlock
+TestKBAGraphPartitioner00(const InputParameters&)
 {
-  Chi::log.Log() << "GOLD_BEGIN";
+  opensn::Chi::log.Log() << "GOLD_BEGIN";
 
-  chi::ParameterBlock input_parameters;
+  ParameterBlock input_parameters;
 
   input_parameters.AddParameter("nx", 2);
   input_parameters.AddParameter("ny", 2);
@@ -33,30 +35,30 @@ TestKBAGraphPartitioner00(const chi::InputParameters&)
   input_parameters.AddParameter("ycuts", std::vector<double>{0.0});
   input_parameters.AddParameter("zcuts", std::vector<double>{0.0});
 
-  chi::InputParameters valid_parameters = chi::KBAGraphPartitioner::GetInputParameters();
+  InputParameters valid_parameters = KBAGraphPartitioner::GetInputParameters();
 
   valid_parameters.AssignParameters(input_parameters);
 
-  chi::KBAGraphPartitioner partitioner(valid_parameters);
+  KBAGraphPartitioner partitioner(valid_parameters);
 
   std::vector<std::vector<uint64_t>> dummy_graph(8);
-  std::vector<chi_mesh::Vector3> centroids = {{-1.0, -1.0, -1.0},
-                                              {1.0, -1.0, -1.0},
-                                              {-1.0, 1.0, -1.0},
-                                              {1.0, 1.0, -1.0},
-                                              {-1.0, -1.0, 1.0},
-                                              {1.0, -1.0, 1.0},
-                                              {-1.0, 1.0, 1.0},
-                                              {1.0, 1.0, 1.0}};
+  std::vector<Vector3> centroids = {{-1.0, -1.0, -1.0},
+                                    {1.0, -1.0, -1.0},
+                                    {-1.0, 1.0, -1.0},
+                                    {1.0, 1.0, -1.0},
+                                    {-1.0, -1.0, 1.0},
+                                    {1.0, -1.0, 1.0},
+                                    {-1.0, 1.0, 1.0},
+                                    {1.0, 1.0, 1.0}};
 
   auto cell_pids = partitioner.Partition(dummy_graph, centroids, 2 * 2 * 2);
 
   for (const int64_t pid : cell_pids)
-    Chi::log.Log() << pid;
+    opensn::Chi::log.Log() << pid;
 
-  Chi::log.Log() << "GOLD_END";
+  opensn::Chi::log.Log() << "GOLD_END";
 
-  return chi::ParameterBlock();
+  return ParameterBlock();
 }
 
 } // namespace chi_unit_tests

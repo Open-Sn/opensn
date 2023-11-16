@@ -4,11 +4,11 @@
 
 #include "framework/logging/log.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
-LagrangeHexMapping::LagrangeHexMapping(const chi_mesh::MeshContinuum& grid,
-                                       const chi_mesh::Cell& cell,
+LagrangeHexMapping::LagrangeHexMapping(const MeshContinuum& grid,
+                                       const Cell& cell,
                                        const Quadrature& volume_quadrature,
                                        const Quadrature& surface_quadrature)
   : LagrangeBaseMapping(
@@ -38,7 +38,7 @@ LagrangeHexMapping::RefShape(uint32_t i, const Vec3& qpoint) const
   // clang-format on
 }
 
-chi_mesh::Vector3
+Vector3
 LagrangeHexMapping::RefGradShape(uint32_t i, const Vec3& qpoint) const
 {
   ChiLogicalErrorIf(i >= 8, "Invalid shapefunction index " + std::to_string(i));
@@ -146,4 +146,4 @@ LagrangeHexMapping::FaceToElementQPointConversion(size_t face_index, const Vec3&
   ChiLogicalError("Invalid face index " + std::to_string(face_index));
 }
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

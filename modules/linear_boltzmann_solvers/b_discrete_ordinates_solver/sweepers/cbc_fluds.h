@@ -6,36 +6,30 @@
 #include <map>
 #include <functional>
 
-namespace chi_math
+namespace opensn
 {
 class UnknownManager;
 class SpatialDiscretization;
-} // namespace chi_math
-
-namespace chi_mesh
-{
 class Cell;
-}
 
 namespace lbs
 {
 
-class CBC_FLUDS : public chi_mesh::sweep_management::FLUDS
+class CBC_FLUDS : public FLUDS
 {
 public:
   CBC_FLUDS(size_t num_groups,
             size_t num_angles,
             const CBC_FLUDSCommonData& common_data,
             std::vector<double>& local_psi_data,
-            const chi_math::UnknownManager& psi_uk_man,
-            const chi_math::SpatialDiscretization& sdm);
+            const UnknownManager& psi_uk_man,
+            const SpatialDiscretization& sdm);
 
-  const chi_mesh::sweep_management::FLUDSCommonData& CommonData() const;
+  const FLUDSCommonData& CommonData() const;
 
   const std::vector<double>& GetLocalUpwindDataBlock() const;
 
-  const double* GetLocalCellUpwindPsi(const std::vector<double>& psi_data_block,
-                                      const chi_mesh::Cell& cell);
+  const double* GetLocalCellUpwindPsi(const std::vector<double>& psi_data_block, const Cell& cell);
 
   const std::vector<double>& GetNonLocalUpwindData(uint64_t cell_global_id,
                                                    unsigned int face_id) const;
@@ -87,8 +81,8 @@ public:
 private:
   const CBC_FLUDSCommonData& common_data_;
   std::reference_wrapper<std::vector<double>> local_psi_data_;
-  const chi_math::UnknownManager& psi_uk_man_;
-  const chi_math::SpatialDiscretization& sdm_;
+  const UnknownManager& psi_uk_man_;
+  const SpatialDiscretization& sdm_;
 
   std::vector<double> delayed_local_psi_;
   std::vector<double> delayed_local_psi_old_;
@@ -103,3 +97,4 @@ private:
 };
 
 } // namespace lbs
+} // namespace opensn

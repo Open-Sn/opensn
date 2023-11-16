@@ -6,14 +6,19 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
+namespace opensn
+{
+namespace lbs
+{
+
 void
-lbs::TestFunction()
+TestFunction()
 {
   std::cout << "Test Function!\n";
 }
 
 std::array<double, 2>
-lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
+MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
 {
   // Custom function to implement the non-linear equations
   // that make up the system to solve the a and b coefficients
@@ -29,7 +34,7 @@ lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
   //
   // Note that the function only accept the current normalized with
   // 1/phi. So phi is always 1.0.
-  class CustomF : public chi_math::NonLinearFunction
+  class CustomF : public NonLinearFunction
   {
   private:
     double J_x, J_y, J_z;
@@ -50,7 +55,7 @@ lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
       const double b = x[1];
       const double FOUR_PI = 4.0 * M_PI;
 
-      double size_J = chi_math::Vec2Norm({J_x, J_y, J_z});
+      double size_J = Vec2Norm({J_x, J_y, J_z});
 
       return {(FOUR_PI / b) * exp(a) * sinh(b) - 1.0,
               (FOUR_PI / b / b) * exp(a) * (b * cosh(b) - sinh(b)) - size_J};
@@ -77,7 +82,7 @@ lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
   double J_z = P1_moments[3];
 
   // Compute initial ratio size_J/phi
-  double size_J_i = chi_math::Vec2Norm({J_x, J_y, J_z});
+  double size_J_i = Vec2Norm({J_x, J_y, J_z});
   double ratio_i = size_J_i / phi;
 
   if (phi < 1.0e-10 or ratio_i > 0.9)
@@ -93,7 +98,7 @@ lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
     J_z /= phi;
   }
 
-  double size_J_f = chi_math::Vec2Norm({J_x, J_y, J_z});
+  double size_J_f = Vec2Norm({J_x, J_y, J_z});
   double ratio_f = size_J_f;
 
   if (verbose)
@@ -120,7 +125,7 @@ lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
   else
   {
     CustomF custom_function({J_x, J_y, J_z});
-    auto solution = chi_math::NewtonIteration(custom_function, {1.0, 0.1}, 100, 1.0e-8, verbose);
+    auto solution = NewtonIteration(custom_function, {1.0, 0.1}, 100, 1.0e-8, verbose);
 
     double a = solution[0];
     double b = solution[1];
@@ -130,3 +135,6 @@ lbs::MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
     return {a, b};
   }
 }
+
+} // namespace lbs
+} // namespace opensn

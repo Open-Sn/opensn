@@ -6,7 +6,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi
+namespace opensn
 {
 
 InputParameters GetSyntax_PrintPostProcessors();
@@ -73,7 +73,8 @@ PrintPostProcessors(const InputParameters& params)
 
     for (const size_t handle : handle_list)
     {
-      auto& pp = Chi::GetStackItem<PostProcessor>(Chi::postprocessor_stack, handle, __FUNCTION__);
+      auto& pp =
+        opensn::Chi::GetStackItem<PostProcessor>(Chi::postprocessor_stack, handle, __FUNCTION__);
       pp_list.push_back(&pp);
     }
   }
@@ -89,4 +90,4 @@ PrintPostProcessors(const InputParameters& params)
   return ParameterBlock{};
 }
 
-} // namespace chi
+} // namespace opensn

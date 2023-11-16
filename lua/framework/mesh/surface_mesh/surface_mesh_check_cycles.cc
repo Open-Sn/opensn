@@ -10,6 +10,8 @@
 #include "lua_surface_mesh.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiSurfaceMeshCheckCycles);
 RegisterLuaFunctionAsIs(chiComputeLoadBalancing);
 
@@ -19,13 +21,13 @@ chiSurfaceMeshCheckCycles(lua_State* L)
   int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError("chiSurfaceMeshCheckCycles", 2, num_args);
 
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = opensn::GetCurrentHandler();
 
   int surf_handle = lua_tonumber(L, 1);
   int num_angles = lua_tonumber(L, 2);
 
-  auto& surf_mesh =
-    Chi::GetStackItem<chi_mesh::SurfaceMesh>(Chi::surface_mesh_stack, surf_handle, __FUNCTION__);
+  auto& surf_mesh = opensn::Chi::GetStackItem<SurfaceMesh>(
+    opensn::Chi::surface_mesh_stack, surf_handle, __FUNCTION__);
 
   surf_mesh.CheckCyclicDependencies(num_angles);
   return 0;
@@ -40,15 +42,16 @@ chiComputeLoadBalancing(lua_State* L)
   // Get reference surface mesh
   int surf_handle = lua_tonumber(L, 1);
 
-  auto& cur_surf =
-    Chi::GetStackItem<chi_mesh::SurfaceMesh>(Chi::surface_mesh_stack, surf_handle, __FUNCTION__);
+  auto& cur_surf = opensn::Chi::GetStackItem<SurfaceMesh>(
+    opensn::Chi::surface_mesh_stack, surf_handle, __FUNCTION__);
 
   // Extract x-cuts
   if (!lua_istable(L, 2))
   {
-    Chi::log.LogAllError() << "In call to chiComputeLoadBalancing: "
-                           << " expected table for argument 2. Incompatible value supplied.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError()
+      << "In call to chiComputeLoadBalancing: "
+      << " expected table for argument 2. Incompatible value supplied.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   int x_table_len = lua_rawlen(L, 2);
@@ -65,9 +68,10 @@ chiComputeLoadBalancing(lua_State* L)
   // Extract y-cuts
   if (!lua_istable(L, 3))
   {
-    Chi::log.LogAllError() << "In call to chiComputeLoadBalancing: "
-                           << " expected table for argument 3. Incompatible value supplied.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError()
+      << "In call to chiComputeLoadBalancing: "
+      << " expected table for argument 3. Incompatible value supplied.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   int y_table_len = lua_rawlen(L, 3);

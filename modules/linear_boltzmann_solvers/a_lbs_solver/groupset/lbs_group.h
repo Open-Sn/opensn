@@ -1,6 +1,7 @@
 #pragma once
 
-//################################################################### Class def
+namespace opensn
+{
 namespace lbs
 {
 /**Object holding a grouping.*/
@@ -13,4 +14,6 @@ public:
   LBSGroup() : id_(-1) {}
   explicit LBSGroup(int id) : id_(id) {}
 };
+
 } // namespace lbs
+} // namespace opensn

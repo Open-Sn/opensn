@@ -5,7 +5,9 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace mg_diffusion::mgd_lua_utils
+using namespace opensn;
+
+namespace opensnlua::mg_diffusion
 {
 
 int
@@ -22,16 +24,16 @@ chiCFEMMGDiffusionSolverCreate(lua_State* L)
     solver_name = lua_tostring(L, 1);
   }
 
-  auto new_solver = std::make_shared<mg_diffusion::Solver>(solver_name);
+  auto new_solver = std::make_shared<opensn::mg_diffusion::Solver>(solver_name);
 
-  Chi::object_stack.push_back(new_solver);
+  opensn::Chi::object_stack.push_back(new_solver);
 
-  lua_pushinteger(L, static_cast<lua_Integer>(Chi::object_stack.size() - 1));
+  lua_pushinteger(L, static_cast<lua_Integer>(opensn::Chi::object_stack.size() - 1));
 
-  Chi::log.LogAllVerbose1() << "\nchiCFEMMGDiffusionSolverCreate: CFEM "
-                               "Multigroup Diffusion solver created"
-                            << std::endl;
+  opensn::Chi::log.LogAllVerbose1() << "\nchiCFEMMGDiffusionSolverCreate: CFEM "
+                                       "Multigroup Diffusion solver created"
+                                    << std::endl;
   return 1;
 }
 
-} // namespace mg_diffusion::mgd_lua_utils
+} // namespace opensnlua::mg_diffusion

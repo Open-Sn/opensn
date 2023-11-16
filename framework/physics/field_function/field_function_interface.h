@@ -2,7 +2,7 @@
 
 #include "framework/parameters/input_parameters.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 class FieldFunction;
@@ -14,14 +14,14 @@ class FieldFunction;
 class FieldFunctionInterface
 {
 protected:
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
-  explicit FieldFunctionInterface(const chi::InputParameters& params);
+  explicit FieldFunctionInterface(const InputParameters& params);
 
   FieldFunction* GetFieldFunction() const;
 
 private:
-  chi::ParameterBlock field_function_param_;
+  ParameterBlock field_function_param_;
 };
 
-} // namespace chi_physics
+} // namespace opensn

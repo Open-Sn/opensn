@@ -9,7 +9,7 @@
 
 #include <mpi.h>
 
-namespace chi_math
+namespace opensn
 {
 
 /**
@@ -145,7 +145,7 @@ public:
   void Shift(double a) override;
 
   /**Returns the specified norm of the vector.*/
-  double ComputeNorm(chi_math::NormType norm_type) const override;
+  double ComputeNorm(NormType norm_type) const override;
 
   /**
    * Communicate all operations stored within the operation cache to the
@@ -174,4 +174,4 @@ private:
   int FindOwnerPID(uint64_t global_id) const;
 };
 
-} // namespace chi_math
+} // namespace opensn

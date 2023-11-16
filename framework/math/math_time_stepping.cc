@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace chi_math
+namespace opensn
 {
 
 #pragma GCC diagnostic push
@@ -29,4 +29,4 @@ SteppingMethodStringName(SteppingMethod method)
 }
 #pragma GCC diagnostic pop
 
-} // namespace chi_math
+} // namespace opensn

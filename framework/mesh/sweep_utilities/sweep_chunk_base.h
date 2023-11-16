@@ -4,19 +4,20 @@
 
 #include <functional>
 
+namespace opensn
+{
+
 /**Sweep work function*/
-class chi_mesh::sweep_management::SweepChunk
+class SweepChunk
 {
 public:
   /**
    * Convenient typdef for the moment call back function. See moment_callbacks.
    *  Arguments are:
-   *  chi_mesh::sweep_management::SweepChunk *
-   *  chi_mesh::sweep_management::AngleSet *
+   *  SweepChunk *
+   *  AngleSet *
    */
-  typedef std::function<void(chi_mesh::sweep_management::SweepChunk* sweeper,
-                             chi_mesh::sweep_management::AngleSet* angle_set)>
-    MomentCallbackF;
+  typedef std::function<void(SweepChunk* sweeper, AngleSet* angle_set)> MomentCallbackF;
 
   /**
    * Functions of type MomentCallbackF can be added to the moment_callbacks
@@ -39,12 +40,9 @@ public:
 
   /**For cell-by-cell methods or computing the residual on a
    * single cell.*/
-  virtual void SetCell(chi_mesh::Cell const* cell_ptr,
-                       chi_mesh::sweep_management::AngleSet& angle_set)
-  {
-  }
+  virtual void SetCell(Cell const* cell_ptr, AngleSet& angle_set) {}
 
-  virtual void SetCells(const std::vector<const chi_mesh::Cell*>& cell_ptrs) {}
+  virtual void SetCells(const std::vector<const Cell*>& cell_ptrs) {}
 
   virtual ~SweepChunk() = default;
 
@@ -89,3 +87,5 @@ private:
   std::vector<double>* destination_psi;
   bool surface_source_active = false;
 };
+
+} // namespace opensn

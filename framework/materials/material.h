@@ -2,7 +2,7 @@
 
 #include "framework/object.h"
 
-namespace chi
+namespace opensn
 {
 
 /**A generic material object used to group together multiple properties.*/
@@ -13,7 +13,7 @@ private:
 
 public:
   static InputParameters GetInputParameters();
-  explicit Material(const chi::InputParameters& params);
+  explicit Material(const InputParameters& params);
 };
 
-} // namespace chi
+} // namespace opensn

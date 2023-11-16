@@ -8,7 +8,9 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace lbs::common_lua_utils
+using namespace opensn;
+
+namespace opensnlua::lbs
 {
 
 RegisterLuaFunctionAsIs(chiLBSSetPhiFromFieldFunction);
@@ -25,11 +27,12 @@ chiLBSSetPhiFromFieldFunction(lua_State* L)
 
   const size_t handle = lua_tointeger(L, 1);
 
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, handle, fname);
+  auto& lbs_solver =
+    opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(opensn::Chi::object_stack, handle, fname);
 
-  auto specs = chi_lua::TableParserAsParameterBlock::ParseTable(L, 2);
+  auto specs = TableParserAsParameterBlock::ParseTable(L, 2);
 
-  lbs::PhiSTLOption phi_option = PhiSTLOption::PHI_OLD;
+  opensn::lbs::PhiSTLOption phi_option = opensn::lbs::PhiSTLOption::PHI_OLD;
   std::vector<size_t> moment_indices;
   std::vector<size_t> group_indices;
 
@@ -39,9 +42,9 @@ chiLBSSetPhiFromFieldFunction(lua_State* L)
     if (spec.Name() == "which_phi")
     {
       const auto phi_str = spec.GetValue<std::string>();
-      if (phi_str == "old") phi_option = PhiSTLOption::PHI_OLD;
+      if (phi_str == "old") phi_option = opensn::lbs::PhiSTLOption::PHI_OLD;
       else if (phi_str == "new")
-        phi_option = PhiSTLOption::PHI_NEW;
+        phi_option = opensn::lbs::PhiSTLOption::PHI_NEW;
       else
         ChiInvalidArgument(std::string("Parameter \"which_phi\" can only be"
                                        " \"old\" or \"new\". ") +
@@ -60,4 +63,4 @@ chiLBSSetPhiFromFieldFunction(lua_State* L)
   return 0;
 }
 
-} // namespace lbs::common_lua_utils
+} // namespace opensnlua::lbs

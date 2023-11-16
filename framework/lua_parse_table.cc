@@ -20,10 +20,10 @@
   throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                                        \
                          ": Encountered mixed key types (string and number)")
 
-namespace chi_lua
+namespace opensn
 {
 
-typedef chi::ParameterBlock ParamBlock;
+typedef ParameterBlock ParamBlock;
 
 //  NOLINTBEGIN(misc-no-recursion)
 void
@@ -64,7 +64,7 @@ TableParserAsParameterBlock::RecursivelyParseTableValues(lua_State* L,
     }
     case LUA_TTABLE:
     {
-      chi::ParameterBlock new_block(key_str_name);
+      ParameterBlock new_block(key_str_name);
       RecursivelyParseTableKeys(L, lua_gettop(L), new_block);
       block.AddParameter(new_block);
       break;
@@ -77,9 +77,7 @@ TableParserAsParameterBlock::RecursivelyParseTableValues(lua_State* L,
 
 //  NOLINTBEGIN(misc-no-recursion)
 void
-TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
-                                                       int t,
-                                                       chi::ParameterBlock& block)
+TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L, int t, ParameterBlock& block)
 {
   bool number_key_encountered = false;
   bool string_key_encountered = false;
@@ -105,7 +103,7 @@ TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
     {
       if (string_key_encountered) ExceptionMixStringNumberKeys;
 
-      if (block.Type() != chi::ParameterBlockType::ARRAY) block.ChangeToArray();
+      if (block.Type() != ParameterBlockType::ARRAY) block.ChangeToArray();
 
       number_key_encountered = true;
       const std::string key_str_name = std::to_string(key_number_index);
@@ -118,7 +116,7 @@ TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
 }
 // NOLINTEND(misc-no-recursion)
 
-chi::ParameterBlock
+ParameterBlock
 TableParserAsParameterBlock::ParseTable(lua_State* L, int table_stack_index)
 {
   ParamBlock param_block;
@@ -130,10 +128,8 @@ TableParserAsParameterBlock::ParseTable(lua_State* L, int table_stack_index)
 
 //  NOLINTBEGIN(misc-no-recursion)
 void
-PushParameterBlock(lua_State* L, const chi::ParameterBlock& block, int level)
+PushParameterBlock(lua_State* L, const ParameterBlock& block, int level)
 {
-  using namespace chi;
-
   switch (block.Type())
   {
     case ParameterBlockType::BOOLEAN:
@@ -179,7 +175,7 @@ PushParameterBlock(lua_State* L, const chi::ParameterBlock& block, int level)
 }
 //  NOLINTEND(misc-no-recursion)
 
-chi::ParameterBlock
+ParameterBlock
 StackItemToParameterBlock(lua_State* L, int index)
 {
   switch (lua_type(L, index))
@@ -209,5 +205,5 @@ StackItemToParameterBlock(lua_State* L, int index)
   }
 }
 
-} // namespace chi_lua
+} // namespace opensn
 #endif

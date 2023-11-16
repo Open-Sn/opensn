@@ -3,7 +3,9 @@
 
 #include "framework/console/console.h"
 
-namespace chi_physics::field_operations::lua_utils
+using namespace opensn;
+
+namespace opensnlua
 {
 
 RegisterLuaFunctionAsIs(chiFieldOperationExecute);
@@ -19,12 +21,12 @@ chiFieldOperationExecute(lua_State* L)
 
   const size_t handle = lua_tointeger(L, 1);
 
-  auto& operation = Chi::GetStackItem<chi_physics::field_operations::FieldOperation>(
-    Chi::object_stack, handle, fname);
+  auto& operation =
+    opensn::Chi::GetStackItem<FieldOperation>(opensn::Chi::object_stack, handle, fname);
 
   operation.Execute();
 
   return 0;
 }
 
-} // namespace chi_physics::field_operations::lua_utils
+} // namespace opensnlua

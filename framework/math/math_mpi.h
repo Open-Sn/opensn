@@ -4,7 +4,7 @@
 #include <vector>
 typedef std::vector<double> VecDbl;
 
-namespace chi_math
+namespace opensn
 {
 
 /**
@@ -12,4 +12,4 @@ namespace chi_math
  */
 double Vec2NormMPI(const VecDbl& x, MPI_Comm comm);
 
-} // namespace chi_math
+} // namespace opensn

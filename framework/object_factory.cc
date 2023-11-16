@@ -1,7 +1,9 @@
 #include "framework/object_factory.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+
+namespace opensn
+{
 
 ChiObjectFactory&
 ChiObjectFactory::GetInstance() noexcept
@@ -23,7 +25,7 @@ ChiObjectFactory::RegistryHasKey(const std::string& key) const
 }
 
 size_t
-ChiObjectFactory::MakeRegisteredObject(const chi::ParameterBlock& params) const
+ChiObjectFactory::MakeRegisteredObject(const ParameterBlock& params) const
 {
   if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object with type from parameters";
 
@@ -42,7 +44,7 @@ ChiObjectFactory::MakeRegisteredObject(const chi::ParameterBlock& params) const
 
 size_t
 ChiObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
-                                             const chi::ParameterBlock& params) const
+                                             const ParameterBlock& params) const
 {
   if (Chi::log.GetVerbosity() >= 2) Chi::log.Log() << "Making object with specified type";
 
@@ -81,7 +83,7 @@ ChiObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
   return new_object->StackID();
 }
 
-chi::InputParameters
+InputParameters
 ChiObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
 {
   auto iter = object_registry_.find(type);
@@ -125,3 +127,5 @@ ChiObjectFactory::AssertRegistryKeyAvailable(const std::string& key,
     ChiLogicalError(calling_function + ": Attempted to register Object \"" + key +
                     "\" but an object with the same name is already registered.");
 }
+
+} // namespace opensn

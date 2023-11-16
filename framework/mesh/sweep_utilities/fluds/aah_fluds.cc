@@ -4,7 +4,7 @@
 #include "framework/logging/log.h"
 #include "framework/math/math.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data)
@@ -278,4 +278,4 @@ AAH_FLUDS::DelayedPrelocIOutgoingPsiOld()
   return delayed_prelocI_outgoing_psi_old_;
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

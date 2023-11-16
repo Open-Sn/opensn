@@ -13,22 +13,22 @@
 #define sc_double static_cast<double>
 #define PCShellPtr PetscErrorCode (*)(PC, Vec, Vec)
 
+namespace opensn
+{
 namespace lbs
 {
 
-SweepWGSContext::SweepWGSContext(
-  DiscreteOrdinatesSolver& lbs_solver,
-  LBSGroupset& groupset,
-  const SetSourceFunction& set_source_function,
-  SourceFlags lhs_scope,
-  SourceFlags rhs_scope,
-  bool log_info,
-  std::shared_ptr<chi_mesh::sweep_management::SweepChunk> sweep_chunk)
+SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
+                                 LBSGroupset& groupset,
+                                 const SetSourceFunction& set_source_function,
+                                 SourceFlags lhs_scope,
+                                 SourceFlags rhs_scope,
+                                 bool log_info,
+                                 std::shared_ptr<SweepChunk> sweep_chunk)
   : WGSContext(lbs_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
     sweep_chunk_(std::move(sweep_chunk)),
-    sweep_scheduler_(lbs_solver.SweepType() == "AAH"
-                       ? chi_mesh::sweep_management::SchedulingAlgorithm::DEPTH_OF_GRAPH
-                       : chi_mesh::sweep_management::SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
+    sweep_scheduler_(lbs_solver.SweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
+                                                     : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
                      *groupset.angle_agg_,
                      *sweep_chunk_),
     lbs_ss_solver_(lbs_solver)
@@ -152,7 +152,7 @@ SweepWGSContext::PostSolveCallback()
     double sweep_time = sweep_scheduler_.GetAverageSweepTime();
     double chunk_overhead_ratio = 1.0 - sweep_scheduler_.GetAngleSetTimings()[2];
     double source_time = Chi::log.ProcessEvent(lbs_solver_.GetSourceEventTag(),
-                                               chi::ChiLog::EventOperation::AVERAGE_DURATION);
+                                               ChiLog::EventOperation::AVERAGE_DURATION);
     size_t num_angles = groupset_.quadrature_->abscissae_.size();
     size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
 
@@ -177,3 +177,4 @@ SweepWGSContext::PostSolveCallback()
 }
 
 } // namespace lbs
+} // namespace opensn

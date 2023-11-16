@@ -6,17 +6,15 @@
 #include <memory>
 #include <petscksp.h>
 
+namespace opensn
+{
 namespace lbs
 {
 class LBSSolver;
-}
 
-namespace lbs
+struct AGSContext : public LinearSolverContext
 {
-
-struct AGSContext : public chi_math::LinearSolverContext
-{
-  typedef std::shared_ptr<chi_math::LinearSolver> LinSolveBaseTypePtr;
+  typedef std::shared_ptr<LinearSolver> LinSolveBaseTypePtr;
   LBSSolver& lbs_solver_;
   std::vector<LinSolveBaseTypePtr> sub_solvers_list_;
 
@@ -33,3 +31,4 @@ struct AGSContext : public chi_math::LinearSolverContext
 };
 
 } // namespace lbs
+} // namespace opensn

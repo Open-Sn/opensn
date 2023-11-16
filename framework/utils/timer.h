@@ -3,9 +3,9 @@
 #include <string>
 #include <chrono>
 
-// ################################################################### CLASS DEF
-namespace chi
+namespace opensn
 {
+
 /** Timer object.*/
 class Timer
 {
@@ -37,4 +37,5 @@ public:
  * `chi::Sleep(std::chrono::milliseconds(100))` sleeps for 100 milliseconds,
  * `std::Sleep(std::chrono::seconds(1))` sleeps for 1 second.*/
 void Sleep(std::chrono::duration<double> time);
-} // namespace chi
+
+} // namespace opensn

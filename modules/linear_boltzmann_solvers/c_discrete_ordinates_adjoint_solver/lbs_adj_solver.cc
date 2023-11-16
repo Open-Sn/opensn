@@ -13,15 +13,17 @@
 #include <utility>
 #include <fstream>
 
+namespace opensn
+{
 namespace lbs
 {
 
 RegisterChiObject(lbs, DiscreteOrdinatesAdjointSolver);
 
-chi::InputParameters
+InputParameters
 DiscreteOrdinatesAdjointSolver::GetInputParameters()
 {
-  chi::InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
+  InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
 
   params.SetGeneralDescription("Adjoint capability");
 
@@ -33,7 +35,7 @@ DiscreteOrdinatesAdjointSolver::GetInputParameters()
   return params;
 }
 
-DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const chi::InputParameters& params)
+DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const InputParameters& params)
   : lbs::DiscreteOrdinatesSolver(params)
 {
   basic_options_.AddOption<std::string>("REFERENCE_RF", std::string());
@@ -86,14 +88,14 @@ void
 DiscreteOrdinatesAdjointSolver::MakeAdjointXSs()
 {
   // Create adjoint cross sections
-  using AdjXS = chi_physics::AdjointMGXS;
+  using AdjXS = AdjointMGXS;
 
   // define the actual cross-sections
   std::map<int, XSPtr> matid_to_adj_xs_map;
   for (const auto& matid_xs_pair : matid_to_xs_map_)
   {
     const auto matid = matid_xs_pair.first;
-    const auto fwd_xs = std::dynamic_pointer_cast<chi_physics::MultiGroupXS>(matid_xs_pair.second);
+    const auto fwd_xs = std::dynamic_pointer_cast<MultiGroupXS>(matid_xs_pair.second);
     matid_to_adj_xs_map[matid] = std::make_shared<AdjXS>(*fwd_xs);
   } // for each mat
   matid_to_xs_map_ = std::move(matid_to_adj_xs_map);
@@ -176,10 +178,9 @@ DiscreteOrdinatesAdjointSolver::Execute()
 }
 
 size_t
-DiscreteOrdinatesAdjointSolver::AddResponseFunction(
-  const std::string& qoi_name,
-  std::shared_ptr<chi_mesh::LogicalVolume> logical_volume,
-  const std::string& lua_function_name)
+DiscreteOrdinatesAdjointSolver::AddResponseFunction(const std::string& qoi_name,
+                                                    std::shared_ptr<LogicalVolume> logical_volume,
+                                                    const std::string& lua_function_name)
 {
 #ifdef OPENSN_WITH_LUA
   // Make the designation
@@ -210,7 +211,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
 
   const auto& m_to_ell_em_map = groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap();
 
-  typedef chi_math::VectorN<4> Arr4; // phi, J_x, J_y, J_z
+  typedef VectorN<4> Arr4; // phi, J_x, J_y, J_z
   typedef std::vector<Arr4> MGVec4;
   typedef std::vector<MGVec4> VecOfMGVec4;
   const size_t num_groups = set_group_numbers.size();
@@ -252,7 +253,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
       // Determine nodal average p1_moments
       for (int g : set_group_numbers)
       {
-        chi_math::VectorN<4> cell_p1_avg(VecDbl{0.0, 0.0, 0.0, 0.0});
+        VectorN<4> cell_p1_avg(VecDbl{0.0, 0.0, 0.0, 0.0});
 
         double volume_total = 0.0;
         for (int i = 0; i < num_nodes; ++i)
@@ -451,3 +452,4 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
 }
 
 } // namespace lbs
+} // namespace opensn

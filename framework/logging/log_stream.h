@@ -3,9 +3,9 @@
 #include <iostream>
 #include <sstream>
 
-namespace chi
+namespace opensn
 {
-//###################################################################
+
 /** Log stream for adding header information to a string stream.*/
 class LogStream : public std::stringstream
 {
@@ -42,4 +42,5 @@ struct DummyStream : public std::ostream
 
   ~DummyStream() {}
 };
-} // namespace chi
+
+} // namespace opensn

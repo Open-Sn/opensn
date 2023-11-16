@@ -9,6 +9,8 @@
 #include "quadratures_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiGetProductQuadrature);
 
 int
@@ -19,23 +21,24 @@ chiGetProductQuadrature(lua_State* L)
 
   int handle = lua_tonumber(L, 1);
 
-  std::shared_ptr<chi_math::ProductQuadrature> quad;
+  std::shared_ptr<ProductQuadrature> quad;
   try
   {
-    auto ang_quad = Chi::angular_quadrature_stack.at(handle);
-    if (ang_quad->type_ == chi_math::AngularQuadratureType::ProductQuadrature)
-      quad = std::static_pointer_cast<chi_math::ProductQuadrature>(ang_quad);
+    auto ang_quad = opensn::Chi::angular_quadrature_stack.at(handle);
+    if (ang_quad->type_ == AngularQuadratureType::ProductQuadrature)
+      quad = std::static_pointer_cast<ProductQuadrature>(ang_quad);
     else
     {
-      Chi::log.LogAllError() << "chiGetProductQuadrature: Provided quadrature handle points to "
-                                "a quadrature that is not a product quadrature.";
-      Chi::Exit(EXIT_FAILURE);
+      opensn::Chi::log.LogAllError()
+        << "chiGetProductQuadrature: Provided quadrature handle points to "
+           "a quadrature that is not a product quadrature.";
+      opensn::Chi::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
-    Chi::log.LogAllError() << "chiGetProductQuadrature: Invalid quadrature handle.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << "chiGetProductQuadrature: Invalid quadrature handle.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   lua_newtable(L);

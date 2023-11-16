@@ -3,6 +3,8 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -14,13 +16,13 @@ class SweepChunkPWLRZ : public lbs::AAH_SweepChunk
 private:
   const std::vector<lbs::UnitCellMatrices>& secondary_unit_cell_matrices_;
   /** Unknown manager. */
-  chi_math::UnknownManager unknown_manager_;
+  UnknownManager unknown_manager_;
   /** Sweeping dependency angular intensity (for each polar level). */
   std::vector<double> psi_sweep_;
   /** Mapping from direction linear index to direction polar level. */
   std::map<unsigned int, unsigned int> map_polar_level_;
   /** Normal vector to determine symmetric boundary condition. */
-  chi_mesh::Vector3 normal_vector_boundary_;
+  Vector3 normal_vector_boundary_;
 
   // Runtime params
   const MatDbl* Maux_ = nullptr;
@@ -32,8 +34,8 @@ private:
   //  Methods
 public:
   /** Constructor. */
-  SweepChunkPWLRZ(const chi_mesh::MeshContinuum& grid,
-                  const chi_math::SpatialDiscretization& discretization_primary,
+  SweepChunkPWLRZ(const MeshContinuum& grid,
+                  const SpatialDiscretization& discretization_primary,
                   const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
                   const std::vector<lbs::UnitCellMatrices>& secondary_unit_cell_matrices,
                   std::vector<lbs::CellLBSView>& cell_transport_views,
@@ -64,3 +66,4 @@ protected:
 };
 
 } // namespace lbs
+} // namespace opensn

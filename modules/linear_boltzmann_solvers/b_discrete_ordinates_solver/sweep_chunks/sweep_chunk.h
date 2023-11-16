@@ -3,10 +3,9 @@
 #include "framework/mesh/sweep_utilities/sweep_chunk_base.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 
-namespace chi_math
+namespace opensn
 {
 class CellMapping;
-}
 
 namespace lbs
 {
@@ -16,13 +15,13 @@ struct SweepDependencyInterface
   size_t groupset_angle_group_stride_;
   size_t groupset_group_stride_;
 
-  chi_mesh::sweep_management::AngleSet* angle_set_ = nullptr;
+  AngleSet* angle_set_ = nullptr;
   bool surface_source_active_ = false;
 
   size_t gs_ss_begin_ = 0;
   int gs_gi_ = 0;
 
-  const chi_mesh::Cell* cell_ptr_ = nullptr;
+  const Cell* cell_ptr_ = nullptr;
   uint64_t cell_local_id_ = 0;
 
   size_t angle_set_index_ = 0;
@@ -60,13 +59,13 @@ public:
 };
 
 /**Base class for LBS sweepers*/
-class SweepChunk : public chi_mesh::sweep_management::SweepChunk
+class SweepChunk : public opensn::SweepChunk
 {
 public:
   SweepChunk(std::vector<double>& destination_phi,
              std::vector<double>& destination_psi,
-             const chi_mesh::MeshContinuum& grid,
-             const chi_math::SpatialDiscretization& discretization,
+             const MeshContinuum& grid,
+             const SpatialDiscretization& discretization,
              const std::vector<UnitCellMatrices>& unit_cell_matrices,
              std::vector<lbs::CellLBSView>& cell_transport_views,
              const std::vector<double>& source_moments,
@@ -79,8 +78,8 @@ public:
 protected:
   typedef std::function<void()> CallbackFunction;
 
-  const chi_mesh::MeshContinuum& grid_;
-  const chi_math::SpatialDiscretization& grid_fe_view_;
+  const MeshContinuum& grid_;
+  const SpatialDiscretization& grid_fe_view_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
   std::vector<lbs::CellLBSView>& grid_transport_view_;
   const std::vector<double>& q_moments_;
@@ -107,8 +106,8 @@ protected:
 
   // Cell items
   uint64_t cell_local_id_ = 0;
-  const chi_mesh::Cell* cell_ = nullptr;
-  const chi_math::CellMapping* cell_mapping_ = nullptr;
+  const Cell* cell_ = nullptr;
+  const CellMapping* cell_mapping_ = nullptr;
   CellLBSView* cell_transport_view_ = nullptr;
   size_t cell_num_faces_ = 0;
   size_t cell_num_nodes_ = 0;
@@ -122,7 +121,7 @@ protected:
 
   std::vector<double> face_mu_values_;
   size_t direction_num_ = 0;
-  chi_mesh::Vector3 omega_;
+  Vector3 omega_;
   double direction_qweight_ = 0.0;
 
   /**Callbacks at phase 2 : direction data established*/
@@ -175,3 +174,4 @@ private:
 };
 
 } // namespace lbs
+} // namespace opensn

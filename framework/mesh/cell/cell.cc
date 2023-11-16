@@ -7,8 +7,11 @@
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"
 
+namespace opensn
+{
+
 std::string
-chi_mesh::CellTypeName(const CellType type)
+CellTypeName(const CellType type)
 {
   switch (type)
   {
@@ -43,7 +46,7 @@ chi_mesh::CellTypeName(const CellType type)
   return "NONE";
 }
 
-chi_mesh::Cell::Cell(const Cell& other)
+Cell::Cell(const Cell& other)
   : cell_type_(other.cell_type_),
     cell_sub_type_(other.cell_sub_type_),
     global_id_(other.global_id_),
@@ -56,7 +59,7 @@ chi_mesh::Cell::Cell(const Cell& other)
 {
 }
 
-chi_mesh::Cell::Cell(Cell&& other) noexcept
+Cell::Cell(Cell&& other) noexcept
   : cell_type_(other.cell_type_),
     cell_sub_type_(other.cell_sub_type_),
     global_id_(other.global_id_),
@@ -69,8 +72,8 @@ chi_mesh::Cell::Cell(Cell&& other) noexcept
 {
 }
 
-chi_mesh::Cell&
-chi_mesh::Cell::operator=(const Cell& other)
+Cell&
+Cell::operator=(const Cell& other)
 {
   global_id_ = other.global_id_;
   local_id_ = other.local_id_;
@@ -84,7 +87,7 @@ chi_mesh::Cell::operator=(const Cell& other)
 }
 
 bool
-chi_mesh::CellFace::IsNeighborLocal(const chi_mesh::MeshContinuum& grid) const
+CellFace::IsNeighborLocal(const MeshContinuum& grid) const
 {
   if (not has_neighbor_) return false;
   if (Chi::mpi.process_count == 1) return true;
@@ -95,7 +98,7 @@ chi_mesh::CellFace::IsNeighborLocal(const chi_mesh::MeshContinuum& grid) const
 }
 
 int
-chi_mesh::CellFace::GetNeighborPartitionID(const chi_mesh::MeshContinuum& grid) const
+CellFace::GetNeighborPartitionID(const MeshContinuum& grid) const
 {
   if (not has_neighbor_) return -1;
   if (Chi::mpi.process_count == 1) return 0;
@@ -106,7 +109,7 @@ chi_mesh::CellFace::GetNeighborPartitionID(const chi_mesh::MeshContinuum& grid) 
 }
 
 uint64_t
-chi_mesh::CellFace::GetNeighborLocalID(const chi_mesh::MeshContinuum& grid) const
+CellFace::GetNeighborLocalID(const MeshContinuum& grid) const
 {
   if (not has_neighbor_) return -1;
   if (Chi::mpi.process_count == 1) return neighbor_id_; // cause global_ids=local_ids
@@ -120,7 +123,7 @@ chi_mesh::CellFace::GetNeighborLocalID(const chi_mesh::MeshContinuum& grid) cons
 }
 
 int
-chi_mesh::CellFace::GetNeighborAssociatedFace(const chi_mesh::MeshContinuum& grid) const
+CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
 {
   const auto& cur_face = *this; // just for readability
   // Check index validity
@@ -174,7 +177,7 @@ chi_mesh::CellFace::GetNeighborAssociatedFace(const chi_mesh::MeshContinuum& gri
 }
 
 double
-chi_mesh::CellFace::ComputeFaceArea(const chi_mesh::MeshContinuum& grid) const
+CellFace::ComputeFaceArea(const MeshContinuum& grid) const
 {
   if (vertex_ids_.size() <= 1) return 1.0;
   else if (vertex_ids_.size() == 2)
@@ -200,10 +203,10 @@ chi_mesh::CellFace::ComputeFaceArea(const chi_mesh::MeshContinuum& grid) const
       auto v01 = v1 - v0;
       auto v02 = v2 - v0;
 
-      chi_mesh::Matrix3x3 J;
+      Matrix3x3 J;
       J.SetColJVec(0, v01);
       J.SetColJVec(1, v02);
-      J.SetColJVec(2, chi_mesh::Vector3(1.0, 1.0, 1.0));
+      J.SetColJVec(2, Vector3(1.0, 1.0, 1.0));
 
       area += 0.5 * std::fabs(J.Det());
     }
@@ -212,25 +215,25 @@ chi_mesh::CellFace::ComputeFaceArea(const chi_mesh::MeshContinuum& grid) const
   }
 }
 
-chi_data_types::ByteArray
-chi_mesh::CellFace::Serialize() const
+ByteArray
+CellFace::Serialize() const
 {
-  chi_data_types::ByteArray raw;
+  ByteArray raw;
 
   raw.Write<size_t>(vertex_ids_.size());
   for (uint64_t vid : vertex_ids_)
     raw.Write<uint64_t>(vid);
 
-  raw.Write<chi_mesh::Vector3>(normal_);
-  raw.Write<chi_mesh::Vector3>(centroid_);
+  raw.Write<Vector3>(normal_);
+  raw.Write<Vector3>(centroid_);
   raw.Write<bool>(has_neighbor_);
   raw.Write<uint64_t>(neighbor_id_);
 
   return raw;
 }
 
-chi_mesh::CellFace
-chi_mesh::CellFace::DeSerialize(const chi_data_types::ByteArray& raw, size_t& address)
+CellFace
+CellFace::DeSerialize(const ByteArray& raw, size_t& address)
 {
 
   CellFace face;
@@ -240,8 +243,8 @@ chi_mesh::CellFace::DeSerialize(const chi_data_types::ByteArray& raw, size_t& ad
   for (size_t fv = 0; fv < num_face_verts; ++fv)
     face.vertex_ids_.push_back(raw.Read<uint64_t>(address, &address));
 
-  face.normal_ = raw.Read<chi_mesh::Vector3>(address, &address);
-  face.centroid_ = raw.Read<chi_mesh::Vector3>(address, &address);
+  face.normal_ = raw.Read<Vector3>(address, &address);
+  face.centroid_ = raw.Read<Vector3>(address, &address);
   face.has_neighbor_ = raw.Read<bool>(address, &address);
   face.neighbor_id_ = raw.Read<uint64_t>(address, &address);
 
@@ -249,7 +252,7 @@ chi_mesh::CellFace::DeSerialize(const chi_data_types::ByteArray& raw, size_t& ad
 }
 
 std::string
-chi_mesh::CellFace::ToString() const
+CellFace::ToString() const
 {
   std::stringstream outstr;
 
@@ -269,23 +272,23 @@ chi_mesh::CellFace::ToString() const
 }
 
 void
-chi_mesh::CellFace::RecomputeCentroid(const chi_mesh::MeshContinuum& grid)
+CellFace::RecomputeCentroid(const MeshContinuum& grid)
 {
-  centroid_ = chi_mesh::Vector3(0, 0, 0);
+  centroid_ = Vector3(0, 0, 0);
   for (uint64_t vid : vertex_ids_)
     centroid_ += grid.vertices[vid];
   centroid_ /= static_cast<double>(vertex_ids_.size());
 }
 
-chi_data_types::ByteArray
-chi_mesh::Cell::Serialize() const
+ByteArray
+Cell::Serialize() const
 {
-  chi_data_types::ByteArray raw;
+  ByteArray raw;
 
   raw.Write<uint64_t>(global_id_);
   raw.Write<uint64_t>(local_id_);
   raw.Write<uint64_t>(partition_id_);
-  raw.Write<chi_mesh::Vector3>(centroid_);
+  raw.Write<Vector3>(centroid_);
   raw.Write<int>(material_id_);
 
   raw.Write<CellType>(cell_type_);
@@ -302,10 +305,10 @@ chi_mesh::Cell::Serialize() const
   return raw;
 }
 
-chi_mesh::Cell
-chi_mesh::Cell::DeSerialize(const chi_data_types::ByteArray& raw, size_t& address)
+Cell
+Cell::DeSerialize(const ByteArray& raw, size_t& address)
 {
-  typedef chi_mesh::Vector3 Vec3;
+  typedef Vector3 Vec3;
   auto cell_global_id = raw.Read<uint64_t>(address, &address);
   auto cell_local_id = raw.Read<uint64_t>(address, &address);
   auto cell_prttn_id = raw.Read<uint64_t>(address, &address);
@@ -330,13 +333,13 @@ chi_mesh::Cell::DeSerialize(const chi_data_types::ByteArray& raw, size_t& addres
   auto num_faces = raw.Read<size_t>(address, &address);
   cell.faces_.reserve(num_faces);
   for (size_t f = 0; f < num_faces; ++f)
-    cell.faces_.push_back(chi_mesh::CellFace::DeSerialize(raw, address));
+    cell.faces_.push_back(CellFace::DeSerialize(raw, address));
 
   return cell;
 }
 
 std::string
-chi_mesh::Cell::ToString() const
+Cell::ToString() const
 {
   std::stringstream outstr;
 
@@ -366,11 +369,11 @@ chi_mesh::Cell::ToString() const
 }
 
 void
-chi_mesh::Cell::RecomputeCentroidsAndNormals(const chi_mesh::MeshContinuum& grid)
+Cell::RecomputeCentroidsAndNormals(const MeshContinuum& grid)
 {
   const auto k_hat = Vector3(0, 0, 1);
 
-  centroid_ = chi_mesh::Vector3(0, 0, 0);
+  centroid_ = Vector3(0, 0, 0);
   for (uint64_t vid : vertex_ids_)
     centroid_ += grid.vertices[vid];
   centroid_ /= static_cast<double>(vertex_ids_.size());
@@ -420,3 +423,5 @@ chi_mesh::Cell::RecomputeCentroidsAndNormals(const chi_mesh::MeshContinuum& grid
     }
   }
 }
+
+} // namespace opensn

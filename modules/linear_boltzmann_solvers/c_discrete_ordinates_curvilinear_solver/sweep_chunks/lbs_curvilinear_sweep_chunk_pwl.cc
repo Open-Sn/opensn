@@ -5,12 +5,14 @@
 
 #include "framework/logging/log_exceptions.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 SweepChunkPWLRZ::SweepChunkPWLRZ(
-  const chi_mesh::MeshContinuum& grid,
-  const chi_math::SpatialDiscretization& discretization_primary,
+  const MeshContinuum& grid,
+  const SpatialDiscretization& discretization_primary,
   const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
   const std::vector<lbs::UnitCellMatrices>& secondary_unit_cell_matrices,
   std::vector<lbs::CellLBSView>& cell_transport_views,
@@ -38,7 +40,7 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
     normal_vector_boundary_()
 {
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<chi_math::CurvilinearAngularQuadrature>(groupset_.quadrature_);
+    std::dynamic_pointer_cast<CurvilinearAngularQuadrature>(groupset_.quadrature_);
 
   if (!curvilinear_product_quadrature)
     throw std::invalid_argument("D_DO_RZ_SteadyState::SweepChunkPWL::SweepChunkPWL : "
@@ -47,7 +49,7 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
   //  configure unknown manager for quantities that depend on polar level
   const size_t dir_map_size = curvilinear_product_quadrature->GetDirectionMap().size();
   for (size_t m = 0; m < dir_map_size; ++m)
-    unknown_manager_.AddUnknown(chi_math::UnknownType::VECTOR_N, groupset_.groups_.size());
+    unknown_manager_.AddUnknown(UnknownType::VECTOR_N, groupset_.groups_.size());
 
   //  allocate storage for sweeping dependency
   const unsigned int n_dof = discretization_primary.GetNumLocalDOFs(unknown_manager_);
@@ -59,8 +61,8 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
       map_polar_level_.emplace(dir_idx, dir_set.first);
 
   //  set normal vector for symmetric boundary condition
-  const int d = (grid_.Attributes() & chi_mesh::DIMENSION_1) ? 2 : 0;
-  normal_vector_boundary_ = chi_mesh::Vector3(0.0, 0.0, 0.0);
+  const int d = (grid_.Attributes() & DIMENSION_1) ? 2 : 0;
+  normal_vector_boundary_ = Vector3(0.0, 0.0, 0.0);
   normal_vector_boundary_(d) = 1;
 
   RegisterKernel("FEMRZVolumetricGradTerm",
@@ -97,11 +99,11 @@ SweepChunkPWLRZ::DirectionDataCallback()
 {
   polar_level_ = map_polar_level_[direction_num_];
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<chi_math::CurvilinearAngularQuadrature>(groupset_.quadrature_);
+    std::dynamic_pointer_cast<CurvilinearAngularQuadrature>(groupset_.quadrature_);
 
   ChiLogicalErrorIf(not curvilinear_product_quadrature,
                     "Failure to cast angular quadrature to "
-                    "chi_math::CurvilinearAngularQuadrature");
+                    "CurvilinearAngularQuadrature");
 
   fac_diamond_difference_ =
     curvilinear_product_quadrature->GetDiamondDifferenceFactor()[direction_num_];
@@ -181,3 +183,4 @@ SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals()
 }
 
 } // namespace lbs
+} // namespace opensn

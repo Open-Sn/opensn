@@ -2,23 +2,22 @@
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 
-namespace chi_math
+namespace opensn
 {
 class TimeIntegration;
-}
 
 namespace lbs
 {
 
-class TransientSolver : public chi_physics::Solver
+class TransientSolver : public opensn::Solver
 {
 protected:
   LBSSolver& lbs_solver_;
-  std::shared_ptr<chi_math::TimeIntegration> time_integration_;
+  std::shared_ptr<TimeIntegration> time_integration_;
 
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit TransientSolver(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit TransientSolver(const InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
@@ -27,3 +26,4 @@ public:
 };
 
 } // namespace lbs
+} // namespace opensn

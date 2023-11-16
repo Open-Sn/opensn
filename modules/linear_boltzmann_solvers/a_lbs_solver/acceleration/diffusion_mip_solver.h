@@ -5,36 +5,26 @@
 #include "framework/lua.h"
 #endif
 
-namespace chi_mesh
+namespace opensn
 {
 class MeshContinuum;
 class Cell;
 struct Vector3;
-} // namespace chi_mesh
-
-namespace chi_math
-{
 class SpatialDiscretization;
-}
+struct UnitCellMatrices;
 
 namespace lbs
 {
-struct UnitCellMatrices;
-}
-
-namespace lbs::acceleration
-{
-
 /**
  * Generalized diffusion solver for both WGDSA and TGDSA based on the MIP-method
  * of Bruno Turcksin and Jean Ragusa.
  */
-class DiffusionMIPSolver : public lbs::acceleration::DiffusionSolver
+class DiffusionMIPSolver : public DiffusionSolver
 {
 public:
   DiffusionMIPSolver(std::string text_name,
-                     const chi_math::SpatialDiscretization& sdm,
-                     const chi_math::UnknownManager& uk_man,
+                     const opensn::SpatialDiscretization& sdm,
+                     const UnknownManager& uk_man,
                      std::map<uint64_t, BoundaryCondition> bcs,
                      MatID2XSMap map_mat_id_2_xs,
                      const std::vector<UnitCellMatrices>& unit_cell_matrices,
@@ -77,15 +67,15 @@ public:
    * Nv = Number of vertices. If Nv <= 4 then the perimeter parameter
    * should be replaced by edge length.
    */
-  double HPerpendicular(const chi_mesh::Cell& cell, unsigned int f);
+  double HPerpendicular(const Cell& cell, unsigned int f);
 
   /**
    * Maps a face, in a discontinuous sense, using the spatial discretization.
    */
-  int MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
-                      const chi_mesh::Cell& adj_cell,
-                      const std::vector<chi_mesh::Vector3>& cc_node_locs,
-                      const std::vector<chi_mesh::Vector3>& ac_node_locs,
+  int MapFaceNodeDisc(const Cell& cur_cell,
+                      const Cell& adj_cell,
+                      const std::vector<Vector3>& cc_node_locs,
+                      const std::vector<Vector3>& ac_node_locs,
                       size_t ccf,
                       size_t acf,
                       size_t ccfi,
@@ -102,8 +92,9 @@ public:
    * \return The function evaluation.
    */
   static double
-  CallLuaXYZFunction(lua_State* L, const std::string& lua_func_name, const chi_mesh::Vector3& xyz);
+  CallLuaXYZFunction(lua_State* L, const std::string& lua_func_name, const Vector3& xyz);
 #endif
 };
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

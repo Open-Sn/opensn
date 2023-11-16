@@ -6,13 +6,18 @@
 
 #include "framework/physics/field_function/field_function_grid_based.h"
 
+namespace opensn
+{
+namespace fv_diffusion
+{
+
 #ifdef OPENSN_WITH_LUA
 
 double
-fv_diffusion::Solver::CallLua_iXYZFunction(lua_State* L,
-                                           const std::string& lua_func_name,
-                                           const int imat,
-                                           const chi_mesh::Vector3& xyz)
+Solver::CallLua_iXYZFunction(lua_State* L,
+                             const std::string& lua_func_name,
+                             const int imat,
+                             const Vector3& xyz)
 {
   // Load lua function
   lua_getglobal(L, lua_func_name.c_str());
@@ -49,8 +54,11 @@ fv_diffusion::Solver::CallLua_iXYZFunction(lua_State* L,
 #endif
 
 void
-fv_diffusion::Solver::UpdateFieldFunctions()
+Solver::UpdateFieldFunctions()
 {
   auto& ff = *field_functions_.front();
   ff.UpdateFieldVector(x_);
 }
+
+} // namespace fv_diffusion
+} // namespace opensn

@@ -7,13 +7,15 @@
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 struct SweepWGSContext : public WGSContext
 {
-  std::shared_ptr<chi_mesh::sweep_management::SweepChunk> sweep_chunk_;
-  chi_mesh::sweep_management::SweepScheduler sweep_scheduler_;
+  std::shared_ptr<SweepChunk> sweep_chunk_;
+  SweepScheduler sweep_scheduler_;
 
   DiscreteOrdinatesSolver& lbs_ss_solver_;
 
@@ -23,7 +25,7 @@ struct SweepWGSContext : public WGSContext
                   SourceFlags lhs_scope,
                   SourceFlags rhs_scope,
                   bool log_info,
-                  std::shared_ptr<chi_mesh::sweep_management::SweepChunk> sweep_chunk);
+                  std::shared_ptr<SweepChunk> sweep_chunk);
 
   void PreSetupCallback() override;
 
@@ -37,3 +39,4 @@ struct SweepWGSContext : public WGSContext
 };
 
 } // namespace lbs
+} // namespace opensn

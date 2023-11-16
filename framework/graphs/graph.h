@@ -2,8 +2,8 @@
 
 #include "framework/mesh/mesh.h"
 
-namespace chi
+namespace opensn
 {
 struct GraphVertex;
 class DirectedGraph;
-} // namespace chi
+} // namespace opensn

@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+namespace opensn
+{
 namespace lbs
 {
 class LBSSolver;
@@ -60,7 +62,7 @@ public:
 
   virtual double AddSourceMoments() const;
 
-  typedef std::vector<chi_physics::MultiGroupXS::Precursor> PrecursorList;
+  typedef std::vector<MultiGroupXS::Precursor> PrecursorList;
   /**Adds delayed particle precursor sources.*/
   virtual double AddDelayedFission(const PrecursorList& precursors,
                                    const std::vector<double>& nu_delayed_sigma_f,
@@ -82,3 +84,4 @@ public:
 };
 
 } // namespace lbs
+} // namespace opensn

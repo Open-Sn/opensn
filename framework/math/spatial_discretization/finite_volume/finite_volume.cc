@@ -11,14 +11,13 @@
 #define sc_int64 static_cast<int64_t>
 
 #define MappingError                                                                               \
-  "chi_math::SpatialDiscretization_FV::OrderNodes: "                                               \
+  "SpatialDiscretization_FV::OrderNodes: "                                                         \
   "Error mapping neighbor cells"
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
 
-FiniteVolume::FiniteVolume(const chi_mesh::MeshContinuum& grid,
-                           chi_math::CoordinateSystemType cs_type)
+FiniteVolume::FiniteVolume(const MeshContinuum& grid, CoordinateSystemType cs_type)
   : SpatialDiscretization(grid, cs_type, SDMType::FINITE_VOLUME)
 {
   CreateCellMappings();
@@ -27,7 +26,7 @@ FiniteVolume::FiniteVolume(const chi_mesh::MeshContinuum& grid,
 }
 
 std::shared_ptr<FiniteVolume>
-FiniteVolume::New(const chi_mesh::MeshContinuum& in_grid, chi_math::CoordinateSystemType in_cs_type)
+FiniteVolume::New(const MeshContinuum& in_grid, CoordinateSystemType in_cs_type)
 {
   // First try to find an existing spatial discretization that matches the
   // one requested.
@@ -45,8 +44,7 @@ FiniteVolume::New(const chi_mesh::MeshContinuum& in_grid, chi_math::CoordinateSy
 
   // If no existing discretization was found then go ahead and make a
   // new one
-  auto new_sdm =
-    std::shared_ptr<spatial_discretization::FiniteVolume>(new FiniteVolume(in_grid, in_cs_type));
+  auto new_sdm = std::shared_ptr<FiniteVolume>(new FiniteVolume(in_grid, in_cs_type));
 
   Chi::sdm_stack.push_back(new_sdm);
 
@@ -56,23 +54,23 @@ FiniteVolume::New(const chi_mesh::MeshContinuum& in_grid, chi_math::CoordinateSy
 void
 FiniteVolume::CreateCellMappings()
 {
-  constexpr std::string_view fname = "chi_math::SpatialDiscretization_FV::"
+  constexpr std::string_view fname = "SpatialDiscretization_FV::"
                                      "CreateCellMappings";
 
-  auto MakeCellMapping = [this, fname](const chi_mesh::Cell& cell)
+  auto MakeCellMapping = [this, fname](const Cell& cell)
   {
     using namespace std;
-    using namespace chi_math;
-    std::unique_ptr<chi_math::CellMapping> mapping;
+    using namespace opensn;
+    std::unique_ptr<CellMapping> mapping;
 
     switch (cell.Type())
     {
-      case chi_mesh::CellType::SLAB:
-      case chi_mesh::CellType::POLYGON:
-      case chi_mesh::CellType::POLYHEDRON:
+      case CellType::SLAB:
+      case CellType::POLYGON:
+      case CellType::POLYHEDRON:
       {
         typedef std::vector<std::vector<int>> FaceDofMapping;
-        mapping = make_unique<cell_mapping::FiniteVolumeMapping>(
+        mapping = make_unique<FiniteVolumeMapping>(
           ref_grid_, cell, cell.centroid_, FaceDofMapping(cell.faces_.size(), {-1}));
         break;
       }
@@ -127,8 +125,7 @@ FiniteVolume::OrderNodes()
   }
 
   // Communicate neighbor ids requiring mapping
-  const auto query_nb_gids =
-    chi_mpi_utils::MapAllToAll(sorted_nb_gids, MPI_UINT64_T, Chi::mpi.comm);
+  const auto query_nb_gids = MapAllToAll(sorted_nb_gids, MPI_UINT64_T, Chi::mpi.comm);
 
   // Map the ids
   std::map<uint64_t, std::vector<uint64_t>> mapped_query_nb_gids;
@@ -149,8 +146,7 @@ FiniteVolume::OrderNodes()
   }   // for pid_list_pair
 
   // Communicate back the mapped ids
-  const auto mapped_nb_gids =
-    chi_mpi_utils::MapAllToAll(mapped_query_nb_gids, MPI_UINT64_T, Chi::mpi.comm);
+  const auto mapped_nb_gids = MapAllToAll(mapped_query_nb_gids, MPI_UINT64_T, Chi::mpi.comm);
 
   // Create the neighbor cell mapping
   neighbor_cell_local_ids_.clear();
@@ -181,7 +177,7 @@ FiniteVolume::OrderNodes()
 void
 FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
                                    std::vector<int64_t>& nodal_nnz_off_diag,
-                                   const chi_math::UnknownManager& unknown_manager) const
+                                   const UnknownManager& unknown_manager) const
 {
   unsigned int num_uk = unknown_manager.unknowns_.size();          // Number of unknowns
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize(); // Total number of unknowns
@@ -219,9 +215,9 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 }
 
 int64_t
-FiniteVolume::MapDOF(const chi_mesh::Cell& cell,
+FiniteVolume::MapDOF(const Cell& cell,
                      const unsigned int,
-                     const chi_math::UnknownManager& unknown_manager,
+                     const UnknownManager& unknown_manager,
                      const unsigned int unknown_id,
                      const unsigned int component) const
 {
@@ -236,10 +232,10 @@ FiniteVolume::MapDOF(const chi_mesh::Cell& cell,
   int64_t address = -1;
   if (cell.partition_id_ == Chi::mpi.location_id)
   {
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
       address =
         sc_int64(local_block_address_) * num_unknowns + num_local_cells * block_id + cell.local_id_;
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
       address =
         sc_int64(local_block_address_) * num_unknowns + cell.local_id_ * num_unknowns + block_id;
   }
@@ -247,10 +243,10 @@ FiniteVolume::MapDOF(const chi_mesh::Cell& cell,
   {
     const uint64_t ghost_local_id = neighbor_cell_local_ids_.at(cell.global_id_);
 
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
       address = sc_int64(locJ_block_address_[cell.partition_id_]) * num_unknowns +
                 locJ_block_size_[cell.partition_id_] * block_id + ghost_local_id;
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
       address = sc_int64(locJ_block_address_[cell.partition_id_]) * num_unknowns +
                 ghost_local_id * num_unknowns + block_id;
   }
@@ -259,9 +255,9 @@ FiniteVolume::MapDOF(const chi_mesh::Cell& cell,
 }
 
 int64_t
-FiniteVolume::MapDOFLocal(const chi_mesh::Cell& cell,
+FiniteVolume::MapDOFLocal(const Cell& cell,
                           const unsigned int,
-                          const chi_math::UnknownManager& unknown_manager,
+                          const UnknownManager& unknown_manager,
                           const unsigned int unknown_id,
                           const unsigned int component) const
 {
@@ -276,9 +272,9 @@ FiniteVolume::MapDOFLocal(const chi_mesh::Cell& cell,
   int64_t address = -1;
   if (cell.partition_id_ == Chi::mpi.location_id)
   {
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
       address = sc_int64(num_local_cells) * block_id + cell.local_id_;
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
       address = sc_int64(cell.local_id_) * num_unknowns + block_id;
   }
   else
@@ -287,9 +283,9 @@ FiniteVolume::MapDOFLocal(const chi_mesh::Cell& cell,
     const size_t num_ghost_nodes = GetNumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
     const uint64_t ghost_local_id = ref_grid_.cells.GetGhostLocalID(cell.global_id_);
 
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
       address = sc_int64(num_local_dofs) + sc_int64(num_ghost_nodes) * block_id + ghost_local_id;
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
       address = sc_int64(num_local_dofs) + num_unknowns * sc_int64(ghost_local_id) + block_id;
   }
 
@@ -297,7 +293,7 @@ FiniteVolume::MapDOFLocal(const chi_mesh::Cell& cell,
 }
 
 size_t
-FiniteVolume::GetNumGhostDOFs(const chi_math::UnknownManager& unknown_manager) const
+FiniteVolume::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
@@ -305,7 +301,7 @@ FiniteVolume::GetNumGhostDOFs(const chi_math::UnknownManager& unknown_manager) c
 }
 
 std::vector<int64_t>
-FiniteVolume::GetGhostDOFIndices(const chi_math::UnknownManager& unknown_manager) const
+FiniteVolume::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
 {
   std::vector<int64_t> dof_ids;
   dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
@@ -332,4 +328,4 @@ FiniteVolume::GetGhostDOFIndices(const chi_math::UnknownManager& unknown_manager
   return dof_ids;
 }
 
-} // namespace chi_math::spatial_discretization
+} // namespace opensn

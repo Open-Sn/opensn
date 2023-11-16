@@ -3,10 +3,13 @@
 #include "framework/graphs/directed_graph_vertex.h"
 #include <stack>
 
+namespace opensn
+{
+
 /**Simple implementation of a directed graph. This implementation was
  * considered to serve more versatile strategies with regards to grid
  * parallel partitioning.*/
-class chi::DirectedGraph
+class DirectedGraph
 {
 public:
   /**Allows semi-sane access to vertices even if
@@ -147,12 +150,12 @@ public:
 private:
   /** Depth-First-Search main recursive algorithm. This is the recursive
    * portion of the method below this one
-   * (chi_graph::DirectedGraph::DepthFirstSearch).*/
+   * (opensn::DirectedGraph::DepthFirstSearch).*/
   void DFSAlgorithm(std::vector<size_t>& traversal, std::vector<bool>& visited, size_t cur_vid);
 
   /**SCC main recursive algorithm. This is the recursive call for the
    * method defined below this one
-   * (chi_graph::DirectedGraph::FindStronglyConnectedConnections).*/
+   * (opensn::DirectedGraph::FindStronglyConnectedConnections).*/
   void SCCAlgorithm(size_t u,
                     int& time,
                     std::vector<int>& disc,
@@ -204,3 +207,4 @@ public:
 
   ~DirectedGraph();
 };
+} // namespace opensn

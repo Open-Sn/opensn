@@ -4,15 +4,15 @@
 
 #include "framework/logging/log.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 RegisterChiObject(chi_mesh, OrthogonalMeshGenerator);
 
-chi::InputParameters
+InputParameters
 OrthogonalMeshGenerator::GetInputParameters()
 {
-  chi::InputParameters params = MeshGenerator::GetInputParameters();
+  InputParameters params = MeshGenerator::GetInputParameters();
 
   params.SetGeneralDescription("Creates orthogonal meshes.");
   params.SetDocGroup("doc_MeshGenerators");
@@ -24,18 +24,18 @@ OrthogonalMeshGenerator::GetInputParameters()
   return params;
 }
 
-OrthogonalMeshGenerator::OrthogonalMeshGenerator(const chi::InputParameters& params)
+OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
   : MeshGenerator(params)
 {
   // Parse the node_sets param
   if (params.ParametersAtAssignment().Has("node_sets"))
   {
     auto& node_sets_param = params.GetParam("node_sets");
-    node_sets_param.RequireBlockTypeIs(chi::ParameterBlockType::ARRAY);
+    node_sets_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
 
     for (const auto& node_list_block : node_sets_param)
     {
-      ChiInvalidArgumentIf(node_list_block.Type() != chi::ParameterBlockType::ARRAY,
+      ChiInvalidArgumentIf(node_list_block.Type() != ParameterBlockType::ARRAY,
                            "The entries of \"node_sets\" are required to be of type \"Array\".");
 
       node_sets_.push_back(node_list_block.GetVectorValue<double>());
@@ -441,4 +441,4 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
   return umesh;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

@@ -5,11 +5,13 @@
 
 #define scint static_cast<int>
 
+namespace opensn
+{
 namespace lbs
 {
 
-AAH_SweepChunk::AAH_SweepChunk(const chi_mesh::MeshContinuum& grid,
-                               const chi_math::SpatialDiscretization& discretization,
+AAH_SweepChunk::AAH_SweepChunk(const MeshContinuum& grid,
+                               const SpatialDiscretization& discretization,
                                const std::vector<UnitCellMatrices>& unit_cell_matrices,
                                std::vector<lbs::CellLBSView>& cell_transport_views,
                                std::vector<double>& destination_phi,
@@ -56,9 +58,9 @@ AAH_SweepChunk::AAH_SweepChunk(const chi_mesh::MeshContinuum& grid,
 }
 
 void
-AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
+AAH_SweepChunk::Sweep(AngleSet& angle_set)
 {
-  const chi::SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
+  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
 
   gs_ss_size_ = grp_ss_info.ss_size;
   gs_ss_begin_ = grp_ss_info.ss_begin;
@@ -74,8 +76,7 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
 
   auto& aah_sweep_depinterf =
     dynamic_cast<AAH_SweepDependencyInterface&>(sweep_dependency_interface_);
-  aah_sweep_depinterf.fluds_ =
-    &dynamic_cast<chi_mesh::sweep_management::AAH_FLUDS&>(angle_set.GetFLUDS());
+  aah_sweep_depinterf.fluds_ = &dynamic_cast<AAH_FLUDS&>(angle_set.GetFLUDS());
 
   // Loop over each cell
   const auto& spds = angle_set.GetSPDS();
@@ -90,7 +91,6 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
     cell_mapping_ = &grid_fe_view_.GetCellMapping(*cell_);
     cell_transport_view_ = &grid_transport_view_[cell_->local_id_];
 
-    using namespace chi_mesh::sweep_management;
     const auto& face_orientations = spds.CellFaceOrientations()[cell_local_id_];
 
     cell_num_faces_ = cell_->faces_.size();
@@ -181,7 +181,7 @@ AAH_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
         ExecuteKernels(mass_term_kernels_);
 
         // Solve system
-        chi_math::GaussElimination(Atemp_, b_[gsg], scint(cell_num_nodes_));
+        GaussElimination(Atemp_, b_[gsg], scint(cell_num_nodes_));
       }
 
       // Flux updates
@@ -258,3 +258,4 @@ AAH_SweepDependencyInterface::GetDownwindPsi(int face_node_local_idx) const
 }
 
 } // namespace lbs
+} // namespace opensn

@@ -21,10 +21,10 @@
 
 #define scvtkid static_cast<vtkIdType>
 
-namespace chi_mesh
+namespace opensn
 {
 
-std::shared_ptr<chi::ChiMPICommunicatorSet>
+std::shared_ptr<ChiMPICommunicatorSet>
 MeshContinuum::MakeMPILocalCommunicatorSet() const
 {
   // Build the communicator
@@ -114,7 +114,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
 
   Chi::log.Log0Verbose1() << "Done building communicators.";
 
-  return std::make_shared<chi::ChiMPICommunicatorSet>(communicators, location_groups, world_group);
+  return std::make_shared<ChiMPICommunicatorSet>(communicators, location_groups, world_group);
 }
 
 void
@@ -1058,7 +1058,7 @@ MeshContinuum::GetIJKInfo() const
   return {ortho_attributes.Nx, ortho_attributes.Ny, ortho_attributes.Nz};
 }
 
-chi_data_types::NDArray<uint64_t>
+NDArray<uint64_t>
 MeshContinuum::MakeIJKToGlobalIDMapping() const
 {
   const std::string fname = "MakeIJKToGlobalIDMapping";
@@ -1070,7 +1070,7 @@ MeshContinuum::MakeIJKToGlobalIDMapping() const
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
 
-  chi_data_types::NDArray<uint64_t> m_ijk_to_i({Nx, Ny, Nz});
+  NDArray<uint64_t> m_ijk_to_i({Nx, Ny, Nz});
   for (int i = 0; i < Nx; ++i)
     for (int j = 0; j < Ny; ++j)
       for (int k = 0; k < Nz; ++k)
@@ -1169,4 +1169,4 @@ MeshContinuum::GetGlobalNumberOfCells() const
   return num_globl_cells;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

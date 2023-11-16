@@ -10,11 +10,11 @@
 
 #include <algorithm>
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
-SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
-                                               const chi_mesh::MeshContinuum& grid,
+SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
+                                               const MeshContinuum& grid,
                                                bool cycle_allowance_flag,
                                                bool verbose)
   : SPDS(omega, grid, verbose)
@@ -42,7 +42,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
     location_dependencies_.push_back(v);
 
   // Build graph
-  chi::DirectedGraph local_DG;
+  DirectedGraph local_DG;
 
   // Add vertex for each local cell
   for (int c = 0; c < num_loc_cells; ++c)
@@ -110,13 +110,13 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
 }
 
 void
-chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
+SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   const std::vector<std::vector<int>>& global_dependencies, bool cycle_allowance_flag)
 {
 
   std::vector<std::pair<int, int>> edges_to_remove;
   std::vector<int> raw_edges_to_remove;
-  chi::DirectedGraph TDG;
+  DirectedGraph TDG;
 
   // Build graph on home location
   if (Chi::mpi.location_id == 0)
@@ -270,7 +270,7 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString() << " Generating TDG structure.";
   for (int r = 0; r <= abs_max_rank; r++)
   {
-    chi_mesh::sweep_management::STDG new_stdg;
+    STDG new_stdg;
 
     for (int k = 0; k < Chi::mpi.process_count; k++)
     {
@@ -280,4 +280,4 @@ chi_mesh::sweep_management::SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   }
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

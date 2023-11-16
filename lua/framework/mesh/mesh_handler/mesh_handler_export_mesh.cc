@@ -17,7 +17,7 @@ chiMeshHandlerExportMeshToObj(lua_State* L)
   if (num_args == 2) per_material = lua_toboolean(L, 2);
 
   // Get current handler
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = opensn::GetCurrentHandler();
 
   auto& grid = cur_hndlr.GetGrid();
   grid->ExportCellsToObj(file_name.c_str(), per_material);
@@ -36,7 +36,7 @@ chiMeshHandlerExportMeshToVTK(lua_State* L)
   const std::string file_name = lua_tostring(L, 1);
 
   // Get current handler
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = opensn::GetCurrentHandler();
 
   auto& grid = cur_hndlr.GetGrid();
   grid->ExportCellsToVTK(file_name);
@@ -69,7 +69,7 @@ chiMeshHandlerExportMeshToExodus(lua_State* L)
   }
 
   // Get current handler
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = opensn::GetCurrentHandler();
 
   auto& grid = cur_hndlr.GetGrid();
   grid->ExportCellsToExodus(file_name, suppress_nodesets, suppress_sidesets);

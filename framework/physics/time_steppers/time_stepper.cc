@@ -2,13 +2,13 @@
 
 #include <cmath>
 
-namespace chi_physics
+namespace opensn
 {
 
-chi::InputParameters
+InputParameters
 TimeStepper::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   params.AddOptionalParameter("dt", 0.01, "Initial timestep to use");
   params.AddOptionalParameter("time", 0.0, "Initial time");
@@ -27,7 +27,7 @@ TimeStepper::GetInputParameters()
   return params;
 }
 
-TimeStepper::TimeStepper(const chi::InputParameters& params)
+TimeStepper::TimeStepper(const InputParameters& params)
   : ChiObject(params),
     dt_(params.GetParamValue<double>("dt")),
     time_(params.GetParamValue<double>("time")),
@@ -164,4 +164,4 @@ TimeStepper::StringTimeInfo(bool old_time) const
   return outstr.str();
 }
 
-} // namespace chi_physics
+} // namespace opensn

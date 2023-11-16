@@ -2,7 +2,7 @@
 
 #include "framework/lua.h"
 
-namespace chi_log_utils::lua_utils
+namespace opensnlua
 {
 /** Sets the verbosity level of the Logger.
  * This lua command will overwrite the currently set value.
@@ -68,4 +68,4 @@ int chiLogProcessEvent(lua_State* L);
  * \ingroup LuaLogging
  * */
 int chiLogPrintTimingGraph(lua_State* L);
-} // namespace chi_log_utils::lua_utils
+} // namespace opensnlua

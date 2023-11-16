@@ -11,7 +11,7 @@
 #include <vtkXMLUnstructuredGridWriter.h>
 #include <vtkXMLPUnstructuredGridWriter.h>
 
-namespace chi_mesh
+namespace opensn
 {
 
 void
@@ -598,4 +598,4 @@ WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_
   grid_writer->Write();
 }
 
-} // namespace chi_mesh
+} // namespace opensn

@@ -3,7 +3,7 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObject(chi_objects, MaterialPropertyScalarFuncXYZTV);
@@ -24,7 +24,7 @@ MaterialPropertyScalarFuncXYZTV::GetInputParameters()
   return params;
 }
 
-typedef chi_math::FunctionDimAToDimB SFXYZV;
+typedef FunctionDimAToDimB SFXYZV;
 
 MaterialPropertyScalarFuncXYZTV::MaterialPropertyScalarFuncXYZTV(const InputParameters& params)
   : MaterialProperty(params),
@@ -43,4 +43,4 @@ MaterialPropertyScalarFuncXYZTV::Evaluate(const std::vector<double>& vars)
   return function_.Evaluate(vars).front();
 }
 
-} // namespace chi
+} // namespace opensn

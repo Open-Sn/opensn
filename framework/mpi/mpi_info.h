@@ -5,7 +5,7 @@
 
 class Chi;
 
-namespace chi
+namespace opensn
 {
 
 /**An object for storing various MPI states.*/
@@ -53,4 +53,4 @@ public:
   static void Call(int mpi_error_code);
 };
 
-} // namespace chi
+} // namespace opensn

@@ -4,21 +4,14 @@
 #include "framework/physics/field_function/grid_based_field_function_interface.h"
 #include "framework/mesh/logical_volume/logical_volume_interface.h"
 
-namespace chi_mesh
+namespace opensn
 {
 class LogicalVolume;
-}
-namespace chi_physics
-{
 class FieldFunctionGridBased;
-}
-
-namespace chi
-{
 
 class AggregateNodalValuePostProcessor : public PostProcessor,
-                                         public chi_physics::GridBasedFieldFunctionInterface,
-                                         public chi_mesh::LogicalVolumeInterface
+                                         public GridBasedFieldFunctionInterface,
+                                         public LogicalVolumeInterface
 {
 public:
   static InputParameters GetInputParameters();
@@ -34,4 +27,4 @@ protected:
   std::vector<uint64_t> cell_local_ids_;
 };
 
-} // namespace chi
+} // namespace opensn

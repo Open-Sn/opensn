@@ -1,14 +1,13 @@
 #include "framework/physics/field_function/field_function.h"
-
 #include "framework/logging/log_exceptions.h"
 
-namespace chi_physics
+namespace opensn
 {
 
-chi::InputParameters
+InputParameters
 FieldFunction::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   params.AddRequiredParameter<std::string>("name",
                                            "Named to be associated with this field function");
@@ -22,7 +21,6 @@ FieldFunction::GetInputParameters()
                               "Only effective when \"type\" is VectorN.");
 
   // Constrain values
-  using namespace chi_data_types;
   params.ConstrainParameterRange(
     "unknown_type", AllowableRangeList::New({"Scalar", "Vector2", "Vector3", "VectorN"}));
 
@@ -31,24 +29,24 @@ FieldFunction::GetInputParameters()
   return params;
 }
 
-FieldFunction::FieldFunction(const chi::InputParameters& params)
+FieldFunction::FieldFunction(const InputParameters& params)
   : ChiObject(params),
     text_name_(params.GetParamValue<std::string>("name")),
     unknown_((params.GetParamValue<std::string>("unknown_type") == "Scalar")
-               ? chi_math::Unknown(chi_math::UnknownType::SCALAR)
+               ? opensn::Unknown(UnknownType::SCALAR)
              : (params.GetParamValue<std::string>("unknown_type") == "Vector2")
-               ? chi_math::Unknown(chi_math::UnknownType::VECTOR_2)
+               ? opensn::Unknown(UnknownType::VECTOR_2)
              : (params.GetParamValue<std::string>("unknown_type") == "Vector3")
-               ? chi_math::Unknown(chi_math::UnknownType::VECTOR_2)
+               ? opensn::Unknown(UnknownType::VECTOR_2)
              : (params.GetParamValue<std::string>("unknown_type") == "VectorN")
-               ? chi_math::Unknown(chi_math::UnknownType::VECTOR_N,
-                                   params.GetParamValue<unsigned int>("num_components"))
-               : chi_math::Unknown(chi_math::UnknownType::SCALAR)),
+               ? opensn::Unknown(UnknownType::VECTOR_N,
+                                 params.GetParamValue<unsigned int>("num_components"))
+               : opensn::Unknown(UnknownType::SCALAR)),
     unknown_manager_({unknown_})
 {
 }
 
-FieldFunction::FieldFunction(const std::string& text_name, chi_math::Unknown unknown)
+FieldFunction::FieldFunction(const std::string& text_name, opensn::Unknown unknown)
   : text_name_(text_name), unknown_(std::move(unknown)), unknown_manager_({unknown_})
 {
 }
@@ -64,4 +62,4 @@ FieldFunction::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
   new_object->SetStackID(Chi::field_function_stack.size() - 1);
 }
 
-} // namespace chi_physics
+} // namespace opensn

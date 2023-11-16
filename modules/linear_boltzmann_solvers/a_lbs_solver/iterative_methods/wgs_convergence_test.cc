@@ -10,6 +10,8 @@
 
 #include <iomanip>
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -25,17 +27,17 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
   double residual_scale = 1.0;
   switch (context->residual_scale_type)
   {
-    case chi_math::ResidualScaleType::NONE:
+    case ResidualScaleType::NONE:
       residual_scale = 1.0;
       break;
-    case chi_math::ResidualScaleType::RHS_NORM:
+    case ResidualScaleType::RHS_NORM:
       if (context->rhs_norm > 1.0e-25) residual_scale = 1.0 / context->rhs_norm;
       break;
-    case chi_math::ResidualScaleType::RHS_PRECONDITIONED_NORM:
+    case ResidualScaleType::RHS_PRECONDITIONED_NORM:
       if (context->rhs_preconditioned_norm > 1.0e-25)
         residual_scale = 1.0 / context->rhs_preconditioned_norm;
       break;
-    case chi_math::ResidualScaleType::CUSTOM_SCALE:
+    case ResidualScaleType::CUSTOM_SCALE:
       if (context->custom_residual_scale > 1.0e-25)
         residual_scale = 1.0 / context->custom_residual_scale;
       break;
@@ -72,3 +74,4 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
 }
 
 } // namespace lbs
+} // namespace opensn

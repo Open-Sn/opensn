@@ -4,26 +4,16 @@
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "petscksp.h"
 
-namespace chi_mesh
+namespace opensn
 {
 class MeshContinuum;
 class Cell;
 struct Vector3;
-} // namespace chi_mesh
-
-namespace chi_math
-{
 class SpatialDiscretization;
-}
 
 namespace lbs
 {
 struct UnitCellMatrices;
-}
-
-namespace lbs::acceleration
-{
-
 struct Multigroup_D_and_sigR;
 
 /**
@@ -35,9 +25,9 @@ protected:
   typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
 
   const std::string text_name_;
-  const chi_mesh::MeshContinuum& grid_;
-  const chi_math::SpatialDiscretization& sdm_;
-  const chi_math::UnknownManager uk_man_;
+  const MeshContinuum& grid_;
+  const class SpatialDiscretization& sdm_;
+  const UnknownManager uk_man_;
 
   const std::map<uint64_t, BoundaryCondition> bcs_;
 
@@ -69,8 +59,8 @@ public:
 
 public:
   DiffusionSolver(std::string text_name,
-                  const chi_math::SpatialDiscretization& sdm,
-                  const chi_math::UnknownManager& uk_man,
+                  const SpatialDiscretization& sdm,
+                  const UnknownManager& uk_man,
                   std::map<uint64_t, BoundaryCondition> bcs,
                   MatID2XSMap map_mat_id_2_xs,
                   const std::vector<UnitCellMatrices>& unit_cell_matrices,
@@ -92,12 +82,12 @@ public:
    */
   const std::map<uint64_t, BoundaryCondition>& BCS() const { return bcs_; }
 
-  const chi_math::UnknownManager& UnknownStructure() const;
+  const UnknownManager& UnknownStructure() const;
 
   /**
    * Returns the associated spatial discretization.
    */
-  const chi_math::SpatialDiscretization& SpatialDiscretization() const;
+  const class SpatialDiscretization& SpatialDiscretization() const;
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
 
@@ -140,4 +130,5 @@ public:
   void Solve(Vec petsc_solution, bool use_initial_guess = false);
 };
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

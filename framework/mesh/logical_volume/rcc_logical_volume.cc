@@ -2,15 +2,15 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 RegisterChiObject(chi_mesh, RCCLogicalVolume);
 
-chi::InputParameters
+InputParameters
 RCCLogicalVolume::GetInputParameters()
 {
-  chi::InputParameters params = LogicalVolume::GetInputParameters();
+  InputParameters params = LogicalVolume::GetInputParameters();
 
   params.SetDocGroup("LuaLogicVolumes");
 
@@ -25,7 +25,7 @@ RCCLogicalVolume::GetInputParameters()
   return params;
 }
 
-RCCLogicalVolume::RCCLogicalVolume(const chi::InputParameters& params)
+RCCLogicalVolume::RCCLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
     r_(params.GetParamValue<double>("r")),
     x0_(params.GetParamValue<double>("x0")),
@@ -38,9 +38,9 @@ RCCLogicalVolume::RCCLogicalVolume(const chi::InputParameters& params)
 }
 
 bool
-RCCLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+RCCLogicalVolume::Inside(const Vector3& point) const
 {
-  typedef chi_mesh::Vector3 Vec3;
+  typedef Vector3 Vec3;
 
   const auto& pr = point;                // reference point
   const Vec3 p0(x0_, y0_, z0_);          // cylinder root
@@ -83,4 +83,4 @@ RCCLogicalVolume::Inside(const chi_mesh::Vector3& point) const
     return false;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

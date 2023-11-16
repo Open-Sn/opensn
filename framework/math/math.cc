@@ -1,7 +1,7 @@
 #include "framework/math/math.h"
 #include <assert.h>
 
-namespace chi_math
+namespace opensn
 {
 
 double
@@ -15,7 +15,7 @@ Factorial(const int x)
 }
 
 std::pair<double, double>
-OmegaToPhiThetaSafe(const chi_mesh::Vector3& omega)
+OmegaToPhiThetaSafe(const Vector3& omega)
 {
   // Notes: asin maps [-1,+1] to [-pi/2,+pi/2]
   //        acos maps [-1,+1] to [0,pi]
@@ -661,4 +661,4 @@ operator-(const VecDbl& a, const VecDbl& b)
   return result;
 }
 
-} // namespace chi_math
+} // namespace opensn

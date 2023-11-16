@@ -2,8 +2,9 @@
 
 #include <string>
 
-namespace chi_data_types
+namespace opensn
 {
+
 /**Enumeration of data-types supported by Varying*/
 enum class VaryingDataType : int
 {
@@ -23,4 +24,5 @@ class ByteArray;
 
 template <typename T>
 class NDArray;
-} // namespace chi_data_types
+
+} // namespace opensn

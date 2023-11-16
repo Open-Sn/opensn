@@ -10,19 +10,11 @@
 
 #include "framework/mpi/mpi.h"
 
-namespace chi_data_types
+namespace opensn
 {
 template <typename T>
 class NDArray;
-} // namespace chi_data_types
-
-namespace chi
-{
 class ChiMPICommunicatorSet;
-}
-
-namespace chi_mesh
-{
 class GridFaceHistogram;
 class MeshGenerator;
 
@@ -32,7 +24,7 @@ class MeshGenerator;
 class MeshContinuum
 {
 private:
-  typedef std::shared_ptr<chi::ChiMPICommunicatorSet> MPILocalCommSetPtr;
+  typedef std::shared_ptr<ChiMPICommunicatorSet> MPILocalCommSetPtr;
 
 private:
   std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
@@ -211,7 +203,7 @@ public:
   /**
    * Provides a mapping from cell ijk indices to global ids.
    */
-  chi_data_types::NDArray<uint64_t> MakeIJKToGlobalIDMapping() const;
+  NDArray<uint64_t> MakeIJKToGlobalIDMapping() const;
 
   /**
    * Determines the bounding box size of each cell and returns it as
@@ -231,4 +223,4 @@ private:
   }
 };
 
-} // namespace chi_mesh
+} // namespace opensn

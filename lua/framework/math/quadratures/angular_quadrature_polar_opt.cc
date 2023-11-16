@@ -8,6 +8,8 @@
 #include "quadratures_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiOptimizeAngularQuadratureForPolarSymmetry);
 
 int
@@ -22,12 +24,12 @@ chiOptimizeAngularQuadratureForPolarSymmetry(lua_State* L)
   double normalization = -1.0;
   if (num_args == 2) normalization = lua_tonumber(L, 2);
 
-  auto& quadrature =
-    Chi::GetStackItem<chi_math::AngularQuadrature>(Chi::angular_quadrature_stack, handle, fname);
+  auto& quadrature = opensn::Chi::GetStackItem<AngularQuadrature>(
+    opensn::Chi::angular_quadrature_stack, handle, fname);
 
   if (normalization > 0.0)
-    Chi::log.Log() << "Optimizing angular quadrature for polar symmetry. using "
-                   << "normalization factor " << normalization << ".";
+    opensn::Chi::log.Log() << "Optimizing angular quadrature for polar symmetry. using "
+                           << "normalization factor " << normalization << ".";
 
   quadrature.OptimizeForPolarSymmetry(normalization);
 

@@ -2,15 +2,15 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 RegisterChiObject(chi_mesh, RPPLogicalVolume);
 
-chi::InputParameters
+InputParameters
 RPPLogicalVolume::GetInputParameters()
 {
-  chi::InputParameters params = LogicalVolume::GetInputParameters();
+  InputParameters params = LogicalVolume::GetInputParameters();
 
   params.SetDocGroup("LuaLogicVolumes");
 
@@ -28,7 +28,7 @@ RPPLogicalVolume::GetInputParameters()
   return params;
 }
 
-RPPLogicalVolume::RPPLogicalVolume(const chi::InputParameters& params)
+RPPLogicalVolume::RPPLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
     xmin_(params.GetParamValue<double>("xmin")),
     xmax_(params.GetParamValue<double>("xmax")),
@@ -50,7 +50,7 @@ RPPLogicalVolume::RPPLogicalVolume(const chi::InputParameters& params)
 #define ZMIN 5
 
 bool
-RPPLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+RPPLogicalVolume::Inside(const Vector3& point) const
 {
   constexpr std::array<bool, 6> true_condition = {true, true, true, true, true, true};
   std::array<bool, 6> condition = {false, false, false, false, false, false};
@@ -65,4 +65,4 @@ RPPLogicalVolume::Inside(const chi_mesh::Vector3& point) const
   return condition == true_condition;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

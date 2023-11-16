@@ -6,14 +6,17 @@
 #include "framework/runtime.h"
 #include "framework/logging/log_exceptions.h"
 
-namespace lbs::acceleration
+namespace opensn
 {
+namespace lbs
+{
+
 std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, SwpBndryPtr>& sweep_boundaries, bool vaccum_bcs_are_dirichlet)
 {
-  typedef chi_mesh::sweep_management::BoundaryType SwpBndryType;
-  typedef lbs::acceleration::BoundaryCondition BC;
-  typedef lbs::acceleration::BCType BCType;
+  typedef BoundaryType SwpBndryType;
+  typedef BoundaryCondition BC;
+  typedef BCType BCType;
 
   std::map<uint64_t, BC> bcs;
   for (auto& [bid, lbs_bndry] : sweep_boundaries)
@@ -38,8 +41,8 @@ PackGroupsetXS(const std::map<int, MGXSPtr>& matid_to_xs_map,
   const int num_gs_groups = last_group_index - first_grp_index + 1;
   ChiInvalidArgumentIf(num_gs_groups < 0, "last_grp_index must be >= first_grp_index");
 
-  typedef lbs::acceleration::Multigroup_D_and_sigR MGXS;
-  typedef std::map<int, lbs::acceleration::Multigroup_D_and_sigR> MatID2XSMap;
+  typedef Multigroup_D_and_sigR MGXS;
+  typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
   MatID2XSMap matid_2_mgxs_map;
   for (const auto& matid_xs_pair : matid_to_xs_map)
   {
@@ -65,4 +68,5 @@ PackGroupsetXS(const std::map<int, MGXSPtr>& matid_to_xs_map,
   return matid_2_mgxs_map;
 }
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

@@ -36,7 +36,7 @@ class Chi;
  * i.e., "::".*/
 #define RegisterLuaFunctionAsIs(func_name)                                                         \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
-    chi::Console::AddFunctionToRegistryGlobalNamespace(#func_name, func_name)
+    opensn::Console::AddFunctionToRegistryGlobalNamespace(#func_name, func_name)
 
 /**Macro for registering a lua_CFunction within the Console
 * singleton.
@@ -47,21 +47,22 @@ class Chi;
 */
 #define RegisterLuaFunction(function, namespace_name, func_name)                                   \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
-    chi::Console::AddFunctionToRegistryInNamespaceWithName(function, #namespace_name, #func_name)
+    opensn::Console::AddFunctionToRegistryInNamespaceWithName(                                     \
+      function, #namespace_name, #func_name)
 
 #define RegisterWrapperFunction(namespace_name, name_in_lua, syntax_function, actual_function)     \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##name_in_lua##_, __COUNTER__) =          \
-    chi::Console::AddWrapperToRegistryInNamespaceWithName(                                         \
+    opensn::Console::AddWrapperToRegistryInNamespaceWithName(                                      \
       #namespace_name, #name_in_lua, syntax_function, actual_function)
 
 #define RegisterLuaConstant(namespace_name, name_in_lua, value)                                    \
   static char ConsoleJoinWordsB(unique_var_name_luaconst_##namespace_name##_##name_in_lua,         \
                                 __COUNTER__) =                                                     \
-    chi::Console::AddLuaConstantToRegistry(#namespace_name, #name_in_lua, value)
+    opensn::Console::AddLuaConstantToRegistry(#namespace_name, #name_in_lua, value)
 
 #define RegisterLuaConstantAsIs(name_in_lua, value)                                                \
   static char ConsoleJoinWordsB(unique_var_name_luaconst_##name_in_lua, __COUNTER__) =             \
-    chi::Console::AddLuaConstantToRegistry("", #name_in_lua, value)
+    opensn::Console::AddLuaConstantToRegistry("", #name_in_lua, value)
 
 #else
 #define RegisterLuaFunctionAsIs(func_name)
@@ -71,17 +72,10 @@ class Chi;
 #define RegisterLuaConstantAsIs(name_in_lua, value)
 #endif
 
-namespace chi_physics
+namespace opensn
 {
 class Solver;
-}
-namespace chi
-{
 struct RegistryStatuses;
-}
-
-namespace chi
-{
 
 /**
  * Class for handling the console and scripting.
@@ -89,8 +83,8 @@ namespace chi
 class Console
 {
 public:
-  using WrapperGetInParamsFunc = chi::InputParameters (*)();
-  using WrapperCallFunc = chi::ParameterBlock (*)(const chi::InputParameters&);
+  using WrapperGetInParamsFunc = InputParameters (*)();
+  using WrapperCallFunc = ParameterBlock (*)(const InputParameters&);
 
 private:
 #ifdef OPENSN_WITH_LUA
@@ -118,7 +112,7 @@ private:
   std::map<std::string, LuaFuncWrapperRegEntry> function_wrapper_registry_;
 #endif
 
-  std::map<std::string, chi_data_types::Varying> lua_constants_registry_;
+  std::map<std::string, Varying> lua_constants_registry_;
 
   Console() noexcept;
 
@@ -154,7 +148,7 @@ public:
     return function_wrapper_registry_;
   }
 
-  const std::map<std::string, chi_data_types::Varying>& GetLuaConstantsRegistry() const
+  const std::map<std::string, Varying>& GetLuaConstantsRegistry() const
   {
     return lua_constants_registry_;
   }
@@ -209,7 +203,7 @@ public:
    */
   static char AddLuaConstantToRegistry(const std::string& namespace_name,
                                        const std::string& constant_name,
-                                       const chi_data_types::Varying& value);
+                                       const Varying& value);
 #endif
 
   /**
@@ -260,8 +254,7 @@ public:
   /**
    * Sets a lua constant in the lua state.
    */
-  static void SetLuaConstant(const std::string& constant_name,
-                             const chi_data_types::Varying& value);
+  static void SetLuaConstant(const std::string& constant_name, const Varying& value);
 #endif
 
   /**
@@ -284,8 +277,8 @@ public:
   /**
    * Given an old status, will update the bindings for only newly registered items.
    */
-  void UpdateConsoleBindings(const chi::RegistryStatuses& old_statuses);
+  void UpdateConsoleBindings(const RegistryStatuses& old_statuses);
 #endif
 };
 
-} // namespace chi
+} // namespace opensn

@@ -1,6 +1,8 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -10,7 +12,7 @@ WGSContext::WGSContext(LBSSolver& lbs_solver,
                        SourceFlags lhs_scope,
                        SourceFlags rhs_scope,
                        bool log_info)
-  : chi_math::LinearSolverContext(),
+  : LinearSolverContext(),
     lbs_solver_(lbs_solver),
     groupset_(groupset),
     set_source_function_(set_source_function),
@@ -18,7 +20,7 @@ WGSContext::WGSContext(LBSSolver& lbs_solver,
     rhs_src_scope_(rhs_scope),
     log_info_(log_info)
 {
-  this->residual_scale_type = chi_math::ResidualScaleType::RHS_PRECONDITIONED_NORM;
+  this->residual_scale_type = ResidualScaleType::RHS_PRECONDITIONED_NORM;
 }
 
 int
@@ -58,3 +60,4 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
 }
 
 } // namespace lbs
+} // namespace opensn

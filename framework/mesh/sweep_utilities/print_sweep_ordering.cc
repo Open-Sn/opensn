@@ -11,9 +11,11 @@
 
 #include "framework/mesh/sweep_utilities/spds/spds.h"
 
+namespace opensn
+{
+
 void
-chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS* sweep_order,
-                                               MeshContinuumPtr vol_continuum)
+PrintSweepOrdering(SPDS* sweep_order, MeshContinuumPtr vol_continuum)
 {
   //  double polar = sweep_order->polar;
   //  double azimuthal = sweep_order->azimuthal;
@@ -28,7 +30,7 @@ chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS*
   //    rank_of_cell.push_back(0);
   //  }
   //
-  //  chi_mesh::Vector3 omega;
+  //  Vector3 omega;
   //  omega.x = sin(polar)*cos(azimuthal);
   //  omega.y = sin(polar)*sin(azimuthal);
   //  omega.z = cos(polar);
@@ -40,7 +42,7 @@ chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS*
   //  for (int ci=0; ci<sweep_order->spls_->item_id.size(); ci++)
   //  {
   //    int cell_index = sweep_order->spls_->item_id[ci];
-  //    chi_mesh::Cell* cell =  vol_continuum->cells[cell_index];
+  //    Cell* cell =  vol_continuum->cells[cell_index];
   //
   //    for (int e=0; e < cell->faces.size(); e++)
   //    {
@@ -109,3 +111,5 @@ chi_mesh::sweep_management::PrintSweepOrdering(chi_mesh::sweep_management::SPDS*
   //      ranks[sp],1);
   //  }
 }
+
+} // namespace opensn

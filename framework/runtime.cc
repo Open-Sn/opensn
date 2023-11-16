@@ -31,28 +31,31 @@
 #include <unistd.h>
 #endif
 
-// Global variables
-chi::Console& Chi::console = chi::Console::GetInstance();
-chi::ChiLog& Chi::log = chi::ChiLog::GetInstance();
-chi::MPI_Info& Chi::mpi = chi::MPI_Info::GetInstance();
-chi::Timer Chi::program_timer;
+namespace opensn
+{
 
-std::vector<chi_mesh::MeshHandlerPtr> Chi::meshhandler_stack;
+// Global variables
+Console& Chi::console = Console::GetInstance();
+ChiLog& Chi::log = ChiLog::GetInstance();
+MPI_Info& Chi::mpi = MPI_Info::GetInstance();
+Timer Chi::program_timer;
+
+std::vector<MeshHandlerPtr> Chi::meshhandler_stack;
 int Chi::current_mesh_handler = -1;
 
-std::vector<chi_mesh::SurfaceMeshPtr> Chi::surface_mesh_stack;
-std::vector<chi_mesh::FFInterpPtr> Chi::field_func_interpolation_stack;
-std::vector<chi_mesh::UnpartMeshPtr> Chi::unpartitionedmesh_stack;
+std::vector<SurfaceMeshPtr> Chi::surface_mesh_stack;
+std::vector<FFInterpPtr> Chi::field_func_interpolation_stack;
+std::vector<UnpartMeshPtr> Chi::unpartitionedmesh_stack;
 
-std::vector<chi_physics::MaterialPtr> Chi::material_stack;
-std::vector<chi_physics::MultiGroupXSPtr> Chi::multigroup_xs_stack;
-std::vector<chi_physics::FieldFunctionPtr> Chi::field_function_stack;
+std::vector<MaterialPtr> Chi::material_stack;
+std::vector<MultiGroupXSPtr> Chi::multigroup_xs_stack;
+std::vector<FieldFunctionPtr> Chi::field_function_stack;
 
-std::vector<chi_math::AngularQuadraturePtr> Chi::angular_quadrature_stack;
+std::vector<AngularQuadraturePtr> Chi::angular_quadrature_stack;
 
 std::vector<ChiObjectPtr> Chi::object_stack;
-std::vector<chi_math::SpatialDiscretizationPtr> Chi::sdm_stack;
-std::vector<chi::PostProcessorPtr> Chi::postprocessor_stack;
+std::vector<SpatialDiscretizationPtr> Chi::sdm_stack;
+std::vector<PostProcessorPtr> Chi::postprocessor_stack;
 
 // run_time quantities
 bool Chi::run_time::termination_posted_ = false;
@@ -90,30 +93,30 @@ Chi::run_time::ParseArguments(int argc, char** argv)
 
     if (argument.find("-h") != std::string::npos or argument.find("--help") != std::string::npos)
     {
-      Chi::log.Log() << Chi::run_time::command_line_help_string_;
-      Chi::run_time::termination_posted_ = true;
+      Chi::log.Log() << run_time::command_line_help_string_;
+      run_time::termination_posted_ = true;
     }
     else if (argument.find("--suppress-beg-end-timelog") != std::string::npos)
     {
-      Chi::run_time::supress_beg_end_timelog_ = true;
+      run_time::supress_beg_end_timelog_ = true;
     }
     else if (argument.find("--allow-petsc-error-handler") != std::string::npos)
     {
-      Chi::run_time::allow_petsc_error_handler_ = true;
+      run_time::allow_petsc_error_handler_ = true;
     }
     else if (argument.find("--suppress-color") != std::string::npos)
     {
-      Chi::run_time::suppress_color_ = true;
+      run_time::suppress_color_ = true;
     }
     else if (argument.find("--dump-object-registry") != std::string::npos)
     {
-      Chi::run_time::dump_registry_ = true;
-      Chi::run_time::termination_posted_ = true;
+      run_time::dump_registry_ = true;
+      run_time::termination_posted_ = true;
     }
     // No-graphics option
     else if (argument.find("-b") != std::string::npos)
     {
-      Chi::run_time::sim_option_interactive_ = false;
+      run_time::sim_option_interactive_ = false;
     } //-b
     // Verbosity
     else if (argument.find("-v") != std::string::npos)
@@ -123,7 +126,7 @@ Chi::run_time::ParseArguments(int argc, char** argv)
         std::cerr << "Invalid option used with command line argument "
                      "-v. Options are 0,1 or 2."
                   << std::endl;
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
       else
       {
@@ -131,35 +134,35 @@ Chi::run_time::ParseArguments(int argc, char** argv)
         try
         {
           int level = std::stoi(v_option);
-          Chi::log.SetVerbosity(level);
+          log.SetVerbosity(level);
         }
         catch (const std::invalid_argument& e)
         {
           std::cerr << "Invalid option used with command line argument "
                        "-v. Options are 0,1 or 2."
                     << std::endl;
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
       }
 
     } //-v
     else if ((argument.find('=') == std::string::npos) and (!input_file_found))
     {
-      Chi::run_time::input_file_name_ = argument;
+      run_time::input_file_name_ = argument;
       input_file_found = true;
-      Chi::run_time::sim_option_interactive_ = false;
+      run_time::sim_option_interactive_ = false;
     } // no =
     else if (argument.find('=') != std::string::npos)
     {
-      Chi::console.GetCommandBuffer().push_back(argument);
+      console.GetCommandBuffer().push_back(argument);
     }
   }
 
 #ifdef OPENSN_WITH_LUA
-  if (Chi::run_time::dump_registry_)
+  if (run_time::dump_registry_)
   {
     ChiObjectFactory::GetInstance().DumpRegister();
-    Chi::console.DumpRegister();
+    console.DumpRegister();
   }
 #endif
 }
@@ -173,19 +176,19 @@ Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
   MPI_Comm_rank(communicator, &location_id);
   MPI_Comm_size(communicator, &number_processes);
 
-  mpi.SetCommunicator(communicator);
-  mpi.SetLocationID(location_id);
-  mpi.SetProcessCount(number_processes);
+  Chi::mpi.SetCommunicator(communicator);
+  Chi::mpi.SetLocationID(location_id);
+  Chi::mpi.SetProcessCount(number_processes);
 
   Chi::console.PostMPIInfo(location_id, number_processes);
 
-  run_time::ParseArguments(argc, argv);
+  Chi::run_time::ParseArguments(argc, argv);
 
-  run_time::InitPetSc(argc, argv);
+  Chi::run_time::InitPetSc(argc, argv);
 
   auto& t_main = Chi::log.CreateTimingBlock("ChiTech");
   t_main.TimeSectionBegin();
-  chi::SystemWideEventPublisher::GetInstance().PublishEvent(chi::Event("ProgramStart"));
+  SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
   return 0;
 }
@@ -208,17 +211,17 @@ Chi::Finalize()
 {
   auto& t_main = Chi::log.GetTimingBlock("ChiTech");
   t_main.TimeSectionEnd();
-  chi::SystemWideEventPublisher::GetInstance().PublishEvent(chi::Event("ProgramExecuted"));
-  meshhandler_stack.clear();
+  SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
+  Chi::meshhandler_stack.clear();
 
-  surface_mesh_stack.clear();
-  object_stack.clear();
-  field_func_interpolation_stack.clear();
-  unpartitionedmesh_stack.clear();
+  Chi::surface_mesh_stack.clear();
+  Chi::object_stack.clear();
+  Chi::field_func_interpolation_stack.clear();
+  Chi::unpartitionedmesh_stack.clear();
 
-  object_stack.clear();
-  material_stack.clear();
-  multigroup_xs_stack.clear();
+  Chi::object_stack.clear();
+  Chi::material_stack.clear();
+  Chi::multigroup_xs_stack.clear();
 
   PetscFinalize();
   MPI_Finalize();
@@ -229,11 +232,11 @@ Chi::RunInteractive(int argc, char** argv)
 {
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    Chi::log.Log() << chi::Timer::GetLocalDateTimeString()
-                   << " Running ChiTech in interactive-mode with " << Chi::mpi.process_count
-                   << " processes.";
+    Chi::Chi::log.Log() << Timer::GetLocalDateTimeString()
+                        << " Running ChiTech in interactive-mode with " << Chi::mpi.process_count
+                        << " processes.";
 
-    Chi::log.Log() << "ChiTech version " << GetVersionStr();
+    Chi::Chi::log.Log() << "ChiTech version " << Chi::GetVersionStr();
   }
 
   Chi::log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
@@ -261,8 +264,8 @@ Chi::RunInteractive(int argc, char** argv)
 
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    Chi::log.Log() << "Final program time " << program_timer.GetTimeString();
-    Chi::log.Log() << chi::Timer::GetLocalDateTimeString() << " ChiTech finished execution.";
+    Chi::log.Log() << "Final program time " << Chi::program_timer.GetTimeString();
+    Chi::log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution.";
   }
 
   return 0;
@@ -273,10 +276,10 @@ Chi::RunBatch(int argc, char** argv)
 {
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    Chi::log.Log() << chi::Timer::GetLocalDateTimeString() << " Running ChiTech in batch-mode with "
+    Chi::log.Log() << Timer::GetLocalDateTimeString() << " Running ChiTech in batch-mode with "
                    << Chi::mpi.process_count << " processes.";
 
-    Chi::log.Log() << "ChiTech version " << GetVersionStr();
+    Chi::log.Log() << "ChiTech version " << Chi::GetVersionStr();
   }
 
   Chi::log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
@@ -293,7 +296,7 @@ Chi::RunBatch(int argc, char** argv)
       Chi::log.Log() << k;
     }
 
-  mpi.Barrier();
+  Chi::mpi.Barrier();
 #endif
 
   const auto& input_fname = Chi::run_time::input_file_name_;
@@ -314,8 +317,8 @@ Chi::RunBatch(int argc, char** argv)
 
   if (not Chi::run_time::supress_beg_end_timelog_)
   {
-    Chi::log.Log() << "\nFinal program time " << program_timer.GetTimeString();
-    Chi::log.Log() << chi::Timer::GetLocalDateTimeString() << " ChiTech finished execution of "
+    Chi::log.Log() << "\nFinal program time " << Chi::program_timer.GetTimeString();
+    Chi::log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution of "
                    << Chi::run_time::input_file_name_;
   }
 
@@ -325,7 +328,7 @@ Chi::RunBatch(int argc, char** argv)
 void
 Chi::Exit(int error_code)
 {
-  MPI_Abort(mpi.comm, error_code);
+  MPI_Abort(Chi::mpi.comm, error_code);
 }
 
 std::string
@@ -334,27 +337,27 @@ Chi::GetVersionStr()
   return PROJECT_VERSION;
 }
 
-chi::RegistryStatuses
+RegistryStatuses
 Chi::GetStatusOfRegistries()
 {
-  chi::RegistryStatuses stats;
+  RegistryStatuses stats;
 
   const auto& object_factory = ChiObjectFactory::GetInstance();
   for (const auto& [key, _] : object_factory.Registry())
     stats.objfactory_keys_.push_back(key);
 
 #ifdef OPENSN_WITH_LUA
-  for (const auto& [key, _] : console.GetLuaFunctionRegistry())
+  for (const auto& [key, _] : Chi::console.GetLuaFunctionRegistry())
     stats.console_lua_func_keys_.push_back(key);
 
-  for (const auto& [key, _] : console.GetFunctionWrapperRegistry())
+  for (const auto& [key, _] : Chi::console.GetFunctionWrapperRegistry())
     stats.console_lua_wrapper_keys_.push_back(key);
 #endif
 
   return stats;
 }
 
-chi::CSTMemory
+CSTMemory
 Chi::GetMemoryUsage()
 {
   double mem = 0.0;
@@ -394,7 +397,7 @@ Chi::GetMemoryUsage()
   // mem = llmem * (long long int)sysconf(_SC_PAGESIZE);
 #endif
 
-  chi::CSTMemory mem_struct(mem);
+  CSTMemory mem_struct(mem);
 
   return mem_struct;
 }
@@ -402,7 +405,9 @@ Chi::GetMemoryUsage()
 double
 Chi::GetMemoryUsageInMB()
 {
-  chi::CSTMemory mem_struct = GetMemoryUsage();
+  CSTMemory mem_struct = Chi::GetMemoryUsage();
 
   return mem_struct.memory_mbytes;
 }
+
+} // namespace opensn

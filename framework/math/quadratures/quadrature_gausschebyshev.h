@@ -2,15 +2,15 @@
 
 #include "framework/math/quadratures/quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
 
 /**Gauss-Chebyshev quadrature.*/
-class QuadratureGaussChebyshev : public chi_math::Quadrature
+class QuadratureGaussChebyshev : public Quadrature
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit QuadratureGaussChebyshev(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit QuadratureGaussChebyshev(const InputParameters& params);
 
   /**Populates the abscissae and weights for a Gauss-Chebyshev
    * quadrature given the number of desired quadrature points. The
@@ -23,4 +23,4 @@ private:
   void Initialize(unsigned int N);
 };
 
-} // namespace chi_math
+} // namespace opensn

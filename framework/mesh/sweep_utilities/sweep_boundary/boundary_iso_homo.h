@@ -6,7 +6,7 @@
 #include <vector>
 #include <limits>
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 /**
@@ -21,7 +21,7 @@ public:
   explicit BoundaryIsotropicHomogenous(
     size_t in_num_groups,
     std::vector<double> ref_boundary_flux,
-    chi_math::CoordinateSystemType coord_type = chi_math::CoordinateSystemType::CARTESIAN)
+    CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
     : SweepBoundary(BoundaryType::INCIDENT_ISOTROPIC_HOMOGENOUS, in_num_groups, coord_type),
       boundary_flux(std::move(ref_boundary_flux))
   {
@@ -35,4 +35,4 @@ public:
                                    size_t gs_ss_begin) override;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

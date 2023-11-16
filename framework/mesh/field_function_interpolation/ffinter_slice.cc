@@ -11,7 +11,7 @@
 #include "framework/mpi/mpi.h"
 #include <fstream>
 
-namespace chi_mesh
+namespace opensn
 {
 
 void
@@ -469,4 +469,4 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
                  << "\" to base name \"" << base_name << "\" Successfully";
 }
 
-} // namespace chi_mesh
+} // namespace opensn

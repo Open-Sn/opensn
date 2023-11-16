@@ -2,13 +2,11 @@
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
 
+namespace opensn
+{
 namespace lbs
 {
 class DiffusionDFEMSolver;
-}
-
-namespace lbs
-{
 
 struct MIPWGSContext2 : public WGSContext
 {
@@ -31,4 +29,6 @@ struct MIPWGSContext2 : public WGSContext
 
   void PostSolveCallback() override;
 };
+
 } // namespace lbs
+} // namespace opensn

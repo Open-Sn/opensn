@@ -2,21 +2,24 @@
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
-class SteadyStateSolver : public chi_physics::Solver
+class SteadyStateSolver : public opensn::Solver
 {
 protected:
   LBSSolver& lbs_solver_;
 
 public:
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
-  explicit SteadyStateSolver(const chi::InputParameters& params);
+  explicit SteadyStateSolver(const InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
 };
 
 } // namespace lbs
+} // namespace opensn

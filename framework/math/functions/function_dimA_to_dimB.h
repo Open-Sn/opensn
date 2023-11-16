@@ -3,10 +3,12 @@
 #include "framework/object.h"
 #include <functional>
 
-namespace chi_math
+namespace opensn
 {
+
 typedef std::function<double(double)> ScalarScalarFunction;
 typedef std::function<double(double, double, double, double)> ScalarXYZTFunction;
+
 class FunctionDimAToDimB : public ChiObject
 {
 private:
@@ -14,8 +16,8 @@ private:
   const size_t output_dimension_;
 
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit FunctionDimAToDimB(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit FunctionDimAToDimB(const InputParameters& params);
 
   size_t InputDimension() const { return input_dimension_; }
   size_t OutputDimension() const { return output_dimension_; }
@@ -35,4 +37,4 @@ public:
   virtual std::vector<double> EvaluateSlope(const std::vector<double>& vals) const { return {0.0}; }
 };
 
-} // namespace chi_math
+} // namespace opensn

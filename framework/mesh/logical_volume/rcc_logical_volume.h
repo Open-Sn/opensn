@@ -2,7 +2,7 @@
 
 #include "framework/mesh/logical_volume/logical_volume.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**Right Circular Cylinder (RCC) logical volume.
@@ -12,10 +12,10 @@ namespace chi_mesh
 class RCCLogicalVolume : public LogicalVolume
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit RCCLogicalVolume(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit RCCLogicalVolume(const InputParameters& params);
 
-  bool Inside(const chi_mesh::Vector3& point) const override;
+  bool Inside(const Vector3& point) const override;
 
 protected:
   double r_;
@@ -23,4 +23,4 @@ protected:
   double vx_, vy_, vz_;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

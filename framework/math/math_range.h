@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace chi_math
+namespace opensn
 {
 /**Returns a range of number according to the logic of the parameters.
  *
@@ -16,7 +16,7 @@ template <typename T, typename D = int>
 std::vector<T>
 Range(T start, T end, D delta = 1)
 {
-  static_assert(std::is_signed<D>::value, "chi_math::Range delta parameter must be signed");
+  static_assert(std::is_signed<D>::value, "Range delta parameter must be signed");
   const bool forward = (delta > 0);
 
   std::vector<T> sequence = {};
@@ -41,4 +41,4 @@ Range(T start, T end, D delta = 1)
   return sequence;
 }
 
-} // namespace chi_math
+} // namespace opensn

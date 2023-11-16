@@ -11,24 +11,26 @@
 #include "volume_mesher_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiVolumeMesherSetProperty);
 
-RegisterLuaConstantAsIs(FORCE_POLYGONS, chi_data_types::Varying(1));
-RegisterLuaConstantAsIs(MESH_GLOBAL, chi_data_types::Varying(2));
-RegisterLuaConstantAsIs(PARTITION_Z, chi_data_types::Varying(3));
-RegisterLuaConstantAsIs(VOLUMEPARTITION_Y, chi_data_types::Varying(4));
-RegisterLuaConstantAsIs(VOLUMEPARTITION_X, chi_data_types::Varying(5));
-RegisterLuaConstantAsIs(CUTS_Z, chi_data_types::Varying(6));
-RegisterLuaConstantAsIs(CUTS_Y, chi_data_types::Varying(7));
-RegisterLuaConstantAsIs(CUTS_X, chi_data_types::Varying(8));
-RegisterLuaConstantAsIs(PARTITION_TYPE, chi_data_types::Varying(9));
-RegisterLuaConstantAsIs(KBA_STYLE_XYZ, chi_data_types::Varying(2));
-RegisterLuaConstantAsIs(PARMETIS, chi_data_types::Varying(3));
-RegisterLuaConstantAsIs(EXTRUSION_LAYER, chi_data_types::Varying(10));
-RegisterLuaConstantAsIs(MATID_FROMLOGICAL, chi_data_types::Varying(11));
-RegisterLuaConstantAsIs(BNDRYID_FROMLOGICAL, chi_data_types::Varying(12));
-RegisterLuaConstantAsIs(MATID_FROM_LUA_FUNCTION, chi_data_types::Varying(13));
-RegisterLuaConstantAsIs(BNDRYID_FROM_LUA_FUNCTION, chi_data_types::Varying(14));
+RegisterLuaConstantAsIs(FORCE_POLYGONS, Varying(1));
+RegisterLuaConstantAsIs(MESH_GLOBAL, Varying(2));
+RegisterLuaConstantAsIs(PARTITION_Z, Varying(3));
+RegisterLuaConstantAsIs(VOLUMEPARTITION_Y, Varying(4));
+RegisterLuaConstantAsIs(VOLUMEPARTITION_X, Varying(5));
+RegisterLuaConstantAsIs(CUTS_Z, Varying(6));
+RegisterLuaConstantAsIs(CUTS_Y, Varying(7));
+RegisterLuaConstantAsIs(CUTS_X, Varying(8));
+RegisterLuaConstantAsIs(PARTITION_TYPE, Varying(9));
+RegisterLuaConstantAsIs(KBA_STYLE_XYZ, Varying(2));
+RegisterLuaConstantAsIs(PARMETIS, Varying(3));
+RegisterLuaConstantAsIs(EXTRUSION_LAYER, Varying(10));
+RegisterLuaConstantAsIs(MATID_FROMLOGICAL, Varying(11));
+RegisterLuaConstantAsIs(BNDRYID_FROMLOGICAL, Varying(12));
+RegisterLuaConstantAsIs(MATID_FROM_LUA_FUNCTION, Varying(13));
+RegisterLuaConstantAsIs(BNDRYID_FROM_LUA_FUNCTION, Varying(14));
 
 RegisterLuaFunctionAsIs(chiVolumeMesherSetKBAPartitioningPxPyPz);
 RegisterLuaFunctionAsIs(chiVolumeMesherSetKBACutsX);
@@ -40,7 +42,7 @@ chiVolumeMesherSetProperty(lua_State* L)
 {
   const std::string fname = "chiVolumeMesherSetProperty";
   // Get current mesh handler
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = GetCurrentHandler();
   auto& volume_mesher = cur_hndlr.GetVolumeMesher();
 
   // Get property index
@@ -52,7 +54,7 @@ chiVolumeMesherSetProperty(lua_State* L)
 
   int property_index = lua_tonumber(L, 1);
 
-  typedef chi_mesh::VolumeMesherProperty VMP;
+  typedef VolumeMesherProperty VMP;
 
   // Selects property
   if (property_index == VMP::FORCE_POLYGONS)
@@ -71,19 +73,19 @@ chiVolumeMesherSetProperty(lua_State* L)
   {
     int pz = lua_tonumber(L, 2);
     volume_mesher.options.partition_z = pz;
-    Chi::log.LogAllVerbose1() << "Partition z set to " << pz;
+    opensn::Chi::log.LogAllVerbose1() << "Partition z set to " << pz;
   }
   else if (property_index == VMP::PARTITION_Y)
   {
     int p = lua_tonumber(L, 2);
     volume_mesher.options.partition_y = p;
-    Chi::log.LogAllVerbose1() << "Partition y set to " << p;
+    opensn::Chi::log.LogAllVerbose1() << "Partition y set to " << p;
   }
   else if (property_index == VMP::PARTITION_X)
   {
     int p = lua_tonumber(L, 2);
     volume_mesher.options.partition_x = p;
-    Chi::log.LogAllVerbose1() << "Partition x set to " << p;
+    opensn::Chi::log.LogAllVerbose1() << "Partition x set to " << p;
   }
   else if (property_index == VMP::CUTS_Z)
   {
@@ -105,27 +107,28 @@ chiVolumeMesherSetProperty(lua_State* L)
   else if (property_index == VMP::PARTITION_TYPE)
   {
     int p = lua_tonumber(L, 2);
-    if (p >= chi_mesh::VolumeMesher::PartitionType::KBA_STYLE_XYZ and
-        p <= chi_mesh::VolumeMesher::PartitionType::PARMETIS)
-      volume_mesher.options.partition_type = (chi_mesh::VolumeMesher::PartitionType)p;
+    if (p >= VolumeMesher::PartitionType::KBA_STYLE_XYZ and
+        p <= VolumeMesher::PartitionType::PARMETIS)
+      volume_mesher.options.partition_type = (VolumeMesher::PartitionType)p;
     else
     {
-      Chi::log.LogAllError() << "Unsupported partition type used in call to " << fname << ".";
-      Chi::Exit(EXIT_FAILURE);
+      opensn::Chi::log.LogAllError()
+        << "Unsupported partition type used in call to " << fname << ".";
+      opensn::Chi::Exit(EXIT_FAILURE);
     }
   }
 
   else if (property_index == VMP::EXTRUSION_LAYER)
   {
-    if (volume_mesher.Type() == chi_mesh::VolumeMesherType::EXTRUDER)
+    if (volume_mesher.Type() == VolumeMesherType::EXTRUDER)
     {
-      auto& mesher = dynamic_cast<chi_mesh::VolumeMesherExtruder&>(volume_mesher);
+      auto& mesher = dynamic_cast<VolumeMesherExtruder&>(volume_mesher);
 
       double layer_height = lua_tonumber(L, 2);
       int subdivisions = 1;
 
       if (num_args >= 3) { subdivisions = lua_tonumber(L, 3); }
-      chi_mesh::VolumeMesherExtruder::MeshLayer new_layer;
+      VolumeMesherExtruder::MeshLayer new_layer;
       new_layer.height = layer_height;
       new_layer.sub_divisions = subdivisions;
 
@@ -144,10 +147,10 @@ chiVolumeMesherSetProperty(lua_State* L)
   {
     if (!((num_args == 3) || (num_args == 4)))
     {
-      Chi::log.LogAllError() << "Invalid amount of arguments used for "
-                                "chiVolumeMesherSetProperty("
-                                "MATID_FROMLOGICAL...";
-      Chi::Exit(EXIT_FAILURE);
+      opensn::Chi::log.LogAllError() << "Invalid amount of arguments used for "
+                                        "chiVolumeMesherSetProperty("
+                                        "MATID_FROMLOGICAL...";
+      opensn::Chi::Exit(EXIT_FAILURE);
     }
     int volume_hndl = lua_tonumber(L, 2);
     int mat_id = lua_tonumber(L, 3);
@@ -155,19 +158,19 @@ chiVolumeMesherSetProperty(lua_State* L)
     if (num_args == 4) sense = lua_toboolean(L, 4);
 
     const auto& log_vol =
-      Chi::GetStackItem<chi_mesh::LogicalVolume>(Chi::object_stack, volume_hndl, fname);
+      opensn::Chi::GetStackItem<LogicalVolume>(opensn::Chi::object_stack, volume_hndl, fname);
 
-    chi_mesh::VolumeMesher::SetMatIDFromLogical(log_vol, sense, mat_id);
+    VolumeMesher::SetMatIDFromLogical(log_vol, sense, mat_id);
   }
 
   else if (property_index == VMP::BNDRYID_FROMLOGICAL)
   {
     if (!((num_args == 3) || (num_args == 4)))
     {
-      Chi::log.LogAllError() << "Invalid amount of arguments used for "
-                                "chiVolumeMesherSetProperty("
-                                "BNDRYID_FROMLOGICAL...";
-      Chi::Exit(EXIT_FAILURE);
+      opensn::Chi::log.LogAllError() << "Invalid amount of arguments used for "
+                                        "chiVolumeMesherSetProperty("
+                                        "BNDRYID_FROMLOGICAL...";
+      opensn::Chi::Exit(EXIT_FAILURE);
     }
     LuaCheckNilValue(fname, L, 2);
     LuaCheckStringValue(fname, L, 3);
@@ -181,9 +184,9 @@ chiVolumeMesherSetProperty(lua_State* L)
                                           "an empty string.");
 
     const auto& log_vol =
-      Chi::GetStackItem<chi_mesh::LogicalVolume>(Chi::object_stack, volume_hndl, fname);
+      opensn::Chi::GetStackItem<LogicalVolume>(opensn::Chi::object_stack, volume_hndl, fname);
 
-    chi_mesh::VolumeMesher::SetBndryIDFromLogical(log_vol, sense, bndry_name);
+    VolumeMesher::SetBndryIDFromLogical(log_vol, sense, bndry_name);
   }
   else if (property_index == VMP::MATID_FROM_LUA_FUNCTION)
   {
@@ -191,7 +194,7 @@ chiVolumeMesherSetProperty(lua_State* L)
 
     const std::string lua_fname = lua_tostring(L, 2);
 
-    chi_mesh::VolumeMesher::SetMatIDFromLuaFunction(lua_fname);
+    VolumeMesher::SetMatIDFromLuaFunction(lua_fname);
   }
   else if (property_index == VMP::BNDRYID_FROM_LUA_FUNCTION)
   {
@@ -199,13 +202,13 @@ chiVolumeMesherSetProperty(lua_State* L)
 
     const std::string lua_fname = lua_tostring(L, 2);
 
-    chi_mesh::VolumeMesher::SetBndryIDFromLuaFunction(lua_fname);
+    VolumeMesher::SetBndryIDFromLuaFunction(lua_fname);
   }
   else
   {
-    Chi::log.LogAllError() << "Invalid property specified " << property_index
-                           << " in call to chiVolumeMesherSetProperty().";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << "Invalid property specified " << property_index
+                                   << " in call to chiVolumeMesherSetProperty().";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   return 0;
@@ -222,7 +225,7 @@ chiVolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
   LuaCheckNilValue(__FUNCTION__, L, 3);
 
   // Get current mesh handler
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = GetCurrentHandler();
   auto& vol_mesher = cur_hndlr.GetVolumeMesher();
 
   int px = lua_tonumber(L, 1);
@@ -247,7 +250,7 @@ chiVolumeMesherSetKBACutsX(lua_State* L)
   std::vector<double> cuts;
   LuaPopulateVectorFrom1DArray(__FUNCTION__, L, 1, cuts);
 
-  auto& mesh_handler = chi_mesh::GetCurrentHandler();
+  auto& mesh_handler = GetCurrentHandler();
   mesh_handler.GetVolumeMesher().options.xcuts = cuts;
 
   return 0;
@@ -264,7 +267,7 @@ chiVolumeMesherSetKBACutsY(lua_State* L)
   std::vector<double> cuts;
   LuaPopulateVectorFrom1DArray(__FUNCTION__, L, 1, cuts);
 
-  auto& mesh_handler = chi_mesh::GetCurrentHandler();
+  auto& mesh_handler = GetCurrentHandler();
   mesh_handler.GetVolumeMesher().options.ycuts = cuts;
 
   return 0;
@@ -281,7 +284,7 @@ chiVolumeMesherSetKBACutsZ(lua_State* L)
   std::vector<double> cuts;
   LuaPopulateVectorFrom1DArray(__FUNCTION__, L, 1, cuts);
 
-  auto& mesh_handler = chi_mesh::GetCurrentHandler();
+  auto& mesh_handler = GetCurrentHandler();
   mesh_handler.GetVolumeMesher().options.zcuts = cuts;
 
   return 0;

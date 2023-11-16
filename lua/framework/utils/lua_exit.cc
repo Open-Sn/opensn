@@ -4,7 +4,7 @@
 
 #include "framework/runtime.h"
 
-namespace chi::lua_utils
+namespace opensnlua
 {
 
 /**Gracefully exits ChiTech.
@@ -25,8 +25,8 @@ chiExit(lua_State* L)
     return_code = lua_tointeger(L, 1);
   }
 
-  Chi::Exit(return_code);
+  opensn::Chi::Exit(return_code);
   return 0;
 }
 
-} // namespace chi::lua_utils
+} // namespace opensnlua

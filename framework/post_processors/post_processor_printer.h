@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 
-namespace chi
+namespace opensn
 {
 class PostProcessor;
 class PostProcessorPrinter;
@@ -122,4 +122,4 @@ private:
   std::string csv_filename_;
 };
 
-} // namespace chi
+} // namespace opensn

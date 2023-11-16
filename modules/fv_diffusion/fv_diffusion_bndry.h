@@ -2,6 +2,8 @@
 
 #include <array>
 
+namespace opensn
+{
 namespace fv_diffusion
 {
 class Boundary;
@@ -14,14 +16,16 @@ enum class BoundaryType : int
   Robin = 4,
   Vacuum = 5
 };
-} // namespace fv_diffusion
 
-//###################################################################
+// ###################################################################
 /**Parent class for diffusion boundaries*/
-class fv_diffusion::Boundary
+class Boundary
 {
 public:
   BoundaryType type_ = BoundaryType::Dirichlet;
 
   std::array<double, 3> values_ = {0., 0., 0.};
 };
+
+} // namespace fv_diffusion
+} // namespace opensn

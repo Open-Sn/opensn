@@ -2,7 +2,7 @@
 
 #include "framework/math/math.h"
 
-namespace chi_math
+namespace opensn
 {
 
 double
@@ -20,4 +20,4 @@ Vec2NormMPI(const VecDbl& x, MPI_Comm comm)
   return sqrt(global_sum);
 }
 
-} // namespace chi_math
+} // namespace opensn

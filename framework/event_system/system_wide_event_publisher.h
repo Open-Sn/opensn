@@ -2,10 +2,10 @@
 
 #include "framework/event_system/event_publisher.h"
 
-namespace chi
+namespace opensn
 {
 
-class SystemWideEventPublisher : public chi::EventPublisher
+class SystemWideEventPublisher : public EventPublisher
 {
 public:
   static SystemWideEventPublisher& GetInstance();
@@ -16,10 +16,10 @@ public:
   /// Deleted assignment operator
   operator=(const SystemWideEventPublisher&) = delete;
 
-  void PublishEvent(const chi::Event& event) override;
+  void PublishEvent(const Event& event) override;
 
 private:
   SystemWideEventPublisher();
 };
 
-} // namespace chi
+} // namespace opensn

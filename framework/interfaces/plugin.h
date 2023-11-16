@@ -2,7 +2,7 @@
 
 #include "framework/object.h"
 
-namespace chi
+namespace opensn
 {
 
 class Plugin : public ChiObject
@@ -18,4 +18,4 @@ protected:
   void* library_handle_ = nullptr;
 };
 
-} // namespace chi
+} // namespace opensn

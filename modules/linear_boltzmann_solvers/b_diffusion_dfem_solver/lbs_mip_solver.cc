@@ -7,15 +7,17 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/b_diffusion_dfem_solver/iterative_methods/mip_wgs_context2.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 RegisterChiObject(lbs, DiffusionDFEMSolver);
 
-chi::InputParameters
+InputParameters
 DiffusionDFEMSolver::GetInputParameters()
 {
-  chi::InputParameters params = LBSSolver::GetInputParameters();
+  InputParameters params = LBSSolver::GetInputParameters();
 
   params.SetClassName("DiffusionDFEMSolver");
   params.SetDocGroup("lbs__LBSSolver");
@@ -25,7 +27,7 @@ DiffusionDFEMSolver::GetInputParameters()
   return params;
 }
 
-DiffusionDFEMSolver::DiffusionDFEMSolver(const chi::InputParameters& params) : LBSSolver(params)
+DiffusionDFEMSolver::DiffusionDFEMSolver(const InputParameters& params) : LBSSolver(params)
 {
 }
 
@@ -67,13 +69,13 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
 
     // Make UnknownManager
     const size_t gs_G = groupset.groups_.size();
-    chi_math::UnknownManager uk_man;
-    uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, gs_G);
+    opensn::UnknownManager uk_man;
+    uk_man.AddUnknown(UnknownType::VECTOR_N, gs_G);
 
     // Make boundary conditions
-    typedef chi_mesh::sweep_management::BoundaryType SwpBndryType;
-    typedef lbs::acceleration::BoundaryCondition BC;
-    typedef lbs::acceleration::BCType BCType;
+    typedef opensn::BoundaryType SwpBndryType;
+    typedef BoundaryCondition BC;
+    typedef BCType BCType;
 
     std::map<uint64_t, BC> bcs;
     for (auto& [bid, lbs_bndry] : sweep_boundaries_)
@@ -95,8 +97,8 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
     } // for sweep-boundary
 
     // Make xs map
-    typedef lbs::acceleration::Multigroup_D_and_sigR MGXS;
-    typedef std::map<int, lbs::acceleration::Multigroup_D_and_sigR> MatID2XSMap;
+    typedef Multigroup_D_and_sigR MGXS;
+    typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
     MatID2XSMap matid_2_mgxs_map;
     for (const auto& matid_xs_pair : matid_to_xs_map_)
     {
@@ -124,14 +126,13 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver =
-      std::make_shared<acceleration::DiffusionMIPSolver>(std::string(TextName() + "_WGSolver"),
-                                                         sdm,
-                                                         uk_man,
-                                                         bcs,
-                                                         matid_2_mgxs_map,
-                                                         unit_cell_matrices_,
-                                                         true); // verbosity
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(TextName() + "_WGSolver"),
+                                                       sdm,
+                                                       uk_man,
+                                                       bcs,
+                                                       matid_2_mgxs_map,
+                                                       unit_cell_matrices_,
+                                                       true); // verbosity
 
     solver->options.residual_tolerance = groupset.wgdsa_tol_;
     solver->options.max_iters = groupset.wgdsa_max_iters_;
@@ -166,3 +167,4 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
 }
 
 } // namespace lbs
+} // namespace opensn

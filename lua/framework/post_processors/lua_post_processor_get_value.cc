@@ -5,7 +5,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi
+namespace opensn
 {
 
 InputParameters GetSyntax_PostProcessorGetValue();
@@ -58,4 +58,4 @@ PostProcessorGetValue(const InputParameters& params)
 
   return ParameterBlock{};
 }
-} // namespace chi
+} // namespace opensn

@@ -10,7 +10,7 @@
 
 #define scint64_t static_cast<int64_t>
 
-namespace chi_math
+namespace opensn
 {
 
 VectorGhostCommunicator::VectorGhostCommunicator(const uint64_t local_size,
@@ -21,9 +21,9 @@ VectorGhostCommunicator::VectorGhostCommunicator(const uint64_t local_size,
     global_size_(global_size),
     ghost_ids_(ghost_ids),
     comm_(communicator),
-    location_id_(chi_mpi_utils::GetLocationID(communicator)),
-    process_count_(chi_mpi_utils::GetProcessCount(communicator)),
-    extents_(chi_mpi_utils::BuildLocationExtents(local_size, communicator)),
+    location_id_(GetLocationID(communicator)),
+    process_count_(GetProcessCount(communicator)),
+    extents_(BuildLocationExtents(local_size, communicator)),
     cached_parallel_data_(MakeCachedParallelData())
 {
 }
@@ -73,8 +73,7 @@ VectorGhostCommunicator::MakeCachedParallelData()
   // MPI utility MapAllToAll in Chi-Tech accomplishes this task,
   // returning a mapping of processes to the global ids that this
   // process needs to send.
-  std::map<int, std::vector<int64_t>> send_map =
-    chi_mpi_utils::MapAllToAll(recv_map, MPI_INT64_T, comm_);
+  std::map<int, std::vector<int64_t>> send_map = MapAllToAll(recv_map, MPI_INT64_T, comm_);
 
   // With this information, the amount of information that needs
   // to be sent can be determined.
@@ -231,4 +230,4 @@ VectorGhostCommunicator::FindOwnerPID(const int64_t global_id) const
   return -1;
 }
 
-} // namespace chi_math
+} // namespace opensn

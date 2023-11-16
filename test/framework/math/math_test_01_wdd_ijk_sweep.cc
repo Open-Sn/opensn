@@ -11,17 +11,19 @@
 
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 namespace chi_unit_tests
 {
 
-chi::ParameterBlock chi_math_Test01_WDD_IJK_Sweep(const chi::InputParameters& params);
+ParameterBlock chi_math_Test01_WDD_IJK_Sweep(const InputParameters& params);
 
 RegisterWrapperFunction(chi_unit_tests,
                         chi_math_Test01_WDD_IJK_Sweep,
                         nullptr,
                         chi_math_Test01_WDD_IJK_Sweep);
 
-typedef chi_data_types::NDArray<double> IJKArrayDbl;
+typedef NDArray<double> IJKArrayDbl;
 
 IJKArrayDbl
 WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
@@ -29,7 +31,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
                const std::array<double, 6>& bcs,
                const IJKArrayDbl& sigma_t,
                const IJKArrayDbl& q,
-               const chi_math::AngularQuadrature& quad,
+               const AngularQuadrature& quad,
                bool verbose = false)
 {
   const int Nx = static_cast<int>(mesh_divs[0]);
@@ -43,30 +45,30 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   IJKArrayDbl phi_0(mesh_divs);
   phi_0.set(0.0);
 
-  auto iorder = chi_math::Range<int>(0, Nx);
-  auto jorder = chi_math::Range<int>(0, Ny);
-  auto korder = chi_math::Range<int>(0, Nz);
+  auto iorder = Range<int>(0, Nx);
+  auto jorder = Range<int>(0, Ny);
+  auto korder = Range<int>(0, Nz);
 
   const auto& D2M = quad.GetDiscreteToMomentOperator();
 
   int n = 0;
   for (const auto& omega_n : quad.omegas_)
   {
-    if (Chi::mpi.location_id == 0 and verbose)
+    if (opensn::Chi::mpi.location_id == 0 and verbose)
       std::cout << "Sweep angle " << n << " " << omega_n.PrintStr() << std::endl;
 
     // Determine sweep ordering
-    if (omega_n.x > 0.0) iorder = chi_math::Range<int>(0, Nx);
+    if (omega_n.x > 0.0) iorder = Range<int>(0, Nx);
     else
-      iorder = chi_math::Range<int>(Nx - 1, -1, -1);
+      iorder = Range<int>(Nx - 1, -1, -1);
 
-    if (omega_n.y > 0.0) jorder = chi_math::Range<int>(0, Ny);
+    if (omega_n.y > 0.0) jorder = Range<int>(0, Ny);
     else
-      jorder = chi_math::Range<int>(Ny - 1, -1, -1);
+      jorder = Range<int>(Ny - 1, -1, -1);
 
-    if (omega_n.z > 0.0) korder = chi_math::Range<int>(0, Nz);
+    if (omega_n.z > 0.0) korder = Range<int>(0, Nz);
     else
-      korder = chi_math::Range<int>(Nz - 1, -1, -1);
+      korder = Range<int>(Nz - 1, -1, -1);
 
     // Sweep cells
     IJKArrayDbl psi_ds_x(mesh_divs);
@@ -113,10 +115,10 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   return phi_0;
 }
 
-chi::ParameterBlock
-chi_math_Test01_WDD_IJK_Sweep(const chi::InputParameters&)
+ParameterBlock
+chi_math_Test01_WDD_IJK_Sweep(const InputParameters&)
 {
-  Chi::log.Log() << "GOLD_BEGIN";
+  opensn::Chi::log.Log() << "GOLD_BEGIN";
   bool verbose = true;
   const std::array<size_t, 3> mesh_divisions = {1, 1, 10};
   const std::array<double, 3> mesh_lengths = {1.0, 1.0, 10.0};
@@ -128,21 +130,21 @@ chi_math_Test01_WDD_IJK_Sweep(const chi::InputParameters&)
   //  sigma_t.Set(0.2);
   //  q.Set(0.0);
 
-  auto pquad = std::make_shared<chi_math::AngularQuadratureProdGL>(1, verbose);
+  auto pquad = std::make_shared<AngularQuadratureProdGL>(1, verbose);
 
   pquad->BuildDiscreteToMomentOperator(0, 1);
 
   auto phi = WDD_IJK_Sweep2(mesh_divisions, mesh_lengths, bcs, sigma_t, q, *pquad, verbose);
 
-  if (Chi::mpi.location_id == 0 and verbose)
+  if (opensn::Chi::mpi.location_id == 0 and verbose)
   {
     std::cout << "order:\n";
     for (auto i : phi)
       std::cout << i << "\n";
   }
 
-  Chi::log.Log() << "GOLD_END";
-  return chi::ParameterBlock();
+  opensn::Chi::log.Log() << "GOLD_END";
+  return ParameterBlock();
 }
 
 } // namespace chi_unit_tests

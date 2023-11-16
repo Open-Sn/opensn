@@ -5,11 +5,11 @@
 
 #include "framework/logging/log_exceptions.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
-LagrangeQuadMapping::LagrangeQuadMapping(const chi_mesh::MeshContinuum& grid,
-                                         const chi_mesh::Cell& cell,
+LagrangeQuadMapping::LagrangeQuadMapping(const MeshContinuum& grid,
+                                         const Cell& cell,
                                          const Quadrature& volume_quadrature,
                                          const Quadrature& surface_quadrature)
   : LagrangeBaseMapping(
@@ -33,7 +33,7 @@ LagrangeQuadMapping::RefShape(uint32_t i, const Vec3& qpoint) const
   return 0.25 * (1.0 + a * qpoint.x) * (1.0 + b * qpoint.y);
 }
 
-chi_mesh::Vector3
+Vector3
 LagrangeQuadMapping::RefGradShape(uint32_t i, const Vec3& qpoint) const
 {
   ChiLogicalErrorIf(i >= 4, "Invalid shapefunction index " + std::to_string(i));
@@ -105,4 +105,4 @@ LagrangeQuadMapping::FaceToElementQPointConversion(size_t face_index, const Vec3
   ChiLogicalError("Invalid face index " + std::to_string(face_index));
 }
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

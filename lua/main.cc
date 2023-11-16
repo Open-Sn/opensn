@@ -5,6 +5,8 @@
 #include "framework/event_system/event.h"
 #include "modules/modules_lua.h"
 
+using namespace opensn;
+
 /** Program entry point.
 
 \param argc int    Number of arguments supplied.
@@ -21,27 +23,28 @@ main(int argc, char** argv)
   MPI_Comm_rank(communicator, &location_id);
   MPI_Comm_size(communicator, &number_processes);
 
-  Chi::mpi.SetCommunicator(communicator);
-  Chi::mpi.SetLocationID(location_id);
-  Chi::mpi.SetProcessCount(number_processes);
+  opensn::Chi::mpi.SetCommunicator(communicator);
+  opensn::Chi::mpi.SetLocationID(location_id);
+  opensn::Chi::mpi.SetProcessCount(number_processes);
 
-  chi_modules::lua_utils::LoadRegisteredLuaItems();
-  Chi::console.PostMPIInfo(location_id, number_processes);
+  opensnlua::LoadRegisteredLuaItems();
+  opensn::Chi::console.PostMPIInfo(location_id, number_processes);
 
-  Chi::run_time::ParseArguments(argc, argv);
+  opensn::Chi::run_time::ParseArguments(argc, argv);
 
-  Chi::run_time::InitPetSc(argc, argv);
+  opensn::Chi::run_time::InitPetSc(argc, argv);
 
-  auto& t_main = Chi::log.CreateTimingBlock("ChiTech");
+  auto& t_main = opensn::Chi::log.CreateTimingBlock("ChiTech");
   t_main.TimeSectionBegin();
-  chi::SystemWideEventPublisher::GetInstance().PublishEvent(chi::Event("ProgramStart"));
+  opensn::SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
   int error_code;
-  if (Chi::run_time::sim_option_interactive_) error_code = Chi::RunInteractive(argc, argv);
+  if (opensn::Chi::run_time::sim_option_interactive_)
+    error_code = opensn::Chi::RunInteractive(argc, argv);
   else
-    error_code = Chi::RunBatch(argc, argv);
+    error_code = opensn::Chi::RunBatch(argc, argv);
 
-  Chi::Finalize();
+  opensn::Chi::Finalize();
 
   return error_code;
 }

@@ -11,7 +11,7 @@
 #include <vector>
 #include <array>
 
-namespace chi_math
+namespace opensn
 {
 namespace SimplifiedLDFESQ
 {
@@ -31,20 +31,20 @@ struct BaseFunctor
  * spherical quadrilateral (SQ).*/
 struct SimplifiedLDFESQ::SphericalQuadrilateral
 {
-  std::array<chi_mesh::Vertex, 4> vertices_xy_tilde;  ///< On square
-  std::array<chi_mesh::Vertex, 4> vertices_xyz_prime; ///< On cube face
-  std::array<chi_mesh::Vertex, 4> vertices_xyz;       ///< On unit sphere
-  chi_mesh::Vertex centroid_xyz;
+  std::array<Vertex, 4> vertices_xy_tilde;  ///< On square
+  std::array<Vertex, 4> vertices_xyz_prime; ///< On cube face
+  std::array<Vertex, 4> vertices_xyz;       ///< On unit sphere
+  Vertex centroid_xyz;
 
-  chi_mesh::Matrix3x3 rotation_matrix;
-  chi_mesh::Vector3 translation_vector;
+  Matrix3x3 rotation_matrix;
+  Vector3 translation_vector;
 
-  std::array<chi_mesh::Vector3, 4> sub_sqr_points;
+  std::array<Vector3, 4> sub_sqr_points;
   std::array<double, 4> sub_sqr_weights;
 
   double area = 0.0;
 
-  chi_mesh::Vector3 octant_modifier;
+  Vector3 octant_modifier;
 };
 
 /** Piecewise-linear Finite element quadrature using quadrilaterals.*/
@@ -64,7 +64,7 @@ public:
 private:
   static constexpr double a = 0.57735026919; ///< Inscribed cude side length
   int initial_level_ = 0;
-  std::vector<chi_mesh::Vector3> diagonal_vertices_;
+  std::vector<Vector3> diagonal_vertices_;
   std::vector<SphericalQuadrilateral> initial_octant_SQs_;
 
 public:
@@ -93,8 +93,8 @@ private:
   /**
    * Generates the standard points on the reference face.
    */
-  void GenerateReferenceFaceVertices(const chi_mesh::Matrix3x3& rotation_matrix,
-                                     const chi_mesh::Vector3& translation,
+  void GenerateReferenceFaceVertices(const Matrix3x3& rotation_matrix,
+                                     const Vector3& translation,
                                      int level);
 
   /**
@@ -107,21 +107,21 @@ private:
    */
   void EmpiricalQPOptimization(SphericalQuadrilateral& sq,
                                QuadratureGaussLegendre& legendre,
-                               chi_mesh::Vertex& sq_xy_tilde_centroid,
-                               std::array<chi_mesh::Vector3, 4>& radii_vectors_xy_tilde,
+                               Vertex& sq_xy_tilde_centroid,
+                               std::array<Vector3, 4>& radii_vectors_xy_tilde,
                                std::array<double, 4>& sub_sub_sqr_areas);
 
   void IsolatedQPOptimization(SphericalQuadrilateral& sq,
                               QuadratureGaussLegendre& legendre,
-                              chi_mesh::Vertex& sq_xy_tilde_centroid,
-                              std::array<chi_mesh::Vector3, 4>& radii_vectors_xy_tilde,
+                              Vertex& sq_xy_tilde_centroid,
+                              std::array<Vector3, 4>& radii_vectors_xy_tilde,
                               std::array<double, 4>& sub_sub_sqr_areas);
 
   /**
    * Computes the area of a cell. This routine uses Girard's theorem to get the area of a spherical
    * triangle using the spherical excess.
    */
-  static double ComputeSphericalQuadrilateralArea(std::array<chi_mesh::Vertex, 4>& vertices_xyz);
+  static double ComputeSphericalQuadrilateralArea(std::array<Vertex, 4>& vertices_xyz);
 
   /**
    * Integrates shape functions to produce weights.
@@ -170,7 +170,7 @@ public:
   /**
    * Locally refines the cells.
    */
-  void LocallyRefine(const chi_mesh::Vector3& ref_dir,
+  void LocallyRefine(const Vector3& ref_dir,
                      const double cone_size,
                      const bool dir_as_plane_normal = false);
 
@@ -189,8 +189,8 @@ private:
 struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
 {
   Quadrature& sldfesq;
-  chi_mesh::Vertex& centroid_xy_tilde;
-  std::array<chi_mesh::Vector3, 4>& radii_vectors_xy_tilde;
+  Vertex& centroid_xy_tilde;
+  std::array<Vector3, 4>& radii_vectors_xy_tilde;
   SphericalQuadrilateral& sq;
 
   std::array<DynamicVector<double>, 4> rhs;
@@ -203,8 +203,8 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   std::vector<double>& lqw;
 
   FUNCTION_WEIGHT_FROM_RHO(SimplifiedLDFESQ::Quadrature& in_sldfesq,
-                           chi_mesh::Vertex& in_centroid_xy_tilde,
-                           std::array<chi_mesh::Vector3, 4>& in_radii_vectors_xy_tilde,
+                           Vertex& in_centroid_xy_tilde,
+                           std::array<Vector3, 4>& in_radii_vectors_xy_tilde,
                            SphericalQuadrilateral& in_sq,
                            QuadratureGaussLegendre& in_legendre_quadrature)
     : sldfesq(in_sldfesq),
@@ -232,7 +232,7 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   std::array<double, 4> operator()(const DynamicVector<double>& rho)
   {
     // Determine qpoints from rho
-    std::array<chi_mesh::Vector3, 4> qpoints;
+    std::array<Vector3, 4> qpoints;
     for (int i = 0; i < 4; ++i)
     {
       auto xy_tilde = centroid_xy_tilde + rho[i] * radii_vectors_xy_tilde[i];
@@ -255,4 +255,4 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   }
 };
 
-} // namespace chi_math
+} // namespace opensn

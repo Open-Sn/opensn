@@ -9,6 +9,8 @@
 #include "field_functions_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiGetFieldFunctionHandleByName);
 
 int
@@ -25,7 +27,7 @@ chiGetFieldFunctionHandleByName(lua_State* L)
 
   size_t ff_handle_counter = 0;
   std::vector<size_t> handles_that_matched;
-  for (const auto& pff : Chi::field_function_stack)
+  for (const auto& pff : opensn::Chi::field_function_stack)
   {
     if (pff->TextName() == ff_name) handles_that_matched.emplace_back(ff_handle_counter);
     ++ff_handle_counter;
@@ -35,19 +37,19 @@ chiGetFieldFunctionHandleByName(lua_State* L)
 
   if (num_handles == 0)
   {
-    Chi::log.Log0Warning() << fname << ": No field-functions were found that "
-                           << "matched the requested name:\"" << ff_name
-                           << "\". A null handle will "
-                           << "be returned." << std::endl;
+    opensn::Chi::log.Log0Warning()
+      << fname << ": No field-functions were found that "
+      << "matched the requested name:\"" << ff_name << "\". A null handle will "
+      << "be returned." << std::endl;
 
     return 0;
   }
 
   if (num_handles > 1)
-    Chi::log.Log0Warning() << fname << ": A total of " << num_handles
-                           << " field-functions were found that matched the "
-                           << " requested name. Only the first match will be "
-                           << " returned.";
+    opensn::Chi::log.Log0Warning()
+      << fname << ": A total of " << num_handles << " field-functions were found that matched the "
+      << " requested name. Only the first match will be "
+      << " returned.";
 
   lua_pushinteger(L, static_cast<lua_Integer>(handles_that_matched.front()));
   return 1;

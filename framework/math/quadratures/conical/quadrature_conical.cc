@@ -3,8 +3,11 @@
 #include "framework/math/quadratures/quadrature_gausslegendre.h"
 #include "framework/math/quadratures/jacobi/quadrature_jacobi.h"
 
+namespace opensn
+{
+
 void
-chi_math::QuadratureConical::Initialize_Conical_Product_Tri()
+QuadratureConical::Initialize_Conical_Product_Tri()
 {
   QuadratureGaussLegendre legendre((QuadratureOrder)std::floor(((int)order_ + 1) / 2.0));
   QuadratureJacobi jacobiA(order_, 1, 0);
@@ -29,7 +32,7 @@ chi_math::QuadratureConical::Initialize_Conical_Product_Tri()
 }
 
 void
-chi_math::QuadratureConical::Initialize_Conical_Product_Tet()
+QuadratureConical::Initialize_Conical_Product_Tet()
 {
   QuadratureGaussLegendre legendre((QuadratureOrder)std::floor(((int)order_ + 1) / 2.0));
   QuadratureJacobi jacobiA(order_, 1, 0);
@@ -62,3 +65,5 @@ chi_math::QuadratureConical::Initialize_Conical_Product_Tet()
   for (auto& v : weights_)
     v *= w_scale;
 }
+
+} // namespace opensn

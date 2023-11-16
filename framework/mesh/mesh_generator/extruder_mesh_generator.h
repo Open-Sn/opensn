@@ -2,12 +2,12 @@
 
 #include "framework/mesh/mesh_generator/mesh_generator.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 struct ExtrusionLayer
 {
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
   const double height_;
   const uint32_t num_sub_layers_;
@@ -16,8 +16,8 @@ struct ExtrusionLayer
 class ExtruderMeshGenerator : public MeshGenerator
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit ExtruderMeshGenerator(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit ExtruderMeshGenerator(const InputParameters& params);
 
 protected:
   std::unique_ptr<UnpartitionedMesh>
@@ -29,4 +29,4 @@ protected:
   std::vector<ExtrusionLayer> layers_;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

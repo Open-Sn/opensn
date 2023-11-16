@@ -2,14 +2,14 @@
 
 #include "framework/mesh/sweep_utilities/spds/spds.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 class SPDS_AdamsAdamsHawkins : public SPDS
 {
 public:
-  SPDS_AdamsAdamsHawkins(const chi_mesh::Vector3& omega,
-                         const chi_mesh::MeshContinuum& grid,
+  SPDS_AdamsAdamsHawkins(const Vector3& omega,
+                         const MeshContinuum& grid,
                          bool cycle_allowance_flag,
                          bool verbose);
   const std::vector<STDG>& GetGlobalSweepPlanes() const { return global_sweep_planes_; }
@@ -22,4 +22,4 @@ private:
   std::vector<STDG> global_sweep_planes_; ///< Processor sweep planes
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

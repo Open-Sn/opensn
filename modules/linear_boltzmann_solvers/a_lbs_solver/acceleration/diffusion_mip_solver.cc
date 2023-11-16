@@ -21,12 +21,14 @@
 
 #define scdouble static_cast<double>
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
 DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
-                                       const chi_math::SpatialDiscretization& sdm,
-                                       const chi_math::UnknownManager& uk_man,
+                                       const opensn::SpatialDiscretization& sdm,
+                                       const UnknownManager& uk_man,
                                        std::map<uint64_t, BoundaryCondition> bcs,
                                        MatID2XSMap map_mat_id_2_xs,
                                        const std::vector<UnitCellMatrices>& unit_cell_matrices,
@@ -40,7 +42,7 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                     verbose,
                     false)
 {
-  using SDM_TYPE = chi_math::SpatialDiscretizationType;
+  using SDM_TYPE = SpatialDiscretizationType;
   const auto& PWLD = SDM_TYPE ::PIECEWISE_LINEAR_DISCONTINUOUS;
 
   if (sdm_.Type() != PWLD)
@@ -135,7 +137,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        typedef chi_mesh::MeshContinuum Grid;
+        typedef MeshContinuum Grid;
 
         if (face.has_neighbor_)
         {
@@ -150,11 +152,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
           // Compute kappa
           double kappa = 1.0;
-          if (cell.Type() == chi_mesh::CellType::SLAB)
+          if (cell.Type() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == chi_mesh::CellType::POLYGON)
+          if (cell.Type() == CellType::POLYGON)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+          if (cell.Type() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
 
           // Assembly penalty terms
@@ -198,7 +200,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               const int64_t jmmap = sdm_.MapDOF(cell, jm, uk_man_, 0, g);
               const int64_t jpmap = sdm_.MapDOF(adj_cell, jp, uk_man_, 0, g);
 
-              chi_mesh::Vector3 vec_aij;
+              Vector3 vec_aij;
               for (size_t qp : fqp_data.QuadraturePointIndices())
                 vec_aij +=
                   fqp_data.ShapeValue(jm, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp);
@@ -222,7 +224,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             {
               const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
-              chi_mesh::Vector3 vec_aij;
+              Vector3 vec_aij;
               for (size_t qp : fqp_data.QuadraturePointIndices())
                 vec_aij +=
                   fqp_data.ShapeValue(im, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
@@ -245,11 +247,10 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == chi_mesh::CellType::SLAB)
+            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+            if (cell.Type() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -298,7 +299,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               {
                 const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
-                chi_mesh::Vector3 vec_aij;
+                Vector3 vec_aij;
                 for (size_t qp : fqp_data.QuadraturePointIndices())
                   vec_aij +=
                     fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
@@ -310,7 +311,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 if (not solution_function.empty())
                 {
 #ifdef OPENSN_WITH_LUA
-                  chi_mesh::Vector3 vec_aij_mms;
+                  Vector3 vec_aij_mms;
                   for (size_t qp : fqp_data.QuadraturePointIndices())
                     vec_aij_mms +=
                       CallLuaXYZFunction(L, solution_function, fqp_data.QPointXYZ(qp)) *
@@ -480,11 +481,10 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == chi_mesh::CellType::SLAB)
+            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+            if (cell.Type() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -529,7 +529,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
               for (size_t j = 0; j < num_nodes; j++)
               {
-                chi_mesh::Vector3 vec_aij;
+                Vector3 vec_aij;
                 for (size_t qp : fqp_data.QuadraturePointIndices())
                   vec_aij +=
                     fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
@@ -541,7 +541,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 if (not solution_function.empty())
                 {
 #ifdef OPENSN_WITH_LUA
-                  chi_mesh::Vector3 vec_aij_mms;
+                  Vector3 vec_aij_mms;
                   for (size_t qp : fqp_data.QuadraturePointIndices())
                     vec_aij_mms +=
                       CallLuaXYZFunction(L, solution_function, fqp_data.QPointXYZ(qp)) *
@@ -666,7 +666,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        typedef chi_mesh::MeshContinuum Grid;
+        typedef MeshContinuum Grid;
 
         if (face.has_neighbor_)
         {
@@ -681,11 +681,11 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
           // Compute kappa
           double kappa = 1.0;
-          if (cell.Type() == chi_mesh::CellType::SLAB)
+          if (cell.Type() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == chi_mesh::CellType::POLYGON)
+          if (cell.Type() == CellType::POLYGON)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+          if (cell.Type() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
 
           // Assembly penalty terms
@@ -765,11 +765,10 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == chi_mesh::CellType::SLAB)
+            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+            if (cell.Type() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -955,11 +954,10 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == chi_mesh::CellType::SLAB)
+            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+            if (cell.Type() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -1101,11 +1099,10 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == chi_mesh::CellType::SLAB)
+            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+            if (cell.Type() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -1178,7 +1175,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 }
 
 double
-DiffusionMIPSolver::HPerpendicular(const chi_mesh::Cell& cell, unsigned int f)
+DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
 {
   const auto& cell_mapping = sdm_.GetCellMapping(cell);
   double hp;
@@ -1200,9 +1197,9 @@ DiffusionMIPSolver::HPerpendicular(const chi_mesh::Cell& cell, unsigned int f)
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == chi_mesh::CellType::SLAB) hp = volume / 2.0;
+  if (cell.Type() == CellType::SLAB) hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
-  else if (cell.Type() == chi_mesh::CellType::POLYGON)
+  else if (cell.Type() == CellType::POLYGON)
   {
     if (num_faces == 3) hp = 2.0 * volume / face_area;
     else if (num_faces == 4)
@@ -1220,7 +1217,7 @@ DiffusionMIPSolver::HPerpendicular(const chi_mesh::Cell& cell, unsigned int f)
     }
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
-  else if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+  else if (cell.Type() == CellType::POLYHEDRON)
   {
     const double surface_area = ComputeSurfaceArea();
 
@@ -1239,10 +1236,10 @@ DiffusionMIPSolver::HPerpendicular(const chi_mesh::Cell& cell, unsigned int f)
 }
 
 int
-DiffusionMIPSolver::MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
-                                    const chi_mesh::Cell& adj_cell,
-                                    const std::vector<chi_mesh::Vector3>& cc_node_locs,
-                                    const std::vector<chi_mesh::Vector3>& ac_node_locs,
+DiffusionMIPSolver::MapFaceNodeDisc(const Cell& cur_cell,
+                                    const Cell& adj_cell,
+                                    const std::vector<Vector3>& cc_node_locs,
+                                    const std::vector<Vector3>& ac_node_locs,
                                     size_t ccf,
                                     size_t acf,
                                     size_t ccfi,
@@ -1270,7 +1267,7 @@ DiffusionMIPSolver::MapFaceNodeDisc(const chi_mesh::Cell& cur_cell,
 double
 DiffusionMIPSolver::CallLuaXYZFunction(lua_State* L,
                                        const std::string& lua_func_name,
-                                       const chi_mesh::Vector3& xyz)
+                                       const Vector3& xyz)
 {
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
                             "CallLuaXYZFunction";
@@ -1306,4 +1303,5 @@ DiffusionMIPSolver::CallLuaXYZFunction(lua_State* L,
 }
 #endif
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

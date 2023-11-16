@@ -5,7 +5,7 @@
 #include "framework/mesh/volume_mesher/predefined_unpartitioned/volmesher_predefunpart.h"
 #include "framework/logging/log.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 MeshHandler&
@@ -346,4 +346,4 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
   return Chi::unpartitionedmesh_stack.size() - 1;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

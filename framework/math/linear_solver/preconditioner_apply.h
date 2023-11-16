@@ -1,7 +1,9 @@
 #pragma once
 
-namespace chi_math
+namespace opensn
 {
+
 template <class PCType, class VecType>
 int PreconditionerApplication(PCType pc, VecType vector, VecType action);
-} // namespace chi_math
+
+} // namespace opensn

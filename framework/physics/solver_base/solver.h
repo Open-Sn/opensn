@@ -9,7 +9,7 @@
 #include <iostream>
 #include <utility>
 
-namespace chi_physics
+namespace opensn
 {
 class FieldFunctionGridBased;
 class TimeStepper;
@@ -20,10 +20,10 @@ class Solver : public ChiObject
 {
 public:
   /**Returns the input parameters.*/
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
   explicit Solver(std::string in_text_name);
   Solver(std::string in_text_name, std::initializer_list<BasicOption> in_options);
-  explicit Solver(const chi::InputParameters& params);
+  explicit Solver(const InputParameters& params);
   virtual ~Solver() = default;
 
   std::string TextName() const;
@@ -48,21 +48,21 @@ public:
   virtual void Advance();
 
   /**Generalized query for information supporting varying returns.*/
-  virtual chi::ParameterBlock GetInfo(const chi::ParameterBlock& params) const;
+  virtual ParameterBlock GetInfo(const ParameterBlock& params) const;
   /**\addtogroup SolverBase
    *
    * \section Properties Properties that can be set
    * The following properties can be set via the lua call
-   * `chi_lua::chiSolverSetProperties`
-   * \copydoc chi_physics::Solver::SetProperties
+   * `chiSolverSetProperties`
+   * \copydoc opensn::Solver::SetProperties
    *
    * Base solver settable properties:
    * - `dt`, Timestep size
    * - `time`, Current time
    */
-  virtual void SetProperties(const chi::ParameterBlock& params);
+  virtual void SetProperties(const ParameterBlock& params);
   /**PreCheck call to GetInfo.*/
-  chi::ParameterBlock GetInfoWithPreCheck(const chi::ParameterBlock& params) const;
+  ParameterBlock GetInfoWithPreCheck(const ParameterBlock& params) const;
 
 protected:
   BasicOptions basic_options_;
@@ -70,8 +70,8 @@ protected:
   std::shared_ptr<TimeStepper> timestepper_ = nullptr;
 
 private:
-  static std::shared_ptr<TimeStepper> InitTimeStepper(const chi::InputParameters& params);
+  static std::shared_ptr<TimeStepper> InitTimeStepper(const InputParameters& params);
   const std::string text_name_;
 };
 
-} // namespace chi_physics
+} // namespace opensn

@@ -6,7 +6,7 @@
 
 #include <mpi.h>
 
-namespace chi_math
+namespace opensn
 {
 
 /**Vector with allocation space for ghosts.*/
@@ -68,4 +68,4 @@ private:
   CachedParallelData MakeCachedParallelData();
 };
 
-} // namespace chi_math
+} // namespace opensn

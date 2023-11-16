@@ -4,7 +4,7 @@
 #include "framework/utils/timer.h"
 #include <iostream>
 
-namespace chi_physics
+namespace opensn
 {
 
 void
@@ -70,7 +70,7 @@ MultiGroupXS::ExportToChiXSFile(const std::string& file_name, const double fissi
   }
 
   ofile << "# Exported cross section from ChiTech\n";
-  ofile << "# Date: " << chi::Timer::GetLocalDateTimeString() << "\n";
+  ofile << "# Date: " << Timer::GetLocalDateTimeString() << "\n";
   ofile << "NUM_GROUPS " << NumGroups() << "\n";
   ofile << "NUM_MOMENTS " << ScatteringOrder() + 1 << "\n";
   if (NumPrecursors() > 0) ofile << "NUM_PRECURSORS " << NumPrecursors() << "\n";
@@ -344,4 +344,4 @@ MultiGroupXS::PushLuaTable(lua_State* L) const
 }
 #endif
 
-} // namespace chi_physics
+} // namespace opensn

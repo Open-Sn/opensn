@@ -7,8 +7,11 @@
 #include "framework/runtime.h"
 #include "framework/mpi/mpi.h"
 
+namespace opensn
+{
+
 void
-chi_mesh::FieldFunctionInterpolationPoint::Initialize()
+FieldFunctionInterpolationPoint::Initialize()
 {
   const std::string fname = "FieldFunctionInterpolationPoint::Initialize";
   const auto& grid = field_functions_.front()->GetSpatialDiscretization().Grid();
@@ -64,7 +67,7 @@ chi_mesh::FieldFunctionInterpolationPoint::Initialize()
 }
 
 void
-chi_mesh::FieldFunctionInterpolationPoint::Execute()
+FieldFunctionInterpolationPoint::Execute()
 {
   if (not locally_owned_) return;
 
@@ -76,7 +79,6 @@ chi_mesh::FieldFunctionInterpolationPoint::Execute()
   const auto uid = 0;
   const auto cid = ref_component_;
 
-  using namespace chi_mesh::ff_interpolation;
   const auto field_data = ref_ff.GetGhostedFieldVector();
 
   const auto& cell = grid.cells[owning_cell_gid_];
@@ -99,10 +101,12 @@ chi_mesh::FieldFunctionInterpolationPoint::Execute()
 }
 
 double
-chi_mesh::FieldFunctionInterpolationPoint::GetPointValue() const
+FieldFunctionInterpolationPoint::GetPointValue() const
 {
   double global_point_value;
   MPI_Allreduce(&point_value_, &global_point_value, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
   return global_point_value;
 }
+
+} // namespace opensn

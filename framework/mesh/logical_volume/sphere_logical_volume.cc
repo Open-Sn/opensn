@@ -2,15 +2,15 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 RegisterChiObject(chi_mesh, SphereLogicalVolume);
 
-chi::InputParameters
+InputParameters
 SphereLogicalVolume::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   params.SetDocGroup("LuaLogicVolumes");
 
@@ -19,13 +19,12 @@ SphereLogicalVolume::GetInputParameters()
   params.AddOptionalParameter("y", 0.0, "Y-location of the volume.");
   params.AddOptionalParameter("z", 0.0, "Z-location of the volume.");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("r", AllowableRangeLowLimit::New(0.0, false));
 
   return params;
 }
 
-SphereLogicalVolume::SphereLogicalVolume(const chi::InputParameters& params)
+SphereLogicalVolume::SphereLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
     r_(params.GetParamValue<double>("r")),
     x0_(params.GetParamValue<double>("x")),
@@ -35,7 +34,7 @@ SphereLogicalVolume::SphereLogicalVolume(const chi::InputParameters& params)
 }
 
 bool
-SphereLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+SphereLogicalVolume::Inside(const Vector3& point) const
 {
   double dx = point.x - x0_;
   double dy = point.y - y0_;
@@ -48,4 +47,4 @@ SphereLogicalVolume::Inside(const chi_mesh::Vector3& point) const
     return false;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

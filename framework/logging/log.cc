@@ -6,14 +6,17 @@
 
 #include <sstream>
 
-chi::ChiLog&
-chi::ChiLog::GetInstance() noexcept
+namespace opensn
+{
+
+ChiLog&
+ChiLog::GetInstance() noexcept
 {
   static ChiLog instance;
   return instance;
 }
 
-chi::ChiLog::ChiLog() noexcept
+ChiLog::ChiLog() noexcept
 {
   verbosity_ = 0;
   std::string memory_usage_event("Maximum Memory Usage");
@@ -25,8 +28,8 @@ chi::ChiLog::ChiLog() noexcept
     Chi::program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
 }
 
-chi::LogStream
-chi::ChiLog::Log(LOG_LVL level)
+LogStream
+ChiLog::Log(LOG_LVL level)
 {
   switch (level)
   {
@@ -155,19 +158,19 @@ chi::ChiLog::Log(LOG_LVL level)
 }
 
 void
-chi::ChiLog::SetVerbosity(int int_level)
+ChiLog::SetVerbosity(int int_level)
 {
   verbosity_ = std::min(int_level, 2);
 }
 
 int
-chi::ChiLog::GetVerbosity() const
+ChiLog::GetVerbosity() const
 {
   return verbosity_;
 }
 
 size_t
-chi::ChiLog::GetRepeatingEventTag(std::string event_name)
+ChiLog::GetRepeatingEventTag(std::string event_name)
 {
   repeating_events.emplace_back(event_name);
 
@@ -180,7 +183,7 @@ chi::ChiLog::GetRepeatingEventTag(std::string event_name)
 }
 
 size_t
-chi::ChiLog::GetExistingRepeatingEventTag(std::string event_name)
+ChiLog::GetExistingRepeatingEventTag(std::string event_name)
 {
   const size_t num_rep_events = repeating_events.size();
   for (size_t k = num_rep_events - 1; k != 0; --k)
@@ -190,7 +193,7 @@ chi::ChiLog::GetExistingRepeatingEventTag(std::string event_name)
 }
 
 void
-chi::ChiLog::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventInfo>& ev_info)
+ChiLog::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventInfo>& ev_info)
 {
   if (ev_tag >= repeating_events.size()) return;
 
@@ -200,7 +203,7 @@ chi::ChiLog::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<Ev
 }
 
 void
-chi::ChiLog::LogEvent(size_t ev_tag, EventType ev_type)
+ChiLog::LogEvent(size_t ev_tag, EventType ev_type)
 {
   if (ev_tag >= repeating_events.size()) return;
 
@@ -210,7 +213,7 @@ chi::ChiLog::LogEvent(size_t ev_tag, EventType ev_type)
 }
 
 std::string
-chi::ChiLog::PrintEventHistory(size_t ev_tag)
+ChiLog::PrintEventHistory(size_t ev_tag)
 {
   std::stringstream outstr;
   if (ev_tag >= repeating_events.size()) return outstr.str();
@@ -249,7 +252,7 @@ chi::ChiLog::PrintEventHistory(size_t ev_tag)
 }
 
 double
-chi::ChiLog::ProcessEvent(size_t ev_tag, chi::ChiLog::EventOperation ev_operation)
+ChiLog::ProcessEvent(size_t ev_tag, ChiLog::EventOperation ev_operation)
 {
   if (ev_tag >= repeating_events.size()) return 0.0;
 
@@ -334,3 +337,5 @@ chi::ChiLog::ProcessEvent(size_t ev_tag, chi::ChiLog::EventOperation ev_operatio
 
   return ret_val;
 }
+
+} // namespace opensn

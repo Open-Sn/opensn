@@ -9,36 +9,37 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 CBC_AngleSet::CBC_AngleSet(size_t id,
                            size_t num_groups,
-                           const chi_mesh::sweep_management::SPDS& spds,
-                           std::shared_ptr<chi_mesh::sweep_management::FLUDS>& fluds,
+                           const SPDS& spds,
+                           std::shared_ptr<FLUDS>& fluds,
                            const std::vector<size_t>& angle_indices,
                            std::map<uint64_t, SweepBndryPtr>& sim_boundaries,
                            size_t in_ref_subset,
-                           const chi::ChiMPICommunicatorSet& comm_set)
-  : chi_mesh::sweep_management::AngleSet(
-      id, num_groups, spds, fluds, angle_indices, sim_boundaries, in_ref_subset),
+                           const ChiMPICommunicatorSet& comm_set)
+  : AngleSet(id, num_groups, spds, fluds, angle_indices, sim_boundaries, in_ref_subset),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
     async_comm_(id, *fluds, comm_set)
 {
 }
 
-chi_mesh::sweep_management::AsynchronousCommunicator*
+AsynchronousCommunicator*
 CBC_AngleSet::GetCommunicator()
 {
-  return static_cast<chi_mesh::sweep_management::AsynchronousCommunicator*>(&async_comm_);
+  return static_cast<AsynchronousCommunicator*>(&async_comm_);
 }
 
-chi_mesh::sweep_management::AngleSetStatus
-CBC_AngleSet::AngleSetAdvance(chi_mesh::sweep_management::SweepChunk& sweep_chunk,
+AngleSetStatus
+CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
                               const std::vector<size_t>& timing_tags,
-                              chi_mesh::sweep_management::ExecutionPermission permission)
+                              ExecutionPermission permission)
 {
-  typedef chi_mesh::sweep_management::AngleSetStatus Status;
+  typedef AngleSetStatus Status;
 
   if (executed_) return Status::FINISHED;
 
@@ -67,13 +68,13 @@ CBC_AngleSet::AngleSetAdvance(chi_mesh::sweep_management::SweepChunk& sweep_chun
       if (not cell_task.completed_) all_tasks_completed = false;
       if (cell_task.num_dependencies_ == 0 and not cell_task.completed_)
       {
-        Chi::log.LogEvent(timing_tags[0], chi::ChiLog::EventType::EVENT_BEGIN);
+        Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_BEGIN);
         sweep_chunk.SetCell(cell_task.cell_ptr_, *this);
         sweep_chunk.Sweep(*this);
 
         for (uint64_t local_task_num : cell_task.successors_)
           --current_task_list_[local_task_num].num_dependencies_;
-        Chi::log.LogEvent(timing_tags[0], chi::ChiLog::EventType::EVENT_END);
+        Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_END);
 
         cell_task.completed_ = true;
         a_task_executed = true;
@@ -156,3 +157,4 @@ CBC_AngleSet::ReflectingPsiOutBoundBndry(uint64_t bndry_map,
 }
 
 } // namespace lbs
+} // namespace opensn

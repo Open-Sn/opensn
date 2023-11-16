@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 
-namespace chi_mesh
+namespace opensn
 {
 
 SurfaceMesh::SurfaceMesh()
@@ -625,7 +625,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
   // Check each vertex is accounted
   Chi::log.Log() << "Surface mesh loaded with " << this->faces_.size() << " triangle faces and "
                  << this->poly_faces_.size() << " polygon faces.";
-  // chi::Exit(EXIT_FAILURE);
+  // Exit(EXIT_FAILURE);
 
   return 0;
 }
@@ -767,7 +767,7 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   // Check each vertex is accounted
   Chi::log.Log() << "Surface mesh loaded with " << this->faces_.size() << " triangle faces and "
                  << this->poly_faces_.size() << " polygon faces.";
-  // chi::Exit(EXIT_FAILURE);
+  // Exit(EXIT_FAILURE);
 
   return 0;
 }
@@ -1180,7 +1180,7 @@ SurfaceMesh::CheckCyclicDependencies(int num_angles)
     omega.z = 0.0;
 
     // Add all polyfaces to graph
-    chi::DirectedGraph G;
+    DirectedGraph G;
     size_t num_loc_cells = poly_faces_.size();
     for (size_t c = 0; c < num_loc_cells; c++)
       G.AddVertex();
@@ -1223,9 +1223,9 @@ SurfaceMesh::CheckCyclicDependencies(int num_angles)
     //    }
     //    catch (const boost::bad_graph& exc)
     //    {
-    //      chi::log.LogAllError()
+    //      log.LogAllError()
     //        << "Function CheckCyclicDependencies. Detected cyclic depency.";
-    //     chi::Exit(EXIT_FAILURE);
+    //     Exit(EXIT_FAILURE);
     //    }
 
     auto topological_order = G.GenerateTopologicalSort();
@@ -1325,11 +1325,11 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
 {
   Chi::log.Log() << "X-cuts to be logged: " << x_cuts.size();
   //  for (auto& val : x_cuts)
-  //    chi::log.Log() << val;
+  //    log.Log() << val;
   //
   Chi::log.Log() << "Y-cuts to be logged: " << y_cuts.size();
   //  for (auto& val : y_cuts)
-  //    chi::log.Log() << val;
+  //    log.Log() << val;
 
   // Sort faces into bins
   size_t I = x_cuts.size();
@@ -1628,4 +1628,4 @@ SurfaceMesh::SplitByPatch(std::vector<SurfaceMesh*>& patches)
   }
 }
 
-} // namespace chi_mesh
+} // namespace opensn

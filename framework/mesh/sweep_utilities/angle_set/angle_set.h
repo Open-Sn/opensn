@@ -7,12 +7,12 @@
 
 #include "framework/mpi/mpi.h"
 
-typedef chi_mesh::sweep_management::SweepBoundary SweepBndry;
-
 #include <memory>
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
+
+typedef SweepBoundary SweepBndry;
 
 class AngleSet
 {
@@ -97,4 +97,4 @@ protected:
   bool executed_ = false;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

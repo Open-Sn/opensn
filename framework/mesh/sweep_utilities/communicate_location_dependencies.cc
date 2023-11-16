@@ -4,9 +4,12 @@
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"
 
+namespace opensn
+{
+
 void
-chi_mesh::sweep_management::CommunicateLocationDependencies(
-  const std::vector<int>& location_dependencies, std::vector<std::vector<int>>& global_dependencies)
+CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
+                                std::vector<std::vector<int>>& global_dependencies)
 {
   int P = Chi::mpi.process_count;
 
@@ -47,3 +50,5 @@ chi_mesh::sweep_management::CommunicateLocationDependencies(
     }
   }
 }
+
+} // namespace opensn

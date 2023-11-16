@@ -4,15 +4,15 @@
 
 #define scint static_cast<int>
 
-namespace chi_math
+namespace opensn
 {
 
 RegisterChiObject(chi_math, ImplicitEulerTimeIntegration);
 
-chi::InputParameters
+InputParameters
 ImplicitEulerTimeIntegration::GetInputParameters()
 {
-  chi::InputParameters params = ThetaSchemeTimeIntegration::GetInputParameters();
+  InputParameters params = ThetaSchemeTimeIntegration::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription("General implicit Euler Time Integration");
@@ -25,9 +25,9 @@ ImplicitEulerTimeIntegration::GetInputParameters()
   return params;
 }
 
-ImplicitEulerTimeIntegration::ImplicitEulerTimeIntegration(const chi::InputParameters& params)
+ImplicitEulerTimeIntegration::ImplicitEulerTimeIntegration(const InputParameters& params)
   : ThetaSchemeTimeIntegration(params)
 {
 }
 
-} // namespace chi_math
+} // namespace opensn

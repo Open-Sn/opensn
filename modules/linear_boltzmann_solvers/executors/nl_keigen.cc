@@ -5,15 +5,17 @@
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/power_iteration_keigen.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 RegisterChiObject(lbs, XXNonLinearKEigen);
 
-chi::InputParameters
+InputParameters
 XXNonLinearKEigen::GetInputParameters()
 {
-  chi::InputParameters params = chi_physics::Solver::GetInputParameters();
+  InputParameters params = opensn::Solver::GetInputParameters();
 
   params.SetGeneralDescription("Generalized implementation of a non-linear k-Eigenvalue solver");
   params.SetDocGroup("LBSExecutors");
@@ -45,8 +47,8 @@ XXNonLinearKEigen::GetInputParameters()
   return params;
 }
 
-XXNonLinearKEigen::XXNonLinearKEigen(const chi::InputParameters& params)
-  : chi_physics::Solver(params),
+XXNonLinearKEigen::XXNonLinearKEigen(const InputParameters& params)
+  : opensn::Solver(params),
     lbs_solver_(Chi::GetStackItem<LBSSolver>(Chi::object_stack,
                                              params.GetParamValue<size_t>("lbs_solver_handle"))),
     nl_context_(std::make_shared<NLKEigenAGSContext>(lbs_solver_)),
@@ -93,8 +95,7 @@ XXNonLinearKEigen::Execute()
   if (lbs_solver_.Options().use_precursors)
   {
     lbs_solver_.ComputePrecursors();
-    chi_math::Scale(lbs_solver_.PrecursorsNewLocal(),
-                    1.0 / nl_context_->kresid_func_context_.k_eff);
+    Scale(lbs_solver_.PrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context_.k_eff);
   }
 
   lbs_solver_.UpdateFieldFunctions();
@@ -103,3 +104,4 @@ XXNonLinearKEigen::Execute()
 }
 
 } // namespace lbs
+} // namespace opensn

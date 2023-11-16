@@ -15,6 +15,8 @@
 #define sc_double static_cast<double>
 #define PCShellPtr PetscErrorCode (*)(PC, Vec, Vec)
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -116,3 +118,4 @@ MIPWGSContext2::PostSolveCallback()
 }
 
 } // namespace lbs
+} // namespace opensn

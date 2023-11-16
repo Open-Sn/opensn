@@ -2,13 +2,11 @@
 
 #include "framework/math/quadratures/quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
-class QuadratureTetrahedron;
-}
 
 /**Quadrature set for tetrahedrons.*/
-class chi_math::QuadratureTetrahedron : public chi_math::Quadrature
+class QuadratureTetrahedron : public Quadrature
 {
 public:
   /**Initialzes a set of points for a quadrature integration over
@@ -20,3 +18,5 @@ public:
   _points and _weights vectors.*/
   void KeastRule(const std::vector<std::vector<double>>& rule_data, const unsigned int n_pts);
 };
+
+} // namespace opensn

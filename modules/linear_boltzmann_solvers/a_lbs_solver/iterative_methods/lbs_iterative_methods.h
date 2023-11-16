@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace opensn
+{
 namespace lbs
 {
 enum class IterativeMethod : int
@@ -42,4 +44,6 @@ IterativeMethodPETScName(IterativeMethod it_method)
   }
   return "";
 }
+
 } // namespace lbs
+} // namespace opensn

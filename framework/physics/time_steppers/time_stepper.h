@@ -2,7 +2,7 @@
 
 #include "framework/object.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 enum class TimeStepStatus
@@ -69,8 +69,8 @@ public:
   std::string StringTimeInfo(bool old_time = false) const;
 
 protected:
-  static chi::InputParameters GetInputParameters();
-  explicit TimeStepper(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit TimeStepper(const InputParameters& params);
 
   double dt_;
   double time_;
@@ -86,4 +86,4 @@ protected:
   double last_dt_;
 };
 
-} // namespace chi_physics
+} // namespace opensn

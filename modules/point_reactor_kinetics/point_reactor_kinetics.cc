@@ -10,15 +10,17 @@
 
 #include <numeric>
 
+namespace opensn
+{
 namespace prk
 {
 
 RegisterChiObject(prk, TransientSolver);
 
-chi::InputParameters
+InputParameters
 TransientSolver::GetInputParameters()
 {
-  chi::InputParameters params = chi_physics::Solver::GetInputParameters();
+  InputParameters params = opensn::Solver::GetInputParameters();
 
   params.SetDocGroup("prk");
 
@@ -41,7 +43,6 @@ TransientSolver::GetInputParameters()
   params.AddOptionalParameter(
     "time_integration", "implicit_euler", "Time integration scheme to use");
 
-  using namespace chi_data_types;
   auto time_intgl_list =
     AllowableRangeList::New({"explicit_euler", "implicit_euler", "crank_nicolson"});
 
@@ -53,8 +54,8 @@ TransientSolver::GetInputParameters()
   return params;
 }
 
-TransientSolver::TransientSolver(const chi::InputParameters& params)
-  : chi_physics::Solver(params.GetParamValue<std::string>("name")),
+TransientSolver::TransientSolver(const InputParameters& params)
+  : opensn::Solver(params.GetParamValue<std::string>("name")),
     lambdas_(params.GetParamVectorValue<double>("precursor_lambdas")),
     betas_(params.GetParamVectorValue<double>("precursor_betas")),
     gen_time_(params.GetParamValue<double>("gen_time")),
@@ -93,11 +94,11 @@ TransientSolver::Initialize()
 
   // Initializing linalg items
   const auto& J = num_precursors_;
-  A_ = chi_math::DynamicMatrix<double>(J + 1, J + 1, 0.0);
+  A_ = DynamicMatrix<double>(J + 1, J + 1, 0.0);
   I_ = A_;
   I_.SetDiagonal(1.0);
 
-  x_t_ = chi_math::DynamicVector<double>(J + 1, 0.0);
+  x_t_ = DynamicVector<double>(J + 1, 0.0);
 
   // Assembling system
   A_[0][0] = beta_ * (rho_ - 1.0) / gen_time_;
@@ -141,7 +142,7 @@ TransientSolver::Initialize()
 void
 TransientSolver::Execute()
 {
-  auto& physics_ev_pub = chi_physics::PhysicsEventPublisher::GetInstance();
+  auto& physics_ev_pub = PhysicsEventPublisher::GetInstance();
 
   while (timestepper_->IsActive())
   {
@@ -193,27 +194,27 @@ TransientSolver::Advance()
   timestepper_->Advance();
 }
 
-chi::ParameterBlock
-TransientSolver::GetInfo(const chi::ParameterBlock& params) const
+ParameterBlock
+TransientSolver::GetInfo(const ParameterBlock& params) const
 {
   const auto param_name = params.GetParamValue<std::string>("name");
 
-  if (param_name == "neutron_population") return chi::ParameterBlock("", x_t_[0]);
+  if (param_name == "neutron_population") return ParameterBlock("", x_t_[0]);
   else if (param_name == "population_next")
-    return chi::ParameterBlock("", PopulationNew());
+    return ParameterBlock("", PopulationNew());
   else if (param_name == "period")
-    return chi::ParameterBlock("", period_tph_);
+    return ParameterBlock("", period_tph_);
   else if (param_name == "rho")
-    return chi::ParameterBlock("", rho_);
+    return ParameterBlock("", rho_);
   else if (param_name == "solution")
-    return chi::ParameterBlock("", x_t_.elements_);
+    return ParameterBlock("", x_t_.elements_);
   else if (param_name == "time_integration")
-    return chi::ParameterBlock("", time_integration_);
+    return ParameterBlock("", time_integration_);
   else if (param_name == "time_next")
-    return chi::ParameterBlock("", TimeNew());
+    return ParameterBlock("", TimeNew());
   else if (param_name == "test_arb_info")
   {
-    chi::ParameterBlock block;
+    ParameterBlock block;
 
     block.AddParameter("name", TextName());
     block.AddParameter("time_integration", time_integration_);
@@ -275,9 +276,9 @@ TransientSolver::SetRho(double value)
 }
 
 void
-TransientSolver::SetProperties(const chi::ParameterBlock& params)
+TransientSolver::SetProperties(const ParameterBlock& params)
 {
-  chi_physics::Solver::SetProperties(params);
+  opensn::Solver::SetProperties(params);
 
   for (const auto& param : params)
   {
@@ -287,3 +288,4 @@ TransientSolver::SetProperties(const chi::ParameterBlock& params)
 }
 
 } // namespace prk
+} // namespace opensn

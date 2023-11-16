@@ -5,38 +5,32 @@
 
 #include "framework/mesh/mesh.h"
 
-namespace chi_math
+namespace opensn
 {
 class Quadrature;
-}
-
-namespace chi_math::cell_mapping
-{
 
 /**Base class for finite elements using Lagrange basis functions.
  *\ingroup doc_CellMappings*/
 class LagrangeBaseMapping : public CellMapping
 {
 public:
-  double ShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
-  void ShapeValues(const chi_mesh::Vector3& xyz, std::vector<double>& shape_values) const override;
-  chi_mesh::Vector3 GradShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
-  void GradShapeValues(const chi_mesh::Vector3& xyz,
-                       std::vector<chi_mesh::Vector3>& gradshape_values) const override;
+  double ShapeValue(int i, const Vector3& xyz) const override;
+  void ShapeValues(const Vector3& xyz, std::vector<double>& shape_values) const override;
+  Vector3 GradShapeValue(int i, const Vector3& xyz) const override;
+  void GradShapeValues(const Vector3& xyz, std::vector<Vector3>& gradshape_values) const override;
 
-  finite_element::VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
+  VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
 
-  finite_element::SurfaceQuadraturePointData
-  MakeSurfaceQuadraturePointData(size_t face_index) const override;
+  SurfaceQuadraturePointData MakeSurfaceQuadraturePointData(size_t face_index) const override;
 
 protected:
   friend class WorldXYZToNaturalMappingHelper;
-  typedef chi_mesh::Vector3 Vec3;
+  typedef Vector3 Vec3;
   typedef std::vector<double> VecDbl;
   typedef std::vector<VecDbl> MatDbl;
 
-  LagrangeBaseMapping(const chi_mesh::MeshContinuum& grid,
-                      const chi_mesh::Cell& cell,
+  LagrangeBaseMapping(const MeshContinuum& grid,
+                      const Cell& cell,
                       size_t num_nodes,
                       std::vector<std::vector<int>> face_node_mappings,
                       const Quadrature& volume_quadrature,
@@ -47,8 +41,7 @@ protected:
   Vec3 MapWorldXYZToNaturalXYZ(const Vec3& world_xyz) const;
 
   /**Used in the constructor this method simply collects the cell vertices.*/
-  static std::vector<chi_mesh::Vector3> GetVertexLocations(const chi_mesh::MeshContinuum& grid,
-                                                           const chi_mesh::Cell& cell);
+  static std::vector<Vector3> GetVertexLocations(const MeshContinuum& grid, const Cell& cell);
 
   /** This section just determines a mapping of face dofs
    * to cell dofs. This is pretty simple since we can
@@ -60,7 +53,7 @@ protected:
    *     this class but is used by methods requiring the
    *       surface integrals of the shape functions.
    */
-  static std::vector<std::vector<int>> MakeFaceNodeMapping(const chi_mesh::Cell& cell);
+  static std::vector<std::vector<int>> MakeFaceNodeMapping(const Cell& cell);
 
   /**Reference element shape function evaluation. Meant to be overridden by
    * a specific element mapping.*/
@@ -98,7 +91,7 @@ protected:
 class WorldXYZToNaturalMappingHelper : public NonLinearFunction
 {
 public:
-  typedef chi_mesh::Vector3 Vec3;
+  typedef Vector3 Vec3;
   WorldXYZToNaturalMappingHelper(const LagrangeBaseMapping& cell_mapping, const Vec3& world_x);
 
   VecDbl F(const VecDbl& x) const override;
@@ -110,4 +103,4 @@ private:
   const Vec3 world_x_;
 };
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

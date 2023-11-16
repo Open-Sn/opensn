@@ -2,11 +2,11 @@
 
 #include "framework/math/quadratures/quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
 
 /**Jacobi quadrature.*/
-class QuadratureJacobi : public chi_math::Quadrature
+class QuadratureJacobi : public Quadrature
 {
 private:
   const unsigned int m_alpha_;
@@ -14,7 +14,7 @@ private:
 
 public:
   QuadratureJacobi(QuadratureOrder order, unsigned int alpha, unsigned int beta)
-    : chi_math::Quadrature(order), m_alpha_(alpha), m_beta_(beta)
+    : Quadrature(order), m_alpha_(alpha), m_beta_(beta)
   {
     Initialize(order);
   }
@@ -23,4 +23,4 @@ private:
   void Initialize(QuadratureOrder order);
 };
 
-} // namespace chi_math
+} // namespace opensn

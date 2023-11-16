@@ -57,7 +57,7 @@ chiPhysicsMaterialSetProperty(materials[0],SCALAR_VALUE,SINGLE_VALUE,1.0)
 
 prop = chiPhysicsMaterialGetProperty(materials[0],SCALAR_VALUE)
 if ((prop.is_empty ~=nil) and (not prop.is_empty)) then
-    print("Property table populated, value="..tostring(prop.value))
+    print("FieldFunctionInterpolationProperty table populated, value="..tostring(prop.value))
 end
 
 --############################################### Setup Physics
@@ -125,5 +125,3 @@ end
 if (chi_location_id == 0 and master_export == nil) then
     local handle = io.popen("python ZPFFI00.py")
 end
-
-

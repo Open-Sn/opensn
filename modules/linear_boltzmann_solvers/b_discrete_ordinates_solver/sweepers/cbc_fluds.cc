@@ -4,6 +4,8 @@
 #include "framework/mesh/sweep_utilities/spds/spds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -11,9 +13,9 @@ CBC_FLUDS::CBC_FLUDS(size_t num_groups,
                      size_t num_angles,
                      const CBC_FLUDSCommonData& common_data,
                      std::vector<double>& local_psi_data,
-                     const chi_math::UnknownManager& psi_uk_man,
-                     const chi_math::SpatialDiscretization& sdm)
-  : chi_mesh::sweep_management::FLUDS(num_groups, num_angles, common_data.GetSPDS()),
+                     const UnknownManager& psi_uk_man,
+                     const SpatialDiscretization& sdm)
+  : FLUDS(num_groups, num_angles, common_data.GetSPDS()),
     common_data_(common_data),
     local_psi_data_(local_psi_data),
     psi_uk_man_(psi_uk_man),
@@ -21,7 +23,7 @@ CBC_FLUDS::CBC_FLUDS(size_t num_groups,
 {
 }
 
-const chi_mesh::sweep_management::FLUDSCommonData&
+const FLUDSCommonData&
 CBC_FLUDS::CommonData() const
 {
   return common_data_;
@@ -34,8 +36,7 @@ CBC_FLUDS::GetLocalUpwindDataBlock() const
 }
 
 const double*
-CBC_FLUDS::GetLocalCellUpwindPsi(const std::vector<double>& psi_data_block,
-                                 const chi_mesh::Cell& cell)
+CBC_FLUDS::GetLocalCellUpwindPsi(const std::vector<double>& psi_data_block, const Cell& cell)
 {
   const auto dof_map = sdm_.MapDOFLocal(cell, 0, psi_uk_man_, 0, 0);
 
@@ -59,3 +60,4 @@ CBC_FLUDS::GetNonLocalUpwindPsi(const std::vector<double>& psi_data,
 }
 
 } // namespace lbs
+} // namespace opensn

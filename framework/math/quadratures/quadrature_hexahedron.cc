@@ -2,7 +2,10 @@
 
 #include "framework/math/quadratures/quadrature_gausslegendre.h"
 
-chi_math::QuadratureHexahedron::QuadratureHexahedron(QuadratureOrder order) : Quadrature(order)
+namespace opensn
+{
+
+QuadratureHexahedron::QuadratureHexahedron(QuadratureOrder order) : Quadrature(order)
 {
   QuadratureGaussLegendre legendre(order);
 
@@ -28,3 +31,5 @@ chi_math::QuadratureHexahedron::QuadratureHexahedron(QuadratureOrder order) : Qu
         q++;
       }
 }
+
+} // namespace opensn

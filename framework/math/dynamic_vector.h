@@ -4,20 +4,15 @@
 #include <stdexcept>
 #include <sstream>
 
-namespace chi_mesh
+namespace opensn
 {
 struct Vector3;
-}
-
-namespace chi_math
-{
 template <class NumberFormat>
 class DynamicVector;
-}
 
 /** General dynamic vector utility.*/
 template <class NumberFormat>
-class chi_math::DynamicVector
+class DynamicVector
 {
 public:
   std::vector<NumberFormat> elements_;
@@ -338,11 +333,13 @@ public:
 
 /**Multiplication by a scalar from the left.*/
 template <class NumberFormat>
-chi_math::DynamicVector<NumberFormat>
-operator*(const double value, const chi_math::DynamicVector<NumberFormat>& that)
+DynamicVector<NumberFormat>
+operator*(const double value, const DynamicVector<NumberFormat>& that)
 {
-  chi_math::DynamicVector<NumberFormat> newVector(that.size());
+  DynamicVector<NumberFormat> newVector(that.size());
   for (int i = 0; i < that.size(); ++i)
     newVector.elements_[i] = that.elements_[i] * value;
   return newVector;
 }
+
+} // namespace opensn

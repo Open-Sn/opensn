@@ -2,7 +2,7 @@
 
 #include "framework/math/spatial_discretization/cell_mappings/lagrange_base_mapping.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
 /**Lagrange element mapping for a wedge (extruded triangle).
@@ -10,8 +10,8 @@ namespace chi_math::cell_mapping
 class LagrangeWedgeMapping : public LagrangeBaseMapping
 {
 public:
-  LagrangeWedgeMapping(const chi_mesh::MeshContinuum& grid,
-                       const chi_mesh::Cell& cell,
+  LagrangeWedgeMapping(const MeshContinuum& grid,
+                       const Cell& cell,
                        const Quadrature& volume_quadrature,
                        const Quadrature& surface_quadrature,
                        const Quadrature& aux_surface_quadrature);
@@ -33,4 +33,4 @@ protected:
   const Quadrature& aux_surface_quadrature_;
 };
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

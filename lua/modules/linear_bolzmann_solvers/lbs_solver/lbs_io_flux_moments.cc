@@ -3,7 +3,9 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace lbs::common_lua_utils
+using namespace opensn;
+
+namespace opensnlua::lbs
 {
 
 int
@@ -21,7 +23,8 @@ chiLBSWriteFluxMoments(lua_State* L)
   const std::string file_base = lua_tostring(L, 2);
 
   // Get pointer to solver
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   lbs_solver.WriteFluxMoments(file_base, lbs_solver.PhiOldLocal());
 
@@ -43,7 +46,8 @@ chiLBSCreateAndWriteSourceMoments(lua_State* L)
   const std::string file_base = lua_tostring(L, 2);
 
   // Get pointer to solver
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   auto source_moments = lbs_solver.MakeSourceMomentsFromPhi();
   lbs_solver.WriteFluxMoments(file_base, source_moments);
@@ -73,11 +77,12 @@ chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
   }
 
   // Get pointer to solver
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.ExtSrcMomentsLocal(), single_file_flag);
 
-  Chi::log.Log() << "Making source moments from flux file.";
+  opensn::Chi::log.Log() << "Making source moments from flux file.";
   auto temp_phi = lbs_solver.PhiOldLocal();
   lbs_solver.PhiOldLocal() = lbs_solver.ExtSrcMomentsLocal();
   lbs_solver.ExtSrcMomentsLocal() = lbs_solver.MakeSourceMomentsFromPhi();
@@ -108,7 +113,8 @@ chiLBSReadSourceMoments(lua_State* L)
   }
 
   // Get pointer to solver
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.ExtSrcMomentsLocal(), single_file_flag);
 
@@ -137,11 +143,12 @@ chiLBSReadFluxMoments(lua_State* L)
   }
 
   // Get pointer to solver
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.PhiOldLocal(), single_file_flag);
 
   return 0;
 }
 
-} // namespace lbs::common_lua_utils
+} // namespace opensnlua::lbs

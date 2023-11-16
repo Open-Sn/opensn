@@ -3,12 +3,11 @@
 #include <vector>
 #include "framework/mesh/mesh.h"
 
-namespace chi_math
+namespace opensn
 {
 class CellMapping;
-}
 
-namespace chi_diffusion
+namespace diffusion
 {
 
 class UnitIntegralContainer
@@ -16,7 +15,7 @@ class UnitIntegralContainer
 public:
   typedef std::vector<double> VecDbl;
   typedef std::vector<VecDbl> MatDbl;
-  typedef std::vector<chi_mesh::Vector3> VecVec3;
+  typedef std::vector<Vector3> VecVec3;
   typedef std::vector<VecVec3> MatVec3;
 
 private:
@@ -45,22 +44,22 @@ public:
                         std::vector<std::vector<int>> face_dof_mappings,
                         size_t num_nodes);
 
-  static UnitIntegralContainer Make(const chi_math::CellMapping& cell_mapping);
+  static UnitIntegralContainer Make(const CellMapping& cell_mapping);
 
   double IntV_gradShapeI_gradShapeJ(unsigned int i, unsigned int j) const;
 
-  chi_mesh::Vector3 IntV_shapeI_gradshapeJ(unsigned int i, unsigned int j) const;
+  Vector3 IntV_shapeI_gradshapeJ(unsigned int i, unsigned int j) const;
   double IntV_shapeI_shapeJ(unsigned int i, unsigned int j) const;
 
   double IntV_shapeI(unsigned int i) const;
 
-  chi_mesh::Vector3 IntV_gradshapeI(unsigned int i) const;
+  Vector3 IntV_gradshapeI(unsigned int i) const;
 
   double IntS_shapeI_shapeJ(unsigned int face, unsigned int i, unsigned int j) const;
 
   double IntS_shapeI(unsigned int face, unsigned int i) const;
 
-  chi_mesh::Vector3 IntS_shapeI_gradshapeJ(unsigned int face, unsigned int i, unsigned int j) const;
+  Vector3 IntS_shapeI_gradshapeJ(unsigned int face, unsigned int i, unsigned int j) const;
 
   int FaceDofMapping(size_t face, size_t face_node_index) const
   {
@@ -81,4 +80,5 @@ public:
   const std::vector<MatVec3>& GetIntS_shapeI_gradshapeJ() const { return IntS_shapeI_gradshapeJ_; }
 };
 
-} // namespace chi_diffusion
+} // namespace diffusion
+} // namespace opensn

@@ -10,7 +10,7 @@
 #include "framework/math/quadratures/quadrature_hexahedron.h"
 #include "framework/math/quadratures/quadrature_wedge.h"
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
 
 /**Base class for Lagrange spatial discretizations.
@@ -18,7 +18,7 @@ namespace chi_math::spatial_discretization
 class LagrangeBase : public FiniteElementBase
 {
 protected:
-  LagrangeBase(const chi_mesh::MeshContinuum& grid,
+  LagrangeBase(const MeshContinuum& grid,
                QuadratureOrder q_order,
                SDMType sdm_type,
                CoordinateSystemType cs_type);
@@ -34,4 +34,4 @@ protected:
   void CreateCellMappings();
 };
 
-} // namespace chi_math::spatial_discretization
+} // namespace opensn

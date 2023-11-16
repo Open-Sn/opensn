@@ -5,7 +5,7 @@
 #include "framework/math/quadratures/quadrature_triangle.h"
 #include "framework/mesh/cell/cell.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
 /**
@@ -19,33 +19,31 @@ public:
   /**
    * Constructor for the Piecewise Linear Polyhedron cell finite element view.
    */
-  PieceWiseLinearPolyhedronMapping(const chi_mesh::Cell& polyh_cell,
-                                   const chi_mesh::MeshContinuum& ref_grid,
+  PieceWiseLinearPolyhedronMapping(const Cell& polyh_cell,
+                                   const MeshContinuum& ref_grid,
                                    const QuadratureTetrahedron& volume_quadrature,
                                    const QuadratureTriangle& surface_quadrature);
 
-  finite_element::VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
+  VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
 
-  finite_element::SurfaceQuadraturePointData
-  MakeSurfaceQuadraturePointData(size_t face_index) const override;
+  SurfaceQuadraturePointData MakeSurfaceQuadraturePointData(size_t face_index) const override;
 
   /**
    * Actual shape functions as function of cartesian coordinates
    */
-  double ShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
+  double ShapeValue(int i, const Vector3& xyz) const override;
 
-  chi_mesh::Vector3 GradShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
+  Vector3 GradShapeValue(int i, const Vector3& xyz) const override;
 
-  void ShapeValues(const chi_mesh::Vector3& xyz, std::vector<double>& shape_values) const override;
+  void ShapeValues(const Vector3& xyz, std::vector<double>& shape_values) const override;
 
-  void GradShapeValues(const chi_mesh::Vector3& xyz,
-                       std::vector<chi_mesh::Vector3>& gradshape_values) const override;
+  void GradShapeValues(const Vector3& xyz, std::vector<Vector3>& gradshape_values) const override;
 
 private:
   /**
    * Define standard tetrahedron linear shape functions
    */
-  static double TetShape(uint32_t index, const chi_mesh::Vector3& qpoint, bool on_surface = false);
+  static double TetShape(uint32_t index, const Vector3& qpoint, bool on_surface = false);
 
   static double TetGradShape_x(uint32_t index);
   static double TetGradShape_y(uint32_t index);
@@ -58,7 +56,7 @@ private:
   double FaceSideShape(uint32_t face_index,
                        uint32_t side_index,
                        uint32_t i,
-                       const chi_mesh::Vector3& qpoint,
+                       const Vector3& qpoint,
                        bool on_surface = false) const;
 
   /**
@@ -87,10 +85,10 @@ private:
     double detJ = 0.0;
     double detJ_surf = 0.0;
     std::vector<uint64_t> v_index;
-    chi_mesh::Vector3 v0;
-    chi_mesh::Matrix3x3 J;
-    chi_mesh::Matrix3x3 Jinv;
-    chi_mesh::Matrix3x3 JTinv;
+    Vector3 v0;
+    Matrix3x3 J;
+    Matrix3x3 Jinv;
+    Matrix3x3 JTinv;
   };
 
   /**
@@ -99,7 +97,7 @@ private:
   struct FEface_data
   {
     std::vector<FEside_data3d> sides;
-    chi_mesh::Vector3 normal;
+    Vector3 normal;
   };
 
   /**
@@ -142,4 +140,4 @@ private:
   const QuadratureTriangle& surface_quadrature_;
 };
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

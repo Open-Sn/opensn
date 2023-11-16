@@ -10,7 +10,7 @@
 
 #include "framework/object_factory.h"
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObject(chi, CellVolumeIntegralPostProcessor);
@@ -19,8 +19,8 @@ InputParameters
 CellVolumeIntegralPostProcessor::GetInputParameters()
 {
   InputParameters params = PostProcessor::GetInputParameters();
-  params += chi_physics::GridBasedFieldFunctionInterface::GetInputParameters();
-  params += chi_mesh::LogicalVolumeInterface::GetInputParameters();
+  params += GridBasedFieldFunctionInterface::GetInputParameters();
+  params += LogicalVolumeInterface::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription(
@@ -38,8 +38,8 @@ CellVolumeIntegralPostProcessor::GetInputParameters()
 
 CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
-    chi_physics::GridBasedFieldFunctionInterface(params),
-    chi_mesh::LogicalVolumeInterface(params),
+    GridBasedFieldFunctionInterface(params),
+    LogicalVolumeInterface(params),
     compute_volume_average_(params.GetParamValue<bool>("compute_volume_average"))
 {
   value_ = ParameterBlock("", 0.0);
@@ -149,4 +149,4 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
   }
 }
 
-} // namespace chi
+} // namespace opensn

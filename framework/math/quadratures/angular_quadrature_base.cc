@@ -8,12 +8,15 @@
 #include <iomanip>
 #include <numeric>
 
-void
-chi_math::AngularQuadrature::OptimizeForPolarSymmetry(const double normalization)
+namespace opensn
 {
-  std::vector<chi_math::QuadraturePointPhiTheta> new_abscissae;
+
+void
+AngularQuadrature::OptimizeForPolarSymmetry(const double normalization)
+{
+  std::vector<QuadraturePointPhiTheta> new_abscissae;
   std::vector<double> new_weights;
-  std::vector<chi_mesh::Vector3> new_omegas;
+  std::vector<Vector3> new_omegas;
 
   const size_t num_dirs = omegas_.size();
   double weight_sum = 0.0;
@@ -36,7 +39,7 @@ chi_math::AngularQuadrature::OptimizeForPolarSymmetry(const double normalization
 }
 
 void
-chi_math::AngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimension)
+AngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimension)
 {
   m_to_ell_em_map_.clear();
 
@@ -54,8 +57,7 @@ chi_math::AngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, 
 }
 
 void
-chi_math::AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
-                                                           int dimension)
+AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order, int dimension)
 {
   if (d2m_op_built_) return;
 
@@ -73,7 +75,7 @@ chi_math::AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scatteri
     for (int n = 0; n < num_angles; n++)
     {
       const auto& cur_angle = abscissae_[n];
-      double value = chi_math::Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+      double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
       double w = weights_[n];
       cur_mom.push_back(value * w);
     }
@@ -100,8 +102,7 @@ chi_math::AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scatteri
 }
 
 void
-chi_math::AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order,
-                                                           int dimension)
+AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order, int dimension)
 {
   if (m2d_op_built_) return;
 
@@ -122,7 +123,7 @@ chi_math::AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scatteri
     {
       const auto& cur_angle = abscissae_[n];
       double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
-                     chi_math::Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+                     Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
       cur_mom.push_back(value);
     }
 
@@ -149,7 +150,7 @@ chi_math::AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scatteri
 }
 
 std::vector<std::vector<double>> const&
-chi_math::AngularQuadrature::GetDiscreteToMomentOperator() const
+AngularQuadrature::GetDiscreteToMomentOperator() const
 {
   const std::string fname = __FUNCTION__;
   if (not d2m_op_built_)
@@ -160,7 +161,7 @@ chi_math::AngularQuadrature::GetDiscreteToMomentOperator() const
 }
 
 std::vector<std::vector<double>> const&
-chi_math::AngularQuadrature::GetMomentToDiscreteOperator() const
+AngularQuadrature::GetMomentToDiscreteOperator() const
 {
   const std::string fname = __FUNCTION__;
   if (not m2d_op_built_)
@@ -170,8 +171,8 @@ chi_math::AngularQuadrature::GetMomentToDiscreteOperator() const
   return m2d_op_;
 }
 
-const std::vector<chi_math::AngularQuadrature::HarmonicIndices>&
-chi_math::AngularQuadrature::GetMomentToHarmonicsIndexMap() const
+const std::vector<AngularQuadrature::HarmonicIndices>&
+AngularQuadrature::GetMomentToHarmonicsIndexMap() const
 {
   const std::string fname = __FUNCTION__;
   if (not(d2m_op_built_ or m2d_op_built_))
@@ -181,10 +182,10 @@ chi_math::AngularQuadrature::GetMomentToHarmonicsIndexMap() const
   return m_to_ell_em_map_;
 }
 
-chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
-                                                           std::vector<double>& polar,
-                                                           std::vector<double>& in_weights,
-                                                           bool verbose)
+AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
+                                                 std::vector<double>& polar,
+                                                 std::vector<double>& in_weights,
+                                                 bool verbose)
 {
   size_t Na = azimuthal.size();
   size_t Np = polar.size();
@@ -192,7 +193,7 @@ chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& 
 
   if ((Na - Np != 0) or (Na - Nw != 0))
   {
-    Chi::log.LogAllError() << "chi_math::AngularQuadrature::InitializeWithCustom: supplied"
+    Chi::log.LogAllError() << "AngularQuadrature::InitializeWithCustom: supplied"
                               " vectors need to be of equal length.";
     Chi::Exit(EXIT_FAILURE);
   }
@@ -203,7 +204,7 @@ chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& 
 
   for (unsigned int i = 0; i < Na; i++)
   {
-    const auto abscissa = chi_math::QuadraturePointPhiTheta(azimuthal[i], polar[i]);
+    const auto abscissa = QuadraturePointPhiTheta(azimuthal[i], polar[i]);
 
     abscissae_.push_back(abscissa);
 
@@ -227,7 +228,7 @@ chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& 
   // Create omega list
   for (const auto& qpoint : abscissae_)
   {
-    chi_mesh::Vector3 new_omega;
+    Vector3 new_omega;
     new_omega.x = sin(qpoint.theta) * cos(qpoint.phi);
     new_omega.y = sin(qpoint.theta) * sin(qpoint.phi);
     new_omega.z = cos(qpoint.theta);
@@ -241,3 +242,5 @@ chi_math::AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& 
                    << "Weight sum=" << weight_sum;
   }
 }
+
+} // namespace opensn

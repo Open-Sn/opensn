@@ -6,15 +6,17 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_math::functions
+using namespace opensn;
+
+namespace opensnlua
 {
 
 RegisterChiObject(chi_math::functions, LuaDimAToDimB);
 
-chi::InputParameters
+InputParameters
 LuaDimAToDimB::GetInputParameters()
 {
-  chi::InputParameters params = FunctionDimAToDimB::GetInputParameters();
+  InputParameters params = FunctionDimAToDimB::GetInputParameters();
 
   // Inherits input_dimension and output_dimension
 
@@ -28,7 +30,7 @@ LuaDimAToDimB::GetInputParameters()
   return params;
 }
 
-LuaDimAToDimB::LuaDimAToDimB(const chi::InputParameters& params)
+LuaDimAToDimB::LuaDimAToDimB(const InputParameters& params)
   : FunctionDimAToDimB(params),
     lua_function_name_(params.GetParamValue<std::string>("lua_function_name"))
 {
@@ -38,7 +40,7 @@ std::vector<double>
 LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
 {
   const std::string fname = __PRETTY_FUNCTION__;
-  lua_State* L = Chi::console.GetConsoleState();
+  lua_State* L = opensn::Chi::console.GetConsoleState();
   lua_getglobal(L, lua_function_name_.c_str());
 
   ChiLogicalErrorIf(not lua_isfunction(L, -1),
@@ -90,4 +92,4 @@ LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
   return result;
 }
 
-} // namespace chi_math::functions
+} // namespace opensnlua

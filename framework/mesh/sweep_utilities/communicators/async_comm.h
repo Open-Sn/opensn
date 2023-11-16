@@ -4,20 +4,15 @@
 #include <cstdint>
 #include <vector>
 
-namespace chi
+namespace opensn
 {
 class ChiMPICommunicatorSet;
-}
-
-namespace chi_mesh::sweep_management
-{
-
 class FLUDS;
 
 class AsynchronousCommunicator
 {
 public:
-  explicit AsynchronousCommunicator(FLUDS& fluds, const chi::ChiMPICommunicatorSet& comm_set);
+  explicit AsynchronousCommunicator(FLUDS& fluds, const ChiMPICommunicatorSet& comm_set);
   virtual ~AsynchronousCommunicator() = default;
 
   /**Obtains a data vector holding a spot into which outgoing data can be
@@ -30,7 +25,7 @@ public:
 
 protected:
   FLUDS& fluds_;
-  const chi::ChiMPICommunicatorSet& comm_set_;
+  const ChiMPICommunicatorSet& comm_set_;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

@@ -7,14 +7,9 @@
 
 typedef unsigned long long int u_ll_int;
 
-namespace chi
+namespace opensn
 {
 class ChiMPICommunicatorSet;
-}
-
-namespace chi_mesh::sweep_management
-{
-
 class FLUDS;
 
 /**
@@ -56,7 +51,7 @@ public:
                                size_t num_groups,
                                size_t num_angles,
                                int sweep_eager_limit,
-                               const chi::ChiMPICommunicatorSet& in_comm_set);
+                               const ChiMPICommunicatorSet& in_comm_set);
   /**
    * Returns the private flag done_sending.
    */
@@ -124,4 +119,4 @@ protected:
   void BuildMessageStructure();
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

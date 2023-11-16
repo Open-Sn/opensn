@@ -5,8 +5,11 @@
 
 #include "framework/logging/log_exceptions.h"
 
+namespace opensn
+{
+
 std::string
-chi_data_types::VaryingDataTypeStringName(chi_data_types::VaryingDataType type)
+VaryingDataTypeStringName(VaryingDataType type)
 {
   switch (type)
   {
@@ -27,8 +30,6 @@ chi_data_types::VaryingDataTypeStringName(chi_data_types::VaryingDataType type)
   }
 }
 
-namespace chi_data_types
-{
 // VaryingType Base
 std::string
 Varying::VaryingType::StringValue() const
@@ -186,11 +187,8 @@ Varying::VaryingArbitraryType<double>::FloatValue() const
   return value_;
 }
 
-} // namespace chi_data_types
-
 void
-chi_data_types::Varying::CheckTypeMatch(const VaryingDataType type_A,
-                                        const VaryingDataType type_B_required) const
+Varying::CheckTypeMatch(const VaryingDataType type_A, const VaryingDataType type_B_required) const
 {
   if (type_A != type_B_required)
     throw std::logic_error("Varying data type " + TypeName() +
@@ -200,34 +198,33 @@ chi_data_types::Varying::CheckTypeMatch(const VaryingDataType type_A,
 }
 
 // Constructors
-chi_data_types::Varying::Varying(const std::vector<std::byte>& value)
-  : type_(VaryingDataType::ARBITRARY_BYTES)
+Varying::Varying(const std::vector<std::byte>& value) : type_(VaryingDataType::ARBITRARY_BYTES)
 {
   // raw_data_ = value;
   // data_initialized_ = true;
   data_ = std::make_unique<VaryingArbitraryType<std::vector<std::byte>>>(value);
 }
 
-chi_data_types::Varying::Varying(const std::string& value)
+Varying::Varying(const std::string& value)
   : type_(VaryingDataType::STRING),
     data_(std::make_unique<VaryingArbitraryType<std::string>>(value))
 {
 }
 
-chi_data_types::Varying::Varying(const Varying& other)
+Varying::Varying(const Varying& other)
 {
   data_ = other.data_->Clone();
   type_ = other.type_;
 }
 
-chi_data_types::Varying::Varying(Varying&& other) noexcept
+Varying::Varying(Varying&& other) noexcept
 {
   std::swap(data_, other.data_);
   std::swap(type_, other.type_);
 }
 
-chi_data_types::Varying&
-chi_data_types::Varying::operator=(const Varying& other)
+Varying&
+Varying::operator=(const Varying& other)
 {
   if (this != &other)
   {
@@ -238,16 +235,16 @@ chi_data_types::Varying::operator=(const Varying& other)
 }
 
 //  Assignments
-chi_data_types::Varying&
-chi_data_types::Varying::operator=(const std::vector<std::byte>& value)
+Varying&
+Varying::operator=(const std::vector<std::byte>& value)
 {
   type_ = VaryingDataType::ARBITRARY_BYTES;
   data_ = std::make_unique<VaryingArbitraryType<std::vector<std::byte>>>(value);
   return *this;
 }
 
-chi_data_types::Varying&
-chi_data_types::Varying::operator=(const std::string& value)
+Varying&
+Varying::operator=(const std::string& value)
 {
   type_ = VaryingDataType::STRING;
   data_ = std::make_unique<VaryingArbitraryType<std::string>>(value);
@@ -256,7 +253,7 @@ chi_data_types::Varying::operator=(const std::string& value)
 
 //  Get values
 std::string
-chi_data_types::Varying::StringValue() const
+Varying::StringValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::STRING);
 
@@ -264,7 +261,7 @@ chi_data_types::Varying::StringValue() const
 }
 
 bool
-chi_data_types::Varying::BoolValue() const
+Varying::BoolValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::BOOL);
 
@@ -272,7 +269,7 @@ chi_data_types::Varying::BoolValue() const
 }
 
 int64_t
-chi_data_types::Varying::IntegerValue() const
+Varying::IntegerValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::INTEGER);
 
@@ -280,7 +277,7 @@ chi_data_types::Varying::IntegerValue() const
 }
 
 double
-chi_data_types::Varying::FloatValue() const
+Varying::FloatValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::FLOAT);
 
@@ -288,30 +285,31 @@ chi_data_types::Varying::FloatValue() const
 }
 
 size_t
-chi_data_types::Varying::ByteSize() const
+Varying::ByteSize() const
 {
   return data_->Size();
 }
 
 std::string
-chi_data_types::Varying::PrintStr(bool with_type) const
+Varying::PrintStr(bool with_type) const
 {
   std::stringstream outstr;
 
-  if (this->Type() == chi_data_types::VaryingDataType::STRING)
-    outstr << "\"" << this->StringValue() << "\"";
-  else if (this->Type() == chi_data_types::VaryingDataType::FLOAT)
+  if (this->Type() == VaryingDataType::STRING) outstr << "\"" << this->StringValue() << "\"";
+  else if (this->Type() == VaryingDataType::FLOAT)
     outstr << this->FloatValue() << (with_type ? "(double)" : "");
-  else if (this->Type() == chi_data_types::VaryingDataType::INTEGER)
+  else if (this->Type() == VaryingDataType::INTEGER)
     outstr << this->IntegerValue();
-  else if (this->Type() == chi_data_types::VaryingDataType::BOOL)
+  else if (this->Type() == VaryingDataType::BOOL)
     outstr << (this->BoolValue() ? "true" : "false");
 
   return outstr.str();
 }
 
+} // namespace opensn
+
 std::ostream&
-operator<<(std::ostream& outstr, const chi_data_types::Varying& value)
+operator<<(std::ostream& outstr, const opensn::Varying& value)
 {
   outstr << value.PrintStr(false);
   return outstr;

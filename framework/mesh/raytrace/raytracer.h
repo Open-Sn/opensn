@@ -2,7 +2,7 @@
 
 #include "framework/mesh/mesh.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**
@@ -192,4 +192,4 @@ void PopulateRaySegmentLengths(const MeshContinuum& grid,
                                const Vector3& omega,
                                std::vector<double>& segment_lengths);
 
-} // namespace chi_mesh
+} // namespace opensn

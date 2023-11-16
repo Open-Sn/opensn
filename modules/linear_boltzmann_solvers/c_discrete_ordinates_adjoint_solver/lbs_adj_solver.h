@@ -10,6 +10,8 @@
 #endif
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -25,7 +27,7 @@ public:
   std::vector<std::vector<double>> m_moment_buffers_;
 
 public:
-  explicit DiscreteOrdinatesAdjointSolver(const chi::InputParameters& params);
+  explicit DiscreteOrdinatesAdjointSolver(const InputParameters& params);
   explicit DiscreteOrdinatesAdjointSolver(const std::string& solver_name);
 
   DiscreteOrdinatesAdjointSolver(const DiscreteOrdinatesAdjointSolver&) = delete;
@@ -53,7 +55,7 @@ public:
    * Subscribes cells to QOIs.
    */
   size_t AddResponseFunction(const std::string& qoi_name,
-                             std::shared_ptr<chi_mesh::LogicalVolume> logical_volume,
+                             std::shared_ptr<LogicalVolume> logical_volume,
                              const std::string& lua_function_name);
 
   /**
@@ -70,7 +72,8 @@ public:
   /**
    * Returns the input parameters.
    */
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 };
 
 } // namespace lbs
+} // namespace opensn

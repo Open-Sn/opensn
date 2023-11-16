@@ -11,6 +11,8 @@
 
 #include <iomanip>
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -67,7 +69,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
   auto SetLBSFissionSource = [&active_set_source_function, &front_gs, &q_moments_local](
                                const VecDbl& input, const bool additive)
   {
-    if (not additive) chi_math::Set(q_moments_local, 0.0);
+    if (not additive) Set(q_moments_local, 0.0);
     active_set_source_function(
       front_gs, q_moments_local, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
@@ -77,7 +79,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
     [&active_set_source_function, &front_gs, &q_moments_local](
       const VecDbl& input, const bool additive, const bool suppress_wgs = false)
   {
-    if (not additive) chi_math::Set(q_moments_local, 0.0);
+    if (not additive) Set(q_moments_local, 0.0);
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
     if (suppress_wgs) source_flags |= SUPPRESS_WG_SCATTER;
     active_set_source_function(front_gs, q_moments_local, input, source_flags);
@@ -94,8 +96,6 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
     lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
     SetLBSScatterSource(phi_temp, additive, suppress_wgs);
   };
-
-  using namespace chi_math;
 
   // Start power iterations
   primary_ags_solver->SetVerbosity(lbs_solver.Options().verbose_ags_iterations);
@@ -227,3 +227,4 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
 }
 
 } // namespace lbs
+} // namespace opensn

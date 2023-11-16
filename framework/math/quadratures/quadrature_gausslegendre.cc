@@ -12,15 +12,15 @@
 #define uint unsigned int
 #define scint static_cast<int>
 
-namespace chi_math
+namespace opensn
 {
 
 RegisterChiObject(chi_math, QuadratureGaussLegendre);
 
-chi::InputParameters
+InputParameters
 QuadratureGaussLegendre::GetInputParameters()
 {
-  chi::InputParameters params = Quadrature::GetInputParameters();
+  InputParameters params = Quadrature::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription("General Gauss-Legendre quadrature");
@@ -37,8 +37,7 @@ QuadratureGaussLegendre::GetInputParameters()
   return params;
 }
 
-QuadratureGaussLegendre::QuadratureGaussLegendre(const chi::InputParameters& params)
-  : chi_math::Quadrature(params)
+QuadratureGaussLegendre::QuadratureGaussLegendre(const InputParameters& params) : Quadrature(params)
 {
   const auto& assigned_params = params.ParametersAtAssignment();
 
@@ -65,7 +64,7 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(QuadratureOrder in_order,
                                                  bool verbose,
                                                  unsigned int max_iters,
                                                  double tol)
-  : chi_math::Quadrature(in_order)
+  : Quadrature(in_order)
 {
   const unsigned int N = std::ceil(((int)order_ + 1) / 2.0);
   Initialize(N, verbose, max_iters, tol);
@@ -75,7 +74,7 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(unsigned int N,
                                                  bool verbose,
                                                  unsigned int max_iters,
                                                  double tol)
-  : chi_math::Quadrature((QuadratureOrder)(2 * N - 1))
+  : Quadrature((QuadratureOrder)(2 * N - 1))
 {
   Initialize(N, verbose, max_iters, tol);
 }
@@ -134,7 +133,7 @@ QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, doubl
   if (N > 2056)
   {
     num_search_intvls *= 10;
-    Chi::log.Log0Warning() << "chi_math::QuadratureGaussLegendre::FindRoots: "
+    Chi::log.Log0Warning() << "QuadratureGaussLegendre::FindRoots: "
                            << "The order of the polynomial for which to find the roots is "
                            << "greater than 2056. Accuracy of the root finder will be diminished "
                            << "along with a reduction in stability.";
@@ -198,4 +197,4 @@ QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, doubl
   return xk;
 }
 
-} // namespace chi_math
+} // namespace opensn

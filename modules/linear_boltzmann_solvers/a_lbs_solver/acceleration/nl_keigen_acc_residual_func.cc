@@ -4,7 +4,9 @@
 
 #include "framework/logging/log.h"
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
 PetscErrorCode
@@ -34,7 +36,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto SetLBSFissionSource =
     [&active_set_source_function, &front_gs](const VecDbl& input, VecDbl& output)
   {
-    chi_math::Set(output, 0.0);
+    Set(output, 0.0);
     active_set_source_function(
       front_gs, output, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
@@ -42,7 +44,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto SetLBSScatterSource =
     [&active_set_source_function, &front_gs](const VecDbl& input, VecDbl& output, bool suppress_wgs)
   {
-    chi_math::Set(output, 0.0);
+    Set(output, 0.0);
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
     if (suppress_wgs) source_flags |= SUPPRESS_WG_SCATTER;
     active_set_source_function(front_gs, output, input, source_flags);
@@ -51,7 +53,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto SetPhi0FissionSource =
     [&front_gs, &lbs_solver, &phi_temp, &SetLBSFissionSource, &q_moments_local](const VecDbl& input)
   {
-    chi_math::Set(phi_temp, 0.0);
+    Set(phi_temp, 0.0);
     lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
 
     SetLBSFissionSource(phi_temp, q_moments_local);
@@ -64,7 +66,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     [&front_gs, &lbs_solver, &phi_temp, &SetLBSScatterSource, &q_moments_local](const VecDbl& input,
                                                                                 bool suppress_wgs)
   {
-    chi_math::Set(phi_temp, 0.0);
+    Set(phi_temp, 0.0);
     lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
 
     SetLBSScatterSource(phi_temp, q_moments_local, suppress_wgs);
@@ -75,14 +77,13 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   auto Phi0FissionProdL2Norm = [&front_gs, &lbs_solver, &phi_temp](const VecDbl& input)
   {
-    chi_math::Set(phi_temp, 0.0);
+    Set(phi_temp, 0.0);
     lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
 
     return lbs_solver.ComputeFissionProduction(phi_temp);
   };
 
   // Business end
-  using namespace chi_math;
 
   auto delta_phi = nl_context_ptr->PhiVecToSTLVec(phi);
   auto epsilon = delta_phi;
@@ -112,4 +113,5 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   return 0;
 }
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

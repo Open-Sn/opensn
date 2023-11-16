@@ -4,6 +4,8 @@
 
 #define GetGSContextPtr(x) std::dynamic_pointer_cast<WGSContext>(x)
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -44,3 +46,4 @@ AGSContext::MatrixAction(Mat& matrix, Vec& vector, Vec& action)
 }
 
 } // namespace lbs
+} // namespace opensn

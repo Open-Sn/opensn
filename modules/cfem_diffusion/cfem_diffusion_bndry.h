@@ -2,6 +2,8 @@
 
 #include <array>
 
+namespace opensn
+{
 namespace cfem_diffusion
 {
 class Boundary;
@@ -14,17 +16,18 @@ enum class BoundaryType : int
   Robin = 4,
   Vacuum = 5
 };
-} // namespace cfem_diffusion
 
-//###################################################################
 /**Parent class for diffusion boundaries*/
-class cfem_diffusion::Boundary
+class Boundary
 {
 public:
   BoundaryType type_ = BoundaryType::Dirichlet;
 
   std::array<double, 3> values_ = {0., 0., 0.};
 };
+
+} // namespace cfem_diffusion
+} // namespace opensn
 
 // //###################################################################
 // /**Robin boundary condition is a natural (i.w., weak) boundary condition of

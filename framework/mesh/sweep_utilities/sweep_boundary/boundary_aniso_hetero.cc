@@ -4,7 +4,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 double*
@@ -28,8 +28,7 @@ BoundaryIncidentHeterogeneous::HeterogeneousPsiIncoming(uint64_t cell_local_id,
 }
 
 void
-BoundaryIncidentHeterogeneous::Setup(const chi_mesh::MeshContinuum& grid,
-                                     const chi_math::AngularQuadrature& quadrature)
+BoundaryIncidentHeterogeneous::Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature)
 {
   const size_t num_local_cells = grid.local_cells.size();
   local_cell_data_.clear();
@@ -49,7 +48,7 @@ BoundaryIncidentHeterogeneous::Setup(const chi_mesh::MeshContinuum& grid,
   typedef std::pair<double, double> PhiTheta;
 
   std::vector<int> angle_indices;
-  std::vector<chi_mesh::Vector3> angle_vectors;
+  std::vector<Vector3> angle_vectors;
   std::vector<PhiTheta> phi_theta_angles;
   std::vector<int> group_indices;
 
@@ -120,4 +119,4 @@ BoundaryIncidentHeterogeneous::Setup(const chi_mesh::MeshContinuum& grid,
   } // for cell
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

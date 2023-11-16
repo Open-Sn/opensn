@@ -6,22 +6,25 @@
 #include <sstream>
 #include <algorithm>
 
+namespace opensn
+{
+
 void
-chi::DirectedGraph::VertexAccessor::AddVertex(size_t id, void* context)
+DirectedGraph::VertexAccessor::AddVertex(size_t id, void* context)
 {
   vertices_.emplace_back(id, context);
   vertex_valid_flags_.push_back(true);
 }
 
 void
-chi::DirectedGraph::VertexAccessor::AddVertex(void* context)
+DirectedGraph::VertexAccessor::AddVertex(void* context)
 {
   vertices_.emplace_back(vertices_.size(), context);
   vertex_valid_flags_.push_back(true);
 }
 
 void
-chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
+DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
 {
   ChiLogicalErrorIf(v >= vertices_.size(), "Error removing vertex.");
 
@@ -49,35 +52,35 @@ chi::DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
   vertex_valid_flags_[v] = false;
 }
 
-chi::GraphVertex&
-chi::DirectedGraph::VertexAccessor::operator[](size_t v)
+GraphVertex&
+DirectedGraph::VertexAccessor::operator[](size_t v)
 {
   if (not vertex_valid_flags_[v])
-    Chi::log.LogAllError() << "chi_graph::DirectedGraph::VertexAccessor: "
+    Chi::log.LogAllError() << "opensn::DirectedGraph::VertexAccessor: "
                               "Invalid vertex accessed. Vertex may have been removed.";
   return vertices_[v];
 }
 
 void
-chi::DirectedGraph::AddVertex(size_t id, void* context)
+DirectedGraph::AddVertex(size_t id, void* context)
 {
   vertices.AddVertex(id, context);
 }
 
 void
-chi::DirectedGraph::AddVertex(void* context)
+DirectedGraph::AddVertex(void* context)
 {
   vertices.AddVertex(context);
 }
 
 void
-chi::DirectedGraph::RemoveVertex(size_t v)
+DirectedGraph::RemoveVertex(size_t v)
 {
   vertices.RemoveVertex(v);
 }
 
 bool
-chi::DirectedGraph::AddEdge(size_t from, size_t to, double weight)
+DirectedGraph::AddEdge(size_t from, size_t to, double weight)
 {
   vertices[from].ds_edge.insert(to);
   vertices[to].us_edge.insert(from);
@@ -89,16 +92,16 @@ chi::DirectedGraph::AddEdge(size_t from, size_t to, double weight)
 }
 
 void
-chi::DirectedGraph::RemoveEdge(size_t from, size_t to)
+DirectedGraph::RemoveEdge(size_t from, size_t to)
 {
   vertices[from].ds_edge.erase(to);
   vertices[to].us_edge.erase(from);
 }
 
 void
-chi::DirectedGraph::DFSAlgorithm(std::vector<size_t>& traversal,
-                                 std::vector<bool>& visited,
-                                 size_t cur_vid)
+DirectedGraph::DFSAlgorithm(std::vector<size_t>& traversal,
+                            std::vector<bool>& visited,
+                            size_t cur_vid)
 {
   traversal.push_back(cur_vid);
   visited[cur_vid] = true;
@@ -108,13 +111,13 @@ chi::DirectedGraph::DFSAlgorithm(std::vector<size_t>& traversal,
 }
 
 void
-chi::DirectedGraph::SCCAlgorithm(size_t u,
-                                 int& time,
-                                 std::vector<int>& disc,
-                                 std::vector<int>& low,
-                                 std::vector<bool>& on_stack,
-                                 std::stack<size_t>& stack,
-                                 std::vector<std::vector<size_t>>& SCCs)
+DirectedGraph::SCCAlgorithm(size_t u,
+                            int& time,
+                            std::vector<int>& disc,
+                            std::vector<int>& low,
+                            std::vector<bool>& on_stack,
+                            std::stack<size_t>& stack,
+                            std::vector<std::vector<size_t>>& SCCs)
 {
   // Init discovery time and low value
   disc[u] = low[u] = ++time;
@@ -152,7 +155,7 @@ chi::DirectedGraph::SCCAlgorithm(size_t u,
 }
 
 std::vector<std::vector<size_t>>
-chi::DirectedGraph::FindStronglyConnectedComponents()
+DirectedGraph::FindStronglyConnectedComponents()
 {
   size_t V = vertices.size();
 
@@ -172,7 +175,7 @@ chi::DirectedGraph::FindStronglyConnectedComponents()
 }
 
 std::vector<size_t>
-chi::DirectedGraph::GenerateTopologicalSort()
+DirectedGraph::GenerateTopologicalSort()
 {
   bool has_cycles = false;
   std::vector<size_t> L;
@@ -225,9 +228,9 @@ endofalgo:
 }
 
 std::vector<size_t>
-chi::DirectedGraph::FindApproxMinimumFAS()
+DirectedGraph::FindApproxMinimumFAS()
 {
-  auto GetVertexDelta = [](chi::GraphVertex& vertex)
+  auto GetVertexDelta = [](GraphVertex& vertex)
   {
     double delta = 0.0;
     for (size_t ds : vertex.ds_edge)
@@ -293,7 +296,7 @@ chi::DirectedGraph::FindApproxMinimumFAS()
 }
 
 void
-chi::DirectedGraph::PrintGraphviz(int location_mask)
+DirectedGraph::PrintGraphviz(int location_mask)
 {
   if (Chi::mpi.location_id != location_mask) return;
 
@@ -320,7 +323,7 @@ chi::DirectedGraph::PrintGraphviz(int location_mask)
 }
 
 void
-chi::DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int location_mask)
+DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int location_mask)
 {
   if (Chi::mpi.location_id != location_mask) return;
 
@@ -350,7 +353,7 @@ chi::DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int
 }
 
 std::vector<std::pair<size_t, size_t>>
-chi::DirectedGraph::RemoveCyclicDependencies()
+DirectedGraph::RemoveCyclicDependencies()
 {
   std::vector<std::pair<size_t, size_t>> edges_to_remove;
 
@@ -364,7 +367,7 @@ chi::DirectedGraph::RemoveCyclicDependencies()
   int iter = 0;
   while (not SCCs.empty())
   {
-    if (Chi::log.GetVerbosity() >= chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2)
+    if (Chi::log.GetVerbosity() >= ChiLog::LOG_LVL::LOG_0VERBOSE_2)
       Chi::log.LogAll() << "Inter cell cyclic dependency removal. Iteration " << ++iter;
 
     // Remove bi-connected then tri-connected SCCs then n-connected
@@ -397,7 +400,7 @@ chi::DirectedGraph::RemoveCyclicDependencies()
       else
       {
         // Add vertices to temporary graph
-        chi::DirectedGraph TG; // Temp Graph
+        DirectedGraph TG; // Temp Graph
         for (size_t k = 0; k < subDG.size(); ++k)
           TG.AddVertex();
 
@@ -419,7 +422,7 @@ chi::DirectedGraph::RemoveCyclicDependencies()
         } // for u
 
         // Make a copy of the graph verts
-        std::vector<chi::GraphVertex> verts_copy;
+        std::vector<GraphVertex> verts_copy;
         verts_copy.reserve(TG.vertices.size());
         for (auto& v : TG.vertices)
           verts_copy.push_back(v);
@@ -473,12 +476,14 @@ chi::DirectedGraph::RemoveCyclicDependencies()
 }
 
 void
-chi::DirectedGraph::Clear()
+DirectedGraph::Clear()
 {
   vertices.clear();
 }
 
-chi::DirectedGraph::~DirectedGraph()
+DirectedGraph::~DirectedGraph()
 {
   Clear();
 }
+
+} // namespace opensn

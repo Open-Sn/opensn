@@ -3,6 +3,8 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -15,14 +17,13 @@ class CBC_ASynchronousCommunicator;
 class DiscreteOrdinatesSolver : public LBSSolver
 {
 protected:
-  typedef std::shared_ptr<chi_math::AngularQuadrature> AngQuadPtr;
+  typedef std::shared_ptr<AngularQuadrature> AngQuadPtr;
 
   typedef std::pair<UniqueSOGroupings, DirIDToSOMap> SwpOrderGroupingInfo;
 
-  typedef std::shared_ptr<chi_mesh::sweep_management::SPDS> SPDS_ptr;
+  typedef std::shared_ptr<SPDS> SPDS_ptr;
   typedef std::vector<SPDS_ptr> SPDS_ptrs;
 
-  typedef chi_mesh::sweep_management::FLUDSCommonData FLUDSCommonData;
   typedef std::unique_ptr<FLUDSCommonData> FLUDSCommonDataPtr;
   typedef std::vector<FLUDSCommonDataPtr> FLUDSCommonDataPtrs;
 
@@ -30,7 +31,7 @@ public:
   /**
    * Static registration based constructor.
    */
-  explicit DiscreteOrdinatesSolver(const chi::InputParameters& params);
+  explicit DiscreteOrdinatesSolver(const InputParameters& params);
   ~DiscreteOrdinatesSolver() override;
 
   const std::string& SweepType() const { return sweep_type_; }
@@ -121,7 +122,7 @@ protected:
   const std::string sweep_type_;
 
 public:
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
 protected:
   /**
@@ -129,10 +130,11 @@ protected:
    * ordering. It also takes geometry into account.
    */
   static std::pair<UniqueSOGroupings, DirIDToSOMap>
-  AssociateSOsAndDirections(const chi_mesh::MeshContinuum& grid,
-                            const chi_math::AngularQuadrature& quadrature,
+  AssociateSOsAndDirections(const MeshContinuum& grid,
+                            const AngularQuadrature& quadrature,
                             AngleAggregationType agg_type,
                             lbs::GeometryType lbs_geo_type);
 };
 
 } // namespace lbs
+} // namespace opensn

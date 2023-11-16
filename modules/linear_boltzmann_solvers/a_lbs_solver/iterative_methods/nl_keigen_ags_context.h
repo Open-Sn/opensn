@@ -8,15 +8,13 @@
 #include <vector>
 #include <cstdint>
 
+namespace opensn
+{
 namespace lbs
 {
 class LBSSolver;
-}
 
-namespace lbs
-{
-
-struct NLKEigenAGSContext : public chi_math::NonLinearSolverContext
+struct NLKEigenAGSContext : public NonLinearSolverContext
 {
   LBSSolver& lbs_solver_;
   KResidualFunctionContext kresid_func_context_;
@@ -32,3 +30,4 @@ struct NLKEigenAGSContext : public chi_math::NonLinearSolverContext
 };
 
 } // namespace lbs
+} // namespace opensn

@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace chi
+namespace opensn
 {
 
 class Event
@@ -55,4 +55,4 @@ public:
   static Event::EventCode GetStandardCode(const std::string& event_name);
 };
 
-} // namespace chi
+} // namespace opensn

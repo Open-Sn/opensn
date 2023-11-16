@@ -1,6 +1,6 @@
 #include "framework/mesh/sweep_utilities/fluds/fluds_common_data.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 FLUDSCommonData::FLUDSCommonData(const SPDS& spds,
@@ -21,4 +21,4 @@ FLUDSCommonData::GetFaceNodalMapping(uint64_t cell_local_id, unsigned int face_i
   return grid_nodal_mappings_[cell_local_id][face_id];
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

@@ -14,29 +14,31 @@
 
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 namespace chi_unit_sim_tests
 {
 
 /**This is a simple test of the Finite Volume spatial discretization applied
  * to Laplace's problem. */
-chi::ParameterBlock chiSimTest02_FV(const chi::InputParameters& params);
+ParameterBlock chiSimTest02_FV(const InputParameters& params);
 
 RegisterWrapperFunction(chi_unit_sim_tests, chiSimTest02_FV, nullptr, chiSimTest02_FV);
 
-chi::ParameterBlock
-chiSimTest02_FV(const chi::InputParameters&)
+ParameterBlock
+chiSimTest02_FV(const InputParameters&)
 {
-  Chi::log.Log() << "Coding Tutorial 2";
+  opensn::Chi::log.Log() << "Coding Tutorial 2";
 
   // Get grid
-  auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
+  auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make SDM
-  typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
-  SDMPtr sdm_ptr = chi_math::spatial_discretization::FiniteVolume::New(grid);
+  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
+  SDMPtr sdm_ptr = FiniteVolume::New(grid);
   const auto& sdm = *sdm_ptr;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
@@ -44,8 +46,8 @@ chiSimTest02_FV(const chi::InputParameters&)
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
-  Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
+  opensn::Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
+  opensn::Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
   // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
@@ -53,18 +55,18 @@ chiSimTest02_FV(const chi::InputParameters&)
   Mat A;
   Vec x, b;
 
-  A = chi_math::PETScUtils::CreateSquareMatrix(n, N);
-  x = chi_math::PETScUtils::CreateVector(n, N);
-  b = chi_math::PETScUtils::CreateVector(n, N);
+  A = CreateSquareMatrix(n, N);
+  x = CreateVector(n, N);
+  b = CreateVector(n, N);
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
   sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   // Assemble the system
-  Chi::log.Log() << "Assembling system: ";
+  opensn::Chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -107,24 +109,23 @@ chiSimTest02_FV(const chi::InputParameters&)
     VecSetValue(b, imap, 1.0 * V, ADD_VALUES);
   } // for cell i
 
-  Chi::log.Log() << "Global assembly";
+  opensn::Chi::log.Log() << "Global assembly";
 
   MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
   VecAssemblyBegin(b);
   VecAssemblyEnd(b);
 
-  Chi::log.Log() << "Done global assembly";
+  opensn::Chi::log.Log() << "Done global assembly";
 
   // Create Krylov Solver
-  Chi::log.Log() << "Solving: ";
-  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A, "FVDiffSolver", KSPCG, PCGAMG, 1.0e-6, 1000);
+  opensn::Chi::log.Log() << "Solving: ";
+  auto petsc_solver = CreateCommonKrylovSolverSetup(A, "FVDiffSolver", KSPCG, PCGAMG, 1.0e-6, 1000);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);
 
-  Chi::log.Log() << "Done solving";
+  opensn::Chi::log.Log() << "Done solving";
 
   // Extract PETSc vector
   std::vector<double> field(num_local_dofs, 0.0);
@@ -137,27 +138,26 @@ chiSimTest02_FV(const chi::InputParameters&)
   VecDestroy(&b);
   MatDestroy(&A);
 
-  Chi::log.Log() << "Done cleanup";
+  opensn::Chi::log.Log() << "Done cleanup";
 
   // Create Field Function
-  auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::SCALAR));
+  auto ff = std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, Unknown(UnknownType::SCALAR));
 
   ff->UpdateFieldVector(field);
 
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV", {ff});
+  FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV", {ff});
 
   // Make ghosted vectors
   std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
 
-  chi_math::VectorGhostCommunicator vgc(num_local_dofs, num_globl_dofs, ghost_ids, Chi::mpi.comm);
+  VectorGhostCommunicator vgc(num_local_dofs, num_globl_dofs, ghost_ids, opensn::Chi::mpi.comm);
   std::vector<double> field_wg = vgc.MakeGhostedVector(field);
 
   vgc.CommunicateGhostEntries(field_wg);
 
   // Setup gradient unknown
   // structure
-  chi_math::UnknownManager grad_uk_man({chi_math::Unknown(chi_math::UnknownType::VECTOR_3)});
+  UnknownManager grad_uk_man({Unknown(UnknownType::VECTOR_3)});
 
   const size_t num_grad_dofs = sdm.GetNumLocalDOFs(grad_uk_man);
 
@@ -172,7 +172,7 @@ chiSimTest02_FV(const chi::InputParameters&)
 
     const auto& xp = cell.centroid_;
 
-    auto grad_phi_P = chi_mesh::Vector3(0, 0, 0);
+    auto grad_phi_P = Vector3(0, 0, 0);
 
     size_t f = 0;
     for (const auto& face : cell.faces_)
@@ -207,14 +207,14 @@ chiSimTest02_FV(const chi::InputParameters&)
   } // for cell
 
   // Create Field Function
-  auto ff_grad = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "GradPhi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::VECTOR_3));
+  auto ff_grad =
+    std::make_shared<FieldFunctionGridBased>("GradPhi", sdm_ptr, Unknown(UnknownType::VECTOR_3));
 
   ff_grad->UpdateFieldVector(grad_phi);
 
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV_grad", {ff_grad});
+  FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV_grad", {ff_grad});
 
-  return chi::ParameterBlock();
+  return ParameterBlock();
 }
 
 } // namespace chi_unit_sim_tests

@@ -2,20 +2,20 @@
 
 #include "framework/object.h"
 
-namespace chi_math
+namespace opensn
 {
 
 class NonLinearSolverOptions : public ChiObject
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit NonLinearSolverOptions(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit NonLinearSolverOptions(const InputParameters& params);
   NonLinearSolverOptions() = default;
 
   std::string nl_method_ = "JFNK";
   std::string l_method_ = "gmres";
 
-  chi::ParameterBlock pc_options_;
+  ParameterBlock pc_options_;
 
   std::string petsc_snes_type_ = "newtonls";
 
@@ -33,4 +33,4 @@ public:
   double l_gmres_breakdown_tol_ = 1.0e6;
 };
 
-} // namespace chi_math
+} // namespace opensn

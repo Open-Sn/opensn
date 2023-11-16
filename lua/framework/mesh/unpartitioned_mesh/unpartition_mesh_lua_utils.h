@@ -4,7 +4,7 @@
 
 #include "framework/lua.h"
 
-namespace chi_mesh::unpartition_mesh_lua_utils
+namespace opensnlua
 {
 
 /**Creates an empty unpartitioned mesh. An empty unpartitioned mesh
@@ -329,4 +329,4 @@ int chiUnpartitionedMeshUploadCell(lua_State* L);
  */
 int chiUnpartitionedMeshFinalizeEmpty(lua_State* L);
 
-} // namespace chi_mesh::unpartition_mesh_lua_utils
+} // namespace opensnlua

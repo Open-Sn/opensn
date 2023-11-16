@@ -1,17 +1,19 @@
 #pragma once
 
-//######################################################### Struct
+namespace opensn
+{
+
 /**Data structure for a triangular face.*/
-struct chi_mesh::Face
+struct Face
 {
   int v_index[3];
   int n_index[3];
   int vt_index[3];
   int e_index[3][4];
 
-  chi_mesh::Normal geometric_normal;
-  chi_mesh::Normal assigned_normal;
-  chi_mesh::Vertex face_centroid;
+  Normal geometric_normal;
+  Normal assigned_normal;
+  Vertex face_centroid;
 
   bool invalidated;
 
@@ -65,7 +67,7 @@ struct chi_mesh::Face
 
 #define NEIGHBOR 0
 
-//######################################################### Struct
+// ######################################################### Struct
 /**Data structure for a polygon face.
 
  edges\n
@@ -87,14 +89,14 @@ struct chi_mesh::Face
   [2] = Partition ID of adjecent cell.\n
 
  */
-struct chi_mesh::PolyFace
+struct PolyFace
 {
   std::vector<int> v_indices;
   std::vector<int*> edges;
   int face_indices[3];
 
-  chi_mesh::Normal geometric_normal;
-  chi_mesh::Vertex face_centroid;
+  Normal geometric_normal;
+  Vertex face_centroid;
 
   bool invalidated;
 
@@ -106,3 +108,5 @@ struct chi_mesh::PolyFace
       delete[] edge;
   }
 };
+
+} // namespace opensn

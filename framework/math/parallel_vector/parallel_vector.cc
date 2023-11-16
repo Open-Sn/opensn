@@ -2,7 +2,7 @@
 
 #include "framework/mpi/mpi_utils.h"
 
-namespace chi_math
+namespace opensn
 {
 
 ParallelVector::ParallelVector(uint64_t local_size,
@@ -10,8 +10,8 @@ ParallelVector::ParallelVector(uint64_t local_size,
                                const MPI_Comm communicator)
   : local_size_(local_size),
     global_size_(global_size),
-    location_id_(chi_mpi_utils::GetLocationID(communicator)),
-    process_count_(chi_mpi_utils::GetProcessCount(communicator)),
+    location_id_(GetLocationID(communicator)),
+    process_count_(GetProcessCount(communicator)),
     comm_(communicator)
 {
 }
@@ -34,4 +34,4 @@ ParallelVector::ParallelVector(ParallelVector&& other) noexcept
 {
 }
 
-} // namespace chi_math
+} // namespace opensn

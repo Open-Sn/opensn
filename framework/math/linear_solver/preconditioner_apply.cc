@@ -4,7 +4,7 @@
 
 #include <petscksp.h>
 
-namespace chi_math
+namespace opensn
 {
 
 template <>
@@ -19,4 +19,4 @@ PreconditionerApplication(PC pc, Vec vector, Vec action)
   return 0;
 }
 
-} // namespace chi_math
+} // namespace opensn

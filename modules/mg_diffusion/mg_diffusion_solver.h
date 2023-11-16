@@ -13,17 +13,12 @@
 
 #include <map>
 
-// forward declaration
-namespace chi_mesh
+namespace opensn
 {
 class MeshContinuum;
 typedef std::shared_ptr<MeshContinuum> MeshContinuumPtr;
-} // namespace chi_mesh
-namespace chi_math
-{
 class SpatialDiscretization;
 typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
-} // namespace chi_math
 
 namespace mg_diffusion
 {
@@ -49,12 +44,12 @@ struct TwoGridCollapsedInfo
 /**
  * Multi-group diffusion solver
  */
-class Solver : public chi_physics::Solver
+class Solver : public opensn::Solver
 {
 public:
-  chi_mesh::MeshContinuumPtr grid_ptr_ = nullptr;
+  MeshContinuumPtr grid_ptr_ = nullptr;
 
-  chi_math::SDMPtr sdm_ptr_ = nullptr;
+  SDMPtr sdm_ptr_ = nullptr;
 
   uint num_groups_ = 0;
   uint last_fast_group_ = 0;
@@ -77,7 +72,7 @@ public:
   /// actual rhs vector for the linear system A[g] x[g] = b
   Vec b_ = nullptr;
 
-  chi_math::PETScUtils::PETScSolverSetup petsc_solver_;
+  PETScSolverSetup petsc_solver_;
   KSPAppContext my_app_context_;
 
   std::vector<std::vector<double>> VF_;
@@ -113,12 +108,13 @@ public:
   void UpdateFieldFunctions();
 
 protected:
-  std::map<int, std::shared_ptr<chi_physics::MultiGroupXS>> matid_to_xs_map;
+  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map;
 
-  std::map<int, std::shared_ptr<chi_physics::IsotropicMultiGrpSource>> matid_to_src_map;
+  std::map<int, std::shared_ptr<IsotropicMultiGrpSource>> matid_to_src_map;
 
   std::map<int, TwoGridCollapsedInfo> map_mat_id_2_tginfo;
   //  std::map<int, Multigroup_D_and_sigR> map_mat_id_2_tgXS;
 };
 
 } // namespace mg_diffusion
+} // namespace opensn

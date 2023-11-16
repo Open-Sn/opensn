@@ -2,8 +2,11 @@
 #include <cmath>
 #include <cstdlib>
 
+namespace opensn
+{
+
 double
-chi_math::AssocLegendre(unsigned int ell, int m, double x)
+AssocLegendre(unsigned int ell, int m, double x)
 {
   if (abs(m) > ell) return 0.0;
 
@@ -36,3 +39,5 @@ chi_math::AssocLegendre(unsigned int ell, int m, double x)
 
   return Pmlp1;
 }
+
+} // namespace opensn

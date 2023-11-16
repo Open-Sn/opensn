@@ -7,33 +7,33 @@
 #include <algorithm>
 #include <map>
 
-namespace chi_math
+namespace opensn
 {
 
 void
 SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
 {
-  chi::Timer timer;
+  Timer timer;
   timer.Reset();
   initial_level_ = level;
 
   // Define constants
-  const chi_mesh::Vector3 ihat = chi_mesh::Vector3(1.0, 0.0, 0.0);
-  const chi_mesh::Vector3 jhat = chi_mesh::Vector3(0.0, 1.0, 0.0);
-  const chi_mesh::Vector3 khat = chi_mesh::Vector3(0.0, 0.0, 1.0);
+  const Vector3 ihat = Vector3(1.0, 0.0, 0.0);
+  const Vector3 jhat = Vector3(0.0, 1.0, 0.0);
+  const Vector3 khat = Vector3(0.0, 0.0, 1.0);
 
   // Build rotation matrices for cube faces
-  chi_mesh::Matrix3x3 Rxface;
+  Matrix3x3 Rxface;
   Rxface.SetColJVec(0, jhat);
   Rxface.SetColJVec(1, khat);
   Rxface.SetColJVec(2, ihat);
 
-  chi_mesh::Matrix3x3 Ryface;
+  Matrix3x3 Ryface;
   Ryface.SetColJVec(0, ihat);
   Ryface.SetColJVec(1, khat);
   Ryface.SetColJVec(2, -1.0 * jhat);
 
-  chi_mesh::Matrix3x3 Rzface;
+  Matrix3x3 Rzface;
   Rzface.SetDiagonalVec(1.0, 1.0, 1.0);
 
   // Set translation vectors for cube faces
@@ -94,11 +94,11 @@ SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
   const int Ns = (level + 1); // Number of subdivisions
   const int Np = Ns + 1;      // Number of diagonal points
 
-  const auto ihat = chi_mesh::Vector3(1.0, 0.0, 0.0);
+  const auto ihat = Vector3(1.0, 0.0, 0.0);
 
   // Define rotation matrix
-  chi_mesh::Matrix3x3 Rihat;
-  auto n = chi_mesh::Vector3(0.0, -1.0 / sqrt(2), 1.0 / sqrt(2));
+  Matrix3x3 Rihat;
+  auto n = Vector3(0.0, -1.0 / sqrt(2), 1.0 / sqrt(2));
   auto& t = ihat;
   auto b = n.Cross(t).Normalized();
 
@@ -107,7 +107,7 @@ SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
   Rihat.SetColJVec(2, n);
 
   // Generate p-points
-  std::vector<chi_mesh::Vector3> p_points(Np);
+  std::vector<Vector3> p_points(Np);
   double dphi = acos(a) / Ns;
   double alpha = 0.10005;
   double beta = 1.0185;
@@ -116,28 +116,29 @@ SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
   {
     double phi = i * dphi * (1.0 + alpha * (cos(beta * M_PI_2 * i / Ns) - cos(beta * M_PI_2)));
 
-    p_points[i] = Rihat * chi_mesh::Vector3(cos(phi), sin(phi), 0.0);
+    p_points[i] = Rihat * Vector3(cos(phi), sin(phi), 0.0);
   }
 
   // Compute tilde points
-  std::vector<chi_mesh::Vector3> tilde_points(Np);
+  std::vector<Vector3> tilde_points(Np);
   for (int i = 0; i < Np; ++i)
   {
     double R = a / p_points[i].x;
     double x_tilde = p_points[i].y * R;
     double y_tilde = p_points[i].z * R;
 
-    tilde_points[i] = chi_mesh::Vector3(x_tilde, y_tilde, 0.0);
+    tilde_points[i] = Vector3(x_tilde, y_tilde, 0.0);
   }
 
   diagonal_vertices_ = tilde_points;
 }
 
 void
-SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(
-  const chi_mesh::Matrix3x3& rotation_matrix, const chi_mesh::Vector3& translation, int level)
+SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(const Matrix3x3& rotation_matrix,
+                                                            const Vector3& translation,
+                                                            int level)
 {
-  typedef std::vector<chi_mesh::Vertex> VertList;
+  typedef std::vector<Vertex> VertList;
 
   int Ns = (level + 1); // Number of subdivisions
   int Np = Ns + 1;      // Number of diagonal points
@@ -149,8 +150,7 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(
   vertices_xy_tilde_ij.resize(Np, VertList(Np));
   for (int i = 0; i < Np; ++i)
     for (int j = 0; j < Np; ++j)
-      vertices_xy_tilde_ij[i][j] =
-        chi_mesh::Vertex(diagonal_vertices_[i].x, diagonal_vertices_[j].y, 0.0);
+      vertices_xy_tilde_ij[i][j] = Vertex(diagonal_vertices_[i].x, diagonal_vertices_[j].y, 0.0);
 
   // Generate SQs
   for (int i = 0; i < Ns; ++i)
@@ -199,7 +199,7 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(
       sq.area = ComputeSphericalQuadrilateralArea(sq.vertices_xyz);
 
       // Set octant modifier
-      sq.octant_modifier = chi_mesh::Vector3(1.0, 1.0, 1.0);
+      sq.octant_modifier = Vector3(1.0, 1.0, 1.0);
 
       // Develop LDFE values
       DevelopSQLDFEValues(sq, legendre);
@@ -213,8 +213,8 @@ void
 SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
   SphericalQuadrilateral& sq,
   QuadratureGaussLegendre& legendre,
-  chi_mesh::Vertex& sq_xy_tilde_centroid,
-  std::array<chi_mesh::Vector3, 4>& radii_vectors_xy_tilde,
+  Vertex& sq_xy_tilde_centroid,
+  std::array<Vector3, 4>& radii_vectors_xy_tilde,
   std::array<double, 4>& sub_sub_sqr_areas)
 {
   FUNCTION_WEIGHT_FROM_RHO ComputeWeights(
@@ -235,12 +235,11 @@ SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
 }
 
 void
-SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(
-  SphericalQuadrilateral& sq,
-  QuadratureGaussLegendre& legendre,
-  chi_mesh::Vertex& sq_xy_tilde_centroid,
-  std::array<chi_mesh::Vector3, 4>& radii_vectors_xy_tilde,
-  std::array<double, 4>& sub_sub_sqr_areas)
+SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
+                                                     QuadratureGaussLegendre& legendre,
+                                                     Vertex& sq_xy_tilde_centroid,
+                                                     std::array<Vector3, 4>& radii_vectors_xy_tilde,
+                                                     std::array<double, 4>& sub_sub_sqr_areas)
 {
   auto& SA_i = sub_sub_sqr_areas;
 
@@ -306,7 +305,7 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(
     if (rho_change_total < 1.0e-2) break;
     //    if (std::fabs(change) < 1.0e-2) break;
   }
-  //  chi::log.Log() << "rhos: "
+  //  log.Log() << "rhos: "
   //                     << rho[0]/(1.0/sqrt(3.0)) << " "
   //                     << rho[1]/(1.0/sqrt(3.0)) << " "
   //                     << rho[2]/(1.0/sqrt(3.0)) << " "
@@ -328,20 +327,20 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
                                                   QuadratureGaussLegendre& legendre)
 {
   // Determine sq tilde center
-  chi_mesh::Vertex sq_tilde_center;
+  Vertex sq_tilde_center;
   for (const auto& v : sq.vertices_xy_tilde)
     sq_tilde_center += v;
   sq_tilde_center /= 4;
 
   // Determine off-set vectors
   auto& vc = sq_tilde_center;
-  std::array<chi_mesh::Vector3, 4> vctoi;
+  std::array<Vector3, 4> vctoi;
   for (int v = 0; v < 4; ++v)
     vctoi[v] = sq.vertices_xy_tilde[v] - vc;
 
   // Determine sub-sub-squares
-  std::array<std::array<chi_mesh::Vertex, 4>, 4> sub_sub_square_xy_tilde;
-  std::map<std::string, chi_mesh::Vertex> vm;
+  std::array<std::array<Vertex, 4>, 4> sub_sub_square_xy_tilde;
+  std::map<std::string, Vertex> vm;
 
   for (int v = 0; v < 4; ++v)
     vm[std::to_string(v)] = sq.vertices_xy_tilde[v];
@@ -359,7 +358,7 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
   sst[3] = {vm["03"], vm["c"], vm["23"], vm["3"]};
 
   // Determine sub-sub-square xyz
-  std::array<std::array<chi_mesh::Vertex, 4>, 4> sub_sub_square_xyz;
+  std::array<std::array<Vertex, 4>, 4> sub_sub_square_xyz;
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       sub_sub_square_xyz[i][j] =
@@ -388,13 +387,12 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
 }
 
 double
-SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(
-  std::array<chi_mesh::Vertex, 4>& vertices_xyz)
+SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(std::array<Vertex, 4>& vertices_xyz)
 {
   const auto num_verts = 4;
 
   // Compute centroid
-  chi_mesh::Vertex centroid_xyz;
+  Vertex centroid_xyz;
   for (auto& v : vertices_xyz)
     centroid_xyz += v;
   centroid_xyz /= num_verts;
@@ -410,8 +408,7 @@ SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(
     if ((v1 - v0).Cross(v2 - v0).Dot(v0) < 0.0) std::swap(v1, v2);
 
     // Lambda for spherical excess
-    auto GetSphericalExcess =
-      [](const chi_mesh::Vector3& vA, const chi_mesh::Vector3& vB, const chi_mesh::Vector3& vC)
+    auto GetSphericalExcess = [](const Vector3& vA, const Vector3& vB, const Vector3& vC)
     {
       const auto& n = vA;
 
@@ -446,7 +443,7 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
   const std::vector<double>& legendre_qweights)
 {
   // Lambda to evaluate LDFE shape func
-  auto EvaluateShapeFunction = [](DynamicVector<double>& shape_coeffs, chi_mesh::Vector3& mu_eta_xi)
+  auto EvaluateShapeFunction = [](DynamicVector<double>& shape_coeffs, Vector3& mu_eta_xi)
   {
     return shape_coeffs[0] + shape_coeffs[1] * mu_eta_xi[0] + shape_coeffs[2] * mu_eta_xi[1] +
            shape_coeffs[3] * mu_eta_xi[2];
@@ -479,7 +476,7 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
       // Determine xy_tilde
       double x_tilde = x_tilde_min + (1.0 + legendre_qpoints[j][0]) * dx_tilde / 2.0;
       double y_tilde = y_tilde_min + (1.0 + legendre_qpoints[i][0]) * dy_tilde / 2.0;
-      chi_mesh::Vector3 xy_tilde(x_tilde, y_tilde, 0.0);
+      Vector3 xy_tilde(x_tilde, y_tilde, 0.0);
 
       // Map to xyz
       auto xyz = (sq.rotation_matrix * xy_tilde + sq.translation_vector).Normalized();
@@ -505,14 +502,14 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
   deployed_SQs_.reserve(initial_octant_SQs_.size() * 8);
 
   // Define modifying variables
-  chi_mesh::Vector3 octant_mod(1.0, 1.0, 1.0);
+  Vector3 octant_mod(1.0, 1.0, 1.0);
 
   // Top NE octant, no change
   for (auto& sq : initial_octant_SQs_)
     deployed_SQs_.push_back(sq);
 
   // Top NW octant
-  octant_mod = chi_mesh::Vector3(-1.0, 1.0, 1.0);
+  octant_mod = Vector3(-1.0, 1.0, 1.0);
   for (auto& sq : initial_octant_SQs_)
   {
     SphericalQuadrilateral new_sq = sq;
@@ -529,7 +526,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
   }
 
   // Top SW octant
-  octant_mod = chi_mesh::Vector3(-1.0, -1.0, 1.0);
+  octant_mod = Vector3(-1.0, -1.0, 1.0);
   for (auto& sq : initial_octant_SQs_)
   {
     SphericalQuadrilateral new_sq = sq;
@@ -546,7 +543,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
   }
 
   // Top SE octant
-  octant_mod = chi_mesh::Vector3(1.0, -1.0, 1.0);
+  octant_mod = Vector3(1.0, -1.0, 1.0);
   for (auto& sq : initial_octant_SQs_)
   {
     SphericalQuadrilateral new_sq = sq;
@@ -563,7 +560,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
   }
 
   // Bot NE octant
-  octant_mod = chi_mesh::Vector3(1.0, 1.0, -1.0);
+  octant_mod = Vector3(1.0, 1.0, -1.0);
   for (auto& sq : initial_octant_SQs_)
   {
     SphericalQuadrilateral new_sq = sq;
@@ -580,7 +577,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
   }
 
   // Bot NW octant
-  octant_mod = chi_mesh::Vector3(-1.0, 1.0, -1.0);
+  octant_mod = Vector3(-1.0, 1.0, -1.0);
   for (auto& sq : initial_octant_SQs_)
   {
     SphericalQuadrilateral new_sq = sq;
@@ -597,7 +594,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
   }
 
   // Bot SW octant
-  octant_mod = chi_mesh::Vector3(-1.0, -1.0, -1.0);
+  octant_mod = Vector3(-1.0, -1.0, -1.0);
   for (auto& sq : initial_octant_SQs_)
   {
     SphericalQuadrilateral new_sq = sq;
@@ -614,7 +611,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
   }
 
   // Bot SE octant
-  octant_mod = chi_mesh::Vector3(1.0, -1.0, -1.0);
+  octant_mod = Vector3(1.0, -1.0, -1.0);
   for (auto& sq : initial_octant_SQs_)
   {
     SphericalQuadrilateral new_sq = sq;
@@ -653,7 +650,7 @@ SimplifiedLDFESQ::Quadrature::PopulateQuadratureAbscissae()
 
       if (omega.y / sin(theta) < 0.0) phi = 2.0 * M_PI - phi;
 
-      const auto abscissa = chi_math::QuadraturePointPhiTheta(phi, theta);
+      const auto abscissa = QuadraturePointPhiTheta(phi, theta);
 
       abscissae_.push_back(abscissa);
       weights_.push_back(weight);
@@ -967,14 +964,14 @@ SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, QuadratureGaus
   std::array<SphericalQuadrilateral, 4> new_sqs;
 
   // Determine sq tilde center
-  chi_mesh::Vertex sq_tilde_center;
+  Vertex sq_tilde_center;
   for (const auto& v : sq.vertices_xy_tilde)
     sq_tilde_center += v;
   sq_tilde_center /= 4;
 
   // Determine sub-sub-squares Tilde coordinates
-  std::array<std::array<chi_mesh::Vertex, 4>, 4> sub_sub_square_xy_tilde;
-  std::map<std::string, chi_mesh::Vertex> vm;
+  std::array<std::array<Vertex, 4>, 4> sub_sub_square_xy_tilde;
+  std::map<std::string, Vertex> vm;
 
   for (int v = 0; v < 4; ++v)
     vm[std::to_string(v)] = sq.vertices_xy_tilde[v];
@@ -1030,7 +1027,7 @@ SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, QuadratureGaus
 }
 
 void
-SimplifiedLDFESQ::Quadrature::LocallyRefine(const chi_mesh::Vector3& ref_dir,
+SimplifiedLDFESQ::Quadrature::LocallyRefine(const Vector3& ref_dir,
                                             const double cone_size,
                                             const bool dir_as_plane_normal)
 {
@@ -1069,4 +1066,4 @@ SimplifiedLDFESQ::Quadrature::LocallyRefine(const chi_mesh::Vector3& ref_dir,
   Chi::log.Log() << "SLDFESQ refined " << num_refined << " SQs.";
 }
 
-} // namespace chi_math
+} // namespace opensn

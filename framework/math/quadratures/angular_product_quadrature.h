@@ -5,8 +5,9 @@
 
 #include "framework/math/quadratures/angular_quadrature_base.h"
 
-namespace chi_math
+namespace opensn
 {
+
 enum class ProductQuadratureType
 {
   UNKNOWN = 0,
@@ -17,15 +18,8 @@ enum class ProductQuadratureType
   CUSTOM_QUADRATURE = 5,
 };
 
-class ProductQuadrature;
-class AngularQuadratureProdGL;
-class AngularQuadratureProdGLL;
-class AngularQuadratureProdGLC;
-class AngularQuadratureProdCustom;
-} // namespace chi_math
-
 /** Class for product quadratures*/
-class chi_math::ProductQuadrature : public chi_math::AngularQuadrature
+class ProductQuadrature : public AngularQuadrature
 {
 public:
   std::vector<double> polar_ang_;
@@ -36,7 +30,7 @@ protected:
   std::map<unsigned int, std::vector<unsigned int>> map_directions_;
 
 protected:
-  ProductQuadrature() : AngularQuadrature(chi_math::AngularQuadratureType::ProductQuadrature) {}
+  ProductQuadrature() : AngularQuadrature(AngularQuadratureType::ProductQuadrature) {}
 
 public:
   ~ProductQuadrature() override = default;
@@ -69,28 +63,28 @@ public:
   }
 };
 
-class chi_math::AngularQuadratureProdGL : public chi_math::ProductQuadrature
+class AngularQuadratureProdGL : public ProductQuadrature
 {
 public:
   /**Constructor for Angular Gauss-Legendre.*/
   explicit AngularQuadratureProdGL(int Np, bool verbose = false);
 };
 
-class chi_math::AngularQuadratureProdGLL : public chi_math::ProductQuadrature
+class AngularQuadratureProdGLL : public ProductQuadrature
 {
 public:
   /**Constructor for Angular Gauss-Legendre-Legendre.*/
   explicit AngularQuadratureProdGLL(int Na, int Np, bool verbose = false);
 };
 
-class chi_math::AngularQuadratureProdGLC : public chi_math::ProductQuadrature
+class AngularQuadratureProdGLC : public ProductQuadrature
 {
 public:
   /**Constructor for Angular Gauss-Legendre-Chebyshev.*/
   explicit AngularQuadratureProdGLC(int Na, int Np, bool verbose = false);
 };
 
-class chi_math::AngularQuadratureProdCustom : public chi_math::ProductQuadrature
+class AngularQuadratureProdCustom : public ProductQuadrature
 {
 public:
   /**Constructor for Custom Angular Product Quadrature.*/
@@ -99,3 +93,5 @@ public:
                               const std::vector<double>& in_weights,
                               bool verbose);
 };
+
+} // namespace opensn

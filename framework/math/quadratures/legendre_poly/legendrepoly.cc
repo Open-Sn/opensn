@@ -2,8 +2,11 @@
 
 #include <algorithm>
 
+namespace opensn
+{
+
 double
-chi_math::Legendre(int N, double x)
+Legendre(int N, double x)
 {
   double Pnm1 = 1;
   double Pn = x;
@@ -25,7 +28,7 @@ chi_math::Legendre(int N, double x)
 }
 
 double
-chi_math::dLegendredx(int N, double x)
+dLegendredx(int N, double x)
 {
   if (N == 0) { return 0; }
 
@@ -38,7 +41,7 @@ chi_math::dLegendredx(int N, double x)
 }
 
 double
-chi_math::d2Legendredx2(int N, double x)
+d2Legendredx2(int N, double x)
 {
   double epsilon = 1.0e-8;
   if (N == 0) { return 0.0; }
@@ -54,3 +57,5 @@ chi_math::d2Legendredx2(int N, double x)
 
   return (dPdx_pos - dPdx_neg) / dx;
 }
+
+} // namespace opensn

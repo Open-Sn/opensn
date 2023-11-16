@@ -4,15 +4,17 @@
 
 #include <cinttypes>
 
+namespace opensn
+{
 namespace lbs
 {
 
-class CBC_FLUDSCommonData : public chi_mesh::sweep_management::FLUDSCommonData
+class CBC_FLUDSCommonData : public FLUDSCommonData
 {
 public:
-  CBC_FLUDSCommonData(
-    const chi_mesh::sweep_management::SPDS& spds,
-    const std::vector<chi_mesh::sweep_management::CellFaceNodalMapping>& grid_nodal_mappings);
+  CBC_FLUDSCommonData(const SPDS& spds,
+                      const std::vector<CellFaceNodalMapping>& grid_nodal_mappings);
 };
 
 } // namespace lbs
+} // namespace opensn

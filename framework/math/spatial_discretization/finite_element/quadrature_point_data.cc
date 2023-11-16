@@ -1,7 +1,8 @@
 #include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 
-namespace chi_math::finite_element
+namespace opensn
 {
+
 VolumetricQuadraturePointData::VolumetricQuadraturePointData()
 {
 }
@@ -29,7 +30,7 @@ VolumetricQuadraturePointData::QuadraturePointIndices() const
 {
   return quadrature_point_indices_;
 }
-chi_mesh::Vector3
+Vector3
 VolumetricQuadraturePointData::QPointXYZ(unsigned int qp) const
 {
   return qpoints_xyz_.at(qp);
@@ -40,7 +41,7 @@ VolumetricQuadraturePointData::ShapeValue(unsigned int i, unsigned int qp) const
   auto& qp_data = shape_value_.at(i);
   return qp_data.at(qp);
 }
-chi_mesh::Vector3
+Vector3
 VolumetricQuadraturePointData::ShapeGrad(unsigned int i, unsigned int qp) const
 {
   auto& qp_data = shape_grad_.at(i);
@@ -109,7 +110,7 @@ SurfaceQuadraturePointData::SurfaceQuadraturePointData(
 {
 }
 
-chi_mesh::Vector3
+Vector3
 SurfaceQuadraturePointData::Normal(unsigned int qp) const
 {
   return normals_.at(qp);
@@ -121,4 +122,4 @@ SurfaceQuadraturePointData::Normals() const
   return normals_;
 }
 
-} // namespace chi_math::finite_element
+} // namespace opensn

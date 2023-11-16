@@ -2,7 +2,7 @@
 
 #include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 /**
@@ -22,7 +22,7 @@ class AdjointMGXS : public MultiGroupXS
 {
 private:
   const MultiGroupXS& xs_;
-  std::vector<chi_math::SparseMatrix> transposed_transfer_matrices_;
+  std::vector<SparseMatrix> transposed_transfer_matrices_;
   std::vector<std::vector<double>> transposed_production_matrices_;
 
 public:
@@ -59,12 +59,12 @@ public:
 
   const std::vector<double>& InverseVelocity() const override { return xs_.InverseVelocity(); }
 
-  const std::vector<chi_math::SparseMatrix>& TransferMatrices() const override
+  const std::vector<SparseMatrix>& TransferMatrices() const override
   {
     return transposed_transfer_matrices_;
   }
 
-  const chi_math::SparseMatrix& TransferMatrix(unsigned int ell) const override
+  const SparseMatrix& TransferMatrix(unsigned int ell) const override
   {
     return transposed_transfer_matrices_.at(ell);
   }
@@ -88,4 +88,4 @@ public:
   const std::vector<double>& SigmaSGtoG() const override { return xs_.SigmaSGtoG(); }
 };
 
-} // namespace chi_physics
+} // namespace opensn

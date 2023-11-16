@@ -6,13 +6,13 @@
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
-namespace chi_math
+namespace opensn
 {
 
-CellMapping::CellMapping(const chi_mesh::MeshContinuum& grid,
-                         const chi_mesh::Cell& cell,
+CellMapping::CellMapping(const MeshContinuum& grid,
+                         const Cell& cell,
                          size_t num_nodes,
-                         std::vector<chi_mesh::Vector3> node_locations,
+                         std::vector<Vector3> node_locations,
                          std::vector<std::vector<int>> face_node_mappings,
                          const VandAFunction& volume_area_function)
   : ref_grid_(grid),
@@ -24,13 +24,13 @@ CellMapping::CellMapping(const chi_mesh::MeshContinuum& grid,
   volume_area_function(ref_grid_, cell, volume_, areas_);
 }
 
-const chi_mesh::Cell&
+const Cell&
 CellMapping::ReferenceCell() const
 {
   return cell_;
 }
 
-const chi_mesh::MeshContinuum&
+const MeshContinuum&
 CellMapping::ReferenceGrid() const
 {
   return ref_grid_;
@@ -81,14 +81,14 @@ CellMapping::MapFaceNode(size_t face_index, size_t face_node_index) const
 }
 
 void
-CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
-                                       const chi_mesh::Cell& cell,
+CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
+                                       const Cell& cell,
                                        double& volume,
                                        std::vector<double>& areas)
 {
   switch (cell.Type())
   {
-    case chi_mesh::CellType::SLAB:
+    case CellType::SLAB:
     {
       const auto& v0 = grid.vertices[cell.vertex_ids_[0]];
       const auto& v1 = grid.vertices[cell.vertex_ids_[1]];
@@ -97,7 +97,7 @@ CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
       areas = {1.0, 1.0};
       break;
     }
-    case chi_mesh::CellType::POLYGON:
+    case CellType::POLYGON:
     {
       volume = 0.0;
       const auto& v2 = cell.centroid_;
@@ -115,8 +115,8 @@ CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
 
         areas.push_back((v1 - v0).Norm());
 
-        const chi_mesh::Vector3 sidev01 = v1 - v0;
-        const chi_mesh::Vector3 sidev02 = v2 - v0;
+        const Vector3 sidev01 = v1 - v0;
+        const Vector3 sidev02 = v2 - v0;
 
         double sidedetJ = ((sidev01.x) * (sidev02.y) - (sidev02.x) * (sidev01.y));
 
@@ -125,7 +125,7 @@ CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
 
       break;
     }
-    case chi_mesh::CellType::POLYHEDRON:
+    case CellType::POLYHEDRON:
     {
       volume = 0.0;
       const auto& vcc = cell.centroid_;
@@ -151,7 +151,7 @@ CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
           const auto sidev02 = v2 - v0;
           const auto sidev03 = v3 - v0;
 
-          chi_mesh::Matrix3x3 J;
+          Matrix3x3 J;
 
           J.SetColJVec(0, sidev01);
           J.SetColJVec(1, sidev02);
@@ -169,10 +169,10 @@ CellMapping::ComputeCellVolumeAndAreas(const chi_mesh::MeshContinuum& grid,
   }
 }
 
-const std::vector<chi_mesh::Vector3>&
+const std::vector<Vector3>&
 CellMapping::GetNodeLocations() const
 {
   return node_locations_;
 }
 
-} // namespace chi_math
+} // namespace opensn

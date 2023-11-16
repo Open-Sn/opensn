@@ -5,7 +5,7 @@
 
 #include <petscksp.h>
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**
@@ -24,8 +24,8 @@ namespace chi_mesh
 class FieldFunctionInterpolationVolume : public FieldFunctionInterpolation
 {
 protected:
-  std::shared_ptr<chi_mesh::LogicalVolume> logical_volume_ = nullptr;
-  ff_interpolation::Operation op_type_ = ff_interpolation::Operation::OP_SUM;
+  std::shared_ptr<LogicalVolume> logical_volume_ = nullptr;
+  FieldFunctionInterpolationOperation op_type_ = FieldFunctionInterpolationOperation::OP_SUM;
   std::string op_lua_func_;
   double op_value_ = 0.0;
 
@@ -33,10 +33,13 @@ private:
   std::vector<uint64_t> cell_local_ids_inside_logvol_;
 
 public:
-  FieldFunctionInterpolationVolume() : FieldFunctionInterpolation(ff_interpolation::Type::VOLUME) {}
-  std::shared_ptr<chi_mesh::LogicalVolume>& GetLogicalVolume() { return logical_volume_; }
+  FieldFunctionInterpolationVolume()
+    : FieldFunctionInterpolation(FieldFunctionInterpolationType::VOLUME)
+  {
+  }
+  std::shared_ptr<LogicalVolume>& GetLogicalVolume() { return logical_volume_; }
 
-  ff_interpolation::Operation& GetOperationType() { return op_type_; }
+  FieldFunctionInterpolationOperation& GetOperationType() { return op_type_; }
 
   std::string& GetOperationLuaFunction() { return op_lua_func_; }
 
@@ -61,4 +64,4 @@ public:
   }
 };
 
-} // namespace chi_mesh
+} // namespace opensn

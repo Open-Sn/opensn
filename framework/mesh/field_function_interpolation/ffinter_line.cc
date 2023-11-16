@@ -9,11 +9,11 @@
 #include "framework/mpi/mpi.h"
 #include <fstream>
 
-namespace chi_mesh
+namespace opensn
 {
 
 void
-chi_mesh::FieldFunctionInterpolationLine::Initialize()
+FieldFunctionInterpolationLine::Initialize()
 {
   Chi::log.Log0Verbose1() << "Initializing line interpolator.";
   // Check for empty FF-list
@@ -22,7 +22,7 @@ chi_mesh::FieldFunctionInterpolationLine::Initialize()
                            "field function interpolator.");
 
   // Create points;
-  const chi_mesh::Vector3 vif = pf_ - pi_;
+  const Vector3 vif = pf_ - pi_;
   delta_d_ = vif.Norm() / (number_of_points_ - 1);
 
   const auto omega = vif.Normalized();
@@ -251,4 +251,4 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
                  << "\" to base name \"" << base_name << "\" Successfully";
 }
 
-} // namespace chi_mesh
+} // namespace opensn

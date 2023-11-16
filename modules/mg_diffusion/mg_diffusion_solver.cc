@@ -15,17 +15,19 @@
 #include "modules/mg_diffusion/tools.h"
 #include <iomanip>
 
+namespace opensn
+{
 namespace mg_diffusion
 {
 
 Solver::Solver(const std::string& in_solver_name)
-  : chi_physics::Solver(in_solver_name,
-                        {{"max_inner_iters", int64_t(500)},
-                         {"residual_tolerance", 1.0e-2},
-                         {"verbose_level", int64_t(0)},
-                         {"thermal_flux_tolerance", 1.0e-2},
-                         {"max_thermal_iters", int64_t(500)},
-                         {"do_two_grid", false}})
+  : opensn::Solver(in_solver_name,
+                   {{"max_inner_iters", int64_t(500)},
+                    {"residual_tolerance", 1.0e-2},
+                    {"verbose_level", int64_t(0)},
+                    {"thermal_flux_tolerance", 1.0e-2},
+                    {"max_thermal_iters", int64_t(500)},
+                    {"do_two_grid", false}})
 {
 }
 
@@ -61,7 +63,7 @@ Solver::Initialize()
                  << ": Initializing CFEM Multigroup Diffusion solver ";
 
   // Get grid
-  grid_ptr_ = chi_mesh::GetCurrentHandler().GetGrid();
+  grid_ptr_ = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
@@ -97,7 +99,7 @@ Solver::Initialize()
   mg_diffusion::Solver::Set_BCs(globl_unique_bndry_ids);
 
   // Make SDM
-  sdm_ptr_ = chi_math::spatial_discretization::PieceWiseLinearContinuous::New(*grid_ptr_);
+  sdm_ptr_ = PieceWiseLinearContinuous::New(*grid_ptr_);
   const auto& sdm = *sdm_ptr_;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
@@ -126,14 +128,14 @@ Solver::Initialize()
 
   for (uint g = 0; g < num_groups_; ++g)
   {
-    // x[g] = chi_math::PETScUtils::CreateVector(n,N);
-    x_[g] = chi_math::PETScUtils::CreateVectorWithGhosts(
+    // x[g] = CreateVector(n,N);
+    x_[g] = CreateVectorWithGhosts(
       n, N, static_cast<int64_t>(ghost_dof_indices.size()), ghost_dof_indices);
     VecSet(x_[g], 0.0);
-    bext_[g] = chi_math::PETScUtils::CreateVector(n, N);
+    bext_[g] = CreateVector(n, N);
 
-    A_[g] = chi_math::PETScUtils::CreateSquareMatrix(n, N);
-    chi_math::PETScUtils::InitMatrixSparsity(A_[g], nodal_nnz_in_diag, nodal_nnz_off_diag);
+    A_[g] = CreateSquareMatrix(n, N);
+    InitMatrixSparsity(A_[g], nodal_nnz_in_diag, nodal_nnz_off_diag);
   }
   // initialize b
   VecDuplicate(bext_.front(), &b_);
@@ -151,11 +153,10 @@ Solver::Initialize()
   // add two-grid mat and vec, if needed
   if (do_two_grid_)
   {
-    A_[num_groups_] = chi_math::PETScUtils::CreateSquareMatrix(n, N);
-    chi_math::PETScUtils::InitMatrixSparsity(
-      A_[num_groups_], nodal_nnz_in_diag, nodal_nnz_off_diag);
+    A_[num_groups_] = CreateSquareMatrix(n, N);
+    InitMatrixSparsity(A_[num_groups_], nodal_nnz_in_diag, nodal_nnz_off_diag);
     VecDuplicate(x_.front(), &x_[num_groups_]); // jcr needed?
-    //    x[num_groups] = chi_math::PETScUtils::CreateVectorWithGhosts(n,N,
+    //    x[num_groups] = CreateVectorWithGhosts(n,N,
     //                                                        static_cast<int64_t>(ghost_dof_indices.size()),
     //                                                        ghost_dof_indices);
   }
@@ -180,9 +181,8 @@ Solver::Initialize()
 
       std::string text_name = solver_name + "Flux_g" + std::string(buff);
 
-      using namespace chi_math;
-      auto initial_field_function = std::make_shared<chi_physics::FieldFunctionGridBased>(
-        text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
+      auto initial_field_function =
+        std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
       field_functions_.push_back(initial_field_function);
       Chi::field_function_stack.push_back(initial_field_function);
@@ -218,13 +218,13 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     }
 
     // Extract properties
-    using MatProperty = chi_physics::PropertyType;
+    using MatProperty = PropertyType;
     bool found_transport_xs = false;
     for (const auto& property : current_material->properties_)
     {
       if (property->Type() == MatProperty::TRANSPORT_XSECTIONS)
       {
-        auto transp_xs = std::static_pointer_cast<chi_physics::MultiGroupXS>(property);
+        auto transp_xs = std::static_pointer_cast<MultiGroupXS>(property);
         matid_to_xs_map[mat_id] = transp_xs;
         found_transport_xs = true;
         if (first_material_read) num_groups_ = transp_xs->NumGroups();
@@ -232,7 +232,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
       } // transport xs
       if (property->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
       {
-        auto mg_source = std::static_pointer_cast<chi_physics::IsotropicMultiGrpSource>(property);
+        auto mg_source = std::static_pointer_cast<IsotropicMultiGrpSource>(property);
 
         if (mg_source->source_value_g_.size() < num_groups_)
         {
@@ -360,12 +360,12 @@ Solver::Compute_TwoGrid_Params()
       for (unsigned int gp = g + 1; gp < num_groups_; ++gp)
         B[g][gp] = S[g][gp];
     }
-    MatDbl Ainv = chi_math::Inverse(A);
+    MatDbl Ainv = Inverse(A);
     // finally, obtain the iteration matrix
-    MatDbl C_ = chi_math::MatMul(Ainv, B);
+    MatDbl C_ = MatMul(Ainv, B);
     // Perform power iteration
     VecDbl E(num_groups_, 1.0);
-    double rho = chi_math::PowerIteration(C_, E, 10000, 1.0e-12);
+    double rho = PowerIteration(C_, E, 10000, 1.0e-12);
 
     // Compute two-grid diffusion quantities
     // normalize spectrum
@@ -689,13 +689,12 @@ Solver::Execute()
 
   // Create Krylov Solver
   // setup KSP once for all
-  petsc_solver_ = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A_.front(),
-    TextName(),
-    KSPCG,
-    PCGAMG,
-    basic_options_("residual_tolerance").FloatValue(),
-    basic_options_("max_inner_iters").IntegerValue());
+  petsc_solver_ = CreateCommonKrylovSolverSetup(A_.front(),
+                                                TextName(),
+                                                KSPCG,
+                                                PCGAMG,
+                                                basic_options_("residual_tolerance").FloatValue(),
+                                                basic_options_("max_inner_iters").IntegerValue());
 
   KSPSetApplicationContext(petsc_solver_.ksp, (void*)&my_app_context_);
   KSPMonitorCancel(petsc_solver_.ksp);
@@ -838,7 +837,7 @@ Solver::SolveOneGroupProblem(const unsigned int g, const int64_t verbose)
   KSPSolve(petsc_solver_.ksp, b_, x_[g]);
 
   // this is required to compute the inscattering RHS correctly in parallel
-  chi_math::PETScUtils::CommunicateGhostEntries(x_[g]);
+  CommunicateGhostEntries(x_[g]);
 
   if (verbose > 1) Chi::log.Log() << "Done solving group " << g;
 }
@@ -959,3 +958,4 @@ Solver::UpdateFieldFunctions()
 }
 
 } // namespace mg_diffusion
+} // namespace opensn

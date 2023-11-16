@@ -3,7 +3,7 @@
 #include "framework/math/quadratures/quadrature_gausslegendre.h"
 #include "framework/math/quadratures/quadrature_triangle.h"
 
-namespace chi_math
+namespace opensn
 {
 
 QuadratureWedge::QuadratureWedge(QuadratureOrder order) : Quadrature(order)
@@ -32,4 +32,4 @@ QuadratureWedge::QuadratureWedge(QuadratureOrder order) : Quadrature(order)
     }
 }
 
-} // namespace chi_math
+} // namespace opensn

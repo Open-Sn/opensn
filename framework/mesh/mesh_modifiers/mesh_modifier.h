@@ -2,14 +2,14 @@
 
 #include "framework/object.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**Base class for mesh modifiers*/
 class MeshModifier : public ChiObject
 {
 public:
-  explicit MeshModifier(const chi::InputParameters& params);
+  explicit MeshModifier(const InputParameters& params);
 
   virtual void Apply() = 0;
   virtual ~MeshModifier() = default;
@@ -18,4 +18,4 @@ protected:
   MeshModifier() = default;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

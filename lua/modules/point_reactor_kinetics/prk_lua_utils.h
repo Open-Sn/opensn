@@ -2,7 +2,7 @@
 
 #include "framework/lua.h"
 
-namespace prk::lua_utils
+namespace opensnlua::prk
 {
 /**Gets a parameter from the prk::TransientSolver.
  *
@@ -21,9 +21,10 @@ int chiPRKGetParam(lua_State* L);
  */
 int chiPRKSetParam(lua_State* L);
 
-chi::InputParameters GetSyntax_SetParam();
-chi::ParameterBlock SetParam(const chi::InputParameters& params);
+opensn::InputParameters GetSyntax_SetParam();
+opensn::ParameterBlock SetParam(const opensn::InputParameters& params);
 
-chi::InputParameters GetParamSyntax();
-chi::ParameterBlock GetParam(const chi::InputParameters& params);
-} // namespace prk::lua_utils
+opensn::InputParameters GetParamSyntax();
+opensn::ParameterBlock GetParam(const opensn::InputParameters& params);
+
+} // namespace opensnlua::prk

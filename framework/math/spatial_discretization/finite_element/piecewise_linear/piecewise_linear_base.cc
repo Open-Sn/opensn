@@ -10,10 +10,10 @@
   std::invalid_argument((fname) + ": Unsupported cell type encountered. type_id=" +                \
                         std::to_string(static_cast<int>(cell.Type())));
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
 
-PieceWiseLinearBase::PieceWiseLinearBase(const chi_mesh::MeshContinuum& grid,
+PieceWiseLinearBase::PieceWiseLinearBase(const MeshContinuum& grid,
                                          QuadratureOrder q_order,
                                          SDMType sdm_type,
                                          CoordinateSystemType cs_type)
@@ -30,26 +30,26 @@ PieceWiseLinearBase::CreateCellMappings()
 {
   constexpr std::string_view fname = __PRETTY_FUNCTION__;
 
-  typedef cell_mapping::PieceWiseLinearSlabMapping SlabSlab;
-  typedef cell_mapping::PieceWiseLinearPolygonMapping Polygon;
-  typedef cell_mapping::PieceWiseLinearPolyhedronMapping Polyhedron;
+  typedef PieceWiseLinearSlabMapping SlabSlab;
+  typedef PieceWiseLinearPolygonMapping Polygon;
+  typedef PieceWiseLinearPolyhedronMapping Polyhedron;
 
-  auto MakeCellMapping = [this, fname](const chi_mesh::Cell& cell)
+  auto MakeCellMapping = [this, fname](const Cell& cell)
   {
     using namespace std;
-    using namespace chi_math;
-    std::unique_ptr<chi_math::CellMapping> mapping;
+    using namespace opensn;
+    std::unique_ptr<CellMapping> mapping;
 
     switch (cell.Type())
     {
-      case chi_mesh::CellType::SLAB:
+      case CellType::SLAB:
       {
         const auto& vol_quad = line_quad_order_arbitrary_;
 
         mapping = make_unique<SlabSlab>(cell, ref_grid_, vol_quad);
         break;
       }
-      case chi_mesh::CellType::POLYGON:
+      case CellType::POLYGON:
       {
         const auto& vol_quad = tri_quad_order_arbitrary_;
         const auto& area_quad = line_quad_order_arbitrary_;
@@ -57,7 +57,7 @@ PieceWiseLinearBase::CreateCellMappings()
         mapping = make_unique<Polygon>(cell, ref_grid_, vol_quad, area_quad);
         break;
       }
-      case chi_mesh::CellType::POLYHEDRON:
+      case CellType::POLYHEDRON:
       {
         const auto& vol_quad = tet_quad_order_arbitrary_;
         const auto& area_quad = tri_quad_order_arbitrary_;
@@ -81,4 +81,4 @@ PieceWiseLinearBase::CreateCellMappings()
     nb_cell_mappings_.insert(std::make_pair(ghost_id, std::move(ghost_mapping)));
   }
 }
-} // namespace chi_math::spatial_discretization
+} // namespace opensn

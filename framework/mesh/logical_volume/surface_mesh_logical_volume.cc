@@ -8,15 +8,15 @@
 
 #include <utility>
 
-namespace chi_mesh
+namespace opensn
 {
 
 RegisterChiObject(chi_mesh, SurfaceMeshLogicalVolume);
 
-chi::InputParameters
+InputParameters
 SurfaceMeshLogicalVolume::GetInputParameters()
 {
-  chi::InputParameters params = LogicalVolume::GetInputParameters();
+  InputParameters params = LogicalVolume::GetInputParameters();
 
   params.SetDocGroup("LuaLogicVolumes");
 
@@ -26,9 +26,9 @@ SurfaceMeshLogicalVolume::GetInputParameters()
   return params;
 }
 
-SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const chi::InputParameters& params)
+SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
-    surf_mesh(Chi::GetStackItemPtrAsType<chi_mesh::SurfaceMesh>(
+    surf_mesh(Chi::GetStackItemPtrAsType<SurfaceMesh>(
       Chi::object_stack, params.GetParamValue<size_t>("surface_mesh_handle"), __FUNCTION__)),
     xbounds_({1.0e6, -1.0e6}),
     ybounds_({1.0e6, -1.0e6}),
@@ -62,7 +62,7 @@ SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const chi::InputParameters& p
 }
 
 bool
-SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
 {
   double tolerance = 1.0e-5;
 
@@ -83,8 +83,8 @@ SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
   bool cheap_pass = true; // now try to disprove
   for (auto& face : surf_mesh->GetTriangles())
   {
-    chi_mesh::Vector3 fc = face.face_centroid;
-    chi_mesh::Vector3 p_to_fc = fc - point;
+    Vector3 fc = face.face_centroid;
+    Vector3 p_to_fc = fc - point;
 
     p_to_fc = p_to_fc / p_to_fc.Norm();
 
@@ -105,8 +105,8 @@ SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
   // a negative and now we need to do more work.
   for (size_t f = 0; f < surf_mesh->GetTriangles().size(); f++)
   {
-    chi_mesh::Vector3 fc = surf_mesh->GetTriangles()[f].face_centroid;
-    chi_mesh::Vector3 p_to_fc = fc - point;
+    Vector3 fc = surf_mesh->GetTriangles()[f].face_centroid;
+    Vector3 p_to_fc = fc - point;
     double distance_to_face = p_to_fc.Norm();
     double closest_distance = 1.0e16;
     bool closest_sense_pos = false;
@@ -127,14 +127,14 @@ SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
         int v0_i = surf_mesh->GetTriangles()[fi].v_index[0];
         int v1_i = surf_mesh->GetTriangles()[fi].v_index[1];
         int v2_i = surf_mesh->GetTriangles()[fi].v_index[2];
-        chi_mesh::Vertex v0 = surf_mesh->GetVertices()[v0_i];
-        chi_mesh::Vertex v1 = surf_mesh->GetVertices()[v1_i];
-        chi_mesh::Vertex v2 = surf_mesh->GetVertices()[v2_i];
+        Vertex v0 = surf_mesh->GetVertices()[v0_i];
+        Vertex v1 = surf_mesh->GetVertices()[v1_i];
+        Vertex v2 = surf_mesh->GetVertices()[v2_i];
 
         // Check if the line intersects plane
-        chi_mesh::Vertex intp; // Intersection point
+        Vertex intp; // Intersection point
         std::pair<double, double> weights;
-        bool intersects_plane = chi_mesh::CheckPlaneLineIntersect(
+        bool intersects_plane = CheckPlaneLineIntersect(
           surf_mesh->GetTriangles()[fi].geometric_normal, v0, point, fc, intp, &weights);
         if (!intersects_plane) continue;
 
@@ -142,27 +142,27 @@ SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
         bool intersects_triangle = true;
 
         // Compute the legs
-        chi_mesh::Vector3 v01 = v1 - v0;
-        chi_mesh::Vector3 v12 = v2 - v1;
-        chi_mesh::Vector3 v20 = v0 - v2;
+        Vector3 v01 = v1 - v0;
+        Vector3 v12 = v2 - v1;
+        Vector3 v20 = v0 - v2;
 
         // Compute the vertices to the point
-        chi_mesh::Vector3 v0p = intp - v0;
-        chi_mesh::Vector3 v1p = intp - v1;
-        chi_mesh::Vector3 v2p = intp - v2;
+        Vector3 v0p = intp - v0;
+        Vector3 v1p = intp - v1;
+        Vector3 v2p = intp - v2;
 
         // Compute the cross products
-        chi_mesh::Vector3 x0p = v01.Cross(v0p);
-        chi_mesh::Vector3 x1p = v12.Cross(v1p);
-        chi_mesh::Vector3 x2p = v20.Cross(v2p);
+        Vector3 x0p = v01.Cross(v0p);
+        Vector3 x1p = v12.Cross(v1p);
+        Vector3 x2p = v20.Cross(v2p);
 
         // Normalize them
         x0p = x0p / x0p.Norm();
         x1p = x1p / x1p.Norm();
         x2p = x2p / x2p.Norm();
 
-        chi_mesh::Vector3 face_norm = surf_mesh->GetTriangles()[fi].geometric_normal /
-                                      surf_mesh->GetTriangles()[fi].geometric_normal.Norm();
+        Vector3 face_norm = surf_mesh->GetTriangles()[fi].geometric_normal /
+                            surf_mesh->GetTriangles()[fi].geometric_normal.Norm();
 
         if (x0p.Dot(face_norm) < 0.0) intersects_triangle = false;
         if (x1p.Dot(face_norm) < 0.0) intersects_triangle = false;
@@ -194,4 +194,4 @@ SurfaceMeshLogicalVolume::Inside(const chi_mesh::Vector3& point) const
   return true;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

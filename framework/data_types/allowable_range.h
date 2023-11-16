@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <sstream>
 
-namespace chi_data_types
+namespace opensn
 {
 
 /**Base class for an allowable range.*/
@@ -213,4 +213,4 @@ protected:
   }
 };
 
-} // namespace chi_data_types
+} // namespace opensn

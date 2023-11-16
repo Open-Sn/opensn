@@ -3,14 +3,9 @@
 #include "framework/object.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 
-namespace chi
+namespace opensn
 {
 class GraphPartitioner;
-}
-
-namespace chi_mesh
-{
-
 class MeshContinuum;
 
 /**
@@ -39,8 +34,8 @@ public:
    */
   virtual void Execute();
 
-  static chi::InputParameters GetInputParameters();
-  explicit MeshGenerator(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit MeshGenerator(const InputParameters& params);
 
   /**
    * Virtual method to generate the unpartitioned mesh for the next step.
@@ -54,13 +49,13 @@ public:
 
   struct VertexListHelper
   {
-    virtual const chi_mesh::Vertex& at(uint64_t vid) const = 0;
+    virtual const Vertex& at(uint64_t vid) const = 0;
   };
   template <typename T>
   struct STLVertexListHelper : public VertexListHelper
   {
     explicit STLVertexListHelper(const T& list) : list_(list) {}
-    const chi_mesh::Vertex& at(uint64_t vid) const override { return list_.at(vid); };
+    const Vertex& at(uint64_t vid) const override { return list_.at(vid); };
     const T& list_;
   };
 
@@ -86,7 +81,7 @@ protected:
    * Determines if a cells needs to be included as a ghost or as a local cell.
    */
   bool CellHasLocalScope(int location_id,
-                         const chi_mesh::UnpartitionedMesh::LightWeightCell& lwcell,
+                         const UnpartitionedMesh::LightWeightCell& lwcell,
                          uint64_t cell_global_id,
                          const std::vector<std::set<uint64_t>>& vertex_subscriptions,
                          const std::vector<int64_t>& cell_partition_ids) const;
@@ -94,22 +89,21 @@ protected:
   /**
    * Converts a light-weight cell to a real cell.
    */
-  static std::unique_ptr<chi_mesh::Cell>
-  SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
-            uint64_t global_id,
-            uint64_t partition_id,
-            const VertexListHelper& vertices);
+  static std::unique_ptr<Cell> SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
+                                         uint64_t global_id,
+                                         uint64_t partition_id,
+                                         const VertexListHelper& vertices);
 
-  static void SetGridAttributes(chi_mesh::MeshContinuum& grid,
+  static void SetGridAttributes(MeshContinuum& grid,
                                 MeshAttributes new_attribs,
                                 std::array<size_t, 3> ortho_cells_per_dimension);
 
-  static void ComputeAndPrintStats(const chi_mesh::MeshContinuum& grid);
+  static void ComputeAndPrintStats(const MeshContinuum& grid);
 
   const double scale_;
   const bool replicated_;
   std::vector<MeshGenerator*> inputs_;
-  chi::GraphPartitioner* partitioner_ = nullptr;
+  GraphPartitioner* partitioner_ = nullptr;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

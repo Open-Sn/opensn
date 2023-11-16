@@ -9,14 +9,13 @@
 
 #define sc_int64 static_cast<int64_t>
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
 
-PieceWiseLinearContinuous::PieceWiseLinearContinuous(const chi_mesh::MeshContinuum& grid,
-                                                     chi_math::QuadratureOrder q_order,
-                                                     chi_math::CoordinateSystemType cs_type)
-  : spatial_discretization::PieceWiseLinearBase(
-      grid, q_order, SDMType::PIECEWISE_LINEAR_CONTINUOUS, cs_type)
+PieceWiseLinearContinuous::PieceWiseLinearContinuous(const MeshContinuum& grid,
+                                                     QuadratureOrder q_order,
+                                                     CoordinateSystemType cs_type)
+  : PieceWiseLinearBase(grid, q_order, SDMType::PIECEWISE_LINEAR_CONTINUOUS, cs_type)
 {
   CreateCellMappings();
 
@@ -24,7 +23,7 @@ PieceWiseLinearContinuous::PieceWiseLinearContinuous(const chi_mesh::MeshContinu
 }
 
 std::shared_ptr<PieceWiseLinearContinuous>
-PieceWiseLinearContinuous::New(const chi_mesh::MeshContinuum& grid,
+PieceWiseLinearContinuous::New(const MeshContinuum& grid,
                                QuadratureOrder q_order,
                                CoordinateSystemType cs_type)
 
@@ -133,7 +132,7 @@ PieceWiseLinearContinuous::OrderNodes()
   // Communicate nodes in need
   //                                              of mapping
   std::map<uint64_t, std::vector<uint64_t>> query_node_ids =
-    chi_mpi_utils::MapAllToAll(nonlocal_node_ids_map, MPI_UINT64_T);
+    MapAllToAll(nonlocal_node_ids_map, MPI_UINT64_T);
 
   // Map the query nodes
   std::map<uint64_t, std::vector<int64_t>> mapped_node_ids;
@@ -153,7 +152,7 @@ PieceWiseLinearContinuous::OrderNodes()
 
   // Communicate back the mappings
   std::map<uint64_t, std::vector<int64_t>> nonlocal_node_ids_map_mapped =
-    chi_mpi_utils::MapAllToAll(mapped_node_ids, MPI_INT64_T);
+    MapAllToAll(mapped_node_ids, MPI_INT64_T);
 
   // Processing the mapping for non-local nodes
   ghost_node_mapping_.clear();
@@ -187,10 +186,9 @@ PieceWiseLinearContinuous::OrderNodes()
 }
 
 void
-PieceWiseLinearContinuous::BuildSparsityPattern(
-  std::vector<int64_t>& nodal_nnz_in_diag,
-  std::vector<int64_t>& nodal_nnz_off_diag,
-  const chi_math::UnknownManager& unknown_manager) const
+PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
+                                                std::vector<int64_t>& nodal_nnz_off_diag,
+                                                const UnknownManager& unknown_manager) const
 {
   //**************************************** DEFINE UTILITIES
 
@@ -488,7 +486,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
   nodal_nnz_in_diag.resize(local_base_block_size_ * N, 0);
   nodal_nnz_off_diag.resize(local_base_block_size_ * N, 0);
 
-  if (unknown_manager.dof_storage_type_ == chi_math::UnknownStorageType::NODAL)
+  if (unknown_manager.dof_storage_type_ == UnknownStorageType::NODAL)
   {
     int ir = -1;
     for (int i = 0; i < local_base_block_size_; ++i)
@@ -501,7 +499,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
       } // for j
     }   // for i
   }
-  else if (unknown_manager.dof_storage_type_ == chi_math::UnknownStorageType::BLOCK)
+  else if (unknown_manager.dof_storage_type_ == UnknownStorageType::BLOCK)
   {
     int ir = -1;
     for (int j = 0; j < N; ++j)
@@ -517,9 +515,9 @@ PieceWiseLinearContinuous::BuildSparsityPattern(
 }
 
 int64_t
-PieceWiseLinearContinuous::MapDOF(const chi_mesh::Cell& cell,
+PieceWiseLinearContinuous::MapDOF(const Cell& cell,
                                   const unsigned int node,
-                                  const chi_math::UnknownManager& unknown_manager,
+                                  const UnknownManager& unknown_manager,
                                   const unsigned int unknown_id,
                                   const unsigned int component) const
 {
@@ -534,7 +532,7 @@ PieceWiseLinearContinuous::MapDOF(const chi_mesh::Cell& cell,
   auto storage = unknown_manager.dof_storage_type_;
 
   int64_t address = -1;
-  if (storage == chi_math::UnknownStorageType::BLOCK)
+  if (storage == UnknownStorageType::BLOCK)
   {
     for (int locJ = 0; locJ < Chi::mpi.process_count; ++locJ)
     {
@@ -547,16 +545,16 @@ PieceWiseLinearContinuous::MapDOF(const chi_mesh::Cell& cell,
       break;
     }
   }
-  else if (storage == chi_math::UnknownStorageType::NODAL)
+  else if (storage == UnknownStorageType::NODAL)
     address = global_id * sc_int64(num_unknowns) + sc_int64(block_id);
 
   return address;
 }
 
 int64_t
-PieceWiseLinearContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
+PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
                                        const unsigned int node,
-                                       const chi_math::UnknownManager& unknown_manager,
+                                       const UnknownManager& unknown_manager,
                                        const unsigned int unknown_id,
                                        const unsigned int component) const
 {
@@ -575,11 +573,11 @@ PieceWiseLinearContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
   int64_t address = -1;
   if (is_local)
   {
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
     {
       address = sc_int64(local_base_block_size_ * block_id) + local_id;
     }
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
       address = local_id * sc_int64(num_unknowns) + sc_int64(block_id);
   } // if is_local
   else
@@ -596,11 +594,11 @@ PieceWiseLinearContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
       }
       ++counter;
     }
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
     {
       address = sc_int64(ghost_node_mapping_.size() * block_id) + ghost_local_node_id;
     }
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
       address = ghost_local_node_id * sc_int64(num_unknowns) + sc_int64(block_id);
 
     address += sc_int64(num_local_dofs);
@@ -610,7 +608,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
 }
 
 size_t
-PieceWiseLinearContinuous::GetNumGhostDOFs(const chi_math::UnknownManager& unknown_manager) const
+PieceWiseLinearContinuous::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
@@ -618,7 +616,7 @@ PieceWiseLinearContinuous::GetNumGhostDOFs(const chi_math::UnknownManager& unkno
 }
 
 std::vector<int64_t>
-PieceWiseLinearContinuous::GetGhostDOFIndices(const chi_math::UnknownManager& unknown_manager) const
+PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
 {
   std::vector<int64_t> dof_ids;
   dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
@@ -639,7 +637,7 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const chi_math::UnknownManager& un
       {
         size_t block_id = unknown_manager.MapUnknown(u, c);
         int64_t address = -1;
-        if (storage == chi_math::UnknownStorageType::BLOCK)
+        if (storage == UnknownStorageType::BLOCK)
         {
           for (int locJ = 0; locJ < Chi::mpi.process_count; ++locJ)
           {
@@ -652,7 +650,7 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const chi_math::UnknownManager& un
             break;
           }
         }
-        else if (storage == chi_math::UnknownStorageType::NODAL)
+        else if (storage == UnknownStorageType::NODAL)
           address = global_id * sc_int64(num_unknown_comps) + sc_int64(block_id);
 
         dof_ids.push_back(address);
@@ -663,4 +661,4 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const chi_math::UnknownManager& un
   return dof_ids;
 }
 
-} // namespace chi_math::spatial_discretization
+} // namespace opensn

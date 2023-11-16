@@ -8,7 +8,7 @@
 #include "framework/object_factory.h"
 #include <inttypes.h>
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObjectParametersOnly(chi, PostProcessor);
@@ -45,7 +45,6 @@ PostProcessor::GetInputParameters()
 
   params.AddOptionalParameter("print_numeric_format", "general", "Numeric format to use.");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange(
     "print_numeric_format",
     AllowableRangeList::New({"fixed", "floating_point", "scientific", "general"}));
@@ -122,17 +121,16 @@ PostProcessor::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
 {
 
   auto pp_ptr = std::dynamic_pointer_cast<PostProcessor>(new_object);
-  ChiLogicalErrorIf(not pp_ptr, "Failure to cast new object to chi::PostProcessor");
+  ChiLogicalErrorIf(not pp_ptr, "Failure to cast new object to PostProcessor");
 
   Chi::postprocessor_stack.push_back(pp_ptr);
   new_object->SetStackID(Chi::postprocessor_stack.size() - 1);
 
-  auto new_subscriber = std::dynamic_pointer_cast<chi::EventSubscriber>(pp_ptr);
+  auto new_subscriber = std::dynamic_pointer_cast<EventSubscriber>(pp_ptr);
 
-  ChiLogicalErrorIf(not new_subscriber,
-                    "Failure to cast chi::PostProcessor to chi::EventSubscriber");
+  ChiLogicalErrorIf(not new_subscriber, "Failure to cast PostProcessor to EventSubscriber");
 
-  auto& publisher = chi_physics::PhysicsEventPublisher::GetInstance();
+  auto& publisher = PhysicsEventPublisher::GetInstance();
   publisher.AddSubscriber(new_subscriber);
 }
 
@@ -309,4 +307,4 @@ PostProcessor::SetType(PPType type)
   type_ = type;
 }
 
-} // namespace chi
+} // namespace opensn

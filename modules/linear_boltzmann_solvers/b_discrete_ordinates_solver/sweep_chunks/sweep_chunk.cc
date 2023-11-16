@@ -9,13 +9,15 @@
 
 #define scint static_cast<int>
 
+namespace opensn
+{
 namespace lbs
 {
 
 SweepChunk::SweepChunk(std::vector<double>& destination_phi,
                        std::vector<double>& destination_psi,
-                       const chi_mesh::MeshContinuum& grid,
-                       const chi_math::SpatialDiscretization& discretization,
+                       const MeshContinuum& grid,
+                       const SpatialDiscretization& discretization,
                        const std::vector<UnitCellMatrices>& unit_cell_matrices,
                        std::vector<lbs::CellLBSView>& cell_transport_views,
                        const std::vector<double>& source_moments,
@@ -24,7 +26,7 @@ SweepChunk::SweepChunk(std::vector<double>& destination_phi,
                        int num_moments,
                        int max_num_cell_dofs,
                        std::unique_ptr<SweepDependencyInterface> sweep_dependency_interface_ptr)
-  : chi_mesh::sweep_management::SweepChunk(destination_phi, destination_psi),
+  : opensn::SweepChunk(destination_phi, destination_psi),
     grid_(grid),
     grid_fe_view_(discretization),
     unit_cell_matrices_(unit_cell_matrices),
@@ -242,3 +244,4 @@ SweepDependencyInterface::SetupOutgoingFace(int face_id,
 }
 
 } // namespace lbs
+} // namespace opensn

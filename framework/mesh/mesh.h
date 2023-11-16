@@ -5,15 +5,13 @@
 #include <memory>
 
 /**
- * Namespace for all meshing features
- *
  * Meshes in ChiTech follow the concept of Regions. In any given region the
  * boundaries are a collection of either line-meshes (2D) or
  * surface-meshes (3D).
  */
-namespace chi_mesh
+namespace opensn
 {
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ FORWARD DECLARATIONS
+
 struct Vector3;
 typedef Vector3 Normal;
 typedef Vector3 Vertex;
@@ -24,7 +22,7 @@ struct Face;
 struct Edge;
 struct PolyFace;
 
-struct SPDS;
+class SPDS;
 
 // Cells
 class Cell;
@@ -80,8 +78,6 @@ operator|(const MeshAttributes f1, const MeshAttributes f2)
   return static_cast<MeshAttributes>(static_cast<int>(f1) | static_cast<int>(f2));
 }
 
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ROUTINES
-
 /**
  * Obtains a reference to the current mesh handler from the global stack.
  *
@@ -116,9 +112,9 @@ size_t CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices_1d);
  * The vertices along a dimension merely represents the divisions. They are not the complete
  * vertices defining a cell. For example:
  * \code
- * std::vector<chi_mesh::Vertex> vertices_x = {0.0,1.0,2.0};
- * std::vector<chi_mesh::Vertex> vertices_y = {0.0,1.0,2.0};
- * chi_mesh::CreateUnpartitioned2DOrthoMesh(vertices_x,vertices_y);
+ * std::vector<Vertex> vertices_x = {0.0,1.0,2.0};
+ * std::vector<Vertex> vertices_y = {0.0,1.0,2.0};
+ * opensn::CreateUnpartitioned2DOrthoMesh(vertices_x,vertices_y);
  * \endcode
  *
  * This code will create a 2x2 mesh with \f$ \vec{x} \in [0,2]^2 \f$.
@@ -132,10 +128,10 @@ size_t CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
  * The vertices along a dimension merely represents the divisions. They are not the complete
  * vertices defining a cell. For example:
  * \code
- * std::vector<chi_mesh::Vertex> vertices_x = {0.0,1.0,2.0};
- * std::vector<chi_mesh::Vertex> vertices_y = {0.0,1.0,2.0};
- * std::vector<chi_mesh::Vertex> vertices_z = {0.0,1.0,2.0};
- * chi_mesh::CreateUnpartitioned3DOrthoMesh(vertices_x,vertices_y,vertices_z);
+ * std::vector<Vertex> vertices_x = {0.0,1.0,2.0};
+ * std::vector<Vertex> vertices_y = {0.0,1.0,2.0};
+ * std::vector<Vertex> vertices_z = {0.0,1.0,2.0};
+ * opensn::CreateUnpartitioned3DOrthoMesh(vertices_x,vertices_y,vertices_z);
  * \endcode
  *
  * This code will create a 2x2 mesh with \f$ \vec{x} \in [0,2]^2 \f$.
@@ -144,7 +140,7 @@ size_t CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
 size_t CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
                                       std::vector<double>& vertices_1d_y,
                                       std::vector<double>& vertices_1d_z);
-} // namespace chi_mesh
+} // namespace opensn
 
 #include "framework/mesh/mesh_vector.h"
 #include "framework/mesh/mesh_matrix3x3.h"

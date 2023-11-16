@@ -2,7 +2,7 @@
 
 #include "framework/mesh/surface_mesher/surface_mesher.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**
@@ -16,4 +16,4 @@ public:
   void Execute() override;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

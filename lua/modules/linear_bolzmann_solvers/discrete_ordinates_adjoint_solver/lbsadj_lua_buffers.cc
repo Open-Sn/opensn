@@ -6,7 +6,7 @@
 
 #include "framework/console/console.h"
 
-namespace lbs::adjoint_lua_utils
+namespace opensnlua::lbs
 {
 
 RegisterLuaFunctionAsIs(chiAdjointSolverReadFluxMomentsToBuffer);
@@ -24,8 +24,8 @@ chiAdjointSolverReadFluxMomentsToBuffer(lua_State* L)
 
   const int solver_handle = lua_tointeger(L, 1);
 
-  auto& solver =
-    Chi::GetStackItem<lbs::DiscreteOrdinatesAdjointSolver>(Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::Chi::GetStackItem<opensn::lbs::DiscreteOrdinatesAdjointSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   const std::string file_basename = lua_tostring(L, 2);
 
@@ -52,8 +52,8 @@ chiAdjointSolverApplyFluxMomentBuffer(lua_State* L)
 
   const int solver_handle = lua_tointeger(L, 1);
 
-  auto& solver =
-    Chi::GetStackItem<lbs::DiscreteOrdinatesAdjointSolver>(Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::Chi::GetStackItem<opensn::lbs::DiscreteOrdinatesAdjointSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   const int buffer_handle = lua_tointeger(L, 2);
 
@@ -65,4 +65,4 @@ chiAdjointSolverApplyFluxMomentBuffer(lua_State* L)
   return 0;
 }
 
-} // namespace lbs::adjoint_lua_utils
+} // namespace opensnlua::lbs

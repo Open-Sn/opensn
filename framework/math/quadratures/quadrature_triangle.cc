@@ -6,14 +6,17 @@
 #include <stdexcept>
 #include <cassert>
 
-chi_math::QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order)
+namespace opensn
+{
+
+QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order)
 {
   double x = 0.0, y = 0.0, z = 0.0;
 
   auto& _points = qpoints_;
   auto& _weights = weights_;
 
-  typedef chi_mesh::Vector3 Point;
+  typedef Vector3 Point;
   typedef double Real;
 
   switch (order)
@@ -1198,7 +1201,7 @@ chi_math::QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadra
 
     default:
     {
-      chi_math::QuadratureConical conical(order);
+      QuadratureConical conical(order);
       conical.Initialize_Conical_Product_Tri();
       qpoints_.swap(conical.qpoints_);
       weights_.swap(conical.weights_);
@@ -1207,7 +1210,7 @@ chi_math::QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadra
 }
 
 void
-chi_math::QuadratureTriangle::dunavant_rule(const double rule_data[][4], const unsigned int n_pts)
+QuadratureTriangle::dunavant_rule(const double rule_data[][4], const unsigned int n_pts)
 {
   // The input data array has 4 columns.  The first 3 are the permutation
   // points. The last column is the weights for a given set of permutation
@@ -1249,7 +1252,7 @@ chi_math::QuadratureTriangle::dunavant_rule(const double rule_data[][4], const u
         assert(offset + 0 < qpoints_.size());
 
         // The point has only a single permutation (the centroid!)
-        qpoints_[offset + 0] = chi_mesh::Vector3(rule_data[p][0], rule_data[p][0]);
+        qpoints_[offset + 0] = Vector3(rule_data[p][0], rule_data[p][0]);
 
         // The weight is always the last entry in the row.
         weights_[offset + 0] = rule_data[p][3];
@@ -1265,9 +1268,9 @@ chi_math::QuadratureTriangle::dunavant_rule(const double rule_data[][4], const u
 
         // Here it's understood the second entry is to be used twice, and
         // thus there are three possible permutations.
-        qpoints_[offset + 0] = chi_mesh::Vector3(rule_data[p][0], rule_data[p][1]);
-        qpoints_[offset + 1] = chi_mesh::Vector3(rule_data[p][1], rule_data[p][0]);
-        qpoints_[offset + 2] = chi_mesh::Vector3(rule_data[p][1], rule_data[p][1]);
+        qpoints_[offset + 0] = Vector3(rule_data[p][0], rule_data[p][1]);
+        qpoints_[offset + 1] = Vector3(rule_data[p][1], rule_data[p][0]);
+        qpoints_[offset + 2] = Vector3(rule_data[p][1], rule_data[p][1]);
 
         for (unsigned int j = 0; j < 3; ++j)
           weights_[offset + j] = rule_data[p][3];
@@ -1282,12 +1285,12 @@ chi_math::QuadratureTriangle::dunavant_rule(const double rule_data[][4], const u
         assert(offset + 5 < qpoints_.size());
 
         // Three individual entries with six permutations.
-        qpoints_[offset + 0] = chi_mesh::Vector3(rule_data[p][0], rule_data[p][1]);
-        qpoints_[offset + 1] = chi_mesh::Vector3(rule_data[p][0], rule_data[p][2]);
-        qpoints_[offset + 2] = chi_mesh::Vector3(rule_data[p][1], rule_data[p][0]);
-        qpoints_[offset + 3] = chi_mesh::Vector3(rule_data[p][1], rule_data[p][2]);
-        qpoints_[offset + 4] = chi_mesh::Vector3(rule_data[p][2], rule_data[p][0]);
-        qpoints_[offset + 5] = chi_mesh::Vector3(rule_data[p][2], rule_data[p][1]);
+        qpoints_[offset + 0] = Vector3(rule_data[p][0], rule_data[p][1]);
+        qpoints_[offset + 1] = Vector3(rule_data[p][0], rule_data[p][2]);
+        qpoints_[offset + 2] = Vector3(rule_data[p][1], rule_data[p][0]);
+        qpoints_[offset + 3] = Vector3(rule_data[p][1], rule_data[p][2]);
+        qpoints_[offset + 4] = Vector3(rule_data[p][2], rule_data[p][0]);
+        qpoints_[offset + 5] = Vector3(rule_data[p][2], rule_data[p][1]);
 
         for (unsigned int j = 0; j < 6; ++j)
           weights_[offset + j] = rule_data[p][3];
@@ -1310,16 +1313,16 @@ chi_math::QuadratureTriangle::dunavant_rule(const double rule_data[][4], const u
 // III:  6-permutation, (a,b,1-a-b)
 // The weights for a given set of permutations are all the same.
 void
-chi_math::QuadratureTriangle::dunavant_rule2(const double* wts,
-                                             const double* a,
-                                             const double* b,
-                                             const unsigned int* permutation_ids,
-                                             unsigned int n_wts)
+QuadratureTriangle::dunavant_rule2(const double* wts,
+                                   const double* a,
+                                   const double* b,
+                                   const unsigned int* permutation_ids,
+                                   unsigned int n_wts)
 {
   auto& _points = qpoints_;
   auto& _weights = weights_;
 
-  typedef chi_mesh::Vector3 Point;
+  typedef Vector3 Point;
 
   // Figure out how many total points by summing up the entries
   // in the permutation_ids array, and resize the _points and _weights
@@ -1387,3 +1390,5 @@ chi_math::QuadratureTriangle::dunavant_rule2(const double* wts,
     }
   }
 }
+
+} // namespace opensn

@@ -7,16 +7,18 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-chi_math::SphericalAngularQuadrature::SphericalAngularQuadrature(
-  const chi_math::Quadrature& quad_polar, const bool verbose)
+namespace opensn
+{
+
+SphericalAngularQuadrature::SphericalAngularQuadrature(const Quadrature& quad_polar,
+                                                       const bool verbose)
   : CurvilinearAngularQuadrature()
 {
   Initialize(quad_polar, verbose);
 }
 
 void
-chi_math::SphericalAngularQuadrature::Initialize(const chi_math::Quadrature& quad_polar,
-                                                 const bool verbose)
+SphericalAngularQuadrature::Initialize(const Quadrature& quad_polar, const bool verbose)
 {
   //  copies of input quadratures
   auto polar_quad(quad_polar);
@@ -27,7 +29,7 @@ chi_math::SphericalAngularQuadrature::Initialize(const chi_math::Quadrature& qua
   const auto eps = std::numeric_limits<double>::epsilon();
 
   if (polar_quad.weights_.size() == 0)
-    throw std::invalid_argument("chi_math::SphericalAngularQuadrature::Initialize : "
+    throw std::invalid_argument("SphericalAngularQuadrature::Initialize : "
                                 "invalid polar quadrature size = " +
                                 std::to_string(polar_quad.weights_.size()));
 
@@ -48,7 +50,7 @@ chi_math::SphericalAngularQuadrature::Initialize(const chi_math::Quadrature& qua
         w *= fac;
   }
   else
-    throw std::invalid_argument("chi_math::SphericalAngularQuadrature::Initialize : "
+    throw std::invalid_argument("SphericalAngularQuadrature::Initialize : "
                                 "polar quadrature weights sum to zero.");
 
   //  defined on range [-1;+1]
@@ -57,10 +59,10 @@ chi_math::SphericalAngularQuadrature::Initialize(const chi_math::Quadrature& qua
     polar_quad.SetRange(polar_quad_span);
 
   //  abscissae sorted in ascending order
-  auto lt_qp = [](const chi_math::QuadraturePointXYZ& qp0, const chi_math::QuadraturePointXYZ& qp1)
+  auto lt_qp = [](const QuadraturePointXYZ& qp0, const QuadraturePointXYZ& qp1)
   { return qp0[0] < qp1[0]; };
   if (!std::is_sorted(polar_quad.qpoints_.begin(), polar_quad.qpoints_.end(), lt_qp))
-    throw std::invalid_argument("chi_math::SphericalAngularQuadrature::Initialize : "
+    throw std::invalid_argument("SphericalAngularQuadrature::Initialize : "
                                 "polar quadrature abscissae not in ascending order.");
 
   //  existence of zero-weight abscissae at the start and at the end of the
@@ -95,7 +97,7 @@ chi_math::SphericalAngularQuadrature::Initialize(const chi_math::Quadrature& qua
 
     const auto weight = pol_wei;
     const auto abscissa = QuadraturePointPhiTheta(0, std::acos(pol_abs));
-    const auto omega = chi_mesh::Vector3(pol_com, 0, pol_abs);
+    const auto omega = Vector3(pol_com, 0, pol_abs);
 
     weights_.emplace_back(weight);
     abscissae_.emplace_back(abscissa);
@@ -145,7 +147,7 @@ chi_math::SphericalAngularQuadrature::Initialize(const chi_math::Quadrature& qua
 }
 
 void
-chi_math::SphericalAngularQuadrature::InitializeParameters()
+SphericalAngularQuadrature::InitializeParameters()
 {
   fac_diamond_difference_.resize(weights_.size(), 1);
   fac_streaming_operator_.resize(weights_.size(), 0);
@@ -175,8 +177,7 @@ chi_math::SphericalAngularQuadrature::InitializeParameters()
 }
 
 void
-chi_math::SphericalAngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order,
-                                                          int dimension)
+SphericalAngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimension)
 {
   if (m_to_ell_em_map_.empty())
   {
@@ -184,7 +185,9 @@ chi_math::SphericalAngularQuadrature::MakeHarmonicIndices(unsigned int scatterin
       for (unsigned int l = 0; l <= scattering_order; ++l)
         m_to_ell_em_map_.emplace_back(l, 0);
     else
-      throw std::invalid_argument("chi_math::SphericalAngularQuadrature::MakeHarmonicIndices : "
+      throw std::invalid_argument("SphericalAngularQuadrature::MakeHarmonicIndices : "
                                   "invalid dimension.");
   }
 }
+
+} // namespace opensn

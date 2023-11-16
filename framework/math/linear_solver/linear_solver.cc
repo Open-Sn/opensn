@@ -1,6 +1,6 @@
 #include "framework/math/linear_solver/linear_solver.h"
 
-namespace chi_math
+namespace opensn
 {
 
 LinearSolver::LinearSolver(const std::string& iterative_method, LinSolveContextPtr context_ptr)
@@ -123,4 +123,4 @@ LinearSolver::Solve()
   PostSolveCallback();
 }
 
-} // namespace chi_math
+} // namespace opensn

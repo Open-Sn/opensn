@@ -2,7 +2,7 @@
 
 #include "framework/mesh/sweep_utilities/fluds/fluds.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 /**Contains the sweep plane data.*/
@@ -18,4 +18,4 @@ struct STDG
   std::vector<int> item_id;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

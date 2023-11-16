@@ -7,7 +7,7 @@
 
 #include <cmath>
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObject(chi, LinearGraphPartitioner);
@@ -42,12 +42,12 @@ LinearGraphPartitioner::LinearGraphPartitioner(const InputParameters& params)
 
 std::vector<int64_t>
 LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
-                                  const std::vector<chi_mesh::Vector3>&,
+                                  const std::vector<Vector3>&,
                                   const int number_of_parts)
 {
   Chi::log.Log0Verbose1() << "Partitioning with LinearGraphPartitioner";
 
-  const std::vector<chi::SubSetInfo> sub_sets = chi::MakeSubSets(graph.size(), number_of_parts);
+  const std::vector<SubSetInfo> sub_sets = MakeSubSets(graph.size(), number_of_parts);
 
   std::vector<int64_t> pids(graph.size(), 0);
 
@@ -65,4 +65,4 @@ LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& grap
   return pids;
 }
 
-} // namespace chi
+} // namespace opensn

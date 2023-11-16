@@ -10,27 +10,22 @@
 #include "framework/mpi/mpi.h"
 #include "framework/data_types/byte_array.h"
 
-namespace chi
+namespace opensn
 {
 class ChiMPICommunicatorSet;
-}
-
-namespace chi_data_types
-{
 class ByteArray;
-}
 
 namespace lbs
 {
 
 class CBC_FLUDS;
 
-class CBC_ASynchronousCommunicator : public chi_mesh::sweep_management::AsynchronousCommunicator
+class CBC_ASynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
   explicit CBC_ASynchronousCommunicator(size_t angle_set_id,
-                                        chi_mesh::sweep_management::FLUDS& fluds,
-                                        const chi::ChiMPICommunicatorSet& comm_set);
+                                        FLUDS& fluds,
+                                        const ChiMPICommunicatorSet& comm_set);
 
   // location_id
   // cell_global_id
@@ -63,9 +58,10 @@ protected:
     MPI_Request mpi_request_ = 0;
     bool send_initiated_ = false;
     bool completed_ = false;
-    chi_data_types::ByteArray data_array_;
+    ByteArray data_array_;
   };
   std::vector<BufferItem> send_buffer_;
 };
 
 } // namespace lbs
+} // namespace opensn

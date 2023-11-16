@@ -12,6 +12,8 @@
 #include "quadratures_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiCreateCylindricalProductQuadrature);
 RegisterLuaFunctionAsIs(chiCreateSphericalProductQuadrature);
 
@@ -36,9 +38,10 @@ chiCreateCylindricalProductQuadrature(lua_State* L)
     const size_t lNa = lua_rawlen(L, 3);
     if (lNa != Np)
     {
-      Chi::log.LogAllError() << "chiCreateCylindricalProductQuadrature : third argument, "
-                             << ", if a lua table, must be of length equal to second argument.";
-      Chi::Exit(EXIT_FAILURE);
+      opensn::Chi::log.LogAllError()
+        << "chiCreateCylindricalProductQuadrature : third argument, "
+        << ", if a lua table, must be of length equal to second argument.";
+      opensn::Chi::Exit(EXIT_FAILURE);
     }
     vNa.resize(Np, 0);
     for (int n = 1; n <= lNa; ++n)
@@ -51,58 +54,58 @@ chiCreateCylindricalProductQuadrature(lua_State* L)
   }
   else
   {
-    Chi::log.LogAllError() << "chiCreateCylindricalProductQuadrature : third argument "
-                           << "must be a number or a lua table.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << "chiCreateCylindricalProductQuadrature : third argument "
+                                   << "must be a number or a lua table.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   bool verbose = false;
   if (num_args == 4) verbose = lua_toboolean(L, 4);
 
-  const auto prod_quad_type = static_cast<chi_math::ProductQuadratureType>(ident);
+  const auto prod_quad_type = static_cast<ProductQuadratureType>(ident);
   switch (prod_quad_type)
   {
-    case chi_math::ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV:
+    case ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV:
     {
-      Chi::log.Log() << "chiCreateCylindricalProductQuadrature : "
-                     << "Creating Gauss-Legendre-Legendre Quadrature\n";
+      opensn::Chi::log.Log() << "chiCreateCylindricalProductQuadrature : "
+                             << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
-      const auto quad_pol = chi_math::QuadratureGaussLegendre(Np, verbose);
-      std::vector<chi_math::Quadrature> quad_azi;
+      const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
+      std::vector<Quadrature> quad_azi;
       for (const auto& Na : vNa)
-        quad_azi.emplace_back(chi_math::QuadratureGaussChebyshev(Na, verbose));
+        quad_azi.emplace_back(QuadratureGaussChebyshev(Na, verbose));
       const auto new_quad =
-        std::make_shared<chi_math::CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
+        std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
 
-      Chi::angular_quadrature_stack.push_back(new_quad);
-      const size_t index = Chi::angular_quadrature_stack.size() - 1;
+      opensn::Chi::angular_quadrature_stack.push_back(new_quad);
+      const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
       lua_pushinteger(L, static_cast<lua_Integer>(index));
 
       return 1;
     }
-    case chi_math::ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE:
+    case ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE:
     {
-      Chi::log.Log() << "chiCreateCylindricalProductQuadrature : "
-                     << "Creating Gauss-Legendre-Legendre Quadrature\n";
+      opensn::Chi::log.Log() << "chiCreateCylindricalProductQuadrature : "
+                             << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
-      const auto quad_pol = chi_math::QuadratureGaussLegendre(Np, verbose);
-      std::vector<chi_math::Quadrature> quad_azi;
+      const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
+      std::vector<Quadrature> quad_azi;
       for (const auto& Na : vNa)
-        quad_azi.emplace_back(chi_math::QuadratureGaussLegendre(Na, verbose));
+        quad_azi.emplace_back(QuadratureGaussLegendre(Na, verbose));
       const auto new_quad =
-        std::make_shared<chi_math::CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
+        std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
 
-      Chi::angular_quadrature_stack.push_back(new_quad);
-      const size_t index = Chi::angular_quadrature_stack.size() - 1;
+      opensn::Chi::angular_quadrature_stack.push_back(new_quad);
+      const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
       lua_pushinteger(L, static_cast<lua_Integer>(index));
 
       return 1;
     }
     default:
     {
-      Chi::log.LogAllError() << "chiCreateCylindricalProductQuadrature : "
-                             << "Unsupported quadrature type supplied, type=" << ident;
-      Chi::Exit(EXIT_FAILURE);
+      opensn::Chi::log.LogAllError() << "chiCreateCylindricalProductQuadrature : "
+                                     << "Unsupported quadrature type supplied, type=" << ident;
+      opensn::Chi::Exit(EXIT_FAILURE);
     }
   }
 
@@ -148,44 +151,42 @@ chiCreateSphericalProductQuadrature(lua_State* L)
   bool verbose = false;
   if (num_args == 3) verbose = lua_toboolean(L, 3);
 
-  const auto prod_quad_type = static_cast<chi_math::ProductQuadratureType>(ident);
+  const auto prod_quad_type = static_cast<ProductQuadratureType>(ident);
   switch (prod_quad_type)
   {
-    case chi_math::ProductQuadratureType::GAUSS_CHEBYSHEV:
+    case ProductQuadratureType::GAUSS_CHEBYSHEV:
     {
-      Chi::log.Log() << "chiCreateSphericalProductQuadrature : "
-                     << "Creating Gauss-Chebyshev Quadrature\n";
+      opensn::Chi::log.Log() << "chiCreateSphericalProductQuadrature : "
+                             << "Creating Gauss-Chebyshev Quadrature\n";
 
-      const auto quad_pol = chi_math::QuadratureGaussChebyshev(Np, verbose);
-      const auto new_quad =
-        std::make_shared<chi_math::SphericalAngularQuadrature>(quad_pol, verbose);
+      const auto quad_pol = QuadratureGaussChebyshev(Np, verbose);
+      const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
 
-      Chi::angular_quadrature_stack.push_back(new_quad);
-      const size_t index = Chi::angular_quadrature_stack.size() - 1;
+      opensn::Chi::angular_quadrature_stack.push_back(new_quad);
+      const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
       lua_pushnumber(L, static_cast<lua_Number>(index));
 
       return 1;
     }
-    case chi_math::ProductQuadratureType::GAUSS_LEGENDRE:
+    case ProductQuadratureType::GAUSS_LEGENDRE:
     {
-      Chi::log.Log() << "chiCreateSphericalProductQuadrature : "
-                     << "Creating Gauss-Legendre Quadrature\n";
+      opensn::Chi::log.Log() << "chiCreateSphericalProductQuadrature : "
+                             << "Creating Gauss-Legendre Quadrature\n";
 
-      const auto quad_pol = chi_math::QuadratureGaussLegendre(Np, verbose);
-      const auto new_quad =
-        std::make_shared<chi_math::SphericalAngularQuadrature>(quad_pol, verbose);
+      const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
+      const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
 
-      Chi::angular_quadrature_stack.push_back(new_quad);
-      const size_t index = Chi::angular_quadrature_stack.size() - 1;
+      opensn::Chi::angular_quadrature_stack.push_back(new_quad);
+      const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
       lua_pushnumber(L, static_cast<lua_Number>(index));
 
       return 1;
     }
     default:
     {
-      Chi::log.LogAllError() << "chiCreateSphericalProductQuadrature : "
-                             << "Unsupported quadrature type supplied, type=" << ident;
-      Chi::Exit(EXIT_FAILURE);
+      opensn::Chi::log.LogAllError() << "chiCreateSphericalProductQuadrature : "
+                                     << "Unsupported quadrature type supplied, type=" << ident;
+      opensn::Chi::Exit(EXIT_FAILURE);
     }
   }
 

@@ -4,7 +4,7 @@
 #include "framework/mesh/mesh.h"
 #include "framework/runtime.h"
 
-namespace chi
+namespace opensn
 {
 
 /**Simple implementation a communicator set.
@@ -41,4 +41,5 @@ public:
     return group_rank;
   }
 };
-} // namespace chi
+
+} // namespace opensn

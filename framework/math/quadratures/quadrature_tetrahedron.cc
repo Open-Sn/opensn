@@ -6,7 +6,10 @@
 #include <stdexcept>
 #include <cassert>
 
-chi_math::QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : Quadrature(order)
+namespace opensn
+{
+
+QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : Quadrature(order)
 {
   double x = 0.0, y = 0.0, z = 0.0;
 
@@ -53,7 +56,7 @@ chi_math::QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : 
     }
     case QuadratureOrder::THIRD:
     {
-      chi_math::QuadratureConical conical(order);
+      QuadratureConical conical(order);
       conical.Initialize_Conical_Product_Tet();
       qpoints_.swap(conical.qpoints_);
       weights_.swap(conical.weights_);
@@ -91,10 +94,10 @@ chi_math::QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : 
 
         // Here are the permutations.  Order of these is not important,
         // all have the same weight
-        qpoints_[offset + 0] = chi_mesh::Vector3(a[i], a[i], a[i]);
-        qpoints_[offset + 1] = chi_mesh::Vector3(a[i], b, a[i]);
-        qpoints_[offset + 2] = chi_mesh::Vector3(b, a[i], a[i]);
-        qpoints_[offset + 3] = chi_mesh::Vector3(a[i], a[i], b);
+        qpoints_[offset + 0] = Vector3(a[i], a[i], a[i]);
+        qpoints_[offset + 1] = Vector3(a[i], b, a[i]);
+        qpoints_[offset + 2] = Vector3(b, a[i], a[i]);
+        qpoints_[offset + 3] = Vector3(a[i], a[i], b);
 
         // These 4 points all have the same weights
         for (unsigned int j = 0; j < 4; ++j)
@@ -108,12 +111,12 @@ chi_math::QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : 
 
         // Here are the permutations.  Order of these is not important,
         // all have the same weight
-        qpoints_[offset + 0] = chi_mesh::Vector3(b, b, a[2]);
-        qpoints_[offset + 1] = chi_mesh::Vector3(b, a[2], a[2]);
-        qpoints_[offset + 2] = chi_mesh::Vector3(a[2], a[2], b);
-        qpoints_[offset + 3] = chi_mesh::Vector3(a[2], b, a[2]);
-        qpoints_[offset + 4] = chi_mesh::Vector3(b, a[2], b);
-        qpoints_[offset + 5] = chi_mesh::Vector3(a[2], b, b);
+        qpoints_[offset + 0] = Vector3(b, b, a[2]);
+        qpoints_[offset + 1] = Vector3(b, a[2], a[2]);
+        qpoints_[offset + 2] = Vector3(a[2], a[2], b);
+        qpoints_[offset + 3] = Vector3(a[2], b, a[2]);
+        qpoints_[offset + 4] = Vector3(b, a[2], b);
+        qpoints_[offset + 5] = Vector3(a[2], b, b);
 
         // These 6 points all have the same weights
         for (unsigned int j = 0; j < 6; ++j)
@@ -155,7 +158,7 @@ chi_math::QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : 
     }
     default:
     {
-      chi_math::QuadratureConical conical(order);
+      QuadratureConical conical(order);
       conical.Initialize_Conical_Product_Tet();
       qpoints_.swap(conical.qpoints_);
       weights_.swap(conical.weights_);
@@ -164,13 +167,13 @@ chi_math::QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : 
 }
 
 void
-chi_math::QuadratureTetrahedron::KeastRule(const std::vector<std::vector<double>>& rule_data,
-                                           const unsigned int n_pts)
+QuadratureTetrahedron::KeastRule(const std::vector<std::vector<double>>& rule_data,
+                                 const unsigned int n_pts)
 {
   auto& _points = qpoints_;
   auto& _weights = weights_;
 
-  typedef chi_mesh::Vector3 Point;
+  typedef Vector3 Point;
 
   // clang-format off
   // Like the Dunavant rule, the input data should have 4 columns.  These
@@ -315,3 +318,5 @@ chi_math::QuadratureTetrahedron::KeastRule(const std::vector<std::vector<double>
     }
   }
 }
+
+} // namespace opensn

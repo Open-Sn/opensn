@@ -7,11 +7,11 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
-LagrangeBaseMapping::LagrangeBaseMapping(const chi_mesh::MeshContinuum& grid,
-                                         const chi_mesh::Cell& cell,
+LagrangeBaseMapping::LagrangeBaseMapping(const MeshContinuum& grid,
+                                         const Cell& cell,
                                          size_t num_nodes,
                                          std::vector<std::vector<int>> face_node_mappings,
                                          const Quadrature& volume_quadrature,
@@ -28,7 +28,7 @@ LagrangeBaseMapping::LagrangeBaseMapping(const chi_mesh::MeshContinuum& grid,
 }
 
 std::vector<std::vector<int>>
-LagrangeBaseMapping::MakeFaceNodeMapping(const chi_mesh::Cell& cell)
+LagrangeBaseMapping::MakeFaceNodeMapping(const Cell& cell)
 {
   const size_t num_faces = cell.faces_.size();
   std::vector<std::vector<int>> mappings;
@@ -62,11 +62,10 @@ LagrangeBaseMapping::MakeFaceNodeMapping(const chi_mesh::Cell& cell)
   return mappings;
 }
 
-std::vector<chi_mesh::Vector3>
-LagrangeBaseMapping::GetVertexLocations(const chi_mesh::MeshContinuum& grid,
-                                        const chi_mesh::Cell& cell)
+std::vector<Vector3>
+LagrangeBaseMapping::GetVertexLocations(const MeshContinuum& grid, const Cell& cell)
 {
-  std::vector<chi_mesh::Vector3> verts;
+  std::vector<Vector3> verts;
   verts.reserve(cell.vertex_ids_.size());
 
   for (const auto vid : cell.vertex_ids_)
@@ -75,26 +74,25 @@ LagrangeBaseMapping::GetVertexLocations(const chi_mesh::MeshContinuum& grid,
   return verts;
 }
 
-chi_mesh::Vector3
+Vector3
 LagrangeBaseMapping::MapWorldXYZToNaturalXYZ(const Vec3& world_xyz) const
 {
   WorldXYZToNaturalMappingHelper helper(*this, world_xyz);
 
-  auto nat_xyz = chi_math::NewtonIteration(helper, {0.0, 0.0, 0.0}, 20, 1.0e-8);
+  auto nat_xyz = NewtonIteration(helper, {0.0, 0.0, 0.0}, 20, 1.0e-8);
 
   return {nat_xyz[0], nat_xyz[1], nat_xyz[2]};
 }
 
 double
-LagrangeBaseMapping::ShapeValue(int i, const chi_mesh::Vector3& xyz) const
+LagrangeBaseMapping::ShapeValue(int i, const Vector3& xyz) const
 {
   const auto natural_xyz = MapWorldXYZToNaturalXYZ(xyz);
   return RefShape(i, natural_xyz);
 }
 
 void
-LagrangeBaseMapping::ShapeValues(const chi_mesh::Vector3& xyz,
-                                 std::vector<double>& shape_values) const
+LagrangeBaseMapping::ShapeValues(const Vector3& xyz, std::vector<double>& shape_values) const
 {
   const auto natural_xyz = MapWorldXYZToNaturalXYZ(xyz);
 
@@ -103,16 +101,16 @@ LagrangeBaseMapping::ShapeValues(const chi_mesh::Vector3& xyz,
     shape_values.push_back(RefShape(i, natural_xyz));
 }
 
-chi_mesh::Vector3
-LagrangeBaseMapping::GradShapeValue(int i, const chi_mesh::Vector3& xyz) const
+Vector3
+LagrangeBaseMapping::GradShapeValue(int i, const Vector3& xyz) const
 {
   const auto natural_xyz = MapWorldXYZToNaturalXYZ(xyz);
   return RefGradShape(i, natural_xyz);
 }
 
 void
-LagrangeBaseMapping::GradShapeValues(const chi_mesh::Vector3& xyz,
-                                     std::vector<chi_mesh::Vector3>& gradshape_values) const
+LagrangeBaseMapping::GradShapeValues(const Vector3& xyz,
+                                     std::vector<Vector3>& gradshape_values) const
 {
   const auto natural_xyz = MapWorldXYZToNaturalXYZ(xyz);
 
@@ -121,7 +119,7 @@ LagrangeBaseMapping::GradShapeValues(const chi_mesh::Vector3& xyz,
     gradshape_values.push_back(RefGradShape(i, natural_xyz));
 }
 
-finite_element::VolumetricQuadraturePointData
+VolumetricQuadraturePointData
 LagrangeBaseMapping::MakeVolumetricQuadraturePointData() const
 {
   typedef std::vector<Vec3> VecVec3;
@@ -147,8 +145,8 @@ LagrangeBaseMapping::MakeVolumetricQuadraturePointData() const
   {
     const Vec3& qpoint = volume_quadrature_.qpoints_[qp];
     const auto J = RefJacobian(qpoint);
-    const auto JT = chi_math::Transpose(J);
-    const auto JTinv = chi_math::Inverse(JT);
+    const auto JT = Transpose(J);
+    const auto JTinv = Inverse(JT);
     const double detJ = Determinant(J);
 
     JxW[qp] = detJ * volume_quadrature_.weights_[qp];
@@ -169,13 +167,13 @@ LagrangeBaseMapping::MakeVolumetricQuadraturePointData() const
     } // for i
   }   // for qp
 
-  return finite_element::VolumetricQuadraturePointData(quadrature_point_indices,
-                                                       qpoints_xyz,
-                                                       shape_value,
-                                                       shape_grad,
-                                                       JxW,
-                                                       face_node_mappings_,
-                                                       num_nodes_);
+  return VolumetricQuadraturePointData(quadrature_point_indices,
+                                       qpoints_xyz,
+                                       shape_value,
+                                       shape_grad,
+                                       JxW,
+                                       face_node_mappings_,
+                                       num_nodes_);
 }
 
 const Quadrature&
@@ -184,7 +182,7 @@ LagrangeBaseMapping::GetSurfaceQuadrature(size_t face_index) const
   return surface_quadrature_;
 }
 
-finite_element::SurfaceQuadraturePointData
+SurfaceQuadraturePointData
 LagrangeBaseMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
 {
   const auto& surface_quadrature = GetSurfaceQuadrature(face_index);
@@ -217,8 +215,8 @@ LagrangeBaseMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
     const auto qpoint = FaceToElementQPointConversion(f, qpoint_face);
 
     const auto J = RefJacobian(qpoint);
-    const auto JT = chi_math::Transpose(J);
-    const auto JTinv = chi_math::Inverse(JT);
+    const auto JT = Transpose(J);
+    const auto JTinv = Inverse(JT);
     const auto [detJ, qp_normal] = RefFaceJacobianDeterminantAndNormal(f, qpoint_face);
 
     normals[qp] = qp_normal;
@@ -241,14 +239,14 @@ LagrangeBaseMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
     } // for i
   }   // for qp
 
-  return finite_element::SurfaceQuadraturePointData(quadrature_point_indices,
-                                                    qpoints_xyz,
-                                                    shape_value,
-                                                    shape_grad,
-                                                    JxW,
-                                                    normals,
-                                                    face_node_mappings_,
-                                                    num_nodes_);
+  return SurfaceQuadraturePointData(quadrature_point_indices,
+                                    qpoints_xyz,
+                                    shape_value,
+                                    shape_grad,
+                                    JxW,
+                                    normals,
+                                    face_node_mappings_,
+                                    num_nodes_);
 }
 
 std::pair<double, LagrangeBaseMapping::Vec3>
@@ -264,10 +262,10 @@ WorldXYZToNaturalMappingHelper::WorldXYZToNaturalMappingHelper(
 {
   const auto& cell = cell_mapping.ReferenceCell();
   const auto cell_type = cell.Type();
-  if (cell_type == chi_mesh::CellType::SLAB) dimension_ = 1;
-  else if (cell_type == chi_mesh::CellType::POLYGON)
+  if (cell_type == CellType::SLAB) dimension_ = 1;
+  else if (cell_type == CellType::POLYGON)
     dimension_ = 2;
-  else if (cell_type == chi_mesh::CellType::POLYHEDRON)
+  else if (cell_type == CellType::POLYHEDRON)
     dimension_ = 3;
   else
     ChiLogicalError("Unsupported cell type.");
@@ -305,4 +303,4 @@ WorldXYZToNaturalMappingHelper::J(const VecDbl& x) const
   return cell_mapping_.RefJacobian({x[0], x[1], x[2]});
 }
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

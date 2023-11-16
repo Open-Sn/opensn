@@ -2,7 +2,7 @@
 
 #include "framework/logging/log_exceptions.h"
 
-namespace chi
+namespace opensn
 {
 
 MPI_Info&
@@ -52,4 +52,4 @@ MPI_Info::Call(int mpi_error_code)
   }
 }
 
-} // namespace chi
+} // namespace opensn

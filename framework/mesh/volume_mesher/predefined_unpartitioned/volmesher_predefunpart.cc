@@ -11,7 +11,7 @@
 #include "framework/console/console.h"
 #include "petsc.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 std::unique_ptr<Cell>
@@ -354,4 +354,4 @@ VolumeMesherPredefinedUnpartitioned::CellHasLocalScope(
   return false;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

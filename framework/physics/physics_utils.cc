@@ -2,8 +2,11 @@
 
 #include <sstream>
 
+namespace opensn
+{
+
 std::string
-chi_physics::GetPETScConvergedReasonstring(KSPConvergedReason reason)
+GetPETScConvergedReasonstring(KSPConvergedReason reason)
 {
   std::stringstream ostr;
   switch (reason)
@@ -70,3 +73,5 @@ chi_physics::GetPETScConvergedReasonstring(KSPConvergedReason reason)
 
   return ostr.str();
 }
+
+} // namespace opensn

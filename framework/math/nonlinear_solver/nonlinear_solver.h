@@ -7,7 +7,7 @@
 #include <utility>
 #include <petscsnes.h>
 
-namespace chi_math
+namespace opensn
 {
 
 /**Implementation of a general non-linear solver.*/
@@ -18,7 +18,7 @@ public:
 
   explicit NonLinearSolver(
     NLSolverContextPtr context_ptr,
-    const chi::InputParameters& params = NonLinearSolverOptions::GetInputParameters());
+    const InputParameters& params = NonLinearSolverOptions::GetInputParameters());
   virtual ~NonLinearSolver();
 
   NonLinearSolverOptions& ToleranceOptions() { return options_; }
@@ -75,4 +75,4 @@ private:
   std::string converged_reason_string_;
 };
 
-} // namespace chi_math
+} // namespace opensn

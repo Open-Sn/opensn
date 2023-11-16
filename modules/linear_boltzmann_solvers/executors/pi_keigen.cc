@@ -7,15 +7,17 @@
 #include "framework/utils/timer.h"
 #include <iomanip>
 
+namespace opensn
+{
 namespace lbs
 {
 
 RegisterChiObject(lbs, XXPowerIterationKEigen);
 
-chi::InputParameters
+InputParameters
 XXPowerIterationKEigen::GetInputParameters()
 {
-  chi::InputParameters params = chi_physics::Solver::GetInputParameters();
+  InputParameters params = opensn::Solver::GetInputParameters();
 
   params.SetGeneralDescription("Generalized implementation of a k-Eigenvalue solver using Power "
                                "Iteration.");
@@ -38,8 +40,8 @@ XXPowerIterationKEigen::GetInputParameters()
   return params;
 }
 
-XXPowerIterationKEigen::XXPowerIterationKEigen(const chi::InputParameters& params)
-  : chi_physics::Solver(params),
+XXPowerIterationKEigen::XXPowerIterationKEigen(const InputParameters& params)
+  : opensn::Solver(params),
     lbs_solver_(Chi::GetStackItem<LBSSolver>(Chi::object_stack,
                                              params.GetParamValue<size_t>("lbs_solver_handle"))),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
@@ -86,8 +88,6 @@ XXPowerIterationKEigen::Initialize()
 void
 XXPowerIterationKEigen::Execute()
 {
-  using namespace chi_math;
-
   double F_prev = 1.0;
   k_eff_ = 1.0;
   double k_eff_prev = 1.0;
@@ -147,7 +147,7 @@ XXPowerIterationKEigen::Execute()
   if (lbs_solver_.Options().use_precursors)
   {
     lbs_solver_.ComputePrecursors();
-    chi_math::Scale(lbs_solver_.PrecursorsNewLocal(), 1.0 / k_eff_);
+    Scale(lbs_solver_.PrecursorsNewLocal(), 1.0 / k_eff_);
   }
 
   lbs_solver_.UpdateFieldFunctions();
@@ -158,7 +158,7 @@ XXPowerIterationKEigen::Execute()
 void
 XXPowerIterationKEigen::SetLBSFissionSource(const VecDbl& input, const bool additive)
 {
-  if (not additive) chi_math::Set(q_moments_local_, 0.0);
+  if (not additive) Set(q_moments_local_, 0.0);
   active_set_source_function_(
     front_gs_, q_moments_local_, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 }
@@ -168,10 +168,11 @@ XXPowerIterationKEigen::SetLBSScatterSource(const VecDbl& input,
                                             const bool additive,
                                             const bool suppress_wg_scat)
 {
-  if (not additive) chi_math::Set(q_moments_local_, 0.0);
+  if (not additive) Set(q_moments_local_, 0.0);
   SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
   if (suppress_wg_scat) source_flags |= SUPPRESS_WG_SCATTER;
   active_set_source_function_(front_gs_, q_moments_local_, input, source_flags);
 }
 
 } // namespace lbs
+} // namespace opensn

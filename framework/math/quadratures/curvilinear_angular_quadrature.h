@@ -2,15 +2,13 @@
 
 #include "framework/math/quadratures/angular_product_quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
-class CurvilinearAngularQuadrature;
-}
 
 /** Base class for curvilinear angular quadratures (product angular
  *  quadratures with additional direction-dependent parameters).
  */
-class chi_math::CurvilinearAngularQuadrature : public chi_math::ProductQuadrature
+class CurvilinearAngularQuadrature : public ProductQuadrature
 {
   //  Attributes
 protected:
@@ -33,3 +31,5 @@ protected:
   /** Default destructor. */
   virtual ~CurvilinearAngularQuadrature() = default;
 };
+
+} // namespace opensn

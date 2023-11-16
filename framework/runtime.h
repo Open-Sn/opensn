@@ -8,8 +8,9 @@
 
 #include "framework/mpi/mpi.h"
 
-namespace chi_mesh
+namespace opensn
 {
+
 class MeshHandler;
 typedef std::shared_ptr<MeshHandler> MeshHandlerPtr;
 
@@ -23,10 +24,7 @@ typedef std::shared_ptr<FFInterp> FFInterpPtr;
 class UnpartitionedMesh;
 typedef std::shared_ptr<UnpartitionedMesh> UnpartitionedMeshPtr;
 typedef UnpartitionedMeshPtr UnpartMeshPtr;
-} // namespace chi_mesh
 
-namespace chi_physics
-{
 class Solver;
 class Material;
 class MultiGroupXS;
@@ -35,10 +33,7 @@ class FieldFunction;
 typedef std::shared_ptr<Material> MaterialPtr;
 typedef std::shared_ptr<MultiGroupXS> MultiGroupXSPtr;
 typedef std::shared_ptr<FieldFunction> FieldFunctionPtr;
-} // namespace chi_physics
 
-namespace chi_math
-{
 class AngularQuadrature;
 class SpatialDiscretization;
 
@@ -46,10 +41,6 @@ typedef std::shared_ptr<AngularQuadrature> AngularQuadraturePtr;
 typedef std::shared_ptr<SpatialDiscretization> SpatialDiscretizationPtr;
 
 class UnknownManager;
-} // namespace chi_math
-
-namespace chi
-{
 
 class Timer;
 class Console;
@@ -85,8 +76,6 @@ struct CSTMemory
   CSTMemory& operator=(const CSTMemory& in_struct) = default;
 };
 
-} // namespace chi
-
 class ChiObject;
 typedef std::shared_ptr<ChiObject> ChiObjectPtr;
 
@@ -94,35 +83,35 @@ typedef std::shared_ptr<ChiObject> ChiObjectPtr;
 class Chi
 {
 public:
-  static chi::MPI_Info& mpi;
-  static chi::Timer program_timer;
-  static chi::Console& console;
-  static chi::ChiLog& log;
+  static MPI_Info& mpi;
+  static Timer program_timer;
+  static Console& console;
+  static ChiLog& log;
 
   /** Global stack of handlers */
-  static std::vector<chi_mesh::MeshHandlerPtr> meshhandler_stack;
+  static std::vector<MeshHandlerPtr> meshhandler_stack;
   static int current_mesh_handler;
 
-  static std::vector<chi_mesh::SurfaceMeshPtr> surface_mesh_stack;
-  static std::vector<chi_mesh::FFInterpPtr> field_func_interpolation_stack;
-  static std::vector<chi_mesh::UnpartMeshPtr> unpartitionedmesh_stack;
+  static std::vector<SurfaceMeshPtr> surface_mesh_stack;
+  static std::vector<FFInterpPtr> field_func_interpolation_stack;
+  static std::vector<UnpartMeshPtr> unpartitionedmesh_stack;
 
-  static std::vector<chi_physics::MaterialPtr> material_stack;
-  static std::vector<chi_physics::MultiGroupXSPtr> multigroup_xs_stack;
-  static std::vector<chi_physics::FieldFunctionPtr> field_function_stack;
+  static std::vector<MaterialPtr> material_stack;
+  static std::vector<MultiGroupXSPtr> multigroup_xs_stack;
+  static std::vector<FieldFunctionPtr> field_function_stack;
 
-  static std::vector<chi_math::AngularQuadraturePtr> angular_quadrature_stack;
+  static std::vector<AngularQuadraturePtr> angular_quadrature_stack;
 
   static std::vector<ChiObjectPtr> object_stack;
-  static std::vector<chi_math::SpatialDiscretizationPtr> sdm_stack;
-  static std::vector<chi::PostProcessorPtr> postprocessor_stack;
+  static std::vector<SpatialDiscretizationPtr> sdm_stack;
+  static std::vector<PostProcessorPtr> postprocessor_stack;
 
   static const size_t SIZE_T_INVALID = ((size_t)-1);
 
   /**
    * Get current memory usage.
    */
-  static chi::CSTMemory GetMemoryUsage();
+  static CSTMemory GetMemoryUsage();
 
   /**
    * Get current memory usage in Megabytes.
@@ -208,7 +197,7 @@ public:
   static void Exit(int error_code);
 
   /**Builds a `RegistryStatuses` structure*/
-  static chi::RegistryStatuses GetStatusOfRegistries();
+  static RegistryStatuses GetStatusOfRegistries();
 
   /** Gets the ChiTech-version string.*/
   static std::string GetVersionStr();
@@ -222,9 +211,9 @@ public:
    * Example usage:
    *
    * \code
-   * const auto& surf_mesh = Chi::GetStackItem<chi_mesh::SurfaceMesh>(
+   * const auto& surf_mesh = Chi::GetStackItem<SurfaceMesh>(
         Chi::object_stack, surface_hndl);
-     // Returns chi_mesh::SurfaceMesh&
+     // Returns SurfaceMesh&
    * \endcode
    * */
   template <class R, class T>
@@ -258,9 +247,9 @@ public:
    *
    * \code
    * auto surf_mesh_ptr =
-   *   Chi::GetStackItemPtrAsType<chi_mesh::SurfaceMesh>(
+   *   Chi::GetStackItemPtrAsType<SurfaceMesh>(
          Chi::object_stack, surf_mesh_hndle, fname);
-     // Returns std::shared_ptr<chi_mesh::SurfaceMesh>
+     // Returns std::shared_ptr<SurfaceMesh>
    * \endcode
    * */
   template <class T, class P>
@@ -318,3 +307,5 @@ public:
     }
   }
 };
+
+} // namespace opensn

@@ -2,6 +2,8 @@
 
 #include <petscsnes.h>
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -12,3 +14,4 @@ namespace lbs
 PetscErrorCode NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx);
 
 } // namespace lbs
+} // namespace opensn

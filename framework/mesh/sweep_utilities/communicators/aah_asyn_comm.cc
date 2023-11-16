@@ -8,15 +8,14 @@
 #include "framework/mpi/mpi.h"
 #include "framework/console/console.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
-AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(
-  FLUDS& fluds,
-  size_t num_groups,
-  size_t num_angles,
-  int sweep_eager_limit,
-  const chi::ChiMPICommunicatorSet& in_comm_set)
+AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(FLUDS& fluds,
+                                                           size_t num_groups,
+                                                           size_t num_angles,
+                                                           int sweep_eager_limit,
+                                                           const ChiMPICommunicatorSet& in_comm_set)
   : AsynchronousCommunicator(fluds, in_comm_set), num_groups_(num_groups), num_angles_(num_angles)
 {
   done_sending = false;
@@ -447,15 +446,14 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
     // Make a memory query
     double memory_mb = Chi::GetMemoryUsageInMB();
 
-    std::shared_ptr<chi::ChiLog::EventInfo> memory_event_info =
-      std::make_shared<chi::ChiLog::EventInfo>(memory_mb);
+    std::shared_ptr<ChiLog::EventInfo> memory_event_info =
+      std::make_shared<ChiLog::EventInfo>(memory_mb);
 
-    Chi::log.LogEvent(chi::ChiLog::StdTags::MAX_MEMORY_USAGE,
-                      chi::ChiLog::EventType::SINGLE_OCCURRENCE,
-                      memory_event_info);
+    Chi::log.LogEvent(
+      ChiLog::StdTags::MAX_MEMORY_USAGE, ChiLog::EventType::SINGLE_OCCURRENCE, memory_event_info);
 
     data_initialized = true;
   }
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

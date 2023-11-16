@@ -7,15 +7,15 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_physics::field_operations
+namespace opensn
 {
 
 RegisterChiObject(chi_physics::field_operations, PartitionerPredicate);
 
-chi::InputParameters
+InputParameters
 PartitionerPredicate::GetInputParameters()
 {
-  chi::InputParameters params = FieldOperation::GetInputParameters();
+  InputParameters params = FieldOperation::GetInputParameters();
 
   params.SetGeneralDescription("Field operation that will write to the "
                                "field the result of a partitioning operation");
@@ -38,9 +38,9 @@ PartitionerPredicate::GetInputParameters()
   return params;
 }
 
-PartitionerPredicate::PartitionerPredicate(const chi::InputParameters& params)
+PartitionerPredicate::PartitionerPredicate(const InputParameters& params)
   : FieldOperation(params),
-    partitioner_(Chi::GetStackItem<chi::GraphPartitioner>(
+    partitioner_(Chi::GetStackItem<GraphPartitioner>(
       Chi::object_stack, params.GetParamValue<size_t>("partitioner"), __FUNCTION__)),
     result_field_param_(params.GetParam("result_field")),
     num_partitions_(params.GetParamValue<size_t>("num_partitions")),
@@ -52,7 +52,7 @@ void
 PartitionerPredicate::Execute()
 {
   std::shared_ptr<FieldFunctionGridBased> grid_ff_ptr;
-  if (result_field_param_.Type() == chi::ParameterBlockType::INTEGER)
+  if (result_field_param_.Type() == ParameterBlockType::INTEGER)
   {
     const size_t handle = result_field_param_.GetValue<size_t>();
     auto ff_ptr =
@@ -61,7 +61,7 @@ PartitionerPredicate::Execute()
 
     ChiLogicalErrorIf(not grid_ff_ptr, "Could not cast field function to FieldFunctionGridBased");
   }
-  else if (result_field_param_.Type() == chi::ParameterBlockType::STRING)
+  else if (result_field_param_.Type() == ParameterBlockType::STRING)
   {
     const std::string ff_name = result_field_param_.GetValue<std::string>();
     for (auto& ff_ptr : Chi::field_function_stack)
@@ -83,7 +83,7 @@ PartitionerPredicate::Execute()
   typedef std::vector<uint64_t> CellGraphNode;
   typedef std::vector<CellGraphNode> CellGraph;
   CellGraph cell_graph;
-  std::vector<chi_mesh::Vector3> cell_centroids;
+  std::vector<Vector3> cell_centroids;
 
   const size_t num_local_cells = grid.local_cells.size();
 
@@ -124,4 +124,4 @@ PartitionerPredicate::Execute()
   } // for cell
 }
 
-} // namespace chi_physics::field_operations
+} // namespace opensn

@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-namespace chi_math
+namespace opensn
 {
 
 enum class VecOpType : short
@@ -153,7 +153,7 @@ public:
   virtual void Shift(double a) = 0;
 
   /**Returns the specified norm of the vector.*/
-  virtual double ComputeNorm(chi_math::NormType norm_type) const = 0;
+  virtual double ComputeNorm(NormType norm_type) const = 0;
 
   /**
    * Communicate all operations stored within the operation cache to the
@@ -184,4 +184,4 @@ protected:
   const MPI_Comm comm_;
 };
 
-} // namespace chi_math
+} // namespace opensn

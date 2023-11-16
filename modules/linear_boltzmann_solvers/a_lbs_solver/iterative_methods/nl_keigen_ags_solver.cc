@@ -20,6 +20,8 @@
   std::dynamic_pointer_cast<NLKEigenAGSContext>(x);                                                \
   CheckContext(x)
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -40,14 +42,13 @@ NLKEigenvalueAGSSolver::SetMonitor()
 
   auto& lbs_solver = nl_context_ptr->lbs_solver_;
   if (lbs_solver.Options().verbose_outer_iterations)
-    SNESMonitorSet(
-      nl_solver_, &lbs::KEigenSNESMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
+    SNESMonitorSet(nl_solver_, &KEigenSNESMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
 
   if (lbs_solver.Options().verbose_inner_iterations)
   {
     KSP ksp;
     SNESGetKSP(nl_solver_, &ksp);
-    KSPMonitorSet(ksp, &lbs::KEigenKSPMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
+    KSPMonitorSet(ksp, &KEigenKSPMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
   }
 }
 
@@ -67,7 +68,7 @@ void
 NLKEigenvalueAGSSolver::SetSystem()
 {
   // Create the vectors
-  x_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_globl_dofs_);
+  x_ = CreateVector(num_local_dofs_, num_globl_dofs_);
   VecDuplicate(x_, &r_);
 }
 
@@ -123,3 +124,4 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
 }
 
 } // namespace lbs
+} // namespace opensn

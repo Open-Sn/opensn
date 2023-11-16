@@ -18,28 +18,30 @@
 
 #include <iomanip>
 
+using namespace opensn;
+
 namespace chi_unit_sim_tests
 {
 
 /**PWLD Sweep. */
-chi::ParameterBlock chiSimTest91_PWLD(const chi::InputParameters&);
+ParameterBlock chiSimTest91_PWLD(const InputParameters&);
 
 RegisterWrapperFunction(chi_unit_tests, chiSimTest91_PWLD, nullptr, chiSimTest91_PWLD);
 
-chi::ParameterBlock
-chiSimTest91_PWLD(const chi::InputParameters&)
+ParameterBlock
+chiSimTest91_PWLD(const InputParameters&)
 {
   const std::string fname = "chiSimTest91_PWLD";
 
-  Chi::log.Log() << "chiSimTest91_PWLD num_args = " << 0;
+  opensn::Chi::log.Log() << "chiSimTest91_PWLD num_args = " << 0;
 
-  if (Chi::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
+  if (opensn::Chi::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
-  auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
+  auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make Orthogonal mapping
   const auto ijk_info = grid.GetIJKInfo();
@@ -49,9 +51,9 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
 
-  const auto Dim1 = chi_mesh::DIMENSION_1;
-  const auto Dim2 = chi_mesh::DIMENSION_2;
-  const auto Dim3 = chi_mesh::DIMENSION_3;
+  const auto Dim1 = DIMENSION_1;
+  const auto Dim2 = DIMENSION_2;
+  const auto Dim3 = DIMENSION_3;
 
   int dimension = 0;
   if (grid.Attributes() & Dim1) dimension = 1;
@@ -59,8 +61,8 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   if (grid.Attributes() & Dim3) dimension = 3;
 
   // Make SDM
-  typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
-  SDMPtr sdm_ptr = chi_math::spatial_discretization::PieceWiseLinearDiscontinuous::New(grid);
+  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
+  SDMPtr sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
   const auto& sdm = *sdm_ptr;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
@@ -68,23 +70,23 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   const size_t num_local_nodes = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_globl_nodes = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  Chi::log.Log() << "Num local nodes: " << num_local_nodes;
-  Chi::log.Log() << "Num globl nodes: " << num_globl_nodes;
+  opensn::Chi::log.Log() << "Num local nodes: " << num_local_nodes;
+  opensn::Chi::log.Log() << "Num globl nodes: " << num_globl_nodes;
 
   // Make an angular quadrature
-  std::shared_ptr<chi_math::AngularQuadrature> quadrature;
-  if (dimension == 1) quadrature = std::make_shared<chi_math::AngularQuadratureProdGL>(8);
+  std::shared_ptr<AngularQuadrature> quadrature;
+  if (dimension == 1) quadrature = std::make_shared<AngularQuadratureProdGL>(8);
   else if (dimension == 2)
   {
-    quadrature = std::make_shared<chi_math::AngularQuadratureProdGLC>(8, 8);
+    quadrature = std::make_shared<AngularQuadratureProdGLC>(8, 8);
     quadrature->OptimizeForPolarSymmetry(4.0 * M_PI);
   }
   else if (dimension == 3)
-    quadrature = std::make_shared<chi_math::AngularQuadratureProdGLC>(8, 8);
+    quadrature = std::make_shared<AngularQuadratureProdGLC>(8, 8);
   else
     throw std::logic_error(fname + "Error with the dimensionality "
                                    "of the mesh.");
-  Chi::log.Log() << "Quadrature created." << std::endl;
+  opensn::Chi::log.Log() << "Quadrature created." << std::endl;
 
   // Set/Get params
   const size_t scat_order = 1;
@@ -100,26 +102,26 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   const size_t num_moments = m_ell_em_map.size();
   const size_t num_dirs = quadrature->omegas_.size();
 
-  Chi::log.Log() << "End Set/Get params." << std::endl;
-  Chi::log.Log() << "Num Moments: " << num_moments << std::endl;
+  opensn::Chi::log.Log() << "End Set/Get params." << std::endl;
+  opensn::Chi::log.Log() << "Num Moments: " << num_moments << std::endl;
 
   // Make Unknown Managers
-  const auto VecN = chi_math::UnknownType::VECTOR_N;
-  using Unknown = chi_math::Unknown;
+  const auto VecN = UnknownType::VECTOR_N;
+  using Unknown = Unknown;
 
   std::vector<Unknown> phi_uks(num_moments, Unknown(VecN, num_groups));
   std::vector<Unknown> psi_uks(num_dirs, Unknown(VecN, num_groups));
 
-  const chi_math::UnknownManager phi_uk_man(phi_uks);
-  const chi_math::UnknownManager psi_uk_man(psi_uks);
+  const UnknownManager phi_uk_man(phi_uks);
+  const UnknownManager psi_uk_man(psi_uks);
 
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   const size_t num_local_psi_dofs = sdm.GetNumLocalDOFs(psi_uk_man);
 
-  Chi::log.Log() << "End ukmanagers." << std::endl;
+  opensn::Chi::log.Log() << "End ukmanagers." << std::endl;
 
   // Make XSs
-  chi_physics::SingleStateMGXS xs;
+  SingleStateMGXS xs;
   xs.MakeFromChiXSFile("xs_graphite_pure.cxs");
 
   // Initializes vectors
@@ -129,7 +131,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   auto phi_new = phi_old;
   auto q_source = phi_old;
 
-  Chi::log.Log() << "End vectors." << std::endl;
+  opensn::Chi::log.Log() << "End vectors." << std::endl;
 
   // Make material source term
   for (const auto& cell : grid.local_cells)
@@ -150,7 +152,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   }
 
   // Precompute cell matrices
-  typedef chi_mesh::Vector3 Vec3;
+  typedef Vector3 Vec3;
   typedef std::vector<Vec3> VecVec3;
   typedef std::vector<VecVec3> MatVec3;
   typedef std::vector<double> VecDbl;
@@ -203,7 +205,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
 
   } // for cell
 
-  Chi::log.Log() << "End cell matrices." << std::endl;
+  opensn::Chi::log.Log() << "End cell matrices." << std::endl;
 
   // Make Grid internal face
   // mapping
@@ -227,7 +229,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
                      &cell_adj_mapping](const std::array<int64_t, 3>& ijk,
                                         const Vec3& omega,
                                         const size_t d,
-                                        const chi_physics::SingleStateMGXS& cell_xs)
+                                        const SingleStateMGXS& cell_xs)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
     const auto& cell = grid.cells[cell_global_id];
@@ -317,7 +319,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
       } // for i
 
       // Solve system
-      chi_math::GaussElimination(Atemp, b[g], static_cast<int>(num_nodes));
+      GaussElimination(Atemp, b[g], static_cast<int>(num_nodes));
     } // for g
 
     // Accumulate flux-moments
@@ -350,15 +352,15 @@ chiSimTest91_PWLD(const chi::InputParameters&)
       const auto& weight = quadrature->weights_[d];
 
       std::vector<int64_t> iorder, jorder, korder;
-      if (omega.x > 0.0) iorder = chi_math::Range<int64_t>(0, Nx);
+      if (omega.x > 0.0) iorder = Range<int64_t>(0, Nx);
       else
-        iorder = chi_math::Range<int64_t>(Nx - 1, -1, -1);
-      if (omega.y > 0.0) jorder = chi_math::Range<int64_t>(0, Ny);
+        iorder = Range<int64_t>(Nx - 1, -1, -1);
+      if (omega.y > 0.0) jorder = Range<int64_t>(0, Ny);
       else
-        jorder = chi_math::Range<int64_t>(Ny - 1, -1, -1);
-      if (omega.z > 0.0) korder = chi_math::Range<int64_t>(0, Nz);
+        jorder = Range<int64_t>(Ny - 1, -1, -1);
+      if (omega.z > 0.0) korder = Range<int64_t>(0, Nz);
       else
-        korder = chi_math::Range<int64_t>(Nz - 1, -1, -1);
+        korder = Range<int64_t>(Nz - 1, -1, -1);
 
       for (auto i : iorder)
         for (auto j : jorder)
@@ -459,7 +461,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   };
 
   // Classic Richardson iteration
-  Chi::log.Log() << "Starting iterations" << std::endl;
+  opensn::Chi::log.Log() << "Starting iterations" << std::endl;
   for (size_t iter = 0; iter < 200; ++iter)
   {
     phi_new.assign(phi_new.size(), 0.0);
@@ -477,7 +479,7 @@ chiSimTest91_PWLD(const chi::InputParameters&)
       outstr << buffer;
     }
 
-    Chi::log.Log() << outstr.str();
+    opensn::Chi::log.Log() << outstr.str();
 
     phi_old = phi_new;
 
@@ -485,21 +487,20 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   } // for iteration
 
   // Create Field Functions
-  std::vector<std::shared_ptr<chi_physics::FieldFunctionGridBased>> ff_list;
+  std::vector<std::shared_ptr<FieldFunctionGridBased>> ff_list;
 
-  ff_list.push_back(std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups)));
+  ff_list.push_back(std::make_shared<FieldFunctionGridBased>(
+    "Phi", sdm_ptr, Unknown(UnknownType::VECTOR_N, num_groups)));
 
   const std::vector<std::string> dim_strings = {"x", "y", "z"};
   for (const std::string& dim : dim_strings)
-    ff_list.push_back(std::make_shared<chi_physics::FieldFunctionGridBased>(
-      "J-" + dim, sdm_ptr, chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups)));
+    ff_list.push_back(std::make_shared<FieldFunctionGridBased>(
+      "J-" + dim, sdm_ptr, Unknown(UnknownType::VECTOR_N, num_groups)));
 
   // Localize zeroth moment
   // This routine extracts a single moment vector
   // from the vector that contains multiple moments
-  const chi_math::UnknownManager m0_uk_man(
-    {chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups)});
+  const UnknownManager m0_uk_man({Unknown(UnknownType::VECTOR_N, num_groups)});
   const size_t num_m0_dofs = sdm.GetNumLocalDOFs(m0_uk_man);
 
   std::vector<double> m0_phi(num_m0_dofs, 0.0);
@@ -525,12 +526,12 @@ chiSimTest91_PWLD(const chi::InputParameters&)
   ff_list[3]->UpdateFieldVector(mz_phi);
 
   // Update field function
-  chi_physics::FieldFunctionGridBased::FFList const_ff_list;
+  FieldFunctionGridBased::FFList const_ff_list;
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("SimTest_91a_PWLD", const_ff_list);
+  FieldFunctionGridBased::ExportMultipleToVTK("SimTest_91a_PWLD", const_ff_list);
 
-  return chi::ParameterBlock();
+  return ParameterBlock();
 }
 
 } // namespace chi_unit_sim_tests

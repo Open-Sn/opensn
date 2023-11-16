@@ -3,19 +3,18 @@
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion.h"
 
-namespace chi_math
+namespace opensn
 {
 class VectorGhostCommunicator;
-}
 
 namespace lbs
 {
 
 class XXPowerIterationKEigenSCDSA : public XXPowerIterationKEigen
 {
-  typedef std::shared_ptr<acceleration::DiffusionSolver> DiffusionSolverPtr;
-  typedef std::shared_ptr<chi_math::VectorGhostCommunicator> VecGhostCommPtr;
-  typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
+  typedef std::shared_ptr<DiffusionSolver> DiffusionSolverPtr;
+  typedef std::shared_ptr<VectorGhostCommunicator> VecGhostCommPtr;
+  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
 
 protected:
   int accel_pi_max_its_;
@@ -40,8 +39,8 @@ protected:
   std::string diff_accel_diffusion_petsc_options_;
 
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit XXPowerIterationKEigenSCDSA(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit XXPowerIterationKEigenSCDSA(const InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
@@ -61,8 +60,8 @@ public:
   /**
    * Creates a ghost communicator and all associated information.
    */
-  GhostInfo MakePWLDVecGhostCommInfo(const chi_math::SpatialDiscretization& sdm,
-                                     const chi_math::UnknownManager& uk_man);
+  GhostInfo MakePWLDVecGhostCommInfo(const SpatialDiscretization& sdm,
+                                     const UnknownManager& uk_man);
 
   /**
    * This method takes an input vector that is the local version of a PWLD discrete space and then
@@ -70,10 +69,11 @@ public:
    */
   static std::vector<double>
   NodallyAveragedPWLDVector(const std::vector<double>& input,
-                            const chi_math::SpatialDiscretization& pwld_sdm,
-                            const chi_math::SpatialDiscretization& pwlc_sdm,
-                            const chi_math::UnknownManager& uk_man,
+                            const SpatialDiscretization& pwld_sdm,
+                            const SpatialDiscretization& pwlc_sdm,
+                            const UnknownManager& uk_man,
                             const XXPowerIterationKEigenSCDSA::GhostInfo& ghost_info);
 };
 
 } // namespace lbs
+} // namespace opensn

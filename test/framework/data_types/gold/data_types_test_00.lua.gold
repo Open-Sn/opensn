@@ -4,15 +4,15 @@
 [0]  Parsing argument 4 master_export=false
 [0]  ChiTech number of arguments supplied: 4
 [0]  GOLD_BEGIN
-[0]  Testing chi_data_types::ByteArray Write and Read
+[0]  Testing ByteArray Write and Read
 [0]  EndOfBuffer 0
 [0]  Offset 0
 [0]  OffsetAfterSeek 1
 [0]  Value check 1.01235
-[0]  chi_data_types::ByteArray Write/Read ... Passed
-[0]  Testing chi_data_types::ByteArray Serialization/DeSerialization
-[0]  chi_data_types::ByteArraySerialization/DeSerialization ... Passed
-[0]  Testing chi_data_types::NDArray
+[0]  ByteArray Write/Read ... Passed
+[0]  Testing ByteArray Serialization/DeSerialization
+[0]  ByteArraySerialization/DeSerialization ... Passed
+[0]  Testing NDArray
 [0]  Should be printing rank and 2x2x2=8 zeros
 [0]  3
 [0]  0 0 0 0 0 0 0 0 Done1

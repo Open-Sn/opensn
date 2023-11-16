@@ -4,17 +4,18 @@
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
+
 /**Base Finite Element spatial discretization class.
  * \ingroup doc_SpatialDiscretization*/
-class FiniteElementBase : public chi_math::SpatialDiscretization
+class FiniteElementBase : public SpatialDiscretization
 {
 public:
   QuadratureOrder GetQuadratureOrder() const;
 
 protected:
-  explicit FiniteElementBase(const chi_mesh::MeshContinuum& grid,
+  explicit FiniteElementBase(const MeshContinuum& grid,
                              CoordinateSystemType cs_type,
                              SDMType sdm_type,
                              QuadratureOrder q_order)
@@ -24,4 +25,5 @@ protected:
 
   const QuadratureOrder q_order_;
 };
-} // namespace chi_math::spatial_discretization
+
+} // namespace opensn

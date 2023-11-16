@@ -4,8 +4,11 @@
 
 #include <map>
 
+namespace opensn
+{
+
 /**General implementation of a directed-graph vertex.*/
-struct chi::GraphVertex
+struct GraphVertex
 {
   size_t id;
   void* context;
@@ -68,3 +71,5 @@ struct chi::GraphVertex
 
   bool operator==(const GraphVertex& other) const { return other.id == this->id; }
 };
+
+} // namespace opensn

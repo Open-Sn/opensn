@@ -8,6 +8,9 @@
 
 #include <memory>
 
+namespace opensn
+{
+
 /**Angle aggregation has to cater for running the 8 corners of a 3D
  * partitioning, the 4 corners of a 2D partitioning (the latter 2 both being
  * polar angle aggregation) as well as single angle aggregation.
@@ -23,7 +26,7 @@
  * The octant based separation is achieved via the notion of "AngleSetGroup"
  * which will group angle sets for each quadrant or octant
  * (depending on 2D or 3D).*/
-class chi_mesh::sweep_management::AngleAggregation
+class AngleAggregation
 {
 public:
   typedef std::shared_ptr<SweepBndry> SweepBndryPtr;
@@ -33,7 +36,7 @@ public:
   std::map<uint64_t, SweepBndryPtr> sim_boundaries;
   size_t number_of_groups = 0;
   size_t number_of_group_subsets = 0;
-  std::shared_ptr<chi_math::AngularQuadrature> quadrature = nullptr;
+  std::shared_ptr<AngularQuadrature> quadrature = nullptr;
 
 private:
   bool is_setup = false;
@@ -41,14 +44,14 @@ private:
   bool num_ang_unknowns_avail = false;
 
 public:
-  chi_mesh::MeshContinuumPtr grid = nullptr;
+  MeshContinuumPtr grid = nullptr;
 
   /** Sets up the angle-aggregation object. */
   AngleAggregation(const std::map<uint64_t, SweepBndryPtr>& in_sim_boundaries,
                    size_t in_number_of_groups,
                    size_t in_number_of_group_subsets,
-                   std::shared_ptr<chi_math::AngularQuadrature>& in_quadrature,
-                   chi_mesh::MeshContinuumPtr& in_grid);
+                   std::shared_ptr<AngularQuadrature>& in_quadrature,
+                   MeshContinuumPtr& in_grid);
 
   bool IsSetup() const { return is_setup; }
 
@@ -92,3 +95,5 @@ public:
   /**Copies the new delayed angular fluxes to the old.*/
   void SetDelayedPsiNew2Old();
 };
+
+} // namespace opensn

@@ -4,7 +4,9 @@
 #include "framework/logging/log.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 
-namespace lbs::common_lua_utils
+using namespace opensn;
+
+namespace opensnlua::lbs
 {
 
 int
@@ -24,19 +26,20 @@ chiLBSWriteGroupsetAngularFlux(lua_State* L)
   const std::string file_base = lua_tostring(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
-  lbs::LBSGroupset* groupset = nullptr;
+  opensn::lbs::LBSGroupset* groupset = nullptr;
   try
   {
     groupset = &lbs_solver.Groupsets().at(grpset_index);
   }
   catch (const std::out_of_range& o)
   {
-    Chi::log.LogAllError() << "Invalid handle to groupset "
-                           << "in call to " << fname;
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
+                                   << "in call to " << fname;
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   lbs_solver.WriteGroupsetAngularFluxes(*groupset, file_base);
@@ -61,19 +64,20 @@ chiLBSReadGroupsetAngularFlux(lua_State* L)
   const std::string file_base = lua_tostring(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
-  lbs::LBSGroupset* groupset = nullptr;
+  opensn::lbs::LBSGroupset* groupset = nullptr;
   try
   {
     groupset = &lbs_solver.Groupsets().at(grpset_index);
   }
   catch (const std::out_of_range& o)
   {
-    Chi::log.LogAllError() << "Invalid handle to groupset "
-                           << "in call to " << fname;
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << "Invalid handle to groupset "
+                                   << "in call to " << fname;
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   lbs_solver.ReadGroupsetAngularFluxes(*groupset, file_base);
@@ -81,4 +85,4 @@ chiLBSReadGroupsetAngularFlux(lua_State* L)
   return 0;
 }
 
-} // namespace lbs::common_lua_utils
+} // namespace opensnlua::lbs

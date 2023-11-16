@@ -3,7 +3,7 @@
 #include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**
@@ -23,7 +23,7 @@ public:
   void Execute() override;
 
   /**
-   * Determines if a chi_mesh::UnpartitionedMesh::LightWeightCell is a neighbor to the current
+   * Determines if a opensn::UnpartitionedMesh::LightWeightCell is a neighbor to the current
    * partition for ParMETIS-style partitioning.
    * This method loops over the faces of the lightweight cell and determines the partition-id of
    * each the neighbors. If the neighbor has a partition id equal to that of the current process
@@ -53,4 +53,4 @@ public:
                                         const std::vector<Vector3>& vertices);
 };
 
-} // namespace chi_mesh
+} // namespace opensn

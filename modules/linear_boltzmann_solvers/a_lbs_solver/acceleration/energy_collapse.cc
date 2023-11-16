@@ -5,11 +5,13 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
 TwoGridCollapsedInfo
-MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseScheme scheme)
+MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
 {
   const std::string fname = "lbs::acceleration::MakeTwoGridCollapsedInfo";
 
@@ -59,8 +61,8 @@ MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseSche
   for (int g = 0; g < num_groups; g++)
     if (sigma_t[g] < 1.0e-16) A[g][g] = 1.0;
 
-  MatDbl Ainv = chi_math::Inverse(A);
-  MatDbl C = chi_math::MatMul(Ainv, B);
+  MatDbl Ainv = Inverse(A);
+  MatDbl C = MatMul(Ainv, B);
   VecDbl E(num_groups, 1.0);
 
   double collapsed_D = 0.0;
@@ -68,7 +70,7 @@ MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseSche
   std::vector<double> spectrum(num_groups, 1.0);
 
   // Perform power iteration
-  double rho = chi_math::PowerIteration(C, E, 1000, 1.0e-12);
+  double rho = PowerIteration(C, E, 1000, 1.0e-12);
 
   // Compute two-grid diffusion quantities
   double sum = 0.0;
@@ -98,4 +100,5 @@ MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs, EnergyCollapseSche
   return {collapsed_D, collapsed_sig_a, spectrum};
 }
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

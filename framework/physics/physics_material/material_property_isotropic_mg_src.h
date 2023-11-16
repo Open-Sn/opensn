@@ -2,11 +2,11 @@
 
 #include "framework/physics/physics_material/material_property_base.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 /** Basic thermal conductivity material property.*/
-class IsotropicMultiGrpSource : public chi_physics::MaterialProperty
+class IsotropicMultiGrpSource : public MaterialProperty
 {
 public:
   std::vector<double> source_value_g_;
@@ -40,4 +40,4 @@ public:
 #endif
 };
 
-} // namespace chi_physics
+} // namespace opensn

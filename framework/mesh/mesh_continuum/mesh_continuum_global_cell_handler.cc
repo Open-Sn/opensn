@@ -4,8 +4,11 @@
 #include "framework/mpi/mpi.h"
 #include "framework/logging/log.h"
 
+namespace opensn
+{
+
 void
-chi_mesh::GlobalCellHandler::push_back(std::unique_ptr<chi_mesh::Cell> new_cell)
+GlobalCellHandler::push_back(std::unique_ptr<Cell> new_cell)
 {
   if (new_cell->partition_id_ == static_cast<uint64_t>(Chi::mpi.location_id))
   {
@@ -29,8 +32,8 @@ chi_mesh::GlobalCellHandler::push_back(std::unique_ptr<chi_mesh::Cell> new_cell)
   }
 }
 
-chi_mesh::Cell&
-chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index)
+Cell&
+GlobalCellHandler::operator[](uint64_t cell_global_index)
 {
   auto native_location = global_cell_id_to_native_id_map.find(cell_global_index);
 
@@ -44,15 +47,15 @@ chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index)
   }
 
   std::stringstream ostr;
-  ostr << "chi_mesh::MeshContinuum::cells. Mapping error."
+  ostr << "MeshContinuum::cells. Mapping error."
        << "\n"
        << cell_global_index;
 
   throw std::invalid_argument(ostr.str());
 }
 
-const chi_mesh::Cell&
-chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index) const
+const Cell&
+GlobalCellHandler::operator[](uint64_t cell_global_index) const
 {
   auto native_location = global_cell_id_to_native_id_map.find(cell_global_index);
 
@@ -66,7 +69,7 @@ chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index) const
   }
 
   std::stringstream ostr;
-  ostr << "chi_mesh::MeshContinuum::cells. Mapping error."
+  ostr << "MeshContinuum::cells. Mapping error."
        << "\n"
        << cell_global_index;
 
@@ -74,7 +77,7 @@ chi_mesh::GlobalCellHandler::operator[](uint64_t cell_global_index) const
 }
 
 std::vector<uint64_t>
-chi_mesh::GlobalCellHandler::GetGhostGlobalIDs() const
+GlobalCellHandler::GetGhostGlobalIDs() const
 {
   std::vector<uint64_t> ids;
   ids.reserve(GetNumGhosts());
@@ -86,7 +89,7 @@ chi_mesh::GlobalCellHandler::GetGhostGlobalIDs() const
 }
 
 uint64_t
-chi_mesh::GlobalCellHandler::GetGhostLocalID(uint64_t cell_global_index) const
+GlobalCellHandler::GetGhostLocalID(uint64_t cell_global_index) const
 {
   auto foreign_location = global_cell_id_to_foreign_id_map.find(cell_global_index);
 
@@ -97,3 +100,5 @@ chi_mesh::GlobalCellHandler::GetGhostLocalID(uint64_t cell_global_index) const
 
   throw std::invalid_argument(ostr.str());
 }
+
+} // namespace opensn

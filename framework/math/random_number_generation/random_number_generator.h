@@ -2,7 +2,7 @@
 
 #include <random>
 
-namespace chi_math
+namespace opensn
 {
 // #########################################################
 /**Random number generator based on threefry.*/
@@ -20,4 +20,4 @@ public:
   /**Generates a random number with the default distribution.*/
   double Rand();
 };
-} // namespace chi_math
+} // namespace opensn

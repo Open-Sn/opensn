@@ -5,8 +5,9 @@
 #include <tuple>
 
 // Appending cell types to namespace
-namespace chi_mesh
+namespace opensn
 {
+
 enum class CellType
 {
   GHOST = 0,
@@ -43,27 +44,27 @@ public:
 
 public:
   /**Determines the neighbor's partition and whether its local or not.*/
-  bool IsNeighborLocal(const chi_mesh::MeshContinuum& grid) const;
+  bool IsNeighborLocal(const MeshContinuum& grid) const;
   /**Determines the neighbor's partition.*/
-  int GetNeighborPartitionID(const chi_mesh::MeshContinuum& grid) const;
+  int GetNeighborPartitionID(const MeshContinuum& grid) const;
   /**Determines the neighbor's local id.*/
-  uint64_t GetNeighborLocalID(const chi_mesh::MeshContinuum& grid) const;
+  uint64_t GetNeighborLocalID(const MeshContinuum& grid) const;
   /**Determines the neighbor's associated face.*/
-  int GetNeighborAssociatedFace(const chi_mesh::MeshContinuum& grid) const;
+  int GetNeighborAssociatedFace(const MeshContinuum& grid) const;
 
 public:
   /**Computes the face area.*/
-  double ComputeFaceArea(const chi_mesh::MeshContinuum& grid) const;
+  double ComputeFaceArea(const MeshContinuum& grid) const;
 
   /**Serializes a face into a vector of bytes.*/
-  chi_data_types::ByteArray Serialize() const;
+  ByteArray Serialize() const;
   /**Deserializes a face from a set of raw data*/
-  static CellFace DeSerialize(const chi_data_types::ByteArray& raw, size_t& address);
+  static CellFace DeSerialize(const ByteArray& raw, size_t& address);
   /**Provides string information of the face.*/
   std::string ToString() const;
 
   /**Recomputes the face centroid assuming the mesh vertices have been transformed.*/
-  void RecomputeCentroid(const chi_mesh::MeshContinuum& grid);
+  void RecomputeCentroid(const MeshContinuum& grid);
 };
 
 /**Generic mesh cell object*/
@@ -103,15 +104,15 @@ public:
   CellType SubType() const { return cell_sub_type_; }
 
   /**Serializes a cell into a vector of bytes.*/
-  chi_data_types::ByteArray Serialize() const;
+  ByteArray Serialize() const;
   /**Deserializes a cell from a vector of bytes.*/
-  static Cell DeSerialize(const chi_data_types::ByteArray& raw, size_t& address);
+  static Cell DeSerialize(const ByteArray& raw, size_t& address);
   /**Provides string information of the cell.*/
   std::string ToString() const;
 
   /**Recomputes the cell centroid and all face centroids assuming
    * the mesh vertices have been transformed.*/
-  void RecomputeCentroidsAndNormals(const chi_mesh::MeshContinuum& grid);
+  void RecomputeCentroidsAndNormals(const MeshContinuum& grid);
 };
 
-} // namespace chi_mesh
+} // namespace opensn

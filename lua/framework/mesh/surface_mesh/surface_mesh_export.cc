@@ -10,13 +10,15 @@
 #include "lua_surface_mesh.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportToObj);
 RegisterLuaFunctionAsIs(chiSurfaceMeshExportPolyFile);
 
 int
 chiSurfaceMeshExportToObj(lua_State* L)
 {
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = opensn::GetCurrentHandler();
 
   // Get arguments
   int num_args = lua_gettop(L);
@@ -28,7 +30,7 @@ chiSurfaceMeshExportToObj(lua_State* L)
   const char* temp = lua_tolstring(L, 2, &length);
 
   auto& surface_mesh =
-    Chi::GetStackItem<chi_mesh::SurfaceMesh>(Chi::surface_mesh_stack, handle, __FUNCTION__);
+    opensn::Chi::GetStackItem<SurfaceMesh>(opensn::Chi::surface_mesh_stack, handle, __FUNCTION__);
 
   surface_mesh.ExportToOBJFile(temp);
 
@@ -38,7 +40,7 @@ chiSurfaceMeshExportToObj(lua_State* L)
 int
 chiSurfaceMeshExportPolyFile(lua_State* L)
 {
-  auto& cur_hndlr = chi_mesh::GetCurrentHandler();
+  auto& cur_hndlr = opensn::GetCurrentHandler();
 
   // Get arguments
   int num_args = lua_gettop(L);
@@ -50,7 +52,7 @@ chiSurfaceMeshExportPolyFile(lua_State* L)
   const char* temp = lua_tolstring(L, 2, &length);
 
   auto& surface_mesh =
-    Chi::GetStackItem<chi_mesh::SurfaceMesh>(Chi::surface_mesh_stack, handle, __FUNCTION__);
+    opensn::Chi::GetStackItem<SurfaceMesh>(opensn::Chi::surface_mesh_stack, handle, __FUNCTION__);
 
   surface_mesh.ExportToPolyFile(temp);
   return 0;

@@ -4,15 +4,15 @@
 
 #define scint static_cast<int>
 
-namespace chi_math
+namespace opensn
 {
 
 RegisterChiObject(chi_math, ThetaSchemeTimeIntegration);
 
-chi::InputParameters
+InputParameters
 ThetaSchemeTimeIntegration::GetInputParameters()
 {
-  chi::InputParameters params = TimeIntegration::GetInputParameters();
+  InputParameters params = TimeIntegration::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription("Generalized theta-scheme");
@@ -26,7 +26,7 @@ ThetaSchemeTimeIntegration::GetInputParameters()
   return params;
 }
 
-ThetaSchemeTimeIntegration::ThetaSchemeTimeIntegration(const chi::InputParameters& params)
+ThetaSchemeTimeIntegration::ThetaSchemeTimeIntegration(const InputParameters& params)
   : TimeIntegration(params), theta_(params.GetParamValue<double>("theta"))
 {
 }
@@ -37,4 +37,4 @@ ThetaSchemeTimeIntegration::ThetaFactor() const
   return theta_;
 }
 
-} // namespace chi_math
+} // namespace opensn

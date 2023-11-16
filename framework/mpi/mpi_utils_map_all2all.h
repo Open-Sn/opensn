@@ -8,7 +8,7 @@
 #include "framework/runtime.h"
 #include "framework/mpi/mpi.h"
 
-namespace chi_mpi_utils
+namespace opensn
 {
 
 /**Given a map with keys indicating the destination process-ids and the
@@ -104,4 +104,4 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
   return output_data;
 }
 
-} // namespace chi_mpi_utils
+} // namespace opensn

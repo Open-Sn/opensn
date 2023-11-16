@@ -3,7 +3,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 size_t
@@ -36,7 +36,7 @@ GridFaceHistogram::GetFaceHistogramBinDOFSize(size_t bin_number) const
   }
   catch (std::out_of_range& o)
   {
-    Chi::log.LogAllWarning() << "Fault detected in chi_mesh::MeshContinuum::"
+    Chi::log.LogAllWarning() << "Fault detected in MeshContinuum::"
                              << "GetFaceHistogramBinDOFSize.";
     return 0;
   }
@@ -44,4 +44,4 @@ GridFaceHistogram::GetFaceHistogramBinDOFSize(size_t bin_number) const
   return face_dof_size;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

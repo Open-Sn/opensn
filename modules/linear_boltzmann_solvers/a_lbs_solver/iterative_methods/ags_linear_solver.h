@@ -3,11 +3,13 @@
 #include "framework/math/linear_solver/linear_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/ags_context.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
-class AGSLinearSolver : public chi_math::LinearSolver
+class AGSLinearSolver : public LinearSolver
 {
 public:
   typedef std::shared_ptr<AGSContext> AGSContextPtr;
@@ -23,7 +25,7 @@ public:
                   int groupspan_first_id,
                   int groupspan_last_id,
                   bool verbose = true)
-    : chi_math::LinearSolver(std::move(iterative_method), ags_context_ptr),
+    : LinearSolver(std::move(iterative_method), ags_context_ptr),
       groupspan_first_id_(groupspan_first_id),
       groupspan_last_id_(groupspan_last_id),
       verbose_(verbose)
@@ -50,3 +52,4 @@ protected:
 };
 
 } // namespace lbs
+} // namespace opensn

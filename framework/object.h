@@ -3,6 +3,9 @@
 #include "framework/runtime.h"
 #include "framework/parameters/input_parameters.h"
 
+namespace opensn
+{
+
 class ChiObject
 {
 private:
@@ -11,13 +14,13 @@ private:
 public:
   /**Returns the input parameters. For the base ChiObject, there
    * are now parameters loaded.*/
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
   /**Default constructor. This will be removed in future.*/
   ChiObject();
 
   /**Constructor with input parameters.*/
-  explicit ChiObject(const chi::InputParameters& params);
+  explicit ChiObject(const InputParameters& params);
 
   // Setters
   /**Sets the stack id of the object. This allows this
@@ -36,3 +39,5 @@ public:
 
   virtual ~ChiObject() = default;
 };
+
+} // namespace opensn

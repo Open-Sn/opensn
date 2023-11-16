@@ -1,6 +1,6 @@
 #pragma once
 
-namespace chi_math
+namespace opensn
 {
 
 struct NonLinearSolverContext
@@ -8,4 +8,4 @@ struct NonLinearSolverContext
   virtual ~NonLinearSolverContext() = default;
 };
 
-} // namespace chi_math
+} // namespace opensn

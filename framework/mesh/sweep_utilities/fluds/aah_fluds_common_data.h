@@ -5,15 +5,11 @@
 #include <cstdint>
 #include <set>
 
-namespace chi_mesh
+namespace opensn
 {
 class GridFaceHistogram;
 class Cell;
 class CellFace;
-} // namespace chi_mesh
-
-namespace chi_mesh::sweep_management
-{
 
 // face_slot index, vertex ids
 typedef std::pair<int, std::vector<uint64_t>> CompactFaceView;
@@ -43,7 +39,7 @@ public:
 public:
   explicit AAH_FLUDSCommonData(const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
                                const SPDS& spds,
-                               const chi_mesh::GridFaceHistogram& grid_face_histogram);
+                               const GridFaceHistogram& grid_face_histogram);
 
 protected:
   friend class AAH_FLUDS;
@@ -138,7 +134,7 @@ private:
 
   void InitializeAlphaElements(const SPDS& spds, const GridFaceHistogram& grid_face_histogram);
 
-  void SlotDynamics(const chi_mesh::Cell& cell,
+  void SlotDynamics(const Cell& cell,
                     const SPDS& spds,
                     const GridFaceHistogram& grid_face_histogram,
                     std::vector<std::vector<std::pair<int, short>>>& lock_boxes,
@@ -149,14 +145,10 @@ private:
    * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
    * computes the location of this position's upwind psi in the local upwind psi vector.
    */
-  void AddFaceViewToDepLocI(int deplocI,
-                            int cell_g_index,
-                            int face_slot,
-                            const chi_mesh::CellFace& face);
+  void AddFaceViewToDepLocI(int deplocI, int cell_g_index, int face_slot, const CellFace& face);
 
-  void LocalIncidentMapping(const chi_mesh::Cell& cell,
-                            const SPDS& spds,
-                            std::vector<int>& local_so_cell_mapping);
+  void
+  LocalIncidentMapping(const Cell& cell, const SPDS& spds, std::vector<int>& local_so_cell_mapping);
 
   void InitializeBetaElements(const SPDS& spds, int tag_index = 0);
 
@@ -175,7 +167,7 @@ private:
                                   std::vector<int>* face_indices,
                                   int& num_face_dofs);
 
-  void NonLocalIncidentMapping(const chi_mesh::Cell& cell, const SPDS& spds);
+  void NonLocalIncidentMapping(const Cell& cell, const SPDS& spds);
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

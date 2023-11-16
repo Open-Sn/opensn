@@ -10,8 +10,11 @@
   lua_pushnumber(L, y);                                                                            \
   lua_setglobal(L, #x)
 
+namespace opensnlua::dfem_diffusion
+{
+
 void
-dfem_diffusion::dfem_diffusion_lua_utils::RegisterLuaEntities(lua_State* L)
+RegisterLuaEntities(lua_State* L)
 {
   LUA_FMACRO1(chiDFEMDiffusionSolverCreate);
   LUA_FMACRO1(chiDFEMDiffusionSetBCProperty);
@@ -19,3 +22,5 @@ dfem_diffusion::dfem_diffusion_lua_utils::RegisterLuaEntities(lua_State* L)
   LUA_CMACRO1(MAX_ITERATIONS, 1);
   LUA_CMACRO1(TOLERANCE, 2);
 }
+
+} // namespace opensnlua::dfem_diffusion

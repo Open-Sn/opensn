@@ -4,7 +4,7 @@
 #include "framework/logging/log.h"
 #include <iomanip>
 
-namespace chi_math::PETScUtils
+namespace opensn
 {
 
 Vec
@@ -337,4 +337,4 @@ RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data)
   VecGhostRestoreLocalForm(x, &local_data.x_localized);
 }
 
-} // namespace chi_math::PETScUtils
+} // namespace opensn

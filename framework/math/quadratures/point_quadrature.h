@@ -2,7 +2,7 @@
 
 #include "framework/math/quadratures/quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
 
 /**Quadrate for a single point. Helps generalize quadrature based integration
@@ -13,4 +13,4 @@ public:
   PointQuadrature();
 };
 
-} // namespace chi_math
+} // namespace opensn

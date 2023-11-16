@@ -1,11 +1,14 @@
 #pragma once
 
-/**Structure containing edge properties*/
-struct chi_mesh::Edge
+namespace opensn
 {
-  int v_index[2]{};             ///< Indices of the vertices
-  int f_index[4]{};             ///< Indices of faces adjoining it
-  chi_mesh::Vertex vertices[2]; ///< Vector vertices
+
+/**Structure containing edge properties*/
+struct Edge
+{
+  int v_index[2]{};   ///< Indices of the vertices
+  int f_index[4]{};   ///< Indices of faces adjoining it
+  Vertex vertices[2]; ///< Vector vertices
 
   Edge()
   {
@@ -37,3 +40,5 @@ struct chi_mesh::Edge
     return *this;
   }
 };
+
+} // namespace opensn

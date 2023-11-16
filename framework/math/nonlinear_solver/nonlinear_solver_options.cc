@@ -2,15 +2,15 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_math
+namespace opensn
 {
 
 RegisterChiObjectParametersOnly(chi_math, NonLinearSolverOptions);
 
-chi::InputParameters
+InputParameters
 NonLinearSolverOptions::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   params.SetGeneralDescription("Options available on NonLinearSolver");
   params.SetDocGroup("LuaMath");
@@ -25,7 +25,7 @@ NonLinearSolverOptions::GetInputParameters()
                               "The type passed to SNESSetType, if PETSc is used. Consult PETSc's "
                               "documentation for a list of available types.");
 
-  chi::ParameterBlock pc_options;
+  ParameterBlock pc_options;
   pc_options.AddParameter("pc_type", "hypre");
   pc_options.AddParameter("pc_hypre_type", "boomeramg");
 
@@ -52,14 +52,13 @@ NonLinearSolverOptions::GetInputParameters()
   params.AddOptionalParameter("l_gmres_restart_intvl", 30, "GMRes restart interval");
   params.AddOptionalParameter("l_gmres_breakdown_tol", 1.0e6, "GMRes breakdown tolerance");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("nl_method",
                                  AllowableRangeList::New({"JFNK", "PJFNK", "NEWTON", "LINEAR"}));
 
   return params;
 }
 
-NonLinearSolverOptions::NonLinearSolverOptions(const chi::InputParameters& params)
+NonLinearSolverOptions::NonLinearSolverOptions(const InputParameters& params)
   : ChiObject(params),
     nl_method_(params.GetParamValue<std::string>("nl_method")),
     l_method_(params.GetParamValue<std::string>("l_method")),
@@ -80,4 +79,4 @@ NonLinearSolverOptions::NonLinearSolverOptions(const chi::InputParameters& param
 {
 }
 
-} // namespace chi_math
+} // namespace opensn

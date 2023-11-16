@@ -2,13 +2,13 @@
 
 #include "framework/event_system/event_publisher.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 class Solver;
 
 /**A singleton object that can be subscribed to for events.*/
-class PhysicsEventPublisher : public chi::EventPublisher
+class PhysicsEventPublisher : public EventPublisher
 {
 public:
   /**Access to the singleton*/
@@ -19,7 +19,7 @@ public:
   /// Deleted assignment operator
   operator=(const PhysicsEventPublisher&) = delete;
 
-  void PublishEvent(const chi::Event& event) override;
+  void PublishEvent(const Event& event) override;
 
   void SolverInitialize(Solver& solver);
   void SolverExecute(Solver& solver);
@@ -30,4 +30,4 @@ private:
   PhysicsEventPublisher();
 };
 
-} // namespace chi_physics
+} // namespace opensn

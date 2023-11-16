@@ -2,7 +2,7 @@
 
 #include "framework/mesh/cell/cell.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**Stores references to global cells to enable an iterator.*/
@@ -11,20 +11,20 @@ class LocalCellHandler
   friend class MeshContinuum;
 
 public:
-  std::vector<std::unique_ptr<chi_mesh::Cell>>& native_cells;
+  std::vector<std::unique_ptr<Cell>>& native_cells;
 
 private:
   /**Constructor.*/
-  explicit LocalCellHandler(std::vector<std::unique_ptr<chi_mesh::Cell>>& in_native_cells)
+  explicit LocalCellHandler(std::vector<std::unique_ptr<Cell>>& in_native_cells)
     : native_cells(in_native_cells)
   {
   }
 
 public:
   /**Returns a reference to a local cell, given a local cell index.*/
-  chi_mesh::Cell& operator[](uint64_t cell_local_index);
+  Cell& operator[](uint64_t cell_local_index);
   /**Returns a const reference to a local cell, given a local cell index.*/
-  const chi_mesh::Cell& operator[](uint64_t cell_local_index) const;
+  const Cell& operator[](uint64_t cell_local_index) const;
 
   /**Internal iterator class.*/
   class iterator
@@ -47,7 +47,7 @@ public:
       return *this;
     }
 
-    chi_mesh::Cell& operator*() { return *(ref_block.native_cells[ref_element]); }
+    Cell& operator*() { return *(ref_block.native_cells[ref_element]); }
     bool operator==(const iterator& rhs) const { return ref_element == rhs.ref_element; }
     bool operator!=(const iterator& rhs) const { return ref_element != rhs.ref_element; }
   };
@@ -75,7 +75,7 @@ public:
       return *this;
     }
 
-    const chi_mesh::Cell& operator*() { return *(ref_block.native_cells[ref_element]); }
+    const Cell& operator*() { return *(ref_block.native_cells[ref_element]); }
     bool operator==(const const_iterator& rhs) const { return ref_element == rhs.ref_element; }
     bool operator!=(const const_iterator& rhs) const { return ref_element != rhs.ref_element; }
   };
@@ -91,4 +91,4 @@ public:
   size_t size() const { return native_cells.size(); }
 };
 
-} // namespace chi_mesh
+} // namespace opensn

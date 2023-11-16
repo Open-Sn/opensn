@@ -6,17 +6,19 @@
 
 #include "framework/mesh/cell/cell.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 struct ResponseFunctionDesignation
 {
   const std::string name;
-  const std::shared_ptr<chi_mesh::LogicalVolume> logical_volume;
+  const std::shared_ptr<LogicalVolume> logical_volume;
   const std::string lua_functional;
 
   explicit ResponseFunctionDesignation(std::string in_name,
-                                       std::shared_ptr<chi_mesh::LogicalVolume> in_logical_volume,
+                                       std::shared_ptr<LogicalVolume> in_logical_volume,
                                        std::string in_lua_function_name)
     : name(std::move(in_name)),
       logical_volume(std::move(in_logical_volume)),
@@ -26,8 +28,9 @@ struct ResponseFunctionDesignation
 
   /** Calls the lua function associated with the response function and
    * returns a multigroup vector of the source values.*/
-  std::vector<double> GetMGResponse(const chi_mesh::Cell& cell, size_t num_groups) const;
+  std::vector<double> GetMGResponse(const Cell& cell, size_t num_groups) const;
 };
 
 } // namespace lbs
+} // namespace opensn
 #endif

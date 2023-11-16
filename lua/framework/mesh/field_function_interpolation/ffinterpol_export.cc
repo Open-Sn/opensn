@@ -20,7 +20,8 @@ chiFFInterpolationExportPython(lua_State* L)
   // Get handle to field function
   const size_t ffihandle = lua_tonumber(L, 1);
 
-  auto p_ffi = Chi::GetStackItemPtr(Chi::field_func_interpolation_stack, ffihandle, fname);
+  auto p_ffi =
+    opensn::Chi::GetStackItemPtr(opensn::Chi::field_func_interpolation_stack, ffihandle, fname);
 
   std::string base_name = p_ffi->GetDefaultFileBaseName() + std::to_string(ffihandle);
   if (num_args == 2) base_name = lua_tostring(L, 2);

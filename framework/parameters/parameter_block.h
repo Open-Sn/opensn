@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-namespace chi
+namespace opensn
 {
 
 enum class ParameterBlockType
@@ -40,7 +40,7 @@ class ParameterBlock
 private:
   ParameterBlockType type_ = ParameterBlockType::BLOCK;
   std::string name_;
-  std::unique_ptr<chi_data_types::Varying> value_ptr_ = nullptr;
+  std::unique_ptr<Varying> value_ptr_ = nullptr;
   std::vector<ParameterBlock> parameters_;
   std::string error_origin_scope_ = "Unknown Scope";
 
@@ -99,7 +99,7 @@ public:
     if (IsString<T>::value) type_ = ParameterBlockType::STRING;
     if (IsInteger<T>::value) type_ = ParameterBlockType::INTEGER;
 
-    value_ptr_ = std::make_unique<chi_data_types::Varying>(value);
+    value_ptr_ = std::make_unique<Varying>(value);
   }
 
   /**Copy constructor*/
@@ -122,7 +122,7 @@ public:
   /**Returns a string version of the type.*/
   std::string TypeName() const;
   std::string Name() const;
-  const chi_data_types::Varying& Value() const;
+  const Varying& Value() const;
   /**Returns the number of parameters in a block. This is normally
    * only useful for the ARRAY type.*/
   size_t NumParameters() const;
@@ -319,4 +319,4 @@ public:
   void RecursiveDumpToJSON(std::string& outstr) const;
 };
 
-} // namespace chi
+} // namespace opensn

@@ -2,7 +2,9 @@
 
 #include "framework/runtime.h"
 
-namespace lbs::common_lua_utils
+using namespace opensn;
+
+namespace opensnlua::lbs
 {
 
 int
@@ -18,11 +20,12 @@ chiLBSInitializeMaterials(lua_State* L)
   // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
 
-  auto& lbs_solver = Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   lbs_solver.InitMaterials();
 
   return 0;
 }
 
-} // namespace lbs::common_lua_utils
+} // namespace opensnlua::lbs

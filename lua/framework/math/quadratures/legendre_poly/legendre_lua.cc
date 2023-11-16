@@ -4,6 +4,8 @@
 #include "framework/console/console.h"
 #include "legendre_lua.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiLegendre);
 RegisterLuaFunctionAsIs(chiLegendreDerivative);
 RegisterLuaFunctionAsIs(chiYlm);
@@ -15,7 +17,7 @@ chiLegendre(lua_State* L)
   int N = lua_tonumber(L, 1);
   double x = lua_tonumber(L, 2);
 
-  double retval = chi_math::Legendre(N, x);
+  double retval = Legendre(N, x);
 
   lua_pushnumber(L, retval);
   return 1;
@@ -28,7 +30,7 @@ chiLegendreDerivative(lua_State* L)
   int N = lua_tonumber(L, 1);
   double x = lua_tonumber(L, 2);
 
-  double retval = chi_math::dLegendredx(N, x);
+  double retval = dLegendredx(N, x);
 
   lua_pushnumber(L, retval);
   return 1;
@@ -45,7 +47,7 @@ chiYlm(lua_State* L)
   double theta = lua_tonumber(L, 3);
   double varphi = lua_tonumber(L, 4);
 
-  double retval = chi_math::Ylm(ell, m, varphi, theta);
+  double retval = Ylm(ell, m, varphi, theta);
 
   lua_pushnumber(L, retval);
   return 1;

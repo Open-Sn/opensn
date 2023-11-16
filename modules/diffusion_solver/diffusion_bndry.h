@@ -2,7 +2,9 @@
 
 #include "modules/diffusion_solver/diffusion.h"
 
-namespace chi_diffusion
+namespace opensn
+{
+namespace diffusion
 {
 enum class BoundaryType : int
 {
@@ -12,10 +14,9 @@ enum class BoundaryType : int
   Robin = 4,
   Vacuum = 5
 };
-}
 
 /**Parent class for diffusion boundaries*/
-class chi_diffusion::Boundary
+class Boundary
 {
 public:
   BoundaryType type_;
@@ -24,14 +25,14 @@ public:
 };
 
 /**Reflecting boundary condition.*/
-class chi_diffusion::BoundaryReflecting : public chi_diffusion::Boundary
+class BoundaryReflecting : public Boundary
 {
 public:
   BoundaryReflecting() : Boundary(BoundaryType::Reflecting) {}
 };
 
 /**Dirichlet boundary.*/
-class chi_diffusion::BoundaryDirichlet : public chi_diffusion::Boundary
+class BoundaryDirichlet : public Boundary
 {
 public:
   double boundary_value = 0.0;
@@ -66,7 +67,7 @@ and \f$ f=0 \f$ then the boundary condition is equivalent to a
 \frac{1}{4}\phi + \frac{1}{2}D\hat{n}\cdot \nabla \phi = 0
 \f]
  */
-class chi_diffusion::BoundaryRobin : public chi_diffusion::Boundary
+class BoundaryRobin : public Boundary
 {
 public:
   double a = 0.25;
@@ -81,3 +82,6 @@ public:
     f = f_value;
   }
 };
+
+} // namespace diffusion
+} // namespace opensn

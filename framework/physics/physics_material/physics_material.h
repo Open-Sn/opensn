@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-namespace chi_physics
+namespace opensn
 {
 
 /** Base class for materials used in physics simulations.*/
@@ -17,4 +17,4 @@ public:
   std::string name_ = "Unnamed Material";
 };
 
-} // namespace chi_physics
+} // namespace opensn

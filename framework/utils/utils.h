@@ -7,7 +7,7 @@
 #include <fstream>
 
 /**Miscellaneous utilities. These utilities should have no dependencies.*/
-namespace chi
+namespace opensn
 {
 /**Print the percentage completed based on the given interval.
  *
@@ -96,4 +96,4 @@ ReadBinaryValue(std::ifstream& input_file)
 
   return value;
 }
-} // namespace chi
+} // namespace opensn

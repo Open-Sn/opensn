@@ -16,6 +16,8 @@
 
 #define GetAGSContextPtr(x) std::dynamic_pointer_cast<AGSContext>(x)
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -33,8 +35,7 @@ AGSLinearSolver::SetSystemSize()
 void
 AGSLinearSolver::SetSystem()
 {
-  x_ =
-    chi_math::PETScUtils::CreateVector(sc_int64_t(num_local_dofs_), sc_int64_t(num_global_dofs_));
+  x_ = CreateVector(sc_int64_t(num_local_dofs_), sc_int64_t(num_global_dofs_));
 
   VecSet(x_, 0.0);
   VecDuplicate(x_, &b_);
@@ -49,7 +50,7 @@ AGSLinearSolver::SetSystem()
                  &A_);
 
   // Set the action-operator
-  MatShellSetOperation(A_, MATOP_MULT, (void (*)())chi_math::LinearSolverMatrixAction);
+  MatShellSetOperation(A_, MATOP_MULT, (void (*)())LinearSolverMatrixAction);
 
   // Set solver operators
   KSPSetOperators(ksp_, A_, A_);
@@ -130,3 +131,4 @@ AGSLinearSolver::~AGSLinearSolver()
 }
 
 } // namespace lbs
+} // namespace opensn

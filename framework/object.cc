@@ -1,6 +1,9 @@
 #include "framework/object.h"
 
-chi::InputParameters
+namespace opensn
+{
+
+InputParameters
 ChiObject::GetInputParameters()
 {
   return {}; // Returns an empty block
@@ -10,7 +13,7 @@ ChiObject::ChiObject()
 {
 }
 
-ChiObject::ChiObject(const chi::InputParameters&)
+ChiObject::ChiObject(const InputParameters&)
 {
 }
 
@@ -32,3 +35,5 @@ ChiObject::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
   Chi::object_stack.push_back(new_object);
   new_object->SetStackID(Chi::object_stack.size() - 1);
 }
+
+} // namespace opensn

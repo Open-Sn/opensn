@@ -2,18 +2,18 @@
 
 #include "framework/math/functions/function_dimA_to_dimB.h"
 
-namespace chi_math::functions
+namespace opensnlua
 {
 
-class LuaDimAToDimB : public FunctionDimAToDimB
+class LuaDimAToDimB : public opensn::FunctionDimAToDimB
 {
 private:
   const std::string lua_function_name_;
 
 public:
-  static chi::InputParameters GetInputParameters();
+  static opensn::InputParameters GetInputParameters();
 
-  explicit LuaDimAToDimB(const chi::InputParameters& params);
+  explicit LuaDimAToDimB(const opensn::InputParameters& params);
 
   std::vector<double> Evaluate(const std::vector<double>& vals) const override;
 
@@ -21,4 +21,4 @@ public:
   bool HasCurvature() const override { return false; }
 };
 
-} // namespace chi_math::functions
+} // namespace opensnlua

@@ -18,7 +18,9 @@
   std::dynamic_pointer_cast<NLKEigenDiffContext>(x);                                               \
   CheckContext(x)
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
 void
@@ -54,7 +56,7 @@ void
 NLKEigenDiffSolver::SetSystem()
 {
   // Create the vectors
-  x_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_globl_dofs_);
+  x_ = CreateVector(num_local_dofs_, num_globl_dofs_);
   VecDuplicate(x_, &r_);
 }
 
@@ -95,7 +97,6 @@ NLKEigenDiffSolver::PostSolveCallback()
   auto delta_phi = nl_context_ptr->PhiVecToSTLVec(x_);
   auto& phi_lph_ip1 = nl_context_ptr->phi_lph_ip1_;
 
-  using namespace chi_math;
   auto phi_lp1_temp = phi_lph_ip1 + delta_phi;
   lbs_solver.GSProjectBackPhi0(front_gs, phi_lp1_temp, phi_new_local);
   lbs_solver.GSScopedCopyPrimarySTLvectors(front_gs, phi_new_local, phi_old_local);
@@ -116,4 +117,5 @@ NLKEigenDiffSolver::PostSolveCallback()
                    << "\n";
 }
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

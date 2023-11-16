@@ -2,17 +2,17 @@
 
 #include "framework/mesh/logical_volume/logical_volume.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**Rectangular Parallel Piped (RPP) logical volume*/
 class RPPLogicalVolume : public LogicalVolume
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit RPPLogicalVolume(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit RPPLogicalVolume(const InputParameters& params);
 
-  bool Inside(const chi_mesh::Vector3& point) const override;
+  bool Inside(const Vector3& point) const override;
 
 protected:
   double xmin_, xmax_;
@@ -21,4 +21,4 @@ protected:
   bool infx_, infy_, infz_;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

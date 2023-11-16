@@ -1,6 +1,6 @@
 #include "framework/math/quadratures/point_quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
 
 PointQuadrature::PointQuadrature() : Quadrature(QuadratureOrder::CONSTANT)
@@ -9,4 +9,4 @@ PointQuadrature::PointQuadrature() : Quadrature(QuadratureOrder::CONSTANT)
   weights_ = {1.0};
 }
 
-} // namespace chi_math
+} // namespace opensn

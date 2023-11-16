@@ -4,7 +4,7 @@
 #include "framework/object_factory.h"
 #include "framework/console/console.h"
 
-namespace chi::lua_utils
+namespace opensn
 {
 
 /**Generic lua routine for the creation of objects.
@@ -31,7 +31,7 @@ chiMakeObject(lua_State* L)
 
   LuaCheckTableValue(fname, L, 1);
 
-  const auto params = chi_lua::TableParserAsParameterBlock::ParseTable(L, 1);
+  const auto params = TableParserAsParameterBlock::ParseTable(L, 1);
 
   const auto& object_maker = ChiObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObject(params);
@@ -53,7 +53,7 @@ chiMakeObjectType(lua_State* L)
   LuaCheckTableValue(fname, L, 2);
 
   const std::string type = lua_tostring(L, 1);
-  const auto params = chi_lua::TableParserAsParameterBlock::ParseTable(L, 2);
+  const auto params = TableParserAsParameterBlock::ParseTable(L, 2);
 
   const auto& object_maker = ChiObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObjectOfType(type, params);
@@ -62,5 +62,5 @@ chiMakeObjectType(lua_State* L)
   return 1;
 }
 
-} // namespace chi::lua_utils
+} // namespace opensn
 #endif
