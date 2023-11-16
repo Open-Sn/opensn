@@ -50,7 +50,7 @@ chiComputeLoadBalancing(lua_State* L)
   {
     opensn::log.LogAllError() << "In call to chiComputeLoadBalancing: "
                               << " expected table for argument 2. Incompatible value supplied.";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::Exit(EXIT_FAILURE);
   }
 
   int x_table_len = lua_rawlen(L, 2);
@@ -69,7 +69,7 @@ chiComputeLoadBalancing(lua_State* L)
   {
     opensn::log.LogAllError() << "In call to chiComputeLoadBalancing: "
                               << " expected table for argument 3. Incompatible value supplied.";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::Exit(EXIT_FAILURE);
   }
 
   int y_table_len = lua_rawlen(L, 3);

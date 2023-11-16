@@ -52,14 +52,14 @@ Solver::GetMaterialProperties(const Cell& cell,
   if (mat_id < 0)
   {
     log.Log0Error() << "Cell encountered with no material id. ";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   if (mat_id >= Chi::material_stack.size())
   {
     log.Log0Error() << "Cell encountered with material id pointing to "
                        "non-existing material.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   auto property_map_D = basic_options_("property_map_D").IntegerValue();
@@ -82,7 +82,7 @@ Solver::GetMaterialProperties(const Cell& cell,
       log.Log0Error() << "Solver diffusion coefficient mapped to property index " << property_map_D
                       << " is not a valid index for material \"" << material->name_ << "\" id "
                       << mat_id;
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     // For now, we can only support scalar values so lets check that
@@ -97,7 +97,7 @@ Solver::GetMaterialProperties(const Cell& cell,
                       << " for material \"" << material->name_ << "\" id " << mat_id
                       << ". Currently SCALAR_VALUE and THERMAL_CONDUCTIVITY are the "
                       << "only supported types.";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     if ((property_map_q < material->properties_.size()) && (property_map_q >= 0))
@@ -113,7 +113,7 @@ Solver::GetMaterialProperties(const Cell& cell,
                         << " for material \"" << material->name_ << "\" id " << mat_id
                         << ". Currently SCALAR_VALUE is the "
                         << "only supported type.";
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
     }
 
@@ -146,7 +146,7 @@ Solver::GetMaterialProperties(const Cell& cell,
     {
       log.LogAllError() << "Diffusion Solver: Material encountered with no tranport xs"
                            " yet material mode is DIFFUSION_MATERIALS_FROM_TRANSPORTXS.";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     // Setting Q
@@ -163,14 +163,14 @@ Solver::GetMaterialProperties(const Cell& cell,
                         << " for material \"" << material->name_ << "\" id " << mat_id
                         << ". Currently SCALAR_VALUE is the "
                         << "only supported type.";
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
     }
   } // transport xs TTR
   else
   {
     log.Log0Error() << "Diffusion Solver: Invalid material mode.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 }
 
@@ -490,7 +490,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   {
     log.Log() << "Diffusion Solver: Finite Element Discretization "
                  "method not specified.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   if (!suppress_assembly)
@@ -1127,7 +1127,7 @@ Solver::HPerpendicular(const Cell& cell,
   else
   {
     log.LogAllError() << "Unsupported cell type in call to HPerpendicular";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   return hp;

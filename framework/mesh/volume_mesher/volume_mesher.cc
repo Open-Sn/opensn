@@ -66,14 +66,14 @@ VolumeMesher::GetCellXYPartitionID(Cell* cell)
   {
     log.LogAllError() << "When specifying x-partitioning, the number of grp_subsets in x "
                          "needs to be divisible by the number of partitions in x.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   if (y_remainder != 0)
   {
     log.LogAllError() << "When specifying y-partitioning, the number of grp_subsets in y "
                          "needs to be divisible by the number of partitions in y.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   size_t subsets_per_partitionx = num_x_subsets / vol_mesher.options.partition_x;
@@ -151,7 +151,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
       {
         log.LogAllError() << "Number of sub-layers in extruded mesh is not divisible "
                           << "by the requested number of z-partitions.";
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
 
       int delta_zk = num_sub_layers / vol_mesher.options.partition_z;
@@ -244,7 +244,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
   {
     log.LogAllError() << "A cell was encountered for which "
                          "no zpartition id was found";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   return ijk_id;
@@ -269,7 +269,7 @@ VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPt
       log.LogAllError() << "VolumeMesher::CreatePolygonCells "
                            "called with a cell not being of primary type"
                            " CellType::POLYGON.";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     // Make cell

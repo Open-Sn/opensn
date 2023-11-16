@@ -55,7 +55,7 @@ Console::FlushConsole()
   catch (const std::exception& e)
   {
     log.LogAllError() << e.what();
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 #endif
 }
@@ -204,7 +204,7 @@ Console::RunConsoleLoop(char*) const
     catch (const std::exception& e)
     {
       log.LogAllError() << e.what();
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 #endif
   } // while not termination posted

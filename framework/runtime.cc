@@ -304,7 +304,7 @@ Chi::RunBatch(int argc, char** argv)
     catch (const std::exception& excp)
     {
       log.LogAllError() << excp.what();
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
   }
 
@@ -319,7 +319,7 @@ Chi::RunBatch(int argc, char** argv)
 }
 
 void
-Chi::Exit(int error_code)
+Exit(int error_code)
 {
   MPI_Abort(mpi.comm, error_code);
 }

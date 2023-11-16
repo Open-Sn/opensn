@@ -442,7 +442,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
     if (of == nullptr)
     {
       log.LogAllError() << "Could not open file: " << std::string(fileName);
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     // Develop list of faces and nodes
@@ -531,7 +531,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
       if (of == nullptr)
       {
         log.LogAllError() << "Could not open file: " << mat_file_name;
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
 
       // Develop list of faces and nodes
@@ -836,7 +836,7 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
                         << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
                            "node."
                         << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
   }
 }
@@ -876,7 +876,7 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
                         << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
                            "node."
                         << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
   }
 }
@@ -924,7 +924,7 @@ MeshContinuum::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list)
   if (list.empty())
   {
     log.LogAllError() << "ComputeCentroidFromListOfNodes, empty list";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
   Vector3 centroid;
   for (auto node_id : list)

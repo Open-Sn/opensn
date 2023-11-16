@@ -40,7 +40,7 @@ chiMeshHandlerSetCurrent(lua_State* L)
   {
     opensn::log.LogAllError() << "Invalid handle to mesh handler specified "
                               << "in call to chiMeshHandlerSetCurrent";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::Exit(EXIT_FAILURE);
   }
 
   opensn::Chi::current_mesh_handler = handle;

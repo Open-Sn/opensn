@@ -731,7 +731,7 @@ LBSSolver::PerformInputChecks()
   if (groups_.empty())
   {
     log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No groups added to solver.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   num_groups_ = groups_.size();
@@ -739,7 +739,7 @@ LBSSolver::PerformInputChecks()
   if (groupsets_.empty())
   {
     log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No group-sets added to solver.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
   int grpset_counter = 0;
   for (auto& group_set : groupsets_)
@@ -748,14 +748,14 @@ LBSSolver::PerformInputChecks()
     {
       log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No groups added to groupset "
                         << grpset_counter << ".";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
     ++grpset_counter;
   }
   if (options_.sd_type == SpatialDiscretizationType::UNDEFINED)
   {
     log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No discretization_ method set.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   grid_ptr_ = GetCurrentHandler().GetGrid();
@@ -764,7 +764,7 @@ LBSSolver::PerformInputChecks()
   {
     log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No "
                          "grid_ptr_ available from region.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   // Determine geometry type
@@ -895,7 +895,7 @@ LBSSolver::InitMaterials()
     {
       log.LogAllError() << fname + ": Found no transport cross-section property for "
                         << "material \"" << current_material->name_ << "\".";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
     // Check number of groups legal
     if (matid_to_xs_map_[mat_id]->NumGroups() < groups_.size())
@@ -904,7 +904,7 @@ LBSSolver::InitMaterials()
                         << matid_to_xs_map_[mat_id]->NumGroups() << " groups and"
                         << " the simulation has " << groups_.size() << " groups."
                         << " The material must have a greater or equal amount of groups.";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     // Check number of moments

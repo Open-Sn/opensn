@@ -317,7 +317,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
       log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
                         << "with global index " << cell.global_id_ << " and partition-ID "
                         << cell.partition_id_;
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     if (storage == UnknownStorageType::BLOCK)
@@ -383,7 +383,7 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
       log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
                         << "with global index " << cell.global_id_ << " and partition-ID "
                         << cell.partition_id_;
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     if (storage == UnknownStorageType::BLOCK)

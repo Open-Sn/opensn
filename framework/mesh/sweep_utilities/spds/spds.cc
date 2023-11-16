@@ -27,7 +27,7 @@ SPDS::MapLocJToPrelocI(int locJ) const
   }
 
   log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToPrelocI.";
-  Chi::Exit(EXIT_FAILURE);
+  Exit(EXIT_FAILURE);
   return 0;
 }
 
@@ -40,7 +40,7 @@ SPDS::MapLocJToDeplocI(int locJ) const
   }
 
   log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToDeplocI.";
-  Chi::Exit(EXIT_FAILURE);
+  Exit(EXIT_FAILURE);
   return 0;
 }
 

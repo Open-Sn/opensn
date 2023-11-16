@@ -225,14 +225,14 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
   auto IR_MAP_ERROR = []()
   {
     log.LogAllError() << "PWL-MapCFEMDOF: ir Mapping error node ";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   };
 
   // Writes a message on jr error
   auto JR_MAP_ERROR = []()
   {
     log.LogAllError() << "PWL-MapCFEMDOF: jr Mapping error node ";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   };
 
   // Checks whether an integer is already in a vector

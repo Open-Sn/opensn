@@ -52,7 +52,7 @@ LagrangeBaseMapping::MakeFaceNodeMapping(const Cell& cell)
       {
         log.LogAllError() << "Unknown face mapping encountered. "
                              "pwl_polyhedron.h";
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
       face_dof_mapping.push_back(mapping);
     } // for face i

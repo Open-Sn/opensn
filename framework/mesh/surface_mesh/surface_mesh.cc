@@ -99,7 +99,7 @@ SurfaceMesh::ExtractOpenEdgesToObj(const char* fileName)
   {
     log.LogAllError() << "In call to SurfaceMesh::ExtractOpenEdgesToObj. Failed"
                       << " to open file: " << std::string(fileName);
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   outfile << "# ChiTech open edges file\n";
@@ -251,7 +251,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
   {
     log.LogAllError() << "Failed to open file: " << fileName << " in call "
                       << "to ImportFromOBJFile \n";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
   log.Log() << "Loading surface mesh with transform " << transform.PrintStr();
 
@@ -643,7 +643,7 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   {
     log.LogAllError() << "Failed to open file: " << node_filename << " in call "
                       << "to ImportFromOBJFile \n";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   int num_verts;
@@ -668,7 +668,7 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   {
     log.LogAllError() << "Failed to open file: " << tria_filename << " in call "
                       << "to ImportFromOBJFile \n";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   int num_tris;
@@ -780,12 +780,12 @@ SurfaceMesh::CreateFromDivisions(std::vector<double>& vertices_1d_x,
   if (vertices_1d_x.empty())
   {
     log.LogAllError() << "SurfaceMesh::CreateFromDivisions. Empty vertex_x list.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
   if (vertices_1d_y.empty())
   {
     log.LogAllError() << "SurfaceMesh::CreateFromDivisions. Empty vertex_y list.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   // Populate 2D vertices
@@ -891,7 +891,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   {
     log.LogAllError() << "Failed to open file: " << fileName << " in call "
                       << "to ImportFromMshFiles \n";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   // Find section with node information and then read information
@@ -906,7 +906,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   if (!(iss >> num_nodes))
   {
     log.LogAllError() << "Failed while trying to read the number of nodes.\n";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   vertices_.resize(num_nodes);
@@ -921,13 +921,13 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
     if (!(iss >> vert_index))
     {
       log.LogAllError() << "Failed to read vertex index.\n";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     if (!(iss >> vertex.x >> vertex.y >> vertex.z))
     {
       log.LogAllError() << "Failed while reading the vertex coordinates.\n";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     vertices_[vert_index - 1] = vertex;
@@ -946,7 +946,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   if (!(iss >> num_elems))
   {
     log.LogAllError() << "Failed to read number of elements.\n";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   for (int n = 0; n < num_elems; n++)
@@ -960,20 +960,20 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
     {
       log.LogAllError() << "Failed while reading element index, element "
                            "type, and number of tags.\n";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     if (!(iss >> physical_reg))
     {
       log.LogAllError() << "Failed while reading physical region.\n";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     for (int i = 1; i < num_tags; i++)
       if (!(iss >> tag))
       {
         log.LogAllError() << "Failed when reading tags.\n";
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
 
     if (elem_type == 2)
@@ -985,7 +985,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
         if (!(iss >> nodes[i]))
         {
           log.LogAllError() << "Failed when reading element node index.\n";
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
 
       newFace->v_indices.resize(num_nodes);
@@ -1001,7 +1001,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
         if (!(iss >> node))
         {
           log.LogAllError() << "Failed when reading element node index.\n";
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
 
       newFace->v_indices.resize(num_nodes);
@@ -1232,7 +1232,7 @@ SurfaceMesh::CheckCyclicDependencies(int num_angles)
     if (topological_order.empty())
     {
       log.LogAllError() << "Function CheckCyclicDependencies. Detected cyclic depency.";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     // Cleanup

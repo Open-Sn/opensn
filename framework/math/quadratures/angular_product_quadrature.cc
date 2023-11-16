@@ -26,7 +26,7 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
     log.LogAllError() << "Product Quadrature, InitializeWithCustom: mismatch in the amount "
                          "angles and weights. Number of azimuthal angles times number "
                          "polar angles must equal the amount of weights.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   azimu_ang_ = azimuthal;
@@ -226,7 +226,7 @@ AngularQuadratureProdCustom::AngularQuadratureProdCustom(const std::vector<doubl
     log.LogAllError() << "Product Quadrature, InitializeWithCustom: mismatch in the amount "
                          "angles and weights. Number of azimuthal angles times number "
                          "polar angles must equal the amount of weights.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   AssembleCosines(azimuthal, polar, weights_, verbose);

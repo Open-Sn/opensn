@@ -70,7 +70,7 @@ chiFFInterpolationCreate(lua_State* L)
   else // Fall back
   {
     opensn::log.LogAllError() << "Invalid FFITypeIndex used in chiFFInterpolationCreate.";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::Exit(EXIT_FAILURE);
   }
   return 0;
 }

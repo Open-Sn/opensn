@@ -101,7 +101,7 @@ SweepScheduler::InitializeAlgoDOG()
       else
       {
         log.LogAllError() << "Location depth not found in Depth-Of-Graph algorithm.";
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
 
     } // for anglesets

@@ -66,7 +66,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
     log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                       << "invalid coordinate system, static_cast<int>(type) = "
                       << static_cast<int>(coord_system_type_);
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   //  re-interpret geometry type to curvilinear
@@ -83,7 +83,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
                             << static_cast<int>(options_.geometry_type) << " "
                             << "for curvilinear coordinate system, static_cast<int>(type) = "
                             << static_cast<int>(coord_system_type_);
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
       }
       break;
@@ -104,7 +104,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
                             << static_cast<int>(options_.geometry_type) << " "
                             << "for curvilinear coordinate system, static_cast<int>(type) = "
                             << static_cast<int>(coord_system_type_);
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
       }
       break;
@@ -115,7 +115,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
                         << "invalid geometry, static_cast<int>(type) = "
                         << static_cast<int>(options_.geometry_type) << " "
                         << "for curvilinear coordinate system";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
   }
 
@@ -136,7 +136,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
                             << "invalid angular quadrature, static_cast<int>(type) = "
                             << static_cast<int>(angular_quad_ptr->type_)
                             << ", for groupset = " << gs;
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
         break;
       }
@@ -151,7 +151,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
                             << "invalid angular quadrature, static_cast<int>(type) = "
                             << static_cast<int>(angular_quad_ptr->type_)
                             << ", for groupset = " << gs;
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
         break;
       }
@@ -160,7 +160,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                           << "invalid curvilinear coordinate system, static_cast<int>(type) = "
                           << static_cast<int>(coord_system_type_);
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
     }
 
@@ -175,7 +175,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angle aggregation type, static_cast<int>(type) = "
                             << static_cast<int>(angleagg_method) << ", for groupset = " << gs;
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
         break;
       }
@@ -186,7 +186,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angle aggregation type, static_cast<int>(type) = "
                             << static_cast<int>(angleagg_method) << ", for groupset = " << gs;
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
         break;
       }
@@ -195,7 +195,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                           << "invalid curvilinear coordinate system, static_cast<int>(type) = "
                           << static_cast<int>(coord_system_type_);
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
     }
   }
@@ -233,7 +233,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
                                   << "mesh contains boundary faces with outward-oriented unit "
                                   << "normal vector " << (-1 * unit_normal_vectors[d]).PrintS()
                                   << "with vertices characterised by v(" << d << ") != 0.";
-                Chi::Exit(EXIT_FAILURE);
+                Exit(EXIT_FAILURE);
               }
             }
             face_orthogonal = true;
@@ -245,7 +245,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "mesh contains boundary faces not orthogonal with respect to "
                             << "Cartesian reference frame.";
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
       }
     }
@@ -284,7 +284,7 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
                            "InitializeSpatialDiscretization : "
                         << "invalid geometry, static_cast<int>(type) = "
                         << static_cast<int>(options_.geometry_type);
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
   }
 
@@ -318,7 +318,7 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
                            "InitializeSpatialDiscretization : "
                         << "invalid geometry, static_cast<int>(type) = "
                         << static_cast<int>(options_.geometry_type);
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
   }
 

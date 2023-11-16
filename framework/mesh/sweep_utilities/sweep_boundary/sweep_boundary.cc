@@ -16,7 +16,7 @@ SweepBoundary::HeterogeneousPsiIncoming(uint64_t cell_local_id,
 {
   log.LogAllError()
     << "HeterogeneousPsiIncoming call made to boundary that has no such information.";
-  Chi::Exit(EXIT_FAILURE);
+  Exit(EXIT_FAILURE);
   return nullptr;
 }
 
@@ -29,7 +29,7 @@ SweepBoundary::HeterogeneousPsiOutgoing(uint64_t cell_local_id,
 {
   log.LogAllError()
     << "HeterogeneousPsiOutgoing call made to boundary that has no such information.";
-  Chi::Exit(EXIT_FAILURE);
+  Exit(EXIT_FAILURE);
   return nullptr;
 }
 

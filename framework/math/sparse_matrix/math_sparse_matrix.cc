@@ -39,7 +39,7 @@ SparseMatrix::Insert(size_t i, size_t j, double value)
     log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
                       << " i=" << i << " j=" << j << " bounds(" << row_size_ << "," << col_size_
                       << ")";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), j);
@@ -67,7 +67,7 @@ SparseMatrix::InsertAdd(size_t i, size_t j, double value)
     log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
                       << " i=" << i << " j=" << j << " bounds(" << row_size_ << "," << col_size_
                       << ")";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), j);
@@ -96,7 +96,7 @@ SparseMatrix::SetDiagonal(const std::vector<double>& diag)
   {
     log.LogAllError() << "Incompatible matrix-vector size encountered "
                       << "in call to SparseMatrix::SetDiagonal.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   // Assign values
@@ -127,7 +127,7 @@ SparseMatrix::ValueIJ(size_t i, size_t j) const
     log.LogAllError() << "Index i out of bounds"
                       << " in call to SparseMatrix::ValueIJ"
                       << " i=" << i;
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   if (not rowI_indices_[i].empty())
@@ -217,7 +217,7 @@ SparseMatrix::CheckInitialized() const
   if (rowI_values_.empty())
   {
     log.LogAllError() << "Illegal call to unitialized SparseMatrix matrix.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 }
 

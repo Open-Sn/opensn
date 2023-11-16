@@ -252,7 +252,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
       log.LogAllError() << "MG-Diff-InitMaterials: Found no transport cross-section property "
                            "for "
                         << "material \"" << current_material->name_ << "\".";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
     // Check number of groups legal
     if (matid_to_xs_map[mat_id]->NumGroups() != num_groups_)
@@ -261,7 +261,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
                         << "\" has " << matid_to_xs_map[mat_id]->NumGroups() << " groups and "
                         << "the simulation has " << num_groups_ << " groups. The material "
                         << "must have the same number of groups.";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
 
     // Check number of moments
@@ -317,7 +317,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
   {
     log.Log0Error() << "Two-grid is not possible with no upscattering.";
     do_two_grid_ = false;
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
   if (do_two_grid_)
   {

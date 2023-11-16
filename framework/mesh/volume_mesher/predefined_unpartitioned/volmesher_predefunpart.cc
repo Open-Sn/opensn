@@ -121,7 +121,7 @@ VolumeMesherPredefinedUnpartitioned::Execute()
                         << ") does not match amount of processors "
                            "required by partitioning parameters ("
                         << desired_process_count << ").";
-      Chi::Exit(EXIT_FAILURE);
+      Exit(EXIT_FAILURE);
     }
   }
 

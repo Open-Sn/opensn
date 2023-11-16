@@ -165,7 +165,7 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
       {
         log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2)
           << "xnew " << i << " " << xnew << " y=" << a << std::endl;
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
 
       double res = std::fabs(xnew - xold);

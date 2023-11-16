@@ -31,13 +31,13 @@ chiGetProductQuadrature(lua_State* L)
     {
       opensn::log.LogAllError() << "chiGetProductQuadrature: Provided quadrature handle points to "
                                    "a quadrature that is not a product quadrature.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "chiGetProductQuadrature: Invalid quadrature handle.";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::Exit(EXIT_FAILURE);
   }
 
   lua_newtable(L);

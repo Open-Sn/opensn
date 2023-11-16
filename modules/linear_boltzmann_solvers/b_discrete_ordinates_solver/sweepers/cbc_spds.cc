@@ -82,7 +82,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
     log.LogAllError() << "Topological sorting for local sweep-ordering failed. "
                       << "Cyclic dependencies detected. Cycles need to be allowed"
                       << " by calling application.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Create Task

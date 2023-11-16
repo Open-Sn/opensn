@@ -45,7 +45,7 @@ chiVolumeMesherCreate(lua_State* L)
                                      ": "
                                      "When specifying VOLUMEMESHER_EXTRUDER, the template type and "
                                      "handle must also be supplied.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::Exit(EXIT_FAILURE);
     }
 
     LuaCheckNilValue(fname, L, 2);
@@ -68,7 +68,7 @@ chiVolumeMesherCreate(lua_State* L)
     {
       opensn::log.LogAllError() << "In call to " << __FUNCTION__
                                 << ". Invalid template type specified.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::Exit(EXIT_FAILURE);
     }
   }
   else if (mesher_type == opensn::VolumeMesherType::UNPARTITIONED)
@@ -78,7 +78,7 @@ chiVolumeMesherCreate(lua_State* L)
       opensn::log.LogAllError() << fname + ": "
                                            "When specifying VOLUMEMESHER_UNPARTITIONED, the "
                                            "handle must also be supplied.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::Exit(EXIT_FAILURE);
     }
 
     LuaCheckNilValue(fname, L, 2);
@@ -95,7 +95,7 @@ chiVolumeMesherCreate(lua_State* L)
                                "chiVolumeMesherCreate. Allowed options are"
                                "VOLUMEMESHER_EXTRUDER or "
                                "VOLUMEMESHER_UNPARTITIONED";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::Exit(EXIT_FAILURE);
   }
 
   auto& cur_hndlr = opensn::GetCurrentHandler();

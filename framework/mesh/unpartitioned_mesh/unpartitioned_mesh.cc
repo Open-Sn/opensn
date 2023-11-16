@@ -1123,7 +1123,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   {
     log.LogAllError() << "Failed to open file: " << options.file_name << " in call "
                       << "to ImportFromOBJFile \n";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   opensn::mpi.Barrier();
@@ -1483,7 +1483,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   {
     log.LogAllError() << "Failed to open file: " << options.file_name << " in call "
                       << "to ReadFromMsh \n";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   log.Log() << "Making Unpartitioned mesh from msh format file " << options.file_name;

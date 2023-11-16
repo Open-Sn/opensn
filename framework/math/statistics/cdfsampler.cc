@@ -153,7 +153,7 @@ CDFSampler::Sample(double x)
   {
     log.LogAllError() << "CDFSampler::Sample. Error in CDF sampling routine. "
                       << "A bin was not found.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   return ret_val;
@@ -290,7 +290,7 @@ SampleCDF(double x, std::vector<double> cdf_bin)
     log.LogAllError() << "SampleCDF. Error in CDF sampling routine. "
                       << "A bin was not found."
                       << " i=" << lookup_i << " f=" << lookup_f << " x=" << x;
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   //  chi::log.Log() << ret_val;

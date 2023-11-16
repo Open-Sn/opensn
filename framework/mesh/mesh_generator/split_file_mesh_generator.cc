@@ -119,7 +119,7 @@ SplitFileMeshGenerator::Execute()
                          "num_parts the program will now auto terminate. This is not an error "
                          "and is the default behavior for the SplitFileMeshGenerator.\n"
                       << log.GetTimingBlock("ChiTech").MakeGraphString();
-    Chi::Exit(EXIT_SUCCESS);
+    Exit(EXIT_SUCCESS);
   }
 
   opensn::mpi.Barrier();

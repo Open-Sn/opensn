@@ -36,7 +36,7 @@ chiDFEMDiffusionSetBCProperty(lua_State* L)
       opensn::log.Log0Error() << "Invalid amount of arguments used in"
                               << " chiDFEMDiffusionsetBCproperty(...,\"boundary_type\".... "
                               << " At least 4 arguments are expected.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::Exit(EXIT_FAILURE);
     }
     LuaCheckStringValue(fname, L, 3);
     const std::string bound_name = lua_tostring(L, 3);
@@ -52,7 +52,7 @@ chiDFEMDiffusionSetBCProperty(lua_State* L)
                                 << " chiDFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"reflecting\". "
                                 << " 4 arguments are expected.";
-        opensn::Chi::Exit(EXIT_FAILURE);
+        opensn::Exit(EXIT_FAILURE);
       }
 
       dfem_diffusion::Solver::BoundaryInfo bndry_info;
@@ -71,7 +71,7 @@ chiDFEMDiffusionSetBCProperty(lua_State* L)
                                 << " chiDFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"dirichlet\". "
                                 << " 5 arguments are expected.";
-        opensn::Chi::Exit(EXIT_FAILURE);
+        opensn::Exit(EXIT_FAILURE);
       }
       LuaCheckNumberValue(fname, L, 5);
       double boundary_value = lua_tonumber(L, 5);
@@ -92,7 +92,7 @@ chiDFEMDiffusionSetBCProperty(lua_State* L)
                                 << " chiDFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"neumann\". "
                                 << " 5 arguments are expected.";
-        opensn::Chi::Exit(EXIT_FAILURE);
+        opensn::Exit(EXIT_FAILURE);
       }
       LuaCheckNumberValue(fname, L, 5);
       double f_value = lua_tonumber(L, 5);
@@ -113,7 +113,7 @@ chiDFEMDiffusionSetBCProperty(lua_State* L)
                                 << " chiDFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"vacuum\". "
                                 << " 4 arguments are expected.";
-        opensn::Chi::Exit(EXIT_FAILURE);
+        opensn::Exit(EXIT_FAILURE);
       }
 
       dfem_diffusion::Solver::BoundaryInfo bndry_info;
@@ -132,7 +132,7 @@ chiDFEMDiffusionSetBCProperty(lua_State* L)
                                 << " chiDFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"robin\". "
                                 << " 7 arguments are expected.";
-        opensn::Chi::Exit(EXIT_FAILURE);
+        opensn::Exit(EXIT_FAILURE);
       }
       LuaCheckNumberValue(fname, L, 5);
       LuaCheckNumberValue(fname, L, 6);
@@ -156,13 +156,13 @@ chiDFEMDiffusionSetBCProperty(lua_State* L)
       opensn::log.LogAllError() << "Unsupported boundary type encountered in call to "
                                 << "chiDFEMDiffusionSetBCProperty(..,\"boundary_type\",.. :"
                                 << type_name;
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::Exit(EXIT_FAILURE);
     }
   }
   else
   {
     opensn::log.Log0Error() << "Invalid property in chiDFEMDiffusionSetBCProperty.";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::Exit(EXIT_FAILURE);
   }
   return 0;
 }

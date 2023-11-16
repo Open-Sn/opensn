@@ -286,7 +286,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
       {
         log.Log0Error() << "Parameter \"" << param_name << "\" has been deprecated.\n"
                         << dep_errs.at(param_name);
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
     }
   }

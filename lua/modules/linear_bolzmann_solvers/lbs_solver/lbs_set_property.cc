@@ -84,7 +84,7 @@ chiLBSSetProperty(lua_State* L)
     {
       opensn::log.LogAllError() << "Unknown boundary identifier encountered "
                                    "in call to chiLBSSetProperty";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::Exit(EXIT_FAILURE);
     }
 
     const int bid = bident - 31;
@@ -104,7 +104,7 @@ chiLBSSetProperty(lua_State* L)
                                 << "incident isotropic flux boundary type: Number of solver groups"
                                 << " is zero. Boundary fluxes can only be set after group structure"
                                 << " has been defined.";
-        opensn::Chi::Exit(EXIT_FAILURE);
+        opensn::Exit(EXIT_FAILURE);
       }
 
       if (!lua_istable(L, 5))
@@ -113,7 +113,7 @@ chiLBSSetProperty(lua_State* L)
                                   << "incident isotropic flux boundary type,"
                                   << " argument 5 should be a lua table and was detected as"
                                      " not being one.";
-        opensn::Chi::Exit(EXIT_FAILURE);
+        opensn::Exit(EXIT_FAILURE);
       }
 
       const size_t table_len = lua_rawlen(L, 5);
@@ -134,7 +134,7 @@ chiLBSSetProperty(lua_State* L)
                                 << table_len << " but solver has a total of "
                                 << lbs_solver.Groups().size()
                                 << " groups. These two must be equal.";
-        opensn::Chi::Exit(EXIT_FAILURE);
+        opensn::Exit(EXIT_FAILURE);
       }
 
       lbs_solver.BoundaryPreferences()[bid] = {opensn::lbs::BoundaryType::INCIDENT_ISOTROPIC,
@@ -164,7 +164,7 @@ chiLBSSetProperty(lua_State* L)
       opensn::log.LogAllError() << "Unsupported boundary type encountered "
                                    "in call to "
                                 << LuaSourceInfo(L, "chiLBSSetProperty");
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::Exit(EXIT_FAILURE);
     }
   }
   else if (scpcode(property) == PropertyCode::SCATTERING_ORDER)
@@ -178,7 +178,7 @@ chiLBSSetProperty(lua_State* L)
       opensn::log.Log0Error() << "Invalid scattering order in call to "
                               << "chiLBSSetProperty:SCATTERING_ORDER. "
                                  "Value must be > 0.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::Exit(EXIT_FAILURE);
     }
 
     lbs_solver.Options().scattering_order = scattering_order;

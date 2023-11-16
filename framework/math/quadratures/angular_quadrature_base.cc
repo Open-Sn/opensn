@@ -195,7 +195,7 @@ AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
   {
     log.LogAllError() << "AngularQuadrature::InitializeWithCustom: supplied"
                          " vectors need to be of equal length.";
-    Chi::Exit(EXIT_FAILURE);
+    Exit(EXIT_FAILURE);
   }
 
   // Create angle pairs

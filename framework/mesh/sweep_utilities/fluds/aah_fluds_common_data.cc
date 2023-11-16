@@ -201,7 +201,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
                             << f << " looking for cell " << face.GetNeighborLocalID(grid)
                             << " face " << ass_face << " cat: " << face_categ
                             << " omg=" << spds.Omega().PrintS() << " lbsize=" << lock_box.size();
-          Chi::Exit(EXIT_FAILURE);
+          Exit(EXIT_FAILURE);
         }
 
       } // if local
@@ -741,7 +741,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             log.LogAll() << "Required predecessor cell not located in call to"
                          << " InitializeBetaElements. locJ=" << locJ << " prelocI=" << prelocI
                          << " cell=" << face.neighbor_id_;
-            Chi::Exit(EXIT_FAILURE);
+            Exit(EXIT_FAILURE);
           }
 
           // Find associated face
@@ -766,7 +766,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           if (ass_face < 0)
           {
             log.LogAll() << "Associated face not found in call to InitializeBetaElements";
-            Chi::Exit(EXIT_FAILURE);
+            Exit(EXIT_FAILURE);
           }
 
           // Map dofs
@@ -790,7 +790,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             {
               log.LogAll() << "Associated vertex not found in call to "
                               "InitializeBetaElements";
-              Chi::Exit(EXIT_FAILURE);
+              Exit(EXIT_FAILURE);
             }
           }
 
@@ -824,7 +824,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             log.LogAll() << "Required predecessor cell not located in call to"
                          << " InitializeBetaElements. locJ=" << locJ
                          << " delayed prelocI=" << delayed_preLocI << " cell=" << face.neighbor_id_;
-            Chi::Exit(EXIT_FAILURE);
+            Exit(EXIT_FAILURE);
           }
 
           // Find associated face
@@ -861,7 +861,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           if (ass_face < 0)
           {
             log.LogAll() << "Associated face not found in call to InitializeBetaElements";
-            Chi::Exit(EXIT_FAILURE);
+            Exit(EXIT_FAILURE);
           }
 
           // Map dofs
@@ -885,7 +885,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             {
               log.LogAll() << "Associated vertex not found in call to "
                               "InitializeBetaElements";
-              Chi::Exit(EXIT_FAILURE);
+              Exit(EXIT_FAILURE);
             }
           }
 

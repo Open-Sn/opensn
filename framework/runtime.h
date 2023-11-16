@@ -163,8 +163,6 @@ public:
    * Finalizes ChiTech.
    */
   static void Finalize();
-  /** Exits the program appropriately.*/
-  static void Exit(int error_code);
 
   /**Builds a `RegistryStatuses` structure*/
   static RegistryStatuses GetStatusOfRegistries();
@@ -277,5 +275,10 @@ public:
     }
   }
 };
+
+/**
+ * Exits the program appropriately.
+ */
+void Exit(int error_code);
 
 } // namespace opensn
