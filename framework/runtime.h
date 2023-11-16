@@ -153,16 +153,6 @@ public:
   static int RunInteractive(int argc, char** argv);
   /**Runs ChiTech in pure batch mode. Start then finish.*/
   static int RunBatch(int argc, char** argv);
-  /**Initializes all necessary items for ChiTech.
-  \param argc int    Number of arguments supplied.
-  \param argv char** Array of strings representing each argument.
-  \param communicator MPI_Comm The main communicator, used system wide.
-   */
-  static int Initialize(int argc, char** argv, MPI_Comm communicator);
-  /**
-   * Finalizes ChiTech.
-   */
-  static void Finalize();
 
   /**Builds a `RegistryStatuses` structure*/
   static RegistryStatuses GetStatusOfRegistries();
@@ -272,6 +262,19 @@ public:
     }
   }
 };
+
+/**
+ * Initializes all necessary items
+ * \param argc Number of arguments supplied.
+ * \param argv Array of strings representing each argument.
+ * \param communicator The main communicator, used system wide.
+ */
+int Initialize(int argc, char** argv, MPI_Comm communicator);
+
+/**
+ * Finalize the run
+ */
+void Finalize();
 
 /**
  * Gets the version string.

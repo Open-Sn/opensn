@@ -38,7 +38,7 @@ main(int argc, char** argv)
   else
     error_code = opensn::Chi::RunBatch(argc, argv);
 
-  opensn::Chi::Finalize();
+  opensn::Finalize();
 
   return error_code;
 }

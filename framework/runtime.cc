@@ -162,7 +162,7 @@ Chi::run_time::ParseArguments(int argc, char** argv)
 }
 
 int
-Chi::Initialize(int argc, char** argv, MPI_Comm communicator)
+Initialize(int argc, char** argv, MPI_Comm communicator)
 {
   int location_id = 0, number_processes = 1;
 
@@ -201,7 +201,7 @@ Chi::run_time::InitPetSc(int argc, char** argv)
 }
 
 void
-Chi::Finalize()
+Finalize()
 {
   auto& t_main = log.GetTimingBlock("ChiTech");
   t_main.TimeSectionEnd();
