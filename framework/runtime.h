@@ -44,7 +44,7 @@ class UnknownManager;
 
 class Timer;
 class Console;
-class ChiLog;
+class Logger;
 class PostProcessor;
 typedef std::shared_ptr<PostProcessor> PostProcessorPtr;
 /**Stores all the keys currently in the registries.*/
@@ -86,7 +86,7 @@ public:
   static MPI_Info& mpi;
   static Timer program_timer;
   static Console& console;
-  static ChiLog& log;
+  static Logger& log;
 
   /** Global stack of handlers */
   static std::vector<MeshHandlerPtr> meshhandler_stack;

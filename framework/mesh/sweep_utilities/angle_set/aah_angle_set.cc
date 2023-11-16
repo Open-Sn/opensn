@@ -57,9 +57,9 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
   {
     async_comm_.InitializeLocalAndDownstreamBuffers();
 
-    Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_BEGIN);
+    Chi::log.LogEvent(timing_tags[0], Logger::EventType::EVENT_BEGIN);
     sweep_chunk.Sweep(*this); // Execute chunk
-    Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_END);
+    Chi::log.LogEvent(timing_tags[0], Logger::EventType::EVENT_END);
 
     // Send outgoing psi and clear local and receive buffers
     async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));

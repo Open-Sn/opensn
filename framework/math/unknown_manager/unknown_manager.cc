@@ -9,7 +9,7 @@ namespace opensn
 unsigned int
 UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
 {
-  auto& log = ChiLog::GetInstance();
+  auto& log = Logger::GetInstance();
 
   unsigned int last_unknown_end = -1;
   if (not unknowns_.empty()) last_unknown_end = unknowns_.back().GetMapEnd();
@@ -67,7 +67,7 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
 unsigned int
 UnknownManager::MapUnknown(unsigned int unknown_id, unsigned int component) const
 {
-  auto& log = ChiLog::GetInstance();
+  auto& log = Logger::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
@@ -88,7 +88,7 @@ UnknownManager::GetTotalUnknownStructureSize() const
 void
 UnknownManager::SetUnknownNumOffBlockConnections(unsigned int unknown_id, int num_conn)
 {
-  auto& log = ChiLog::GetInstance();
+  auto& log = Logger::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
@@ -107,7 +107,7 @@ UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int unknown_i
                                                           unsigned int component,
                                                           int num_conn)
 {
-  auto& log = ChiLog::GetInstance();
+  auto& log = Logger::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
@@ -131,7 +131,7 @@ UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int unknown_i
 void
 UnknownManager::SetUnknownTextName(unsigned int unknown_id, const std::string& in_text_name)
 {
-  auto& log = ChiLog::GetInstance();
+  auto& log = Logger::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {
@@ -149,7 +149,7 @@ UnknownManager::SetUnknownComponentTextName(unsigned int unknown_id,
                                             unsigned int component,
                                             const std::string& in_text_name)
 {
-  auto& log = ChiLog::GetInstance();
+  auto& log = Logger::GetInstance();
 
   if (unknown_id < 0 or unknown_id >= unknowns_.size())
   {

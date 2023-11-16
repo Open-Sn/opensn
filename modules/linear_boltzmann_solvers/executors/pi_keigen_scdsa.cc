@@ -310,10 +310,10 @@ XXPowerIterationKEigenSCDSA::Execute()
         auto Ss = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
         // Solve the diffusion system
-        Chi::log.LogEvent(tag_SCDSA_solve_time, ChiLog::EventType::EVENT_BEGIN);
+        Chi::log.LogEvent(tag_SCDSA_solve_time, Logger::EventType::EVENT_BEGIN);
         diffusion_solver_->Assemble_b(Ss + Sfaux + Ss_res - Sf0_ell);
         diffusion_solver_->Solve(epsilon_kp1, true);
-        Chi::log.LogEvent(tag_SCDSA_solve_time, ChiLog::EventType::EVENT_END);
+        Chi::log.LogEvent(tag_SCDSA_solve_time, Logger::EventType::EVENT_END);
 
         epsilon_k = epsilon_kp1;
       }
@@ -378,11 +378,11 @@ XXPowerIterationKEigenSCDSA::Execute()
                  << "\n"
                  << "        Diffusion solve time  :        "
                  << Chi::log.ProcessEvent(tag_SCDSA_solve_time,
-                                          ChiLog::EventOperation::TOTAL_DURATION) *
+                                          Logger::EventOperation::TOTAL_DURATION) *
                       1.0e-6
                  << "s\n"
                  << "        Total sweep time      :        "
-                 << Chi::log.ProcessEvent(tag_sweep_timing, ChiLog::EventOperation::TOTAL_DURATION);
+                 << Chi::log.ProcessEvent(tag_sweep_timing, Logger::EventOperation::TOTAL_DURATION);
   Chi::log.Log() << "\n";
 
   if (lbs_solver_.Options().use_precursors)

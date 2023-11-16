@@ -500,7 +500,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   MPI_Barrier(Chi::mpi.comm);
 
   // Call matrix assembly
-  if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
+  if (verbose_info_ || Chi::log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
                    << ": Communicating matrix assembly";
 
@@ -538,7 +538,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
                    << "\nNumber of non-zeros used = " << info.nz_used
                    << "\nNumber of unneeded non-zeros = " << info.nz_unneeded;
   }
-  if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
+  if (verbose_info_ || Chi::log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
                    << ": Assembling x and b";
   VecAssemblyBegin(x_);
@@ -558,7 +558,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   }
   else
   {
-    if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
+    if (verbose_info_ || Chi::log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
       Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
                      << ": Solving system\n";
     t_solve_.Reset();
@@ -593,7 +593,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
       Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName() << "[g=" << gi_
                      << "-" << gi_ + G_ - 1 << "]: Number of iterations =" << its;
 
-      if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
+      if (verbose_info_ || Chi::log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
       {
         Chi::log.Log() << "Timing:";
         Chi::log.Log() << "Assembling the matrix: " << time_assembly_;
@@ -603,7 +603,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
 
     UpdateFieldFunctions();
 
-    if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
+    if (verbose_info_ || Chi::log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
       Chi::log.Log() << "Diffusion Solver execution completed!\n";
   } // if not suppressed solve
 

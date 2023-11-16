@@ -36,7 +36,7 @@ namespace opensn
 
 // Global variables
 Console& Chi::console = Console::GetInstance();
-ChiLog& Chi::log = ChiLog::GetInstance();
+Logger& Chi::log = Logger::GetInstance();
 MPI_Info& Chi::mpi = MPI_Info::GetInstance();
 Timer Chi::program_timer;
 

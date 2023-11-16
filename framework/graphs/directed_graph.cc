@@ -367,7 +367,7 @@ DirectedGraph::RemoveCyclicDependencies()
   int iter = 0;
   while (not SCCs.empty())
   {
-    if (Chi::log.GetVerbosity() >= ChiLog::LOG_LVL::LOG_0VERBOSE_2)
+    if (Chi::log.GetVerbosity() >= Logger::LOG_LVL::LOG_0VERBOSE_2)
       Chi::log.LogAll() << "Inter cell cyclic dependency removal. Iteration " << ++iter;
 
     // Remove bi-connected then tri-connected SCCs then n-connected

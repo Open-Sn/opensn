@@ -446,11 +446,11 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
     // Make a memory query
     double memory_mb = Chi::GetMemoryUsageInMB();
 
-    std::shared_ptr<ChiLog::EventInfo> memory_event_info =
-      std::make_shared<ChiLog::EventInfo>(memory_mb);
+    std::shared_ptr<Logger::EventInfo> memory_event_info =
+      std::make_shared<Logger::EventInfo>(memory_mb);
 
     Chi::log.LogEvent(
-      ChiLog::StdTags::MAX_MEMORY_USAGE, ChiLog::EventType::SINGLE_OCCURRENCE, memory_event_info);
+      Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventType::SINGLE_OCCURRENCE, memory_event_info);
 
     data_initialized = true;
   }

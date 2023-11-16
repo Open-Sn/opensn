@@ -152,7 +152,7 @@ SweepWGSContext::PostSolveCallback()
     double sweep_time = sweep_scheduler_.GetAverageSweepTime();
     double chunk_overhead_ratio = 1.0 - sweep_scheduler_.GetAngleSetTimings()[2];
     double source_time = Chi::log.ProcessEvent(lbs_solver_.GetSourceEventTag(),
-                                               ChiLog::EventOperation::AVERAGE_DURATION);
+                                               Logger::EventOperation::AVERAGE_DURATION);
     size_t num_angles = groupset_.quadrature_->abscissae_.size();
     size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
 

@@ -73,7 +73,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
   } // for csoi
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
+  Chi::log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
   Chi::mpi.Barrier();
 
   // Populate boundary dependencies
@@ -104,7 +104,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   delayed_local_psi_Gn_block_stride = largest_face * delayed_lock_box.size();
   delayed_local_psi_Gn_block_strideG = delayed_local_psi_Gn_block_stride * /*G=*/1;
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
+  Chi::log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
   Chi::mpi.Barrier();
 
   // Clean up

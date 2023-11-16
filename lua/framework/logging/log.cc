@@ -52,7 +52,7 @@ chiLog(lua_State* L)
   int mode = lua_tonumber(L, 1);
   const char* message = lua_tostring(L, 2);
 
-  opensn::Chi::log.Log(static_cast<opensn::ChiLog::LOG_LVL>(mode)) << message << std::endl;
+  opensn::Chi::log.Log(static_cast<opensn::Logger::LOG_LVL>(mode)) << message << std::endl;
 
   return 0;
 }
@@ -72,18 +72,18 @@ chiLogProcessEvent(lua_State* L)
 
   const size_t event_tag = opensn::Chi::log.GetExistingRepeatingEventTag(event_name);
 
-  opensn::ChiLog::EventOperation event_operation;
+  opensn::Logger::EventOperation event_operation;
 
   if (event_operation_name == "NUMBER_OF_OCCURRENCES")
-    event_operation = opensn::ChiLog::EventOperation::NUMBER_OF_OCCURRENCES;
+    event_operation = opensn::Logger::EventOperation::NUMBER_OF_OCCURRENCES;
   else if (event_operation_name == "TOTAL_DURATION")
-    event_operation = opensn::ChiLog::EventOperation::TOTAL_DURATION;
+    event_operation = opensn::Logger::EventOperation::TOTAL_DURATION;
   else if (event_operation_name == "AVERAGE_DURATION")
-    event_operation = opensn::ChiLog::EventOperation::AVERAGE_DURATION;
+    event_operation = opensn::Logger::EventOperation::AVERAGE_DURATION;
   else if (event_operation_name == "MAX_VALUE")
-    event_operation = opensn::ChiLog::EventOperation::MAX_VALUE;
+    event_operation = opensn::Logger::EventOperation::MAX_VALUE;
   else if (event_operation_name == "AVERAGE_VALUE")
-    event_operation = opensn::ChiLog::EventOperation::AVERAGE_VALUE;
+    event_operation = opensn::Logger::EventOperation::AVERAGE_VALUE;
   else
     ChiInvalidArgument("Unsupported event operation name \"" + event_operation_name + "\".");
 

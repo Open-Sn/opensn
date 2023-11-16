@@ -1107,7 +1107,7 @@ DiscreteOrdinatesSolver::ResetSweepOrderings(LBSGroupset& groupset)
                  << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
 
   double local_app_memory =
-    Chi::log.ProcessEvent(ChiLog::StdTags::MAX_MEMORY_USAGE, ChiLog::EventOperation::MAX_VALUE);
+    Chi::log.ProcessEvent(Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventOperation::MAX_VALUE);
   double total_app_memory = 0.0;
   MPI_Allreduce(&local_app_memory, &total_app_memory, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
   double max_proc_memory = 0.0;

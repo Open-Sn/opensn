@@ -48,7 +48,7 @@ namespace opensn
    *
    * \code
    * #include <chi::log.h>
-   * extern ChiLog& chi::log;
+   * extern Logger& chi::log;
    * \endcode
    *
    * A log is then written inside a piece of code as follows:
@@ -77,19 +77,19 @@ namespace opensn
    * We do this by using a repeating event. A repeating event is identified
    * by a tag. Therefore the first step is to obtain a unique id for the event
   using
-   * ChiLog::GetRepeatingEventTag.
+   * Logger::GetRepeatingEventTag.
    *
    * \code
    * size_t tag = chi::log.GetRepeatingEventTag(std::string("Sweep Timing"))
    * \endcode
    *
    * Events can now be logged using
-   * ChiLog::LogEvent(size_t ev_tag, ChiLog::EventType ev_type). As an example,
+   * Logger::LogEvent(size_t ev_tag, Logger::EventType ev_type). As an example,
    * consider we want to count the number of occurrences of an event. We trigger
    * multiple occurences using
    *
    * \code
-   * chi::log.LogEvent(tag,ChiLog::EventType::SINGLE_OCCURRENCE);
+   * chi::log.LogEvent(tag,Logger::EventType::SINGLE_OCCURRENCE);
    * \endcode
    *
    * At the end of the block for which you wanted to log these events we can now
@@ -97,7 +97,7 @@ namespace opensn
    *
    * \code
    * double number_of_occ =
-  chi::log.ProcessEvent(tag,ChiLog::EventOperation::NUMBER_OF_OCCURRENCES);
+  chi::log.ProcessEvent(tag,Logger::EventOperation::NUMBER_OF_OCCURRENCES);
    *\endcode
    *
    * Below is a complete example:
@@ -106,11 +106,11 @@ namespace opensn
   size_t tag = chi::log.GetRepeatingEventTag(std::string());
 
   for (int i=0; i<5; ++i)
-    chi::log.LogEvent(tag,ChiLog::EventType::SINGLE_OCCURRENCE);
+    chi::log.LogEvent(tag,Logger::EventType::SINGLE_OCCURRENCE);
 
   chi::log.LogAll()
     << chi::log.ProcessEvent(tag,
-  ChiLog::EventOperation::NUMBER_OF_OCCURRENCES); \endcode \verbatim
+  Logger::EventOperation::NUMBER_OF_OCCURRENCES); \endcode \verbatim
   6
   \endverbatim
 
@@ -122,9 +122,9 @@ namespace opensn
    * contribute to the event.
    *
    * ### Supplying event information
-   * In addition to the ChiLog::EventType the user can also supply a reference
+   * In addition to the Logger::EventType the user can also supply a reference
   to
-   * a ChiLog::EventInfo structure. Be cautious with this though because each
+   * a Logger::EventInfo structure. Be cautious with this though because each
    * event stored a double and a string which can look like a memory leak if
    * multiple events are pushed up with event information. Developers can supply
    * either a double or a string or both to an event info constructor to
@@ -137,12 +137,12 @@ namespace opensn
 
   for (int i=0; i<5; ++i)
   {
-    auto ev_info = std::make_shared<ChiLog::EventInfo>(i*2.0);
-    chi::log.LogEvent(tag,ChiLog::EventType::SINGLE_OCCURRENCE,ev_info);
+    auto ev_info = std::make_shared<Logger::EventInfo>(i*2.0);
+    chi::log.LogEvent(tag,Logger::EventType::SINGLE_OCCURRENCE,ev_info);
   }
 
   chi::log.LogAll()
-    << chi::log.ProcessEvent(tag, ChiLog::EventOperation::AVERAGE_VALUE);
+    << chi::log.ProcessEvent(tag, Logger::EventOperation::AVERAGE_VALUE);
   \endcode
   \verbatim
   4.0
@@ -156,24 +156,24 @@ namespace opensn
   size_t tag = chi::log.GetRepeatingEventTag(std::string());
 
   chi::log.LogEvent(tag,
-                   ChiLog::EventType::SINGLE_OCCURRENCE,
-                   std::make_shared<ChiLog::EventInfo>(std::string("A"),2.0));
+                   Logger::EventType::SINGLE_OCCURRENCE,
+                   std::make_shared<Logger::EventInfo>(std::string("A"),2.0));
   chi::log.LogEvent(tag,
-                   ChiLog::EventType::SINGLE_OCCURRENCE,
-                   std::make_shared<ChiLog::EventInfo>(std::string("B")));
+                   Logger::EventType::SINGLE_OCCURRENCE,
+                   std::make_shared<Logger::EventInfo>(std::string("B")));
   chi::log.LogEvent(tag,
-                   ChiLog::EventType::SINGLE_OCCURRENCE,
-                   std::make_shared<ChiLog::EventInfo>(std::string("C"),2.0));
+                   Logger::EventType::SINGLE_OCCURRENCE,
+                   std::make_shared<Logger::EventInfo>(std::string("C"),2.0));
 
   chi::log.LogAll()
-    << chi::log.ProcessEvent(tag, ChiLog::EventOperation::AVERAGE_VALUE);
+    << chi::log.ProcessEvent(tag, Logger::EventOperation::AVERAGE_VALUE);
   \endcode
   \verbatim
   1.33333
   \endverbatim
    *
    * To get a string value of the event history developers can use
-   * ChiLog::PrintEventHistory along with the event tag. Just note that it will
+   * Logger::PrintEventHistory along with the event tag. Just note that it will
    * automatically be formatted for each location so no need to use chi::log to
    * print it. Also, each event will be prepended with a program timestamp
    * in seconds.
@@ -189,7 +189,7 @@ namespace opensn
   [0]      3.813122000 SINGLE_OCCURRENCE C
   \endverbatim
    * */
-class ChiLog : public TimingLog
+class Logger : public TimingLog
 {
 public:
   /**Logging level*/
@@ -215,11 +215,11 @@ private:
 
 public:
   /**Access to the singleton*/
-  static ChiLog& GetInstance() noexcept;
+  static Logger& GetInstance() noexcept;
 
 private:
   /** Default constructor*/
-  ChiLog() noexcept;
+  Logger() noexcept;
 
 public:
   /** Makes a log entry.*/
@@ -284,16 +284,16 @@ public:
   /**Returns a string representation of the event history associated with
    * the tag. Each event entry will be prepended by the location id and
    * the program timestamp in seconds. This method uses the
-   * ChiLog::EventInfo::GetString method to append information. This allows
+   * Logger::EventInfo::GetString method to append information. This allows
    * derived classes to implement more sophisticated outputs.*/
   std::string PrintEventHistory(size_t ev_tag);
-  /**Processes an event given an event operation. See ChiLog for further
+  /**Processes an event given an event operation. See Logger for further
    * reference.*/
   double ProcessEvent(size_t ev_tag, EventOperation ev_operation);
 };
 
 /** */
-struct ChiLog::EventInfo
+struct Logger::EventInfo
 {
   std::string arb_info;
   double arb_value = 0.0;
@@ -312,7 +312,7 @@ struct ChiLog::EventInfo
 };
 
 /** Object used by repeating events.*/
-struct ChiLog::Event
+struct Logger::Event
 {
   const double ev_time = 0.0;
   const EventType ev_type = EventType::SINGLE_OCCURRENCE;
@@ -325,7 +325,7 @@ struct ChiLog::Event
 };
 
 /**Repeating event object.*/
-class ChiLog::RepeatingEvent
+class Logger::RepeatingEvent
 {
 public:
   explicit RepeatingEvent(std::string& name) : name_(name) {}
