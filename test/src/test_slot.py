@@ -30,8 +30,8 @@ class TestSlot:
         cmd =  self.argv.mpi_cmd + " " + str(test.num_procs) + " "
         cmd += self.argv.exe + " "
         cmd += test.filename + " "
-        cmd += "--suppress_color "
-        cmd += "--supress_beg_end_timelog "
+        cmd += "--suppress-color "
+        cmd += "--suppress-beg-end-timelog "
         cmd += "master_export=false "
         for arg in test.args:
             if arg.find("\"") >= 0:
