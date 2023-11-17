@@ -278,7 +278,7 @@ XXPowerIterationKEigenSCDSA::Execute()
     q_moments_local_ = Sf_ell; // Restore 1/k F phi_l
     SetLBSScatterSource(phi_new_local_, true);
 
-    front_wgs_context_->ApplyInverseTransportOperator(NO_FLAGS_SET); // Sweep
+    front_wgs_context_->ApplyInverseTransportOperator(SourceFlags()); // Sweep
 
     auto phi0_lph_ip1 = CopyOnlyPhi0(front_gs_, phi_new_local_);
 

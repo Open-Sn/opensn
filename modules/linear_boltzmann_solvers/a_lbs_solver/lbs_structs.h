@@ -83,9 +83,8 @@ struct BoundaryPreference
   std::string source_function;
 };
 
-enum SourceFlags : int
+enum SourceType
 {
-  NO_FLAGS_SET = 0,
   APPLY_FIXED_SOURCES = (1 << 0),
   APPLY_WGS_SCATTER_SOURCES = (1 << 1),
   APPLY_AGS_SCATTER_SOURCES = (1 << 2),
@@ -95,10 +94,102 @@ enum SourceFlags : int
   ZERO_INCOMING_DELAYED_PSI = (1 << 6)
 };
 
-inline SourceFlags
-operator|(const SourceFlags f1, const SourceFlags f2)
+/**
+ * SourceFlags is a combination of `SourceType`s
+ */
+struct SourceFlags
 {
-  return static_cast<SourceFlags>(static_cast<int>(f1) | static_cast<int>(f2));
+  /**
+   * Create an empty `SourceFlags`
+   */
+  SourceFlags() : flags_(0) {}
+
+  /**
+   * Create `SourceFlags` from a `SourceType`
+   *
+   * \param type Type to set in the `SourceFlags`
+   */
+  SourceFlags(SourceType type) : flags_(type) {}
+
+  /**
+   * Add flags using the `|=` operator
+   *
+   * \param type Type to set
+   * \return Combination of our types and new `type`
+   */
+  SourceFlags& operator|=(SourceType type)
+  {
+    flags_ |= type;
+    return *this;
+  }
+
+  /**
+   * Add source using the `|=` operator
+   *
+   * \param src Source to add
+   * \return Combination of our types and new types from `src`
+   */
+  SourceFlags& operator|=(const SourceFlags& src)
+  {
+    flags_ |= src.flags_;
+    return *this;
+  }
+
+  /**
+   * Test is there are any types set
+   * \return `true` if there are no types set, `false` otherwise
+   */
+  bool Empty() const { return flags_ == 0; }
+
+  /**
+   * Unset a type
+   *
+   * \param type Type to unset
+   */
+  void Unset(SourceType type) { flags_ &= ~type; }
+
+  /**
+   * Test if type is set using the `&` operator
+   *
+   * \param type Type to test
+   * \return `true` if `type` is set, `false` otherwise
+   */
+  bool operator&(const SourceType& type) const { return flags_ & type; }
+
+private:
+  /// Combination of `SourceFlags`
+  int flags_;
+};
+
+/**
+ * Operator to join individual `SourceFlags`s using the `|` operator
+ *
+ * \param s1 First source
+ * \param s2 Second source
+ * \return Source with types from both sources
+ */
+inline SourceFlags
+operator|(SourceFlags s1, SourceFlags s2)
+{
+  SourceFlags src = s1;
+  src |= s2;
+  return src;
+}
+
+/**
+ * Two `SourceType`s get combined into `SourceFlags`
+ *
+ * \param f1 First source type
+ * \param f2 Second source type
+ * \return Source with both types set
+ */
+inline SourceFlags
+operator|(SourceType f1, SourceType f2)
+{
+  SourceFlags src;
+  src |= f1;
+  src |= f2;
+  return src;
 }
 
 enum class PhiSTLOption

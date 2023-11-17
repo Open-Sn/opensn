@@ -151,7 +151,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
   for (auto& groupset : groupsets_)
   {
 
-    auto mip_wgs_context_ptr = std::make_shared<MIPWGSContext2<Mat, Vec, KSP>>(
+    auto mip_wgs_context_ptr = std::make_shared<MIPWGSContext2>(
       *this,
       groupset,
       active_set_source_function_,
@@ -159,7 +159,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
       APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES,
       options_.verbose_inner_iterations);
 
-    auto wgs_solver = std::make_shared<WGSLinearSolver<Mat, Vec, KSP>>(mip_wgs_context_ptr);
+    auto wgs_solver = std::make_shared<WGSLinearSolver>(mip_wgs_context_ptr);
 
     wgs_solvers_.push_back(wgs_solver);
   } // for groupset

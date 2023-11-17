@@ -18,7 +18,7 @@ PetscErrorCode
 GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
 {
   // Get data context
-  WGSContext<Mat, Vec, KSP>* context;
+  WGSContext* context;
   KSPGetApplicationContext(ksp, &context);
 
   // Set rhs norm

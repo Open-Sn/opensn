@@ -19,7 +19,7 @@ SourceFunction::operator()(LBSGroupset& groupset,
                            const std::vector<double>& phi_local,
                            SourceFlags source_flags)
 {
-  if (source_flags & NO_FLAGS_SET) return;
+  if (source_flags.Empty()) return;
 
   const size_t source_event_tag = lbs_solver_.GetSourceEventTag();
   Chi::log.LogEvent(source_event_tag, chi::ChiLog::EventType::EVENT_BEGIN);

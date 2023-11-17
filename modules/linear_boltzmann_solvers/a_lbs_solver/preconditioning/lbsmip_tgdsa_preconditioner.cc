@@ -10,7 +10,7 @@ lbs::MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   void* context;
   PCShellGetContext(pc, &context);
 
-  auto gs_context_ptr = (lbs::WGSContext<Mat, Vec, KSP>*)(context);
+  auto gs_context_ptr = (lbs::WGSContext*)(context);
 
   // Shorten some names
   lbs::LBSSolver& solver = gs_context_ptr->lbs_solver_;

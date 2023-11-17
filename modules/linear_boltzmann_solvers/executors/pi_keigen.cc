@@ -65,21 +65,18 @@ XXPowerIterationKEigen::Initialize()
   for (auto& wgs_solver : lbs_solver_.GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(context);
+    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
 
     ChiLogicalErrorIf(not wgs_context, ": Cast failed");
 
-    wgs_context->lhs_src_scope_ =
-      wgs_context->lhs_src_scope_ & (~APPLY_WGS_FISSION_SOURCES); // lhs_scope
-    wgs_context->rhs_src_scope_ =
-      wgs_context->rhs_src_scope_ & (~APPLY_AGS_FISSION_SOURCES); // rhs_scope
+    wgs_context->lhs_src_scope_.Unset(APPLY_WGS_FISSION_SOURCES); // lhs_scope
+    wgs_context->rhs_src_scope_.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
   }
 
   primary_ags_solver_->SetVerbosity(lbs_solver_.Options().verbose_ags_iterations);
 
   front_wgs_solver_ = lbs_solver_.GetWGSSolvers().at(front_gs_.id_);
-  front_wgs_context_ =
-    std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(front_wgs_solver_->GetContext());
+  front_wgs_context_ = std::dynamic_pointer_cast<lbs::WGSContext>(front_wgs_solver_->GetContext());
 
   ChiLogicalErrorIf(not front_wgs_context_, ": Casting failure");
 
@@ -172,11 +169,9 @@ XXPowerIterationKEigen::SetLBSScatterSource(const VecDbl& input,
                                             const bool suppress_wg_scat)
 {
   if (not additive) chi_math::Set(q_moments_local_, 0.0);
-  active_set_source_function_(front_gs_,
-                              q_moments_local_,
-                              input,
-                              APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
-                                (suppress_wg_scat ? SUPPRESS_WG_SCATTER : NO_FLAGS_SET));
+  SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
+  if (suppress_wg_scat) source_flags |= SUPPRESS_WG_SCATTER;
+  active_set_source_function_(front_gs_, q_moments_local_, input, source_flags);
 }
 
 } // namespace lbs

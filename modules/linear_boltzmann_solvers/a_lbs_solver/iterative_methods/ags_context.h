@@ -2,9 +2,9 @@
 
 #include "framework/math/linear_solver/linear_solver_context.h"
 #include "framework/math/linear_solver/linear_solver.h"
-
 #include <vector>
 #include <memory>
+#include <petscksp.h>
 
 namespace lbs
 {
@@ -14,11 +14,9 @@ class LBSSolver;
 namespace lbs
 {
 
-template <class MatType, class VecType, class SolverType>
-struct AGSContext : public chi_math::LinearSolverContext<MatType, VecType>
+struct AGSContext : public chi_math::LinearSolverContext
 {
-  typedef chi_math::LinearSolver<MatType, VecType, SolverType> LinSolveBaseType;
-  typedef std::shared_ptr<LinSolveBaseType> LinSolveBaseTypePtr;
+  typedef std::shared_ptr<chi_math::LinearSolver> LinSolveBaseTypePtr;
   LBSSolver& lbs_solver_;
   std::vector<LinSolveBaseTypePtr> sub_solvers_list_;
 
@@ -29,9 +27,9 @@ struct AGSContext : public chi_math::LinearSolverContext<MatType, VecType>
 
   std::pair<int64_t, int64_t> SystemSize();
 
-  virtual void SetPreconditioner(SolverType& solver);
+  virtual void SetPreconditioner(KSP& solver);
 
-  int MatrixAction(MatType& matrix, VecType& vector, VecType& action) override;
+  int MatrixAction(Mat& matrix, Vec& vector, Vec& action) override;
 };
 
 } // namespace lbs

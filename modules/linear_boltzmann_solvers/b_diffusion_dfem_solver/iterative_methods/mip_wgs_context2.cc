@@ -18,9 +18,19 @@
 namespace lbs
 {
 
-template <>
+MIPWGSContext2::MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
+                               LBSGroupset& groupset,
+                               const SetSourceFunction& set_source_function,
+                               SourceFlags lhs_scope,
+                               SourceFlags rhs_scope,
+                               bool log_info)
+  : WGSContext(lbs_mip_ss_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
+    lbs_mip_ss_solver_(lbs_mip_ss_solver)
+{
+}
+
 void
-MIPWGSContext2<Mat, Vec, KSP>::PreSetupCallback()
+MIPWGSContext2::PreSetupCallback()
 {
   if (log_info_)
   {
@@ -45,9 +55,8 @@ MIPWGSContext2<Mat, Vec, KSP>::PreSetupCallback()
   }
 }
 
-template <>
 void
-MIPWGSContext2<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
+MIPWGSContext2::SetPreconditioner(KSP& solver)
 {
   auto& ksp = solver;
 
@@ -65,9 +74,8 @@ MIPWGSContext2<Mat, Vec, KSP>::SetPreconditioner(KSP& solver)
   KSPSetUp(ksp);
 }
 
-template <>
 std::pair<int64_t, int64_t>
-MIPWGSContext2<Mat, Vec, KSP>::SystemSize()
+MIPWGSContext2::SystemSize()
 {
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
@@ -79,9 +87,8 @@ MIPWGSContext2<Mat, Vec, KSP>::SystemSize()
   return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};
 }
 
-template <>
 void
-MIPWGSContext2<Mat, Vec, KSP>::ApplyInverseTransportOperator(int scope)
+MIPWGSContext2::ApplyInverseTransportOperator(SourceFlags scope)
 {
   ++counter_applications_of_inv_op_;
   auto& mip_solver = *lbs_mip_ss_solver_.gs_mip_solvers_[groupset_.id_];
@@ -101,9 +108,8 @@ MIPWGSContext2<Mat, Vec, KSP>::ApplyInverseTransportOperator(int scope)
   VecDestroy(&work_vector);
 }
 
-template <>
 void
-MIPWGSContext2<Mat, Vec, KSP>::PostSolveCallback()
+MIPWGSContext2::PostSolveCallback()
 {
   lbs_solver_.GSScopedCopyPrimarySTLvectors(
     groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);

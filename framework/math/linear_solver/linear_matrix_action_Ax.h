@@ -4,6 +4,5 @@
 
 namespace chi_math
 {
-template <class MatType, class VecType>
-int LinearSolverMatrixAction(MatType matrix, VecType vector, VecType action);
+int LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action);
 } // namespace chi_math

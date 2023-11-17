@@ -1,43 +1,25 @@
 #pragma once
 
 #include "framework/math/linear_solver/linear_solver_context.h"
-
 #include <string>
 #include <utility>
-
 #include <memory>
+#include <petscksp.h>
 
 namespace chi_math
 {
-template <class MatType, class VecType>
+
 struct LinearSolverContext;
 
-/**Implementation of a general linear solver.*/
-template <class MatType, class VecType, class SolverType>
+/**
+ * Linear solver
+ *
+ * Wrapper around PETSc KSP
+ */
 class LinearSolver
 {
 public:
-  typedef LinearSolverContext<MatType, VecType> LinSolveContext;
-  typedef std::shared_ptr<LinSolveContext> LinSolveContextPtr;
-
-protected:
-  const std::string solver_name_;
-  const std::string iterative_method_;
-
-  LinSolveContextPtr context_ptr_ = nullptr;
-
-  MatType A_;
-  VecType b_;
-  VecType x_;
-  SolverType solver_;
-
-private:
-  bool system_set_ = false;
-  bool suppress_kspsolve_ = false;
-
-protected:
-  int64_t num_local_dofs_ = 0;
-  int64_t num_globl_dofs_ = 0;
+  typedef std::shared_ptr<LinearSolverContext> LinSolveContextPtr;
 
   struct ToleranceOptions
   {
@@ -49,23 +31,11 @@ protected:
     double gmres_breakdown_tolerance = 1.0e6;
   } tolerance_options_;
 
-protected:
-  bool IsSystemSet() const { return system_set_; }
+  LinearSolver(const std::string& iterative_method, LinSolveContextPtr context_ptr);
 
-public:
-  explicit LinearSolver(const std::string& iterative_method, LinSolveContextPtr context_ptr)
-    : solver_name_(iterative_method), iterative_method_(iterative_method), context_ptr_(context_ptr)
-  {
-  }
-
-  explicit LinearSolver(std::string solver_name,
-                        std::string iterative_method,
-                        LinSolveContextPtr context_ptr)
-    : solver_name_(std::move(solver_name)),
-      iterative_method_(std::move(iterative_method)),
-      context_ptr_(context_ptr)
-  {
-  }
+  LinearSolver(const std::string& solver_name,
+               const std::string& iterative_method,
+               LinSolveContextPtr context_ptr);
 
   virtual ~LinearSolver();
 
@@ -78,29 +48,45 @@ public:
   void SetKSPSolveSuppressionFlag(bool flag) { suppress_kspsolve_ = flag; }
   bool GetKSPSolveSuppressionFlag() const { return suppress_kspsolve_; }
 
+  /**
+   * Set up the linaer solver
+   */
+  virtual void Setup();
+
+  /**
+   * Solve the system
+   */
+  virtual void Solve();
+
 protected:
+  bool IsSystemSet() const { return system_set_; }
   virtual void PreSetupCallback();
   virtual void SetOptions();
   virtual void SetSolverContext();
   virtual void SetConvergenceTest();
   virtual void SetMonitor();
   virtual void SetPreconditioner();
-
   virtual void SetSystemSize() = 0;
   virtual void SetSystem() = 0;
   virtual void PostSetupCallback();
-
-public:
-  virtual void Setup();
-
-protected:
   virtual void PreSolveCallback();
   virtual void SetInitialGuess() = 0;
   virtual void SetRHS() = 0;
   virtual void PostSolveCallback();
 
-public:
-  virtual void Solve();
+  const std::string solver_name_;
+  const std::string iterative_method_;
+  LinSolveContextPtr context_ptr_ = nullptr;
+  Mat A_;
+  Vec b_;
+  Vec x_;
+  KSP ksp_;
+  int64_t num_local_dofs_ = 0;
+  int64_t num_global_dofs_ = 0;
+
+private:
+  bool system_set_ = false;
+  bool suppress_kspsolve_ = false;
 };
 
 } // namespace chi_math

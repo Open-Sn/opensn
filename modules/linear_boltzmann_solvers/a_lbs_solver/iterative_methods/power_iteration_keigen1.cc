@@ -22,7 +22,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
   for (auto& wgs_solver : lbs_solver.GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(context);
+    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
 
     if (not wgs_context) throw std::logic_error(fname + ": Cast failed.");
 
@@ -45,7 +45,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
   auto& front_gs = groupsets.front();
   auto& front_wgs_solver = lbs_solver.GetWGSSolvers()[front_gs.id_];
   auto frons_wgs_context =
-    std::dynamic_pointer_cast<lbs::WGSContext<Mat, Vec, KSP>>(front_wgs_solver->GetContext());
+    std::dynamic_pointer_cast<lbs::WGSContext>(front_wgs_solver->GetContext());
 
   front_gs.apply_wgdsa_ = true;
   front_gs.wgdsa_tol_ = basic_options("PISA_MIP_L_ABS_TOL").FloatValue();
@@ -78,11 +78,9 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
       const VecDbl& input, const bool additive, const bool suppress_wgs = false)
   {
     if (not additive) chi_math::Set(q_moments_local, 0.0);
-    active_set_source_function(front_gs,
-                               q_moments_local,
-                               input,
-                               APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
-                                 (suppress_wgs ? SUPPRESS_WG_SCATTER : NO_FLAGS_SET));
+    SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
+    if (suppress_wgs) source_flags |= SUPPRESS_WG_SCATTER;
+    active_set_source_function(front_gs, q_moments_local, input, source_flags);
   };
 
   auto phi_temp = phi_old_local;
@@ -128,7 +126,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
     q_moments_local = Sf_all_moments; // Restore 1/k F phi_l
     SetLBSScatterSource(phi_new_local, true);
 
-    frons_wgs_context->ApplyInverseTransportOperator(NO_FLAGS_SET); // Sweep
+    frons_wgs_context->ApplyInverseTransportOperator(SourceFlags()); // Sweep
 
     auto phi0_lph_ip1 = lbs_solver.WGSCopyOnlyPhi0(front_gs, phi_new_local);
 

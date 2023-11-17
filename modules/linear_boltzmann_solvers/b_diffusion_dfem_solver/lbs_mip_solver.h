@@ -14,12 +14,13 @@ public:
   std::vector<MIPSolverPtr> gs_mip_solvers_;
 
 public:
-  // 00
-  static chi::InputParameters GetInputParameters();
   explicit DiffusionDFEMSolver(const chi::InputParameters& params);
   ~DiffusionDFEMSolver() override;
   void Initialize() override;
   void InitializeWGSSolvers() override;
+
+public:
+  static chi::InputParameters GetInputParameters();
 };
 
 } // namespace lbs
