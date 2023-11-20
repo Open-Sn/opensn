@@ -11,7 +11,7 @@ namespace opensn
  * Definitions:
  * P = total amount of processors.
  * locI = process I in [0,P]*/
-class ChiMPICommunicatorSet
+class MPICommunicatorSet
 {
 private:
   /**A list of communicators, size P, contains a communicator for
@@ -24,9 +24,9 @@ private:
   MPI_Group world_group_;
 
 public:
-  ChiMPICommunicatorSet(std::vector<MPI_Comm>& communicators,
-                        std::vector<MPI_Group>& location_groups,
-                        MPI_Group& world_group)
+  MPICommunicatorSet(std::vector<MPI_Comm>& communicators,
+                     std::vector<MPI_Group>& location_groups,
+                     MPI_Group& world_group)
     : communicators_(communicators), location_groups_(location_groups), world_group_(world_group)
   {
   }

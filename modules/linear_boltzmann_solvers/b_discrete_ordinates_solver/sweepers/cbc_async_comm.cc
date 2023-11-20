@@ -19,7 +19,7 @@ namespace lbs
 
 CBC_ASynchronousCommunicator::CBC_ASynchronousCommunicator(size_t angle_set_id,
                                                            FLUDS& fluds,
-                                                           const ChiMPICommunicatorSet& comm_set)
+                                                           const MPICommunicatorSet& comm_set)
   : AsynchronousCommunicator(fluds, comm_set),
     angle_set_id_(angle_set_id),
     cbc_fluds_(dynamic_cast<CBC_FLUDS&>(fluds))

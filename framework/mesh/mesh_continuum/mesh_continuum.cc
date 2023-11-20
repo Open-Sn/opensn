@@ -24,7 +24,7 @@
 namespace opensn
 {
 
-std::shared_ptr<ChiMPICommunicatorSet>
+std::shared_ptr<MPICommunicatorSet>
 MeshContinuum::MakeMPILocalCommunicatorSet() const
 {
   // Build the communicator
@@ -114,7 +114,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
 
   log.Log0Verbose1() << "Done building communicators.";
 
-  return std::make_shared<ChiMPICommunicatorSet>(communicators, location_groups, world_group);
+  return std::make_shared<MPICommunicatorSet>(communicators, location_groups, world_group);
 }
 
 void

@@ -9,7 +9,7 @@ typedef unsigned long long int u_ll_int;
 
 namespace opensn
 {
-class ChiMPICommunicatorSet;
+class MPICommunicatorSet;
 class FLUDS;
 
 /**
@@ -51,7 +51,7 @@ public:
                                size_t num_groups,
                                size_t num_angles,
                                int sweep_eager_limit,
-                               const ChiMPICommunicatorSet& in_comm_set);
+                               const MPICommunicatorSet& in_comm_set);
   /**
    * Returns the private flag done_sending.
    */

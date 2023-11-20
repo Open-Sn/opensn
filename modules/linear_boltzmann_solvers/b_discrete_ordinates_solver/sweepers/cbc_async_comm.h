@@ -12,7 +12,7 @@
 
 namespace opensn
 {
-class ChiMPICommunicatorSet;
+class MPICommunicatorSet;
 class ByteArray;
 
 namespace lbs
@@ -25,7 +25,7 @@ class CBC_ASynchronousCommunicator : public AsynchronousCommunicator
 public:
   explicit CBC_ASynchronousCommunicator(size_t angle_set_id,
                                         FLUDS& fluds,
-                                        const ChiMPICommunicatorSet& comm_set);
+                                        const MPICommunicatorSet& comm_set);
 
   // location_id
   // cell_global_id

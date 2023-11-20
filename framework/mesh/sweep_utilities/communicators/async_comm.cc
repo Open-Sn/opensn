@@ -5,8 +5,7 @@
 namespace opensn
 {
 
-AsynchronousCommunicator::AsynchronousCommunicator(FLUDS& fluds,
-                                                   const ChiMPICommunicatorSet& comm_set)
+AsynchronousCommunicator::AsynchronousCommunicator(FLUDS& fluds, const MPICommunicatorSet& comm_set)
   : fluds_(fluds), comm_set_(comm_set)
 {
 }

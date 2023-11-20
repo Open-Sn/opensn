@@ -14,7 +14,7 @@ namespace opensn
 {
 template <typename T>
 class NDArray;
-class ChiMPICommunicatorSet;
+class MPICommunicatorSet;
 class GridFaceHistogram;
 class MeshGenerator;
 
@@ -24,7 +24,7 @@ class MeshGenerator;
 class MeshContinuum
 {
 private:
-  typedef std::shared_ptr<ChiMPICommunicatorSet> MPILocalCommSetPtr;
+  typedef std::shared_ptr<MPICommunicatorSet> MPILocalCommSetPtr;
 
 private:
   std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
