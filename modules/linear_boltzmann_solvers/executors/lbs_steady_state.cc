@@ -9,7 +9,7 @@ namespace opensn
 namespace lbs
 {
 
-RegisterChiObject(lbs, SteadyStateSolver);
+OpenSnRegisterObject(lbs, SteadyStateSolver);
 
 InputParameters
 SteadyStateSolver::GetInputParameters()

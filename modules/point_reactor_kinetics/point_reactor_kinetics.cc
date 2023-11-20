@@ -15,7 +15,7 @@ namespace opensn
 namespace prk
 {
 
-RegisterChiObject(prk, TransientSolver);
+OpenSnRegisterObject(prk, TransientSolver);
 
 InputParameters
 TransientSolver::GetInputParameters()

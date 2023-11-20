@@ -16,7 +16,7 @@ namespace opensn
 namespace lbs
 {
 
-RegisterChiObject(lbs, DiscreteOrdinatesCurvilinearSolver);
+OpenSnRegisterObject(lbs, DiscreteOrdinatesCurvilinearSolver);
 
 InputParameters
 DiscreteOrdinatesCurvilinearSolver::GetInputParameters()

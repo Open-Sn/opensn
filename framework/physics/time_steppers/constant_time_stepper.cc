@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_physics, ConstantTimeStepper);
+OpenSnRegisterObject(chi_physics, ConstantTimeStepper);
 
 InputParameters
 ConstantTimeStepper::GetInputParameters()

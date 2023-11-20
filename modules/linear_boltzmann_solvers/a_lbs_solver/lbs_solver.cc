@@ -50,11 +50,11 @@ namespace opensn
 {
 namespace lbs
 {
-// RegisterChiObject(lbs, LBSSolver); Should not be constructible
+// OpenSnRegisterObject(lbs, LBSSolver); Should not be constructible
 
-RegisterSyntaxBlock(lbs, OptionsBlock, LBSSolver::OptionsBlock);
+OpenSnRegisterSyntaxBlock(lbs, OptionsBlock, LBSSolver::OptionsBlock);
 
-RegisterSyntaxBlock(lbs, BoundaryOptionsBlock, LBSSolver::BoundaryOptionsBlock);
+OpenSnRegisterSyntaxBlock(lbs, BoundaryOptionsBlock, LBSSolver::BoundaryOptionsBlock);
 
 LBSSolver::LBSSolver(const std::string& text_name) : Solver(text_name)
 {

@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_math, QuadratureGaussChebyshev);
+OpenSnRegisterObject(chi_math, QuadratureGaussChebyshev);
 
 InputParameters
 QuadratureGaussChebyshev::GetInputParameters()

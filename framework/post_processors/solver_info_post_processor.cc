@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi, SolverInfoPostProcessor);
+OpenSnRegisterObject(chi, SolverInfoPostProcessor);
 
 InputParameters
 SolverInfoPostProcessor::GetInputParameters()

@@ -66,7 +66,7 @@ namespace opensn
 namespace lbs
 {
 
-RegisterChiObject(lbs, DiscreteOrdinatesSolver);
+OpenSnRegisterObject(lbs, DiscreteOrdinatesSolver);
 
 DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const std::string& text_name)
   : LBSSolver(text_name)

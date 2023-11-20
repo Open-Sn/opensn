@@ -10,7 +10,7 @@ namespace opensn
 namespace lbs
 {
 
-RegisterChiObject(lbs, XXNonLinearKEigen);
+OpenSnRegisterObject(lbs, XXNonLinearKEigen);
 
 InputParameters
 XXNonLinearKEigen::GetInputParameters()

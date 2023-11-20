@@ -14,7 +14,7 @@ namespace opensn
 {
 namespace lbs
 {
-RegisterChiObjectParametersOnly(lbs, LBSGroupset);
+OpenSnRegisterObjectParametersOnly(lbs, LBSGroupset);
 
 InputParameters
 lbs::LBSGroupset::GetInputParameters()

@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_mesh, MeshGenerator);
+OpenSnRegisterObject(chi_mesh, MeshGenerator);
 
 InputParameters
 MeshGenerator::GetInputParameters()

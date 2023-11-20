@@ -19,7 +19,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_mesh, SplitFileMeshGenerator);
+OpenSnRegisterObject(chi_mesh, SplitFileMeshGenerator);
 
 InputParameters
 SplitFileMeshGenerator::GetInputParameters()

@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi, Plugin);
+OpenSnRegisterObject(chi, Plugin);
 
 InputParameters
 Plugin::GetInputParameters()

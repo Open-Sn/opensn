@@ -12,7 +12,7 @@ namespace opensn
 namespace lbs
 {
 
-RegisterChiObject(lbs, XXPowerIterationKEigen);
+OpenSnRegisterObject(lbs, XXPowerIterationKEigen);
 
 InputParameters
 XXPowerIterationKEigen::GetInputParameters()

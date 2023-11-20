@@ -15,7 +15,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_math, QuadratureGaussLegendre);
+OpenSnRegisterObject(chi_math, QuadratureGaussLegendre);
 
 InputParameters
 QuadratureGaussLegendre::GetInputParameters()

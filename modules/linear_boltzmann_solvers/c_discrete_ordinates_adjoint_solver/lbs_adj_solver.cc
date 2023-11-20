@@ -18,7 +18,7 @@ namespace opensn
 namespace lbs
 {
 
-RegisterChiObject(lbs, DiscreteOrdinatesAdjointSolver);
+OpenSnRegisterObject(lbs, DiscreteOrdinatesAdjointSolver);
 
 InputParameters
 DiscreteOrdinatesAdjointSolver::GetInputParameters()

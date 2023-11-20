@@ -20,7 +20,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_physics, FieldFunctionGridBased);
+OpenSnRegisterObject(chi_physics, FieldFunctionGridBased);
 
 InputParameters
 FieldFunctionGridBased::GetInputParameters()

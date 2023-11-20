@@ -7,9 +7,9 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_mesh, ExtruderMeshGenerator);
+OpenSnRegisterObject(chi_mesh, ExtruderMeshGenerator);
 
-RegisterChiObjectParametersOnly(chi_mesh, ExtrusionLayer);
+OpenSnRegisterObjectParametersOnly(chi_mesh, ExtrusionLayer);
 
 InputParameters
 ExtrusionLayer::GetInputParameters()

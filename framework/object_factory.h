@@ -5,20 +5,21 @@
 #include "framework/logging/log_exceptions.h"
 
 /**Small utility macro for joining two words.*/
-#define ChiObjectFactoryJoinWordsA(x, y) x##y
+#define OpenSnObjectFactoryJoinWordsA(x, y) x##y
 /**IDK why this is needed. Seems like counter doesnt work properly without it*/
-#define ChiObjectFactoryJoinWordsB(x, y) ChiObjectFactoryJoinWordsA(x, y)
+#define OpenSnObjectFactoryJoinWordsB(x, y) OpenSnObjectFactoryJoinWordsA(x, y)
 
 /**Macro for registering an object within the ObjectFactory singleton.
  * \param namespace_name Name of the namespace within which the object is.
  * \param object_name Name of the object in the registry.
  * Example:
  * \code
- * RegisterChiObject(kaka, Zorba);
+ * OpenSnRegisterObject(kaka, Zorba);
  * \endcode
  * \note Remember to include the header "framework/object_factory.h".*/
-#define RegisterChiObject(namespace_name, object_name)                                             \
-  static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
+#define OpenSnRegisterObject(namespace_name, object_name)                                          \
+  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
+                                            __COUNTER__) =                                         \
     opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#namespace_name, #object_name)
 
 /**Macro for registering an object (parameters only) within the
@@ -27,12 +28,13 @@
  * \param object_name Name of the object in the registry.
  * Example:
  * \code
- * RegisterChiObjectParametersOnly(kaka, Zorba);
+ * OpenSnRegisterObjectParametersOnly(kaka, Zorba);
  * \endcode
  *
  * \note Remember to include the header "framework/object_factory.h"*/
-#define RegisterChiObjectParametersOnly(namespace_name, object_name)                               \
-  static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
+#define OpenSnRegisterObjectParametersOnly(namespace_name, object_name)                            \
+  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
+                                            __COUNTER__) =                                         \
     opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name,             \
                                                                       #object_name)
 
@@ -43,12 +45,12 @@
  * \param syntax_function Actual syntax function for this object
  * Example:
  * \code
- * RegisterSyntaxBlock(kaka, Zorba, ZorbaSyntaxFunction);
+ * OpenSnRegisterSyntaxBlock(kaka, Zorba, ZorbaSyntaxFunction);
  * \endcode
  *
  * \note Remember to include the header "framework/object_factory.h"*/
-#define RegisterSyntaxBlock(namespace_name, block_name, syntax_function)                           \
-  static char ChiObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) =    \
+#define OpenSnRegisterSyntaxBlock(namespace_name, block_name, syntax_function)                     \
+  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) = \
     opensn::ObjectFactory::AddSyntaxBlockToRegistry(#namespace_name, #block_name, syntax_function)
 
 namespace opensn

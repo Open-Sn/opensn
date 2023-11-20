@@ -16,7 +16,7 @@ InputParameters PostProcessorPrinterOptions();
 InputParameters GetSyntax_PPPrinterSetOptions();
 ParameterBlock PostProcessorPrinterSetOptions(const InputParameters& params);
 
-RegisterSyntaxBlock(chi, PostProcessorPrinterOptions, PostProcessorPrinterOptions);
+OpenSnRegisterSyntaxBlock(chi, PostProcessorPrinterOptions, PostProcessorPrinterOptions);
 
 RegisterWrapperFunction(chi,
                         PostProcessorPrinterSetOptions,

@@ -8,7 +8,7 @@
 namespace unit_tests
 {
 
-RegisterChiObject(chi_unit_testsB, TestObject);
+OpenSnRegisterObject(chi_unit_testsB, TestObject);
 
 InputParameters
 TestObject::GetInputParameters()
@@ -66,7 +66,7 @@ TestObject::TestObject(const InputParameters& params)
                     << "solver_type=" << solver_type_;
 }
 
-RegisterChiObject(chi_unit_testsB, TestSubObject);
+OpenSnRegisterObject(chi_unit_testsB, TestSubObject);
 
 InputParameters
 TestSubObject::GetInputParameters()
@@ -92,7 +92,7 @@ TestSubObject::TestSubObject(const InputParameters& params)
                     << "num_groups=" << num_groups_;
 }
 
-RegisterChiObject(chi_unit_testsB, ChildTestObject);
+OpenSnRegisterObject(chi_unit_testsB, ChildTestObject);
 
 InputParameters
 ChildTestObject::GetInputParameters()

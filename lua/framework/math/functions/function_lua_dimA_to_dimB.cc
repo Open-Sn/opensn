@@ -11,7 +11,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterChiObject(chi_math::functions, LuaDimAToDimB);
+OpenSnRegisterObject(chi_math::functions, LuaDimAToDimB);
 
 InputParameters
 LuaDimAToDimB::GetInputParameters()
