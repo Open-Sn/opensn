@@ -1,5 +1,4 @@
-#include "framework/console/console.h"
-
+#include "lua/framework/console/console.h"
 #include "framework/graphs/kba_graph_partitioner.h"
 #include "framework/object_factory.h"
 

@@ -9,8 +9,28 @@
 
 #include <dlfcn.h>
 
-namespace opensn
+using namespace opensn;
+
+namespace opensnlua
 {
+
+RegistryStatuses
+GetStatusOfRegistries()
+{
+  RegistryStatuses stats;
+
+  const auto& object_factory = ObjectFactory::GetInstance();
+  for (const auto& [key, _] : object_factory.Registry())
+    stats.objfactory_keys_.push_back(key);
+
+  for (const auto& [key, _] : console.GetLuaFunctionRegistry())
+    stats.console_lua_func_keys_.push_back(key);
+
+  for (const auto& [key, _] : console.GetFunctionWrapperRegistry())
+    stats.console_lua_wrapper_keys_.push_back(key);
+
+  return stats;
+}
 
 OpenSnRegisterObject(chi, Plugin);
 
@@ -35,8 +55,8 @@ Plugin::GetInputParameters()
 Plugin::Plugin(const InputParameters& params)
   : Object(params), plugin_path_(params.GetParamValue<std::string>("plugin_path"))
 {
-  log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
-  RegistryStatuses registry_statuses = Chi::GetStatusOfRegistries();
+  opensn::log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
+  RegistryStatuses registry_statuses = GetStatusOfRegistries();
 
   AssertReadibleFile(plugin_path_);
   library_handle_ = dlopen(plugin_path_.c_str(), RTLD_LAZY);
@@ -57,9 +77,7 @@ Plugin::Plugin(const InputParameters& params)
     func();
   }
 
-#ifdef OPENSN_WITH_LUA
   console.UpdateConsoleBindings(registry_statuses);
-#endif
 }
 
 Plugin::~Plugin()
@@ -67,4 +85,4 @@ Plugin::~Plugin()
   dlclose(library_handle_);
 }
 
-} // namespace opensn
+} // namespace opensnlua

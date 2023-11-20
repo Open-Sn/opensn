@@ -9,9 +9,9 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 
 using namespace opensn;
 
@@ -65,7 +65,7 @@ chiSimTest04_PWLC(const InputParameters& params)
   InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   // Source lambda
-  lua_State* L = Console::GetInstance().GetConsoleState();
+  lua_State* L = opensnlua::Console::GetInstance().GetConsoleState();
   auto CallLuaXYZFunction = [&L](const std::string& lua_func_name, const Vector3& xyz)
   {
     // Load lua function

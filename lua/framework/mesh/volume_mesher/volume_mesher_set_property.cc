@@ -62,7 +62,7 @@ SetMatIDFromLuaFunction(const std::string& lua_fname)
                              << " Setting material id from lua function.";
 
   // Define console call
-  auto L = console.GetConsoleState();
+  auto L = opensnlua::console.GetConsoleState();
   auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const Cell& cell)
   {
     // Load lua function
@@ -159,7 +159,7 @@ SetBndryIDFromLuaFunction(const std::string& lua_fname)
                              << " Setting boundary id from lua function.";
 
   // Define console call
-  auto L = console.GetConsoleState();
+  auto L = opensnlua::console.GetConsoleState();
   auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const CellFace& face)
   {
     // Load lua function

@@ -12,7 +12,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include "lua/framework/math/functions/lua_scalar_spatial_function.h"
 
 using namespace opensn;

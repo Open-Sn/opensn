@@ -27,7 +27,7 @@ LuaScalarSpatialFunction::Evaluate(const opensn::Vector3& xyz) const
 {
   const std::string fname = "LuaScalarSpatialFunction::Evaluate";
 
-  lua_State* L = opensn::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
   // Load lua function
   lua_getglobal(L, lua_function_name_.c_str());
 

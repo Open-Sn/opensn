@@ -25,7 +25,7 @@ LuaScalarMaterialFunction::LuaScalarMaterialFunction(const InputParameters& para
 double
 LuaScalarMaterialFunction::Evaluate(double val, int mat_id) const
 {
-  lua_State* L = opensn::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
   double ret_val = 0.0;
 
   lua_getglobal(L, lua_function_name_.c_str());

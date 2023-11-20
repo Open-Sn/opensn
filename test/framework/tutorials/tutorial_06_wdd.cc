@@ -14,7 +14,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 
 #include <iomanip>
 

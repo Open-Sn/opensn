@@ -8,7 +8,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/console/console.h"
 #include <utility>
 
 #define DefaultBCDirichlet                                                                         \

@@ -5,9 +5,6 @@
 
 #include "modules/mg_diffusion/mg_diffusion_bndry.h"
 #include "framework/utils/timer.h"
-
-#include "framework/console/console.h"
-
 #include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 

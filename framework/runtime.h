@@ -45,22 +45,13 @@ typedef std::shared_ptr<SpatialDiscretization> SpatialDiscretizationPtr;
 class UnknownManager;
 
 class Timer;
-class Console;
 class Logger;
 class PostProcessor;
 typedef std::shared_ptr<PostProcessor> PostProcessorPtr;
-/**Stores all the keys currently in the registries.*/
-struct RegistryStatuses
-{
-  std::vector<std::string> objfactory_keys_;
-  std::vector<std::string> console_lua_func_keys_;
-  std::vector<std::string> console_lua_wrapper_keys_;
-};
 
 class Object;
 typedef std::shared_ptr<Object> ChiObjectPtr;
 
-extern Console& console;
 extern MPI_Info& mpi;
 extern Logger& log;
 extern Timer program_timer;
@@ -90,37 +81,7 @@ public:
 
   static const size_t SIZE_T_INVALID = ((size_t)-1);
 
-  /**Data block for run-time quantities.*/
-  class run_time
-  {
-  public:
-    static bool termination_posted_;
-    static std::string input_file_name_;
-    static bool sim_option_interactive_;
-    static bool allow_petsc_error_handler_;
-    static bool supress_beg_end_timelog_;
-    static bool suppress_color_;
-    static bool dump_registry_;
-
-    static const std::string command_line_help_string_;
-
-    /**Parses input arguments.
-    \param argc int    Number of arguments supplied.
-    \param argv char** Array of strings representing each argument.
-     */
-    static void ParseArguments(int argc, char** argv);
-    /**Initializes PetSc for use by all entities.*/
-    static int InitPetSc(int argc, char** argv);
-
-  public:
-  public:
-    /// Deleted constructor
-    run_time() = delete;
-    /// Deleted copy constructor
-    run_time(const run_time&) = delete;
-    /// Deleted assigment operator
-    run_time operator=(const run_time&) = delete;
-  };
+  static bool suppress_color_;
 
   /**Customized exceptions.*/
   class RecoverableException : public std::runtime_error
@@ -149,15 +110,6 @@ public:
   Chi(const Chi&) = delete;
   /// Deleted assigment operator
   Chi operator=(const Chi&) = delete;
-
-public:
-  /**Runs the interactive chitech engine*/
-  static int RunInteractive(int argc, char** argv);
-  /**Runs ChiTech in pure batch mode. Start then finish.*/
-  static int RunBatch(int argc, char** argv);
-
-  /**Builds a `RegistryStatuses` structure*/
-  static RegistryStatuses GetStatusOfRegistries();
 
 public:
   /**Attempts to retrieve an object of base-type `shared_ptr<T>` at the given
@@ -267,11 +219,8 @@ public:
 
 /**
  * Initializes all necessary items
- * \param argc Number of arguments supplied.
- * \param argv Array of strings representing each argument.
- * \param communicator The main communicator, used system wide.
  */
-int Initialize(int argc, char** argv, MPI_Comm communicator);
+int Initialize();
 
 /**
  * Finalize the run

@@ -4,7 +4,6 @@
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "modules/dfem_diffusion/dfem_diffusion_bndry.h"
 #include "framework/utils/timer.h"
-#include "framework/console/console.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/mesh/mesh.h"
 #include <map>

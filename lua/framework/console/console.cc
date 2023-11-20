@@ -1,8 +1,6 @@
-#include "framework/console/console.h"
-#ifdef OPENSN_WITH_LUA
+#include "lua/framework/console/console.h"
 #include "lua/modules/modules_lua.h"
 #include "framework/lua.h"
-#endif
 #include "config.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
@@ -10,15 +8,21 @@
 #include "framework/logging/log_exceptions.h"
 #include "framework/mpi/mpi.h"
 #include "framework/utils/utils.h"
+#include "lua/framework/interfaces/plugin.h"
+#include "framework/runtime.h"
 #include <iostream>
+
+using namespace opensn;
 
 namespace opensn::lua_utils
 {
 int chiMakeObject(lua_State* L);
 }
 
-namespace opensn
+namespace opensnlua
 {
+
+Console& console = Console::GetInstance();
 
 RegisterLuaFunction(Console::LuaWrapperCall, chi_console, LuaWrapperCall);
 
@@ -29,17 +33,13 @@ Console::GetInstance() noexcept
   return singleton;
 }
 
-Console::Console() noexcept
-#ifdef OPENSN_WITH_LUA
-  : console_state_(luaL_newstate())
-#endif
+Console::Console() noexcept : console_state_(luaL_newstate())
 {
 }
 
 void
 Console::FlushConsole()
 {
-#ifdef OPENSN_WITH_LUA
   try
   {
     for (auto& command : command_buffer_)
@@ -47,20 +47,18 @@ Console::FlushConsole()
       bool error = luaL_dostring(console_state_, command.c_str());
       if (error)
       {
-        log.LogAll() << lua_tostring(console_state_, -1);
+        opensn::log.LogAll() << lua_tostring(console_state_, -1);
         lua_pop(console_state_, 1);
       }
     }
   }
   catch (const std::exception& e)
   {
-    log.LogAllError() << e.what();
-    Exit(EXIT_FAILURE);
+    opensn::log.LogAllError() << e.what();
+    opensn::Exit(EXIT_FAILURE);
   }
-#endif
 }
 
-#ifdef OPENSN_WITH_LUA
 int
 Console::LuaWrapperCall(lua_State* L)
 {
@@ -122,13 +120,12 @@ Console::LuaWrapperCall(lua_State* L)
 
   return output_params.IsScalar() ? 1 : num_sub_params;
 }
-#endif
 
 void
 Console::RunConsoleLoop(char*) const
 {
-  log.Log() << "Console loop started. "
-            << "Type \"exit\" to quit (or Ctl-C).";
+  opensn::log.Log() << "Console loop started. "
+                    << "Type \"exit\" to quit (or Ctl-C).";
 
   /** Wrapper to an MPI_Bcast call for a single integer
    * broadcast from location 0. */
@@ -153,18 +150,16 @@ Console::RunConsoleLoop(char*) const
     string_to_bcast = std::string(raw_chars.data());
   };
 
-#ifdef OPENSN_WITH_LUA
   /** Executes a string within the lua-console. */
   auto LuaDoString = [this](const std::string& the_string)
   {
     bool error = luaL_dostring(console_state_, the_string.c_str());
     if (error)
     {
-      log.LogAll() << lua_tostring(console_state_, -1);
+      opensn::log.LogAll() << lua_tostring(console_state_, -1);
       lua_pop(console_state_, 1);
     }
   };
-#endif
 
   auto ConsoleInputNumChars = [](const std::string& input)
   {
@@ -176,7 +171,7 @@ Console::RunConsoleLoop(char*) const
 
   const bool HOME = opensn::mpi.location_id == 0;
 
-  while (not Chi::run_time::termination_posted_)
+  while (true)
   {
     std::string console_input;
 
@@ -192,32 +187,27 @@ Console::RunConsoleLoop(char*) const
     else
       NonHomeBroadcastStringAsRaw(console_input, console_input_len);
 
-#ifdef OPENSN_WITH_LUA
     try
     {
       LuaDoString(console_input);
     }
-    catch (const Chi::RecoverableException& e)
+    catch (const opensn::Chi::RecoverableException& e)
     {
-      log.LogAllError() << e.what();
+      opensn::log.LogAllError() << e.what();
     }
     catch (const std::exception& e)
     {
-      log.LogAllError() << e.what();
+      opensn::log.LogAllError() << e.what();
       Exit(EXIT_FAILURE);
     }
-#endif
   } // while not termination posted
 
-  Chi::run_time::termination_posted_ = true;
-
-  log.Log() << "Console loop stopped successfully.";
+  opensn::log.Log() << "Console loop stopped successfully.";
 }
 
 int
 Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
 {
-#ifdef OPENSN_WITH_LUA
   lua_State* L = this->console_state_;
   if (not fileName.empty())
   {
@@ -236,18 +226,16 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
 
     if (error > 0)
     {
-      log.LogAllError() << "LuaError: " << lua_tostring(this->console_state_, -1);
+      opensn::log.LogAllError() << "LuaError: " << lua_tostring(this->console_state_, -1);
       return EXIT_FAILURE;
     }
   }
-#endif
   return EXIT_SUCCESS;
 }
 
 void
 Console::PostMPIInfo(int location_id, int number_of_processes) const
 {
-#ifdef OPENSN_WITH_LUA
   lua_State* L = this->console_state_;
 
   lua_pushinteger(L, location_id);
@@ -255,13 +243,11 @@ Console::PostMPIInfo(int location_id, int number_of_processes) const
 
   lua_pushinteger(L, number_of_processes);
   lua_setglobal(L, "chi_number_of_processes");
-#endif
 }
 
 void
 Console::AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunction function_ptr)
 {
-#ifdef OPENSN_WITH_LUA
   auto& console = GetInstance();
 
   // Check if the function name is already there
@@ -280,10 +266,7 @@ Console::AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunction fun
 
   console.lua_function_registry_.insert(
     std::make_pair(name_in_lua, LuaFunctionRegistryEntry{function_ptr, name_in_lua}));
-#endif
 }
-
-#ifdef OPENSN_WITH_LUA
 
 char
 Console::AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_in_lua,
@@ -296,9 +279,6 @@ Console::AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_in_lua
 
   return 0;
 }
-#endif
-
-#ifdef OPENSN_WITH_LUA
 
 char
 Console::AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_ptr,
@@ -311,9 +291,6 @@ Console::AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_ptr,
 
   return 0;
 }
-#endif
-
-#ifdef OPENSN_WITH_LUA
 
 char
 Console::AddLuaConstantToRegistry(const std::string& namespace_name,
@@ -338,15 +315,12 @@ Console::AddLuaConstantToRegistry(const std::string& namespace_name,
 
   return 0;
 }
-#endif
 
 InputParameters
 Console::DefaultGetInParamsFunc()
 {
   return InputParameters();
 }
-
-#ifdef OPENSN_WITH_LUA
 
 char
 Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_name,
@@ -378,9 +352,6 @@ Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_na
 
   return 0;
 }
-#endif
-
-#ifdef OPENSN_WITH_LUA
 
 void
 Console::SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name,
@@ -406,9 +377,6 @@ Console::SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name,
 
   lua_pop(L, lua_gettop(L));
 }
-#endif
-
-#ifdef OPENSN_WITH_LUA
 
 void
 Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_name)
@@ -446,9 +414,6 @@ Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_na
 
   lua_pop(L, lua_gettop(L));
 }
-#endif
-
-#ifdef OPENSN_WITH_LUA
 
 void
 Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
@@ -478,9 +443,6 @@ Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
 
   lua_pop(L, lua_gettop(L));
 }
-#endif
-
-#ifdef OPENSN_WITH_LUA
 
 void
 Console::FleshOutLuaTableStructure(const std::vector<std::string>& table_names)
@@ -516,9 +478,6 @@ Console::FleshOutLuaTableStructure(const std::vector<std::string>& table_names)
     }
   } // for table_key in table_keys
 }
-#endif
-
-#ifdef OPENSN_WITH_LUA
 
 void
 Console::SetLuaConstant(const std::string& constant_name, const Varying& value)
@@ -560,36 +519,31 @@ Console::SetLuaConstant(const std::string& constant_name, const Varying& value)
 
   lua_pop(L, lua_gettop(L));
 }
-#endif
-
-#ifdef OPENSN_WITH_LUA
 
 void
 Console::DumpRegister() const
 {
-  log.Log() << "\n\n";
+  opensn::log.Log() << "\n\n";
   for (const auto& [key, entry] : function_wrapper_registry_)
   {
-    if (log.GetVerbosity() == 0)
+    if (opensn::log.GetVerbosity() == 0)
     {
-      log.Log() << key;
+      opensn::log.Log() << key;
       continue;
     }
 
-    log.Log() << "LUA_FUNCWRAPPER_BEGIN " << key;
+    opensn::log.Log() << "LUA_FUNCWRAPPER_BEGIN " << key;
 
-    if (not entry.call_func) log.Log() << "SYNTAX_BLOCK";
+    if (not entry.call_func) opensn::log.Log() << "SYNTAX_BLOCK";
 
     const auto in_params = entry.get_in_params_func();
     in_params.DumpParameters();
 
-    log.Log() << "LUA_FUNCWRAPPER_END\n\n";
+    opensn::log.Log() << "LUA_FUNCWRAPPER_END\n\n";
   }
-  log.Log() << "\n\n";
+  opensn::log.Log() << "\n\n";
 }
-#endif
 
-#ifdef OPENSN_WITH_LUA
 void
 Console::UpdateConsoleBindings(const RegistryStatuses& old_statuses)
 {
@@ -608,6 +562,5 @@ Console::UpdateConsoleBindings(const RegistryStatuses& old_statuses)
     if (not ListHasValue(old_statuses.objfactory_keys_, key))
       if (entry.call_func) SetLuaFuncWrapperNamespaceTableStructure(key);
 }
-#endif
 
-} // namespace opensn
+} // namespace opensnlua

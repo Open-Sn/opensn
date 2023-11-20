@@ -7,7 +7,6 @@
 #include "modules/linear_boltzmann_solvers/c_discrete_ordinates_curvilinear_solver/sweep_chunks/lbs_curvilinear_sweep_chunk_pwl.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/console/console.h"
 #include "framework/memory_usage.h"
 #include <iomanip>
 

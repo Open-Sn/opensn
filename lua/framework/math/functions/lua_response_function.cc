@@ -56,7 +56,7 @@ LuaResponseFunction::Evaluate(int num_groups, const opensn::Vector3& xyz, int ma
   }
 
   // Load lua function
-  lua_State* L = opensn::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
   lua_getglobal(L, lua_function_name_.c_str());
 
   // Error check lua function

@@ -1,10 +1,9 @@
-#ifdef OPENSN_WITH_LUA
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 
 #include "framework/object_factory.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 
-namespace opensn
+namespace opensnlua
 {
 
 /**Generic lua routine for the creation of objects.
@@ -33,7 +32,7 @@ chiMakeObject(lua_State* L)
 
   const auto params = TableParserAsParameterBlock::ParseTable(L, 1);
 
-  const auto& object_maker = ObjectFactory::GetInstance();
+  const auto& object_maker = opensn::ObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObject(params);
 
   const std::string type = params.GetParamValue<std::string>("obj_type");
@@ -55,12 +54,11 @@ chiMakeObjectType(lua_State* L)
   const std::string type = lua_tostring(L, 1);
   const auto params = TableParserAsParameterBlock::ParseTable(L, 2);
 
-  const auto& object_maker = ObjectFactory::GetInstance();
+  const auto& object_maker = opensn::ObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObjectOfType(type, params);
 
   lua_pushinteger(L, static_cast<lua_Integer>(handle));
   return 1;
 }
 
-} // namespace opensn
-#endif
+} // namespace opensnlua
