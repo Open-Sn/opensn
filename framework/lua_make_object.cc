@@ -9,7 +9,7 @@ namespace opensn
 
 /**Generic lua routine for the creation of objects.
  * \param params ParameterBlock A single block tree that requires a parameter
- *  called chi_obj_type that indicates the type of object to make.
+ *  called obj_type that indicates the type of object to make.
  */
 int chiMakeObject(lua_State* L);
 
@@ -36,7 +36,7 @@ chiMakeObject(lua_State* L)
   const auto& object_maker = ObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObject(params);
 
-  const std::string type = params.GetParamValue<std::string>("chi_obj_type");
+  const std::string type = params.GetParamValue<std::string>("obj_type");
 
   lua_pushinteger(L, static_cast<lua_Integer>(handle));
   return 1;

@@ -31,13 +31,12 @@ ObjectFactory::MakeRegisteredObject(const ParameterBlock& params) const
 
   const std::string fname = __PRETTY_FUNCTION__;
 
-  if (not params.Has("chi_obj_type"))
-    throw std::invalid_argument(fname +
-                                ": Requires a parameter block with a field called "
-                                "\"chi_obj_type\". The given parameter block does not seem to "
-                                "have this parameter.");
+  if (not params.Has("obj_type"))
+    throw std::invalid_argument(fname + ": Requires a parameter block with a field called "
+                                        "\"obj_type\". The given parameter block does not seem to "
+                                        "have this parameter.");
 
-  const auto type = params.GetParamValue<std::string>("chi_obj_type");
+  const auto type = params.GetParamValue<std::string>("obj_type");
 
   return MakeRegisteredObjectOfType(type, params);
 }

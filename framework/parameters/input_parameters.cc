@@ -19,7 +19,7 @@
 namespace opensn
 {
 
-const std::vector<std::string> InputParameters::system_ignored_param_names_ = {"chi_obj_type"};
+const std::vector<std::string> InputParameters::system_ignored_param_names_ = {"obj_type"};
 
 InputParameters&
 InputParameters::operator+=(InputParameters other)

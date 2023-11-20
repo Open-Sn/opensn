@@ -137,7 +137,7 @@ public:
 
   /**Makes an object with the given parameters and places on the global
    * object stack. Returns a handle to the object. The object type is
-   * obtained from a string parameter name `chi_obj_type`.*/
+   * obtained from a string parameter name `obj_type`.*/
   size_t MakeRegisteredObject(const ParameterBlock& params) const;
   /**Makes an object with the given parameters and places on the global
    * object stack. Returns a handle to the object.*/

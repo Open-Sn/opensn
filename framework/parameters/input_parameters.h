@@ -41,7 +41,7 @@ private:
   std::string general_description_;
 
   /**Parameter names to ignore when trying to assign. For now this
-   * "chi_obj_type"*/
+   * "obj_type"*/
   static const std::vector<std::string> system_ignored_param_names_;
 
   ParameterBlock param_block_at_assignment_;
