@@ -3,16 +3,12 @@
 #include <mpi.h>
 #include <set>
 
-class Chi;
-
 namespace opensn
 {
 
 /**An object for storing various MPI states.*/
 class MPI_Info
 {
-  friend class ::Chi;
-
 private:
   MPI_Comm communicator_ = MPI_COMM_WORLD;
   int location_id_ = 0;
