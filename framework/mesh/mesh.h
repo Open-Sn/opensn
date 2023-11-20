@@ -5,7 +5,7 @@
 #include <memory>
 
 /**
- * Meshes in ChiTech follow the concept of Regions. In any given region the
+ * Meshes in OpenSn follow the concept of Regions. In any given region the
  * boundaries are a collection of either line-meshes (2D) or
  * surface-meshes (3D).
  */

@@ -18,13 +18,13 @@ public:
   /**Creates a time block and returns a reference to it. If the name
    * is already taken or the parent name is not found then this method
    * throws `std::invalid_argument`. The parent name may be empty, i.e. "",
-   * which will revert to the main timing block "ChiTech"*/
+   * which will revert to the main timing block "OpenSn"*/
   TimingBlock& CreateTimingBlock(const std::string& name, const std::string& parent_name = "");
   /**If the timing block with the given exists, this method returns that block,
    * otherwise it creates a time block and returns a reference to it. If the
    * parent name is not found then this method throws `std::invalid_argument`.
    * The parent name may be empty, i.e. "", which will revert to the main timing
-   * block "ChiTech"*/
+   * block "OpenSn"*/
   TimingBlock& CreateOrGetTimingBlock(const std::string& name, const std::string& parent_name = "");
   /**Returns a reference to the timing block with the given name. If a timing
    * block with that name does not exist then this method will throw
