@@ -22,6 +22,69 @@ RegisterLuaConstantAsIs(SCALAR_VALUE, Varying(1));
 RegisterLuaConstantAsIs(TRANSPORT_XSECTIONS, Varying(10));
 RegisterLuaConstantAsIs(ISOTROPIC_MG_SOURCE, Varying(11));
 
+namespace
+{
+
+void
+ScalarPropertyPushTable(lua_State* L, std::shared_ptr<MaterialProperty> property)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "is_empty");
+  lua_pushboolean(L, false);
+  lua_settable(L, -3);
+
+  lua_pushstring(L, "value");
+  lua_pushnumber(L, property->GetScalarValue());
+  lua_settable(L, -3);
+}
+
+void
+IsotropicMGSourcePropertyPushTable(lua_State* L, std::shared_ptr<IsotropicMultiGrpSource> property)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "is_empty");
+  lua_pushboolean(L, false);
+  lua_settable(L, -3);
+
+  lua_pushstring(L, "G");
+  lua_pushnumber(L, property->source_value_g_.size());
+  lua_settable(L, -3);
+
+  lua_pushstring(L, "source_value_g");
+  lua_newtable(L);
+  int g = 0;
+  for (auto val : property->source_value_g_)
+  {
+    ++g;
+    lua_pushnumber(L, g);
+    lua_pushnumber(L, val);
+    lua_settable(L, -3);
+  }
+  lua_settable(L, -3);
+}
+
+void
+MaterialPropertyPushLuaTable(lua_State* L)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "is_empty");
+  lua_pushboolean(L, true);
+  lua_settable(L, -3);
+}
+
+void
+PropertyPushLuaTable(lua_State* L, std::shared_ptr<MaterialProperty> property)
+{
+  if (property->Type() == PropertyType::SCALAR_VALUE) ScalarPropertyPushTable(L, property);
+  else if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
+    IsotropicMGSourcePropertyPushTable(
+      L, std::dynamic_pointer_cast<IsotropicMultiGrpSource>(property));
+  else
+    MaterialPropertyPushLuaTable(L);
+}
+
+} // namespace
+
 int
 chiPhysicsMaterialAddProperty(lua_State* L)
 {
@@ -464,7 +527,7 @@ chiPhysicsMaterialGetProperty(lua_State* L)
   {
     if (static_cast<int>(property->Type()) == property_index)
     {
-      property->PushLuaTable(L);
+      PropertyPushLuaTable(L, property);
       property_polulated = true;
     }
   }

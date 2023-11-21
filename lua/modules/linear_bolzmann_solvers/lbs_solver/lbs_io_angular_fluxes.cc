@@ -3,6 +3,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
+#include "framework/lua.h"
 
 using namespace opensn;
 
