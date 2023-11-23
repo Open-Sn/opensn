@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-const std::string name = "openSn";
+const std::string name = "OpenSn";
 
 class MeshHandler;
 typedef std::shared_ptr<MeshHandler> MeshHandlerPtr;
