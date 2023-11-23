@@ -2,8 +2,6 @@
 
 #include "framework/object_factory.h"
 
-#define scint static_cast<int>
-
 namespace opensn
 {
 
@@ -19,7 +17,7 @@ CrankNicolsonTimeIntegration::GetInputParameters()
   params.SetDocGroup("DocTimeIntegrations");
   // clang-format on
 
-  params.ChangeExistingParamToOptional("method", scint(SteppingMethod::CRANK_NICOLSON));
+  params.ChangeExistingParamToOptional("method", static_cast<int>(SteppingMethod::CRANK_NICOLSON));
   params.ChangeExistingParamToOptional("theta", 0.5);
 
   return params;
