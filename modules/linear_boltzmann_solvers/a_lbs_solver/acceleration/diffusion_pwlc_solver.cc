@@ -8,15 +8,6 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 
-#define DefaultBCDirichlet                                                                         \
-  BoundaryCondition                                                                                \
-  {                                                                                                \
-    BCType::DIRICHLET,                                                                             \
-    {                                                                                              \
-      0, 0, 0                                                                                      \
-    }                                                                                              \
-  }
-
 namespace opensn
 {
 namespace lbs
@@ -86,7 +77,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       const auto& face = cell.faces_[f];
       if (not face.has_neighbor_)
       {
-        auto bc = DefaultBCDirichlet;
+        BoundaryCondition bc;
         if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
         if (bc.type != BCType::DIRICHLET) continue;
@@ -143,7 +134,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
         if (not face.has_neighbor_)
         {
-          auto bc = DefaultBCDirichlet;
+          BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
@@ -274,7 +265,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
       const auto& face = cell.faces_[f];
       if (not face.has_neighbor_)
       {
-        auto bc = DefaultBCDirichlet;
+        BoundaryCondition bc;
         if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
         if (bc.type != BCType::DIRICHLET) continue;
@@ -327,7 +318,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 
         if (not face.has_neighbor_)
         {
-          auto bc = DefaultBCDirichlet;
+          BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
@@ -410,7 +401,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
       const auto& face = cell.faces_[f];
       if (not face.has_neighbor_)
       {
-        auto bc = DefaultBCDirichlet;
+        BoundaryCondition bc;
         if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
         if (bc.type != BCType::DIRICHLET) continue;
@@ -450,7 +441,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
 
         if (not face.has_neighbor_)
         {
-          auto bc = DefaultBCDirichlet;
+          BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
