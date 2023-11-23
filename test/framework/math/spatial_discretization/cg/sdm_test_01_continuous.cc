@@ -12,8 +12,6 @@
 
 #include "lua/framework/console/console.h"
 
-#define scdouble static_cast<double>
-
 using namespace opensn;
 
 namespace unit_tests
