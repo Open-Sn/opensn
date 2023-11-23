@@ -26,8 +26,6 @@ class MultiGroupXS;
 class FieldFunction;
 class Function;
 
-typedef std::shared_ptr<Function> FunctionPtr;
-
 class AngularQuadrature;
 class SpatialDiscretization;
 
@@ -64,7 +62,7 @@ extern std::vector<AngularQuadraturePtr> angular_quadrature_stack;
 extern std::vector<std::shared_ptr<Object>> object_stack;
 extern std::vector<SpatialDiscretizationPtr> sdm_stack;
 extern std::vector<PostProcessorPtr> postprocessor_stack;
-extern std::vector<FunctionPtr> function_stack;
+extern std::vector<std::shared_ptr<Function>> function_stack;
 
 const size_t SIZE_T_INVALID = ((size_t)-1);
 

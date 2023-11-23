@@ -44,7 +44,7 @@ std::vector<AngularQuadraturePtr> angular_quadrature_stack;
 std::vector<std::shared_ptr<Object>> object_stack;
 std::vector<SpatialDiscretizationPtr> sdm_stack;
 std::vector<PostProcessorPtr> postprocessor_stack;
-std::vector<FunctionPtr> function_stack;
+std::vector<std::shared_ptr<Function>> function_stack;
 
 bool suppress_color = false;
 
