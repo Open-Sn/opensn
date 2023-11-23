@@ -21,8 +21,6 @@ typedef std::vector<VecDbl> MatDbl;
 typedef std::vector<Vector3> VecVec3;
 typedef std::vector<VecVec3> MatVec3;
 
-typedef std::shared_ptr<IsotropicMultiGrpSource> IsotropicSrcPtr;
-
 enum class SolverType
 {
   DISCRETE_ORDINATES = 1,

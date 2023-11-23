@@ -233,7 +233,7 @@ LBSSolver::GetMatID2XSMap() const
   return matid_to_xs_map_;
 }
 
-const std::map<int, IsotropicSrcPtr>&
+const std::map<int, std::shared_ptr<IsotropicMultiGrpSource>>&
 LBSSolver::GetMatID2IsoSrcMap() const
 {
   return matid_to_src_map_;
