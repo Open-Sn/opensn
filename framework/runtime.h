@@ -34,7 +34,6 @@ class UnknownManager;
 class Timer;
 class Logger;
 class PostProcessor;
-typedef std::shared_ptr<PostProcessor> PostProcessorPtr;
 
 class Object;
 
@@ -58,7 +57,7 @@ extern std::vector<std::shared_ptr<AngularQuadrature>> angular_quadrature_stack;
 
 extern std::vector<std::shared_ptr<Object>> object_stack;
 extern std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
-extern std::vector<PostProcessorPtr> postprocessor_stack;
+extern std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
 extern std::vector<std::shared_ptr<Function>> function_stack;
 
 const size_t SIZE_T_INVALID = ((size_t)-1);
