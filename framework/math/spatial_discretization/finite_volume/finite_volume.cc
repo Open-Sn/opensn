@@ -24,7 +24,7 @@ FiniteVolume::New(const MeshContinuum& in_grid, CoordinateSystemType in_cs_type)
 {
   // First try to find an existing spatial discretization that matches the
   // one requested.
-  for (auto& sdm : Chi::sdm_stack)
+  for (auto& sdm : sdm_stack)
     if (sdm->Type() == SpatialDiscretizationType::FINITE_VOLUME and
         std::addressof(sdm->Grid()) == std::addressof(in_grid) and
         sdm->GetCoordinateSystemType() == in_cs_type)
@@ -40,7 +40,7 @@ FiniteVolume::New(const MeshContinuum& in_grid, CoordinateSystemType in_cs_type)
   // new one
   auto new_sdm = std::shared_ptr<FiniteVolume>(new FiniteVolume(in_grid, in_cs_type));
 
-  Chi::sdm_stack.push_back(new_sdm);
+  sdm_stack.push_back(new_sdm);
 
   return new_sdm;
 }

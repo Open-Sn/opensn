@@ -24,8 +24,8 @@ chiOptimizeAngularQuadratureForPolarSymmetry(lua_State* L)
   double normalization = -1.0;
   if (num_args == 2) normalization = lua_tonumber(L, 2);
 
-  auto& quadrature = opensn::Chi::GetStackItem<AngularQuadrature>(
-    opensn::Chi::angular_quadrature_stack, handle, fname);
+  auto& quadrature =
+    opensn::GetStackItem<AngularQuadrature>(opensn::angular_quadrature_stack, handle, fname);
 
   if (normalization > 0.0)
     opensn::log.Log() << "Optimizing angular quadrature for polar symmetry. using "

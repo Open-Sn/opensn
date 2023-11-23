@@ -21,8 +21,8 @@ chiDFEMDiffusionSetBCProperty(lua_State* L)
   LuaCheckNumberValue(fname, L, 1);
   const int solver_index = lua_tonumber(L, 1);
 
-  auto& solver = opensn::Chi::GetStackItem<dfem_diffusion::Solver>(
-    opensn::Chi::object_stack, solver_index, fname);
+  auto& solver =
+    opensn::GetStackItem<dfem_diffusion::Solver>(opensn::object_stack, solver_index, fname);
 
   // Get property index
   LuaCheckStringValue(fname, L, 2);

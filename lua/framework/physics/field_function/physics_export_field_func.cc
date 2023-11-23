@@ -22,7 +22,7 @@ chiExportFieldFunctionToVTK(lua_State* L)
   int ff_handle = lua_tonumber(L, 1);
   const char* base_name = lua_tostring(L, 2);
 
-  auto ff_base = opensn::Chi::GetStackItemPtr(opensn::Chi::field_function_stack, ff_handle, fname);
+  auto ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ff_handle, fname);
   auto ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base);
 
   ChiLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
@@ -44,7 +44,7 @@ chiExportMultiFieldFunctionToVTK(lua_State* L)
 
   LuaCheckTableValue(fname, L, 1);
 
-  auto& ff_stack = opensn::Chi::field_function_stack;
+  auto& ff_stack = opensn::field_function_stack;
 
   const size_t table_size = lua_rawlen(L, 1);
   std::vector<std::shared_ptr<const FieldFunctionGridBased>> ffs;
@@ -60,7 +60,7 @@ chiExportMultiFieldFunctionToVTK(lua_State* L)
       int ff_handle = lua_tonumber(L, -1);
       lua_pop(L, 1);
 
-      ff_base = opensn::Chi::GetStackItemPtr(ff_stack, ff_handle, fname);
+      ff_base = opensn::GetStackItemPtr(ff_stack, ff_handle, fname);
     }
     else if (lua_isstring(L, -1))
     {

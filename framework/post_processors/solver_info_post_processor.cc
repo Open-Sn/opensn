@@ -40,8 +40,8 @@ SolverInfoPostProcessor::GetInputParameters()
 
 SolverInfoPostProcessor::SolverInfoPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
-    solver_(Chi::GetStackItem<Solver>(
-      Chi::object_stack, params.GetParamValue<size_t>("solver"), __FUNCTION__)),
+    solver_(
+      GetStackItem<Solver>(object_stack, params.GetParamValue<size_t>("solver"), __FUNCTION__)),
     info_(params.GetParam("info"))
 {
   const auto& param_assigned = params.ParametersAtAssignment();

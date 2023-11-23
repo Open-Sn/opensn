@@ -25,8 +25,8 @@ chiLBSComputeLeakage(lua_State* L)
   // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
 
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::DiscreteOrdinatesSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesSolver>(
+    opensn::object_stack, solver_handle, fname);
   LuaCheckNilValue(fname, L, 2);
   LuaCheckNilValue(fname, L, 3);
 
@@ -59,8 +59,8 @@ ComputeLeakage(lua_State* L)
   // Get the solver
   LuaCheckNilValue(fname, L, 1);
   const auto solver_handle = lua_tointeger(L, 1);
-  const auto& solver = opensn::Chi::GetStackItem<opensn::lbs::DiscreteOrdinatesSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  const auto& solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesSolver>(
+    opensn::object_stack, solver_handle, fname);
 
   // Get the supported boundaries
   const auto supported_boundary_names =

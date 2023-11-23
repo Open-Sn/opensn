@@ -105,7 +105,7 @@ LuaApp::ParseArguments(int argc, char** argv)
     }
     else if (argument.find("--suppress-color") != std::string::npos)
     {
-      opensn::Chi::suppress_color_ = true;
+      opensn::suppress_color_ = true;
     }
     else if (argument.find("--dump-object-registry") != std::string::npos)
     {

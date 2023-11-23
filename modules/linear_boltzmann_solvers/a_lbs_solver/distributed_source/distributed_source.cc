@@ -32,18 +32,18 @@ DistributedSource::GetInputParameters()
                                       "defined within.");
   params.AddOptionalParameter(
     "function_handle",
-    Chi::SIZE_T_INVALID,
+    SIZE_T_INVALID,
     "Handle to a ResponseFunction object to be used to define the source.");
 
   return params;
 }
 
 DistributedSource::DistributedSource(const InputParameters& params)
-  : logical_volume_ptr_(Chi::GetStackItemPtrAsType<opensn::LogicalVolume>(
-      Chi::object_stack, params.GetParamValue<size_t>("logical_volume_handle"))),
+  : logical_volume_ptr_(GetStackItemPtrAsType<opensn::LogicalVolume>(
+      object_stack, params.GetParamValue<size_t>("logical_volume_handle"))),
     function_(params.ParametersAtAssignment().Has("function_handle")
-                ? Chi::GetStackItemPtrAsType<opensn::SpatialMaterialFunction>(
-                    Chi::object_stack, params.GetParamValue<size_t>("function_handle"))
+                ? GetStackItemPtrAsType<opensn::SpatialMaterialFunction>(
+                    object_stack, params.GetParamValue<size_t>("function_handle"))
                 : nullptr)
 {
 }

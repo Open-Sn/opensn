@@ -52,8 +52,7 @@ FieldCopyOperation::FieldCopyOperation(const InputParameters& params)
 {
   // Get field functions
   {
-    auto to_base_ptr =
-      Chi::GetStackItemPtr(Chi::field_function_stack, to_field_handle_, __FUNCTION__);
+    auto to_base_ptr = GetStackItemPtr(field_function_stack, to_field_handle_, __FUNCTION__);
 
     to_ff_ = std::dynamic_pointer_cast<FieldFunctionGridBased>(to_base_ptr);
 
@@ -63,8 +62,7 @@ FieldCopyOperation::FieldCopyOperation(const InputParameters& params)
   }
 
   {
-    auto from_base_ptr =
-      Chi::GetStackItemPtr(Chi::field_function_stack, from_field_handle_, __FUNCTION__);
+    auto from_base_ptr = GetStackItemPtr(field_function_stack, from_field_handle_, __FUNCTION__);
 
     from_ff_ = std::dynamic_pointer_cast<FieldFunctionGridBased>(from_base_ptr);
 

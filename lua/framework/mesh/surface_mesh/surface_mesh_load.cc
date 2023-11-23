@@ -31,7 +31,7 @@ chiSurfaceMeshImportFromOBJFile(lua_State* L)
   if (num_args >= 3) as_poly = lua_toboolean(L, 3);
 
   auto& surface_mesh =
-    opensn::Chi::GetStackItem<SurfaceMesh>(opensn::Chi::surface_mesh_stack, handle, __FUNCTION__);
+    opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);
 
   opensn::log.Log0Verbose2() << fname << ": Loading Wavefront .obj file: " << std::endl;
 
@@ -67,7 +67,7 @@ chiSurfaceMeshImportFromTriangleFiles(lua_State* L)
   if (num_args == 3) { as_poly = lua_toboolean(L, 3); }
 
   auto& surface_mesh =
-    opensn::Chi::GetStackItem<SurfaceMesh>(opensn::Chi::surface_mesh_stack, handle, __FUNCTION__);
+    opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);
 
   surface_mesh.ImportFromTriangleFiles(temp, as_poly);
 
@@ -90,7 +90,7 @@ chiSurfaceMeshImportFromMshFiles(lua_State* L)
   if (num_args == 3) { as_poly = lua_toboolean(L, 3); }
 
   auto& surface_mesh =
-    opensn::Chi::GetStackItem<SurfaceMesh>(opensn::Chi::surface_mesh_stack, handle, __FUNCTION__);
+    opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);
 
   std::stringstream outtext;
   outtext << "chiSurfaceMeshImportFromMshFiles: "

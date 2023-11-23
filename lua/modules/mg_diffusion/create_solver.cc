@@ -26,9 +26,9 @@ chiCFEMMGDiffusionSolverCreate(lua_State* L)
 
   auto new_solver = std::make_shared<opensn::mg_diffusion::Solver>(solver_name);
 
-  opensn::Chi::object_stack.push_back(new_solver);
+  opensn::object_stack.push_back(new_solver);
 
-  lua_pushinteger(L, static_cast<lua_Integer>(opensn::Chi::object_stack.size() - 1));
+  lua_pushinteger(L, static_cast<lua_Integer>(opensn::object_stack.size() - 1));
 
   opensn::log.LogAllVerbose1() << "\nchiCFEMMGDiffusionSolverCreate: CFEM "
                                   "Multigroup Diffusion solver created"

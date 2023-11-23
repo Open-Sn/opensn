@@ -40,8 +40,8 @@ chiCreateProductQuadrature(lua_State* L)
 
     auto new_quad = std::make_shared<AngularQuadratureProdGL>(Np, verbose);
 
-    opensn::Chi::angular_quadrature_stack.push_back(new_quad);
-    const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
+    opensn::angular_quadrature_stack.push_back(new_quad);
+    const size_t index = opensn::angular_quadrature_stack.size() - 1;
     lua_pushinteger(L, static_cast<lua_Integer>(index));
 
     if (verbose)
@@ -65,8 +65,8 @@ chiCreateProductQuadrature(lua_State* L)
 
     auto new_quad = std::make_shared<AngularQuadratureProdGLL>(Na, Np, verbose);
 
-    opensn::Chi::angular_quadrature_stack.push_back(new_quad);
-    const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
+    opensn::angular_quadrature_stack.push_back(new_quad);
+    const size_t index = opensn::angular_quadrature_stack.size() - 1;
     lua_pushinteger(L, static_cast<lua_Integer>(index));
 
     if (verbose)
@@ -90,8 +90,8 @@ chiCreateProductQuadrature(lua_State* L)
 
     auto new_quad = std::make_shared<AngularQuadratureProdGLC>(Na, Np, verbose);
 
-    opensn::Chi::angular_quadrature_stack.push_back(new_quad);
-    const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
+    opensn::angular_quadrature_stack.push_back(new_quad);
+    const size_t index = opensn::angular_quadrature_stack.size() - 1;
     lua_pushinteger(L, static_cast<lua_Integer>(index));
 
     if (verbose)
@@ -168,8 +168,8 @@ chiCreateProductQuadrature(lua_State* L)
     auto new_quad =
       std::make_shared<AngularQuadratureProdCustom>(azimuthal, polar, weights, verbose);
 
-    opensn::Chi::angular_quadrature_stack.push_back(new_quad);
-    const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
+    opensn::angular_quadrature_stack.push_back(new_quad);
+    const size_t index = opensn::angular_quadrature_stack.size() - 1;
     lua_pushinteger(L, static_cast<lua_Integer>(index));
 
     if (verbose)

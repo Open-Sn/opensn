@@ -18,9 +18,9 @@ chiSurfaceMeshCreate(lua_State* L)
 {
   auto new_mesh = new SurfaceMesh;
 
-  opensn::Chi::surface_mesh_stack.emplace_back(new_mesh);
+  opensn::surface_mesh_stack.emplace_back(new_mesh);
 
-  size_t index = opensn::Chi::surface_mesh_stack.size() - 1;
+  size_t index = opensn::surface_mesh_stack.size() - 1;
   lua_pushnumber(L, static_cast<lua_Number>(index));
 
   opensn::log.LogAllVerbose2() << "chiSurfaceMeshCreate: "

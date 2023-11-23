@@ -28,7 +28,7 @@ chiLBSSetPhiFromFieldFunction(lua_State* L)
   const size_t handle = lua_tointeger(L, 1);
 
   auto& lbs_solver =
-    opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(opensn::Chi::object_stack, handle, fname);
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, handle, fname);
 
   auto specs = TableParserAsParameterBlock::ParseTable(L, 2);
 

@@ -105,7 +105,7 @@ SplitFileMeshGenerator::Execute()
     auto new_mesher = std::make_shared<VolumeMesher>(VolumeMesherType::UNPARTITIONED);
     new_mesher->SetContinuum(grid_ptr);
 
-    if (Chi::current_mesh_handler < 0) PushNewHandlerAndGetIndex();
+    if (current_mesh_handler < 0) PushNewHandlerAndGetIndex();
 
     auto& cur_hndlr = GetCurrentHandler();
     cur_hndlr.SetVolumeMesher(new_mesher);

@@ -29,7 +29,7 @@ PieceWiseLinearContinuous::New(const MeshContinuum& grid,
   const auto PWLC = SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS;
   // First try to find an existing spatial discretization that matches the
   // one requested.
-  for (auto& sdm : Chi::sdm_stack)
+  for (auto& sdm : sdm_stack)
     if (sdm->Type() == PWLC and std::addressof(sdm->Grid()) == std::addressof(grid) and
         sdm->GetCoordinateSystemType() == cs_type)
     {
@@ -49,7 +49,7 @@ PieceWiseLinearContinuous::New(const MeshContinuum& grid,
   auto new_sdm = std::shared_ptr<PieceWiseLinearContinuous>(
     new PieceWiseLinearContinuous(grid, q_order, cs_type));
 
-  Chi::sdm_stack.push_back(new_sdm);
+  sdm_stack.push_back(new_sdm);
 
   return new_sdm;
 }

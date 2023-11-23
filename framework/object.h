@@ -9,7 +9,7 @@ namespace opensn
 class Object
 {
 private:
-  size_t stack_id_ = Chi::SIZE_T_INVALID;
+  size_t stack_id_ = SIZE_T_INVALID;
 
 public:
   /**Returns the input parameters. For the base Object, there

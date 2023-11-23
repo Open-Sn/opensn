@@ -185,7 +185,7 @@ Solver::Initialize()
         std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
       field_functions_.push_back(initial_field_function);
-      Chi::field_function_stack.push_back(initial_field_function);
+      field_function_stack.push_back(initial_field_function);
     } // for g
   }   // if not ff set
 }
@@ -198,12 +198,12 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
   std::stringstream materials_list;
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Process materials found
-  const size_t num_physics_mats = Chi::material_stack.size();
+  const size_t num_physics_mats = material_stack.size();
   bool first_material_read = true;
 
   for (const int& mat_id : material_ids)
   {
-    auto current_material = Chi::GetStackItemPtr(Chi::material_stack, mat_id, __FUNCTION__);
+    auto current_material = GetStackItemPtr(material_stack, mat_id, __FUNCTION__);
     materials_list << "Material id " << mat_id;
 
     // Check valid ids

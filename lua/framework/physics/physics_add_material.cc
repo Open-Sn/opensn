@@ -23,9 +23,9 @@ chiPhysicsAddMaterial(lua_State* L)
     new_material->name_ = std::string(temp);
   }
 
-  opensn::Chi::material_stack.push_back(new_material);
+  opensn::material_stack.push_back(new_material);
 
-  const size_t index = opensn::Chi::material_stack.size() - 1;
+  const size_t index = opensn::material_stack.size() - 1;
   lua_pushnumber(L, static_cast<lua_Number>(index));
 
   opensn::log.Log0Verbose1() << "New material added at index " << index << " with name \""

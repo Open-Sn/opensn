@@ -121,7 +121,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
   {
     // Get the cross section from the stack
     std::shared_ptr<MultiGroupXS> xs;
-    xs = Chi::GetStackItemPtr(Chi::multigroup_xs_stack, combo.first, std::string(__FUNCTION__));
+    xs = GetStackItemPtr(multigroup_xs_stack, combo.first, std::string(__FUNCTION__));
     xsecs.push_back(xs);
 
     // Set the scaling factor

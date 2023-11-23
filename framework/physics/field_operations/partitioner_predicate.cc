@@ -40,8 +40,8 @@ PartitionerPredicate::GetInputParameters()
 
 PartitionerPredicate::PartitionerPredicate(const InputParameters& params)
   : FieldOperation(params),
-    partitioner_(Chi::GetStackItem<GraphPartitioner>(
-      Chi::object_stack, params.GetParamValue<size_t>("partitioner"), __FUNCTION__)),
+    partitioner_(GetStackItem<GraphPartitioner>(
+      object_stack, params.GetParamValue<size_t>("partitioner"), __FUNCTION__)),
     result_field_param_(params.GetParam("result_field")),
     num_partitions_(params.GetParamValue<size_t>("num_partitions")),
     result_component_(params.GetParamValue<size_t>("result_component"))
@@ -55,8 +55,7 @@ PartitionerPredicate::Execute()
   if (result_field_param_.Type() == ParameterBlockType::INTEGER)
   {
     const size_t handle = result_field_param_.GetValue<size_t>();
-    auto ff_ptr =
-      Chi::GetStackItemPtrAsType<FieldFunction>(Chi::field_function_stack, handle, __FUNCTION__);
+    auto ff_ptr = GetStackItemPtrAsType<FieldFunction>(field_function_stack, handle, __FUNCTION__);
     grid_ff_ptr = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_ptr);
 
     ChiLogicalErrorIf(not grid_ff_ptr, "Could not cast field function to FieldFunctionGridBased");
@@ -64,7 +63,7 @@ PartitionerPredicate::Execute()
   else if (result_field_param_.Type() == ParameterBlockType::STRING)
   {
     const std::string ff_name = result_field_param_.GetValue<std::string>();
-    for (auto& ff_ptr : Chi::field_function_stack)
+    for (auto& ff_ptr : field_function_stack)
       if (ff_ptr->TextName() == ff_name)
       {
         grid_ff_ptr = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_ptr);

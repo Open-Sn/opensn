@@ -55,7 +55,7 @@ Solver::GetMaterialProperties(const Cell& cell,
     Exit(EXIT_FAILURE);
   }
 
-  if (mat_id >= Chi::material_stack.size())
+  if (mat_id >= material_stack.size())
   {
     log.Log0Error() << "Cell encountered with material id pointing to "
                        "non-existing material.";
@@ -66,7 +66,7 @@ Solver::GetMaterialProperties(const Cell& cell,
   auto property_map_q = basic_options_("property_map_q").IntegerValue();
   auto property_map_sigma = basic_options_("property_map_sigma").IntegerValue();
 
-  auto material = Chi::GetStackItemPtr(Chi::material_stack, mat_id, __FUNCTION__);
+  auto material = GetStackItemPtr(material_stack, mat_id, __FUNCTION__);
 
   // Process material properties
   diffCoeff.resize(cell_dofs, 1.0);
@@ -325,7 +325,7 @@ Solver::Initialize(bool verbose)
       std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr, Unknown(UnknownType::SCALAR));
 
     field_functions_.push_back(initial_field_function);
-    Chi::field_function_stack.push_back(initial_field_function);
+    field_function_stack.push_back(initial_field_function);
   } // if not ff set
 
   // Determine nodal DOF
@@ -455,7 +455,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
 {
   t_assembly_.Reset();
 
-  if (Chi::material_stack.empty())
+  if (material_stack.empty())
   {
     log.Log0Error() << "No materials added to simulation. Add materials.";
     exit(0);

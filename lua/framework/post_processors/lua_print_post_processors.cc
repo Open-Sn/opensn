@@ -53,7 +53,7 @@ PrintPostProcessors(const InputParameters& params)
     {
       bool found = false;
 
-      for (const auto& pp_smart_ptr : Chi::postprocessor_stack)
+      for (const auto& pp_smart_ptr : opensn::postprocessor_stack)
         if (pp_smart_ptr->Name() == name)
         {
           found = true;
@@ -74,7 +74,7 @@ PrintPostProcessors(const InputParameters& params)
     for (const size_t handle : handle_list)
     {
       auto& pp =
-        opensn::Chi::GetStackItem<PostProcessor>(Chi::postprocessor_stack, handle, __FUNCTION__);
+        opensn::GetStackItem<PostProcessor>(opensn::postprocessor_stack, handle, __FUNCTION__);
       pp_list.push_back(&pp);
     }
   }

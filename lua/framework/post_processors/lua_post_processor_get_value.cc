@@ -39,7 +39,7 @@ PostProcessorGetValue(const InputParameters& params)
   {
     const auto pp_name = param.GetValue<std::string>();
 
-    for (const auto& pp_ptr : Chi::postprocessor_stack)
+    for (const auto& pp_ptr : opensn::postprocessor_stack)
       if (pp_ptr->Name() == pp_name) return pp_ptr->GetValue();
 
     // If we haven't returned here
@@ -49,7 +49,7 @@ PostProcessorGetValue(const InputParameters& params)
   {
     const auto pp_handle = param.GetValue<size_t>();
     const auto& pp =
-      Chi::GetStackItem<PostProcessor>(Chi::postprocessor_stack, pp_handle, __FUNCTION__);
+      opensn::GetStackItem<PostProcessor>(opensn::postprocessor_stack, pp_handle, __FUNCTION__);
 
     return pp.GetValue();
   }

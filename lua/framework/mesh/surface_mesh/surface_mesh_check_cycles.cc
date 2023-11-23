@@ -26,8 +26,8 @@ chiSurfaceMeshCheckCycles(lua_State* L)
   int surf_handle = lua_tonumber(L, 1);
   int num_angles = lua_tonumber(L, 2);
 
-  auto& surf_mesh = opensn::Chi::GetStackItem<SurfaceMesh>(
-    opensn::Chi::surface_mesh_stack, surf_handle, __FUNCTION__);
+  auto& surf_mesh =
+    opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, surf_handle, __FUNCTION__);
 
   surf_mesh.CheckCyclicDependencies(num_angles);
   return 0;
@@ -42,8 +42,8 @@ chiComputeLoadBalancing(lua_State* L)
   // Get reference surface mesh
   int surf_handle = lua_tonumber(L, 1);
 
-  auto& cur_surf = opensn::Chi::GetStackItem<SurfaceMesh>(
-    opensn::Chi::surface_mesh_stack, surf_handle, __FUNCTION__);
+  auto& cur_surf =
+    opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, surf_handle, __FUNCTION__);
 
   // Extract x-cuts
   if (!lua_istable(L, 2))

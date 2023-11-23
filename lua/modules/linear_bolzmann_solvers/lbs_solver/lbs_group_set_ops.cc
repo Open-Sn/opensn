@@ -22,8 +22,8 @@ chiLBSCreateGroupset(lua_State* L)
   const std::string fname = "chiLBSCreateGroupset";
   // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Create groupset
   lbs_solver.AddGroupset();
@@ -43,8 +43,8 @@ chiLBSCreateGroup(lua_State* L)
   LuaCheckNumberValue(fname, L, 1);
   const int solver_handle = lua_tointeger(L, 1);
 
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Set Id
   int group_id = -1;
@@ -74,8 +74,8 @@ chiLBSGroupsetAddGroups(lua_State* L)
   int to = lua_tonumber(L, 4);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -136,8 +136,8 @@ chiLBSGroupsetSetQuadrature(lua_State* L)
   int prquad_index = lua_tonumber(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -157,7 +157,7 @@ chiLBSGroupsetSetQuadrature(lua_State* L)
   std::shared_ptr<AngularQuadrature> ang_quad;
   try
   {
-    ang_quad = opensn::Chi::GetStackItemPtr(opensn::Chi::angular_quadrature_stack, prquad_index);
+    ang_quad = opensn::GetStackItemPtr(opensn::angular_quadrature_stack, prquad_index);
   }
   catch (const std::out_of_range& o)
   {
@@ -204,8 +204,8 @@ chiLBSGroupsetSetAngleAggregationType(lua_State* L)
   int agg_type = lua_tonumber(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -255,8 +255,8 @@ chiLBSGroupsetSetAngleAggDiv(lua_State* L)
   int num_div = lua_tonumber(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -302,8 +302,8 @@ chiLBSGroupsetSetGroupSubsets(lua_State* L)
   int num_div = lua_tonumber(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -349,8 +349,8 @@ chiLBSGroupsetSetIterativeMethod(lua_State* L)
   int iter_method = lua_tonumber(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -440,8 +440,8 @@ chiLBSGroupsetSetResidualTolerance(lua_State* L)
   double resid_tol = lua_tonumber(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -490,8 +490,8 @@ chiLBSGroupsetSetMaxIterations(lua_State* L)
   int num_iter = lua_tonumber(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -537,8 +537,8 @@ chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L)
   int restart_intvl = lua_tonumber(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -584,8 +584,8 @@ chiLBSGroupsetSetEnableSweepLog(lua_State* L)
   bool log_flag = lua_toboolean(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -632,8 +632,8 @@ chiLBSGroupsetSetWGDSA(lua_State* L)
   if (num_args == 6) petsc_string = lua_tostring(L, 6);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -685,8 +685,8 @@ chiLBSGroupsetSetTGDSA(lua_State* L)
   if (num_args == 6) petsc_string = lua_tostring(L, 6);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;

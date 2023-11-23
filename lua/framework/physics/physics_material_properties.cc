@@ -105,8 +105,7 @@ chiPhysicsMaterialAddProperty(lua_State* L)
   if (numArgs == 3) { provided_name = lua_tostring(L, 3); }
 
   // Get reference to material
-  auto cur_material =
-    opensn::Chi::GetStackItemPtr(opensn::Chi::material_stack, material_index, fname);
+  auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
 
   // Process property
   using MatProperty = PropertyType;
@@ -156,9 +155,9 @@ chiPhysicsMaterialAddProperty(lua_State* L)
                                   " at index "
                                << material_index;
 
-    opensn::Chi::multigroup_xs_stack.push_back(prop);
+    opensn::multigroup_xs_stack.push_back(prop);
 
-    const size_t index = opensn::Chi::multigroup_xs_stack.size() - 1;
+    const size_t index = opensn::multigroup_xs_stack.size() - 1;
 
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
@@ -227,8 +226,7 @@ chiPhysicsMaterialSetProperty(lua_State* L)
   int operation_index = lua_tonumber(L, 3);
 
   // Get reference to material
-  auto cur_material =
-    opensn::Chi::GetStackItemPtr(opensn::Chi::material_stack, material_index, fname);
+  auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
 
   // If user supplied name then find property index
   if (!lua_isnumber(L, 2))
@@ -360,7 +358,7 @@ chiPhysicsMaterialSetProperty(lua_State* L)
         try
         {
           xs = std::dynamic_pointer_cast<SingleStateMGXS>(
-            opensn::Chi::GetStackItemPtr(opensn::Chi::multigroup_xs_stack, handle, fname));
+            opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle, fname));
         }
         catch (const std::out_of_range& o)
         {
@@ -510,8 +508,7 @@ chiPhysicsMaterialGetProperty(lua_State* L)
   }
 
   // Get reference to material
-  auto cur_material =
-    opensn::Chi::GetStackItemPtr(opensn::Chi::material_stack, material_index, fname);
+  auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
 
   // If user supplied name then find property index
   if (!lua_isnumber(L, 2))

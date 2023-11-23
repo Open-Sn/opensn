@@ -51,8 +51,7 @@ MeshGenerator::MeshGenerator(const InputParameters& params)
 
   for (const size_t input_handle : input_handles)
   {
-    auto& mesh_generator =
-      Chi::GetStackItem<MeshGenerator>(Chi::object_stack, input_handle, __FUNCTION__);
+    auto& mesh_generator = GetStackItem<MeshGenerator>(object_stack, input_handle, __FUNCTION__);
     inputs_.push_back(&mesh_generator);
   }
 
@@ -67,8 +66,7 @@ MeshGenerator::MeshGenerator(const InputParameters& params)
     partitioner_handle =
       factory.MakeRegisteredObjectOfType("chi::PETScGraphPartitioner", ParameterBlock());
   }
-  partitioner_ =
-    &Chi::GetStackItem<GraphPartitioner>(Chi::object_stack, partitioner_handle, __FUNCTION__);
+  partitioner_ = &GetStackItem<GraphPartitioner>(object_stack, partitioner_handle, __FUNCTION__);
 }
 
 std::unique_ptr<UnpartitionedMesh>
@@ -104,7 +102,7 @@ MeshGenerator::Execute()
   auto new_mesher = std::make_shared<VolumeMesher>(VolumeMesherType::UNPARTITIONED);
   new_mesher->SetContinuum(grid_ptr);
 
-  if (Chi::current_mesh_handler < 0) PushNewHandlerAndGetIndex();
+  if (current_mesh_handler < 0) PushNewHandlerAndGetIndex();
 
   auto& cur_hndlr = GetCurrentHandler();
   cur_hndlr.SetVolumeMesher(new_mesher);

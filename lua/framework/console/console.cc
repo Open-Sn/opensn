@@ -191,7 +191,7 @@ Console::RunConsoleLoop(char*) const
     {
       LuaDoString(console_input);
     }
-    catch (const opensn::Chi::RecoverableException& e)
+    catch (const opensn::RecoverableException& e)
     {
       opensn::log.LogAllError() << e.what();
     }

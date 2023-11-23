@@ -8,7 +8,7 @@ namespace opensn
 std::string
 StringStreamColor(StringSteamColorCode code)
 {
-  if (Chi::suppress_color_) return {};
+  if (suppress_color_) return {};
   return std::string("\033[") + std::to_string(code) + "m";
 }
 

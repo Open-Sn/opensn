@@ -173,7 +173,7 @@ fv_diffusion::Solver::Initialize()
       std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
     field_functions_.push_back(initial_field_function);
-    Chi::field_function_stack.push_back(initial_field_function);
+    field_function_stack.push_back(initial_field_function);
   } // if not ff set
 
 } // end initialize

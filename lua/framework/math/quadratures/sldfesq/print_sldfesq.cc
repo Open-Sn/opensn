@@ -25,7 +25,7 @@ chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
 
   try
   {
-    auto ref_quadrature = opensn::Chi::angular_quadrature_stack.at(handle);
+    auto ref_quadrature = opensn::angular_quadrature_stack.at(handle);
     if (ref_quadrature->type_ == AngularQuadratureType::SLDFESQ)
     {
       auto sldfesq = std::dynamic_pointer_cast<SimplifiedLDFESQ::Quadrature>(ref_quadrature);

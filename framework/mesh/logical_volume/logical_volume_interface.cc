@@ -20,8 +20,8 @@ LogicalVolumeInterface::GetInputParameters()
 LogicalVolumeInterface::LogicalVolumeInterface(const InputParameters& params)
   : logical_volume_(
       params.ParametersAtAssignment().Has("logical_volume")
-        ? Chi::GetStackItemPtrAsType<const LogicalVolume>(
-            Chi::object_stack, params.GetParamValue<size_t>("logical_volume"), __FUNCTION__)
+        ? GetStackItemPtrAsType<const LogicalVolume>(
+            object_stack, params.GetParamValue<size_t>("logical_volume"), __FUNCTION__)
         : nullptr)
 {
 }

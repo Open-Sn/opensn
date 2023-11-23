@@ -33,7 +33,7 @@ chiFunctionDimAToDimBEvaluate(lua_State* L)
   const size_t handle = lua_tointeger(L, 1);
 
   const auto& function =
-    opensn::Chi::GetStackItem<FunctionDimAToDimB>(opensn::Chi::object_stack, handle, fname);
+    opensn::GetStackItem<FunctionDimAToDimB>(opensn::object_stack, handle, fname);
 
   // Getting params
   std::vector<double> params;

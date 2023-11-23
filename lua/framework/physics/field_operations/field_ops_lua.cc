@@ -21,8 +21,7 @@ chiFieldOperationExecute(lua_State* L)
 
   const size_t handle = lua_tointeger(L, 1);
 
-  auto& operation =
-    opensn::Chi::GetStackItem<FieldOperation>(opensn::Chi::object_stack, handle, fname);
+  auto& operation = opensn::GetStackItem<FieldOperation>(opensn::object_stack, handle, fname);
 
   operation.Execute();
 
