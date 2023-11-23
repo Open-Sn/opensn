@@ -34,8 +34,7 @@ chiSimTest03_PWLC(const InputParameters&)
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make SDM
-  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
-  SDMPtr sdm_ptr = PieceWiseLinearContinuous::New(grid);
+  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(grid);
   const auto& sdm = *sdm_ptr;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;

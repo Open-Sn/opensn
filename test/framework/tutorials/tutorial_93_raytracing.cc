@@ -64,8 +64,7 @@ chiSimTest93_RayTracing(const InputParameters&)
         m_to_ell_em_map.emplace_back(ell, m);
 
   // Make SDM
-  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
-  SDMPtr sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
+  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
   const auto& sdm = *sdm_ptr;
 
   UnknownManager phi_uk_man;

@@ -14,7 +14,6 @@ class XXPowerIterationKEigenSCDSA : public XXPowerIterationKEigen
 {
   typedef std::shared_ptr<DiffusionSolver> DiffusionSolverPtr;
   typedef std::shared_ptr<VectorGhostCommunicator> VecGhostCommPtr;
-  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
 
 protected:
   int accel_pi_max_its_;
@@ -24,7 +23,7 @@ protected:
 
   const std::string diffusion_solver_sdm_;
 
-  SDMPtr continuous_sdm_ptr_ = nullptr;
+  std::shared_ptr<SpatialDiscretization> continuous_sdm_ptr_ = nullptr;
   bool requires_ghosts_ = false;
   struct GhostInfo
   {

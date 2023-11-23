@@ -15,7 +15,6 @@
 namespace opensn
 {
 class SpatialDiscretization;
-typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
 class GhostedParallelSTLVector;
 
 /***/
@@ -32,20 +31,20 @@ public:
 
   /**Creates a field function, filling it with zeros.*/
   FieldFunctionGridBased(const std::string& text_name,
-                         SDMPtr& discretization_ptr,
+                         std::shared_ptr<SpatialDiscretization>& discretization_ptr,
                          opensn::Unknown unknown);
 
   /**Creates a field function with an associated field vector.
    * The field's data vector is set to the incoming field vector.*/
   FieldFunctionGridBased(const std::string& text_name,
-                         SDMPtr& sdm_ptr,
+                         std::shared_ptr<SpatialDiscretization>& sdm_ptr,
                          opensn::Unknown unknown,
                          const std::vector<double>& field_vector);
 
   /**Creates a field function where all the values are assigned to
    * the single supplied value.*/
   FieldFunctionGridBased(const std::string& text_name,
-                         SDMPtr& sdm_ptr,
+                         std::shared_ptr<SpatialDiscretization>& sdm_ptr,
                          opensn::Unknown unknown,
                          double field_value);
 
@@ -100,14 +99,15 @@ public:
   double Evaluate(const Cell& cell, const Vector3& position, unsigned int component) const override;
 
 protected:
-  SDMPtr sdm_;
+  std::shared_ptr<SpatialDiscretization> sdm_;
   std::unique_ptr<GhostedParallelSTLVector> ghosted_field_vector_;
 
 private:
   /**
    * Static method for making the GetSpatialDiscretization for the constructors.
    */
-  static SDMPtr MakeSpatialDiscretization(const InputParameters& params);
+  static std::shared_ptr<SpatialDiscretization>
+  MakeSpatialDiscretization(const InputParameters& params);
 
   /**
    * Static method for making the ghosted vector for the constructors.

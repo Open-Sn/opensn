@@ -61,8 +61,7 @@ chiSimTest91_PWLD(const InputParameters&)
   if (grid.Attributes() & Dim3) dimension = 3;
 
   // Make SDM
-  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
-  SDMPtr sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
+  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
   const auto& sdm = *sdm_ptr;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
