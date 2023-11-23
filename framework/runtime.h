@@ -29,8 +29,6 @@ class Function;
 class AngularQuadrature;
 class SpatialDiscretization;
 
-typedef std::shared_ptr<SpatialDiscretization> SpatialDiscretizationPtr;
-
 class UnknownManager;
 
 class Timer;
@@ -59,7 +57,7 @@ extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 extern std::vector<std::shared_ptr<AngularQuadrature>> angular_quadrature_stack;
 
 extern std::vector<std::shared_ptr<Object>> object_stack;
-extern std::vector<SpatialDiscretizationPtr> sdm_stack;
+extern std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 extern std::vector<PostProcessorPtr> postprocessor_stack;
 extern std::vector<std::shared_ptr<Function>> function_stack;
 

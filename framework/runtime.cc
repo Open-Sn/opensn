@@ -42,7 +42,7 @@ std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 std::vector<std::shared_ptr<AngularQuadrature>> angular_quadrature_stack;
 
 std::vector<std::shared_ptr<Object>> object_stack;
-std::vector<SpatialDiscretizationPtr> sdm_stack;
+std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 std::vector<PostProcessorPtr> postprocessor_stack;
 std::vector<std::shared_ptr<Function>> function_stack;
 
