@@ -12,14 +12,13 @@ namespace lbs
 
 class XXPowerIterationKEigenSCDSA : public XXPowerIterationKEigen
 {
-  typedef std::shared_ptr<DiffusionSolver> DiffusionSolverPtr;
   typedef std::shared_ptr<VectorGhostCommunicator> VecGhostCommPtr;
 
 protected:
   int accel_pi_max_its_;
   double accel_pi_k_tol_;
   bool accel_pi_verbose_;
-  DiffusionSolverPtr diffusion_solver_ = nullptr;
+  std::shared_ptr<DiffusionSolver> diffusion_solver_ = nullptr;
 
   const std::string diffusion_solver_sdm_;
 
