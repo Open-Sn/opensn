@@ -17,13 +17,11 @@ namespace lbs
 class WGSLinearSolver : public LinearSolver
 {
 public:
-  typedef std::shared_ptr<WGSContext> WGSContextPtr;
-
   /**
    * Constructor.
    * \param gs_context_ptr Context Pointer to abstract context.
    */
-  explicit WGSLinearSolver(WGSContextPtr gs_context_ptr);
+  explicit WGSLinearSolver(std::shared_ptr<WGSContext> gs_context_ptr);
   ~WGSLinearSolver() override;
 
 protected:
