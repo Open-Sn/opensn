@@ -79,7 +79,7 @@ extern std::vector<FunctionPtr> function_stack;
 
 const size_t SIZE_T_INVALID = ((size_t)-1);
 
-extern bool suppress_color_;
+extern bool suppress_color;
 
 /**Customized exceptions.*/
 class RecoverableException : public std::runtime_error

@@ -46,7 +46,7 @@ std::vector<SpatialDiscretizationPtr> sdm_stack;
 std::vector<PostProcessorPtr> postprocessor_stack;
 std::vector<FunctionPtr> function_stack;
 
-bool suppress_color_ = false;
+bool suppress_color = false;
 
 int
 Initialize()
