@@ -379,7 +379,7 @@ InputParameters::MarkParamaterRenamed(const std::string& param_name,
 
 void
 InputParameters::ConstrainParameterRange(const std::string& param_name,
-                                         AllowableRangePtr allowable_range)
+                                         std::unique_ptr<AllowableRange> allowable_range)
 {
   if (Has(param_name))
   {
