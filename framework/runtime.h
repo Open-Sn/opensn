@@ -51,7 +51,6 @@ class PostProcessor;
 typedef std::shared_ptr<PostProcessor> PostProcessorPtr;
 
 class Object;
-typedef std::shared_ptr<Object> ChiObjectPtr;
 
 extern MPI_Info& mpi;
 extern Logger& log;
@@ -71,7 +70,7 @@ extern std::vector<FieldFunctionPtr> field_function_stack;
 
 extern std::vector<AngularQuadraturePtr> angular_quadrature_stack;
 
-extern std::vector<ChiObjectPtr> object_stack;
+extern std::vector<std::shared_ptr<Object>> object_stack;
 extern std::vector<SpatialDiscretizationPtr> sdm_stack;
 extern std::vector<PostProcessorPtr> postprocessor_stack;
 extern std::vector<FunctionPtr> function_stack;
