@@ -2,8 +2,6 @@
 
 #include "framework/object_factory.h"
 
-#define scint static_cast<int>
-
 namespace opensn
 {
 
@@ -19,7 +17,7 @@ ImplicitEulerTimeIntegration::GetInputParameters()
   params.SetDocGroup("DocTimeIntegrations");
   // clang-format on
 
-  params.ChangeExistingParamToOptional("method", scint(SteppingMethod::IMPLICIT_EULER));
+  params.ChangeExistingParamToOptional("method", static_cast<int>(SteppingMethod::IMPLICIT_EULER));
   params.ChangeExistingParamToOptional("theta", 1.0);
 
   return params;
