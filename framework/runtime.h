@@ -26,7 +26,6 @@ class MultiGroupXS;
 class FieldFunction;
 class Function;
 
-typedef std::shared_ptr<FieldFunction> FieldFunctionPtr;
 typedef std::shared_ptr<Function> FunctionPtr;
 
 class AngularQuadrature;
@@ -58,7 +57,7 @@ extern std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
 
 extern std::vector<std::shared_ptr<Material>> material_stack;
 extern std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
-extern std::vector<FieldFunctionPtr> field_function_stack;
+extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 
 extern std::vector<AngularQuadraturePtr> angular_quadrature_stack;
 
