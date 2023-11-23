@@ -12,8 +12,6 @@ namespace lbs
 
 class XXPowerIterationKEigenSCDSA : public XXPowerIterationKEigen
 {
-  typedef std::shared_ptr<VectorGhostCommunicator> VecGhostCommPtr;
-
 protected:
   int accel_pi_max_its_;
   double accel_pi_k_tol_;
@@ -26,7 +24,7 @@ protected:
   bool requires_ghosts_ = false;
   struct GhostInfo
   {
-    VecGhostCommPtr vector_ghost_communicator = nullptr;
+    std::shared_ptr<VectorGhostCommunicator> vector_ghost_communicator = nullptr;
     std::map<int64_t, int64_t> ghost_global_id_2_local_map;
   };
   GhostInfo lbs_pwld_ghost_info_;
