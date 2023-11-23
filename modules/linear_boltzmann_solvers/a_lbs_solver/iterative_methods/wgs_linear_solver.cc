@@ -15,11 +15,6 @@
 #include <memory>
 #include <iomanip>
 
-#define sc_double static_cast<double>
-#define sc_int64_t static_cast<int64_t>
-
-#define GetGSContextPtr(x) std::dynamic_pointer_cast<WGSContext>(x)
-
 namespace opensn
 {
 namespace lbs
@@ -44,7 +39,7 @@ WGSLinearSolver::~WGSLinearSolver()
 void
 WGSLinearSolver::PreSetupCallback()
 {
-  auto gs_context_ptr = GetGSContextPtr(context_ptr_);
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   gs_context_ptr->PreSetupCallback();
 }
@@ -58,7 +53,7 @@ WGSLinearSolver::SetConvergenceTest()
 void
 WGSLinearSolver::SetSystemSize()
 {
-  auto gs_context_ptr = GetGSContextPtr(context_ptr_);
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   const auto sizes = gs_context_ptr->SystemSize();
 
   num_local_dofs_ = sizes.first;
@@ -70,17 +65,17 @@ WGSLinearSolver::SetSystem()
 {
   if (IsSystemSet()) return;
 
-  x_ = CreateVector(sc_int64_t(num_local_dofs_), sc_int64_t(num_global_dofs_));
+  x_ = CreateVector(static_cast<int64_t>(num_local_dofs_), static_cast<int64_t>(num_global_dofs_));
 
   VecSet(x_, 0.0);
   VecDuplicate(x_, &b_);
 
   // Create the matrix-shell
   MatCreateShell(PETSC_COMM_WORLD,
-                 sc_int64_t(num_local_dofs_),
-                 sc_int64_t(num_local_dofs_),
-                 sc_int64_t(num_global_dofs_),
-                 sc_int64_t(num_global_dofs_),
+                 static_cast<int64_t>(num_local_dofs_),
+                 static_cast<int64_t>(num_local_dofs_),
+                 static_cast<int64_t>(num_global_dofs_),
+                 static_cast<int64_t>(num_global_dofs_),
                  &(*context_ptr_),
                  &A_);
 
@@ -96,7 +91,7 @@ void
 WGSLinearSolver::SetPreconditioner()
 {
   if (IsSystemSet()) return;
-  auto gs_context_ptr = GetGSContextPtr(context_ptr_);
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   gs_context_ptr->SetPreconditioner(ksp_);
 }
@@ -104,7 +99,7 @@ WGSLinearSolver::SetPreconditioner()
 void
 WGSLinearSolver::PostSetupCallback()
 {
-  auto gs_context_ptr = GetGSContextPtr(context_ptr_);
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   gs_context_ptr->PostSetupCallback();
 }
@@ -112,7 +107,7 @@ WGSLinearSolver::PostSetupCallback()
 void
 WGSLinearSolver::PreSolveCallback()
 {
-  auto gs_context_ptr = GetGSContextPtr(context_ptr_);
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   gs_context_ptr->PreSolveCallback();
 }
@@ -123,7 +118,7 @@ WGSLinearSolver::SetInitialGuess()
   // If the norm of the initial guess is large enough, the initial guess will be used, otherwise it
   // is assumed to be zero.
 
-  auto gs_context_ptr = GetGSContextPtr(context_ptr_);
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   auto& groupset = gs_context_ptr->groupset_;
   auto& lbs_solver = gs_context_ptr->lbs_solver_;
@@ -143,7 +138,7 @@ WGSLinearSolver::SetInitialGuess()
 void
 WGSLinearSolver::SetRHS()
 {
-  auto gs_context_ptr = GetGSContextPtr(context_ptr_);
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   auto& groupset = gs_context_ptr->groupset_;
   auto& lbs_solver = gs_context_ptr->lbs_solver_;
@@ -228,7 +223,7 @@ WGSLinearSolver::PostSolveCallback()
   }
 
   // Copy x to local solution
-  auto gs_context_ptr = GetGSContextPtr(context_ptr_);
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   auto& groupset = gs_context_ptr->groupset_;
   auto& lbs_solver = gs_context_ptr->lbs_solver_;
