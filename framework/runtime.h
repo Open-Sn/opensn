@@ -14,27 +14,20 @@ namespace opensn
 const std::string name = "OpenSn";
 
 class MeshHandler;
-
 class SurfaceMesh;
 class FieldFunctionInterpolation;
-
 class UnpartitionedMesh;
-
 class Solver;
 class Material;
 class MultiGroupXS;
 class FieldFunction;
 class Function;
-
 class AngularQuadrature;
 class SpatialDiscretization;
-
 class UnknownManager;
-
 class Timer;
 class Logger;
 class PostProcessor;
-
 class Object;
 
 extern MPI_Info& mpi;
