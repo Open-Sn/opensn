@@ -12,13 +12,12 @@
 
 #include <iomanip>
 
-#define sc_double static_cast<double>
-#define PCShellPtr PetscErrorCode (*)(PC, Vec, Vec)
-
 namespace opensn
 {
 namespace lbs
 {
+
+typedef PetscErrorCode (*PCShellPtr)(PC, Vec, Vec);
 
 MIPWGSContext2::MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
                                LBSGroupset& groupset,
