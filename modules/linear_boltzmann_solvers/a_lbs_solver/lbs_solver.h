@@ -148,7 +148,7 @@ public:
   /**
    * Returns a reference to the map of material ids to XSs.
    */
-  const std::map<int, XSPtr>& GetMatID2XSMap() const;
+  const std::map<int, std::shared_ptr<MultiGroupXS>>& GetMatID2XSMap() const;
 
   /**
    * Returns a reference to the map of material ids to Isotropic Srcs.
@@ -529,7 +529,7 @@ protected:
   std::vector<LBSGroup> groups_;
   std::vector<LBSGroupset> groupsets_;
 
-  std::map<int, XSPtr> matid_to_xs_map_;
+  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map_;
   std::map<int, IsotropicSrcPtr> matid_to_src_map_;
 
   std::vector<PointSource> point_sources_;

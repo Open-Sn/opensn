@@ -43,7 +43,7 @@ public:
                   std::vector<double>& destination_psi,
                   const std::vector<double>& source_moments,
                   lbs::LBSGroupset& groupset,
-                  const std::map<int, lbs::XSPtr>& xs,
+                  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
                   int num_moments,
                   int max_num_cell_dofs);
 
