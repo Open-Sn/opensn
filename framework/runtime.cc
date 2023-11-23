@@ -36,7 +36,7 @@ std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolatio
 std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
 
 std::vector<std::shared_ptr<Material>> material_stack;
-std::vector<MultiGroupXSPtr> multigroup_xs_stack;
+std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
 std::vector<FieldFunctionPtr> field_function_stack;
 
 std::vector<AngularQuadraturePtr> angular_quadrature_stack;
