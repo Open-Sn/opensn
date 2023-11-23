@@ -604,7 +604,6 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
   const std::string fname = "UnpartitionedMesh::CopyUGridCellsAndPoints";
   typedef Vector3 Vec3;
   typedef Vec3* Vec3Ptr;
-  typedef LightWeightCell* CellPtr;
 
   const vtkIdType total_cell_count = ugrid.GetNumberOfCells();
   const vtkIdType total_point_count = ugrid.GetNumberOfPoints();
@@ -625,7 +624,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
 
   if (has_global_ids)
   {
-    std::vector<CellPtr> cells(total_cell_count, nullptr);
+    std::vector<LightWeightCell*> cells(total_cell_count, nullptr);
     std::vector<Vec3Ptr> vertices(total_point_count, nullptr);
 
     auto cell_gids_ptr = ugrid.GetCellData()->GetGlobalIds();
@@ -666,7 +665,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
 
       if (vtk_celldim != dimension_to_copy) continue;
 
-      CellPtr raw_cell;
+      LightWeightCell* raw_cell;
       if (vtk_celldim == 3) raw_cell = CreateCellFromVTKPolyhedron(vtk_cell);
       else if (vtk_celldim == 2)
         raw_cell = CreateCellFromVTKPolygon(vtk_cell);
