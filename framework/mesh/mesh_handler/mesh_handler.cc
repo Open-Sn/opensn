@@ -7,7 +7,7 @@
 namespace opensn
 {
 
-MeshContinuumPtr&
+std::shared_ptr<MeshContinuum>&
 MeshHandler::GetGrid() const
 {
   if (volume_mesher_ == nullptr)

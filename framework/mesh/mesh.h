@@ -37,9 +37,6 @@ class FieldFunctionInterpolationVolume;
 class SurfaceMesh;
 class UnpartitionedMesh;
 class MeshContinuum;
-typedef std::shared_ptr<MeshContinuum> MeshContinuumPtr;
-typedef std::shared_ptr<const MeshContinuum> MeshContinuumConstPtr;
-
 // Logical Volumes
 class LogicalVolume;
 class SphereLogicalVolume;

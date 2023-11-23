@@ -15,7 +15,7 @@ namespace opensn
 {
 
 void
-PrintSweepOrdering(SPDS* sweep_order, MeshContinuumPtr vol_continuum)
+PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum)
 {
   //  double polar = sweep_order->polar;
   //  double azimuthal = sweep_order->azimuthal;

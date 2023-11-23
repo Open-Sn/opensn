@@ -44,14 +44,14 @@ private:
   bool num_ang_unknowns_avail = false;
 
 public:
-  MeshContinuumPtr grid = nullptr;
+  std::shared_ptr<MeshContinuum> grid = nullptr;
 
   /** Sets up the angle-aggregation object. */
   AngleAggregation(const std::map<uint64_t, SweepBndryPtr>& in_sim_boundaries,
                    size_t in_number_of_groups,
                    size_t in_number_of_group_subsets,
                    std::shared_ptr<AngularQuadrature>& in_quadrature,
-                   MeshContinuumPtr& in_grid);
+                   std::shared_ptr<MeshContinuum>& in_grid);
 
   bool IsSetup() const { return is_setup; }
 

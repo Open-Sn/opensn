@@ -16,12 +16,12 @@ VolumeMesher::VolumeMesher(VolumeMesherType type) : type_(type)
 }
 
 void
-VolumeMesher::SetContinuum(MeshContinuumPtr& grid)
+VolumeMesher::SetContinuum(std::shared_ptr<MeshContinuum>& grid)
 {
   grid_ptr_ = grid;
 }
 
-MeshContinuumPtr&
+std::shared_ptr<MeshContinuum>&
 VolumeMesher::GetContinuum()
 {
   return grid_ptr_;
@@ -48,7 +48,7 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
   auto& handler = GetCurrentHandler();
 
   // Get back mesh
-  MeshContinuumPtr vol_cont = handler.GetGrid();
+  std::shared_ptr<MeshContinuum> vol_cont = handler.GetGrid();
 
   int num_cells_modified = 0;
   for (auto& cell : vol_cont->local_cells)
@@ -85,7 +85,7 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
   auto& handler = GetCurrentHandler();
 
   // Get back mesh
-  MeshContinuumPtr vol_cont = handler.GetGrid();
+  std::shared_ptr<MeshContinuum> vol_cont = handler.GetGrid();
 
   // Check if name already has id
   auto& grid_bndry_id_map = vol_cont->GetBoundaryIDMap();

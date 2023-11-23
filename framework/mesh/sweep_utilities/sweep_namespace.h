@@ -44,7 +44,7 @@ void CommunicateLocationDependencies(const std::vector<int>& location_dependenci
                                      std::vector<std::vector<int>>& global_dependencies);
 
 /**Print a sweep ordering to file.*/
-void PrintSweepOrdering(SPDS* sweep_order, MeshContinuumPtr vol_continuum);
+void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum);
 
 enum class AngleSetStatus
 {

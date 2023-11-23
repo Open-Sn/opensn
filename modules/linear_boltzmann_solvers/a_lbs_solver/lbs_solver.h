@@ -535,7 +535,7 @@ protected:
   std::vector<PointSource> point_sources_;
   std::vector<DistributedSource> distributed_sources_;
 
-  MeshContinuumPtr grid_ptr_;
+  std::shared_ptr<MeshContinuum> grid_ptr_;
   std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;
