@@ -19,8 +19,6 @@ struct LinearSolverContext;
 class LinearSolver
 {
 public:
-  typedef std::shared_ptr<LinearSolverContext> LinSolveContextPtr;
-
   struct ToleranceOptions
   {
     double residual_relative = 1.0e-50;
@@ -31,18 +29,19 @@ public:
     double gmres_breakdown_tolerance = 1.0e6;
   } tolerance_options_;
 
-  LinearSolver(const std::string& iterative_method, LinSolveContextPtr context_ptr);
+  LinearSolver(const std::string& iterative_method,
+               std::shared_ptr<LinearSolverContext> context_ptr);
 
   LinearSolver(const std::string& solver_name,
                const std::string& iterative_method,
-               LinSolveContextPtr context_ptr);
+               std::shared_ptr<LinearSolverContext> context_ptr);
 
   virtual ~LinearSolver();
 
   ToleranceOptions& ToleranceOptions() { return tolerance_options_; }
   void ApplyToleranceOptions();
 
-  LinSolveContextPtr& GetContext() { return context_ptr_; }
+  std::shared_ptr<LinearSolverContext>& GetContext() { return context_ptr_; }
 
   /**Sets a flag to suppress the KSPSolve() method from being called.*/
   void SetKSPSolveSuppressionFlag(bool flag) { suppress_kspsolve_ = flag; }
@@ -76,7 +75,7 @@ protected:
 
   const std::string solver_name_;
   const std::string iterative_method_;
-  LinSolveContextPtr context_ptr_ = nullptr;
+  std::shared_ptr<LinearSolverContext> context_ptr_ = nullptr;
   Mat A_;
   Vec b_;
   Vec x_;
