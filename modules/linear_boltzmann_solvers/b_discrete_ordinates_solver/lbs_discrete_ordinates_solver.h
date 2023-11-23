@@ -22,8 +22,7 @@ protected:
   typedef std::shared_ptr<SPDS> SPDS_ptr;
   typedef std::vector<SPDS_ptr> SPDS_ptrs;
 
-  typedef std::unique_ptr<FLUDSCommonData> FLUDSCommonDataPtr;
-  typedef std::vector<FLUDSCommonDataPtr> FLUDSCommonDataPtrs;
+  typedef std::vector<std::unique_ptr<FLUDSCommonData>> FLUDSCommonDataPtrs;
 
 public:
   /**
