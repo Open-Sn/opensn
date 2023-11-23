@@ -2,8 +2,6 @@
 
 #include "framework/object_factory.h"
 
-#define scint static_cast<int>
-
 namespace opensn
 {
 
@@ -19,7 +17,7 @@ ThetaSchemeTimeIntegration::GetInputParameters()
   params.SetDocGroup("DocTimeIntegrations");
   // clang-format on
 
-  params.ChangeExistingParamToOptional("method", scint(SteppingMethod::THETA_SCHEME));
+  params.ChangeExistingParamToOptional("method", static_cast<int>(SteppingMethod::THETA_SCHEME));
 
   params.AddRequiredParameter<double>("theta", "The theta parameter for a theta scheme");
 
