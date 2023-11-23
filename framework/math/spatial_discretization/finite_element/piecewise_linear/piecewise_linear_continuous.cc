@@ -7,8 +7,6 @@
 #include "framework/mpi/mpi_utils_map_all2all.h"
 #include <algorithm>
 
-#define sc_int64 static_cast<int64_t>
-
 namespace opensn
 {
 
@@ -220,8 +218,8 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
       return locI;
     }
 
-  } dof_handler(sc_int64(local_block_address_),
-                sc_int64(local_block_address_ + local_base_block_size_),
+  } dof_handler(static_cast<int64_t>(local_block_address_),
+                static_cast<int64_t>(local_block_address_ + local_base_block_size_),
                 locJ_block_address_);
 
   // Writes a message on ir error
@@ -360,8 +358,10 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   {
     const int64_t locI = dof_handler.GetLocFromIR(ir_linkage.first);
 
-    locI_serialized[locI].push_back(sc_int64(ir_linkage.second.size())); // row cols amount
-    locI_serialized[locI].push_back(sc_int64(ir_linkage.first));         // row num
+    // row cols amount
+    locI_serialized[locI].push_back(static_cast<int64_t>(ir_linkage.second.size()));
+    // row num
+    locI_serialized[locI].push_back(static_cast<int64_t>(ir_linkage.first));
     for (int64_t jr : ir_linkage.second)
       locI_serialized[locI].push_back(jr); // col num
   }
@@ -536,17 +536,17 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
   {
     for (int locJ = 0; locJ < opensn::mpi.process_count; ++locJ)
     {
-      const int64_t local_id = global_id - sc_int64(locJ_block_address_[locJ]);
+      const int64_t local_id = global_id - static_cast<int64_t>(locJ_block_address_[locJ]);
 
       if (local_id < 0 or local_id >= locJ_block_size_[locJ]) continue;
 
-      address = sc_int64(locJ_block_address_[locJ] * num_unknowns) +
-                sc_int64(locJ_block_size_[locJ] * block_id) + local_id;
+      address = static_cast<int64_t>(locJ_block_address_[locJ] * num_unknowns) +
+                static_cast<int64_t>(locJ_block_size_[locJ] * block_id) + local_id;
       break;
     }
   }
   else if (storage == UnknownStorageType::NODAL)
-    address = global_id * sc_int64(num_unknowns) + sc_int64(block_id);
+    address = global_id * static_cast<int64_t>(num_unknowns) + static_cast<int64_t>(block_id);
 
   return address;
 }
@@ -567,7 +567,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
   auto storage = unknown_manager.dof_storage_type_;
 
-  const int64_t local_id = node_global_id - sc_int64(local_block_address_);
+  const int64_t local_id = node_global_id - static_cast<int64_t>(local_block_address_);
   const bool is_local = not(local_id < 0 or local_id >= local_base_block_size_);
 
   int64_t address = -1;
@@ -575,10 +575,10 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
   {
     if (storage == UnknownStorageType::BLOCK)
     {
-      address = sc_int64(local_base_block_size_ * block_id) + local_id;
+      address = static_cast<int64_t>(local_base_block_size_ * block_id) + local_id;
     }
     else if (storage == UnknownStorageType::NODAL)
-      address = local_id * sc_int64(num_unknowns) + sc_int64(block_id);
+      address = local_id * static_cast<int64_t>(num_unknowns) + static_cast<int64_t>(block_id);
   } // if is_local
   else
   {
@@ -596,12 +596,13 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
     }
     if (storage == UnknownStorageType::BLOCK)
     {
-      address = sc_int64(ghost_node_mapping_.size() * block_id) + ghost_local_node_id;
+      address = static_cast<int64_t>(ghost_node_mapping_.size() * block_id) + ghost_local_node_id;
     }
     else if (storage == UnknownStorageType::NODAL)
-      address = ghost_local_node_id * sc_int64(num_unknowns) + sc_int64(block_id);
+      address =
+        ghost_local_node_id * static_cast<int64_t>(num_unknowns) + static_cast<int64_t>(block_id);
 
-    address += sc_int64(num_local_dofs);
+    address += static_cast<int64_t>(num_local_dofs);
   }
 
   return address;
@@ -641,17 +642,18 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_mana
         {
           for (int locJ = 0; locJ < opensn::mpi.process_count; ++locJ)
           {
-            const int64_t local_id = global_id - sc_int64(locJ_block_address_[locJ]);
+            const int64_t local_id = global_id - static_cast<int64_t>(locJ_block_address_[locJ]);
 
             if (local_id < 0 or local_id >= locJ_block_size_[locJ]) continue;
 
-            address = sc_int64(locJ_block_address_[locJ] * num_unknown_comps) +
-                      sc_int64(locJ_block_size_[locJ] * block_id) + local_id;
+            address = static_cast<int64_t>(locJ_block_address_[locJ] * num_unknown_comps) +
+                      static_cast<int64_t>(locJ_block_size_[locJ] * block_id) + local_id;
             break;
           }
         }
         else if (storage == UnknownStorageType::NODAL)
-          address = global_id * sc_int64(num_unknown_comps) + sc_int64(block_id);
+          address =
+            global_id * static_cast<int64_t>(num_unknown_comps) + static_cast<int64_t>(block_id);
 
         dof_ids.push_back(address);
       } // for c
