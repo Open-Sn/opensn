@@ -10,8 +10,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#define uint unsigned int
-
 namespace opensn
 {
 namespace lbs
@@ -57,7 +55,7 @@ CBC_ASynchronousCommunicator::SendData()
     {
       const MPIRank locI = std::get<0>(msg_key);
       const uint64_t cell_global_id = std::get<1>(msg_key);
-      const uint face_id = std::get<2>(msg_key);
+      const unsigned int face_id = std::get<2>(msg_key);
       const size_t data_size = data.size();
 
       BufferItem& buffer_item = locI_buffer_map[locI];
@@ -112,7 +110,7 @@ CBC_ASynchronousCommunicator::SendData()
 std::vector<uint64_t>
 CBC_ASynchronousCommunicator::ReceiveData()
 {
-  typedef std::pair<uint64_t, uint> CellFaceKey; // cell_gid + face_id
+  typedef std::pair<uint64_t, unsigned int> CellFaceKey; // cell_gid + face_id
 
   std::map<CellFaceKey, std::vector<double>> received_messages;
   std::vector<uint64_t> cells_who_received_data;
@@ -145,7 +143,7 @@ CBC_ASynchronousCommunicator::ReceiveData()
       while (not data_array.EndOfBuffer())
       {
         const uint64_t cell_global_id = data_array.Read<uint64_t>();
-        const uint face_id = data_array.Read<uint>();
+        const auto face_id = data_array.Read<unsigned int>();
         const size_t data_size = data_array.Read<size_t>();
 
         std::vector<double> psi_data;
