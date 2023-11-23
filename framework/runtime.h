@@ -19,8 +19,6 @@ class SurfaceMesh;
 class FieldFunctionInterpolation;
 
 class UnpartitionedMesh;
-typedef std::shared_ptr<UnpartitionedMesh> UnpartitionedMeshPtr;
-typedef UnpartitionedMeshPtr UnpartMeshPtr;
 
 class Solver;
 class Material;
@@ -58,7 +56,7 @@ extern int current_mesh_handler;
 
 extern std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
 extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
-extern std::vector<UnpartMeshPtr> unpartitionedmesh_stack;
+extern std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
 
 extern std::vector<MaterialPtr> material_stack;
 extern std::vector<MultiGroupXSPtr> multigroup_xs_stack;
