@@ -29,14 +29,11 @@ class LBSSolver;
 /**Group set functioning as a collection of groups*/
 class LBSGroupset : public Object
 {
-protected:
-  typedef std::shared_ptr<AngleAggregation> AngleAggPtr;
-
 public:
   int id_;
   std::vector<LBSGroup> groups_;
   std::shared_ptr<AngularQuadrature> quadrature_ = nullptr;
-  AngleAggPtr angle_agg_;
+  std::shared_ptr<AngleAggregation> angle_agg_;
   UniqueSOGroupings unique_so_groupings_;
   DirIDToSOMap dir_id_to_so_map_;
 
