@@ -8,8 +8,6 @@
 #include <string>
 #include <algorithm>
 
-#define scint64_t static_cast<int64_t>
-
 namespace opensn
 {
 
@@ -95,7 +93,7 @@ VectorGhostCommunicator::MakeCachedParallelData()
                           std::to_string(location_id_) + " needs to communicate global id " +
                           std::to_string(gid) + " to it, but this id is not locally owned.");
 
-      local_ids_to_send.push_back(gid - scint64_t(extents_[location_id_]));
+      local_ids_to_send.push_back(gid - static_cast<int64_t>(extents_[location_id_]));
     }
 
   // Finally, the communication pattern for the data being sent
@@ -152,7 +150,7 @@ VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
   const auto k = std::find(ghost_ids_.begin(), ghost_ids_.end(), ghost_id) - ghost_ids_.begin();
 
   // Local index is local size plus the position in the ghost id vector
-  return scint64_t(local_size_) + k;
+  return static_cast<int64_t>(local_size_) + k;
 }
 
 void
