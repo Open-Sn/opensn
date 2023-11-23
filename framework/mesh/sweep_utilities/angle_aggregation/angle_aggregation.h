@@ -29,11 +29,8 @@ namespace opensn
 class AngleAggregation
 {
 public:
-  typedef std::shared_ptr<SweepBndry> SweepBndryPtr;
-
-public:
   std::vector<AngleSetGroup> angle_set_groups;
-  std::map<uint64_t, SweepBndryPtr> sim_boundaries;
+  std::map<uint64_t, std::shared_ptr<SweepBndry>> sim_boundaries;
   size_t number_of_groups = 0;
   size_t number_of_group_subsets = 0;
   std::shared_ptr<AngularQuadrature> quadrature = nullptr;
@@ -47,7 +44,7 @@ public:
   std::shared_ptr<MeshContinuum> grid = nullptr;
 
   /** Sets up the angle-aggregation object. */
-  AngleAggregation(const std::map<uint64_t, SweepBndryPtr>& in_sim_boundaries,
+  AngleAggregation(const std::map<uint64_t, std::shared_ptr<SweepBndry>>& in_sim_boundaries,
                    size_t in_number_of_groups,
                    size_t in_number_of_group_subsets,
                    std::shared_ptr<AngularQuadrature>& in_quadrature,

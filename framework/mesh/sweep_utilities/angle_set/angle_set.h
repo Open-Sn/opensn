@@ -17,15 +17,13 @@ typedef SweepBoundary SweepBndry;
 class AngleSet
 {
 public:
-  typedef std::shared_ptr<SweepBndry> SweepBndryPtr;
-
   /**AngleSet constructor.*/
   AngleSet(size_t id,
            size_t num_groups,
            const SPDS& spds,
            std::shared_ptr<FLUDS>& fluds,
            const std::vector<size_t>& angle_indices,
-           std::map<uint64_t, SweepBndryPtr>& sim_boundaries,
+           std::map<uint64_t, std::shared_ptr<SweepBndry>>& sim_boundaries,
            size_t in_ref_subset);
 
   /**Returns the angleset's unique id.*/
@@ -39,7 +37,7 @@ public:
   /**Returns the angle indices associated with this angleset.*/
   const std::vector<size_t>& GetAngleIndices() const;
   /**Returns the angle indices associated with this angleset.*/
-  std::map<uint64_t, SweepBndryPtr>& GetBoundaries();
+  std::map<uint64_t, std::shared_ptr<SweepBndry>>& GetBoundaries();
 
   size_t GetNumGroups() const;
   size_t GetNumAngles() const;
@@ -91,7 +89,7 @@ protected:
   const SPDS& spds_;
   std::shared_ptr<FLUDS> fluds_;
   const std::vector<size_t> angles_;
-  std::map<uint64_t, SweepBndryPtr>& ref_boundaries_;
+  std::map<uint64_t, std::shared_ptr<SweepBndry>>& ref_boundaries_;
   const size_t ref_group_subset_;
 
   bool executed_ = false;

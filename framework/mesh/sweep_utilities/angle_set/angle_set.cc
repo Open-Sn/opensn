@@ -52,7 +52,7 @@ AngleSet::GetAngleIndices() const
   return angles_;
 }
 
-std::map<uint64_t, AngleSet::SweepBndryPtr>&
+std::map<uint64_t, std::shared_ptr<SweepBndry>>&
 AngleSet::GetBoundaries()
 {
   return ref_boundaries_;
