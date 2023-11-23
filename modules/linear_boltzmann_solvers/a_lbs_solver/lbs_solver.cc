@@ -26,22 +26,6 @@
 #include <cstring>
 #include <cassert>
 
-#define mk_shrd(x) std::make_shared<x>
-#define SweepVaccuumBndry BoundaryVaccuum
-#define SweepIncHomoBndry BoundaryIsotropicHomogenous
-#define SweepReflectingBndry BoundaryReflecting
-#define SweepAniHeteroBndry BoundaryIncidentHeterogeneous
-
-#define ExceptionLocalFaceNormalsDiffer                                                            \
-  std::logic_error(fname + ": Not all face normals are,"                                           \
-                           " within tolerance, locally the same for the reflecting boundary"       \
-                           " condition requested.")
-
-#define ExceptionGlobalFaceNormalsDiffer                                                           \
-  std::logic_error(fname + ": Not all face normals are,"                                           \
-                           " within tolerance, globally the same for the reflecting boundary"      \
-                           " condition requested.")
-
 namespace opensn
 {
 namespace lbs
@@ -1443,7 +1427,7 @@ LBSSolver::InitializeBoundaries()
     const bool has_not_been_set = sweep_boundaries_.count(bid) == 0;
     if (has_no_preference and has_not_been_set)
     {
-      sweep_boundaries_[bid] = mk_shrd(SweepVaccuumBndry)(G);
+      sweep_boundaries_[bid] = std::make_shared<BoundaryVaccuum>(G);
     } // defaulted
     else if (has_not_been_set)
     {
@@ -1451,14 +1435,14 @@ LBSSolver::InitializeBoundaries()
       const auto& mg_q = bndry_pref.isotropic_mg_source;
 
       if (bndry_pref.type == lbs::BoundaryType::VACUUM)
-        sweep_boundaries_[bid] = mk_shrd(SweepVaccuumBndry)(G);
+        sweep_boundaries_[bid] = std::make_shared<BoundaryVaccuum>(G);
       else if (bndry_pref.type == lbs::BoundaryType::INCIDENT_ISOTROPIC)
-        sweep_boundaries_[bid] = mk_shrd(SweepIncHomoBndry)(G, mg_q);
+        sweep_boundaries_[bid] = std::make_shared<BoundaryIsotropicHomogenous>(G, mg_q);
       else if (bndry_pref.type == BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS)
       {
         // FIXME:
 #if 0
-        sweep_boundaries_[bid] = mk_shrd(SweepAniHeteroBndry)(
+        sweep_boundaries_[bid] = std::make_shared<BoundaryIncidentHeterogeneous>(
           G, std::make_unique<BoundaryFunctionToLua>(bndry_pref.source_function), bid);
 #endif
       }
@@ -1475,7 +1459,9 @@ LBSSolver::InitializeBoundaries()
             {
               if (not n_ptr) n_ptr = std::make_unique<Vec3>(face.normal_);
               if (std::fabs(face.normal_.Dot(*n_ptr) - 1.0) > EPSILON)
-                throw ExceptionLocalFaceNormalsDiffer;
+                throw std::logic_error(fname +
+                                       ": Not all face normals are, within tolerance, locally the "
+                                       "same for the reflecting boundary condition requested.");
             }
 
         // Now check globally
@@ -1500,13 +1486,15 @@ LBSSolver::InitializeBoundaries()
 
             if (local_has_bid)
               if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
-                throw ExceptionGlobalFaceNormalsDiffer;
+                throw std::logic_error(fname +
+                                       ": Not all face normals are, within tolerance, globally the "
+                                       "same for the reflecting boundary condition requested.");
 
             global_normal = locJ_normal;
           }
         }
 
-        sweep_boundaries_[bid] = mk_shrd(SweepReflectingBndry)(
+        sweep_boundaries_[bid] = std::make_shared<BoundaryReflecting>(
           G, global_normal, MapGeometryTypeToCoordSys(options_.geometry_type));
       }
     } // non-defaulted
