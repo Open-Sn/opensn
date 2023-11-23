@@ -12,7 +12,8 @@ namespace lbs
 {
 
 std::map<uint64_t, BoundaryCondition>
-TranslateBCs(const std::map<uint64_t, SwpBndryPtr>& sweep_boundaries, bool vaccum_bcs_are_dirichlet)
+TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
+             bool vaccum_bcs_are_dirichlet)
 {
   typedef BoundaryType SwpBndryType;
   typedef BoundaryCondition BC;
