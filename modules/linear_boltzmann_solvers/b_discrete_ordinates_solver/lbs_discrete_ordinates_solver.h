@@ -19,8 +19,6 @@ class DiscreteOrdinatesSolver : public LBSSolver
 protected:
   typedef std::pair<UniqueSOGroupings, DirIDToSOMap> SwpOrderGroupingInfo;
 
-  typedef std::vector<std::shared_ptr<SPDS>> SPDS_ptrs;
-
   typedef std::vector<std::unique_ptr<FLUDSCommonData>> FLUDSCommonDataPtrs;
 
 public:
@@ -121,7 +119,8 @@ protected:
 
   std::map<std::shared_ptr<AngularQuadrature>, SwpOrderGroupingInfo>
     quadrature_unq_so_grouping_map_;
-  std::map<std::shared_ptr<AngularQuadrature>, SPDS_ptrs> quadrature_spds_map_;
+  std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::shared_ptr<SPDS>>>
+    quadrature_spds_map_;
   std::map<std::shared_ptr<AngularQuadrature>, FLUDSCommonDataPtrs>
     quadrature_fluds_commondata_map_;
 
