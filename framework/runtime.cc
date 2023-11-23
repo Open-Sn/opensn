@@ -32,7 +32,7 @@ std::vector<std::shared_ptr<MeshHandler>> meshhandler_stack;
 int current_mesh_handler = -1;
 
 std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
-std::vector<FFInterpPtr> field_func_interpolation_stack;
+std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
 std::vector<UnpartMeshPtr> unpartitionedmesh_stack;
 
 std::vector<MaterialPtr> material_stack;
