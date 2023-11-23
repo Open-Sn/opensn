@@ -2,8 +2,6 @@
 
 #include "framework/logging/log_exceptions.h"
 
-#define scint static_cast<int>
-
 namespace opensn
 {
 
@@ -20,13 +18,13 @@ TimeIntegration::GetInputParameters()
 TimeIntegration::TimeIntegration(const InputParameters& params) : Object(params)
 {
   const int method_option = params.GetParamValue<int>("method");
-  if (method_option == scint(SteppingMethod::EXPLICIT_EULER))
+  if (method_option == static_cast<int>(SteppingMethod::EXPLICIT_EULER))
     method_ = SteppingMethod::EXPLICIT_EULER;
-  else if (method_option == scint(SteppingMethod::IMPLICIT_EULER))
+  else if (method_option == static_cast<int>(SteppingMethod::IMPLICIT_EULER))
     method_ = SteppingMethod::IMPLICIT_EULER;
-  else if (method_option == scint(SteppingMethod::CRANK_NICOLSON))
+  else if (method_option == static_cast<int>(SteppingMethod::CRANK_NICOLSON))
     method_ = SteppingMethod::CRANK_NICOLSON;
-  else if (method_option == scint(SteppingMethod::THETA_SCHEME))
+  else if (method_option == static_cast<int>(SteppingMethod::THETA_SCHEME))
     method_ = SteppingMethod::THETA_SCHEME;
   else
     ChiInvalidArgument("Unsupported Time Integration scheme");
