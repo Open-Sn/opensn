@@ -18,8 +18,6 @@ namespace opensn
 {
 
 class MPICommunicatorSet;
-typedef std::shared_ptr<MPICommunicatorSet> MPILocalCommSetPtr;
-
 class GridFaceHistogram;
 typedef std::shared_ptr<GridFaceHistogram> GridFaceHistogramPtr;
 
@@ -541,7 +539,7 @@ protected:
   std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;
-  MPILocalCommSetPtr grid_local_comm_set_ = nullptr;
+  std::shared_ptr<MPICommunicatorSet> grid_local_comm_set_ = nullptr;
   GridFaceHistogramPtr grid_face_histogram_ = nullptr;
 
   std::vector<UnitCellMatrices> unit_cell_matrices_;
