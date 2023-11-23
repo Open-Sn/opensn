@@ -20,7 +20,7 @@ namespace
 {
 
 std::shared_ptr<NLKEigenDiffContext>
-GetNLKDiffContextPtr(const NonLinearSolver::NLSolverContextPtr& context,
+GetNLKDiffContextPtr(const std::shared_ptr<NonLinearSolverContext>& context,
                      const std::string& func_name)
 {
   auto nlk_eigen_diff_context = std::dynamic_pointer_cast<NLKEigenDiffContext>(context);

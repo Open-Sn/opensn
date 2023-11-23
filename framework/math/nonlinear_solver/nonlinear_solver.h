@@ -14,17 +14,15 @@ namespace opensn
 class NonLinearSolver
 {
 public:
-  typedef std::shared_ptr<NonLinearSolverContext> NLSolverContextPtr;
-
   explicit NonLinearSolver(
-    NLSolverContextPtr context_ptr,
+    std::shared_ptr<NonLinearSolverContext> context_ptr,
     const InputParameters& params = NonLinearSolverOptions::GetInputParameters());
   virtual ~NonLinearSolver();
 
   NonLinearSolverOptions& ToleranceOptions() { return options_; }
   void ApplyToleranceOptions();
 
-  NLSolverContextPtr& GetContext() { return context_ptr_; }
+  std::shared_ptr<NonLinearSolverContext>& GetContext() { return context_ptr_; }
 
   bool IsConverged() const { return converged_; }
   std::string GetConvergedReasonString() const;
@@ -56,7 +54,7 @@ protected:
 
   const std::string solver_name_;
 
-  NLSolverContextPtr context_ptr_ = nullptr;
+  std::shared_ptr<NonLinearSolverContext> context_ptr_ = nullptr;
 
   Mat J_;
   Mat P_;

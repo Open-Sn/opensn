@@ -22,7 +22,7 @@ namespace
 {
 
 std::shared_ptr<NLKEigenAGSContext>
-GetNLKAGSContextPtr(const NonLinearSolver::NLSolverContextPtr& context,
+GetNLKAGSContextPtr(const std::shared_ptr<NonLinearSolverContext>& context,
                     const std::string& func_name)
 {
   auto nlk_ags_context = std::dynamic_pointer_cast<NLKEigenAGSContext>(context);
