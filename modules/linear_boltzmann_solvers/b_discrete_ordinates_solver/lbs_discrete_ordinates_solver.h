@@ -17,8 +17,6 @@ class CBC_ASynchronousCommunicator;
 class DiscreteOrdinatesSolver : public LBSSolver
 {
 protected:
-  typedef std::shared_ptr<AngularQuadrature> AngQuadPtr;
-
   typedef std::pair<UniqueSOGroupings, DirIDToSOMap> SwpOrderGroupingInfo;
 
   typedef std::shared_ptr<SPDS> SPDS_ptr;
@@ -123,9 +121,11 @@ protected:
    */
   virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
 
-  std::map<AngQuadPtr, SwpOrderGroupingInfo> quadrature_unq_so_grouping_map_;
-  std::map<AngQuadPtr, SPDS_ptrs> quadrature_spds_map_;
-  std::map<AngQuadPtr, FLUDSCommonDataPtrs> quadrature_fluds_commondata_map_;
+  std::map<std::shared_ptr<AngularQuadrature>, SwpOrderGroupingInfo>
+    quadrature_unq_so_grouping_map_;
+  std::map<std::shared_ptr<AngularQuadrature>, SPDS_ptrs> quadrature_spds_map_;
+  std::map<std::shared_ptr<AngularQuadrature>, FLUDSCommonDataPtrs>
+    quadrature_fluds_commondata_map_;
 
   std::vector<size_t> verbose_sweep_angles_;
   const std::string sweep_type_;
