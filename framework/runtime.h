@@ -14,7 +14,6 @@ namespace opensn
 const std::string name = "OpenSn";
 
 class MeshHandler;
-typedef std::shared_ptr<MeshHandler> MeshHandlerPtr;
 
 class SurfaceMesh;
 typedef std::shared_ptr<SurfaceMesh> SurfaceMeshPtr;
@@ -59,7 +58,7 @@ extern Logger& log;
 extern Timer program_timer;
 
 /** Global stack of handlers */
-extern std::vector<MeshHandlerPtr> meshhandler_stack;
+extern std::vector<std::shared_ptr<MeshHandler>> meshhandler_stack;
 extern int current_mesh_handler;
 
 extern std::vector<SurfaceMeshPtr> surface_mesh_stack;

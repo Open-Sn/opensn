@@ -28,7 +28,7 @@ Logger& log = Logger::GetInstance();
 MPI_Info& mpi = MPI_Info::GetInstance();
 Timer program_timer;
 
-std::vector<MeshHandlerPtr> meshhandler_stack;
+std::vector<std::shared_ptr<MeshHandler>> meshhandler_stack;
 int current_mesh_handler = -1;
 
 std::vector<SurfaceMeshPtr> surface_mesh_stack;
