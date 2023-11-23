@@ -35,7 +35,7 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
 }
 
 std::map<int, Multigroup_D_and_sigR>
-PackGroupsetXS(const std::map<int, MGXSPtr>& matid_to_xs_map,
+PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_map,
                int first_grp_index,
                int last_group_index)
 {
