@@ -602,8 +602,6 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
                                            int dimension_to_copy)
 {
   const std::string fname = "UnpartitionedMesh::CopyUGridCellsAndPoints";
-  typedef Vector3 Vec3;
-  typedef Vec3* Vec3Ptr;
 
   const vtkIdType total_cell_count = ugrid.GetNumberOfCells();
   const vtkIdType total_point_count = ugrid.GetNumberOfPoints();
@@ -625,7 +623,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
   if (has_global_ids)
   {
     std::vector<LightWeightCell*> cells(total_cell_count, nullptr);
-    std::vector<Vec3Ptr> vertices(total_point_count, nullptr);
+    std::vector<Vector3*> vertices(total_point_count, nullptr);
 
     auto cell_gids_ptr = ugrid.GetCellData()->GetGlobalIds();
     auto pnts_gids_ptr = ugrid.GetPointData()->GetGlobalIds();
@@ -697,7 +695,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
       auto point = ugrid.GetPoint(static_cast<vtkIdType>(p));
       const vtkIdType point_gid = pnts_gids->GetValue(p) + pid_offset;
 
-      auto vertex = new Vec3(point[0], point[1], point[2]);
+      auto vertex = new Vector3(point[0], point[1], point[2]);
 
       *vertex *= scale;
 
@@ -745,7 +743,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
     {
       auto point = ugrid.GetPoint(static_cast<vtkIdType>(p));
 
-      Vec3 vertex(point[0], point[1], point[2]);
+      Vector3 vertex(point[0], point[1], point[2]);
 
       vertex *= scale;
 
