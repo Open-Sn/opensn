@@ -9,17 +9,6 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/functions/scalar_spatial_material_function.h"
 
-#define scdouble static_cast<double>
-
-#define DefaultBCDirichlet                                                                         \
-  BoundaryCondition                                                                                \
-  {                                                                                                \
-    BCType::DIRICHLET,                                                                             \
-    {                                                                                              \
-      0, 0, 0                                                                                      \
-    }                                                                                              \
-  }
-
 namespace opensn
 {
 namespace dfem_diffusion
@@ -544,7 +533,9 @@ Solver::HPerpendicular(const Cell& cell, unsigned int f)
       else
       {
         hp = 2.0 * volume / surface_area;
-        hp += sqrt(2.0 * volume / (scdouble(num_faces) * sin(2.0 * M_PI / scdouble(num_faces))));
+        hp +=
+          sqrt(2.0 * volume /
+               (static_cast<double>(num_faces) * sin(2.0 * M_PI / static_cast<double>(num_faces))));
       }
     }
   }
