@@ -13,10 +13,6 @@
 #include <cmath>
 #include <numeric>
 
-#define scint64_t static_cast<int64_t>
-#define scint static_cast<int>
-#define scshort static_cast<short>
-
 namespace opensn
 {
 
@@ -81,7 +77,7 @@ ParallelSTLVector::LocalSTLData()
 std::vector<double>
 ParallelSTLVector::MakeLocalVector()
 {
-  return std::vector<double>(values_.begin(), values_.begin() + scint(local_size_));
+  return std::vector<double>(values_.begin(), values_.begin() + static_cast<int>(local_size_));
 }
 
 double
@@ -117,7 +113,9 @@ ParallelSTLVector::Set(const std::vector<double>& local_vector)
 
   // We cannot assign values = local_vector because this might
   // destroy the internals of a ghosted vector
-  std::copy(local_vector.begin(), local_vector.begin() + scint64_t(local_size_), values_.begin());
+  std::copy(local_vector.begin(),
+            local_vector.begin() + static_cast<int64_t>(local_size_),
+            values_.begin());
 }
 
 void
@@ -326,7 +324,7 @@ ParallelSTLVector::ComputeNorm(NormType norm_type) const
     case NormType::L1_NORM:
     {
       const double local_norm_val =
-        std::accumulate(values_.begin(), values_.begin() + scint(local_size_), 0.0);
+        std::accumulate(values_.begin(), values_.begin() + static_cast<int>(local_size_), 0.0);
 
       double global_norm_val;
       MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_SUM, comm_);
@@ -349,7 +347,7 @@ ParallelSTLVector::ComputeNorm(NormType norm_type) const
     case NormType::LINF_NORM:
     {
       const double local_norm_val =
-        *std::max_element(values_.begin(), values_.begin() + scint(local_size_));
+        *std::max_element(values_.begin(), values_.begin() + static_cast<int>(local_size_));
 
       double global_norm_val;
       MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_MAX, comm_);
@@ -366,8 +364,8 @@ ParallelSTLVector::Assemble()
 {
   // Define the local operation mode.
   // 0=Do Nothing, 1=Set, 2=Add, 3=INVALID (mixed set/add ops)
-  const short local_mode =
-    scshort(not set_cache_.empty()) + scshort(not add_cache_.empty()) * short(2);
+  const short local_mode = static_cast<short>(not set_cache_.empty()) +
+                           static_cast<short>(not add_cache_.empty()) * static_cast<short>(2);
   ChiLogicalErrorIf(local_mode == 3, "Invalid operation mode.");
 
   // Now, determine the global operation mode
@@ -401,7 +399,7 @@ ParallelSTLVector::Assemble()
   // The local operations can be handled immediately
   for (const auto& [global_id, value] : local_cache)
   {
-    const int64_t local_id = global_id - scint64_t(extents_[location_id_]);
+    const int64_t local_id = global_id - static_cast<int64_t>(extents_[location_id_]);
     ChiLogicalErrorIf(local_id < 0 or local_id >= local_size_,
                       "Invalid mapping from global to local.");
 
@@ -458,7 +456,7 @@ ParallelSTLVector::Assemble()
       const double value = byte_array.Read<double>();
 
       // Check that the global ID is in fact valid for this process
-      const int64_t local_id = global_id - scint64_t(extents_[location_id_]);
+      const int64_t local_id = global_id - static_cast<int64_t>(extents_[location_id_]);
 
       ChiLogicalErrorIf(local_id < 0 or local_id >= local_size_,
                         "A non-local global ID was received by process " +
