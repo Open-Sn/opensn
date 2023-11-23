@@ -7,17 +7,29 @@
 #include <algorithm>
 #include <utility>
 
-#define ThrowInputError                                                                            \
-  throw std::invalid_argument(                                                                     \
-    (GetErrorOriginScope().empty() ? "" : GetErrorOriginScope() + "\n") +                          \
-    "Input error: " + ObjectType() + "\n" + err_stream.str())
-
-#define ExceptionParamNotPresent(param_name)                                                       \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ": Parameter \"" + param_name +        \
-                         "\" not present in list of parameters.")
-
 namespace opensn
 {
+
+namespace
+{
+
+std::string
+InputErrorStr(const std::string& error_scope,
+              const std::string& object_type,
+              const std::string& err_msg)
+{
+  return (error_scope.empty() ? "" : error_scope + "\n") + "Input error: " + object_type + "\n" +
+         err_msg;
+}
+
+std::string
+ParamNotPresentErrorStr(const std::string& function_name, const std::string& param_name)
+{
+  return std::string(__PRETTY_FUNCTION__) + ": Parameter \"" + param_name +
+         "\" not present in list of parameters.";
+}
+
+} // namespace
 
 const std::vector<std::string> InputParameters::system_ignored_param_names_ = {"obj_type"};
 
@@ -229,7 +241,9 @@ InputParameters::AssignParameters(const ParameterBlock& params)
                  << "\nEnsure the parameter given is supplied or not nil";
   }
 
-  if (not err_stream.str().empty()) ThrowInputError;
+  if (not err_stream.str().empty())
+    throw std::invalid_argument(
+      InputErrorStr(GetErrorOriginScope(), ObjectType(), err_stream.str()));
 
   // Check unused parameters
   // Loops over all candidate-parameters and
@@ -250,7 +264,9 @@ InputParameters::AssignParameters(const ParameterBlock& params)
       }
     }
 
-    if (not err_stream.str().empty()) ThrowInputError;
+    if (not err_stream.str().empty())
+      throw std::invalid_argument(
+        InputErrorStr(GetErrorOriginScope(), ObjectType(), err_stream.str()));
   }
 
   // Check deprecation warnings
@@ -329,7 +345,9 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     input_param = param;
   } // for input params
 
-  if (not err_stream.str().empty()) ThrowInputError;
+  if (not err_stream.str().empty())
+    throw std::invalid_argument(
+      InputErrorStr(GetErrorOriginScope(), ObjectType(), err_stream.str()));
 }
 
 void
@@ -338,7 +356,7 @@ InputParameters::MarkParamaterDeprecatedWarning(const std::string& param_name,
 {
   if (Has(param_name)) deprecation_warning_tags_[param_name] = deprecation_message;
   else
-    ExceptionParamNotPresent(param_name);
+    throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
 }
 
 void
@@ -347,7 +365,7 @@ InputParameters::MarkParamaterDeprecatedError(const std::string& param_name,
 {
   if (Has(param_name)) deprecation_error_tags_[param_name] = deprecation_message;
   else
-    ExceptionParamNotPresent(param_name);
+    throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
 }
 
 void
@@ -356,7 +374,7 @@ InputParameters::MarkParamaterRenamed(const std::string& param_name,
 {
   if (Has(param_name)) renamed_error_tags_[param_name] = renaming_description;
   else
-    ExceptionParamNotPresent(param_name);
+    throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
 }
 
 void
@@ -373,7 +391,7 @@ InputParameters::ConstrainParameterRange(const std::string& param_name,
     constraint_tags_[param_name] = std::move(allowable_range);
   }
   else
-    ExceptionParamNotPresent(param_name);
+    throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
 }
 
 void
