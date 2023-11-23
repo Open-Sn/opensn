@@ -47,7 +47,7 @@ LogTimingInfoTest(const InputParameters&)
   }
   t_main.TimeSectionEnd();
 
-  opensn::log.Log() << opensn::log.GetTimingBlock("ChiTech").MakeGraphString();
+  opensn::log.Log() << opensn::log.GetTimingBlock(opensn::name).MakeGraphString();
 
   return ParameterBlock{};
 }

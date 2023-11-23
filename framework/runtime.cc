@@ -51,7 +51,7 @@ bool Chi::suppress_color_ = false;
 int
 Initialize()
 {
-  auto& t_main = log.CreateTimingBlock("ChiTech");
+  auto& t_main = log.CreateTimingBlock(opensn::name);
   t_main.TimeSectionBegin();
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
@@ -61,7 +61,7 @@ Initialize()
 void
 Finalize()
 {
-  auto& t_main = log.GetTimingBlock("ChiTech");
+  auto& t_main = log.GetTimingBlock(opensn::name);
   t_main.TimeSectionEnd();
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
   Chi::meshhandler_stack.clear();

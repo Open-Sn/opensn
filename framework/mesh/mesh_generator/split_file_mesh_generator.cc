@@ -116,7 +116,7 @@ SplitFileMeshGenerator::Execute()
     log.Log0Warning() << "After creating a split-mesh with mpi-processes < "
                          "num_parts the program will now auto terminate. This is not an error "
                          "and is the default behavior for the SplitFileMeshGenerator.\n"
-                      << log.GetTimingBlock("ChiTech").MakeGraphString();
+                      << log.GetTimingBlock(opensn::name).MakeGraphString();
     Exit(EXIT_SUCCESS);
   }
 
