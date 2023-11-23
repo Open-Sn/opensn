@@ -9,9 +9,6 @@
 
 #include <algorithm>
 
-#define uint unsigned int
-#define scint static_cast<int>
-
 namespace opensn
 {
 
@@ -44,19 +41,19 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(const InputParameters& params) 
   const int param_count = int(assigned_params.Has("order")) + int(assigned_params.Has("N"));
   ChiInvalidArgumentIf(param_count == 2, "Either \"order\" or \"N\" must be specified, not both");
 
-  const uint max_iters = params.GetParamValue<uint>("max_root_finding_iters");
+  const auto max_iters = params.GetParamValue<unsigned int>("max_root_finding_iters");
   const double tol = params.GetParamValue<double>("root_finding_tol");
 
   if (assigned_params.Has("order"))
   {
-    const uint N = std::ceil(((int)order_ + 1) / 2.0);
-    Initialize(N, verbose_, max_iters, tol);
+    const unsigned int n = std::ceil((static_cast<int>(order_) + 1) / 2.0);
+    Initialize(n, verbose_, max_iters, tol);
   }
   else
   {
-    const uint N = assigned_params.GetParamValue<uint>("N");
-    order_ = static_cast<QuadratureOrder>(std::min(scint(2 * N + 1), 43));
-    Initialize(N, verbose_, max_iters, tol);
+    const auto n = assigned_params.GetParamValue<unsigned int>("N");
+    order_ = static_cast<QuadratureOrder>(std::min(2 * n + 1, 43u));
+    Initialize(n, verbose_, max_iters, tol);
   }
 }
 
