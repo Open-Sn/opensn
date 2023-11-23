@@ -19,8 +19,7 @@ class DiscreteOrdinatesSolver : public LBSSolver
 protected:
   typedef std::pair<UniqueSOGroupings, DirIDToSOMap> SwpOrderGroupingInfo;
 
-  typedef std::shared_ptr<SPDS> SPDS_ptr;
-  typedef std::vector<SPDS_ptr> SPDS_ptrs;
+  typedef std::vector<std::shared_ptr<SPDS>> SPDS_ptrs;
 
   typedef std::vector<std::unique_ptr<FLUDSCommonData>> FLUDSCommonDataPtrs;
 
