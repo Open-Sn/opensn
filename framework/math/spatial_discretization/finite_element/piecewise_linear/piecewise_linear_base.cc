@@ -6,10 +6,6 @@
 #include "framework/math/spatial_discretization/cell_mappings/piecewise_linear/piecewise_linear_polygon_mapping.h"
 #include "framework/math/spatial_discretization/cell_mappings/piecewise_linear/piecewise_linear_polyhedron_mapping.h"
 
-#define UnsupportedCellType(fname)                                                                 \
-  std::invalid_argument((fname) + ": Unsupported cell type encountered. type_id=" +                \
-                        std::to_string(static_cast<int>(cell.Type())));
-
 namespace opensn
 {
 
@@ -66,7 +62,9 @@ PieceWiseLinearBase::CreateCellMappings()
         break;
       }
       default:
-        throw UnsupportedCellType(std::string(fname))
+        throw std::invalid_argument(std::string(fname) +
+                                    ": Unsupported cell type encountered. type_id=" +
+                                    std::to_string(static_cast<int>(cell.Type())));
     }
     return mapping;
   };
