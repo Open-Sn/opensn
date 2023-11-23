@@ -32,9 +32,6 @@ struct WGSContext;
 class LBSSolver : public opensn::Solver
 {
 public:
-  typedef std::shared_ptr<AGSLinearSolver> AGSLinSolverPtr;
-
-public:
   explicit LBSSolver(const std::string& text_name);
   /**
    * Input parameters based construction.
@@ -265,7 +262,7 @@ public:
 
   SetSourceFunction GetActiveSetSourceFunction() const;
 
-  AGSLinSolverPtr GetPrimaryAGSSolver();
+  std::shared_ptr<AGSLinearSolver> GetPrimaryAGSSolver();
 
   std::vector<std::shared_ptr<LinearSolver>>& GetWGSSolvers();
 
@@ -560,9 +557,9 @@ protected:
 
   SetSourceFunction active_set_source_function_;
 
-  std::vector<AGSLinSolverPtr> ags_solvers_;
+  std::vector<std::shared_ptr<AGSLinearSolver>> ags_solvers_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
-  AGSLinSolverPtr primary_ags_solver_;
+  std::shared_ptr<AGSLinearSolver> primary_ags_solver_;
 
   std::map<std::pair<size_t, size_t>, size_t> phi_field_functions_local_map_;
   size_t power_gen_fieldfunc_local_handle_ = 0;

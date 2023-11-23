@@ -371,7 +371,7 @@ LBSSolver::GetActiveSetSourceFunction() const
   return active_set_source_function_;
 }
 
-LBSSolver::AGSLinSolverPtr
+std::shared_ptr<AGSLinearSolver>
 LBSSolver::GetPrimaryAGSSolver()
 {
   return primary_ags_solver_;
