@@ -16,7 +16,6 @@ const std::string name = "OpenSn";
 class MeshHandler;
 
 class SurfaceMesh;
-typedef std::shared_ptr<SurfaceMesh> SurfaceMeshPtr;
 
 class FieldFunctionInterpolation;
 typedef FieldFunctionInterpolation FFInterp;
@@ -60,7 +59,7 @@ extern Timer program_timer;
 extern std::vector<std::shared_ptr<MeshHandler>> meshhandler_stack;
 extern int current_mesh_handler;
 
-extern std::vector<SurfaceMeshPtr> surface_mesh_stack;
+extern std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
 extern std::vector<FFInterpPtr> field_func_interpolation_stack;
 extern std::vector<UnpartMeshPtr> unpartitionedmesh_stack;
 
