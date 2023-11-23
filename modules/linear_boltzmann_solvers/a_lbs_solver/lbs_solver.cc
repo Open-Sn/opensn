@@ -377,7 +377,7 @@ LBSSolver::GetPrimaryAGSSolver()
   return primary_ags_solver_;
 }
 
-std::vector<LBSSolver::LinSolvePtr>&
+std::vector<std::shared_ptr<LinearSolver>>&
 LBSSolver::GetWGSSolvers()
 {
   return wgs_solvers_;
