@@ -26,8 +26,8 @@ FieldFunctionInterpolationPoint::Initialize()
   }
 
   const int local_count = static_cast<int>(cells_potentially_owning_point.size());
-  std::vector<int> locI_count(opensn::mpi_comm.size(), 0);
-  MPI_Allgather(&local_count, 1, MPI_INT, locI_count.data(), 1, MPI_INT, mpi_comm);
+  std::vector<int> locI_count;
+  mpi_comm.all_gather(local_count, locI_count);
 
   std::vector<int> recvdispls(opensn::mpi_comm.size(), 0);
 

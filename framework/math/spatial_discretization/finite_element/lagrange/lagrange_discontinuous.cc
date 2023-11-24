@@ -75,14 +75,7 @@ LagrangeDiscontinuous::OrderNodes()
   }
 
   // Allgather node_counts
-  locJ_block_size_.assign(opensn::mpi_comm.size(), 0);
-  MPI_Allgather(&local_node_count,
-                1,
-                MPI_UNSIGNED_LONG_LONG,
-                locJ_block_size_.data(),
-                1,
-                MPI_UNSIGNED_LONG_LONG,
-                mpi_comm);
+  mpi_comm.all_gather(local_node_count, locJ_block_size_);
 
   // Assign
   // local_block_address

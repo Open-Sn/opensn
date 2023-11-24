@@ -1455,9 +1455,8 @@ LBSSolver::InitializeBoundaries()
     std::vector<uint64_t> local_unique_bids(local_unique_bids_set.begin(),
                                             local_unique_bids_set.end());
     const int local_num_unique_bids = static_cast<int>(local_unique_bids.size());
-    std::vector<int> recvcounts(opensn::mpi_comm.size(), 0);
-
-    MPI_Allgather(&local_num_unique_bids, 1, MPI_INT, recvcounts.data(), 1, MPI_INT, mpi_comm);
+    std::vector<int> recvcounts;
+    mpi_comm.all_gather(local_num_unique_bids, recvcounts);
 
     std::vector<int> recvdispls(opensn::mpi_comm.size(), 0);
 
@@ -1539,8 +1538,8 @@ LBSSolver::InitializeBoundaries()
         std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
         std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3, 0.0);
 
-        MPI_Allgather(&local_has_bid, 1, MPI_INT, locJ_has_bid.data(), 1, MPI_INT, mpi_comm);
-
+        mpi_comm.all_gather(local_has_bid, locJ_has_bid);
+        // FIXME: use mpicpp-lite
         MPI_Allgather(&local_normal, 3, MPI_DOUBLE, locJ_n_val.data(), 3, MPI_DOUBLE, mpi_comm);
 
         Vec3 global_normal;

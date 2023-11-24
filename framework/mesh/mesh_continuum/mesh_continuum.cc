@@ -643,11 +643,9 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
   std::vector<uint64_t> local_bndry_ids(local_bndry_ids_set.begin(), local_bndry_ids_set.end());
   int local_num_bndry_ids = (int)local_bndry_ids.size();
 
-  // Everyone now tells everyone
-  //                                       how many bndry-ids they have
-  std::vector<int> locI_bndry_count(opensn::mpi_comm.size(), 0);
-
-  MPI_Allgather(&local_num_bndry_ids, 1, MPI_INT, locI_bndry_count.data(), 1, MPI_INT, mpi_comm);
+  // Everyone now tells everyone how many bndry-ids they have
+  std::vector<int> locI_bndry_count;
+  mpi_comm.all_gather(local_num_bndry_ids, locI_bndry_count);
 
   // Build a displacement list, in prep for gathering all bndry-ids
   std::vector<int> locI_bndry_ids_displs(opensn::mpi_comm.size(), 0);

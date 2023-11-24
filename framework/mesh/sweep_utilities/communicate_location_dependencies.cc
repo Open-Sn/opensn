@@ -12,11 +12,10 @@ CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
 {
   int P = opensn::mpi_comm.size();
 
-  // Communicate location dep
-  // counts
-  std::vector<int> depcount_per_loc(P, 0);
+  // Communicate location dep counts
+  std::vector<int> depcount_per_loc;
   int current_loc_dep_count = location_dependencies.size();
-  MPI_Allgather(&current_loc_dep_count, 1, MPI_INT, depcount_per_loc.data(), 1, MPI_INT, mpi_comm);
+  mpi_comm.all_gather(current_loc_dep_count, depcount_per_loc);
 
   // Broadcast dependencies
   std::vector<int> raw_depvec_displs(P, 0);
