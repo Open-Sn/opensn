@@ -262,15 +262,8 @@ MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids,
                              int root,
                              const mpi::Communicator& communicator)
 {
-  size_t data_count = opensn::mpi_comm.rank() == root ? cell_pids.size() : 0;
-
-  // Broadcast data_count to all locations
-  MPI_Bcast(&data_count, 1, MPI_UINT64_T, root, communicator);
-
-  if (opensn::mpi_comm.rank() != root) cell_pids.assign(data_count, 0);
-
   // Broadcast partitioning to all locations
-  MPI_Bcast(cell_pids.data(), static_cast<int>(data_count), MPI_LONG_LONG_INT, root, communicator);
+  communicator.broadcast(cell_pids, root);
 }
 
 bool

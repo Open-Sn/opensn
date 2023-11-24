@@ -57,7 +57,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
     // If chi::mpi.location_id == locI then this call will
     // act like a send instead of receive. Otherwise
     // It receives the count.
-    MPI_Bcast(&locI_num_connections, 1, MPI_INT, locI, mpi_comm);
+    mpi_comm.broadcast(locI_num_connections, locI);
 
     if (opensn::mpi_comm.rank() != locI) { global_graph[locI].resize(locI_num_connections, -1); }
     else
@@ -73,11 +73,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
     // If chi::mpi.location_id == locI then this call will
     // act like a send instead of receive. Otherwise
     // It receives the count.
-    MPI_Bcast(global_graph[locI].data(),
-              static_cast<int>(global_graph[locI].size()),
-              MPI_INT,
-              locI,
-              mpi_comm);
+    mpi_comm.broadcast(global_graph[locI].data(), global_graph[locI].size(), locI);
   }
 
   log.Log0Verbose1() << "Done communicating local connections.";

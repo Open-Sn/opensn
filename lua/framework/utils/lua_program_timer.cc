@@ -22,7 +22,7 @@ chiProgramTime(lua_State* L)
   double time;
   if (opensn::mpi_comm.rank() == 0) time = opensn::program_timer.GetTime() / 1000.0;
 
-  MPI_Bcast(&time, 1, MPI_DOUBLE, 0, opensn::mpi_comm);
+  opensn::mpi_comm.broadcast(time, 0);
 
   lua_pushnumber(L, time);
   return 1;

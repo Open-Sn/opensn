@@ -149,17 +149,9 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     }
   } // if home
 
-  // Broadcast edge buffer size
-  int edge_buffer_size = 0;
-
-  if (opensn::mpi_comm.rank() == 0) edge_buffer_size = static_cast<int>(raw_edges_to_remove.size());
-
-  MPI_Bcast(&edge_buffer_size, 1, MPI_INT, 0, mpi_comm);
-
   // Broadcast edges
-  if (opensn::mpi_comm.rank() != 0) raw_edges_to_remove.resize(edge_buffer_size, -1);
-
-  MPI_Bcast(raw_edges_to_remove.data(), edge_buffer_size, MPI_INT, 0, mpi_comm);
+  mpi_comm.broadcast(raw_edges_to_remove, 0);
+  int edge_buffer_size = raw_edges_to_remove.size();
 
   // De-serialize edges
   if (opensn::mpi_comm.rank() != 0)
@@ -210,17 +202,8 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     }
   }
 
-  // Broadcasting topsort size
-  int topsort_buffer_size = 0;
-
-  if (opensn::mpi_comm.rank() == 0) topsort_buffer_size = glob_linear_sweep_order.size();
-
-  MPI_Bcast(&topsort_buffer_size, 1, MPI_INT, 0, mpi_comm);
-
   // Broadcast topological sort
-  if (opensn::mpi_comm.rank() != 0) glob_linear_sweep_order.resize(topsort_buffer_size, -1);
-
-  MPI_Bcast(glob_linear_sweep_order.data(), topsort_buffer_size, MPI_INT, 0, mpi_comm);
+  mpi_comm.broadcast(glob_linear_sweep_order, 0);
 
   // Compute reorder mapping
   // This mapping allows us to punch in
