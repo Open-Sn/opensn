@@ -202,7 +202,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
   }
 
   double global_integral = 0.0;
-  MPI_Allreduce(&local_integral, &global_integral, 1, MPI_DOUBLE, MPI_SUM, mpi_comm);
+  mpi_comm.all_reduce(local_integral, global_integral, mpi::op::sum<double>());
   return global_integral;
 }
 

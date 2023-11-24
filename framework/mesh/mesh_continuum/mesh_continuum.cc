@@ -933,15 +933,11 @@ MeshContinuum::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list)
 size_t
 MeshContinuum::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 {
-  size_t local_count = 0;
+  size_t count = 0;
   for (const auto& cell : local_cells)
-    if (log_vol.Inside(cell.centroid_)) ++local_count;
-
-  size_t global_count = 0;
-
-  MPI_Allreduce(&local_count, &global_count, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi_comm);
-
-  return global_count;
+    if (log_vol.Inside(cell.centroid_)) ++count;
+  mpi_comm.all_reduce(count, mpi::op::sum<size_t>());
+  return count;
 }
 
 bool
@@ -1156,12 +1152,9 @@ MeshContinuum::GetLocalBoundingBox() const
 size_t
 MeshContinuum::GetGlobalNumberOfCells() const
 {
-  size_t num_local_cells = local_cells_.size();
-  size_t num_globl_cells = 0;
-
-  MPI_Allreduce(&num_local_cells, &num_globl_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi_comm);
-
-  return num_globl_cells;
+  size_t num_cells = local_cells_.size();
+  mpi_comm.all_reduce(num_cells, mpi::op::sum<size_t>());
+  return num_cells;
 }
 
 } // namespace opensn

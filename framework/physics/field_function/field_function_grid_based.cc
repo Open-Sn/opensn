@@ -362,11 +362,11 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
 
   // Communicate number of point hits
   size_t globl_num_point_hits;
-  MPI_Allreduce(&local_num_point_hits, &globl_num_point_hits, 1, MPIU_SIZE_T, MPI_SUM, mpi_comm);
+  mpi_comm.all_reduce(local_num_point_hits, globl_num_point_hits, mpi::op::sum<size_t>());
 
   std::vector<double> globl_point_value(num_components, 0.0);
-  MPI_Allreduce(
-    local_point_value.data(), globl_point_value.data(), 1, MPI_DOUBLE, MPI_SUM, mpi_comm);
+  mpi_comm.all_reduce(
+    local_point_value.data(), 1, globl_point_value.data(), mpi::op::sum<double>());
 
   Scale(globl_point_value, 1.0 / static_cast<double>(globl_num_point_hits));
 

@@ -111,8 +111,7 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
   }
 
   size_t num_local_subs = subscribers_.size();
-  MPI_Allreduce(
-    &num_local_subs, &num_global_subscribers_, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, MPI_COMM_WORLD);
+  mpi_comm.all_reduce(num_local_subs, num_global_subscribers_, mpi::op::sum<size_t>());
 
   log.LogAll() << "Point source has " << num_local_subs << " subscribing cells on processor "
                << mpi_comm.rank();

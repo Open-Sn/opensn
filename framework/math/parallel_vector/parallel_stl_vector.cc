@@ -13,6 +13,8 @@
 #include <cmath>
 #include <numeric>
 
+namespace mpi = mpicpp_lite;
+
 namespace opensn
 {
 
@@ -323,36 +325,28 @@ ParallelSTLVector::ComputeNorm(NormType norm_type) const
   {
     case NormType::L1_NORM:
     {
-      const double local_norm_val =
+      double norm_val =
         std::accumulate(values_.begin(), values_.begin() + static_cast<int>(local_size_), 0.0);
-
-      double global_norm_val;
-      MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_SUM, comm_);
-
-      return global_norm_val;
+      comm_.all_reduce(norm_val, mpi::op::sum<double>());
+      return norm_val;
     }
     case NormType::L2_NORM:
     {
-      double local_norm_val = 0.0;
+      double norm_val = 0.0;
       for (size_t i = 0; i < local_size_; ++i)
       {
         const double value = values_[i];
-        local_norm_val += value * value;
+        norm_val += value * value;
       }
-      double global_norm_val;
-      MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_SUM, comm_);
-
-      return std::sqrt(global_norm_val);
+      comm_.all_reduce(norm_val, mpi::op::sum<double>());
+      return std::sqrt(norm_val);
     }
     case NormType::LINF_NORM:
     {
-      const double local_norm_val =
+      double norm_val =
         *std::max_element(values_.begin(), values_.begin() + static_cast<int>(local_size_));
-
-      double global_norm_val;
-      MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_MAX, comm_);
-
-      return global_norm_val;
+      comm_.all_reduce(norm_val, mpi::op::max<double>());
+      return norm_val;
     }
     default:
       return 0.0;
@@ -370,7 +364,7 @@ ParallelSTLVector::Assemble()
 
   // Now, determine the global operation mode
   short global_mode;
-  MPI_Allreduce(&local_mode, &global_mode, 1, MPI_SHORT, MPI_MAX, comm_);
+  comm_.all_reduce(local_mode, global_mode, mpi::op::max<short>());
 
   // If the mode is to do nothing, exit
   if (global_mode == 0) return;

@@ -67,7 +67,7 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
   }
 
   int global_num_cells_modified;
-  MPI_Allreduce(&num_cells_modified, &global_num_cells_modified, 1, MPI_INT, MPI_SUM, mpi_comm);
+  mpi_comm.all_reduce(num_cells_modified, global_num_cells_modified, mpi::op::sum<int>());
 
   log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Done setting material id from logical volume. "
@@ -106,7 +106,7 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
   }
 
   int global_num_faces_modified;
-  MPI_Allreduce(&num_faces_modified, &global_num_faces_modified, 1, MPI_INT, MPI_SUM, mpi_comm);
+  mpi_comm.all_reduce(num_faces_modified, global_num_faces_modified, mpi::op::sum<int>());
 
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
     grid_bndry_id_map[bndry_id] = bndry_name;

@@ -37,7 +37,7 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
 
   // Reconcile all local maximums
   int global_max_num_messages = 0;
-  MPI_Allreduce(&local_max_num_messages, &global_max_num_messages, 1, MPI_INT, MPI_MAX, mpi_comm);
+  mpi_comm.all_reduce(local_max_num_messages, global_max_num_messages, mpi::op::max<int>());
 
   // Propogate items back to sweep buffers
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)

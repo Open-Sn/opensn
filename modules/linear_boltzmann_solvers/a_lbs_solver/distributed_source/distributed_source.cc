@@ -56,12 +56,7 @@ lbs::DistributedSource::Initialize(const LBSSolver& lbs_solver)
     if (logical_volume_ptr_->Inside(cell.centroid_)) subscribers_.push_back(cell.local_id_);
 
   num_local_subsribers_ = subscribers_.size();
-  MPI_Allreduce(&num_local_subsribers_,
-                &num_global_subscribers_,
-                1,
-                MPI_UNSIGNED_LONG_LONG,
-                MPI_SUM,
-                MPI_COMM_WORLD);
+  mpi_comm.all_reduce(num_local_subsribers_, num_global_subscribers_, mpi::op::sum<size_t>());
 
   log.LogAll() << "Distributed source has " << num_local_subsribers_
                << " subscribing cells on processor " << opensn::mpi_comm.rank() << ".";
