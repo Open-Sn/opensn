@@ -1454,29 +1454,8 @@ LBSSolver::InitializeBoundaries()
 
     std::vector<uint64_t> local_unique_bids(local_unique_bids_set.begin(),
                                             local_unique_bids_set.end());
-    const int local_num_unique_bids = static_cast<int>(local_unique_bids.size());
-    std::vector<int> recvcounts;
-    mpi_comm.all_gather(local_num_unique_bids, recvcounts);
-
-    std::vector<int> recvdispls(opensn::mpi_comm.size(), 0);
-
-    int running_displacement = 0;
-    for (int locI = 0; locI < opensn::mpi_comm.size(); ++locI)
-    {
-      recvdispls[locI] = running_displacement;
-      running_displacement += recvcounts[locI];
-    }
-
-    std::vector<uint64_t> recvbuf(running_displacement, 0);
-
-    MPI_Allgatherv(local_unique_bids.data(),
-                   local_num_unique_bids,
-                   MPI_UINT64_T,
-                   recvbuf.data(),
-                   recvcounts.data(),
-                   recvdispls.data(),
-                   MPI_UINT64_T,
-                   mpi_comm);
+    std::vector<uint64_t> recvbuf;
+    mpi_comm.all_gather(local_unique_bids, recvbuf);
 
     globl_unique_bids_set = local_unique_bids_set; // give it a head start
 
@@ -1539,8 +1518,8 @@ LBSSolver::InitializeBoundaries()
         std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3, 0.0);
 
         mpi_comm.all_gather(local_has_bid, locJ_has_bid);
-        // FIXME: use mpicpp-lite
-        MPI_Allgather(&local_normal, 3, MPI_DOUBLE, locJ_n_val.data(), 3, MPI_DOUBLE, mpi_comm);
+        std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
+        mpi_comm.all_gather(lnv.data(), 3, locJ_n_val.data(), 3);
 
         Vec3 global_normal;
         for (int j = 0; j < opensn::mpi_comm.size(); ++j)

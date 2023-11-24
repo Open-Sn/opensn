@@ -625,34 +625,10 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
     for (auto& face : cell.faces_)
       if (not face.has_neighbor_) local_bndry_ids_set.insert(face.neighbor_id_);
 
-  // Vectorify it and get local count
+  // Vectorify it
   std::vector<uint64_t> local_bndry_ids(local_bndry_ids_set.begin(), local_bndry_ids_set.end());
-  int local_num_bndry_ids = (int)local_bndry_ids.size();
-
-  // Everyone now tells everyone how many bndry-ids they have
-  std::vector<int> locI_bndry_count;
-  mpi_comm.all_gather(local_num_bndry_ids, locI_bndry_count);
-
-  // Build a displacement list, in prep for gathering all bndry-ids
-  std::vector<int> locI_bndry_ids_displs(opensn::mpi_comm.size(), 0);
-  size_t total_num_global_bndry_ids = locI_bndry_count[0];
-  for (int locI = 1; locI < opensn::mpi_comm.size(); ++locI)
-  {
-    locI_bndry_ids_displs[locI] = locI_bndry_ids_displs[locI - 1] + locI_bndry_count[locI - 1];
-    total_num_global_bndry_ids += locI_bndry_count[locI];
-  }
-
-  // Everyone now sends everyone their boundary-ids
-  std::vector<uint64_t> globl_bndry_ids(total_num_global_bndry_ids);
-
-  MPI_Allgatherv(local_bndry_ids.data(),
-                 local_num_bndry_ids,
-                 MPI_UNSIGNED_LONG_LONG,
-                 globl_bndry_ids.data(),
-                 locI_bndry_count.data(),
-                 locI_bndry_ids_displs.data(),
-                 MPI_UNSIGNED_LONG_LONG,
-                 mpi_comm);
+  std::vector<uint64_t> globl_bndry_ids;
+  mpi_comm.all_gather(local_bndry_ids, globl_bndry_ids);
 
   std::set<uint64_t> globl_bndry_ids_set(globl_bndry_ids.begin(), globl_bndry_ids.end());
 

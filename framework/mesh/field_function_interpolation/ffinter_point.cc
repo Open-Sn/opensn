@@ -25,29 +25,8 @@ FieldFunctionInterpolationPoint::Initialize()
       cells_potentially_owning_point.push_back(cell.global_id_);
   }
 
-  const int local_count = static_cast<int>(cells_potentially_owning_point.size());
-  std::vector<int> locI_count;
-  mpi_comm.all_gather(local_count, locI_count);
-
-  std::vector<int> recvdispls(opensn::mpi_comm.size(), 0);
-
-  int running_count = 0;
-  for (int locI = 0; locI < opensn::mpi_comm.size(); ++locI)
-  {
-    recvdispls[locI] = running_count;
-    running_count += locI_count[locI];
-  }
-
-  const auto& sendbuf = cells_potentially_owning_point;
-  std::vector<uint64_t> recvbuf(running_count, 0);
-  MPI_Allgatherv(sendbuf.data(),
-                 local_count,
-                 MPI_UINT64_T,
-                 recvbuf.data(),
-                 locI_count.data(),
-                 recvdispls.data(),
-                 MPI_UINT64_T,
-                 mpi_comm);
+  std::vector<uint64_t> recvbuf;
+  mpi_comm.all_gather(cells_potentially_owning_point, recvbuf);
 
   if (recvbuf.empty()) throw std::logic_error(fname + ": No cell identified containing the point.");
 

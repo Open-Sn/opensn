@@ -19,23 +19,11 @@ CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
 
   // Broadcast dependencies
   std::vector<int> raw_depvec_displs(P, 0);
-  int recv_buf_size = depcount_per_loc[0];
   for (int locI = 1; locI < P; ++locI)
-  {
     raw_depvec_displs[locI] = raw_depvec_displs[locI - 1] + depcount_per_loc[locI - 1];
-    recv_buf_size += depcount_per_loc[locI];
-  }
 
-  std::vector<int> raw_dependencies(recv_buf_size, 0);
-
-  MPI_Allgatherv(location_dependencies.data(),
-                 int(location_dependencies.size()),
-                 MPI_INT,
-                 raw_dependencies.data(),
-                 depcount_per_loc.data(),
-                 raw_depvec_displs.data(),
-                 MPI_INT,
-                 mpi_comm);
+  std::vector<int> raw_dependencies;
+  mpi_comm.all_gather(location_dependencies, raw_dependencies, depcount_per_loc, raw_depvec_displs);
 
   for (int locI = 0; locI < P; ++locI)
   {
