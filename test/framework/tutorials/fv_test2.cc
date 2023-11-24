@@ -149,7 +149,7 @@ chiSimTest02_FV(const InputParameters&)
   // Make ghosted vectors
   std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
 
-  VectorGhostCommunicator vgc(num_local_dofs, num_globl_dofs, ghost_ids, opensn::mpi.comm);
+  VectorGhostCommunicator vgc(num_local_dofs, num_globl_dofs, ghost_ids, opensn::mpi_comm);
   std::vector<double> field_wg = vgc.MakeGhostedVector(field);
 
   vgc.CommunicateGhostEntries(field_wg);

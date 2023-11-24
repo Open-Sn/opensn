@@ -129,7 +129,7 @@ SetMatIDFromLuaFunction(const std::string& lua_fname)
 
   int globl_num_cells_modified;
   MPI_Allreduce(
-    &local_num_cells_modified, &globl_num_cells_modified, 1, MPI_INT, MPI_SUM, mpi.comm);
+    &local_num_cells_modified, &globl_num_cells_modified, 1, MPI_INT, MPI_SUM, mpi_comm);
 
   opensn::log.Log0Verbose1() << program_timer.GetTimeString()
                              << " Done setting material id from lua function. "
@@ -152,7 +152,7 @@ SetBndryIDFromLuaFunction(const std::string& lua_fname)
 {
   const std::string fname = "VolumeMesher::SetBndryIDFromLuaFunction";
 
-  ChiLogicalErrorIf(opensn::mpi.process_count != 1, "Can for now only be used in serial.");
+  ChiLogicalErrorIf(opensn::mpi_comm.size() != 1, "Can for now only be used in serial.");
 
   opensn::log.Log0Verbose1() << program_timer.GetTimeString()
                              << " Setting boundary id from lua function.";
@@ -246,7 +246,7 @@ SetBndryIDFromLuaFunction(const std::string& lua_fname)
 
   int globl_num_faces_modified;
   MPI_Allreduce(
-    &local_num_faces_modified, &globl_num_faces_modified, 1, MPI_INT, MPI_SUM, mpi.comm);
+    &local_num_faces_modified, &globl_num_faces_modified, 1, MPI_INT, MPI_SUM, mpi_comm);
 
   opensn::log.Log0Verbose1() << program_timer.GetTimeString()
                              << " Done setting boundary id from lua function. "

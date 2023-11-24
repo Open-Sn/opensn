@@ -2,8 +2,10 @@
 
 #include "framework/math/math.h"
 #include "framework/math/petsc_utils/petsc_forward_declarations.h"
-
+#include "mpicpp-lite/mpicpp-lite.h"
 #include <cstdint>
+
+namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
@@ -24,7 +26,7 @@ public:
    * Initialize a parallel vector with the given local and global sizes with
    * the given communicator whose entries are set to zero.
    */
-  ParallelVector(uint64_t local_size, uint64_t global_size, MPI_Comm communicator);
+  ParallelVector(uint64_t local_size, uint64_t global_size, const mpi::Communicator& communicator);
 
   /**Copy constructor.*/
   ParallelVector(const ParallelVector& other);
@@ -181,7 +183,7 @@ protected:
 
   const int location_id_;
   const int process_count_;
-  const MPI_Comm comm_;
+  const mpi::Communicator& comm_;
 };
 
 } // namespace opensn

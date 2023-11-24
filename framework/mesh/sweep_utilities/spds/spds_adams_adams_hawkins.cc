@@ -94,7 +94,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
 
   // auto& global_dependencies = sweep_order->global_dependencies;
   std::vector<std::vector<int>> global_dependencies;
-  global_dependencies.resize(opensn::mpi.process_count);
+  global_dependencies.resize(opensn::mpi_comm.size());
 
   CommunicateLocationDependencies(location_dependencies_, global_dependencies);
 
@@ -102,7 +102,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
   //                                                        dependency graph
   BuildTaskDependencyGraph(global_dependencies, cycle_allowance_flag);
 
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 
   log.Log0Verbose1() << program_timer.GetTimeString() << " Done computing sweep ordering.\n\n";
 }
@@ -117,16 +117,16 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   DirectedGraph TDG;
 
   // Build graph on home location
-  if (opensn::mpi.location_id == 0)
+  if (opensn::mpi_comm.rank() == 0)
   {
     log.Log0Verbose1() << program_timer.GetTimeString() << " Building Task Dependency Graphs.";
 
     // Add vertices to the graph
-    for (int loc = 0; loc < opensn::mpi.process_count; loc++)
+    for (int loc = 0; loc < opensn::mpi_comm.size(); loc++)
       TDG.AddVertex();
 
     // Add dependencies
-    for (int loc = 0; loc < opensn::mpi.process_count; loc++)
+    for (int loc = 0; loc < opensn::mpi_comm.size(); loc++)
       for (int dep = 0; dep < global_dependencies[loc].size(); dep++)
         TDG.AddEdge(global_dependencies[loc][dep], loc);
 
@@ -152,17 +152,17 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   // Broadcast edge buffer size
   int edge_buffer_size = 0;
 
-  if (opensn::mpi.location_id == 0) edge_buffer_size = static_cast<int>(raw_edges_to_remove.size());
+  if (opensn::mpi_comm.rank() == 0) edge_buffer_size = static_cast<int>(raw_edges_to_remove.size());
 
-  MPI_Bcast(&edge_buffer_size, 1, MPI_INT, 0, mpi.comm);
+  MPI_Bcast(&edge_buffer_size, 1, MPI_INT, 0, mpi_comm);
 
   // Broadcast edges
-  if (opensn::mpi.location_id != 0) raw_edges_to_remove.resize(edge_buffer_size, -1);
+  if (opensn::mpi_comm.rank() != 0) raw_edges_to_remove.resize(edge_buffer_size, -1);
 
-  MPI_Bcast(raw_edges_to_remove.data(), edge_buffer_size, MPI_INT, 0, mpi.comm);
+  MPI_Bcast(raw_edges_to_remove.data(), edge_buffer_size, MPI_INT, 0, mpi_comm);
 
   // De-serialize edges
-  if (opensn::mpi.location_id != 0)
+  if (opensn::mpi_comm.rank() != 0)
   {
     edges_to_remove.resize(edge_buffer_size / 2, std::pair<int, int>(0, 0));
     int i = 0;
@@ -179,9 +179,9 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     int rlocI = edge_to_remove.first;
     int locI = edge_to_remove.second;
 
-    if (opensn::mpi.location_id == 0) TDG.RemoveEdge(rlocI, locI);
+    if (opensn::mpi_comm.rank() == 0) TDG.RemoveEdge(rlocI, locI);
 
-    if (locI == opensn::mpi.location_id)
+    if (locI == opensn::mpi_comm.rank())
     {
       auto dependent_location =
         std::find(location_dependencies_.begin(), location_dependencies_.end(), rlocI);
@@ -189,12 +189,12 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
       delayed_location_dependencies_.push_back(rlocI);
     }
 
-    if (rlocI == opensn::mpi.location_id) delayed_location_successors_.push_back(locI);
+    if (rlocI == opensn::mpi_comm.rank()) delayed_location_successors_.push_back(locI);
   }
 
   // Generate topological sort
   std::vector<int> glob_linear_sweep_order;
-  if (opensn::mpi.location_id == 0)
+  if (opensn::mpi_comm.rank() == 0)
   {
     log.LogAllVerbose2() << program_timer.GetTimeString() << "   - Generating topological sort.";
     auto so_temp = TDG.GenerateTopologicalSort();
@@ -213,22 +213,22 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   // Broadcasting topsort size
   int topsort_buffer_size = 0;
 
-  if (opensn::mpi.location_id == 0) topsort_buffer_size = glob_linear_sweep_order.size();
+  if (opensn::mpi_comm.rank() == 0) topsort_buffer_size = glob_linear_sweep_order.size();
 
-  MPI_Bcast(&topsort_buffer_size, 1, MPI_INT, 0, mpi.comm);
+  MPI_Bcast(&topsort_buffer_size, 1, MPI_INT, 0, mpi_comm);
 
   // Broadcast topological sort
-  if (opensn::mpi.location_id != 0) glob_linear_sweep_order.resize(topsort_buffer_size, -1);
+  if (opensn::mpi_comm.rank() != 0) glob_linear_sweep_order.resize(topsort_buffer_size, -1);
 
-  MPI_Bcast(glob_linear_sweep_order.data(), topsort_buffer_size, MPI_INT, 0, mpi.comm);
+  MPI_Bcast(glob_linear_sweep_order.data(), topsort_buffer_size, MPI_INT, 0, mpi_comm);
 
   // Compute reorder mapping
   // This mapping allows us to punch in
   // the location id and find what its
   // id is in the TDG
-  std::vector<int> glob_order_mapping(opensn::mpi.process_count, -1);
+  std::vector<int> glob_order_mapping(opensn::mpi_comm.size(), -1);
 
-  for (int k = 0; k < opensn::mpi.process_count; k++)
+  for (int k = 0; k < opensn::mpi_comm.size(); k++)
   {
     int loc = glob_linear_sweep_order[k];
     glob_order_mapping[loc] = k;
@@ -237,10 +237,10 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   // Determine sweep order ranks
   log.Log0Verbose1() << program_timer.GetTimeString() << " Determining sweep order ranks.";
 
-  std::vector<int> glob_sweep_order_rank(opensn::mpi.process_count, -1);
+  std::vector<int> glob_sweep_order_rank(opensn::mpi_comm.size(), -1);
 
   int abs_max_rank = 0;
-  for (int k = 0; k < opensn::mpi.process_count; k++)
+  for (int k = 0; k < opensn::mpi_comm.size(); k++)
   {
     int loc = glob_linear_sweep_order[k];
     if (global_dependencies[loc].empty()) glob_sweep_order_rank[k] = 0;
@@ -266,7 +266,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   {
     STDG new_stdg;
 
-    for (int k = 0; k < opensn::mpi.process_count; k++)
+    for (int k = 0; k < opensn::mpi_comm.size(); k++)
     {
       if (glob_sweep_order_rank[k] == r) new_stdg.item_id.push_back(glob_linear_sweep_order[k]);
     }

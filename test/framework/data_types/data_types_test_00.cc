@@ -7,9 +7,7 @@
 
 #include "lua/framework/console/console.h"
 
-#include "framework/mpi/mpi.h"
-
-#include "framework/mpi/mpi_utils_map_all2all.h"
+#include "framework/mpi/mpi_utils.h"
 
 #include <map>
 
@@ -74,7 +72,7 @@ chi_data_types_Test00(const InputParameters&)
   // serialization
   opensn::log.Log() << "Testing ByteArray "
                        "Serialization/DeSerialization\n";
-  if (opensn::mpi.process_count == 2)
+  if (opensn::mpi_comm.size() == 2)
   {
 
     std::map<int /*pid*/, ByteArray> send_data;
@@ -151,7 +149,7 @@ chi_data_types_Test00(const InputParameters&)
       }
     }
 
-    if (opensn::mpi.location_id == 0)
+    if (opensn::mpi_comm.rank() == 0)
     {
       send_data[1].Append(poster_child_cell.Serialize());
       send_data[1].Append(poster_child_cell.Serialize().Data());

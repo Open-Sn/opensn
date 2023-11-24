@@ -2,12 +2,13 @@
 
 #include "framework/math/parallel_vector/parallel_vector.h"
 #include "framework/math/math.h"
+#include "mpicpp-lite/mpicpp-lite.h"
 
 #include <vector>
 #include <cstdint>
 #include <map>
 
-#include <mpi.h>
+namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
@@ -22,7 +23,9 @@ public:
    * Initialize a parallel vector with the given local and global sizes with
    * the given communicator whose entries are set to zero.
    */
-  ParallelSTLVector(uint64_t local_size, uint64_t global_size, MPI_Comm communicator);
+  ParallelSTLVector(uint64_t local_size,
+                    uint64_t global_size,
+                    const mpi::Communicator& communicator);
 
   /**Copy constructor.*/
   ParallelSTLVector(const ParallelSTLVector& other);
@@ -170,7 +173,7 @@ protected:
 
 private:
   static std::vector<uint64_t>
-  DefineExtents(uint64_t local_size, int comm_size, MPI_Comm communicator);
+  DefineExtents(uint64_t local_size, int comm_size, const mpi::Communicator& communicator);
   int FindOwnerPID(uint64_t global_id) const;
 };
 

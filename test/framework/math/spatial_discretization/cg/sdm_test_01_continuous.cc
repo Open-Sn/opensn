@@ -196,7 +196,7 @@ chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
     local_max = std::max(val, local_max);
 
   double global_max;
-  MPI_Allreduce(&local_max, &global_max, 1, MPI_DOUBLE, MPI_MAX, opensn::mpi.comm);
+  MPI_Allreduce(&local_max, &global_max, 1, MPI_DOUBLE, MPI_MAX, opensn::mpi_comm);
 
   opensn::log.Log() << "Nodal max = " << global_max;
 

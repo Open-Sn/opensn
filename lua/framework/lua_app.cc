@@ -31,15 +31,9 @@ const std::string command_line_help_string_ =
   "     --dump-object-registry      Dumps the object registry.\n"
   "\n\n\n";
 
-LuaApp::LuaApp(MPI_Comm comm)
+LuaApp::LuaApp(const mpi::Communicator& comm)
 {
-  int location_id = 0, number_processes = 1;
-  MPI_Comm_rank(comm, &location_id);
-  MPI_Comm_size(comm, &number_processes);
-
-  opensn::mpi.SetCommunicator(comm);
-  opensn::mpi.SetLocationID(location_id);
-  opensn::mpi.SetProcessCount(number_processes);
+  opensn::mpi_comm = comm;
 }
 
 LuaApp::~LuaApp()
@@ -49,7 +43,7 @@ LuaApp::~LuaApp()
 int
 LuaApp::InitPetSc(int argc, char** argv)
 {
-  PETSC_COMM_WORLD = mpi.comm;
+  PETSC_COMM_WORLD = mpi_comm;
   PetscOptionsInsertString(nullptr, "-error_output_stderr");
   if (not allow_petsc_error_handler_) PetscOptionsInsertString(nullptr, "-no_signal_handler");
 
@@ -63,7 +57,7 @@ LuaApp::Run(int argc, char** argv)
 {
   InitPetSc(argc, argv);
   opensn::Initialize();
-  console.PostMPIInfo(opensn::mpi.location_id, opensn::mpi.process_count);
+  console.PostMPIInfo(opensn::mpi_comm.rank(), opensn::mpi_comm.size());
 
   int error_code = 0;
   ParseArguments(argc, argv);
@@ -167,7 +161,7 @@ LuaApp::RunInteractive(int argc, char** argv)
   if (not supress_beg_end_timelog_)
   {
     opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name
-                      << " in interactive-mode with " << mpi.process_count << " processes.";
+                      << " in interactive-mode with " << opensn::mpi_comm.size() << " processes.";
 
     opensn::log.Log() << opensn::name << " version " << GetVersionStr();
   }
@@ -211,7 +205,7 @@ LuaApp::RunBatch(int argc, char** argv)
   if (not supress_beg_end_timelog_)
   {
     opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name
-                      << " in batch-mode with " << mpi.process_count << " processes.";
+                      << " in batch-mode with " << opensn::mpi_comm.size() << " processes.";
 
     opensn::log.Log() << opensn::name << " version " << GetVersionStr();
   }
@@ -223,14 +217,14 @@ LuaApp::RunBatch(int argc, char** argv)
 
 #ifndef NDEBUG
   opensn::log.Log() << "Waiting...";
-  if (mpi.location_id == 0)
+  if (opensn::mpi_comm.rank() == 0)
     for (int k = 0; k < 2; ++k)
     {
       usleep(1000000);
       opensn::log.Log() << k;
     }
 
-  mpi.Barrier();
+  mpi_comm.barrier();
 #endif
 
   const auto& input_fname = input_file_name_;

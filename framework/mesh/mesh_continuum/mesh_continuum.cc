@@ -2,7 +2,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi_comm_set.h"
-#include "framework/mpi/mpi.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
@@ -31,7 +30,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
 
   // Loop over local cells
   // Populate local_graph_edges
-  local_graph_edges.insert(opensn::mpi.location_id); // add current location
+  local_graph_edges.insert(opensn::mpi_comm.rank()); // add current location
   for (auto& cell : local_cells)
   {
     for (auto& face : cell.faces_)
@@ -50,17 +49,17 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   // Broadcast local connection size
   log.Log0Verbose1() << "Communicating local connections.";
 
-  std::vector<std::vector<int>> global_graph(opensn::mpi.process_count, std::vector<int>());
-  for (int locI = 0; locI < opensn::mpi.process_count; locI++)
+  std::vector<std::vector<int>> global_graph(opensn::mpi_comm.size(), std::vector<int>());
+  for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
   {
     int locI_num_connections = static_cast<int>(local_connections.size());
 
     // If chi::mpi.location_id == locI then this call will
     // act like a send instead of receive. Otherwise
     // It receives the count.
-    MPI_Bcast(&locI_num_connections, 1, MPI_INT, locI, mpi.comm);
+    MPI_Bcast(&locI_num_connections, 1, MPI_INT, locI, mpi_comm);
 
-    if (opensn::mpi.location_id != locI) { global_graph[locI].resize(locI_num_connections, -1); }
+    if (opensn::mpi_comm.rank() != locI) { global_graph[locI].resize(locI_num_connections, -1); }
     else
     {
       std::copy(
@@ -69,7 +68,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   }
 
   // Broadcast local connections
-  for (int locI = 0; locI < opensn::mpi.process_count; locI++)
+  for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
   {
     // If chi::mpi.location_id == locI then this call will
     // act like a send instead of receive. Otherwise
@@ -78,19 +77,19 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
               static_cast<int>(global_graph[locI].size()),
               MPI_INT,
               locI,
-              mpi.comm);
+              mpi_comm);
   }
 
   log.Log0Verbose1() << "Done communicating local connections.";
 
   // Build groups
   MPI_Group world_group;
-  MPI_Comm_group(mpi.comm, &world_group);
+  MPI_Comm_group(mpi_comm, &world_group);
 
   std::vector<MPI_Group> location_groups;
-  location_groups.resize(opensn::mpi.process_count, MPI_Group());
+  location_groups.resize(opensn::mpi_comm.size(), MPI_Group());
 
-  for (int locI = 0; locI < opensn::mpi.process_count; locI++)
+  for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
   {
     MPI_Group_incl(world_group,
                    static_cast<int>(global_graph[locI].size()),
@@ -101,11 +100,11 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   // Build communicators
   std::vector<MPI_Comm> communicators;
   log.Log0Verbose1() << "Building communicators.";
-  communicators.resize(opensn::mpi.process_count, MPI_Comm());
+  communicators.resize(opensn::mpi_comm.size(), MPI_Comm());
 
-  for (int locI = 0; locI < opensn::mpi.process_count; locI++)
+  for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
   {
-    int err = MPI_Comm_create_group(mpi.comm, location_groups[locI], 0, &communicators[locI]);
+    int err = MPI_Comm_create_group(mpi_comm, location_groups[locI], 0, &communicators[locI]);
 
     if (err != MPI_SUCCESS) { log.Log0Verbose1() << "Communicator creation failed."; }
   }
@@ -123,7 +122,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
   const std::string fname = "MeshContinuum::ExportCellsToExodus";
   log.Log() << "Exporting mesh to Exodus file with base " << file_base_name;
 
-  if (opensn::mpi.process_count != 1)
+  if (opensn::mpi_comm.size() != 1)
     throw std::logic_error(fname + ": Currently this routine is only allowed "
                                    "in serial.");
 
@@ -427,7 +426,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
   // writer->PrintSelf(std::cout, vtkIndent());
 
   log.Log() << "Done exporting mesh to exodus.";
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 }
 
 void
@@ -631,7 +630,7 @@ MeshContinuum::ExportCellsToVTK(const std::string& file_base_name) const
 std::vector<uint64_t>
 MeshContinuum::GetDomainUniqueBoundaryIDs() const
 {
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
   log.LogAllVerbose1() << "Identifying unique boundary-ids.";
 
   // Develop local bndry-id set
@@ -646,14 +645,14 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
 
   // Everyone now tells everyone
   //                                       how many bndry-ids they have
-  std::vector<int> locI_bndry_count(opensn::mpi.process_count, 0);
+  std::vector<int> locI_bndry_count(opensn::mpi_comm.size(), 0);
 
-  MPI_Allgather(&local_num_bndry_ids, 1, MPI_INT, locI_bndry_count.data(), 1, MPI_INT, mpi.comm);
+  MPI_Allgather(&local_num_bndry_ids, 1, MPI_INT, locI_bndry_count.data(), 1, MPI_INT, mpi_comm);
 
   // Build a displacement list, in prep for gathering all bndry-ids
-  std::vector<int> locI_bndry_ids_displs(opensn::mpi.process_count, 0);
+  std::vector<int> locI_bndry_ids_displs(opensn::mpi_comm.size(), 0);
   size_t total_num_global_bndry_ids = locI_bndry_count[0];
-  for (int locI = 1; locI < opensn::mpi.process_count; ++locI)
+  for (int locI = 1; locI < opensn::mpi_comm.size(); ++locI)
   {
     locI_bndry_ids_displs[locI] = locI_bndry_ids_displs[locI - 1] + locI_bndry_count[locI - 1];
     total_num_global_bndry_ids += locI_bndry_count[locI];
@@ -669,7 +668,7 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
                  locI_bndry_count.data(),
                  locI_bndry_ids_displs.data(),
                  MPI_UNSIGNED_LONG_LONG,
-                 mpi.comm);
+                 mpi_comm);
 
   std::set<uint64_t> globl_bndry_ids_set(globl_bndry_ids.begin(), globl_bndry_ids.end());
 
@@ -940,7 +939,7 @@ MeshContinuum::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 
   size_t global_count = 0;
 
-  MPI_Allreduce(&local_count, &global_count, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi.comm);
+  MPI_Allreduce(&local_count, &global_count, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi_comm);
 
   return global_count;
 }
@@ -1160,7 +1159,7 @@ MeshContinuum::GetGlobalNumberOfCells() const
   size_t num_local_cells = local_cells_.size();
   size_t num_globl_cells = 0;
 
-  MPI_Allreduce(&num_local_cells, &num_globl_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi.comm);
+  MPI_Allreduce(&num_local_cells, &num_globl_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi_comm);
 
   return num_globl_cells;
 }

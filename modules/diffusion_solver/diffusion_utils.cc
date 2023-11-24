@@ -5,8 +5,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#include "framework/mpi/mpi.h"
-
 namespace opensn
 {
 namespace diffusion
@@ -22,7 +20,7 @@ KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* monitordestroy)
   VecNorm(Rhs, NORM_2, &rhs_norm);
   if (rhs_norm < 1.0e-25) rhs_norm = 1.0;
 
-  if (opensn::mpi.location_id == 0)
+  if (opensn::mpi_comm.rank() == 0)
   {
     const auto ksp_name = "Diffusion";
 

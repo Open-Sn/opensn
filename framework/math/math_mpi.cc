@@ -6,7 +6,7 @@ namespace opensn
 {
 
 double
-Vec2NormMPI(const VecDbl& x, MPI_Comm comm)
+Vec2NormMPI(const VecDbl& x, const mpi::Communicator& comm)
 {
   size_t n = x.size();
   double local_sum = 0.;

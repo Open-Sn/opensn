@@ -4,7 +4,6 @@
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mpi/mpi.h"
 #include "framework/utils/timer.h"
 
 #include <algorithm>
@@ -167,9 +166,9 @@ SPDS::PrintedGhostedGraph() const
 {
   constexpr double tolerance = 1.0e-16;
 
-  for (int p = 0; p < opensn::mpi.process_count; ++p)
+  for (int p = 0; p < opensn::mpi_comm.size(); ++p)
   {
-    if (p == opensn::mpi.location_id)
+    if (p == opensn::mpi_comm.rank())
     {
       std::cout << "// Printing directed graph for location " << p << ":\n";
       std::cout << "digraph DG {\n";
@@ -226,7 +225,7 @@ SPDS::PrintedGhostedGraph() const
       std::cout << "}\n";
 
     } // if current location
-    opensn::mpi.Barrier();
+    opensn::mpi_comm.barrier();
   } // for p
 }
 

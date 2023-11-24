@@ -14,13 +14,13 @@ namespace opensn
 VectorGhostCommunicator::VectorGhostCommunicator(const uint64_t local_size,
                                                  const uint64_t global_size,
                                                  const std::vector<int64_t>& ghost_ids,
-                                                 const MPI_Comm communicator)
+                                                 const mpi::Communicator& communicator)
   : local_size_(local_size),
     global_size_(global_size),
     ghost_ids_(ghost_ids),
     comm_(communicator),
-    location_id_(GetLocationID(communicator)),
-    process_count_(GetProcessCount(communicator)),
+    location_id_(communicator.rank()),
+    process_count_(communicator.size()),
     extents_(BuildLocationExtents(local_size, communicator)),
     cached_parallel_data_(MakeCachedParallelData())
 {

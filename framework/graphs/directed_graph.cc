@@ -298,7 +298,7 @@ DirectedGraph::FindApproxMinimumFAS()
 void
 DirectedGraph::PrintGraphviz(int location_mask)
 {
-  if (opensn::mpi.location_id != location_mask) return;
+  if (opensn::mpi_comm.rank() != location_mask) return;
 
   std::stringstream o;
   std::string offset("    ");
@@ -325,7 +325,7 @@ DirectedGraph::PrintGraphviz(int location_mask)
 void
 DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int location_mask)
 {
-  if (opensn::mpi.location_id != location_mask) return;
+  if (opensn::mpi_comm.rank() != location_mask) return;
 
   std::stringstream o;
   std::string offset("    ");

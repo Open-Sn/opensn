@@ -4,7 +4,6 @@
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mpi/mpi.h"
 
 namespace opensn
 {
@@ -264,7 +263,7 @@ AngleAggregation::GetNumDelayedAngularDOFs()
 
   size_t global_ang_unknowns = 0;
   MPI_Allreduce(
-    &local_ang_unknowns, &global_ang_unknowns, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi.comm);
+    &local_ang_unknowns, &global_ang_unknowns, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi_comm);
 
   number_angular_unknowns = {local_ang_unknowns, global_ang_unknowns};
 

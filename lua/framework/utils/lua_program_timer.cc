@@ -20,9 +20,9 @@ int
 chiProgramTime(lua_State* L)
 {
   double time;
-  if (opensn::mpi.location_id == 0) time = opensn::program_timer.GetTime() / 1000.0;
+  if (opensn::mpi_comm.rank() == 0) time = opensn::program_timer.GetTime() / 1000.0;
 
-  MPI_Bcast(&time, 1, MPI_DOUBLE, 0, opensn::mpi.comm);
+  MPI_Bcast(&time, 1, MPI_DOUBLE, 0, opensn::mpi_comm);
 
   lua_pushnumber(L, time);
   return 1;

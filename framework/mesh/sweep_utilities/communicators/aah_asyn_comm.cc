@@ -5,7 +5,6 @@
 #include "framework/mpi/mpi_comm_set.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mpi/mpi.h"
 #include "framework/memory_usage.h"
 
 namespace opensn
@@ -263,9 +262,9 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
       if (not delayed_prelocI_message_received[prelocI][m])
       {
         int message_available = 0;
-        MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
+        MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
                    max_num_mess * angle_set_num + m,
-                   comm_set_.LocICommunicator(opensn::mpi.location_id),
+                   comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
                    &message_available,
                    MPI_STATUS_IGNORE);
 
@@ -284,9 +283,9 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
         int error_code = MPI_Recv(&upstream_psi[block_addr],
                                   static_cast<int>(message_size),
                                   MPI_DOUBLE,
-                                  comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
+                                  comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
                                   max_num_mess * angle_set_num + m,
-                                  comm_set_.LocICommunicator(opensn::mpi.location_id),
+                                  comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
                                   MPI_STATUS_IGNORE);
 
         delayed_prelocI_message_received[prelocI][m] = true;
@@ -343,9 +342,9 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
       if (!prelocI_message_received[prelocI][m])
       {
         int message_available = 0;
-        MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
+        MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
                    max_num_mess * angle_set_num + m,
-                   comm_set_.LocICommunicator(opensn::mpi.location_id),
+                   comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
                    &message_available,
                    MPI_STATUS_IGNORE);
 
@@ -364,9 +363,9 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
         int error_code = MPI_Recv(&upstream_psi[block_addr],
                                   static_cast<int>(message_size),
                                   MPI_DOUBLE,
-                                  comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
+                                  comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
                                   max_num_mess * angle_set_num + m,
-                                  comm_set_.LocICommunicator(opensn::mpi.location_id),
+                                  comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
                                   MPI_STATUS_IGNORE);
 
         prelocI_message_received[prelocI][m] = true;

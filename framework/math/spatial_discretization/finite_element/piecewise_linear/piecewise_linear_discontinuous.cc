@@ -4,7 +4,6 @@
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mpi/mpi.h"
 #include "framework/mpi/mpi_utils.h"
 
 namespace opensn
@@ -76,21 +75,21 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   }
 
   // Allgather node_counts
-  locJ_block_size_.assign(opensn::mpi.process_count, 0);
+  locJ_block_size_.assign(opensn::mpi_comm.size(), 0);
   MPI_Allgather(&local_node_count,
                 1,
                 MPI_UNSIGNED_LONG_LONG,
                 locJ_block_size_.data(),
                 1,
                 MPI_UNSIGNED_LONG_LONG,
-                mpi.comm);
+                mpi_comm);
 
   // Assign
   // local_block_address
   uint64_t running_block_address = 0;
-  for (int locI = 0; locI < opensn::mpi.process_count; ++locI)
+  for (int locI = 0; locI < opensn::mpi_comm.size(); ++locI)
   {
-    if (locI == opensn::mpi.location_id)
+    if (locI == opensn::mpi_comm.rank())
       local_block_address_ = static_cast<int64_t>(running_block_address);
 
     running_block_address += locJ_block_size_[locI];
@@ -264,7 +263,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     }   // for j
   }
 
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 }
 
 int64_t
@@ -279,7 +278,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
-  if (cell.partition_id_ == opensn::mpi.location_id)
+  if (cell.partition_id_ == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
     {
@@ -348,7 +347,7 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
-  if (cell.partition_id_ == opensn::mpi.location_id)
+  if (cell.partition_id_ == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
     {

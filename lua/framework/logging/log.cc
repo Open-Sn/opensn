@@ -107,11 +107,11 @@ chiLogPrintTimingGraph(lua_State* L)
     rank = lua_tointeger(L, 1);
   }
 
-  ChiInvalidArgumentIf(rank >= opensn::mpi.process_count,
+  ChiInvalidArgumentIf(rank >= opensn::mpi_comm.size(),
                        "rank >= process_count, i.e., " + std::to_string(rank) +
-                         " >= " + std::to_string(opensn::mpi.process_count));
+                         " >= " + std::to_string(opensn::mpi_comm.size()));
 
-  if (opensn::mpi.location_id == rank)
+  if (opensn::mpi_comm.rank() == rank)
     opensn::log.LogAll() << "\nPerformance Graph:\n" << chitech_timing.MakeGraphString();
 
   return 0;

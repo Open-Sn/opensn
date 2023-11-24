@@ -2,6 +2,9 @@
 
 #include "framework/object.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
+#include "mpicpp-lite/mpicpp-lite.h"
+
+namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
@@ -75,7 +78,8 @@ protected:
   /**
    * Broadcasts PIDs to other locations.
    */
-  static void BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm communicator);
+  static void
+  BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, const mpi::Communicator& communicator);
 
   /**
    * Determines if a cells needs to be included as a ghost or as a local cell.

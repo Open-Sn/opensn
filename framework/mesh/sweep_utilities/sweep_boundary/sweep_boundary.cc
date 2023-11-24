@@ -1,7 +1,6 @@
 #include "framework/mesh/sweep_utilities/sweep_boundary/sweep_boundary.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mpi/mpi.h"
 
 namespace opensn
 {

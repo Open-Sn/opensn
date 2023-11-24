@@ -245,7 +245,7 @@ chiSimTest04_PWLC(const InputParameters& params)
   } // for cell
 
   double global_error = 0.0;
-  MPI_Allreduce(&local_error, &global_error, 1, MPI_DOUBLE, MPI_SUM, opensn::mpi.comm);
+  MPI_Allreduce(&local_error, &global_error, 1, MPI_DOUBLE, MPI_SUM, opensn::mpi_comm);
 
   global_error = std::sqrt(global_error);
 

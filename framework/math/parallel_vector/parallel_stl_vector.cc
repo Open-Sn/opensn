@@ -1,6 +1,6 @@
 #include "framework/math/parallel_vector/parallel_stl_vector.h"
 
-#include "framework/mpi/mpi_utils_map_all2all.h"
+#include "framework/mpi/mpi_utils.h"
 #include "framework/data_types/byte_array.h"
 
 #include <petsc.h>
@@ -18,7 +18,7 @@ namespace opensn
 
 ParallelSTLVector::ParallelSTLVector(const uint64_t local_size,
                                      const uint64_t global_size,
-                                     const MPI_Comm communicator)
+                                     const mpi::Communicator& communicator)
   : ParallelVector(local_size, global_size, communicator),
     extents_(DefineExtents(local_size, process_count_, communicator)),
     values_(local_size_, 0.0)
@@ -475,7 +475,9 @@ ParallelSTLVector::Assemble()
 }
 
 std::vector<uint64_t>
-ParallelSTLVector::DefineExtents(uint64_t local_size, int comm_size, MPI_Comm communicator)
+ParallelSTLVector::DefineExtents(uint64_t local_size,
+                                 int comm_size,
+                                 const mpi::Communicator& communicator)
 {
   // Get the local vector sizes per processor
   std::vector<uint64_t> local_sizes(comm_size, 0);

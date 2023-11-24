@@ -6,7 +6,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/logging/log_exceptions.h"
-#include "framework/mpi/mpi.h"
 #include "framework/utils/utils.h"
 #include "lua/framework/interfaces/plugin.h"
 #include "framework/runtime.h"
@@ -130,14 +129,14 @@ Console::RunConsoleLoop(char*) const
   /** Wrapper to an MPI_Bcast call for a single integer
    * broadcast from location 0. */
   auto BroadcastSingleInteger = [](int* int_being_bcast)
-  { MPI_Bcast(int_being_bcast, 1, MPI_INT, 0, mpi.comm); };
+  { MPI_Bcast(int_being_bcast, 1, MPI_INT, 0, mpi_comm); };
 
   /** Wrapper to an MPI_Bcast call for an array of characters
    * broadcast from location 0. */
   auto HomeBroadcastStringAsRaw = [](std::string string_to_bcast, int length)
   {
     char* raw_string_to_bcast = string_to_bcast.data();
-    MPI_Bcast(raw_string_to_bcast, length, MPI_CHAR, 0, mpi.comm);
+    MPI_Bcast(raw_string_to_bcast, length, MPI_CHAR, 0, mpi_comm);
   };
 
   /** Wrapper to an MPI_Bcast call for an array of characters
@@ -145,7 +144,7 @@ Console::RunConsoleLoop(char*) const
   auto NonHomeBroadcastStringAsRaw = [](std::string& string_to_bcast, int length)
   {
     std::vector<char> raw_chars(length + 1, '\0');
-    MPI_Bcast(raw_chars.data(), length, MPI_CHAR, 0, mpi.comm);
+    MPI_Bcast(raw_chars.data(), length, MPI_CHAR, 0, mpi_comm);
 
     string_to_bcast = std::string(raw_chars.data());
   };
@@ -169,7 +168,7 @@ Console::RunConsoleLoop(char*) const
     return L;
   };
 
-  const bool HOME = opensn::mpi.location_id == 0;
+  const bool HOME = opensn::mpi_comm.rank() == 0;
 
   while (true)
   {

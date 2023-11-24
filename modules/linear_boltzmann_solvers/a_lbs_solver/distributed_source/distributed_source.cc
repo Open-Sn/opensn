@@ -64,7 +64,7 @@ lbs::DistributedSource::Initialize(const LBSSolver& lbs_solver)
                 MPI_COMM_WORLD);
 
   log.LogAll() << "Distributed source has " << num_local_subsribers_
-               << " subscribing cells on processor " << opensn::mpi.location_id << ".";
+               << " subscribing cells on processor " << opensn::mpi_comm.rank() << ".";
   log.Log() << "Distributed source has " << num_global_subscribers_ << " total subscribing cells.";
 }
 

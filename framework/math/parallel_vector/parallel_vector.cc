@@ -1,17 +1,15 @@
 #include "framework/math/parallel_vector/parallel_vector.h"
 
-#include "framework/mpi/mpi_utils.h"
-
 namespace opensn
 {
 
 ParallelVector::ParallelVector(uint64_t local_size,
                                uint64_t global_size,
-                               const MPI_Comm communicator)
+                               const mpi::Communicator& communicator)
   : local_size_(local_size),
     global_size_(global_size),
-    location_id_(GetLocationID(communicator)),
-    process_count_(GetProcessCount(communicator)),
+    location_id_(communicator.rank()),
+    process_count_(communicator.size()),
     comm_(communicator)
 {
 }

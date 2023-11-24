@@ -3,7 +3,6 @@
 #include "framework/logging/log.h"
 #include "framework/mesh/sweep_utilities/spds/spds_adams_adams_hawkins.h"
 #include "framework/mesh/sweep_utilities/sweep_boundary/boundary_reflecting.h"
-#include "framework/mpi/mpi.h"
 #include <sstream>
 #include <algorithm>
 
@@ -38,7 +37,7 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
 
   // Reconcile all local maximums
   int global_max_num_messages = 0;
-  MPI_Allreduce(&local_max_num_messages, &global_max_num_messages, 1, MPI_INT, MPI_MAX, mpi.comm);
+  MPI_Allreduce(&local_max_num_messages, &global_max_num_messages, 1, MPI_INT, MPI_MAX, mpi_comm);
 
   // Propogate items back to sweep buffers
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)
@@ -76,7 +75,7 @@ SweepScheduler::InitializeAlgoDOG()
       {
         for (size_t index = 0; index < leveled_graph[level].item_id.size(); index++)
         {
-          if (leveled_graph[level].item_id[index] == opensn::mpi.location_id)
+          if (leveled_graph[level].item_id[index] == opensn::mpi_comm.rank())
           {
             loc_depth = static_cast<int>(leveled_graph.size() - level);
             break;
@@ -189,7 +188,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       {
         std::stringstream message_i;
         message_i << "Angleset " << angleset->GetID() << " executed on location "
-                  << opensn::mpi.location_id;
+                  << opensn::mpi_comm.rank();
 
         auto ev_info_i = std::make_shared<Logger::EventInfo>(message_i.str());
 
@@ -199,7 +198,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 
         std::stringstream message_f;
         message_f << "Angleset " << angleset->GetID() << " finished on location "
-                  << opensn::mpi.location_id;
+                  << opensn::mpi_comm.rank();
 
         auto ev_info_f = std::make_shared<Logger::EventInfo>(message_f.str());
 
@@ -213,7 +212,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
   }   // while not finished
 
   // Receive delayed data
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
   bool received_delayed_data = false;
   while (not received_delayed_data)
   {
@@ -274,7 +273,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
   }     // while not finished
 
   // Receive delayed data
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
   bool received_delayed_data = false;
   while (not received_delayed_data)
   {

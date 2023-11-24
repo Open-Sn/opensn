@@ -282,7 +282,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
 
   log.Log() << "Materials Initialized:\n" << materials_list.str() << "\n";
 
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Compute last fast group
   // initialize last fast group
