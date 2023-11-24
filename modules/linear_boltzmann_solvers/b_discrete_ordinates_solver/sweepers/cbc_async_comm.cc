@@ -84,21 +84,16 @@ CBC_ASynchronousCommunicator::SendData()
     if (not buffer_item.send_initiated_)
     {
       const int locJ = buffer_item.destination_;
-      MPI_Isend(buffer_item.data_array_.Data().data(),
-                static_cast<int>(buffer_item.data_array_.Size()),
-                MPI_BYTE,
-                comm_set_.MapIonJ(locJ, locJ),
-                static_cast<int>(angle_set_id_),
-                comm_set_.LocICommunicator(locJ),
-                &buffer_item.mpi_request_);
+      auto& comm = comm_set_.LocICommunicator(locJ);
+      auto dest = comm_set_.MapIonJ(locJ, locJ);
+      auto tag = static_cast<int>(angle_set_id_);
+      buffer_item.mpi_request_ = comm.isend(dest, tag, buffer_item.data_array_.Data());
       buffer_item.send_initiated_ = true;
     }
 
     if (not buffer_item.completed_)
     {
-      int sent;
-      MPI_Test(&buffer_item.mpi_request_, &sent, MPI_STATUS_IGNORE);
-      if (sent) buffer_item.completed_ = true;
+      if (mpi::test(buffer_item.mpi_request_)) buffer_item.completed_ = true;
       else
         all_messages_sent = false;
     }
@@ -117,26 +112,15 @@ CBC_ASynchronousCommunicator::ReceiveData()
   auto& location_dependencies = fluds_.GetSPDS().GetLocationDependencies();
   for (int locJ : location_dependencies)
   {
-    int message_available = 0;
-    MPI_Status status;
-    MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
-               static_cast<int>(angle_set_id_),
-               comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
-               &message_available,
-               &status);
-
-    if (message_available)
+    auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+    auto source_rank = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
+    auto tag = static_cast<int>(angle_set_id_);
+    mpi::Status status;
+    if (comm.iprobe(source_rank, tag, status))
     {
-      int num_items;
-      MPI_Get_count(&status, MPI_BYTE, &num_items);
+      int num_items = status.get_count<std::byte>();
       std::vector<std::byte> recv_buffer(num_items);
-      MPI_Recv(recv_buffer.data(),
-               num_items,
-               MPI_BYTE,
-               comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
-               status.MPI_TAG,
-               comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
-               MPI_STATUS_IGNORE);
+      comm.recv(source_rank, status.tag(), recv_buffer.data(), num_items);
 
       ByteArray data_array(recv_buffer);
 

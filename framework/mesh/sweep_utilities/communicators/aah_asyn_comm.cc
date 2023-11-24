@@ -48,9 +48,7 @@ AAH_ASynchronousCommunicator::ClearDownstreamBuffers()
   for (auto& locI_requests : deplocI_message_request)
     for (auto& request : locI_requests)
     {
-      int message_sent;
-      MPI_Test(&request, &message_sent, MPI_STATUS_IGNORE);
-      if (not message_sent)
+      if (not mpi::test(request))
       {
         done_sending = false;
         return;
@@ -211,7 +209,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
       deplocI_message_size[deplocI].push_back(num_unknowns);
     }
 
-    deplocI_message_request.emplace_back(message_count, MPI_Request());
+    deplocI_message_request.emplace_back(message_count);
   }
 
   // All reduce to get maximum message count
@@ -261,13 +259,10 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
     {
       if (not delayed_prelocI_message_received[prelocI][m])
       {
-        int message_available = 0;
-        MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
-                   max_num_mess * angle_set_num + m,
-                   comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
-                   &message_available,
-                   MPI_STATUS_IGNORE);
-
+        auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+        auto source_rank = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
+        auto tag = max_num_mess * angle_set_num + m;
+        auto message_available = comm.iprobe(source_rank, tag);
         if (not message_available)
         {
           all_messages_received = false;
@@ -279,34 +274,9 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 
         u_ll_int block_addr = delayed_prelocI_message_blockpos[prelocI][m];
         u_ll_int message_size = delayed_prelocI_message_size[prelocI][m];
-
-        int error_code = MPI_Recv(&upstream_psi[block_addr],
-                                  static_cast<int>(message_size),
-                                  MPI_DOUBLE,
-                                  comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
-                                  max_num_mess * angle_set_num + m,
-                                  comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
-                                  MPI_STATUS_IGNORE);
+        comm.recv(source_rank, tag, &upstream_psi[block_addr], message_size);
 
         delayed_prelocI_message_received[prelocI][m] = true;
-
-        if (error_code != MPI_SUCCESS)
-        {
-          std::stringstream err_stream;
-          err_stream << "################# Delayed receive error."
-                     << " message size=" << message_size << " as_num=" << angle_set_num
-                     << " num_mess=" << num_mess << " m=" << m << " error="
-                     << " size="
-                     << "\n";
-          char error_string[BUFSIZ];
-          int length_of_error_string, error_class;
-          MPI_Error_class(error_code, &error_class);
-          MPI_Error_string(error_class, error_string, &length_of_error_string);
-          err_stream << error_string << "\n";
-          MPI_Error_string(error_code, error_string, &length_of_error_string);
-          err_stream << error_string << "\n";
-          log.LogAllWarning() << err_stream.str();
-        }
       } // if not message already received
     }   // for message
   }     // for delayed predecessor
@@ -341,14 +311,10 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
     {
       if (!prelocI_message_received[prelocI][m])
       {
-        int message_available = 0;
-        MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
-                   max_num_mess * angle_set_num + m,
-                   comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
-                   &message_available,
-                   MPI_STATUS_IGNORE);
-
-        if (not message_available)
+        auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+        auto source = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
+        auto tag = max_num_mess * angle_set_num + m;
+        if (not comm.iprobe(source, tag))
         {
           ready_to_execute = false;
           continue;
@@ -360,32 +326,8 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
         u_ll_int block_addr = prelocI_message_blockpos[prelocI][m];
         u_ll_int message_size = prelocI_message_size[prelocI][m];
 
-        int error_code = MPI_Recv(&upstream_psi[block_addr],
-                                  static_cast<int>(message_size),
-                                  MPI_DOUBLE,
-                                  comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank()),
-                                  max_num_mess * angle_set_num + m,
-                                  comm_set_.LocICommunicator(opensn::mpi_comm.rank()),
-                                  MPI_STATUS_IGNORE);
-
+        comm.recv(source, tag, &upstream_psi[block_addr], message_size);
         prelocI_message_received[prelocI][m] = true;
-
-        if (error_code != MPI_SUCCESS)
-        {
-          std::stringstream err_stream;
-          err_stream << "################# Delayed receive error."
-                     << " message size=" << message_size << " as_num=" << angle_set_num
-                     << " num_mess=" << num_mess << " m=" << m << " error="
-                     << " size=\n";
-          char error_string[BUFSIZ];
-          int length_of_error_string, error_class;
-          MPI_Error_class(error_code, &error_class);
-          MPI_Error_string(error_class, error_string, &length_of_error_string);
-          err_stream << error_string << "\n";
-          MPI_Error_string(error_code, error_string, &length_of_error_string);
-          err_stream << error_string << "\n";
-          log.LogAllWarning() << err_stream.str();
-        }
       } // if not message already received
     }   // for message
 
@@ -417,13 +359,11 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
 
       const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[deplocI];
 
-      MPI_Isend(&outgoing_psi[block_addr],
-                static_cast<int>(message_size),
-                MPI_DOUBLE,
-                comm_set_.MapIonJ(locJ, locJ),
-                max_num_mess * angle_set_num + m,
-                comm_set_.LocICommunicator(locJ),
-                &deplocI_message_request[deplocI][m]);
+      auto& comm = comm_set_.LocICommunicator(locJ);
+      auto dest = comm_set_.MapIonJ(locJ, locJ);
+      auto tag = max_num_mess * angle_set_num + m;
+      deplocI_message_request[deplocI][m] =
+        comm.isend(dest, tag, &outgoing_psi[block_addr], message_size);
     } // for message
   }   // for deplocI
 }
