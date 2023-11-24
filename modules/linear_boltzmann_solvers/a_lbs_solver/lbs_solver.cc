@@ -746,7 +746,7 @@ LBSSolver::Initialize()
   PerformInputChecks(); // a assigns num_groups and grid
   PrintSimHeader();     // b
 
-  MPI_Barrier(mpi_comm);
+  mpi_comm.barrier();
 
   InitMaterials();                   // c
   InitializeSpatialDiscretization(); // d
@@ -1005,7 +1005,7 @@ LBSSolver::InitMaterials()
 
   log.Log0Verbose1() << "Materials Initialized:\n" << materials_list.str() << "\n";
 
-  MPI_Barrier(mpi_comm);
+  mpi_comm.barrier();
 }
 
 void

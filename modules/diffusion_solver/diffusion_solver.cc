@@ -303,7 +303,7 @@ Solver::Initialize(bool verbose)
     unit_integrals_.insert(std::make_pair(global_id, UnitIntegralContainer::Make(cell_mapping)));
   }
 
-  MPI_Barrier(mpi_comm);
+  mpi_comm.barrier();
   auto& sdm = discretization_;
 
   // Get DOF counts
@@ -494,7 +494,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   if (!suppress_assembly)
     log.Log() << program_timer.GetTimeString() << " " << TextName()
               << ": Done Assembling A locally";
-  MPI_Barrier(mpi_comm);
+  mpi_comm.barrier();
 
   // Call matrix assembly
   if (verbose_info_ || log.GetVerbosity() >= Logger::LOG_0VERBOSE_1)
