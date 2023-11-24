@@ -112,6 +112,7 @@ target_include_directories(libopensn
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/external
     PUBLIC
     ${LUA_INCLUDE_DIR}
     ${PETSC_INCLUDE_DIR}
