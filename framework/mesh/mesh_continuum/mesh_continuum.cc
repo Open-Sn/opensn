@@ -79,31 +79,21 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   log.Log0Verbose1() << "Done communicating local connections.";
 
   // Build groups
-  MPI_Group world_group;
-  MPI_Comm_group(mpi_comm, &world_group);
+  mpi::Group world_group = mpi_comm.group();
 
-  std::vector<MPI_Group> location_groups;
-  location_groups.resize(opensn::mpi_comm.size(), MPI_Group());
+  std::vector<mpi::Group> location_groups;
+  location_groups.resize(opensn::mpi_comm.size());
 
   for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
-  {
-    MPI_Group_incl(world_group,
-                   static_cast<int>(global_graph[locI].size()),
-                   global_graph[locI].data(),
-                   &location_groups[locI]);
-  }
+    location_groups[locI] = world_group.include(global_graph[locI]);
 
   // Build communicators
-  std::vector<MPI_Comm> communicators;
+  std::vector<mpi::Communicator> communicators;
   log.Log0Verbose1() << "Building communicators.";
-  communicators.resize(opensn::mpi_comm.size(), MPI_Comm());
+  communicators.resize(opensn::mpi_comm.size());
 
   for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
-  {
-    int err = MPI_Comm_create_group(mpi_comm, location_groups[locI], 0, &communicators[locI]);
-
-    if (err != MPI_SUCCESS) { log.Log0Verbose1() << "Communicator creation failed."; }
-  }
+    communicators[locI] = mpi_comm.create(location_groups[locI], 0);
 
   log.Log0Verbose1() << "Done building communicators.";
 
