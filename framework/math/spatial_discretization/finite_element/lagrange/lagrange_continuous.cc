@@ -377,7 +377,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
     ++locI;
   }
 
-  MPI_Alltoall(sendcount.data(), 1, MPI_INT, recvcount.data(), 1, MPI_INT, mpi_comm);
+  mpi_comm.all_to_all(sendcount, recvcount);
 
   // Step 3
   // We now establish send displacements and
