@@ -363,71 +363,8 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
       locI_serialized[locI].push_back(jr); // col num
   }
 
-  // Step 2
-  // Establish the size of the serialized data
-  // to send to each location and communicate
-  // to get receive count.
-  std::vector<int> sendcount(opensn::mpi_comm.size(), 0);
-  std::vector<int> recvcount(opensn::mpi_comm.size(), 0);
-  int locI = 0;
-  for (const auto& locI_data : locI_serialized)
-  {
-    sendcount[locI] = static_cast<int>(locI_data.size());
-
-    if (opensn::mpi_comm.rank() == 0)
-      log.LogAllVerbose1() << "To send to " << locI << " = " << sendcount[locI];
-
-    ++locI;
-  }
-
-  mpi_comm.all_to_all(sendcount, recvcount);
-
-  // Step 3
-  // We now establish send displacements and
-  // receive displacements.
-  std::vector<int> send_displs(opensn::mpi_comm.size(), 0);
-  std::vector<int> recv_displs(opensn::mpi_comm.size(), 0);
-
-  int send_displ_c = 0;
-  int recv_displ_c = 0;
-
-  int c = 0;
-  for (int send_count : sendcount)
-  {
-    send_displs[c++] = send_displ_c;
-    send_displ_c += send_count;
-  }
-  c = 0;
-  for (int recv_count : recvcount)
-  {
-    recv_displs[c++] = recv_displ_c;
-    recv_displ_c += recv_count;
-  }
-
-  // Communicate data
-  log.Log0Verbose1() << "Communicating non-local rows.";
-
-  // We now initialize the buffers and
-  // communicate the data
-  std::vector<int64_t> sendbuf;
   std::vector<int64_t> recvbuf;
-
-  sendbuf.reserve(send_displ_c);
-  recvbuf.resize(recv_displ_c, 0);
-
-  for (const auto& serial_block : locI_serialized)
-    for (int64_t data_val : serial_block)
-      sendbuf.push_back(data_val);
-
-  MPI_Alltoallv(sendbuf.data(),
-                sendcount.data(),
-                send_displs.data(),
-                MPI_INT64_T,
-                recvbuf.data(),
-                recvcount.data(),
-                recv_displs.data(),
-                MPI_INT64_T,
-                mpi_comm);
+  mpi_comm.all_to_all(locI_serialized, recvbuf);
 
   // Deserialze data
   log.Log0Verbose1() << "Deserialize data.";

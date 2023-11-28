@@ -175,15 +175,12 @@ VectorGhostCommunicator::CommunicateGhostEntries(std::vector<double>& ghosted_ve
   std::vector<double> recv_data(recv_size, 0.0);
 
   // Communicate the ghost data
-  MPI_Alltoallv(send_data.data(),
-                cached_parallel_data_.sendcounts_.data(),
-                cached_parallel_data_.senddispls_.data(),
-                MPI_DOUBLE,
-                recv_data.data(),
-                cached_parallel_data_.recvcounts_.data(),
-                cached_parallel_data_.recvdispls_.data(),
-                MPI_DOUBLE,
-                comm_);
+  comm_.all_to_all(send_data,
+                   cached_parallel_data_.sendcounts_,
+                   cached_parallel_data_.senddispls_,
+                   recv_data,
+                   cached_parallel_data_.recvcounts_,
+                   cached_parallel_data_.recvdispls_);
 
   // Lastly, populate the local vector with ghost data. All ghost data is
   // appended to the back of the local vector. Using the mapping between
