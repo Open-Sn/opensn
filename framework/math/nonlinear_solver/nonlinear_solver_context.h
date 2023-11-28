@@ -3,7 +3,6 @@
 namespace chi_math
 {
 
-template <class VecType, class SolverType>
 struct NonLinearSolverContext
 {
   virtual ~NonLinearSolverContext() = default;

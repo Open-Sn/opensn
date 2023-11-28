@@ -13,8 +13,8 @@ class XXNonLinearKEigen : public chi_physics::Solver
 {
 protected:
   LBSSolver& lbs_solver_;
-  std::shared_ptr<NLKEigenAGSContext<Vec, SNES>> nl_context_;
-  NLKEigenvalueAGSSolver<Mat, Vec, SNES> nl_solver_;
+  std::shared_ptr<NLKEigenAGSContext> nl_context_;
+  NLKEigenvalueAGSSolver nl_solver_;
 
   bool reinit_phi_1_;
   int num_free_power_its_;

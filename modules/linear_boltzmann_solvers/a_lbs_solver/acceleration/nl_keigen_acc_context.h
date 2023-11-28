@@ -11,7 +11,7 @@
 namespace lbs::acceleration
 {
 
-struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext<Vec, SNES>
+struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext
 {
   DiffusionMIPSolver& diff_solver_;
   LBSSolver& lbs_solver_;

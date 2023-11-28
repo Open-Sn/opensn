@@ -13,7 +13,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   const std::string fname = "lbs::SNESKResidualFunction";
   auto& function_context = *((KResidualFunctionContext*)ctx);
 
-  NLKEigenAGSContext<Vec, SNES>* nl_context_ptr;
+  NLKEigenAGSContext* nl_context_ptr;
   SNESGetApplicationContext(snes, &nl_context_ptr);
 
   auto& lbs_solver = nl_context_ptr->lbs_solver_;
