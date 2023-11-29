@@ -13,7 +13,7 @@ namespace opensnlua::fv_diffusion
  *\return Handle int Handle to the created solver.
  *\ingroup LuaDiffusion
  */
-int chiFVDiffusionSolverCreate(lua_State* L);
+int FVDiffusionSolverCreate(lua_State* L);
 
 /** Sets a property of a Diffusion solver. Please also consult the whitepaper
  * for the Diffusion solver (<a
@@ -65,7 +65,7 @@ int chiFVDiffusionSolverCreate(lua_State* L);
  * \ingroup LuaDiffusion
  * \author Jan
  */
-int chiFVDiffusionSetBCProperty(lua_State* L);
+int FVDiffusionSetBCProperty(lua_State* L);
 
 void RegisterLuaEntities(lua_State* L);
 } // namespace opensnlua::fv_diffusion

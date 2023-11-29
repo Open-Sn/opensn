@@ -11,7 +11,7 @@ namespace opensnlua::fv_diffusion
 {
 
 int
-chiFVDiffusionSetBCProperty(lua_State* L)
+FVDiffusionSetBCProperty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
