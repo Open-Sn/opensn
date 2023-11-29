@@ -114,8 +114,8 @@ LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
 LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
 LBSSetProperty(phys1,SCATTERING_ORDER,1)
 
-chiLBKESSetProperty(phys1, "MAX_ITERATIONS", 1000)
-chiLBKESSetProperty(phys1, "TOLERANCE", 1.0e-8)
+LBKESSetProperty(phys1, "MAX_ITERATIONS", 1000)
+LBKESSetProperty(phys1, "TOLERANCE", 1.0e-8)
 
 LBSSetProperty(phys1, USE_PRECURSORS, true)
 

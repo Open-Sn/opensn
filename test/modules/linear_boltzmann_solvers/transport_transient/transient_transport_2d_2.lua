@@ -101,8 +101,8 @@ LBSSetProperty(phys1,BOUNDARY_CONDITION,YMAX,LBSBoundaryTypes.REFLECTING);
 LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
 LBSSetProperty(phys1,SCATTERING_ORDER,1)
 
-chiLBKESSetProperty(phys1, "MAX_ITERATIONS", 100)
-chiLBKESSetProperty(phys1, "TOLERANCE", 1.0e-8)
+LBKESSetProperty(phys1, "MAX_ITERATIONS", 100)
+LBKESSetProperty(phys1, "TOLERANCE", 1.0e-8)
 
 LBSSetProperty(phys1, USE_PRECURSORS, true)
 
