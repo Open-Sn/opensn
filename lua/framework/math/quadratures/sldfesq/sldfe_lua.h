@@ -10,7 +10,7 @@
  * ###Example:
  * Example with refinement level 2.
  * \code
- * pquad = chiCreateSLDFESQAngularQuadrature(2)
+ * pquad = CreateSLDFESQAngularQuadrature(2)
  * \endcode
  *
  * \image html "SLDFESQBasen2.png" width=500px
@@ -20,7 +20,7 @@
  * \ingroup LuaSLDFESQ
  * \author Jan
  */
-int chiCreateSLDFESQAngularQuadrature(lua_State* L);
+int CreateSLDFESQAngularQuadrature(lua_State* L);
 
 /** Applies a local refinement of angles.
  * \param handle int. Handle to the reference quadrature.
@@ -35,7 +35,7 @@ int chiCreateSLDFESQAngularQuadrature(lua_State* L);
  * ###Example:
  * Example with refinement level 2 and a triple directional refinement:
  * \code
- * pquad = chiCreateSLDFESQAngularQuadrature(2)
+ * pquad = CreateSLDFESQAngularQuadrature(2)
  * chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},45.0*math.pi/180,false)
  * chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},23.0*math.pi/180,false)
  * chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},12.0*math.pi/180,false)
@@ -45,7 +45,7 @@ int chiCreateSLDFESQAngularQuadrature(lua_State* L);
  *
  * Example with refinement level 2 and a triple planar refinement:
  * \code
- * pquad = chiCreateSLDFESQAngularQuadrature(2)
+ * pquad = CreateSLDFESQAngularQuadrature(2)
  * chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},22.50*math.pi/180,true)
  * chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},11.75*math.pi/180,true)
  * chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},5.000*math.pi/180,true)
@@ -68,7 +68,7 @@ int chiLocallyRefineSLDFESQAngularQuadrature(lua_State* L);
  * Example of printing a quadrature:
  * Example with refinement level 2 and a triple directional refinement:
  * \code
- * pquad = chiCreateSLDFESQAngularQuadrature(2)
+ * pquad = CreateSLDFESQAngularQuadrature(2)
  * chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},45.0*math.pi/180,false)
  * chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},23.0*math.pi/180,false)
  * chiLocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},12.0*math.pi/180,false)
