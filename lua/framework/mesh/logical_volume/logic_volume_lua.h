@@ -23,32 +23,32 @@
  * Example usage:
  * \code
  * -- Sphere at origin radius 1.0
- * lv1 = chiLogicalVolumeCreate(SPHERE_ORIGIN, 1.0)
+ * lv1 = LogicalVolumeCreate(SPHERE_ORIGIN, 1.0)
  *
  * -- Sphere centered at (0.1,0.2,0.3) with radius 1.0
- * lv2 = chiLogicalVolumeCreate(SPHERE, 0.1, 0.2, 0.3, 1.0)
+ * lv2 = LogicalVolumeCreate(SPHERE, 0.1, 0.2, 0.3, 1.0)
  *
  * -- Rectangular parallelepiped
  * xmin = -1.0; xmax = 1.0
  * ymin = -2.0; ymax = 1.0
  * zmin = -1000.0, zmax = 1000.0
- * lv3 = chiLogicalVolumeCreate(RPP, xmin, xmax, ymin, ymax, zmin, zmax)
+ * lv3 = LogicalVolumeCreate(RPP, xmin, xmax, ymin, ymax, zmin, zmax)
  *
  * -- Right Circular Cylinder
  * basex = 1.0; basey = 0.0; basez = 0.5
  * upvecx = 0.0; upvecy = 0.0; upvecz = 1.0
  * R = 1.0
- * lv4 = chiLogicalVolumeCreate(RPP, basex, basey, basez, upvecx, upvecy, upvecz,
+ * lv4 = LogicalVolumeCreate(RPP, basex, basey, basez, upvecx, upvecy, upvecz,
  * R)
  *
  * -- Surface mesh
  * lv_surfmesh = chiSurfaceMeshCreate()
  * chiSurfaceMeshImportFromOBJFile(lv_surfmesh, "MeshFile3D.obj", false)
  *
- * lv5 = chiLogicalVolumeCreate(SURFACE, lv_surfmesh)
+ * lv5 = LogicalVolumeCreate(SURFACE, lv_surfmesh)
  *
  * -- Boolean combination
- * lv6 = chiLogicalVolumeCreate(BOOLEAN, {{true , lv5},  -- inside logical volume 5
+ * lv6 = LogicalVolumeCreate(BOOLEAN, {{true , lv5},  -- inside logical volume 5
  *                                        {false, lv1},  -- outside logical volume
  * 1 {false, lv2}}) -- outside logical volume 2 \endcode
  *
@@ -56,7 +56,7 @@
  * \ingroup LuaLogicVolumes
  * \author Jan
  */
-int chiLogicalVolumeCreate(lua_State* L);
+int LogicalVolumeCreate(lua_State* L);
 
 /**Evaluates whether a point is within the logical volume.
  * \param LVHandle int Handle to the logical volume.

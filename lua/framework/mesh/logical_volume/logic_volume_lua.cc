@@ -16,7 +16,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiLogicalVolumeCreate);
+RegisterLuaFunctionAsIs(LogicalVolumeCreate);
 RegisterLuaConstantAsIs(SPHERE, Varying(1));
 RegisterLuaConstantAsIs(SPHERE_ORIGIN, Varying(2));
 RegisterLuaConstantAsIs(RPP, Varying(3));
@@ -26,7 +26,7 @@ RegisterLuaConstantAsIs(BOOLEAN, Varying(10));
 RegisterLuaFunctionAsIs(LogicalVolumePointSense);
 
 int
-chiLogicalVolumeCreate(lua_State* L)
+LogicalVolumeCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
@@ -340,7 +340,7 @@ chiLogicalVolumeCreate(lua_State* L)
   else
   {
     opensn::log.Log0Error() << "Unrecognized volume type used in "
-                               "chiLogicalVolumeCreate.";
+                               "LogicalVolumeCreate.";
     opensn::Exit(EXIT_FAILURE);
   }
 

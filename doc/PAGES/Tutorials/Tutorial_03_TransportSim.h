@@ -35,7 +35,7 @@ Next we set the material IDs:
 
 \code
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 \endcode
 
@@ -182,7 +182,7 @@ surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 chiVolumeMesherExecute();
 
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 --############################################### Add material

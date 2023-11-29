@@ -9,7 +9,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes}
 mesh.MeshGenerator.Execute(meshgen1)
 
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 --############################################### Add material

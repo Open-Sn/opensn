@@ -18,14 +18,14 @@ mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Set Material IDs
 material = PhysicsAddMaterial("Homogenous_Material");
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 -- Setboundary IDs
 -- xmin,xmax,ymin,ymax,zmin,zmax
-e_vol = chiLogicalVolumeCreate(RPP,0.99999,1000,-1000,1000,-1000,1000)
-w_vol = chiLogicalVolumeCreate(RPP,-1000,0.00001,-1000,1000,-1000,1000)
-n_vol = chiLogicalVolumeCreate(RPP,-1000,1000,0.99999,1000,-1000,1000)
-s_vol = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,0.00001,-1000,1000)
+e_vol = LogicalVolumeCreate(RPP,0.99999,1000,-1000,1000,-1000,1000)
+w_vol = LogicalVolumeCreate(RPP,-1000,0.00001,-1000,1000,-1000,1000)
+n_vol = LogicalVolumeCreate(RPP,-1000,1000,0.99999,1000,-1000,1000)
+s_vol = LogicalVolumeCreate(RPP,-1000,1000,-1000,0.00001,-1000,1000)
 
 e_bndry = 0
 w_bndry = 1

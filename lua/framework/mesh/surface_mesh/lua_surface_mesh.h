@@ -42,7 +42,7 @@ int chiSurfaceMeshCreate(lua_State* L);
  * lv_surfmesh1 = chiSurfaceMeshCreate()
  * chiSurfaceMeshImportFromOBJFile(lv_surfmesh1, "MeshFile3D.obj", false)
  *
- * lv1 = chiLogicalVolumeCreate(SURFACE, lv_surfmesh1)
+ * lv1 = LogicalVolumeCreate(SURFACE, lv_surfmesh1)
  *
  * -- Surface mesh with transform
  * dx = 1.5
@@ -51,7 +51,7 @@ int chiSurfaceMeshCreate(lua_State* L);
  * chiSurfaceMeshImportFromOBJFile(lv_surfmesh2, "MeshFile3D.obj", false,
  * {dx,dy,0.0})
  *
- * lv2 = chiLogicalVolumeCreate(SURFACE, lv_surfmesh2)
+ * lv2 = LogicalVolumeCreate(SURFACE, lv_surfmesh2)
  * \endcode
  *
  * \return success bool Return true if file was successfully loaded and false

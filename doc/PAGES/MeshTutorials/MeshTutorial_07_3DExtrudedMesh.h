@@ -75,7 +75,7 @@ or
  ### LV of pre-defined type
  \code
 -- Logical Volumes
-my_LV = chiLogicalVolumeCreate(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
+my_LV = LogicalVolumeCreate(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
 VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
 MeshHandlerExportMeshToVTK("export_mesh_with_IDs")
  \endcode
@@ -84,7 +84,7 @@ MeshHandlerExportMeshToVTK("export_mesh_with_IDs")
  \code
 surf_LV = chiSurfaceMeshCreate()
 chiSurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
-my_LV = chiLogicalVolumeCreate(SURFACE, surf_LV)
+my_LV = LogicalVolumeCreate(SURFACE, surf_LV)
 
  VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
 MeshHandlerExportMeshToVTK("export_mesh_with_IDs")

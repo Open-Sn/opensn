@@ -97,7 +97,7 @@ chiVolumeMesherExecute();
 material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
 chiRegionExportMeshToVTK(region1,"Mesh")

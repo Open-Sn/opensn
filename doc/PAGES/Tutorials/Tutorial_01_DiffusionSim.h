@@ -90,13 +90,13 @@ chiVolumeMesherExecute();
 Materials ID's can conveniently be specified using logical volumes. There are
 many options for logical volumes ranging from primitive parametric surfaces
  to non-convex user generated surfaces using surface meshes
- (see chiLogicalVolumeCreate). For this tutorial
+ (see LogicalVolumeCreate). For this tutorial
  we will use a rectangular paralellipiped (RPP or brick) as follows.
 
 \code
 material = PhysicsAddMaterial("Test Material");
 
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 \endcode
 
@@ -106,7 +106,7 @@ We first create a material using the PhysicsAddMaterial() function.
  operates on the integer supplied.
 This material is added to the physics environment and therefore has scope over
 all mesh handlers and all physics entities. We then create a logical volume
- using the function chiLogicalVolumeCreate() with arguments RPP,
+ using the function LogicalVolumeCreate() with arguments RPP,
  specifying that we will be using a Rectangular Parallelipiped and then a
  series of dimensions specifying xmin-xmax-ymin-ymax-zmin-zmax. Every cell
  centroid within these dimensions will be flagged as being "within" the logical
@@ -228,7 +228,7 @@ chiVolumeMesherExecute();
 material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
 MeshHandlerExportMeshToVTK("Mesh")
