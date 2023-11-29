@@ -10,9 +10,9 @@ namespace opensnlua::lbs
 {
 
 int
-chiLBSWriteFluxMoments(lua_State* L)
+LBSWriteFluxMoments(lua_State* L)
 {
-  const std::string fname = "chiLBSWriteFluxMoments";
+  const std::string fname = "LBSWriteFluxMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);

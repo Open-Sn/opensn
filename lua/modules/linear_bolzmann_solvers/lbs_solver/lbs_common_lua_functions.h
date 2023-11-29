@@ -641,7 +641,7 @@ int chiLBSReadGroupsetAngularFlux(lua_State* L);
  *                         will append its id to the back plus an extension ".data"
  *
  */
-int chiLBSWriteFluxMoments(lua_State* L);
+int LBSWriteFluxMoments(lua_State* L);
 
 /**Creates scattered source-moments, based on a LBS solution, and writes them
  * to file.

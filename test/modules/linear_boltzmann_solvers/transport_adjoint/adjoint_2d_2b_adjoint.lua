@@ -113,7 +113,7 @@ ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 SolverInitialize(ss_solver)
 SolverExecute(ss_solver)
 
-chiLBSWriteFluxMoments(phys, "Adjoint2D_2b_adjoint")
+LBSWriteFluxMoments(phys, "Adjoint2D_2b_adjoint")
 
 --############################################### Exports
 if master_export == nil then
