@@ -95,7 +95,7 @@ GetSyntax_PPPrinterSetOptions()
   params.SetDocGroup("doc_PPUtils");
 
   params.AddRequiredParameterBlock("arg0", "Options parameter block");
-  params.LinkParameterToBlock("arg0", "chi::PostProcessorPrinterOptions");
+  params.LinkParameterToBlock("arg0", "PostProcessorPrinterOptions");
 
   return params;
 }
