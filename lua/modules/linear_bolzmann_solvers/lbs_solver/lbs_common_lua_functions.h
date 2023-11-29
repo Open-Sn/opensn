@@ -616,7 +616,7 @@ int LBSGetScalarFieldFunctionList(lua_State* L);
  *                         will append its id to the back plus an extension ".data"
  *
  */
-int chiLBSWriteGroupsetAngularFlux(lua_State* L);
+int LBSWriteGroupsetAngularFlux(lua_State* L);
 
 /**Reads the angular fluxes of a LBS groupset from a file.
  *
