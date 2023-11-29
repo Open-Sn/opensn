@@ -27,7 +27,7 @@ function MMS_q(x,y,z)
     return math.pi*math.pi * (math.cos(math.pi*x)+math.cos(math.pi*y))
 end
 
-chi_unit_tests.acceleration_Diffusion_CFEM();
+unit_tests.acceleration_Diffusion_CFEM();
 chiMPIBarrier()
 if (location_id == 0) then
     --os.execute("rm SimTest_92*")

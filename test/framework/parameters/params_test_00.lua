@@ -20,4 +20,4 @@ block =
   }
 }
 
-chi_unit_tests.chi_ParameterBlock_Test00(--[[verbose=]]true, block)
+unit_tests.chi_ParameterBlock_Test00(--[[verbose=]]true, block)

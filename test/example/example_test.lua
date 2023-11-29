@@ -1,1 +1,1 @@
-chi_unit_tests.ExampleTest()
+unit_tests.ExampleTest()

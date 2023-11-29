@@ -21,7 +21,7 @@ namespace unit_sim_tests
 
 ParameterBlock acceleration_Diffusion_CFEM(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests,
+RegisterWrapperFunction(unit_tests,
                         acceleration_Diffusion_CFEM,
                         nullptr,
                         acceleration_Diffusion_CFEM);

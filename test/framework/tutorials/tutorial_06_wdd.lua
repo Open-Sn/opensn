@@ -17,7 +17,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Set Material IDs
 chiVolumeMesherSetMatIDToAll(0)
 
-chi_unit_testsB.chiSimTest06_WDD();
+unit_testsB.chiSimTest06_WDD();
 chiMPIBarrier()
 if (location_id == 0) then
     os.execute("rm SimTest_06*")

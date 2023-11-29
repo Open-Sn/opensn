@@ -18,7 +18,7 @@ namespace unit_tests
 
 ParameterBlock chi_data_types_Test00(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests, chi_data_types_Test00, nullptr, chi_data_types_Test00);
+RegisterWrapperFunction(unit_tests, chi_data_types_Test00, nullptr, chi_data_types_Test00);
 
 ParameterBlock
 chi_data_types_Test00(const InputParameters&)
@@ -256,7 +256,7 @@ chi_data_types_Test00(const InputParameters&)
     }
   } // if #procs=2
   else
-    throw std::invalid_argument("chi_unit_tests::Test_chi_data_types requires"
+    throw std::invalid_argument("unit_tests::Test_chi_data_types requires"
                                 " at least 2 MPI processes.");
 
   if (not passed)

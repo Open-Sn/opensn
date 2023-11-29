@@ -1,1 +1,1 @@
-chi_unit_tests.math_Test02_ParallelVector()
+unit_tests.math_Test02_ParallelVector()

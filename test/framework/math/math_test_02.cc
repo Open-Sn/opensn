@@ -13,7 +13,7 @@ namespace unit_tests
 
 ParameterBlock math_Test02_ParallelVector(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests,
+RegisterWrapperFunction(unit_tests,
                         math_Test02_ParallelVector,
                         nullptr,
                         math_Test02_ParallelVector);

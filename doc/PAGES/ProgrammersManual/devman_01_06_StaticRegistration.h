@@ -213,7 +213,7 @@ In the definition (`.cc`) file we then have
 namespace zorba
 {
 
-OpenSnRegisterObject(chi_unit_tests, CoolObject);
+OpenSnRegisterObject(unit_tests, CoolObject);
 
 chi::InputParameters CoolObject::GetInputParameters()
 {

@@ -13,7 +13,7 @@ namespace unit_tests
 {
 int chi_ParameterBlock_Test00(lua_State* L);
 
-RegisterLuaFunction(chi_ParameterBlock_Test00, chi_unit_tests, chi_ParameterBlock_Test00);
+RegisterLuaFunction(chi_ParameterBlock_Test00, unit_tests, chi_ParameterBlock_Test00);
 
 int
 chi_ParameterBlock_Test00(lua_State* L)

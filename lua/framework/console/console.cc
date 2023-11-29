@@ -23,7 +23,7 @@ namespace opensnlua
 
 Console& console = Console::GetInstance();
 
-RegisterLuaFunction(Console::LuaWrapperCall, chi_console, LuaWrapperCall);
+RegisterLuaFunction(Console::LuaWrapperCall, console, LuaWrapperCall);
 
 Console&
 Console::GetInstance() noexcept
@@ -348,7 +348,7 @@ Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_na
   auto MakeChunk = [&L, &full_lua_name]()
   {
     std::string chunk_code = "local params = ...; ";
-    chunk_code += "return chi_console.LuaWrapperCall(\"" + full_lua_name + "\", ...)";
+    chunk_code += "return console.LuaWrapperCall(\"" + full_lua_name + "\", ...)";
 
     luaL_loadstring(L, chunk_code.c_str());
   };

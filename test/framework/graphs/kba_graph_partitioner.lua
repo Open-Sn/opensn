@@ -1,1 +1,1 @@
-chi_unit_tests.TestKBAGraphPartitioner00()
+unit_tests.TestKBAGraphPartitioner00()

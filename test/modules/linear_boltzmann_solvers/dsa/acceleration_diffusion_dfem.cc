@@ -38,7 +38,7 @@ CreateFunction(const std::string& function_name)
 
 ParameterBlock acceleration_Diffusion_DFEM(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests,
+RegisterWrapperFunction(unit_tests,
                         acceleration_Diffusion_DFEM,
                         nullptr,
                         acceleration_Diffusion_DFEM);

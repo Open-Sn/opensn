@@ -20,7 +20,7 @@ namespace unit_sim_tests
 
 ParameterBlock chiSimTest93_RayTracing(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests, chiSimTest93_RayTracing, nullptr, chiSimTest93_RayTracing);
+RegisterWrapperFunction(unit_tests, chiSimTest93_RayTracing, nullptr, chiSimTest93_RayTracing);
 
 ParameterBlock
 chiSimTest93_RayTracing(const InputParameters&)

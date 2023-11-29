@@ -18,7 +18,7 @@ namespace unit_tests
 
 ParameterBlock math_Test01_WDD_IJK_Sweep(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests,
+RegisterWrapperFunction(unit_tests,
                         math_Test01_WDD_IJK_Sweep,
                         nullptr,
                         math_Test01_WDD_IJK_Sweep);

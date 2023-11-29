@@ -14,7 +14,7 @@ namespace unit_tests
 
 ParameterBlock TestKBAGraphPartitioner00(const InputParameters&);
 
-RegisterWrapperFunction(chi_unit_tests,
+RegisterWrapperFunction(unit_tests,
                         TestKBAGraphPartitioner00,
                         nullptr,
                         TestKBAGraphPartitioner00);

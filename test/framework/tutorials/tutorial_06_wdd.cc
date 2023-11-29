@@ -40,7 +40,7 @@ std::vector<double> SetSource(const MeshContinuum& grid,
 /**WDD Sweep. */
 ParameterBlock chiSimTest06_WDD(const InputParameters&);
 
-RegisterWrapperFunction(chi_unit_testsB, chiSimTest06_WDD, nullptr, chiSimTest06_WDD);
+RegisterWrapperFunction(unit_testsB, chiSimTest06_WDD, nullptr, chiSimTest06_WDD);
 
 ParameterBlock
 chiSimTest06_WDD(const InputParameters&)

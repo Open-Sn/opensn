@@ -20,7 +20,7 @@ namespace unit_tests
 InputParameters math_SDM_Test02Syntax();
 ParameterBlock math_SDM_Test02_DisContinuous(const InputParameters& input_parameters);
 
-RegisterWrapperFunction(chi_unit_tests,
+RegisterWrapperFunction(unit_tests,
                         math_SDM_Test02_DisContinuous,
                         math_SDM_Test02Syntax,
                         math_SDM_Test02_DisContinuous);

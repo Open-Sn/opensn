@@ -26,7 +26,7 @@ namespace unit_sim_tests
 /**PWLD Sweep. */
 ParameterBlock chiSimTest91_PWLD(const InputParameters&);
 
-RegisterWrapperFunction(chi_unit_tests, chiSimTest91_PWLD, nullptr, chiSimTest91_PWLD);
+RegisterWrapperFunction(unit_tests, chiSimTest91_PWLD, nullptr, chiSimTest91_PWLD);
 
 ParameterBlock
 chiSimTest91_PWLD(const InputParameters&)

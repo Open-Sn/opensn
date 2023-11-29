@@ -12,7 +12,7 @@ namespace unit_tests
 
 ParameterBlock chi_misc_utils_Test00(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests, chi_misc_utils_Test00, nullptr, chi_misc_utils_Test00);
+RegisterWrapperFunction(unit_tests, chi_misc_utils_Test00, nullptr, chi_misc_utils_Test00);
 
 ParameterBlock
 chi_misc_utils_Test00(const InputParameters&)

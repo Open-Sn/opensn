@@ -20,7 +20,7 @@ namespace unit_tests
 InputParameters math_SDM_Test01Syntax();
 ParameterBlock math_SDM_Test01_Continuous(const InputParameters& input_parameters);
 
-RegisterWrapperFunction(chi_unit_tests,
+RegisterWrapperFunction(unit_tests,
                         math_SDM_Test01_Continuous,
                         math_SDM_Test01Syntax,
                         math_SDM_Test01_Continuous);
