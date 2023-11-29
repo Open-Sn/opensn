@@ -17,7 +17,7 @@ PhysicsTransportXSSet(xs["6"],CHI_XSFILE,"materials/XS_fission_chamber.cxs")
 water_xs = PhysicsTransportXSGet(xs["0"])
 
 num_groups = water_xs["num_groups"]
-chiLog(LOG_0,"Num groups: "..tostring(num_groups))
+Log(LOG_0,"Num groups: "..tostring(num_groups))
 
 --############################################### Create materials
 materials = {}

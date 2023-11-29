@@ -16,7 +16,7 @@ num_procs = 4
 
 --############################################### Check num_procs
 if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    chiLog(LOG_0ERROR, "Incorrect amount of processors. " ..
+    Log(LOG_0ERROR, "Incorrect amount of processors. " ..
         "Expected " .. tostring(num_procs) ..
         ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -151,11 +151,11 @@ for g = 0, num_groups - 1 do
     FFInterpolationExecute(ffi)
     value = FFInterpolationGetValue(ffi)
 
-    chiLog(LOG_0, string.format("QoI-value[" .. tostring(g) .. "]= %.5e", value))
+    Log(LOG_0, string.format("QoI-value[" .. tostring(g) .. "]= %.5e", value))
 
     sum = sum + value
 end
-chiLog(LOG_0, string.format("QoI-value[sum]= %.5e", sum))
+Log(LOG_0, string.format("QoI-value[sum]= %.5e", sum))
 
 --############################################### Exports
 if master_export == nil then

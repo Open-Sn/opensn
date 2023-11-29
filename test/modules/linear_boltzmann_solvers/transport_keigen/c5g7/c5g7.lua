@@ -99,7 +99,7 @@ elseif (k_method == "jfnk") then
     SolverInitialize(k_solver)
     SolverExecute(k_solver)
 else
-    chiLog(LOG_0ERROR, "k_method must be specified. \"pi\", "..
+    Log(LOG_0ERROR, "k_method must be specified. \"pi\", "..
       "\"pi_scdsa\", \"pi_scdsa_pwlc\" or \"jfnk\"");
     os.exit(1)
 end

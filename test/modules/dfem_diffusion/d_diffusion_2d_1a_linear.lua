@@ -94,4 +94,4 @@ FFInterpolationInitialize(ffvol)
 FFInterpolationExecute(ffvol)
 maxval = FFInterpolationGetValue(ffvol)
 
-chiLog(LOG_0,string.format("Max-value=%.6f", maxval))
+Log(LOG_0,string.format("Max-value=%.6f", maxval))

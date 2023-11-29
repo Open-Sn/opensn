@@ -50,7 +50,7 @@ int chiLogSetVerbosity(lua_State* L);
  * \ingroup LuaLogging
  * \author Jan
  */
-int chiLog(lua_State* L);
+int Log(lua_State* L);
 /**Processes the sub-events of a repeating event and converts it to a
  * meaningful value (floating-point).
  *

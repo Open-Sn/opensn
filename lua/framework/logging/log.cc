@@ -11,7 +11,7 @@ using namespace opensn;
 namespace opensnlua
 {
 RegisterLuaFunctionAsIs(chiLogSetVerbosity);
-RegisterLuaFunctionAsIs(chiLog);
+RegisterLuaFunctionAsIs(Log);
 RegisterLuaFunctionAsIs(chiLogProcessEvent);
 RegisterLuaFunctionAsIs(LogPrintTimingGraph);
 
@@ -43,11 +43,11 @@ chiLogSetVerbosity(lua_State* L)
 }
 
 int
-chiLog(lua_State* L)
+Log(lua_State* L)
 {
   int num_args = lua_gettop(L);
 
-  if (num_args != 2) LuaPostArgAmountError("chiLog", 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError("Log", 2, num_args);
 
   int mode = lua_tonumber(L, 1);
   const char* message = lua_tostring(L, 2);

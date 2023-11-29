@@ -167,7 +167,7 @@ make -j4
  *
  * int chiPrintStatus(lua_State *L)
  * {
- *     ChiLog& log = ChiLog::GetInstance();
+ *     Log& log = Log::GetInstance();
  *
  *     log.Log() << "Hello from here";
  *
