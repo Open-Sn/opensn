@@ -88,12 +88,12 @@ for k=1,num_groups do
     bsrc[k] = 0.0
 end
 bsrc[1] = 0.5
-chiLBSSetProperty(phys1,BOUNDARY_CONDITION,
+LBSSetProperty(phys1,BOUNDARY_CONDITION,
                   YMIN,LBSBoundaryTypes.INCIDENT_ISOTROPIC,bsrc);
 
 --========== Solvers
-chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD1D)
-chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
+LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD1D)
+LBSSetProperty(phys1,SCATTERING_ORDER,0)
 \endcode
 
  A transport solver is invoked by using a call to LBSCreateSolver().
@@ -220,12 +220,12 @@ for k=1,num_groups do
     bsrc[k] = 0.0
 end
 bsrc[1] = 0.5
-chiLBSSetProperty(phys1,BOUNDARY_CONDITION,
+LBSSetProperty(phys1,BOUNDARY_CONDITION,
                   YMIN,LBSBoundaryTypes.INCIDENT_ISOTROPIC,bsrc);
 
 --========== Solvers
-chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
-chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
+LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
+LBSSetProperty(phys1,SCATTERING_ORDER,0)
 
 chiLBSInitialize(phys1)
 chiLBSExecute(phys1)

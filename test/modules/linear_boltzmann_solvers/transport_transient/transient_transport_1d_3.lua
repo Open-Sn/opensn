@@ -108,20 +108,20 @@ LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
 --    bsrc[g] = 0.0
 --end
 --bsrc[1] = 1.0/2
---chiLBSSetProperty(phys1,BOUNDARY_CONDITION,ZMIN,LBSBoundaryTypes.REFLECTING);
---chiLBSSetProperty(phys1,BOUNDARY_CONDITION,ZMAX,LBSBoundaryTypes.REFLECTING);
+--LBSSetProperty(phys1,BOUNDARY_CONDITION,ZMIN,LBSBoundaryTypes.REFLECTING);
+--LBSSetProperty(phys1,BOUNDARY_CONDITION,ZMAX,LBSBoundaryTypes.REFLECTING);
 --
-chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
-chiLBSSetProperty(phys1,SCATTERING_ORDER,1)
+LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
+LBSSetProperty(phys1,SCATTERING_ORDER,1)
 
 chiLBKESSetProperty(phys1, "MAX_ITERATIONS", 1000)
 chiLBKESSetProperty(phys1, "TOLERANCE", 1.0e-8)
 
-chiLBSSetProperty(phys1, USE_PRECURSORS, true)
+LBSSetProperty(phys1, USE_PRECURSORS, true)
 
---chiLBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, false)
-chiLBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, false)
-chiLBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
+--LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, false)
+LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, false)
+LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 
 
 --############################################### Initialize and Execute Solver

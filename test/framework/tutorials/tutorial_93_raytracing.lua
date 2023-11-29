@@ -73,8 +73,8 @@ PhysicsMaterialSetProperty(materials[1],
 --LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 --
 ----############################################### Set solver properties
---chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
---chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
+--LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
+--LBSSetProperty(phys1,SCATTERING_ORDER,0)
 --
 ----############################################### Initialize and Execute Solver
 --SolverInitialize(phys1)

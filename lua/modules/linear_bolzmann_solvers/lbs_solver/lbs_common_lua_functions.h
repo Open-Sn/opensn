@@ -58,7 +58,7 @@ namespace opensnlua::lbs
  *  to be followed by a boolean.\n\n
  *
  * \code
- * chiLBSSetProperty(phys1,READ_RESTART_DATA,"YRestart1")
+ * LBSSetProperty(phys1,READ_RESTART_DATA,"YRestart1")
  * \endcode
  *
  * WRITE_RESTART_DATA\n
@@ -71,7 +71,7 @@ namespace opensnlua::lbs
  *  "YRestart", "restart" and 30 minutes respectively.\n\n
  *
  * \code
- * chiLBSSetProperty(phys1,WRITE_RESTART_DATA,"YRestart1","restart",1)
+ * LBSSetProperty(phys1,WRITE_RESTART_DATA,"YRestart1","restart",1)
  * \endcode
  *
  * ###Discretization methods
@@ -96,7 +96,7 @@ namespace opensnlua::lbs
  * LBSBoundaryTypes.VACUUM\n
  * Specifies a vaccuum boundary condition. It is not followed by any value.\n
  * \code
- * chiLBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
+ * LBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
  *                       LBSBoundaryTypes.VACUUM);
  * \endcode
  * \n
@@ -110,7 +110,7 @@ namespace opensnlua::lbs
  *     bsrc[g] = 0.0
  * end
  * bsrc[1] = 1.0
- * chiLBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
+ * LBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
  *                       LBSBoundaryTypes.INCIDENT_ISOTROPIC, bsrc);
  * \endcode
  * \n
@@ -119,7 +119,7 @@ namespace opensnlua::lbs
  * conditions are used this enduces a cyclic dependency which will increase the
  * iteration convergence behavior.\n
  * \code
- * chiLBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
+ * LBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
  *                       LBSBoundaryTypes.REFLECTING);
  * \endcode
  * \n
@@ -173,7 +173,7 @@ namespace opensnlua::lbs
  *     return psi
  * end
  *
- * chiLBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
+ * LBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
  *                       LBSBoundaryTypes.INCIDENT_ANISTROPIC_HETEROGENEOUS,
  *                       "luaBoundaryFunctionA");
  * \endcode
@@ -193,7 +193,7 @@ namespace opensnlua::lbs
  *
  * \ingroup LBSLuaFunctions
  */
-int chiLBSSetProperty(lua_State* L);
+int LBSSetProperty(lua_State* L);
 
 /**Create a groupset.
  * \param SolverIndex int Handle to the solver for which the set is to be created.

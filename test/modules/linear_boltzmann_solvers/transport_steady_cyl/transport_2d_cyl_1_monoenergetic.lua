@@ -108,10 +108,10 @@ chiSolverExecute(ss_solver)
 --LBSGroupsetSetGMRESRestartIntvl(phys0, gs0, 30)
 --
 ----  spatial discretisation
---chiLBSSetProperty(phys0, DISCRETIZATION_METHOD, PWLD)
+--LBSSetProperty(phys0, DISCRETIZATION_METHOD, PWLD)
 --
 ----  scattering order
---chiLBSSetProperty(phys0, SCATTERING_ORDER, 0)
+--LBSSetProperty(phys0, SCATTERING_ORDER, 0)
 --
 ----------------------------------------------------------------------------------
 ----  boundary conditions
@@ -120,13 +120,13 @@ chiSolverExecute(ss_solver)
 --for g = 1, ngrp do
 --  dirichlet_value[g] = 0
 --end
---chiLBSSetProperty(phys0, BOUNDARY_CONDITION,
+--LBSSetProperty(phys0, BOUNDARY_CONDITION,
 --                  XMIN, LBSBoundaryTypes.REFLECTING)
---chiLBSSetProperty(phys0, BOUNDARY_CONDITION,
+--LBSSetProperty(phys0, BOUNDARY_CONDITION,
 --                  XMAX, LBSBoundaryTypes.INCIDENT_ISOTROPIC, dirichlet_value)
---chiLBSSetProperty(phys0, BOUNDARY_CONDITION,
+--LBSSetProperty(phys0, BOUNDARY_CONDITION,
 --                  YMIN, LBSBoundaryTypes.INCIDENT_ISOTROPIC, dirichlet_value)
---chiLBSSetProperty(phys0, BOUNDARY_CONDITION,
+--LBSSetProperty(phys0, BOUNDARY_CONDITION,
 --                  YMAX, LBSBoundaryTypes.INCIDENT_ISOTROPIC, dirichlet_value)
 --
 ----------------------------------------------------------------------------------

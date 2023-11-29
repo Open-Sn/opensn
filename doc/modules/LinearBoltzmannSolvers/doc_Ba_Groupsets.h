@@ -7,8 +7,8 @@ The code below is an example of a complete specification of a groupset.
 phys1 = LBSCreateSolver()
 chiSolverAddRegion(phys1,region1)
 
-chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD3D)
-chiLBSSetProperty(phys1,SCATTERING_ORDER,1)
+LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD3D)
+LBSSetProperty(phys1,SCATTERING_ORDER,1)
 
 --========== Groups
 grp = {}

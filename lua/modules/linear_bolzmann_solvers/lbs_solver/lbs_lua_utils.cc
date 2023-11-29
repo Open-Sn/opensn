@@ -24,7 +24,7 @@ namespace opensnlua::lbs
 void
 RegisterLuaEntities(lua_State* L)
 {
-  RegisterFunction(chiLBSSetProperty);
+  RegisterFunction(LBSSetProperty);
   RegisterNumber(DISCRETIZATION_METHOD, 1);
   RegisterNumber(PWLD, 3);
   RegisterNumber(PWLD1D, 4);

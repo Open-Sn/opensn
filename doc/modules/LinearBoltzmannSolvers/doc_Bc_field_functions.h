@@ -15,8 +15,8 @@ chiSolverAddRegion(phys1,region1)
 --
 -- Add Groupset construction here
 --
-chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
-chiLBSSetProperty(phys1,SCATTERING_ORDER,1)
+LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
+LBSSetProperty(phys1,SCATTERING_ORDER,1)
 --
 chiLBSInitialize(phys1)
 chiLBSExecute(phys1)
