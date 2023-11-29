@@ -17,7 +17,7 @@ namespace opensnlua::lbs
 opensn::InputParameters GetSyntax_SetOptions();
 opensn::ParameterBlock SetOptions(const opensn::InputParameters& params);
 
-int chiLBSSetOptions(lua_State* L);
+int LBSSetOptions(lua_State* L);
 
 /**Sets the internal phi vector to the value in the associated
  * field function.
@@ -29,7 +29,7 @@ int chiLBSSetOptions(lua_State* L);
  * ### Example usage
  * Example:
  * \code
- * chiLBSSetPhiFromFieldFunction(phys1,
+ * LBSSetPhiFromFieldFunction(phys1,
  * {
  *   which_phi = "old",  --Optional
  *   m_ids = {0,1,2,3},  --Optional Empty means all of them
@@ -54,7 +54,7 @@ int chiLBSSetOptions(lua_State* L);
  * Default: `{}`.\n\n
  *
  */
-int chiLBSSetPhiFromFieldFunction(lua_State* L);
+int LBSSetPhiFromFieldFunction(lua_State* L);
 
 /**
  * Adds a point source to an LBS solver.

@@ -39,7 +39,7 @@ LBSSetProperty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
-  opensn::log.Log0Warning() << fname + " has been deprecated. Use chiLBSSetOptions instead.";
+  opensn::log.Log0Warning() << fname + " has been deprecated. Use LBSSetOptions instead.";
 
   const int numArgs = lua_gettop(L);
   if (numArgs < 2) LuaPostArgAmountError(fname, 2, numArgs);
@@ -68,8 +68,7 @@ LBSSetProperty(lua_State* L)
     if (scpcode(method) == PropertyCode::PWLD)
       lbs_solver.Options().sd_type = SDMType::PIECEWISE_LINEAR_DISCONTINUOUS;
     else
-      throw std::invalid_argument(
-        "Invalid option for Discretization method in LBSSetProperty.\n");
+      throw std::invalid_argument("Invalid option for Discretization method in LBSSetProperty.\n");
   }
   else if (scpcode(property) == PropertyCode::BOUNDARY_CONDITION)
   {

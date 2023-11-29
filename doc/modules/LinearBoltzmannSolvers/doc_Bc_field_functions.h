@@ -51,7 +51,7 @@ phi_g001_m000
 Additionally, LBS can create a power generation field function with the
 default name `power_generation`.
 \code
-chiLBSSetOptions(phys1,
+LBSSetOptions(phys1,
 {
   spatial_discretization = "pwld",
   scattering_order = 2,
@@ -64,7 +64,7 @@ chiLBSSetOptions(phys1,
 All of the field function can be supplied with a prefix, either using the
 solver name
 \code
-chiLBSSetOptions(phys1,
+LBSSetOptions(phys1,
 {
   spatial_discretization = "pwld",
   scattering_order = 2,
@@ -78,7 +78,7 @@ chiLBSSetOptions(phys1,
 
 or by setting a different prefix
 \code
-chiLBSSetOptions(phys1,
+LBSSetOptions(phys1,
 {
   spatial_discretization = "pwld",
   scattering_order = 2,
