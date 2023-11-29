@@ -16,7 +16,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 VolumeMesherSetMatIDToAll(0)
 
 unit_sim_tests.chiSimTest03_PWLC();
-chiMPIBarrier()
+MPIBarrier()
 if (location_id == 0) then
     os.execute("rm CodeTut3_PWLC*")
 end

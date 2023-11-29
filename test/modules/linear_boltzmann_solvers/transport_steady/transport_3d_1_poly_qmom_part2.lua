@@ -162,7 +162,7 @@ if (location_id == 0 and master_export == nil) then
   --local handle = io.popen("python ZPFFI00.py")
   print("Execution completed")
 end
-chiMPIBarrier()
+MPIBarrier()
 if (location_id == 0) then
   os.execute("rm Qmoms*")
 end

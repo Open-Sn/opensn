@@ -128,7 +128,7 @@ end
 
 
 --############################################### Cleanup
-chiMPIBarrier()
+MPIBarrier()
 if (location_id == 0) then
     os.execute("rm Adjoint2D_2b_adjoint*.data")
 end

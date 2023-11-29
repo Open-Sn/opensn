@@ -123,7 +123,7 @@ if master_export == nil then
 end
 
 --############################################### Cleanup
-chiMPIBarrier()
+MPIBarrier()
 if (location_id == 0) then
     os.execute("rm Adjoint2D_3b_adjoint*.data")
 end

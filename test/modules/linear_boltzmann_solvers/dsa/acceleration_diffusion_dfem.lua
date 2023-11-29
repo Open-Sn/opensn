@@ -28,7 +28,7 @@ function MMS_q(x,y,z)
 end
 
 unit_tests.acceleration_Diffusion_DFEM();
-chiMPIBarrier()
+MPIBarrier()
 if (location_id == 0) then
     os.execute("rm SimTest_92*")
 end

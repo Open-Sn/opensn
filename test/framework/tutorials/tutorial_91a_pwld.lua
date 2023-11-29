@@ -17,7 +17,7 @@ VolumeMesherSetMatIDToAll(0)
 
 
 unit_tests.chiSimTest91_PWLD();
-chiMPIBarrier()
+MPIBarrier()
 if (location_id == 0) then
     os.execute("rm SimTest_91*")
 end
