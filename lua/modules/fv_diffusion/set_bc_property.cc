@@ -37,7 +37,7 @@ chiFVDiffusionSetBCProperty(lua_State* L)
     if (num_args < 4)
     {
       opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                              << " chiCFEMDiffusionsetBCproperty(...,\"boundary_type\".... "
+                              << " CFEMDiffusionsetBCproperty(...,\"boundary_type\".... "
                               << " At least 4 arguments are expected.";
       opensn::Exit(EXIT_FAILURE);
     }
@@ -52,7 +52,7 @@ chiFVDiffusionSetBCProperty(lua_State* L)
       if (num_args != 4)
       {
         opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " chiCFEMDiffusionsetBCproperty(...,\"boundary_type\","
+                                << " CFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"reflecting\". "
                                 << " 4 arguments are expected.";
         opensn::Exit(EXIT_FAILURE);
@@ -71,7 +71,7 @@ chiFVDiffusionSetBCProperty(lua_State* L)
       if (num_args != 5)
       {
         opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " chiCFEMDiffusionsetBCproperty(...,\"boundary_type\","
+                                << " CFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"dirichlet\". "
                                 << " 5 arguments are expected.";
         opensn::Exit(EXIT_FAILURE);
@@ -92,7 +92,7 @@ chiFVDiffusionSetBCProperty(lua_State* L)
       if (num_args != 5)
       {
         opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " chiCFEMDiffusionsetBCproperty(...,\"boundary_type\","
+                                << " CFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"neumann\". "
                                 << " 5 arguments are expected.";
         opensn::Exit(EXIT_FAILURE);
@@ -113,7 +113,7 @@ chiFVDiffusionSetBCProperty(lua_State* L)
       if (num_args != 4)
       {
         opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " chiCFEMDiffusionsetBCproperty(...,\"boundary_type\","
+                                << " CFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"vacuum\". "
                                 << " 4 arguments are expected.";
         opensn::Exit(EXIT_FAILURE);
@@ -132,7 +132,7 @@ chiFVDiffusionSetBCProperty(lua_State* L)
       if (num_args != 7)
       {
         opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " chiCFEMDiffusionsetBCproperty(...,\"boundary_type\","
+                                << " CFEMDiffusionsetBCproperty(...,\"boundary_type\","
                                 << bound_name << ",\"robin\". "
                                 << " 7 arguments are expected.";
         opensn::Exit(EXIT_FAILURE);
@@ -157,7 +157,7 @@ chiFVDiffusionSetBCProperty(lua_State* L)
     else
     {
       opensn::log.LogAllError() << "Unsupported boundary type encountered in call to "
-                                << "chiCFEMDiffusionSetBCProperty(..,\"boundary_type\",.. :"
+                                << "CFEMDiffusionSetBCProperty(..,\"boundary_type\",.. :"
                                 << type_name;
       opensn::Exit(EXIT_FAILURE);
     }
