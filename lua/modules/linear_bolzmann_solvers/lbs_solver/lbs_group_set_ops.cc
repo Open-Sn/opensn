@@ -17,9 +17,9 @@ namespace opensnlua::lbs
 {
 
 int
-chiLBSCreateGroupset(lua_State* L)
+LBSCreateGroupset(lua_State* L)
 {
-  const std::string fname = "chiLBSCreateGroupset";
+  const std::string fname = "LBSCreateGroupset";
   // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
   auto& lbs_solver =
@@ -33,9 +33,9 @@ chiLBSCreateGroupset(lua_State* L)
 }
 
 int
-chiLBSCreateGroup(lua_State* L)
+LBSCreateGroup(lua_State* L)
 {
-  const std::string fname = "chiLBSCreateGroup";
+  const std::string fname = "LBSCreateGroup";
   const int num_args = lua_gettop(L);
   if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
 

@@ -57,8 +57,8 @@ RegisterLuaEntities(lua_State* L)
   RegisterNumberValueToTable(INCIDENT_ANISTROPIC_HETEROGENEOUS, 4, LBSBoundaryTypes);
 
   RegisterTable(LBSGroupset);
-  RegisterFunction(chiLBSCreateGroupset);
-  RegisterFunction(chiLBSCreateGroup);
+  RegisterFunction(LBSCreateGroupset);
+  RegisterFunction(LBSCreateGroup);
   RegisterFunction(chiLBSGroupsetAddGroups);
   RegisterFunction(chiLBSGroupsetSetQuadrature);
   RegisterFunction(chiLBSGroupsetSetAngleAggregationType);

@@ -94,11 +94,11 @@ chiSolverExecute(ss_solver)
 ----  groups
 --groups = {}
 --for g = 1, ngrp do
---  groups[g] = chiLBSCreateGroup(phys0)
+--  groups[g] = LBSCreateGroup(phys0)
 --end
 --
 ----  groupsets
---gs0 = chiLBSCreateGroupset(phys0)
+--gs0 = LBSCreateGroupset(phys0)
 --chiLBSGroupsetAddGroups(phys0, gs0, 0, ngrp-1)
 --chiLBSGroupsetSetQuadrature(phys0, gs0, pquad)
 --chiLBSGroupsetSetAngleAggregationType(phys0, gs0, LBSGroupset.ANGLE_AGG_AZIMUTHAL)

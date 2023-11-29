@@ -70,13 +70,13 @@ phys1 = LBSCreateSolver()
 chiSolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
-    chiLBSCreateGroup(phys1)
+    LBSCreateGroup(phys1)
 end
 
 pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
 
 --========== Groupset def
-gs0 = chiLBSCreateGroupset(phys1)
+gs0 = LBSCreateGroupset(phys1)
 chiLBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
 chiLBSGroupsetSetQuadrature(phys1,gs0,pquad)
 chiLBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
@@ -100,7 +100,7 @@ chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
  This creates a derived object based on a base physics solver so the
  mesh region gets added to the
  solver using the generic call chiSolverAddRegion(). Past this point we need
- to create the single required group with chiLBSCreateGroup(), although we put
+ to create the single required group with LBSCreateGroup(), although we put
  this in a loop for in-case we want to increase the number of groups, and then a
  quadrature rule for integration of the angular fluxes. Since we are dealing
  with a 3D simulation we will be integrating over \f$ \theta \f$, the polar
@@ -113,7 +113,7 @@ chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
  The next step in the process is to assign a group-set. Group-sets are very
  useful aggregation features in higher dimension simulations but here we
  only have a single groupset. The group-set is created with a call to
- chiLBSCreateGroupset(). Next we add groups to the group-set using a range,
+ LBSCreateGroupset(). Next we add groups to the group-set using a range,
  however, since we only have one group here the range will be 0 to 0. The
  final piece of a groupset is to add a quadrature which is achieved with a
  call to chiLBSGroupsetSetQuadrature().
@@ -202,13 +202,13 @@ phys1 = LBSCreateSolver()
 chiSolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
-    chiLBSCreateGroup(phys1)
+    LBSCreateGroup(phys1)
 end
 
 pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2,2)
 
 --========== Groupset def
-gs0 = chiLBSCreateGroupset(phys1)
+gs0 = LBSCreateGroupset(phys1)
 chiLBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
 chiLBSGroupsetSetQuadrature(phys1,gs0,pquad)
 chiLBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)

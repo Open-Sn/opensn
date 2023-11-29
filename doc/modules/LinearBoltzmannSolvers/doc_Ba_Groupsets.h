@@ -13,7 +13,7 @@ chiLBSSetProperty(phys1,SCATTERING_ORDER,1)
 --========== Groups
 grp = {}
 for g=1,num_groups do
-    grp[g] = chiLBSCreateGroup(phys1)
+    grp[g] = LBSCreateGroup(phys1)
 end
 
 --========== ProdQuad
@@ -21,7 +21,7 @@ pquad0 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
 pquad1 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,8, 8)
 
 --========== Groupset def
-gs0 = chiLBSCreateGroupset(phys1)
+gs0 = LBSCreateGroupset(phys1)
 
 cur_gs = gs0
 chiLBSGroupsetAddGroups(phys1,cur_gs,0,15)

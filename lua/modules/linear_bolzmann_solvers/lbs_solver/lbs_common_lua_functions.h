@@ -202,12 +202,12 @@ int chiLBSSetProperty(lua_State* L);
  *
  * Example:
  * \code
- * gs0 = chiLBSCreateGroupset(phys1)
+ * gs0 = LBSCreateGroupset(phys1)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSCreateGroupset(lua_State* L);
+int LBSCreateGroupset(lua_State* L);
 
 /**Create a group.
  * \param SolverIndex int Handle to the solver for which the group
@@ -222,13 +222,13 @@ int chiLBSCreateGroupset(lua_State* L);
  * --========== Groups
  * grp = {}
  * for g=1,num_groups do
- *     grp[g] = chiLBSCreateGroup(phys1)
+ *     grp[g] = LBSCreateGroup(phys1)
  * end
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSCreateGroup(lua_State* L);
+int LBSCreateGroup(lua_State* L);
 
 /**Adds a block of groups to a groupset.
  * \param SolverIndex int Handle to the solver for which the group
@@ -244,7 +244,7 @@ int chiLBSCreateGroup(lua_State* L);
  * \code
  * grp = {}
  * for g=1,num_groups do
- *     grp[g] = chiLBSCreateGroup(phys1)
+ *     grp[g] = LBSCreateGroup(phys1)
  * end
  *
  * chiLBSGroupsetAddGroups(phys1,cur_gs,0,15)

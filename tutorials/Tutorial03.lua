@@ -29,13 +29,13 @@ phys1 = LBSCreateSolver()
 chiSolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
-    chiLBSCreateGroup(phys1)
+    LBSCreateGroup(phys1)
 end
 
 pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
 
 --========== Groupset def
-gs0 = chiLBSCreateGroupset(phys1)
+gs0 = LBSCreateGroupset(phys1)
 chiLBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
 chiLBSGroupsetSetQuadrature(phys1,gs0,pquad)
 chiLBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
