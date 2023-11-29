@@ -140,7 +140,7 @@ initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
 --time = 0.0
 --psi_t = psi_0
 --for k=1,10 do
---    chiSolverStep(phys1)
+--    SolverStep(phys1)
 --
 --    FRf = chiLBSComputeFissionRate(phys1,"NEW") --time+dt
 --    FRi = chiLBSComputeFissionRate(phys1,"OLD") --time
@@ -166,7 +166,7 @@ initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
 --
 --tolA = 10.0
 --while (time < time_stop) do
---    chiSolverStep(phys1)
+--    SolverStep(phys1)
 --    FRf = chiLBSComputeFissionRate(phys1,"NEW")
 --    FRi = chiLBSComputeFissionRate(phys1,"OLD")
 --    dt = chiLBTSGetProperty(phys1, "TIMESTEP")

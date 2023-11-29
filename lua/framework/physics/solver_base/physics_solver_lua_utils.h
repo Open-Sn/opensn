@@ -49,7 +49,7 @@ int chiSolverExecute(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverStep(lua_State* L);
+int SolverStep(lua_State* L);
 
 /** Advances the time values of the solver at the given handle.
  *

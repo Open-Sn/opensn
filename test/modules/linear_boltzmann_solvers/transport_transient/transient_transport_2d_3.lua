@@ -142,7 +142,7 @@ initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
 --time = 0.0
 --for k=1,2 do
 --    --chiLBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
---    chiSolverStep(phys1)
+--    SolverStep(phys1)
 --    FRf = chiLBSComputeFissionRate(phys1,"NEW")
 --    FRi = chiLBSComputeFissionRate(phys1,"OLD")
 --    dt = chiLBTSGetProperty(phys1, "TIMESTEP")
@@ -158,7 +158,7 @@ k=0
 swapped = false
 while (time < time_stop) do
     k = k + 1
-    chiSolverStep(phys1)
+    SolverStep(phys1)
     FRf = chiLBSComputeFissionRate(phys1,"NEW")
     FRi = chiLBSComputeFissionRate(phys1,"OLD")
     dt = chiLBTSGetProperty(phys1, "TIMESTEP")

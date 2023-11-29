@@ -82,7 +82,7 @@ pp0 = chi.SolverInfoPostProcessor.Create
 SolverInitialize(phys0)
 
 for t=1,20 do
-  chiSolverStep(phys0)
+  SolverStep(phys0)
   time = chiPRKGetParam(phys0, "time_next")
   print(t, time,
         chiPRKGetParam(phys0, "population_next"),
