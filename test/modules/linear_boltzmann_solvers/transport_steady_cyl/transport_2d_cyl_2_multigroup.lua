@@ -96,7 +96,7 @@ SolverExecute(ss_solver)
 --############################################### Exports
 fflist, count = LBSGetScalarFieldFunctionList(phys1)
 if master_export == nil then
-  chiExportMultiFieldFunctionToVTK(fflist, "ZRZPhi")
+  ExportMultiFieldFunctionToVTK(fflist, "ZRZPhi")
 end
 
 --  volume integrations - energy group 1

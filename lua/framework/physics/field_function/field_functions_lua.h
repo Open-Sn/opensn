@@ -32,4 +32,4 @@ int chiExportFieldFunctionToVTK(lua_State* L);
  * \ingroup LuaFieldFunc
  * \author Jan
  */
-int chiExportMultiFieldFunctionToVTK(lua_State* L);
+int ExportMultiFieldFunctionToVTK(lua_State* L);

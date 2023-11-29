@@ -10,7 +10,7 @@
 using namespace opensn;
 
 RegisterLuaFunctionAsIs(chiExportFieldFunctionToVTK);
-RegisterLuaFunctionAsIs(chiExportMultiFieldFunctionToVTK);
+RegisterLuaFunctionAsIs(ExportMultiFieldFunctionToVTK);
 
 int
 chiExportFieldFunctionToVTK(lua_State* L)
@@ -34,9 +34,9 @@ chiExportFieldFunctionToVTK(lua_State* L)
 }
 
 int
-chiExportMultiFieldFunctionToVTK(lua_State* L)
+ExportMultiFieldFunctionToVTK(lua_State* L)
 {
-  const std::string fname = "chiExportMultiFieldFunctionToVTK";
+  const std::string fname = "ExportMultiFieldFunctionToVTK";
   const int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
 

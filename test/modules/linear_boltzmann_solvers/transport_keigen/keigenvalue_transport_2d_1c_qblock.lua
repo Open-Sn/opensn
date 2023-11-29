@@ -67,6 +67,6 @@ SolverExecute(k_solver0)
 
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
---chiExportMultiFieldFunctionToVTK(fflist,"tests/BigTests/QBlock/solutions/Flux")
+--ExportMultiFieldFunctionToVTK(fflist,"tests/BigTests/QBlock/solutions/Flux")
 
 -- Reference value k_eff = 0.5969127

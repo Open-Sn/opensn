@@ -125,7 +125,7 @@ fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
 --############################################### Exports
 if (master_export == nil) then
-  chiExportMultiFieldFunctionToVTK(fflist,"ZPhi")
+  ExportMultiFieldFunctionToVTK(fflist,"ZPhi")
 end
 
 --############################################### Plots

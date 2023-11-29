@@ -142,7 +142,7 @@ chiLog(LOG_0,string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if (master_export == nil) then
-  chiExportMultiFieldFunctionToVTK(fflist,"ZPhi3D")
+  ExportMultiFieldFunctionToVTK(fflist,"ZPhi3D")
   chiExportFieldFunctionToVTK(fflist[1],"ZPhi3D_g0")
 end
 

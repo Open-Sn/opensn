@@ -154,5 +154,5 @@ chiLog(LOG_0, string.format("QoI-value=%.5e", value))
 
 --############################################### Exports
 if master_export == nil then
-    chiExportMultiFieldFunctionToVTK({ ff_m0, ff_m1, ff_m2 }, "ZPhi_LBS")
+    ExportMultiFieldFunctionToVTK({ ff_m0, ff_m1, ff_m2 }, "ZPhi_LBS")
 end

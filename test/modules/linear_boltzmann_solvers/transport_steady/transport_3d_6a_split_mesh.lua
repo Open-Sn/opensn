@@ -149,7 +149,7 @@ pp2 = chi.CellVolumeIntegralPostProcessor.Create
 chi.ExecutePostProcessors({ pp1, pp2 })
 
 if (master_export == nil) then
-  chiExportMultiFieldFunctionToVTK(fflist,"ZPhi")
+  ExportMultiFieldFunctionToVTK(fflist,"ZPhi")
 end
 
 LogPrintTimingGraph()
