@@ -59,17 +59,17 @@ xs_weak_fuelA  = chiPhysicsTransportXSMakeCombined({{ xs_weak_fuelA_micro, atom_
 xs_weak_fuelB  = chiPhysicsTransportXSMakeCombined({{xs_weak_fuelB_micro, atom_density}})   --critical
 
 num_groups = 1
-chiPhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
         EXISTING,xs_strong_fuel)
-chiPhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
         EXISTING,xs_weak_fuelA)
 
 src={0.0}
-chiPhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
-chiPhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 function SwapXS(solver_handle, new_xs)
-    chiPhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
+    PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
             EXISTING,new_xs)
     chiLBSInitializeMaterials(solver_handle)
 end

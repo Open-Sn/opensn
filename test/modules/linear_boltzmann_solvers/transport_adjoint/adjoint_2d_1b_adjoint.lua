@@ -73,16 +73,16 @@ materials[3] = PhysicsAddMaterial("Test Material3");
 
 -- Cross sections
 PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
-chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-                              SIMPLEXS1, 1, 0.01, 0.01)
+PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
+                           SIMPLEXS1, 1, 0.01, 0.01)
 
 PhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
-chiPhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
-                              SIMPLEXS1, 1, 0.1 * 20, 0.8)
+PhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
+                           SIMPLEXS1, 1, 0.1 * 20, 0.8)
 
 PhysicsMaterialAddProperty(materials[3], TRANSPORT_XSECTIONS)
-chiPhysicsMaterialSetProperty(materials[3], TRANSPORT_XSECTIONS,
-                              SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
+PhysicsMaterialSetProperty(materials[3], TRANSPORT_XSECTIONS,
+                           SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
 
 -- Distributed source
 qoi_vol = mesh.RPPLogicalVolume.Create(

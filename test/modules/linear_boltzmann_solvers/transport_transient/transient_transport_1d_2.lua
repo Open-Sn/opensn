@@ -46,14 +46,14 @@ xs_21cent = chiPhysicsTransportXSCreate()
 chiPhysicsTransportXSSet(xs_21cent, CHI_XSFILE, "tests/transport_transient/xs_inf_21cent_1g.cxs")
 
 num_groups = 1
-chiPhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
         EXISTING,xs_critical)
 
 src={0.0}
-chiPhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 function SwapXS(solver_handle, new_xs)
-    chiPhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
+    PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
             EXISTING,new_xs)
     chiLBSInitializeMaterials(solver_handle)
 end

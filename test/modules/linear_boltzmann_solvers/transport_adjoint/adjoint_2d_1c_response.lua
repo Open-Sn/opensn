@@ -73,16 +73,16 @@ materials[3] = PhysicsAddMaterial("Test Material3");
 
 -- Cross sections
 PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
-chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-                              SIMPLEXS1, 1, 0.01, 0.01)
+PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
+                           SIMPLEXS1, 1, 0.01, 0.01)
 
 PhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
-chiPhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
-                              SIMPLEXS1, 1, 0.1 * 20, 0.8)
+PhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
+                           SIMPLEXS1, 1, 0.1 * 20, 0.8)
 
 PhysicsMaterialAddProperty(materials[3], TRANSPORT_XSECTIONS)
-chiPhysicsMaterialSetProperty(materials[3], TRANSPORT_XSECTIONS,
-                              SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
+PhysicsMaterialSetProperty(materials[3], TRANSPORT_XSECTIONS,
+                           SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
 
 -- Sources
 src = {}
@@ -90,7 +90,7 @@ for g = 1, num_groups do
     if g == 1 then src[g] = 3.0 else src[g] = 0.0 end
 end
 PhysicsMaterialAddProperty(materials[3], ISOTROPIC_MG_SOURCE)
-chiPhysicsMaterialSetProperty(materials[3], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+PhysicsMaterialSetProperty(materials[3], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
 pquad0 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)

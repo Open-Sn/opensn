@@ -22,10 +22,10 @@ MeshHandlerExportMeshToVTK("Mesh")
 
 -- Set material properties
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics

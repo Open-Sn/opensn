@@ -10,7 +10,7 @@
  *                          CHI_XSFILE,
  *                          "test/xs_graphite_pure.cxs")
  *
- * chiPhysicsMaterialSetProperty(materials[2],
+ * PhysicsMaterialSetProperty(materials[2],
  *                               TRANSPORT_XSECTIONS,
  *                               EXISTING,
  *                               xs_graphite_clean)
@@ -100,7 +100,7 @@ int chiPhysicsTransportXSSet(lua_State* L);
  *         {xs_3, 0.3e2}}
  * aerated_graphite = chiPhysicsTransportXSMakeCombined(combo)
  *
- * chiPhysicsMaterialSetProperty(materials[1],
+ * PhysicsMaterialSetProperty(materials[1],
  *                               TRANSPORT_XSECTIONS,
  *                               EXISTING,
  *                               aerated_graphite)

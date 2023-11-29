@@ -49,21 +49,21 @@ PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
 
 
 num_groups = 1
-chiPhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
   CHI_XSFILE,"tests/transport_steady/simple_scatter.cxs")
-chiPhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
   CHI_XSFILE,"tests/transport_steady/simple_scatter.cxs")
 
---chiPhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
---chiPhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
+--PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
+--PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
 
 src={}
 for g=1,num_groups do
   src[g] = 0.0
 end
-chiPhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 src[1] = 1.0
-chiPhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 --############################################### Setup Physics
 fac=1

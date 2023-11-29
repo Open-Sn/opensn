@@ -33,8 +33,8 @@ materials = {}
 materials[1] = PhysicsAddMaterial("Test Material");
 PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 
-chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-                              SIMPLEXS0, num_groups, sigma_t)
+PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
+                           SIMPLEXS0, num_groups, sigma_t)
 
 -- Setup Physics
 pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE, 128)

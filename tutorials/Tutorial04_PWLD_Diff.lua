@@ -42,10 +42,10 @@ MeshHandlerExportMeshToVTK("Mesh")
 --############################################### Add material properties
 -- Set material properties
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"D")
-chiPhysicsMaterialSetProperty(material,"D",SINGLE_VALUE,1.0)
+PhysicsMaterialSetProperty(material,"D",SINGLE_VALUE,1.0)
 
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,0.0)
+PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,0.0)
 
 --############################################### Setup Physics
 phys1 = chiDiffusionCreateSolver()

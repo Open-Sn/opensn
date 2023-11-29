@@ -17,5 +17,5 @@ for m=0,1 do
     key = tostring(m)
     materials[key] = PhysicsAddMaterial("Material_"..key)
     PhysicsMaterialAddProperty(key,TRANSPORT_XSECTIONS)
-    chiPhysicsMaterialSetProperty(key,TRANSPORT_XSECTIONS, EXISTING,xs[key])
+    PhysicsMaterialSetProperty(key,TRANSPORT_XSECTIONS, EXISTING,xs[key])
 end

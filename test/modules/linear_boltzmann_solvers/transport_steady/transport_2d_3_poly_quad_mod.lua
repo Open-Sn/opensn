@@ -50,21 +50,21 @@ PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
 
 
 num_groups = 168
-chiPhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
   CHI_XSFILE,"xs_3_170.cxs")
-chiPhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
   CHI_XSFILE,"xs_3_170.cxs")
 
---chiPhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
---chiPhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
+--PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
+--PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
 
 src={}
 for g=1,num_groups do
   src[g] = 0.0
 end
 --src[1] = 1.0
-chiPhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
-chiPhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 --############################################### Setup Physics
 pquad0 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)

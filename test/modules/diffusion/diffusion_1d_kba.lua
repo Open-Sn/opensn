@@ -47,7 +47,7 @@ materials = {}
 materials[0] = PhysicsAddMaterial("Test Material");
 
 PhysicsMaterialAddProperty(materials[0],SCALAR_VALUE)
-chiPhysicsMaterialSetProperty(materials[0],SCALAR_VALUE,SINGLE_VALUE,1.0)
+PhysicsMaterialSetProperty(materials[0],SCALAR_VALUE,SINGLE_VALUE,1.0)
 
 
 

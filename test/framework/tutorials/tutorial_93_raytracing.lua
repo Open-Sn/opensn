@@ -30,7 +30,7 @@ materials[1] = PhysicsAddMaterial("Test Material");
 PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
 
 num_groups = 1
-chiPhysicsMaterialSetProperty(materials[1],
+PhysicsMaterialSetProperty(materials[1],
         TRANSPORT_XSECTIONS,
         SIMPLEXS0,1,0.27)
 

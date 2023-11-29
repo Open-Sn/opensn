@@ -50,10 +50,10 @@ end
 material0 = PhysicsAddMaterial("Material_0");
 PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 PhysicsMaterialAddProperty(material0,ISOTROPIC_MG_SOURCE)
-chiPhysicsMaterialSetProperty(material0, TRANSPORT_XSECTIONS,
-                              SIMPLEXS1, ngrp, sigmat, ratioc)
-chiPhysicsMaterialSetProperty(material0, ISOTROPIC_MG_SOURCE,
-                              FROM_ARRAY, source)
+PhysicsMaterialSetProperty(material0, TRANSPORT_XSECTIONS,
+                           SIMPLEXS1, ngrp, sigmat, ratioc)
+PhysicsMaterialSetProperty(material0, ISOTROPIC_MG_SOURCE,
+                           FROM_ARRAY, source)
 
 --############################################### Setup Physics
 pquad0 = chiCreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)

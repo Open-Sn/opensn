@@ -126,7 +126,7 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * Supply handle to an existing cross-section and simply swap them out.
  *
  * \code
- * chiPhysicsMaterialSetProperty(materials[1],
+ * PhysicsMaterialSetProperty(materials[1],
  *                               TRANSPORT_XSECTIONS,
  *                               CHI_XSFILE,
  *                               "xs_3_170.cxs",
@@ -141,7 +141,7 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * materials = {}
  * materials[1] = PhysicsAddMaterial("Test Material");
  * PhysicsMaterialAddProperty(materials[0],THERMAL_CONDUCTIVITY)
- * chiPhysicsMaterialSetProperty(materials[0],THERMAL_CONDUCTIVITY,SINGLE_VALUE,13.7)
+ * PhysicsMaterialSetProperty(materials[0],THERMAL_CONDUCTIVITY,SINGLE_VALUE,13.7)
  * \endcode
  *
  * where the thermal conductivity has been set to 13.7.\n
@@ -159,7 +159,7 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * for g=1,num_groups do
  *     src[g] = 0.0
  * end
- * chiPhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+ * PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
  * \endcode
  *
  * ### Developer Info
@@ -176,7 +176,7 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * \ingroup LuaPhysicsMaterials
  * \author Jan
  */
-int chiPhysicsMaterialSetProperty(lua_State* L);
+int PhysicsMaterialSetProperty(lua_State* L);
 
 /** Returns a rich lua data-structure of the required property.
  *

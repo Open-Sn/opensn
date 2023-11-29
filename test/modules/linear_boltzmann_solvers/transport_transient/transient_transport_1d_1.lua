@@ -53,9 +53,9 @@ chiPhysicsTransportXSSet(xs, CHI_XSFILE, xs_file)
 xs = chiPhysicsTransportXSMakeCombined({{xs, 0.0424459}}) -- just sub-critical
 
 num_groups = 1
-chiPhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
         EXISTING,xs)
-chiPhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
         EXISTING,xs)
 
 src={}
@@ -63,8 +63,8 @@ for g=1,num_groups do
     src[g] = 0.0
 end
 --src[1] = 1.0
-chiPhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
-chiPhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 --############################################### Setup Physics
 phys1 = chiLBSCreateTransientSolver()

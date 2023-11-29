@@ -17,12 +17,12 @@ material0 = PhysicsAddMaterial("Test Material");
 
 PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1
-chiPhysicsMaterialSetProperty(material0,
-                              TRANSPORT_XSECTIONS,
-                              SIMPLEXS1,
-                              num_groups,     --Num grps
-                              1.0,   --Sigma_t
-                              0.2)   --Scattering ratio
+PhysicsMaterialSetProperty(material0,
+                           TRANSPORT_XSECTIONS,
+                           SIMPLEXS1,
+                           num_groups,     --Num grps
+                           1.0,   --Sigma_t
+                           0.2)   --Scattering ratio
 
 --############################################### Setup Physics
 phys1 = chiLBSCreateSolver()

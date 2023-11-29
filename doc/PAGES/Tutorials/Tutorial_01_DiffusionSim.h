@@ -147,10 +147,10 @@ Now that the cells have been assigned a material id we need to add
 
 \code
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 \endcode
 
 In this code we created the material properties using the function
@@ -160,7 +160,7 @@ In this code we created the material properties using the function
  to the specific property.
 
 Material property values are set using the function
- chiPhysicsMaterialSetProperty() which again expects a handle to the
+ PhysicsMaterialSetProperty() which again expects a handle to the
  reference material, then either a material property id or name (in this case
  name), then an operation index and value(s). For this case we used an operation
  index SINGLE_VALUE which is the only operation supported by SCALAR_VALUE. In
@@ -237,10 +237,10 @@ MeshHandlerExportMeshToVTK("Mesh")
 
 -- Set material properties
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics
