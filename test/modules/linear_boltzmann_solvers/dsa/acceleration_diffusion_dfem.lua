@@ -29,7 +29,7 @@ end
 
 chi_unit_tests.acceleration_Diffusion_DFEM();
 chiMPIBarrier()
-if (chi_location_id == 0) then
+if (location_id == 0) then
     os.execute("rm SimTest_92*")
 end
 

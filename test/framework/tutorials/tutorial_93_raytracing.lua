@@ -126,6 +126,6 @@ ff_m0 = chiLBSGetScalarFieldFunctionList(phys1)
 
 chiExportMultiFieldFunctionToVTK({ff_m0[1]},"SimTest_93_LBS_"..solver_name)
 chiMPIBarrier()
-if (chi_location_id == 0) then
+if (location_id == 0) then
     os.execute("rm SimTest_93*")
 end

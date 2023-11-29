@@ -74,8 +74,6 @@ chiFFInterpolationExportPython(cline)
 
 chiExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
 
-if (chi_location_id == 0) then
+if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")
 end
-
-

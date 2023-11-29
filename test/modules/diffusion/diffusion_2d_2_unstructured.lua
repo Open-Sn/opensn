@@ -98,7 +98,7 @@ if (master_export == nil) then
 end
 
 --############################################### Plots
-if ((master_export == nil) and (chi_location_id == 0)) then
+if ((master_export == nil) and (location_id == 0)) then
     local handle = io.popen("python3 ZPFFI00.py")
     local handle = io.popen("python3 ZLFFI10.py")
 end

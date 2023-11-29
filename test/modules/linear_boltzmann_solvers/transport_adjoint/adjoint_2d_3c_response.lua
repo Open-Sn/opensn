@@ -124,6 +124,6 @@ end
 
 --############################################### Cleanup
 chiMPIBarrier()
-if (chi_location_id == 0) then
+if (location_id == 0) then
     os.execute("rm Adjoint2D_3b_adjoint*.data")
 end
