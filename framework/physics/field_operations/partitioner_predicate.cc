@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_physics::field_operations, PartitionerPredicate);
+OpenSnRegisterObject(physics::field_operations, PartitionerPredicate);
 
 InputParameters
 PartitionerPredicate::GetInputParameters()

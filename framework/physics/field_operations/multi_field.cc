@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_physics::field_operations, MultiFieldOperation);
+OpenSnRegisterObject(physics::field_operations, MultiFieldOperation);
 
 InputParameters
 MultiFieldOperation::GetInputParameters()
