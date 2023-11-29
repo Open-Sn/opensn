@@ -46,7 +46,7 @@ end
 --MeshCreateUnpartitioned3DOrthoMesh(mesh,mesh,mesh)
 MeshCreateUnpartitioned2DOrthoMesh(mesh,mesh)
 --MeshCreateUnpartitioned1DOrthoMesh(mesh)
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 
 --############################################### Set Material IDs
 VolumeMesherSetMatIDToAll(0)

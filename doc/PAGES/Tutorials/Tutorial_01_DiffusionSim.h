@@ -83,7 +83,7 @@ The underlying mesher for a 3D mesh is an extruded mesh from 2D. This mesh
  are not going to set any partitioning parameters we will just execute it now.
 
 \code
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 \endcode
 
 ## Step 5 - Assign material- and boundary IDs and
@@ -224,7 +224,7 @@ for i=0,N do
 end
 surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 
 material = PhysicsAddMaterial("Test Material");
 
@@ -299,7 +299,7 @@ The output produced will look as follows:
 [0]  Done partitioning mesh.
 [0]  Cells loaded.
 [0]  VolumeMesherPredefinedUnpartitioned: Cells created = 32768
-[0]  00:00:00 chiVolumeMesherExecute: Volume meshing completed. Memory used = 43.5 MB
+[0]  00:00:00 VolumeMesherExecute: Volume meshing completed. Memory used = 43.5 MB
 [0]  Total process memory used after meshing 104 MB
 [0]  00:00:00 Setting material id from logical volume.
 [0]  00:00:00 Done setting material id from logical volume. Number of cells modified = 32768.

@@ -24,7 +24,7 @@ for i=1,(N+1) do
   mesh[i] = xmin + k*dx
 end
 MeshCreateUnpartitioned3DOrthoMesh(mesh,mesh,mesh)
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 
 lv1 = chi_mesh.SphereLogicalVolume.Create({r = 1.3, x=1.0, y=-1.0, z=2.0})
 

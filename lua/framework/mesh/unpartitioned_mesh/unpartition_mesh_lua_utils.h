@@ -60,10 +60,10 @@ int DestroyUnpartitionedMesh(lua_State* L);
  * umesh = UnpartitionedMeshFromVTU("ZMeshTest_0.vtu")
  *
  * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
  * SurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  *
@@ -90,10 +90,10 @@ int UnpartitionedMeshFromVTU(lua_State* L);
  * umesh = UnpartitionedMeshFromPVTU("ZMeshTest_0.vtu")
  *
  * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
  * SurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  *
@@ -119,10 +119,10 @@ int UnpartitionedMeshFromPVTU(lua_State* L);
  * umesh = UnpartitionedMeshFromEnsightGold("resources/TestObjects/Sphere.case")
  *
  * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
  * SurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  * \return Handle A handle to the newly created UnpartitionedMesh
@@ -146,10 +146,10 @@ int UnpartitionedMeshFromEnsightGold(lua_State* L);
  * UnpartitionedMeshFromWavefrontOBJ("resources/TestObjects/TriangleMesh2x2.obj")
  *
  * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
  * SurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  * \return Handle A handle to the newly created UnpartitionedMesh
@@ -172,10 +172,10 @@ int UnpartitionedMeshFromWavefrontOBJ(lua_State* L);
  * umesh = UnpartitionedMeshFromMshFormat("File.msh")
  *
  * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
  * SurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  *
@@ -200,10 +200,10 @@ int UnpartitionedMeshFromMshFormat(lua_State* L);
  * umesh = UnpartitionedMeshFromExodusII("resources/TestObjects/Mesh.e")
  *
  * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
  * SurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  * \return Handle A handle to the newly created UnpartitionedMesh

@@ -31,10 +31,10 @@ RegisterLuaConstantAsIs(BNDRYID_FROMLOGICAL, Varying(12));
 RegisterLuaConstantAsIs(MATID_FROM_LUA_FUNCTION, Varying(13));
 RegisterLuaConstantAsIs(BNDRYID_FROM_LUA_FUNCTION, Varying(14));
 
-RegisterLuaFunctionAsIs(chiVolumeMesherSetKBAPartitioningPxPyPz);
-RegisterLuaFunctionAsIs(chiVolumeMesherSetKBACutsX);
-RegisterLuaFunctionAsIs(chiVolumeMesherSetKBACutsY);
-RegisterLuaFunctionAsIs(chiVolumeMesherSetKBACutsZ);
+RegisterLuaFunctionAsIs(VolumeMesherSetKBAPartitioningPxPyPz);
+RegisterLuaFunctionAsIs(VolumeMesherSetKBACutsX);
+RegisterLuaFunctionAsIs(VolumeMesherSetKBACutsY);
+RegisterLuaFunctionAsIs(VolumeMesherSetKBACutsZ);
 
 using namespace opensn;
 
@@ -401,7 +401,7 @@ VolumeMesherSetProperty(lua_State* L)
 }
 
 int
-chiVolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
+VolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(__FUNCTION__, 3, num_args);
@@ -426,7 +426,7 @@ chiVolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
 }
 
 int
-chiVolumeMesherSetKBACutsX(lua_State* L)
+VolumeMesherSetKBACutsX(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
@@ -443,7 +443,7 @@ chiVolumeMesherSetKBACutsX(lua_State* L)
 }
 
 int
-chiVolumeMesherSetKBACutsY(lua_State* L)
+VolumeMesherSetKBACutsY(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
@@ -460,7 +460,7 @@ chiVolumeMesherSetKBACutsY(lua_State* L)
 }
 
 int
-chiVolumeMesherSetKBACutsZ(lua_State* L)
+VolumeMesherSetKBACutsZ(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);

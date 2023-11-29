@@ -89,11 +89,11 @@ end
 surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 -- VolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
--- chiVolumeMesherSetKBAPartitioningPxPyPz(2,2,1)
--- chiVolumeMesherSetKBACutsX({0.0})
--- chiVolumeMesherSetKBACutsY({0.0})
+-- VolumeMesherSetKBAPartitioningPxPyPz(2,2,1)
+-- VolumeMesherSetKBACutsX({0.0})
+-- VolumeMesherSetKBACutsY({0.0})
 
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 
 material = PhysicsAddMaterial("Test Material");
 

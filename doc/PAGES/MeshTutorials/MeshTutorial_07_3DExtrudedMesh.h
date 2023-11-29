@@ -38,8 +38,8 @@ or
 
  \code
  SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
- chiVolumeMesherCreate(VOLUMEMESHER_EXTRUDER,
+ VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ VolumeMesherCreate(VOLUMEMESHER_EXTRUDER,
                       ExtruderTemplateType.UNPARTITIONED_MESH,
                       umesh);
 
@@ -51,10 +51,10 @@ or
  VolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"SarahConner");
 
  VolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
- chiVolumeMesherSetKBAPartitioningPxPyPz(1,1,1)
+ VolumeMesherSetKBAPartitioningPxPyPz(1,1,1)
 
  SurfaceMesherExecute();
- chiVolumeMesherExecute();
+ VolumeMesherExecute();
 
  MeshHandlerExportMeshToVTK("export_mesh_without_IDs")
  \endcode

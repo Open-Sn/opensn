@@ -18,7 +18,7 @@
  * nodes={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * MeshCreateUnpartitioned1DOrthoMesh(nodes)
  * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
- * chiVolumeMesherExecute();
+ * VolumeMesherExecute();
  * \endcode
  *
  * \author Nak
@@ -46,7 +46,7 @@ int MeshCreateUnpartitioned1DOrthoMesh(lua_State* L);
  * nodesy={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * MeshCreateUnpartitioned2DOrthoMesh(nodesx,nodesy)
  * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
- * chiVolumeMesherExecute();
+ * VolumeMesherExecute();
  * \endcode
  *
  *  \author Nak
@@ -78,7 +78,7 @@ int MeshCreateUnpartitioned2DOrthoMesh(lua_State* L);
  * nodesz={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * MeshCreateUnpartitioned3DOrthoMesh(nodesx,nodesy,nodesz)
  * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
- * chiVolumeMesherExecute();
+ * VolumeMesherExecute();
  * \endcode
  *
  *  \author Nak

@@ -5,7 +5,7 @@
 Simply define the nodes of the 1D mesh in a lua table as shown below and call
 the function chiMeshCreate1DSlabMesh(). As per usual, a mesh-handler needs to be
 created through MeshHandlerCreate() and the whole process is concluded with
-a call to chiVolumeMesherExecute().
+a call to VolumeMesherExecute().
 
 \code
 MeshHandlerCreate()

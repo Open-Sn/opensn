@@ -28,7 +28,7 @@ for i=0,N do
 end
 surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 \endcode
 
 Next we set the material IDs:
@@ -179,7 +179,7 @@ surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 --SurfaceMesherSetProperty(CUT_X,0.0)
 --SurfaceMesherSetProperty(CUT_Y,0.0)
 
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)

@@ -16,10 +16,10 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiVolumeMesherExecute);
+RegisterLuaFunctionAsIs(VolumeMesherExecute);
 
 int
-chiVolumeMesherExecute(lua_State* L)
+VolumeMesherExecute(lua_State* L)
 {
   auto& cur_hndlr = GetCurrentHandler();
 
@@ -37,7 +37,7 @@ chiVolumeMesherExecute(lua_State* L)
              << "Total process memory used after meshing " << mem_after.memory_mbytes << " MB";
 
   opensn::log.Log() << opensn::program_timer.GetTimeString()
-                    << " chiVolumeMesherExecute: Volume meshing completed." << mem_string.str()
+                    << " VolumeMesherExecute: Volume meshing completed." << mem_string.str()
                     << std::endl;
 
   return 0;

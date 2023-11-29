@@ -15,7 +15,7 @@ k=i-1
 mesh[i] = xmin + k*dx
 end
 MeshCreateUnpartitioned3DOrthoMesh(mesh,mesh,mesh)
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 
 lv1 = chi_mesh.RCCLogicalVolume.Create({r = 1.3, x0=L/2, y0=L/2, z0 = -1.0, vz
 = 2.0}) VolumeMesherSetProperty(MATID_FROMLOGICAL, lv1, 1)

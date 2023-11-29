@@ -59,10 +59,10 @@ we create a chi_mesh::SurfaceMesher with the type *SURFACEMESHER_PREDEFINED* as
 
 \code
 SurfaceMesherCreate(SURFACEMESHER_PREDEFINED);
-chiVolumeMesherCreate(VOLUMEMESHER_PREDEFINED2D);
+VolumeMesherCreate(VOLUMEMESHER_PREDEFINED2D);
 --
 SurfaceMesherExecute();
-chiVolumeMesherExecute()
+VolumeMesherExecute()
 \endcode
 
 The *SURFACEMESHER_PREDEFINED* is just a pass-through mesher, in contrast to the
@@ -99,10 +99,10 @@ for k=1,line_mesh_count do
 end
 --
 SurfaceMesherCreate(SURFACEMESHER_PREDEFINED);
-chiVolumeMesherCreate(VOLUMEMESHER_PREDEFINED2D);
+VolumeMesherCreate(VOLUMEMESHER_PREDEFINED2D);
 --
 SurfaceMesherExecute();
-chiVolumeMesherExecute()
+VolumeMesherExecute()
 \endcode
 
 */
