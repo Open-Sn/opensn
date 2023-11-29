@@ -65,7 +65,7 @@ fflist,count = SolverGetFieldFunctionList(phys1)
 
 --############################################### Export VTU
 if (master_export == nil) then
-    chiExportFieldFunctionToVTK(fflist[1],"CFEMDiff2D_linear")
+    ExportFieldFunctionToVTK(fflist[1],"CFEMDiff2D_linear")
 end
 
 --############################################### Line plot

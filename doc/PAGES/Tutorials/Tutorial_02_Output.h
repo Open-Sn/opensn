@@ -125,7 +125,7 @@ chiDiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = chiGetFieldFunctionList(phys1)
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 
 slice1 = FFInterpolationCreate(SLICE)
 FFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)

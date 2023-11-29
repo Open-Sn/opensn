@@ -22,7 +22,7 @@ int chiGetFieldFunctionHandleByName(lua_State* L);
  * \ingroup LuaFieldFunc
  * \author Jan
  */
-int chiExportFieldFunctionToVTK(lua_State* L);
+int ExportFieldFunctionToVTK(lua_State* L);
 
 /** Exports all the field functions in a list to VTK format.
  *

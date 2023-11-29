@@ -148,7 +148,7 @@ chiLog(LOG_0,string.format("Max-value2=%.5e", maxval))
 --############################################### Exports
 if master_export == nil then
   FFInterpolationExportPython(slice2)
-  chiExportFieldFunctionToVTKG(fflist[1],"ZPhi3D","Phi")
+  ExportFieldFunctionToVTKG(fflist[1],"ZPhi3D","Phi")
 end
 
 --############################################### Plots

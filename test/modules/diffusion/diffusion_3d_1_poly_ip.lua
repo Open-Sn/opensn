@@ -109,7 +109,7 @@ if (master_export == nil) then
     FFInterpolationExportPython(slice1)
     FFInterpolationExportPython(slice2)
     FFInterpolationExportPython(line0)
-    chiExportFieldFunctionToVTK(fflist[1],"ZPhi3D","Temperature")
+    ExportFieldFunctionToVTK(fflist[1],"ZPhi3D","Temperature")
 end
 
 --############################################### Plots

@@ -63,4 +63,4 @@ chiDiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = chiGetFieldFunctionList(phys1)
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial4_Diff_PWLD_Output","Flux_Diff_IP")
+ExportFieldFunctionToVTK(fflist[1],"Tutorial4_Diff_PWLD_Output","Flux_Diff_IP")

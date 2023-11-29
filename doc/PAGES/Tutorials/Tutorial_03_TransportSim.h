@@ -245,7 +245,7 @@ FFInterpolationInitialize(cline)
 FFInterpolationExecute(cline)
 FFInterpolationExportPython(cline)
 
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
+ExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
 
 if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")

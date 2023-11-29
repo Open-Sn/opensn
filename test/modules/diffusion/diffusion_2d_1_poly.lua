@@ -93,7 +93,7 @@ chiLog(LOG_0,string.format("Max-value=%.5f", maxval))
 if (master_export == nil) then
     FFInterpolationExportPython(slice2)
     FFInterpolationExportPython(line0)
-    chiExportFieldFunctionToVTK(fftemp,"ZPhi")
+    ExportFieldFunctionToVTK(fftemp,"ZPhi")
 end
 
 --############################################### Plots

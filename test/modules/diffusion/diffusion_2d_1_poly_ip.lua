@@ -118,7 +118,7 @@ print(FFInterpolationGetValue(curffi))
 --############################################### Exports
 if (master_export == nil) then
     FFInterpolationExportPython(slice2)
-    chiExportFieldFunctionToVTK(fftemp,"ZPhi")
+    ExportFieldFunctionToVTK(fftemp,"ZPhi")
 end
 
 --############################################### Plots

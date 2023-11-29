@@ -202,7 +202,7 @@ The execution of a Chi-Tech physics module culminates in the creation of one or
 
 \code
 fflist,count = chiGetFieldFunctionList(phys1)
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 \endcode
 
 
@@ -255,7 +255,7 @@ chiDiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = chiGetFieldFunctionList(phys1)
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 \endcode
 
 

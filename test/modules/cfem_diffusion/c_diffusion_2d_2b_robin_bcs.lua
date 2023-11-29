@@ -69,7 +69,7 @@ fflist,count = SolverGetFieldFunctionList(phys1)
 
 --############################################### Export VTU
 if (master_export == nil) then
-    chiExportFieldFunctionToVTK(fflist[1],"CFEMDiff2D_RobinRefl","flux")
+    ExportFieldFunctionToVTK(fflist[1],"CFEMDiff2D_RobinRefl","flux")
 end
 
 --############################################### Volume integrations

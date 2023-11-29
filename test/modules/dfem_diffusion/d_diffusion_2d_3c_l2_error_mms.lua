@@ -56,7 +56,7 @@ SimTest_IP_MMS_L2error() --simtest_IP_MMS_L2_handle becomes available here
 
 --############################################### Export VTU
 if (master_export == nil) then
-    chiExportFieldFunctionToVTK(simtest_IP_MMS_L2_handle,"DFEMDiff2D_MMS","flux")
+    ExportFieldFunctionToVTK(simtest_IP_MMS_L2_handle,"DFEMDiff2D_MMS","flux")
 end
 
 ----############################################### Volume integrations
