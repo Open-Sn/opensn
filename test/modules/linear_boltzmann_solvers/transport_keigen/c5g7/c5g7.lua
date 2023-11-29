@@ -55,7 +55,7 @@ if (k_method == "pi") then
         k_tol = 1.0e-8
     })
     SolverInitialize(k_solver)
-    chiSolverExecute(k_solver)
+    SolverExecute(k_solver)
 elseif (k_method == "pi_scdsa") then
     k_solver = lbs.XXPowerIterationKEigenSCDSA.Create
     ({
@@ -70,7 +70,7 @@ elseif (k_method == "pi_scdsa") then
     LBSGroupsetSetMaxIterations(phys1, 0, 1)
 
     SolverInitialize(k_solver)
-    chiSolverExecute(k_solver)
+    SolverExecute(k_solver)
 elseif (k_method == "pi_scdsa_pwlc") then
     k_solver = lbs.XXPowerIterationKEigenSCDSA.Create
     ({
@@ -85,7 +85,7 @@ elseif (k_method == "pi_scdsa_pwlc") then
     LBSGroupsetSetMaxIterations(phys1, 0, 1)
 
     SolverInitialize(k_solver)
-    chiSolverExecute(k_solver)
+    SolverExecute(k_solver)
 elseif (k_method == "jfnk") then
     k_solver = lbs.XXNonLinearKEigen.Create
     ({
@@ -97,7 +97,7 @@ elseif (k_method == "jfnk") then
         num_free_power_iterations = 2,
     })
     SolverInitialize(k_solver)
-    chiSolverExecute(k_solver)
+    SolverExecute(k_solver)
 else
     chiLog(LOG_0ERROR, "k_method must be specified. \"pi\", "..
       "\"pi_scdsa\", \"pi_scdsa_pwlc\" or \"jfnk\"");

@@ -126,7 +126,7 @@ lbs.SetOptions(phys, lbs_options)
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
 SolverInitialize(ss_solver)
-chiSolverExecute(ss_solver)
+SolverExecute(ss_solver)
 
 chiLBSWriteFluxMoments(phys, "Adjoint2D_3b_adjoint")
 

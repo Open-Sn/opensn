@@ -78,7 +78,7 @@ PhysicsMaterialSetProperty(materials[1],
 --
 ----############################################### Initialize and Execute Solver
 --SolverInitialize(phys1)
---chiSolverExecute(phys1)
+--SolverExecute(phys1)
 
 
 
@@ -120,7 +120,7 @@ LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
 SolverInitialize(ss_solver)
-chiSolverExecute(ss_solver)
+SolverExecute(ss_solver)
 
 ff_m0 = chiLBSGetScalarFieldFunctionList(phys1)
 

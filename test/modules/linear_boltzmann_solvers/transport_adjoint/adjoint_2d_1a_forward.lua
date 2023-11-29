@@ -122,7 +122,7 @@ lbs.SetOptions(phys, lbs_options)
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
 SolverInitialize(ss_solver)
-chiSolverExecute(ss_solver)
+SolverExecute(ss_solver)
 
 --############################################### Get field functions
 ff_m0 = chiGetFieldFunctionHandleByName("phi_g000_m00")

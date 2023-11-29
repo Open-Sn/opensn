@@ -40,7 +40,7 @@ int SolverInitialize(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverExecute(lua_State* L);
+int SolverExecute(lua_State* L);
 
 /** Performs a single timestep for the solver at the given handle.
  *

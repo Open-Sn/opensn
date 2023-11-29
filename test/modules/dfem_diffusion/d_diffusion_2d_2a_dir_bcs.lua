@@ -62,7 +62,7 @@ chiDFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"dirichlet",0.0)
 chiDFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"dirichlet",0.0)
 
 SolverInitialize(phys1)
-chiSolverExecute(phys1)
+SolverExecute(phys1)
 
 
 --############################################### Get field functions

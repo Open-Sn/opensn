@@ -106,7 +106,7 @@ k_solver0 = lbs.XXNonLinearKEigen.Create
   nl_abs_tol = kes_tolerance
 })
 SolverInitialize(k_solver0)
-chiSolverExecute(k_solver0)
+SolverExecute(k_solver0)
 
 --############################################### Get field functions
 --############################################### Line plot

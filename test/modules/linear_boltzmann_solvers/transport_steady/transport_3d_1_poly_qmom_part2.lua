@@ -105,7 +105,7 @@ ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 SolverInitialize(ss_solver)
 chiLBSReadSourceMoments(phys1,"Qmoms")
 
-chiSolverExecute(ss_solver)
+SolverExecute(ss_solver)
 
 --############################################### Get field functions
 fflist,count = chiLBSGetScalarFieldFunctionList(phys1)

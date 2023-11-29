@@ -203,4 +203,4 @@ function MyCallBack()
                 phys1name,time,dt,period,FRf/initial_FR))
 end
 chiLBTSSetProperty(phys1, "CALLBACK", "MyCallBack")
-chiSolverExecute(phys1)
+SolverExecute(phys1)
