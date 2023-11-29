@@ -15,7 +15,7 @@
 using namespace opensn;
 
 RegisterLuaFunctionAsIs(CreateCylindricalProductQuadrature);
-RegisterLuaFunctionAsIs(chiCreateSphericalProductQuadrature);
+RegisterLuaFunctionAsIs(CreateSphericalProductQuadrature);
 
 int
 CreateCylindricalProductQuadrature(lua_State* L)
@@ -140,10 +140,10 @@ CreateCylindricalProductQuadrature(lua_State* L)
  \ingroup LuaQuadrature
  */
 int
-chiCreateSphericalProductQuadrature(lua_State* L)
+CreateSphericalProductQuadrature(lua_State* L)
 {
   const int num_args = lua_gettop(L);
-  if (num_args < 2) LuaPostArgAmountError("chiCreateSphericalProductQuadrature", 2, num_args);
+  if (num_args < 2) LuaPostArgAmountError("CreateSphericalProductQuadrature", 2, num_args);
 
   const int ident = lua_tonumber(L, 1);
   const int Np = lua_tonumber(L, 2);
@@ -155,7 +155,7 @@ chiCreateSphericalProductQuadrature(lua_State* L)
   {
     case ProductQuadratureType::GAUSS_CHEBYSHEV:
     {
-      opensn::log.Log() << "chiCreateSphericalProductQuadrature : "
+      opensn::log.Log() << "CreateSphericalProductQuadrature : "
                         << "Creating Gauss-Chebyshev Quadrature\n";
 
       const auto quad_pol = QuadratureGaussChebyshev(Np, verbose);
@@ -169,7 +169,7 @@ chiCreateSphericalProductQuadrature(lua_State* L)
     }
     case ProductQuadratureType::GAUSS_LEGENDRE:
     {
-      opensn::log.Log() << "chiCreateSphericalProductQuadrature : "
+      opensn::log.Log() << "CreateSphericalProductQuadrature : "
                         << "Creating Gauss-Legendre Quadrature\n";
 
       const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
@@ -183,7 +183,7 @@ chiCreateSphericalProductQuadrature(lua_State* L)
     }
     default:
     {
-      opensn::log.LogAllError() << "chiCreateSphericalProductQuadrature : "
+      opensn::log.LogAllError() << "CreateSphericalProductQuadrature : "
                                 << "Unsupported quadrature type supplied, type=" << ident;
       opensn::Exit(EXIT_FAILURE);
     }
