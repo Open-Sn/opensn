@@ -72,7 +72,7 @@ int LocallyRefineSLDFESQAngularQuadrature(lua_State* L);
  * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},45.0*math.pi/180,false)
  * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},23.0*math.pi/180,false)
  * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},12.0*math.pi/180,false)
- * chiPrintToPythonSLDFESQAngularQuadrature(pquad,"YQuad_");
+ * PrintToPythonSLDFESQAngularQuadrature(pquad,"YQuad_");
  * \endcode
  *
  * \image html "SLDFESQr.png" width=500px
@@ -80,4 +80,4 @@ int LocallyRefineSLDFESQAngularQuadrature(lua_State* L);
  * \ingroup LuaSLDFESQ
  * \author Jan
  */
-int chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L);
+int PrintToPythonSLDFESQAngularQuadrature(lua_State* L);
