@@ -19,7 +19,7 @@ LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
 LBSSetProperty(phys1,SCATTERING_ORDER,1)
 --
 LBSInitialize(phys1)
-chiLBSExecute(phys1)
+LBSExecute(phys1)
 --
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 \endcode
