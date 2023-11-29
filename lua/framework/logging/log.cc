@@ -13,7 +13,7 @@ namespace opensnlua
 RegisterLuaFunctionAsIs(chiLogSetVerbosity);
 RegisterLuaFunctionAsIs(chiLog);
 RegisterLuaFunctionAsIs(chiLogProcessEvent);
-RegisterLuaFunctionAsIs(chiLogPrintTimingGraph);
+RegisterLuaFunctionAsIs(LogPrintTimingGraph);
 
 RegisterLuaConstantAsIs(LOG_0, Varying(1));
 RegisterLuaConstantAsIs(LOG_0WARNING, Varying(2));
@@ -94,7 +94,7 @@ chiLogProcessEvent(lua_State* L)
 }
 
 int
-chiLogPrintTimingGraph(lua_State* L)
+LogPrintTimingGraph(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

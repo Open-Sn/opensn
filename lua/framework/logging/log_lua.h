@@ -67,5 +67,5 @@ int chiLogProcessEvent(lua_State* L);
  *
  * \ingroup LuaLogging
  * */
-int chiLogPrintTimingGraph(lua_State* L);
+int LogPrintTimingGraph(lua_State* L);
 } // namespace opensnlua

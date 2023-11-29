@@ -152,4 +152,4 @@ if (master_export == nil) then
   chiExportMultiFieldFunctionToVTK(fflist,"ZPhi")
 end
 
-chiLogPrintTimingGraph()
+LogPrintTimingGraph()

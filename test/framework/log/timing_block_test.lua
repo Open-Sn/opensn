@@ -1,4 +1,4 @@
 unit_tests.LogTimingInfoTest()
 
-chiLogPrintTimingGraph()
-chiLogPrintTimingGraph(1)
+LogPrintTimingGraph()
+LogPrintTimingGraph(1)
