@@ -55,7 +55,7 @@ VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 --#### CFEM solver
 phys1 = CFEMDiffusionSolverCreate()
 
-chiSolverSetBasicOption(phys1, "residual_tolerance", 1E-8)
+SolverSetBasicOption(phys1, "residual_tolerance", 1E-8)
 
 CFEMDiffusionSetBCProperty(phys1,"boundary_type",e_bndry,"dirichlet",0.0)
 CFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"dirichlet",0.0)
@@ -66,7 +66,7 @@ SolverInitialize(phys1)
 SolverExecute(phys1)
 
 --############################################### Get field functions
-fflist,count = chiSolverGetFieldFunctionList(phys1)
+fflist,count = SolverGetFieldFunctionList(phys1)
 
 --############################################### Export VTU
 if (master_export == nil) then

@@ -62,8 +62,8 @@ end
 
 --############################################### Setup Physics
 phys1 = chiDiffusionCreateSolver()
-chiSolverSetBasicOption(phys1,"discretization_method","PWLD_MIP")
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-8)
+SolverSetBasicOption(phys1,"discretization_method","PWLD_MIP")
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-8)
 
 --############################################### Set boundary conditions
 chiDiffusionSetProperty(phys1,"boundary_type",e_bndry,"vacuum")
@@ -76,7 +76,7 @@ chiDiffusionInitialize(phys1)
 chiDiffusionExecute(phys1)
 
 --############################################### Get field functions
-fftemp,count = chiSolverGetFieldFunctionList(phys1)
+fftemp,count = SolverGetFieldFunctionList(phys1)
 
 --############################################### Slice plot
 slice2 = chiFFInterpolationCreate(SLICE)

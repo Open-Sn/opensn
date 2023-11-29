@@ -173,8 +173,8 @@ The following sequence of function calls completely define the diffusion solver.
 
 \code
 phys1 = chiDiffusionCreateSolver()
-chiSolverSetBasicOption(phys1,"discretization_method","PWLC")
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+SolverSetBasicOption(phys1,"discretization_method","PWLC")
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 \endcode
 
 We first create the diffusion solver with a call to
@@ -245,8 +245,8 @@ PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 --############################################### Setup Physics
 phys1 = chiDiffusionCreateSolver()
-chiSolverSetBasicOption(phys1,"discretization_method","PWLC");
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+SolverSetBasicOption(phys1,"discretization_method","PWLC");
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 
 --############################################### Initialize and
 --                                                Execute Solver

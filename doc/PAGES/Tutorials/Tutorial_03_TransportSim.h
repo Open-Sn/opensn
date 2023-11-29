@@ -67,7 +67,7 @@ The general material property TRANSPORT_XSECTIONS is used for
 \code
 --############################################### Setup Physics
 phys1 = LBSCreateSolver()
-chiSolverAddRegion(phys1,region1)
+SolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
     LBSCreateGroup(phys1)
@@ -99,7 +99,7 @@ LBSSetProperty(phys1,SCATTERING_ORDER,0)
  A transport solver is invoked by using a call to LBSCreateSolver().
  This creates a derived object based on a base physics solver so the
  mesh region gets added to the
- solver using the generic call chiSolverAddRegion(). Past this point we need
+ solver using the generic call SolverAddRegion(). Past this point we need
  to create the single required group with LBSCreateGroup(), although we put
  this in a loop for in-case we want to increase the number of groups, and then a
  quadrature rule for integration of the angular fluxes. Since we are dealing
@@ -199,7 +199,7 @@ PhysicsMaterialSetProperty(material0,
 
 --############################################### Setup Physics
 phys1 = LBSCreateSolver()
-chiSolverAddRegion(phys1,region1)
+SolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
     LBSCreateGroup(phys1)

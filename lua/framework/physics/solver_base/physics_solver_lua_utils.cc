@@ -14,20 +14,20 @@ using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionAsIs(chiSolverCreate);
+RegisterLuaFunctionAsIs(SolverCreate);
 
 RegisterLuaFunctionAsIs(SolverInitialize);
 RegisterLuaFunctionAsIs(SolverExecute);
 RegisterLuaFunctionAsIs(SolverStep);
 RegisterLuaFunctionAsIs(SolverAdvance);
-RegisterLuaFunctionAsIs(chiSolverSetBasicOption);
-RegisterLuaFunctionAsIs(chiSolverGetName);
-RegisterLuaFunctionAsIs(chiSolverGetFieldFunctionList);
+RegisterLuaFunctionAsIs(SolverSetBasicOption);
+RegisterLuaFunctionAsIs(SolverGetName);
+RegisterLuaFunctionAsIs(SolverGetFieldFunctionList);
 RegisterLuaFunctionAsIs(SolverGetInfo);
-RegisterLuaFunctionAsIs(chiSolverSetProperties);
+RegisterLuaFunctionAsIs(SolverSetProperties);
 
 int
-chiSolverCreate(lua_State* L)
+SolverCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -121,7 +121,7 @@ SolverAdvance(lua_State* L)
 }
 
 int
-chiSolverSetBasicOption(lua_State* L)
+SolverSetBasicOption(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -186,9 +186,9 @@ chiSolverSetBasicOption(lua_State* L)
 }
 
 int
-chiSolverGetName(lua_State* L)
+SolverGetName(lua_State* L)
 {
-  const std::string fname = "chiSolverGetName";
+  const std::string fname = "SolverGetName";
   const int num_args = lua_gettop(L);
 
   if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
@@ -205,7 +205,7 @@ chiSolverGetName(lua_State* L)
 }
 
 int
-chiSolverGetFieldFunctionList(lua_State* L)
+SolverGetFieldFunctionList(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -277,9 +277,9 @@ SolverGetInfo(lua_State* L)
 }
 
 int
-chiSolverSetProperties(lua_State* L)
+SolverSetProperties(lua_State* L)
 {
-  const std::string fname = "chiSolverSetProperties";
+  const std::string fname = "SolverSetProperties";
   const int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
 

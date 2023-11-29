@@ -5,7 +5,7 @@ The code below is an example of a complete specification of a groupset.
 \code
 --===================================== Setup physics
 phys1 = LBSCreateSolver()
-chiSolverAddRegion(phys1,region1)
+SolverAddRegion(phys1,region1)
 
 LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD3D)
 LBSSetProperty(phys1,SCATTERING_ORDER,1)

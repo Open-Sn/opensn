@@ -30,8 +30,8 @@ PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 --############################################### Setup Physics
 phys1 = chiDiffusionCreateSolver()
-chiSolverSetBasicOption(phys1,"discretization_method","PWLC");
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+SolverSetBasicOption(phys1,"discretization_method","PWLC");
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 chiDiffusionSetProperty(phys1,"boundary_type",4,"reflecting")
 chiDiffusionSetProperty(phys1,"boundary_type",5,"reflecting")
 

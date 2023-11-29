@@ -26,7 +26,7 @@ PhysicsMaterialSetProperty(material0,
 
 --############################################### Setup Physics
 phys1 = LBSCreateSolver()
-chiSolverAddRegion(phys1,region1)
+SolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
     LBSCreateGroup(phys1)

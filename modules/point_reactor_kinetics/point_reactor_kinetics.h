@@ -62,7 +62,7 @@ public:
    *
    * \section Properties Properties that can be set
    * The following properties can be set via the lua call
-   * `chiSolverSetProperties`
+   * `SolverSetProperties`
    * \copydoc prk::TransientSolver::SetProperties
    *
    * PRK Transient solver settable properties:

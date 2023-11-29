@@ -136,7 +136,7 @@ chiLBTSSetProperty(phys1, "TIMESTEP", 1e-3)
 chiLBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 chiLBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
-phys1name = chiSolverGetName(phys1);
+phys1name = SolverGetName(phys1);
 initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
 
 --time = 0.0

@@ -121,7 +121,7 @@ chiLBTSSetProperty(phys1, "TIMESTEP", 1e-1)
 chiLBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 chiLBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
-phys1name = chiSolverGetName(phys1);
+phys1name = SolverGetName(phys1);
 
 --for k=1,2 do
 --    --chiLBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)

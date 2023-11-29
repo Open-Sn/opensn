@@ -53,8 +53,8 @@ PhysicsMaterialSetProperty(materials[0],SCALAR_VALUE,SINGLE_VALUE,1.0)
 
 --############################################### Setup Physics
 phys1 = chiDiffusionCreateSolver()
-chiSolverSetBasicOption(phys1,"discretization_method","PWLC")
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+SolverSetBasicOption(phys1,"discretization_method","PWLC")
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 
 --############################################### Set boundary conditions
 chiDiffusionSetProperty(phys1,"boundary_type","ZMIN","reflecting")
@@ -65,7 +65,7 @@ chiDiffusionInitialize(phys1)
 chiDiffusionExecute(phys1)
 
 --############################################### Get field functions
-fftemp,count = chiSolverGetFieldFunctionList(phys1)
+fftemp,count = SolverGetFieldFunctionList(phys1)
 
 --############################################### Slice plot
 slice1 = chiFFInterpolationCreate(SLICE)
