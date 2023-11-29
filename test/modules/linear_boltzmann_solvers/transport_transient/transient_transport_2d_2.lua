@@ -69,7 +69,7 @@ end
 
 --========== ProdQuad
 fac=1
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4*fac, 3*fac)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4*fac, 3*fac)
 chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
 
 --========== Groupset def

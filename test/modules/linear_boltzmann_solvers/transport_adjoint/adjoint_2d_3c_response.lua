@@ -80,7 +80,7 @@ loc = { 1.25 - 0.5 * ds, 1.5 * ds, 0.0 }
 pt_src = lbs.PointSource.Create({ location = loc, strength = src })
 
 --############################################### Setup Physics
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
 chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {

@@ -8,8 +8,8 @@ dofile("materials/materials.lua")
 
 --############################################### Setup Physics
 --========== ProdQuad
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
---pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,1, 1)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
+--pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,1, 1)
 chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
 
 

@@ -73,7 +73,7 @@ for k=1,num_groups do
     LBSCreateGroup(phys1)
 end
 
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)
@@ -107,7 +107,7 @@ chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
  angle, and \f$ \varphi \f$, the azimuthal angle. A quadrature with favorable
  parallel properties is the Gauss-Legendre-Chebyshev quadrature. We create this
  quadrature with a call to
- chiCreateProductQuadrature() and specifying GAUSS_LEGENDRE_CHEBYSHEV as the rule
+ CreateProductQuadrature() and specifying GAUSS_LEGENDRE_CHEBYSHEV as the rule
  and we then specify 2 azimuthal angles per octant and 2 polar angles per octant.
 
  The next step in the process is to assign a group-set. Group-sets are very
@@ -205,7 +205,7 @@ for k=1,num_groups do
     LBSCreateGroup(phys1)
 end
 
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2,2)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2,2)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)

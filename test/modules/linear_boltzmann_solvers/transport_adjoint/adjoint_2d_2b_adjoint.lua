@@ -81,7 +81,7 @@ qoi_vol = mesh.RPPLogicalVolume.Create(
 dsrc = lbs.DistributedSource.Create({ logical_volume_handle = qoi_vol })
 
 --############################################### Setup Physics
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)
 chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {

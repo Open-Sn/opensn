@@ -37,7 +37,7 @@ PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
                            SIMPLEXS0, num_groups, sigma_t)
 
 -- Setup Physics
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE, 128)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE, 128)
 lbs_block = {
     num_groups = num_groups,
     groupsets = {

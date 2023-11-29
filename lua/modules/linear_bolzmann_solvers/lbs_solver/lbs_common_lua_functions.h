@@ -268,7 +268,7 @@ int chiLBSGroupsetAddGroups(lua_State* L);
  *
  * Example:
  * \code
- * pquad0 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
+ * pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
  *
  * chiLBSGroupsetSetQuadrature(phys1,cur_gs,pquad0)
  * \endcode

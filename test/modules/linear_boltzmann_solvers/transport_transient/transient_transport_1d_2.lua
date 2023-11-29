@@ -68,7 +68,7 @@ for g=1,num_groups do
 end
 
 --========== ProdQuad
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE,16)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE,16)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)

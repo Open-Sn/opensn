@@ -90,7 +90,7 @@ int chiCreateSphericalProductQuadrature(lua_State* L);
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiCreateProductQuadrature(lua_State* L);
+int CreateProductQuadrature(lua_State* L);
 
 /** Creates a quadrature.
  *
@@ -135,7 +135,7 @@ int chiGetProductQuadrature(lua_State* L);
  *  ###Example:
  *  Example:
  * \code
- * pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)
+ * pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)
  * chiOptimizeAngularQuadratureForPolarSymmetry(pqaud, 4.0*math.pi)
  * \endcode
  *

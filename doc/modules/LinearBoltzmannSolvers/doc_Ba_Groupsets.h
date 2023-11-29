@@ -17,8 +17,8 @@ for g=1,num_groups do
 end
 
 --========== ProdQuad
-pquad0 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
-pquad1 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,8, 8)
+pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
+pquad1 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,8, 8)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)

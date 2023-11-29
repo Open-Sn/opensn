@@ -62,7 +62,7 @@ PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 --############################################### Setup Physics
-pquad0 = chiCreateProductQuadrature(GAUSS_LEGENDRE,40)
+pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE,40)
 lbs_block =
 {
   num_groups = num_groups,

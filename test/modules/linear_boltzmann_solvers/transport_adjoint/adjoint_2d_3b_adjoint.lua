@@ -96,7 +96,7 @@ dsrc = lbs.DistributedSource.Create(
 )
 
 --############################################### Setup Physics
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
 chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
