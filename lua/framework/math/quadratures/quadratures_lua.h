@@ -121,7 +121,7 @@ int CreateLineQuadrature(lua_State* L);
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiGetProductQuadrature(lua_State* L);
+int GetProductQuadrature(lua_State* L);
 
 /**Optimizes the indicated angular quadrature for polar symmetry.
  *
