@@ -16,10 +16,10 @@ int MakeObject(lua_State* L);
  * \param type string The type to create.
  * \param params ParameterBlock A single block tree.
  */
-int chiMakeObjectType(lua_State* L);
+int MakeObjectType(lua_State* L);
 
 RegisterLuaFunctionAsIs(MakeObject);
-RegisterLuaFunctionAsIs(chiMakeObjectType);
+RegisterLuaFunctionAsIs(MakeObjectType);
 
 int
 MakeObject(lua_State* L)
@@ -42,7 +42,7 @@ MakeObject(lua_State* L)
 }
 
 int
-chiMakeObjectType(lua_State* L)
+MakeObjectType(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

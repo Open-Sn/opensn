@@ -397,7 +397,7 @@ Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
 
     lua_pushstring(L, "Create");
     std::string chunk_code = "local params = ...; ";
-    chunk_code += "return chiMakeObjectType(\"" + full_name + "\", ...)";
+    chunk_code += "return MakeObjectType(\"" + full_name + "\", ...)";
 
     luaL_loadstring(L, chunk_code.c_str());
     lua_settable(L, -3);
