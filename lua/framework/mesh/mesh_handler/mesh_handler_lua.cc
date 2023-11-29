@@ -13,7 +13,7 @@ using namespace opensn;
 
 RegisterLuaFunctionAsIs(chiMeshHandlerCreate);
 RegisterLuaFunctionAsIs(chiMeshHandlerSetCurrent);
-RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToObj);
+RegisterLuaFunctionAsIs(MeshHandlerExportMeshToObj);
 RegisterLuaFunctionAsIs(MeshHandlerExportMeshToVTK);
 RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToExodus);
 

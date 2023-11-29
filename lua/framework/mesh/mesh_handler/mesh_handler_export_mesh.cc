@@ -4,7 +4,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 int
-chiMeshHandlerExportMeshToObj(lua_State* L)
+MeshHandlerExportMeshToObj(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;

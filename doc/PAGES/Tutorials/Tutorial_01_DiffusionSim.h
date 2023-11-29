@@ -44,7 +44,8 @@ centered on operating on a specific chi_mesh::MeshHandler object. Physics/math
  (32,768 total) as shown in Figure 1.
 
 
- \image html "Meshing/CubeMeshTut1.png"  "Figure 1 - Mesh spanning from [-1,-1,-1] to [1,1,1]" width=350px
+ \image html "Meshing/CubeMeshTut1.png"  "Figure 1 - Mesh spanning from [-1,-1,-1] to [1,1,1]"
+width=350px
 
 The first step of this process is to define an array of nodes starting from -1.0
 with a distance \f$ ds \f$ between each of them. In lua we can create this array
@@ -132,7 +133,7 @@ By default all boundaries are unassigned (i.e., -1). There are two utilities
 
 The culmination of this step is all done within a physics agnostic framework.
 The user can even export the mesh for visualization using the function
- chiMeshHandlerExportMeshToObj().
+ MeshHandlerExportMeshToObj().
 
 ### Boundary IDs
 

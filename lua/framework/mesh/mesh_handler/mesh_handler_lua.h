@@ -26,7 +26,7 @@ int chiMeshHandlerSetCurrent(lua_State* L);
  *                      the extruder's surface mesh by material.
  * \ingroup LuaMeshHandler
  */
-int chiMeshHandlerExportMeshToObj(lua_State* L);
+int MeshHandlerExportMeshToObj(lua_State* L);
 
 /**Exports the mesh to vtu format.
  * \param FileName char Base name of the file to be used.
