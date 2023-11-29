@@ -11,8 +11,8 @@ namespace opensnlua::mg_diffusion
 void
 RegisterLuaEntities(lua_State* L)
 {
-  LUA_FMACRO1(chiCFEMMGDiffusionSolverCreate);
-  LUA_FMACRO1(chiCFEMMGDiffusionSetBCProperty);
+  LUA_FMACRO1(CFEMMGDiffusionSolverCreate);
+  LUA_FMACRO1(CFEMMGDiffusionSetBCProperty);
 
   //  LUA_CMACRO1(MAX_ITERATIONS, 1);
   //  LUA_CMACRO1(TOLERANCE     , 2);
