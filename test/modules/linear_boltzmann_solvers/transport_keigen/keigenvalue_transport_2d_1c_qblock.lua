@@ -61,7 +61,7 @@ k_solver0 = lbs.XXPowerIterationKEigenSCDSA.Create
   accel_pi_verbose = false,
   k_tol = 1.0e-8
 })
-chiSolverInitialize(k_solver0)
+SolverInitialize(k_solver0)
 chiSolverExecute(k_solver0)
 
 

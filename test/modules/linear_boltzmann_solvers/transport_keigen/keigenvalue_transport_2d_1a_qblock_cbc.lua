@@ -55,7 +55,7 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 
 k_solver0 = lbs.XXPowerIterationKEigen.Create({ lbs_solver_handle = phys1, })
-chiSolverInitialize(k_solver0)
+SolverInitialize(k_solver0)
 chiSolverExecute(k_solver0)
 
 

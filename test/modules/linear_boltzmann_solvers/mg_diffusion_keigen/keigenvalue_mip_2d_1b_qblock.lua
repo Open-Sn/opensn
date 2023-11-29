@@ -42,7 +42,7 @@ lbs.SetOptions(phys1, lbs_options)
 
 
 k_solver0 = lbs.XXNonLinearKEigen.Create({ lbs_solver_handle = phys1, })
-chiSolverInitialize(k_solver0)
+SolverInitialize(k_solver0)
 chiSolverExecute(k_solver0)
 
 fflist,count = chiLBSGetScalarFieldFunctionList(phys1)

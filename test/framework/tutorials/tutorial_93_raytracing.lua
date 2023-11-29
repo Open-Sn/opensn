@@ -77,7 +77,7 @@ chiPhysicsMaterialSetProperty(materials[1],
 --chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
 --
 ----############################################### Initialize and Execute Solver
---chiSolverInitialize(phys1)
+--SolverInitialize(phys1)
 --chiSolverExecute(phys1)
 
 
@@ -119,7 +119,7 @@ chiLBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-chiSolverInitialize(ss_solver)
+SolverInitialize(ss_solver)
 chiSolverExecute(ss_solver)
 
 ff_m0 = chiLBSGetScalarFieldFunctionList(phys1)

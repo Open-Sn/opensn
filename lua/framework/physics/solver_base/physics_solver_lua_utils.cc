@@ -16,7 +16,7 @@ namespace opensnlua
 {
 RegisterLuaFunctionAsIs(chiSolverCreate);
 
-RegisterLuaFunctionAsIs(chiSolverInitialize);
+RegisterLuaFunctionAsIs(SolverInitialize);
 RegisterLuaFunctionAsIs(chiSolverExecute);
 RegisterLuaFunctionAsIs(chiSolverStep);
 RegisterLuaFunctionAsIs(chiSolverAdvance);
@@ -45,7 +45,7 @@ chiSolverCreate(lua_State* L)
 }
 
 int
-chiSolverInitialize(lua_State* L)
+SolverInitialize(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

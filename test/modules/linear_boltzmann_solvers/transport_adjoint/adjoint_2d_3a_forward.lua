@@ -119,7 +119,7 @@ lbs.SetOptions(phys, lbs_options)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
-chiSolverInitialize(ss_solver)
+SolverInitialize(ss_solver)
 chiSolverExecute(ss_solver)
 
 --############################################### Get field functions

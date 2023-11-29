@@ -56,7 +56,7 @@ chiDFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"reflecting")
 chiDFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"reflecting")
 chiDFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"robin", 0.25, 0.5, 1.0)
 
-chiSolverInitialize(phys1)
+SolverInitialize(phys1)
 chiSolverExecute(phys1)
 
 

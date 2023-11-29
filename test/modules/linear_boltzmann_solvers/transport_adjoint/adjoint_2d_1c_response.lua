@@ -118,7 +118,7 @@ lbs.SetOptions(phys, lbs_options)
 --############################################### Initialize and Compute Response
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
-chiSolverInitialize(ss_solver)
+SolverInitialize(ss_solver)
 chiLBSReadFluxMoments(phys, "Adjoint2D_1b_adjoint")
 
 value = chiAdjointSolverComputeInnerProduct(phys)

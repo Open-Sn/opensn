@@ -24,7 +24,7 @@ chi.PostProcessorPrinterSetOptions({
   time_history_limit = 5,
 })
 
-chiSolverInitialize(phys0)
+SolverInitialize(phys0)
 
 for t = 1, 20 do
   chiSolverStep(phys0)

@@ -54,7 +54,7 @@ if (k_method == "pi") then
         lbs_solver_handle = phys1,
         k_tol = 1.0e-8
     })
-    chiSolverInitialize(k_solver)
+    SolverInitialize(k_solver)
     chiSolverExecute(k_solver)
 elseif (k_method == "pi_scdsa") then
     k_solver = lbs.XXPowerIterationKEigenSCDSA.Create
@@ -69,7 +69,7 @@ elseif (k_method == "pi_scdsa") then
     chiLBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
     chiLBSGroupsetSetMaxIterations(phys1, 0, 1)
 
-    chiSolverInitialize(k_solver)
+    SolverInitialize(k_solver)
     chiSolverExecute(k_solver)
 elseif (k_method == "pi_scdsa_pwlc") then
     k_solver = lbs.XXPowerIterationKEigenSCDSA.Create
@@ -84,7 +84,7 @@ elseif (k_method == "pi_scdsa_pwlc") then
     chiLBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
     chiLBSGroupsetSetMaxIterations(phys1, 0, 1)
 
-    chiSolverInitialize(k_solver)
+    SolverInitialize(k_solver)
     chiSolverExecute(k_solver)
 elseif (k_method == "jfnk") then
     k_solver = lbs.XXNonLinearKEigen.Create
@@ -96,7 +96,7 @@ elseif (k_method == "jfnk") then
         l_max_its = 20,
         num_free_power_iterations = 2,
     })
-    chiSolverInitialize(k_solver)
+    SolverInitialize(k_solver)
     chiSolverExecute(k_solver)
 else
     chiLog(LOG_0ERROR, "k_method must be specified. \"pi\", "..

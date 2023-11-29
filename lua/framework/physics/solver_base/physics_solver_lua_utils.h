@@ -31,7 +31,7 @@ int chiSolverCreate(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverInitialize(lua_State* L);
+int SolverInitialize(lua_State* L);
 
 /** Executes the solver at the given handle.
  *

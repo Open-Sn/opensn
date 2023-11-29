@@ -103,7 +103,7 @@ k_solver0 = lbs.XXNonLinearKEigen.Create
   nl_max_its = kes_max_iterations,
   nl_abs_tol = kes_tolerance
 })
-chiSolverInitialize(k_solver0)
+SolverInitialize(k_solver0)
 chiSolverExecute(k_solver0)
 
 --############################################### Get field functions

@@ -125,7 +125,7 @@ chiLBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 
 
 --############################################### Initialize and Execute Solver
-chiSolverInitialize(phys1)
+SolverInitialize(phys1)
 
 chiLBTSSetProperty(phys1, "TIMESTEP", 1e-3*100)
 chiLBTSSetProperty(phys1, "TIMESTOP", 1.0*100)

@@ -24,7 +24,7 @@ extern "C"
 /**Macro for registering a lua_CFunction within the Console
  * singleton, with the function being in the global namespace. Example:
  * \code
- * ConsoleRegisterLuaFunction(chiSolverInitialize);
+ * ConsoleRegisterLuaFunction(SolverInitialize);
  * \endcode
  *
  * \note Remember to include the header "console/chi_console.h".

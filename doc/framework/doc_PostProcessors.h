@@ -79,7 +79,7 @@ pp0 = chi.SolverInfoPostProcessor.Create
   print_on = { "ProgramExecuted" }
 })
 
-chiSolverInitialize(phys0)
+SolverInitialize(phys0)
 
 for t=1,20 do
   chiSolverStep(phys0)

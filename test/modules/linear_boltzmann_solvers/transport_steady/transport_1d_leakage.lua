@@ -78,7 +78,7 @@ lbs.SetOptions(phys, lbs_options)
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
 -- Solve the problem
-chiSolverInitialize(ss_solver)
+SolverInitialize(ss_solver)
 chiSolverExecute(ss_solver)
 
 -- Compute the leakage

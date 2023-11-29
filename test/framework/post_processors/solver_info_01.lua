@@ -17,7 +17,7 @@ chi.PostProcessorPrinterSetOptions
   csv_filename = "solver_info_01.csv"
 })
 
-chiSolverInitialize(phys0)
+SolverInitialize(phys0)
 
 for t=1,20 do
   chiSolverStep(phys0)
