@@ -119,7 +119,7 @@ lbs.SetOptions(phys, lbs_options)
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
 SolverInitialize(ss_solver)
-chiLBSReadFluxMoments(phys, "Adjoint2D_1b_adjoint")
+LBSReadFluxMoments(phys, "Adjoint2D_1b_adjoint")
 
 value = AdjointSolverComputeInnerProduct(phys)
 chiLog(LOG_0, string.format("Inner-product=%.5e", value))

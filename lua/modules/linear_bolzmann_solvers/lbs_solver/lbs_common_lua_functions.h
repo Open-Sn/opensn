@@ -670,7 +670,7 @@ int chiLBSCreateAndWriteSourceMoments(lua_State* L);
  *                              with the ".data" appended. Default: false.
  *
  */
-int chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L);
+int LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L);
 
 /**Reads the source-moments from a file to a specific
  * ext_src_moments_local-vector
@@ -702,7 +702,7 @@ int chiLBSReadSourceMoments(lua_State* L);
  *                              be used without adding the location-id, but still
  *                              with the ".data" appended. Default: false.
  */
-int chiLBSReadFluxMoments(lua_State* L);
+int LBSReadFluxMoments(lua_State* L);
 
 /**Computes and returns the fission rate.
  *
