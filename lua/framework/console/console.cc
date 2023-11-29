@@ -203,7 +203,7 @@ Console::PostMPIInfo(int location_id, int number_of_processes) const
   lua_setglobal(L, "location_id");
 
   lua_pushinteger(L, number_of_processes);
-  lua_setglobal(L, "chi_number_of_processes");
+  lua_setglobal(L, "number_of_processes");
 }
 
 void
