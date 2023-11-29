@@ -197,11 +197,11 @@ DiffusionExecute(phys1)
 The execution of a Chi-Tech physics module culminates in the creation of one or
  more field functions. These field functions should all be populated for use
  during the initialization phase of the solver. Users can get handles to all
- the field functions by using the chiGetFieldFunctionList call. Thereafter, the
+ the field functions by using the GetFieldFunctionList call. Thereafter, the
  field function can be exported to VTK-format which can be read by Paraview.
 
 \code
-fflist,count = chiGetFieldFunctionList(phys1)
+fflist,count = GetFieldFunctionList(phys1)
 ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 \endcode
 
@@ -254,7 +254,7 @@ DiffusionInitialize(phys1)
 DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
-fflist,count = chiGetFieldFunctionList(phys1)
+fflist,count = GetFieldFunctionList(phys1)
 ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 \endcode
 

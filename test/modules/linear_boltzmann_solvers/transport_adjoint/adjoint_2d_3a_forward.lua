@@ -123,9 +123,9 @@ SolverInitialize(ss_solver)
 SolverExecute(ss_solver)
 
 --############################################### Get field functions
-ff_m0 = chiGetFieldFunctionHandleByName("phi_g000_m00")
-ff_m1 = chiGetFieldFunctionHandleByName("phi_g000_m01")
-ff_m2 = chiGetFieldFunctionHandleByName("phi_g000_m02")
+ff_m0 = GetFieldFunctionHandleByName("phi_g000_m00")
+ff_m1 = GetFieldFunctionHandleByName("phi_g000_m01")
+ff_m2 = GetFieldFunctionHandleByName("phi_g000_m02")
 
 --############################################### Volume integrations
 
@@ -140,7 +140,7 @@ qoi_vol = mesh.RPPLogicalVolume.Create(
 
 sum = 0.0
 for g = 0, num_groups - 1 do
-    ff = chiGetFieldFunctionHandleByName(
+    ff = GetFieldFunctionHandleByName(
         "phi_g" .. string.format("%03d", g) .. "_m" .. string.format("%02d", 0))
     ffi = FFInterpolationCreate(VOLUME)
     FFInterpolationSetProperty(ffi, OPERATION, OP_SUM)

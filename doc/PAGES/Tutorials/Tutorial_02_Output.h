@@ -13,10 +13,10 @@ We will be adding some items to this input file.
 ## Step 2 - Obtain a list of field functions associated with the solver
 
  \code
- fflist,count = chiGetFieldFunctionList(phys1)
+ fflist,count = GetFieldFunctionList(phys1)
  \endcode
 
- The function call chiGetFieldFunctionList() provides us with two items. A
+ The function call GetFieldFunctionList() provides us with two items. A
  lua-table and a count of how many items there are in the table. The items
  in "fflist" are the text names of the field functions. Each solver has its
  own defaults.
@@ -124,7 +124,7 @@ DiffusionInitialize(phys1)
 DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
-fflist,count = chiGetFieldFunctionList(phys1)
+fflist,count = GetFieldFunctionList(phys1)
 ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 
 slice1 = FFInterpolationCreate(SLICE)

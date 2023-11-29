@@ -11,10 +11,10 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiGetFieldFunctionHandleByName);
+RegisterLuaFunctionAsIs(GetFieldFunctionHandleByName);
 
 int
-chiGetFieldFunctionHandleByName(lua_State* L)
+GetFieldFunctionHandleByName(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   int num_args = lua_gettop(L);

@@ -209,7 +209,7 @@ SolverGetFieldFunctionList(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError("chiGetFieldFunctionList", 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError("GetFieldFunctionList", 1, num_args);
 
   // Getting solver
   const int solver_handle = lua_tonumber(L, 1);

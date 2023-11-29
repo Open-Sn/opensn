@@ -12,7 +12,7 @@
  *
  * \ingroup LuaFieldFunc
  */
-int chiGetFieldFunctionHandleByName(lua_State* L);
+int GetFieldFunctionHandleByName(lua_State* L);
 
 /** Exports a field function to VTK format.
  *
