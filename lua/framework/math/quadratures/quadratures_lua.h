@@ -14,7 +14,7 @@
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiCreateCustomAngularQuadrature(lua_State* L);
+int CreateCustomAngularQuadrature(lua_State* L);
 
 /** Creates a curvilinear product quadrature suitable for cylindrical
  * geometries.

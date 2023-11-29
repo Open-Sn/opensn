@@ -9,10 +9,10 @@
 #include "quadratures_lua.h"
 #include "framework/console/console.h"
 
-RegisterLuaFunctionAsIs(chiCreateCustomAngularQuadrature);
+RegisterLuaFunctionAsIs(CreateCustomAngularQuadrature);
 
 int
-chiCreateCustomAngularQuadrature(lua_State* L)
+CreateCustomAngularQuadrature(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
