@@ -42,4 +42,4 @@ int MeshHandlerExportMeshToVTK(lua_State* L);
  *                               Default = `false`.
  * \ingroup LuaMeshHandler
  */
-int chiMeshHandlerExportMeshToExodus(lua_State* L);
+int MeshHandlerExportMeshToExodus(lua_State* L);

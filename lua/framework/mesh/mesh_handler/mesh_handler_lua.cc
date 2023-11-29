@@ -15,7 +15,7 @@ RegisterLuaFunctionAsIs(chiMeshHandlerCreate);
 RegisterLuaFunctionAsIs(chiMeshHandlerSetCurrent);
 RegisterLuaFunctionAsIs(MeshHandlerExportMeshToObj);
 RegisterLuaFunctionAsIs(MeshHandlerExportMeshToVTK);
-RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToExodus);
+RegisterLuaFunctionAsIs(MeshHandlerExportMeshToExodus);
 
 int
 chiMeshHandlerCreate(lua_State* L)

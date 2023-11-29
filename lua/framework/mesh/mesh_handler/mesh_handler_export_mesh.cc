@@ -45,7 +45,7 @@ MeshHandlerExportMeshToVTK(lua_State* L)
 }
 
 int
-chiMeshHandlerExportMeshToExodus(lua_State* L)
+MeshHandlerExportMeshToExodus(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;
