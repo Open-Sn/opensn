@@ -10,7 +10,7 @@ Example:
 Suppose this is a 3D simulation, 2 groups, scattering order of 1
 (resulting in 4 moments)
 \code
-phys1 = chiLBSCreateSolver()
+phys1 = LBSCreateSolver()
 chiSolverAddRegion(phys1,region1)
 --
 -- Add Groupset construction here

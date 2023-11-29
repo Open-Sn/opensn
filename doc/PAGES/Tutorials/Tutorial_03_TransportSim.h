@@ -66,7 +66,7 @@ The general material property TRANSPORT_XSECTIONS is used for
 
 \code
 --############################################### Setup Physics
-phys1 = chiLBSCreateSolver()
+phys1 = LBSCreateSolver()
 chiSolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
@@ -96,7 +96,7 @@ chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD1D)
 chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
 \endcode
 
- A transport solver is invoked by using a call to chiLBSCreateSolver().
+ A transport solver is invoked by using a call to LBSCreateSolver().
  This creates a derived object based on a base physics solver so the
  mesh region gets added to the
  solver using the generic call chiSolverAddRegion(). Past this point we need
@@ -198,7 +198,7 @@ PhysicsMaterialSetProperty(material0,
                               0.2)   --Scattering ratio
 
 --############################################### Setup Physics
-phys1 = chiLBSCreateSolver()
+phys1 = LBSCreateSolver()
 chiSolverAddRegion(phys1,region1)
 
 for k=1,num_groups do

@@ -4,7 +4,7 @@ The code below is an example of a complete specification of a groupset.
 
 \code
 --===================================== Setup physics
-phys1 = chiLBSCreateSolver()
+phys1 = LBSCreateSolver()
 chiSolverAddRegion(phys1,region1)
 
 chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD3D)

@@ -38,7 +38,7 @@ PhysicsMaterialSetProperty(materials[1],
 
 ----############################################### Setup Physics
 --solver_name = "LBS"
---phys1 = chiLBSCreateSolver(solver_name)
+--phys1 = LBSCreateSolver(solver_name)
 --
 ----========== Groups
 --grp = {}

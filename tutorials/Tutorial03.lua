@@ -25,7 +25,7 @@ PhysicsMaterialSetProperty(material0,
                            0.2)   --Scattering ratio
 
 --############################################### Setup Physics
-phys1 = chiLBSCreateSolver()
+phys1 = LBSCreateSolver()
 chiSolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
