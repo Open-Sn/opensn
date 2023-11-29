@@ -181,7 +181,7 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
         lua_pushstring(L, argv[i - 1]);
         lua_settable(L, -3);
       }
-      lua_setglobal(L, "chiArgs");
+      lua_setglobal(L, "Args");
     }
     int error = luaL_dofile(this->console_state_, fileName.c_str());
 
