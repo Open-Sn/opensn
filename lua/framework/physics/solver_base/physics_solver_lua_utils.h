@@ -98,7 +98,7 @@ int chiSolverGetFieldFunctionList(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverGetInfo(lua_State* L);
+int SolverGetInfo(lua_State* L);
 
 /**Sets a property of a solver.
  * \param handle int Solver handle.
