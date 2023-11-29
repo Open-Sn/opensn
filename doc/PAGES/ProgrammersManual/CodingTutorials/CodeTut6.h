@@ -402,7 +402,7 @@ for (const auto& cell : grid.local_cells)
 \section CodeTut6Sec6 6 Defining a cell-by-cell sweep chunk
 \code
 // Define sweep chunk
-typedef chi_data_types::NDArray<double> IJKArrayDbl;
+typedef data_types::NDArray<double> IJKArrayDbl;
 IJKArrayDbl psi_ds_x(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});
 IJKArrayDbl psi_ds_y(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});
 IJKArrayDbl psi_ds_z(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});
@@ -505,7 +505,7 @@ const auto k = ijk[2]; const auto Nz = ijk_info[2];
 
 Thereafter we determine the upstream fluxes from the general downstream
 \f$ \psi \f$ structures. These data structures are multidimensional arrays
-`chi_data_types::NDArray` which are used to store each cell's downstream
+`data_types::NDArray` which are used to store each cell's downstream
 components. These arrays are indexed with ijk indices making them easy to use in
 our orthogonal mesh setting.
 \code
@@ -959,7 +959,7 @@ int main(int argc, char* argv[])
   }//for cell
 
   // Define sweep chunk
-  typedef chi_data_types::NDArray<double> IJKArrayDbl;
+  typedef data_types::NDArray<double> IJKArrayDbl;
   IJKArrayDbl psi_ds_x(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});
   IJKArrayDbl psi_ds_y(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});
   IJKArrayDbl psi_ds_z(std::array<int64_t,4>{Nx,Ny,Nz,num_groups});

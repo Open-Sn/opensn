@@ -16,12 +16,12 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock chi_data_types_Test00(const InputParameters& params);
+ParameterBlock data_types_Test00(const InputParameters& params);
 
-RegisterWrapperFunction(unit_tests, chi_data_types_Test00, nullptr, chi_data_types_Test00);
+RegisterWrapperFunction(unit_tests, data_types_Test00, nullptr, data_types_Test00);
 
 ParameterBlock
-chi_data_types_Test00(const InputParameters&)
+data_types_Test00(const InputParameters&)
 {
   bool passed = true;
 
@@ -256,7 +256,7 @@ chi_data_types_Test00(const InputParameters&)
     }
   } // if #procs=2
   else
-    throw std::invalid_argument("unit_tests::Test_chi_data_types requires"
+    throw std::invalid_argument("unit_tests::Test_data_types requires"
                                 " at least 2 MPI processes.");
 
   if (not passed)
