@@ -17,12 +17,12 @@ namespace opensnlua
  *
  * \return Varying Either a single number or a table of output values.
  */
-int chiFunctionDimAToDimBEvaluate(lua_State* L);
+int FunctionDimAToDimBEvaluate(lua_State* L);
 
-RegisterLuaFunctionAsIs(chiFunctionDimAToDimBEvaluate);
+RegisterLuaFunctionAsIs(FunctionDimAToDimBEvaluate);
 
 int
-chiFunctionDimAToDimBEvaluate(lua_State* L)
+FunctionDimAToDimBEvaluate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
