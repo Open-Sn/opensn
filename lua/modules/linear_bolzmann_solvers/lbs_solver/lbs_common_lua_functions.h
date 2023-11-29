@@ -687,7 +687,7 @@ int LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L);
  *                              be used without adding the location-id, but still
  *                              with the ".data" appended. Default: false.
  */
-int chiLBSReadSourceMoments(lua_State* L);
+int LBSReadSourceMoments(lua_State* L);
 
 /**Reads flux-moments from a file to phi_old_local (the initial flux solution).
  *

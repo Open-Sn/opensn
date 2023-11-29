@@ -103,7 +103,7 @@ lbs.SetOptions(phys1, lbs_options)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 SolverInitialize(ss_solver)
-chiLBSReadSourceMoments(phys1,"Qmoms")
+LBSReadSourceMoments(phys1,"Qmoms")
 
 SolverExecute(ss_solver)
 

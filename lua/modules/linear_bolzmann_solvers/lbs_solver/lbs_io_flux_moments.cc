@@ -93,9 +93,9 @@ LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
 }
 
 int
-chiLBSReadSourceMoments(lua_State* L)
+LBSReadSourceMoments(lua_State* L)
 {
-  const std::string fname = "chiLBSReadSourceMoments";
+  const std::string fname = "LBSReadSourceMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
   if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);
