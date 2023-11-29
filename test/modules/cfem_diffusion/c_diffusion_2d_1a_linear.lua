@@ -69,17 +69,17 @@ if (master_export == nil) then
 end
 
 --############################################### Line plot
-cline = chiFFInterpolationCreate(LINE)
-chiFFInterpolationSetProperty(cline,LINE_FIRSTPOINT,-L/2, 0.0, 0.0)
-chiFFInterpolationSetProperty(cline,LINE_SECONDPOINT,L/2, 0.0, 0.0)
-chiFFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
-chiFFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
+cline = FFInterpolationCreate(LINE)
+FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,-L/2, 0.0, 0.0)
+FFInterpolationSetProperty(cline,LINE_SECONDPOINT,L/2, 0.0, 0.0)
+FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
-chiFFInterpolationInitialize(cline)
-chiFFInterpolationExecute(cline)
+FFInterpolationInitialize(cline)
+FFInterpolationExecute(cline)
 
 if (master_export == nil) then
-    chiFFInterpolationExportPython(cline)
+    FFInterpolationExportPython(cline)
 end
 
 --############################################### Volume integrations

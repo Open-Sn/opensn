@@ -57,33 +57,33 @@ chiDiffusionExecute(phys1)
 fftemp,count = SolverGetFieldFunctionList(phys1)
 
 --############################################### Line plot
-ffi0 = chiFFInterpolationCreate(LINE)
+ffi0 = FFInterpolationCreate(LINE)
 curffi = ffi0;
-chiFFInterpolationSetProperty(curffi,LINE_FIRSTPOINT,0.0,0.0,0.0+xmin)
-chiFFInterpolationSetProperty(curffi,LINE_SECONDPOINT,0.0,0.0, 2.0+xmin)
-chiFFInterpolationSetProperty(curffi,LINE_NUMBEROFPOINTS, 1000)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
+FFInterpolationSetProperty(curffi,LINE_FIRSTPOINT,0.0,0.0,0.0+xmin)
+FFInterpolationSetProperty(curffi,LINE_SECONDPOINT,0.0,0.0, 2.0+xmin)
+FFInterpolationSetProperty(curffi,LINE_NUMBEROFPOINTS, 1000)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
 
 --############################################### Volume integrations
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
 chiLog(LOG_0,string.format("Max-value=%.5f", maxval))
 
 --############################################### Exports
 if (master_export == nil) then
-    chiFFInterpolationExportPython(ffi0)
+    FFInterpolationExportPython(ffi0)
 end
 
 --############################################### Plots

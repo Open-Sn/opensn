@@ -62,13 +62,13 @@ end
 ----############################################### Volume integrations
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 --
-ffvol = chiFFInterpolationCreate(VOLUME)
-chiFFInterpolationSetProperty(ffvol,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(ffvol,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(ffvol,ADD_FIELDFUNCTION,simtest_IP_MMS_L2_handle)
+ffvol = FFInterpolationCreate(VOLUME)
+FFInterpolationSetProperty(ffvol,OPERATION,OP_MAX)
+FFInterpolationSetProperty(ffvol,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(ffvol,ADD_FIELDFUNCTION,simtest_IP_MMS_L2_handle)
 --
-chiFFInterpolationInitialize(ffvol)
-chiFFInterpolationExecute(ffvol)
-maxval = chiFFInterpolationGetValue(ffvol)
+FFInterpolationInitialize(ffvol)
+FFInterpolationExecute(ffvol)
+maxval = FFInterpolationGetValue(ffvol)
 
 chiLog(LOG_0,string.format("Max-value=%.6f", maxval))

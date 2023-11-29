@@ -57,32 +57,32 @@ chiDiffusionExecute(phys1)
 fftemp,count = SolverGetFieldFunctionList(phys1)
 
 --############################################### Line plot
-line0 = chiFFInterpolationCreate(LINE)
-chiFFInterpolationSetProperty(line0,LINE_FIRSTPOINT,0.1,0.0,0.0)
-chiFFInterpolationSetProperty(line0,LINE_SECONDPOINT,0.1,0.0, 2.0)
-chiFFInterpolationSetProperty(line0,LINE_NUMBEROFPOINTS, 100)
-chiFFInterpolationSetProperty(line0,ADD_FIELDFUNCTION,fftemp[1])
+line0 = FFInterpolationCreate(LINE)
+FFInterpolationSetProperty(line0,LINE_FIRSTPOINT,0.1,0.0,0.0)
+FFInterpolationSetProperty(line0,LINE_SECONDPOINT,0.1,0.0, 2.0)
+FFInterpolationSetProperty(line0,LINE_NUMBEROFPOINTS, 100)
+FFInterpolationSetProperty(line0,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(line0)
-chiFFInterpolationExecute(line0)
+FFInterpolationInitialize(line0)
+FFInterpolationExecute(line0)
 
 --############################################### Volume integrations
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
 chiLog(LOG_0,string.format("Max-value=%.10f", maxval))
 
 --############################################### Exports
 if (master_export == nil) then
-    chiFFInterpolationExportPython(line0)
+    FFInterpolationExportPython(line0)
 end
 
 --############################################### Plots

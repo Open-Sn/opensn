@@ -115,39 +115,39 @@ fflist,count = LBSGetScalarFieldFunctionList(phys1)
 --############################################### Slice plot
 --slices = {}
 --for k=1,count do
---    slices[k] = chiFFInterpolationCreate(SLICE)
---    chiFFInterpolationSetProperty(slices[k],SLICE_POINT,0.0,0.0,0.8001)
---    chiFFInterpolationSetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
---    --chiFFInterpolationSetProperty(slices[k],SLICE_TANGENT,0.393,1.0-0.393,0)
---    --chiFFInterpolationSetProperty(slices[k],SLICE_NORMAL,-(1.0-0.393),-0.393,0.0)
---    --chiFFInterpolationSetProperty(slices[k],SLICE_BINORM,0.0,0.0,1.0)
---    chiFFInterpolationInitialize(slices[k])
---    chiFFInterpolationExecute(slices[k])
---    chiFFInterpolationExportPython(slices[k])
+--    slices[k] = FFInterpolationCreate(SLICE)
+--    FFInterpolationSetProperty(slices[k],SLICE_POINT,0.0,0.0,0.8001)
+--    FFInterpolationSetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
+--    --FFInterpolationSetProperty(slices[k],SLICE_TANGENT,0.393,1.0-0.393,0)
+--    --FFInterpolationSetProperty(slices[k],SLICE_NORMAL,-(1.0-0.393),-0.393,0.0)
+--    --FFInterpolationSetProperty(slices[k],SLICE_BINORM,0.0,0.0,1.0)
+--    FFInterpolationInitialize(slices[k])
+--    FFInterpolationExecute(slices[k])
+--    FFInterpolationExportPython(slices[k])
 --end
 
 --############################################### Volume integrations
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
 chiLog(LOG_0,string.format("Max-value1=%.5e", maxval))
 
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[20])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[20])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
 chiLog(LOG_0,string.format("Max-value2=%.5e", maxval))
 

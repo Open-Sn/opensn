@@ -79,23 +79,23 @@ chiDiffusionExecute(phys1)
 fftemp,count = SolverGetFieldFunctionList(phys1)
 
 --############################################### Slice plot
-slice2 = chiFFInterpolationCreate(SLICE)
-chiFFInterpolationSetProperty(slice2,SLICE_POINT,0.0,0.0,0.025)
-chiFFInterpolationSetProperty(slice2,ADD_FIELDFUNCTION,fftemp[1])
+slice2 = FFInterpolationCreate(SLICE)
+FFInterpolationSetProperty(slice2,SLICE_POINT,0.0,0.0,0.025)
+FFInterpolationSetProperty(slice2,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(slice2)
-chiFFInterpolationExecute(slice2)
+FFInterpolationInitialize(slice2)
+FFInterpolationExecute(slice2)
 
 --############################################### Volume integrations
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
 chiLog(LOG_0,string.format("Max-value=%.5f", maxval))
 
@@ -104,20 +104,20 @@ xwing=2.0
 function IntegrateMaterialVolume(ff_value,mat_id)
     return xwing
 end
-ffi2 = chiFFInterpolationCreate(VOLUME)
+ffi2 = FFInterpolationCreate(VOLUME)
 curffi = ffi2
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_SUM_LUA,"IntegrateMaterialVolume")
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
+FFInterpolationSetProperty(curffi,OPERATION,OP_SUM_LUA,"IntegrateMaterialVolume")
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-print(chiFFInterpolationGetValue(curffi))
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+print(FFInterpolationGetValue(curffi))
 --==========================================
 
 --############################################### Exports
 if (master_export == nil) then
-    chiFFInterpolationExportPython(slice2)
+    FFInterpolationExportPython(slice2)
     chiExportFieldFunctionToVTK(fftemp,"ZPhi")
 end
 

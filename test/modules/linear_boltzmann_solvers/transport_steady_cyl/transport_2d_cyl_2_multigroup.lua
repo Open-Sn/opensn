@@ -100,27 +100,27 @@ if master_export == nil then
 end
 
 --  volume integrations - energy group 1
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi, OPERATION, OP_MAX)
-chiFFInterpolationSetProperty(curffi, LOGICAL_VOLUME, vol0)
-chiFFInterpolationSetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
+FFInterpolationSetProperty(curffi, OPERATION, OP_MAX)
+FFInterpolationSetProperty(curffi, LOGICAL_VOLUME, vol0)
+FFInterpolationSetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
 chiLog(LOG_0,string.format("Max-valueG1=%.5f", maxval))
 
 --  volume integrations - energy group 2
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[2])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[2])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
 chiLog(LOG_0,string.format("Max-valueG2=%.5f", maxval))

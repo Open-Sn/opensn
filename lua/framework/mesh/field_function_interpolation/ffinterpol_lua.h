@@ -19,7 +19,7 @@
  * \ingroup LuaFFInterpol
  * \author Jan
  */
-int chiFFInterpolationCreate(lua_State* L);
+int FFInterpolationCreate(lua_State* L);
 
 /** Creates a new field function interpolation.
  *
@@ -86,15 +86,15 @@ int chiFFInterpolationCreate(lua_State* L);
  * function IntegrateMaterialVolume(ff_value,mat_id)
  *     return xwing
  * end
- * ffi2 = chiFFInterpolationCreate(VOLUME)
+ * ffi2 = FFInterpolationCreate(VOLUME)
  * curffi = ffi2
- * chiFFInterpolationSetProperty(curffi,OPERATION,OP_SUM_LUA,"IntegrateMaterialVolume")
- * chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
- * chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp)
+ * FFInterpolationSetProperty(curffi,OPERATION,OP_SUM_LUA,"IntegrateMaterialVolume")
+ * FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+ * FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp)
  *
- * chiFFInterpolationInitialize(curffi)
- * chiFFInterpolationExecute(curffi)
- * print(chiFFInterpolationGetValue(curffi))
+ * FFInterpolationInitialize(curffi)
+ * FFInterpolationExecute(curffi)
+ * print(FFInterpolationGetValue(curffi))
  * \endcode
  *
  * The code above will return 2.0 times the volume of cells included in the logical
@@ -105,7 +105,7 @@ int chiFFInterpolationCreate(lua_State* L);
  * \ingroup LuaFFInterpol
  * \author Jan
  */
-int chiFFInterpolationSetProperty(lua_State* L);
+int FFInterpolationSetProperty(lua_State* L);
 
 /** Initialize interpolator.
  *
@@ -114,7 +114,7 @@ int chiFFInterpolationSetProperty(lua_State* L);
  * \ingroup LuaFFInterpol
  * \author Jan
  */
-int chiFFInterpolationInitialize(lua_State* L);
+int FFInterpolationInitialize(lua_State* L);
 
 /** Execute interpolator.
  *
@@ -123,7 +123,7 @@ int chiFFInterpolationInitialize(lua_State* L);
  * \ingroup LuaFFInterpol
  * \author Jan
  */
-int chiFFInterpolationExecute(lua_State* L);
+int FFInterpolationExecute(lua_State* L);
 
 /** Export interpolation to python line,contour plot depending on the
  * type of interpolation.
@@ -134,7 +134,7 @@ int chiFFInterpolationExecute(lua_State* L);
  * \ingroup LuaFFInterpol
  * \author Jan
  */
-int chiFFInterpolationExportPython(lua_State* L);
+int FFInterpolationExportPython(lua_State* L);
 
 /** Gets the value(s) associated with an interpolation provided the
  * interpolation type has an associated value.
@@ -150,4 +150,4 @@ int chiFFInterpolationExportPython(lua_State* L);
  * \ingroup LuaFFInterpol
  * \author Jan
  */
-int chiFFInterpolationGetValue(lua_State* L);
+int FFInterpolationGetValue(lua_State* L);

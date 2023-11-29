@@ -63,51 +63,51 @@ chiDiffusionExecute(phys1)
 fftemp,count = SolverGetFieldFunctionList(phys1)
 
 --############################################### Slice plot
-slice1 = chiFFInterpolationCreate(SLICE)
-chiFFInterpolationSetProperty(slice1,SLICE_POINT,0.008,0.0,0.0)
-chiFFInterpolationSetProperty(slice1,SLICE_BINORM,0.0,0.0,1.0)
-chiFFInterpolationSetProperty(slice1,SLICE_TANGENT,0.0,-1.0,0.0)
-chiFFInterpolationSetProperty(slice1,SLICE_NORMAL,1.0,0.0,0.0)
-chiFFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fftemp[1])
+slice1 = FFInterpolationCreate(SLICE)
+FFInterpolationSetProperty(slice1,SLICE_POINT,0.008,0.0,0.0)
+FFInterpolationSetProperty(slice1,SLICE_BINORM,0.0,0.0,1.0)
+FFInterpolationSetProperty(slice1,SLICE_TANGENT,0.0,-1.0,0.0)
+FFInterpolationSetProperty(slice1,SLICE_NORMAL,1.0,0.0,0.0)
+FFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(slice1)
-chiFFInterpolationExecute(slice1)
+FFInterpolationInitialize(slice1)
+FFInterpolationExecute(slice1)
 
-slice2 = chiFFInterpolationCreate(SLICE)
-chiFFInterpolationSetProperty(slice2,SLICE_POINT,0.0,0.0,0.025)
-chiFFInterpolationSetProperty(slice2,ADD_FIELDFUNCTION,fftemp[1])
+slice2 = FFInterpolationCreate(SLICE)
+FFInterpolationSetProperty(slice2,SLICE_POINT,0.0,0.0,0.025)
+FFInterpolationSetProperty(slice2,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(slice2)
-chiFFInterpolationExecute(slice2)
+FFInterpolationInitialize(slice2)
+FFInterpolationExecute(slice2)
 
 --############################################### Line plot
-line0 = chiFFInterpolationCreate(LINE)
-chiFFInterpolationSetProperty(line0,LINE_FIRSTPOINT,-1.0,0.0,0.025)
-chiFFInterpolationSetProperty(line0,LINE_SECONDPOINT, 1.0,0.0,0.025)
-chiFFInterpolationSetProperty(line0,LINE_NUMBEROFPOINTS, 100)
-chiFFInterpolationSetProperty(line0,ADD_FIELDFUNCTION,fftemp[1])
+line0 = FFInterpolationCreate(LINE)
+FFInterpolationSetProperty(line0,LINE_FIRSTPOINT,-1.0,0.0,0.025)
+FFInterpolationSetProperty(line0,LINE_SECONDPOINT, 1.0,0.0,0.025)
+FFInterpolationSetProperty(line0,LINE_NUMBEROFPOINTS, 100)
+FFInterpolationSetProperty(line0,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(line0)
-chiFFInterpolationExecute(line0)
+FFInterpolationInitialize(line0)
+FFInterpolationExecute(line0)
 
 --############################################### Volume integrations
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fftemp[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
 chiLog(LOG_0,string.format("Max-value=%.5f", maxval))
 
 --############################################### Exports
 if (master_export == nil) then
-    chiFFInterpolationExportPython(slice1)
-    chiFFInterpolationExportPython(slice2)
-    chiFFInterpolationExportPython(line0)
+    FFInterpolationExportPython(slice1)
+    FFInterpolationExportPython(slice2)
+    FFInterpolationExportPython(line0)
     chiExportFieldFunctionToVTK(fftemp,"ZPhi")
 end
 

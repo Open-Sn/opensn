@@ -141,14 +141,14 @@ qoi_vol = mesh.RPPLogicalVolume.Create(
 )
 
 -- Integration
-ffi = chiFFInterpolationCreate(VOLUME)
-chiFFInterpolationSetProperty(ffi, OPERATION, OP_SUM)
-chiFFInterpolationSetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
-chiFFInterpolationSetProperty(ffi, ADD_FIELDFUNCTION, ff_m0)
+ffi = FFInterpolationCreate(VOLUME)
+FFInterpolationSetProperty(ffi, OPERATION, OP_SUM)
+FFInterpolationSetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
+FFInterpolationSetProperty(ffi, ADD_FIELDFUNCTION, ff_m0)
 
-chiFFInterpolationInitialize(ffi)
-chiFFInterpolationExecute(ffi)
-value = chiFFInterpolationGetValue(ffi)
+FFInterpolationInitialize(ffi)
+FFInterpolationExecute(ffi)
+value = FFInterpolationGetValue(ffi)
 
 chiLog(LOG_0, string.format("QoI-value=%.5e", value))
 

@@ -14,14 +14,14 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiFFInterpolationCreate);
+RegisterLuaFunctionAsIs(FFInterpolationCreate);
 RegisterLuaConstantAsIs(SLICE, Varying(1));
 RegisterLuaConstantAsIs(LINE, Varying(2));
 RegisterLuaConstantAsIs(VOLUME, Varying(3));
 RegisterLuaConstantAsIs(POINT, Varying(4));
 
 int
-chiFFInterpolationCreate(lua_State* L)
+FFInterpolationCreate(lua_State* L)
 {
   auto& cur_hndlr = GetCurrentHandler();
 
@@ -69,7 +69,7 @@ chiFFInterpolationCreate(lua_State* L)
   }
   else // Fall back
   {
-    opensn::log.LogAllError() << "Invalid FFITypeIndex used in chiFFInterpolationCreate.";
+    opensn::log.LogAllError() << "Invalid FFITypeIndex used in FFInterpolationCreate.";
     opensn::Exit(EXIT_FAILURE);
   }
   return 0;

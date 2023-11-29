@@ -7,10 +7,10 @@
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
 
-RegisterLuaFunctionAsIs(chiFFInterpolationExportPython);
+RegisterLuaFunctionAsIs(FFInterpolationExportPython);
 
 int
-chiFFInterpolationExportPython(lua_State* L)
+FFInterpolationExportPython(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 

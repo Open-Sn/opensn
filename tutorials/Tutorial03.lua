@@ -60,17 +60,17 @@ chiLBSExecute(phys1)
 --############################################### Setup Output
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
-cline = chiFFInterpolationCreate(LINE)
-chiFFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
-chiFFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
-chiFFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+cline = FFInterpolationCreate(LINE)
+FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
+FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
+FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
 
-chiFFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
+FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
 
-chiFFInterpolationInitialize(cline)
-chiFFInterpolationExecute(cline)
-chiFFInterpolationExportPython(cline)
+FFInterpolationInitialize(cline)
+FFInterpolationExecute(cline)
+FFInterpolationExportPython(cline)
 
 chiExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
 

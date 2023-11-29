@@ -24,16 +24,16 @@ We will be adding some items to this input file.
 ## Step 3 - Create a slice interpolator
 
 \code
-slice1 = chiFFInterpolationCreate(SLICE)
-chiFFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
-chiFFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
+slice1 = FFInterpolationCreate(SLICE)
+FFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
+FFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
 \endcode
 
 The first call creates a interpolator of type SLICE. At the time of writing this
  tutorial we support LINE, SLICE and VOLUME. The default orientation of a slice
  interpolator is with the cutting plane's normal pointing in the direction
  of \f$ \hat{k} \f$ and the reference point at (0,0,0). A change in reference
- point is achieved with a call to chiFFInterpolationSetProperty() with
+ point is achieved with a call to FFInterpolationSetProperty() with
  a property index SLICE_POINT. The last line here is to add a field function to
  this interpolator. We use the same function but this time with a property index
  ADD_FIELDFUNCTION.
@@ -45,13 +45,13 @@ For very complex meshes it might be prudent to perform initialization before
  execute the interpolator multiple times after that with minimal cost.
 
 \code
-chiFFInterpolationInitialize(slice1)
-chiFFInterpolationExecute(slice1)
-chiFFInterpolationExportPython(slice1)
+FFInterpolationInitialize(slice1)
+FFInterpolationExecute(slice1)
+FFInterpolationExportPython(slice1)
 \endcode
 
-The chiFFInterpolationInitialize() and chiFFInterpolationExecute() should be
- intuitive to understand. The last function call here is chiFFInterpolationExportPython()
+The FFInterpolationInitialize() and FFInterpolationExecute() should be
+ intuitive to understand. The last function call here is FFInterpolationExportPython()
  which is a utility to export a slice to a python file. Inside this python
  file there are some default visualization commands but the major utility here
  is that the field function is now represented as python variables so that
@@ -127,13 +127,13 @@ chiDiffusionExecute(phys1)
 fflist,count = chiGetFieldFunctionList(phys1)
 chiExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 
-slice1 = chiFFInterpolationCreate(SLICE)
-chiFFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
-chiFFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
+slice1 = FFInterpolationCreate(SLICE)
+FFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
+FFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
 
-chiFFInterpolationInitialize(slice1)
-chiFFInterpolationExecute(slice1)
-chiFFInterpolationExportPython(slice1)
+FFInterpolationInitialize(slice1)
+FFInterpolationExecute(slice1)
+FFInterpolationExportPython(slice1)
 
 local handle = io.popen("python ZPFFI00.py")
 \endcode

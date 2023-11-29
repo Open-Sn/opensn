@@ -69,29 +69,29 @@ if (master_export == nil) then
 end
 
 --############################################### Line plot
-cline = chiFFInterpolationCreate(LINE)
-chiFFInterpolationSetProperty(cline,LINE_FIRSTPOINT,-L/2, 0.0, 0.0)
-chiFFInterpolationSetProperty(cline,LINE_SECONDPOINT,L/2, 0.0, 0.0)
-chiFFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
-chiFFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
+cline = FFInterpolationCreate(LINE)
+FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,-L/2, 0.0, 0.0)
+FFInterpolationSetProperty(cline,LINE_SECONDPOINT,L/2, 0.0, 0.0)
+FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
-chiFFInterpolationInitialize(cline)
-chiFFInterpolationExecute(cline)
+FFInterpolationInitialize(cline)
+FFInterpolationExecute(cline)
 
 if (master_export == nil) then
-    chiFFInterpolationExportPython(cline)
+    FFInterpolationExportPython(cline)
 end
 
 --############################################### Volume integrations
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 
-ffvol = chiFFInterpolationCreate(VOLUME)
-chiFFInterpolationSetProperty(ffvol,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(ffvol,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(ffvol,ADD_FIELDFUNCTION,fflist[1])
+ffvol = FFInterpolationCreate(VOLUME)
+FFInterpolationSetProperty(ffvol,OPERATION,OP_MAX)
+FFInterpolationSetProperty(ffvol,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(ffvol,ADD_FIELDFUNCTION,fflist[1])
 
-chiFFInterpolationInitialize(ffvol)
-chiFFInterpolationExecute(ffvol)
-maxval = chiFFInterpolationGetValue(ffvol)
+FFInterpolationInitialize(ffvol)
+FFInterpolationExecute(ffvol)
+maxval = FFInterpolationGetValue(ffvol)
 
 chiLog(LOG_0,string.format("Max-value=%.6f", maxval))

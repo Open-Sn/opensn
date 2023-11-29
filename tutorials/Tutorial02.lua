@@ -41,12 +41,12 @@ chiDiffusionExecute(phys1)
 fflist,count = chiGetFieldFunctionList(phys1)
 chiExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 
-slice1 = chiFFInterpolationCreate(SLICE)
-chiFFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
-chiFFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
+slice1 = FFInterpolationCreate(SLICE)
+FFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
+FFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
 
-chiFFInterpolationInitialize(slice1)
-chiFFInterpolationExecute(slice1)
-chiFFInterpolationExportPython(slice1)
+FFInterpolationInitialize(slice1)
+FFInterpolationExecute(slice1)
+FFInterpolationExportPython(slice1)
 
 local handle = io.popen("python ZPFFI00.py")

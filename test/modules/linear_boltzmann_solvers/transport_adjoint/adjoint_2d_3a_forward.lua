@@ -142,14 +142,14 @@ sum = 0.0
 for g = 0, num_groups - 1 do
     ff = chiGetFieldFunctionHandleByName(
         "phi_g" .. string.format("%03d", g) .. "_m" .. string.format("%02d", 0))
-    ffi = chiFFInterpolationCreate(VOLUME)
-    chiFFInterpolationSetProperty(ffi, OPERATION, OP_SUM)
-    chiFFInterpolationSetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
-    chiFFInterpolationSetProperty(ffi, ADD_FIELDFUNCTION, ff)
+    ffi = FFInterpolationCreate(VOLUME)
+    FFInterpolationSetProperty(ffi, OPERATION, OP_SUM)
+    FFInterpolationSetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
+    FFInterpolationSetProperty(ffi, ADD_FIELDFUNCTION, ff)
 
-    chiFFInterpolationInitialize(ffi)
-    chiFFInterpolationExecute(ffi)
-    value = chiFFInterpolationGetValue(ffi)
+    FFInterpolationInitialize(ffi)
+    FFInterpolationExecute(ffi)
+    value = FFInterpolationGetValue(ffi)
 
     chiLog(LOG_0, string.format("QoI-value[" .. tostring(g) .. "]= %.5e", value))
 
