@@ -15,9 +15,9 @@ namespace opensnlua::lbs
 {
 
 int
-chiLBSAddPointSource(lua_State* L)
+LBSAddPointSource(lua_State* L)
 {
-  opensn::log.Log0Warning() << "chiLBSAddPointSource has been deprecated and will be removed soon. "
+  opensn::log.Log0Warning() << "LBSAddPointSource has been deprecated and will be removed soon. "
                                "Consider using lbs.AddPointSource instead, or setting point "
                                "sources via LBSSolver::Options.";
 

@@ -739,7 +739,7 @@ int chiLBSInitializeMaterials(lua_State* L);
  *
  *  \ingroup LBSLuaFunctions
  */
-int chiLBSAddPointSource(lua_State* L);
+int LBSAddPointSource(lua_State* L);
 
 /**Clears all the point sources from the solver. This is mostly
  * useful for adjoint response calculations.

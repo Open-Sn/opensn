@@ -70,7 +70,7 @@ PhysicsMaterialSetProperty(materials[1],
 --    src[g] = 0.0
 --end
 --src[1] = 1.0
---chiLBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
+--LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 --
 ----############################################### Set solver properties
 --chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
@@ -114,7 +114,7 @@ for g=1,num_groups do
     src[g] = 0.0
 end
 src[1] = 1.0
-chiLBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
+LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
