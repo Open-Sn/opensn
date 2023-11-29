@@ -8,7 +8,7 @@
  *\return Handle int Handle to the created solver.
  *\ingroup LuaDiffusion
  */
-int chiDFEMDiffusionSolverCreate(lua_State* L);
+int DFEMDiffusionSolverCreate(lua_State* L);
 
 /** Sets a property of a Diffusion solver. Please also consult the whitepaper
  * for the Diffusion solver (<a
@@ -60,7 +60,7 @@ int chiDFEMDiffusionSolverCreate(lua_State* L);
  * \ingroup LuaDiffusion
  * \author Jan
  */
-int chiDFEMDiffusionSetBCProperty(lua_State* L);
+int DFEMDiffusionSetBCProperty(lua_State* L);
 
 namespace opensnlua::dfem_diffusion
 {

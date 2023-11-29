@@ -47,14 +47,14 @@ VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### DFEM solver
-phys1 = chiDFEMDiffusionSolverCreate()
+phys1 = DFEMDiffusionSolverCreate()
 
 SolverSetBasicOption(phys1, "residual_tolerance", 1E-8)
 
-chiDFEMDiffusionSetBCProperty(phys1,"boundary_type",e_bndry,"robin", 0.25, 0.5, 0.0)
-chiDFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"reflecting")
-chiDFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"reflecting")
-chiDFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"robin", 0.25, 0.5, 1.0)
+DFEMDiffusionSetBCProperty(phys1,"boundary_type",e_bndry,"robin", 0.25, 0.5, 0.0)
+DFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"reflecting")
+DFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"reflecting")
+DFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"robin", 0.25, 0.5, 1.0)
 
 SolverInitialize(phys1)
 SolverExecute(phys1)
