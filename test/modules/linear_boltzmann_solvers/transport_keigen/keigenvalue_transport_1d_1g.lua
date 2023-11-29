@@ -60,7 +60,7 @@ VolumeMesherSetMatIDToAll(0)
 materials = {}
 materials[1] = PhysicsAddMaterial("Fissile Material")
 
-chiPhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 
 xs_file = "simple_fissile.cxs"
 chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,

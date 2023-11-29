@@ -27,7 +27,7 @@ unit_tests.SimTest93_RayTracing()
 materials = {}
 materials[1] = PhysicsAddMaterial("Test Material");
 
-chiPhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
 
 num_groups = 1
 chiPhysicsMaterialSetProperty(materials[1],

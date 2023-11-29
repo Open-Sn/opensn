@@ -47,7 +47,7 @@ Similar to the diffusion tutorial we have to create a material, then add a
 \code
 material0 = PhysicsAddMaterial("Test Material");
 
-chiPhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1
 chiPhysicsMaterialSetProperty(material0,
                               TRANSPORT_XSECTIONS,
@@ -188,7 +188,7 @@ VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 --############################################### Add material
 material0 = PhysicsAddMaterial("Test Material");
 
-chiPhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1
 chiPhysicsMaterialSetProperty(material0,
                               TRANSPORT_XSECTIONS,

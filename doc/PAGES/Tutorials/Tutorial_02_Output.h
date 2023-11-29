@@ -105,10 +105,10 @@ chiRegionExportMeshToVTK(region1,"Mesh")
 
 
 -- Set material properties
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
 chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
 chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 

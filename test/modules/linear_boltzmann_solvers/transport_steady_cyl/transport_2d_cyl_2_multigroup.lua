@@ -48,8 +48,8 @@ for g = 2, ngrp do
 end
 
 material0 = PhysicsAddMaterial("Material_0");
-chiPhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
-chiPhysicsMaterialAddProperty(material0,ISOTROPIC_MG_SOURCE)
+PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(material0,ISOTROPIC_MG_SOURCE)
 chiPhysicsMaterialSetProperty(material0, TRANSPORT_XSECTIONS,
                               SIMPLEXS1, ngrp, sigmat, ratioc)
 chiPhysicsMaterialSetProperty(material0, ISOTROPIC_MG_SOURCE,

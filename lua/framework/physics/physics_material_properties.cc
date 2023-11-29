@@ -14,7 +14,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiPhysicsMaterialAddProperty);
+RegisterLuaFunctionAsIs(PhysicsMaterialAddProperty);
 RegisterLuaFunctionAsIs(chiPhysicsMaterialSetProperty);
 RegisterLuaFunctionAsIs(chiPhysicsMaterialGetProperty);
 
@@ -86,7 +86,7 @@ PropertyPushLuaTable(lua_State* L, std::shared_ptr<MaterialProperty> property)
 } // namespace
 
 int
-chiPhysicsMaterialAddProperty(lua_State* L)
+PhysicsMaterialAddProperty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int numArgs = lua_gettop(L);
@@ -94,7 +94,7 @@ chiPhysicsMaterialAddProperty(lua_State* L)
   if (!((numArgs >= 2) && (numArgs <= 3)))
   {
     opensn::log.Log0Error() << "Incorrect amount of arguments "
-                               "in chiPhysicsMaterialAddProperty";
+                               "in PhysicsMaterialAddProperty";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -192,8 +192,7 @@ chiPhysicsMaterialAddProperty(lua_State* L)
   }
   else
   {
-    opensn::log.Log0Error()
-      << "Unsupported property type in call to chiPhysicsMaterialAddProperty.";
+    opensn::log.Log0Error() << "Unsupported property type in call to PhysicsMaterialAddProperty.";
     opensn::Exit(EXIT_FAILURE);
   }
 

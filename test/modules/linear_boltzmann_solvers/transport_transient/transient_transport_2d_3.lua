@@ -44,10 +44,10 @@ materials = {}
 materials[1] = PhysicsAddMaterial("Strong fuel");
 materials[2] = PhysicsAddMaterial("Weak fuel");
 
-chiPhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-chiPhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)
-chiPhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
-chiPhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
+PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
 xs_strong_fuel_micro = chiPhysicsTransportXSCreate()

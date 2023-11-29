@@ -74,15 +74,15 @@ materials[2] = PhysicsAddMaterial("Test Material2");
 materials[3] = PhysicsAddMaterial("Test Material3");
 
 -- Cross sections
-chiPhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
                               SIMPLEXS1, num_groups, 0.01, 0.01)
 
-chiPhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
 chiPhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
                               SIMPLEXS1, num_groups, 0.1 * 20, 0.8)
 
-chiPhysicsMaterialAddProperty(materials[3], TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[3], TRANSPORT_XSECTIONS)
 chiPhysicsMaterialSetProperty(materials[3], TRANSPORT_XSECTIONS,
                               SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
 
@@ -91,7 +91,7 @@ src = {}
 for g = 1, num_groups do
     if g == 1 then src[g] = 3.0 else src[g] = 0.0 end
 end
-chiPhysicsMaterialAddProperty(materials[3], ISOTROPIC_MG_SOURCE)
+PhysicsMaterialAddProperty(materials[3], ISOTROPIC_MG_SOURCE)
 chiPhysicsMaterialSetProperty(materials[3], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 

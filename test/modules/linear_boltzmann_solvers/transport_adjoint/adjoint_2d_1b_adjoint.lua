@@ -72,15 +72,15 @@ materials[2] = PhysicsAddMaterial("Test Material2");
 materials[3] = PhysicsAddMaterial("Test Material3");
 
 -- Cross sections
-chiPhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
                               SIMPLEXS1, 1, 0.01, 0.01)
 
-chiPhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
 chiPhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
                               SIMPLEXS1, 1, 0.1 * 20, 0.8)
 
-chiPhysicsMaterialAddProperty(materials[3], TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[3], TRANSPORT_XSECTIONS)
 chiPhysicsMaterialSetProperty(materials[3], TRANSPORT_XSECTIONS,
                               SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
 

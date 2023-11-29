@@ -37,7 +37,7 @@ VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 materials = {}
 materials[0] = PhysicsAddMaterial("Test Material");
 
-chiPhysicsMaterialAddProperty(materials[0],SCALAR_VALUE)
+PhysicsMaterialAddProperty(materials[0],SCALAR_VALUE)
 chiPhysicsMaterialSetProperty(materials[0],SCALAR_VALUE,SINGLE_VALUE,1.0)
 
 --############################################### Setup Physics

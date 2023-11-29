@@ -36,8 +36,8 @@ VolumeMesherSetMatIDToAll(0)
 materials = {}
 materials[1] = PhysicsAddMaterial("Test Material");
 
-chiPhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-chiPhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
 xs_critical = chiPhysicsTransportXSCreate()

@@ -64,13 +64,13 @@ int PhysicsAddMaterial(lua_State* L);
  * ### Example\n
  * Example lua code:
  * \code
- * chiPhysicsMaterialAddProperty(materials[i],TRANSPORT_XSECTIONS)
+ * PhysicsMaterialAddProperty(materials[i],TRANSPORT_XSECTIONS)
  * \endcode
  *
  * \ingroup LuaPhysicsMaterials
  * \author Jan
  */
-int chiPhysicsMaterialAddProperty(lua_State* L);
+int PhysicsMaterialAddProperty(lua_State* L);
 
 /** Sets a material property for a given material.
  *
@@ -140,7 +140,7 @@ int chiPhysicsMaterialAddProperty(lua_State* L);
  * \code
  * materials = {}
  * materials[1] = PhysicsAddMaterial("Test Material");
- * chiPhysicsMaterialAddProperty(materials[0],THERMAL_CONDUCTIVITY)
+ * PhysicsMaterialAddProperty(materials[0],THERMAL_CONDUCTIVITY)
  * chiPhysicsMaterialSetProperty(materials[0],THERMAL_CONDUCTIVITY,SINGLE_VALUE,13.7)
  * \endcode
  *
@@ -152,7 +152,7 @@ int chiPhysicsMaterialAddProperty(lua_State* L);
  * materials = {}
  * materials[1] = PhysicsAddMaterial("Test Material");
  *
- * chiPhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+ * PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
  *
  * num_groups = 12
  * src={}
@@ -165,7 +165,7 @@ int chiPhysicsMaterialAddProperty(lua_State* L);
  * ### Developer Info
  * Checklist for adding a new material property:
  *  - Make sure you followed the steps depicted in the developer info section for
- *    the ChiLua::chiPhysicsMaterialAddProperty function.
+ *    the ChiLua::PhysicsMaterialAddProperty function.
  *  - Now under the "If user supplied name then find property index"-section
  *    add the appropriate code for setting the property index.
  *  - Add an else-if block for your property similar to the others. It should be

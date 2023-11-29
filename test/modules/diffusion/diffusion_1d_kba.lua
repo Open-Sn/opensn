@@ -46,7 +46,7 @@ VolumeMesherSetupOrthogonalBoundaries()
 materials = {}
 materials[0] = PhysicsAddMaterial("Test Material");
 
-chiPhysicsMaterialAddProperty(materials[0],SCALAR_VALUE)
+PhysicsMaterialAddProperty(materials[0],SCALAR_VALUE)
 chiPhysicsMaterialSetProperty(materials[0],SCALAR_VALUE,SINGLE_VALUE,1.0)
 
 

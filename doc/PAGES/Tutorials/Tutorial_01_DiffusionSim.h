@@ -146,15 +146,15 @@ Now that the cells have been assigned a material id we need to add
  scalar values.
 
 \code
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
 chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
 chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 \endcode
 
 In this code we created the material properties using the function
- chiPhysicsMaterialAddProperty() which requires a handle to the reference
+ PhysicsMaterialAddProperty() which requires a handle to the reference
  material, the property type (SCALAR_VALUE), and a name for the property.
  Unlike extrusion layers the property name can be used in further calls to refer
  to the specific property.
@@ -236,10 +236,10 @@ MeshHandlerExportMeshToVTK("Mesh")
 
 
 -- Set material properties
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
 chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
 chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
