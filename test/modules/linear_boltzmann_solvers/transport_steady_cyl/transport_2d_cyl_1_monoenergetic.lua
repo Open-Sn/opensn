@@ -52,7 +52,7 @@ PhysicsMaterialSetProperty(material0, ISOTROPIC_MG_SOURCE,
                            SINGLE_VALUE, source)
 
 --############################################### Setup Physics
-pquad0 = chiCreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
+pquad0 = CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
 
 lbs_block =
 {
@@ -89,7 +89,7 @@ SolverExecute(ss_solver)
 --phys0 = chiLBSCurvilinearCreateSolver(LBSCurvilinear.CYLINDRICAL)
 --
 ----  angular quadrature
---pquad = chiCreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
+--pquad = CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
 --
 ----  groups
 --groups = {}

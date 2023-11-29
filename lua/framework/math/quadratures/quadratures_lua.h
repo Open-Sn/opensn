@@ -49,7 +49,7 @@ int chiCreateCustomAngularQuadrature(lua_State* L);
  *
  * \ingroup LuaQuadrature
  */
-int chiCreateCylindricalProductQuadrature(lua_State* L);
+int CreateCylindricalProductQuadrature(lua_State* L);
 int chiCreateSphericalProductQuadrature(lua_State* L);
 
 /** Creates a Product-quadrature.
