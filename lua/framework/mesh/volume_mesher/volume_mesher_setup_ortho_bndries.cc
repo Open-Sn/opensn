@@ -6,7 +6,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiVolumeMesherSetupOrthogonalBoundaries);
+RegisterLuaFunctionAsIs(VolumeMesherSetupOrthogonalBoundaries);
 
 RegisterLuaConstant(OrthoBoundaryID, XMAX, Varying(0));
 RegisterLuaConstant(OrthoBoundaryID, XMIN, Varying(1));
@@ -16,7 +16,7 @@ RegisterLuaConstant(OrthoBoundaryID, ZMAX, Varying(4));
 RegisterLuaConstant(OrthoBoundaryID, ZMIN, Varying(5));
 
 int
-chiVolumeMesherSetupOrthogonalBoundaries(lua_State* L)
+VolumeMesherSetupOrthogonalBoundaries(lua_State* L)
 {
   VolumeMesher::SetupOrthogonalBoundaries();
   return 0;

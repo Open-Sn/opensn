@@ -146,4 +146,4 @@ int VolumeMesherSetMatIDToAll(lua_State* L);
  *
  * \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetupOrthogonalBoundaries(lua_State* L);
+int VolumeMesherSetupOrthogonalBoundaries(lua_State* L);

@@ -31,7 +31,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 VolumeMesherSetMatIDToAll(0)
-chiVolumeMesherSetupOrthogonalBoundaries()
+VolumeMesherSetupOrthogonalBoundaries()
 
 --############################################### Add materials
 materials = {}

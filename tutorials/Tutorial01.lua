@@ -14,7 +14,7 @@ material = chiPhysicsAddMaterial("Test Material");
 vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
-chiVolumeMesherSetupOrthogonalBoundaries()
+VolumeMesherSetupOrthogonalBoundaries()
 
 MeshHandlerExportMeshToVTK("Mesh")
 --############################################### Add material properties

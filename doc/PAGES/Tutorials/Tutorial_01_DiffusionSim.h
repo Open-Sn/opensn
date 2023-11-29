@@ -126,7 +126,7 @@ By default all boundaries are unassigned (i.e., -1). There are two utilities
  that set the boundary id's the first of which is essentially identical to how
  material ids are set, VolumeMesherSetProperty(), but this time the property
  index is BNDRYID_FROMLOGICAL. The second way is to use
- chiVolumeMesherSetupOrthogonalBoundaries() which requires no arguments and will
+ VolumeMesherSetupOrthogonalBoundaries() which requires no arguments and will
  asssign standard indices to a boundary if it is aligned with the orthogonal
  cartesian directions.
 

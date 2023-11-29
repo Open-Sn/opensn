@@ -17,7 +17,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Set Material IDs
 VolumeMesherSetMatIDToAll(0)
 
-chiVolumeMesherSetupOrthogonalBoundaries()
+VolumeMesherSetupOrthogonalBoundaries()
 
 unit_tests.SimTest93_RayTracing()
 
