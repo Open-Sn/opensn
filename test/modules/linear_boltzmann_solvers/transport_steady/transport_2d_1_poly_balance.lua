@@ -106,7 +106,7 @@ ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 SolverInitialize(ss_solver)
 SolverExecute(ss_solver)
 
-chiLBSComputeBalance(phys1)
+LBSComputeBalance(phys1)
 
 --############################################### Get field functions
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
