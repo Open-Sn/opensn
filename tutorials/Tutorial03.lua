@@ -10,7 +10,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 -- Set Material IDs
 vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 --############################################### Add material
 material0 = chiPhysicsAddMaterial("Test Material");

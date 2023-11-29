@@ -14,11 +14,11 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 vol1 = mesh.RPPLogicalVolume.Create
 ({ xmin=-0.5,xmax=0.5,ymin=-0.5,ymax=0.5, infz=true })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
 
 D = {1.0,0.01}
 Q = {1.0,10.0}
@@ -45,10 +45,10 @@ w_bndry = 1
 n_bndry = 2
 s_bndry = 3
 
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### DFEM solver

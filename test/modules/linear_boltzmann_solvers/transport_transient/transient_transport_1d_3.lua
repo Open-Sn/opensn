@@ -33,7 +33,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 chiVolumeMesherSetMatIDToAll(0)
 
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, zmin=-L/4, zmax=L/4})
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,1)
 
 --############################################### Add materials
 materials = {}

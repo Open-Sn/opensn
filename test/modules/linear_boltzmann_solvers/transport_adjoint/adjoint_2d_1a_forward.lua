@@ -35,7 +35,7 @@ vol1a = mesh.RPPLogicalVolume.Create(
     }
 )
 
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol1a, 1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, vol1a, 1)
 
 vol0 = mesh.RPPLogicalVolume.Create(
     {
@@ -44,7 +44,7 @@ vol0 = mesh.RPPLogicalVolume.Create(
         infz = true
     }
 )
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol0, 0)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, vol0, 0)
 
 vol2 = mesh.RPPLogicalVolume.Create(
     {
@@ -53,7 +53,7 @@ vol2 = mesh.RPPLogicalVolume.Create(
         infz = true
     }
 )
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol2, 2)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, vol2, 2)
 
 vol1b = mesh.RPPLogicalVolume.Create(
     {
@@ -62,7 +62,7 @@ vol1b = mesh.RPPLogicalVolume.Create(
         infz = true
     }
 )
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol1b, 1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, vol1b, 1)
 
 
 --############################################### Add materials

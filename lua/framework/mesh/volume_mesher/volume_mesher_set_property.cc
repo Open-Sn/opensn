@@ -12,7 +12,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiVolumeMesherSetProperty);
+RegisterLuaFunctionAsIs(VolumeMesherSetProperty);
 
 RegisterLuaConstantAsIs(FORCE_POLYGONS, Varying(1));
 RegisterLuaConstantAsIs(MESH_GLOBAL, Varying(2));
@@ -254,9 +254,9 @@ SetBndryIDFromLuaFunction(const std::string& lua_fname)
 } // namespace
 
 int
-chiVolumeMesherSetProperty(lua_State* L)
+VolumeMesherSetProperty(lua_State* L)
 {
-  const std::string fname = "chiVolumeMesherSetProperty";
+  const std::string fname = "VolumeMesherSetProperty";
   // Get current mesh handler
   auto& cur_hndlr = GetCurrentHandler();
   auto& volume_mesher = cur_hndlr.GetVolumeMesher();
@@ -336,7 +336,7 @@ chiVolumeMesherSetProperty(lua_State* L)
     if (!((num_args == 3) || (num_args == 4)))
     {
       opensn::log.LogAllError() << "Invalid amount of arguments used for "
-                                   "chiVolumeMesherSetProperty("
+                                   "VolumeMesherSetProperty("
                                    "MATID_FROMLOGICAL...";
       opensn::Exit(EXIT_FAILURE);
     }
@@ -356,7 +356,7 @@ chiVolumeMesherSetProperty(lua_State* L)
     if (!((num_args == 3) || (num_args == 4)))
     {
       opensn::log.LogAllError() << "Invalid amount of arguments used for "
-                                   "chiVolumeMesherSetProperty("
+                                   "VolumeMesherSetProperty("
                                    "BNDRYID_FROMLOGICAL...";
       opensn::Exit(EXIT_FAILURE);
     }
@@ -393,7 +393,7 @@ chiVolumeMesherSetProperty(lua_State* L)
   else
   {
     opensn::log.LogAllError() << "Invalid property specified " << property_index
-                              << " in call to chiVolumeMesherSetProperty().";
+                              << " in call to VolumeMesherSetProperty().";
     opensn::Exit(EXIT_FAILURE);
   }
 

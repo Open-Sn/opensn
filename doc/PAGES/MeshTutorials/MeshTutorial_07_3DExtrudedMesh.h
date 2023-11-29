@@ -45,12 +45,12 @@ or
 
  nbr_planes_in_layer = 10
  height=0.1
- chiVolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Charlie");
- chiVolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Chuck");
- chiVolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Bob");
- chiVolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"SarahConner");
+ VolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Charlie");
+ VolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Chuck");
+ VolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Bob");
+ VolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"SarahConner");
 
- chiVolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
+ VolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
  chiVolumeMesherSetKBAPartitioningPxPyPz(1,1,1)
 
  chiSurfaceMesherExecute();
@@ -76,7 +76,7 @@ or
  \code
 -- Logical Volumes
 my_LV = chiLogicalVolumeCreate(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
 chiMeshHandlerExportMeshToVTK("export_mesh_with_IDs")
  \endcode
 
@@ -86,13 +86,13 @@ surf_LV = chiSurfaceMeshCreate()
 chiSurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
 my_LV = chiLogicalVolumeCreate(SURFACE, surf_LV)
 
- chiVolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
+ VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
 chiMeshHandlerExportMeshToVTK("export_mesh_with_IDs")
  \endcode
 
   ### LV using a Lua function
  \code
-chiVolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "my_LV_func.lua")
+VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "my_LV_func.lua")
 chiMeshHandlerExportMeshToVTK("export_mesh_with_IDs")
  \endcode
 

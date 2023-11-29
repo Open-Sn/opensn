@@ -107,7 +107,7 @@ int chiVolumeMesherExecute(lua_State* L);
  * \ingroup LuaVolumeMesher
  * \author Jan
  */
-int chiVolumeMesherSetProperty(lua_State* L);
+int VolumeMesherSetProperty(lua_State* L);
 
 /**Sets the Px, Py and Pz partititioning parameters for a
  * KBA-type partitioning. This also fixes the process count required to

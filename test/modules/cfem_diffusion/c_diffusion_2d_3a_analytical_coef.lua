@@ -38,10 +38,10 @@ w_bndry = 1
 n_bndry = 2
 s_bndry = 3
 
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
 --chiMeshHandlerExportMeshToVTK("Mesh")
 

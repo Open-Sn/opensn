@@ -17,7 +17,7 @@
  * chiMeshHandlerCreate()
  * nodes={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * chiMeshCreateUnpartitioned1DOrthoMesh(nodes)
- * chiVolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
+ * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
  * chiVolumeMesherExecute();
  * \endcode
  *
@@ -45,7 +45,7 @@ int chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L);
  * nodesx={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * nodesy={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * chiMeshCreateUnpartitioned2DOrthoMesh(nodesx,nodesy)
- * chiVolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
+ * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
  * chiVolumeMesherExecute();
  * \endcode
  *
@@ -77,7 +77,7 @@ int chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L);
  * nodesy={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * nodesz={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * chiMeshCreateUnpartitioned3DOrthoMesh(nodesx,nodesy,nodesz)
- * chiVolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
+ * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
  * chiVolumeMesherExecute();
  * \endcode
  *

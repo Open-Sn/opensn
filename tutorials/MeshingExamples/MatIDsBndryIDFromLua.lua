@@ -26,7 +26,7 @@ function MatIDFunction1(x,y,z,cur_id)
     return cur_id
 end
 
-chiVolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
+VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
 
 chiMeshHandlerExportMeshToVTK("ZMeshPhase2")
 
@@ -60,6 +60,6 @@ function BndryIDFunction1(x,y,z,nx,ny,nz,cur_bid)
     return cur_bid
 end
 
-chiVolumeMesherSetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
+VolumeMesherSetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
 
 chiMeshHandlerExportMeshToVTK("ZMeshPhase3")

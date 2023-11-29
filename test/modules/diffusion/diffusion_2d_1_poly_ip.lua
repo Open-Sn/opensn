@@ -31,7 +31,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 e_vol = mesh.RPPLogicalVolume.Create({xmin=0.99999,xmax=1000.0  , infy=true, infz=true})
 w_vol = mesh.RPPLogicalVolume.Create({xmin=-1000.0,xmax=-0.99999, infy=true, infz=true})
@@ -43,10 +43,10 @@ w_bndry = "1"
 n_bndry = "2"
 s_bndry = "3"
 
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
 --############################################### Add materials
 materials = {}

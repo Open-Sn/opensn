@@ -87,7 +87,7 @@ for i=0,N do
 end
 surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
--- chiVolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
+-- VolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
 -- chiVolumeMesherSetKBAPartitioningPxPyPz(2,2,1)
 -- chiVolumeMesherSetKBACutsX({0.0})
 -- chiVolumeMesherSetKBACutsY({0.0})
@@ -98,7 +98,7 @@ material = chiPhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
 chiRegionExportMeshToVTK(region1,"Mesh")
 --############################################### Add material properties

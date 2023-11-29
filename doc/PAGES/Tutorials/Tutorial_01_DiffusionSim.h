@@ -97,12 +97,12 @@ many options for logical volumes ranging from primitive parametric surfaces
 material = chiPhysicsAddMaterial("Test Material");
 
 vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 \endcode
 
 We first create a material using the chiPhysicsAddMaterial() function.
  The handle of this material will essentially be zero but it is not technically
- required by the chiVolumeMesherSetProperty() function since this function
+ required by the VolumeMesherSetProperty() function since this function
  operates on the integer supplied.
 This material is added to the physics environment and therefore has scope over
 all mesh handlers and all physics entities. We then create a logical volume
@@ -113,7 +113,7 @@ all mesh handlers and all physics entities. We then create a logical volume
  volume.
 
 Actually setting the mesh's material id's is a utility facilitated by a
- volume mesher property and hence we call chiVolumeMesherSetProperty()
+ volume mesher property and hence we call VolumeMesherSetProperty()
  with a property index MATID_FROMLOGICAL. Next we provided a handle to the
  logical volume (vol0) and the desired material id. Logical volumes are very
  diverse and their uses are discussed elsewhere. There is an additional utility,
@@ -124,7 +124,7 @@ Actually setting the mesh's material id's is a utility facilitated by a
 ### Boundary IDs
 By default all boundaries are unassigned (i.e., -1). There are two utilities
  that set the boundary id's the first of which is essentially identical to how
- material ids are set, chiVolumeMesherSetProperty(), but this time the property
+ material ids are set, VolumeMesherSetProperty(), but this time the property
  index is BNDRYID_FROMLOGICAL. The second way is to use
  chiVolumeMesherSetupOrthogonalBoundaries() which requires no arguments and will
  asssign standard indices to a boundary if it is aligned with the orthogonal
@@ -229,7 +229,7 @@ material = chiPhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
 chiMeshHandlerExportMeshToVTK("Mesh")
 --############################################### Add material properties

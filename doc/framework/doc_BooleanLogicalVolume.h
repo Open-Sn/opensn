@@ -36,7 +36,7 @@ lv3 = chi_mesh.BooleanLogicalVolume.Create
   parts = { { op=true, lv=lv2 },
             { op=false, lv=lv1 } }
 })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, lv3, 1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, lv3, 1)
 
 chiMeshHandlerExportMeshToVTK("lv_boolean_test1")
 \endcode

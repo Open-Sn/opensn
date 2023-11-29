@@ -36,11 +36,11 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 vol1 = mesh.RPPLogicalVolume.Create
 ({ xmin=-0.5,xmax=0.5,ymin=-0.5,ymax=0.5, infz=true })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
 
 --############################################### Add materials
 materials = {}

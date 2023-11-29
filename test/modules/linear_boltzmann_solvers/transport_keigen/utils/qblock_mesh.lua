@@ -15,4 +15,4 @@ chiVolumeMesherSetMatIDToAll(0)
 
 vol1 = mesh.RPPLogicalVolume.Create
 ({ xmin=-1000.0,xmax=10.0,ymin=-1000.0,ymax=10.0, infz=true })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)

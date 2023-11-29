@@ -14,11 +14,11 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen1)
 
 lv1 = mesh.RCCLogicalVolume.Create({r = 1.3, x0=L/2, y0=L/2, z0 = -1.0, vz = 2.0})
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, lv1, 1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, lv1, 1)
 
 lv2 = mesh.RCCLogicalVolume.Create({r = 1.3,
                                         x0=-0.8, y0=-0.8, z0=-1.5,
                                         vx=1.0, vy=1.0, vz=3.0})
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, lv2, 2)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, lv2, 2)
 
 chiMeshHandlerExportMeshToVTK("lv_rcc_test1")
