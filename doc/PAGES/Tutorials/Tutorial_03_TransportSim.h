@@ -26,7 +26,7 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
+surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 chiVolumeMesherExecute();
 \endcode
@@ -172,7 +172,7 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
+surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 --chiSurfaceMesherSetProperty(PARTITION_X,2)
 --chiSurfaceMesherSetProperty(PARTITION_Y,2)

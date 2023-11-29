@@ -60,12 +60,12 @@ end
 \endcode
 
 Note here that lua arrays cannot use `nodes[0]` since arrays in lua are not
-zero based. The next step is call chiMeshCreateUnpartitioned3DOrthoMesh with
+zero based. The next step is call MeshCreateUnpartitioned3DOrthoMesh with
 the node arrangement along the X-direction, Y-direction and Z-direction,
 which in our case is the same,
 
 \code
-surf_mesh, region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
+surf_mesh, region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 \endcode
 
 Some work has been encapsulated behind the scenes here. Firstly, a 2D surface
@@ -222,7 +222,7 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
+surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 chiVolumeMesherExecute();
 

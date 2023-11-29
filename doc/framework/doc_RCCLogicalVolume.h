@@ -14,7 +14,7 @@ for i=1,(N+1) do
 k=i-1
 mesh[i] = xmin + k*dx
 end
-chiMeshCreateUnpartitioned3DOrthoMesh(mesh,mesh,mesh)
+MeshCreateUnpartitioned3DOrthoMesh(mesh,mesh,mesh)
 chiVolumeMesherExecute();
 
 lv1 = chi_mesh.RCCLogicalVolume.Create({r = 1.3, x0=L/2, y0=L/2, z0 = -1.0, vz

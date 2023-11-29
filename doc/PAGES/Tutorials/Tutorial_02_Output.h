@@ -86,7 +86,7 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
+surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 -- VolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
 -- chiVolumeMesherSetKBAPartitioningPxPyPz(2,2,1)
