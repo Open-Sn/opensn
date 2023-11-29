@@ -9,10 +9,10 @@
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionAsIs(chiAdjointSolverComputeInnerProduct);
+RegisterLuaFunctionAsIs(AdjointSolverComputeInnerProduct);
 
 int
-chiAdjointSolverComputeInnerProduct(lua_State* L)
+AdjointSolverComputeInnerProduct(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
