@@ -3,7 +3,7 @@
 
 ## Additional Example
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 mesh={}
 N=40

@@ -31,7 +31,7 @@ For our specific problem we will choose \f$ q(\mathbf{x})=1 \f$ and \f$ \mathcal
 domain, either 1D, 2D or 3D, with each dimension always between \f$ -1,+1 \f$. We can generate the
 mesh for this problem using an input file \code
 --############################################### Setup mesh
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 mesh={}
 N=20
@@ -290,7 +290,7 @@ directory.
 Use an editor to add the following lines to `mesh.lua`
 \code
 --############################################### Setup mesh
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 mesh={}
 N=20

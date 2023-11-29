@@ -14,7 +14,7 @@
  * ### Example
  * An example 1D mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  * nodes={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * chiMeshCreateUnpartitioned1DOrthoMesh(nodes)
  * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
@@ -41,7 +41,7 @@ int chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L);
  * ### Example
  * An example 2D mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  * nodesx={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * nodesy={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * chiMeshCreateUnpartitioned2DOrthoMesh(nodesx,nodesy)
@@ -72,7 +72,7 @@ int chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L);
  * ### Example
  * An example 3D mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  * nodesx={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * nodesy={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * nodesz={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}

@@ -5,16 +5,16 @@
 
  Meshing in ChiTech is made available via the chi_mesh namespace. All instances
  of entities are stored within a handler (chi_mesh::MeshHandler). A mesh handler
- is created with a call to chiMeshHandlerCreate().
+ is created with a call to MeshHandlerCreate().
 
  \code
- chiMeshHandlerCreate()
+ MeshHandlerCreate()
  \endcode
 
 ## Predefined 2D Mesh Setup Example
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 --
 newSurfMesh = chiSurfaceMeshCreate();
 chiSurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")

@@ -12,7 +12,7 @@ chi_mesh.BooleanLogicalVolume.Create
 
 ## Additional Example B
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 mesh={}
 N=40

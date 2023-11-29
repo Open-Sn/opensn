@@ -4,7 +4,8 @@
  * called a <B>Field Function</B>. A field function is considered fully defined
  * when it is connected to both a grid (mesh) and a spatial discretization.
 
- \image html "Physics/FieldFunctionHierarchy.png" "Figure 1 - Hierarchy of field functions" width=600px
+ \image html "Physics/FieldFunctionHierarchy.png" "Figure 1 - Hierarchy of field functions"
+width=600px
 
 ## Step 1 - Make a copy of Tutorial01 input
 In the same folder (or any of your choice) make a copy of the input you used for Tutorial 1.
@@ -77,7 +78,7 @@ The output produced is shown below:
 
 \code
 --############################################### Setup mesh
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 nodes={}
 N=32

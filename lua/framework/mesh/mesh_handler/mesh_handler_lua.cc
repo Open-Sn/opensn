@@ -11,19 +11,19 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiMeshHandlerCreate);
+RegisterLuaFunctionAsIs(MeshHandlerCreate);
 RegisterLuaFunctionAsIs(chiMeshHandlerSetCurrent);
 RegisterLuaFunctionAsIs(MeshHandlerExportMeshToObj);
 RegisterLuaFunctionAsIs(MeshHandlerExportMeshToVTK);
 RegisterLuaFunctionAsIs(MeshHandlerExportMeshToExodus);
 
 int
-chiMeshHandlerCreate(lua_State* L)
+MeshHandlerCreate(lua_State* L)
 {
   int index = (int)PushNewHandlerAndGetIndex();
   lua_pushnumber(L, index);
 
-  opensn::log.LogAllVerbose2() << "chiMeshHandlerCreate: Mesh Handler " << index << " created\n";
+  opensn::log.LogAllVerbose2() << "MeshHandlerCreate: Mesh Handler " << index << " created\n";
 
   return 1;
 }

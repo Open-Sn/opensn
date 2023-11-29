@@ -27,7 +27,7 @@
 ## Step 2 - Create a mesh handler
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 \endcode
 
 This function call creates a new mesh handler and pushes it to a global
@@ -214,7 +214,7 @@ Here is the complete input file with comments
 
 \code
 --############################################### Setup mesh
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 nodes={}
 N=32

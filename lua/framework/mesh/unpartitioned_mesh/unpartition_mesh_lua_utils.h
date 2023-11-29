@@ -55,7 +55,7 @@ int chiDestroyUnpartitionedMesh(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
  * umesh = chiUnpartitionedMeshFromVTU("ZMeshTest_0.vtu")
  *
@@ -85,7 +85,7 @@ int chiUnpartitionedMeshFromVTU(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
  * umesh = chiUnpartitionedMeshFromPVTU("ZMeshTest_0.vtu")
  *
@@ -114,7 +114,7 @@ int chiUnpartitionedMeshFromPVTU(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
  * umesh = chiUnpartitionedMeshFromEnsightGold("resources/TestObjects/Sphere.case")
  *
@@ -140,7 +140,7 @@ int chiUnpartitionedMeshFromEnsightGold(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
  * umesh =
  * chiUnpartitionedMeshFromWavefrontOBJ("resources/TestObjects/TriangleMesh2x2.obj")
@@ -167,7 +167,7 @@ int chiUnpartitionedMeshFromWavefrontOBJ(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
  * umesh = chiUnpartitionedMeshFromMshFormat("File.msh")
  *
@@ -195,7 +195,7 @@ int chiUnpartitionedMeshFromMshFormat(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
  * umesh = chiUnpartitionedMeshFromExodusII("resources/TestObjects/Mesh.e")
  *

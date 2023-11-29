@@ -10,7 +10,7 @@ subsequent meshing operations. This will also serve as a global subspace for
 other meshing objects that will be added.
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 \endcode
 
 We next import a surface mesh (chi_mesh::SurfaceMesh) that will define our
@@ -73,7 +73,7 @@ The *SURFACEMESHER_PREDEFINED* is just a pass-through mesher, in contrast to the
 ### Complete code segment
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 --
 newSurfMesh = chiSurfaceMeshCreate();
 chiSurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")

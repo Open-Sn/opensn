@@ -8,12 +8,12 @@
  * \ingroup LuaMeshHandler
  * \author Jan
  */
-int chiMeshHandlerCreate(lua_State* L);
+int MeshHandlerCreate(lua_State* L);
 
 /** Sets the given mesh handler as "current".
  *
  * \param HandlerHandler int Handle to the mesh handler previously created
- *        with a call to chiMeshHandlerCreate.
+ *        with a call to MeshHandlerCreate.
  *
  * \ingroup LuaMeshHandler
  * \author Jan

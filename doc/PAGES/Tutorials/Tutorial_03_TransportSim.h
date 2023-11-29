@@ -18,7 +18,7 @@ Let us tackle a basic transport simulation on a 3D mesh\n
 As was done in Tutorials 1 and 2 we create the 3D mesh as follows:
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 nodes={}
 N=32
@@ -164,7 +164,7 @@ Instead of using a SLICE interpolator we instead opt to use a LINE interpolator.
 
 \code
 --############################################### Setup mesh
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 nodes={}
 N=32

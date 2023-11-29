@@ -21,14 +21,14 @@ Thus, in order to obtain a 3D extruded mesh, you need
  there is meshio but there are other possibilities).
 
 \code
- chiMeshHandlerCreate()
+ MeshHandlerCreate()
 
  mesh2d_file = "your_mesh.obj"
  umesh = chiUnpartitionedMeshFromWavefrontOBJ(mesh2d_file)
 \endcode
 or
 \code
- chiMeshHandlerCreate()
+ MeshHandlerCreate()
 
  mesh2d_file = "your_mesh.vtu"
  umesh = chiUnpartitionedMeshFromVTU(mesh2d_file, "attribute")
@@ -66,7 +66,8 @@ or
  a material ID for cells (identified by their centroids) that are included in the LV.
 
  We have several ways of defining a Logical Volume, LV:
- 1. Using pre-defined volumes, such as RPP (rectangular paralleliped)and  RCC (right circular cylinder),
+ 1. Using pre-defined volumes, such as RPP (rectangular paralleliped)and  RCC (right circular
+cylinder),
  2. Using a surface mesh read in as an```.obj``` file,
  3. Using lua functions to describe the  surface mesh of the LV.
 
