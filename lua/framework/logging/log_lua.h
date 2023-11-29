@@ -12,7 +12,7 @@ namespace opensnlua
  * \ingroup LuaLogging
  * \author Jan
  */
-int chiLogSetVerbosity(lua_State* L);
+int LogSetVerbosity(lua_State* L);
 
 /**Logs a message depending on the log type specified.
  *

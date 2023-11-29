@@ -10,7 +10,7 @@ using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionAsIs(chiLogSetVerbosity);
+RegisterLuaFunctionAsIs(LogSetVerbosity);
 RegisterLuaFunctionAsIs(Log);
 RegisterLuaFunctionAsIs(chiLogProcessEvent);
 RegisterLuaFunctionAsIs(LogPrintTimingGraph);
@@ -29,7 +29,7 @@ RegisterLuaConstantAsIs(LOG_ALLVERBOSE_1, Varying(11));
 RegisterLuaConstantAsIs(LOG_ALLVERBOSE_2, Varying(12));
 
 int
-chiLogSetVerbosity(lua_State* L)
+LogSetVerbosity(lua_State* L)
 {
   int num_args = lua_gettop(L);
 
