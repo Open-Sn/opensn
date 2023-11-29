@@ -117,4 +117,4 @@ int SurfaceMeshCheckCycles(lua_State* L);
  * \ingroup LuaSurfaceMesh
  * \author Jan
  */
-int chiComputeLoadBalancing(lua_State* L);
+int ComputeLoadBalancing(lua_State* L);
