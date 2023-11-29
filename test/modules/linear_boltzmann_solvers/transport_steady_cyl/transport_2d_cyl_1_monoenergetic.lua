@@ -136,7 +136,7 @@ SolverExecute(ss_solver)
 --SolverExecute(phys0)
 
 --############################################### Exports
-fflist, count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist, count = LBSGetScalarFieldFunctionList(phys1)
 if master_export == nil then
   chiExportMultiFieldFunctionToVTK(fflist, "ZRZPhi")
 end

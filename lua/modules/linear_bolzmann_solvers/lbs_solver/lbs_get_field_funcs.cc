@@ -12,7 +12,7 @@ namespace opensnlua::lbs
 {
 
 int
-chiLBSGetScalarFieldFunctionList(lua_State* L)
+LBSGetScalarFieldFunctionList(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

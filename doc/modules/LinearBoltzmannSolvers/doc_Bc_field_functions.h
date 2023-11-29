@@ -21,7 +21,7 @@ LBSSetProperty(phys1,SCATTERING_ORDER,1)
 chiLBSInitialize(phys1)
 chiLBSExecute(phys1)
 --
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 \endcode
 
 will create field functions
@@ -37,10 +37,10 @@ phi_g001_m003
 \endcode
 
 We can get the scalar field functions with a call to
-`chiLBSGetScalarFieldFunctionList` which will return a table with the field
+`LBSGetScalarFieldFunctionList` which will return a table with the field
 function handles of only the scalar fields. E.g.,
 \code
-fflist = chiLBSGetScalarFieldFunctionList(phys1)
+fflist = LBSGetScalarFieldFunctionList(phys1)
 \endcode
 with `fflist` containing handles to
 \code

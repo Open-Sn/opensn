@@ -59,7 +59,7 @@ SolverInitialize(k_solver0)
 SolverExecute(k_solver0)
 
 
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
 --chiExportMultiFieldFunctionToVTK(fflist,"tests/BigTests/QBlock/solutions/Flux")
 

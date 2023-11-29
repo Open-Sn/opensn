@@ -58,7 +58,7 @@ chiLBSInitialize(phys1)
 chiLBSExecute(phys1)
 
 --############################################### Setup Output
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
 cline = chiFFInterpolationCreate(LINE)
 chiFFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)

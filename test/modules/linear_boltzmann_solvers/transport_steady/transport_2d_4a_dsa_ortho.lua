@@ -122,7 +122,7 @@ SolverInitialize(ss_solver)
 SolverExecute(ss_solver)
 
 --############################################### Get field functions
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
 --############################################### Exports
 if (master_export == nil) then

@@ -141,7 +141,7 @@ SolverInitialize(ss_solver)
 SolverExecute(ss_solver)
 
 --############################################### Get field functions
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
 --############################################### Slice plot
 slice2 = chiFFInterpolationCreate(SLICE)

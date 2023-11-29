@@ -81,7 +81,7 @@ RegisterLuaEntities(lua_State* L)
   RegisterFunction(LBSGroupsetSetWGDSA);
   RegisterFunction(LBSGroupsetSetTGDSA);
 
-  RegisterFunction(chiLBSGetScalarFieldFunctionList);
+  RegisterFunction(LBSGetScalarFieldFunctionList);
 
   RegisterFunction(chiLBSWriteGroupsetAngularFlux);
   RegisterFunction(chiLBSReadGroupsetAngularFlux);

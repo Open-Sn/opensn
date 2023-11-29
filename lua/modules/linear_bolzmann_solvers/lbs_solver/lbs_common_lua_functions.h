@@ -602,7 +602,7 @@ int LBSGroupsetSetTGDSA(lua_State* L);
  * \return Pair Table and count. Returns an array of handles and the amount of
  * elements in it (indexed from 1). \ingroup LBSLuaFunctions \author Jan
  */
-int chiLBSGetScalarFieldFunctionList(lua_State* L);
+int LBSGetScalarFieldFunctionList(lua_State* L);
 
 /**Writes the angular fluxes of a LBS groupset to file.
  *

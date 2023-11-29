@@ -105,6 +105,6 @@ else
 end
 
 if (master_export == nil) then
-    fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+    fflist,count = LBSGetScalarFieldFunctionList(phys1)
     chiExportMultiFieldFunctionToVTK(fflist,"solutions/ZPhi")
 end

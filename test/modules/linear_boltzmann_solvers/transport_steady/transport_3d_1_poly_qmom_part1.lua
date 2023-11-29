@@ -108,7 +108,7 @@ SolverExecute(ss_solver)
 chiLBSCreateAndWriteSourceMoments(phys1,"Qmoms")
 
 --############################################### Get field functions
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
 --############################################### Slice plot
 --slices = {}
