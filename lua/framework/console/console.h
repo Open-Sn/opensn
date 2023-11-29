@@ -41,15 +41,25 @@ extern "C"
 \param func_name NonQuotedString. The name of the function as it will appear in
                  the lua console.
 */
-#define RegisterLuaFunction(function, namespace_name, func_name)                                   \
+#define RegisterLuaFunctionNamespace(function, namespace_name, func_name)                          \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
     opensnlua::Console::AddFunctionToRegistryInNamespaceWithName(                                  \
       function, #namespace_name, #func_name)
 
-#define RegisterWrapperFunction(namespace_name, name_in_lua, syntax_function, actual_function)     \
+#define RegisterLuaFunction(function, func_name)                                                   \
+  static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
+    opensnlua::Console::AddFunctionToRegistryInNamespaceWithName(function, #func_name)
+
+#define RegisterWrapperFunctionNamespace(                                                          \
+  namespace_name, name_in_lua, syntax_function, actual_function)                                   \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##name_in_lua##_, __COUNTER__) =          \
     opensnlua::Console::AddWrapperToRegistryInNamespaceWithName(                                   \
       #namespace_name, #name_in_lua, syntax_function, actual_function)
+
+#define RegisterWrapperFunction(name_in_lua, syntax_function, actual_function)                     \
+  static char ConsoleJoinWordsB(unique_var_name_luacfunc_##name_in_lua##_, __COUNTER__) =          \
+    opensnlua::Console::AddWrapperToRegistryInNamespaceWithName(                                   \
+      #name_in_lua, syntax_function, actual_function)
 
 #define RegisterLuaConstant(namespace_name, name_in_lua, value)                                    \
   static char ConsoleJoinWordsB(unique_var_name_luaconst_##namespace_name##_##name_in_lua,         \
@@ -190,6 +200,11 @@ public:
    */
   static char AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_name,
                                                       const std::string& name_in_lua,
+                                                      WrapperGetInParamsFunc syntax_function,
+                                                      WrapperCallFunc actual_function,
+                                                      bool ignore_null_call_func = false);
+
+  static char AddWrapperToRegistryInNamespaceWithName(const std::string& name_in_lua,
                                                       WrapperGetInParamsFunc syntax_function,
                                                       WrapperCallFunc actual_function,
                                                       bool ignore_null_call_func = false);

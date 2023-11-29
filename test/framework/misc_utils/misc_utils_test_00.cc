@@ -12,7 +12,7 @@ namespace unit_tests
 
 ParameterBlock misc_utils_Test00(const InputParameters& params);
 
-RegisterWrapperFunction(unit_tests, misc_utils_Test00, nullptr, misc_utils_Test00);
+RegisterWrapperFunctionNamespace(unit_tests, misc_utils_Test00, nullptr, misc_utils_Test00);
 
 ParameterBlock
 misc_utils_Test00(const InputParameters&)

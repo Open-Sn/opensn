@@ -9,7 +9,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-OpenSnRegisterObject(opensn, LuaScalarSpatialMaterialFunction);
+OpenSnRegisterObjectInNamespace(opensn, LuaScalarSpatialMaterialFunction);
 
 InputParameters
 LuaScalarSpatialMaterialFunction::GetInputParameters()

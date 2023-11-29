@@ -12,7 +12,7 @@ namespace unit_tests
 
 ParameterBlock LogTimingInfoTest(const InputParameters&);
 
-RegisterWrapperFunction(unit_tests, LogTimingInfoTest, nullptr, LogTimingInfoTest);
+RegisterWrapperFunctionNamespace(unit_tests, LogTimingInfoTest, nullptr, LogTimingInfoTest);
 
 ParameterBlock
 LogTimingInfoTest(const InputParameters&)

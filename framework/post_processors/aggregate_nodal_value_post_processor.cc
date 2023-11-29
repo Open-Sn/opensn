@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi, AggregateNodalValuePostProcessor);
+OpenSnRegisterObject(AggregateNodalValuePostProcessor);
 
 InputParameters
 AggregateNodalValuePostProcessor::GetInputParameters()

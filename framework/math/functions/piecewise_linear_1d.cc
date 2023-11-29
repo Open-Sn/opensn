@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(math::functions, PiecewiseLinear1D);
+OpenSnRegisterObjectInNamespace(math::functions, PiecewiseLinear1D);
 
 InputParameters
 PiecewiseLinear1D::GetInputParameters()

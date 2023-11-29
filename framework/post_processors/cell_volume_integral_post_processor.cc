@@ -13,7 +13,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi, CellVolumeIntegralPostProcessor);
+OpenSnRegisterObject(CellVolumeIntegralPostProcessor);
 
 InputParameters
 CellVolumeIntegralPostProcessor::GetInputParameters()

@@ -14,10 +14,10 @@ namespace unit_tests
 
 ParameterBlock TestKBAGraphPartitioner00(const InputParameters&);
 
-RegisterWrapperFunction(unit_tests,
-                        TestKBAGraphPartitioner00,
-                        nullptr,
-                        TestKBAGraphPartitioner00);
+RegisterWrapperFunctionNamespace(unit_tests,
+                                 TestKBAGraphPartitioner00,
+                                 nullptr,
+                                 TestKBAGraphPartitioner00);
 
 ParameterBlock
 TestKBAGraphPartitioner00(const InputParameters&)

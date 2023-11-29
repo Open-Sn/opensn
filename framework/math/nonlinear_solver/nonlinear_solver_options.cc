@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectParametersOnly(math, NonLinearSolverOptions);
+OpenSnRegisterObjectParametersOnlyInNamespace(math, NonLinearSolverOptions);
 
 InputParameters
 NonLinearSolverOptions::GetInputParameters()

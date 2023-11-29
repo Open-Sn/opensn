@@ -76,10 +76,10 @@ end
 --############################################### Volume integrations
 
 --############################################### PostProcessors
-chi.CellVolumeIntegralPostProcessor.Create
+CellVolumeIntegralPostProcessor.Create
 ({
     name = "avgval",
     field_function = math.floor(fflist[1]),
     compute_volume_average = true
 })
-chi.ExecutePostProcessors({"avgval"})
+ExecutePostProcessors({"avgval"})

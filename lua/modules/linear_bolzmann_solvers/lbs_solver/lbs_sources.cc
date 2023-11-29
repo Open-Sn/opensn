@@ -81,7 +81,7 @@ chiLBSClearPointSources(lua_State* L)
   return 0;
 }
 
-RegisterLuaFunction(AddPointSource, lbs, AddPointSource);
+RegisterLuaFunctionNamespace(AddPointSource, lbs, AddPointSource);
 int
 AddPointSource(lua_State* L)
 {
@@ -103,7 +103,7 @@ AddPointSource(lua_State* L)
   return 1;
 }
 
-RegisterLuaFunction(ClearPointSources, lbs, ClearPointSources);
+RegisterLuaFunctionNamespace(ClearPointSources, lbs, ClearPointSources);
 int
 ClearPointSources(lua_State* L)
 {
@@ -122,7 +122,7 @@ ClearPointSources(lua_State* L)
   return 0;
 }
 
-RegisterLuaFunction(AddDistributedSource, lbs, AddDistributedSource);
+RegisterLuaFunctionNamespace(AddDistributedSource, lbs, AddDistributedSource);
 int
 AddDistributedSource(lua_State* L)
 {
@@ -144,7 +144,7 @@ AddDistributedSource(lua_State* L)
   return 0;
 }
 
-RegisterLuaFunction(ClearDistributedSources, lbs, ClearDistributedSources);
+RegisterLuaFunctionNamespace(ClearDistributedSources, lbs, ClearDistributedSources);
 int
 ClearDistributedSources(lua_State* L)
 {

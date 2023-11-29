@@ -153,10 +153,10 @@ static registration, i.e.,
 `ChiObjectFactory`, therefore, we use a macro. That works as follows.
 
 In order to register an object within the `ChiObjectFactory` we created a macro
-called `OpenSnRegisterObject(namespace_name, obj_name)`. The arguments to this
+called `OpenSnRegisterObjectInNamespace(namespace_name, obj_name)`. The arguments to this
 macro, `namespace_name` and `obj_name`, then get used to construct the following
 \code
-OpenSnRegisterObject(namespace_name, ObjectName);
+OpenSnRegisterObjectInNamespace(namespace_name, ObjectName);
 //
 // becomes:
 //
@@ -213,7 +213,7 @@ In the definition (`.cc`) file we then have
 namespace zorba
 {
 
-OpenSnRegisterObject(unit_tests, CoolObject);
+OpenSnRegisterObjectInNamespace(unit_tests, CoolObject);
 
 chi::InputParameters CoolObject::GetInputParameters()
 {

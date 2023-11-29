@@ -135,21 +135,21 @@ SolverExecute(ss_solver)
 --############################################### Get field functions
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
-pp1 = chi.CellVolumeIntegralPostProcessor.Create
+pp1 = CellVolumeIntegralPostProcessor.Create
 ({
   name="max-grp0",
   field_function = fflist[1],
   compute_volume_average = true,
   print_numeric_format = "scientific"
 })
-pp2 = chi.CellVolumeIntegralPostProcessor.Create
+pp2 = CellVolumeIntegralPostProcessor.Create
 ({
   name="max-grp19",
   field_function = fflist[20],
   compute_volume_average = true,
   print_numeric_format = "scientific"
 })
-chi.ExecutePostProcessors({ pp1, pp2 })
+ExecutePostProcessors({ pp1, pp2 })
 
 if (master_export == nil) then
   ExportMultiFieldFunctionToVTK(fflist,"ZPhi")

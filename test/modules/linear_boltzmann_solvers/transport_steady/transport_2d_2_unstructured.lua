@@ -25,7 +25,7 @@ meshgen1 = mesh.MeshGenerator.Create
       filename="../../../../resources/TestMeshes/TriangleMesh2x2Cuts.obj"
     }),
   },
-  partitioner = chi.KBAGraphPartitioner.Create
+  partitioner = KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2, nz=1,
     xcuts = {0.0}, ycuts = {0.0},

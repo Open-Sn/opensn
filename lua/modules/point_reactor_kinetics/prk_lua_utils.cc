@@ -77,7 +77,7 @@ chiPRKSetParam(lua_State* L)
   return 0;
 }
 
-RegisterWrapperFunction(prk, SetParam, GetSyntax_SetParam, SetParam);
+RegisterWrapperFunctionNamespace(prk, SetParam, GetSyntax_SetParam, SetParam);
 
 InputParameters
 GetSyntax_SetParam()
@@ -123,7 +123,7 @@ SetParam(const InputParameters& params)
   return ParameterBlock(); // Return empty param block
 }
 
-RegisterWrapperFunction(prk, GetParam, GetParamSyntax, GetParam);
+RegisterWrapperFunctionNamespace(prk, GetParam, GetParamSyntax, GetParam);
 
 InputParameters
 GetParamSyntax()

@@ -18,7 +18,7 @@ namespace unit_tests
 
 ParameterBlock data_types_Test00(const InputParameters& params);
 
-RegisterWrapperFunction(unit_tests, data_types_Test00, nullptr, data_types_Test00);
+RegisterWrapperFunctionNamespace(unit_tests, data_types_Test00, nullptr, data_types_Test00);
 
 ParameterBlock
 data_types_Test00(const InputParameters&)

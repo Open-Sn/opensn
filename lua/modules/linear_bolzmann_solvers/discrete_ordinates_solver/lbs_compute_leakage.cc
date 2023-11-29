@@ -48,7 +48,7 @@ chiLBSComputeLeakage(lua_State* L)
   return 1;
 }
 
-RegisterLuaFunction(ComputeLeakage, lbs, ComputeLeakage);
+RegisterLuaFunctionNamespace(ComputeLeakage, lbs, ComputeLeakage);
 
 int
 ComputeLeakage(lua_State* L)

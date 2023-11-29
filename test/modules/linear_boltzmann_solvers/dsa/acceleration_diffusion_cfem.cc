@@ -21,10 +21,10 @@ namespace unit_sim_tests
 
 ParameterBlock acceleration_Diffusion_CFEM(const InputParameters& params);
 
-RegisterWrapperFunction(unit_tests,
-                        acceleration_Diffusion_CFEM,
-                        nullptr,
-                        acceleration_Diffusion_CFEM);
+RegisterWrapperFunctionNamespace(unit_tests,
+                                 acceleration_Diffusion_CFEM,
+                                 nullptr,
+                                 acceleration_Diffusion_CFEM);
 
 ParameterBlock
 acceleration_Diffusion_CFEM(const InputParameters&)

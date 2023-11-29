@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(math, CrankNicolsonTimeIntegration);
+OpenSnRegisterObjectInNamespace(math, CrankNicolsonTimeIntegration);
 
 InputParameters
 CrankNicolsonTimeIntegration::GetInputParameters()

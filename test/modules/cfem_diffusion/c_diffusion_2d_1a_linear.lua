@@ -85,10 +85,10 @@ end
 --############################################### Volume integrations
 
 --############################################### PostProcessors
-chi.AggregateNodalValuePostProcessor.Create
+AggregateNodalValuePostProcessor.Create
 ({
     name = "maxval",
     field_function = math.floor(fflist[1]),
     operation = "max"
 })
-chi.ExecutePostProcessors({"maxval"})
+ExecutePostProcessors({"maxval"})

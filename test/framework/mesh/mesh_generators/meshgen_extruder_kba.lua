@@ -8,7 +8,7 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create
     }),
   },
   layers = {{z=1.1, n=2}, {z=2.1, n=3}},
-  partitioner = chi.KBAGraphPartitioner.Create
+  partitioner = KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2, nz=2,
     xcuts = {0.0}, ycuts = {0.0}, zcuts = {1.1}

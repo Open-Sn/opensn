@@ -29,7 +29,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create
 ({
   node_sets = {nodes},
-  partitioner = chi.KBAGraphPartitioner.Create
+  partitioner = KBAGraphPartitioner.Create
   ({
     nx = 1, ny=1, nz=2,
     zcuts = {L/2}

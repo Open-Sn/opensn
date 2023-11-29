@@ -25,7 +25,7 @@ meshgen1 = mesh.MeshGenerator.Create
       filename = "../../../../resources/TestMeshes/SquareMesh2x2QuadsBlock.obj"
     }),
   },
-  partitioner = chi.KBAGraphPartitioner.Create
+  partitioner = KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2,
     xcuts = {0.0}, ycuts = {0.0}

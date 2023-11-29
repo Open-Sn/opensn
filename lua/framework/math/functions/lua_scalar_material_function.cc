@@ -9,7 +9,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-OpenSnRegisterObject(opensn, LuaScalarMaterialFunction);
+OpenSnRegisterObjectInNamespace(opensn, LuaScalarMaterialFunction);
 
 InputParameters
 LuaScalarMaterialFunction::GetInputParameters()

@@ -6,7 +6,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(objects, MaterialPropertyScalarFuncXYZTV);
+OpenSnRegisterObjectInNamespace(objects, MaterialPropertyScalarFuncXYZTV);
 
 InputParameters
 MaterialPropertyScalarFuncXYZTV::GetInputParameters()

@@ -14,13 +14,18 @@
  * \param object_name Name of the object in the registry.
  * Example:
  * \code
- * OpenSnRegisterObject(kaka, Zorba);
+ * OpenSnRegisterObjectInNamespace(kaka, Zorba);
  * \endcode
  * \note Remember to include the header "framework/object_factory.h".*/
-#define OpenSnRegisterObject(namespace_name, object_name)                                          \
+#define OpenSnRegisterObjectInNamespace(namespace_name, object_name)                               \
   static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
                                             __COUNTER__) =                                         \
     opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#namespace_name, #object_name)
+
+#define OpenSnRegisterObject(object_name)                                                          \
+  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
+                                            __COUNTER__) =                                         \
+    opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#object_name)
 
 /**Macro for registering an object (parameters only) within the
  * ObjectFactory singleton.
@@ -28,15 +33,20 @@
  * \param object_name Name of the object in the registry.
  * Example:
  * \code
- * OpenSnRegisterObjectParametersOnly(kaka, Zorba);
+ * OpenSnRegisterObjectParametersOnlyInNamespace(kaka, Zorba);
  * \endcode
  *
  * \note Remember to include the header "framework/object_factory.h"*/
-#define OpenSnRegisterObjectParametersOnly(namespace_name, object_name)                            \
+#define OpenSnRegisterObjectParametersOnlyInNamespace(namespace_name, object_name)                 \
   static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
                                             __COUNTER__) =                                         \
     opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name,             \
                                                                       #object_name)
+
+#define OpenSnRegisterObjectParametersOnly(object_name)                                            \
+  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
+                                            __COUNTER__) =                                         \
+    opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#object_name)
 
 /**Macro for registering a pure input parameters block within the
  * ObjectFactory singleton AND giving it a custom name
@@ -45,13 +55,17 @@
  * \param syntax_function Actual syntax function for this object
  * Example:
  * \code
- * OpenSnRegisterSyntaxBlock(kaka, Zorba, ZorbaSyntaxFunction);
+ * OpenSnRegisterSyntaxBlockInNamespace(kaka, Zorba, ZorbaSyntaxFunction);
  * \endcode
  *
  * \note Remember to include the header "framework/object_factory.h"*/
-#define OpenSnRegisterSyntaxBlock(namespace_name, block_name, syntax_function)                     \
+#define OpenSnRegisterSyntaxBlockInNamespace(namespace_name, block_name, syntax_function)          \
   static char OpenSnObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) = \
     opensn::ObjectFactory::AddSyntaxBlockToRegistry(#namespace_name, #block_name, syntax_function)
+
+#define OpenSnRegisterSyntaxBlock(block_name, syntax_function)                                     \
+  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) = \
+    opensn::ObjectFactory::AddSyntaxBlockToRegistry(#block_name, syntax_function)
 
 namespace opensn
 {
@@ -90,9 +104,15 @@ public:
   template <typename T, typename base_T>
   static char AddObjectToRegistry(const std::string& namespace_name, const std::string& object_name)
   {
+    return AddObjectToRegistry<T, base_T>(namespace_name + "::" + object_name);
+  }
+
+  template <typename T, typename base_T>
+  static char AddObjectToRegistry(const std::string& object_name)
+  {
     auto& object_maker = GetInstance();
 
-    const std::string name = namespace_name + "::" + object_name;
+    const std::string name = object_name;
     object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
 
     ObjectRegistryEntry reg_entry;
@@ -107,9 +127,15 @@ public:
   static char AddObjectToRegistryParamsOnly(const std::string& namespace_name,
                                             const std::string& object_name)
   {
+    return AddObjectToRegistryParamsOnly<T>(namespace_name + "::" + object_name);
+  }
+
+  template <typename T>
+  static char AddObjectToRegistryParamsOnly(const std::string& object_name)
+  {
     auto& object_maker = GetInstance();
 
-    const std::string name = namespace_name + "::" + object_name;
+    const std::string name = object_name;
     object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
 
     ObjectRegistryEntry reg_entry;
@@ -123,9 +149,15 @@ public:
                                        const std::string& block_name,
                                        ObjectGetInParamsFunc syntax_function)
   {
+    return AddSyntaxBlockToRegistry(namespace_name + "::" + block_name, syntax_function);
+  }
+
+  static char AddSyntaxBlockToRegistry(const std::string& block_name,
+                                       ObjectGetInParamsFunc syntax_function)
+  {
     auto& object_maker = GetInstance();
 
-    const std::string name = namespace_name + "::" + block_name;
+    const std::string name = block_name;
     object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
 
     ObjectRegistryEntry reg_entry;

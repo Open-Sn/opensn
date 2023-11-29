@@ -32,7 +32,7 @@ GetStatusOfRegistries()
   return stats;
 }
 
-OpenSnRegisterObject(chi, Plugin);
+OpenSnRegisterObject(Plugin);
 
 InputParameters
 Plugin::GetInputParameters()

@@ -15,7 +15,7 @@ namespace opensn
 namespace prk
 {
 
-OpenSnRegisterObject(prk, TransientSolver);
+OpenSnRegisterObjectInNamespace(prk, TransientSolver);
 
 InputParameters
 TransientSolver::GetInputParameters()

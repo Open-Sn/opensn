@@ -26,7 +26,7 @@ namespace unit_sim_tests
 /**PWLD Sweep. */
 ParameterBlock SimTest91_PWLD(const InputParameters&);
 
-RegisterWrapperFunction(unit_tests, SimTest91_PWLD, nullptr, SimTest91_PWLD);
+RegisterWrapperFunctionNamespace(unit_tests, SimTest91_PWLD, nullptr, SimTest91_PWLD);
 
 ParameterBlock
 SimTest91_PWLD(const InputParameters&)

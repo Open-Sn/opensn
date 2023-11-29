@@ -26,7 +26,7 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create
     }),
   },
   layers = {{z=0.2, n=2}},    -- First layer - 2 sub-layers
-  partitioner = chi.KBAGraphPartitioner.Create
+  partitioner = KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2, nz=1,
     xcuts = {0.0}, ycuts = {0.0},

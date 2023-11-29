@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(mesh, RCCLogicalVolume);
+OpenSnRegisterObjectInNamespace(mesh, RCCLogicalVolume);
 
 InputParameters
 RCCLogicalVolume::GetInputParameters()

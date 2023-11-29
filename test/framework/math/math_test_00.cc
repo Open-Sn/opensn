@@ -14,7 +14,7 @@ namespace unit_tests
 
 ParameterBlock math_Test00(const InputParameters& params);
 
-RegisterWrapperFunction(unit_tests, math_Test00, nullptr, math_Test00);
+RegisterWrapperFunctionNamespace(unit_tests, math_Test00, nullptr, math_Test00);
 
 ParameterBlock
 math_Test00(const InputParameters& params)
