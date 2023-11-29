@@ -24,14 +24,14 @@ Thus, in order to obtain a 3D extruded mesh, you need
  MeshHandlerCreate()
 
  mesh2d_file = "your_mesh.obj"
- umesh = chiUnpartitionedMeshFromWavefrontOBJ(mesh2d_file)
+ umesh = UnpartitionedMeshFromWavefrontOBJ(mesh2d_file)
 \endcode
 or
 \code
  MeshHandlerCreate()
 
  mesh2d_file = "your_mesh.vtu"
- umesh = chiUnpartitionedMeshFromVTU(mesh2d_file, "attribute")
+ umesh = UnpartitionedMeshFromVTU(mesh2d_file, "attribute")
 \endcode
 
  ## The extrusion process
