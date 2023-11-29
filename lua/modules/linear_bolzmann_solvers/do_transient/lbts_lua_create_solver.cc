@@ -14,9 +14,9 @@ namespace lbs::lbts_lua_utils
 
 \author Zachary Hardy*/
 int
-chiLBSCreateTransientSolver(lua_State* L)
+LBSCreateTransientSolver(lua_State* L)
 {
-  const std::string fname = "chiLBSCreateTransientSolver";
+  const std::string fname = "LBSCreateTransientSolver";
   const int num_args = lua_gettop(L);
 
   std::string solver_name = "LBSTransient";

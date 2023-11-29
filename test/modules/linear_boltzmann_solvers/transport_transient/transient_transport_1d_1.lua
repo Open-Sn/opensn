@@ -67,7 +67,7 @@ PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 --############################################### Setup Physics
-phys1 = chiLBSCreateTransientSolver()
+phys1 = LBSCreateTransientSolver()
 
 --========== Groups
 grp = {}

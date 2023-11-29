@@ -20,7 +20,7 @@
 void
 lbs::lbts_lua_utils::RegisterLuaEntities(lua_State* L)
 {
-  LUA_FMACRO1(chiLBSCreateTransientSolver);
+  LUA_FMACRO1(LBSCreateTransientSolver);
   LUA_FMACRO1(chiLBTSSetProperty);
   LUA_FMACRO1(chiLBTSGetProperty);
   LUA_FMACRO1(chiLBTSAdvanceTimeData);

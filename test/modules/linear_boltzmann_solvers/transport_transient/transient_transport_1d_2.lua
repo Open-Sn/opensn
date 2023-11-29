@@ -59,7 +59,7 @@ function SwapXS(solver_handle, new_xs)
 end
 
 --############################################### Setup Physics
-phys1 = chiLBSCreateTransientSolver()
+phys1 = LBSCreateTransientSolver()
 
 --========== Groups
 grp = {}
