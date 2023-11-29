@@ -18,7 +18,7 @@ int MeshHandlerCreate(lua_State* L);
  * \ingroup LuaMeshHandler
  * \author Jan
  */
-int chiMeshHandlerSetCurrent(lua_State* L);
+int MeshHandlerSetCurrent(lua_State* L);
 
 /**Exports the mesh to a wavefront.obj format.
  * \param FileName char Base name of the file to be used.
