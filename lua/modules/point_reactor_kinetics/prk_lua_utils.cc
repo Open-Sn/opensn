@@ -12,11 +12,11 @@ using namespace opensn;
 namespace opensnlua::prk
 {
 
-RegisterLuaFunctionAsIs(chiPRKGetParam);
-RegisterLuaFunctionAsIs(chiPRKSetParam);
+RegisterLuaFunctionAsIs(PRKGetParam);
+RegisterLuaFunctionAsIs(PRKSetParam);
 
 int
-chiPRKGetParam(lua_State* L)
+PRKGetParam(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -48,7 +48,7 @@ chiPRKGetParam(lua_State* L)
 }
 
 int
-chiPRKSetParam(lua_State* L)
+PRKSetParam(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

@@ -83,10 +83,10 @@ SolverInitialize(phys0)
 
 for t=1,20 do
   SolverStep(phys0)
-  time = chiPRKGetParam(phys0, "time_next")
+  time = PRKGetParam(phys0, "time_next")
   print(t, time,
-        chiPRKGetParam(phys0, "population_next"),
-        chiPRKGetParam(phys0, "period"))
+        PRKGetParam(phys0, "population_next"),
+        PRKGetParam(phys0, "period"))
 
   SolverAdvance(phys0)
   if (time > 0.1) then
