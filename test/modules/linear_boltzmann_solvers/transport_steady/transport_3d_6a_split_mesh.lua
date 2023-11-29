@@ -52,15 +52,15 @@ for i = 1, (Nz+1) do
   zmesh[i] = zmin + k*dz
 end
 
-meshgen1 = chi_mesh.SplitFileMeshGenerator.Create
+meshgen1 = mesh.SplitFileMeshGenerator.Create
 ({
   inputs =
   {
-    chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {xmesh,ymesh,zmesh} })
+    mesh.OrthogonalMeshGenerator.Create({ node_sets = {xmesh,ymesh,zmesh} })
   },
 })
 
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
 --chiMeshHandlerExportMeshToVTK("ZMesh")
 

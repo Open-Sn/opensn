@@ -29,17 +29,17 @@ end
 
 znodes={0.0,10.0,20.0,30.0,40.0}
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create
+meshgen1 = mesh.OrthogonalMeshGenerator.Create
 ({
   node_sets = {nodes,nodes,znodes}
 })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 chiVolumeMesherSetMatIDToAll(0)
 
-vol1 = chi_mesh.RPPLogicalVolume.Create
+vol1 = mesh.RPPLogicalVolume.Create
 ({ xmin=-10.0,xmax=10.0,ymin=-10.0,ymax=10.0, infz=true })
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
 

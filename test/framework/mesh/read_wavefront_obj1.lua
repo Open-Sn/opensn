@@ -16,17 +16,17 @@ if (check_num_procs==nil and chi_number_of_processes ~= num_procs) then
 end
 
 --############################################### Setup mesh
-meshgen1 = chi_mesh.MeshGenerator.Create
+meshgen1 = mesh.MeshGenerator.Create
 ({
   inputs =
   {
-    chi_mesh.FromFileMeshGenerator.Create
+    mesh.FromFileMeshGenerator.Create
     ({
       filename = "reactor_pin_mesh.obj"
     })
   }
 })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Exports
 if master_export == nil then
     chiMeshHandlerExportMeshToVTK("ZObjMesh")

@@ -31,13 +31,13 @@ nodes = {}
 for i = 0, N do
     nodes[i + 1] = i * ds
 end
-meshgen = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-chi_mesh.MeshGenerator.Execute(meshgen)
+meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+mesh.MeshGenerator.Execute(meshgen)
 
 --############################################### Set Material IDs
 chiVolumeMesherSetMatIDToAll(0)
 
-vol1a = chi_mesh.RPPLogicalVolume.Create(
+vol1a = mesh.RPPLogicalVolume.Create(
     {
         infx = true,
         ymin = 0.0, ymax = 0.8 * L,
@@ -47,7 +47,7 @@ vol1a = chi_mesh.RPPLogicalVolume.Create(
 
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol1a, 1)
 
-vol0 = chi_mesh.RPPLogicalVolume.Create(
+vol0 = mesh.RPPLogicalVolume.Create(
     {
         xmin = 2.5 - 0.166666, xmax = 2.5 + 0.166666,
         infy = true,
@@ -56,7 +56,7 @@ vol0 = chi_mesh.RPPLogicalVolume.Create(
 )
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol0, 0)
 
-vol1b = chi_mesh.RPPLogicalVolume.Create(
+vol1b = mesh.RPPLogicalVolume.Create(
     {
         xmin = -1 + 2.5, xmax = 1 + 2.5,
         ymin = 0.9 * L, ymax = L,
@@ -130,7 +130,7 @@ ff_m2 = chiGetFieldFunctionHandleByName("phi_g000_m02")
 --############################################### Volume integrations
 
 -- Define QoI region
-qoi_vol = chi_mesh.RPPLogicalVolume.Create(
+qoi_vol = mesh.RPPLogicalVolume.Create(
     {
         xmin = 0.5, xmax = 0.8333,
         ymin = 4.16666, ymax = 4.33333,

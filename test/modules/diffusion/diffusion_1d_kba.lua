@@ -26,7 +26,7 @@ for i=1,(N+1) do
     nodes[i] = xmin + k*dx
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create
+meshgen1 = mesh.OrthogonalMeshGenerator.Create
 ({
   node_sets = {nodes},
   partitioner = chi.KBAGraphPartitioner.Create
@@ -35,7 +35,7 @@ meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create
     zcuts = {L/2}
   })
 })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 chiVolumeMesherSetMatIDToAll(0)
@@ -79,7 +79,7 @@ chiFFInterpolationInitialize(curffi)
 chiFFInterpolationExecute(curffi)
 
 --############################################### Volume integrations
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 ffi1 = chiFFInterpolationCreate(VOLUME)
 curffi = ffi1
 chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)

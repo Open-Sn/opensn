@@ -26,13 +26,13 @@ for i=1,(N+1) do
     nodes[i] = xmin + k*dx
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
-vol1 = chi_mesh.RPPLogicalVolume.Create({xmin=-1000.0, xmax=0.0, infy=true, infz=true})
+vol1 = mesh.RPPLogicalVolume.Create({xmin=-1000.0, xmax=0.0, infy=true, infz=true})
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
 
 

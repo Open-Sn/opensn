@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_mesh, FromFileMeshGenerator);
+OpenSnRegisterObject(mesh, FromFileMeshGenerator);
 
 InputParameters
 FromFileMeshGenerator::GetInputParameters()

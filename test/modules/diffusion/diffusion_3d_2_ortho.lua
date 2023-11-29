@@ -23,11 +23,11 @@ nodes={}
 for k=0,N do
     nodes[k+1] = -1.0 + ds*k
 end
-meshgen1 = chi_mesh.ExtruderMeshGenerator.Create
+meshgen1 = mesh.ExtruderMeshGenerator.Create
 ({
   inputs =
   {
-    chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} }),
+    mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} }),
   },
   layers = {{z=0.2,n=2}}, -- layers
   partitioner = chi.KBAGraphPartitioner.Create
@@ -36,11 +36,11 @@ meshgen1 = chi_mesh.ExtruderMeshGenerator.Create
     xcuts = {0.0}, ycuts = {0.0}
   })
 })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 chiVolumeMesherSetupOrthogonalBoundaries()
 
@@ -123,4 +123,3 @@ if (chi_location_id == 0 and master_export == nil) then
     local handle = io.popen("python3 ZLFFI20.py")
     print("Execution completed")
 end
-

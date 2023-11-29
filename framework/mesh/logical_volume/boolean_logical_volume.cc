@@ -7,8 +7,8 @@ namespace opensn
 
 InputParameters BooleanLogicalVolumeArgumentPair();
 
-OpenSnRegisterObject(chi_mesh, BooleanLogicalVolume);
-OpenSnRegisterSyntaxBlock(chi_mesh,
+OpenSnRegisterObject(mesh, BooleanLogicalVolume);
+OpenSnRegisterSyntaxBlock(mesh,
                           BooleanLogicalVolumeArgumentPair,
                           BooleanLogicalVolumeArgumentPair);
 
@@ -24,9 +24,9 @@ BooleanLogicalVolume::GetInputParameters()
   params.AddRequiredParameterArray(
     "parts",
     "Array of combinatorial logic each entry has the following required params "
-    "<TT>chi_mesh::BooleanLogicalVolumeArgumentPair</TT>");
+    "<TT>mesh::BooleanLogicalVolumeArgumentPair</TT>");
 
-  params.LinkParameterToBlock("parts", "chi_mesh::BooleanLogicalVolumeArgumentPair");
+  params.LinkParameterToBlock("parts", "mesh::BooleanLogicalVolumeArgumentPair");
 
   return params;
 }
@@ -57,7 +57,7 @@ BooleanLogicalVolumeArgumentPair()
 {
   InputParameters params;
 
-  params.SetDocGroup("chi_mesh__BooleanLogicalVolume");
+  params.SetDocGroup("mesh__BooleanLogicalVolume");
 
   params.AddRequiredParameter<bool>(
     "op",

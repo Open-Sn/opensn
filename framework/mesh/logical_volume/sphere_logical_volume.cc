@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_mesh, SphereLogicalVolume);
+OpenSnRegisterObject(mesh, SphereLogicalVolume);
 
 InputParameters
 SphereLogicalVolume::GetInputParameters()

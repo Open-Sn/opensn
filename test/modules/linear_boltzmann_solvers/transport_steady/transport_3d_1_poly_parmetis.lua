@@ -28,14 +28,14 @@ for k=0,8 do
   nodesz[k+1] = 0.0 + k*dz
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodesxy,nodesxy,nodesz} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodesxy,nodesxy,nodesz} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
-vol1 = chi_mesh.RPPLogicalVolume.Create
+vol1 = mesh.RPPLogicalVolume.Create
 ({ xmin=-0.5,xmax=0.5,ymin=-0.5,ymax=0.5, infz=true })
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
 
@@ -165,4 +165,3 @@ if (chi_location_id == 0 and master_export == nil) then
   --local handle = io.popen("python ZPFFI00.py")
   print("Execution completed")
 end
-

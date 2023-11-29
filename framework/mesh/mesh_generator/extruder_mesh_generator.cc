@@ -7,9 +7,9 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_mesh, ExtruderMeshGenerator);
+OpenSnRegisterObject(mesh, ExtruderMeshGenerator);
 
-OpenSnRegisterObjectParametersOnly(chi_mesh, ExtrusionLayer);
+OpenSnRegisterObjectParametersOnly(mesh, ExtrusionLayer);
 
 InputParameters
 ExtrusionLayer::GetInputParameters()
@@ -42,7 +42,7 @@ ExtruderMeshGenerator::GetInputParameters()
   // clang-format off
   params.SetGeneralDescription(
 "Extrudes 2D geometry. Extrusion layers are"
-" specified using an \\ref chi_mesh__ExtrusionLayer specification which takes "
+" specified using an \\ref mesh__ExtrusionLayer specification which takes "
 "either pairs of"
 " parameters: Pair A = \"n\" and \"z\", or Pair B = \"n\" and \"h\". When pair "
 "A is used then the z-levels will be computed automatically. Vice versa, when "
@@ -53,7 +53,7 @@ ExtruderMeshGenerator::GetInputParameters()
   params.SetDocGroup("MeshGenerator");
 
   params.AddRequiredParameterArray("layers", "A list of layers");
-  params.LinkParameterToBlock("layers", "chi_mesh::ExtrusionLayer");
+  params.LinkParameterToBlock("layers", "mesh::ExtrusionLayer");
 
   params.AddOptionalParameter(
     "top_boundary_name", "ZMAX", "The name to associate with the top boundary.");

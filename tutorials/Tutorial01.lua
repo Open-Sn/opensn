@@ -5,8 +5,8 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 material = chiPhysicsAddMaterial("Test Material");
 

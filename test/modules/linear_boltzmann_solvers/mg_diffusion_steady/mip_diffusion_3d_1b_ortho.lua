@@ -31,14 +31,14 @@ for i=1,(N/2+1) do
   znodes[i] = xmin + k*dx
 end
 if (reflecting) then
-  meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,znodes} })
+  meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,znodes} })
 else
-  meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
+  meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
 end
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 chiVolumeMesherSetMatIDToAll(0)
 
 --############################################### Add materials

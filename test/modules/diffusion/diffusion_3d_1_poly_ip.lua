@@ -30,12 +30,12 @@ for i=1,11 do
     znodes[i] = 0.0 + (i-1)*0.2/10
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,znodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,znodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 chiVolumeMesherSetupOrthogonalBoundaries()
 

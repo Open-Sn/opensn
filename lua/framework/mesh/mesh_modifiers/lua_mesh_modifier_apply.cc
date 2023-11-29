@@ -11,7 +11,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterWrapperFunction(chi_mesh,
+RegisterWrapperFunction(mesh,
                         MeshModifiersApply,
                         MeshModifiersApply_Syntax,
                         MeshModifiersApply);

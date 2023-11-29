@@ -32,14 +32,14 @@ for i=1,(N/2+1) do
 end
 
 if (reflecting) then
-  meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,znodes} })
+  meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,znodes} })
 else
-  meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
+  meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
 end
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 --############################################### Add materials
@@ -166,4 +166,3 @@ if (chi_location_id == 0 and master_export == nil) then
   --local handle = io.popen("python ZPFFI00.py")
   print("Execution completed")
 end
-

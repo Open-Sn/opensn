@@ -18,11 +18,11 @@ if (check_num_procs==nil and chi_number_of_processes ~= num_procs) then
 end
 
 --############################################### Setup mesh
-meshgen1 = chi_mesh.MeshGenerator.Create
+meshgen1 = mesh.MeshGenerator.Create
 ({
   inputs =
   {
-    chi_mesh.FromFileMeshGenerator.Create
+    mesh.FromFileMeshGenerator.Create
     ({
       filename = "../../../../resources/TestMeshes/Sphere.case"
     }),
@@ -33,7 +33,7 @@ meshgen1 = chi_mesh.MeshGenerator.Create
     xcuts = {0.0}, ycuts = {0.0}
   })
 })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Add materials
 materials = {}
@@ -115,7 +115,7 @@ fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
 --end
 
 --############################################### Volume integrations
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 ffi1 = chiFFInterpolationCreate(VOLUME)
 curffi = ffi1
 chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
@@ -150,5 +150,3 @@ end
 if (chi_location_id == 0 and master_export == nil) then
   print("Execution completed")
 end
-
-

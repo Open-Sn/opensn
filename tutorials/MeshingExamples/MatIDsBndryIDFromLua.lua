@@ -9,8 +9,8 @@ for i=1,(N+1) do
     nodes[i] = xmin + k*dx
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 chiMeshHandlerExportMeshToVTK("ZMeshPhase1")
 

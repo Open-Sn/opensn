@@ -9,14 +9,14 @@ for i=1,(N+1) do
     nodes[i] = xmin + k*dx
 end
  
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
  
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
-vol1 = chi_mesh.RPPLogicalVolume.Create
+vol1 = mesh.RPPLogicalVolume.Create
 ({ xmin=-0.5,xmax=0.5,ymin=-0.5,ymax=0.5, infz=true })
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
 
@@ -35,10 +35,10 @@ end
 
 -- Setboundary IDs
 -- xmin,xmax,ymin,ymax,zmin,zmax
-e_vol = chi_mesh.RPPLogicalVolume.Create({xmin=0.99999,xmax=1000.0  , infy=true, infz=true})
-w_vol = chi_mesh.RPPLogicalVolume.Create({xmin=-1000.0,xmax=-0.99999, infy=true, infz=true})
-n_vol = chi_mesh.RPPLogicalVolume.Create({ymin=0.99999,ymax=1000.0  , infx=true, infz=true})
-s_vol = chi_mesh.RPPLogicalVolume.Create({ymin=-1000.0,ymax=-0.99999, infx=true, infz=true})
+e_vol = mesh.RPPLogicalVolume.Create({xmin=0.99999,xmax=1000.0  , infy=true, infz=true})
+w_vol = mesh.RPPLogicalVolume.Create({xmin=-1000.0,xmax=-0.99999, infy=true, infz=true})
+n_vol = mesh.RPPLogicalVolume.Create({ymin=0.99999,ymax=1000.0  , infx=true, infz=true})
+s_vol = mesh.RPPLogicalVolume.Create({ymin=-1000.0,ymax=-0.99999, infx=true, infz=true})
 
 e_bndry = 0
 w_bndry = 1
@@ -74,7 +74,7 @@ if (master_export == nil) then
 end
 
 --############################################### Volume integrations
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 
 ffvol = chiFFInterpolationCreate(VOLUME)
 chiFFInterpolationSetProperty(ffvol,OPERATION,OP_AVG)
@@ -86,5 +86,3 @@ chiFFInterpolationExecute(ffvol)
 maxval = chiFFInterpolationGetValue(ffvol)
 
 chiLog(LOG_0,string.format("Avg-value=%.6f", maxval))
-
-

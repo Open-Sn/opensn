@@ -13,7 +13,7 @@ namespace opensnlua
 
 int chiMeshGeneratorExecute(lua_State* L);
 
-RegisterLuaFunction(chiMeshGeneratorExecute, chi_mesh::MeshGenerator, Execute);
+RegisterLuaFunction(chiMeshGeneratorExecute, mesh::MeshGenerator, Execute);
 
 int
 chiMeshGeneratorExecute(lua_State* L)

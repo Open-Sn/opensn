@@ -16,11 +16,11 @@ if (check_num_procs==nil and chi_number_of_processes ~= num_procs) then
 end
 
 --############################################### Setup mesh
-meshgen1 = chi_mesh.ExtruderMeshGenerator.Create
+meshgen1 = mesh.ExtruderMeshGenerator.Create
 ({
   inputs =
   {
-    chi_mesh.FromFileMeshGenerator.Create
+    mesh.FromFileMeshGenerator.Create
     ({
       filename="../../../resources/TestMeshes/TriangleMesh2x2.obj"
     }),
@@ -32,10 +32,10 @@ meshgen1 = chi_mesh.ExtruderMeshGenerator.Create
     xcuts = {0.0}, ycuts = {0.0},
   })
 })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 chiVolumeMesherSetupOrthogonalBoundaries()
 

@@ -29,11 +29,11 @@ for d = 1, dim do
   end
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes[1],nodes[2]} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes[1],nodes[2]} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create
+vol0 = mesh.RPPLogicalVolume.Create
 ({ xmin=0.0,xmax=length[1],ymin=0.0,ymax=length[2], infz=true })
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 

@@ -21,8 +21,8 @@ for i = 1, (N + 1) do
     nodes[i] = (i - 1) * L / N
 end
 
-meshgen = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-chi_mesh.MeshGenerator.Execute(meshgen)
+meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+mesh.MeshGenerator.Execute(meshgen)
 chiVolumeMesherSetMatIDToAll(0)
 
 -- Add materials
