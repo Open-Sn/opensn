@@ -12,7 +12,7 @@ namespace opensnlua
 {
 RegisterLuaFunctionAsIs(LogSetVerbosity);
 RegisterLuaFunctionAsIs(Log);
-RegisterLuaFunctionAsIs(chiLogProcessEvent);
+RegisterLuaFunctionAsIs(LogProcessEvent);
 RegisterLuaFunctionAsIs(LogPrintTimingGraph);
 
 RegisterLuaConstantAsIs(LOG_0, Varying(1));
@@ -58,7 +58,7 @@ Log(lua_State* L)
 }
 
 int
-chiLogProcessEvent(lua_State* L)
+LogProcessEvent(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

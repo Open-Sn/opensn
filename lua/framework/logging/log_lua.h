@@ -61,7 +61,7 @@ int Log(lua_State* L);
  * \ingroup LuaLogging
  * \return double The processed value.
  */
-int chiLogProcessEvent(lua_State* L);
+int LogProcessEvent(lua_State* L);
 /**Prints the performance graph.
  * \params rank int Optional argument to print the graph for a specific rank.
  *
