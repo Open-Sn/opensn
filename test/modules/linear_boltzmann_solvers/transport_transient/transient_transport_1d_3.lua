@@ -134,7 +134,7 @@ LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
 phys1name = SolverGetName(phys1);
-initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
+initial_FR = LBSComputeFissionRate(phys1,"OLD")
 
 
 --time = 0.0
@@ -142,8 +142,8 @@ initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
 --for k=1,10 do
 --    SolverStep(phys1)
 --
---    FRf = chiLBSComputeFissionRate(phys1,"NEW") --time+dt
---    FRi = chiLBSComputeFissionRate(phys1,"OLD") --time
+--    FRf = LBSComputeFissionRate(phys1,"NEW") --time+dt
+--    FRi = LBSComputeFissionRate(phys1,"OLD") --time
 --    dt = chiLBTSGetProperty(phys1, "TIMESTEP")
 --    time = chiLBTSGetProperty(phys1, "TIME")
 --    new_time = time+dt
@@ -167,8 +167,8 @@ initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
 --tolA = 10.0
 --while (time < time_stop) do
 --    SolverStep(phys1)
---    FRf = chiLBSComputeFissionRate(phys1,"NEW")
---    FRi = chiLBSComputeFissionRate(phys1,"OLD")
+--    FRf = LBSComputeFissionRate(phys1,"NEW")
+--    FRi = LBSComputeFissionRate(phys1,"OLD")
 --    dt = chiLBTSGetProperty(phys1, "TIMESTEP")
 --    time = chiLBTSGetProperty(phys1, "TIME")
 --    period = dt/math.log(FRf/FRi)
@@ -189,8 +189,8 @@ initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
 --end
 swapped=false
 function MyCallBack()
-    FRf = chiLBSComputeFissionRate(phys1,"NEW")
-    FRi = chiLBSComputeFissionRate(phys1,"OLD")
+    FRf = LBSComputeFissionRate(phys1,"NEW")
+    FRi = LBSComputeFissionRate(phys1,"OLD")
     dt = chiLBTSGetProperty(phys1, "TIMESTEP")
     time = chiLBTSGetProperty(phys1, "TIME")
     period = dt/math.log(FRf/FRi)

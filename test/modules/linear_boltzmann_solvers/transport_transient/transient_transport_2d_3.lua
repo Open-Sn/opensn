@@ -137,14 +137,14 @@ LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
 phys1name = SolverGetName(phys1);
-initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
+initial_FR = LBSComputeFissionRate(phys1,"OLD")
 
 --time = 0.0
 --for k=1,2 do
 --    --LBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
 --    SolverStep(phys1)
---    FRf = chiLBSComputeFissionRate(phys1,"NEW")
---    FRi = chiLBSComputeFissionRate(phys1,"OLD")
+--    FRf = LBSComputeFissionRate(phys1,"NEW")
+--    FRi = LBSComputeFissionRate(phys1,"OLD")
 --    dt = chiLBTSGetProperty(phys1, "TIMESTEP")
 --    time = chiLBTSGetProperty(phys1, "TIME")
 --    period = dt/math.log(FRf/FRi)
@@ -159,8 +159,8 @@ swapped = false
 while (time < time_stop) do
     k = k + 1
     SolverStep(phys1)
-    FRf = chiLBSComputeFissionRate(phys1,"NEW")
-    FRi = chiLBSComputeFissionRate(phys1,"OLD")
+    FRf = LBSComputeFissionRate(phys1,"NEW")
+    FRi = LBSComputeFissionRate(phys1,"OLD")
     dt = chiLBTSGetProperty(phys1, "TIMESTEP")
     time = chiLBTSGetProperty(phys1, "TIME")
     period = dt/math.log(FRf/FRi)

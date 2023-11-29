@@ -92,7 +92,7 @@ RegisterLuaEntities(lua_State* L)
   RegisterFunction(LBSReadSourceMoments);
   RegisterFunction(LBSReadFluxMoments);
 
-  RegisterFunction(chiLBSComputeFissionRate);
+  RegisterFunction(LBSComputeFissionRate);
   RegisterFunction(LBSInitializeMaterials);
 
   RegisterFunction(LBSAddPointSource);

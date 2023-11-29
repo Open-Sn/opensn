@@ -716,7 +716,7 @@ int LBSReadFluxMoments(lua_State* L);
  * \ingroup LBSLuaFunctions
  * \author Jan
  */
-int chiLBSComputeFissionRate(lua_State* L);
+int LBSComputeFissionRate(lua_State* L);
 
 /**Initializes or reinitializes the materials. This normally happens
  * automatically during solver initialization but if the user wants to

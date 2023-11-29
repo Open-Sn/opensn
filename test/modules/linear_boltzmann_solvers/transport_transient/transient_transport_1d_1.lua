@@ -126,8 +126,8 @@ phys1name = SolverGetName(phys1);
 --for k=1,2 do
 --    --LBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
 --    SolverStep(phys1)
---    FRf = chiLBSComputeFissionRate(phys1,"NEW")
---    FRi = chiLBSComputeFissionRate(phys1,"OLD")
+--    FRf = LBSComputeFissionRate(phys1,"NEW")
+--    FRi = LBSComputeFissionRate(phys1,"OLD")
 --    dt = chiLBTSGetProperty(phys1, "TIMESTEP")
 --    t = chiLBTSGetProperty(phys1, "TIME")
 --    period = dt/math.log(FRf/FRi)
@@ -140,8 +140,8 @@ k=0
 while (time < time_stop) do
     k = k + 1
     SolverStep(phys1)
-    FRf = chiLBSComputeFissionRate(phys1,"NEW")
-    FRi = chiLBSComputeFissionRate(phys1,"OLD")
+    FRf = LBSComputeFissionRate(phys1,"NEW")
+    FRi = LBSComputeFissionRate(phys1,"OLD")
     dt = chiLBTSGetProperty(phys1, "TIMESTEP")
     time = chiLBTSGetProperty(phys1, "TIME")
     period = dt/math.log(FRf/FRi)
