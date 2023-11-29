@@ -59,12 +59,10 @@ weights:
   2 0.78539816339745
   3 0.78539816339745
   4 0.78539816339745
-chiLegendre(0, 0.25)	1.0
-chiLegendre(1, 0.25)	0.25
-chiLegendreDerivative(0, 0.25)	0.0
-chiLegendreDerivative(1, 0.25)	1.0
+Legendre(0, 0.25)	1.0
+Legendre(1, 0.25)	0.25
+LegendreDerivative(0, 0.25)	0.0
+LegendreDerivative(1, 0.25)	1.0
 chiYlm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0)	1.0
 chiYlm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0)	0.70710678118655
 GOLD_END
-
-

@@ -6,12 +6,12 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiLegendre);
-RegisterLuaFunctionAsIs(chiLegendreDerivative);
+RegisterLuaFunctionAsIs(Legendre);
+RegisterLuaFunctionAsIs(LegendreDerivative);
 RegisterLuaFunctionAsIs(chiYlm);
 
 int
-chiLegendre(lua_State* L)
+Legendre(lua_State* L)
 {
   // Retrieve arguments
   int N = lua_tonumber(L, 1);
@@ -24,7 +24,7 @@ chiLegendre(lua_State* L)
 }
 
 int
-chiLegendreDerivative(lua_State* L)
+LegendreDerivative(lua_State* L)
 {
   // Retrieve arguments
   int N = lua_tonumber(L, 1);
