@@ -144,8 +144,8 @@ initial_FR = LBSComputeFissionRate(phys1,"OLD")
 --
 --    FRf = LBSComputeFissionRate(phys1,"NEW") --time+dt
 --    FRi = LBSComputeFissionRate(phys1,"OLD") --time
---    dt = chiLBTSGetProperty(phys1, "TIMESTEP")
---    time = chiLBTSGetProperty(phys1, "TIME")
+--    dt = LBTSGetProperty(phys1, "TIMESTEP")
+--    time = LBTSGetProperty(phys1, "TIME")
 --    new_time = time+dt
 --
 --    period = dt/math.log(FRf/FRi)
@@ -169,8 +169,8 @@ initial_FR = LBSComputeFissionRate(phys1,"OLD")
 --    SolverStep(phys1)
 --    FRf = LBSComputeFissionRate(phys1,"NEW")
 --    FRi = LBSComputeFissionRate(phys1,"OLD")
---    dt = chiLBTSGetProperty(phys1, "TIMESTEP")
---    time = chiLBTSGetProperty(phys1, "TIME")
+--    dt = LBTSGetProperty(phys1, "TIMESTEP")
+--    time = LBTSGetProperty(phys1, "TIME")
 --    period = dt/math.log(FRf/FRi)
 --
 --    if (time >= 0.2 and not swapped) then
@@ -191,8 +191,8 @@ swapped=false
 function MyCallBack()
     FRf = LBSComputeFissionRate(phys1,"NEW")
     FRi = LBSComputeFissionRate(phys1,"OLD")
-    dt = chiLBTSGetProperty(phys1, "TIMESTEP")
-    time = chiLBTSGetProperty(phys1, "TIME")
+    dt = LBTSGetProperty(phys1, "TIMESTEP")
+    time = LBTSGetProperty(phys1, "TIME")
     period = dt/math.log(FRf/FRi)
 
     if (time >= 0.2 and not swapped) then
