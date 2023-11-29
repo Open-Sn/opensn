@@ -11,12 +11,12 @@ using namespace opensn;
 namespace opensnlua
 {
 
-int chiMeshGeneratorExecute(lua_State* L);
+int MeshGeneratorExecute(lua_State* L);
 
-RegisterLuaFunctionNamespace(chiMeshGeneratorExecute, mesh::MeshGenerator, Execute);
+RegisterLuaFunctionNamespace(MeshGeneratorExecute, mesh::MeshGenerator, Execute);
 
 int
-chiMeshGeneratorExecute(lua_State* L)
+MeshGeneratorExecute(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
