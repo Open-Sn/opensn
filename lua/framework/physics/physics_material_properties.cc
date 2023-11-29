@@ -16,7 +16,7 @@ using namespace opensn;
 
 RegisterLuaFunctionAsIs(PhysicsMaterialAddProperty);
 RegisterLuaFunctionAsIs(PhysicsMaterialSetProperty);
-RegisterLuaFunctionAsIs(chiPhysicsMaterialGetProperty);
+RegisterLuaFunctionAsIs(PhysicsMaterialGetProperty);
 
 RegisterLuaConstantAsIs(SCALAR_VALUE, Varying(1));
 RegisterLuaConstantAsIs(TRANSPORT_XSECTIONS, Varying(10));
@@ -490,11 +490,11 @@ PhysicsMaterialSetProperty(lua_State* L)
 }
 
 int
-chiPhysicsMaterialGetProperty(lua_State* L)
+PhysicsMaterialGetProperty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("chiPhysicsMaterialGetProperty", 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError("PhysicsMaterialGetProperty", 2, num_args);
 
   int material_index = lua_tonumber(L, 1);
   int property_index = -1;
@@ -531,7 +531,7 @@ chiPhysicsMaterialGetProperty(lua_State* L)
   if (not property_polulated)
   {
     opensn::log.LogAllError() << "Invalid material property specified in "
-                                 "call to chiPhysicsMaterialGetProperty."
+                                 "call to PhysicsMaterialGetProperty."
                               << property_index << std::endl;
     opensn::Exit(EXIT_FAILURE);
   }

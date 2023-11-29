@@ -40,10 +40,10 @@ PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
 PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
-xs_critical = chiPhysicsTransportXSCreate()
-chiPhysicsTransportXSSet(xs_critical, CHI_XSFILE, "tests/transport_transient/xs_inf_critical_1g.cxs")
-xs_21cent = chiPhysicsTransportXSCreate()
-chiPhysicsTransportXSSet(xs_21cent, CHI_XSFILE, "tests/transport_transient/xs_inf_21cent_1g.cxs")
+xs_critical = PhysicsTransportXSCreate()
+PhysicsTransportXSSet(xs_critical, CHI_XSFILE, "tests/transport_transient/xs_inf_critical_1g.cxs")
+xs_21cent = PhysicsTransportXSCreate()
+PhysicsTransportXSSet(xs_21cent, CHI_XSFILE, "tests/transport_transient/xs_inf_21cent_1g.cxs")
 
 num_groups = 1
 PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,

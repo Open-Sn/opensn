@@ -187,4 +187,4 @@ int PhysicsMaterialSetProperty(lua_State* L);
  * \ingroup LuaPhysicsMaterials
  * \return Lua table of the desired property.
  */
-int chiPhysicsMaterialGetProperty(lua_State* L);
+int PhysicsMaterialGetProperty(lua_State* L);

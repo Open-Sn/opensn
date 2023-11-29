@@ -5,8 +5,8 @@
 /**Creates a stand-alone transport cross section.
  *
  * \code
- * xs_graphite_clean = chiPhysicsTransportXSCreate()
- * chiPhysicsTransportXSSet(xs_grph_clean,
+ * xs_graphite_clean = PhysicsTransportXSCreate()
+ * PhysicsTransportXSSet(xs_grph_clean,
  *                          CHI_XSFILE,
  *                          "test/xs_graphite_pure.cxs")
  *
@@ -19,7 +19,7 @@
  *
  * \ingroup LuaTransportXSs
  */
-int chiPhysicsTransportXSCreate(lua_State* L);
+int PhysicsTransportXSCreate(lua_State* L);
 
 /**Sets the properties of a transport cross section.
  *
@@ -67,14 +67,14 @@ int chiPhysicsTransportXSCreate(lua_State* L);
  * ### Example
  * Example lua code:
  * \code
- * graphite = chiPhysicsTransportXSCreate()
- * chiPhysicsTransportXSSet(graphite,"xs_3_170.data","2518")
+ * graphite = PhysicsTransportXSCreate()
+ * PhysicsTransportXSSet(graphite,"xs_3_170.data","2518")
  * \endcode
  *
  *
  * \ingroup LuaTransportXSs
  */
-int chiPhysicsTransportXSSet(lua_State* L);
+int PhysicsTransportXSSet(lua_State* L);
 
 /**Makes a combined cross section from multiple other cross sections.
  *
@@ -87,18 +87,18 @@ int chiPhysicsTransportXSSet(lua_State* L);
  * ###Example:
  * Example lua code:
  * \code
- * xs_1 = chiPhysicsTransportXSCreate()
- * xs_2 = chiPhysicsTransportXSCreate()
- * xs_3 = chiPhysicsTransportXSCreate()
+ * xs_1 = PhysicsTransportXSCreate()
+ * xs_2 = PhysicsTransportXSCreate()
+ * xs_3 = PhysicsTransportXSCreate()
  *
- * chiPhysicsTransportXSSet(xs_1,CHI_XSFILE,"test/xs_graphite_pure.cxs")
- * chiPhysicsTransportXSSet(xs_2,CHI_XSFILE,"test/xs_3_170.cxs")
- * chiPhysicsTransportXSSet(xs_3,CHI_XSFILE,"test/xs_air50RH.cxs")
+ * PhysicsTransportXSSet(xs_1,CHI_XSFILE,"test/xs_graphite_pure.cxs")
+ * PhysicsTransportXSSet(xs_2,CHI_XSFILE,"test/xs_3_170.cxs")
+ * PhysicsTransportXSSet(xs_3,CHI_XSFILE,"test/xs_air50RH.cxs")
  *
  * combo ={{xs_1, 0.5e5},
  *         {xs_2, 0.4e3},
  *         {xs_3, 0.3e2}}
- * aerated_graphite = chiPhysicsTransportXSMakeCombined(combo)
+ * aerated_graphite = PhysicsTransportXSMakeCombined(combo)
  *
  * PhysicsMaterialSetProperty(materials[1],
  *                               TRANSPORT_XSECTIONS,
@@ -111,7 +111,7 @@ int chiPhysicsTransportXSSet(lua_State* L);
  *
  * \ingroup LuaTransportXSs
  */
-int chiPhysicsTransportXSMakeCombined(lua_State* L);
+int PhysicsTransportXSMakeCombined(lua_State* L);
 
 /**Sets a combined cross section from multiple other cross sections. This
  *  function can be called multiple times on the same cross section handle.
@@ -126,25 +126,25 @@ int chiPhysicsTransportXSMakeCombined(lua_State* L);
  * ###Example:
  * Example lua code:
  * \code
- * xs_1 = chiPhysicsTransportXSCreate()
- * xs_2 = chiPhysicsTransportXSCreate()
- * xs_3 = chiPhysicsTransportXSCreate()
+ * xs_1 = PhysicsTransportXSCreate()
+ * xs_2 = PhysicsTransportXSCreate()
+ * xs_3 = PhysicsTransportXSCreate()
  *
- * chiPhysicsTransportXSSet(xs_1,CHI_XSFILE,"test/xs_graphite_pure.cxs")
- * chiPhysicsTransportXSSet(xs_2,CHI_XSFILE,"test/xs_3_170.cxs")
- * chiPhysicsTransportXSSet(xs_3,CHI_XSFILE,"test/xs_air50RH.cxs")
+ * PhysicsTransportXSSet(xs_1,CHI_XSFILE,"test/xs_graphite_pure.cxs")
+ * PhysicsTransportXSSet(xs_2,CHI_XSFILE,"test/xs_3_170.cxs")
+ * PhysicsTransportXSSet(xs_3,CHI_XSFILE,"test/xs_air50RH.cxs")
  *
  * combo ={{xs_1, 0.5e5},
  *         {xs_2, 0.4e3},
  *         {xs_3, 0.3e2}}
- * aerated_graphite = chiPhysicsTransportXSMakeCombined(combo)
+ * aerated_graphite = PhysicsTransportXSMakeCombined(combo)
  *
- * chiPhysicsTransportXSSetCombined(aerated_graphite,combo)
+ * PhysicsTransportXSSetCombined(aerated_graphite,combo)
  * \endcode
  *
  * \ingroup LuaTransportXSs
  */
-int chiPhysicsTransportXSSetCombined(lua_State* L);
+int PhysicsTransportXSSetCombined(lua_State* L);
 
 /**Obtains a lua table of all the cross section values.
  *
@@ -154,14 +154,14 @@ int chiPhysicsTransportXSSetCombined(lua_State* L);
  *
  * To print the contents of the table, execute the following:
  * \code
- * xs = chiPhysicsTransportXSGet(xs_handle)
+ * xs = PhysicsTransportXSGet(xs_handle)
  * for i,v in pairs(xs) do
  *     print(i,v)
  * end
  * \endcode
  * \ingroup LuaTransportXSs
  */
-int chiPhysicsTransportXSGet(lua_State* L);
+int PhysicsTransportXSGet(lua_State* L);
 
 /** Exports a cross section to ChiTech format.
  *
@@ -170,4 +170,4 @@ int chiPhysicsTransportXSGet(lua_State* L);
  *
  * \ingroup LuaTransportXSs
  */
-int chiPhysicsTransportXSExportToChiTechFormat(lua_State* L);
+int PhysicsTransportXSExportToChiTechFormat(lua_State* L);

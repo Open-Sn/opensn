@@ -44,13 +44,13 @@ PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
 PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
-xs = chiPhysicsTransportXSCreate()
+xs = PhysicsTransportXSCreate()
 xs_file = "tests/transport_transient/subcritical_1g.cxs"
-chiPhysicsTransportXSSet(xs, CHI_XSFILE, xs_file)
+PhysicsTransportXSSet(xs, CHI_XSFILE, xs_file)
 
 -- Define macroscopic cross sections
---xs = chiPhysicsTransportXSMakeCombined({{xs, 0.00264086}}) -- just sub-critical
-xs = chiPhysicsTransportXSMakeCombined({{xs, 0.0424459}}) -- just sub-critical
+--xs = PhysicsTransportXSMakeCombined({{xs, 0.00264086}}) -- just sub-critical
+xs = PhysicsTransportXSMakeCombined({{xs, 0.0424459}}) -- just sub-critical
 
 num_groups = 1
 PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,

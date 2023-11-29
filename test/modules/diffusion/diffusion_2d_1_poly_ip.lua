@@ -55,7 +55,7 @@ materials[0] = PhysicsAddMaterial("Test Material");
 PhysicsMaterialAddProperty(materials[0],SCALAR_VALUE)
 PhysicsMaterialSetProperty(materials[0],SCALAR_VALUE,SINGLE_VALUE,1.0)
 
-prop = chiPhysicsMaterialGetProperty(materials[0],SCALAR_VALUE)
+prop = PhysicsMaterialGetProperty(materials[0],SCALAR_VALUE)
 if ((prop.is_empty ~=nil) and (not prop.is_empty)) then
     print("FieldFunctionInterpolationProperty table populated, value="..tostring(prop.value))
 end

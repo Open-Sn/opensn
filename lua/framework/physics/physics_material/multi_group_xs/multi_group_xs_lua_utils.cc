@@ -11,12 +11,12 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiPhysicsTransportXSCreate);
-RegisterLuaFunctionAsIs(chiPhysicsTransportXSSet);
-RegisterLuaFunctionAsIs(chiPhysicsTransportXSMakeCombined);
-RegisterLuaFunctionAsIs(chiPhysicsTransportXSSetCombined);
-RegisterLuaFunctionAsIs(chiPhysicsTransportXSGet);
-RegisterLuaFunctionAsIs(chiPhysicsTransportXSExportToChiTechFormat);
+RegisterLuaFunctionAsIs(PhysicsTransportXSCreate);
+RegisterLuaFunctionAsIs(PhysicsTransportXSSet);
+RegisterLuaFunctionAsIs(PhysicsTransportXSMakeCombined);
+RegisterLuaFunctionAsIs(PhysicsTransportXSSetCombined);
+RegisterLuaFunctionAsIs(PhysicsTransportXSGet);
+RegisterLuaFunctionAsIs(PhysicsTransportXSExportToChiTechFormat);
 
 RegisterLuaConstantAsIs(SINGLE_VALUE, Varying(0));
 RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));
@@ -203,7 +203,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
 } // namespace
 
 int
-chiPhysicsTransportXSCreate(lua_State* L)
+PhysicsTransportXSCreate(lua_State* L)
 {
   auto xs = std::make_shared<SingleStateMGXS>();
   opensn::multigroup_xs_stack.push_back(xs);
@@ -214,7 +214,7 @@ chiPhysicsTransportXSCreate(lua_State* L)
 }
 
 int
-chiPhysicsTransportXSSet(lua_State* L)
+PhysicsTransportXSSet(lua_State* L)
 {
   const auto fname = std::string(__FUNCTION__);
   const int num_args = lua_gettop(L);
@@ -279,7 +279,7 @@ chiPhysicsTransportXSSet(lua_State* L)
 }
 
 int
-chiPhysicsTransportXSGet(lua_State* L)
+PhysicsTransportXSGet(lua_State* L)
 {
   const auto fname = std::string(__FUNCTION__);
   const int num_args = lua_gettop(L);
@@ -308,7 +308,7 @@ chiPhysicsTransportXSGet(lua_State* L)
 }
 
 int
-chiPhysicsTransportXSMakeCombined(lua_State* L)
+PhysicsTransportXSMakeCombined(lua_State* L)
 {
   const auto fname = std::string(__FUNCTION__);
   const int num_args = lua_gettop(L);
@@ -363,7 +363,7 @@ chiPhysicsTransportXSMakeCombined(lua_State* L)
 }
 
 int
-chiPhysicsTransportXSSetCombined(lua_State* L)
+PhysicsTransportXSSetCombined(lua_State* L)
 {
   const auto fname = std::string(__FUNCTION__);
   int num_args = lua_gettop(L);
@@ -427,7 +427,7 @@ chiPhysicsTransportXSSetCombined(lua_State* L)
 }
 
 int
-chiPhysicsTransportXSExportToChiTechFormat(lua_State* L)
+PhysicsTransportXSExportToChiTechFormat(lua_State* L)
 {
   const auto fname = std::string(__FUNCTION__);
   const int num_args = lua_gettop(L);
