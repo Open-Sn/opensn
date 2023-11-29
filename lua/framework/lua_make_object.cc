@@ -10,7 +10,7 @@ namespace opensnlua
  * \param params ParameterBlock A single block tree that requires a parameter
  *  called obj_type that indicates the type of object to make.
  */
-int chiMakeObject(lua_State* L);
+int MakeObject(lua_State* L);
 
 /**Generic lua routine for the creation of objects.
  * \param type string The type to create.
@@ -18,11 +18,11 @@ int chiMakeObject(lua_State* L);
  */
 int chiMakeObjectType(lua_State* L);
 
-RegisterLuaFunctionAsIs(chiMakeObject);
+RegisterLuaFunctionAsIs(MakeObject);
 RegisterLuaFunctionAsIs(chiMakeObjectType);
 
 int
-chiMakeObject(lua_State* L)
+MakeObject(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
