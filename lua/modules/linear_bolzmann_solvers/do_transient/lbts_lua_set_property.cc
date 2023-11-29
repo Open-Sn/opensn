@@ -59,9 +59,9 @@ Sets the initial data normalization data. Can be "TOTAL_POWER",
 
 \author Zachary Hardy*/
 int
-chiLBTSSetProperty(lua_State* L)
+LBTSSetProperty(lua_State* L)
 {
-  const std::string fname = "chiLBTSSetProperty";
+  const std::string fname = "LBTSSetProperty";
   const int num_args = lua_gettop(L);
   if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 

@@ -127,11 +127,11 @@ LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 --############################################### Initialize and Execute Solver
 SolverInitialize(phys1)
 
-chiLBTSSetProperty(phys1, "TIMESTEP", 1e-3*100)
-chiLBTSSetProperty(phys1, "TIMESTOP", 1.0*100)
-chiLBTSSetProperty(phys1, "MAX_TIMESTEPS", -1)
-chiLBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
-chiLBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
+LBTSSetProperty(phys1, "TIMESTEP", 1e-3*100)
+LBTSSetProperty(phys1, "TIMESTOP", 1.0*100)
+LBTSSetProperty(phys1, "MAX_TIMESTEPS", -1)
+LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
+LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
 phys1name = SolverGetName(phys1);
 initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
@@ -202,5 +202,5 @@ function MyCallBack()
     chiLog(LOG_0,string.format("%s time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
                 phys1name,time,dt,period,FRf/initial_FR))
 end
-chiLBTSSetProperty(phys1, "CALLBACK", "MyCallBack")
+LBTSSetProperty(phys1, "CALLBACK", "MyCallBack")
 SolverExecute(phys1)

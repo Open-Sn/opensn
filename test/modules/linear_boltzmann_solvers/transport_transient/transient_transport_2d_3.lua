@@ -132,16 +132,16 @@ LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 --############################################### Initialize and Execute Solver
 SolverInitialize(phys1)
 
-chiLBTSSetProperty(phys1, "TIMESTEP", 1e-3)
-chiLBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
-chiLBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
+LBTSSetProperty(phys1, "TIMESTEP", 1e-3)
+LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
+LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
 phys1name = SolverGetName(phys1);
 initial_FR = chiLBSComputeFissionRate(phys1,"OLD")
 
 --time = 0.0
 --for k=1,2 do
---    --chiLBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
+--    --LBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
 --    SolverStep(phys1)
 --    FRf = chiLBSComputeFissionRate(phys1,"NEW")
 --    FRi = chiLBSComputeFissionRate(phys1,"OLD")
