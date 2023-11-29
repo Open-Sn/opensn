@@ -11,7 +11,7 @@ using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionAsIs(chiCreateEmptyUnpartitionedMesh);
+RegisterLuaFunctionAsIs(CreateEmptyUnpartitionedMesh);
 RegisterLuaFunctionAsIs(chiDestroyUnpartitionedMesh);
 
 RegisterLuaFunctionAsIs(UnpartitionedMeshFromVTU);
@@ -22,7 +22,7 @@ RegisterLuaFunctionAsIs(UnpartitionedMeshFromMshFormat);
 RegisterLuaFunctionAsIs(UnpartitionedMeshFromExodusII);
 
 int
-chiCreateEmptyUnpartitionedMesh(lua_State* L)
+CreateEmptyUnpartitionedMesh(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
 
