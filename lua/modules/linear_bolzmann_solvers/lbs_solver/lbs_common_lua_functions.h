@@ -728,7 +728,7 @@ int chiLBSComputeFissionRate(lua_State* L);
  * \ingroup LBSLuaFunctions
  * \author Jan
  */
-int chiLBSInitializeMaterials(lua_State* L);
+int LBSInitializeMaterials(lua_State* L);
 
 /**Adds a point source to an LBS solver.
  * \param SolverIndex int Handle to the solver.

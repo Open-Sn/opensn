@@ -54,7 +54,7 @@ LBSSetProperty(phys1,BOUNDARY_CONDITION,
 LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
 LBSSetProperty(phys1,SCATTERING_ORDER,0)
 
-chiLBSInitialize(phys1)
+LBSInitialize(phys1)
 chiLBSExecute(phys1)
 
 --############################################### Setup Output

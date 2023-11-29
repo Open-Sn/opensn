@@ -55,7 +55,7 @@ PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 function SwapXS(solver_handle, new_xs)
     PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
             EXISTING,new_xs)
-    chiLBSInitializeMaterials(solver_handle)
+    LBSInitializeMaterials(solver_handle)
 end
 
 --############################################### Setup Physics
