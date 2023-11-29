@@ -964,7 +964,7 @@ the stochastic "noise" from the uncollided algorithm.
 #include "chi_runtime.h"
 #include "chi_log.h"
 
-namespace chi_unit_sim_tests
+namespace unit_sim_tests
 {
 
 int chiSimTest93_RayTracing(lua_State* Lstate)
@@ -1311,6 +1311,6 @@ int chiSimTest93_RayTracing(lua_State* Lstate)
   return 0;
 }
 
-}//namespace chi_unit_sim_tests
+}//namespace unit_sim_tests
 \endcode
 */

@@ -20,7 +20,7 @@ namespace unit_sim_tests
  * to Laplace's problem. */
 ParameterBlock chiSimTest03_PWLC(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_sim_tests, chiSimTest03_PWLC, nullptr, chiSimTest03_PWLC);
+RegisterWrapperFunction(unit_sim_tests, chiSimTest03_PWLC, nullptr, chiSimTest03_PWLC);
 
 ParameterBlock
 chiSimTest03_PWLC(const InputParameters&)

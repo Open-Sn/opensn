@@ -23,13 +23,13 @@ LoadRegisteredLuaItems()
 
   // Register version
   lua_pushstring(L, PROJECT_VERSION);
-  lua_setglobal(L, "chi_version");
+  lua_setglobal(L, "version");
   lua_pushinteger(L, PROJECT_MAJOR_VERSION);
-  lua_setglobal(L, "chi_major_version");
+  lua_setglobal(L, "major_version");
   lua_pushinteger(L, PROJECT_MINOR_VERSION);
-  lua_setglobal(L, "chi_minor_version");
+  lua_setglobal(L, "minor_version");
   lua_pushinteger(L, PROJECT_PATCH_VERSION);
-  lua_setglobal(L, "chi_patch_version");
+  lua_setglobal(L, "patch_version");
 
   // Registering functions
   RegisterLuaEntities(L);
