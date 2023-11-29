@@ -26,7 +26,6 @@ std::vector<uint64_t> BuildLocationExtents(uint64_t local_size, const mpi::Commu
 template <typename K, class T>
 std::map<K, std::vector<T>>
 MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
-            const MPI_Datatype data_mpi_type,
             const mpi::Communicator& comm = opensn::mpi_comm)
 {
   static_assert(std::is_integral<K>::value, "Integral datatype required.");
@@ -47,7 +46,7 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
   // Communicate sendcounts to get recvcounts
   std::vector<int> recvcounts(opensn::mpi_comm.size(), 0);
 
-  MPI_Alltoall(sendcounts.data(), 1, MPI_INT, recvcounts.data(), 1, MPI_INT, comm);
+  comm.all_to_all(sendcounts, recvcounts);
 
   // Populate recvdispls, sender_pids_set, and total_recv_count
   // All three these quantities are constructed
@@ -55,7 +54,6 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
   std::vector<int> recvdispls(opensn::mpi_comm.size(), 0);
   // set of neighbor-partitions sending data
   std::set<K> sender_pids_set;
-  size_t total_recv_count;
   {
     int displacement = 0;
     for (int pid = 0; pid < opensn::mpi_comm.size(); ++pid)
@@ -65,7 +63,6 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
 
       if (recvcounts[pid] > 0) sender_pids_set.insert(static_cast<K>(pid));
     } // for pid
-    total_recv_count = displacement;
   }
 
   // Make sendbuf
@@ -76,18 +73,9 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
     sendbuf.insert(sendbuf.end(), pid_data_pair.second.begin(), pid_data_pair.second.end());
 
   // Make recvbuf
-  std::vector<T> recvbuf(total_recv_count);
-
+  std::vector<T> recvbuf;
   // Communicate serial data
-  MPI_Alltoallv(sendbuf.data(),
-                sendcounts.data(),
-                senddispls.data(),
-                data_mpi_type,
-                recvbuf.data(),
-                recvcounts.data(),
-                recvdispls.data(),
-                data_mpi_type,
-                comm);
+  comm.all_to_all(sendbuf, sendcounts, senddispls, recvbuf, recvcounts, recvdispls);
 
   std::map<K, std::vector<T>> output_data;
   {

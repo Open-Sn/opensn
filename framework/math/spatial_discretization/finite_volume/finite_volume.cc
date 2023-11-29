@@ -118,7 +118,7 @@ FiniteVolume::OrderNodes()
   }
 
   // Communicate neighbor ids requiring mapping
-  const auto query_nb_gids = MapAllToAll(sorted_nb_gids, MPI_UINT64_T, mpi_comm);
+  const auto query_nb_gids = MapAllToAll(sorted_nb_gids, mpi_comm);
 
   // Map the ids
   std::map<uint64_t, std::vector<uint64_t>> mapped_query_nb_gids;
@@ -139,7 +139,7 @@ FiniteVolume::OrderNodes()
   }   // for pid_list_pair
 
   // Communicate back the mapped ids
-  const auto mapped_nb_gids = MapAllToAll(mapped_query_nb_gids, MPI_UINT64_T, mpi_comm);
+  const auto mapped_nb_gids = MapAllToAll(mapped_query_nb_gids, mpi_comm);
 
   // Create the neighbor cell mapping
   neighbor_cell_local_ids_.clear();

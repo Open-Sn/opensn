@@ -160,8 +160,7 @@ chi_data_types_Test00(const InputParameters&)
     for (const auto& pid_byte_array : send_data)
       send_data_bytes[pid_byte_array.first] = pid_byte_array.second.Data();
 
-    std::map<int /*pid*/, std::vector<std::byte>> recv_data_bytes =
-      MapAllToAll(send_data_bytes, MPI_BYTE);
+    std::map<int /*pid*/, std::vector<std::byte>> recv_data_bytes = MapAllToAll(send_data_bytes);
 
     for (const auto& pid_vec_bytes : recv_data_bytes)
     {

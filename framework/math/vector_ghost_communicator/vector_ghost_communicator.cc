@@ -71,7 +71,7 @@ VectorGhostCommunicator::MakeCachedParallelData()
   // MPI utility MapAllToAll in Chi-Tech accomplishes this task,
   // returning a mapping of processes to the global ids that this
   // process needs to send.
-  std::map<int, std::vector<int64_t>> send_map = MapAllToAll(recv_map, MPI_INT64_T, comm_);
+  std::map<int, std::vector<int64_t>> send_map = MapAllToAll(recv_map, comm_);
 
   // With this information, the amount of information that needs
   // to be sent can be determined.

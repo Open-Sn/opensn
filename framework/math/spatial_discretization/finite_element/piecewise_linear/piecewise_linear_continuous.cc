@@ -126,8 +126,7 @@ PieceWiseLinearContinuous::OrderNodes()
 
   // Communicate nodes in need
   //                                              of mapping
-  std::map<uint64_t, std::vector<uint64_t>> query_node_ids =
-    MapAllToAll(nonlocal_node_ids_map, MPI_UINT64_T);
+  std::map<uint64_t, std::vector<uint64_t>> query_node_ids = MapAllToAll(nonlocal_node_ids_map);
 
   // Map the query nodes
   std::map<uint64_t, std::vector<int64_t>> mapped_node_ids;
@@ -147,7 +146,7 @@ PieceWiseLinearContinuous::OrderNodes()
 
   // Communicate back the mappings
   std::map<uint64_t, std::vector<int64_t>> nonlocal_node_ids_map_mapped =
-    MapAllToAll(mapped_node_ids, MPI_INT64_T);
+    MapAllToAll(mapped_node_ids);
 
   // Processing the mapping for non-local nodes
   ghost_node_mapping_.clear();

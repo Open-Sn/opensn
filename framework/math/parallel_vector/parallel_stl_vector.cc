@@ -427,8 +427,7 @@ ParallelSTLVector::Assemble()
   // To do this, each process must send to each other process the information
   // that it needs. With each process knowing what each other process needs
   // from it, a map of information to be sent is obtained.
-  std::map<int, std::vector<std::byte>> pid_recv_map_bytes =
-    MapAllToAll(pid_send_map_bytes, MPI_BYTE);
+  std::map<int, std::vector<std::byte>> pid_recv_map_bytes = MapAllToAll(pid_send_map_bytes);
 
   // The received information is now processed, unpacked, and the
   // necessary operations performed

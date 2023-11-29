@@ -107,7 +107,7 @@ LagrangeDiscontinuous::OrderNodes()
 
   // AllToAll to get query cell-ids
   const std::map<int, std::vector<uint64_t>> query_ghost_cell_ids_consolidated =
-    MapAllToAll(ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
+    MapAllToAll(ghost_cell_ids_consolidated);
 
   // Map all query cell-ids
   std::map<int, std::vector<uint64_t>> mapped_ghost_cell_ids_consolidated;
@@ -127,7 +127,7 @@ LagrangeDiscontinuous::OrderNodes()
 
   // Communicate back the mapping
   const std::map<int, std::vector<uint64_t>> global_id_mapping =
-    MapAllToAll(mapped_ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
+    MapAllToAll(mapped_ghost_cell_ids_consolidated);
 
   // Process global id mapping
   for (const auto& [pid, mapping_list] : global_id_mapping)
