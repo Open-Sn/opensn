@@ -41,17 +41,17 @@ PhysicsMaterialAddProperty(materials[0],SCALAR_VALUE)
 PhysicsMaterialSetProperty(materials[0],SCALAR_VALUE,SINGLE_VALUE,1.0)
 
 --############################################### Setup Physics
-phys1 = chiDiffusionCreateSolver()
+phys1 = DiffusionCreateSolver()
 SolverSetBasicOption(phys1,"discretization_method","PWLD_MIP")
 SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 
 --############################################### Set boundary conditions
-chiDiffusionSetProperty(phys1,"boundary_type","ZMIN","dirichlet",0.0)
-chiDiffusionSetProperty(phys1,"boundary_type","ZMAX","dirichlet",0.0)
+DiffusionSetProperty(phys1,"boundary_type","ZMIN","dirichlet",0.0)
+DiffusionSetProperty(phys1,"boundary_type","ZMAX","dirichlet",0.0)
 
 --############################################### Initialize and Execute Solver
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 
 --############################################### Get field functions
 fftemp,count = SolverGetFieldFunctionList(phys1)

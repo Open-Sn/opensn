@@ -61,19 +61,19 @@ if ((prop.is_empty ~=nil) and (not prop.is_empty)) then
 end
 
 --############################################### Setup Physics
-phys1 = chiDiffusionCreateSolver()
+phys1 = DiffusionCreateSolver()
 SolverSetBasicOption(phys1,"discretization_method","PWLD_MIP")
 SolverSetBasicOption(phys1,"residual_tolerance",1.0e-8)
 
 --############################################### Set boundary conditions
-chiDiffusionSetProperty(phys1,"boundary_type",e_bndry,"vacuum")
-chiDiffusionSetProperty(phys1,"boundary_type",w_bndry,"vacuum")
-chiDiffusionSetProperty(phys1,"boundary_type",n_bndry,"reflecting")
-chiDiffusionSetProperty(phys1,"boundary_type",s_bndry,"reflecting")
+DiffusionSetProperty(phys1,"boundary_type",e_bndry,"vacuum")
+DiffusionSetProperty(phys1,"boundary_type",w_bndry,"vacuum")
+DiffusionSetProperty(phys1,"boundary_type",n_bndry,"reflecting")
+DiffusionSetProperty(phys1,"boundary_type",s_bndry,"reflecting")
 
 --############################################### Initialize and Execute Solver
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 
 --############################################### Get field functions
 fftemp,count = SolverGetFieldFunctionList(phys1)

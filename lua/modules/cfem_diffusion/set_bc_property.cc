@@ -164,7 +164,7 @@ CFEMDiffusionSetBCProperty(lua_State* L)
   }
   else
   {
-    opensn::log.Log0Error() << "Invalid property in chiDiffusionsetBCproperty.";
+    opensn::log.Log0Error() << "Invalid property in DiffusionsetBCproperty.";
     opensn::Exit(EXIT_FAILURE);
   }
   return 0;

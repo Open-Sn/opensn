@@ -30,7 +30,7 @@ int DFEMDiffusionSolverCreate(lua_State* L);
  *  then type value.\n\n
  *
  * \code
- * chiDiffusionsetBCproperty(solver,"boundary_type",2,"dirichlet",1.0)
+ * DiffusionsetBCproperty(solver,"boundary_type",2,"dirichlet",1.0)
  * \endcode
  *
  * ### BoundaryTypeName

@@ -6,7 +6,7 @@
 using namespace opensn;
 
 int
-chiDiffusionExecute(lua_State* L)
+DiffusionExecute(lua_State* L)
 {
   const size_t solver_index = lua_tonumber(L, 1);
   auto& solver =

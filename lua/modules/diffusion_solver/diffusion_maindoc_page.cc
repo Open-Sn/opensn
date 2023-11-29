@@ -26,7 +26,7 @@
  * geometries and therefore are assigned their own id's. In the extruded case
  * the last boundary index is always assigned to the top boundary and
  * second-to-last boundary index is always assigned to the bottom boundary.
- * Boundary types are specified using the ChiLua::chiDiffusionSetProperty
+ * Boundary types are specified using the ChiLua::DiffusionSetProperty
  * function call, using the BOUNDARY_TYPE property index.
  *
  * The materials and source values are for now obtained from materials
@@ -37,7 +37,7 @@
  *  \image html "DiffusionMatProp.png" width=500px
  *
  * To change the mapping of the properties the user needs to make a call to
- * ChiLua::chiDiffusionSetProperty using the PROPERTY_D_MAP, PROPERTY_Q_MAP or
+ * ChiLua::DiffusionSetProperty using the PROPERTY_D_MAP, PROPERTY_Q_MAP or
  * PROPERTY_SIGMAA_MAP property index.
  *
  * By default the solver populates a scalar field function which is the solution

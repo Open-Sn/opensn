@@ -29,16 +29,16 @@ PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics
-phys1 = chiDiffusionCreateSolver()
+phys1 = DiffusionCreateSolver()
 SolverSetBasicOption(phys1,"discretization_method","PWLC");
 SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
-chiDiffusionSetProperty(phys1,"boundary_type",4,"reflecting")
-chiDiffusionSetProperty(phys1,"boundary_type",5,"reflecting")
+DiffusionSetProperty(phys1,"boundary_type",4,"reflecting")
+DiffusionSetProperty(phys1,"boundary_type",5,"reflecting")
 
 --############################################### Initialize and
 --                                                Execute Solver
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = chiGetFieldFunctionList(phys1)

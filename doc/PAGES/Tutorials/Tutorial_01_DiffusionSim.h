@@ -172,25 +172,25 @@ Material property values are set using the function
 The following sequence of function calls completely define the diffusion solver.
 
 \code
-phys1 = chiDiffusionCreateSolver()
+phys1 = DiffusionCreateSolver()
 SolverSetBasicOption(phys1,"discretization_method","PWLC")
 SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 \endcode
 
 We first create the diffusion solver with a call to
- chiDiffusionCreateSolver(). This creates the solver and pushes it onto
+ DiffusionCreateSolver(). This creates the solver and pushes it onto
  the physics handler. The function returns the handle.
 
 Next we can set numerous diffusion solver properties which can comprehensively
- be viewed in its specific documentation (chiDiffusionSetProperty()).
+ be viewed in its specific documentation (DiffusionSetProperty()).
 
 ## Step 7 - Initialize and Solve
 
 The final step of this process is to initialize and execute the diffusion solver.
 
 \code
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 \endcode
 
 ## Step 8 - Post-processing
@@ -244,14 +244,14 @@ PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics
-phys1 = chiDiffusionCreateSolver()
+phys1 = DiffusionCreateSolver()
 SolverSetBasicOption(phys1,"discretization_method","PWLC");
 SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 
 --############################################### Initialize and
 --                                                Execute Solver
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = chiGetFieldFunctionList(phys1)

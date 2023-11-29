@@ -48,18 +48,18 @@ PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
 PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,0.0)
 
 --############################################### Setup Physics
-phys1 = chiDiffusionCreateSolver()
+phys1 = DiffusionCreateSolver()
 SolverSetBasicOption(phys1,"discretization_method","PWLD_MIP");
 SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
-chiDiffusionSetProperty(phys1,"boundary_type",e_bndry,"robin", 0.25, 0.5, 0.0)
-chiDiffusionSetProperty(phys1,"boundary_type",n_bndry,"reflecting")
-chiDiffusionSetProperty(phys1,"boundary_type",s_bndry,"reflecting")
-chiDiffusionSetProperty(phys1,"boundary_type",w_bndry,"robin", 0.25, 0.5, 1.0)
+DiffusionSetProperty(phys1,"boundary_type",e_bndry,"robin", 0.25, 0.5, 0.0)
+DiffusionSetProperty(phys1,"boundary_type",n_bndry,"reflecting")
+DiffusionSetProperty(phys1,"boundary_type",s_bndry,"reflecting")
+DiffusionSetProperty(phys1,"boundary_type",w_bndry,"robin", 0.25, 0.5, 1.0)
 
 --############################################### Initialize and
 --                                                Execute Solver
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = chiGetFieldFunctionList(phys1)
