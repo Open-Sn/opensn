@@ -12,7 +12,7 @@ namespace opensnlua::lbs
 {
 
 // void SetBoundaryOptions(LBSSolver& lbs_solver,
-//                         const chi_objects::InputParameters& params);
+//                         const objects::InputParameters& params);
 
 opensn::InputParameters GetSyntax_SetOptions();
 opensn::ParameterBlock SetOptions(const opensn::InputParameters& params);

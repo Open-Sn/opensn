@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_objects, Material);
+OpenSnRegisterObject(objects, Material);
 
 InputParameters
 Material::GetInputParameters()
