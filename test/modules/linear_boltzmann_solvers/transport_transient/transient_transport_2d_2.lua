@@ -153,5 +153,5 @@ while (time < time_stop) do
         swapped = true
     end
 
-    chiLBTSAdvanceTimeData(phys1)
+    LBTSAdvanceTimeData(phys1)
 end

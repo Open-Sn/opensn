@@ -155,7 +155,7 @@ initial_FR = LBSComputeFissionRate(phys1,"OLD")
 --    if (not timestep_rejected) then
 --        chiLBTSAdvanceTimeValues()
 --    end
---    chiLBTSAdvanceTimeData(phys1)
+--    LBTSAdvanceTimeData(phys1)
 --end
 
 --time = 0.0
@@ -179,7 +179,7 @@ initial_FR = LBSComputeFissionRate(phys1,"OLD")
 --    end
 --
 --    if (not timestep_rejected) then
---        chiLBTSAdvanceTimeData(phys1)
+--        LBTSAdvanceTimeData(phys1)
 --        k = k + 1
 --        chiLog(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
 --                phys1name,k,time,dt,period,FRf/initial_FR))
