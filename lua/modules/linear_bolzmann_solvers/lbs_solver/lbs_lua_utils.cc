@@ -87,7 +87,7 @@ RegisterLuaEntities(lua_State* L)
   RegisterFunction(chiLBSReadGroupsetAngularFlux);
 
   RegisterFunction(LBSWriteFluxMoments);
-  RegisterFunction(chiLBSCreateAndWriteSourceMoments);
+  RegisterFunction(LBSCreateAndWriteSourceMoments);
   RegisterFunction(LBSReadFluxMomentsAndMakeSourceMoments);
   RegisterFunction(chiLBSReadSourceMoments);
   RegisterFunction(LBSReadFluxMoments);

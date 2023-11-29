@@ -653,7 +653,7 @@ int LBSWriteFluxMoments(lua_State* L);
  *                         will append its id to the back plus an extension ".data"
  *
  */
-int chiLBSCreateAndWriteSourceMoments(lua_State* L);
+int LBSCreateAndWriteSourceMoments(lua_State* L);
 
 /**Reads flux-moments from a file and creates a scattering source from these
  * moments to be used instead of a regular material/boundary source.
