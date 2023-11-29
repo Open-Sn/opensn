@@ -86,7 +86,7 @@ SolverInitialize(ss_solver)
 SolverExecute(ss_solver)
 
 
---phys0 = chiLBSCurvilinearCreateSolver(LBSCurvilinear.CYLINDRICAL)
+--phys0 = LBSCurvilinearCreateSolver(LBSCurvilinear.CYLINDRICAL)
 --
 ----  angular quadrature
 --pquad = CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
