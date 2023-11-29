@@ -1,5 +1,5 @@
 # libopensnlua
-file(GLOB_RECURSE LIBOPENSN_LUA_SRCS *.cc)
+file(GLOB_RECURSE LIBOPENSN_LUA_SRCS CONFIGURE_DEPENDS framework/*.cc modules/*.cc)
 add_library(libopensnlua SHARED ${LIBOPENSN_LUA_SRCS})
 
 target_include_directories(libopensnlua

@@ -1,5 +1,5 @@
 # test binary
-file(GLOB_RECURSE TEST_SRCS *.cc)
+file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS *.cc)
 
 add_executable(opensn-test ${TEST_SRCS})
 
