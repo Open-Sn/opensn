@@ -10,15 +10,15 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock chi_misc_utils_Test00(const InputParameters& params);
+ParameterBlock misc_utils_Test00(const InputParameters& params);
 
-RegisterWrapperFunction(unit_tests, chi_misc_utils_Test00, nullptr, chi_misc_utils_Test00);
+RegisterWrapperFunction(unit_tests, misc_utils_Test00, nullptr, misc_utils_Test00);
 
 ParameterBlock
-chi_misc_utils_Test00(const InputParameters&)
+misc_utils_Test00(const InputParameters&)
 {
   opensn::log.Log() << "GOLD_BEGIN";
-  opensn::log.Log() << "Testing chi_misc_utils::PrintIterationProgress\n";
+  opensn::log.Log() << "Testing misc_utils::PrintIterationProgress\n";
 
   const unsigned int I = 4;
   const size_t N = 39;
