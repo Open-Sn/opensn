@@ -247,13 +247,13 @@ int LBSCreateGroup(lua_State* L);
  *     grp[g] = LBSCreateGroup(phys1)
  * end
  *
- * chiLBSGroupsetAddGroups(phys1,cur_gs,0,15)
+ * LBSGroupsetAddGroups(phys1,cur_gs,0,15)
  * \endcode
  *
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetAddGroups(lua_State* L);
+int LBSGroupsetAddGroups(lua_State* L);
 
 /**Sets the product quadrature used for the groupset
  * \param SolverIndex int Handle to the solver for which the group
@@ -270,12 +270,12 @@ int chiLBSGroupsetAddGroups(lua_State* L);
  * \code
  * pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
  *
- * chiLBSGroupsetSetQuadrature(phys1,cur_gs,pquad0)
+ * LBSGroupsetSetQuadrature(phys1,cur_gs,pquad0)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetQuadrature(lua_State* L);
+int LBSGroupsetSetQuadrature(lua_State* L);
 
 /**Sets the the type of angle aggregation to use for this groupset.
  * \param SolverIndex int Handle to the solver for which the group
@@ -299,12 +299,12 @@ int chiLBSGroupsetSetQuadrature(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetAngleAggregationType(phys1,cur_gs,LBSGroupset.ANGLE_AGG_POLAR)
+ * LBSGroupsetSetAngleAggregationType(phys1,cur_gs,LBSGroupset.ANGLE_AGG_POLAR)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetAngleAggregationType(lua_State* L);
+int LBSGroupsetSetAngleAggregationType(lua_State* L);
 
 /**Sets the angle aggregation divisions
  * \param SolverIndex int Handle to the solver for which the group
@@ -326,12 +326,12 @@ int chiLBSGroupsetSetAngleAggregationType(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
+ * LBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetAngleAggDiv(lua_State* L);
+int LBSGroupsetSetAngleAggDiv(lua_State* L);
 
 /**Sets the number of group-subsets to use for groupset. Default 1.
  * \param SolverIndex int Handle to the solver for which the group
@@ -345,12 +345,12 @@ int chiLBSGroupsetSetAngleAggDiv(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
+ * LBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetGroupSubsets(lua_State* L);
+int LBSGroupsetSetGroupSubsets(lua_State* L);
 
 /**Sets the number of group-subsets to use for groupset. Default 1.
  * \param SolverIndex int Handle to the solver for which the group
@@ -439,13 +439,13 @@ int chiLBSGroupsetSetGroupSubsets(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_CLASSICRICHARDSON)
- * chiLBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_GMRES)
+ * LBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_CLASSICRICHARDSON)
+ * LBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_GMRES)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetIterativeMethod(lua_State* L);
+int LBSGroupsetSetIterativeMethod(lua_State* L);
 
 /**Sets the residual tolerance for the iterative method of the groupset.
  *
@@ -463,12 +463,12 @@ int chiLBSGroupsetSetIterativeMethod(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-4)
+ * LBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-4)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetResidualTolerance(lua_State* L);
+int LBSGroupsetSetResidualTolerance(lua_State* L);
 
 /**Sets the maximum number of iterations for the groupset iterative method.
  * \param SolverIndex int Handle to the solver for which the group
@@ -482,12 +482,12 @@ int chiLBSGroupsetSetResidualTolerance(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetMaxIterations(phys1,cur_gs,200)
+ * LBSGroupsetSetMaxIterations(phys1,cur_gs,200)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetMaxIterations(lua_State* L);
+int LBSGroupsetSetMaxIterations(lua_State* L);
 
 /**Sets the restart interval for GMRES if applied to the groupset.
  * \param SolverIndex int Handle to the solver for which the group
@@ -501,12 +501,12 @@ int chiLBSGroupsetSetMaxIterations(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,15)
+ * LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,15)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L);
+int LBSGroupsetSetGMRESRestartIntvl(lua_State* L);
 
 /**Enables or disables the printing of a sweep log.
  * \param SolverIndex int Handle to the solver for which the group
@@ -520,12 +520,12 @@ int chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetEnableSweepLog(phys1,cur_gs,true)
+ * LBSGroupsetSetEnableSweepLog(phys1,cur_gs,true)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetEnableSweepLog(lua_State* L);
+int LBSGroupsetSetEnableSweepLog(lua_State* L);
 
 /**Sets the Within-Group Diffusion Synthetic Acceleration parameters
  * for this groupset. If this call is being made then it is assumed
@@ -553,12 +553,12 @@ int chiLBSGroupsetSetEnableSweepLog(lua_State* L);
  * \code
  * petsc_options =                  " -pc_hypre_boomeramg_strong_threshold 0.8"
  * petsc_options = petsc_options .. " -pc_hypre_boomeramg_max_levels 25"
- * chiLBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,false,petsc_options)
+ * LBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,false,petsc_options)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetWGDSA(lua_State* L);
+int LBSGroupsetSetWGDSA(lua_State* L);
 
 /**Sets the Two-Grid Diffusion Synthetic Acceleration parameters
  * for this groupset. If this call is being made then it is assumed
@@ -586,12 +586,12 @@ int chiLBSGroupsetSetWGDSA(lua_State* L);
  * \code
  * petsc_options =                  " -pc_hypre_boomeramg_strong_threshold 0.8"
  * petsc_options = petsc_options .. " -pc_hypre_boomeramg_max_levels 25"
- * chiLBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,false,petsc_options)
+ * LBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,false,petsc_options)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetTGDSA(lua_State* L);
+int LBSGroupsetSetTGDSA(lua_State* L);
 
 /**Obtains a list of field functions, related only to scalar flux,
  * from the transport solver.

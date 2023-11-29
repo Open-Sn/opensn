@@ -99,13 +99,13 @@ chiSolverExecute(ss_solver)
 --
 ----  groupsets
 --gs0 = LBSCreateGroupset(phys0)
---chiLBSGroupsetAddGroups(phys0, gs0, 0, ngrp-1)
---chiLBSGroupsetSetQuadrature(phys0, gs0, pquad)
---chiLBSGroupsetSetAngleAggregationType(phys0, gs0, LBSGroupset.ANGLE_AGG_AZIMUTHAL)
---chiLBSGroupsetSetIterativeMethod(phys0, gs0, KRYLOV_GMRES_CYCLES)
---chiLBSGroupsetSetResidualTolerance(phys0, gs0, 1.0e-12)
---chiLBSGroupsetSetMaxIterations(phys0, gs0, 100)
---chiLBSGroupsetSetGMRESRestartIntvl(phys0, gs0, 30)
+--LBSGroupsetAddGroups(phys0, gs0, 0, ngrp-1)
+--LBSGroupsetSetQuadrature(phys0, gs0, pquad)
+--LBSGroupsetSetAngleAggregationType(phys0, gs0, LBSGroupset.ANGLE_AGG_AZIMUTHAL)
+--LBSGroupsetSetIterativeMethod(phys0, gs0, KRYLOV_GMRES_CYCLES)
+--LBSGroupsetSetResidualTolerance(phys0, gs0, 1.0e-12)
+--LBSGroupsetSetMaxIterations(phys0, gs0, 100)
+--LBSGroupsetSetGMRESRestartIntvl(phys0, gs0, 30)
 --
 ----  spatial discretisation
 --chiLBSSetProperty(phys0, DISCRETIZATION_METHOD, PWLD)

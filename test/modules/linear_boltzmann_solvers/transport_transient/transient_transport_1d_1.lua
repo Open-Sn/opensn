@@ -81,16 +81,16 @@ pquad = CreateProductQuadrature(GAUSS_LEGENDRE,16)
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)
 cur_gs = gs0
-chiLBSGroupsetAddGroups(phys1,cur_gs,0,num_groups-1)
-chiLBSGroupsetSetQuadrature(phys1,cur_gs,pquad)
-chiLBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
-chiLBSGroupsetSetGroupSubsets(phys1,cur_gs,8)
-chiLBSGroupsetSetIterativeMethod(phys1,cur_gs,KRYLOV_GMRES)
-chiLBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-6)
-chiLBSGroupsetSetMaxIterations(phys1,cur_gs,1000)
-chiLBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
---chiLBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,false," ")
---chiLBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,false," ")
+LBSGroupsetAddGroups(phys1,cur_gs,0,num_groups-1)
+LBSGroupsetSetQuadrature(phys1,cur_gs,pquad)
+LBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
+LBSGroupsetSetGroupSubsets(phys1,cur_gs,8)
+LBSGroupsetSetIterativeMethod(phys1,cur_gs,KRYLOV_GMRES)
+LBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-6)
+LBSGroupsetSetMaxIterations(phys1,cur_gs,1000)
+LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
+--LBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,false," ")
+--LBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,false," ")
 
 --
 ----############################################### Set boundary conditions

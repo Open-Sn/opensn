@@ -66,8 +66,8 @@ elseif (k_method == "pi_scdsa") then
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
     })
-    chiLBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
-    chiLBSGroupsetSetMaxIterations(phys1, 0, 1)
+    LBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
+    LBSGroupsetSetMaxIterations(phys1, 0, 1)
 
     SolverInitialize(k_solver)
     chiSolverExecute(k_solver)
@@ -81,8 +81,8 @@ elseif (k_method == "pi_scdsa_pwlc") then
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
     })
-    chiLBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
-    chiLBSGroupsetSetMaxIterations(phys1, 0, 1)
+    LBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
+    LBSGroupsetSetMaxIterations(phys1, 0, 1)
 
     SolverInitialize(k_solver)
     chiSolverExecute(k_solver)

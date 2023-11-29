@@ -53,14 +53,14 @@ PhysicsMaterialSetProperty(materials[1],
 ----========== Groupset def
 --gs0 = LBSCreateGroupset(phys1)
 --cur_gs = gs0
---chiLBSGroupsetAddGroups(phys1,cur_gs,0,num_groups-1)
---chiLBSGroupsetSetQuadrature(phys1,cur_gs,pquad)
---chiLBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
---chiLBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
---chiLBSGroupsetSetIterativeMethod(phys1,cur_gs,KRYLOV_RICHARDSON)
---chiLBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-6)
---chiLBSGroupsetSetMaxIterations(phys1,cur_gs,0)
---chiLBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
+--LBSGroupsetAddGroups(phys1,cur_gs,0,num_groups-1)
+--LBSGroupsetSetQuadrature(phys1,cur_gs,pquad)
+--LBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
+--LBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
+--LBSGroupsetSetIterativeMethod(phys1,cur_gs,KRYLOV_RICHARDSON)
+--LBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-6)
+--LBSGroupsetSetMaxIterations(phys1,cur_gs,0)
+--LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
 --
 ----############################################### Set boundary conditions
 --

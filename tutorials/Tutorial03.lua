@@ -36,10 +36,10 @@ pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)
-chiLBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
-chiLBSGroupsetSetQuadrature(phys1,gs0,pquad)
-chiLBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
-chiLBSGroupsetSetIterativeMethod(phys1,gs0,NPT_GMRES_CYCLES)
+LBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
+LBSGroupsetSetQuadrature(phys1,gs0,pquad)
+LBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
+LBSGroupsetSetIterativeMethod(phys1,gs0,NPT_GMRES_CYCLES)
 
 --========== Boundary conditions
 bsrc = {}

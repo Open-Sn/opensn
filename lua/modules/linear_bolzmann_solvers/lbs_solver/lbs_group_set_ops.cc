@@ -62,9 +62,9 @@ LBSCreateGroup(lua_State* L)
 }
 
 int
-chiLBSGroupsetAddGroups(lua_State* L)
+LBSGroupsetAddGroups(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetAddGroups";
+  const std::string fname = "LBSGroupsetAddGroups";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 4) LuaPostArgAmountError(fname, 4, num_args);
@@ -85,15 +85,15 @@ chiLBSGroupsetAddGroups(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "chiLBSGroupsetAddGroups: Invalid handle to groupset\n";
+    opensn::log.LogAllError() << "LBSGroupsetAddGroups: Invalid handle to groupset\n";
     opensn::Exit(EXIT_FAILURE);
   }
-  if (groupset == nullptr) throw std::runtime_error("chiLBSGroupsetAddGroups: Bad trouble.");
+  if (groupset == nullptr) throw std::runtime_error("LBSGroupsetAddGroups: Bad trouble.");
 
   // Add the groups
   if (to < from)
   {
-    opensn::log.LogAllError() << "No groups added to groupset in chiLBSGroupsetAddGroups. "
+    opensn::log.LogAllError() << "No groups added to groupset in LBSGroupsetAddGroups. "
                                  "This is triggered when groups are added with the \"to\" "
                                  "field being less than the \"from\" field.";
     opensn::Exit(EXIT_FAILURE);
@@ -109,10 +109,10 @@ chiLBSGroupsetAddGroups(lua_State* L)
     }
     catch (const std::out_of_range& o)
     {
-      opensn::log.LogAllError() << "chiLBSGroupsetAddGroups: Invalid group added to groupset\n";
+      opensn::log.LogAllError() << "LBSGroupsetAddGroups: Invalid group added to groupset\n";
       opensn::Exit(EXIT_FAILURE);
     }
-    if (group == nullptr) throw std::runtime_error("chiLBSGroupsetAddGroups: Bad trouble.");
+    if (group == nullptr) throw std::runtime_error("LBSGroupsetAddGroups: Bad trouble.");
 
     groupset->groups_.push_back(*group);
   }
@@ -120,9 +120,9 @@ chiLBSGroupsetAddGroups(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetQuadrature(lua_State* L)
+LBSGroupsetSetQuadrature(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetQuadrature";
+  const std::string fname = "LBSGroupsetSetQuadrature";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
@@ -148,10 +148,10 @@ chiLBSGroupsetSetQuadrature(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset"
-                                 "in chiLBSGroupsetSetQuadrature.";
+                                 "in LBSGroupsetSetQuadrature.";
     opensn::Exit(EXIT_FAILURE);
   }
-  if (groupset == nullptr) throw std::logic_error("chiLBSGroupsetSetQuadrature: Bad trouble");
+  if (groupset == nullptr) throw std::logic_error("LBSGroupsetSetQuadrature: Bad trouble");
 
   // Obtain pointer to quadrature
   std::shared_ptr<AngularQuadrature> ang_quad;
@@ -162,7 +162,7 @@ chiLBSGroupsetSetQuadrature(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to Product Quadrature"
-                                 "in chiLBSGroupsetSetQuadrature. Handle provided: "
+                                 "in LBSGroupsetSetQuadrature. Handle provided: "
                               << prquad_index;
     opensn::Exit(EXIT_FAILURE);
   }
@@ -189,9 +189,9 @@ chiLBSGroupsetSetQuadrature(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetAngleAggregationType(lua_State* L)
+LBSGroupsetSetAngleAggregationType(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetAngleAggregationType";
+  const std::string fname = "LBSGroupsetSetAngleAggregationType";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
@@ -216,7 +216,7 @@ chiLBSGroupsetSetAngleAggregationType(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetAngleAggregationType";
+                              << "in call to LBSGroupsetSetAngleAggregationType";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -230,7 +230,7 @@ chiLBSGroupsetSetAngleAggregationType(lua_State* L)
   else
   {
     opensn::log.LogAllError() << "Invalid aggregation type to groupset " << grpset_index
-                              << " in call to chiLBSGroupsetSetAngleAggregationType";
+                              << " in call to LBSGroupsetSetAngleAggregationType";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -240,9 +240,9 @@ chiLBSGroupsetSetAngleAggregationType(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetAngleAggDiv(lua_State* L)
+LBSGroupsetSetAngleAggDiv(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetAngleAggDiv";
+  const std::string fname = "LBSGroupsetSetAngleAggDiv";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
@@ -267,7 +267,7 @@ chiLBSGroupsetSetAngleAggDiv(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetAngleAggDiv";
+                              << "in call to LBSGroupsetSetAngleAggDiv";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -275,7 +275,7 @@ chiLBSGroupsetSetAngleAggDiv(lua_State* L)
   if (num_div <= 0)
   {
     opensn::log.LogAllError() << "Invalid number of divisions "
-                              << "in call to chiLBSGroupsetSetAngleAggDiv. Must be >= 1.";
+                              << "in call to LBSGroupsetSetAngleAggDiv. Must be >= 1.";
   }
 
   groupset->master_num_ang_subsets_ = num_div;
@@ -287,9 +287,9 @@ chiLBSGroupsetSetAngleAggDiv(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetGroupSubsets(lua_State* L)
+LBSGroupsetSetGroupSubsets(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetGroupSubsets";
+  const std::string fname = "LBSGroupsetSetGroupSubsets";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
@@ -314,7 +314,7 @@ chiLBSGroupsetSetGroupSubsets(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetGroupSubsets";
+                              << "in call to LBSGroupsetSetGroupSubsets";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -322,7 +322,7 @@ chiLBSGroupsetSetGroupSubsets(lua_State* L)
   if (num_div <= 0)
   {
     opensn::log.LogAllError() << "Invalid number of subsets "
-                              << "in call to chiLBSGroupsetSetGroupSubsets. Must be >= 1.";
+                              << "in call to LBSGroupsetSetGroupSubsets. Must be >= 1.";
   }
 
   groupset->master_num_grp_subsets_ = num_div;
@@ -334,9 +334,9 @@ chiLBSGroupsetSetGroupSubsets(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetIterativeMethod(lua_State* L)
+LBSGroupsetSetIterativeMethod(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetIterativeMethod";
+  const std::string fname = "LBSGroupsetSetIterativeMethod";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
@@ -361,7 +361,7 @@ chiLBSGroupsetSetIterativeMethod(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetGroupSubsets";
+                              << "in call to LBSGroupsetSetGroupSubsets";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -416,7 +416,7 @@ chiLBSGroupsetSetIterativeMethod(lua_State* L)
     else
     {
       opensn::log.LogAllError() << "Unsupported iterative method specified in call to "
-                                << "chiLBSGroupsetSetIterativeMethod.";
+                                << "LBSGroupsetSetIterativeMethod.";
       opensn::Exit(EXIT_FAILURE);
     }
   }
@@ -425,9 +425,9 @@ chiLBSGroupsetSetIterativeMethod(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetResidualTolerance(lua_State* L)
+LBSGroupsetSetResidualTolerance(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetResidualTolerance";
+  const std::string fname = "LBSGroupsetSetResidualTolerance";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
@@ -452,7 +452,7 @@ chiLBSGroupsetSetResidualTolerance(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetGroupSubsets";
+                              << "in call to LBSGroupsetSetGroupSubsets";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -475,9 +475,9 @@ chiLBSGroupsetSetResidualTolerance(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetMaxIterations(lua_State* L)
+LBSGroupsetSetMaxIterations(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetMaxIterations";
+  const std::string fname = "LBSGroupsetSetMaxIterations";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
@@ -502,7 +502,7 @@ chiLBSGroupsetSetMaxIterations(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetMaxIterations";
+                              << "in call to LBSGroupsetSetMaxIterations";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -510,7 +510,7 @@ chiLBSGroupsetSetMaxIterations(lua_State* L)
   if (num_iter < 0)
   {
     opensn::log.LogAllError() << "Invalid number of iterations "
-                              << "in call to chiLBSGroupsetSetMaxIterations. Must be >= 0.";
+                              << "in call to LBSGroupsetSetMaxIterations. Must be >= 0.";
   }
 
   groupset->max_iterations_ = num_iter;
@@ -522,9 +522,9 @@ chiLBSGroupsetSetMaxIterations(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L)
+LBSGroupsetSetGMRESRestartIntvl(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetGMRESRestartIntvl";
+  const std::string fname = "LBSGroupsetSetGMRESRestartIntvl";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
@@ -549,7 +549,7 @@ chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetGMRESRestartIntvl";
+                              << "in call to LBSGroupsetSetGMRESRestartIntvl";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -557,7 +557,7 @@ chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L)
   if (restart_intvl < 2)
   {
     opensn::log.LogAllError() << "Invalid GMRES restart interval specified "
-                              << "in call to chiLBSGroupsetSetGMRESRestartIntvl. Must be >= 3.";
+                              << "in call to LBSGroupsetSetGMRESRestartIntvl. Must be >= 3.";
   }
 
   groupset->gmres_restart_intvl_ = restart_intvl;
@@ -569,9 +569,9 @@ chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetEnableSweepLog(lua_State* L)
+LBSGroupsetSetEnableSweepLog(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetEnableSweepLog";
+  const std::string fname = "LBSGroupsetSetEnableSweepLog";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
@@ -596,7 +596,7 @@ chiLBSGroupsetSetEnableSweepLog(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetEnableSweepLog";
+                              << "in call to LBSGroupsetSetEnableSweepLog";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -609,9 +609,9 @@ chiLBSGroupsetSetEnableSweepLog(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetWGDSA(lua_State* L)
+LBSGroupsetSetWGDSA(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetWGDSA";
+  const std::string fname = "LBSGroupsetSetWGDSA";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args < 4) LuaPostArgAmountError(fname, 4, num_args);
@@ -644,7 +644,7 @@ chiLBSGroupsetSetWGDSA(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetWGDSA";
+                              << "in call to LBSGroupsetSetWGDSA";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -662,9 +662,9 @@ chiLBSGroupsetSetWGDSA(lua_State* L)
 }
 
 int
-chiLBSGroupsetSetTGDSA(lua_State* L)
+LBSGroupsetSetTGDSA(lua_State* L)
 {
-  const std::string fname = "chiLBSGroupsetSetTGDSA";
+  const std::string fname = "LBSGroupsetSetTGDSA";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args < 4) LuaPostArgAmountError(fname, 4, num_args);
@@ -697,7 +697,7 @@ chiLBSGroupsetSetTGDSA(lua_State* L)
   catch (const std::out_of_range& o)
   {
     opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to chiLBSGroupsetSetTGDSA";
+                              << "in call to LBSGroupsetSetTGDSA";
     opensn::Exit(EXIT_FAILURE);
   }
 

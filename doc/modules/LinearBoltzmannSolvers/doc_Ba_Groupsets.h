@@ -24,16 +24,16 @@ pquad1 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,8, 8)
 gs0 = LBSCreateGroupset(phys1)
 
 cur_gs = gs0
-chiLBSGroupsetAddGroups(phys1,cur_gs,0,15)
-chiLBSGroupsetSetQuadrature(phys1,cur_gs,pquad0)
-chiLBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
-chiLBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
-chiLBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_GMRES)
-chiLBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-4)
-chiLBSGroupsetSetMaxIterations(phys1,cur_gs,300)
-chiLBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,30)
-chiLBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,false," ")
-chiLBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,false," ")
+LBSGroupsetAddGroups(phys1,cur_gs,0,15)
+LBSGroupsetSetQuadrature(phys1,cur_gs,pquad0)
+LBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
+LBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
+LBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_GMRES)
+LBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-4)
+LBSGroupsetSetMaxIterations(phys1,cur_gs,300)
+LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,30)
+LBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,false," ")
+LBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,false," ")
 \endcode
 
 Groupsets segregate the code into pieces arranged by the number of groups

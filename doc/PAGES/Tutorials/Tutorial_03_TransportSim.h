@@ -77,10 +77,10 @@ pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)
-chiLBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
-chiLBSGroupsetSetQuadrature(phys1,gs0,pquad)
-chiLBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
-chiLBSGroupsetSetIterativeMethod(NPT_GMRES_CYCLES)
+LBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
+LBSGroupsetSetQuadrature(phys1,gs0,pquad)
+LBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
+LBSGroupsetSetIterativeMethod(NPT_GMRES_CYCLES)
 
 --========== Boundary conditions
 bsrc = {}
@@ -116,7 +116,7 @@ chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
  LBSCreateGroupset(). Next we add groups to the group-set using a range,
  however, since we only have one group here the range will be 0 to 0. The
  final piece of a groupset is to add a quadrature which is achieved with a
- call to chiLBSGroupsetSetQuadrature().
+ call to LBSGroupsetSetQuadrature().
 
 
 ## Step 5 - Initialize and Execute
@@ -209,10 +209,10 @@ pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2,2)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)
-chiLBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
-chiLBSGroupsetSetQuadrature(phys1,gs0,pquad)
-chiLBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
-chiLBSGroupsetSetIterativeMethod(phys1,gs0,NPT_GMRES_CYCLES)
+LBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
+LBSGroupsetSetQuadrature(phys1,gs0,pquad)
+LBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
+LBSGroupsetSetIterativeMethod(phys1,gs0,NPT_GMRES_CYCLES)
 
 --========== Boundary conditions
 bsrc = {}
