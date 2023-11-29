@@ -13,7 +13,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
  
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 
 function D_coef(i,x,y,z)

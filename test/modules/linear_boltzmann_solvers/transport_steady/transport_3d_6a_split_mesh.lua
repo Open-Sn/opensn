@@ -64,7 +64,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 --MeshHandlerExportMeshToVTK("ZMesh")
 
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 --############################################### Add materials
 materials = {}

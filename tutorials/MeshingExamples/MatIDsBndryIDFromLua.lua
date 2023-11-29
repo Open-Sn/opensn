@@ -14,7 +14,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 MeshHandlerExportMeshToVTK("ZMeshPhase1")
 
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 --Sets a middle square to material 1
 function MatIDFunction1(x,y,z,cur_id)

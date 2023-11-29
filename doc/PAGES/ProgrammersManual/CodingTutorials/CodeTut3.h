@@ -49,7 +49,7 @@ chiMeshCreateUnpartitioned2DOrthoMesh(mesh,mesh)
 chiVolumeMesherExecute();
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 \endcode
 This code can be used to generate any of the following meshes,
 \image html CodingTutorials/OrthoMesh_1D_2D_3D.png "[From left to right] 1D, 2D, 3D orthogonal mesh"

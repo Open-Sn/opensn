@@ -15,7 +15,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 function MMS_phi(x,y,z)
     return math.cos(math.pi*x) + math.cos(math.pi*y)

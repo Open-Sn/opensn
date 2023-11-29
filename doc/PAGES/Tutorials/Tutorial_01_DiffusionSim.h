@@ -117,7 +117,7 @@ Actually setting the mesh's material id's is a utility facilitated by a
  with a property index MATID_FROMLOGICAL. Next we provided a handle to the
  logical volume (vol0) and the desired material id. Logical volumes are very
  diverse and their uses are discussed elsewhere. There is an additional utility,
- chiVolumeMesherSetMatIDToAll(), which will set all cell-material-ids without
+ VolumeMesherSetMatIDToAll(), which will set all cell-material-ids without
  requiring a logical volume, however, in this tutorial we opted to show the
  logical volume route.
 

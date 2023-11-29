@@ -23,7 +23,7 @@ end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 mesh.MeshGenerator.Execute(meshgen)
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 -- Add materials
 num_groups = 1

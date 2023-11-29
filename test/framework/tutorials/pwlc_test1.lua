@@ -13,7 +13,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 unit_sim_tests.chiSimTest03_PWLC();
 chiMPIBarrier()

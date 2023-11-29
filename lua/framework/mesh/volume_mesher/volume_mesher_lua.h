@@ -139,7 +139,7 @@ int chiVolumeMesherSetKBACutsZ(lua_State* L);
  * \param material_id int The id.
  * \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetMatIDToAll(lua_State* L);
+int VolumeMesherSetMatIDToAll(lua_State* L);
 
 /** Sets boundary numbers on boundaries orthogonal to the cardinal directions
  * as xmax=0, xmin=1, ymax=2, ymin=3, zmax=4, zmin=5.

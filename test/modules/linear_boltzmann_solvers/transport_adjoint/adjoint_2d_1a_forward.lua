@@ -25,7 +25,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 mesh.MeshGenerator.Execute(meshgen)
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 vol1a = mesh.RPPLogicalVolume.Create(
     {

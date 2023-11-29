@@ -39,7 +39,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 --############################################### Add materials
 materials = {}

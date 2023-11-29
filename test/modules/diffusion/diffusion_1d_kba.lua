@@ -38,7 +38,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 chiVolumeMesherSetupOrthogonalBoundaries()
 
 
