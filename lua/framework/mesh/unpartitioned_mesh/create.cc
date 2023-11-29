@@ -12,7 +12,7 @@ using namespace opensn;
 namespace opensnlua
 {
 RegisterLuaFunctionAsIs(CreateEmptyUnpartitionedMesh);
-RegisterLuaFunctionAsIs(chiDestroyUnpartitionedMesh);
+RegisterLuaFunctionAsIs(DestroyUnpartitionedMesh);
 
 RegisterLuaFunctionAsIs(UnpartitionedMeshFromVTU);
 RegisterLuaFunctionAsIs(UnpartitionedMeshFromPVTU);
@@ -34,7 +34,7 @@ CreateEmptyUnpartitionedMesh(lua_State* L)
 }
 
 int
-chiDestroyUnpartitionedMesh(lua_State* L)
+DestroyUnpartitionedMesh(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   const int num_args = lua_gettop(L);

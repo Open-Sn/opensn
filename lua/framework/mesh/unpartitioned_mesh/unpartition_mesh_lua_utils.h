@@ -35,12 +35,12 @@ int CreateEmptyUnpartitionedMesh(lua_State* L);
  * ###Example
  * Example usage
  * \code
- * chiDestroyUnpartitionedMesh(umesh)
+ * DestroyUnpartitionedMesh(umesh)
  * \endcode
  *
  * \ingroup LuaUnpartitionedMesh
  */
-int chiDestroyUnpartitionedMesh(lua_State* L);
+int DestroyUnpartitionedMesh(lua_State* L);
 
 /**Creates an unpartitioned mesh from VTK Unstructured mesh files.
  *
