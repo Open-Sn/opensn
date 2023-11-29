@@ -10,10 +10,10 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiCreateLineQuadrature);
+RegisterLuaFunctionAsIs(CreateLineQuadrature);
 
 int
-chiCreateLineQuadrature(lua_State* L)
+CreateLineQuadrature(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

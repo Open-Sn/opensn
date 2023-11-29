@@ -109,7 +109,7 @@ int CreateProductQuadrature(lua_State* L);
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiCreateLineQuadrature(lua_State* L);
+int CreateLineQuadrature(lua_State* L);
 
 /** Get the values of a product quadrature
  *
