@@ -37,7 +37,7 @@ vol0 = mesh.RPPLogicalVolume.Create({xmin=-L/16, xmax=L/16,
                                          zmin=-L/16, zmax=L/16})
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,1)
 
-chiMeshHandlerExportMeshToVTK("TheMesh")
+MeshHandlerExportMeshToVTK("TheMesh")
 
 --############################################### Add materials
 materials = {}

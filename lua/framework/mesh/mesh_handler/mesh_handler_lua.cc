@@ -14,7 +14,7 @@ using namespace opensn;
 RegisterLuaFunctionAsIs(chiMeshHandlerCreate);
 RegisterLuaFunctionAsIs(chiMeshHandlerSetCurrent);
 RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToObj);
-RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToVTK);
+RegisterLuaFunctionAsIs(MeshHandlerExportMeshToVTK);
 RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToExodus);
 
 int

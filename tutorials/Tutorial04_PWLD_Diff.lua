@@ -37,7 +37,7 @@ VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
 VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
 VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
-chiMeshHandlerExportMeshToVTK("Mesh")
+MeshHandlerExportMeshToVTK("Mesh")
 
 --############################################### Add material properties
 -- Set material properties

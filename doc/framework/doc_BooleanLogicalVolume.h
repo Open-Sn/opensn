@@ -38,7 +38,7 @@ lv3 = chi_mesh.BooleanLogicalVolume.Create
 })
 VolumeMesherSetProperty(MATID_FROMLOGICAL, lv3, 1)
 
-chiMeshHandlerExportMeshToVTK("lv_boolean_test1")
+MeshHandlerExportMeshToVTK("lv_boolean_test1")
 \endcode
 
 \image html framework/chi_mesh/LogicalVolume/lv_boolean_test1.png width=500px

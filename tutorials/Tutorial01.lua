@@ -16,7 +16,7 @@ VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
 chiVolumeMesherSetupOrthogonalBoundaries()
 
-chiMeshHandlerExportMeshToVTK("Mesh")
+MeshHandlerExportMeshToVTK("Mesh")
 --############################################### Add material properties
 
 

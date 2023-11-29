@@ -26,7 +26,7 @@ chiMeshHandlerExportMeshToObj(lua_State* L)
 }
 
 int
-chiMeshHandlerExportMeshToVTK(lua_State* L)
+MeshHandlerExportMeshToVTK(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;

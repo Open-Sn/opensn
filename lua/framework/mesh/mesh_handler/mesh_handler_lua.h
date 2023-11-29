@@ -32,7 +32,7 @@ int chiMeshHandlerExportMeshToObj(lua_State* L);
  * \param FileName char Base name of the file to be used.
  * \ingroup LuaMeshHandler
  */
-int chiMeshHandlerExportMeshToVTK(lua_State* L);
+int MeshHandlerExportMeshToVTK(lua_State* L);
 
 /**Exports the mesh to exodus format (.e extensions).
  * \param FileName char Base name of the file to be used.

@@ -62,7 +62,7 @@ meshgen1 = mesh.SplitFileMeshGenerator.Create
 
 mesh.MeshGenerator.Execute(meshgen1)
 
---chiMeshHandlerExportMeshToVTK("ZMesh")
+--MeshHandlerExportMeshToVTK("ZMesh")
 
 chiVolumeMesherSetMatIDToAll(0)
 

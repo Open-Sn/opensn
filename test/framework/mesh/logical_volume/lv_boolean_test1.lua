@@ -25,4 +25,4 @@ lv3 = mesh.BooleanLogicalVolume.Create
 })
 VolumeMesherSetProperty(MATID_FROMLOGICAL, lv3, 1)
 
-chiMeshHandlerExportMeshToVTK("lv_boolean_test1")
+MeshHandlerExportMeshToVTK("lv_boolean_test1")

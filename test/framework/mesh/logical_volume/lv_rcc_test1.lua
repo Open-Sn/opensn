@@ -21,4 +21,4 @@ lv2 = mesh.RCCLogicalVolume.Create({r = 1.3,
                                         vx=1.0, vy=1.0, vz=3.0})
 VolumeMesherSetProperty(MATID_FROMLOGICAL, lv2, 2)
 
-chiMeshHandlerExportMeshToVTK("lv_rcc_test1")
+MeshHandlerExportMeshToVTK("lv_rcc_test1")
