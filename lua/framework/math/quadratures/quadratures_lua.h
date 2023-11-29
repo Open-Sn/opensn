@@ -136,10 +136,10 @@ int chiGetProductQuadrature(lua_State* L);
  *  Example:
  * \code
  * pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)
- * chiOptimizeAngularQuadratureForPolarSymmetry(pqaud, 4.0*math.pi)
+ * OptimizeAngularQuadratureForPolarSymmetry(pqaud, 4.0*math.pi)
  * \endcode
  *
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiOptimizeAngularQuadratureForPolarSymmetry(lua_State* L);
+int OptimizeAngularQuadratureForPolarSymmetry(lua_State* L);

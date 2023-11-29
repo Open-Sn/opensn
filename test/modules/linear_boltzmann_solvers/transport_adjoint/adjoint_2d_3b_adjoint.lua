@@ -97,7 +97,7 @@ dsrc = lbs.DistributedSource.Create(
 
 --############################################### Setup Physics
 pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
-chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0 * math.pi)
+OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
     num_groups = num_groups,

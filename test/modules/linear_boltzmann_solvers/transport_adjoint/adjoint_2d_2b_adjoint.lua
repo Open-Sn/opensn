@@ -82,7 +82,7 @@ dsrc = lbs.DistributedSource.Create({ logical_volume_handle = qoi_vol })
 
 --############################################### Setup Physics
 pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)
-chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0 * math.pi)
+OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
     num_groups = num_groups,

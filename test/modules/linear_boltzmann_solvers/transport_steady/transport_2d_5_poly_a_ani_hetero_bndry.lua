@@ -53,7 +53,7 @@ PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 --############################################### Setup Physics
 pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12, 2)
-chiOptimizeAngularQuadratureForPolarSymmetry(pquad0, 4.0*math.pi)
+OptimizeAngularQuadratureForPolarSymmetry(pquad0, 4.0*math.pi)
 
 lbs_block =
 {
