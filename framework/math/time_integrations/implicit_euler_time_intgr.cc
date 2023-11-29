@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_math, ImplicitEulerTimeIntegration);
+OpenSnRegisterObject(math, ImplicitEulerTimeIntegration);
 
 InputParameters
 ImplicitEulerTimeIntegration::GetInputParameters()

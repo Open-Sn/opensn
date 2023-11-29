@@ -11,15 +11,15 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock chi_math_Test02_ParallelVector(const InputParameters& params);
+ParameterBlock math_Test02_ParallelVector(const InputParameters& params);
 
 RegisterWrapperFunction(chi_unit_tests,
-                        chi_math_Test02_ParallelVector,
+                        math_Test02_ParallelVector,
                         nullptr,
-                        chi_math_Test02_ParallelVector);
+                        math_Test02_ParallelVector);
 
 ParameterBlock
-chi_math_Test02_ParallelVector(const InputParameters&)
+math_Test02_ParallelVector(const InputParameters&)
 {
   using namespace opensn;
 

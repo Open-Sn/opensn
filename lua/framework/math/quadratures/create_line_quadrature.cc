@@ -49,7 +49,7 @@ chiCreateLineQuadrature(lua_State* L)
     opensn::log.Log() << "Creating Gauss-Chebyshev Quadrature\n";
 
     const size_t handle =
-      obj_factory.MakeRegisteredObjectOfType("chi_math::QuadratureGaussChebyshev", params);
+      obj_factory.MakeRegisteredObjectOfType("math::QuadratureGaussChebyshev", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;

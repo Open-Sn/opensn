@@ -11,7 +11,7 @@ namespace opensnlua
 InputParameters GetSyntax_Get1DQuadratureData();
 ParameterBlock Get1DQuadratureData(const InputParameters& params);
 
-RegisterWrapperFunction(chi_math,
+RegisterWrapperFunction(math,
                         Get1DQuadratureData,
                         GetSyntax_Get1DQuadratureData,
                         Get1DQuadratureData);

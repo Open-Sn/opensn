@@ -13,9 +13,9 @@ function PrintTable(t, indent)
 end
 
 print("GOLD_BEGIN")
-q = chi_math.QuadratureGaussLegendre.Create({N = 4, verbose = true})
+q = math.QuadratureGaussLegendre.Create({N = 4, verbose = true})
 
-qdata = chi_math.Get1DQuadratureData(q)
+qdata = math.Get1DQuadratureData(q)
 
 print("qpoints:")
 PrintTable(qdata.qpoints, 2)
@@ -24,9 +24,9 @@ PrintTable(qdata.weights, 2)
 print()
 
 --################################################
-q = chi_math.QuadratureGaussChebyshev.Create({N = 4, verbose = true})
+q = math.QuadratureGaussChebyshev.Create({N = 4, verbose = true})
 
-qdata = chi_math.Get1DQuadratureData(q)
+qdata = math.Get1DQuadratureData(q)
 
 print("qpoints:")
 PrintTable(qdata.qpoints, 2)

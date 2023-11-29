@@ -17,16 +17,16 @@ using namespace opensn;
 namespace unit_tests
 {
 
-InputParameters chi_math_SDM_Test01Syntax();
-ParameterBlock chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters);
+InputParameters math_SDM_Test01Syntax();
+ParameterBlock math_SDM_Test01_Continuous(const InputParameters& input_parameters);
 
 RegisterWrapperFunction(chi_unit_tests,
-                        chi_math_SDM_Test01_Continuous,
-                        chi_math_SDM_Test01Syntax,
-                        chi_math_SDM_Test01_Continuous);
+                        math_SDM_Test01_Continuous,
+                        math_SDM_Test01Syntax,
+                        math_SDM_Test01_Continuous);
 
 InputParameters
-chi_math_SDM_Test01Syntax()
+math_SDM_Test01Syntax()
 {
   InputParameters params;
 
@@ -36,7 +36,7 @@ chi_math_SDM_Test01Syntax()
 }
 
 ParameterBlock
-chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
+math_SDM_Test01_Continuous(const InputParameters& input_parameters)
 {
   const ParameterBlock& params = input_parameters.GetParam("arg0");
 

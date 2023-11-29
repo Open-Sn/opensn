@@ -1,1 +1,1 @@
-chi_unit_tests.chi_math_Test00()
+chi_unit_tests.math_Test00()
