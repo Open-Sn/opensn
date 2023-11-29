@@ -24,7 +24,7 @@ function MMS_q(x,y,z)
     return math.pi*math.pi * (math.cos(math.pi*x)+math.cos(math.pi*y))
 end
 
-unit_tests.chiSimTest04_PWLC()
+unit_tests.SimTest04_PWLC()
 MPIBarrier()
 if (location_id == 0) then
     os.execute("rm CodeTut4_PWLC*")

@@ -18,15 +18,15 @@ using namespace opensn;
 namespace unit_sim_tests
 {
 
-ParameterBlock chiSimTest93_RayTracing(const InputParameters& params);
+ParameterBlock SimTest93_RayTracing(const InputParameters& params);
 
-RegisterWrapperFunction(unit_tests, chiSimTest93_RayTracing, nullptr, chiSimTest93_RayTracing);
+RegisterWrapperFunction(unit_tests, SimTest93_RayTracing, nullptr, SimTest93_RayTracing);
 
 ParameterBlock
-chiSimTest93_RayTracing(const InputParameters&)
+SimTest93_RayTracing(const InputParameters&)
 {
-  const std::string fname = "chiSimTest93_RayTracing";
-  opensn::log.Log() << "chiSimTest93_RayTracing";
+  const std::string fname = "SimTest93_RayTracing";
+  opensn::log.Log() << "SimTest93_RayTracing";
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();

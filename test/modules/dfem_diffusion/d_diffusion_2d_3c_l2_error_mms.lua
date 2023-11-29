@@ -52,7 +52,7 @@ VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
 VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
 --############################################### Call Lua Sim Test
-chiSimTest_IP_MMS_L2error() --simtest_IP_MMS_L2_handle becomes available here
+SimTest_IP_MMS_L2error() --simtest_IP_MMS_L2_handle becomes available here
 
 --############################################### Export VTU
 if (master_export == nil) then

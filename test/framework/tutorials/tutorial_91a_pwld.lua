@@ -16,7 +16,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 VolumeMesherSetMatIDToAll(0)
 
 
-unit_tests.chiSimTest91_PWLD();
+unit_tests.SimTest91_PWLD();
 MPIBarrier()
 if (location_id == 0) then
     os.execute("rm SimTest_91*")

@@ -18,7 +18,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Set Material IDs
 VolumeMesherSetMatIDToAll(0)
 
-unit_sim_tests.chiSimTest01_FV();
+unit_sim_tests.SimTest01_FV();
 MPIBarrier()
 if (location_id == 0) then
     os.execute("rm CodeTut1_FV*")

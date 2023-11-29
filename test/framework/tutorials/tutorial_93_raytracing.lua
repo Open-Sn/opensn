@@ -19,7 +19,7 @@ VolumeMesherSetMatIDToAll(0)
 
 chiVolumeMesherSetupOrthogonalBoundaries()
 
-unit_tests.chiSimTest93_RayTracing()
+unit_tests.SimTest93_RayTracing()
 
 
 --###############################################

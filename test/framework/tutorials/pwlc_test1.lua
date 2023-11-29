@@ -15,7 +15,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Set Material IDs
 VolumeMesherSetMatIDToAll(0)
 
-unit_sim_tests.chiSimTest03_PWLC();
+unit_sim_tests.SimTest03_PWLC();
 MPIBarrier()
 if (location_id == 0) then
     os.execute("rm CodeTut3_PWLC*")

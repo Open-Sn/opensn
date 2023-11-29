@@ -967,10 +967,10 @@ the stochastic "noise" from the uncollided algorithm.
 namespace unit_sim_tests
 {
 
-int chiSimTest93_RayTracing(lua_State* Lstate)
+int SimTest93_RayTracing(lua_State* Lstate)
 {
-  const std::string fname = "chiSimTest93_RayTracing";
-  chi::log.Log() << "chiSimTest93_RayTracing";
+  const std::string fname = "SimTest93_RayTracing";
+  chi::log.Log() << "SimTest93_RayTracing";
 
   // Get grid
   auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
