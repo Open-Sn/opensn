@@ -67,4 +67,4 @@ int chiLogicalVolumeCreate(lua_State* L);
  * \return Sense true if inside the logical volume and false if outside.
  * \ingroup LuaLogicVolumes
  */
-int chiLogicalVolumePointSense(lua_State* L);
+int LogicalVolumePointSense(lua_State* L);

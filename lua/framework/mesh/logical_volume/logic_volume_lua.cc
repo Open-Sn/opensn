@@ -23,7 +23,7 @@ RegisterLuaConstantAsIs(RPP, Varying(3));
 RegisterLuaConstantAsIs(RCC, Varying(4));
 RegisterLuaConstantAsIs(SURFACE, Varying(9));
 RegisterLuaConstantAsIs(BOOLEAN, Varying(10));
-RegisterLuaFunctionAsIs(chiLogicalVolumePointSense);
+RegisterLuaFunctionAsIs(LogicalVolumePointSense);
 
 int
 chiLogicalVolumeCreate(lua_State* L)
@@ -348,9 +348,9 @@ chiLogicalVolumeCreate(lua_State* L)
 }
 
 int
-chiLogicalVolumePointSense(lua_State* L)
+LogicalVolumePointSense(lua_State* L)
 {
-  const std::string fname = "chiLogicalVolumePointSense";
+  const std::string fname = "LogicalVolumePointSense";
   const int num_args = lua_gettop(L);
   if (num_args != 4) LuaPostArgAmountError(fname, 4, num_args);
 
