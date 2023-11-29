@@ -747,6 +747,6 @@ int LBSAddPointSource(lua_State* L);
  *
  *  \ingroup LBSLuaFunctions
  */
-int chiLBSClearPointSources(lua_State* L);
+int LBSClearPointSources(lua_State* L);
 
 } // namespace opensnlua::lbs

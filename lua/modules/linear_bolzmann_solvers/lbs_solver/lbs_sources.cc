@@ -60,7 +60,7 @@ LBSAddPointSource(lua_State* L)
 }
 
 int
-chiLBSClearPointSources(lua_State* L)
+LBSClearPointSources(lua_State* L)
 {
   opensn::log.Log0Warning() << "chiLBSClearPointSource has been deprecated and will "
                                "be removed soon. Consider using lbs.ClearPointSources instead, "
