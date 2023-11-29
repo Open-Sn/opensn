@@ -630,7 +630,7 @@ int LBSWriteGroupsetAngularFlux(lua_State* L);
  *                         will append its id to the back plus an extension ".data"
  *
  */
-int chiLBSReadGroupsetAngularFlux(lua_State* L);
+int LBSReadGroupsetAngularFlux(lua_State* L);
 
 /**Writes the flux-moments of a LBS solution to file (phi_old_local).
  *
