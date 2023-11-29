@@ -12,14 +12,14 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiSurfaceMeshCheckCycles);
+RegisterLuaFunctionAsIs(SurfaceMeshCheckCycles);
 RegisterLuaFunctionAsIs(chiComputeLoadBalancing);
 
 int
-chiSurfaceMeshCheckCycles(lua_State* L)
+SurfaceMeshCheckCycles(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("chiSurfaceMeshCheckCycles", 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError("SurfaceMeshCheckCycles", 2, num_args);
 
   auto& cur_hndlr = opensn::GetCurrentHandler();
 

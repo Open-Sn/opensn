@@ -37,7 +37,7 @@ or
  ## The extrusion process
 
  \code
- chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
  chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  chiVolumeMesherCreate(VOLUMEMESHER_EXTRUDER,
                       ExtruderTemplateType.UNPARTITIONED_MESH,
@@ -53,7 +53,7 @@ or
  VolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
  chiVolumeMesherSetKBAPartitioningPxPyPz(1,1,1)
 
- chiSurfaceMesherExecute();
+ SurfaceMesherExecute();
  chiVolumeMesherExecute();
 
  MeshHandlerExportMeshToVTK("export_mesh_without_IDs")
@@ -83,8 +83,8 @@ MeshHandlerExportMeshToVTK("export_mesh_with_IDs")
 
   ### LV defined as read-in surfaces
  \code
-surf_LV = chiSurfaceMeshCreate()
-chiSurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
+surf_LV = SurfaceMeshCreate()
+SurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
 my_LV = LogicalVolumeCreate(SURFACE, surf_LV)
 
  VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)

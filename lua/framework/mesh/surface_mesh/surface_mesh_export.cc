@@ -12,17 +12,17 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiSurfaceMeshExportToObj);
-RegisterLuaFunctionAsIs(chiSurfaceMeshExportPolyFile);
+RegisterLuaFunctionAsIs(SurfaceMeshExportToObj);
+RegisterLuaFunctionAsIs(SurfaceMeshExportPolyFile);
 
 int
-chiSurfaceMeshExportToObj(lua_State* L)
+SurfaceMeshExportToObj(lua_State* L)
 {
   auto& cur_hndlr = opensn::GetCurrentHandler();
 
   // Get arguments
   int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("chiSurfaceMeshExportObj", 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError("SurfaceMeshExportObj", 2, num_args);
 
   int handle = lua_tonumber(L, 1);
 
@@ -38,13 +38,13 @@ chiSurfaceMeshExportToObj(lua_State* L)
 }
 
 int
-chiSurfaceMeshExportPolyFile(lua_State* L)
+SurfaceMeshExportPolyFile(lua_State* L)
 {
   auto& cur_hndlr = opensn::GetCurrentHandler();
 
   // Get arguments
   int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("chiSurfaceMeshExportPolyFile", 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError("SurfaceMeshExportPolyFile", 2, num_args);
 
   int handle = lua_tonumber(L, 1);
 

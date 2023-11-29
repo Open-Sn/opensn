@@ -174,10 +174,10 @@ for i=0,N do
 end
 surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
---chiSurfaceMesherSetProperty(PARTITION_X,2)
---chiSurfaceMesherSetProperty(PARTITION_Y,2)
---chiSurfaceMesherSetProperty(CUT_X,0.0)
---chiSurfaceMesherSetProperty(CUT_Y,0.0)
+--SurfaceMesherSetProperty(PARTITION_X,2)
+--SurfaceMesherSetProperty(PARTITION_Y,2)
+--SurfaceMesherSetProperty(CUT_X,0.0)
+--SurfaceMesherSetProperty(CUT_Y,0.0)
 
 chiVolumeMesherExecute();
 

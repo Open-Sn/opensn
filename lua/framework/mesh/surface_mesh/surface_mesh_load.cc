@@ -10,11 +10,11 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiSurfaceMeshImportFromOBJFile);
-RegisterLuaFunctionAsIs(chiSurfaceMeshImportFromTriangleFiles);
+RegisterLuaFunctionAsIs(SurfaceMeshImportFromOBJFile);
+RegisterLuaFunctionAsIs(SurfaceMeshImportFromTriangleFiles);
 
 int
-chiSurfaceMeshImportFromOBJFile(lua_State* L)
+SurfaceMeshImportFromOBJFile(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
@@ -52,7 +52,7 @@ chiSurfaceMeshImportFromOBJFile(lua_State* L)
 }
 
 int
-chiSurfaceMeshImportFromTriangleFiles(lua_State* L)
+SurfaceMeshImportFromTriangleFiles(lua_State* L)
 {
   auto& cur_hndlr = opensn::GetCurrentHandler();
 
@@ -75,7 +75,7 @@ chiSurfaceMeshImportFromTriangleFiles(lua_State* L)
 }
 
 int
-chiSurfaceMeshImportFromMshFiles(lua_State* L)
+SurfaceMeshImportFromMshFiles(lua_State* L)
 {
   auto& cur_hndlr = opensn::GetCurrentHandler();
 
@@ -93,7 +93,7 @@ chiSurfaceMeshImportFromMshFiles(lua_State* L)
     opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);
 
   std::stringstream outtext;
-  outtext << "chiSurfaceMeshImportFromMshFiles: "
+  outtext << "SurfaceMeshImportFromMshFiles: "
              "Loading a gmsh ascii file: ";
   outtext << temp << std::endl;
   opensn::log.LogAllVerbose2() << outtext.str();

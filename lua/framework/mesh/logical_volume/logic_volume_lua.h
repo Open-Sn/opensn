@@ -42,8 +42,8 @@
  * R)
  *
  * -- Surface mesh
- * lv_surfmesh = chiSurfaceMeshCreate()
- * chiSurfaceMeshImportFromOBJFile(lv_surfmesh, "MeshFile3D.obj", false)
+ * lv_surfmesh = SurfaceMeshCreate()
+ * SurfaceMeshImportFromOBJFile(lv_surfmesh, "MeshFile3D.obj", false)
  *
  * lv5 = LogicalVolumeCreate(SURFACE, lv_surfmesh)
  *

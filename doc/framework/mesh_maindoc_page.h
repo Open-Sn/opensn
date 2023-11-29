@@ -16,9 +16,9 @@
 \code
 MeshHandlerCreate()
 --
-newSurfMesh = chiSurfaceMeshCreate();
-chiSurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
-loops,loop_count = chiSurfaceMeshGetEdgeLoops(newSurfMesh)
+newSurfMesh = SurfaceMeshCreate();
+SurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
+loops,loop_count = SurfaceMeshGetEdgeLoops(newSurfMesh)
 --
 --
 line_mesh = {};

@@ -59,10 +59,10 @@ int chiDestroyUnpartitionedMesh(lua_State* L);
  *
  * umesh = chiUnpartitionedMeshFromVTU("ZMeshTest_0.vtu")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
  * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
+ * SurfaceMesherExecute()
  * chiVolumeMesherExecute()
  * \endcode
  *
@@ -89,10 +89,10 @@ int chiUnpartitionedMeshFromVTU(lua_State* L);
  *
  * umesh = chiUnpartitionedMeshFromPVTU("ZMeshTest_0.vtu")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
  * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
+ * SurfaceMesherExecute()
  * chiVolumeMesherExecute()
  * \endcode
  *
@@ -118,10 +118,10 @@ int chiUnpartitionedMeshFromPVTU(lua_State* L);
  *
  * umesh = chiUnpartitionedMeshFromEnsightGold("resources/TestObjects/Sphere.case")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
  * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
+ * SurfaceMesherExecute()
  * chiVolumeMesherExecute()
  * \endcode
  *
@@ -145,10 +145,10 @@ int chiUnpartitionedMeshFromEnsightGold(lua_State* L);
  * umesh =
  * chiUnpartitionedMeshFromWavefrontOBJ("resources/TestObjects/TriangleMesh2x2.obj")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
  * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
+ * SurfaceMesherExecute()
  * chiVolumeMesherExecute()
  * \endcode
  *
@@ -171,10 +171,10 @@ int chiUnpartitionedMeshFromWavefrontOBJ(lua_State* L);
  *
  * umesh = chiUnpartitionedMeshFromMshFormat("File.msh")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
  * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
+ * SurfaceMesherExecute()
  * chiVolumeMesherExecute()
  * \endcode
  *
@@ -199,10 +199,10 @@ int chiUnpartitionedMeshFromMshFormat(lua_State* L);
  *
  * umesh = chiUnpartitionedMeshFromExodusII("resources/TestObjects/Mesh.e")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
  * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
+ * SurfaceMesherExecute()
  * chiVolumeMesherExecute()
  * \endcode
  *
