@@ -58,7 +58,7 @@ int SolverStep(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverAdvance(lua_State* L);
+int SolverAdvance(lua_State* L);
 
 /** Sets a basic option of a solver.
  *

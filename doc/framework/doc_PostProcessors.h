@@ -88,7 +88,7 @@ for t=1,20 do
         chiPRKGetParam(phys0, "population_next"),
         chiPRKGetParam(phys0, "period"))
 
-  chiSolverAdvance(phys0)
+  SolverAdvance(phys0)
   if (time > 0.1) then
     prk.SetParam(phys0, "rho", 0.8)
   end

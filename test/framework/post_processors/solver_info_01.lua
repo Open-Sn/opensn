@@ -24,7 +24,7 @@ for t=1,20 do
   time = SolverGetInfo(phys0, "time_next")
   print(t, string.format("%.3f %.5f",time, SolverGetInfo(phys0, "population_next")))
 
-  chiSolverAdvance(phys0)
+  SolverAdvance(phys0)
   if (time > 0.1) then
     prk.SetParam(phys0, "rho", 0.8)
   end

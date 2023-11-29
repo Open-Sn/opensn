@@ -19,7 +19,7 @@ RegisterLuaFunctionAsIs(chiSolverCreate);
 RegisterLuaFunctionAsIs(SolverInitialize);
 RegisterLuaFunctionAsIs(chiSolverExecute);
 RegisterLuaFunctionAsIs(SolverStep);
-RegisterLuaFunctionAsIs(chiSolverAdvance);
+RegisterLuaFunctionAsIs(SolverAdvance);
 RegisterLuaFunctionAsIs(chiSolverSetBasicOption);
 RegisterLuaFunctionAsIs(chiSolverGetName);
 RegisterLuaFunctionAsIs(chiSolverGetFieldFunctionList);
@@ -102,7 +102,7 @@ SolverStep(lua_State* L)
 }
 
 int
-chiSolverAdvance(lua_State* L)
+SolverAdvance(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
