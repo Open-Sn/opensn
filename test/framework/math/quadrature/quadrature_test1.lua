@@ -38,7 +38,7 @@ print("Legendre(1, 0.25)", Legendre(1, 0.25))
 print("LegendreDerivative(0, 0.25)", LegendreDerivative(0, 0.25))
 print("LegendreDerivative(1, 0.25)", LegendreDerivative(1, 0.25))
 
-print("chiYlm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0)", chiYlm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0))
-print("chiYlm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0)", chiYlm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0))
+print("Ylm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0)", Ylm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0))
+print("Ylm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0)", Ylm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0))
 
 print("GOLD_END")

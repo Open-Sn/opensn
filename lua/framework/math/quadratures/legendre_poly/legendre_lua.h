@@ -30,4 +30,4 @@ int LegendreDerivative(lua_State* L);
  *
  * \ingroup LuaMath
  */
-int chiYlm(lua_State* L);
+int Ylm(lua_State* L);
