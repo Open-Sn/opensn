@@ -680,12 +680,12 @@ Solver::Assemble_A_bext()
   }
 
   //  PetscViewer viewer;
-  //  PetscViewerASCIIOpen(PETSC_COMM_WORLD,"A2_before_bc.m",&viewer);
+  //  PetscViewerASCIIOpen(opensn::mpi_comm,"A2_before_bc.m",&viewer);
   //  PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_MATLAB);
   //  MatView(A[0],viewer);
   //  PetscViewerPopFormat(viewer);
   //  PetscViewerDestroy(&viewer);
-  //  PetscViewerASCIIOpen(PETSC_COMM_WORLD,"bext2_before_bc.m",&viewer);
+  //  PetscViewerASCIIOpen(opensn::mpi_comm,"bext2_before_bc.m",&viewer);
   //  PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_MATLAB);
   //  VecView(bext[0],viewer);
   //  PetscViewerPopFormat(viewer);

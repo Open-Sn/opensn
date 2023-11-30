@@ -147,7 +147,7 @@ DiffusionSolver::Initialize()
   opensn::mpi_comm.barrier();
 
   // Create KSP
-  KSPCreate(PETSC_COMM_WORLD, &ksp_);
+  KSPCreate(opensn::mpi_comm, &ksp_);
   KSPSetOptionsPrefix(ksp_, text_name_.c_str());
   KSPSetType(ksp_, KSPCG);
 

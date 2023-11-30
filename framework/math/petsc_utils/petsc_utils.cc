@@ -11,7 +11,7 @@ Vec
 CreateVector(int64_t local_size, int64_t global_size)
 {
   Vec x;
-  VecCreate(PETSC_COMM_WORLD, &x);
+  VecCreate(opensn::mpi_comm, &x);
   VecSetType(x, VECMPI);
   VecSetSizes(x, local_size, global_size);
   VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
@@ -22,7 +22,7 @@ CreateVector(int64_t local_size, int64_t global_size)
 void
 CreateVector(Vec& x, int64_t local_size, int64_t global_size)
 {
-  VecCreate(PETSC_COMM_WORLD, &x);
+  VecCreate(opensn::mpi_comm, &x);
   VecSetType(x, VECMPI);
   VecSetSizes(x, local_size, global_size);
   VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
@@ -35,7 +35,7 @@ CreateVectorWithGhosts(int64_t local_size,
                        const std::vector<int64_t>& ghost_indices)
 {
   Vec x;
-  VecCreateGhost(PETSC_COMM_WORLD,
+  VecCreateGhost(opensn::mpi_comm,
                  local_size,
                  global_size,
                  nghosts,
@@ -51,7 +51,7 @@ Mat
 CreateSquareMatrix(int64_t local_size, int64_t global_size)
 {
   Mat A;
-  MatCreate(PETSC_COMM_WORLD, &A);
+  MatCreate(opensn::mpi_comm, &A);
   MatSetType(A, MATMPIAIJ);
   MatSetSizes(A, local_size, local_size, global_size, global_size);
 
@@ -65,7 +65,7 @@ CreateSquareMatrix(int64_t local_size, int64_t global_size)
 void
 CreateSquareMatrix(Mat& A, int64_t local_size, int64_t global_size)
 {
-  MatCreate(PETSC_COMM_WORLD, &A);
+  MatCreate(opensn::mpi_comm, &A);
   MatSetType(A, MATMPIAIJ);
   MatSetSizes(A, local_size, local_size, global_size, global_size);
 
@@ -103,7 +103,7 @@ CreateCommonKrylovSolverSetup(Mat ref_matrix,
 {
   PETScSolverSetup setup;
 
-  KSPCreate(PETSC_COMM_WORLD, &setup.ksp);
+  KSPCreate(opensn::mpi_comm, &setup.ksp);
   KSPSetOperators(setup.ksp, ref_matrix, ref_matrix);
   KSPSetType(setup.ksp, in_solver_type.c_str());
 
