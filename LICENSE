@@ -3,6 +3,26 @@ MIT License
 Copyright (c) 2023 The Texas A&M University System, an agency of the
 State of Texas, and openSn contributors.
 
+(c) 2023. Triad National Security, LLC. All rights reserved.
+This program was produced under U.S. Government contract 89233218CNA000001 for 
+Los Alamos National Laboratory (LANL), which is operated by Triad National 
+Security, LLC for the U.S. Department of Energy/National Nuclear Security 
+Administration. All rights in the program are reserved by Triad National 
+Security, LLC, and the U.S. Department of Energy/National Nuclear Security 
+Administration. The Government is granted for itself and others acting on its 
+behalf a nonexclusive, paid-up, irrevocable worldwide license in this material 
+to reproduce, prepare derivative works, distribute copies to the public, perform 
+publicly and display publicly, and to permit others to do so.
+
+The aforementioned licensing statement of Triad National Security, LLC., implies 
+that this program was originally and is presently developed solely by Los Alamos 
+National Laboratory (LANL).  However, it is crucial to note that this code was 
+originally developed by others, that ongoing development continues to be carried 
+out by entities other than LANL, and that LANL employees have contributed only to 
+specific portions of the code.  Nonetheless, Triad National Security, LLC., is 
+unable to modify their licensing statement. Contributions by LANL employees can 
+be found by searching for specific users in the repository.  
+
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
 the Software without restriction, including without limitation the rights to
