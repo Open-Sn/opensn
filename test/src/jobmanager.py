@@ -350,10 +350,7 @@ def RunTests(tests: list, argv):
 
     print("Executing tests with class in: " + weight_classes_allowed.__str__())
 
-    k = 0
     while True:
-        k += 1
-
         done = True
         # Check for tests to run
         for test in tests:
