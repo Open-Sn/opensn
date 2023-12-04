@@ -107,6 +107,11 @@ test_hierarchy = jobmanager.BuildSearchHierarchyForTests(argv)
 with warnings.catch_warnings(record=True) as warning_manager1:
     tests = jobmanager.ConfigureTests(test_hierarchy, argv)
 
+jobmanager.PrintCaughtWarnings(warning_manager1,
+                               "Warnings during test configuration")
+if len(warning_manager1) > 0:
+    sys.exit(-1)
+
 # EchoTests(tests)
 
 print("""
@@ -147,8 +152,6 @@ print()
 with warnings.catch_warnings(record=True) as warning_manager2:
     retval = jobmanager.RunTests(tests, argv)
 
-jobmanager.PrintCaughtWarnings(warning_manager1,
-                               "Warnings during test configuration")
 jobmanager.PrintCaughtWarnings(warning_manager2,
                                "Warnings during test execution")
 

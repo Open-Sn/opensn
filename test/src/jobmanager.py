@@ -140,7 +140,7 @@ class TestConfiguration:
 # ========================================================= Parse JSON configs
 def ParseTestConfiguration(file_path: str):
     """Parses a JSON configuration at the path specified"""
-    test_objects = []
+    test_objects = {}
     file = open(file_path)
     data = json.load(file)
     file.close()
@@ -235,7 +235,7 @@ def ParseTestConfiguration(file_path: str):
                                          args=args,
                                          weight_class=weight_class,
                                          skip=skip_reason)
-            test_objects.append(new_test)
+            test_objects[new_test.filename] = new_test
         except ValueError:
             continue
 
@@ -295,7 +295,7 @@ def ConfigureTests(test_hierarchy: dict, argv):
         for config_file in ListFilesInDir(testdir, ".json"):
             sub_test_objs = ParseTestConfiguration(testdir + config_file)
             specific_test_dependency = None
-            for obj in sub_test_objs:
+            for obj in sub_test_objs.values():
                 if specific_test is None or obj.filename == specific_test:
                     test_objects.append(obj)
                     if specific_test is not None:
@@ -305,9 +305,11 @@ def ConfigureTests(test_hierarchy: dict, argv):
 
             # if a specific test has dependencies, also add them to the list of executed tests
             if specific_test_dependency is not None:
-                for obj in sub_test_objs:
-                    if obj.filename == specific_test_dependency:
-                        test_objects.append(obj)
+                if specific_test_dependency in sub_test_objs:
+                    obj = sub_test_objs[specific_test_dependency]
+                    test_objects.append(obj)
+                else:
+                    warnings.warn("Specified dependency '" + specific_test_dependency + "' does not exist.")
 
         # If the out directory exists then we clear it
         if os.path.isdir(testdir + "out/"):
