@@ -127,7 +127,7 @@ class TestConfiguration:
     def CheckDependencies(self, tests):
         """Loops through a test coonfiguration and checks whether a
            dependency has executed"""
-        if self.dependency == "":
+        if self.dependency == None:
             return True
         for test in tests:
             if test.filename == self.dependency:
@@ -140,7 +140,7 @@ class TestConfiguration:
 # ========================================================= Parse JSON configs
 def ParseTestConfiguration(file_path: str):
     """Parses a JSON configuration at the path specified"""
-    test_objects = []
+    test_objects = {}
     file = open(file_path)
     data = json.load(file)
     file.close()
@@ -184,7 +184,7 @@ def ParseTestConfiguration(file_path: str):
         if "args" in test_block:
             args = test_block["args"]
 
-        dependency = ""
+        dependency = None
         if "dependency" in test_block:
             dependency = test_block["dependency"]
 
@@ -235,7 +235,7 @@ def ParseTestConfiguration(file_path: str):
                                          args=args,
                                          weight_class=weight_class,
                                          skip=skip_reason)
-            test_objects.append(new_test)
+            test_objects[new_test.filename] = new_test
         except ValueError:
             continue
 
@@ -286,20 +286,30 @@ def ConfigureTests(test_hierarchy: dict, argv):
        that will then be used to create a test object. Also preps the
        out and gold dirs"""
 
-    specific_test = ""
-    if argv.test is not None:
-        specific_test = argv.test
+    specific_test = argv.test
+    if specific_test is not None:
         print("specific_test=" + specific_test)
 
     test_objects = []
     for testdir in test_hierarchy:
         for config_file in ListFilesInDir(testdir, ".json"):
             sub_test_objs = ParseTestConfiguration(testdir + config_file)
-            for obj in sub_test_objs:
-                if specific_test != "" and obj.filename != specific_test:
+            specific_test_dependency = None
+            for obj in sub_test_objs.values():
+                if specific_test is None or obj.filename == specific_test:
+                    test_objects.append(obj)
+                    if specific_test is not None:
+                        specific_test_dependency = obj.dependency
+                else:
                     print("skipping " + obj.filename)
-                    continue
-                test_objects.append(obj)
+
+            # if a specific test has dependencies, also add them to the list of executed tests
+            if specific_test_dependency is not None:
+                if specific_test_dependency in sub_test_objs:
+                    obj = sub_test_objs[specific_test_dependency]
+                    test_objects.append(obj)
+                else:
+                    warnings.warn("Specified dependency '" + specific_test_dependency + "' does not exist.")
 
         # If the out directory exists then we clear it
         if os.path.isdir(testdir + "out/"):
@@ -350,10 +360,7 @@ def RunTests(tests: list, argv):
 
     print("Executing tests with class in: " + weight_classes_allowed.__str__())
 
-    k = 0
     while True:
-        k += 1
-
         done = True
         # Check for tests to run
         for test in tests:
