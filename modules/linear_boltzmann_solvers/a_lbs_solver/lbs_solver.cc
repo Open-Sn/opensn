@@ -440,7 +440,7 @@ LBSSolver::OptionsBlock()
   "The eager limit is the message size limit before which non-blocking MPI send"
   "calls will execute without waiting for a matching receive call. The limit is"
   "platform dependent but in general 64 kb. Some systems have 32 kb as a limit"
-  "and therefore we use that as a default limit in ChiTech. There is a fine"
+  "and therefore we use that as a default limit in OpenSn. There is a fine"
   "interplay between message size and the shear amount of messages that will be"
   "sent. In general smaller messages tend to be more efficient, however, when"
   "there are too many small messages being sent around the communication system"
