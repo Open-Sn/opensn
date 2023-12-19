@@ -322,7 +322,7 @@ public:
   /**
    * Writes phi_old to restart file.
    */
-  void WriteRestartData(const std::string& folder_name, const std::string& file_base);
+  void WriteRestartData(const std::string& folder_name, const std::string& file_base) const;
 
   /**
    * Read phi_old from restart file.
@@ -330,14 +330,30 @@ public:
   void ReadRestartData(const std::string& folder_name, const std::string& file_base);
 
   /**
-   * Writes the groupset's angular fluxes to file.
+   * Writes a full angular flux vector to file.
    */
-  void WriteGroupsetAngularFluxes(const LBSGroupset& groupset, const std::string& file_base);
+  void WriteAngularFluxes(const std::vector<std::vector<double>>& src,
+                          const std::string& file_base) const;
 
   /**
-   * Prints the groupset's angular fluxes to file.
+   * Reads a full angular flux vector from a file into the specified vector.
    */
-  void ReadGroupsetAngularFluxes(LBSGroupset& groupset, const std::string& file_base);
+  void ReadAngularFluxes(const std::string& file_base,
+                         std::vector<std::vector<double>>& dest) const;
+
+  /**
+   * Writes a groupset angular flux vector to file.
+   */
+  void WriteGroupsetAngularFluxes(const LBSGroupset& groupset,
+                                  const std::vector<double>& src,
+                                  const std::string& file_base) const;
+
+  /**
+   * Reads the groupset angular fluxes from a file into the specified vector.
+   */
+  void ReadGroupsetAngularFluxes(const std::string& file_base,
+                                 const LBSGroupset& groupset,
+                                 std::vector<double>& dest) const;
 
   /**
    * Makes a source-moments vector from scattering and fission based on the latest phi-solution.
@@ -345,16 +361,16 @@ public:
   std::vector<double> MakeSourceMomentsFromPhi();
 
   /**
-   * Writes a given flux-moments vector to file.
+   * Writes a given flux moments vector to file.
    */
-  void WriteFluxMoments(const std::string& file_base, const std::vector<double>& flux_moments);
+  void WriteFluxMoments(const std::vector<double>& src, const std::string& file_base) const;
 
   /**
-   * Reads a flux-moments vector from a file in the specified vector.
+   * Reads a flux moments vector from a file into the specified vector.
    */
   void ReadFluxMoments(const std::string& file_base,
-                       std::vector<double>& flux_moments,
-                       bool single_file = false);
+                       std::vector<double>& dest,
+                       bool single_file = false) const;
 
   /**
    * Copy relevant section of phi_old to the field functions.

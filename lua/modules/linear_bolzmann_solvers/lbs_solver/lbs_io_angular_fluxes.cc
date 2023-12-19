@@ -42,7 +42,8 @@ chiLBSWriteGroupsetAngularFlux(lua_State* L)
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
-  lbs_solver.WriteGroupsetAngularFluxes(*groupset, file_base);
+  const auto& psi = lbs_solver.PsiNewLocal().at(groupset->id_);
+  lbs_solver.WriteGroupsetAngularFluxes(*groupset, psi, file_base);
 
   return 0;
 }
@@ -80,7 +81,8 @@ chiLBSReadGroupsetAngularFlux(lua_State* L)
     opensn::Chi::Exit(EXIT_FAILURE);
   }
 
-  lbs_solver.ReadGroupsetAngularFluxes(*groupset, file_base);
+  auto& psi = lbs_solver.PsiNewLocal().at(groupset->id_);
+  lbs_solver.ReadGroupsetAngularFluxes(file_base, *groupset, psi);
 
   return 0;
 }

@@ -1960,7 +1960,7 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
 }
 
 void
-LBSSolver::WriteRestartData(const std::string& folder_name, const std::string& file_base)
+LBSSolver::WriteRestartData(const std::string& folder_name, const std::string& file_base) const
 {
   typedef struct stat Stat;
   Stat st;
@@ -2092,180 +2092,329 @@ LBSSolver::ReadRestartData(const std::string& folder_name, const std::string& fi
 }
 
 void
-LBSSolver::WriteGroupsetAngularFluxes(const LBSGroupset& groupset, const std::string& file_base)
+LBSSolver::WriteAngularFluxes(const std::vector<std::vector<double>>& src,
+                              const std::string& file_base) const
 {
+  // Open the file
   std::string file_name = file_base + std::to_string(Chi::mpi.location_id) + ".data";
-
-  // Open file
   std::ofstream file(file_name,
                      std::ofstream::binary |  // binary file
                        std::ofstream::out |   // no accidental reading
-                       std::ofstream::trunc); // clear file contents when opened
+                       std::ofstream::trunc); // clear contents first
+  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  Chi::log.Log() << "Writing angular flux to " << file_base;
 
-  // Check file is open
-  if (not file.is_open())
-  {
-    Chi::log.LogAllWarning() << __FUNCTION__ << "Failed to open " << file_name;
-    return;
-  }
-
-  // Write header
-  std::string header_info = "Chi-Tech LinearBoltzmann::Groupset angular flux file\n"
-                            "Header size: 320 bytes\n"
+  // Write the header
+  const int num_bytes = 500;
+  std::string header_info = "OpenSn LinearBoltzmann::Angular flux file\n"
+                            "Header size: " +
+                            std::to_string(num_bytes) +
+                            " bytes\n"
                             "Structure(type-info):\n"
-                            "size_t-num_local_nodes\n"
-                            "size_t-num_angles\n"
-                            "size_t-num_groups\n"
-                            "size_t-num_records\n"
+                            "uint64_t    num_local_nodes\n"
+                            "uint64_t    num_angles\n"
+                            "uint64_t    num_groups\n"
                             "Each record:\n"
-                            "size_t-cell_global_id\n"
-                            "unsigned int-node_number\n"
-                            "unsigned int-angle_num_\n"
-                            "unsigned int-group_num\n"
-                            "double-angular_flux\n";
+                            "  uint64_t    cell_global_id\n"
+                            "  uint64_t    node\n"
+                            "  uint64_t    angle\n"
+                            "  uint64_t    group\n"
+                            "  double      value\n";
 
   int header_size = (int)header_info.length();
 
-  char header_bytes[320];
-  memset(header_bytes, '-', 320);
-  strncpy(header_bytes, header_info.c_str(), std::min(header_size, 319));
-  header_bytes[319] = '\0';
+  char header_bytes[num_bytes];
+  memset(header_bytes, '-', num_bytes);
+  strncpy(header_bytes, header_info.c_str(), std::min(header_size, num_bytes - 1));
+  header_bytes[num_bytes - 1] = '\0';
 
   file << header_bytes;
 
-  // Get relevant items
-  auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+  // Write macro info
+  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
 
-  size_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
-  size_t num_angles = groupset.quadrature_->abscissae_.size();
-  size_t num_groups = groupset.groups_.size();
-  size_t num_local_dofs = psi_new_local_[groupset.id_].size();
-  auto dof_handler = groupset.psi_uk_man_;
+  const uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_groupsets = groupsets_.size();
 
-  // Write num_ quantities
-  file.write((char*)&num_local_nodes, sizeof(size_t));
-  file.write((char*)&num_angles, sizeof(size_t));
-  file.write((char*)&num_groups, sizeof(size_t));
-  file.write((char*)&num_local_dofs, sizeof(size_t));
+  file.write((char*)&num_local_nodes, sizeof(uint64_t));
+  file.write((char*)&num_groupsets, sizeof(uint64_t));
 
-  auto& sdm = discretization_;
-
-  // Write per dof data
-  size_t dof_count = 0;
-  for (const auto& cell : grid_ptr_->local_cells)
+  // Go through each groupset
+  for (const auto& groupset : groupsets_)
   {
-    const size_t num_nodes = sdm->GetCellNumNodes(cell);
-    for (unsigned int i = 0; i < num_nodes; ++i)
-      for (unsigned int n = 0; n < num_angles; ++n)
-        for (unsigned int g = 0; g < num_groups; ++g)
-        {
-          if (++dof_count > num_local_dofs) goto close_file;
+    // Write macro groupset info
+    const auto& uk_man = groupset.psi_uk_man_;
+    const auto& quadrature = groupset.quadrature_;
 
-          uint64_t dof_map = sdm->MapDOFLocal(cell, i, dof_handler, n, g);
-          double value = psi_new_local_[groupset.id_][dof_map];
+    const uint64_t groupset_id = groupset.id_;
+    const uint64_t num_gs_angles = quadrature->omegas_.size();
+    const uint64_t num_gs_groups = groupset.groups_.size();
 
-          file.write((char*)&cell.global_id_, sizeof(size_t));
-          file.write((char*)&i, sizeof(unsigned int));
-          file.write((char*)&n, sizeof(unsigned int));
-          file.write((char*)&g, sizeof(unsigned int));
-          file.write((char*)&value, sizeof(double));
-        }
+    file.write((char*)&groupset_id, sizeof(uint64_t));
+    file.write((char*)&num_gs_angles, sizeof(uint64_t));
+    file.write((char*)&num_gs_groups, sizeof(uint64_t));
+
+    // Write the groupset angular flux data
+    for (const auto& cell : grid_ptr_->local_cells)
+      for (uint64_t i = 0; i < discretization_->GetCellNumNodes(cell); ++i)
+        for (uint64_t n = 0; n < num_gs_angles; ++n)
+          for (uint64_t g = 0; g < num_gs_groups; ++g)
+          {
+            const uint64_t dof_map = discretization_->MapDOFLocal(cell, i, uk_man, n, g);
+            const double value = src[groupset_id][dof_map];
+
+            file.write((char*)&cell.global_id_, sizeof(uint64_t));
+            file.write((char*)&i, sizeof(uint64_t));
+            file.write((char*)&n, sizeof(uint64_t));
+            file.write((char*)&g, sizeof(uint64_t));
+            file.write((char*)&value, sizeof(double));
+          }
   }
-
-// Clean-up
-close_file:
   file.close();
 }
 
 void
-LBSSolver::ReadGroupsetAngularFluxes(LBSGroupset& groupset, const std::string& file_base)
+LBSSolver::ReadAngularFluxes(const std::string& file_base,
+                             std::vector<std::vector<double>>& dest) const
 {
-  std::string file_name = file_base + std::to_string(Chi::mpi.location_id) + ".data";
-
   // Open file
+  const auto file_name = file_base + std::to_string(Chi::mpi.location_id) + ".data";
   std::ifstream file(file_name,
                      std::ofstream::binary | // binary file
                        std::ofstream::in);   // no accidental writing
+  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  Chi::log.Log() << "Reading angular flux file from" << file_base;
 
-  // Check file is open
-  if (not file.is_open())
+  // Read the header
+  const int num_bytes = 500;
+  char header_bytes[num_bytes];
+  header_bytes[num_bytes - 1] = '\0';
+  file.read(header_bytes, num_bytes - 1);
+
+  // Read macro data and check for compatibility
+  uint64_t file_num_local_nodes;
+  uint64_t file_num_groupsets;
+
+  file.read((char*)&file_num_local_nodes, sizeof(uint64_t));
+  file.read((char*)&file_num_groupsets, sizeof(uint64_t));
+
+  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+  const uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_groupsets = groupsets_.size();
+
+  // clang-format off
+  ChiLogicalErrorIf(file_num_local_nodes != num_local_nodes,
+                  "Incompatible number of local nodes found in file " + file_name + ".");
+  ChiLogicalErrorIf(file_num_groupsets != num_groupsets,
+                  "Incompatible number of groupsets found in file " + file_name + ".");
+  // clang-format on
+
+  // Go through groupsets for reading
+  dest.clear();
+  for (uint64_t gs = 0; gs < file_num_groupsets; ++gs)
   {
-    Chi::log.LogAllWarning() << __FUNCTION__ << "Failed to open " << file_name;
-    return;
-  }
+    // Read the groupset macro info
+    uint64_t file_groupset_id;
+    uint64_t file_num_gs_angles;
+    uint64_t file_num_gs_groups;
 
-  // Get relevant items
-  auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+    file.read((char*)&file_groupset_id, sizeof(uint64_t));
+    file.read((char*)&file_num_gs_angles, sizeof(uint64_t));
+    file.read((char*)&file_num_gs_groups, sizeof(uint64_t));
 
-  size_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
-  size_t num_angles = groupset.quadrature_->abscissae_.size();
-  size_t num_groups = groupset.groups_.size();
-  size_t num_local_dofs = psi_new_local_[groupset.id_].size();
-  std::vector<double>& psi = psi_new_local_[groupset.id_];
-  auto dof_handler = groupset.psi_uk_man_;
+    // Check compatibility with system groupset macro info
+    const auto& groupset = groupsets_.at(file_groupset_id);
+    const auto& uk_man = groupset.psi_uk_man_;
+    const auto& quadrature = groupset.quadrature_;
 
-  size_t file_num_local_nodes;
-  size_t file_num_angles;
-  size_t file_num_groups;
-  size_t file_num_local_dofs;
+    const uint64_t num_gs_angles = quadrature->omegas_.size();
+    const uint64_t num_gs_groups = groupset.groups_.size();
 
-  // Read header
-  Chi::log.Log() << "Reading angular flux file " << file_name;
-  char header_bytes[320];
-  header_bytes[319] = '\0';
-  file.read(header_bytes, 319);
+    // clang-format off
+    ChiLogicalErrorIf(file_groupset_id != dest.size(),
+                      "Incompatible groupset id found in file " + file_name + ". "
+                      "Groupsets must be specified in sequential order.");
+    ChiLogicalErrorIf(file_num_gs_angles != num_gs_angles,
+                      "Incompatible number of groupset angles found in file " + file_name +
+                      " for groupset " + std::to_string(file_groupset_id) + ".");
+    ChiLogicalErrorIf(file_num_gs_groups != num_gs_groups,
+                      "Incompatible number of groupset groups found in file " + file_name +
+                      " for groupset " + std::to_string(file_groupset_id) + ".");
+    // clang-format on
 
-  file.read((char*)&file_num_local_nodes, sizeof(size_t));
-  file.read((char*)&file_num_angles, sizeof(size_t));
-  file.read((char*)&file_num_groups, sizeof(size_t));
-  file.read((char*)&file_num_local_dofs, sizeof(size_t));
+    // Size the groupset angular flux vector
+    const auto num_local_gs_dofs = discretization_->GetNumLocalDOFs(uk_man);
+    dest.emplace_back(num_local_gs_dofs, 0.0);
+    auto& psi = dest.back();
 
-  // Check compatibility
-  if (file_num_local_nodes != num_local_nodes or file_num_angles != num_angles or
-      file_num_groups != num_groups or file_num_local_dofs != num_local_dofs)
-  {
-    std::stringstream outstr;
-    outstr << "num_local_nodes: " << file_num_local_nodes << "\n";
-    outstr << "num_angles     : " << file_num_angles << "\n";
-    outstr << "num_groups     : " << file_num_groups << "\n";
-    outstr << "num_local_dofs : " << file_num_local_dofs << "\n";
-    Chi::log.LogAll() << "Incompatible DOF data found in file " << file_name << "\n"
-                      << outstr.str();
-    file.close();
-    return;
-  }
+    // Read the groupset angular flux data
+    for (uint64_t dof = 0; dof < num_local_gs_dofs; ++dof)
+    {
+      uint64_t cell_global_id;
+      uint64_t node;
+      uint64_t angle;
+      uint64_t group;
+      double value;
 
-  auto& sdm = discretization_;
+      file.read((char*)&cell_global_id, sizeof(uint64_t));
+      file.read((char*)&node, sizeof(uint64_t));
+      file.read((char*)&angle, sizeof(uint64_t));
+      file.read((char*)&group, sizeof(uint64_t));
+      file.read((char*)&value, sizeof(double));
 
-  // Commit to reading the file
-  psi.reserve(file_num_local_dofs);
-  std::set<uint64_t> cells_touched;
-  for (size_t dof = 0; dof < file_num_local_dofs; ++dof)
+      const auto& cell = grid_ptr_->cells[cell_global_id];
+      const auto imap = discretization_->MapDOFLocal(cell, node, uk_man, angle, group);
+      psi[imap] = value;
+    } // for dof
+  }   // for groupset gs
+  file.close();
+}
+
+void
+LBSSolver::WriteGroupsetAngularFluxes(const LBSGroupset& groupset,
+                                      const std::vector<double>& src,
+                                      const std::string& file_base) const
+{
+  // Open file
+  const auto file_name = file_base + std::to_string(Chi::mpi.location_id) + ".data";
+  std::ofstream file(file_name,
+                     std::ofstream::binary |  // binary file
+                       std::ofstream::out |   // no accidental reading
+                       std::ofstream::trunc); // clear file contents when opened
+  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  Chi::log.Log() << "Writing groupset " << groupset.id_ << " angular flux file to " << file_base;
+
+  // Write header
+  const int num_bytes = 320;
+  std::string header_info = "OpenSn LinearBoltzmannSolver::Groupset angular flux file\n"
+                            "Header size: " +
+                            std::to_string(num_bytes) +
+                            " bytes\n"
+                            "Structure(type-info):\n"
+                            "uint64_t   num_local_nodes\n"
+                            "uint64_t   num_angles\n"
+                            "uint64_t   num_groups\n"
+                            "Each record:\n"
+                            "  uint64_t   cell_global_id\n"
+                            "  uint64_t   node\n"
+                            "  uint64_t   angle\n"
+                            "  uint64_t   group\n"
+                            "  double     value\n";
+
+  int header_size = (int)header_info.length();
+
+  char header_bytes[num_bytes];
+  memset(header_bytes, '-', num_bytes);
+  strncpy(header_bytes, header_info.c_str(), std::min(header_size, num_bytes - 1));
+  header_bytes[num_bytes - 1] = '\0';
+
+  file << header_bytes;
+
+  // Write macro info
+  const auto& uk_man = groupset.psi_uk_man_;
+  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+
+  const uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_gs_angles = groupset.quadrature_->abscissae_.size();
+  const uint64_t num_gs_groups = groupset.groups_.size();
+  const auto num_local_gs_dofs = discretization_->GetNumLocalDOFs(uk_man);
+
+  // clang-format off
+  ChiLogicalErrorIf(src.size() != num_local_gs_dofs,
+                    "Incompatible angular flux vector provided for groupset " +
+                    std::to_string(groupset.id_) + ".");
+  // clang-format on
+
+  file.write((char*)&num_local_nodes, sizeof(uint64_t));
+  file.write((char*)&num_gs_angles, sizeof(uint64_t));
+  file.write((char*)&num_gs_groups, sizeof(uint64_t));
+
+  // Write the groupset angular flux data
+  for (const auto& cell : grid_ptr_->local_cells)
+    for (uint64_t i = 0; i < discretization_->GetCellNumNodes(cell); ++i)
+      for (uint64_t n = 0; n < num_gs_angles; ++n)
+        for (uint64_t g = 0; g < num_gs_groups; ++g)
+        {
+          const uint64_t dof_map = discretization_->MapDOFLocal(cell, i, uk_man, n, g);
+          const double value = src[dof_map];
+
+          file.write((char*)&cell.global_id_, sizeof(uint64_t));
+          file.write((char*)&i, sizeof(uint64_t));
+          file.write((char*)&n, sizeof(uint64_t));
+          file.write((char*)&g, sizeof(uint64_t));
+          file.write((char*)&value, sizeof(double));
+        }
+  file.close();
+}
+
+void
+LBSSolver::ReadGroupsetAngularFluxes(const std::string& file_base,
+                                     const LBSGroupset& groupset,
+                                     std::vector<double>& dest) const
+{
+  // Open file
+  const auto file_name = file_base + std::to_string(Chi::mpi.location_id) + ".data";
+  std::ifstream file(file_name,
+                     std::ofstream::binary | // binary file
+                       std::ofstream::in);   // no accidental writing
+  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  Chi::log.Log() << "Reading groupset " << groupset.id_ << " angular flux file " << file_base;
+
+  // Read the header
+  const int num_bytes = 320;
+  char header_bytes[num_bytes];
+  header_bytes[num_bytes - 1] = '\0';
+  file.read(header_bytes, num_bytes - 1);
+
+  // Read the macro info
+  uint64_t file_num_local_nodes;
+  uint64_t file_num_gs_angles;
+  uint64_t file_num_gs_groups;
+
+  file.read((char*)&file_num_local_nodes, sizeof(uint64_t));
+  file.read((char*)&file_num_gs_angles, sizeof(uint64_t));
+  file.read((char*)&file_num_gs_groups, sizeof(uint64_t));
+
+  // Check compatibility with system macro info
+  const auto& uk_man = groupset.psi_uk_man_;
+  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+
+  const uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_gs_angles = groupset.quadrature_->abscissae_.size();
+  const uint64_t num_gs_groups = groupset.groups_.size();
+  const auto num_local_gs_dofs = discretization_->GetNumLocalDOFs(uk_man);
+
+  // clang-format off
+  ChiLogicalErrorIf(file_num_local_nodes != num_local_nodes,
+                    "Incompatible number of local nodes found in file " + file_name + ".");
+  ChiLogicalErrorIf(file_num_gs_angles != num_gs_angles,
+                    "Incompatible number of groupset angles found in file " + file_name +
+                    " for groupset " + std::to_string(groupset.id_) + ".");
+  ChiLogicalErrorIf(file_num_gs_groups != num_gs_groups,
+                    "Incompatible number of groupset groups found in file " + file_name +
+                    " for groupset " + std::to_string(groupset.id_) + ".");
+  // clang-format on
+
+  // Read the angular flux data
+  dest.assign(num_local_gs_dofs, 0.0);
+  for (uint64_t dof = 0; dof < num_local_gs_dofs; ++dof)
   {
     uint64_t cell_global_id;
-    unsigned int node;
-    unsigned int angle_num;
-    unsigned int group;
+    uint64_t node;
+    uint64_t angle;
+    uint64_t group;
     double psi_value;
 
     file.read((char*)&cell_global_id, sizeof(uint64_t));
-    file.read((char*)&node, sizeof(unsigned int));
-    file.read((char*)&angle_num, sizeof(unsigned int));
-    file.read((char*)&group, sizeof(unsigned int));
+    file.read((char*)&node, sizeof(uint64_t));
+    file.read((char*)&angle, sizeof(uint64_t));
+    file.read((char*)&group, sizeof(uint64_t));
     file.read((char*)&psi_value, sizeof(double));
 
-    cells_touched.insert(cell_global_id);
-
     const auto& cell = grid_ptr_->cells[cell_global_id];
-
-    size_t imap = sdm->MapDOFLocal(cell, node, dof_handler, angle_num, group);
-
-    psi[imap] = psi_value;
+    const auto imap = discretization_->MapDOFLocal(cell, node, uk_man, angle, group);
+    dest[imap] = psi_value;
   }
-
-  Chi::log.LogAll() << "Number of cells read: " << cells_touched.size();
-
-  // Clean-up
   file.close();
 }
 
@@ -2288,85 +2437,79 @@ LBSSolver::MakeSourceMomentsFromPhi()
 }
 
 void
-LBSSolver::WriteFluxMoments(const std::string& file_base, const std::vector<double>& flux_moments)
+LBSSolver::WriteFluxMoments(const std::vector<double>& src, const std::string& file_base) const
 {
-  std::string file_name = file_base + std::to_string(Chi::mpi.location_id) + ".data";
-
   // Open file
-  Chi::log.Log() << "Writing flux-moments to files with base-name " << file_base
-                 << " and extension .data";
+  std::string file_name = file_base + std::to_string(Chi::mpi.location_id) + ".data";
   std::ofstream file(file_name,
                      std::ofstream::binary |  // binary file
                        std::ofstream::out |   // no accidental reading
                        std::ofstream::trunc); // clear file contents when opened
+  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  Chi::log.Log() << "Writing flux moments to " << file_base;
 
-  // Check file is open
-  if (not file.is_open())
-  {
-    Chi::log.LogAllWarning() << __FUNCTION__ << "Failed to open " << file_name;
-    return;
-  }
-
-  // Write header
-  std::string header_info = "Chi-Tech LinearBoltzmann: Flux moments file\n"
-                            "Header size: 500 bytes\n"
+  // Write the header
+  const int num_bytes = 500;
+  std::string header_info = "OpenSn LinearBoltzmannSolver: Flux moments file\n"
+                            "Header size: " +
+                            std::to_string(num_bytes) +
+                            " bytes\n"
                             "Structure(type-info):\n"
-                            "uint64_t num_local_nodes\n"
-                            "uint64_t num_moments\n"
-                            "uint64_t num_groups\n"
-                            "uint64_t num_records\n"
-                            "uint64_t num_cells\n"
+                            "uint64_t    num_local_cells\n"
+                            "uint64_t    num_local_nodes\n"
+                            "uint64_t    num_moments\n"
+                            "uint64_t    num_groups\n"
                             "Each cell:\n"
-                            "  uint64_t cell_global_id\n"
-                            "  uint64_t num_nodes\n"
+                            "  uint64_t    cell_global_id\n"
+                            "  uint64_t    num_cell_nodes\n"
                             "  Each node:\n"
                             "    double   x_position\n"
                             "    double   y_position\n"
                             "    double   z_position\n"
                             "Each record:\n"
-                            "  uint64_t     cell_global_id\n"
-                            "  unsigned int node_number\n"
-                            "  unsigned int moment_num\n"
-                            "  unsigned int group_num\n"
-                            "  double       flux_moment_value\n";
+                            "  uint64_t    cell_global_id\n"
+                            "  uint64_t    node\n"
+                            "  uint64_t    moment\n"
+                            "  uint64_t    group\n"
+                            "  double      value\n";
 
   int header_size = (int)header_info.length();
 
-  char header_bytes[500];
-  memset(header_bytes, '-', 500);
-  strncpy(header_bytes, header_info.c_str(), std::min(header_size, 499));
-  header_bytes[499] = '\0';
+  char header_bytes[num_bytes];
+  memset(header_bytes, '-', num_bytes);
+  strncpy(header_bytes, header_info.c_str(), std::min(header_size, num_bytes - 1));
+  header_bytes[num_bytes - 1] = '\0';
 
   file << header_bytes;
 
-  // Get relevant items
-  auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
-  auto& sdm = discretization_;
-  uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
-  uint64_t num_moments_t = static_cast<uint64_t>(num_moments_);
-  uint64_t num_groups_t = static_cast<uint64_t>(num_groups_);
-  uint64_t num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
-  uint64_t num_local_cells = grid_ptr_->local_cells.size();
+  // Write macro data
+  const auto& uk_man = flux_moments_uk_man_;
+  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
 
-  // Write num_ quantities
-  file.write((char*)&num_local_nodes, sizeof(uint64_t));
-  file.write((char*)&num_moments_t, sizeof(uint64_t));
-  file.write((char*)&num_groups_t, sizeof(uint64_t));
-  file.write((char*)&num_local_dofs, sizeof(uint64_t));
+  const uint64_t num_local_cells = grid_ptr_->local_cells.size();
+  const uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_moments = num_moments_;
+  const uint64_t num_groups = num_groups_;
+
+  const auto num_local_dofs = discretization_->GetNumLocalDOFs(uk_man);
+  ChiLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided..");
+
   file.write((char*)&num_local_cells, sizeof(uint64_t));
+  file.write((char*)&num_local_nodes, sizeof(uint64_t));
+  file.write((char*)&num_moments, sizeof(uint64_t));
+  file.write((char*)&num_groups, sizeof(uint64_t));
 
-  // Write nodal positions for
-  //                                              each cell
+  // Write nodal positions
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    uint64_t cell_global_id = static_cast<uint64_t>(cell.global_id_);
+    const uint64_t cell_global_id = cell.global_id_;
+    const uint64_t num_cell_nodes = discretization_->GetCellNumNodes(cell);
+
     file.write((char*)&cell_global_id, sizeof(uint64_t));
+    file.write((char*)&num_cell_nodes, sizeof(uint64_t));
 
-    uint64_t num_nodes = discretization_->GetCellNumNodes(cell);
-    file.write((char*)&num_nodes, sizeof(uint64_t));
-
-    auto node_locations = discretization_->GetCellNodeLocations(cell);
-    for (const auto& node : node_locations)
+    const auto nodes = discretization_->GetCellNodeLocations(cell);
+    for (const auto& node : nodes)
     {
       file.write((char*)&node.x, sizeof(double));
       file.write((char*)&node.y, sizeof(double));
@@ -2374,196 +2517,157 @@ LBSSolver::WriteFluxMoments(const std::string& file_base, const std::vector<doub
     } // for node
   }   // for cell
 
-  // Write per dof data
+  // Write flux moments data
   for (const auto& cell : grid_ptr_->local_cells)
-    for (unsigned int i = 0; i < sdm->GetCellNumNodes(cell); ++i)
-      for (unsigned int m = 0; m < num_moments_t; ++m)
-        for (unsigned int g = 0; g < num_groups_; ++g)
+    for (uint64_t i = 0; i < discretization_->GetCellNumNodes(cell); ++i)
+      for (uint64_t m = 0; m < num_moments; ++m)
+        for (uint64_t g = 0; g < num_groups; ++g)
         {
-          uint64_t cell_global_id = cell.global_id_;
-          uint64_t dof_map = sdm->MapDOFLocal(cell, i, flux_moments_uk_man_, m, g);
-
-          assert(dof_map < flux_moments.size());
-          double value = flux_moments[dof_map];
+          const uint64_t cell_global_id = cell.global_id_;
+          const uint64_t dof_map = discretization_->MapDOFLocal(cell, i, uk_man, m, g);
+          const double value = src[dof_map];
 
           file.write((char*)&cell_global_id, sizeof(uint64_t));
-          file.write((char*)&i, sizeof(unsigned int));
-          file.write((char*)&m, sizeof(unsigned int));
-          file.write((char*)&g, sizeof(unsigned int));
+          file.write((char*)&i, sizeof(uint64_t));
+          file.write((char*)&m, sizeof(uint64_t));
+          file.write((char*)&g, sizeof(uint64_t));
           file.write((char*)&value, sizeof(double));
         }
-
-  // Clean-up
   file.close();
 }
 
 void
 LBSSolver::ReadFluxMoments(const std::string& file_base,
-                           std::vector<double>& flux_moments,
-                           bool single_file)
+                           std::vector<double>& dest,
+                           bool single_file) const
 {
-  std::string file_name = file_base + std::to_string(Chi::mpi.location_id) + ".data";
-  if (single_file) file_name = file_base + ".data";
-
   // Open file
-  Chi::log.Log() << "Reading flux-moments file " << file_name;
+  const auto file_name =
+    file_base + (single_file ? "" : std::to_string(Chi::mpi.location_id)) + ".data";
   std::ifstream file(file_name,
                      std::ofstream::binary | // binary file
                        std::ofstream::in);   // no accidental writing
+  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  Chi::log.Log() << "Reading flux moments from " << file_base;
 
-  // Check file is open
-  if (not file.is_open())
-  {
-    Chi::log.LogAllWarning() << __FUNCTION__ << "Failed to open " << file_name;
-    return;
-  }
+  // Read the header
+  const int num_bytes = 500;
+  char header_bytes[num_bytes];
+  header_bytes[num_bytes - 1] = '\0';
+  file.read(header_bytes, num_bytes - 1);
 
-  // Get relevant items
-  auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
-  auto& sdm = discretization_;
-  uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
-  uint64_t num_moments_t = static_cast<uint64_t>(num_moments_);
-  uint64_t num_groups_t = static_cast<uint64_t>(num_groups_);
-  uint64_t num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
-  uint64_t num_local_cells = grid_ptr_->local_cells.size();
-
+  // Read the macro info
+  uint64_t file_num_local_cells;
   uint64_t file_num_local_nodes;
   uint64_t file_num_moments;
   uint64_t file_num_groups;
-  uint64_t file_num_local_dofs;
-  uint64_t file_num_local_cells;
 
-  flux_moments.assign(num_local_dofs, 0.0);
-
-  // Read header
-  char header_bytes[500];
-  header_bytes[499] = '\0';
-  file.read(header_bytes, 499);
-
+  file.read((char*)&file_num_local_cells, sizeof(uint64_t));
   file.read((char*)&file_num_local_nodes, sizeof(uint64_t));
   file.read((char*)&file_num_moments, sizeof(uint64_t));
   file.read((char*)&file_num_groups, sizeof(uint64_t));
-  file.read((char*)&file_num_local_dofs, sizeof(uint64_t));
-  file.read((char*)&file_num_local_cells, sizeof(uint64_t));
 
-  // Check compatibility
-  if (not single_file)
-    if (file_num_local_nodes != num_local_nodes or file_num_moments != num_moments_t or
-        file_num_groups != num_groups_t or file_num_local_dofs != num_local_dofs or
-        file_num_local_cells != num_local_cells)
-    {
-      std::stringstream outstr;
-      outstr << "num_local_nodes: " << file_num_local_nodes << " vs " << num_local_nodes << "\n";
-      outstr << "num_moments_    : " << file_num_moments << " vs " << num_moments_t << "\n";
-      outstr << "num_groups     : " << file_num_groups << " vs " << num_groups_ << "\n";
-      outstr << "num_local_dofs : " << file_num_local_dofs << " vs " << num_local_dofs << "\n";
-      outstr << "num_local_cells: " << file_num_local_cells << " vs " << num_local_cells << "\n";
-      Chi::log.LogAll() << "Incompatible DOF data found in file " << file_name << "\n"
-                        << "File data vs system:\n"
-                        << outstr.str();
-      file.close();
-      return;
-    }
+  // Check compatibility with system macro info
+  const auto uk_man = flux_moments_uk_man_;
+  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+
+  const uint64_t num_local_cells = grid_ptr_->local_cells.size();
+  const uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
+  const auto num_local_dofs = discretization_->GetNumLocalDOFs(uk_man);
+
+  // clang-format off
+  ChiLogicalErrorIf(file_num_local_cells != num_local_cells,
+                    "Incompatible number of cells found in " + file_name + ".");
+  ChiLogicalErrorIf(file_num_local_nodes != num_local_nodes,
+                    "Incompatible number of nodes found in file " + file_name + ".");
+  ChiLogicalErrorIf(file_num_moments != num_moments_,
+                    "Incompatible number of moments found in file " + file_name + ".");
+  ChiLogicalErrorIf(file_num_groups != num_groups_,
+                    "Incompatible number of groups found in file " + file_name + ".");
+  // clang-format on
 
   // Read cell nodal locations
   std::map<uint64_t, std::map<uint64_t, uint64_t>> file_cell_nodal_mapping;
   for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
     // Read cell-id and num_nodes
-    uint64_t cell_global_id;
-    uint64_t num_nodes;
+    uint64_t file_cell_global_id;
+    uint64_t file_num_cell_nodes;
 
-    file.read((char*)&cell_global_id, sizeof(uint64_t));
-    file.read((char*)&num_nodes, sizeof(uint64_t));
+    file.read((char*)&file_cell_global_id, sizeof(uint64_t));
+    file.read((char*)&file_num_cell_nodes, sizeof(uint64_t));
 
     // Read node locations
-    std::vector<Vector3> file_node_locations;
-    file_node_locations.reserve(num_nodes);
-    for (uint64_t n = 0; n < num_nodes; ++n)
+    std::vector<Vector3> file_nodes;
+    file_nodes.reserve(file_num_cell_nodes);
+    for (uint64_t i = 0; i < file_num_cell_nodes; ++i)
     {
       double x, y, z;
       file.read((char*)&x, sizeof(double));
       file.read((char*)&y, sizeof(double));
       file.read((char*)&z, sizeof(double));
 
-      file_node_locations.emplace_back(x, y, z);
-    } // for file node n
+      file_nodes.emplace_back(x, y, z);
+    } // for file node i
 
-    if (not grid_ptr_->IsCellLocal(cell_global_id)) continue;
+    if (not grid_ptr_->IsCellLocal(file_cell_global_id)) continue;
 
-    const auto& cell = grid_ptr_->cells[cell_global_id];
+    const auto& cell = grid_ptr_->cells[file_cell_global_id];
 
-    // Now map file nodes to system nodes
-    auto system_node_locations = discretization_->GetCellNodeLocations(cell);
-    std::map<uint64_t, uint64_t> mapping;
+    // Check for cell compatibility
+    const auto nodes = discretization_->GetCellNodeLocations(cell);
 
-    // Check num_nodes equal
-    if (system_node_locations.size() != num_nodes)
-      throw std::logic_error(std::string(__FUNCTION__) +
-                             ": Incompatible number of nodes for a cell was encountered. Mapping "
-                             "could not be performed.");
+    // clang-format off
+    ChiLogicalErrorIf(nodes.size() != file_num_cell_nodes,
+                      "Incompatible number of cell nodes encountered on cell " +
+                      std::to_string(file_cell_global_id) + ".");
+    // clang-format on
 
-    bool mapping_successful = true; // Assume true, now try to disprove
-
-    const auto& sys_nodes = system_node_locations;
-    const auto& file_nodes = file_node_locations;
-    size_t num_system_nodes = system_node_locations.size();
-
-    for (uint64_t n = 0; n < num_nodes; ++n)
+    // Map the system nodes to file nodes
+    bool mapping_successful = true; // true until disproven
+    auto& mapping = file_cell_nodal_mapping[file_cell_global_id];
+    for (uint64_t n = 0; n < file_num_cell_nodes; ++n)
     {
       bool mapping_found = false;
-      for (uint64_t m = 0; m < num_system_nodes; ++m)
-        if ((sys_nodes[m] - file_nodes[n]).NormSquare() < 1.0e-12)
+      for (uint64_t m = 0; m < nodes.size(); ++m)
+        if ((nodes[m] - file_nodes[n]).NormSquare() < 1.0e-12)
         {
           mapping[n] = m;
           mapping_found = true;
         }
 
-      if (not mapping_found)
-      {
-        mapping_successful = false;
-        break;
-      }
+      // clang-format off
+      ChiLogicalErrorIf(not mapping_found,
+                        "Incompatible node locations for cell " +
+                        std::to_string(file_cell_global_id) + ".");
+      // clang-format on
     } // for n
+  }   // for c (cell in file)
 
-    if (not mapping_successful)
-      throw std::logic_error(std::string(__FUNCTION__) +
-                             ": Incompatible node locations for a cell was encountered. Mapping "
-                             "unsuccessful.");
-
-    file_cell_nodal_mapping[cell_global_id] = std::move(mapping);
-  } // for c (cell in file)
-
-  // Commit to reading the file
-  for (size_t dof = 0; dof < file_num_local_dofs; ++dof)
+  // Read the flux moments data
+  dest.assign(num_local_dofs, 0.0);
+  for (size_t dof = 0; dof < num_local_dofs; ++dof)
   {
     uint64_t cell_global_id;
-    unsigned int node;
-    unsigned int moment;
-    unsigned int group;
+    uint64_t node;
+    uint64_t moment;
+    uint64_t group;
     double flux_value;
 
     file.read((char*)&cell_global_id, sizeof(uint64_t));
-    file.read((char*)&node, sizeof(unsigned int));
-    file.read((char*)&moment, sizeof(unsigned int));
-    file.read((char*)&group, sizeof(unsigned int));
+    file.read((char*)&node, sizeof(uint64_t));
+    file.read((char*)&moment, sizeof(uint64_t));
+    file.read((char*)&group, sizeof(uint64_t));
     file.read((char*)&flux_value, sizeof(double));
 
     if (grid_ptr_->IsCellLocal(cell_global_id))
     {
       const auto& cell = grid_ptr_->cells[cell_global_id];
-      const auto& node_mapping = file_cell_nodal_mapping.at(cell_global_id);
-
-      size_t node_mapped = node_mapping.at(node);
-
-      size_t dof_map = sdm->MapDOFLocal(cell, node_mapped, flux_moments_uk_man_, moment, group);
-
-      assert(dof_map < flux_moments.size());
-      flux_moments[dof_map] = flux_value;
+      const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(node);
+      const auto dof_map = discretization_->MapDOFLocal(cell, imap, uk_man, moment, group);
+      dest[dof_map] = flux_value;
     } // if cell is local
   }   // for dof
-
-  // Clean-up
   file.close();
 }
 
@@ -2834,7 +2938,7 @@ LBSSolver::ComputePrecursors()
     const auto& nu_delayed_sigma_f = xs.NuDelayedSigmaF();
 
     // Loop over precursors
-    for (unsigned int j = 0; j < xs.NumPrecursors(); ++j)
+    for (uint64_t j = 0; j < xs.NumPrecursors(); ++j)
     {
       size_t dof = cell.local_id_ * J + j;
       const auto& precursor = precursors[j];
