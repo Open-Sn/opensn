@@ -2,17 +2,15 @@
 
 #include "framework/math/quadratures/quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
-class QuadratureGaussLegendre;
-}
 
 /**Gauss-Legendre quadrature.*/
-class chi_math::QuadratureGaussLegendre : public chi_math::Quadrature
+class QuadratureGaussLegendre : public Quadrature
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit QuadratureGaussLegendre(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit QuadratureGaussLegendre(const InputParameters& params);
   /**Populates the abscissae and weights for a Gauss-Legendre
    * quadrature given the degree \f$ p \f$ of the mononomial such that
    * the quadrature rule integrates exactly the weighted integrand
@@ -56,3 +54,5 @@ private:
   static std::vector<double>
   FindRoots(unsigned int N, unsigned int max_iters = 1000, double tol = 1.0e-12);
 };
+
+} // namespace opensn

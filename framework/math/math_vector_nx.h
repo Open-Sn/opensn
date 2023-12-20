@@ -1,17 +1,5 @@
 #pragma once
 
-namespace chi_mesh
-{
-struct TensorRank2Dim3;
-struct Vector3;
-} // namespace chi_mesh
-
-namespace chi_math
-{
-template <int R, int N, class NumberFormat>
-struct TensorRNX;
-}
-
 #include "framework/mesh/mesh_vector.h"
 
 #include <iostream>
@@ -23,8 +11,12 @@ struct TensorRNX;
 
 #include <type_traits>
 
-namespace chi_math
+namespace opensn
 {
+struct TensorRank2Dim3;
+struct Vector3;
+template <int R, int N, class NumberFormat>
+struct TensorRNX;
 
 /**Generalized vector notion.
  * \author Jerry, Jan.*/
@@ -52,8 +44,8 @@ struct VectorNX
     elements.fill(value);
   }
 
-  /** Constructor with chi_mesh::Vector3. */
-  VectorNX(const chi_mesh::Vector3& that) : dimension(N)
+  /** Constructor with Vector3. */
+  VectorNX(const Vector3& that) : dimension(N)
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
                   "Only floating point number formats are supported for VectorNX.");
@@ -67,9 +59,9 @@ struct VectorNX
   /** Constructor with array of values. This allows constructors of the
    * form:
    * \code
-   * chi_math::Vector3 ihat({1.0,0.0});
-   * chi_math::Vector3 jhat({0.0,1.0,0.0,1.0});
-   * chi_math::Vector3 khat({0.0,0.0,1.0});
+   * Vector3 ihat({1.0,0.0});
+   * Vector3 jhat({0.0,1.0,0.0,1.0});
+   * Vector3 khat({0.0,0.0,1.0});
    * \endcode */
   VectorNX(const std::vector<NumberFormat>& values) : dimension(N)
   {
@@ -89,8 +81,8 @@ struct VectorNX
     return *this;
   }
 
-  /**Component-wise from chi_mesh::Vector3.*/
-  VectorNX& operator=(const chi_mesh::Vector3& rhs)
+  /**Component-wise from Vector3.*/
+  VectorNX& operator=(const Vector3& rhs)
   {
     for (int i = 0; (i < N) and (i < 3); ++i)
       elements[i] = rhs[i];
@@ -276,8 +268,7 @@ struct VectorNX
    * \f$ \vec{w} = \vec{x} \times \vec{y} \f$*/
   VectorNX<3, NumberFormat> Cross(const VectorNX<2, NumberFormat>& rhs)
   {
-    static_assert(N == 2 or N == 3,
-                  "chi_math::VectorNX::Cross only defined for dimension 2 or 3 vectors.");
+    static_assert(N == 2 or N == 3, "VectorNX::Cross only defined for dimension 2 or 3 vectors.");
 
     VectorNX<3, NumberFormat> newVector;
     if (dimension == 3)
@@ -296,8 +287,7 @@ struct VectorNX
    * \f$ \vec{w} = \vec{x} \times \vec{y} \f$*/
   VectorNX<3, NumberFormat> Cross(const VectorNX<3, NumberFormat>& rhs)
   {
-    static_assert(N == 2 or N == 3,
-                  "chi_math::VectorNX::Cross only defined for dimension 2 or 3 vectors.");
+    static_assert(N == 2 or N == 3, "VectorNX::Cross only defined for dimension 2 or 3 vectors.");
 
     VectorNX<3, NumberFormat> newVector;
     if (dimension == 3)
@@ -329,7 +319,7 @@ struct VectorNX
 
   /**Vector dot-product.
    * \f$ \vec{w} = \vec{x} \bullet \vec{y} \f$ */
-  NumberFormat Dot(const chi_mesh::Vector3& rhs) const
+  NumberFormat Dot(const Vector3& rhs) const
   {
     NumberFormat value = 0.0;
     for (int i = 0; (i < N) and (i < 3); ++i)
@@ -457,17 +447,17 @@ template <int N>
 using VectorN = VectorNX<N, double>;
 
 using Vector2 = VectorN<2>;
-using Vector3 = VectorN<3>;
-
-} // namespace chi_math
+// using Vector3 = VectorN<3>;
 
 /**Multiplication by a scalar from the left.*/
 template <int N, class NumberFormat>
-chi_math::VectorNX<N, NumberFormat>
-operator*(const double value, const chi_math::VectorNX<N, NumberFormat>& that)
+VectorNX<N, NumberFormat>
+operator*(const double value, const VectorNX<N, NumberFormat>& that)
 {
-  chi_math::VectorNX<N, NumberFormat> newVector;
+  VectorNX<N, NumberFormat> newVector;
   for (int i = 0; i < N; ++i)
     newVector.elements[i] = that.elements[i] * value;
   return newVector;
 }
+
+} // namespace opensn

@@ -2,7 +2,7 @@
 
 #include "framework/parameters/input_parameters.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 class LogicalVolume;
@@ -14,9 +14,9 @@ class LogicalVolume;
 class LogicalVolumeInterface
 {
 protected:
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
-  explicit LogicalVolumeInterface(const chi::InputParameters& params);
+  explicit LogicalVolumeInterface(const InputParameters& params);
 
   const LogicalVolume* GetLogicalVolume() const;
 
@@ -24,4 +24,4 @@ private:
   const std::shared_ptr<const LogicalVolume> logical_volume_;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

@@ -7,13 +7,13 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_physics
+namespace opensn
 {
 
-chi::InputParameters
+InputParameters
 Solver::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   params.AddRequiredParameter<std::string>(
     "name",
@@ -32,7 +32,6 @@ Solver::GetInputParameters()
                               "Handle to a timestepper. If not supplied then a ConstantTimeStepper "
                               "will be created.");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("dt", AllowableRangeLowLimit::New(1.0e-12));
 
   return params;
@@ -50,7 +49,7 @@ Solver::Solver(std::string in_text_name, std::initializer_list<BasicOption> in_o
 {
 }
 
-Solver::Solver(const chi::InputParameters& params)
+Solver::Solver(const InputParameters& params)
   : ChiObject(params),
     timestepper_(InitTimeStepper(params)),
     text_name_(params.GetParamValue<std::string>("name"))
@@ -58,7 +57,7 @@ Solver::Solver(const chi::InputParameters& params)
 }
 
 std::shared_ptr<TimeStepper>
-Solver::InitTimeStepper(const chi::InputParameters& params)
+Solver::InitTimeStepper(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
 
@@ -81,7 +80,7 @@ Solver::InitTimeStepper(const chi::InputParameters& params)
 
     const std::string obj_type = "chi_physics::ConstantTimeStepper";
     auto valid_params = factory.GetRegisteredObjectParameters(obj_type);
-    chi::ParameterBlock custom_params;
+    ParameterBlock custom_params;
 
     if (params.NumParameters() != 0)
     {
@@ -170,26 +169,26 @@ Solver::Advance()
   Chi::log.Log() << "\"Advance()\" method not defined for " << TextName();
 }
 
-chi::ParameterBlock
-Solver::GetInfo(const chi::ParameterBlock& params) const
+ParameterBlock
+Solver::GetInfo(const ParameterBlock& params) const
 {
-  return chi::ParameterBlock{};
+  return ParameterBlock{};
 }
 
-chi::ParameterBlock
-Solver::GetInfoWithPreCheck(const chi::ParameterBlock& params) const
+ParameterBlock
+Solver::GetInfoWithPreCheck(const ParameterBlock& params) const
 {
   if (not params.Has("name"))
   {
     Chi::log.LogAllWarning() << "chi_physics::Solver::GetInfo called without "
                                 "\"name\" in the parameter list";
-    return chi::ParameterBlock{};
+    return ParameterBlock{};
   }
   return GetInfo(params);
 }
 
 void
-Solver::SetProperties(const chi::ParameterBlock& params)
+Solver::SetProperties(const ParameterBlock& params)
 {
   for (const auto& param : params)
   {
@@ -204,4 +203,4 @@ Solver::SetProperties(const chi::ParameterBlock& params)
   }
 }
 
-} // namespace chi_physics
+} // namespace opensn

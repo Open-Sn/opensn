@@ -7,7 +7,9 @@
 
 #include "framework/console/console.h"
 
-namespace lbs::adjoint_lua_utils
+using namespace opensn;
+
+namespace opensnlua::lbs
 {
 
 RegisterLuaFunctionAsIs(chiAdjointSolverAddResponseFunction);
@@ -39,11 +41,11 @@ chiAdjointSolverAddResponseFunction(lua_State* L)
     lua_function = lua_tostring(L, 4);
   }
 
-  auto& solver =
-    Chi::GetStackItem<lbs::DiscreteOrdinatesAdjointSolver>(Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::Chi::GetStackItem<opensn::lbs::DiscreteOrdinatesAdjointSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
-  auto p_logical_volume = std::dynamic_pointer_cast<chi_mesh::LogicalVolume>(
-    Chi::GetStackItemPtr(Chi::object_stack, logvol_handle, fname));
+  auto p_logical_volume = std::dynamic_pointer_cast<LogicalVolume>(
+    opensn::Chi::GetStackItemPtr(opensn::Chi::object_stack, logvol_handle, fname));
 
   size_t qoi_index = solver.AddResponseFunction(qoi_name, p_logical_volume, lua_function);
   lua_pushinteger(L, static_cast<lua_Integer>(qoi_index));
@@ -51,4 +53,4 @@ chiAdjointSolverAddResponseFunction(lua_State* L)
   return 1;
 }
 
-} // namespace lbs::adjoint_lua_utils
+} // namespace opensnlua::lbs

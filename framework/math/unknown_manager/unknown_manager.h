@@ -4,7 +4,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace chi_math
+namespace opensn
 {
 
 /**Different types of variables.*/
@@ -216,4 +216,4 @@ public:
   ~UnknownManager() = default;
 };
 
-} // namespace chi_math
+} // namespace opensn

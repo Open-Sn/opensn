@@ -7,15 +7,9 @@
 
 #include "framework/mesh/sweep_utilities/fluds/fluds_common_data.h"
 
-namespace chi_mesh
+namespace opensn
 {
 class GridFaceHistogram;
-
-} // namespace chi_mesh
-
-namespace chi_mesh::sweep_management
-{
-
 class SPDS;
 
 class FLUDS
@@ -63,4 +57,4 @@ protected:
   const SPDS& spds_;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

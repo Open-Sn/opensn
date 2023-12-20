@@ -2,6 +2,8 @@
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -11,7 +13,7 @@ class CBC_ASynchronousCommunicator;
 struct CBC_SweepDependencyInterface : public SweepDependencyInterface
 {
   CBC_FLUDS* fluds_ = nullptr;
-  const chi_mesh::Cell* neighbor_cell_ptr_ = nullptr;
+  const Cell* neighbor_cell_ptr_ = nullptr;
 
   /**Upwind angular flux*/
   const std::vector<double>* psi_upwnd_data_block_ = nullptr;
@@ -25,7 +27,7 @@ struct CBC_SweepDependencyInterface : public SweepDependencyInterface
   const CellLBSView* cell_transport_view_;
 
   // Set using SetupIncomingFace
-  const chi_mesh::sweep_management::FaceNodalMapping* face_nodal_mapping_ = nullptr;
+  const FaceNodalMapping* face_nodal_mapping_ = nullptr;
 
   const double* GetUpwindPsi(int face_node_local_idx) const override;
   double* GetDownwindPsi(int face_node_local_idx) const override;
@@ -47,8 +49,8 @@ class CBC_SweepChunk : public SweepChunk
 public:
   CBC_SweepChunk(std::vector<double>& destination_phi,
                  std::vector<double>& destination_psi,
-                 const chi_mesh::MeshContinuum& grid,
-                 const chi_math::SpatialDiscretization& discretization,
+                 const MeshContinuum& grid,
+                 const SpatialDiscretization& discretization,
                  const std::vector<UnitCellMatrices>& unit_cell_matrices,
                  std::vector<lbs::CellLBSView>& cell_transport_views,
                  const std::vector<double>& source_moments,
@@ -57,21 +59,21 @@ public:
                  int num_moments,
                  int max_num_cell_dofs);
 
-  void SetAngleSet(chi_mesh::sweep_management::AngleSet& angle_set) override;
+  void SetAngleSet(AngleSet& angle_set) override;
 
-  void SetCell(chi_mesh::Cell const* cell_ptr,
-               chi_mesh::sweep_management::AngleSet& angle_set) override;
+  void SetCell(Cell const* cell_ptr, AngleSet& angle_set) override;
 
-  void SetCells(const std::vector<const chi_mesh::Cell*>& cell_ptrs) override;
+  void SetCells(const std::vector<const Cell*>& cell_ptrs) override;
 
-  void Sweep(chi_mesh::sweep_management::AngleSet& angle_set) override;
+  void Sweep(AngleSet& angle_set) override;
 
 protected:
   CBC_SweepDependencyInterface& cbc_sweep_depinterf_;
-  chi_mesh::Cell const* cell_ptr_ = nullptr;
+  Cell const* cell_ptr_ = nullptr;
   uint64_t cell_local_id_ = 0;
 
-  std::vector<const chi_mesh::Cell*> cell_ptrs_;
+  std::vector<const Cell*> cell_ptrs_;
 };
 
 } // namespace lbs
+} // namespace opensn

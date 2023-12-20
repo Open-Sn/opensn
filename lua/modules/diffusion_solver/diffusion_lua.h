@@ -82,7 +82,7 @@ int chiDiffusionExecute(lua_State* L);
  */
 int chiDiffusionSetProperty(lua_State* L);
 
-namespace diffusion_solver::lua_utils
+namespace opensnlua::diffusion_solver
 {
 void RegisterLuaEntities(lua_State* L);
-} // namespace diffusion_solver::lua_utils
+} // namespace opensnlua::diffusion_solver

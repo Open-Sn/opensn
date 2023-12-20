@@ -10,8 +10,11 @@
 
 #include <algorithm>
 
+namespace opensn
+{
+
 int
-chi_mesh::sweep_management::SPDS::MapLocJToPrelocI(int locJ) const
+SPDS::MapLocJToPrelocI(int locJ) const
 {
   for (int i = 0; i < location_dependencies_.size(); i++)
   {
@@ -29,7 +32,7 @@ chi_mesh::sweep_management::SPDS::MapLocJToPrelocI(int locJ) const
 }
 
 int
-chi_mesh::sweep_management::SPDS::MapLocJToDeplocI(int locJ) const
+SPDS::MapLocJToDeplocI(int locJ) const
 {
   for (int i = 0; i < location_successors_.size(); i++)
   {
@@ -42,11 +45,10 @@ chi_mesh::sweep_management::SPDS::MapLocJToDeplocI(int locJ) const
 }
 
 void
-chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
-  const chi_mesh::Vector3& omega,
-  std::set<int>& location_dependencies,
-  std::set<int>& location_successors,
-  std::vector<std::set<std::pair<int, double>>>& cell_successors)
+SPDS::PopulateCellRelationships(const Vector3& omega,
+                                std::set<int>& location_dependencies,
+                                std::set<int>& location_successors,
+                                std::vector<std::set<std::pair<int, double>>>& cell_successors)
 {
   constexpr double tolerance = 1.0e-16;
 
@@ -162,7 +164,7 @@ chi_mesh::sweep_management::SPDS::PopulateCellRelationships(
 }
 
 void
-chi_mesh::sweep_management::SPDS::PrintedGhostedGraph() const
+SPDS::PrintedGhostedGraph() const
 {
   constexpr double tolerance = 1.0e-16;
 
@@ -228,3 +230,5 @@ chi_mesh::sweep_management::SPDS::PrintedGhostedGraph() const
     Chi::mpi.Barrier();
   } // for p
 }
+
+} // namespace opensn

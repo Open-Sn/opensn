@@ -2,7 +2,7 @@
 
 #include <petscksp.h>
 
-namespace chi_math
+namespace opensn
 {
 
 int
@@ -16,4 +16,4 @@ LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
   return 0;
 }
 
-} // namespace chi_math
+} // namespace opensn

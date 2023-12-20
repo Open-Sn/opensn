@@ -2,21 +2,21 @@
 
 #include "framework/mesh/logical_volume/logical_volume.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**Spherical logical volume.*/
 class SphereLogicalVolume : public LogicalVolume
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit SphereLogicalVolume(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit SphereLogicalVolume(const InputParameters& params);
 
-  bool Inside(const chi_mesh::Vector3& point) const override;
+  bool Inside(const Vector3& point) const override;
 
 protected:
   double r_;
   double x0_, y0_, z0_;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

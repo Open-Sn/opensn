@@ -2,8 +2,8 @@
 
 #include "framework/parameters/input_parameters.h"
 
-namespace chi_mesh::lua_utils
+namespace opensnlua
 {
-chi::InputParameters MeshModifiersApply_Syntax();
-chi::ParameterBlock MeshModifiersApply(const chi::InputParameters& params);
-} // namespace chi_mesh::lua_utils
+opensn::InputParameters MeshModifiersApply_Syntax();
+opensn::ParameterBlock MeshModifiersApply(const opensn::InputParameters& params);
+} // namespace opensnlua

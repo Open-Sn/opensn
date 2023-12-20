@@ -5,7 +5,7 @@
 
 #include "framework/math/math.h"
 
-namespace chi_math
+namespace opensn
 {
 /**A simple base class for the evaluation of a non-linear function
  * and its Jacobian-matrix.*/
@@ -35,4 +35,4 @@ VecDbl NewtonIteration(const NonLinearFunction& non_linear_function,
                        double epsilon,
                        bool verbose = false);
 
-} // namespace chi_math
+} // namespace opensn

@@ -13,46 +13,36 @@
 
 #include <petscksp.h>
 
+namespace opensn
+{
+
+class ChiMPICommunicatorSet;
+typedef std::shared_ptr<ChiMPICommunicatorSet> MPILocalCommSetPtr;
+
+class GridFaceHistogram;
+typedef std::shared_ptr<GridFaceHistogram> GridFaceHistogramPtr;
+
+class TimeIntegration;
+
 namespace lbs
 {
 class AGSLinearSolver;
 class WGSLinearSolver;
 struct WGSContext;
-} // namespace lbs
-
-namespace chi
-{
-class ChiMPICommunicatorSet;
-}
-typedef std::shared_ptr<chi::ChiMPICommunicatorSet> MPILocalCommSetPtr;
-
-namespace chi_mesh
-{
-class GridFaceHistogram;
-}
-typedef std::shared_ptr<chi_mesh::GridFaceHistogram> GridFaceHistogramPtr;
-
-namespace chi_math
-{
-class TimeIntegration;
-}
-
-namespace lbs
-{
 
 /**Base class for all Linear Boltzmann Solvers.*/
-class LBSSolver : public chi_physics::Solver
+class LBSSolver : public opensn::Solver
 {
 public:
   typedef std::shared_ptr<AGSLinearSolver> AGSLinSolverPtr;
-  typedef std::shared_ptr<chi_math::LinearSolver> LinSolvePtr;
+  typedef std::shared_ptr<LinearSolver> LinSolvePtr;
 
 public:
   explicit LBSSolver(const std::string& text_name);
   /**
    * Input parameters based construction.
    */
-  explicit LBSSolver(const chi::InputParameters& params);
+  explicit LBSSolver(const InputParameters& params);
 
   LBSSolver(const LBSSolver&) = delete;
   LBSSolver& operator=(const LBSSolver&) = delete;
@@ -84,10 +74,10 @@ public:
    */
   const lbs::Options& Options() const;
 
-  static chi::InputParameters OptionsBlock();
-  static chi::InputParameters BoundaryOptionsBlock();
-  void SetOptions(const chi::InputParameters& params);
-  void SetBoundaryOptions(const chi::InputParameters& params);
+  static InputParameters OptionsBlock();
+  static InputParameters BoundaryOptionsBlock();
+  void SetOptions(const InputParameters& params);
+  void SetBoundaryOptions(const InputParameters& params);
 
   /**
    * Returns the number of moments for the solver. This will only be non-zero after initialization.
@@ -154,7 +144,7 @@ public:
   /**
    * Obtains a reference to the spatial discretization.
    */
-  const chi_math::SpatialDiscretization& SpatialDiscretization() const;
+  const class SpatialDiscretization& SpatialDiscretization() const;
 
   /**
    * Returns read-only access to the unit cell matrices.
@@ -164,7 +154,7 @@ public:
   /**
    * Obtains a reference to the grid.
    */
-  const chi_mesh::MeshContinuum& Grid() const;
+  const MeshContinuum& Grid() const;
 
   /**
    * Returns a reference to the list of local cell transport views.
@@ -179,7 +169,7 @@ public:
   /**
    * Obtains a reference to the unknown manager for flux-moments.
    */
-  const chi_math::UnknownManager& UnknownManager() const;
+  const class UnknownManager& UnknownManager() const;
 
   /**
    * Returns the local node count for the flux-moments data structures.
@@ -497,8 +487,6 @@ protected:
   /**Initializes the Within-Group DSA solver. */
   void InitTGDSA(LBSGroupset& groupset);
 
-  typedef chi_mesh::sweep_management::CellFaceNodalMapping CellFaceNodalMapping;
-
   size_t source_event_tag_ = 0;
   double last_restart_write_ = 0.0;
 
@@ -515,8 +503,8 @@ protected:
   std::map<int, XSPtr> matid_to_xs_map_;
   std::map<int, IsotropicSrcPtr> matid_to_src_map_;
 
-  std::shared_ptr<chi_math::SpatialDiscretization> discretization_ = nullptr;
-  chi_mesh::MeshContinuumPtr grid_ptr_;
+  std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;
+  MeshContinuumPtr grid_ptr_;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;
   MPILocalCommSetPtr grid_local_comm_set_ = nullptr;
@@ -529,7 +517,7 @@ protected:
   std::map<uint64_t, BoundaryPreference> boundary_preferences_;
   std::map<uint64_t, std::shared_ptr<SweepBndry>> sweep_boundaries_;
 
-  chi_math::UnknownManager flux_moments_uk_man_;
+  opensn::UnknownManager flux_moments_uk_man_;
 
   size_t max_cell_dof_count_ = 0;
   uint64_t local_node_count_ = 0;
@@ -550,7 +538,7 @@ protected:
   size_t power_gen_fieldfunc_local_handle_ = 0;
 
   /**Time integration parameter meant to be set by an executor*/
-  std::shared_ptr<const chi_math::TimeIntegration> time_integration_ = nullptr;
+  std::shared_ptr<const TimeIntegration> time_integration_ = nullptr;
 
   /**Cleans up memory consuming items. */
   static void CleanUpWGDSA(LBSGroupset& groupset);
@@ -561,7 +549,8 @@ public:
   /**
    * Returns the input parameters for this object.
    */
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 };
 
 } // namespace lbs
+} // namespace opensn

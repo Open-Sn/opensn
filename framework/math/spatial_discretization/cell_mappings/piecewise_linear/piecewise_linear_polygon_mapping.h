@@ -7,7 +7,7 @@
 
 #include <array>
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
 /**
@@ -17,15 +17,14 @@ namespace chi_math::cell_mapping
 class PieceWiseLinearPolygonMapping : public PieceWiseLinearBaseMapping
 {
 public:
-  PieceWiseLinearPolygonMapping(const chi_mesh::Cell& poly_cell,
-                                const chi_mesh::MeshContinuum& ref_grid,
+  PieceWiseLinearPolygonMapping(const Cell& poly_cell,
+                                const MeshContinuum& ref_grid,
                                 const QuadratureTriangle& volume_quadrature,
                                 const QuadratureLine& surface_quadrature);
 
-  finite_element::VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
+  VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
 
-  finite_element::SurfaceQuadraturePointData
-  MakeSurfaceQuadraturePointData(size_t face_index) const override;
+  SurfaceQuadraturePointData MakeSurfaceQuadraturePointData(size_t face_index) const override;
 
   /**
    * Precomputation of the partial derivative along x of the
@@ -38,28 +37,24 @@ public:
    */
   double SideGradShape_y(uint32_t side, uint32_t i) const;
 
-  double ShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
+  double ShapeValue(int i, const Vector3& xyz) const override;
 
-  chi_mesh::Vector3 GradShapeValue(int i, const chi_mesh::Vector3& xyz) const override;
+  Vector3 GradShapeValue(int i, const Vector3& xyz) const override;
 
-  void ShapeValues(const chi_mesh::Vector3& xyz, std::vector<double>& shape_values) const override;
+  void ShapeValues(const Vector3& xyz, std::vector<double>& shape_values) const override;
 
-  void GradShapeValues(const chi_mesh::Vector3& xyz,
-                       std::vector<chi_mesh::Vector3>& gradshape_values) const override;
+  void GradShapeValues(const Vector3& xyz, std::vector<Vector3>& gradshape_values) const override;
 
 private:
   /**
    * Define standard triangle linear shape functions
    */
-  static double TriShape(uint32_t index, const chi_mesh::Vector3& qpoint, bool on_surface = false);
+  static double TriShape(uint32_t index, const Vector3& qpoint, bool on_surface = false);
 
   /**
    * Precomputation of the shape function at a quadrature point.
    */
-  double SideShape(uint32_t side,
-                   uint32_t i,
-                   const chi_mesh::Vector3& qpoint,
-                   bool on_surface = false) const;
+  double SideShape(uint32_t side, uint32_t i, const Vector3& qpoint, bool on_surface = false) const;
 
   // This structure goes into sides
   struct FEside_data2d
@@ -67,11 +62,11 @@ private:
     double detJ;
     double detJ_surf;
     std::array<uint64_t, 2> v_index;
-    chi_mesh::Vector3 v0;
-    chi_mesh::Matrix3x3 J;
-    chi_mesh::Matrix3x3 Jinv;
-    chi_mesh::Matrix3x3 JTinv;
-    chi_mesh::Vector3 normal;
+    Vector3 v0;
+    Matrix3x3 J;
+    Matrix3x3 Jinv;
+    Matrix3x3 JTinv;
+    Vector3 normal;
   };
 
   std::vector<FEside_data2d> sides_;
@@ -80,8 +75,8 @@ private:
 
   int num_of_subtris_;
   double beta_;
-  chi_mesh::Vertex vc_;
+  Vertex vc_;
   std::vector<std::vector<int>> node_to_side_map_;
 };
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

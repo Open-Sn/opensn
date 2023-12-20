@@ -12,12 +12,12 @@
 #include "framework/utils/utils.h"
 #include <iostream>
 
-namespace chi::lua_utils
+namespace opensn::lua_utils
 {
 int chiMakeObject(lua_State* L);
 }
 
-namespace chi
+namespace opensn
 {
 
 RegisterLuaFunction(Console::LuaWrapperCall, chi_console, LuaWrapperCall);
@@ -96,7 +96,7 @@ Console::LuaWrapperCall(lua_State* L)
       main_arguments_block.AddParameter(arg_name, lua_tostring(L, p));
     else if (lua_istable(L, p))
     {
-      auto block = chi_lua::TableParserAsParameterBlock::ParseTable(L, p);
+      auto block = TableParserAsParameterBlock::ParseTable(L, p);
       block.SetBlockName(arg_name);
       std::string scope = fname + ":";
       scope.append(arg_name + " ");
@@ -116,7 +116,7 @@ Console::LuaWrapperCall(lua_State* L)
   auto output_params = reg_entry.call_func(input_params);
 
   output_params.SetErrorOriginScope(fname + ":output:");
-  chi_lua::PushParameterBlock(L, output_params);
+  PushParameterBlock(L, output_params);
 
   const int num_sub_params = static_cast<int>(output_params.NumParameters());
 
@@ -215,7 +215,7 @@ Console::RunConsoleLoop(char*) const
 }
 
 int
-chi::Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
+Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
 {
 #ifdef OPENSN_WITH_LUA
   lua_State* L = this->console_state_;
@@ -245,7 +245,7 @@ chi::Console::ExecuteFile(const std::string& fileName, int argc, char** argv) co
 }
 
 void
-chi::Console::PostMPIInfo(int location_id, int number_of_processes) const
+Console::PostMPIInfo(int location_id, int number_of_processes) const
 {
 #ifdef OPENSN_WITH_LUA
   lua_State* L = this->console_state_;
@@ -259,7 +259,7 @@ chi::Console::PostMPIInfo(int location_id, int number_of_processes) const
 }
 
 void
-chi::Console::AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunction function_ptr)
+Console::AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunction function_ptr)
 {
 #ifdef OPENSN_WITH_LUA
   auto& console = GetInstance();
@@ -286,11 +286,11 @@ chi::Console::AddFunctionToRegistry(const std::string& name_in_lua, lua_CFunctio
 #ifdef OPENSN_WITH_LUA
 
 char
-chi::Console::AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_in_lua,
-                                                   lua_CFunction function_ptr)
+Console::AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_in_lua,
+                                              lua_CFunction function_ptr)
 {
   // Filter out namespace from the raw name
-  const std::string name_in_lua = chi::StringUpToFirstReverse(raw_name_in_lua, "::");
+  const std::string name_in_lua = StringUpToFirstReverse(raw_name_in_lua, "::");
 
   AddFunctionToRegistry(name_in_lua, function_ptr);
 
@@ -301,9 +301,9 @@ chi::Console::AddFunctionToRegistryGlobalNamespace(const std::string& raw_name_i
 #ifdef OPENSN_WITH_LUA
 
 char
-chi::Console::AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_ptr,
-                                                       const std::string& namespace_name,
-                                                       const std::string& function_name)
+Console::AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_ptr,
+                                                  const std::string& namespace_name,
+                                                  const std::string& function_name)
 {
   const std::string name_in_lua = namespace_name + "::" + function_name;
 
@@ -316,9 +316,9 @@ chi::Console::AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_pt
 #ifdef OPENSN_WITH_LUA
 
 char
-chi::Console::AddLuaConstantToRegistry(const std::string& namespace_name,
-                                       const std::string& constant_name,
-                                       const chi_data_types::Varying& value)
+Console::AddLuaConstantToRegistry(const std::string& namespace_name,
+                                  const std::string& constant_name,
+                                  const Varying& value)
 {
   const std::string name_in_lua = namespace_name + "::" + constant_name;
 
@@ -340,8 +340,8 @@ chi::Console::AddLuaConstantToRegistry(const std::string& namespace_name,
 }
 #endif
 
-chi::InputParameters
-chi::Console::DefaultGetInParamsFunc()
+InputParameters
+Console::DefaultGetInParamsFunc()
 {
   return InputParameters();
 }
@@ -349,11 +349,11 @@ chi::Console::DefaultGetInParamsFunc()
 #ifdef OPENSN_WITH_LUA
 
 char
-chi::Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_name,
-                                                      const std::string& name_in_lua,
-                                                      WrapperGetInParamsFunc syntax_function,
-                                                      WrapperCallFunc actual_function,
-                                                      bool ignore_null_call_func)
+Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_name,
+                                                 const std::string& name_in_lua,
+                                                 WrapperGetInParamsFunc syntax_function,
+                                                 WrapperCallFunc actual_function,
+                                                 bool ignore_null_call_func)
 {
   const std::string name =
     (namespace_name.empty()) ? name_in_lua : namespace_name + "::" + name_in_lua;
@@ -383,11 +383,11 @@ chi::Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespa
 #ifdef OPENSN_WITH_LUA
 
 void
-chi::Console::SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name,
-                                                lua_CFunction function_ptr)
+Console::SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name,
+                                           lua_CFunction function_ptr)
 {
   auto L = GetInstance().console_state_;
-  const auto lua_name_split = chi::StringSplit(full_lua_name, "::");
+  const auto lua_name_split = StringSplit(full_lua_name, "::");
 
   if (lua_name_split.size() == 1)
   {
@@ -411,7 +411,7 @@ chi::Console::SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name
 #ifdef OPENSN_WITH_LUA
 
 void
-chi::Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_name)
+Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_name)
 {
   auto L = GetInstance().console_state_;
 
@@ -424,7 +424,7 @@ chi::Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_l
     luaL_loadstring(L, chunk_code.c_str());
   };
 
-  const auto table_names = chi::StringSplit(full_lua_name, "::");
+  const auto table_names = StringSplit(full_lua_name, "::");
   std::vector<std::string> namespace_names;
   for (const auto& table_name : table_names)
     if (table_name != table_names.back()) namespace_names.push_back(table_name);
@@ -451,7 +451,7 @@ chi::Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_l
 #ifdef OPENSN_WITH_LUA
 
 void
-chi::Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
+Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
 {
   auto L = GetInstance().console_state_;
 
@@ -470,7 +470,7 @@ chi::Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
     lua_settable(L, -3);
   };
 
-  const auto table_names = chi::StringSplit(full_lua_name, "::");
+  const auto table_names = StringSplit(full_lua_name, "::");
 
   FleshOutLuaTableStructure(table_names);
 
@@ -483,7 +483,7 @@ chi::Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
 #ifdef OPENSN_WITH_LUA
 
 void
-chi::Console::FleshOutLuaTableStructure(const std::vector<std::string>& table_names)
+Console::FleshOutLuaTableStructure(const std::vector<std::string>& table_names)
 {
   auto L = GetInstance().console_state_;
 
@@ -521,21 +521,20 @@ chi::Console::FleshOutLuaTableStructure(const std::vector<std::string>& table_na
 #ifdef OPENSN_WITH_LUA
 
 void
-chi::Console::SetLuaConstant(const std::string& constant_name, const chi_data_types::Varying& value)
+Console::SetLuaConstant(const std::string& constant_name, const Varying& value)
 {
   auto& console = GetInstance();
   auto L = console.console_state_;
-  const auto path_names = chi::StringSplit(constant_name, "::");
+  const auto path_names = StringSplit(constant_name, "::");
 
-  auto PushVaryingValue = [&L](const chi_data_types::Varying& var_value)
+  auto PushVaryingValue = [&L](const Varying& var_value)
   {
-    if (var_value.Type() == chi_data_types::VaryingDataType::BOOL)
-      lua_pushboolean(L, var_value.BoolValue());
-    else if (var_value.Type() == chi_data_types::VaryingDataType::STRING)
+    if (var_value.Type() == VaryingDataType::BOOL) lua_pushboolean(L, var_value.BoolValue());
+    else if (var_value.Type() == VaryingDataType::STRING)
       lua_pushstring(L, var_value.StringValue().c_str());
-    else if (var_value.Type() == chi_data_types::VaryingDataType::INTEGER)
+    else if (var_value.Type() == VaryingDataType::INTEGER)
       lua_pushinteger(L, static_cast<lua_Integer>(var_value.IntegerValue()));
-    else if (var_value.Type() == chi_data_types::VaryingDataType::FLOAT)
+    else if (var_value.Type() == VaryingDataType::FLOAT)
       lua_pushnumber(L, var_value.FloatValue());
     else
       ChiInvalidArgument("Unsupported value type. Only bool, string, int and "
@@ -566,7 +565,7 @@ chi::Console::SetLuaConstant(const std::string& constant_name, const chi_data_ty
 #ifdef OPENSN_WITH_LUA
 
 void
-chi::Console::DumpRegister() const
+Console::DumpRegister() const
 {
   Chi::log.Log() << "\n\n";
   for (const auto& [key, entry] : function_wrapper_registry_)
@@ -592,7 +591,7 @@ chi::Console::DumpRegister() const
 
 #ifdef OPENSN_WITH_LUA
 void
-Console::UpdateConsoleBindings(const chi::RegistryStatuses& old_statuses)
+Console::UpdateConsoleBindings(const RegistryStatuses& old_statuses)
 {
   auto ListHasValue = [](const std::vector<std::string>& list, const std::string& value)
   { return std::find(list.begin(), list.end(), value) != list.end(); };
@@ -611,4 +610,4 @@ Console::UpdateConsoleBindings(const chi::RegistryStatuses& old_statuses)
 }
 #endif
 
-} // namespace chi
+} // namespace opensn

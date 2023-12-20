@@ -4,7 +4,7 @@
 
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
 
-namespace chi_math
+namespace opensn
 {
 
 class GhostedParallelSTLVector : public ParallelSTLVector
@@ -83,4 +83,4 @@ private:
   VectorGhostCommunicator ghost_comm_;
 };
 
-} // namespace chi_math
+} // namespace opensn

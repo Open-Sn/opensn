@@ -6,7 +6,7 @@
 #include <vector>
 #include <limits>
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 enum class BoundaryType
@@ -23,8 +23,8 @@ enum class BoundaryType
 class SweepBoundary
 {
 private:
-  const chi_mesh::sweep_management::BoundaryType type_;
-  const chi_math::CoordinateSystemType coord_type_;
+  const BoundaryType type_;
+  const CoordinateSystemType coord_type_;
   double evaluation_time_ = 0.0; ///< Time value passed to boundary functions
 protected:
   std::vector<double> zero_boundary_flux_;
@@ -33,7 +33,7 @@ protected:
 public:
   explicit SweepBoundary(BoundaryType bndry_type,
                          size_t in_num_groups,
-                         chi_math::CoordinateSystemType coord_type)
+                         CoordinateSystemType coord_type)
     : type_(bndry_type), coord_type_(coord_type), num_groups_(in_num_groups)
   {
     zero_boundary_flux_.resize(num_groups_, 0.0);
@@ -41,7 +41,7 @@ public:
 
   virtual ~SweepBoundary() = default;
   BoundaryType Type() const { return type_; }
-  chi_math::CoordinateSystemType CoordType() const { return coord_type_; }
+  CoordinateSystemType CoordType() const { return coord_type_; }
   bool IsReflecting() const { return type_ == BoundaryType::REFLECTING; }
 
   double GetEvaluationTime() const { return evaluation_time_; }
@@ -73,10 +73,7 @@ public:
     return true;
   }
 
-  virtual void Setup(const chi_mesh::MeshContinuum& grid,
-                     const chi_math::AngularQuadrature& quadrature)
-  {
-  }
+  virtual void Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature) {}
 
   double* ZeroFlux(int group_num) { return &zero_boundary_flux_[group_num]; }
 };
@@ -95,10 +92,10 @@ public:
            int cell_material_id,
            unsigned int face_index,
            unsigned int face_node_index,
-           const chi_mesh::Vector3& face_node_location,
-           const chi_mesh::Vector3& face_node_normal,
+           const Vector3& face_node_location,
+           const Vector3& face_node_normal,
            const std::vector<int>& quadrature_angle_indices,
-           const std::vector<chi_mesh::Vector3>& quadrature_angle_vectors,
+           const std::vector<Vector3>& quadrature_angle_vectors,
            const std::vector<std::pair<double, double>>& quadrature_phi_theta_angles,
            const std::vector<int>& group_indices,
            double time) = 0;
@@ -106,4 +103,4 @@ public:
   virtual ~BoundaryFunction() = default;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

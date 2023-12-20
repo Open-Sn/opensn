@@ -6,8 +6,13 @@
 
 #include "framework/runtime.h"
 
+namespace opensn
+{
+namespace mg_diffusion
+{
+
 PetscErrorCode
-mg_diffusion::MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
+MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
 {
   Vec Rhs;
   KSPGetRhs(ksp, &Rhs);
@@ -24,7 +29,7 @@ mg_diffusion::MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
 
   if (ksp_name == nullptr) ksp_name = NONAME_SOLVER;
 
-  mg_diffusion::KSPAppContext* my_app_context;
+  KSPAppContext* my_app_context;
   KSPGetApplicationContext(ksp, &my_app_context);
 
   // Print message
@@ -39,3 +44,6 @@ mg_diffusion::MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
 
   return 0;
 }
+
+} // namespace mg_diffusion
+} // namespace opensn

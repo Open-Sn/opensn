@@ -1,7 +1,10 @@
 #include "framework/physics/basic_options/basic_options.h"
 
-const chi_physics::BasicOption&
-chi_physics::BasicOptions::operator()(const std::string& option_name) const
+namespace opensn
+{
+
+const BasicOption&
+BasicOptions::operator()(const std::string& option_name) const
 {
   for (const auto& option : options_)
   {
@@ -11,8 +14,8 @@ chi_physics::BasicOptions::operator()(const std::string& option_name) const
   throw std::out_of_range("Basic option " + option_name + " does not appear to exist.");
 }
 
-const chi_physics::BasicOption&
-chi_physics::BasicOptions::operator()(size_t index) const
+const BasicOption&
+BasicOptions::operator()(size_t index) const
 {
   if (index < options_.size()) return options_[index];
 
@@ -20,8 +23,8 @@ chi_physics::BasicOptions::operator()(size_t index) const
                           " does not appear to exist.");
 }
 
-chi_physics::BasicOption&
-chi_physics::BasicOptions::operator[](const std::string& option_name)
+BasicOption&
+BasicOptions::operator[](const std::string& option_name)
 {
   for (auto& option : options_)
   {
@@ -31,8 +34,8 @@ chi_physics::BasicOptions::operator[](const std::string& option_name)
   throw std::out_of_range("Basic option \"" + option_name + "\" does not appear to exist.");
 }
 
-chi_physics::BasicOption&
-chi_physics::BasicOptions::operator[](size_t index)
+BasicOption&
+BasicOptions::operator[](size_t index)
 {
   if (index < options_.size()) return options_[index];
 
@@ -42,35 +45,34 @@ chi_physics::BasicOptions::operator[](size_t index)
 
 template <>
 void
-chi_physics::BasicOptions::AddOption<std::string>(const std::string& option_name,
-                                                  const std::string& value)
+BasicOptions::AddOption<std::string>(const std::string& option_name, const std::string& value)
 {
   options_.emplace_back(option_name, value);
 }
 
 template <>
 void
-chi_physics::BasicOptions::AddOption<bool>(const std::string& option_name, const bool& value)
+BasicOptions::AddOption<bool>(const std::string& option_name, const bool& value)
 {
   options_.emplace_back(option_name, value);
 }
 
 template <>
 void
-chi_physics::BasicOptions::AddOption<int64_t>(const std::string& option_name, const int64_t& value)
+BasicOptions::AddOption<int64_t>(const std::string& option_name, const int64_t& value)
 {
   options_.emplace_back(option_name, value);
 }
 
 template <>
 void
-chi_physics::BasicOptions::AddOption<double>(const std::string& option_name, const double& value)
+BasicOptions::AddOption<double>(const std::string& option_name, const double& value)
 {
   options_.emplace_back(option_name, value);
 }
 
 size_t
-chi_physics::BasicOptions::GetOptionIndexFromName(const std::string& option_name) const
+BasicOptions::GetOptionIndexFromName(const std::string& option_name) const
 {
   size_t index = 0;
   for (const auto& option : options_)
@@ -81,3 +83,5 @@ chi_physics::BasicOptions::GetOptionIndexFromName(const std::string& option_name
 
   throw std::out_of_range("Basic option " + option_name + " does not appear to exist.");
 }
+
+} // namespace opensn

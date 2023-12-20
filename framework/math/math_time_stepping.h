@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace chi_math
+namespace opensn
 {
 
 enum class SteppingMethod
@@ -18,4 +18,4 @@ enum class SteppingMethod
 std::string SteppingMethodStringName(SteppingMethod);
 SteppingMethod SteppingMethodFromString(const std::string& name);
 
-} // namespace chi_math
+} // namespace opensn

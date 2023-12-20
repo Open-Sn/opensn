@@ -6,16 +6,18 @@
 
 #include <petscsnes.h>
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
-class NLKEigenDiffSolver : public chi_math::NonLinearSolver
+class NLKEigenDiffSolver : public NonLinearSolver
 {
 public:
   typedef std::shared_ptr<NLKEigenDiffContext> NLKEigenDiffContextPtr;
 
   explicit NLKEigenDiffSolver(NLKEigenDiffContextPtr nlk_diff_context_ptr)
-    : chi_math::NonLinearSolver(nlk_diff_context_ptr)
+    : NonLinearSolver(nlk_diff_context_ptr)
   {
   }
 
@@ -34,4 +36,5 @@ protected:
   void PostSolveCallback() override;
 };
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

@@ -6,10 +6,12 @@
 
 #include <petscsnes.h>
 
+namespace opensn
+{
 namespace lbs
 {
 
-class XXNonLinearKEigen : public chi_physics::Solver
+class XXNonLinearKEigen : public opensn::Solver
 {
 protected:
   LBSSolver& lbs_solver_;
@@ -20,11 +22,12 @@ protected:
   int num_free_power_its_;
 
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit XXNonLinearKEigen(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit XXNonLinearKEigen(const InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
 };
 
 } // namespace lbs
+} // namespace opensn

@@ -30,10 +30,10 @@
 #include <cassert>
 
 #define mk_shrd(x) std::make_shared<x>
-#define SweepVaccuumBndry chi_mesh::sweep_management::BoundaryVaccuum
-#define SweepIncHomoBndry chi_mesh::sweep_management::BoundaryIsotropicHomogenous
-#define SweepReflectingBndry chi_mesh::sweep_management::BoundaryReflecting
-#define SweepAniHeteroBndry chi_mesh::sweep_management::BoundaryIncidentHeterogeneous
+#define SweepVaccuumBndry BoundaryVaccuum
+#define SweepIncHomoBndry BoundaryIsotropicHomogenous
+#define SweepReflectingBndry BoundaryReflecting
+#define SweepAniHeteroBndry BoundaryIncidentHeterogeneous
 
 #define ExceptionLocalFaceNormalsDiffer                                                            \
   std::logic_error(fname + ": Not all face normals are,"                                           \
@@ -45,6 +45,8 @@
                            " within tolerance, globally the same for the reflecting boundary"      \
                            " condition requested.")
 
+namespace opensn
+{
 namespace lbs
 {
 // RegisterChiObject(lbs, LBSSolver); Should not be constructible
@@ -53,14 +55,14 @@ RegisterSyntaxBlock(lbs, OptionsBlock, LBSSolver::OptionsBlock);
 
 RegisterSyntaxBlock(lbs, BoundaryOptionsBlock, LBSSolver::BoundaryOptionsBlock);
 
-LBSSolver::LBSSolver(const std::string& text_name) : chi_physics::Solver(text_name)
+LBSSolver::LBSSolver(const std::string& text_name) : Solver(text_name)
 {
 }
 
-chi::InputParameters
+InputParameters
 LBSSolver::GetInputParameters()
 {
-  chi::InputParameters params = chi_physics::Solver::GetInputParameters();
+  InputParameters params = Solver::GetInputParameters();
 
   // clang-format off
   params.ChangeExistingParamToOptional("name", "LBSDatablock");
@@ -74,7 +76,7 @@ LBSSolver::GetInputParameters()
     "<TT>lbs::LBSGroupset</TT>.");
   params.LinkParameterToBlock("groupsets", "lbs::LBSGroupset");
 
-  params.AddOptionalParameterBlock("options", chi::ParameterBlock(),
+  params.AddOptionalParameterBlock("options", ParameterBlock(),
     "Block of options. See <TT>lbs::OptionsBlock</TT>.");
   params.LinkParameterToBlock("options", "lbs::OptionsBlock");
   // clang-format on
@@ -82,7 +84,7 @@ LBSSolver::GetInputParameters()
   return params;
 }
 
-LBSSolver::LBSSolver(const chi::InputParameters& params) : chi_physics::Solver(params)
+LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
 {
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");
@@ -97,7 +99,7 @@ LBSSolver::LBSSolver(const chi::InputParameters& params) : chi_physics::Solver(p
   {
     const auto& groupset_params = groupsets_array.GetParam(gs);
 
-    chi::InputParameters gs_input_params = LBSGroupset::GetInputParameters();
+    InputParameters gs_input_params = LBSGroupset::GetInputParameters();
     gs_input_params.SetObjectType("LBSSolver:LBSGroupset");
     gs_input_params.AssignParameters(groupset_params);
 
@@ -230,7 +232,7 @@ LBSSolver::GetMatID2IsoSrcMap() const
   return matid_to_src_map_;
 }
 
-const chi_math::SpatialDiscretization&
+const SpatialDiscretization&
 LBSSolver::SpatialDiscretization() const
 {
   return *discretization_;
@@ -242,7 +244,7 @@ LBSSolver::GetUnitCellMatrices() const
   return unit_cell_matrices_;
 }
 
-const chi_mesh::MeshContinuum&
+const MeshContinuum&
 LBSSolver::Grid() const
 {
   return *grid_ptr_;
@@ -254,7 +256,7 @@ LBSSolver::GetCellTransportViews() const
   return cell_transport_views_;
 }
 
-const chi_math::UnknownManager&
+const UnknownManager&
 LBSSolver::UnknownManager() const
 {
   return flux_moments_uk_man_;
@@ -416,10 +418,10 @@ LBSSolver::GetHandleToPowerGenFieldFunc() const
   return power_gen_fieldfunc_local_handle_;
 }
 
-chi::InputParameters
+InputParameters
 LBSSolver::OptionsBlock()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   params.SetGeneralDescription("Set options from a large list of parameters");
   params.SetDocGroup("LBSUtilities");
@@ -504,7 +506,6 @@ LBSSolver::OptionsBlock()
   params.LinkParameterToBlock("boundary_conditions",
                               "lbs::BoundaryOptionsBlock");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("spatial_discretization",
       AllowableRangeList::New({"pwld"}));
 
@@ -515,10 +516,10 @@ LBSSolver::OptionsBlock()
   return params;
 }
 
-chi::InputParameters
+InputParameters
 LBSSolver::BoundaryOptionsBlock()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   // clang-format off
   params.SetGeneralDescription(
@@ -538,7 +539,6 @@ LBSSolver::BoundaryOptionsBlock()
   "Text name of the lua function to be called for this boundary condition. For"
   " more on this boundary condition type.");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("name", AllowableRangeList::New({
   "xmin", "xmax", "ymin", "ymax", "zmin", "zmax"}));
 
@@ -551,7 +551,7 @@ LBSSolver::BoundaryOptionsBlock()
 }
 
 void
-LBSSolver::SetOptions(const chi::InputParameters& params)
+LBSSolver::SetOptions(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
 
@@ -563,7 +563,7 @@ LBSSolver::SetOptions(const chi::InputParameters& params)
     {
       auto sdm_name = spec.GetValue<std::string>();
       if (sdm_name == "pwld")
-        Options().sd_type = chi_math::SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
+        Options().sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
     }
 
     else if (spec.Name() == "scattering_order")
@@ -630,7 +630,7 @@ LBSSolver::SetOptions(const chi::InputParameters& params)
 
     else if (spec.Name() == "boundary_conditions")
     {
-      spec.RequireBlockTypeIs(chi::ParameterBlockType::ARRAY);
+      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
 
       for (size_t b = 0; b < spec.NumParameters(); ++b)
       {
@@ -644,7 +644,7 @@ LBSSolver::SetOptions(const chi::InputParameters& params)
 }
 
 void
-LBSSolver::SetBoundaryOptions(const chi::InputParameters& params)
+LBSSolver::SetBoundaryOptions(const InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
   const auto& user_params = params.ParametersAtAssignment();
@@ -680,7 +680,7 @@ LBSSolver::SetBoundaryOptions(const chi::InputParameters& params)
 
         throw std::invalid_argument(message);
       }
-      user_params.RequireParameterBlockTypeIs("group_strength", chi::ParameterBlockType::ARRAY);
+      user_params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
 
       const auto group_strength = user_params.GetParamVectorValue<double>("group_strength");
       BoundaryPreferences()[bid] = {type, group_strength};
@@ -751,13 +751,13 @@ LBSSolver::PerformInputChecks()
     }
     ++grpset_counter;
   }
-  if (options_.sd_type == chi_math::SpatialDiscretizationType::UNDEFINED)
+  if (options_.sd_type == SpatialDiscretizationType::UNDEFINED)
   {
     Chi::log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No discretization_ method set.";
     Chi::Exit(EXIT_FAILURE);
   }
 
-  grid_ptr_ = chi_mesh::GetCurrentHandler().GetGrid();
+  grid_ptr_ = GetCurrentHandler().GetGrid();
 
   if (grid_ptr_ == nullptr)
   {
@@ -767,7 +767,6 @@ LBSSolver::PerformInputChecks()
   }
 
   // Determine geometry type
-  using namespace chi_mesh;
   const auto grid_attribs = grid_ptr_->Attributes();
   if (grid_attribs & DIMENSION_1) options_.geometry_type = GeometryType::ONED_SLAB;
   else if (grid_attribs & DIMENSION_2)
@@ -865,19 +864,19 @@ LBSSolver::InitMaterials()
     auto current_material = Chi::GetStackItemPtr(Chi::material_stack, mat_id, fname);
 
     // Extract properties
-    using MatProperty = chi_physics::PropertyType;
+    using MatProperty = PropertyType;
     bool found_transport_xs = false;
     for (const auto& property : current_material->properties_)
     {
       if (property->Type() == MatProperty::TRANSPORT_XSECTIONS)
       {
-        auto transp_xs = std::static_pointer_cast<chi_physics::MultiGroupXS>(property);
+        auto transp_xs = std::static_pointer_cast<MultiGroupXS>(property);
         matid_to_xs_map_[mat_id] = transp_xs;
         found_transport_xs = true;
       } // transport xs
       if (property->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
       {
-        auto mg_source = std::static_pointer_cast<chi_physics::IsotropicMultiGrpSource>(property);
+        auto mg_source = std::static_pointer_cast<IsotropicMultiGrpSource>(property);
 
         if (mg_source->source_value_g_.size() < groups_.size())
         {
@@ -970,9 +969,8 @@ LBSSolver::InitMaterials()
 void
 LBSSolver::InitializeSpatialDiscretization()
 {
-  using namespace chi_math::finite_element;
   Chi::log.Log() << "Initializing spatial discretization.\n";
-  discretization_ = chi_math::spatial_discretization::PieceWiseLinearDiscontinuous::New(*grid_ptr_);
+  discretization_ = PieceWiseLinearDiscontinuous::New(*grid_ptr_);
 
   ComputeUnitIntegrals();
 }
@@ -986,18 +984,18 @@ LBSSolver::ComputeUnitIntegrals()
   // Define spatial weighting functions
   struct SpatialWeightFunction // SWF
   {
-    virtual double operator()(const chi_mesh::Vector3& pt) const { return 1.0; }
+    virtual double operator()(const Vector3& pt) const { return 1.0; }
     virtual ~SpatialWeightFunction() = default;
   };
 
   struct SphericalSWF : public SpatialWeightFunction
   {
-    double operator()(const chi_mesh::Vector3& pt) const override { return pt[2] * pt[2]; }
+    double operator()(const Vector3& pt) const override { return pt[2] * pt[2]; }
   };
 
   struct CylindricalSWF : public SpatialWeightFunction
   {
-    double operator()(const chi_mesh::Vector3& pt) const override { return pt[0]; }
+    double operator()(const Vector3& pt) const override { return pt[0]; }
   };
 
   auto swf_ptr = std::make_shared<SpatialWeightFunction>();
@@ -1006,8 +1004,7 @@ LBSSolver::ComputeUnitIntegrals()
   if (options_.geometry_type == lbs::GeometryType::TWOD_CYLINDRICAL)
     swf_ptr = std::make_shared<CylindricalSWF>();
 
-  auto ComputeCellUnitIntegrals =
-    [&sdm](const chi_mesh::Cell& cell, const SpatialWeightFunction& swf)
+  auto ComputeCellUnitIntegrals = [&sdm](const Cell& cell, const SpatialWeightFunction& swf)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_faces = cell.faces_.size();
@@ -1130,7 +1127,7 @@ LBSSolver::InitializeGroupsets()
     size_t gs_num_groups = groupset.groups_.size();
     auto& grpset_psi_uk_man = groupset.psi_uk_man_;
 
-    const auto VarVecN = chi_math::UnknownType::VECTOR_N;
+    const auto VarVecN = UnknownType::VECTOR_N;
     for (unsigned int n = 0; n < num_angles; ++n)
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
 
@@ -1169,12 +1166,12 @@ LBSSolver::InitializeParrays()
   flux_moments_uk_man_.unknowns_.clear();
   for (size_t m = 0; m < num_moments_; m++)
   {
-    flux_moments_uk_man_.AddUnknown(chi_math::UnknownType::VECTOR_N, groups_.size());
+    flux_moments_uk_man_.AddUnknown(UnknownType::VECTOR_N, groups_.size());
     flux_moments_uk_man_.unknowns_.back().text_name_ = "m" + std::to_string(m);
   }
 
   // Compute local # of dof
-  auto per_node = chi_math::UnknownManager::GetUnitaryUnknownManager();
+  auto per_node = UnknownManager::GetUnitaryUnknownManager();
   local_node_count_ = discretization_->GetNumLocalDOFs(per_node);
   glob_node_count_ = discretization_->GetNumGlobalDOFs(per_node);
 
@@ -1226,9 +1223,9 @@ LBSSolver::InitializeParrays()
   //
   size_t block_MG_counter = 0; // Counts the strides of moment and group
 
-  const chi_mesh::Vector3 ihat(1.0, 0.0, 0.0);
-  const chi_mesh::Vector3 jhat(0.0, 1.0, 0.0);
-  const chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
+  const Vector3 ihat(1.0, 0.0, 0.0);
+  const Vector3 jhat(0.0, 1.0, 0.0);
+  const Vector3 khat(0.0, 0.0, 1.0);
 
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
@@ -1249,14 +1246,14 @@ LBSSolver::InitializeParrays()
     const size_t num_faces = cell.faces_.size();
     std::vector<bool> face_local_flags(num_faces, true);
     std::vector<int> face_locality(num_faces, Chi::mpi.location_id);
-    std::vector<const chi_mesh::Cell*> neighbor_cell_ptrs(num_faces, nullptr);
+    std::vector<const Cell*> neighbor_cell_ptrs(num_faces, nullptr);
     bool cell_on_boundary = false;
     int f = 0;
     for (auto& face : cell.faces_)
     {
       if (not face.has_neighbor_)
       {
-        chi_mesh::Vector3& n = face.normal_;
+        Vector3& n = face.normal_;
 
         int boundary_id = -1;
         if (n.Dot(ihat) > 0.999) boundary_id = 0;
@@ -1309,7 +1306,7 @@ LBSSolver::InitializeParrays()
   grid_nodal_mappings_.reserve(grid_ptr_->local_cells.size());
   for (auto& cell : grid_ptr_->local_cells)
   {
-    chi_mesh::sweep_management::CellFaceNodalMapping cell_nodal_mapping;
+    CellFaceNodalMapping cell_nodal_mapping;
     cell_nodal_mapping.reserve(cell.faces_.size());
 
     for (auto& face : cell.faces_)
@@ -1348,8 +1345,6 @@ LBSSolver::InitializeParrays()
 void
 LBSSolver::InitializeFieldFunctions()
 {
-  using namespace chi_math;
-
   if (not field_functions_.empty()) return;
 
   // Initialize Field Functions
@@ -1373,7 +1368,7 @@ LBSSolver::InitializeFieldFunctions()
         buff, 99, "%sphi_g%03d_m%02d", prefix.c_str(), static_cast<int>(g), static_cast<int>(m));
       const std::string text_name = std::string(buff);
 
-      auto group_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
+      auto group_ff = std::make_shared<FieldFunctionGridBased>(
         text_name, discretization_, Unknown(UnknownType::SCALAR));
 
       Chi::field_function_stack.push_back(group_ff);
@@ -1394,7 +1389,7 @@ LBSSolver::InitializeFieldFunctions()
     }
     if (options_.field_function_prefix_option == "solver_name") prefix = TextName() + "_";
 
-    auto power_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
+    auto power_ff = std::make_shared<FieldFunctionGridBased>(
       prefix + "power_generation", discretization_, Unknown(UnknownType::SCALAR));
 
     Chi::field_function_stack.push_back(power_ff);
@@ -1484,7 +1479,7 @@ LBSSolver::InitializeBoundaries()
       {
         // Locally check all faces, that subscribe to this boundary,
         // have the same normal
-        typedef chi_mesh::Vector3 Vec3;
+        typedef Vector3 Vec3;
         const double EPSILON = 1.0e-12;
         std::unique_ptr<Vec3> n_ptr = nullptr;
         for (const auto& cell : grid_ptr_->local_cells)
@@ -1564,9 +1559,9 @@ LBSSolver::InitializePointSources()
         std::vector<double> shape_values;
         cell_view.ShapeValues(point_source.Location(), shape_values);
 
-        const auto M_inv = chi_math::Inverse(M);
+        const auto M_inv = Inverse(M);
 
-        const auto q_p_weights = chi_math::MatMul(M_inv, shape_values);
+        const auto q_p_weights = MatMul(M_inv, shape_values);
 
         double v_cell = 0.0;
         for (double val : I)
@@ -1644,28 +1639,27 @@ lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
   {
     // Make UnknownManager
     const size_t num_gs_groups = groupset.groups_.size();
-    chi_math::UnknownManager uk_man;
-    uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_gs_groups);
+    opensn::UnknownManager uk_man;
+    uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
     // Make boundary conditions
-    auto bcs = acceleration::TranslateBCs(sweep_boundaries_, vaccum_bcs_are_dirichlet);
+    auto bcs = TranslateBCs(sweep_boundaries_, vaccum_bcs_are_dirichlet);
 
     // Make xs map
-    auto matid_2_mgxs_map = acceleration::PackGroupsetXS(
-      matid_to_xs_map_, groupset.groups_.front().id_, groupset.groups_.back().id_);
+    auto matid_2_mgxs_map =
+      PackGroupsetXS(matid_to_xs_map_, groupset.groups_.front().id_, groupset.groups_.back().id_);
 
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver =
-      std::make_shared<acceleration::DiffusionMIPSolver>(std::string(TextName() + "_WGDSA"),
-                                                         sdm,
-                                                         uk_man,
-                                                         bcs,
-                                                         matid_2_mgxs_map,
-                                                         unit_cell_matrices_,
-                                                         true); // verbosity
-    chi::ParameterBlock block;
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(TextName() + "_WGDSA"),
+                                                       sdm,
+                                                       uk_man,
+                                                       bcs,
+                                                       matid_2_mgxs_map,
+                                                       unit_cell_matrices_,
+                                                       true); // verbosity
+    ParameterBlock block;
 
     solver->options.residual_tolerance = groupset.wgdsa_tol_;
     solver->options.max_iters = groupset.wgdsa_max_iters_;
@@ -1831,7 +1825,7 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
     const auto& uk_man = discretization_->UNITARY_UNKNOWN_MANAGER;
 
     // Make boundary conditions
-    auto bcs = acceleration::TranslateBCs(sweep_boundaries_);
+    auto bcs = TranslateBCs(sweep_boundaries_);
 
     // Make TwoGridInfo
     for (const auto& mat_id_xs_pair : matid_to_xs_map_)
@@ -1839,15 +1833,14 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
       const auto& mat_id = mat_id_xs_pair.first;
       const auto& xs = mat_id_xs_pair.second;
 
-      acceleration::TwoGridCollapsedInfo tginfo =
-        MakeTwoGridCollapsedInfo(*xs, acceleration::EnergyCollapseScheme::JFULL);
+      TwoGridCollapsedInfo tginfo = MakeTwoGridCollapsedInfo(*xs, EnergyCollapseScheme::JFULL);
 
       groupset.tg_acceleration_info_.map_mat_id_2_tginfo.insert(
         std::make_pair(mat_id, std::move(tginfo)));
     }
 
     // Make xs map
-    typedef lbs::acceleration::Multigroup_D_and_sigR MGXS;
+    typedef lbs::Multigroup_D_and_sigR MGXS;
     typedef std::map<int, MGXS> MatID2MGDXSMap;
     MatID2MGDXSMap matid_2_mgxs_map;
     for (const auto& matid_xs_pair : matid_to_xs_map_)
@@ -1863,14 +1856,13 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver =
-      std::make_shared<acceleration::DiffusionMIPSolver>(std::string(TextName() + "_TGDSA"),
-                                                         sdm,
-                                                         uk_man,
-                                                         bcs,
-                                                         matid_2_mgxs_map,
-                                                         unit_cell_matrices_,
-                                                         true); // verbosity
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(TextName() + "_TGDSA"),
+                                                       sdm,
+                                                       uk_man,
+                                                       bcs,
+                                                       matid_2_mgxs_map,
+                                                       unit_cell_matrices_,
+                                                       true); // verbosity
 
     solver->options.residual_tolerance = groupset.tgdsa_tol_;
     solver->options.max_iters = groupset.tgdsa_max_iters_;
@@ -2142,7 +2134,7 @@ LBSSolver::WriteGroupsetAngularFluxes(const LBSGroupset& groupset, const std::st
   file << header_bytes;
 
   // Get relevant items
-  auto NODES_ONLY = chi_math::UnknownManager::GetUnitaryUnknownManager();
+  auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
 
   size_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
   size_t num_angles = groupset.quadrature_->abscissae_.size();
@@ -2203,7 +2195,7 @@ LBSSolver::ReadGroupsetAngularFluxes(LBSGroupset& groupset, const std::string& f
   }
 
   // Get relevant items
-  auto NODES_ONLY = chi_math::UnknownManager::GetUnitaryUnknownManager();
+  auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
 
   size_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
   size_t num_angles = groupset.quadrature_->abscissae_.size();
@@ -2348,7 +2340,7 @@ LBSSolver::WriteFluxMoments(const std::string& file_base, const std::vector<doub
   file << header_bytes;
 
   // Get relevant items
-  auto NODES_ONLY = chi_math::UnknownManager::GetUnitaryUnknownManager();
+  auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
   auto& sdm = discretization_;
   uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
   uint64_t num_moments_t = static_cast<uint64_t>(num_moments_);
@@ -2427,7 +2419,7 @@ LBSSolver::ReadFluxMoments(const std::string& file_base,
   }
 
   // Get relevant items
-  auto NODES_ONLY = chi_math::UnknownManager::GetUnitaryUnknownManager();
+  auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
   auto& sdm = discretization_;
   uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
   uint64_t num_moments_t = static_cast<uint64_t>(num_moments_);
@@ -2485,7 +2477,7 @@ LBSSolver::ReadFluxMoments(const std::string& file_base,
     file.read((char*)&num_nodes, sizeof(uint64_t));
 
     // Read node locations
-    std::vector<chi_mesh::Vector3> file_node_locations;
+    std::vector<Vector3> file_node_locations;
     file_node_locations.reserve(num_nodes);
     for (uint64_t n = 0; n < num_nodes; ++n)
     {
@@ -2679,7 +2671,7 @@ LBSSolver::UpdateFieldFunctions()
       double globl_total_power;
       MPI_Allreduce(&local_total_power, &globl_total_power, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
-      chi_math::Scale(data_vector_local, options_.power_normalization / globl_total_power);
+      Scale(data_vector_local, options_.power_normalization / globl_total_power);
     }
 
     const size_t ff_index = power_gen_fieldfunc_local_handle_;
@@ -2906,7 +2898,7 @@ LBSSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
       throw std::logic_error("SetGSPETScVecFromPrimarySTLvector");
   }
 
-  chi_math::Scale(*y_ptr, value);
+  Scale(*y_ptr, value);
 }
 
 void
@@ -3254,3 +3246,4 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs
 }
 
 } // namespace lbs
+} // namespace opensn

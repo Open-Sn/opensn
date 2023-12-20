@@ -10,15 +10,17 @@
 #include "framework/console/console.h"
 #include <iomanip>
 
+namespace opensn
+{
 namespace lbs
 {
 
 RegisterChiObject(lbs, DiscreteOrdinatesCurvilinearSolver);
 
-chi::InputParameters
+InputParameters
 DiscreteOrdinatesCurvilinearSolver::GetInputParameters()
 {
-  chi::InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
+  InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
 
   params.SetGeneralDescription(
     "Solver for Discrete Ordinates in cylindrical and spherical coordinates");
@@ -35,10 +37,9 @@ DiscreteOrdinatesCurvilinearSolver::GetInputParameters()
 }
 
 DiscreteOrdinatesCurvilinearSolver::DiscreteOrdinatesCurvilinearSolver(
-  const chi::InputParameters& params)
+  const InputParameters& params)
   : DiscreteOrdinatesSolver(params),
-    coord_system_type_(
-      static_cast<chi_math::CoordinateSystemType>(params.GetParamValue<int>("coord_system")))
+    coord_system_type_(static_cast<CoordinateSystemType>(params.GetParamValue<int>("coord_system")))
 {
 }
 
@@ -58,8 +59,8 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   //  --------------------------------------------------------------------------
 
   //  coordinate system must be curvilinear
-  if (coord_system_type_ != chi_math::CoordinateSystemType::CYLINDRICAL &&
-      coord_system_type_ != chi_math::CoordinateSystemType::SPHERICAL)
+  if (coord_system_type_ != CoordinateSystemType::CYLINDRICAL &&
+      coord_system_type_ != CoordinateSystemType::SPHERICAL)
   {
     Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                            << "invalid coordinate system, static_cast<int>(type) = "
@@ -90,7 +91,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
     {
       switch (coord_system_type_)
       {
-        case chi_math::CoordinateSystemType::CYLINDRICAL:
+        case CoordinateSystemType::CYLINDRICAL:
         {
           options_.geometry_type = lbs::GeometryType::TWOD_CYLINDRICAL;
           break;
@@ -123,9 +124,9 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
     const auto angular_quad_ptr = groupsets_[gs].quadrature_;
     switch (coord_system_type_)
     {
-      case chi_math::CoordinateSystemType::CYLINDRICAL:
+      case CoordinateSystemType::CYLINDRICAL:
       {
-        typedef chi_math::CylindricalAngularQuadrature CylAngQuad;
+        typedef CylindricalAngularQuadrature CylAngQuad;
         const auto curvilinear_angular_quad_ptr =
           std::dynamic_pointer_cast<CylAngQuad>(angular_quad_ptr);
         if (!curvilinear_angular_quad_ptr)
@@ -138,9 +139,9 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         }
         break;
       }
-      case chi_math::CoordinateSystemType::SPHERICAL:
+      case CoordinateSystemType::SPHERICAL:
       {
-        typedef chi_math::SphericalAngularQuadrature SphAngQuad;
+        typedef SphericalAngularQuadrature SphAngQuad;
         const auto curvilinear_angular_quad_ptr =
           std::dynamic_pointer_cast<SphAngQuad>(angular_quad_ptr);
         if (!curvilinear_angular_quad_ptr)
@@ -166,7 +167,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
     const auto angleagg_method = groupsets_[gs].angleagg_method_;
     switch (coord_system_type_)
     {
-      case chi_math::CoordinateSystemType::CYLINDRICAL:
+      case CoordinateSystemType::CYLINDRICAL:
       {
         if (angleagg_method != lbs::AngleAggregationType::AZIMUTHAL)
         {
@@ -177,7 +178,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         }
         break;
       }
-      case chi_math::CoordinateSystemType::SPHERICAL:
+      case CoordinateSystemType::SPHERICAL:
       {
         if (angleagg_method != lbs::AngleAggregationType::POLAR)
         {
@@ -199,10 +200,10 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   }
 
   //  boundary of mesh must be rectangular with origin at (0, 0, 0)
-  const std::vector<chi_mesh::Vector3> unit_normal_vectors = {
-    chi_mesh::Vector3(1.0, 0.0, 0.0),
-    chi_mesh::Vector3(0.0, 1.0, 0.0),
-    chi_mesh::Vector3(0.0, 0.0, 1.0),
+  const std::vector<Vector3> unit_normal_vectors = {
+    Vector3(1.0, 0.0, 0.0),
+    Vector3(0.0, 1.0, 0.0),
+    Vector3(0.0, 0.0, 1.0),
   };
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -257,23 +258,23 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
 {
   Chi::log.Log() << "Initializing spatial discretization_.\n";
 
-  auto qorder = chi_math::QuadratureOrder::INVALID_ORDER;
-  auto system = chi_math::CoordinateSystemType::UNDEFINED;
+  auto qorder = QuadratureOrder::INVALID_ORDER;
+  auto system = CoordinateSystemType::UNDEFINED;
 
   //  primary discretisation
   switch (options_.geometry_type)
   {
     case lbs::GeometryType::ONED_SPHERICAL:
     {
-      qorder = chi_math::QuadratureOrder::FOURTH;
-      system = chi_math::CoordinateSystemType::SPHERICAL;
+      qorder = QuadratureOrder::FOURTH;
+      system = CoordinateSystemType::SPHERICAL;
       break;
     }
     case lbs::GeometryType::ONED_CYLINDRICAL:
     case lbs::GeometryType::TWOD_CYLINDRICAL:
     {
-      qorder = chi_math::QuadratureOrder::THIRD;
-      system = chi_math::CoordinateSystemType::CYLINDRICAL;
+      qorder = QuadratureOrder::THIRD;
+      system = CoordinateSystemType::CYLINDRICAL;
       break;
     }
     default:
@@ -286,7 +287,7 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
     }
   }
 
-  typedef chi_math::spatial_discretization::PieceWiseLinearDiscontinuous SDM_PWLD;
+  typedef PieceWiseLinearDiscontinuous SDM_PWLD;
   discretization_ = SDM_PWLD::New(*grid_ptr_, qorder, system);
 
   ComputeUnitIntegrals();
@@ -299,15 +300,15 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
   {
     case lbs::GeometryType::ONED_SPHERICAL:
     {
-      qorder = chi_math::QuadratureOrder::THIRD;
-      system = chi_math::CoordinateSystemType::CYLINDRICAL;
+      qorder = QuadratureOrder::THIRD;
+      system = CoordinateSystemType::CYLINDRICAL;
       break;
     }
     case lbs::GeometryType::ONED_CYLINDRICAL:
     case lbs::GeometryType::TWOD_CYLINDRICAL:
     {
-      qorder = chi_math::QuadratureOrder::SECOND;
-      system = chi_math::CoordinateSystemType::CARTESIAN;
+      qorder = QuadratureOrder::SECOND;
+      system = CoordinateSystemType::CARTESIAN;
       break;
     }
     default:
@@ -332,11 +333,11 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
   const auto& sdm = *discretization_;
 
   // Define spatial weighting functions
-  std::function<double(const chi_mesh::Vector3&)> swf =
-    chi_math::SpatialDiscretization::CylindricalRZSpatialWeightFunction;
+  std::function<double(const Vector3&)> swf =
+    SpatialDiscretization::CylindricalRZSpatialWeightFunction;
 
   // Define lambda for cell-wise comps
-  auto ComputeCellUnitIntegrals = [&sdm, &swf](const chi_mesh::Cell& cell)
+  auto ComputeCellUnitIntegrals = [&sdm, &swf](const Cell& cell)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     //    const size_t cell_num_faces = cell.faces.size();
@@ -400,3 +401,4 @@ DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(lbs::LBSGroupset& groupset)
 }
 
 } // namespace lbs
+} // namespace opensn

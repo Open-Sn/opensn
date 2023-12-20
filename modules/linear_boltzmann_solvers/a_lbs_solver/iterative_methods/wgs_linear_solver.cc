@@ -20,12 +20,14 @@
 
 #define GetGSContextPtr(x) std::dynamic_pointer_cast<WGSContext>(x)
 
+namespace opensn
+{
 namespace lbs
 {
 
 WGSLinearSolver::WGSLinearSolver(WGSContextPtr gs_context_ptr)
-  : chi_math::LinearSolver(IterativeMethodPETScName(gs_context_ptr->groupset_.iterative_method_),
-                           gs_context_ptr)
+  : LinearSolver(IterativeMethodPETScName(gs_context_ptr->groupset_.iterative_method_),
+                 gs_context_ptr)
 {
   auto& groupset = gs_context_ptr->groupset_;
   auto& solver_tol_options = this->ToleranceOptions();
@@ -68,8 +70,7 @@ WGSLinearSolver::SetSystem()
 {
   if (IsSystemSet()) return;
 
-  x_ =
-    chi_math::PETScUtils::CreateVector(sc_int64_t(num_local_dofs_), sc_int64_t(num_global_dofs_));
+  x_ = CreateVector(sc_int64_t(num_local_dofs_), sc_int64_t(num_global_dofs_));
 
   VecSet(x_, 0.0);
   VecDuplicate(x_, &b_);
@@ -84,7 +85,7 @@ WGSLinearSolver::SetSystem()
                  &A_);
 
   // Set the action-operator
-  MatShellSetOperation(A_, MATOP_MULT, (void (*)())chi_math::LinearSolverMatrixAction);
+  MatShellSetOperation(A_, MATOP_MULT, (void (*)())LinearSolverMatrixAction);
 
   // Set solver operators
   KSPSetOperators(ksp_, A_, A_);
@@ -224,7 +225,7 @@ WGSLinearSolver::PostSolveCallback()
     KSPGetConvergedReason(ksp_, &reason);
     if (reason != KSP_CONVERGED_RTOL and reason != KSP_DIVERGED_ITS)
       Chi::log.Log0Warning() << "Krylov solver failed. "
-                             << "Reason: " << chi_physics::GetPETScConvergedReasonstring(reason);
+                             << "Reason: " << GetPETScConvergedReasonstring(reason);
   }
 
   // Copy x to local solution
@@ -244,3 +245,4 @@ WGSLinearSolver::PostSolveCallback()
 }
 
 } // namespace lbs
+} // namespace opensn

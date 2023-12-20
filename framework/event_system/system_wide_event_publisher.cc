@@ -1,9 +1,9 @@
 #include "framework/event_system/system_wide_event_publisher.h"
 
-namespace chi
+namespace opensn
 {
 
-SystemWideEventPublisher::SystemWideEventPublisher() : chi::EventPublisher("SystemWide")
+SystemWideEventPublisher::SystemWideEventPublisher() : EventPublisher("SystemWide")
 {
 }
 
@@ -16,9 +16,9 @@ SystemWideEventPublisher::GetInstance()
 }
 
 void
-SystemWideEventPublisher::PublishEvent(const chi::Event& event)
+SystemWideEventPublisher::PublishEvent(const Event& event)
 {
   EventPublisher::PublishEvent(event);
 }
 
-} // namespace chi
+} // namespace opensn

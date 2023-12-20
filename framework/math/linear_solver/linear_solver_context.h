@@ -2,7 +2,7 @@
 
 #include <petscksp.h>
 
-namespace chi_math
+namespace opensn
 {
 
 enum class ResidualScaleType
@@ -25,4 +25,4 @@ struct LinearSolverContext
   virtual ~LinearSolverContext() = default;
 };
 
-} // namespace chi_math
+} // namespace opensn

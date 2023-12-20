@@ -2,6 +2,8 @@
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/source_functions/source_function.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -33,3 +35,4 @@ public:
 };
 
 } // namespace lbs
+} // namespace opensn

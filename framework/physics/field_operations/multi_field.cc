@@ -5,15 +5,15 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
-namespace chi_physics::field_operations
+namespace opensn
 {
 
 RegisterChiObject(chi_physics::field_operations, MultiFieldOperation);
 
-chi::InputParameters
+InputParameters
 MultiFieldOperation::GetInputParameters()
 {
-  chi::InputParameters params = FieldOperation::GetInputParameters();
+  InputParameters params = FieldOperation::GetInputParameters();
 
   params.SetDocGroup("DocFieldOperation");
 
@@ -40,7 +40,7 @@ MultiFieldOperation::GetInputParameters()
   return params;
 }
 
-MultiFieldOperation::MultiFieldOperation(const chi::InputParameters& params)
+MultiFieldOperation::MultiFieldOperation(const InputParameters& params)
   : FieldOperation(params),
     result_field_handle_(params.GetParamValue<size_t>("result_field_handle")),
     dependent_field_handles_(params.GetParamVectorValue<size_t>("dependent_field_handles")),
@@ -94,7 +94,7 @@ MultiFieldOperation::MultiFieldOperation(const chi::InputParameters& params)
 
   auto function_base_obj = Chi::GetStackItemPtr(Chi::object_stack, function_handle_, __FUNCTION__);
 
-  function_ptr_ = std::dynamic_pointer_cast<chi_math::FunctionDimAToDimB>(function_base_obj);
+  function_ptr_ = std::dynamic_pointer_cast<FunctionDimAToDimB>(function_base_obj);
 
   ChiLogicalErrorIf(not function_ptr_, "Casting failure of function");
 
@@ -167,4 +167,4 @@ MultiFieldOperation::Execute()
   }   // for cell
 }
 
-} // namespace chi_physics::field_operations
+} // namespace opensn

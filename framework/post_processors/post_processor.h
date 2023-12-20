@@ -3,7 +3,7 @@
 #include "framework/object.h"
 #include "framework/event_system/event_subscriber.h"
 
-namespace chi
+namespace opensn
 {
 
 enum class PPType : int
@@ -45,7 +45,7 @@ public:
   size_t NumericPrecision() const;
 
   /**Calls the base ChiObject's method and adds a subscription to
-   * `chi_physics::PhysicsEventPublisher` singleton.*/
+   * `opensn::PhysicsEventPublisher` singleton.*/
   void PushOntoStack(std::shared_ptr<ChiObject>& new_object) override;
 
   void ReceiveEventUpdate(const Event& event) override;
@@ -94,4 +94,4 @@ private:
   static PPNumericFormat ConstructNumericFormat(const std::string& format_string);
 };
 
-} // namespace chi
+} // namespace opensn

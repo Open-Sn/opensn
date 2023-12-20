@@ -2,7 +2,7 @@
 
 #include "framework/math/quadratures/quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
 
 /**Quadrature for a wedge (extruded triangle). This is a simple product
@@ -14,4 +14,4 @@ public:
   explicit QuadratureWedge(QuadratureOrder order);
 };
 
-} // namespace chi_math
+} // namespace opensn

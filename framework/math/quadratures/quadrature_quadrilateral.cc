@@ -2,8 +2,10 @@
 
 #include "framework/math/quadratures/quadrature_gausslegendre.h"
 
-chi_math::QuadratureQuadrilateral::QuadratureQuadrilateral(QuadratureOrder order)
-  : Quadrature(order)
+namespace opensn
+{
+
+QuadratureQuadrilateral::QuadratureQuadrilateral(QuadratureOrder order) : Quadrature(order)
 {
   QuadratureGaussLegendre legendre(order);
 
@@ -27,3 +29,5 @@ chi_math::QuadratureQuadrilateral::QuadratureQuadrilateral(QuadratureOrder order
       q++;
     }
 }
+
+} // namespace opensn

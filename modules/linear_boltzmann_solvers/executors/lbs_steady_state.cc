@@ -4,15 +4,17 @@
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/ags_linear_solver.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 RegisterChiObject(lbs, SteadyStateSolver);
 
-chi::InputParameters
+InputParameters
 SteadyStateSolver::GetInputParameters()
 {
-  chi::InputParameters params = chi_physics::Solver::GetInputParameters();
+  InputParameters params = opensn::Solver::GetInputParameters();
 
   params.SetGeneralDescription(
     "Generalized implementation of a steady state solver. This solver calls"
@@ -26,8 +28,8 @@ SteadyStateSolver::GetInputParameters()
   return params;
 }
 
-SteadyStateSolver::SteadyStateSolver(const chi::InputParameters& params)
-  : chi_physics::Solver(params),
+SteadyStateSolver::SteadyStateSolver(const InputParameters& params)
+  : opensn::Solver(params),
     lbs_solver_(Chi::GetStackItem<LBSSolver>(Chi::object_stack,
                                              params.GetParamValue<size_t>("lbs_solver_handle")))
 {
@@ -53,3 +55,4 @@ SteadyStateSolver::Execute()
 }
 
 } // namespace lbs
+} // namespace opensn

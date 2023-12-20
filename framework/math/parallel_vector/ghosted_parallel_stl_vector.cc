@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-namespace chi_math
+namespace opensn
 {
 
 std::unique_ptr<ParallelVector>
@@ -35,4 +35,4 @@ GhostedParallelSTLVector::GetGlobalValue(const int64_t global_id) const
   return values_[ghost_comm_.MapGhostToLocal(global_id)];
 }
 
-} // namespace chi_math
+} // namespace opensn

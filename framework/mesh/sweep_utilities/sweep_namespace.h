@@ -5,15 +5,9 @@
 
 #include <memory>
 
-namespace chi
+namespace opensn
 {
 class DirectedGraph;
-}
-
-namespace chi_mesh
-{
-namespace sweep_management
-{
 
 enum class FaceOrientation : short
 {
@@ -32,7 +26,7 @@ struct Task
   unsigned int num_dependencies_;
   std::vector<uint64_t> successors_;
   uint64_t reference_id_;
-  const chi_mesh::Cell* cell_ptr_;
+  const Cell* cell_ptr_;
   bool completed_ = false;
 };
 
@@ -64,5 +58,5 @@ enum class AngleSetStatus
   MESSAGES_PENDING = 7
 };
 typedef AngleSetStatus ExecutionPermission;
-} // namespace sweep_management
-} // namespace chi_mesh
+
+} // namespace opensn

@@ -3,7 +3,7 @@
 #include "framework/lua.h"
 #include "modules/cfem_diffusion/cfem_diffusion_solver.h"
 
-namespace cfem_diffusion::cfem_diffusion_lua_utils
+namespace opensnlua::cfem_diffusion
 {
 /** Creates a CFEM Diffusion solver.
  *
@@ -65,4 +65,4 @@ int chiCFEMDiffusionSolverCreate(lua_State* L);
 int chiCFEMDiffusionSetBCProperty(lua_State* L);
 
 void RegisterLuaEntities(lua_State* L);
-} // namespace cfem_diffusion::cfem_diffusion_lua_utils
+} // namespace opensnlua::cfem_diffusion

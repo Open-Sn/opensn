@@ -3,13 +3,10 @@
 #include <petscksp.h>
 #include <vector>
 
-namespace chi_math
+namespace opensn
 {
 class ParallelVector;
-}
 
-namespace chi_math::PETScUtils
-{
 /**Generalized solver structure.*/
 struct PETScSolverSetup
 {
@@ -255,4 +252,4 @@ GhostVecLocalRaw GetGhostVectorLocalViewRead(Vec x);
  */
 void RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data);
 
-} // namespace chi_math::PETScUtils
+} // namespace opensn

@@ -2,9 +2,9 @@
 
 #include "framework/math/math.h"
 
-namespace chi_math::finite_element
+namespace opensn
 {
-typedef std::vector<chi_mesh::Vector3> VecVec3;
+typedef std::vector<Vector3> VecVec3;
 
 /**Stored relevant quadrature point information
  * for volumetric integrals.*/
@@ -21,9 +21,9 @@ public:
                                 size_t num_nodes);
 
   const std::vector<unsigned int>& QuadraturePointIndices() const;
-  chi_mesh::Vector3 QPointXYZ(unsigned int qp) const;
+  Vector3 QPointXYZ(unsigned int qp) const;
   double ShapeValue(unsigned int i, unsigned int qp) const;
-  chi_mesh::Vector3 ShapeGrad(unsigned int i, unsigned int qp) const;
+  Vector3 ShapeGrad(unsigned int i, unsigned int qp) const;
   const VecVec3& QPointsXYZ() const;
   const std::vector<VecDbl>& ShapeValues() const;
   const std::vector<VecVec3>& ShapeGradValues() const;
@@ -57,10 +57,11 @@ public:
                              VecVec3 normals,
                              std::vector<std::vector<int>> face_dof_mappings,
                              size_t num_nodes);
-  chi_mesh::Vector3 Normal(unsigned int qp) const;
+  Vector3 Normal(unsigned int qp) const;
   const VecVec3& Normals() const;
 
 protected:
   VecVec3 normals_; ///< node i, then qp
 };
-} // namespace chi_math::finite_element
+
+} // namespace opensn

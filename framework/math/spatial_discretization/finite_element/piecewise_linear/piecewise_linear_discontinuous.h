@@ -3,7 +3,7 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_base.h"
 #include "framework/math/spatial_discretization/cell_mappings/piecewise_linear_base_mapping.h"
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
 
 /**
@@ -18,7 +18,7 @@ public:
    * Construct a shared object using the protected constructor.
    */
   static std::shared_ptr<PieceWiseLinearDiscontinuous>
-  New(const chi_mesh::MeshContinuum& grid,
+  New(const MeshContinuum& grid,
       QuadratureOrder q_order = QuadratureOrder::SECOND,
       CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN);
 
@@ -26,24 +26,24 @@ public:
                             std::vector<int64_t>& nodal_nnz_off_diag,
                             const UnknownManager& unknown_manager) const override;
 
-  int64_t MapDOF(const chi_mesh::Cell& cell,
+  int64_t MapDOF(const Cell& cell,
                  unsigned int node,
                  const UnknownManager& unknown_manager,
                  unsigned int unknown_id,
                  unsigned int component) const override;
 
-  int64_t MapDOFLocal(const chi_mesh::Cell& cell,
+  int64_t MapDOFLocal(const Cell& cell,
                       unsigned int node,
                       const UnknownManager& unknown_manager,
                       unsigned int unknown_id,
                       unsigned int component) const override;
 
-  int64_t MapDOF(const chi_mesh::Cell& cell, unsigned int node) const override
+  int64_t MapDOF(const Cell& cell, unsigned int node) const override
   {
     return MapDOF(cell, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
   }
 
-  int64_t MapDOFLocal(const chi_mesh::Cell& cell, unsigned int node) const override
+  int64_t MapDOFLocal(const Cell& cell, unsigned int node) const override
   {
     return MapDOFLocal(cell, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
   }
@@ -62,9 +62,9 @@ protected:
   std::vector<std::pair<uint64_t, int64_t>> neighbor_cell_block_address_;
 
 private:
-  explicit PieceWiseLinearDiscontinuous(const chi_mesh::MeshContinuum& grid,
+  explicit PieceWiseLinearDiscontinuous(const MeshContinuum& grid,
                                         QuadratureOrder q_order,
                                         CoordinateSystemType cs_type);
 };
 
-} // namespace chi_math::spatial_discretization
+} // namespace opensn

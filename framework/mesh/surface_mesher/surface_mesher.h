@@ -2,7 +2,7 @@
 
 #include "framework/mesh/mesh.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 enum class SurfaceMesherType
@@ -32,4 +32,4 @@ public:
   virtual ~SurfaceMesher() = default;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

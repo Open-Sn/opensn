@@ -17,12 +17,14 @@
     }                                                                                              \
   }
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
 DiffusionPWLCSolver::DiffusionPWLCSolver(std::string text_name,
-                                         const chi_math::SpatialDiscretization& sdm,
-                                         const chi_math::UnknownManager& uk_man,
+                                         const opensn::SpatialDiscretization& sdm,
+                                         const UnknownManager& uk_man,
                                          std::map<uint64_t, BoundaryCondition> bcs,
                                          MatID2XSMap map_mat_id_2_xs,
                                          const std::vector<UnitCellMatrices>& unit_cell_matrices,
@@ -36,7 +38,7 @@ DiffusionPWLCSolver::DiffusionPWLCSolver(std::string text_name,
                     verbose,
                     true)
 {
-  using SDM_TYPE = chi_math::SpatialDiscretizationType;
+  using SDM_TYPE = SpatialDiscretizationType;
   const auto& PWLC = SDM_TYPE ::PIECEWISE_LINEAR_CONTINUOUS;
 
   if (sdm_.Type() != PWLC)
@@ -501,4 +503,5 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
 }
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

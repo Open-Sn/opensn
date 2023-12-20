@@ -19,7 +19,8 @@
  * \note Remember to include the header "ChiObject/ChiObjectFactory.h".*/
 #define RegisterChiObject(namespace_name, object_name)                                             \
   static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
-    ChiObjectFactory::AddObjectToRegistry<object_name, ChiObject>(#namespace_name, #object_name)
+    opensn::ChiObjectFactory::AddObjectToRegistry<object_name, ChiObject>(#namespace_name,         \
+                                                                          #object_name)
 
 /**Macro for registering an object (parameters only) within the
  * ChiObjectFactory singleton.
@@ -33,7 +34,8 @@
  * \note Remember to include the header "ChiObject/object_maker.h"*/
 #define RegisterChiObjectParametersOnly(namespace_name, object_name)                               \
   static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
-    ChiObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name, #object_name)
+    opensn::ChiObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name,          \
+                                                                         #object_name)
 
 /**Macro for registering a pure input parameters block within the
  * ChiObjectFactory singleton AND giving it a custom name
@@ -48,7 +50,11 @@
  * \note Remember to include the header "ChiObject/object_maker.h"*/
 #define RegisterSyntaxBlock(namespace_name, block_name, syntax_function)                           \
   static char ChiObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) =    \
-    ChiObjectFactory::AddSyntaxBlockToRegistry(#namespace_name, #block_name, syntax_function)
+    opensn::ChiObjectFactory::AddSyntaxBlockToRegistry(                                            \
+      #namespace_name, #block_name, syntax_function)
+
+namespace opensn
+{
 
 class ChiObject;
 
@@ -58,8 +64,8 @@ class ChiObjectFactory
 public:
   using ObjectPtr = std::shared_ptr<ChiObject>;
 
-  using ObjectGetInParamsFunc = chi::InputParameters (*)();
-  using ObjectConstructorFunc = ObjectPtr (*)(const chi::InputParameters&);
+  using ObjectGetInParamsFunc = InputParameters (*)();
+  using ObjectConstructorFunc = ObjectPtr (*)(const InputParameters&);
 
   // Structure storing the entities necessary for creating an object
   struct ObjectRegistryEntry
@@ -132,14 +138,13 @@ public:
   /**Makes an object with the given parameters and places on the global
    * object stack. Returns a handle to the object. The object type is
    * obtained from a string parameter name `chi_obj_type`.*/
-  size_t MakeRegisteredObject(const chi::ParameterBlock& params) const;
+  size_t MakeRegisteredObject(const ParameterBlock& params) const;
   /**Makes an object with the given parameters and places on the global
    * object stack. Returns a handle to the object.*/
-  size_t MakeRegisteredObjectOfType(const std::string& type,
-                                    const chi::ParameterBlock& params) const;
+  size_t MakeRegisteredObjectOfType(const std::string& type, const ParameterBlock& params) const;
 
   /**Returns the input parameters of a registered object.*/
-  chi::InputParameters GetRegisteredObjectParameters(const std::string& type) const;
+  InputParameters GetRegisteredObjectParameters(const std::string& type) const;
 
   /**\brief Dumps the object registry to stdout.*/
   void DumpRegister() const;
@@ -153,7 +158,7 @@ private:
   /**Utility redirection to call an object's static `GetInputParameters`
    * function.*/
   template <typename T>
-  static chi::InputParameters CallGetInputParamsFunction()
+  static InputParameters CallGetInputParamsFunction()
   {
     return T::GetInputParameters();
   }
@@ -161,7 +166,7 @@ private:
   /**Utility redirection to call an object's constructor with a specified list
    * of input parameters.*/
   template <typename T, typename base_T>
-  static std::shared_ptr<base_T> CallObjectConstructor(const chi::InputParameters& params)
+  static std::shared_ptr<base_T> CallObjectConstructor(const InputParameters& params)
   {
     return std::make_shared<T>(params);
   }
@@ -171,3 +176,5 @@ private:
   void AssertRegistryKeyAvailable(const std::string& key,
                                   const std::string& calling_function) const;
 };
+
+} // namespace opensn

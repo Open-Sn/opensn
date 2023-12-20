@@ -5,10 +5,12 @@
 #include <string>
 #include <utility>
 
+namespace opensn
+{
 namespace lbs
 {
 
-class BoundaryFunctionToLua : public chi_mesh::sweep_management::BoundaryFunction
+class BoundaryFunctionToLua : public BoundaryFunction
 {
 private:
   const std::string m_lua_function_name;
@@ -24,14 +26,15 @@ public:
            int cell_material_id,
            unsigned int face_index,
            unsigned int face_node_index,
-           const chi_mesh::Vector3& face_node_location,
-           const chi_mesh::Vector3& face_node_normal,
+           const Vector3& face_node_location,
+           const Vector3& face_node_normal,
            const std::vector<int>& quadrature_angle_indices,
-           const std::vector<chi_mesh::Vector3>& quadrature_angle_vectors,
+           const std::vector<Vector3>& quadrature_angle_vectors,
            const std::vector<std::pair<double, double>>& quadrature_phi_theta_angles,
            const std::vector<int>& group_indices,
            double time) override;
 };
 
 } // namespace lbs
+} // namespace opensn
 #endif

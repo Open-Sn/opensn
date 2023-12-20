@@ -7,7 +7,7 @@
 
 #define scdouble static_cast<double>
 
-namespace chi
+namespace opensn
 {
 
 std::string
@@ -141,4 +141,4 @@ MakeSubSets(size_t num_items, size_t desired_num_subsets)
   return ss_infos;
 }
 
-} // namespace chi
+} // namespace opensn

@@ -1,6 +1,6 @@
 #include "framework/mpi/mpi_utils.h"
 
-namespace chi_mpi_utils
+namespace opensn
 {
 
 int
@@ -40,4 +40,5 @@ BuildLocationExtents(uint64_t local_size, MPI_Comm comm)
 
   return extents;
 }
-} // namespace chi_mpi_utils
+
+} // namespace opensn

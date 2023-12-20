@@ -4,7 +4,7 @@
 
 #include "framework/mesh/mesh.h"
 
-namespace chi_math
+namespace opensn
 {
 struct QuadraturePointPhiTheta;
 
@@ -14,12 +14,9 @@ enum class AngularQuadratureType
   ProductQuadrature = 2,
   SLDFESQ = 3
 };
-class AngularQuadrature;
-class AngularQuadratureCustom;
-} // namespace chi_math
 
 /**Simple structure to add names to the angle components.*/
-struct chi_math::QuadraturePointPhiTheta
+struct QuadraturePointPhiTheta
 {
   double phi = 0.0;
   double theta = 0.0;
@@ -27,15 +24,15 @@ struct chi_math::QuadraturePointPhiTheta
 };
 
 /**Base class for angular quadratures.*/
-class chi_math::AngularQuadrature
+class AngularQuadrature
 {
 public:
-  const chi_math::AngularQuadratureType type_;
+  const AngularQuadratureType type_;
 
 public:
-  std::vector<chi_math::QuadraturePointPhiTheta> abscissae_;
+  std::vector<QuadraturePointPhiTheta> abscissae_;
   std::vector<double> weights_;
-  std::vector<chi_mesh::Vector3> omegas_;
+  std::vector<Vector3> omegas_;
 
   struct HarmonicIndices
   {
@@ -59,9 +56,9 @@ protected:
   bool m2d_op_built_ = false;
 
 public:
-  AngularQuadrature() : type_(chi_math::AngularQuadratureType::Arbitrary) {}
+  AngularQuadrature() : type_(AngularQuadratureType::Arbitrary) {}
 
-  explicit AngularQuadrature(chi_math::AngularQuadratureType in_type) : type_(in_type) {}
+  explicit AngularQuadrature(AngularQuadratureType in_type) : type_(in_type) {}
 
   virtual ~AngularQuadrature() = default;
 
@@ -102,7 +99,7 @@ public:
   const std::vector<HarmonicIndices>& GetMomentToHarmonicsIndexMap() const;
 };
 
-class chi_math::AngularQuadratureCustom : public chi_math::AngularQuadrature
+class AngularQuadratureCustom : public AngularQuadrature
 {
 public:
   /**Constructor using custom directions.*/
@@ -111,3 +108,5 @@ public:
                           std::vector<double>& in_weights,
                           bool verbose);
 };
+
+} // namespace opensn

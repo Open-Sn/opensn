@@ -3,6 +3,8 @@
 #include "modules/linear_boltzmann_solvers/c_discrete_ordinates_adjoint_solver/lbs_adj_solver.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -65,3 +67,4 @@ AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
 }
 
 } // namespace lbs
+} // namespace opensn

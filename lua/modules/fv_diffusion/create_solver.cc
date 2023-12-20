@@ -5,7 +5,9 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace fv_diffusion::fv_diffusion_lua_utils
+using namespace opensn;
+
+namespace opensnlua::fv_diffusion
 {
 
 int
@@ -22,15 +24,15 @@ chiFVDiffusionSolverCreate(lua_State* L)
     solver_name = lua_tostring(L, 1);
   }
 
-  auto new_solver = std::make_shared<fv_diffusion::Solver>(solver_name);
+  auto new_solver = std::make_shared<opensn::fv_diffusion::Solver>(solver_name);
 
-  Chi::object_stack.push_back(new_solver);
+  opensn::Chi::object_stack.push_back(new_solver);
 
-  lua_pushinteger(L, static_cast<lua_Integer>(Chi::object_stack.size() - 1));
+  lua_pushinteger(L, static_cast<lua_Integer>(opensn::Chi::object_stack.size() - 1));
 
-  Chi::log.LogAllVerbose1() << "\nFVDiffusionSolverCreate: FV Diffusion solver created"
-                            << std::endl;
+  opensn::Chi::log.LogAllVerbose1()
+    << "\nFVDiffusionSolverCreate: FV Diffusion solver created" << std::endl;
   return 1;
 }
 
-} // namespace fv_diffusion::fv_diffusion_lua_utils
+} // namespace opensnlua::fv_diffusion

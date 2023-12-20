@@ -14,14 +14,14 @@
 /**IDK why this is needed. Seems like counter doesnt work properly without it*/
 #define JoinWordsB(x, y) JoinWordsA(x, y)
 
-std::shared_ptr<chi::PPPrinterSubscribeHelper> chi::PostProcessorPrinter::helper_ptr_ =
+namespace opensn
+{
+
+std::shared_ptr<PPPrinterSubscribeHelper> PostProcessorPrinter::helper_ptr_ =
   std::make_shared<PPPrinterSubscribeHelper>(PostProcessorPrinter::GetInstance());
 
-static char JoinWordsB(unique_var_name_ppp_, __COUNTER__) =
-  chi::PostProcessorPrinter::SubscribeToSystemWideEventPublisher();
-
-namespace chi
-{
+static char JoinWordsB(unique_var_name_ppp_,
+                       __COUNTER__) = PostProcessorPrinter::SubscribeToSystemWideEventPublisher();
 
 PPPrinterSubscribeHelper::PPPrinterSubscribeHelper(PostProcessorPrinter& printer_ref)
   : printer_ref_(printer_ref)
@@ -692,4 +692,4 @@ PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
   return value_matrix;
 }
 
-} // namespace chi
+} // namespace opensn

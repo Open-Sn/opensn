@@ -3,7 +3,7 @@
 #include "framework/physics/physics_material/material_property_base.h"
 #include "framework/math/sparse_matrix/math_sparse_matrix.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 class MultiGroupXS : public MaterialProperty
@@ -65,9 +65,9 @@ public:
 
   virtual const std::vector<double>& InverseVelocity() const = 0;
 
-  virtual const std::vector<chi_math::SparseMatrix>& TransferMatrices() const = 0;
+  virtual const std::vector<SparseMatrix>& TransferMatrices() const = 0;
 
-  virtual const chi_math::SparseMatrix& TransferMatrix(unsigned int ell) const = 0;
+  virtual const SparseMatrix& TransferMatrix(unsigned int ell) const = 0;
 
   virtual const std::vector<std::vector<double>> ProductionMatrix() const = 0;
 
@@ -82,4 +82,4 @@ public:
   virtual const std::vector<double>& SigmaSGtoG() const = 0;
 };
 
-} // namespace chi_physics
+} // namespace opensn

@@ -2,13 +2,9 @@
 
 #include "framework/mesh/mesh_generator/mesh_generator.h"
 
-namespace chi_data_types
+namespace opensn
 {
 class ByteArray;
-}
-
-namespace chi_mesh
-{
 
 /**Generates the mesh only on location 0, thereafter partitions the mesh
  * but instead of broadcasting the mesh to other locations it creates binary
@@ -16,8 +12,8 @@ namespace chi_mesh
 class SplitFileMeshGenerator : public MeshGenerator
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit SplitFileMeshGenerator(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit SplitFileMeshGenerator(const InputParameters& params);
 
   void Execute() override;
 
@@ -26,12 +22,12 @@ protected:
                       const UnpartitionedMesh& umesh,
                       int num_parts);
   static void SerializeCell(const UnpartitionedMesh::LightWeightCell& cell,
-                            chi_data_types::ByteArray& serial_buffer);
+                            ByteArray& serial_buffer);
   typedef std::pair<int, uint64_t> CellPIDGID;
   struct SplitMeshInfo
   {
     std::map<CellPIDGID, UnpartitionedMesh::LightWeightCell> cells_;
-    std::map<uint64_t, chi_mesh::Vector3> vertices_;
+    std::map<uint64_t, Vector3> vertices_;
     std::map<uint64_t, std::string> boundary_id_map_;
     int mesh_attributes_;
     size_t ortho_Nx_;
@@ -51,4 +47,4 @@ protected:
   const int verbosity_level_;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

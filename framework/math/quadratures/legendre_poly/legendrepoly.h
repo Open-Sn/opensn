@@ -2,7 +2,7 @@
 
 // ###################################################################
 /**Container object for functions relating to Legendre polynomials.*/
-namespace chi_math
+namespace opensn
 {
 /**
  * Provides the function evaluation of the Legendre polynomial P_N at value x.
@@ -48,4 +48,4 @@ double AssocLegendre(unsigned int ell, int m, double x);
  * Harmonics</b></a>
  */
 double Ylm(unsigned int ell, int m, double varphi, double theta);
-} // namespace chi_math
+} // namespace opensn

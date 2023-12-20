@@ -16,7 +16,7 @@
   throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ": Parameter \"" + param_name +        \
                          "\" not present in list of parameters.")
 
-namespace chi
+namespace opensn
 {
 
 const std::vector<std::string> InputParameters::system_ignored_param_names_ = {"chi_obj_type"};
@@ -443,4 +443,4 @@ InputParameters::DumpParameters() const
   }
 }
 
-} // namespace chi
+} // namespace opensn

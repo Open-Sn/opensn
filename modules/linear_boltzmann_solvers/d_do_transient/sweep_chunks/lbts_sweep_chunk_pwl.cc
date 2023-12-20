@@ -8,7 +8,7 @@
 //###################################################################
 /**Constructor.*/
 lbs::SweepChunkPWLTransientTheta::SweepChunkPWLTransientTheta(
-  std::shared_ptr<chi_mesh::MeshContinuum> grid_ptr,
+  std::shared_ptr<MeshContinuum> grid_ptr,
   chi_math::SpatialDiscretization& discretization,
   const std::vector<UnitCellMatrices>& unit_cell_matrices,
   std::vector<lbs::CellLBSView>& cell_transport_views,
@@ -151,7 +151,7 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;
       const int angle_num = angle_set->angles[angle_set_index];
-      const chi_mesh::Vector3& omega = groupset_.quadrature_->omegas_[angle_num];
+      const Vector3& omega = groupset_.quadrature_->omegas_[angle_num];
       const double wt = groupset_.quadrature_->weights_[angle_num];
 
       // Gradient matrix

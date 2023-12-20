@@ -5,7 +5,7 @@
 
 #include <vector>
 
-namespace chi_math
+namespace opensn
 {
 // clang-format off
   enum class QuadratureOrder : int {
@@ -23,19 +23,18 @@ namespace chi_math
     INVALID_ORDER
   };
 // clang-format on
-typedef chi_mesh::Vector3 QuadraturePointXYZ;
+typedef Vector3 QuadraturePointXYZ;
 class Quadrature;
-} // namespace chi_math
 
 /**Parent class for quadratures.*/
-class chi_math::Quadrature : public ChiObject
+class Quadrature : public ChiObject
 {
 public:
   QuadratureOrder order_;
-  std::vector<chi_math::QuadraturePointXYZ> qpoints_;
+  std::vector<QuadraturePointXYZ> qpoints_;
   std::vector<double> weights_;
 
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
 protected:
   /**Interval on which the quadrature is defined
@@ -44,7 +43,7 @@ protected:
   bool verbose_ = false;
 
 protected:
-  explicit Quadrature(const chi::InputParameters& params);
+  explicit Quadrature(const InputParameters& params);
   explicit Quadrature(QuadratureOrder in_order) : order_(in_order), range_({0, 0}) {}
 
 public:
@@ -57,3 +56,5 @@ public:
    * of the abscissae and scaling of the weights.*/
   void SetRange(const std::pair<double, double>& in_range);
 };
+
+} // namespace opensn

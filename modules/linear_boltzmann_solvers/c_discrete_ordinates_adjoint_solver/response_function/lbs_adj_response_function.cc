@@ -7,16 +7,20 @@
 #include "framework/console/console.h"
 #include "framework/logging/log.h"
 
+namespace opensn
+{
+namespace lbs
+{
+
 std::vector<double>
-lbs::ResponseFunctionDesignation::GetMGResponse(const chi_mesh::Cell& cell,
-                                                const size_t num_groups) const
+ResponseFunctionDesignation::GetMGResponse(const Cell& cell, const size_t num_groups) const
 {
   const std::string fname = __FUNCTION__;
 
   std::vector<double> response(num_groups, 0.0);
 
   // Utility lambdas
-  auto PushVector3AsTable = [](lua_State* L, const chi_mesh::Vector3& vec)
+  auto PushVector3AsTable = [](lua_State* L, const Vector3& vec)
   {
     lua_newtable(L);
 
@@ -89,4 +93,7 @@ lbs::ResponseFunctionDesignation::GetMGResponse(const chi_mesh::Cell& cell,
 
   return response;
 }
+
+} // namespace lbs
+} // namespace opensn
 #endif

@@ -13,6 +13,8 @@
 
 #include <iomanip>
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -59,10 +61,10 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
 
   auto& diff_solver = *front_gs.wgdsa_solver_;
 
-  auto nl_diff_context = std::make_shared<acceleration::NLKEigenDiffContext>(
-    diff_solver, lbs_solver, pisa_verbose_level);
+  auto nl_diff_context =
+    std::make_shared<NLKEigenDiffContext>(diff_solver, lbs_solver, pisa_verbose_level);
 
-  acceleration::NLKEigenDiffSolver nl_keigen_diff_solver(nl_diff_context);
+  NLKEigenDiffSolver nl_keigen_diff_solver(nl_diff_context);
 
   auto& tolerances = nl_keigen_diff_solver.ToleranceOptions();
 
@@ -86,7 +88,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
   auto SetLBSFissionSource =
     [&active_set_source_function, &front_gs](const VecDbl& input, VecDbl& output)
   {
-    chi_math::Set(output, 0.0);
+    Set(output, 0.0);
     active_set_source_function(
       front_gs, output, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
@@ -100,7 +102,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
     nl_diff_context->phi_l_ = lbs_solver.WGSCopyOnlyPhi0(front_gs, phi_old_local);
 
     SetLBSFissionSource(phi_old_local, q_moments_local);
-    chi_math::Scale(q_moments_local, 1.0 / k_eff);
+    Scale(q_moments_local, 1.0 / k_eff);
 
     auto Sffull = q_moments_local;
     nl_diff_context->Sf_ = lbs_solver.WGSCopyOnlyPhi0(front_gs, q_moments_local);
@@ -178,3 +180,4 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
 }
 
 } // namespace lbs
+} // namespace opensn

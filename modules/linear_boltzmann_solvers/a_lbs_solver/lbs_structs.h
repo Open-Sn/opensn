@@ -7,6 +7,8 @@
 #include <functional>
 #include <map>
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -16,11 +18,11 @@ typedef std::map<size_t, size_t> DirIDToSOMap;
 
 typedef std::vector<double> VecDbl;
 typedef std::vector<VecDbl> MatDbl;
-typedef std::vector<chi_mesh::Vector3> VecVec3;
+typedef std::vector<Vector3> VecVec3;
 typedef std::vector<VecVec3> MatVec3;
 
-typedef std::shared_ptr<chi_physics::MultiGroupXS> XSPtr;
-typedef std::shared_ptr<chi_physics::IsotropicMultiGrpSource> IsotropicSrcPtr;
+typedef std::shared_ptr<MultiGroupXS> XSPtr;
+typedef std::shared_ptr<IsotropicMultiGrpSource> IsotropicSrcPtr;
 
 enum class SolverType
 {
@@ -40,10 +42,9 @@ enum class GeometryType
   THREED_CARTESIAN = 6
 };
 
-inline chi_math::CoordinateSystemType
+inline CoordinateSystemType
 MapGeometryTypeToCoordSys(const GeometryType gtype)
 {
-  using namespace chi_math;
   switch (gtype)
   {
     case GeometryType::ONED_SLAB:
@@ -210,7 +211,7 @@ class AGSSchemeEntry;
 /**Struct for storing LBS options.*/
 struct Options
 {
-  typedef chi_math::SpatialDiscretizationType SDMType;
+  typedef SpatialDiscretizationType SDMType;
 
   GeometryType geometry_type = GeometryType::NO_GEOMETRY_SET;
   SDMType sd_type = SDMType::PIECEWISE_LINEAR_DISCONTINUOUS;
@@ -255,11 +256,11 @@ private:
   int num_nodes_;
   int num_groups_;
   int num_grps_moms_;
-  const chi_physics::MultiGroupXS* xs_;
+  const MultiGroupXS* xs_;
   double volume_;
   const std::vector<bool> face_local_flags_;
   const std::vector<int> face_locality_;
-  const std::vector<const chi_mesh::Cell*> neighbor_cell_ptrs_;
+  const std::vector<const Cell*> neighbor_cell_ptrs_;
   std::vector<double> outflow_;
 
 public:
@@ -267,11 +268,11 @@ public:
               int num_nodes,
               int num_groups,
               int num_moments,
-              const chi_physics::MultiGroupXS& xs_mapping,
+              const MultiGroupXS& xs_mapping,
               double volume,
               const std::vector<bool>& face_local_flags,
               const std::vector<int>& face_locality,
-              const std::vector<const chi_mesh::Cell*>& neighbor_cell_ptrs,
+              const std::vector<const Cell*>& neighbor_cell_ptrs,
               bool cell_on_boundary)
     : phi_address_(phi_address),
       num_nodes_(num_nodes),
@@ -291,11 +292,11 @@ public:
     return phi_address_ + node * num_grps_moms_ + num_groups_ * moment + grp;
   }
 
-  const chi_physics::MultiGroupXS& XS() const { return *xs_; }
+  const MultiGroupXS& XS() const { return *xs_; }
 
   bool IsFaceLocal(int f) const { return face_local_flags_[f]; }
   int FaceLocality(int f) const { return face_locality_[f]; }
-  const chi_mesh::Cell* FaceNeighbor(int f) const { return neighbor_cell_ptrs_[f]; }
+  const Cell* FaceNeighbor(int f) const { return neighbor_cell_ptrs_[f]; }
 
   int NumNodes() const { return num_nodes_; }
 
@@ -318,7 +319,7 @@ public:
       return 0.0;
   }
 
-  void ReassingXS(const chi_physics::MultiGroupXS& xs_mapped) { xs_ = &xs_mapped; }
+  void ReassingXS(const MultiGroupXS& xs_mapped) { xs_ = &xs_mapped; }
 };
 
 struct UnitCellMatrices
@@ -365,3 +366,4 @@ public:
 };
 
 } // namespace lbs
+} // namespace opensn

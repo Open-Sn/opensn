@@ -5,8 +5,9 @@
 #include <stdexcept>
 #include <string>
 
-namespace chi_data_types
+namespace opensn
 {
+
 class ByteArray
 {
 protected:
@@ -125,4 +126,5 @@ public:
   /**Returns a const reference of the internal byte array.*/
   const std::vector<std::byte>& Data() const { return raw_data_; }
 };
-} // namespace chi_data_types
+
+} // namespace opensn

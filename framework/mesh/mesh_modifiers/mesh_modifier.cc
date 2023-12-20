@@ -1,10 +1,10 @@
 #include "framework/mesh/mesh_modifiers/mesh_modifier.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
-MeshModifier::MeshModifier(const chi::InputParameters& params) : ChiObject(params)
+MeshModifier::MeshModifier(const InputParameters& params) : ChiObject(params)
 {
 }
 
-} // namespace chi_mesh
+} // namespace opensn

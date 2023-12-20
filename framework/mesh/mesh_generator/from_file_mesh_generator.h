@@ -2,14 +2,14 @@
 
 #include "framework/mesh/mesh_generator/mesh_generator.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 class FromFileMeshGenerator : public MeshGenerator
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit FromFileMeshGenerator(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit FromFileMeshGenerator(const InputParameters& params);
 
 protected:
   std::unique_ptr<UnpartitionedMesh>
@@ -19,4 +19,4 @@ protected:
   const std::string boundary_id_fieldname_;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

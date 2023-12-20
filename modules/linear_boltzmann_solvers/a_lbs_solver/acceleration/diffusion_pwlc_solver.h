@@ -2,15 +2,17 @@
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion.h"
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
 class DiffusionPWLCSolver : public DiffusionSolver
 {
 public:
   DiffusionPWLCSolver(std::string text_name,
-                      const chi_math::SpatialDiscretization& sdm,
-                      const chi_math::UnknownManager& uk_man,
+                      const opensn::SpatialDiscretization& sdm,
+                      const UnknownManager& uk_man,
                       std::map<uint64_t, BoundaryCondition> bcs,
                       MatID2XSMap map_mat_id_2_xs,
                       const std::vector<UnitCellMatrices>& unit_cell_matrices,
@@ -35,4 +37,5 @@ public:
   void Assemble_b(Vec petsc_q_vector) override;
 };
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

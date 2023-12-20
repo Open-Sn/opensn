@@ -3,7 +3,7 @@
 #include "framework/materials/material_property.h"
 #include "framework/math/functions/function_dimA_to_dimB.h"
 
-namespace chi
+namespace opensn
 {
 
 /**General material base class for a scalar material property that
@@ -12,7 +12,7 @@ namespace chi
 class MaterialPropertyScalarFuncXYZTV : public MaterialProperty
 {
 protected:
-  const chi_math::FunctionDimAToDimB& function_;
+  const FunctionDimAToDimB& function_;
   const std::vector<std::string> dependent_variables_;
 
 public:
@@ -22,4 +22,4 @@ public:
   double Evaluate(const std::vector<double>& vars);
 };
 
-} // namespace chi
+} // namespace opensn

@@ -2,9 +2,14 @@
 
 #include "framework/runtime.h"
 
+namespace opensn
+{
+
 std::string
-chi::StringStreamColor(StringSteamColorCode code)
+StringStreamColor(StringSteamColorCode code)
 {
   if (Chi::run_time::suppress_color_) return {};
   return std::string("\033[") + std::to_string(code) + "m";
 }
+
+} // namespace opensn

@@ -2,7 +2,7 @@
 
 #include "framework/object.h"
 
-namespace chi
+namespace opensn
 {
 
 /**Base class for a material property.*/
@@ -12,10 +12,10 @@ private:
   const std::string name_;
 
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit MaterialProperty(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit MaterialProperty(const InputParameters& params);
 
   const std::string& TextName() const;
 };
 
-} // namespace chi
+} // namespace opensn

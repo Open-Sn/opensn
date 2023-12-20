@@ -5,12 +5,14 @@
 #include "framework/math/dynamic_matrix.h"
 #include "framework/math/dynamic_vector.h"
 
+namespace opensn
+{
 namespace prk
 {
 /**General transient solver for point kinetics.
 
 * */
-class TransientSolver : public chi_physics::Solver
+class TransientSolver : public opensn::Solver
 {
 private:
   std::vector<double> lambdas_;
@@ -21,23 +23,23 @@ private:
   std::string time_integration_;
 
   size_t num_precursors_;
-  chi_math::DynamicMatrix<double> A_, I_;
-  chi_math::DynamicVector<double> x_t_, x_tp1_, q_;
+  DynamicMatrix<double> A_, I_;
+  DynamicVector<double> x_t_, x_tp1_, q_;
   double beta_ = 1.0;
   double period_tph_ = 0.0;
 
 public:
   /**Sets input parameters.*/
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
   /**Constructor.*/
-  explicit TransientSolver(const chi::InputParameters& params);
+  explicit TransientSolver(const InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
   void Step() override;
   void Advance() override;
 
-  chi::ParameterBlock GetInfo(const chi::ParameterBlock& params) const override;
+  ParameterBlock GetInfo(const ParameterBlock& params) const override;
 
   // Getters and Setters
 
@@ -60,18 +62,20 @@ public:
    *
    * \section Properties Properties that can be set
    * The following properties can be set via the lua call
-   * `chi_lua::chiSolverSetProperties`
+   * `chiSolverSetProperties`
    * \copydoc prk::TransientSolver::SetProperties
    *
    * PRK Transient solver settable properties:
    * - `rho`, The current reactivity
    *
    * Parents:
-   * \copydoc chi_physics::Solver::SetProperties
+   * \copydoc opensn::Solver::SetProperties
    */
-  void SetProperties(const chi::ParameterBlock& params) override;
+  void SetProperties(const ParameterBlock& params) override;
 
   /**Sets the value of rho.*/
   void SetRho(double value);
 };
+
 } // namespace prk
+} // namespace opensn

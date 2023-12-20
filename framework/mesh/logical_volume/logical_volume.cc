@@ -1,16 +1,16 @@
 #include "framework/mesh/logical_volume/logical_volume.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
-chi::InputParameters
+InputParameters
 LogicalVolume::GetInputParameters()
 {
   return ChiObject::GetInputParameters();
 }
 
-LogicalVolume::LogicalVolume(const chi::InputParameters& params) : ChiObject(params)
+LogicalVolume::LogicalVolume(const InputParameters& params) : ChiObject(params)
 {
 }
 
-} // namespace chi_mesh
+} // namespace opensn

@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObject(chi, KBAGraphPartitioner);
@@ -75,7 +75,7 @@ KBAGraphPartitioner::KBAGraphPartitioner(const InputParameters& params)
 
 std::vector<int64_t>
 KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
-                               const std::vector<chi_mesh::Vector3>& centroids,
+                               const std::vector<Vector3>& centroids,
                                int number_of_parts)
 {
   Chi::log.Log0Verbose1() << "Partitioning with KBAGraphPartitioner";
@@ -120,7 +120,7 @@ KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
   if ((nx_ * ny_ * nz_) != number_of_parts)
     Chi::log.Log0Warning() << "KBAGraphPartitioner::Partition nx_*ny_*nz_ != number_of_parts";
 
-  const auto pid_subsets = chi::MakeSubSets(nx_ * ny_ * nz_, number_of_parts);
+  const auto pid_subsets = MakeSubSets(nx_ * ny_ * nz_, number_of_parts);
 
   std::vector<int64_t> real_pids(num_cells, 0);
   for (size_t c = 0; c < num_cells; ++c)
@@ -137,4 +137,4 @@ KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
   return real_pids;
 }
 
-} // namespace chi
+} // namespace opensn

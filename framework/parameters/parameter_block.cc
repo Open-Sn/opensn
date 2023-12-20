@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <sstream>
 
-namespace chi
+namespace opensn
 {
 
 std::string
@@ -44,7 +44,6 @@ ParameterBlock::ParameterBlock(const ParameterBlock& other)
   type_ = other.type_;
   name_ = other.name_;
 
-  using namespace chi_data_types;
   if (other.value_ptr_) value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
 
   parameters_ = other.parameters_;
@@ -59,7 +58,6 @@ ParameterBlock::operator=(const ParameterBlock& other)
     type_ = other.type_;
     name_ = other.name_;
 
-    using namespace chi_data_types;
     if (other.value_ptr_) value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
 
     parameters_ = other.parameters_;
@@ -116,7 +114,7 @@ ParameterBlock::Name() const
   return name_;
 }
 
-const chi_data_types::Varying&
+const Varying&
 ParameterBlock::Value() const
 {
   switch (this->Type())
@@ -426,4 +424,4 @@ ParameterBlock::RecursiveDumpToJSON(std::string& outstr) const
 }
 // NOLINTEND(misc-no-recursion)
 
-} // namespace chi
+} // namespace opensn

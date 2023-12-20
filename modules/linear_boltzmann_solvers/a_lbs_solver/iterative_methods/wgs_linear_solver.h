@@ -8,11 +8,13 @@
 #include <vector>
 #include <functional>
 
+namespace opensn
+{
 namespace lbs
 {
 
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
-class WGSLinearSolver : public chi_math::LinearSolver
+class WGSLinearSolver : public LinearSolver
 {
 public:
   typedef std::shared_ptr<WGSContext> WGSContextPtr;
@@ -40,3 +42,4 @@ protected:
 };
 
 } // namespace lbs
+} // namespace opensn

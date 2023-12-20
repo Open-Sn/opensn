@@ -8,8 +8,9 @@
 #include <vector>
 #include <memory>
 
-namespace chi
+namespace opensn
 {
+
 /**Object for controlling logging.
    *
    * ## Part A: Output logs
@@ -290,10 +291,9 @@ public:
    * reference.*/
   double ProcessEvent(size_t ev_tag, EventOperation ev_operation);
 };
-} // namespace chi
 
 /** */
-struct chi::ChiLog::EventInfo
+struct ChiLog::EventInfo
 {
   std::string arb_info;
   double arb_value = 0.0;
@@ -312,7 +312,7 @@ struct chi::ChiLog::EventInfo
 };
 
 /** Object used by repeating events.*/
-struct chi::ChiLog::Event
+struct ChiLog::Event
 {
   const double ev_time = 0.0;
   const EventType ev_type = EventType::SINGLE_OCCURRENCE;
@@ -325,7 +325,7 @@ struct chi::ChiLog::Event
 };
 
 /**Repeating event object.*/
-class chi::ChiLog::RepeatingEvent
+class ChiLog::RepeatingEvent
 {
 public:
   explicit RepeatingEvent(std::string& name) : name_(name) {}
@@ -341,3 +341,5 @@ private:
   const std::string name_;
   std::vector<Event> events_;
 };
+
+} // namespace opensn

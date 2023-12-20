@@ -5,12 +5,12 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
 PieceWiseLinearBaseMapping::PieceWiseLinearBaseMapping(
-  const chi_mesh::MeshContinuum& grid,
-  const chi_mesh::Cell& cell,
+  const MeshContinuum& grid,
+  const Cell& cell,
   size_t num_nodes,
   std::vector<std::vector<int>> face_node_mappings)
   : CellMapping(grid,
@@ -23,7 +23,7 @@ PieceWiseLinearBaseMapping::PieceWiseLinearBaseMapping(
 }
 
 std::vector<std::vector<int>>
-PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const chi_mesh::Cell& cell)
+PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const Cell& cell)
 {
   const size_t num_faces = cell.faces_.size();
   std::vector<std::vector<int>> mappings;
@@ -57,11 +57,10 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const chi_mesh::Cell& cell)
   return mappings;
 }
 
-std::vector<chi_mesh::Vector3>
-PieceWiseLinearBaseMapping::GetVertexLocations(const chi_mesh::MeshContinuum& grid,
-                                               const chi_mesh::Cell& cell)
+std::vector<Vector3>
+PieceWiseLinearBaseMapping::GetVertexLocations(const MeshContinuum& grid, const Cell& cell)
 {
-  std::vector<chi_mesh::Vector3> verts;
+  std::vector<Vector3> verts;
   verts.reserve(cell.vertex_ids_.size());
 
   for (const auto vid : cell.vertex_ids_)
@@ -70,4 +69,4 @@ PieceWiseLinearBaseMapping::GetVertexLocations(const chi_mesh::MeshContinuum& gr
   return verts;
 }
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

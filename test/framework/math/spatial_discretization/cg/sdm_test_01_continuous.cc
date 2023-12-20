@@ -14,47 +14,49 @@
 
 #define scdouble static_cast<double>
 
-namespace chi_unit_tests
+using namespace opensn;
+
+namespace unit_tests
 {
 
-chi::InputParameters chi_math_SDM_Test01Syntax();
-chi::ParameterBlock chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters);
+InputParameters chi_math_SDM_Test01Syntax();
+ParameterBlock chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters);
 
 RegisterWrapperFunction(chi_unit_tests,
                         chi_math_SDM_Test01_Continuous,
                         chi_math_SDM_Test01Syntax,
                         chi_math_SDM_Test01_Continuous);
 
-chi::InputParameters
+InputParameters
 chi_math_SDM_Test01Syntax()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   params.AddRequiredParameterBlock("arg0", "General parameters");
 
   return params;
 }
 
-chi::ParameterBlock
-chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
+ParameterBlock
+chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
 {
-  const chi::ParameterBlock& params = input_parameters.GetParam("arg0");
+  const ParameterBlock& params = input_parameters.GetParam("arg0");
 
   const bool export_vtk = params.Has("export_vtk") && params.GetParamValue<bool>("export_vtk");
 
   // Get grid
-  auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
+  auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make SDM method
   const auto sdm_type = params.GetParamValue<std::string>("sdm_type");
 
-  std::shared_ptr<chi_math::SpatialDiscretization> sdm_ptr;
+  std::shared_ptr<SpatialDiscretization> sdm_ptr;
   bool is_DG = false;
   {
-    using namespace chi_math::spatial_discretization;
+    using namespace opensn;
     if (sdm_type == "PWLC") sdm_ptr = PieceWiseLinearContinuous::New(grid);
     else if (sdm_type == "LagrangeC") { sdm_ptr = LagrangeContinuous::New(grid); }
     else
@@ -68,8 +70,8 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
-  Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
+  opensn::Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
+  opensn::Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
   // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
@@ -77,18 +79,18 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
   Mat A;
   Vec x, b;
 
-  A = chi_math::PETScUtils::CreateSquareMatrix(n, N);
-  x = chi_math::PETScUtils::CreateVector(n, N);
-  b = chi_math::PETScUtils::CreateVector(n, N);
+  A = CreateSquareMatrix(n, N);
+  x = CreateVector(n, N);
+  b = CreateVector(n, N);
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
   sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   // Assemble the system
-  Chi::log.Log() << "Assembling system: ";
+  opensn::Chi::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -144,19 +146,19 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
     } // for i
   }   // for cell
 
-  Chi::log.Log() << "Global assembly";
+  opensn::Chi::log.Log() << "Global assembly";
 
   MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
   VecAssemblyBegin(b);
   VecAssemblyEnd(b);
 
-  Chi::log.Log() << "Done global assembly";
+  opensn::Chi::log.Log() << "Done global assembly";
 
   // Create Krylov Solver
-  Chi::log.Log() << "Solving: ";
-  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A, "PWLCDiffSolver", KSPCG, PCHYPRE, 1.0e-6, 1000);
+  opensn::Chi::log.Log() << "Solving: ";
+  auto petsc_solver =
+    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCHYPRE, 1.0e-6, 1000);
 
   PC pc;
   KSPGetPC(petsc_solver.ksp, &pc);
@@ -169,9 +171,9 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
                                          "pc_hypre_boomeramg_coarsen_type HMIS",
                                          "pc_hypre_boomeramg_interp_type ext+i"};
 
-  if (grid.Attributes() & chi_mesh::DIMENSION_2)
+  if (grid.Attributes() & DIMENSION_2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
-  if (grid.Attributes() & chi_mesh::DIMENSION_3)
+  if (grid.Attributes() & DIMENSION_3)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.7");
 
   for (const auto& option : pc_options)
@@ -185,7 +187,7 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
 
   const char* reason;
   KSPGetConvergedReasonString(petsc_solver.ksp, &reason);
-  Chi::log.Log() << "Done solving " << reason;
+  opensn::Chi::log.Log() << "Done solving " << reason;
 
   // Extract PETSc vector
   std::vector<double> field;
@@ -196,9 +198,9 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
     local_max = std::max(val, local_max);
 
   double global_max;
-  MPI_Allreduce(&local_max, &global_max, 1, MPI_DOUBLE, MPI_MAX, Chi::mpi.comm);
+  MPI_Allreduce(&local_max, &global_max, 1, MPI_DOUBLE, MPI_MAX, opensn::Chi::mpi.comm);
 
-  Chi::log.Log() << "Nodal max = " << global_max;
+  opensn::Chi::log.Log() << "Nodal max = " << global_max;
 
   // Clean up
   KSPDestroy(&petsc_solver.ksp);
@@ -207,20 +209,20 @@ chi_math_SDM_Test01_Continuous(const chi::InputParameters& input_parameters)
   VecDestroy(&b);
   MatDestroy(&A);
 
-  Chi::log.Log() << "Done cleanup";
+  opensn::Chi::log.Log() << "Done cleanup";
 
   // Create Field Function
   if (export_vtk)
   {
-    auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::SCALAR));
+    auto ff =
+      std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, Unknown(UnknownType::SCALAR));
 
     ff->UpdateFieldVector(field);
 
-    chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("ZSDM_Test", {ff});
+    FieldFunctionGridBased::ExportMultipleToVTK("ZSDM_Test", {ff});
   }
 
-  return chi::ParameterBlock{};
+  return ParameterBlock{};
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

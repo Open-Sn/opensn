@@ -4,7 +4,7 @@
 #include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/mesh/cell/cell.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**
@@ -92,4 +92,4 @@ private:
   void ExtrudeCells(MeshContinuum& template_grid, MeshContinuum& grid);
 };
 
-} // namespace chi_mesh
+} // namespace opensn

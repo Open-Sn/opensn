@@ -3,10 +3,7 @@
 #include "framework/mesh/sweep_utilities/angle_aggregation/angle_aggregation.h"
 #include "framework/mesh/sweep_utilities/sweep_chunk_base.h"
 
-namespace chi_mesh
-{
-
-namespace sweep_management
+namespace opensn
 {
 
 enum class SchedulingAlgorithm
@@ -19,12 +16,7 @@ typedef AngleSetGroup TAngleSetGroup;
 typedef AngleSet TAngleSet;
 typedef STDG TGSPO;
 
-} // namespace sweep_management
-
-typedef std::vector<sweep_management::TGSPO> TLEVELED_GRAPH;
-
-namespace sweep_management
-{
+typedef std::vector<TGSPO> TLEVELED_GRAPH;
 
 class SweepScheduler
 {
@@ -156,5 +148,4 @@ public:
   void SetBoundarySourceActiveFlag(bool flag_value);
 };
 
-} // namespace sweep_management
-} // namespace chi_mesh
+} // namespace opensn

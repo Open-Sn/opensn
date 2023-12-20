@@ -1,6 +1,6 @@
 #include "framework/mesh/mesh.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 Vector3
@@ -14,4 +14,4 @@ operator*(const double value, const Vector3& that)
   return newVector;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

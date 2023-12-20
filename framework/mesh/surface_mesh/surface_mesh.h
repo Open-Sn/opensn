@@ -5,7 +5,7 @@
 
 #include "framework/mesh/mesh.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**
@@ -32,7 +32,6 @@ public:
 
   const std::vector<PolyFace*>& GetPolygons() const { return poly_faces_; }
 
-  // constrdestr.cc
   SurfaceMesh();
   ~SurfaceMesh();
   friend std::ostream& operator<<(std::ostream& os, SurfaceMesh& dt);
@@ -120,4 +119,4 @@ public:
   void ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<double>& y_cuts);
 };
 
-} // namespace chi_mesh
+} // namespace opensn

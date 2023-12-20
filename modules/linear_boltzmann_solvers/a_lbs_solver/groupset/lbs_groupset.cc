@@ -10,15 +10,16 @@
 
 #include "framework/object_factory.h"
 
+namespace opensn
+{
 namespace lbs
 {
 RegisterChiObjectParametersOnly(lbs, LBSGroupset);
-}
 
-chi::InputParameters
+InputParameters
 lbs::LBSGroupset::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription("Input Parameters for groupsets.");
@@ -99,8 +100,6 @@ lbs::LBSGroupset::GetInputParameters()
     "tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
 
   // Constraints
-  using namespace chi_data_types;
-
   params.ConstrainParameterRange(
     "angle_aggregation_type",
     AllowableRangeList::New({"polar", "single", "azimuthal"}));
@@ -126,7 +125,7 @@ lbs::LBSGroupset::GetInputParameters()
   return params;
 }
 
-lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
+lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
                               const int id,
                               const LBSSolver& lbs_solver)
   : ChiObject(params), id_(id)
@@ -159,8 +158,8 @@ lbs::LBSGroupset::LBSGroupset(const chi::InputParameters& params,
 
   // Add quadrature
   const size_t quad_handle = params.GetParamValue<size_t>("angular_quadrature_handle");
-  quadrature_ = Chi::GetStackItemPtr<chi_math::AngularQuadrature>(
-    Chi::angular_quadrature_stack, quad_handle, fname);
+  quadrature_ =
+    Chi::GetStackItemPtr<AngularQuadrature>(Chi::angular_quadrature_stack, quad_handle, fname);
 
   // Angle aggregation
   const auto angle_agg_typestr = params.GetParamValue<std::string>("angle_aggregation_type");
@@ -249,7 +248,7 @@ lbs::LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order,
 void
 lbs::LBSGroupset::BuildSubsets()
 {
-  grp_subset_infos_ = chi::MakeSubSets(groups_.size(), master_num_grp_subsets_);
+  grp_subset_infos_ = MakeSubSets(groups_.size(), master_num_grp_subsets_);
   {
     size_t ss = 0;
     for (const auto& info : grp_subset_infos_)
@@ -300,3 +299,6 @@ lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name
 
   ofile.close();
 }
+
+} // namespace lbs
+} // namespace opensn

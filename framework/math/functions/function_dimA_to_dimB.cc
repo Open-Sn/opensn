@@ -2,13 +2,13 @@
 
 #include "framework/logging/log.h"
 
-namespace chi_math
+namespace opensn
 {
 
-chi::InputParameters
+InputParameters
 FunctionDimAToDimB::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   params.AddRequiredParameter<size_t>(
     "input_dimension", "The dimension of the input values (excluding the position).");
@@ -19,7 +19,7 @@ FunctionDimAToDimB::GetInputParameters()
   return params;
 }
 
-FunctionDimAToDimB::FunctionDimAToDimB(const chi::InputParameters& params)
+FunctionDimAToDimB::FunctionDimAToDimB(const InputParameters& params)
   : ChiObject(params),
     input_dimension_(params.GetParamValue<size_t>("input_dimension")),
     output_dimension_(params.GetParamValue<size_t>("output_dimension"))
@@ -58,4 +58,4 @@ FunctionDimAToDimB::ScalarFunctionCurvature4Parameters(double, double, double, d
 {
   ChiLogicalError("No available function");
 }
-} // namespace chi_math
+} // namespace opensn

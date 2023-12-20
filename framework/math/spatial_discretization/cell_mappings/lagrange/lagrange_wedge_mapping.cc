@@ -4,11 +4,11 @@
 
 #include "framework/logging/log_exceptions.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
-LagrangeWedgeMapping::LagrangeWedgeMapping(const chi_mesh::MeshContinuum& grid,
-                                           const chi_mesh::Cell& cell,
+LagrangeWedgeMapping::LagrangeWedgeMapping(const MeshContinuum& grid,
+                                           const Cell& cell,
                                            const Quadrature& volume_quadrature,
                                            const Quadrature& surface_quadrature,
                                            const Quadrature& aux_surface_quadrature)
@@ -38,7 +38,7 @@ LagrangeWedgeMapping::RefShape(uint32_t i, const Vec3& qpoint) const
   ChiLogicalError("Invalid shapefunction index " + std::to_string(i));
 }
 
-chi_mesh::Vector3
+Vector3
 LagrangeWedgeMapping::RefGradShape(uint32_t i, const Vec3& qpoint) const
 {
 
@@ -189,4 +189,4 @@ LagrangeWedgeMapping::GetSurfaceQuadrature(size_t face_index) const
     return aux_surface_quadrature_;
 }
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

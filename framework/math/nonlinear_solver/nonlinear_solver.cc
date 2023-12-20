@@ -2,10 +2,10 @@
 #include "framework/logging/log.h"
 #include "framework/logging/stringstream_color.h"
 
-namespace chi_math
+namespace opensn
 {
 
-NonLinearSolver::NonLinearSolver(NLSolverContextPtr context_ptr, const chi::InputParameters& params)
+NonLinearSolver::NonLinearSolver(NLSolverContextPtr context_ptr, const InputParameters& params)
   : solver_name_(params.GetParamValue<std::string>("name")),
     context_ptr_(context_ptr),
     options_(params)
@@ -160,13 +160,13 @@ NonLinearSolver::GetConvergedReasonString() const
 {
   std::stringstream outstr;
   if (converged_)
-    outstr << chi::StringStreamColor(chi::FG_GREEN) << std::string(10, ' ') << "Converged "
-           << converged_reason_string_ << chi::StringStreamColor(chi::RESET);
+    outstr << StringStreamColor(FG_GREEN) << std::string(10, ' ') << "Converged "
+           << converged_reason_string_ << StringStreamColor(RESET);
   else
-    outstr << chi::StringStreamColor(chi::FG_RED) << std::string(10, ' ') << "Convergence failure "
-           << converged_reason_string_ << chi::StringStreamColor(chi::RESET);
+    outstr << StringStreamColor(FG_RED) << std::string(10, ' ') << "Convergence failure "
+           << converged_reason_string_ << StringStreamColor(RESET);
 
   return outstr.str();
 }
 
-} // namespace chi_math
+} // namespace opensn

@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-namespace chi_math
+namespace opensn
 {
 
 /**Generalized tensor with rank-R dimension-N and arbitrary number
@@ -307,14 +307,14 @@ using TensorRN = TensorRNX<R, N, double>;
 template <int N>
 using Tensor2N = TensorRNX<2, N, double>;
 
-} // namespace chi_math
+} // namespace opensn
 
 /**Multiplication by a scalar from the left.*/
 template <int N, class NumberFormat>
-chi_math::TensorRNX<2, N, NumberFormat>
-operator*(const double value, const chi_math::TensorRNX<2, N, NumberFormat>& that)
+TensorRNX<2, N, NumberFormat>
+operator*(const double value, const TensorRNX<2, N, NumberFormat>& that)
 {
-  chi_math::TensorRNX<2, N, NumberFormat> new_tensor;
+  TensorRNX<2, N, NumberFormat> new_tensor;
   for (int i = 0; i < N; ++i)
     for (int j = 0; j < N; ++j)
       new_tensor(i)(j) = that[i][j] * value;

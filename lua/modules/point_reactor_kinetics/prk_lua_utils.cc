@@ -7,7 +7,9 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace prk::lua_utils
+using namespace opensn;
+
+namespace opensnlua::prk
 {
 
 RegisterLuaFunctionAsIs(chiPRKGetParam);
@@ -25,7 +27,8 @@ chiPRKGetParam(lua_State* L)
 
   const int handle = lua_tointeger(L, 1);
 
-  auto solver = Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
+  auto solver = opensn::Chi::GetStackItem<opensn::prk::TransientSolver>(
+    opensn::Chi::object_stack, handle, fname);
 
   const std::string param_name = lua_tostring(L, 2);
 
@@ -57,7 +60,8 @@ chiPRKSetParam(lua_State* L)
 
   const int handle = lua_tointeger(L, 1);
 
-  auto& solver = Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
+  auto& solver = opensn::Chi::GetStackItem<opensn::prk::TransientSolver>(
+    opensn::Chi::object_stack, handle, fname);
 
   const std::string param_name = lua_tostring(L, 2);
 
@@ -75,10 +79,10 @@ chiPRKSetParam(lua_State* L)
 
 RegisterWrapperFunction(prk, SetParam, GetSyntax_SetParam, SetParam);
 
-chi::InputParameters
+InputParameters
 GetSyntax_SetParam()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   params.SetGeneralDescription(
     "Lua wrapper function for setting parameters in the PointReactorKinetics"
@@ -90,24 +94,23 @@ GetSyntax_SetParam()
 
   params.AddRequiredParameter<double>("arg2", "Value to set to the parameter pointed to by arg1");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("arg1", AllowableRangeList::New({"rho"}));
 
   return params;
 }
 
-chi::ParameterBlock
-SetParam(const chi::InputParameters& params)
+ParameterBlock
+SetParam(const InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& solver = Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
+  auto& solver = opensn::Chi::GetStackItem<opensn::prk::TransientSolver>(
+    opensn::Chi::object_stack, handle, fname);
 
   const auto param_name = params.GetParamValue<std::string>("arg1");
   const auto& value_param = params.GetParam("arg2");
 
-  using namespace chi;
   if (param_name == "rho")
   {
     ChiInvalidArgumentIf(value_param.Type() != ParameterBlockType::FLOAT,
@@ -117,15 +120,15 @@ SetParam(const chi::InputParameters& params)
   else
     ChiInvalidArgument("Invalid property name \"" + param_name);
 
-  return chi::ParameterBlock(); // Return empty param block
+  return ParameterBlock(); // Return empty param block
 }
 
 RegisterWrapperFunction(prk, GetParam, GetParamSyntax, GetParam);
 
-chi::InputParameters
+InputParameters
 GetParamSyntax()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   params.SetGeneralDescription(
     "Lua wrapper function for getting parameters from the PointReactorKinetics"
@@ -136,23 +139,23 @@ GetParamSyntax()
   params.AddRequiredParameter<std::string>("arg1", "Text name of the parameter to get.");
 
   // clang-format off
-  using namespace chi_data_types;
   params.ConstrainParameterRange("arg1", AllowableRangeList::New({
     "population_prev", "population_next", "period", "time_prev", "time_next"}));
   // clang-format on
   return params;
 }
 
-chi::ParameterBlock
-GetParam(const chi::InputParameters& params)
+ParameterBlock
+GetParam(const InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& solver = Chi::GetStackItem<TransientSolver>(Chi::object_stack, handle, fname);
+  auto& solver = opensn::Chi::GetStackItem<opensn::prk::TransientSolver>(
+    opensn::Chi::object_stack, handle, fname);
 
   const auto param_name = params.GetParamValue<std::string>("arg1");
-  chi::ParameterBlock outputs;
+  ParameterBlock outputs;
 
   if (param_name == "population_prev") outputs.AddParameter("", solver.PopulationPrev());
   else if (param_name == "population_next")
@@ -169,4 +172,4 @@ GetParam(const chi::InputParameters& params)
   return outputs;
 }
 
-} // namespace prk::lua_utils
+} // namespace opensnlua::prk

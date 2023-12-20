@@ -13,7 +13,7 @@
 #include "framework/lua.h"
 #endif
 
-namespace chi_mesh
+namespace opensn
 {
 
 VolumeMesher::VolumeMesher(VolumeMesherType type) : type_(type)
@@ -167,7 +167,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
         {
           vol_mesher.options.zcuts.push_back(vertex_layers[layer_index]);
 
-          if (Chi::log.GetVerbosity() == chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2)
+          if (Chi::log.GetVerbosity() == ChiLog::LOG_LVL::LOG_0VERBOSE_2)
           {
             printf("Z-Cut %lu, %g\n", vol_mesher.options.zcuts.size(), vertex_layers[layer_index]);
           }
@@ -183,7 +183,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
 
       double z = cell->centroid_.z;
 
-      if (Chi::log.GetVerbosity() == chi::ChiLog::LOG_0VERBOSE_2)
+      if (Chi::log.GetVerbosity() == ChiLog::LOG_0VERBOSE_2)
       {
         printf("zmax = %g, zmin = %g, cell_z = %g\n", zmax, zmin, z);
       }
@@ -220,7 +220,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
 
       double z = cell->centroid_.z;
 
-      if (Chi::log.GetVerbosity() == chi::ChiLog::LOG_0VERBOSE_2)
+      if (Chi::log.GetVerbosity() == ChiLog::LOG_0VERBOSE_2)
       {
         printf("zmax = %g, zmin = %g, cell_z = %g\n", zmax, zmin, z);
       }
@@ -668,4 +668,4 @@ VolumeMesher::Execute()
   Chi::log.Log() << std::endl;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

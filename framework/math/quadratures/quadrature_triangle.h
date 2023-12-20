@@ -2,12 +2,10 @@
 
 #include "framework/math/quadratures/quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
-class QuadratureTriangle;
-}
 
-class chi_math::QuadratureTriangle : public chi_math::Quadrature
+class QuadratureTriangle : public Quadrature
 {
 public:
   /**Initializes quadratures for use on triangles.*/
@@ -24,3 +22,5 @@ public:
                       const unsigned int* permutation_ids,
                       const unsigned int n_wts);
 };
+
+} // namespace opensn

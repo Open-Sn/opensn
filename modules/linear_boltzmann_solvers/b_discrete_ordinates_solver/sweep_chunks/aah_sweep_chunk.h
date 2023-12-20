@@ -5,6 +5,8 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -12,7 +14,7 @@ namespace lbs
  * to upstream data.*/
 struct AAH_SweepDependencyInterface : public SweepDependencyInterface
 {
-  chi_mesh::sweep_management::AAH_FLUDS* fluds_ = nullptr;
+  AAH_FLUDS* fluds_ = nullptr;
 
   size_t spls_index = 0;
 
@@ -29,8 +31,8 @@ struct AAH_SweepDependencyInterface : public SweepDependencyInterface
 class AAH_SweepChunk : public SweepChunk
 {
 public:
-  AAH_SweepChunk(const chi_mesh::MeshContinuum& grid,
-                 const chi_math::SpatialDiscretization& discretization,
+  AAH_SweepChunk(const MeshContinuum& grid,
+                 const SpatialDiscretization& discretization,
                  const std::vector<UnitCellMatrices>& unit_cell_matrices,
                  std::vector<lbs::CellLBSView>& cell_transport_views,
                  std::vector<double>& destination_phi,
@@ -42,7 +44,8 @@ public:
                  int max_num_cell_dofs);
 
   // 01
-  void Sweep(chi_mesh::sweep_management::AngleSet& angle_set) override;
+  void Sweep(AngleSet& angle_set) override;
 };
 
 } // namespace lbs
+} // namespace opensn

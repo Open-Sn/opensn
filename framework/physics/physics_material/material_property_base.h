@@ -6,8 +6,9 @@
 #include "framework/lua.h"
 #endif
 
-namespace chi_physics
+namespace opensn
 {
+
 enum class PropertyType
 {
   SCALAR_VALUE = 1,
@@ -38,4 +39,4 @@ public:
 #endif
 };
 
-} // namespace chi_physics
+} // namespace opensn

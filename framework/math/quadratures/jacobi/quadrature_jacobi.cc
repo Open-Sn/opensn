@@ -3,8 +3,11 @@
 #include <stdexcept>
 #include <string>
 
+namespace opensn
+{
+
 void
-chi_math::QuadratureJacobi::Initialize(QuadratureOrder order)
+QuadratureJacobi::Initialize(QuadratureOrder order)
 {
   if ((m_alpha_ == 1) && (m_beta_ == 0))
   {
@@ -1510,3 +1513,5 @@ chi_math::QuadratureJacobi::Initialize(QuadratureOrder order)
                                 ") requested in Jacobi-Gauss quadrature rule.");
   }
 }
+
+} // namespace opensn

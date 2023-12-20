@@ -4,15 +4,17 @@
 
 #include "framework/math/time_integrations/time_integration.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
 RegisterChiObject(lbs, TransientSolver);
 
-chi::InputParameters
+InputParameters
 TransientSolver::GetInputParameters()
 {
-  chi::InputParameters params = chi_physics::Solver::GetInputParameters();
+  InputParameters params = opensn::Solver::GetInputParameters();
 
   params.SetGeneralDescription("Generalized implementation of a transient solver. This solver calls"
                                " the Across-Groupset (AGS) solver for the lbs-data block.");
@@ -28,11 +30,11 @@ TransientSolver::GetInputParameters()
   return params;
 }
 
-TransientSolver::TransientSolver(const chi::InputParameters& params)
-  : chi_physics::Solver(params),
+TransientSolver::TransientSolver(const InputParameters& params)
+  : opensn::Solver(params),
     lbs_solver_(Chi::GetStackItem<LBSSolver>(Chi::object_stack,
                                              params.GetParamValue<size_t>("lbs_solver_handle"))),
-    time_integration_(Chi::GetStackItemPtrAsType<chi_math::TimeIntegration>(
+    time_integration_(Chi::GetStackItemPtrAsType<TimeIntegration>(
       Chi::object_stack, params.GetParamValue<size_t>("time_integration")))
 {
 }
@@ -59,3 +61,4 @@ TransientSolver::Advance()
 }
 
 } // namespace lbs
+} // namespace opensn

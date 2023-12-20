@@ -4,7 +4,7 @@
 #include <vector>
 #include <limits>
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 /**
@@ -13,7 +13,7 @@ namespace chi_mesh::sweep_management
 class BoundaryReflecting : public SweepBoundary
 {
 protected:
-  const chi_mesh::Normal normal_;
+  const opensn::Normal normal_;
   bool opposing_reflected_ = false;
 
   /// Groups per DOF
@@ -34,15 +34,14 @@ protected:
   std::vector<std::vector<bool>> angle_readyflags_;
 
 public:
-  BoundaryReflecting(
-    size_t in_num_groups,
-    const chi_mesh::Normal& in_normal,
-    chi_math::CoordinateSystemType coord_type = chi_math::CoordinateSystemType::CARTESIAN)
+  BoundaryReflecting(size_t in_num_groups,
+                     const Normal& in_normal,
+                     CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
     : SweepBoundary(BoundaryType::REFLECTING, in_num_groups, coord_type), normal_(in_normal)
   {
   }
 
-  const chi_mesh::Vector3& Normal() const { return normal_; }
+  const Vector3& Normal() const { return normal_; }
   bool IsOpposingReflected() const { return opposing_reflected_; }
   void SetOpposingReflected(bool value) { opposing_reflected_ = value; }
 
@@ -73,4 +72,4 @@ public:
   void ResetAnglesReadyStatus();
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

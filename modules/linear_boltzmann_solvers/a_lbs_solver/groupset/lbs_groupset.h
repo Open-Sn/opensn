@@ -19,26 +19,23 @@
 
 #include "framework/utils/utils.h"
 
-namespace lbs::acceleration
+namespace opensn
 {
-class DiffusionMIPSolver;
-}
-
 namespace lbs
 {
-
+class DiffusionMIPSolver;
 class LBSSolver;
 
 /**Group set functioning as a collection of groups*/
 class LBSGroupset : public ChiObject
 {
 protected:
-  typedef std::shared_ptr<chi_mesh::sweep_management::AngleAggregation> AngleAggPtr;
+  typedef std::shared_ptr<AngleAggregation> AngleAggPtr;
 
 public:
   int id_;
   std::vector<LBSGroup> groups_;
-  std::shared_ptr<chi_math::AngularQuadrature> quadrature_ = nullptr;
+  std::shared_ptr<AngularQuadrature> quadrature_ = nullptr;
   AngleAggPtr angle_agg_;
   UniqueSOGroupings unique_so_groupings_;
   DirIDToSOMap dir_id_to_so_map_;
@@ -46,7 +43,7 @@ public:
   int master_num_grp_subsets_ = 1;
   int master_num_ang_subsets_ = 1;
 
-  std::vector<chi::SubSetInfo> grp_subset_infos_;
+  std::vector<SubSetInfo> grp_subset_infos_;
 
   IterativeMethod iterative_method_ = IterativeMethod::CLASSICRICHARDSON;
   AngleAggregationType angleagg_method_ = AngleAggregationType::POLAR;
@@ -68,21 +65,21 @@ public:
   std::string wgdsa_string_;
   std::string tgdsa_string_;
 
-  std::shared_ptr<lbs::acceleration::DiffusionMIPSolver> wgdsa_solver_;
-  std::shared_ptr<lbs::acceleration::DiffusionMIPSolver> tgdsa_solver_;
+  std::shared_ptr<DiffusionMIPSolver> wgdsa_solver_;
+  std::shared_ptr<DiffusionMIPSolver> tgdsa_solver_;
 
   struct TwoGridAccelerationInfo
   {
-    std::map<int, acceleration::TwoGridCollapsedInfo> map_mat_id_2_tginfo;
-    acceleration::EnergyCollapseScheme scheme = acceleration::EnergyCollapseScheme::JFULL;
+    std::map<int, TwoGridCollapsedInfo> map_mat_id_2_tginfo;
+    EnergyCollapseScheme scheme = EnergyCollapseScheme::JFULL;
   } tg_acceleration_info_;
 
-  chi_math::UnknownManager psi_uk_man_;
+  UnknownManager psi_uk_man_;
 
   // lbs_groupset.cc
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
   /**Input parameters based constructor.*/
-  explicit LBSGroupset(const chi::InputParameters& params, int id, const LBSSolver& lbs_solver);
+  explicit LBSGroupset(const InputParameters& params, int id, const LBSSolver& lbs_solver);
   LBSGroupset() : LBSGroupset(-1){};
   explicit LBSGroupset(int id) : id_(id) {}
 
@@ -97,4 +94,6 @@ public:
   /**Constructs the groupset subsets.*/
   void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
 };
+
 } // namespace lbs
+} // namespace opensn

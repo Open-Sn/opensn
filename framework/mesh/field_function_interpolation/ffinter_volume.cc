@@ -8,7 +8,7 @@
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 void
@@ -43,7 +43,6 @@ FieldFunctionInterpolationVolume::Execute()
   const auto uid = 0;
   const auto cid = ref_component_;
 
-  using namespace ff_interpolation;
   const auto field_data = ref_ff.GetGhostedFieldVector();
 
   double local_volume = 0.0;
@@ -84,7 +83,8 @@ FieldFunctionInterpolationVolume::Execute()
 
       double function_value = ff_value;
 #ifdef OPENSN_WITH_LUA
-      if (op_type_ >= Operation::OP_SUM_LUA and op_type_ <= Operation::OP_MAX_LUA)
+      if (op_type_ >= FieldFunctionInterpolationOperation::OP_SUM_LUA and
+          op_type_ <= FieldFunctionInterpolationOperation::OP_MAX_LUA)
         function_value = CallLuaFunction(ff_value, cell.material_id_);
 #endif
 
@@ -95,13 +95,15 @@ FieldFunctionInterpolationVolume::Execute()
     } // for qp
   }   // for cell-id
 
-  if (op_type_ == Operation::OP_SUM or op_type_ == Operation::OP_SUM_LUA)
+  if (op_type_ == FieldFunctionInterpolationOperation::OP_SUM or
+      op_type_ == FieldFunctionInterpolationOperation::OP_SUM_LUA)
   {
     double global_sum;
     MPI_Allreduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
     op_value_ = global_sum;
   }
-  if (op_type_ == Operation::OP_AVG or op_type_ == Operation::OP_AVG_LUA)
+  if (op_type_ == FieldFunctionInterpolationOperation::OP_AVG or
+      op_type_ == FieldFunctionInterpolationOperation::OP_AVG_LUA)
   {
     double local_data[] = {local_volume, local_sum};
     double global_data[] = {0.0, 0.0};
@@ -111,7 +113,8 @@ FieldFunctionInterpolationVolume::Execute()
     double global_sum = global_data[1];
     op_value_ = global_sum / global_volume;
   }
-  if (op_type_ == Operation::OP_MAX or op_type_ == Operation::OP_MAX_LUA)
+  if (op_type_ == FieldFunctionInterpolationOperation::OP_MAX or
+      op_type_ == FieldFunctionInterpolationOperation::OP_MAX_LUA)
   {
     double global_value;
     MPI_Allreduce(&local_max, &global_value, 1, MPI_DOUBLE, MPI_MAX, Chi::mpi.comm);
@@ -138,4 +141,4 @@ FieldFunctionInterpolationVolume::CallLuaFunction(double ff_value, int mat_id) c
 }
 #endif
 
-} // namespace chi_mesh
+} // namespace opensn

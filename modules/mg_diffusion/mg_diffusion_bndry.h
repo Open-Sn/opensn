@@ -2,6 +2,8 @@
 
 #include <array>
 
+namespace opensn
+{
 namespace mg_diffusion
 {
 class Boundary;
@@ -13,11 +15,10 @@ enum class BoundaryType : int
   Robin = 4,
   Vacuum = 5
 };
-} // namespace mg_diffusion
 
-//###################################################################
+// ###################################################################
 /**Parent class for multigroup diffusion boundaries*/
-class mg_diffusion::Boundary
+class Boundary
 {
 public:
   BoundaryType type_ = BoundaryType::Vacuum;
@@ -25,3 +26,6 @@ public:
   std::array<std::vector<double>, 3> mg_values_;
   // std::array<double, 3> mg_values = {0.25,0.5,0.};
 };
+
+} // namespace mg_diffusion
+} // namespace opensn

@@ -2,15 +2,15 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_math::functions
+namespace opensn
 {
 
 RegisterChiObject(chi_math::functions, PiecewiseLinear1D);
 
-chi::InputParameters
+InputParameters
 PiecewiseLinear1D::GetInputParameters()
 {
-  chi::InputParameters params = FunctionDimAToDimB::GetInputParameters();
+  InputParameters params = FunctionDimAToDimB::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription("Piecewise linear function");
@@ -26,7 +26,7 @@ PiecewiseLinear1D::GetInputParameters()
   return params;
 }
 
-PiecewiseLinear1D::PiecewiseLinear1D(const chi::InputParameters& params)
+PiecewiseLinear1D::PiecewiseLinear1D(const InputParameters& params)
   : FunctionDimAToDimB(params),
     x_values_(params.GetParamVectorValue<double>("x_values")),
     y_values_(params.GetParamVectorValue<double>("y_values")),
@@ -99,4 +99,4 @@ PiecewiseLinear1D::ScalarFunctionSlope1Parameter(double x) const
   ChiLogicalError("Bad trouble");
 }
 
-} // namespace chi_math::functions
+} // namespace opensn

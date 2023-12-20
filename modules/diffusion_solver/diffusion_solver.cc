@@ -11,17 +11,19 @@
 #include "framework/mpi/mpi.h"
 #include "framework/utils/timer.h"
 
-namespace chi_diffusion
+namespace opensn
+{
+namespace diffusion
 {
 
 Solver::Solver(const std::string& in_solver_name)
-  : chi_physics::Solver(in_solver_name,
-                        {{"discretization_method", std::string("None")},
-                         {"max_iters", int64_t(500)},
-                         {"residual_tolerance", 1.0e-8},
-                         {"property_map_D", int64_t(0)},
-                         {"property_map_q", int64_t(1)},
-                         {"property_map_sigma", int64_t(2)}})
+  : opensn::Solver(in_solver_name,
+                   {{"discretization_method", std::string("None")},
+                    {"max_iters", int64_t(500)},
+                    {"residual_tolerance", 1.0e-8},
+                    {"property_map_D", int64_t(0)},
+                    {"property_map_q", int64_t(1)},
+                    {"property_map_sigma", int64_t(2)}})
 {
 }
 
@@ -34,7 +36,7 @@ Solver::~Solver()
 }
 
 void
-Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
+Solver::GetMaterialProperties(const Cell& cell,
                               int cell_dofs,
                               std::vector<double>& diffCoeff,
                               std::vector<double>& sourceQ,
@@ -84,7 +86,7 @@ Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
     }
 
     // For now, we can only support scalar values so lets check that
-    if (std::dynamic_pointer_cast<chi_physics::ScalarValue>(material->properties_[property_map_D]))
+    if (std::dynamic_pointer_cast<ScalarValue>(material->properties_[property_map_D]))
     {
       diffCoeff.assign(cell_dofs, material->properties_[property_map_D]->GetScalarValue());
     }
@@ -100,8 +102,7 @@ Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
 
     if ((property_map_q < material->properties_.size()) && (property_map_q >= 0))
     {
-      if (std::dynamic_pointer_cast<chi_physics::ScalarValue>(
-            material->properties_[property_map_q]))
+      if (std::dynamic_pointer_cast<ScalarValue>(material->properties_[property_map_q]))
       {
         sourceQ.assign(cell_dofs, material->properties_[property_map_q]->GetScalarValue());
       }
@@ -131,9 +132,9 @@ Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
     bool transportxs_found = false;
     for (int p = 0; p < material->properties_.size(); p++)
     {
-      if (std::dynamic_pointer_cast<chi_physics::MultiGroupXS>(material->properties_[p]))
+      if (std::dynamic_pointer_cast<MultiGroupXS>(material->properties_[p]))
       {
-        auto xs = std::static_pointer_cast<chi_physics::MultiGroupXS>(material->properties_[p]);
+        auto xs = std::static_pointer_cast<MultiGroupXS>(material->properties_[p]);
 
         diffCoeff.assign(cell_dofs, xs->DiffusionCoefficient()[group]);
         sigmaa.assign(cell_dofs, xs->SigmaRemoval()[group]);
@@ -151,8 +152,7 @@ Solver::GetMaterialProperties(const chi_mesh::Cell& cell,
     // Setting Q
     if ((property_map_q < material->properties_.size()) && (property_map_q >= 0))
     {
-      if (std::dynamic_pointer_cast<chi_physics::ScalarValue>(
-            material->properties_[property_map_q]))
+      if (std::dynamic_pointer_cast<ScalarValue>(material->properties_[property_map_q]))
       {
         sourceQ.assign(cell_dofs, material->properties_[property_map_q]->GetScalarValue());
       }
@@ -191,7 +191,7 @@ void
 Solver::InitializeCommonItems()
 {
   const std::string fname = "Solver::InitializeCommonItems";
-  grid_ptr_ = chi_mesh::GetCurrentHandler().GetGrid();
+  grid_ptr_ = GetCurrentHandler().GetGrid();
 
   if (grid_ptr_ == nullptr) throw std::logic_error(fname + " No grid defined.");
 
@@ -269,23 +269,20 @@ Solver::Initialize(bool verbose)
 
   if (not common_items_initialized_) InitializeCommonItems(); // Mostly boundaries
 
-  chi::Timer t_init;
+  Timer t_init;
   t_init.Reset();
 
   auto sdm_string = basic_options_("discretization_method").StringValue();
   {
-    using namespace chi_math::finite_element;
     if (sdm_string == "PWLC")
     {
-      discretization_ =
-        chi_math::spatial_discretization::PieceWiseLinearContinuous::New(*grid_ptr_);
-      unknown_manager_.AddUnknown(chi_math::UnknownType::SCALAR);
+      discretization_ = PieceWiseLinearContinuous::New(*grid_ptr_);
+      unknown_manager_.AddUnknown(UnknownType::SCALAR);
     }
     else if (sdm_string == "PWLD_MIP")
     {
-      discretization_ =
-        chi_math::spatial_discretization::PieceWiseLinearDiscontinuous::New(*grid_ptr_);
-      unknown_manager_.AddUnknown(chi_math::UnknownType::SCALAR);
+      discretization_ = PieceWiseLinearDiscontinuous::New(*grid_ptr_);
+      unknown_manager_.AddUnknown(UnknownType::SCALAR);
     }
     else
       throw std::invalid_argument(TextName() + ": Invalid spatial discretization method, " +
@@ -324,9 +321,8 @@ Solver::Initialize(bool verbose)
 
     std::string text_name = solver_name + "phi";
 
-    using namespace chi_math;
-    auto initial_field_function = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      text_name, sdm_ptr, Unknown(UnknownType::SCALAR));
+    auto initial_field_function =
+      std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr, Unknown(UnknownType::SCALAR));
 
     field_functions_.push_back(initial_field_function);
     Chi::field_function_stack.push_back(initial_field_function);
@@ -395,7 +391,7 @@ Solver::Initialize(bool verbose)
   // per cell type
   auto first_cell = &grid_ptr_->local_cells[0];
 
-  if (first_cell->Type() == chi_mesh::CellType::SLAB)
+  if (first_cell->Type() == CellType::SLAB)
   {
     PetscOptionsInsertString(nullptr, "-pc_hypre_boomeramg_agg_nl 1");
     PetscOptionsInsertString(nullptr, "-pc_hypre_boomeramg_P_max 4");
@@ -409,7 +405,7 @@ Solver::Initialize(bool verbose)
 
     PetscOptionsInsertString(nullptr, "-options_left");
   }
-  if (first_cell->Type() == chi_mesh::CellType::POLYGON)
+  if (first_cell->Type() == CellType::POLYGON)
   {
     PetscOptionsInsertString(nullptr, "-pc_hypre_boomeramg_strong_threshold 0.6");
 
@@ -424,7 +420,7 @@ Solver::Initialize(bool verbose)
 
     PetscOptionsInsertString(nullptr, "-options_left");
   }
-  if (first_cell->Type() == chi_mesh::CellType::POLYHEDRON)
+  if (first_cell->Type() == CellType::POLYHEDRON)
   {
     PetscOptionsInsertString(nullptr, "-pc_hypre_boomeramg_strong_threshold 0.8");
 
@@ -504,7 +500,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   MPI_Barrier(Chi::mpi.comm);
 
   // Call matrix assembly
-  if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+  if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
                    << ": Communicating matrix assembly";
 
@@ -542,7 +538,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
                    << "\nNumber of non-zeros used = " << info.nz_used
                    << "\nNumber of unneeded non-zeros = " << info.nz_unneeded;
   }
-  if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+  if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
     Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
                    << ": Assembling x and b";
   VecAssemblyBegin(x_);
@@ -562,7 +558,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
   }
   else
   {
-    if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+    if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
       Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName()
                      << ": Solving system\n";
     t_solve_.Reset();
@@ -587,8 +583,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
     if (verbose_info_ || reason != KSP_CONVERGED_RTOL)
-      Chi::log.Log() << "Convergence reason: "
-                     << chi_physics::GetPETScConvergedReasonstring(reason);
+      Chi::log.Log() << "Convergence reason: " << GetPETScConvergedReasonstring(reason);
 
     // Location wise view
     if (Chi::mpi.location_id == 0)
@@ -598,7 +593,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
       Chi::log.Log() << Chi::program_timer.GetTimeString() << " " << TextName() << "[g=" << gi_
                      << "-" << gi_ + G_ - 1 << "]: Number of iterations =" << its;
 
-      if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+      if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
       {
         Chi::log.Log() << "Timing:";
         Chi::log.Log() << "Assembling the matrix: " << time_assembly_;
@@ -608,7 +603,7 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
 
     UpdateFieldFunctions();
 
-    if (verbose_info_ || Chi::log.GetVerbosity() >= chi::ChiLog::LOG_0VERBOSE_1)
+    if (verbose_info_ || Chi::log.GetVerbosity() >= ChiLog::LOG_0VERBOSE_1)
       Chi::log.Log() << "Diffusion Solver execution completed!\n";
   } // if not suppressed solve
 
@@ -616,11 +611,9 @@ Solver::ExecuteS(bool suppress_assembly, bool suppress_solve)
 }
 
 void
-Solver::CFEM_Assemble_A_and_b(chi_mesh::Cell& cell, int group)
+Solver::CFEM_Assemble_A_and_b(Cell& cell, int group)
 {
-  auto pwl_sdm =
-    std::static_pointer_cast<chi_math::spatial_discretization::PieceWiseLinearContinuous>(
-      this->discretization_);
+  auto pwl_sdm = std::static_pointer_cast<PieceWiseLinearContinuous>(this->discretization_);
   const auto& fe_intgrl_values = unit_integrals_.at(cell.global_id_);
 
   size_t num_nodes = fe_intgrl_values.NumNodes();
@@ -771,11 +764,9 @@ Solver::CFEM_Assemble_A_and_b(chi_mesh::Cell& cell, int group)
 }
 
 void
-Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
+Solver::PWLD_Assemble_A_and_b(const Cell& cell, int component)
 {
-  auto pwl_sdm =
-    std::static_pointer_cast<chi_math::spatial_discretization::PieceWiseLinearDiscontinuous>(
-      this->discretization_);
+  auto pwl_sdm = std::static_pointer_cast<PieceWiseLinearDiscontinuous>(this->discretization_);
   const auto& fe_intgrl_values = unit_integrals_.at(cell.global_id_);
 
   size_t num_nodes = fe_intgrl_values.NumNodes();
@@ -821,7 +812,7 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
     auto& face = cell.faces_[f];
 
     // Get face normal
-    chi_mesh::Vector3 n = face.normal_;
+    Vector3 n = face.normal_;
 
     int num_face_dofs = face.vertex_ids_.size();
 
@@ -867,11 +858,9 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
 
       // Compute kappa
       double kappa = 1.0;
-      if (cell.Type() == chi_mesh::CellType::SLAB)
-        kappa = fmax(2.0 * (adj_D_avg / hp + D_avg / hm), 0.25);
-      if (cell.Type() == chi_mesh::CellType::POLYGON)
-        kappa = fmax(2.0 * (adj_D_avg / hp + D_avg / hm), 0.25);
-      if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+      if (cell.Type() == CellType::SLAB) kappa = fmax(2.0 * (adj_D_avg / hp + D_avg / hm), 0.25);
+      if (cell.Type() == CellType::POLYGON) kappa = fmax(2.0 * (adj_D_avg / hp + D_avg / hm), 0.25);
+      if (cell.Type() == CellType::POLYHEDRON)
         kappa = fmax(4.0 * (adj_D_avg / hp + D_avg / hm), 0.25);
 
       // Assembly penalty terms
@@ -962,9 +951,9 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
         D_avg /= intS;
 
         double kappa = 1.0;
-        if (cell.Type() == chi_mesh::CellType::SLAB) kappa = fmax(4.0 * (D_avg / hm), 0.25);
-        if (cell.Type() == chi_mesh::CellType::POLYGON) kappa = fmax(4.0 * (D_avg / hm), 0.25);
-        if (cell.Type() == chi_mesh::CellType::POLYHEDRON) kappa = fmax(8.0 * (D_avg / hm), 0.25);
+        if (cell.Type() == CellType::SLAB) kappa = fmax(4.0 * (D_avg / hm), 0.25);
+        if (cell.Type() == CellType::POLYGON) kappa = fmax(4.0 * (D_avg / hm), 0.25);
+        if (cell.Type() == CellType::POLYHEDRON) kappa = fmax(8.0 * (D_avg / hm), 0.25);
 
         // Assembly penalty terms
         for (int fi = 0; fi < num_face_dofs; fi++)
@@ -1034,11 +1023,9 @@ Solver::PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component)
 }
 
 void
-Solver::PWLD_Assemble_b(const chi_mesh::Cell& cell, int component)
+Solver::PWLD_Assemble_b(const Cell& cell, int component)
 {
-  auto pwl_sdm =
-    std::static_pointer_cast<chi_math::spatial_discretization::PieceWiseLinearDiscontinuous>(
-      this->discretization_);
+  auto pwl_sdm = std::static_pointer_cast<PieceWiseLinearDiscontinuous>(this->discretization_);
   const auto& fe_intgrl_values = unit_integrals_.at(cell.global_id_);
 
   size_t num_nodes = fe_intgrl_values.NumNodes();
@@ -1069,7 +1056,7 @@ Solver::PWLD_Assemble_b(const chi_mesh::Cell& cell, int component)
 }
 
 double
-Solver::HPerpendicular(const chi_mesh::Cell& cell,
+Solver::HPerpendicular(const Cell& cell,
                        const UnitIntegralContainer& fe_intgrl_values,
                        unsigned int f)
 {
@@ -1079,7 +1066,7 @@ Solver::HPerpendicular(const chi_mesh::Cell& cell,
   size_t Nv = cell.vertex_ids_.size();
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == chi_mesh::CellType::SLAB)
+  if (cell.Type() == CellType::SLAB)
   {
     const auto& v0 = grid_ptr_->vertices[cell.vertex_ids_[0]];
     const auto& v1 = grid_ptr_->vertices[cell.vertex_ids_[1]];
@@ -1087,10 +1074,10 @@ Solver::HPerpendicular(const chi_mesh::Cell& cell,
     hp = (v1 - v0).Norm() / 2.0;
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
-  else if (cell.Type() == chi_mesh::CellType::POLYGON)
+  else if (cell.Type() == CellType::POLYGON)
   {
     //    Nv = 4;
-    const chi_mesh::CellFace& face = cell.faces_[f];
+    const CellFace& face = cell.faces_[f];
 
     uint64_t v0i = face.vertex_ids_[0];
     uint64_t v1i = face.vertex_ids_[1];
@@ -1122,7 +1109,7 @@ Solver::HPerpendicular(const chi_mesh::Cell& cell,
     //    }
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
-  else if (cell.Type() == chi_mesh::CellType::POLYHEDRON)
+  else if (cell.Type() == CellType::POLYHEDRON)
   {
     double volume = 0.0;
     for (int i = 0; i < fe_intgrl_values.NumNodes(); i++)
@@ -1150,7 +1137,7 @@ Solver::HPerpendicular(const chi_mesh::Cell& cell,
 }
 
 uint64_t
-Solver::MapCellLocalNodeIDFromGlobalID(const chi_mesh::Cell& cell, uint64_t node_global_id)
+Solver::MapCellLocalNodeIDFromGlobalID(const Cell& cell, uint64_t node_global_id)
 {
   size_t imap = 0;
   bool map_found = false;
@@ -1170,7 +1157,7 @@ Solver::MapCellLocalNodeIDFromGlobalID(const chi_mesh::Cell& cell, uint64_t node
 }
 
 unsigned int
-Solver::MapCellFace(const chi_mesh::Cell& cur_cell, const chi_mesh::Cell& adj_cell, unsigned int f)
+Solver::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned int f)
 {
   const auto& ccface = cur_cell.faces_[f]; // current cell face
   std::set<uint64_t> ccface_vids;
@@ -1200,4 +1187,5 @@ Solver::MapCellFace(const chi_mesh::Cell& cur_cell, const chi_mesh::Cell& adj_ce
   return (unsigned int)fmap;
 }
 
-} // namespace chi_diffusion
+} // namespace diffusion
+} // namespace opensn

@@ -7,23 +7,28 @@
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
 
+namespace opensn
+{
+namespace lbs
+{
+
 std::vector<double>
-lbs::BoundaryFunctionToLua::Evaluate(
+BoundaryFunctionToLua::Evaluate(
   size_t cell_global_id,
   int cell_material_id,
   unsigned int face_index,
   unsigned int face_node_index,
-  const chi_mesh::Vector3& face_node_location,
-  const chi_mesh::Vector3& face_node_normal,
+  const Vector3& face_node_location,
+  const Vector3& face_node_normal,
   const std::vector<int>& quadrature_angle_indices,
-  const std::vector<chi_mesh::Vector3>& quadrature_angle_vectors,
+  const std::vector<Vector3>& quadrature_angle_vectors,
   const std::vector<std::pair<double, double>>& quadrature_phi_theta_angles,
   const std::vector<int>& group_indices,
   double time)
 {
   const std::string fname = "LinearBoltzmann::BoundaryFunctionToLua";
   // Utility lambdas
-  auto PushVector3AsTable = [](lua_State* L, const chi_mesh::Vector3& vec)
+  auto PushVector3AsTable = [](lua_State* L, const Vector3& vec)
   {
     lua_newtable(L);
 
@@ -146,4 +151,8 @@ lbs::BoundaryFunctionToLua::Evaluate(
 
   return psi;
 }
+
+} // namespace lbs
+} // namespace opensn
+
 #endif

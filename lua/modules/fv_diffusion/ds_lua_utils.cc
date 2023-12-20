@@ -5,8 +5,11 @@
   lua_pushnumber(L, y);                                                                            \
   lua_setglobal(L, #x)
 
+namespace opensnlua::fv_diffusion
+{
+
 void
-fv_diffusion::fv_diffusion_lua_utils::RegisterLuaEntities(lua_State* L)
+RegisterLuaEntities(lua_State* L)
 {
   LUA_FMACRO1(chiFVDiffusionSolverCreate);
   LUA_FMACRO1(chiFVDiffusionSetBCProperty);
@@ -14,3 +17,5 @@ fv_diffusion::fv_diffusion_lua_utils::RegisterLuaEntities(lua_State* L)
   LUA_CMACRO1(MAX_ITERATIONS, 1);
   LUA_CMACRO1(TOLERANCE, 2);
 }
+
+} // namespace opensnlua::fv_diffusion

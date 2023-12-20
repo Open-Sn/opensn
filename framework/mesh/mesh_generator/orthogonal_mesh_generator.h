@@ -2,14 +2,14 @@
 
 #include "framework/mesh/mesh_generator/mesh_generator.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 class OrthogonalMeshGenerator : public MeshGenerator
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit OrthogonalMeshGenerator(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit OrthogonalMeshGenerator(const InputParameters& params);
 
 protected:
   std::unique_ptr<UnpartitionedMesh>
@@ -30,4 +30,4 @@ protected:
   std::vector<std::vector<double>> node_sets_;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

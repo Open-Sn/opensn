@@ -3,15 +3,12 @@
 #include <memory>
 #include <vector>
 
-namespace chi_physics
+namespace opensn
 {
 class FieldFunctionGridBased;
 typedef std::shared_ptr<FieldFunctionGridBased> FieldFunctionGridBasedPtr;
-} // namespace chi_physics
 
-namespace chi_mesh::ff_interpolation
-{
-enum class Type : int
+enum class FieldFunctionInterpolationType : int
 {
   SLICE = 1,
   LINE = 2,
@@ -19,7 +16,7 @@ enum class Type : int
   POINT = 4
 };
 
-enum class Operation : int
+enum class FieldFunctionInterpolationOperation : int
 {
   OP_SUM = 10,
   OP_AVG = 11,
@@ -29,7 +26,7 @@ enum class Operation : int
   OP_MAX_LUA = 15,
 };
 
-enum class Property : int
+enum class FieldFunctionInterpolationProperty : int
 {
   PROBEPOINT = 0,
   SLICEPOINT = 1,
@@ -47,29 +44,22 @@ enum class Property : int
   NUMBEROFPOINTS = 13,
   CUSTOM_ARRAY = 14,
 };
-} // namespace chi_mesh::ff_interpolation
-
-namespace chi_mesh
-{
 
 // ###################################################################
 /** Base class for field-function interpolation objects.*/
 class FieldFunctionInterpolation
 {
 protected:
-  ff_interpolation::Type type_;
+  FieldFunctionInterpolationType type_;
   unsigned int ref_component_ = 0;
-  std::vector<chi_physics::FieldFunctionGridBasedPtr> field_functions_;
+  std::vector<FieldFunctionGridBasedPtr> field_functions_;
 
 public:
-  explicit FieldFunctionInterpolation(ff_interpolation::Type type) : type_(type) {}
+  explicit FieldFunctionInterpolation(FieldFunctionInterpolationType type) : type_(type) {}
 
-  std::vector<chi_physics::FieldFunctionGridBasedPtr>& GetFieldFunctions()
-  {
-    return field_functions_;
-  }
+  std::vector<FieldFunctionGridBasedPtr>& GetFieldFunctions() { return field_functions_; }
 
-  ff_interpolation::Type Type() const { return type_; }
+  FieldFunctionInterpolationType Type() const { return type_; }
 
   /**Initializes the point interpolator.*/
   virtual void Initialize(){};
@@ -80,4 +70,4 @@ public:
   virtual void ExportPython(std::string base_name) = 0;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

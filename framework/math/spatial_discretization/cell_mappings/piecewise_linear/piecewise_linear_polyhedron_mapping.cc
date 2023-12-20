@@ -3,21 +3,21 @@
 #include "framework/logging/log.h"
 #include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
 PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
-  const chi_mesh::Cell& polyh_cell,
-  const chi_mesh::MeshContinuum& ref_grid,
-  const chi_math::QuadratureTetrahedron& volume_quadrature,
-  const chi_math::QuadratureTriangle& surface_quadrature)
+  const Cell& polyh_cell,
+  const MeshContinuum& ref_grid,
+  const QuadratureTetrahedron& volume_quadrature,
+  const QuadratureTriangle& surface_quadrature)
   : PieceWiseLinearBaseMapping(
       ref_grid, polyh_cell, polyh_cell.vertex_ids_.size(), MakeFaceNodeMapping(polyh_cell)),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature)
 {
   // Assign cell centre
-  const chi_mesh::Vertex& vcc = polyh_cell.centroid_;
+  const Vertex& vcc = polyh_cell.centroid_;
   alphac_ = 1.0 / static_cast<double>(polyh_cell.vertex_ids_.size());
 
   // For each face
@@ -26,14 +26,14 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
   face_betaf_.reserve(num_faces);
   for (size_t f = 0; f < num_faces; f++)
   {
-    const chi_mesh::CellFace& face = polyh_cell.faces_[f];
+    const CellFace& face = polyh_cell.faces_[f];
     FEface_data face_f_data;
 
     face_f_data.normal = face.normal_;
 
     face_betaf_.push_back(1.0 / static_cast<double>(face.vertex_ids_.size()));
 
-    const chi_mesh::Vertex& vfc = face.centroid_;
+    const Vertex& vfc = face.centroid_;
 
     // For each edge
     const size_t num_edges = face.vertex_ids_.size();
@@ -58,20 +58,20 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
       side_data.v0 = v0;
 
       // Compute vectors
-      chi_mesh::Vector3 v01 = v1 - v0;
-      chi_mesh::Vector3 v02 = v2 - v0;
-      chi_mesh::Vector3 v03 = v3 - v0;
+      Vector3 v01 = v1 - v0;
+      Vector3 v02 = v2 - v0;
+      Vector3 v03 = v3 - v0;
 
       // Compute determinant of surface jacobian
       // First we compute the rotation matrix which will rotate
       // any vector in natural coordinates to the same reference
       // frame as the current face.
-      chi_mesh::Vector3 normal = face.normal_ * -1.0;
-      chi_mesh::Vector3 tangent = v02.Cross(normal);
+      Vector3 normal = face.normal_ * -1.0;
+      Vector3 tangent = v02.Cross(normal);
       tangent = tangent / tangent.Norm();
-      chi_mesh::Vector3 binorm = v02 / v02.Norm();
+      Vector3 binorm = v02 / v02.Norm();
 
-      chi_mesh::Matrix3x3 R;
+      Matrix3x3 R;
       R.SetColJVec(0, tangent);
       R.SetColJVec(1, binorm);
       R.SetColJVec(2, normal);
@@ -79,17 +79,17 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
       // Now we compute the inverse of this matrix which
       // will allow us to rotate any vector in the same reference
       // frame as the face, to natural coordinates
-      chi_mesh::Matrix3x3 Rinv = R.Inverse();
+      Matrix3x3 Rinv = R.Inverse();
 
       // Compute v01 and v02 rotated to natural coordinates
       // A test to see if this is done correctly would be to
       // check if fabs(v01N.z) < epsilon and fabs(v02N.z) < epsilon
-      chi_mesh::Vector3 v01N = Rinv * v01;
-      chi_mesh::Vector3 v02N = Rinv * v02;
+      Vector3 v01N = Rinv * v01;
+      Vector3 v02N = Rinv * v02;
       side_data.detJ_surf = v01N.x * v02N.y - v01N.y * v02N.x;
 
       // Compute Jacobian
-      chi_mesh::Matrix3x3 J;
+      Matrix3x3 J;
       J.SetColJVec(0, v01);
       J.SetColJVec(1, v02);
       J.SetColJVec(2, v03);
@@ -100,9 +100,9 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
       side_data.detJ = J.Det();
 
       // Compute inverse Jacobian elements
-      chi_mesh::Matrix3x3 JT = J.Transpose();
-      chi_mesh::Matrix3x3 Jinv = J.Inverse();
-      chi_mesh::Matrix3x3 JTinv = JT.Inverse();
+      Matrix3x3 JT = J.Transpose();
+      Matrix3x3 Jinv = J.Inverse();
+      Matrix3x3 JTinv = JT.Inverse();
 
       side_data.Jinv = Jinv;
       side_data.JTinv = JTinv;
@@ -167,9 +167,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
 }
 
 double
-PieceWiseLinearPolyhedronMapping::TetShape(uint32_t index,
-                                           const chi_mesh::Vector3& qpoint,
-                                           bool on_surface)
+PieceWiseLinearPolyhedronMapping::TetShape(uint32_t index, const Vector3& qpoint, bool on_surface)
 {
   double value = 0.0;
 
@@ -221,7 +219,7 @@ double
 PieceWiseLinearPolyhedronMapping::FaceSideShape(uint32_t face_index,
                                                 uint32_t side_index,
                                                 uint32_t i,
-                                                const chi_mesh::Vector3& qpoint,
+                                                const Vector3& qpoint,
                                                 bool on_surface) const
 {
   double value = 0.0;
@@ -359,7 +357,7 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_z(uint32_t face_index,
 }
 
 double
-PieceWiseLinearPolyhedronMapping::ShapeValue(const int i, const chi_mesh::Vector3& xyz) const
+PieceWiseLinearPolyhedronMapping::ShapeValue(const int i, const Vector3& xyz) const
 {
   for (size_t f = 0; f < face_data_.size(); f++)
   {
@@ -367,9 +365,9 @@ PieceWiseLinearPolyhedronMapping::ShapeValue(const int i, const chi_mesh::Vector
     {
       // Map xyz to xi_eta_zeta
       const auto& p0 = ref_grid_.vertices[face_data_[f].sides[s].v_index[0]];
-      chi_mesh::Vector3 xyz_ref = xyz - p0;
+      Vector3 xyz_ref = xyz - p0;
 
-      chi_mesh::Vector3 xi_eta_zeta = face_data_[f].sides[s].Jinv * xyz_ref;
+      Vector3 xi_eta_zeta = face_data_[f].sides[s].Jinv * xyz_ref;
 
       double xi = xi_eta_zeta.x;
       double eta = xi_eta_zeta.y;
@@ -399,7 +397,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValue(const int i, const chi_mesh::Vector
 }
 
 void
-PieceWiseLinearPolyhedronMapping::ShapeValues(const chi_mesh::Vector3& xyz,
+PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
                                               std::vector<double>& shape_values) const
 {
   shape_values.resize(num_nodes_, 0.0);
@@ -410,7 +408,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const chi_mesh::Vector3& xyz,
       auto& side_fe_info = face_data_[f].sides[s];
       // Map xyz to xi_eta_zeta
       const auto& p0 = ref_grid_.vertices[side_fe_info.v_index[0]];
-      chi_mesh::Vector3 xi_eta_zeta = side_fe_info.Jinv * (xyz - p0);
+      Vector3 xi_eta_zeta = side_fe_info.Jinv * (xyz - p0);
 
       double xi = xi_eta_zeta.x;
       double eta = xi_eta_zeta.y;
@@ -445,19 +443,19 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const chi_mesh::Vector3& xyz,
   }     // for face
 }
 
-chi_mesh::Vector3
-PieceWiseLinearPolyhedronMapping::GradShapeValue(const int i, const chi_mesh::Vector3& xyz) const
+Vector3
+PieceWiseLinearPolyhedronMapping::GradShapeValue(const int i, const Vector3& xyz) const
 {
-  chi_mesh::Vector3 grad, gradr;
+  Vector3 grad, gradr;
   for (size_t f = 0; f < face_data_.size(); f++)
   {
     for (size_t s = 0; s < face_data_[f].sides.size(); s++)
     {
       // Map xyz to xi_eta_zeta
       const auto& p0 = ref_grid_.vertices[face_data_[f].sides[s].v_index[0]];
-      chi_mesh::Vector3 xyz_ref = xyz - p0;
+      Vector3 xyz_ref = xyz - p0;
 
-      chi_mesh::Vector3 xi_eta_zeta = face_data_[f].sides[s].Jinv * xyz_ref;
+      Vector3 xi_eta_zeta = face_data_[f].sides[s].Jinv * xyz_ref;
 
       double xi = xi_eta_zeta.x;
       double eta = xi_eta_zeta.y;
@@ -467,9 +465,9 @@ PieceWiseLinearPolyhedronMapping::GradShapeValue(const int i, const chi_mesh::Ve
       if ((xi >= -1.0e-12) and (eta >= -1.0e-12) and (zeta >= -1.0e-12) and
           ((xi + eta + zeta) <= (1.0 + 1.0e-12)))
       {
-        chi_mesh::Vector3 grad_i;
-        chi_mesh::Vector3 grad_f;
-        chi_mesh::Vector3 grad_c;
+        Vector3 grad_i;
+        Vector3 grad_f;
+        Vector3 grad_c;
 
         if (node_side_maps_[i].face_map[f].side_map[s].part_of_face)
         {
@@ -506,15 +504,15 @@ PieceWiseLinearPolyhedronMapping::GradShapeValue(const int i, const chi_mesh::Ve
 }
 
 void
-PieceWiseLinearPolyhedronMapping::GradShapeValues(
-  const chi_mesh::Vector3& xyz, std::vector<chi_mesh::Vector3>& gradshape_values) const
+PieceWiseLinearPolyhedronMapping::GradShapeValues(const Vector3& xyz,
+                                                  std::vector<Vector3>& gradshape_values) const
 {
   gradshape_values.clear();
   for (int i = 0; i < num_nodes_; ++i)
     gradshape_values.emplace_back(GradShapeValue(i, xyz));
 }
 
-finite_element::VolumetricQuadraturePointData
+VolumetricQuadraturePointData
 PieceWiseLinearPolyhedronMapping::MakeVolumetricQuadraturePointData() const
 {
   // Determine number of internal qpoints
@@ -585,16 +583,16 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricQuadraturePointData() const
 
   V_num_nodes = num_nodes_;
 
-  return finite_element::VolumetricQuadraturePointData(V_quadrature_point_indices,
-                                                       V_qpoints_xyz,
-                                                       V_shape_value,
-                                                       V_shape_grad,
-                                                       V_JxW,
-                                                       face_node_mappings_,
-                                                       V_num_nodes);
+  return VolumetricQuadraturePointData(V_quadrature_point_indices,
+                                       V_qpoints_xyz,
+                                       V_shape_value,
+                                       V_shape_grad,
+                                       V_JxW,
+                                       face_node_mappings_,
+                                       V_num_nodes);
 }
 
-finite_element::SurfaceQuadraturePointData
+SurfaceQuadraturePointData
 PieceWiseLinearPolyhedronMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
 {
   const bool ON_SURFACE = true;
@@ -660,14 +658,14 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceQuadraturePointData(size_t face_ind
 
   F_num_nodes = face_data_[f].sides.size();
 
-  return finite_element::SurfaceQuadraturePointData(F_quadrature_point_indices,
-                                                    F_qpoints_xyz,
-                                                    F_shape_value,
-                                                    F_shape_grad,
-                                                    F_JxW,
-                                                    F_normals,
-                                                    face_node_mappings_,
-                                                    F_num_nodes);
+  return SurfaceQuadraturePointData(F_quadrature_point_indices,
+                                    F_qpoints_xyz,
+                                    F_shape_value,
+                                    F_shape_grad,
+                                    F_JxW,
+                                    F_normals,
+                                    face_node_mappings_,
+                                    F_num_nodes);
 }
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

@@ -9,11 +9,13 @@
 #include "framework/graphs/directed_graph.h"
 #include "framework/utils/timer.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
-CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
-                   const chi_mesh::MeshContinuum& grid,
+CBC_SPDS::CBC_SPDS(const Vector3& omega,
+                   const MeshContinuum& grid,
                    bool cycle_allowance_flag,
                    bool verbose)
   : SPDS(omega, grid, verbose)
@@ -41,7 +43,7 @@ CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
     location_dependencies_.push_back(v);
 
   // Build graph
-  chi::DirectedGraph local_DG;
+  DirectedGraph local_DG;
 
   // Add vertex for each local cell
   for (int c = 0; c < num_loc_cells; ++c)
@@ -96,15 +98,14 @@ CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
   std::vector<std::vector<int>> global_dependencies;
   global_dependencies.resize(Chi::mpi.process_count);
 
-  chi_mesh::sweep_management::CommunicateLocationDependencies(location_dependencies_,
-                                                              global_dependencies);
+  CommunicateLocationDependencies(location_dependencies_, global_dependencies);
 
   ////%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Build task
   ////                                                        dependency graph
   // BuildTaskDependencyGraph(global_dependencies, cycle_allowance_flag);
 
-  constexpr auto INCOMING = chi_mesh::sweep_management::FaceOrientation::INCOMING;
-  constexpr auto OUTGOING = chi_mesh::sweep_management::FaceOrientation::OUTGOING;
+  constexpr auto INCOMING = FaceOrientation::INCOMING;
+  constexpr auto OUTGOING = FaceOrientation::OUTGOING;
 
   // For each local cell create a task
   for (const auto& cell : grid_.local_cells)
@@ -134,10 +135,11 @@ CBC_SPDS::CBC_SPDS(const chi_mesh::Vector3& omega,
                           << " Done computing sweep ordering.\n\n";
 }
 
-const std::vector<chi_mesh::sweep_management::Task>&
+const std::vector<Task>&
 CBC_SPDS::TaskList() const
 {
   return task_list_;
 }
 
 } // namespace lbs
+} // namespace opensn

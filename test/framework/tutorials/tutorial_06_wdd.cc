@@ -18,42 +18,44 @@
 
 #include <iomanip>
 
-namespace chi_unit_sim_testsB
+using namespace opensn;
+
+namespace unit_sim_tests
 {
-typedef chi_math::AngularQuadrature::HarmonicIndices YlmIndices;
-double ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
-                               const chi_math::SpatialDiscretization& sdm,
-                               const chi_math::UnknownManager& phi_uk_man,
+typedef AngularQuadrature::HarmonicIndices YlmIndices;
+double ComputeRelativePWChange(const MeshContinuum& grid,
+                               const SpatialDiscretization& sdm,
+                               const UnknownManager& phi_uk_man,
                                const std::vector<double>& in_phi_new,
                                const std::vector<double>& in_phi_old);
 
-std::vector<double> SetSource(const chi_mesh::MeshContinuum& grid,
-                              const chi_math::SpatialDiscretization& sdm,
-                              const chi_math::UnknownManager& phi_uk_man,
+std::vector<double> SetSource(const MeshContinuum& grid,
+                              const SpatialDiscretization& sdm,
+                              const UnknownManager& phi_uk_man,
                               const std::vector<double>& q_source,
                               const std::vector<double>& phi_old,
-                              const chi_physics::SingleStateMGXS& xs,
+                              const SingleStateMGXS& xs,
                               const std::vector<YlmIndices>& m_ell_em_map);
 
 /**WDD Sweep. */
-chi::ParameterBlock chiSimTest06_WDD(const chi::InputParameters&);
+ParameterBlock chiSimTest06_WDD(const InputParameters&);
 
 RegisterWrapperFunction(chi_unit_testsB, chiSimTest06_WDD, nullptr, chiSimTest06_WDD);
 
-chi::ParameterBlock
-chiSimTest06_WDD(const chi::InputParameters&)
+ParameterBlock
+chiSimTest06_WDD(const InputParameters&)
 {
   const std::string fname = "chiSimTest06_WDD";
 
-  Chi::log.Log() << "chiSimTest06_WDD num_args = " << 0;
+  opensn::Chi::log.Log() << "chiSimTest06_WDD num_args = " << 0;
 
-  if (Chi::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
+  if (opensn::Chi::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
-  auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
+  auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make Orthogonal mapping
   const auto ijk_info = grid.GetIJKInfo();
@@ -64,9 +66,9 @@ chiSimTest06_WDD(const chi::InputParameters&)
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
 
-  const auto Dim1 = chi_mesh::DIMENSION_1;
-  const auto Dim2 = chi_mesh::DIMENSION_2;
-  const auto Dim3 = chi_mesh::DIMENSION_3;
+  const auto Dim1 = DIMENSION_1;
+  const auto Dim2 = DIMENSION_2;
+  const auto Dim3 = DIMENSION_3;
 
   int dimension = 0;
   if (grid.Attributes() & Dim1) dimension = 1;
@@ -74,8 +76,8 @@ chiSimTest06_WDD(const chi::InputParameters&)
   if (grid.Attributes() & Dim3) dimension = 3;
 
   // Make SDM
-  typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
-  SDMPtr sdm_ptr = chi_math::spatial_discretization::FiniteVolume::New(grid);
+  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
+  SDMPtr sdm_ptr = FiniteVolume::New(grid);
   const auto& sdm = *sdm_ptr;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
@@ -83,23 +85,23 @@ chiSimTest06_WDD(const chi::InputParameters&)
   const size_t num_local_nodes = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_globl_nodes = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  Chi::log.Log() << "Num local nodes: " << num_local_nodes;
-  Chi::log.Log() << "Num globl nodes: " << num_globl_nodes;
+  opensn::Chi::log.Log() << "Num local nodes: " << num_local_nodes;
+  opensn::Chi::log.Log() << "Num globl nodes: " << num_globl_nodes;
 
   // Make an angular quadrature
-  std::shared_ptr<chi_math::AngularQuadrature> quadrature;
-  if (dimension == 1) quadrature = std::make_shared<chi_math::AngularQuadratureProdGL>(8);
+  std::shared_ptr<AngularQuadrature> quadrature;
+  if (dimension == 1) quadrature = std::make_shared<AngularQuadratureProdGL>(8);
   else if (dimension == 2)
   {
-    quadrature = std::make_shared<chi_math::AngularQuadratureProdGLC>(8, 8);
+    quadrature = std::make_shared<AngularQuadratureProdGLC>(8, 8);
     quadrature->OptimizeForPolarSymmetry(4.0 * M_PI);
   }
   else if (dimension == 3)
-    quadrature = std::make_shared<chi_math::AngularQuadratureProdGLC>(8, 8);
+    quadrature = std::make_shared<AngularQuadratureProdGLC>(8, 8);
   else
     throw std::logic_error(fname + "Error with the dimensionality "
                                    "of the mesh.");
-  Chi::log.Log() << "Quadrature created." << std::endl;
+  opensn::Chi::log.Log() << "Quadrature created." << std::endl;
 
   // Set/Get params
   const size_t scat_order = 1;
@@ -115,26 +117,26 @@ chiSimTest06_WDD(const chi::InputParameters&)
   const size_t num_moments = m_ell_em_map.size();
   const size_t num_dirs = quadrature->omegas_.size();
 
-  Chi::log.Log() << "End Set/Get params." << std::endl;
-  Chi::log.Log() << "Num Moments: " << num_moments << std::endl;
+  opensn::Chi::log.Log() << "End Set/Get params." << std::endl;
+  opensn::Chi::log.Log() << "Num Moments: " << num_moments << std::endl;
 
   // Make Unknown Managers
-  const auto VecN = chi_math::UnknownType::VECTOR_N;
-  using Unknown = chi_math::Unknown;
+  const auto VecN = UnknownType::VECTOR_N;
+  using Unknown = Unknown;
 
   std::vector<Unknown> phi_uks(num_moments, Unknown(VecN, num_groups));
   std::vector<Unknown> psi_uks(num_dirs, Unknown(VecN, num_groups));
 
-  const chi_math::UnknownManager phi_uk_man(phi_uks);
-  const chi_math::UnknownManager psi_uk_man(psi_uks);
+  const UnknownManager phi_uk_man(phi_uks);
+  const UnknownManager psi_uk_man(psi_uks);
 
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   const size_t num_local_psi_dofs = sdm.GetNumLocalDOFs(psi_uk_man);
 
-  Chi::log.Log() << "End ukmanagers." << std::endl;
+  opensn::Chi::log.Log() << "End ukmanagers." << std::endl;
 
   // Make XSs
-  chi_physics::SingleStateMGXS xs;
+  SingleStateMGXS xs;
   xs.MakeFromChiXSFile("xs_graphite_pure.cxs");
 
   // Initializes vectors
@@ -144,7 +146,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
   auto phi_new = phi_old;
   auto q_source = phi_old;
 
-  Chi::log.Log() << "End vectors." << std::endl;
+  opensn::Chi::log.Log() << "End vectors." << std::endl;
 
   // Make material source term
   for (const auto& cell : grid.local_cells)
@@ -165,12 +167,12 @@ chiSimTest06_WDD(const chi::InputParameters&)
   }     // for cell
 
   // Define sweep chunk
-  typedef chi_data_types::NDArray<double> IJKArrayDbl;
+  typedef NDArray<double> IJKArrayDbl;
   IJKArrayDbl psi_ds_x(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
   IJKArrayDbl psi_ds_y(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
   IJKArrayDbl psi_ds_z(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
 
-  typedef chi_mesh::Vector3 Vec3;
+  typedef Vector3 Vec3;
   auto SweepChunk = [&ijk_info,
                      &ijk_mapping,
                      &cell_ortho_sizes,
@@ -189,7 +191,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
                      &psi_ds_z](const std::array<int64_t, 3>& ijk,
                                 const Vec3& omega,
                                 const size_t d,
-                                const chi_physics::SingleStateMGXS& cell_xs)
+                                const SingleStateMGXS& cell_xs)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
     const auto& cell = grid.cells[cell_global_id];
@@ -267,15 +269,15 @@ chiSimTest06_WDD(const chi::InputParameters&)
       const auto& omega = quadrature->omegas_[d];
 
       std::vector<int64_t> iorder, jorder, korder;
-      if (omega.x > 0.0) iorder = chi_math::Range<int64_t>(0, Nx);
+      if (omega.x > 0.0) iorder = Range<int64_t>(0, Nx);
       else
-        iorder = chi_math::Range<int64_t>(Nx - 1, -1, -1);
-      if (omega.y > 0.0) jorder = chi_math::Range<int64_t>(0, Ny);
+        iorder = Range<int64_t>(Nx - 1, -1, -1);
+      if (omega.y > 0.0) jorder = Range<int64_t>(0, Ny);
       else
-        jorder = chi_math::Range<int64_t>(Ny - 1, -1, -1);
-      if (omega.z > 0.0) korder = chi_math::Range<int64_t>(0, Nz);
+        jorder = Range<int64_t>(Ny - 1, -1, -1);
+      if (omega.z > 0.0) korder = Range<int64_t>(0, Nz);
       else
-        korder = chi_math::Range<int64_t>(Nz - 1, -1, -1);
+        korder = Range<int64_t>(Nz - 1, -1, -1);
 
       for (auto i : iorder)
         for (auto j : jorder)
@@ -285,7 +287,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
   };
 
   // Classic Richardson iteration
-  Chi::log.Log() << "Starting iterations" << std::endl;
+  opensn::Chi::log.Log() << "Starting iterations" << std::endl;
   for (size_t iter = 0; iter < 200; ++iter)
   {
     phi_new.assign(phi_new.size(), 0.0);
@@ -303,7 +305,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
       outstr << buffer;
     }
 
-    Chi::log.Log() << outstr.str();
+    opensn::Chi::log.Log() << outstr.str();
 
     phi_old = phi_new;
 
@@ -313,8 +315,7 @@ chiSimTest06_WDD(const chi::InputParameters&)
   // Localize zeroth moment
   // This routine extracts a single moment vector
   // from the vector that contains multiple moments
-  const chi_math::UnknownManager m0_uk_man(
-    {chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups)});
+  const UnknownManager m0_uk_man({Unknown(UnknownType::VECTOR_N, num_groups)});
   const size_t num_m0_dofs = sdm.GetNumLocalDOFs(m0_uk_man);
 
   std::vector<double> m0_phi(num_m0_dofs, 0.0);
@@ -322,20 +323,20 @@ chiSimTest06_WDD(const chi::InputParameters&)
   sdm.CopyVectorWithUnknownScope(phi_old, m0_phi, phi_uk_man, 0, m0_uk_man, 0);
 
   // Create Field Function
-  auto phi_ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups));
+  auto phi_ff = std::make_shared<FieldFunctionGridBased>(
+    "Phi", sdm_ptr, Unknown(UnknownType::VECTOR_N, num_groups));
 
   phi_ff->UpdateFieldVector(m0_phi);
 
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("SimTest_06_WDD", {phi_ff});
+  FieldFunctionGridBased::ExportMultipleToVTK("SimTest_06_WDD", {phi_ff});
 
-  return chi::ParameterBlock();
+  return ParameterBlock();
 }
 
 double
-ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
-                        const chi_math::SpatialDiscretization& sdm,
-                        const chi_math::UnknownManager& phi_uk_man,
+ComputeRelativePWChange(const MeshContinuum& grid,
+                        const SpatialDiscretization& sdm,
+                        const UnknownManager& phi_uk_man,
                         const std::vector<double>& in_phi_new,
                         const std::vector<double>& in_phi_old)
 {
@@ -384,12 +385,12 @@ ComputeRelativePWChange(const chi_mesh::MeshContinuum& grid,
 }
 
 std::vector<double>
-SetSource(const chi_mesh::MeshContinuum& grid,
-          const chi_math::SpatialDiscretization& sdm,
-          const chi_math::UnknownManager& phi_uk_man,
+SetSource(const MeshContinuum& grid,
+          const SpatialDiscretization& sdm,
+          const UnknownManager& phi_uk_man,
           const std::vector<double>& q_source,
           const std::vector<double>& phi_old,
-          const chi_physics::SingleStateMGXS& xs,
+          const SingleStateMGXS& xs,
           const std::vector<YlmIndices>& m_ell_em_map)
 {
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
@@ -433,4 +434,4 @@ SetSource(const chi_mesh::MeshContinuum& grid,
   return source_moments;
 }
 
-} // namespace chi_unit_sim_testsB
+} // namespace unit_sim_tests

@@ -1,7 +1,7 @@
 #include "framework/mesh/sweep_utilities/sweep_boundary/boundary_reflecting.h"
 #include "framework/logging/log.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 double*
@@ -67,4 +67,4 @@ BoundaryReflecting::ResetAnglesReadyStatus()
       flags[gs_ss] = false;
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

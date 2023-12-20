@@ -24,8 +24,8 @@ chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L)
   // Check args table
   if (not lua_istable(L, 1))
   {
-    Chi::log.LogAllError() << func_name << ": First argument found to not be an array.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << func_name << ": First argument found to not be an array.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   // Decl vars
@@ -47,7 +47,7 @@ chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L)
   }
 
   // Create mesh
-  const size_t handle = chi_mesh::CreateUnpartitioned1DOrthoMesh(array[0]);
+  const size_t handle = opensn::CreateUnpartitioned1DOrthoMesh(array[0]);
 
   // Push handles
   lua_pushnumber(L, static_cast<lua_Number>(handle));
@@ -67,13 +67,13 @@ chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L)
   // Check args table
   if (not lua_istable(L, 1))
   {
-    Chi::log.LogAllError() << func_name << ": First argument found to not be an array.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << func_name << ": First argument found to not be an array.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
   if (not lua_istable(L, 2))
   {
-    Chi::log.LogAllError() << func_name << ": Second argument found to not be an array.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << func_name << ": Second argument found to not be an array.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   // Decl vars
@@ -107,7 +107,7 @@ chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L)
   }
 
   // Create mesh
-  const size_t handle = chi_mesh::CreateUnpartitioned2DOrthoMesh(array[0], array[1]);
+  const size_t handle = opensn::CreateUnpartitioned2DOrthoMesh(array[0], array[1]);
 
   // Push handles
   lua_pushnumber(L, static_cast<lua_Number>(handle));
@@ -127,18 +127,18 @@ chiMeshCreateUnpartitioned3DOrthoMesh(lua_State* L)
   // Check args table
   if (not lua_istable(L, 1))
   {
-    Chi::log.LogAllError() << func_name << ": First argument found to not be an array.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << func_name << ": First argument found to not be an array.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
   if (not lua_istable(L, 2))
   {
-    Chi::log.LogAllError() << func_name << ": Second argument found to not be an array.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << func_name << ": Second argument found to not be an array.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
   if (not lua_istable(L, 3))
   {
-    Chi::log.LogAllError() << func_name << ": Third argument found to not be an array.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << func_name << ": Third argument found to not be an array.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   // Decl vars
@@ -184,7 +184,7 @@ chiMeshCreateUnpartitioned3DOrthoMesh(lua_State* L)
   }
 
   // Create mesh
-  const size_t handle = chi_mesh::CreateUnpartitioned3DOrthoMesh(array[0], array[1], array[2]);
+  const size_t handle = opensn::CreateUnpartitioned3DOrthoMesh(array[0], array[1], array[2]);
 
   // Push handles
   lua_pushnumber(L, static_cast<lua_Number>(handle));

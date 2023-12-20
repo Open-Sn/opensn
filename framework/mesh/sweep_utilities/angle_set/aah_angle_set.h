@@ -2,7 +2,7 @@
 
 #include "framework/mesh/sweep_utilities/angle_set/angle_set.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 /**Manages the workstages of a single angle set.*/
@@ -18,7 +18,7 @@ public:
                std::vector<size_t>& angle_indices,
                std::map<uint64_t, std::shared_ptr<SweepBndry>>& sim_boundaries,
                int sweep_eager_limit,
-               const chi::ChiMPICommunicatorSet& in_comm_set);
+               const ChiMPICommunicatorSet& in_comm_set);
 
   void InitializeDelayedUpstreamData() override;
 
@@ -49,7 +49,7 @@ public:
                                      size_t gs_ss_begin) override;
 
 protected:
-  chi_mesh::sweep_management::AAH_ASynchronousCommunicator async_comm_;
+  AAH_ASynchronousCommunicator async_comm_;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

@@ -6,12 +6,14 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
 DiffusionSolver::DiffusionSolver(std::string text_name,
-                                 const chi_math::SpatialDiscretization& sdm,
-                                 const chi_math::UnknownManager& uk_man,
+                                 const opensn::SpatialDiscretization& sdm,
+                                 const UnknownManager& uk_man,
                                  std::map<uint64_t, BoundaryCondition> bcs,
                                  MatID2XSMap map_mat_id_2_xs,
                                  const std::vector<UnitCellMatrices>& unit_cell_matrices,
@@ -53,13 +55,13 @@ DiffusionSolver::RHS() const
   return rhs_;
 }
 
-const chi_math::UnknownManager&
+const UnknownManager&
 DiffusionSolver::UnknownStructure() const
 {
   return uk_man_;
 }
 
-const chi_math::SpatialDiscretization&
+const SpatialDiscretization&
 DiffusionSolver::SpatialDiscretization() const
 {
   return sdm_;
@@ -124,21 +126,19 @@ DiffusionSolver::Initialize()
   Chi::mpi.Barrier();
   Chi::log.Log() << "Done Sparsity pattern";
   Chi::mpi.Barrier();
-  A_ = chi_math::PETScUtils::CreateSquareMatrix(num_local_dofs_, num_global_dofs_);
-  chi_math::PETScUtils::InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  A_ = CreateSquareMatrix(num_local_dofs_, num_global_dofs_);
+  InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
   Chi::mpi.Barrier();
   Chi::log.Log() << "Done matrix creation";
   Chi::mpi.Barrier();
 
   // Create RHS
-  if (not requires_ghosts_)
-    rhs_ = chi_math::PETScUtils::CreateVector(num_local_dofs_, num_global_dofs_);
+  if (not requires_ghosts_) rhs_ = CreateVector(num_local_dofs_, num_global_dofs_);
   else
-    rhs_ = chi_math::PETScUtils::CreateVectorWithGhosts(
-      num_local_dofs_,
-      num_global_dofs_,
-      static_cast<int64_t>(sdm_.GetNumGhostDOFs(uk_man_)),
-      sdm_.GetGhostDOFIndices(uk_man_));
+    rhs_ = CreateVectorWithGhosts(num_local_dofs_,
+                                  num_global_dofs_,
+                                  static_cast<int64_t>(sdm_.GetNumGhostDOFs(uk_man_)),
+                                  sdm_.GetGhostDOFIndices(uk_man_));
 
   Chi::mpi.Barrier();
   Chi::log.Log() << "Done vector creation";
@@ -166,9 +166,9 @@ DiffusionSolver::Initialize()
                                          "pc_hypre_boomeramg_coarsen_type HMIS",
                                          "pc_hypre_boomeramg_interp_type ext+i"};
 
-  if (grid_.Attributes() & chi_mesh::DIMENSION_2)
+  if (grid_.Attributes() & DIMENSION_2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
-  if (grid_.Attributes() & chi_mesh::DIMENSION_3)
+  if (grid_.Attributes() & DIMENSION_3)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.8");
 
   for (const auto& option : pc_options)
@@ -204,7 +204,6 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 
   if (options.verbose)
   {
-    using namespace chi_math::PETScUtils;
     KSPSetConvergenceTest(ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
 
     KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
@@ -234,7 +233,6 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
     VecNorm(x, NORM_2, &sol_norm);
     Chi::log.Log() << "Solution-norm " << sol_norm;
 
-    using namespace chi_physics;
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
 
@@ -244,7 +242,7 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
   // Transfer petsc solution to vector
   if (requires_ghosts_)
   {
-    chi_math::PETScUtils::CommunicateGhostEntries(x);
+    CommunicateGhostEntries(x);
     sdm_.LocalizePETScVectorWithGhosts(x, solution, uk_man_);
   }
   else
@@ -278,7 +276,6 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 
   if (options.verbose)
   {
-    using namespace chi_math::PETScUtils;
     KSPSetConvergenceTest(ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
 
     KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
@@ -300,7 +297,6 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
     VecNorm(x, NORM_2, &sol_norm);
     Chi::log.Log() << "Solution-norm " << sol_norm;
 
-    using namespace chi_physics;
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
 
@@ -314,4 +310,5 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
   VecDestroy(&x);
 }
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

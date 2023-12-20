@@ -5,16 +5,12 @@
 #include <memory>
 #include <array>
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 class SweepBoundary;
-}
-namespace chi_physics
-{
 class MultiGroupXS;
-}
 
-namespace lbs::acceleration
+namespace lbs
 {
 
 /**Boundary condition type. We essentially only support two
@@ -66,10 +62,9 @@ struct TwoGridCollapsedInfo
   std::vector<double> spectrum;
 };
 
-TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const chi_physics::MultiGroupXS& xs,
-                                              EnergyCollapseScheme scheme);
+TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme);
 
-typedef std::shared_ptr<chi_mesh::sweep_management::SweepBoundary> SwpBndryPtr;
+typedef std::shared_ptr<SweepBoundary> SwpBndryPtr;
 
 /**Translates sweep boundary conditions to that used in diffusion acceleration
  * methods.*/
@@ -77,7 +72,7 @@ std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, SwpBndryPtr>& sweep_boundaries,
              bool vaccum_bcs_are_dirichlet = true);
 
-typedef std::shared_ptr<chi_physics::MultiGroupXS> MGXSPtr;
+typedef std::shared_ptr<MultiGroupXS> MGXSPtr;
 
 /**Makes a packaged set of XSs, suitable for diffusion, for a particular
  * set of groups.*/
@@ -85,4 +80,5 @@ std::map<int, Multigroup_D_and_sigR> PackGroupsetXS(const std::map<int, MGXSPtr>
                                                     int first_grp_index,
                                                     int last_group_index);
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

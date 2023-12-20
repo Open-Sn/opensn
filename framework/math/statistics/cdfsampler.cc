@@ -7,13 +7,16 @@
 
 #include <unistd.h>
 
-chi_math::CDFSampler::SubIntvl::SubIntvl(std::string offset,
-                                         int ibin,
-                                         int fbin,
-                                         std::vector<double>& in_cdf,
-                                         int subdiv_factor,
-                                         int final_res,
-                                         bool inhibit)
+namespace opensn
+{
+
+CDFSampler::SubIntvl::SubIntvl(std::string offset,
+                               int ibin,
+                               int fbin,
+                               std::vector<double>& in_cdf,
+                               int subdiv_factor,
+                               int final_res,
+                               bool inhibit)
   : ref_cdf(in_cdf)
 {
   inhibited = inhibit;
@@ -52,7 +55,7 @@ chi_math::CDFSampler::SubIntvl::SubIntvl(std::string offset,
   }
 }
 
-chi_math::CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor, int final_res)
+CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor, int final_res)
   : ref_cdf_(in_cdf)
 {
   // Setting sub-division factor
@@ -102,7 +105,7 @@ chi_math::CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor,
 }
 
 int
-chi_math::CDFSampler::Sample(double x)
+CDFSampler::Sample(double x)
 {
   int ret_val = -1;
   int cdf_size = ref_cdf_.size();
@@ -148,7 +151,7 @@ chi_math::CDFSampler::Sample(double x)
 
   if (ret_val < 0)
   {
-    Chi::log.LogAllError() << "chi_math::CDFSampler::Sample. Error in CDF sampling routine. "
+    Chi::log.LogAllError() << "CDFSampler::Sample. Error in CDF sampling routine. "
                            << "A bin was not found.";
     Chi::Exit(EXIT_FAILURE);
   }
@@ -157,7 +160,7 @@ chi_math::CDFSampler::Sample(double x)
 }
 
 bool
-chi_math::CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
+CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
 {
   // If this was an inhibited intvl
   if (inhibited)
@@ -195,7 +198,7 @@ chi_math::CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
 }
 
 int
-chi_math::SampleCDF(double x, std::vector<double> cdf_bin)
+SampleCDF(double x, std::vector<double> cdf_bin)
 {
   size_t fine_limit = 5;
   size_t cdf_size = cdf_bin.size();
@@ -284,7 +287,7 @@ chi_math::SampleCDF(double x, std::vector<double> cdf_bin)
 
   if (ret_val < 0)
   {
-    Chi::log.LogAllError() << "chi_math::SampleCDF. Error in CDF sampling routine. "
+    Chi::log.LogAllError() << "SampleCDF. Error in CDF sampling routine. "
                            << "A bin was not found."
                            << " i=" << lookup_i << " f=" << lookup_f << " x=" << x;
     Chi::Exit(EXIT_FAILURE);
@@ -295,3 +298,5 @@ chi_math::SampleCDF(double x, std::vector<double> cdf_bin)
 
   return ret_val;
 }
+
+} // namespace opensn

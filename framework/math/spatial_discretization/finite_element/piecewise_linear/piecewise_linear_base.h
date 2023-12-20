@@ -7,7 +7,7 @@
 #include "framework/math/quadratures/quadrature_quadrilateral.h"
 #include "framework/math/quadratures/quadrature_tetrahedron.h"
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
 
 /**Base class for PieceWiseLinear based discretization.
@@ -16,7 +16,7 @@ class PieceWiseLinearBase : public FiniteElementBase
 {
 protected:
   /**Constructor*/
-  explicit PieceWiseLinearBase(const chi_mesh::MeshContinuum& grid,
+  explicit PieceWiseLinearBase(const MeshContinuum& grid,
                                QuadratureOrder q_order,
                                SDMType sdm_type,
                                CoordinateSystemType cs_type);
@@ -29,4 +29,4 @@ protected:
   void CreateCellMappings();
 };
 
-} // namespace chi_math::spatial_discretization
+} // namespace opensn

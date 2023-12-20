@@ -9,12 +9,12 @@
 
 #define sc_int64 static_cast<int64_t>
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
 
-LagrangeDiscontinuous::LagrangeDiscontinuous(const chi_mesh::MeshContinuum& grid,
-                                             chi_math::QuadratureOrder q_order,
-                                             chi_math::CoordinateSystemType cs_type)
+LagrangeDiscontinuous::LagrangeDiscontinuous(const MeshContinuum& grid,
+                                             QuadratureOrder q_order,
+                                             CoordinateSystemType cs_type)
   : LagrangeBase(grid, q_order, SDMType::LAGRANGE_DISCONTINUOUS, cs_type)
 {
   CreateCellMappings();
@@ -23,7 +23,7 @@ LagrangeDiscontinuous::LagrangeDiscontinuous(const chi_mesh::MeshContinuum& grid
 }
 
 std::shared_ptr<LagrangeDiscontinuous>
-LagrangeDiscontinuous::New(const chi_mesh::MeshContinuum& grid,
+LagrangeDiscontinuous::New(const MeshContinuum& grid,
                            QuadratureOrder q_order,
                            CoordinateSystemType cs_type)
 
@@ -60,7 +60,7 @@ void
 LagrangeDiscontinuous::OrderNodes()
 {
   const std::string fname = __FUNCTION__;
-  chi::Timer t_stage[6];
+  Timer t_stage[6];
 
   t_stage[0].Reset();
   // Check cell views avail
@@ -117,7 +117,7 @@ LagrangeDiscontinuous::OrderNodes()
 
   // AllToAll to get query cell-ids
   const std::map<int, std::vector<uint64_t>> query_ghost_cell_ids_consolidated =
-    chi_mpi_utils::MapAllToAll(ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
+    MapAllToAll(ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
 
   // Map all query cell-ids
   std::map<int, std::vector<uint64_t>> mapped_ghost_cell_ids_consolidated;
@@ -137,7 +137,7 @@ LagrangeDiscontinuous::OrderNodes()
 
   // Communicate back the mapping
   const std::map<int, std::vector<uint64_t>> global_id_mapping =
-    chi_mpi_utils::MapAllToAll(mapped_ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
+    MapAllToAll(mapped_ghost_cell_ids_consolidated, MPI_UNSIGNED_LONG_LONG);
 
   // Process global id mapping
   for (const auto& [pid, mapping_list] : global_id_mapping)
@@ -161,7 +161,7 @@ LagrangeDiscontinuous::OrderNodes()
 void
 LagrangeDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
                                             std::vector<int64_t>& nodal_nnz_off_diag,
-                                            const chi_math::UnknownManager& unknown_manager) const
+                                            const UnknownManager& unknown_manager) const
 {
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOCAL CONNECTIVITY
   size_t local_dof_count = local_base_block_size_;
@@ -239,7 +239,7 @@ LagrangeDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_d
   nodal_nnz_in_diag.resize(local_base_block_size_ * N, 0);
   nodal_nnz_off_diag.resize(local_base_block_size_ * N, 0);
 
-  if (unknown_manager.dof_storage_type_ == chi_math::UnknownStorageType::NODAL)
+  if (unknown_manager.dof_storage_type_ == UnknownStorageType::NODAL)
   {
     int ir = -1;
     for (int i = 0; i < local_base_block_size_; ++i)
@@ -252,7 +252,7 @@ LagrangeDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_d
       } // for j
     }   // for i
   }
-  else if (unknown_manager.dof_storage_type_ == chi_math::UnknownStorageType::BLOCK)
+  else if (unknown_manager.dof_storage_type_ == UnknownStorageType::BLOCK)
   {
     int ir = -1;
     for (int j = 0; j < N; ++j)
@@ -270,9 +270,9 @@ LagrangeDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_d
 }
 
 int64_t
-LagrangeDiscontinuous::MapDOF(const chi_mesh::Cell& cell,
+LagrangeDiscontinuous::MapDOF(const Cell& cell,
                               const unsigned int node,
-                              const chi_math::UnknownManager& unknown_manager,
+                              const UnknownManager& unknown_manager,
                               const unsigned int unknown_id,
                               const unsigned int component) const
 {
@@ -283,14 +283,14 @@ LagrangeDiscontinuous::MapDOF(const chi_mesh::Cell& cell,
 
   if (cell.partition_id_ == Chi::mpi.location_id)
   {
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
     {
       int64_t address = sc_int64(local_block_address_ * num_unknowns) +
                         cell_local_block_address_[cell.local_id_] +
                         local_base_block_size_ * block_id + node;
       return address;
     }
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
     {
       int64_t address = sc_int64(local_block_address_ * num_unknowns) +
                         cell_local_block_address_[cell.local_id_] * num_unknowns +
@@ -320,13 +320,13 @@ LagrangeDiscontinuous::MapDOF(const chi_mesh::Cell& cell,
       Chi::Exit(EXIT_FAILURE);
     }
 
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
     {
       int64_t address = sc_int64(neighbor_cell_block_address_[index].second) +
                         locJ_block_size_[cell.partition_id_] * block_id + node;
       return address;
     }
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
     {
       int64_t address = sc_int64(neighbor_cell_block_address_[index].second * num_unknowns) +
                         node * num_unknowns + block_id;
@@ -338,9 +338,9 @@ LagrangeDiscontinuous::MapDOF(const chi_mesh::Cell& cell,
 }
 
 int64_t
-LagrangeDiscontinuous::MapDOFLocal(const chi_mesh::Cell& cell,
+LagrangeDiscontinuous::MapDOFLocal(const Cell& cell,
                                    const unsigned int node,
-                                   const chi_math::UnknownManager& unknown_manager,
+                                   const UnknownManager& unknown_manager,
                                    const unsigned int unknown_id,
                                    const unsigned int component) const
 {
@@ -351,13 +351,13 @@ LagrangeDiscontinuous::MapDOFLocal(const chi_mesh::Cell& cell,
 
   if (cell.partition_id_ == Chi::mpi.location_id)
   {
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
     {
       int64_t address = sc_int64(cell_local_block_address_[cell.local_id_]) +
                         local_base_block_size_ * block_id + node;
       return address;
     }
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
     {
       int64_t address = sc_int64(cell_local_block_address_[cell.local_id_] * num_unknowns) +
                         node * num_unknowns + block_id;
@@ -386,13 +386,13 @@ LagrangeDiscontinuous::MapDOFLocal(const chi_mesh::Cell& cell,
       Chi::Exit(EXIT_FAILURE);
     }
 
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
     {
       int64_t address = sc_int64(neighbor_cell_block_address_[index].second) +
                         locJ_block_size_[cell.partition_id_] * block_id + node;
       return address;
     }
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
     {
       int64_t address = sc_int64(neighbor_cell_block_address_[index].second * num_unknowns) +
                         node * num_unknowns + block_id;
@@ -415,4 +415,4 @@ LagrangeDiscontinuous::GetGhostDOFIndices(const UnknownManager& unknown_manager)
   return {};
 }
 
-} // namespace chi_math::spatial_discretization
+} // namespace opensn

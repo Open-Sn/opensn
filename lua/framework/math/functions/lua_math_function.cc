@@ -6,7 +6,9 @@
 
 #include "framework/logging/log_exceptions.h"
 
-namespace chi_math::functions::lua_utils
+using namespace opensn;
+
+namespace opensnlua
 {
 
 /**Evaluates a function of base type `FunctionXYZDimAToDimB`.
@@ -31,14 +33,14 @@ chiFunctionDimAToDimBEvaluate(lua_State* L)
   const size_t handle = lua_tointeger(L, 1);
 
   const auto& function =
-    Chi::GetStackItem<chi_math::FunctionDimAToDimB>(Chi::object_stack, handle, fname);
+    opensn::Chi::GetStackItem<FunctionDimAToDimB>(opensn::Chi::object_stack, handle, fname);
 
   // Getting params
   std::vector<double> params;
   if (lua_istable(L, 2))
   {
-    auto table_block = chi_lua::TableParserAsParameterBlock::ParseTable(L, 2);
-    ChiInvalidArgumentIf(table_block.Type() != chi::ParameterBlockType::ARRAY,
+    auto table_block = TableParserAsParameterBlock::ParseTable(L, 2);
+    ChiInvalidArgumentIf(table_block.Type() != ParameterBlockType::ARRAY,
                          fname + ": Only an array type is allowed. Table can "
                                  "not have string keys.");
     params = table_block.GetVectorValue<double>();
@@ -73,4 +75,4 @@ chiFunctionDimAToDimBEvaluate(lua_State* L)
   return 1;
 }
 
-} // namespace chi_math::functions::lua_utils
+} // namespace opensnlua

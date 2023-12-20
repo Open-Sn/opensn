@@ -12,14 +12,15 @@
 
 #define uint unsigned int
 
+namespace opensn
+{
 namespace lbs
 {
 
-CBC_ASynchronousCommunicator::CBC_ASynchronousCommunicator(
-  size_t angle_set_id,
-  chi_mesh::sweep_management::FLUDS& fluds,
-  const chi::ChiMPICommunicatorSet& comm_set)
-  : chi_mesh::sweep_management::AsynchronousCommunicator(fluds, comm_set),
+CBC_ASynchronousCommunicator::CBC_ASynchronousCommunicator(size_t angle_set_id,
+                                                           FLUDS& fluds,
+                                                           const ChiMPICommunicatorSet& comm_set)
+  : AsynchronousCommunicator(fluds, comm_set),
     angle_set_id_(angle_set_id),
     cbc_fluds_(dynamic_cast<CBC_FLUDS&>(fluds))
 {
@@ -85,20 +86,20 @@ CBC_ASynchronousCommunicator::SendData()
     if (not buffer_item.send_initiated_)
     {
       const int locJ = buffer_item.destination_;
-      chi::MPI_Info::Call(MPI_Isend(buffer_item.data_array_.Data().data(),
-                                    static_cast<int>(buffer_item.data_array_.Size()),
-                                    MPI_BYTE,
-                                    comm_set_.MapIonJ(locJ, locJ),
-                                    static_cast<int>(angle_set_id_),
-                                    comm_set_.LocICommunicator(locJ),
-                                    &buffer_item.mpi_request_));
+      MPI_Info::Call(MPI_Isend(buffer_item.data_array_.Data().data(),
+                               static_cast<int>(buffer_item.data_array_.Size()),
+                               MPI_BYTE,
+                               comm_set_.MapIonJ(locJ, locJ),
+                               static_cast<int>(angle_set_id_),
+                               comm_set_.LocICommunicator(locJ),
+                               &buffer_item.mpi_request_));
       buffer_item.send_initiated_ = true;
     }
 
     if (not buffer_item.completed_)
     {
       int sent;
-      chi::MPI_Info::Call(MPI_Test(&buffer_item.mpi_request_, &sent, MPI_STATUS_IGNORE));
+      MPI_Info::Call(MPI_Test(&buffer_item.mpi_request_, &sent, MPI_STATUS_IGNORE));
       if (sent) buffer_item.completed_ = true;
       else
         all_messages_sent = false;
@@ -120,26 +121,26 @@ CBC_ASynchronousCommunicator::ReceiveData()
   {
     int message_available = 0;
     MPI_Status status;
-    chi::MPI_Info::Call(MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                                   static_cast<int>(angle_set_id_),
-                                   comm_set_.LocICommunicator(Chi::mpi.location_id),
-                                   &message_available,
-                                   &status));
+    MPI_Info::Call(MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+                              static_cast<int>(angle_set_id_),
+                              comm_set_.LocICommunicator(Chi::mpi.location_id),
+                              &message_available,
+                              &status));
 
     if (message_available)
     {
       int num_items;
       MPI_Get_count(&status, MPI_BYTE, &num_items);
       std::vector<std::byte> recv_buffer(num_items);
-      chi::MPI_Info::Call(MPI_Recv(recv_buffer.data(),
-                                   num_items,
-                                   MPI_BYTE,
-                                   comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
-                                   status.MPI_TAG,
-                                   comm_set_.LocICommunicator(Chi::mpi.location_id),
-                                   MPI_STATUS_IGNORE));
+      MPI_Info::Call(MPI_Recv(recv_buffer.data(),
+                              num_items,
+                              MPI_BYTE,
+                              comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+                              status.MPI_TAG,
+                              comm_set_.LocICommunicator(Chi::mpi.location_id),
+                              MPI_STATUS_IGNORE));
 
-      chi_data_types::ByteArray data_array(recv_buffer);
+      ByteArray data_array(recv_buffer);
 
       while (not data_array.EndOfBuffer())
       {
@@ -165,3 +166,4 @@ CBC_ASynchronousCommunicator::ReceiveData()
 }
 
 } // namespace lbs
+} // namespace opensn

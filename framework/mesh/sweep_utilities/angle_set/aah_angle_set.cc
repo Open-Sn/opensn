@@ -5,7 +5,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 AAH_AngleSet::AAH_AngleSet(size_t id,
@@ -16,7 +16,7 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
                            std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBndry>>& sim_boundaries,
                            int sweep_eager_limit,
-                           const chi::ChiMPICommunicatorSet& in_comm_set)
+                           const ChiMPICommunicatorSet& in_comm_set)
   : AngleSet(id, in_numgrps, in_spds, in_fluds, angle_indices, sim_boundaries, in_ref_subset),
     async_comm_(*in_fluds, num_grps, angle_indices.size(), sweep_eager_limit, in_comm_set)
 {
@@ -57,9 +57,9 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
   {
     async_comm_.InitializeLocalAndDownstreamBuffers();
 
-    Chi::log.LogEvent(timing_tags[0], chi::ChiLog::EventType::EVENT_BEGIN);
+    Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_BEGIN);
     sweep_chunk.Sweep(*this); // Execute chunk
-    Chi::log.LogEvent(timing_tags[0], chi::ChiLog::EventType::EVENT_END);
+    Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_END);
 
     // Send outgoing psi and clear local and receive buffers
     async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
@@ -143,4 +143,4 @@ AAH_AngleSet::ReflectingPsiOutBoundBndry(uint64_t bndry_map,
     cell_local_id, face_num, fi, angle_num, gs_ss_begin);
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

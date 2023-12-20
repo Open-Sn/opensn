@@ -5,13 +5,13 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_physics
+namespace opensn
 {
 
-chi::InputParameters
+InputParameters
 FieldFunctionInterface::GetInputParameters()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   params.AddRequiredParameterBlock("field_function", "Field function handle or name.");
   params.SetParameterTypeMismatchAllowed("field_function");
@@ -19,7 +19,7 @@ FieldFunctionInterface::GetInputParameters()
   return params;
 }
 
-FieldFunctionInterface::FieldFunctionInterface(const chi::InputParameters& params)
+FieldFunctionInterface::FieldFunctionInterface(const InputParameters& params)
   : field_function_param_(params.GetParam("field_function"))
 {
 }
@@ -27,8 +27,8 @@ FieldFunctionInterface::FieldFunctionInterface(const chi::InputParameters& param
 FieldFunction*
 FieldFunctionInterface::GetFieldFunction() const
 {
-  std::shared_ptr<chi_physics::FieldFunction> ref_ff_ptr = nullptr;
-  if (field_function_param_.Type() == chi::ParameterBlockType::STRING)
+  std::shared_ptr<FieldFunction> ref_ff_ptr = nullptr;
+  if (field_function_param_.Type() == ParameterBlockType::STRING)
   {
     const auto name = field_function_param_.GetValue<std::string>();
     for (const auto& ff_ptr : Chi::field_function_stack)
@@ -36,11 +36,11 @@ FieldFunctionInterface::GetFieldFunction() const
 
     ChiInvalidArgumentIf(ref_ff_ptr == nullptr, "Field function \"" + name + "\" not found.");
   }
-  else if (field_function_param_.Type() == chi::ParameterBlockType::INTEGER)
+  else if (field_function_param_.Type() == ParameterBlockType::INTEGER)
   {
     const auto handle = field_function_param_.GetValue<size_t>();
-    ref_ff_ptr = Chi::GetStackItemPtrAsType<chi_physics::FieldFunction>(
-      Chi::field_function_stack, handle, __FUNCTION__);
+    ref_ff_ptr =
+      Chi::GetStackItemPtrAsType<FieldFunction>(Chi::field_function_stack, handle, __FUNCTION__);
   }
   else
     ChiInvalidArgument("Argument can only be STRING or INTEGER");
@@ -48,4 +48,4 @@ FieldFunctionInterface::GetFieldFunction() const
   return &(*ref_ff_ptr);
 }
 
-} // namespace chi_physics
+} // namespace opensn

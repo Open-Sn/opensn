@@ -3,16 +3,18 @@
 #include "framework/math/nonlinear_solver/nonlinear_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/nl_keigen_ags_context.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
-class NLKEigenvalueAGSSolver : public chi_math::NonLinearSolver
+class NLKEigenvalueAGSSolver : public NonLinearSolver
 {
 public:
   typedef std::shared_ptr<NLKEigenAGSContext> NLKAGSContextPtr;
 
   explicit NLKEigenvalueAGSSolver(NLKAGSContextPtr nlk_ags_context_ptr)
-    : chi_math::NonLinearSolver(nlk_ags_context_ptr)
+    : NonLinearSolver(nlk_ags_context_ptr)
   {
   }
 
@@ -33,3 +35,4 @@ protected:
 };
 
 } // namespace lbs
+} // namespace opensn

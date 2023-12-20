@@ -6,7 +6,9 @@
 
 #include "framework/runtime.h"
 
-namespace chi_mesh::lua_utils
+using namespace opensn;
+
+namespace opensnlua
 {
 
 int chiMeshGeneratorExecute(lua_State* L);
@@ -25,10 +27,11 @@ chiMeshGeneratorExecute(lua_State* L)
 
   const size_t handle = lua_tointeger(L, 1);
 
-  auto& generator = Chi::GetStackItem<MeshGenerator>(Chi::object_stack, handle, fname);
+  auto& generator =
+    opensn::Chi::GetStackItem<MeshGenerator>(opensn::Chi::object_stack, handle, fname);
   generator.Execute();
 
   return 0;
 }
 
-} // namespace chi_mesh::lua_utils
+} // namespace opensnlua

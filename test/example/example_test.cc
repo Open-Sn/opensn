@@ -3,19 +3,21 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_unit_tests
+using namespace opensn;
+
+namespace unit_tests
 {
 
-chi::ParameterBlock ExampleTest(const chi::InputParameters&);
+ParameterBlock ExampleTest(const InputParameters&);
 
 RegisterWrapperFunction(chi_unit_tests, ExampleTest, nullptr, ExampleTest);
 
-chi::ParameterBlock
-ExampleTest(const chi::InputParameters&)
+ParameterBlock
+ExampleTest(const InputParameters&)
 {
-  Chi::log.Log() << "This is an example test";
+  opensn::Chi::log.Log() << "This is an example test";
 
-  return chi::ParameterBlock();
+  return ParameterBlock();
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

@@ -17,15 +17,15 @@
 #include <vtkPointData.h>
 #include <vtkDoubleArray.h>
 
-namespace chi_physics
+namespace opensn
 {
 
 RegisterChiObject(chi_physics, FieldFunctionGridBased);
 
-chi::InputParameters
+InputParameters
 FieldFunctionGridBased::GetInputParameters()
 {
-  chi::InputParameters params = FieldFunction::GetInputParameters();
+  InputParameters params = FieldFunction::GetInputParameters();
 
   params.SetDocGroup("DocFieldFunction");
 
@@ -43,7 +43,6 @@ FieldFunctionGridBased::GetInputParameters()
   params.AddOptionalParameter(
     "coordinate_system", "cartesian", "Coordinate system to apply to element mappings");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange(
     "sdm_type", AllowableRangeList::New({"FV", "PWLC", "PWLD", "LagrangeC", "LagrangeD"}));
   params.ConstrainParameterRange(
@@ -52,18 +51,18 @@ FieldFunctionGridBased::GetInputParameters()
   return params;
 }
 
-FieldFunctionGridBased::FieldFunctionGridBased(const chi::InputParameters& params)
+FieldFunctionGridBased::FieldFunctionGridBased(const InputParameters& params)
   : FieldFunction(params),
     sdm_(MakeSpatialDiscretization(params)),
     ghosted_field_vector_(MakeFieldVector(*sdm_, GetUnknownManager())),
-    local_grid_bounding_box_(chi_mesh::GetCurrentHandler().GetGrid()->GetLocalBoundingBox())
+    local_grid_bounding_box_(GetCurrentHandler().GetGrid()->GetLocalBoundingBox())
 {
   ghosted_field_vector_->Set(params.GetParamValue<double>("initial_value"));
 }
 
 FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
-                                               chi_math::SDMPtr& discretization_ptr,
-                                               chi_math::Unknown unknown)
+                                               SDMPtr& discretization_ptr,
+                                               opensn::Unknown unknown)
   : FieldFunction(text_name, std::move(unknown)),
     sdm_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*sdm_, GetUnknownManager())),
@@ -72,8 +71,8 @@ FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
 }
 
 FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
-                                               chi_math::SDMPtr& sdm_ptr,
-                                               chi_math::Unknown unknown,
+                                               SDMPtr& sdm_ptr,
+                                               opensn::Unknown unknown,
                                                const std::vector<double>& field_vector)
   : FieldFunction(text_name, std::move(unknown)),
     sdm_(sdm_ptr),
@@ -87,8 +86,8 @@ FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
 }
 
 FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
-                                               chi_math::SDMPtr& sdm_ptr,
-                                               chi_math::Unknown unknown,
+                                               SDMPtr& sdm_ptr,
+                                               opensn::Unknown unknown,
                                                double field_value)
   : FieldFunction(text_name, std::move(unknown)),
     sdm_(sdm_ptr),
@@ -98,7 +97,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
   ghosted_field_vector_->Set(field_value);
 }
 
-const chi_math::SpatialDiscretization&
+const SpatialDiscretization&
 FieldFunctionGridBased::GetSpatialDiscretization() const
 {
   return *sdm_;
@@ -116,48 +115,47 @@ FieldFunctionGridBased::FieldVector()
   return ghosted_field_vector_->LocalSTLData();
 }
 
-chi_math::SDMPtr
-FieldFunctionGridBased::MakeSpatialDiscretization(const chi::InputParameters& params)
+SDMPtr
+FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
-  const auto& grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
+  const auto& grid_ptr = GetCurrentHandler().GetGrid();
   const auto sdm_type = params.GetParamValue<std::string>("sdm_type");
 
-  typedef chi_math::spatial_discretization::FiniteVolume FV;
-  typedef chi_math::spatial_discretization::PieceWiseLinearContinuous PWLC;
-  typedef chi_math::spatial_discretization::PieceWiseLinearDiscontinuous PWLD;
-  typedef chi_math::spatial_discretization::LagrangeContinuous LagC;
-  typedef chi_math::spatial_discretization::LagrangeDiscontinuous LagD;
+  typedef FiniteVolume FV;
+  typedef PieceWiseLinearContinuous PWLC;
+  typedef PieceWiseLinearDiscontinuous PWLD;
+  typedef LagrangeContinuous LagC;
+  typedef LagrangeDiscontinuous LagD;
 
   if (sdm_type == "FV") return FV::New(*grid_ptr);
 
-  chi_math::CoordinateSystemType cs_type = chi_math::CoordinateSystemType::CARTESIAN;
+  CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN;
   std::string cs = "cartesian";
   if (user_params.Has("coordinate_system"))
   {
     cs = params.GetParamValue<std::string>("coordinate_system");
 
-    using namespace chi_math;
     if (cs == "cartesian") cs_type = CoordinateSystemType::CARTESIAN;
     if (cs == "cylindrical") cs_type = CoordinateSystemType::CYLINDRICAL;
     if (cs == "spherical") cs_type = CoordinateSystemType::SPHERICAL;
   }
 
-  chi_math::QuadratureOrder q_order = chi_math::QuadratureOrder::SECOND;
+  QuadratureOrder q_order = QuadratureOrder::SECOND;
 
   if (user_params.Has("quadrature_order"))
   {
-    const uint32_t max_order = static_cast<uint32_t>(chi_math::QuadratureOrder::FORTYTHIRD);
+    const uint32_t max_order = static_cast<uint32_t>(QuadratureOrder::FORTYTHIRD);
     const uint32_t q_order_int = params.GetParamValue<uint32_t>("quadrature_order");
     ChiInvalidArgumentIf(q_order_int > max_order,
                          "Invalid quadrature point order " + std::to_string(q_order_int));
-    q_order = static_cast<chi_math::QuadratureOrder>(q_order_int);
+    q_order = static_cast<QuadratureOrder>(q_order_int);
   }
   else // Defaulted
   {
-    if (cs == "cartesian") q_order = chi_math::QuadratureOrder::SECOND;
-    if (cs == "cylindrical") q_order = chi_math::QuadratureOrder::THIRD;
-    if (cs == "spherical") q_order = chi_math::QuadratureOrder::FOURTH;
+    if (cs == "cartesian") q_order = QuadratureOrder::SECOND;
+    if (cs == "cylindrical") q_order = QuadratureOrder::THIRD;
+    if (cs == "spherical") q_order = QuadratureOrder::FOURTH;
   }
 
   if (sdm_type == "PWLC") return PWLC::New(*grid_ptr, q_order, cs_type);
@@ -172,15 +170,14 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const chi::InputParameters& pa
   ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
 }
 
-std::unique_ptr<chi_math::GhostedParallelSTLVector>
-FieldFunctionGridBased::MakeFieldVector(const chi_math::SpatialDiscretization& discretization,
-                                        const chi_math::UnknownManager& uk_man)
+std::unique_ptr<GhostedParallelSTLVector>
+FieldFunctionGridBased::MakeFieldVector(const SpatialDiscretization& discretization,
+                                        const UnknownManager& uk_man)
 {
-  auto field =
-    std::make_unique<chi_math::GhostedParallelSTLVector>(discretization.GetNumLocalDOFs(uk_man),
-                                                         discretization.GetNumGlobalDOFs(uk_man),
-                                                         discretization.GetGhostDOFIndices(uk_man),
-                                                         Chi::mpi.comm);
+  auto field = std::make_unique<GhostedParallelSTLVector>(discretization.GetNumLocalDOFs(uk_man),
+                                                          discretization.GetNumGlobalDOFs(uk_man),
+                                                          discretization.GetGhostDOFIndices(uk_man),
+                                                          Chi::mpi.comm);
 
   return field;
 }
@@ -229,7 +226,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
   // Get grid
   const auto& grid = master_ff.sdm_->Grid();
 
-  auto ugrid = chi_mesh::PrepareVtkUnstructuredGrid(grid);
+  auto ugrid = PrepareVtkUnstructuredGrid(grid);
 
   // Upload cell/point data
   auto cell_data = ugrid->GetCellData();
@@ -299,7 +296,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
     } // for component
   }   // for ff_ptr
 
-  chi_mesh::WritePVTUFiles(ugrid, file_base_name);
+  WritePVTUFiles(ugrid, file_base_name);
 
   Chi::log.Log() << "Done exporting field functions to VTK.";
 }
@@ -311,7 +308,7 @@ FieldFunctionGridBased::GetGhostedFieldVector() const
 }
 
 std::vector<double>
-FieldFunctionGridBased::GetPointValue(const chi_mesh::Vector3& point) const
+FieldFunctionGridBased::GetPointValue(const Vector3& point) const
 {
   typedef const int64_t cint64_t;
   const auto& uk_man = GetUnknownManager();
@@ -371,14 +368,14 @@ FieldFunctionGridBased::GetPointValue(const chi_mesh::Vector3& point) const
   MPI_Allreduce(
     local_point_value.data(), globl_point_value.data(), 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
 
-  chi_math::Scale(globl_point_value, 1.0 / static_cast<double>(globl_num_point_hits));
+  Scale(globl_point_value, 1.0 / static_cast<double>(globl_num_point_hits));
 
   return globl_point_value;
 }
 
 double
-FieldFunctionGridBased::Evaluate(const chi_mesh::Cell& cell,
-                                 const chi_mesh::Vector3& position,
+FieldFunctionGridBased::Evaluate(const Cell& cell,
+                                 const Vector3& position,
                                  unsigned int component) const
 {
   const auto& field_vector = *ghosted_field_vector_;
@@ -401,4 +398,4 @@ FieldFunctionGridBased::Evaluate(const chi_mesh::Cell& cell,
   return value;
 }
 
-} // namespace chi_physics
+} // namespace opensn

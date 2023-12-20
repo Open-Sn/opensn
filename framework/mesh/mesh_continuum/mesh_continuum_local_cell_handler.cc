@@ -1,7 +1,10 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
-chi_mesh::Cell&
-chi_mesh::LocalCellHandler::operator[](uint64_t cell_local_index)
+namespace opensn
+{
+
+Cell&
+LocalCellHandler::operator[](uint64_t cell_local_index)
 {
   if (native_cells.empty())
   {
@@ -23,8 +26,8 @@ chi_mesh::LocalCellHandler::operator[](uint64_t cell_local_index)
   return *native_cells[cell_local_index];
 }
 
-const chi_mesh::Cell&
-chi_mesh::LocalCellHandler::operator[](uint64_t cell_local_index) const
+const Cell&
+LocalCellHandler::operator[](uint64_t cell_local_index) const
 {
   if (native_cells.empty())
   {
@@ -45,3 +48,5 @@ chi_mesh::LocalCellHandler::operator[](uint64_t cell_local_index) const
 
   return *native_cells[cell_local_index];
 }
+
+} // namespace opensn

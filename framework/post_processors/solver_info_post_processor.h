@@ -2,13 +2,9 @@
 
 #include "framework/post_processors/post_processor.h"
 
-namespace chi_physics
+namespace opensn
 {
 class Solver;
-}
-
-namespace chi
-{
 
 class SolverInfoPostProcessor : public PostProcessor
 {
@@ -19,8 +15,8 @@ public:
   void Execute(const Event& event_context) override;
 
 private:
-  const chi_physics::Solver& solver_;
+  const Solver& solver_;
   const ParameterBlock info_;
 };
 
-} // namespace chi
+} // namespace opensn

@@ -2,7 +2,7 @@
 
 #include "framework/physics/field_function/field_function_interface.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 class FieldFunctionGridBased;
@@ -14,11 +14,11 @@ class FieldFunctionGridBased;
 class GridBasedFieldFunctionInterface : public FieldFunctionInterface
 {
 public:
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
-  explicit GridBasedFieldFunctionInterface(const chi::InputParameters& params);
+  explicit GridBasedFieldFunctionInterface(const InputParameters& params);
 
   FieldFunctionGridBased* GetGridBasedFieldFunction() const;
 };
 
-} // namespace chi_physics
+} // namespace opensn

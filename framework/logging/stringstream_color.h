@@ -2,8 +2,9 @@
 
 #include <string>
 
-namespace chi
+namespace opensn
 {
+
 enum StringSteamColorCode
 {
   RESET = 0,
@@ -23,4 +24,4 @@ enum StringSteamColorCode
 
 std::string StringStreamColor(StringSteamColorCode code);
 
-} // namespace chi
+} // namespace opensn

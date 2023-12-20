@@ -7,6 +7,8 @@
 #include "field_functions_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiExportFieldFunctionToVTK);
 RegisterLuaFunctionAsIs(chiExportMultiFieldFunctionToVTK);
 
@@ -20,15 +22,13 @@ chiExportFieldFunctionToVTK(lua_State* L)
   int ff_handle = lua_tonumber(L, 1);
   const char* base_name = lua_tostring(L, 2);
 
-  typedef chi_physics::FieldFunctionGridBased FFGridBased;
-
-  auto ff_base = Chi::GetStackItemPtr(Chi::field_function_stack, ff_handle, fname);
-  auto ff = std::dynamic_pointer_cast<FFGridBased>(ff_base);
+  auto ff_base = opensn::Chi::GetStackItemPtr(opensn::Chi::field_function_stack, ff_handle, fname);
+  auto ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base);
 
   ChiLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
 
   //  ff->ExportToVTK(base_name);
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK(base_name, {ff});
+  FieldFunctionGridBased::ExportMultipleToVTK(base_name, {ff});
 
   return 0;
 }
@@ -44,23 +44,23 @@ chiExportMultiFieldFunctionToVTK(lua_State* L)
 
   LuaCheckTableValue(fname, L, 1);
 
-  auto& ff_stack = Chi::field_function_stack;
+  auto& ff_stack = opensn::Chi::field_function_stack;
 
   const size_t table_size = lua_rawlen(L, 1);
-  std::vector<std::shared_ptr<const chi_physics::FieldFunctionGridBased>> ffs;
+  std::vector<std::shared_ptr<const FieldFunctionGridBased>> ffs;
   ffs.reserve(table_size);
   for (int i = 0; i < table_size; ++i)
   {
     lua_pushnumber(L, i + 1);
     lua_gettable(L, 1);
 
-    std::shared_ptr<chi_physics::FieldFunction> ff_base = nullptr;
+    std::shared_ptr<FieldFunction> ff_base = nullptr;
     if (lua_isinteger(L, -1))
     {
       int ff_handle = lua_tonumber(L, -1);
       lua_pop(L, 1);
 
-      ff_base = Chi::GetStackItemPtr(ff_stack, ff_handle, fname);
+      ff_base = opensn::Chi::GetStackItemPtr(ff_stack, ff_handle, fname);
     }
     else if (lua_isstring(L, -1))
     {
@@ -81,15 +81,14 @@ chiExportMultiFieldFunctionToVTK(lua_State* L)
       ChiInvalidArgument("The field function specification can only be "
                          "string names or integer handles.");
 
-    typedef chi_physics::FieldFunctionGridBased FFGridBased;
-    auto ff = std::dynamic_pointer_cast<FFGridBased>(ff_base);
+    auto ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base);
 
     ChiLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
 
     ffs.push_back(ff);
   } // for i
 
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK(base_name, ffs);
+  FieldFunctionGridBased::ExportMultipleToVTK(base_name, ffs);
 
   return 0;
 }

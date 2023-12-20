@@ -17,7 +17,9 @@
   lua_settable(L, -3);                                                                             \
   lua_pop(L, 1)
 
-namespace lbs::common_lua_utils
+using namespace opensn;
+
+namespace opensnlua::lbs
 {
 void
 RegisterLuaEntities(lua_State* L)
@@ -97,4 +99,4 @@ RegisterLuaEntities(lua_State* L)
   RegisterFunction(chiLBSClearPointSources);
   RegisterFunction(chiLBSInitializePointSources);
 }
-} // namespace lbs::common_lua_utils
+} // namespace opensnlua::lbs

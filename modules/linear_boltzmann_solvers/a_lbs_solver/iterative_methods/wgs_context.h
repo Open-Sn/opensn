@@ -7,12 +7,14 @@
 #include <memory>
 #include <petscksp.h>
 
+namespace opensn
+{
 namespace lbs
 {
 class LBSGroupset;
 class LBSSolver;
 
-struct WGSContext : public chi_math::LinearSolverContext
+struct WGSContext : public LinearSolverContext
 {
   LBSSolver& lbs_solver_;
   LBSGroupset& groupset_;
@@ -48,3 +50,4 @@ struct WGSContext : public chi_math::LinearSolverContext
 };
 
 } // namespace lbs
+} // namespace opensn

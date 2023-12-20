@@ -62,10 +62,9 @@ int chiDFEMDiffusionSolverCreate(lua_State* L);
  */
 int chiDFEMDiffusionSetBCProperty(lua_State* L);
 
-namespace dfem_diffusion
+namespace opensnlua::dfem_diffusion
 {
-namespace dfem_diffusion_lua_utils
-{
+
 void RegisterLuaEntities(lua_State* L);
-} // namespace dfem_diffusion_lua_utils
-} // namespace dfem_diffusion
+
+} // namespace opensnlua::dfem_diffusion

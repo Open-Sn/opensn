@@ -5,7 +5,7 @@
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
 
-namespace chi_mesh::unpartition_mesh_lua_utils
+namespace opensnlua
 {
 
 RegisterLuaFunctionAsIs(chiUnpartitionedMeshUploadVertex);
@@ -29,8 +29,8 @@ chiUnpartitionedMeshUploadVertex(lua_State* L)
   const double y = lua_tonumber(L, 3);
   const double z = lua_tonumber(L, 4);
 
-  auto& mesh =
-    Chi::GetStackItem<chi_mesh::UnpartitionedMesh>(Chi::unpartitionedmesh_stack, handle, fname);
+  auto& mesh = opensn::Chi::GetStackItem<opensn::UnpartitionedMesh>(
+    opensn::Chi::unpartitionedmesh_stack, handle, fname);
 
   mesh.GetVertices().emplace_back(x, y, z);
 
@@ -55,8 +55,8 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
   bool verbose = false;
   if (num_args == 3) verbose = lua_toboolean(L, 3);
 
-  auto& mesh =
-    Chi::GetStackItem<chi_mesh::UnpartitionedMesh>(Chi::unpartitionedmesh_stack, handle, fname);
+  auto& mesh = opensn::Chi::GetStackItem<opensn::UnpartitionedMesh>(
+    opensn::Chi::unpartitionedmesh_stack, handle, fname);
 
   LuaCheckTableValue(fname, L, 2);
 
@@ -94,10 +94,10 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
 
   if (verbose)
   {
-    Chi::log.Log() << "Cell type       : " << cell_type_str;
-    Chi::log.Log() << "Cell sub-type   : " << cell_sub_type_str;
-    Chi::log.Log() << "Cell num_faces  : " << cell_num_faces;
-    Chi::log.Log() << "Cell material_id: " << cell_material_id;
+    opensn::Chi::log.Log() << "Cell type       : " << cell_type_str;
+    opensn::Chi::log.Log() << "Cell sub-type   : " << cell_sub_type_str;
+    opensn::Chi::log.Log() << "Cell num_faces  : " << cell_num_faces;
+    opensn::Chi::log.Log() << "Cell material_id: " << cell_material_id;
   }
 
   std::vector<std::vector<uint64_t>> proxy_faces(cell_num_faces);
@@ -118,7 +118,7 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
       outstr << "face" << f << " ";
       for (auto val : vals)
         outstr << val << " ";
-      Chi::log.Log() << outstr.str();
+      opensn::Chi::log.Log() << outstr.str();
     }
 
     std::vector<uint64_t> proxy_face;
@@ -151,8 +151,8 @@ chiUnpartitionedMeshFinalizeEmpty(lua_State* L)
 
   const int handle = lua_tointeger(L, 1);
 
-  auto& mesh =
-    Chi::GetStackItem<chi_mesh::UnpartitionedMesh>(Chi::unpartitionedmesh_stack, handle, fname);
+  auto& mesh = opensn::Chi::GetStackItem<opensn::UnpartitionedMesh>(
+    opensn::Chi::unpartitionedmesh_stack, handle, fname);
 
   mesh.ComputeCentroidsAndCheckQuality();
   mesh.BuildMeshConnectivity();
@@ -160,4 +160,4 @@ chiUnpartitionedMeshFinalizeEmpty(lua_State* L)
   return 0;
 }
 
-} // namespace chi_mesh::unpartition_mesh_lua_utils
+} // namespace opensnlua

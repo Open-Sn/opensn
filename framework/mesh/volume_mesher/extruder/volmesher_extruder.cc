@@ -10,7 +10,7 @@
 #include "framework/mpi/mpi.h"
 #include <iostream>
 
-namespace chi_mesh
+namespace opensn
 {
 
 void
@@ -493,4 +493,4 @@ VolumeMesherExtruder::MakeExtrudedCell(const Cell& template_cell,
   return cell;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

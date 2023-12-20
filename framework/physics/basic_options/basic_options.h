@@ -2,7 +2,7 @@
 
 #include "framework/data_types/varying.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 /**Class for option.*/
@@ -10,7 +10,7 @@ class BasicOption
 {
 private:
   std::string name_;
-  chi_data_types::Varying value_;
+  Varying value_;
 
 public:
   BasicOption(const std::string& name, const std::string& string_value)
@@ -29,7 +29,7 @@ public:
   {
   }
 
-  chi_data_types::VaryingDataType Type() const { return value_.Type(); }
+  VaryingDataType Type() const { return value_.Type(); }
 
   std::string Name() const { return name_; }
   std::string StringValue() const { return value_.StringValue(); }
@@ -90,4 +90,4 @@ public:
   size_t GetOptionIndexFromName(const std::string& option_name) const;
 };
 
-} // namespace chi_physics
+} // namespace opensn

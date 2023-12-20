@@ -3,9 +3,10 @@
 #include <vector>
 #include <cstdint>
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 class SPDS;
+
 struct FaceNodalMapping
 {
   /**Face index on the neighbor cell.*/
@@ -42,4 +43,4 @@ protected:
   const std::vector<CellFaceNodalMapping>& grid_nodal_mappings_;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

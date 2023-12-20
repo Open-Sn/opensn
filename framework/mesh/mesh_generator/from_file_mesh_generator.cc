@@ -9,15 +9,15 @@
 
 #include <filesystem>
 
-namespace chi_mesh
+namespace opensn
 {
 
 RegisterChiObject(chi_mesh, FromFileMeshGenerator);
 
-chi::InputParameters
+InputParameters
 FromFileMeshGenerator::GetInputParameters()
 {
-  chi::InputParameters params = MeshGenerator::GetInputParameters();
+  InputParameters params = MeshGenerator::GetInputParameters();
 
   params.SetGeneralDescription("Generator for loading an unpartitioned mesh"
                                " from a file.");
@@ -35,7 +35,7 @@ FromFileMeshGenerator::GetInputParameters()
   return params;
 }
 
-FromFileMeshGenerator::FromFileMeshGenerator(const chi::InputParameters& params)
+FromFileMeshGenerator::FromFileMeshGenerator(const InputParameters& params)
   : MeshGenerator(params),
     filename_(params.GetParamValue<std::string>("filename")),
     material_id_fieldname_(params.GetParamValue<std::string>("material_id_fieldname")),
@@ -85,4 +85,4 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   return umesh;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

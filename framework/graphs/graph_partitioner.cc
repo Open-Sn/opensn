@@ -1,6 +1,6 @@
 #include "framework/graphs/graph_partitioner.h"
 
-namespace chi
+namespace opensn
 {
 
 InputParameters
@@ -15,4 +15,4 @@ GraphPartitioner::GraphPartitioner(const InputParameters& params) : ChiObject(pa
 {
 }
 
-} // namespace chi
+} // namespace opensn

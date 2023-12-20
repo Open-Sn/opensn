@@ -3,7 +3,7 @@
 #include "framework/physics/field_operations/field_operation.h"
 #include "framework/physics/field_function/field_function_grid_based.h"
 
-namespace chi_physics::field_operations
+namespace opensn
 {
 
 /**Field operaiton that copies components of one field to the
@@ -22,12 +22,12 @@ private:
 
 public:
   /**Returns the input parameters.*/
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
   /**Constructor.*/
-  explicit FieldCopyOperation(const chi::InputParameters& params);
+  explicit FieldCopyOperation(const InputParameters& params);
 
   void Execute() override;
 };
 
-} // namespace chi_physics::field_operations
+} // namespace opensn

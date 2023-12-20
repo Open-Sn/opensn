@@ -1,6 +1,8 @@
 #pragma once
 
-// ###################################################################
+namespace opensn
+{
+
 /**Object for implementing an efficient cdf sampler.
  *
  * Normal linear sampling of bins of a Cumulative Distribution Function
@@ -16,11 +18,11 @@
  * it because it has some over-head to it that gets executed in the constructor.
  *
  \code
- chi_math::CDFSampler sampler(in_cdf);
+ CDFSampler sampler(in_cdf);
  \endcode
  *
  * */
-class chi_math::CDFSampler
+class CDFSampler
 {
 public:
   struct SubIntvl;
@@ -45,7 +47,7 @@ public:
 
 // ###################################################################
 /**Sub-structure for sub-intervals*/
-struct chi_math::CDFSampler::SubIntvl
+struct CDFSampler::SubIntvl
 {
   int cbin_i;
   int cbin_f;
@@ -68,3 +70,5 @@ struct chi_math::CDFSampler::SubIntvl
   /**Sampling a sub-interval.*/
   bool Sample(double x, std::pair<int, int>& range);
 };
+
+} // namespace opensn

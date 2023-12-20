@@ -6,15 +6,15 @@
 #include "framework/logging/log.h"
 #include <algorithm>
 
-typedef std::vector<std::pair<int, short>> LockBox;
-
-namespace chi_mesh::sweep_management
+namespace opensn
 {
+
+typedef std::vector<std::pair<int, short>> LockBox;
 
 AAH_FLUDSCommonData::AAH_FLUDSCommonData(
   const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
   const SPDS& spds,
-  const chi_mesh::GridFaceHistogram& grid_face_histogram)
+  const GridFaceHistogram& grid_face_histogram)
   : FLUDSCommonData(spds, grid_nodal_mappings)
 {
   this->InitializeAlphaElements(spds, grid_face_histogram);
@@ -25,8 +25,8 @@ void
 AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
                                              const GridFaceHistogram& grid_face_histogram)
 {
-  const chi_mesh::MeshContinuum& grid = spds.Grid();
-  const chi_mesh::sweep_management::SPLS& spls = spds.GetSPLS();
+  const MeshContinuum& grid = spds.Grid();
+  const SPLS& spls = spds.GetSPLS();
 
   // Initialize face categorization
   num_face_categories = grid_face_histogram.NumberOfFaceHistogramBins();
@@ -73,7 +73,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
   } // for csoi
 
-  Chi::log.Log(chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
+  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
   Chi::mpi.Barrier();
 
   // Populate boundary dependencies
@@ -104,7 +104,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   delayed_local_psi_Gn_block_stride = largest_face * delayed_lock_box.size();
   delayed_local_psi_Gn_block_strideG = delayed_local_psi_Gn_block_stride * /*G=*/1;
 
-  Chi::log.Log(chi::ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
+  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
   Chi::mpi.Barrier();
 
   // Clean up
@@ -119,18 +119,18 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 }
 
 void
-AAH_FLUDSCommonData::SlotDynamics(const chi_mesh::Cell& cell,
+AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
                                   const SPDS& spds,
                                   const GridFaceHistogram& grid_face_histogram,
                                   std::vector<std::vector<std::pair<int, short>>>& lock_boxes,
                                   std::vector<std::pair<int, short>>& delayed_lock_box,
                                   std::set<int>& location_boundary_dependency_set)
 {
-  const chi_mesh::MeshContinuum& grid = spds.Grid();
+  const MeshContinuum& grid = spds.Grid();
 
-  chi_mesh::Vector3 ihat(1.0, 0.0, 0.0);
-  chi_mesh::Vector3 jhat(0.0, 1.0, 0.0);
-  chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
+  Vector3 ihat(1.0, 0.0, 0.0);
+  Vector3 jhat(0.0, 1.0, 0.0);
+  Vector3 khat(0.0, 0.0, 1.0);
 
   // Loop over faces but process only incident faces
   std::vector<short> inco_face_face_category;
@@ -209,7 +209,7 @@ AAH_FLUDSCommonData::SlotDynamics(const chi_mesh::Cell& cell,
       //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ BOUNDARY DEPENDENCE
       else if (not face.has_neighbor_)
       {
-        const chi_mesh::Vector3& face_norm = face.normal_;
+        const Vector3& face_norm = face.normal_;
 
         if (face_norm.Dot(ihat) > 0.999) location_boundary_dependency_set.insert(0);
         else if (face_norm.Dot(ihat) < -0.999)
@@ -342,7 +342,7 @@ void
 AAH_FLUDSCommonData::AddFaceViewToDepLocI(int deplocI,
                                           int cell_g_index,
                                           int face_slot,
-                                          const chi_mesh::CellFace& face)
+                                          const CellFace& face)
 {
   // Check if cell is already there
   bool cell_already_there = false;
@@ -368,11 +368,11 @@ AAH_FLUDSCommonData::AddFaceViewToDepLocI(int deplocI,
 }
 
 void
-AAH_FLUDSCommonData::LocalIncidentMapping(const chi_mesh::Cell& cell,
+AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
                                           const SPDS& spds,
                                           std::vector<int>& local_so_cell_mapping)
 {
-  const chi_mesh::MeshContinuum& grid = spds.Grid();
+  const MeshContinuum& grid = spds.Grid();
   auto& cell_nodal_mapping = grid_nodal_mappings_[cell.local_id_];
   std::vector<std::pair<int, std::vector<short>>> inco_face_dof_mapping;
 
@@ -433,8 +433,8 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const chi_mesh::Cell& cell,
 void
 AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0*/)
 {
-  const chi_mesh::MeshContinuum& grid = spds.Grid();
-  const chi_mesh::sweep_management::SPLS& spls = spds.GetSPLS();
+  const MeshContinuum& grid = spds.Grid();
+  const SPLS& spls = spds.GetSPLS();
 
   //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   // The first two major steps here are: Send delayed successor information
@@ -706,9 +706,9 @@ AAH_FLUDSCommonData::DeSerializeCellInfo(std::vector<CompactCellView>& cell_view
 }
 
 void
-AAH_FLUDSCommonData::NonLocalIncidentMapping(const chi_mesh::Cell& cell, const SPDS& spds)
+AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 {
-  const chi_mesh::MeshContinuum& grid = spds.Grid();
+  const MeshContinuum& grid = spds.Grid();
 
   // Loop over faces but process only incident faces
   for (short f = 0; f < cell.faces_.size(); f++)
@@ -908,4 +908,4 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const chi_mesh::Cell& cell, const S
   }     // for incindent f
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

@@ -5,7 +5,9 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace lbs::common_lua_utils
+using namespace opensn;
+
+namespace opensnlua::lbs
 {
 
 int
@@ -20,15 +22,15 @@ chiLBSGetScalarFieldFunctionList(lua_State* L)
 
   // Get pointer to solver
   const int solver_handle = lua_tonumber(L, 1);
-  const auto& lbs_solver =
-    Chi::GetStackItem<lbs::LBSSolver>(Chi::object_stack, solver_handle, fname);
+  const auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
+    opensn::Chi::object_stack, solver_handle, fname);
 
   /**Lambda for matching a field function smart pointer to one on
    * the runtime stack.*/
-  auto GetStackFFHandle = [](std::shared_ptr<chi_physics::FieldFunctionGridBased>& local_ff)
+  auto GetStackFFHandle = [](std::shared_ptr<FieldFunctionGridBased>& local_ff)
   {
     size_t stack_ff_counter = 0;
-    for (auto& stack_ff : Chi::field_function_stack)
+    for (auto& stack_ff : opensn::Chi::field_function_stack)
     {
       if (stack_ff == local_ff) return stack_ff_counter;
 
@@ -75,4 +77,4 @@ chiLBSGetScalarFieldFunctionList(lua_State* L)
   return 2;
 }
 
-} // namespace lbs::common_lua_utils
+} // namespace opensnlua::lbs

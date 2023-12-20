@@ -4,6 +4,8 @@
 
 #include <petscsnes.h>
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -31,7 +33,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     groupset_ids, phi, lbs::PhiSTLOption::PHI_OLD);
 
   // Compute 1/k F phi
-  chi_math::Set(q_moments_local, 0.0);
+  Set(q_moments_local, 0.0);
   for (auto& groupset : lbs_solver.Groupsets())
     active_set_source_function(groupset,
                                q_moments_local,
@@ -39,7 +41,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
                                lbs::APPLY_AGS_FISSION_SOURCES | lbs::APPLY_WGS_FISSION_SOURCES);
 
   const double k_eff = lbs_solver.ComputeFissionProduction(phi_old_local);
-  chi_math::Scale(q_moments_local, 1.0 / k_eff);
+  Scale(q_moments_local, 1.0 / k_eff);
 
   // Now add MS phi
   for (auto& groupset : lbs_solver.Groupsets())
@@ -83,3 +85,4 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 }
 
 } // namespace lbs
+} // namespace opensn

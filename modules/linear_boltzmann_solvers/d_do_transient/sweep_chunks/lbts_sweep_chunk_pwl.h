@@ -17,7 +17,7 @@ namespace lbs
 class SweepChunkPWLTransientTheta : public chi_mesh::sweep_management::SweepChunk
 {
 protected:
-  const std::shared_ptr<chi_mesh::MeshContinuum> grid_view_;
+  const std::shared_ptr<MeshContinuum> grid_view_;
   chi_math::SpatialDiscretization& grid_fe_view_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
   std::vector<lbs::CellLBSView>& grid_transport_view_;
@@ -42,7 +42,7 @@ protected:
 public:
   std::vector<std::vector<double>> b_;
 
-  SweepChunkPWLTransientTheta(std::shared_ptr<chi_mesh::MeshContinuum> grid_ptr,
+  SweepChunkPWLTransientTheta(std::shared_ptr<MeshContinuum> grid_ptr,
                               chi_math::SpatialDiscretization& discretization,
                               const std::vector<UnitCellMatrices>& unit_cell_matrices,
                               std::vector<lbs::CellLBSView>& cell_transport_views,

@@ -4,20 +4,18 @@
 
 #include "framework/math/quadratures/quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
-class SphericalAngularQuadrature;
-}
 
 /** Spherical product angular quadrature. */
-class chi_math::SphericalAngularQuadrature : public chi_math::CurvilinearAngularQuadrature
+class SphericalAngularQuadrature : public CurvilinearAngularQuadrature
 {
   //  Methods
 public:
   /** Effective constructor. Initialize with one-dimensional quadrature.
    *  If not already present in the quadrature, the method inserts
    *  the starting directions. */
-  SphericalAngularQuadrature(const chi_math::Quadrature& quad_polar, const bool verbose = false);
+  SphericalAngularQuadrature(const Quadrature& quad_polar, const bool verbose = false);
   /** Default destructor. */
   virtual ~SphericalAngularQuadrature() = default;
 
@@ -25,8 +23,10 @@ public:
 
 private:
   /** Initialize with one-dimensional quadrature. */
-  void Initialize(const chi_math::Quadrature& quad_polar, const bool verbose = false);
+  void Initialize(const Quadrature& quad_polar, const bool verbose = false);
   /** Initialize parametrizing factors of the spherical angular quadrature,
    *  starting from a fully initialized underlying product quadrature. */
   void InitializeParameters();
 };
+
+} // namespace opensn

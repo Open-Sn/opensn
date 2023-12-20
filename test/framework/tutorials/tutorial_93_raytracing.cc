@@ -13,29 +13,31 @@
 
 #include "framework/console/console.h"
 
-namespace chi_unit_sim_tests
+using namespace opensn;
+
+namespace unit_sim_tests
 {
 
-chi::ParameterBlock chiSimTest93_RayTracing(const chi::InputParameters& params);
+ParameterBlock chiSimTest93_RayTracing(const InputParameters& params);
 
 RegisterWrapperFunction(chi_unit_tests, chiSimTest93_RayTracing, nullptr, chiSimTest93_RayTracing);
 
-chi::ParameterBlock
-chiSimTest93_RayTracing(const chi::InputParameters&)
+ParameterBlock
+chiSimTest93_RayTracing(const InputParameters&)
 {
   const std::string fname = "chiSimTest93_RayTracing";
-  Chi::log.Log() << "chiSimTest93_RayTracing";
+  opensn::Chi::log.Log() << "chiSimTest93_RayTracing";
 
   // Get grid
-  auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
+  auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  const int dimension = (grid.Attributes() & chi_mesh::DIMENSION_1)   ? 1
-                        : (grid.Attributes() & chi_mesh::DIMENSION_2) ? 2
-                        : (grid.Attributes() & chi_mesh::DIMENSION_3) ? 3
-                                                                      : 0;
+  const int dimension = (grid.Attributes() & DIMENSION_1)   ? 1
+                        : (grid.Attributes() & DIMENSION_2) ? 2
+                        : (grid.Attributes() & DIMENSION_3) ? 3
+                                                            : 0;
 
   // Set parameters
   const size_t num_groups = 1;
@@ -62,25 +64,25 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
         m_to_ell_em_map.emplace_back(ell, m);
 
   // Make SDM
-  typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
-  SDMPtr sdm_ptr = chi_math::spatial_discretization::PieceWiseLinearDiscontinuous::New(grid);
+  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
+  SDMPtr sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
   const auto& sdm = *sdm_ptr;
 
-  chi_math::UnknownManager phi_uk_man;
+  UnknownManager phi_uk_man;
   for (size_t m = 0; m < num_moments; ++m)
-    phi_uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_groups);
+    phi_uk_man.AddUnknown(UnknownType::VECTOR_N, num_groups);
 
   const size_t num_fem_local_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   const size_t num_fem_globl_dofs = sdm.GetNumGlobalDOFs(phi_uk_man);
 
-  Chi::log.Log() << "Num local FEM DOFs: " << num_fem_local_dofs;
-  Chi::log.Log() << "Num globl FEM DOFs: " << num_fem_globl_dofs;
+  opensn::Chi::log.Log() << "Num local FEM DOFs: " << num_fem_local_dofs;
+  opensn::Chi::log.Log() << "Num globl FEM DOFs: " << num_fem_globl_dofs;
 
   // Define tallies
   std::vector<double> phi_tally(num_fem_local_dofs, 0.0);
 
   // Define particle data structure
-  typedef chi_mesh::Vector3 Vec3;
+  typedef Vector3 Vec3;
   struct Particle
   {
     Vec3 position = {0.0, 0.0, 0.0};
@@ -97,7 +99,7 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
   //                                              and find cell containing it
   const Vec3 source_pos = {0.0, 0.0, 0.0};
 
-  chi_mesh::Cell const* source_cell_ptr = nullptr;
+  Cell const* source_cell_ptr = nullptr;
 
   for (auto& cell : grid.local_cells)
     if (grid.CheckPointInsideCell(cell, source_pos))
@@ -110,19 +112,19 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
   const uint64_t source_cell_id = source_cell_ptr->global_id_;
 
   // Define lambdas
-  chi_math::RandomNumberGenerator rng;
+  RandomNumberGenerator rng;
   auto SampleRandomDirection = [&rng]()
   {
     double costheta = 2.0 * rng.Rand() - 1.0;
     double theta = acos(costheta);
     double varphi = rng.Rand() * 2.0 * M_PI;
 
-    return chi_mesh::Vector3{sin(theta) * cos(varphi), sin(theta) * sin(varphi), cos(theta)};
+    return Vector3{sin(theta) * cos(varphi), sin(theta) * sin(varphi), cos(theta)};
   };
 
   auto ContributePWLDTally =
     [&sdm, &grid, &phi_tally, &phi_uk_man, &sigma_t, &num_moments, &m_to_ell_em_map](
-      const chi_mesh::Cell& cell,
+      const Cell& cell,
       const Vec3& positionA,
       const Vec3& positionB,
       const Vec3& omega,
@@ -132,12 +134,12 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    const auto phi_theta = chi_math::OmegaToPhiThetaSafe(omega);
+    const auto phi_theta = OmegaToPhiThetaSafe(omega);
     const double phi = phi_theta.first;
     const double theta = phi_theta.second;
 
     std::vector<double> segment_lengths;
-    chi_mesh::PopulateRaySegmentLengths(grid, cell, positionA, positionB, omega, segment_lengths);
+    PopulateRaySegmentLengths(grid, cell, positionA, positionB, omega, segment_lengths);
 
     std::vector<double> shape_values_k;   // At s_k
     std::vector<double> shape_values_kp1; // At s_{k+1}
@@ -170,7 +172,7 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
           const int ell = ell_em.first;
           const int em = ell_em.second;
 
-          double w_harmonic = chi_math::Ylm(ell, em, phi, theta);
+          double w_harmonic = Ylm(ell, em, phi, theta);
 
           // Apply exponential attenuation weight
           double w_exp =
@@ -190,7 +192,7 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
     } // for d
   };
 
-  auto GetCellApproximateSize = [&grid](const chi_mesh::Cell& cell)
+  auto GetCellApproximateSize = [&grid](const Cell& cell)
   {
     const auto& v0 = grid.vertices[cell.vertex_ids_[0]];
     double xmin = v0.x, xmax = v0.x;
@@ -209,7 +211,7 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
       zmax = std::max(zmax, v.z);
     }
 
-    return (chi_mesh::Vector3(xmin, ymin, zmin) - chi_mesh::Vector3(xmax, ymax, zmax)).Norm();
+    return (Vector3(xmin, ymin, zmin) - Vector3(xmax, ymax, zmax)).Norm();
   };
 
   // Create raytracer
@@ -217,10 +219,10 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
   for (const auto& cell : grid.local_cells)
     cell_sizes[cell.local_id_] = GetCellApproximateSize(cell);
 
-  chi_mesh::RayTracer ray_tracer(grid, cell_sizes);
+  RayTracer ray_tracer(grid, cell_sizes);
 
   // Run rays
-  const auto PWLD = chi_math::SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
+  const auto PWLD = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
 
   const size_t num_particles = 100'000;
   for (size_t n = 0; n < num_particles; ++n)
@@ -289,7 +291,7 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
         for (size_t j = 0; j < num_nodes; ++j)
           M[i][j] += qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp) * qp_data.JxW(qp);
 
-    auto M_inv = chi_math::Inverse(M);
+    auto M_inv = Inverse(M);
 
     // Apply projection
     VecDbl T(num_nodes, 0.0);
@@ -302,7 +304,7 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
           T[i] = phi_tally[imap] / num_particles;
         }
 
-        auto phi_uc = chi_math::MatMul(M_inv, T);
+        auto phi_uc = MatMul(M_inv, T);
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
@@ -314,16 +316,15 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
   } // for cell
 
   // Create Field Functions
-  std::vector<std::shared_ptr<chi_physics::FieldFunctionGridBased>> ff_list;
+  std::vector<std::shared_ptr<FieldFunctionGridBased>> ff_list;
 
-  ff_list.push_back(std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi", sdm_ptr, chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups)));
+  ff_list.push_back(std::make_shared<FieldFunctionGridBased>(
+    "Phi", sdm_ptr, Unknown(UnknownType::VECTOR_N, num_groups)));
 
   // Localize zeroth moment
   // This routine extracts a single moment vector
   // from the vector that contains multiple moments
-  const chi_math::UnknownManager m0_uk_man(
-    {chi_math::Unknown(chi_math::UnknownType::VECTOR_N, num_groups)});
+  const UnknownManager m0_uk_man({Unknown(UnknownType::VECTOR_N, num_groups)});
   const size_t num_m0_dofs = sdm.GetNumLocalDOFs(m0_uk_man);
 
   std::vector<double> m0_phi(num_m0_dofs, 0.0);
@@ -333,12 +334,12 @@ chiSimTest93_RayTracing(const chi::InputParameters&)
   ff_list[0]->UpdateFieldVector(m0_phi);
 
   // Update field function
-  chi_physics::FieldFunctionGridBased::FFList const_ff_list;
+  FieldFunctionGridBased::FFList const_ff_list;
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("SimTest_93", const_ff_list);
+  FieldFunctionGridBased::ExportMultipleToVTK("SimTest_93", const_ff_list);
 
-  return chi::ParameterBlock();
+  return ParameterBlock();
 }
 
-} // namespace chi_unit_sim_tests
+} // namespace unit_sim_tests

@@ -6,7 +6,9 @@
 
 #include "framework/console/console.h"
 
-namespace chi_mesh::lua_utils
+using namespace opensn;
+
+namespace opensnlua
 {
 
 RegisterWrapperFunction(chi_mesh,
@@ -14,10 +16,10 @@ RegisterWrapperFunction(chi_mesh,
                         MeshModifiersApply_Syntax,
                         MeshModifiersApply);
 
-chi::InputParameters
+InputParameters
 MeshModifiersApply_Syntax()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   params.SetGeneralDescription("Lua wrapper function for applying mesh modifiers");
   params.SetDocGroup("DocMeshModifiers");
@@ -27,20 +29,21 @@ MeshModifiersApply_Syntax()
   return params;
 }
 
-chi::ParameterBlock
-MeshModifiersApply(const chi::InputParameters& params)
+ParameterBlock
+MeshModifiersApply(const InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
   const std::vector<size_t> handles = params.GetParamVectorValue<size_t>("arg0");
 
   for (const size_t handle : handles)
   {
-    auto& modifier = Chi::GetStackItem<MeshModifier>(Chi::object_stack, handle, fname);
+    auto& modifier =
+      opensn::Chi::GetStackItem<MeshModifier>(opensn::Chi::object_stack, handle, fname);
 
     modifier.Apply();
   }
 
-  return chi::ParameterBlock(); // Return empty param block
+  return ParameterBlock(); // Return empty param block
 }
 
-} // namespace chi_mesh::lua_utils
+} // namespace opensnlua

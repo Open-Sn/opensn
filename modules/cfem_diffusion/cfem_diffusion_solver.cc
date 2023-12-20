@@ -11,12 +11,13 @@
 #include "framework/lua.h"
 #endif
 
+namespace opensn
+{
 namespace cfem_diffusion
 {
 
 Solver::Solver(const std::string& in_solver_name)
-  : chi_physics::Solver(in_solver_name,
-                        {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
+  : opensn::Solver(in_solver_name, {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
 {
 }
 
@@ -36,7 +37,7 @@ Solver::Initialize()
                  << ": Initializing CFEM Diffusion solver ";
 
   // Get grid
-  grid_ptr_ = chi_mesh::GetCurrentHandler().GetGrid();
+  grid_ptr_ = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
@@ -115,7 +116,7 @@ Solver::Initialize()
   } // for bndry
 
   // Make SDM
-  sdm_ptr_ = chi_math::spatial_discretization::PieceWiseLinearContinuous::New(*grid_ptr_);
+  sdm_ptr_ = PieceWiseLinearContinuous::New(*grid_ptr_);
   const auto& sdm = *sdm_ptr_;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
@@ -129,15 +130,15 @@ Solver::Initialize()
   const auto n = static_cast<int64_t>(num_local_dofs_);
   const auto N = static_cast<int64_t>(num_globl_dofs_);
 
-  A_ = chi_math::PETScUtils::CreateSquareMatrix(n, N);
-  x_ = chi_math::PETScUtils::CreateVector(n, N);
-  b_ = chi_math::PETScUtils::CreateVector(n, N);
+  A_ = CreateSquareMatrix(n, N);
+  x_ = CreateVector(n, N);
+  b_ = CreateVector(n, N);
 
   std::vector<int64_t> nodal_nnz_in_diag;
   std::vector<int64_t> nodal_nnz_off_diag;
   sdm.BuildSparsityPattern(nodal_nnz_in_diag, nodal_nnz_off_diag, OneDofPerNode);
 
-  chi_math::PETScUtils::InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
+  InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   if (field_functions_.empty())
   {
@@ -146,9 +147,8 @@ Solver::Initialize()
 
     std::string text_name = solver_name + "phi";
 
-    using namespace chi_math;
-    auto initial_field_function = std::make_shared<chi_physics::FieldFunctionGridBased>(
-      text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
+    auto initial_field_function =
+      std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
     field_functions_.push_back(initial_field_function);
     Chi::field_function_stack.push_back(initial_field_function);
@@ -319,13 +319,13 @@ Solver::Execute()
 
   // Create Krylov Solver
   Chi::log.Log() << "Solving: ";
-  auto petsc_solver = chi_math::PETScUtils::CreateCommonKrylovSolverSetup(
-    A_,
-    TextName(),
-    KSPCG,
-    PCGAMG,
-    basic_options_("residual_tolerance").FloatValue(),
-    basic_options_("max_iters").IntegerValue());
+  auto petsc_solver =
+    CreateCommonKrylovSolverSetup(A_,
+                                  TextName(),
+                                  KSPCG,
+                                  PCGAMG,
+                                  basic_options_("residual_tolerance").FloatValue(),
+                                  basic_options_("max_iters").IntegerValue());
 
   // Solve
   KSPSolve(petsc_solver.ksp, b_, x_);
@@ -340,7 +340,7 @@ double
 Solver::CallLua_iXYZFunction(lua_State* L,
                              const std::string& lua_func_name,
                              const int imat,
-                             const chi_mesh::Vector3& xyz)
+                             const Vector3& xyz)
 {
   // Load lua function
   lua_getglobal(L, lua_func_name.c_str());
@@ -385,3 +385,4 @@ Solver::UpdateFieldFunctions()
 }
 
 } // namespace cfem_diffusion
+} // namespace opensn

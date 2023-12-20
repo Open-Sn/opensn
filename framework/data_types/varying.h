@@ -7,8 +7,9 @@
 #include <vector>
 #include <memory>
 
-namespace chi_data_types
+namespace opensn
 {
+
 class Varying
 {
 private:
@@ -468,7 +469,7 @@ public:
   ~Varying() = default;
 }; // class Varying
 
-} // namespace chi_data_types
+} // namespace opensn
 
 /**Stream operator*/
-std::ostream& operator<<(std::ostream& outstr, const chi_data_types::Varying& value);
+std::ostream& operator<<(std::ostream& outstr, const opensn::Varying& value);

@@ -2,13 +2,11 @@
 
 #include "framework/math/quadratures/quadrature_gausslegendre.h"
 
-namespace chi_math
+namespace opensn
 {
-class QuadratureLine;
-}
 
 /**Quadrature for use on reference lines.*/
-class chi_math::QuadratureLine : public chi_math::QuadratureGaussLegendre
+class QuadratureLine : public QuadratureGaussLegendre
 {
 public:
   explicit QuadratureLine(QuadratureOrder in_order) : QuadratureGaussLegendre(in_order)
@@ -16,3 +14,5 @@ public:
     SetRange({0, 1});
   }
 };
+
+} // namespace opensn

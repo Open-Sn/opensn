@@ -11,7 +11,7 @@ class vtkSmartPointer;
 #include <map>
 #include <array>
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**
@@ -211,4 +211,4 @@ public:
   }
 };
 
-} // namespace chi_mesh
+} // namespace opensn

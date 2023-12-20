@@ -4,16 +4,21 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
 
+namespace opensn
+{
+namespace lbs
+{
+
 int
-lbs::WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
+WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
   void* context;
   PCShellGetContext(pc, &context);
 
-  auto gs_context_ptr = (lbs::WGSContext*)(context);
+  auto gs_context_ptr = (WGSContext*)(context);
 
   // Shorten some names
-  lbs::LBSSolver& lbs_solver = gs_context_ptr->lbs_solver_;
+  LBSSolver& lbs_solver = gs_context_ptr->lbs_solver_;
   LBSGroupset& groupset = gs_context_ptr->groupset_;
 
   // Copy PETSc vector to STL
@@ -50,10 +55,10 @@ lbs::WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 }
 
 int
-lbs::WGDSA_TGDSA_PreConditionerMult2(lbs::WGSContext& gs_context_ptr, Vec phi_input, Vec pc_output)
+WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec pc_output)
 {
   // Shorten some names
-  lbs::LBSSolver& lbs_solver = gs_context_ptr.lbs_solver_;
+  LBSSolver& lbs_solver = gs_context_ptr.lbs_solver_;
   LBSGroupset& groupset = gs_context_ptr.groupset_;
 
   // Copy PETSc vector to STL
@@ -88,3 +93,6 @@ lbs::WGDSA_TGDSA_PreConditionerMult2(lbs::WGSContext& gs_context_ptr, Vec phi_in
 
   return 0;
 }
+
+} // namespace lbs
+} // namespace opensn

@@ -6,7 +6,7 @@
 #include <vector>
 #include <limits>
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 /**
@@ -18,9 +18,8 @@ private:
   std::vector<double> boundary_flux_;
 
 public:
-  explicit BoundaryVaccuum(
-    size_t in_num_groups,
-    chi_math::CoordinateSystemType coord_type = chi_math::CoordinateSystemType::CARTESIAN)
+  explicit BoundaryVaccuum(size_t in_num_groups,
+                           CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
     : SweepBoundary(BoundaryType::INCIDENT_VACCUUM, in_num_groups, coord_type),
       boundary_flux_(in_num_groups, 0.0)
   {
@@ -34,4 +33,4 @@ public:
                                    size_t gs_ss_begin) override;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

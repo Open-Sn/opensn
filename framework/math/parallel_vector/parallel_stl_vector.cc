@@ -17,7 +17,7 @@
 #define scint static_cast<int>
 #define scshort static_cast<short>
 
-namespace chi_math
+namespace opensn
 {
 
 ParallelSTLVector::ParallelSTLVector(const uint64_t local_size,
@@ -319,7 +319,7 @@ ParallelSTLVector::Shift(double a)
 }
 
 double
-ParallelSTLVector::ComputeNorm(chi_math::NormType norm_type) const
+ParallelSTLVector::ComputeNorm(NormType norm_type) const
 {
   switch (norm_type)
   {
@@ -415,7 +415,7 @@ ParallelSTLVector::Assemble()
   // need to be sent information, and the serialized operations that need
   // to be sent. The operations are serialized by converting the
   // int64_t-double pair to bytes.
-  std::map<int, chi_data_types::ByteArray> pid_send_map;
+  std::map<int, ByteArray> pid_send_map;
   for (const auto& [global_id, value] : nonlocal_cache)
   {
     const int pid = FindOwnerPID(global_id);
@@ -436,7 +436,7 @@ ParallelSTLVector::Assemble()
   // that it needs. With each process knowing what each other process needs
   // from it, a map of information to be sent is obtained.
   std::map<int, std::vector<std::byte>> pid_recv_map_bytes =
-    chi_mpi_utils::MapAllToAll(pid_send_map_bytes, MPI_BYTE);
+    MapAllToAll(pid_send_map_bytes, MPI_BYTE);
 
   // The received information is now processed, unpacked, and the
   // necessary operations performed
@@ -451,7 +451,7 @@ ParallelSTLVector::Assemble()
                         " is not an integer multiple of the size of an int64_t and double.");
 
     const size_t num_ops = byte_vector.size() / packet_size;
-    chi_data_types::ByteArray byte_array(byte_vector);
+    ByteArray byte_array(byte_vector);
     for (size_t k = 0; k < num_ops; ++k)
     {
       const int64_t global_id = byte_array.Read<int64_t>();
@@ -514,4 +514,4 @@ ParallelSTLVector::PrintStr() const
   return ss.str();
 }
 
-} // namespace chi_math
+} // namespace opensn

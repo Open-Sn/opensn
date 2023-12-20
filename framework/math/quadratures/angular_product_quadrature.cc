@@ -8,11 +8,14 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
+namespace opensn
+{
+
 void
-chi_math::ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
-                                             const std::vector<double>& polar,
-                                             const std::vector<double>& in_weights,
-                                             bool verbose)
+ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
+                                   const std::vector<double>& polar,
+                                   const std::vector<double>& in_weights,
+                                   bool verbose)
 {
   size_t Na = azimuthal.size();
   size_t Np = polar.size();
@@ -55,7 +58,7 @@ chi_math::ProductQuadrature::AssembleCosines(const std::vector<double>& azimutha
     {
       map_directions_[j].emplace_back(i * Np + j);
 
-      const auto abscissa = chi_math::QuadraturePointPhiTheta(azimu_ang_[i], polar_ang_[j]);
+      const auto abscissa = QuadraturePointPhiTheta(azimu_ang_[i], polar_ang_[j]);
 
       abscissae_.emplace_back(abscissa);
 
@@ -81,7 +84,7 @@ chi_math::ProductQuadrature::AssembleCosines(const std::vector<double>& azimutha
   omegas_.clear();
   for (const auto& qpoint : abscissae_)
   {
-    chi_mesh::Vector3 new_omega;
+    Vector3 new_omega;
     new_omega.x = sin(qpoint.theta) * cos(qpoint.phi);
     new_omega.y = sin(qpoint.theta) * sin(qpoint.phi);
     new_omega.z = cos(qpoint.theta);
@@ -99,11 +102,11 @@ chi_math::ProductQuadrature::AssembleCosines(const std::vector<double>& azimutha
 }
 
 void
-chi_math::ProductQuadrature::OptimizeForPolarSymmetry(const double normalization)
+ProductQuadrature::OptimizeForPolarSymmetry(const double normalization)
 {
-  std::vector<chi_math::QuadraturePointPhiTheta> new_abscissae;
+  std::vector<QuadraturePointPhiTheta> new_abscissae;
   std::vector<double> new_weights;
-  std::vector<chi_mesh::Vector3> new_omegas;
+  std::vector<Vector3> new_omegas;
   std::vector<double> new_polar_ang;
   std::vector<double> new_azimu_ang;
 
@@ -139,10 +142,9 @@ chi_math::ProductQuadrature::OptimizeForPolarSymmetry(const double normalization
   azimu_ang_ = new_azimu_ang;
 }
 
-chi_math::AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose)
-  : chi_math::ProductQuadrature()
+AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose) : ProductQuadrature()
 {
-  chi_math::QuadratureGaussLegendre gl_polar(Nphemi * 2);
+  QuadratureGaussLegendre gl_polar(Nphemi * 2);
 
   // Create azimuthal angles
   azimu_ang_.clear();
@@ -160,10 +162,10 @@ chi_math::AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verb
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 
-chi_math::AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, bool verbose)
+AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, bool verbose)
 {
-  chi_math::QuadratureGaussLegendre gl_polar(Np * 2);
-  chi_math::QuadratureGaussLegendre gl_azimu(Na * 4);
+  QuadratureGaussLegendre gl_polar(Np * 2);
+  QuadratureGaussLegendre gl_azimu(Na * 4);
 
   // Create azimuthal angles
   azimu_ang_.clear();
@@ -185,10 +187,10 @@ chi_math::AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, boo
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 
-chi_math::AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, bool verbose)
+AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, bool verbose)
 {
-  chi_math::QuadratureGaussLegendre gl_polar(Np * 2);
-  chi_math::QuadratureGaussChebyshev gc_azimu(Na * 4);
+  QuadratureGaussLegendre gl_polar(Np * 2);
+  QuadratureGaussChebyshev gc_azimu(Na * 4);
 
   // Create azimuthal angles
   azimu_ang_.clear();
@@ -210,11 +212,10 @@ chi_math::AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, boo
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 
-chi_math::AngularQuadratureProdCustom::AngularQuadratureProdCustom(
-  const std::vector<double>& azimuthal,
-  const std::vector<double>& polar,
-  const std::vector<double>& in_weights,
-  bool verbose)
+AngularQuadratureProdCustom::AngularQuadratureProdCustom(const std::vector<double>& azimuthal,
+                                                         const std::vector<double>& polar,
+                                                         const std::vector<double>& in_weights,
+                                                         bool verbose)
 {
   size_t Na = azimuthal.size();
   size_t Np = polar.size();
@@ -230,3 +231,5 @@ chi_math::AngularQuadratureProdCustom::AngularQuadratureProdCustom(
 
   AssembleCosines(azimuthal, polar, weights_, verbose);
 }
+
+} // namespace opensn

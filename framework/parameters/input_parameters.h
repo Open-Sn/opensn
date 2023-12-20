@@ -5,9 +5,9 @@
 
 #include <map>
 
-#define MakeInpParamsForObj(x, y) chi::InputParameters::MakeForObject<x>(y)
+#define MakeInpParamsForObj(x, y) InputParameters::MakeForObject<x>(y)
 
-namespace chi
+namespace opensn
 {
 
 enum class InputParameterTag
@@ -35,7 +35,7 @@ private:
   std::map<std::string, bool> type_mismatch_allowed_tags_;
   std::map<std::string, std::string> parameter_link_;
 
-  typedef std::unique_ptr<chi_data_types::AllowableRange> AllowableRangePtr;
+  typedef std::unique_ptr<AllowableRange> AllowableRangePtr;
   std::map<std::string, AllowableRangePtr> constraint_tags_;
 
   std::string general_description_;
@@ -122,7 +122,7 @@ public:
   template <typename T>
   void AddRequiredParameter(const std::string& name, const std::string& doc_string)
   {
-    AddParameter(name, chi_data_types::Varying::DefaultValue<T>());
+    AddParameter(name, Varying::DefaultValue<T>());
     parameter_class_tags_[name] = InputParameterTag::REQUIRED;
     parameter_doc_string_[name] = doc_string;
   }
@@ -148,7 +148,7 @@ public:
   void ChangeExistingParamToRequired(const std::string& name, const std::string& doc_string = "")
   {
     auto& param = GetParam(name);
-    param = ParameterBlock(name, chi_data_types::Varying::DefaultValue<T>());
+    param = ParameterBlock(name, Varying::DefaultValue<T>());
     parameter_class_tags_[name] = InputParameterTag::REQUIRED;
     if (not doc_string.empty()) parameter_doc_string_[name] = doc_string;
   }
@@ -182,4 +182,4 @@ public:
   void DumpParameters() const;
 };
 
-} // namespace chi
+} // namespace opensn

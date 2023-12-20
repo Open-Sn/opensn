@@ -2,7 +2,7 @@
 
 #include "framework/logging/log_exceptions.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 AngleSet::AngleSet(size_t id,
@@ -75,4 +75,4 @@ AngleSet::GetCommunicator()
   ChiLogicalError("Method not implemented");
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

@@ -12,45 +12,41 @@
 #include <vector>
 #include <utility>
 
-namespace chi_math
+namespace opensn
 {
 class SpatialDiscretization;
 typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
 class GhostedParallelSTLVector;
-} // namespace chi_math
-
-namespace chi_physics
-{
 
 /***/
 class FieldFunctionGridBased : public FieldFunction
 {
 public:
-  typedef std::pair<chi_mesh::Vector3, chi_mesh::Vector3> BoundingBox;
+  typedef std::pair<Vector3, Vector3> BoundingBox;
 
   /**Returns required input parameters.*/
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
   /**ObjectMaker based constructor.*/
-  explicit FieldFunctionGridBased(const chi::InputParameters& params);
+  explicit FieldFunctionGridBased(const InputParameters& params);
 
   /**Creates a field function, filling it with zeros.*/
   FieldFunctionGridBased(const std::string& text_name,
-                         chi_math::SDMPtr& discretization_ptr,
-                         chi_math::Unknown unknown);
+                         SDMPtr& discretization_ptr,
+                         opensn::Unknown unknown);
 
   /**Creates a field function with an associated field vector.
    * The field's data vector is set to the incoming field vector.*/
   FieldFunctionGridBased(const std::string& text_name,
-                         chi_math::SDMPtr& sdm_ptr,
-                         chi_math::Unknown unknown,
+                         SDMPtr& sdm_ptr,
+                         opensn::Unknown unknown,
                          const std::vector<double>& field_vector);
 
   /**Creates a field function where all the values are assigned to
    * the single supplied value.*/
   FieldFunctionGridBased(const std::string& text_name,
-                         chi_math::SDMPtr& sdm_ptr,
-                         chi_math::Unknown unknown,
+                         SDMPtr& sdm_ptr,
+                         opensn::Unknown unknown,
                          double field_value);
 
   virtual ~FieldFunctionGridBased() = default;
@@ -58,7 +54,7 @@ public:
   /**
    * Returns the spatial discretization method.
    */
-  const chi_math::SpatialDiscretization& GetSpatialDiscretization() const;
+  const SpatialDiscretization& GetSpatialDiscretization() const;
 
   /**
    * Returns a read-only reference to the locally stored field data.
@@ -98,35 +94,32 @@ public:
   /**
    * Returns the component values at requested point.
    */
-  virtual std::vector<double> GetPointValue(const chi_mesh::Vector3& point) const;
+  virtual std::vector<double> GetPointValue(const Vector3& point) const;
 
   /**Evaluates the field function, on a cell, at the specified point.*/
-  double Evaluate(const chi_mesh::Cell& cell,
-                  const chi_mesh::Vector3& position,
-                  unsigned int component) const override;
+  double Evaluate(const Cell& cell, const Vector3& position, unsigned int component) const override;
 
 protected:
-  chi_math::SDMPtr sdm_;
-  std::unique_ptr<chi_math::GhostedParallelSTLVector> ghosted_field_vector_;
+  SDMPtr sdm_;
+  std::unique_ptr<GhostedParallelSTLVector> ghosted_field_vector_;
 
 private:
   /**
    * Static method for making the GetSpatialDiscretization for the constructors.
    */
-  static chi_math::SDMPtr MakeSpatialDiscretization(const chi::InputParameters& params);
+  static SDMPtr MakeSpatialDiscretization(const InputParameters& params);
 
   /**
    * Static method for making the ghosted vector for the constructors.
    */
-  static std::unique_ptr<chi_math::GhostedParallelSTLVector>
+  static std::unique_ptr<GhostedParallelSTLVector>
 
   /**
    * Private method for creating the field vector.
    */
-  MakeFieldVector(const chi_math::SpatialDiscretization& discretization,
-                  const chi_math::UnknownManager& uk_man);
+  MakeFieldVector(const SpatialDiscretization& discretization, const UnknownManager& uk_man);
 
   const BoundingBox local_grid_bounding_box_;
 };
 
-} // namespace chi_physics
+} // namespace opensn

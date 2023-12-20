@@ -2,7 +2,7 @@
 
 #include "framework/lua.h"
 
-namespace lbs::common_lua_utils
+namespace opensnlua::lbs
 {
 /**Set LBS property.
  * \param SolverIndex int Handle to the solver for which the set is to be created.
@@ -131,10 +131,10 @@ namespace lbs::common_lua_utils
  * int           cell_material_id,
  * unsigned int  face_index,
  * unsigned int  face_node_index,
- * const chi_mesh::Vector3& face_node_location,
- * const chi_mesh::Vector3& face_node_normal,
+ * const Vector3& face_node_location,
+ * const Vector3& face_node_normal,
  * const std::vector<int>& quadrature_angle_indices,
- * const std::vector<chi_mesh::Vector3>& quadrature_angle_vectors,
+ * const std::vector<Vector3>& quadrature_angle_vectors,
  * const std::vector<std::pair<double,double>>& quadrature_phi_theta_angles,
  * const std::vector<int>& group_indices,
  * double evaluation_time;
@@ -756,4 +756,4 @@ int chiLBSClearPointSources(lua_State* L);
  *  \ingroup LBSLuaFunctions
  */
 int chiLBSInitializePointSources(lua_State* L);
-} // namespace lbs::common_lua_utils
+} // namespace opensnlua::lbs

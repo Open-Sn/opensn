@@ -6,21 +6,21 @@
 #include "framework/logging/log.h"
 #include <array>
 
-namespace chi_mesh
+namespace opensn
 {
 
 /** Class for defining base logical volumes.*/
 class LogicalVolume : public ChiObject
 {
 public:
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
   /**Logical operation for surface mesh.*/
-  virtual bool Inside(const chi_mesh::Vector3& point) const { return false; }
+  virtual bool Inside(const Vector3& point) const { return false; }
 
 protected:
   explicit LogicalVolume() : ChiObject() {}
-  explicit LogicalVolume(const chi::InputParameters& parameters);
+  explicit LogicalVolume(const InputParameters& parameters);
 };
 
-} // namespace chi_mesh
+} // namespace opensn

@@ -2,7 +2,10 @@
 
 #include "framework/logging/stringstream_color.h"
 
-chi::LogStream::~LogStream()
+namespace opensn
+{
+
+LogStream::~LogStream()
 {
   if (dummy_) return;
 
@@ -12,3 +15,5 @@ chi::LogStream::~LogStream()
 
   if (!oline.empty()) *log_stream_ << oline << std::flush;
 }
+
+} // namespace opensn

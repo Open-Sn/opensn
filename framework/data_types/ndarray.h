@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace chi_data_types
+namespace opensn
 {
 
 template <typename T>
@@ -602,4 +602,4 @@ public:
   }
 };
 
-} // namespace chi_data_types
+} // namespace opensn

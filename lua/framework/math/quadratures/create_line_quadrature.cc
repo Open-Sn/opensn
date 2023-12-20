@@ -8,6 +8,8 @@
 #include "quadratures_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiCreateLineQuadrature);
 
 int
@@ -27,7 +29,7 @@ chiCreateLineQuadrature(lua_State* L)
   bool verbose = false;
   if (num_args == 3) verbose = lua_toboolean(L, 3);
 
-  chi::ParameterBlock params;
+  ParameterBlock params;
   params.AddParameter("verbose", verbose);
   params.AddParameter("N", N);
 
@@ -35,17 +37,16 @@ chiCreateLineQuadrature(lua_State* L)
 
   if (ident == 1) // GAUSS_LEGENDRE
   {
-    Chi::log.Log() << "Creating Gauss-Legendre Quadrature\n";
+    opensn::Chi::log.Log() << "Creating Gauss-Legendre Quadrature\n";
 
-    const size_t handle =
-      obj_factory.MakeRegisteredObjectOfType("chi_math::QuadratureGaussLegendre", params);
+    const size_t handle = obj_factory.MakeRegisteredObjectOfType("QuadratureGaussLegendre", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
   }
   else if (ident == 2) // GAUSS_CHEBYSHEV
   {
-    Chi::log.Log() << "Creating Gauss-Chebyshev Quadrature\n";
+    opensn::Chi::log.Log() << "Creating Gauss-Chebyshev Quadrature\n";
 
     const size_t handle =
       obj_factory.MakeRegisteredObjectOfType("chi_math::QuadratureGaussChebyshev", params);

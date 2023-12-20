@@ -3,7 +3,7 @@
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 double*
@@ -33,4 +33,4 @@ SweepBoundary::HeterogeneousPsiOutgoing(uint64_t cell_local_id,
   return nullptr;
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

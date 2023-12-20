@@ -2,7 +2,7 @@
 
 #include "framework/lua.h"
 
-namespace chi_mpi_utils
+namespace opensnlua
 {
 
 /** Blocks until all processes in the communicator have reached this routine.
@@ -12,4 +12,4 @@ namespace chi_mpi_utils
  */
 int chiMPIBarrier(lua_State* L);
 
-} // namespace chi_mpi_utils
+} // namespace opensnlua

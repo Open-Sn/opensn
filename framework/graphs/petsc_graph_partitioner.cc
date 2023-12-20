@@ -7,7 +7,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObject(chi, PETScGraphPartitioner);
@@ -32,7 +32,7 @@ PETScGraphPartitioner::PETScGraphPartitioner(const InputParameters& params)
 
 std::vector<int64_t>
 PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
-                                 const std::vector<chi_mesh::Vector3>&,
+                                 const std::vector<Vector3>&,
                                  int number_of_parts)
 {
   Chi::log.Log0Verbose1() << "Partitioning with PETScGraphPartitioner";
@@ -125,4 +125,4 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
   return cell_pids;
 }
 
-} // namespace chi
+} // namespace opensn

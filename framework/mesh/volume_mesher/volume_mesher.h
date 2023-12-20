@@ -6,7 +6,7 @@
 
 #include <array>
 
-namespace chi_mesh
+namespace opensn
 {
 
 enum class VolumeMesherType
@@ -157,4 +157,4 @@ public:
   virtual void Execute();
 };
 
-} // namespace chi_mesh
+} // namespace opensn

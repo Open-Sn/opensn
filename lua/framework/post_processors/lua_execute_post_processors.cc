@@ -4,7 +4,7 @@
 
 #include "framework/event_system/event.h"
 
-namespace chi
+namespace opensn
 {
 
 InputParameters GetSyntax_ExecutePostProcessors();
@@ -70,7 +70,8 @@ ExecutePostProcessors(const InputParameters& params)
 
     for (const size_t handle : handle_list)
     {
-      auto& pp = Chi::GetStackItem<PostProcessor>(Chi::postprocessor_stack, handle, __FUNCTION__);
+      auto& pp =
+        opensn::Chi::GetStackItem<PostProcessor>(Chi::postprocessor_stack, handle, __FUNCTION__);
       pp_list.push_back(&pp);
     }
   }
@@ -85,4 +86,4 @@ ExecutePostProcessors(const InputParameters& params)
   return ParameterBlock{};
 }
 
-} // namespace chi
+} // namespace opensn

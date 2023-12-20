@@ -3,8 +3,11 @@
 #include "framework/math/math.h"
 #include <cmath>
 
+namespace opensn
+{
+
 double
-chi_math::Ylm(unsigned int ell, int m, double varphi, double theta)
+Ylm(unsigned int ell, int m, double varphi, double theta)
 {
   const int _ell = static_cast<int>(ell);
   const int _m = std::abs(m);
@@ -22,3 +25,5 @@ chi_math::Ylm(unsigned int ell, int m, double varphi, double theta)
            cos(_m * varphi);
   }
 }
+
+} // namespace opensn

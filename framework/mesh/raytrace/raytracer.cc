@@ -4,7 +4,7 @@
 #include "framework/logging/log.h"
 #include <algorithm>
 
-namespace chi_mesh
+namespace opensn
 {
 
 const MeshContinuum&
@@ -140,41 +140,39 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
 
     const auto pos_ext = pos_i + (d + cell_char_length) * omega_i;
 
-    using namespace chi_mesh;
+    if (cell_type == CellType::SLAB)
     {
-      if (cell_type == CellType::SLAB)
+      intersects_cell = CheckPlaneLineIntersect(n, p0, pos_i, pos_ext, I);
+    } // SLAB
+    else if (cell_type == CellType::POLYGON)
+    {
+      const auto& p1 = grid.vertices[face.vertex_ids_[1]];
+      intersects_cell = CheckLineIntersectStrip(p0, p1, n, pos_i, pos_ext, I);
+    } // POLYGON
+    else if (cell_type == CellType::POLYHEDRON)
+    {
+      const auto& vids = face.vertex_ids_;
+      const size_t num_sides = face.vertex_ids_.size();
+      for (size_t s = 0; s < num_sides; ++s)
       {
-        intersects_cell = CheckPlaneLineIntersect(n, p0, pos_i, pos_ext, I);
-      } // SLAB
-      else if (cell_type == CellType::POLYGON)
-      {
-        const auto& p1 = grid.vertices[face.vertex_ids_[1]];
-        intersects_cell = CheckLineIntersectStrip(p0, p1, n, pos_i, pos_ext, I);
-      } // POLYGON
-      else if (cell_type == CellType::POLYHEDRON)
-      {
-        const auto& vids = face.vertex_ids_;
-        const size_t num_sides = face.vertex_ids_.size();
-        for (size_t s = 0; s < num_sides; ++s)
-        {
-          uint64_t v0i = vids[s];
-          uint64_t v1i = (s < (num_sides - 1)) ? vids[s + 1] : vids[0];
+        uint64_t v0i = vids[s];
+        uint64_t v1i = (s < (num_sides - 1)) ? vids[s + 1] : vids[0];
 
-          const auto& v0 = grid.vertices[v0i];
-          const auto& v1 = grid.vertices[v1i];
-          const auto& v2 = face.centroid_;
+        const auto& v0 = grid.vertices[v0i];
+        const auto& v1 = grid.vertices[v1i];
+        const auto& v2 = face.centroid_;
 
-          const auto v01 = v1 - v0;
-          const auto v02 = v2 - v0;
-          const auto n_est = v01.Cross(v02);
+        const auto v01 = v1 - v0;
+        const auto v02 = v2 - v0;
+        const auto n_est = v01.Cross(v02);
 
-          if (n_est.Dot(omega_i) > 0.0) continue;
+        if (n_est.Dot(omega_i) > 0.0) continue;
 
-          intersects_cell = CheckLineIntersectTriangle2(v0, v1, v2, pos_i, omega_i, I);
-          if (intersects_cell) break;
-        } // for side
-      }   // POLYHEDRON
-    }
+        intersects_cell = CheckLineIntersectTriangle2(v0, v1, v2, pos_i, omega_i, I);
+        if (intersects_cell) break;
+      } // for side
+    }   // POLYHEDRON
+
     if (intersects_cell) break;
     ++f;
   } // for face
@@ -676,4 +674,4 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
   }
 }
 
-} // namespace chi_mesh
+} // namespace opensn

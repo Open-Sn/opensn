@@ -3,10 +3,12 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
-class XXPowerIterationKEigen : public chi_physics::Solver
+class XXPowerIterationKEigen : public opensn::Solver
 {
 protected:
   LBSSolver& lbs_solver_;
@@ -21,15 +23,15 @@ protected:
   std::shared_ptr<AGSLinearSolver> primary_ags_solver_;
   lbs::SetSourceFunction active_set_source_function_;
   LBSGroupset& front_gs_;
-  std::shared_ptr<chi_math::LinearSolver> front_wgs_solver_;
+  std::shared_ptr<LinearSolver> front_wgs_solver_;
   std::shared_ptr<lbs::WGSContext> front_wgs_context_;
 
   double k_eff_ = 1.0;
 
 public:
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
-  explicit XXPowerIterationKEigen(const chi::InputParameters& params);
+  explicit XXPowerIterationKEigen(const InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
@@ -47,3 +49,4 @@ protected:
 };
 
 } // namespace lbs
+} // namespace opensn

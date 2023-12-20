@@ -18,7 +18,9 @@
 #define DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTF_JPART 13
 #define DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTF_JFULL 14
 
-namespace chi_diffusion
+namespace opensn
+{
+namespace diffusion
 {
 
 /**
@@ -27,11 +29,11 @@ namespace chi_diffusion
  * <img src="DiffusionMatProp.png" style="width:500px">
  *
  */
-class Solver : public chi_physics::Solver
+class Solver : public opensn::Solver
 {
 private:
-  chi::Timer t_assembly_;
-  chi::Timer t_solve_;
+  Timer t_assembly_;
+  Timer t_solve_;
 
   double time_assembly_ = 0.0;
   double time_solve_ = 0.0;
@@ -45,11 +47,11 @@ public:
 public:
   BoundaryPreferences boundary_preferences_;
   std::map<uint64_t, Boundary*> boundaries_;
-  chi_mesh::MeshContinuumPtr grid_ptr_ = nullptr;
+  MeshContinuumPtr grid_ptr_ = nullptr;
 
-  std::shared_ptr<chi_math::SpatialDiscretization> discretization_;
+  std::shared_ptr<SpatialDiscretization> discretization_;
 
-  chi_math::UnknownManager unknown_manager_;
+  UnknownManager unknown_manager_;
 
   int material_mode_ = DIFFUSION_MATERIALS_REGULAR;
 
@@ -116,7 +118,7 @@ public:
   /**
    * Gets material properties various sources.
    */
-  void GetMaterialProperties(const chi_mesh::Cell& cell,
+  void GetMaterialProperties(const Cell& cell,
                              int cell_dofs,
                              std::vector<double>& diffCoeff,
                              std::vector<double>& sourceQ,
@@ -146,17 +148,17 @@ public:
   /**
    * Assembles PWLC matrix for general cells.
    */
-  void CFEM_Assemble_A_and_b(chi_mesh::Cell& cell, int group = 0);
+  void CFEM_Assemble_A_and_b(Cell& cell, int group = 0);
 
   /**
    * Assembles PWLC matrix for polygon cells.
    */
-  void PWLD_Assemble_A_and_b(const chi_mesh::Cell& cell, int component = 0);
+  void PWLD_Assemble_A_and_b(const Cell& cell, int component = 0);
 
   /**
    * Assembles PWLC matrix for polygon cells.
    */
-  void PWLD_Assemble_b(const chi_mesh::Cell& cell, int component = 0);
+  void PWLD_Assemble_b(const Cell& cell, int component = 0);
 
   /**
    * Still searching for a reference for this.
@@ -170,22 +172,19 @@ public:
    * Nv = Number of vertices. If Nv <= 4 then the perimeter parameter
    * should be replaced by edge length.
    */
-  double HPerpendicular(const chi_mesh::Cell& cell,
-                        const UnitIntegralContainer& fe_intgrl_values,
-                        unsigned int f);
+  double
+  HPerpendicular(const Cell& cell, const UnitIntegralContainer& fe_intgrl_values, unsigned int f);
 
   /**
    * Given a global node index, returns the local cell-node it's associated on the referenced cell.
    */
-  static uint64_t MapCellLocalNodeIDFromGlobalID(const chi_mesh::Cell& cell,
-                                                 uint64_t node_global_id);
+  static uint64_t MapCellLocalNodeIDFromGlobalID(const Cell& cell, uint64_t node_global_id);
 
   /**
    * Given the face index on the current cell, finds the
    * corresponding face index on the adjacent cell.
    */
-  static unsigned int
-  MapCellFace(const chi_mesh::Cell& cur_cell, const chi_mesh::Cell& adj_cell, unsigned int f);
+  static unsigned int MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned int f);
 
   /**
    * Update the field functions with the latest data.
@@ -193,4 +192,5 @@ public:
   void UpdateFieldFunctions();
 };
 
-} // namespace chi_diffusion
+} // namespace diffusion
+} // namespace opensn

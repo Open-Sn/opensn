@@ -7,6 +7,8 @@
 #include <petscsnes.h>
 #include <iomanip>
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -46,3 +48,4 @@ KEigenKSPMonitor(KSP ksp, PetscInt iter, PetscReal rnorm, void* ctx)
 }
 
 } // namespace lbs
+} // namespace opensn

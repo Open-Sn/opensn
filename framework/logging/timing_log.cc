@@ -8,7 +8,7 @@
 
 #include <sstream>
 
-namespace chi
+namespace opensn
 {
 
 TimingBlock&
@@ -243,4 +243,4 @@ TimingBlock::AppendGraphEntry(std::vector<std::vector<std::string>>& string_matr
 }
 //  NOLINTEND(misc-no-recursion)
 
-} // namespace chi
+} // namespace opensn

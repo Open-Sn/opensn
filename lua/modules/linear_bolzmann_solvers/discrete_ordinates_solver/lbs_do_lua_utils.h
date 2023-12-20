@@ -2,7 +2,7 @@
 
 #include "framework/lua.h"
 
-namespace lbs::disc_ord_lua_utils
+namespace opensnlua::lbs
 {
 /**Computes balance tables and prints it to the console.
  *
@@ -26,4 +26,4 @@ int chiLBSComputeBalance(lua_State* L);
  * \author Jan
  */
 int chiLBSComputeLeakage(lua_State* L);
-} // namespace lbs::disc_ord_lua_utils
+} // namespace opensnlua::lbs

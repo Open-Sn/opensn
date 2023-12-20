@@ -3,13 +3,13 @@
 #include "framework/mesh/field_function_interpolation/ffinterpolation.h"
 #include "framework/mesh/mesh.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 struct FFIFaceEdgeIntersection
 {
-  chi_mesh::Vector3 point;
-  chi_mesh::Vector3 point2d;
+  Vector3 point;
+  Vector3 point2d;
   double point_value = 0.0;
 };
 
@@ -17,8 +17,8 @@ struct FFICellIntersection
 {
   uint64_t ref_cell_local_id = 0;
   std::vector<FFIFaceEdgeIntersection> intersections;
-  chi_mesh::Vector3 intersection_centre;
-  chi_mesh::Vector3 intersection_2d_centre;
+  Vector3 intersection_centre;
+  Vector3 intersection_2d_centre;
   double cell_avg_value = 0.0;
 };
 
@@ -44,7 +44,10 @@ private:
   std::vector<FFICellIntersection> cell_intersections_;
 
 public:
-  FieldFunctionInterpolationSlice() : FieldFunctionInterpolation(ff_interpolation::Type::SLICE) {}
+  FieldFunctionInterpolationSlice()
+    : FieldFunctionInterpolation(FieldFunctionInterpolationType::SLICE)
+  {
+  }
 
   Normal& GetNormal() { return normal_; }
   Normal& GetBiNorm() { return binorm_; }
@@ -68,4 +71,4 @@ public:
   void ExportPython(std::string base_name) override;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

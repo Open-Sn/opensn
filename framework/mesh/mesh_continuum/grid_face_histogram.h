@@ -3,10 +3,9 @@
 #include <cstddef>
 #include <vector>
 
-namespace chi_mesh
+namespace opensn
 {
 
-// ###################################################################
 /**Utility class for handling face categorizations based on number
  * of vertices.*/
 class GridFaceHistogram
@@ -28,4 +27,4 @@ public:
   size_t GetFaceHistogramBinDOFSize(size_t bin_number) const;
 };
 
-} // namespace chi_mesh
+} // namespace opensn

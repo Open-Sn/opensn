@@ -1,7 +1,7 @@
 #include "framework/event_system/event.h"
 #include <map>
 
-namespace chi
+namespace opensn
 {
 
 Event::Event(const std::string& name) : name_(name), code_(Event::GetStandardCode(name)), params_()
@@ -59,4 +59,4 @@ Event::GetStandardCode(const std::string& event_name)
   return Event::Unknown;
 }
 
-} // namespace chi
+} // namespace opensn

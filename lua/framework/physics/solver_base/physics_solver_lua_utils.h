@@ -1,12 +1,13 @@
 #pragma once
 
-namespace chi
+namespace opensn
 {
 class InputParameters;
 }
 
 #include "framework/lua.h"
-namespace chi_physics::lua_utils
+
+namespace opensnlua
 {
 /**Generic lua routine for the creation of solvers.
  * \param params ParameterBlock. A single block with at least one field
@@ -107,4 +108,4 @@ int chiSolverGetInfo(lua_State* L);
  * \ingroup doc_PhysicsSolver
  */
 int chiSolverSetProperties(lua_State* L);
-} // namespace chi_physics::lua_utils
+} // namespace opensnlua

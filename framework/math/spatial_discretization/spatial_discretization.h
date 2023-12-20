@@ -12,7 +12,7 @@
 #include <vector>
 #include <map>
 
-namespace chi_math
+namespace opensn
 {
 class SpatialDiscretization
 {
@@ -22,13 +22,13 @@ public:
   /**Utility method for getting node indices seperately for domain internal
    * local nodes, and boundary nodes.*/
   std::pair<std::set<uint32_t>, std::set<uint32_t>>
-  MakeCellInternalAndBndryNodeIDs(const chi_mesh::Cell& cell) const;
+  MakeCellInternalAndBndryNodeIDs(const Cell& cell) const;
 
   // 01 AddViewOfContinuum
-  const CellMapping& GetCellMapping(const chi_mesh::Cell& cell) const;
+  const CellMapping& GetCellMapping(const Cell& cell) const;
   SpatialDiscretizationType Type() const;
   /**Returns the reference grid on which this discretization is based.*/
-  const chi_mesh::MeshContinuum& Grid() const;
+  const MeshContinuum& Grid() const;
   CoordinateSystemType GetCoordinateSystemType() const;
 
   // 02 OrderNodes
@@ -45,7 +45,7 @@ public:
 
   // 04 Mappings
   /**Maps the global address of a degree of freedom.*/
-  virtual int64_t MapDOF(const chi_mesh::Cell& cell,
+  virtual int64_t MapDOF(const Cell& cell,
                          unsigned int node,
                          const UnknownManager& unknown_manager,
                          unsigned int unknown_id,
@@ -53,7 +53,7 @@ public:
 
   /**Maps the local address of a degree of freedom. This can include
    * ghost entries if the specific discretization has any.*/
-  virtual int64_t MapDOFLocal(const chi_mesh::Cell& cell,
+  virtual int64_t MapDOFLocal(const Cell& cell,
                               unsigned int node,
                               const UnknownManager& unknown_manager,
                               unsigned int unknown_id,
@@ -62,11 +62,11 @@ public:
   /**Maps the local address of a degree of freedom. This can include
    * ghost entries if the specific discretization has any. Default structure
    * here is a single scalar unknown.*/
-  virtual int64_t MapDOF(const chi_mesh::Cell& cell, unsigned int node) const = 0;
+  virtual int64_t MapDOF(const Cell& cell, unsigned int node) const = 0;
   /**Maps the local address of a degree of freedom. This can include
    * ghost entries if the specific discretization has any. Default structure
    * here is a single scalar unknown.*/
-  virtual int64_t MapDOFLocal(const chi_mesh::Cell& cell, unsigned int node) const = 0;
+  virtual int64_t MapDOFLocal(const Cell& cell, unsigned int node) const = 0;
 
   // 05 Utils
   /**For the unknown structure in the unknown manager, returns the
@@ -89,11 +89,11 @@ public:
 
   /**For the given cell, returns the number of relevant nodes. The same can
    * be achieved by retrieving the cell-to-element mapping first.*/
-  size_t GetCellNumNodes(const chi_mesh::Cell& cell) const;
+  size_t GetCellNumNodes(const Cell& cell) const;
 
   /**For the given cell, returns a reference to the relevant node locations.
    * The same can be achieved by retrieving the cell-to-element mapping first.*/
-  const std::vector<chi_mesh::Vector3>& GetCellNodeLocations(const chi_mesh::Cell& cell) const;
+  const std::vector<Vector3>& GetCellNodeLocations(const Cell& cell) const;
 
   /**For each cell, for each face of that cell, for each node on that face, maps to which local
    * node on the adjacent cell that node position corresponds.
@@ -132,13 +132,12 @@ public:
   std::vector<std::vector<std::vector<int>>>
   MakeInternalFaceNodeMappings(double tolerance = 1.0e-12) const;
 
-  /**Copy part of vector A to vector B. Suppose vector A's entries are
-   * managed `chi_math::UnknownManager` A (`uk_manA`) and that the
-   * entries of the vector B are managed by `chi_math::UnknownManager` B
-   * (`uk_manB`). This function copies the entries associated with an unknown with
-   * id `uk_id_A` in `uk_manA` from vector A to vector B such that the entries
-   * in vector B are aligned with the entries of an unknown with id `uk_id_B` in
-   * `uk_manB`. All the components are copied.
+  /**
+   * Copy part of vector A to vector B. Suppose vector A's entries are managed `UnknownManager` A
+   * (`uk_manA`) and that the entries of the vector B are managed by `UnknownManager` B (`uk_manB`).
+   * This function copies the entries associated with an unknown with id `uk_id_A` in `uk_manA` from
+   * vector A to vector B such that the entries in vector B are aligned with the entries of an
+   * unknown with id `uk_id_B` in `uk_manB`. All the components are copied.
    *
    * \param from_vector Vector to copy from.
    * \param to_vector Vector to copy to.
@@ -168,13 +167,13 @@ public:
                                              const UnknownManager& unknown_manager) const;
 
   /**Cartesian coordinate system spatial weighting function.*/
-  static double CartesianSpatialWeightFunction(const chi_mesh::Vector3& point);
+  static double CartesianSpatialWeightFunction(const Vector3& point);
   /**Cylindrical coordinate system (RZ) spatial weighting function.*/
-  static double CylindricalRZSpatialWeightFunction(const chi_mesh::Vector3& point);
+  static double CylindricalRZSpatialWeightFunction(const Vector3& point);
   /**Spherical coordinate system (1D Spherical) spatial weighting function.*/
-  static double Spherical1DSpatialWeightFunction(const chi_mesh::Vector3& point);
+  static double Spherical1DSpatialWeightFunction(const Vector3& point);
 
-  typedef std::function<double(const chi_mesh::Vector3&)> SpatialWeightFunction;
+  typedef std::function<double(const Vector3&)> SpatialWeightFunction;
 
   /**Returns the spatial weighting function appropriate to the discretization's
    * coordinate system.*/
@@ -185,11 +184,9 @@ public:
 protected:
   typedef SpatialDiscretizationType SDMType;
   // 00
-  SpatialDiscretization(const chi_mesh::MeshContinuum& grid,
-                        CoordinateSystemType cs_type,
-                        SDMType sdm_type);
+  SpatialDiscretization(const MeshContinuum& grid, CoordinateSystemType cs_type, SDMType sdm_type);
 
-  const chi_mesh::MeshContinuum& ref_grid_;
+  const MeshContinuum& ref_grid_;
   std::vector<std::unique_ptr<CellMapping>> cell_mappings_;
   std::map<uint64_t, std::shared_ptr<CellMapping>> nb_cell_mappings_;
 
@@ -205,4 +202,4 @@ protected:
 private:
   const SpatialDiscretizationType type_;
 };
-} // namespace chi_math
+} // namespace opensn

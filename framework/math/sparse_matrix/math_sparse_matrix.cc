@@ -6,14 +6,17 @@
 #include <iomanip>
 #include <algorithm>
 
-chi_math::SparseMatrix::SparseMatrix(size_t num_rows, size_t num_cols)
+namespace opensn
+{
+
+SparseMatrix::SparseMatrix(size_t num_rows, size_t num_cols)
   : row_size_(num_rows), col_size_(num_cols)
 {
   rowI_values_.resize(num_rows, std::vector<double>());
   rowI_indices_.resize(num_rows, std::vector<size_t>());
 }
 
-chi_math::SparseMatrix::SparseMatrix(const chi_math::SparseMatrix& in_matrix)
+SparseMatrix::SparseMatrix(const SparseMatrix& in_matrix)
   : row_size_(in_matrix.NumRows()), col_size_(in_matrix.NumCols())
 {
   rowI_values_.resize(row_size_, std::vector<double>());
@@ -27,7 +30,7 @@ chi_math::SparseMatrix::SparseMatrix(const chi_math::SparseMatrix& in_matrix)
 }
 
 void
-chi_math::SparseMatrix::Insert(size_t i, size_t j, double value)
+SparseMatrix::Insert(size_t i, size_t j, double value)
 {
   CheckInitialized();
 
@@ -55,7 +58,7 @@ chi_math::SparseMatrix::Insert(size_t i, size_t j, double value)
 }
 
 void
-chi_math::SparseMatrix::InsertAdd(size_t i, size_t j, double value)
+SparseMatrix::InsertAdd(size_t i, size_t j, double value)
 {
   CheckInitialized();
 
@@ -83,7 +86,7 @@ chi_math::SparseMatrix::InsertAdd(size_t i, size_t j, double value)
 }
 
 void
-chi_math::SparseMatrix::SetDiagonal(const std::vector<double>& diag)
+SparseMatrix::SetDiagonal(const std::vector<double>& diag)
 {
   CheckInitialized();
 
@@ -116,7 +119,7 @@ chi_math::SparseMatrix::SetDiagonal(const std::vector<double>& diag)
 }
 
 double
-chi_math::SparseMatrix::ValueIJ(size_t i, size_t j) const
+SparseMatrix::ValueIJ(size_t i, size_t j) const
 {
   double retval = 0.0;
   if ((i < 0) || (i >= rowI_indices_.size()))
@@ -141,7 +144,7 @@ chi_math::SparseMatrix::ValueIJ(size_t i, size_t j) const
 }
 
 void
-chi_math::SparseMatrix::Compress()
+SparseMatrix::Compress()
 {
   for (size_t i = 0; i < rowI_indices_.size(); ++i)
   {
@@ -183,7 +186,7 @@ chi_math::SparseMatrix::Compress()
 }
 
 std::string
-chi_math::SparseMatrix::PrintStr() const
+SparseMatrix::PrintStr() const
 {
   std::stringstream out;
 
@@ -209,7 +212,7 @@ chi_math::SparseMatrix::PrintStr() const
 }
 
 void
-chi_math::SparseMatrix::CheckInitialized() const
+SparseMatrix::CheckInitialized() const
 {
   if (rowI_values_.empty())
   {
@@ -219,8 +222,7 @@ chi_math::SparseMatrix::CheckInitialized() const
 }
 
 //  Iterator routines
-namespace chi_math
-{
+
 SparseMatrix::RowIteratorContext
 SparseMatrix::Row(size_t row_id)
 {
@@ -253,4 +255,4 @@ SparseMatrix::end()
 {
   return EntriesIterator(*this, row_size_);
 }
-} // namespace chi_math
+} // namespace opensn

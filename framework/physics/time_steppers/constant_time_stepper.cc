@@ -2,15 +2,15 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 RegisterChiObject(chi_physics, ConstantTimeStepper);
 
-chi::InputParameters
+InputParameters
 ConstantTimeStepper::GetInputParameters()
 {
-  chi::InputParameters params = TimeStepper::GetInputParameters();
+  InputParameters params = TimeStepper::GetInputParameters();
 
   params.SetGeneralDescription("Timestep controller that does not dynamically change.");
   params.SetDocGroup("doc_TimeStepControllers");
@@ -18,8 +18,8 @@ ConstantTimeStepper::GetInputParameters()
   return params;
 }
 
-ConstantTimeStepper::ConstantTimeStepper(const chi::InputParameters& params) : TimeStepper(params)
+ConstantTimeStepper::ConstantTimeStepper(const InputParameters& params) : TimeStepper(params)
 {
 }
 
-} // namespace chi_physics
+} // namespace opensn

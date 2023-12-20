@@ -5,8 +5,9 @@
 /**\defgroup LuaDiffusion Diffusion Solver
  * \ingroup LuaModules*/
 
-// ######################################################### Namespace def
-namespace chi_diffusion
+namespace opensn
+{
+namespace diffusion
 {
 class Solver;
 class Boundary;
@@ -20,4 +21,5 @@ PetscErrorCode KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* mo
 /**Customized convergence test.*/
 PetscErrorCode DiffusionConvergenceTestNPT(
   KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void* monitordestroy);
-} // namespace chi_diffusion
+} // namespace diffusion
+} // namespace opensn

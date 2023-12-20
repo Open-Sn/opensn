@@ -4,15 +4,15 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
-namespace chi_physics::field_operations
+namespace opensn
 {
 
 RegisterChiObject(chi_physics::field_operations, FieldCopyOperation);
 
-chi::InputParameters
+InputParameters
 FieldCopyOperation::GetInputParameters()
 {
-  chi::InputParameters params = FieldOperation::GetInputParameters();
+  InputParameters params = FieldOperation::GetInputParameters();
 
   params.SetDocGroup("DocFieldOperation");
 
@@ -45,7 +45,7 @@ FieldCopyOperation::GetInputParameters()
   return params;
 }
 
-FieldCopyOperation::FieldCopyOperation(const chi::InputParameters& params)
+FieldCopyOperation::FieldCopyOperation(const InputParameters& params)
   : FieldOperation(params),
     to_field_handle_(params.GetParamValue<size_t>("to")),
     from_field_handle_(params.GetParamValue<size_t>("from"))
@@ -153,4 +153,4 @@ FieldCopyOperation::Execute()
   }     // for cell
 }
 
-} // namespace chi_physics::field_operations
+} // namespace opensn

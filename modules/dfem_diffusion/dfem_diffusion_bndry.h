@@ -2,6 +2,8 @@
 
 #include <array>
 
+namespace opensn
+{
 namespace dfem_diffusion
 {
 class Boundary;
@@ -27,3 +29,4 @@ public:
 };
 
 } // namespace dfem_diffusion
+} // namespace opensn

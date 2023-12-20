@@ -4,16 +4,16 @@
 
 #include <map>
 
-namespace chi_mesh
+namespace opensn
 {
 
 /**Manages a vertex map with custom calls.*/
 class VertexHandler
 {
-  typedef std::map<uint64_t, chi_mesh::Vector3> GlobalIDMap;
+  typedef std::map<uint64_t, Vector3> GlobalIDMap;
 
 private:
-  std::map<uint64_t, chi_mesh::Vector3> m_global_id_vertex_map;
+  std::map<uint64_t, Vector3> m_global_id_vertex_map;
 
 public:
   // Iterators
@@ -24,18 +24,15 @@ public:
   GlobalIDMap::const_iterator end() const { return m_global_id_vertex_map.end(); }
 
   // Accessors
-  chi_mesh::Vector3& operator[](const uint64_t global_id)
-  {
-    return m_global_id_vertex_map.at(global_id);
-  }
+  Vector3& operator[](const uint64_t global_id) { return m_global_id_vertex_map.at(global_id); }
 
-  const chi_mesh::Vector3& operator[](const uint64_t global_id) const
+  const Vector3& operator[](const uint64_t global_id) const
   {
     return m_global_id_vertex_map.at(global_id);
   }
 
   // Utilities
-  void Insert(const uint64_t global_id, const chi_mesh::Vector3& vec)
+  void Insert(const uint64_t global_id, const Vector3& vec)
   {
     m_global_id_vertex_map.insert(std::make_pair(global_id, vec));
   }
@@ -45,4 +42,4 @@ public:
   void Clear() { m_global_id_vertex_map.clear(); }
 };
 
-} // namespace chi_mesh
+} // namespace opensn

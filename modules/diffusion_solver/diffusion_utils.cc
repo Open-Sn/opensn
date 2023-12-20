@@ -7,8 +7,13 @@
 
 #include "framework/mpi/mpi.h"
 
+namespace opensn
+{
+namespace diffusion
+{
+
 PetscErrorCode
-chi_diffusion::KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* monitordestroy)
+KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* monitordestroy)
 {
 
   Vec Rhs;
@@ -31,7 +36,7 @@ chi_diffusion::KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* mo
 }
 
 PetscErrorCode
-chi_diffusion::DiffusionConvergenceTestNPT(
+DiffusionConvergenceTestNPT(
   KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
 {
   // Compute rhs norm
@@ -55,3 +60,6 @@ chi_diffusion::DiffusionConvergenceTestNPT(
 
   return KSP_CONVERGED_ITERATING;
 }
+
+} // namespace diffusion
+} // namespace opensn

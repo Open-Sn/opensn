@@ -4,6 +4,8 @@
 #include "volume_mesher_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiVolumeMesherSetMatIDToAll);
 
 int
@@ -16,6 +18,6 @@ chiVolumeMesherSetMatIDToAll(lua_State* L)
 
   int mat_id = lua_tonumber(L, 1);
 
-  chi_mesh::VolumeMesher::SetMatIDToAll(mat_id);
+  VolumeMesher::SetMatIDToAll(mat_id);
   return 0;
 }

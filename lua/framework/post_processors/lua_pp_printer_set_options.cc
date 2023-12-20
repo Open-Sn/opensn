@@ -9,7 +9,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi
+namespace opensn
 {
 
 InputParameters PostProcessorPrinterOptions();
@@ -36,7 +36,6 @@ PostProcessorPrinterOptions()
                               "The table format with which to print scalar "
                               "PostProcessors");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("scalar_pp_table_format",
                                  AllowableRangeList::New({"horizontal", "vertical"}));
 
@@ -113,7 +112,7 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
   {
     const std::string param_name = param.Name();
 
-    uint32_t param_name_hash = chi::hash_djb2a(param_name);
+    uint32_t param_name_hash = opensn::hash_djb2a(param_name);
     // clang-format off
     switch (param_name_hash)
     {
@@ -164,4 +163,4 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
   return ParameterBlock{};
 }
 
-} // namespace chi
+} // namespace opensn

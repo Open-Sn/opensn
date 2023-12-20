@@ -2,7 +2,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 void
@@ -11,4 +11,4 @@ SurfaceMesherPredefined::Execute()
   Chi::log.Log0Verbose1() << "SurfaceMesherPredefined executed";
 }
 
-} // namespace chi_mesh
+} // namespace opensn

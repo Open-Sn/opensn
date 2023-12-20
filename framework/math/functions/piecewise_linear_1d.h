@@ -2,14 +2,15 @@
 
 #include "framework/math/functions/function_dimA_to_dimB.h"
 
-namespace chi_math::functions
+namespace opensn
 {
+
 class PiecewiseLinear1D : public FunctionDimAToDimB
 {
 public:
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
-  explicit PiecewiseLinear1D(const chi::InputParameters& params);
+  explicit PiecewiseLinear1D(const InputParameters& params);
 
   std::vector<double> Evaluate(const std::vector<double>& values) const override;
   std::vector<double> EvaluateSlope(const std::vector<double>& values) const override;
@@ -35,4 +36,5 @@ private:
   /**Distance between independent variable values. Used for interpolation.*/
   std::vector<double> delta_x_values_;
 };
-} // namespace chi_math::functions
+
+} // namespace opensn

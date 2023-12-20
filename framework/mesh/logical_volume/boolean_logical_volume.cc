@@ -2,18 +2,18 @@
 
 #include "framework/object_factory.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
-chi::InputParameters BooleanLogicalVolumeArgumentPair();
+InputParameters BooleanLogicalVolumeArgumentPair();
 
 RegisterChiObject(chi_mesh, BooleanLogicalVolume);
 RegisterSyntaxBlock(chi_mesh, BooleanLogicalVolumeArgumentPair, BooleanLogicalVolumeArgumentPair);
 
-chi::InputParameters
+InputParameters
 BooleanLogicalVolume::GetInputParameters()
 {
-  chi::InputParameters params = LogicalVolume::GetInputParameters();
+  InputParameters params = LogicalVolume::GetInputParameters();
 
   // clang-format off
   params.SetDocGroup("LuaLogicVolumes\n");
@@ -29,16 +29,15 @@ BooleanLogicalVolume::GetInputParameters()
   return params;
 }
 
-BooleanLogicalVolume::BooleanLogicalVolume(const chi::InputParameters& params)
-  : LogicalVolume(params)
+BooleanLogicalVolume::BooleanLogicalVolume(const InputParameters& params) : LogicalVolume(params)
 {
   const auto& input_parts = params.GetParam("parts");
-  input_parts.RequireBlockTypeIs(chi::ParameterBlockType::ARRAY);
+  input_parts.RequireBlockTypeIs(ParameterBlockType::ARRAY);
 
   for (size_t p = 0; p < input_parts.NumParameters(); ++p)
   {
     const auto& part = input_parts.GetParam(p);
-    part.RequireBlockTypeIs(chi::ParameterBlockType::BLOCK);
+    part.RequireBlockTypeIs(ParameterBlockType::BLOCK);
 
     auto part_params = BooleanLogicalVolumeArgumentPair();
 
@@ -52,10 +51,10 @@ BooleanLogicalVolume::BooleanLogicalVolume(const chi::InputParameters& params)
   }
 }
 
-chi::InputParameters
+InputParameters
 BooleanLogicalVolumeArgumentPair()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   params.SetDocGroup("chi_mesh__BooleanLogicalVolume");
 
@@ -69,7 +68,7 @@ BooleanLogicalVolumeArgumentPair()
 }
 
 bool
-BooleanLogicalVolume::Inside(const chi_mesh::Vector3& point) const
+BooleanLogicalVolume::Inside(const Vector3& point) const
 {
   for (const auto& part : parts)
   {
@@ -79,4 +78,4 @@ BooleanLogicalVolume::Inside(const chi_mesh::Vector3& point) const
   return true;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

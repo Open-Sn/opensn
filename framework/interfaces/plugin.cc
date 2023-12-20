@@ -9,7 +9,7 @@
 
 #include <dlfcn.h>
 
-namespace chi
+namespace opensn
 {
 
 RegisterChiObject(chi, Plugin);
@@ -36,9 +36,9 @@ Plugin::Plugin(const InputParameters& params)
   : ChiObject(params), plugin_path_(params.GetParamValue<std::string>("plugin_path"))
 {
   Chi::log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
-  chi::RegistryStatuses registry_statuses = Chi::GetStatusOfRegistries();
+  RegistryStatuses registry_statuses = Chi::GetStatusOfRegistries();
 
-  chi::AssertReadibleFile(plugin_path_);
+  AssertReadibleFile(plugin_path_);
   library_handle_ = dlopen(plugin_path_.c_str(), RTLD_LAZY);
 
   ChiLogicalErrorIf(not library_handle_, "Failure loading \"" + plugin_path_ + "\"");
@@ -67,4 +67,4 @@ Plugin::~Plugin()
   dlclose(library_handle_);
 }
 
-} // namespace chi
+} // namespace opensn

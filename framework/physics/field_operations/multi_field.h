@@ -4,7 +4,7 @@
 #include "framework/physics/field_function/field_function_grid_based.h"
 #include "framework/math/functions/function_dimA_to_dimB.h"
 
-namespace chi_physics::field_operations
+namespace opensn
 {
 
 /**A field operation to manipulate a single field on the hand
@@ -22,16 +22,16 @@ private:
   std::shared_ptr<FieldFunctionGridBased> primary_ff_;
   std::vector<std::shared_ptr<const FieldFunction>> dependent_ffs_;
 
-  std::shared_ptr<const chi_math::FunctionDimAToDimB> function_ptr_;
+  std::shared_ptr<const FunctionDimAToDimB> function_ptr_;
 
 public:
   /**Returns the input parameters.*/
-  static chi::InputParameters GetInputParameters();
+  static InputParameters GetInputParameters();
 
   /**Constructor.*/
-  explicit MultiFieldOperation(const chi::InputParameters& params);
+  explicit MultiFieldOperation(const InputParameters& params);
 
   void Execute() override;
 };
 
-} // namespace chi_physics::field_operations
+} // namespace opensn

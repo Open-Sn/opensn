@@ -2,11 +2,11 @@
 
 #include "framework/logging/log_exceptions.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 AsynchronousCommunicator::AsynchronousCommunicator(FLUDS& fluds,
-                                                   const chi::ChiMPICommunicatorSet& comm_set)
+                                                   const ChiMPICommunicatorSet& comm_set)
   : fluds_(fluds), comm_set_(comm_set)
 {
 }
@@ -21,4 +21,4 @@ AsynchronousCommunicator::InitGetDownwindMessageData(int location_id,
   ChiLogicalError("Method not implemented");
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

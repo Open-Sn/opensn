@@ -1,6 +1,6 @@
 #include "framework/mesh/sweep_utilities/sweep_boundary/boundary_iso_homo.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 double*
@@ -14,4 +14,4 @@ BoundaryIsotropicHomogenous::HeterogeneousPsiIncoming(uint64_t cell_local_id,
   return &boundary_flux[group_num];
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

@@ -35,7 +35,7 @@
 #define IsParallel Chi::mpi.process_count > 1
 
 #define IsPartitionTypeParmetis                                                                    \
-  mesher.options.partition_type == chi_mesh::VolumeMesher::PartitionType::PARMETIS
+  mesher.options.partition_type == VolumeMesher::PartitionType::PARMETIS
 
 #define POLAR_ILLEGAL_GEOTYPE                                                                      \
   (fname + ": The simulation is using polar angle aggregation for which only "                     \
@@ -60,6 +60,8 @@
 #define LogicCheck(condition, message)                                                             \
   if ((condition)) throw std::logic_error(fname + (message));
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -70,10 +72,10 @@ DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const std::string& text_name)
 {
 }
 
-chi::InputParameters
+InputParameters
 DiscreteOrdinatesSolver::GetInputParameters()
 {
-  chi::InputParameters params = LBSSolver::GetInputParameters();
+  InputParameters params = LBSSolver::GetInputParameters();
 
   params.SetClassName("DiscreteOrdinatesSolver");
   params.SetDocGroup("lbs__LBSSolver");
@@ -88,13 +90,12 @@ DiscreteOrdinatesSolver::GetInputParameters()
   params.AddOptionalParameter(
     "sweep_type", "AAH", "The sweep type to use for sweep operatorations.");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("sweep_type", AllowableRangeList::New({"AAH", "CBC"}));
 
   return params;
 }
 
-DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const chi::InputParameters& params)
+DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const InputParameters& params)
   : LBSSolver(params),
     verbose_sweep_angles_(params.GetParamVectorValue<size_t>("directions_sweep_order_to_print")),
     sweep_type_(params.GetParamValue<std::string>("sweep_type"))
@@ -199,7 +200,7 @@ DiscreteOrdinatesSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
       throw std::logic_error("SetGSPETScVecFromPrimarySTLvector");
   }
 
-  chi_math::Scale(*y_ptr, value);
+  Scale(*y_ptr, value);
 
   for (auto& groupset : groupsets_)
   {
@@ -208,14 +209,14 @@ DiscreteOrdinatesSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
       case PhiSTLOption::PHI_NEW:
       {
         auto psi = groupset.angle_agg_->GetNewDelayedAngularDOFsAsSTLVector();
-        chi_math::Scale(psi, value);
+        Scale(psi, value);
         groupset.angle_agg_->SetNewDelayedAngularDOFsFromSTLVector(psi);
         break;
       }
       case PhiSTLOption::PHI_OLD:
       {
         auto psi = groupset.angle_agg_->GetOldDelayedAngularDOFsAsSTLVector();
-        chi_math::Scale(psi, value);
+        Scale(psi, value);
         groupset.angle_agg_->SetOldDelayedAngularDOFsFromSTLVector(psi);
         break;
       }
@@ -739,7 +740,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 
   // Perform checks
   {
-    auto& mesh_handler = chi_mesh::GetCurrentHandler();
+    auto& mesh_handler = GetCurrentHandler();
     auto& mesher = mesh_handler.GetVolumeMesher();
 
     for (const auto& groupset : groupsets_)
@@ -783,7 +784,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
       bool verbose = false;
       if (not verbose_sweep_angles_.empty())
         for (const size_t dir_id : verbose_sweep_angles_)
-          if (chi::VectorListHas(so_grouping, dir_id))
+          if (VectorListHas(so_grouping, dir_id))
           {
             verbose = true;
             break;
@@ -791,7 +792,6 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 
       if (sweep_type_ == "AAH")
       {
-        using namespace chi_mesh::sweep_management;
         const auto new_swp_order = std::make_shared<SPDS_AdamsAdamsHawkins>(
           omega, *this->grid_ptr_, quadrature_allow_cycles_map_[quadrature], verbose);
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
@@ -811,7 +811,6 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
   quadrature_fluds_commondata_map_.clear();
   for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
   {
-    using namespace chi_mesh::sweep_management;
     for (const auto& spds : spds_list)
     {
       if (sweep_type_ == "AAH")
@@ -835,8 +834,8 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 }
 
 std::pair<UniqueSOGroupings, DirIDToSOMap>
-DiscreteOrdinatesSolver::AssociateSOsAndDirections(const chi_mesh::MeshContinuum& grid,
-                                                   const chi_math::AngularQuadrature& quadrature,
+DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
+                                                   const AngularQuadrature& quadrature,
                                                    const AngleAggregationType agg_type,
                                                    const lbs::GeometryType lbs_geo_type)
 {
@@ -870,19 +869,18 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const chi_mesh::MeshContinuum
     {
       // Check geometry types
       const auto grid_attribs = grid.Attributes();
-      if (not(grid_attribs & chi_mesh::ORTHOGONAL or grid_attribs & chi_mesh::DIMENSION_2 or
-              grid_attribs & chi_mesh::EXTRUDED))
+      if (not(grid_attribs & ORTHOGONAL or grid_attribs & DIMENSION_2 or grid_attribs & EXTRUDED))
         throw std::logic_error(POLAR_ILLEGAL_GEOTYPE);
 
       // Check quadrature type
       const auto quad_type = quadrature.type_;
-      if (quad_type != chi_math::AngularQuadratureType::ProductQuadrature)
+      if (quad_type != AngularQuadratureType::ProductQuadrature)
         throw std::logic_error(POLAR_ONLY_PRODUCT);
 
       // Process Product Quadrature
       try
       {
-        typedef chi_math::ProductQuadrature ProdQuadType;
+        typedef ProductQuadrature ProdQuadType;
         const auto& product_quad = dynamic_cast<const ProdQuadType&>(quadrature);
 
         const auto num_azi = product_quad.azimu_ang_.size();
@@ -935,13 +933,13 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const chi_mesh::MeshContinuum
 
       // Check quadrature type
       const auto quad_type = quadrature.type_;
-      if (quad_type != chi_math::AngularQuadratureType::ProductQuadrature)
+      if (quad_type != AngularQuadratureType::ProductQuadrature)
         throw std::logic_error(AZIMUTHAL_ONLY_PRODUCT);
 
       // Process Product Quadrature
       try
       {
-        typedef chi_math::ProductQuadrature ProdQuadType;
+        typedef ProductQuadrature ProdQuadType;
         const auto& product_quad = dynamic_cast<const ProdQuadType&>(quadrature);
 
         for (const auto& dir_set : product_quad.GetDirectionMap())
@@ -991,9 +989,8 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const chi_mesh::MeshContinuum
 void
 DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 {
-  namespace sweep_namespace = chi_mesh::sweep_management;
-  typedef sweep_namespace::AngleSetGroup TAngleSetGroup;
-  typedef sweep_namespace::AAH_AngleSet TAAH_AngleSet;
+  typedef AngleSetGroup TAngleSetGroup;
+  typedef AAH_AngleSet TAAH_AngleSet;
 
   const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature_];
 
@@ -1005,7 +1002,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 
   // Passing the sweep boundaries
   //                                            to the angle aggregation
-  typedef chi_mesh::sweep_management::AngleAggregation AngleAgg;
+  typedef AngleAggregation AngleAgg;
   groupset.angle_agg_ = std::make_shared<AngleAgg>(
     sweep_boundaries_, gs_num_grps, gs_num_ss, groupset.quadrature_, grid_ptr_);
 
@@ -1020,7 +1017,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
     const auto& fluds_common_data = *quadrature_fluds_commondata_map_[groupset.quadrature_][so_id];
 
     // Compute direction subsets
-    const auto dir_subsets = chi::MakeSubSets(so_grouping.size(), groupset.master_num_ang_subsets_);
+    const auto dir_subsets = MakeSubSets(so_grouping.size(), groupset.master_num_ang_subsets_);
 
     for (size_t gs_ss = 0; gs_ss < gs_num_ss; gs_ss++)
     {
@@ -1040,7 +1037,6 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 
         if (sweep_type_ == "AAH")
         {
-          using namespace chi_mesh::sweep_management;
           std::shared_ptr<FLUDS> fluds = std::make_shared<AAH_FLUDS>(
             gs_ss_size,
             angle_indices.size(),
@@ -1063,7 +1059,6 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
           ChiLogicalErrorIf(not options_.save_angular_flux,
                             "When using sweep_type \"CBC\" then "
                             "\"save_angular_flux\" must be true.");
-          using namespace chi_mesh::sweep_management;
           std::shared_ptr<FLUDS> fluds =
             std::make_shared<CBC_FLUDS>(gs_ss_size,
                                         angle_indices.size(),
@@ -1111,8 +1106,8 @@ DiscreteOrdinatesSolver::ResetSweepOrderings(LBSGroupset& groupset)
   Chi::log.Log() << "SPDS and FLUDS reset complete.            Process memory = "
                  << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
 
-  double local_app_memory = Chi::log.ProcessEvent(chi::ChiLog::StdTags::MAX_MEMORY_USAGE,
-                                                  chi::ChiLog::EventOperation::MAX_VALUE);
+  double local_app_memory =
+    Chi::log.ProcessEvent(ChiLog::StdTags::MAX_MEMORY_USAGE, ChiLog::EventOperation::MAX_VALUE);
   double total_app_memory = 0.0;
   MPI_Allreduce(&local_app_memory, &total_app_memory, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
   double max_proc_memory = 0.0;
@@ -1166,3 +1161,4 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
 }
 
 } // namespace lbs
+} // namespace opensn

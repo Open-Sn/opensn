@@ -4,7 +4,7 @@
 
 #include "framework/utils/timer.h"
 
-namespace chi::lua_utils
+namespace opensnlua
 {
 
 /**Makes the program sleep for the specified time in milliseconds.
@@ -24,9 +24,9 @@ chiSleep(lua_State* L)
   LuaCheckIntegerValue(fname, L, 1);
   const int64_t time_to_sleep = lua_tointeger(L, 1);
 
-  chi::Sleep(std::chrono::milliseconds(time_to_sleep));
+  opensn::Sleep(std::chrono::milliseconds(time_to_sleep));
 
   return 0;
 }
 
-} // namespace chi::lua_utils
+} // namespace opensnlua

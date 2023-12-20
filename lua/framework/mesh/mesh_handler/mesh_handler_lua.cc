@@ -9,6 +9,8 @@
 #include "mesh_handler_lua.h"
 #include "framework/console/console.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiMeshHandlerCreate);
 RegisterLuaFunctionAsIs(chiMeshHandlerSetCurrent);
 RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToObj);
@@ -18,10 +20,11 @@ RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToExodus);
 int
 chiMeshHandlerCreate(lua_State* L)
 {
-  int index = (int)chi_mesh::PushNewHandlerAndGetIndex();
+  int index = (int)PushNewHandlerAndGetIndex();
   lua_pushnumber(L, index);
 
-  Chi::log.LogAllVerbose2() << "chiMeshHandlerCreate: Mesh Handler " << index << " created\n";
+  opensn::Chi::log.LogAllVerbose2()
+    << "chiMeshHandlerCreate: Mesh Handler " << index << " created\n";
 
   return 1;
 }
@@ -34,16 +37,16 @@ chiMeshHandlerSetCurrent(lua_State* L)
 
   int handle = lua_tonumber(L, 1);
 
-  if ((handle < 0) or (handle >= Chi::meshhandler_stack.size()))
+  if ((handle < 0) or (handle >= opensn::Chi::meshhandler_stack.size()))
   {
-    Chi::log.LogAllError() << "Invalid handle to mesh handler specified "
-                           << "in call to chiMeshHandlerSetCurrent";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << "Invalid handle to mesh handler specified "
+                                   << "in call to chiMeshHandlerSetCurrent";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
-  Chi::current_mesh_handler = handle;
+  opensn::Chi::current_mesh_handler = handle;
 
-  Chi::log.LogAllVerbose2() << "chiMeshHandlerSetCurrent: set to " << handle;
+  opensn::Chi::log.LogAllVerbose2() << "chiMeshHandlerSetCurrent: set to " << handle;
 
   return 0;
 }

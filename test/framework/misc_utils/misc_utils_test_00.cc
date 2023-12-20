@@ -5,18 +5,20 @@
 
 #include "framework/console/console.h"
 
-namespace chi_unit_tests
+using namespace opensn;
+
+namespace unit_tests
 {
 
-chi::ParameterBlock chi_misc_utils_Test00(const chi::InputParameters& params);
+ParameterBlock chi_misc_utils_Test00(const InputParameters& params);
 
 RegisterWrapperFunction(chi_unit_tests, chi_misc_utils_Test00, nullptr, chi_misc_utils_Test00);
 
-chi::ParameterBlock
-chi_misc_utils_Test00(const chi::InputParameters&)
+ParameterBlock
+chi_misc_utils_Test00(const InputParameters&)
 {
-  Chi::log.Log() << "GOLD_BEGIN";
-  Chi::log.Log() << "Testing chi_misc_utils::PrintIterationProgress\n";
+  opensn::Chi::log.Log() << "GOLD_BEGIN";
+  opensn::Chi::log.Log() << "Testing chi_misc_utils::PrintIterationProgress\n";
 
   const unsigned int I = 4;
   const size_t N = 39;
@@ -24,13 +26,13 @@ chi_misc_utils_Test00(const chi::InputParameters&)
   std::stringstream progress;
   for (size_t i = 0; i < N; ++i)
   {
-    progress << chi::PrintIterationProgress(i, N, I);
+    progress << PrintIterationProgress(i, N, I);
   }
 
-  Chi::log.Log() << progress.str();
+  opensn::Chi::log.Log() << progress.str();
 
-  Chi::log.Log() << "GOLD_END";
-  return chi::ParameterBlock();
+  opensn::Chi::log.Log() << "GOLD_END";
+  return ParameterBlock();
 }
 
-} // namespace chi_unit_tests
+} //  namespace unit_tests

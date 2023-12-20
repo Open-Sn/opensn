@@ -2,7 +2,7 @@
 
 #include "framework/math/spatial_discretization/cell_mappings/lagrange_base_mapping.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
 /**Lagrange element mapping for a Quadrilateral.
@@ -10,8 +10,8 @@ namespace chi_math::cell_mapping
 class LagrangeQuadMapping : public LagrangeBaseMapping
 {
 public:
-  LagrangeQuadMapping(const chi_mesh::MeshContinuum& grid,
-                      const chi_mesh::Cell& cell,
+  LagrangeQuadMapping(const MeshContinuum& grid,
+                      const Cell& cell,
                       const Quadrature& volume_quadrature,
                       const Quadrature& surface_quadrature);
 
@@ -27,4 +27,4 @@ protected:
   Vec3 FaceToElementQPointConversion(size_t face_index, const Vec3& qpoint_face) const override;
 };
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

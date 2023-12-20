@@ -3,14 +3,14 @@
 #include "framework/math/spatial_discretization/cell_mappings/piecewise_linear_base_mapping.h"
 #include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 
-namespace chi_math::cell_mapping
+namespace opensn
 {
 
 PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
-  const chi_mesh::Cell& poly_cell,
-  const chi_mesh::MeshContinuum& ref_grid,
-  const chi_math::QuadratureTriangle& volume_quadrature,
-  const chi_math::QuadratureLine& surface_quadrature)
+  const Cell& poly_cell,
+  const MeshContinuum& ref_grid,
+  const QuadratureTriangle& volume_quadrature,
+  const QuadratureLine& surface_quadrature)
   : PieceWiseLinearBaseMapping(
       ref_grid, poly_cell, poly_cell.vertex_ids_.size(), MakeFaceNodeMapping(poly_cell)),
     volume_quadrature_(volume_quadrature),
@@ -25,14 +25,14 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   // Calculate legs and determinants
   for (int side = 0; side < num_of_subtris_; side++)
   {
-    const chi_mesh::CellFace& face = poly_cell.faces_[side];
+    const CellFace& face = poly_cell.faces_[side];
 
     const auto& v0 = ref_grid_.vertices[face.vertex_ids_[0]];
     const auto& v1 = ref_grid_.vertices[face.vertex_ids_[1]];
-    chi_mesh::Vertex v2 = vc_;
+    Vertex v2 = vc_;
 
-    chi_mesh::Vector3 sidev01 = v1 - v0;
-    chi_mesh::Vector3 sidev02 = v2 - v0;
+    Vector3 sidev01 = v1 - v0;
+    Vector3 sidev02 = v2 - v0;
 
     double sidedetJ = ((sidev01.x) * (sidev02.y) - (sidev02.x) * (sidev01.y));
 
@@ -81,7 +81,7 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
     {
       side_mapping[side] = -1;
 
-      const chi_mesh::CellFace& face = poly_cell.faces_[side];
+      const CellFace& face = poly_cell.faces_[side];
       if (face.vertex_ids_[0] == vindex) { side_mapping[side] = 0; }
       if (face.vertex_ids_[1] == vindex) { side_mapping[side] = 1; }
     }
@@ -90,9 +90,7 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
 }
 
 double
-PieceWiseLinearPolygonMapping::TriShape(uint32_t index,
-                                        const chi_mesh::Vector3& qpoint,
-                                        bool on_surface)
+PieceWiseLinearPolygonMapping::TriShape(uint32_t index, const Vector3& qpoint, bool on_surface)
 {
   double xi;
   double eta;
@@ -120,7 +118,7 @@ PieceWiseLinearPolygonMapping::TriShape(uint32_t index,
 double
 PieceWiseLinearPolygonMapping::SideShape(uint32_t side,
                                          uint32_t i,
-                                         const chi_mesh::Vector3& qpoint,
+                                         const Vector3& qpoint,
                                          bool on_surface) const
 {
   int index = node_to_side_map_[i][side];
@@ -175,14 +173,14 @@ PieceWiseLinearPolygonMapping::SideGradShape_y(uint32_t side, uint32_t i) const
 }
 
 double
-PieceWiseLinearPolygonMapping::ShapeValue(const int i, const chi_mesh::Vector3& xyz) const
+PieceWiseLinearPolygonMapping::ShapeValue(const int i, const Vector3& xyz) const
 {
   for (int s = 0; s < num_of_subtris_; s++)
   {
     const auto& p0 = ref_grid_.vertices[sides_[s].v_index[0]];
-    chi_mesh::Vector3 xyz_ref = xyz - p0;
+    Vector3 xyz_ref = xyz - p0;
 
-    chi_mesh::Vector3 xi_eta_zeta = sides_[s].Jinv * xyz_ref;
+    Vector3 xi_eta_zeta = sides_[s].Jinv * xyz_ref;
 
     double xi = xi_eta_zeta.x;
     double eta = xi_eta_zeta.y;
@@ -206,14 +204,14 @@ PieceWiseLinearPolygonMapping::ShapeValue(const int i, const chi_mesh::Vector3& 
 }
 
 void
-PieceWiseLinearPolygonMapping::ShapeValues(const chi_mesh::Vector3& xyz,
+PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz,
                                            std::vector<double>& shape_values) const
 {
   shape_values.resize(num_nodes_, 0.0);
   for (int s = 0; s < num_of_subtris_; s++)
   {
     const auto& p0 = ref_grid_.vertices[sides_[s].v_index[0]];
-    chi_mesh::Vector3 xi_eta_zeta = sides_[s].Jinv * (xyz - p0);
+    Vector3 xi_eta_zeta = sides_[s].Jinv * (xyz - p0);
 
     double xi = xi_eta_zeta.x;
     double eta = xi_eta_zeta.y;
@@ -238,18 +236,18 @@ PieceWiseLinearPolygonMapping::ShapeValues(const chi_mesh::Vector3& xyz,
   }   // for side
 }
 
-chi_mesh::Vector3
-PieceWiseLinearPolygonMapping::GradShapeValue(const int i, const chi_mesh::Vector3& xyz) const
+Vector3
+PieceWiseLinearPolygonMapping::GradShapeValue(const int i, const Vector3& xyz) const
 {
-  chi_mesh::Vector3 grad_r;
-  chi_mesh::Vector3 grad;
+  Vector3 grad_r;
+  Vector3 grad;
 
   for (int e = 0; e < num_of_subtris_; e++)
   {
     const auto& p0 = ref_grid_.vertices[sides_[e].v_index[0]];
-    chi_mesh::Vector3 xyz_ref = xyz - p0;
+    Vector3 xyz_ref = xyz - p0;
 
-    chi_mesh::Vector3 xi_eta_zeta = sides_[e].Jinv * xyz_ref;
+    Vector3 xi_eta_zeta = sides_[e].Jinv * xyz_ref;
 
     double xi = xi_eta_zeta.x;
     double eta = xi_eta_zeta.y;
@@ -281,15 +279,15 @@ PieceWiseLinearPolygonMapping::GradShapeValue(const int i, const chi_mesh::Vecto
 }
 
 void
-PieceWiseLinearPolygonMapping::GradShapeValues(
-  const chi_mesh::Vector3& xyz, std::vector<chi_mesh::Vector3>& gradshape_values) const
+PieceWiseLinearPolygonMapping::GradShapeValues(const Vector3& xyz,
+                                               std::vector<Vector3>& gradshape_values) const
 {
   gradshape_values.clear();
   for (int i = 0; i < num_nodes_; ++i)
     gradshape_values.emplace_back(GradShapeValue(i, xyz));
 }
 
-finite_element::VolumetricQuadraturePointData
+VolumetricQuadraturePointData
 PieceWiseLinearPolygonMapping::MakeVolumetricQuadraturePointData() const
 {
   // Determine number of internal qpoints
@@ -349,16 +347,16 @@ PieceWiseLinearPolygonMapping::MakeVolumetricQuadraturePointData() const
 
   V_num_nodes = num_nodes_;
 
-  return finite_element::VolumetricQuadraturePointData(V_quadrature_point_indices,
-                                                       V_qpoints_xyz,
-                                                       V_shape_value,
-                                                       V_shape_grad,
-                                                       V_JxW,
-                                                       face_node_mappings_,
-                                                       V_num_nodes);
+  return VolumetricQuadraturePointData(V_quadrature_point_indices,
+                                       V_qpoints_xyz,
+                                       V_shape_value,
+                                       V_shape_grad,
+                                       V_JxW,
+                                       face_node_mappings_,
+                                       V_num_nodes);
 }
 
-finite_element::SurfaceQuadraturePointData
+SurfaceQuadraturePointData
 PieceWiseLinearPolygonMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
 {
   const bool ON_SURFACE = true;
@@ -418,14 +416,14 @@ PieceWiseLinearPolygonMapping::MakeSurfaceQuadraturePointData(size_t face_index)
 
   F_num_nodes = 2;
 
-  return finite_element::SurfaceQuadraturePointData(F_quadrature_point_indices,
-                                                    F_qpoints_xyz,
-                                                    F_shape_value,
-                                                    F_shape_grad,
-                                                    F_JxW,
-                                                    F_normals,
-                                                    face_node_mappings_,
-                                                    F_num_nodes);
+  return SurfaceQuadraturePointData(F_quadrature_point_indices,
+                                    F_qpoints_xyz,
+                                    F_shape_value,
+                                    F_shape_grad,
+                                    F_JxW,
+                                    F_normals,
+                                    face_node_mappings_,
+                                    F_num_nodes);
 }
 
-} // namespace chi_math::cell_mapping
+} // namespace opensn

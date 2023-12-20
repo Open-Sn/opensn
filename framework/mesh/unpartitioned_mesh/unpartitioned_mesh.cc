@@ -26,7 +26,7 @@
 #define ErrorReadingFile(fname)                                                                    \
   std::runtime_error("Failed to open file: " + options.file_name + " in call to " + #fname + ".")
 
-namespace chi_mesh
+namespace opensn
 {
 
 UnpartitionedMesh::~UnpartitionedMesh()
@@ -1052,13 +1052,13 @@ UnpartitionedMesh::ReadFromEnsightGold(const UnpartitionedMesh::Options& options
     auto block_a = iter_a->GetCurrentDataObject();
 
     const std::string block_name =
-      chi::StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()));
+      StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()));
 
     if (block_a->GetDataObjectType() == VTK_UNSTRUCTURED_GRID)
     {
       grid_blocks.emplace_back(
         vtkUnstructuredGrid::SafeDownCast(block_a),
-        chi::StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME())));
+        StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME())));
 
       Chi::log.Log() << "Reading block " << block_name
                      << " Number of cells: " << grid_blocks.back().first->GetNumberOfCells()
@@ -1901,7 +1901,7 @@ UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
     auto block_a = iter_a->GetCurrentDataObject();
 
     const std::string block_name =
-      chi::StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()));
+      StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()));
 
     if (block_a->GetDataObjectType() == VTK_UNSTRUCTURED_GRID)
     {
@@ -2023,4 +2023,4 @@ UnpartitionedMesh::PushProxyCell(const std::string& type_str,
   attributes_ = dimension | UNSTRUCTURED;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

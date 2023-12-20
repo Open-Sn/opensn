@@ -5,7 +5,9 @@
 
 #include "framework/mesh/cell/cell.h"
 
-namespace chi_diffusion
+namespace opensn
+{
+namespace diffusion
 {
 
 UnitIntegralContainer::UnitIntegralContainer(MatDbl IntV_gradShapeI_gradShapeJ,
@@ -32,10 +34,10 @@ UnitIntegralContainer::UnitIntegralContainer(MatDbl IntV_gradShapeI_gradShapeJ,
 }
 
 UnitIntegralContainer
-UnitIntegralContainer::Make(const chi_math::CellMapping& cell_mapping)
+UnitIntegralContainer::Make(const CellMapping& cell_mapping)
 {
-  typedef chi_math::finite_element::VolumetricQuadraturePointData VolQPData;
-  typedef chi_math::finite_element::SurfaceQuadraturePointData FaceQPData;
+  typedef VolumetricQuadraturePointData VolQPData;
+  typedef SurfaceQuadraturePointData FaceQPData;
 
   VolQPData internal_data = cell_mapping.MakeVolumetricQuadraturePointData();
   std::vector<FaceQPData> faces_qp_data;
@@ -134,10 +136,10 @@ UnitIntegralContainer::IntV_gradShapeI_gradShapeJ(unsigned int i, unsigned int j
   value = row_I.at(j);
   return value;
 }
-chi_mesh::Vector3
+Vector3
 UnitIntegralContainer::IntV_shapeI_gradshapeJ(unsigned int i, unsigned int j) const
 {
-  chi_mesh::Vector3 value;
+  Vector3 value;
   auto& row_I = IntV_shapeI_gradshapeJ_.at(i);
   value = row_I.at(j);
   return value;
@@ -156,10 +158,10 @@ UnitIntegralContainer::IntV_shapeI(unsigned int i) const
   double value = IntV_shapeI_.at(i);
   return value;
 }
-chi_mesh::Vector3
+Vector3
 UnitIntegralContainer::IntV_gradshapeI(unsigned int i) const
 {
-  chi_mesh::Vector3 value;
+  Vector3 value;
   value = IntV_gradshapeI_.at(i);
   return value;
 }
@@ -182,16 +184,17 @@ UnitIntegralContainer::IntS_shapeI(unsigned int face, unsigned int i) const
   return value;
 }
 
-chi_mesh::Vector3
+Vector3
 UnitIntegralContainer::IntS_shapeI_gradshapeJ(unsigned int face,
                                               unsigned int i,
                                               unsigned int j) const
 {
-  chi_mesh::Vector3 value;
+  Vector3 value;
   auto& face_data = IntS_shapeI_gradshapeJ_.at(face);
   auto& rowI = face_data.at(i);
   value = rowI.at(j);
   return value;
 }
 
-} // namespace chi_diffusion
+} // namespace diffusion
+} // namespace opensn

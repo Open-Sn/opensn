@@ -4,19 +4,22 @@
 #include <ctime>
 #include <thread>
 
-chi::Timer::Timer() noexcept
+namespace opensn
+{
+
+Timer::Timer() noexcept
 {
   start_time_ = std::chrono::steady_clock::now();
 }
 
 void
-chi::Timer::Reset()
+Timer::Reset()
 {
   start_time_ = std::chrono::steady_clock::now();
 }
 
 double
-chi::Timer::GetTime() const
+Timer::GetTime() const
 {
   using namespace std::chrono;
 
@@ -27,7 +30,7 @@ chi::Timer::GetTime() const
 }
 
 std::string
-chi::Timer::GetTimeString() const
+Timer::GetTimeString() const
 {
   double time_sec = this->GetTime() / 1000.0;
   int hours = std::floor(time_sec / 60 / 60);
@@ -41,7 +44,7 @@ chi::Timer::GetTimeString() const
 }
 
 std::string
-chi::Timer::GetLocalDateTimeString()
+Timer::GetLocalDateTimeString()
 {
   using namespace std::chrono;
   std::time_t now = system_clock::to_time_t(system_clock::now());
@@ -54,7 +57,9 @@ chi::Timer::GetLocalDateTimeString()
 }
 
 void
-chi::Sleep(std::chrono::duration<double> time)
+Sleep(std::chrono::duration<double> time)
 {
   std::this_thread::sleep_for(time);
 }
+
+} // namespace opensn

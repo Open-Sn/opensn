@@ -6,7 +6,7 @@
 #include <memory>
 #include <petscksp.h>
 
-namespace chi_math
+namespace opensn
 {
 
 struct LinearSolverContext;
@@ -89,4 +89,4 @@ private:
   bool suppress_kspsolve_ = false;
 };
 
-} // namespace chi_math
+} // namespace opensn

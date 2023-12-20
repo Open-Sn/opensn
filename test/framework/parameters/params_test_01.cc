@@ -5,15 +5,15 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace chi_unit_testsB
+namespace unit_tests
 {
 
 RegisterChiObject(chi_unit_testsB, TestObject);
 
-chi::InputParameters
+InputParameters
 TestObject::GetInputParameters()
 {
-  chi::InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = ChiObject::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription(
@@ -27,7 +27,7 @@ TestObject::GetInputParameters()
   params.AddRequiredParameterBlock("sub_obj1",
                                    "A block of parameters for chi_unit_testsB::TestSubObject");
 
-  chi::ParameterBlock sub_obj2_param_block("sub_obj2");
+  ParameterBlock sub_obj2_param_block("sub_obj2");
   sub_obj2_param_block.AddParameter("num_groups", 99);
   params.AddOptionalParameterBlock(
     "sub_obj2", sub_obj2_param_block, "A block of parameters for chi_unit_testsB::TestSubObject");
@@ -53,26 +53,25 @@ TestObject::GetInputParameters()
     "The number of subsets to apply to the set of groups in this set. This is "
     "useful for increasing pipeline size for parallel simulations");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("groupset_num_subsets", AllowableRangeLowLimit::New<int>(1));
   return params;
 }
 
-TestObject::TestObject(const chi::InputParameters& params)
+TestObject::TestObject(const InputParameters& params)
   : solver_type_(params.GetParamValue<std::string>("solver_type")),
     sub_obj1_(MakeInpParamsForObj(TestSubObject, params.GetParam("sub_obj1"))),
     sub_obj2_(MakeInpParamsForObj(TestSubObject, params.GetParam("sub_obj2")))
 {
-  Chi::log.Log() << "TestObject created "
-                 << "solver_type=" << solver_type_;
+  opensn::Chi::log.Log() << "TestObject created "
+                         << "solver_type=" << solver_type_;
 }
 
 RegisterChiObject(chi_unit_testsB, TestSubObject);
 
-chi::InputParameters
+InputParameters
 TestSubObject::GetInputParameters()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   // clang-format off
   params.SetGeneralDescription(
@@ -86,19 +85,19 @@ TestSubObject::GetInputParameters()
   return params;
 }
 
-TestSubObject::TestSubObject(const chi::InputParameters& params)
+TestSubObject::TestSubObject(const InputParameters& params)
   : num_groups_(params.GetParamValue<size_t>("num_groups"))
 {
-  Chi::log.Log() << "TestSubObject created "
-                 << "num_groups=" << num_groups_;
+  opensn::Chi::log.Log() << "TestSubObject created "
+                         << "num_groups=" << num_groups_;
 }
 
 RegisterChiObject(chi_unit_testsB, ChildTestObject);
 
-chi::InputParameters
+InputParameters
 ChildTestObject::GetInputParameters()
 {
-  chi::InputParameters params = TestObject::GetInputParameters();
+  InputParameters params = TestObject::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription(
@@ -115,11 +114,11 @@ ChildTestObject::GetInputParameters()
   return params;
 }
 
-ChildTestObject::ChildTestObject(const chi::InputParameters& params)
+ChildTestObject::ChildTestObject(const InputParameters& params)
   : TestObject(params), num_sub_groups_(params.GetParamValue<int>("num_sub_groups"))
 {
-  Chi::log.Log() << "ChildTestObject created "
-                 << "num_sub_groups=" << num_sub_groups_;
+  opensn::Chi::log.Log() << "ChildTestObject created "
+                         << "num_sub_groups=" << num_sub_groups_;
 }
 
-} // namespace chi_unit_testsB
+} // namespace unit_tests

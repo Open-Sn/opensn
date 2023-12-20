@@ -6,6 +6,8 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
+namespace opensn
+{
 namespace lbs
 {
 
@@ -22,7 +24,7 @@ SourceFunction::operator()(LBSGroupset& groupset,
   if (source_flags.Empty()) return;
 
   const size_t source_event_tag = lbs_solver_.GetSourceEventTag();
-  Chi::log.LogEvent(source_event_tag, chi::ChiLog::EventType::EVENT_BEGIN);
+  Chi::log.LogEvent(source_event_tag, ChiLog::EventType::EVENT_BEGIN);
 
   apply_fixed_src_ = (source_flags & APPLY_FIXED_SOURCES);
   apply_wgs_scatter_src_ = (source_flags & APPLY_WGS_SCATTER_SOURCES);
@@ -59,7 +61,7 @@ SourceFunction::operator()(LBSGroupset& groupset,
     // Obtain xs
     const auto& xs = transport_view.XS();
 
-    std::shared_ptr<chi_physics::IsotropicMultiGrpSource> P0_src = nullptr;
+    std::shared_ptr<IsotropicMultiGrpSource> P0_src = nullptr;
     if (matid_to_src_map.count(cell.material_id_) > 0)
       P0_src = matid_to_src_map.at(cell.material_id_);
 
@@ -146,7 +148,7 @@ SourceFunction::operator()(LBSGroupset& groupset,
 
   AddAdditionalSources(groupset, destination_q, phi_local, source_flags);
 
-  Chi::log.LogEvent(source_event_tag, chi::ChiLog::EventType::EVENT_END);
+  Chi::log.LogEvent(source_event_tag, ChiLog::EventType::EVENT_END);
 }
 
 double
@@ -215,3 +217,4 @@ SourceFunction::AddPointSources(LBSGroupset& groupset,
 }
 
 } // namespace lbs
+} // namespace opensn

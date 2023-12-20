@@ -3,7 +3,7 @@
 #include "framework/mesh/sweep_utilities/fluds/fluds.h"
 #include "framework/mesh/sweep_utilities/fluds/aah_fluds_common_data.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 /**Implementation of the Adams-Adams-Hawkins Flux data structure.*/
@@ -83,4 +83,4 @@ public:
   std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsiOld() override;
 };
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

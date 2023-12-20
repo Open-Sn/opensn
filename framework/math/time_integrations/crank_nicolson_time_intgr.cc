@@ -4,15 +4,15 @@
 
 #define scint static_cast<int>
 
-namespace chi_math
+namespace opensn
 {
 
 RegisterChiObject(chi_math, CrankNicolsonTimeIntegration);
 
-chi::InputParameters
+InputParameters
 CrankNicolsonTimeIntegration::GetInputParameters()
 {
-  chi::InputParameters params = ThetaSchemeTimeIntegration::GetInputParameters();
+  InputParameters params = ThetaSchemeTimeIntegration::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription("General Crank-Nicolson Time Integration");
@@ -25,9 +25,9 @@ CrankNicolsonTimeIntegration::GetInputParameters()
   return params;
 }
 
-CrankNicolsonTimeIntegration::CrankNicolsonTimeIntegration(const chi::InputParameters& params)
+CrankNicolsonTimeIntegration::CrankNicolsonTimeIntegration(const InputParameters& params)
   : ThetaSchemeTimeIntegration(params)
 {
 }
 
-} // namespace chi_math
+} // namespace opensn

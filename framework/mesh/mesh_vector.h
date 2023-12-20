@@ -3,8 +3,9 @@
 #include <cmath>
 #include <sstream>
 
-namespace chi_mesh
+namespace opensn
 {
+
 struct TensorRank2Dim3;
 
 /**
@@ -483,4 +484,4 @@ struct Vector3
  */
 Vector3 operator*(double value, const Vector3& that);
 
-} // namespace chi_mesh
+} // namespace opensn

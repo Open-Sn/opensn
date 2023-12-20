@@ -14,10 +14,10 @@
 
 #include "framework/logging/log_exceptions.h"
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
 
-LagrangeBase::LagrangeBase(const chi_mesh::MeshContinuum& grid,
+LagrangeBase::LagrangeBase(const MeshContinuum& grid,
                            QuadratureOrder q_order,
                            SDMType sdm_type,
                            CoordinateSystemType cs_type)
@@ -37,25 +37,25 @@ LagrangeBase::LagrangeBase(const chi_mesh::MeshContinuum& grid,
 void
 LagrangeBase::CreateCellMappings()
 {
-  typedef cell_mapping::LagrangeSlabMapping Slab;
-  typedef cell_mapping::LagrangeQuadMapping Quad;
-  typedef cell_mapping::LagrangeTriangleMapping Triangle;
-  typedef cell_mapping::LagrangeHexMapping Hex;
-  typedef cell_mapping::LagrangeWedgeMapping Wedge;
-  typedef cell_mapping::LagrangeTetMapping Tetrahedron;
+  typedef LagrangeSlabMapping Slab;
+  typedef LagrangeQuadMapping Quad;
+  typedef LagrangeTriangleMapping Triangle;
+  typedef LagrangeHexMapping Hex;
+  typedef LagrangeWedgeMapping Wedge;
+  typedef LagrangeTetMapping Tetrahedron;
 
-  typedef cell_mapping::PieceWiseLinearPolygonMapping Polygon;
-  typedef cell_mapping::PieceWiseLinearPolyhedronMapping Polyhedron;
+  typedef PieceWiseLinearPolygonMapping Polygon;
+  typedef PieceWiseLinearPolyhedronMapping Polyhedron;
 
-  auto MakeCellMapping = [this](const chi_mesh::Cell& cell)
+  auto MakeCellMapping = [this](const Cell& cell)
   {
     using namespace std;
-    using namespace chi_math;
-    std::unique_ptr<chi_math::CellMapping> mapping;
+    using namespace opensn;
+    std::unique_ptr<CellMapping> mapping;
 
     switch (cell.Type())
     {
-      case chi_mesh::CellType::SLAB:
+      case CellType::SLAB:
       {
         const auto& vol_quad = line_quad_order_arbitrary_;
         const auto& area_quad = point_quadrature_;
@@ -63,9 +63,9 @@ LagrangeBase::CreateCellMappings()
         mapping = make_unique<Slab>(ref_grid_, cell, vol_quad, area_quad);
         break;
       }
-      case chi_mesh::CellType::POLYGON:
+      case CellType::POLYGON:
       {
-        if (cell.SubType() == chi_mesh::CellType::QUADRILATERAL)
+        if (cell.SubType() == CellType::QUADRILATERAL)
         {
           const auto& vol_quad = quad_quad_order_arbitrary_;
           const auto& area_quad = line_quad_order_arbitrary_;
@@ -73,7 +73,7 @@ LagrangeBase::CreateCellMappings()
           mapping = make_unique<Quad>(ref_grid_, cell, vol_quad, area_quad);
           break;
         }
-        else if (cell.SubType() == chi_mesh::CellType::TRIANGLE)
+        else if (cell.SubType() == CellType::TRIANGLE)
         {
           const auto& vol_quad = tri_quad_order_arbitrary_;
           const auto& area_quad = line_quad_order_arbitrary_;
@@ -90,9 +90,9 @@ LagrangeBase::CreateCellMappings()
           break;
         }
       }
-      case chi_mesh::CellType::POLYHEDRON:
+      case CellType::POLYHEDRON:
       {
-        if (cell.SubType() == chi_mesh::CellType::HEXAHEDRON)
+        if (cell.SubType() == CellType::HEXAHEDRON)
         {
           const auto& vol_quad = hex_quad_order_arbitrary_;
           const auto& area_quad = quad_quad_order_arbitrary_;
@@ -100,7 +100,7 @@ LagrangeBase::CreateCellMappings()
           mapping = make_unique<Hex>(ref_grid_, cell, vol_quad, area_quad);
           break;
         }
-        else if (cell.SubType() == chi_mesh::CellType::WEDGE)
+        else if (cell.SubType() == CellType::WEDGE)
         {
           const auto& vol_quad = wedge_quad_order_arbitrary_;
           const auto& area_quad1 = quad_quad_order_arbitrary_;
@@ -109,7 +109,7 @@ LagrangeBase::CreateCellMappings()
           mapping = make_unique<Wedge>(ref_grid_, cell, vol_quad, area_quad1, area_quad2);
           break;
         }
-        else if (cell.SubType() == chi_mesh::CellType::TETRAHEDRON)
+        else if (cell.SubType() == CellType::TETRAHEDRON)
         {
           const auto& vol_quad = tet_quad_order_arbitrary_;
           const auto& area_quad = tri_quad_order_arbitrary_;
@@ -143,4 +143,4 @@ LagrangeBase::CreateCellMappings()
   }
 }
 
-} // namespace chi_math::spatial_discretization
+} // namespace opensn

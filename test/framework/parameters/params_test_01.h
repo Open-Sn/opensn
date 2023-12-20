@@ -3,7 +3,9 @@
 #include "framework/object.h"
 #include "framework/parameters/input_parameters.h"
 
-namespace chi_unit_testsB
+using namespace opensn;
+
+namespace unit_tests
 {
 
 class TestSubObject : public ChiObject
@@ -12,8 +14,8 @@ private:
   const size_t num_groups_;
 
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit TestSubObject(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit TestSubObject(const InputParameters& params);
 };
 
 class TestObject : public ChiObject
@@ -24,8 +26,8 @@ private:
   TestSubObject sub_obj2_;
 
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit TestObject(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit TestObject(const InputParameters& params);
 };
 
 class ChildTestObject : public TestObject
@@ -34,8 +36,8 @@ private:
   const int num_sub_groups_;
 
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit ChildTestObject(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit ChildTestObject(const InputParameters& params);
 };
 
-} // namespace chi_unit_testsB
+} // namespace unit_tests

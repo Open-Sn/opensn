@@ -9,15 +9,15 @@
 #define uint unsigned int
 #define scint static_cast<int>
 
-namespace chi_math
+namespace opensn
 {
 
 RegisterChiObject(chi_math, QuadratureGaussChebyshev);
 
-chi::InputParameters
+InputParameters
 QuadratureGaussChebyshev::GetInputParameters()
 {
-  chi::InputParameters params = Quadrature::GetInputParameters();
+  InputParameters params = Quadrature::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription(
@@ -32,8 +32,8 @@ QuadratureGaussChebyshev::GetInputParameters()
   return params;
 }
 
-QuadratureGaussChebyshev::QuadratureGaussChebyshev(const chi::InputParameters& params)
-  : chi_math::Quadrature(params)
+QuadratureGaussChebyshev::QuadratureGaussChebyshev(const InputParameters& params)
+  : Quadrature(params)
 {
   const auto& assigned_params = params.ParametersAtAssignment();
 
@@ -54,7 +54,7 @@ QuadratureGaussChebyshev::QuadratureGaussChebyshev(const chi::InputParameters& p
 }
 
 QuadratureGaussChebyshev::QuadratureGaussChebyshev(unsigned int N, bool verbose)
-  : chi_math::Quadrature((QuadratureOrder)(2 * N - 1))
+  : Quadrature((QuadratureOrder)(2 * N - 1))
 {
   Initialize(N);
 }
@@ -83,4 +83,4 @@ QuadratureGaussChebyshev::Initialize(unsigned int N)
   range_ = {-1, +1};
 }
 
-} // namespace chi_math
+} // namespace opensn

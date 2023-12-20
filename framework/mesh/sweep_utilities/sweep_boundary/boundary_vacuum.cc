@@ -1,6 +1,6 @@
 #include "framework/mesh/sweep_utilities/sweep_boundary/boundary_vacuum.h"
 
-namespace chi_mesh::sweep_management
+namespace opensn
 {
 
 double*
@@ -14,4 +14,4 @@ BoundaryVaccuum::HeterogeneousPsiIncoming(uint64_t cell_local_id,
   return &boundary_flux_[group_num];
 }
 
-} // namespace chi_mesh::sweep_management
+} // namespace opensn

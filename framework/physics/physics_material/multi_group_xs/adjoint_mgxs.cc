@@ -1,12 +1,15 @@
 #include "framework/physics/physics_material/multi_group_xs/adjoint_mgxs.h"
 
-chi_physics::AdjointMGXS::AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
+namespace opensn
+{
+
+AdjointMGXS::AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
 {
   // transpose transfer matrices
   for (unsigned int ell = 0; ell <= xs_.ScatteringOrder(); ++ell)
   {
     const auto& S_ell = xs_.TransferMatrix(ell);
-    chi_math::SparseMatrix S_ell_transpose(xs_.NumGroups(), xs_.NumGroups());
+    SparseMatrix S_ell_transpose(xs_.NumGroups(), xs_.NumGroups());
     for (size_t g = 0; g < xs_.NumGroups(); ++g)
     {
       const size_t row_len = S_ell.rowI_indices_[g].size();
@@ -32,3 +35,5 @@ chi_physics::AdjointMGXS::AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
     }
   }
 }
+
+} // namespace opensn

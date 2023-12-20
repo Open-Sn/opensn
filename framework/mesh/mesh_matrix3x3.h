@@ -4,7 +4,10 @@
 #include <sstream>
 #include "framework/mesh/mesh_vector.h"
 
-struct chi_mesh::Matrix3x3
+namespace opensn
+{
+
+struct Matrix3x3
 {
   double vals[9];
 
@@ -39,10 +42,10 @@ struct chi_mesh::Matrix3x3
    * \f$ \hat{b} = \hat{n} \times \hat{t} \f$*/
   static Matrix3x3 MakeRotationMatrixFromVector(const Vector3& vec)
   {
-    chi_mesh::Matrix3x3 R;
+    Matrix3x3 R;
 
-    chi_mesh::Vector3 n = vec;
-    chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
+    Vector3 n = vec;
+    Vector3 khat(0.0, 0.0, 1.0);
 
     if (n.Dot(khat) > 0.9999999) R.SetDiagonalVec(1.0, 1.0, 1.0);
     else if (n.Dot(khat) < -0.9999999)
@@ -286,3 +289,5 @@ struct chi_mesh::Matrix3x3
     return out.str();
   }
 };
+
+} // namespace opensn

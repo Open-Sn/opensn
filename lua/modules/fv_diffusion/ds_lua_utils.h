@@ -3,7 +3,7 @@
 #include "framework/lua.h"
 #include "modules/fv_diffusion/fv_diffusion_solver.h"
 
-namespace fv_diffusion::fv_diffusion_lua_utils
+namespace opensnlua::fv_diffusion
 {
 /** Creates a Finite Volume Diffusion solver.
  *
@@ -68,4 +68,4 @@ int chiFVDiffusionSolverCreate(lua_State* L);
 int chiFVDiffusionSetBCProperty(lua_State* L);
 
 void RegisterLuaEntities(lua_State* L);
-} // namespace fv_diffusion::fv_diffusion_lua_utils
+} // namespace opensnlua::fv_diffusion

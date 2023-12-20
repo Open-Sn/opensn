@@ -3,8 +3,13 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
+namespace opensn
+{
+
 void
-chi_mesh::SurfaceMesherPassthrough::Execute()
+SurfaceMesherPassthrough::Execute()
 {
   Chi::log.Log0Verbose1() << "SurfaceMesherPassthrough executed";
 }
+
+} // namespace opensn

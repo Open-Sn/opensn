@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-namespace chi
+namespace opensn
 {
 
 class TimingBlock;
@@ -82,4 +82,4 @@ protected:
   std::vector<const TimingBlock*> children_;
 };
 
-} // namespace chi
+} // namespace opensn

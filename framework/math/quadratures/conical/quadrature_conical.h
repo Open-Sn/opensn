@@ -2,14 +2,14 @@
 
 #include "framework/math/quadratures/quadrature.h"
 
-namespace chi_math
+namespace opensn
 {
 
 /**Jacobi quadrature.*/
-class QuadratureConical : public chi_math::Quadrature
+class QuadratureConical : public Quadrature
 {
 public:
-  QuadratureConical(QuadratureOrder order) : chi_math::Quadrature(order) {}
+  QuadratureConical(QuadratureOrder order) : Quadrature(order) {}
 
 public:
   /**Initialize conical quadrature for a tetrahedron.*/
@@ -18,4 +18,4 @@ public:
   void Initialize_Conical_Product_Tri();
 };
 
-} // namespace chi_math
+} // namespace opensn

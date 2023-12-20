@@ -4,17 +4,17 @@
 
 #include "framework/logging/log.h"
 
-namespace chi_mesh
+namespace opensn
 {
 
 RegisterChiObject(chi_mesh, ExtruderMeshGenerator);
 
 RegisterChiObjectParametersOnly(chi_mesh, ExtrusionLayer);
 
-chi::InputParameters
+InputParameters
 ExtrusionLayer::GetInputParameters()
 {
-  chi::InputParameters params;
+  InputParameters params;
 
   // clang-format off
   params.SetGeneralDescription(
@@ -29,16 +29,15 @@ ExtrusionLayer::GetInputParameters()
                               "The z-coordinate at the top of the layer. "
                               "Cannot be specified if \"n\" is specified.");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("n", AllowableRangeLowLimit::New(0, false));
 
   return params;
 }
 
-chi::InputParameters
+InputParameters
 ExtruderMeshGenerator::GetInputParameters()
 {
-  chi::InputParameters params = MeshGenerator::GetInputParameters();
+  InputParameters params = MeshGenerator::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription(
@@ -64,7 +63,7 @@ ExtruderMeshGenerator::GetInputParameters()
   return params;
 }
 
-ExtruderMeshGenerator::ExtruderMeshGenerator(const chi::InputParameters& params)
+ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
   : MeshGenerator(params),
     top_boundary_name_(params.GetParamValue<std::string>("top_boundary_name")),
     bottom_boundary_name_(params.GetParamValue<std::string>("bottom_boundary_name"))
@@ -109,7 +108,7 @@ std::unique_ptr<UnpartitionedMesh>
 ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
   Chi::log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh";
-  const chi_mesh::Vector3 khat(0.0, 0.0, 1.0);
+  const Vector3 khat(0.0, 0.0, 1.0);
 
   ChiInvalidArgumentIf(not(input_umesh->GetMeshAttributes() & DIMENSION_2),
                        "Input mesh is not 2D. A 2D mesh is required for extrusion");
@@ -127,7 +126,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   for (const auto& template_cell_ptr : template_cells)
   {
     const auto& template_cell = *template_cell_ptr;
-    if (template_cell.type != chi_mesh::CellType::POLYGON)
+    if (template_cell.type != CellType::POLYGON)
       throw std::logic_error("ExtruderMeshGenerator: "
                              "Template cell error. Not of base type POLYGON");
 
@@ -168,7 +167,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   }
 
   // Build vertices
-  typedef chi_mesh::Vector3 Vec3;
+  typedef Vector3 Vec3;
   auto& extruded_vertices = umesh->GetVertices();
   for (const double z_level : z_levels)
     for (const auto& template_vertex : template_vertices)
@@ -298,4 +297,4 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   return umesh;
 }
 
-} // namespace chi_mesh
+} // namespace opensn

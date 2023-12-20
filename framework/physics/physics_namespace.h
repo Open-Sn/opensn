@@ -1,9 +1,11 @@
 #pragma once
 
+#include <string>
 #include <petscksp.h>
 
-namespace chi_physics
+namespace opensn
 {
+
 enum class OperationType
 {
   SINGLE_VALUE = 0,
@@ -20,4 +22,5 @@ class Solver;
 
 /**Gets the string value of a converged reason.*/
 std::string GetPETScConvergedReasonstring(KSPConvergedReason reason);
-} // namespace chi_physics
+
+} // namespace opensn

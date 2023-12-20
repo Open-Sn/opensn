@@ -10,10 +10,10 @@
 
 #define sc_int64 static_cast<int64_t>
 
-namespace chi_math::spatial_discretization
+namespace opensn
 {
 
-LagrangeContinuous::LagrangeContinuous(const chi_mesh::MeshContinuum& grid,
+LagrangeContinuous::LagrangeContinuous(const MeshContinuum& grid,
                                        QuadratureOrder q_order,
                                        CoordinateSystemType cs_type)
   : LagrangeBase(grid, q_order, SpatialDiscretizationType::LAGRANGE_CONTINUOUS, cs_type)
@@ -22,7 +22,7 @@ LagrangeContinuous::LagrangeContinuous(const chi_mesh::MeshContinuum& grid,
 }
 
 std::shared_ptr<LagrangeContinuous>
-LagrangeContinuous::New(const chi_mesh::MeshContinuum& grid,
+LagrangeContinuous::New(const MeshContinuum& grid,
                         QuadratureOrder q_order,
                         CoordinateSystemType cs_type)
 
@@ -129,7 +129,7 @@ LagrangeContinuous::OrderNodes()
 
   // Communicate nodes in need of mapping
   std::map<uint64_t, std::vector<uint64_t>> query_node_ids =
-    chi_mpi_utils::MapAllToAll(nonlocal_node_ids_map, MPI_UINT64_T);
+    MapAllToAll(nonlocal_node_ids_map, MPI_UINT64_T);
 
   // Map the query nodes
   std::map<uint64_t, std::vector<int64_t>> mapped_node_ids;
@@ -149,7 +149,7 @@ LagrangeContinuous::OrderNodes()
 
   // Communicate back the mappings
   std::map<uint64_t, std::vector<int64_t>> nonlocal_node_ids_map_mapped =
-    chi_mpi_utils::MapAllToAll(mapped_node_ids, MPI_INT64_T);
+    MapAllToAll(mapped_node_ids, MPI_INT64_T);
 
   // Processing the mapping for non-local nodes
   ghost_node_mapping_.clear();
@@ -185,7 +185,7 @@ LagrangeContinuous::OrderNodes()
 void
 LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
                                          std::vector<int64_t>& nodal_nnz_off_diag,
-                                         const chi_math::UnknownManager& unknown_manager) const
+                                         const UnknownManager& unknown_manager) const
 {
   //**************************************** DEFINE UTILITIES
 
@@ -483,7 +483,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
   nodal_nnz_in_diag.resize(local_base_block_size_ * N, 0);
   nodal_nnz_off_diag.resize(local_base_block_size_ * N, 0);
 
-  if (unknown_manager.dof_storage_type_ == chi_math::UnknownStorageType::NODAL)
+  if (unknown_manager.dof_storage_type_ == UnknownStorageType::NODAL)
   {
     int ir = -1;
     for (int i = 0; i < local_base_block_size_; ++i)
@@ -496,7 +496,7 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
       } // for j
     }   // for i
   }
-  else if (unknown_manager.dof_storage_type_ == chi_math::UnknownStorageType::BLOCK)
+  else if (unknown_manager.dof_storage_type_ == UnknownStorageType::BLOCK)
   {
     int ir = -1;
     for (int j = 0; j < N; ++j)
@@ -512,9 +512,9 @@ LagrangeContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag
 }
 
 int64_t
-LagrangeContinuous::MapDOF(const chi_mesh::Cell& cell,
+LagrangeContinuous::MapDOF(const Cell& cell,
                            const unsigned int node,
-                           const chi_math::UnknownManager& unknown_manager,
+                           const UnknownManager& unknown_manager,
                            const unsigned int unknown_id,
                            const unsigned int component) const
 {
@@ -529,7 +529,7 @@ LagrangeContinuous::MapDOF(const chi_mesh::Cell& cell,
   auto storage = unknown_manager.dof_storage_type_;
 
   int64_t address = -1;
-  if (storage == chi_math::UnknownStorageType::BLOCK)
+  if (storage == UnknownStorageType::BLOCK)
   {
     for (int locJ = 0; locJ < Chi::mpi.process_count; ++locJ)
     {
@@ -542,16 +542,16 @@ LagrangeContinuous::MapDOF(const chi_mesh::Cell& cell,
       break;
     }
   }
-  else if (storage == chi_math::UnknownStorageType::NODAL)
+  else if (storage == UnknownStorageType::NODAL)
     address = global_id * sc_int64(num_unknowns) + sc_int64(block_id);
 
   return address;
 }
 
 int64_t
-LagrangeContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
+LagrangeContinuous::MapDOFLocal(const Cell& cell,
                                 const unsigned int node,
-                                const chi_math::UnknownManager& unknown_manager,
+                                const UnknownManager& unknown_manager,
                                 const unsigned int unknown_id,
                                 const unsigned int component) const
 {
@@ -570,11 +570,11 @@ LagrangeContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
   int64_t address = -1;
   if (is_local)
   {
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
     {
       address = sc_int64(local_base_block_size_ * block_id) + local_id;
     }
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
       address = local_id * sc_int64(num_unknowns) + sc_int64(block_id);
   } // if is_local
   else
@@ -591,11 +591,11 @@ LagrangeContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
       }
       ++counter;
     }
-    if (storage == chi_math::UnknownStorageType::BLOCK)
+    if (storage == UnknownStorageType::BLOCK)
     {
       address = sc_int64(ghost_node_mapping_.size() * block_id) + ghost_local_node_id;
     }
-    else if (storage == chi_math::UnknownStorageType::NODAL)
+    else if (storage == UnknownStorageType::NODAL)
       address = ghost_local_node_id * sc_int64(num_unknowns) + sc_int64(block_id);
 
     address += sc_int64(num_local_dofs);
@@ -605,7 +605,7 @@ LagrangeContinuous::MapDOFLocal(const chi_mesh::Cell& cell,
 }
 
 size_t
-LagrangeContinuous::GetNumGhostDOFs(const chi_math::UnknownManager& unknown_manager) const
+LagrangeContinuous::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
@@ -613,7 +613,7 @@ LagrangeContinuous::GetNumGhostDOFs(const chi_math::UnknownManager& unknown_mana
 }
 
 std::vector<int64_t>
-LagrangeContinuous::GetGhostDOFIndices(const chi_math::UnknownManager& unknown_manager) const
+LagrangeContinuous::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
 {
   std::vector<int64_t> dof_ids;
   dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
@@ -634,7 +634,7 @@ LagrangeContinuous::GetGhostDOFIndices(const chi_math::UnknownManager& unknown_m
       {
         size_t block_id = unknown_manager.MapUnknown(u, c);
         int64_t address = -1;
-        if (storage == chi_math::UnknownStorageType::BLOCK)
+        if (storage == UnknownStorageType::BLOCK)
         {
           for (int locJ = 0; locJ < Chi::mpi.process_count; ++locJ)
           {
@@ -647,7 +647,7 @@ LagrangeContinuous::GetGhostDOFIndices(const chi_math::UnknownManager& unknown_m
             break;
           }
         }
-        else if (storage == chi_math::UnknownStorageType::NODAL)
+        else if (storage == UnknownStorageType::NODAL)
           address = global_id * sc_int64(num_unknown_comps) + sc_int64(block_id);
 
         dof_ids.push_back(address);
@@ -658,4 +658,4 @@ LagrangeContinuous::GetGhostDOFIndices(const chi_math::UnknownManager& unknown_m
   return dof_ids;
 }
 
-} // namespace chi_math::spatial_discretization
+} // namespace opensn

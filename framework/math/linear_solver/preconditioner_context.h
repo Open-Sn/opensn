@@ -1,6 +1,6 @@
 #pragma once
 
-namespace chi_math
+namespace opensn
 {
 
 template <class PCType, class VecType>
@@ -11,4 +11,4 @@ struct PreconditionerContext
   virtual ~PreconditionerContext() = default;
 };
 
-} // namespace chi_math
+} // namespace opensn

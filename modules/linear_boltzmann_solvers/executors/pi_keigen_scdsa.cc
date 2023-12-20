@@ -11,15 +11,17 @@
 #include "framework/utils/timer.h"
 #include <iomanip>
 
+namespace opensn
+{
 namespace lbs
 {
 
 RegisterChiObject(lbs, XXPowerIterationKEigenSCDSA);
 
-chi::InputParameters
+InputParameters
 XXPowerIterationKEigenSCDSA::GetInputParameters()
 {
-  chi::InputParameters params = XXPowerIterationKEigen::GetInputParameters();
+  InputParameters params = XXPowerIterationKEigen::GetInputParameters();
 
   params.SetGeneralDescription("Generalized implementation of a k-Eigenvalue solver using Power "
                                "Iteration and with SCDSA acceleration.");
@@ -57,13 +59,12 @@ XXPowerIterationKEigenSCDSA::GetInputParameters()
   params.AddOptionalParameter(
     "diff_accel_sdm", "pwld", "Spatial discretization to use for the diffusion solver");
 
-  using namespace chi_data_types;
   params.ConstrainParameterRange("diff_accel_sdm", AllowableRangeList::New({"pwld", "pwlc"}));
 
   return params;
 }
 
-XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const chi::InputParameters& params)
+XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const InputParameters& params)
   : XXPowerIterationKEigen(params),
     accel_pi_max_its_(params.GetParamValue<int>("accel_pi_max_its")),
     accel_pi_k_tol_(params.GetParamValue<double>("accel_pi_k_tol")),
@@ -77,16 +78,16 @@ XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const chi::InputParamet
 {
   //// Make UnknownManager
   // const size_t num_gs_groups = front_gs_.groups_.size();
-  // chi_math::UnknownManager uk_man;
-  // uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_gs_groups);
+  // UnknownManager uk_man;
+  // uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
   //
   //// Make boundary conditions
-  // auto bcs = acceleration::TranslateBCs(lbs_solver_.SweepBoundaries(),
+  // auto bcs = TranslateBCs(lbs_solver_.SweepBoundaries(),
   //                                       /*vaccum_bcs_are_dirichlet=*/true);
   //
   //// Make xs map
   // auto matid_2_mgxs_map =
-  //   acceleration::PackGroupsetXS(lbs_solver_.GetMatID2XSMap(),
+  //   PackGroupsetXS(lbs_solver_.GetMatID2XSMap(),
   //                                front_gs_.groups_.front().id_,
   //                                front_gs_.groups_.back().id_);
   //
@@ -95,7 +96,7 @@ XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const chi::InputParamet
   // const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
   //
   // if (diffusion_solver_sdm_ == "pwld")
-  //   diffusion_solver_ = std::make_shared<acceleration::DiffusionMIPSolver>(
+  //   diffusion_solver_ = std::make_shared<DiffusionMIPSolver>(
   //     std::string(TextName() + "_WGDSA"),
   //     sdm,
   //     uk_man,
@@ -106,8 +107,8 @@ XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const chi::InputParamet
   // else
   //{
   //   continuous_sdm_ptr_ =
-  //     chi_math::SpatialDiscretization_PWLC::New(sdm.ref_grid_);
-  //   diffusion_solver_ = std::make_shared<acceleration::DiffusionPWLCSolver>(
+  //     SpatialDiscretization_PWLC::New(sdm.ref_grid_);
+  //   diffusion_solver_ = std::make_shared<DiffusionPWLCSolver>(
   //     std::string(TextName() + "_WGDSA"),
   //     *continuous_sdm_ptr_,
   //     uk_man,
@@ -141,12 +142,12 @@ XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const chi::InputParamet
   //       params.GetParamValue<std::string>(petsc_options);
   // }
   //
-  // chi::log.Log() << "Initializing diffusion solver";
+  // log.Log() << "Initializing diffusion solver";
   // diffusion_solver_->Initialize();
   // Chi::mpi.Barrier();
-  // chi::log.Log() << "Done Initializing diffusion solver";
+  // log.Log() << "Done Initializing diffusion solver";
   //
-  // chi::log.Log() << "Assembling A and b";
+  // log.Log() << "Assembling A and b";
   // std::vector<double> dummy_rhs;
   // if (diffusion_solver_sdm_ == "pwld")
   //   dummy_rhs.assign(sdm.GetNumLocalDOFs(uk_man), 0.0);
@@ -155,7 +156,7 @@ XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const chi::InputParamet
   //   0.0);
   //
   // diffusion_solver_->AssembleAand_b(dummy_rhs);
-  // chi::log.Log() << "Done Assembling A and b";
+  // log.Log() << "Done Assembling A and b";
 }
 
 void
@@ -165,14 +166,14 @@ XXPowerIterationKEigenSCDSA::Initialize()
 
   // Make UnknownManager
   const size_t num_gs_groups = front_gs_.groups_.size();
-  chi_math::UnknownManager uk_man;
-  uk_man.AddUnknown(chi_math::UnknownType::VECTOR_N, num_gs_groups);
+  UnknownManager uk_man;
+  uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
   // Make boundary conditions
-  auto bcs = acceleration::TranslateBCs(lbs_solver_.SweepBoundaries(), true);
+  auto bcs = TranslateBCs(lbs_solver_.SweepBoundaries(), true);
 
   // Make xs map
-  auto matid_2_mgxs_map = acceleration::PackGroupsetXS(
+  auto matid_2_mgxs_map = PackGroupsetXS(
     lbs_solver_.GetMatID2XSMap(), front_gs_.groups_.front().id_, front_gs_.groups_.back().id_);
 
   // Create solver
@@ -180,26 +181,23 @@ XXPowerIterationKEigenSCDSA::Initialize()
   const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
 
   if (diffusion_solver_sdm_ == "pwld")
-    diffusion_solver_ =
-      std::make_shared<acceleration::DiffusionMIPSolver>(std::string(TextName() + "_WGDSA"),
-                                                         sdm,
-                                                         uk_man,
-                                                         bcs,
-                                                         matid_2_mgxs_map,
-                                                         unit_cell_matrices,
-                                                         true); // verbosity
+    diffusion_solver_ = std::make_shared<DiffusionMIPSolver>(std::string(TextName() + "_WGDSA"),
+                                                             sdm,
+                                                             uk_man,
+                                                             bcs,
+                                                             matid_2_mgxs_map,
+                                                             unit_cell_matrices,
+                                                             true); // verbosity
   else
   {
-    continuous_sdm_ptr_ =
-      chi_math::spatial_discretization::PieceWiseLinearContinuous::New(sdm.Grid());
-    diffusion_solver_ =
-      std::make_shared<acceleration::DiffusionPWLCSolver>(std::string(TextName() + "_WGDSA"),
-                                                          *continuous_sdm_ptr_,
-                                                          uk_man,
-                                                          bcs,
-                                                          matid_2_mgxs_map,
-                                                          unit_cell_matrices,
-                                                          true); // verbosity
+    continuous_sdm_ptr_ = PieceWiseLinearContinuous::New(sdm.Grid());
+    diffusion_solver_ = std::make_shared<DiffusionPWLCSolver>(std::string(TextName() + "_WGDSA"),
+                                                              *continuous_sdm_ptr_,
+                                                              uk_man,
+                                                              bcs,
+                                                              matid_2_mgxs_map,
+                                                              unit_cell_matrices,
+                                                              true); // verbosity
     requires_ghosts_ = true;
     lbs_pwld_ghost_info_ =
       MakePWLDVecGhostCommInfo(lbs_solver_.SpatialDiscretization(), lbs_solver_.UnknownManager());
@@ -248,8 +246,6 @@ XXPowerIterationKEigenSCDSA::Execute()
 
   const size_t tag_SCDSA_solve_time = Chi::log.GetRepeatingEventTag("SCDSA_solve_time");
   const size_t tag_sweep_timing = Chi::log.GetRepeatingEventTag("Sweep Timing");
-
-  using namespace chi_math;
 
   k_eff_ = 1.0;
   double k_eff_prev = 1.0;
@@ -314,10 +310,10 @@ XXPowerIterationKEigenSCDSA::Execute()
         auto Ss = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
         // Solve the diffusion system
-        Chi::log.LogEvent(tag_SCDSA_solve_time, chi::ChiLog::EventType::EVENT_BEGIN);
+        Chi::log.LogEvent(tag_SCDSA_solve_time, ChiLog::EventType::EVENT_BEGIN);
         diffusion_solver_->Assemble_b(Ss + Sfaux + Ss_res - Sf0_ell);
         diffusion_solver_->Solve(epsilon_kp1, true);
-        Chi::log.LogEvent(tag_SCDSA_solve_time, chi::ChiLog::EventType::EVENT_END);
+        Chi::log.LogEvent(tag_SCDSA_solve_time, ChiLog::EventType::EVENT_END);
 
         epsilon_k = epsilon_kp1;
       }
@@ -382,18 +378,17 @@ XXPowerIterationKEigenSCDSA::Execute()
                  << "\n"
                  << "        Diffusion solve time  :        "
                  << Chi::log.ProcessEvent(tag_SCDSA_solve_time,
-                                          chi::ChiLog::EventOperation::TOTAL_DURATION) *
+                                          ChiLog::EventOperation::TOTAL_DURATION) *
                       1.0e-6
                  << "s\n"
                  << "        Total sweep time      :        "
-                 << Chi::log.ProcessEvent(tag_sweep_timing,
-                                          chi::ChiLog::EventOperation::TOTAL_DURATION);
+                 << Chi::log.ProcessEvent(tag_sweep_timing, ChiLog::EventOperation::TOTAL_DURATION);
   Chi::log.Log() << "\n";
 
   if (lbs_solver_.Options().use_precursors)
   {
     lbs_solver_.ComputePrecursors();
-    chi_math::Scale(lbs_solver_.PrecursorsNewLocal(), 1.0 / k_eff_);
+    Scale(lbs_solver_.PrecursorsNewLocal(), 1.0 / k_eff_);
   }
 
   lbs_solver_.UpdateFieldFunctions();
@@ -492,8 +487,8 @@ XXPowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
 }
 
 XXPowerIterationKEigenSCDSA::GhostInfo
-XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const chi_math::SpatialDiscretization& sdm,
-                                                      const chi_math::UnknownManager& uk_man)
+XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization& sdm,
+                                                      const UnknownManager& uk_man)
 {
   Chi::log.Log() << "Making PWLD ghost communicator";
 
@@ -533,7 +528,7 @@ XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const chi_math::SpatialDis
   std::vector<int64_t> global_indices(global_dof_ids_set.begin(), global_dof_ids_set.end());
 
   // Create the vector ghost communicator
-  auto vgc = std::make_shared<chi_math::VectorGhostCommunicator>(
+  auto vgc = std::make_shared<VectorGhostCommunicator>(
     num_local_dofs, num_globl_dofs, global_indices, Chi::mpi.comm);
 
   // Create the map
@@ -553,9 +548,9 @@ XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const chi_math::SpatialDis
 std::vector<double>
 XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
   const std::vector<double>& input,
-  const chi_math::SpatialDiscretization& pwld_sdm,
-  const chi_math::SpatialDiscretization& pwlc_sdm,
-  const chi_math::UnknownManager& uk_man,
+  const SpatialDiscretization& pwld_sdm,
+  const SpatialDiscretization& pwlc_sdm,
+  const UnknownManager& uk_man,
   const XXPowerIterationKEigenSCDSA::GhostInfo& ghost_info)
 {
   const auto& vgc = ghost_info.vector_ghost_communicator;
@@ -683,3 +678,4 @@ XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 }
 
 } // namespace lbs
+} // namespace opensn

@@ -8,10 +8,12 @@
 
 #include <petscsnes.h>
 
-namespace lbs::acceleration
+namespace opensn
+{
+namespace lbs
 {
 
-struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext
+struct NLKEigenDiffContext : public NonLinearSolverContext
 {
   DiffusionMIPSolver& diff_solver_;
   LBSSolver& lbs_solver_;
@@ -62,4 +64,5 @@ struct NLKEigenDiffContext : public chi_math::NonLinearSolverContext
   ~NLKEigenDiffContext() override = default;
 };
 
-} // namespace lbs::acceleration
+} // namespace lbs
+} // namespace opensn

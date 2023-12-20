@@ -31,12 +31,12 @@
 #include <iomanip>
 #include <cmath>
 
+namespace opensn
+{
+
 typedef std::vector<std::pair<double, double>> AnglePairs;
 typedef std::vector<double> Tvecdbl;
 
-// ###################################################################
-namespace chi_math
-{
 /**Implementation of the GolubFischer Modified ChebyShev Algorithm (MCA) to find
  * moment-preserving angles from a set of moments computed for the expansion of
  * an angular function in Legendre polynomials.
@@ -72,4 +72,5 @@ private:
   /**Computes the function evaluation of the orthogonal polynomials.*/
   double Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta);
 };
-} // namespace chi_math
+
+} // namespace opensn

@@ -14,31 +14,33 @@
 
 #include "framework/console/console.h"
 
-namespace chi_unit_sim_tests
+using namespace opensn;
+
+namespace unit_sim_tests
 {
 
-chi::ParameterBlock acceleration_Diffusion_DFEM(const chi::InputParameters& params);
+ParameterBlock acceleration_Diffusion_DFEM(const InputParameters& params);
 
 RegisterWrapperFunction(chi_unit_tests,
                         acceleration_Diffusion_DFEM,
                         nullptr,
                         acceleration_Diffusion_DFEM);
 
-chi::ParameterBlock
-acceleration_Diffusion_DFEM(const chi::InputParameters&)
+ParameterBlock
+acceleration_Diffusion_DFEM(const InputParameters&)
 {
-  typedef std::map<int, lbs::acceleration::Multigroup_D_and_sigR> MatID2XSMap;
-  Chi::log.Log() << "chiSimTest92_DSA";
+  typedef std::map<int, lbs::Multigroup_D_and_sigR> MatID2XSMap;
+  opensn::Chi::log.Log() << "chiSimTest92_DSA";
 
   // Get grid
-  auto grid_ptr = chi_mesh::GetCurrentHandler().GetGrid();
+  auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make SDM
-  typedef std::shared_ptr<chi_math::SpatialDiscretization> SDMPtr;
-  SDMPtr sdm_ptr = chi_math::spatial_discretization::PieceWiseLinearDiscontinuous::New(grid);
+  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
+  SDMPtr sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
   const auto& sdm = *sdm_ptr;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
@@ -46,27 +48,24 @@ acceleration_Diffusion_DFEM(const chi::InputParameters&)
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
-  Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
+  opensn::Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
+  opensn::Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
   // Make Boundary conditions
-  typedef lbs::acceleration::BoundaryCondition BC;
+  typedef lbs::BoundaryCondition BC;
   std::map<uint64_t, BC> bcs;
-  bcs[0] = {lbs::acceleration::BCType::DIRICHLET, {2, 0, 0}},
-  bcs[1] = {lbs::acceleration::BCType::DIRICHLET, {2, 0, 0}},
-  bcs[2] = {lbs::acceleration::BCType::DIRICHLET, {2, 0, 0}},
-  bcs[3] = {lbs::acceleration::BCType::DIRICHLET, {2, 0, 0}},
-  bcs[4] = {lbs::acceleration::BCType::DIRICHLET, {2, 0, 0}},
-  bcs[5] = {lbs::acceleration::BCType::DIRICHLET, {2, 0, 0}};
+  bcs[0] = {lbs::BCType::DIRICHLET, {2, 0, 0}}, bcs[1] = {lbs::BCType::DIRICHLET, {2, 0, 0}},
+  bcs[2] = {lbs::BCType::DIRICHLET, {2, 0, 0}}, bcs[3] = {lbs::BCType::DIRICHLET, {2, 0, 0}},
+  bcs[4] = {lbs::BCType::DIRICHLET, {2, 0, 0}}, bcs[5] = {lbs::BCType::DIRICHLET, {2, 0, 0}};
 
   MatID2XSMap matid_2_xs_map;
-  matid_2_xs_map.insert(std::make_pair(0, lbs::acceleration::Multigroup_D_and_sigR{{1.0}, {0.0}}));
+  matid_2_xs_map.insert(std::make_pair(0, lbs::Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
   std::vector<lbs::UnitCellMatrices> unit_cell_matrices;
   unit_cell_matrices.resize(grid.local_cells.size());
 
   // Build unit integrals
-  typedef std::vector<chi_mesh::Vector3> VecVec3;
+  typedef std::vector<Vector3> VecVec3;
   typedef std::vector<VecVec3> MatVec3;
   for (const auto& cell : grid.local_cells)
   {
@@ -146,7 +145,7 @@ acceleration_Diffusion_DFEM(const chi::InputParameters&)
   } // for cell
 
   // Make solver
-  lbs::acceleration::DiffusionMIPSolver solver(
+  lbs::DiffusionMIPSolver solver(
     "SimTest92_DSA", sdm, OneDofPerNode, bcs, matid_2_xs_map, unit_cell_matrices, true);
   solver.options.ref_solution_lua_function = "MMS_phi";
   solver.options.source_lua_function = "MMS_q";
@@ -156,7 +155,7 @@ acceleration_Diffusion_DFEM(const chi::InputParameters&)
 
   solver.Initialize();
 
-  Chi::log.Log() << "Done constructing solver" << std::endl;
+  opensn::Chi::log.Log() << "Done constructing solver" << std::endl;
 
   // Assemble and solve
   std::vector<double> q_vector(num_local_dofs, 1.0);
@@ -170,19 +169,19 @@ acceleration_Diffusion_DFEM(const chi::InputParameters&)
   solver.Solve(x_vector);
 
   // Make Field-Function
-  auto ff = std::make_shared<chi_physics::FieldFunctionGridBased>(
-    "Phi", sdm_ptr, OneDofPerNode.unknowns_.front());
+  auto ff =
+    std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, OneDofPerNode.unknowns_.front());
 
   ff->UpdateFieldVector(x_vector);
 
-  chi_physics::FieldFunctionGridBased::ExportMultipleToVTK("SimTest_92a_DSA", {ff});
+  FieldFunctionGridBased::ExportMultipleToVTK("SimTest_92a_DSA", {ff});
 
   // Compute error
   // First get ghosted values
   const auto field_wg = ff->GetGhostedFieldVector();
 
   double local_error = 0.0;
-  lua_State* L = chi::Console::GetInstance().GetConsoleState();
+  lua_State* L = Console::GetInstance().GetConsoleState();
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -204,22 +203,22 @@ acceleration_Diffusion_DFEM(const chi::InputParameters&)
       for (size_t j = 0; j < num_nodes; ++j)
         phi_fem += nodal_phi[j] * qp_data.ShapeValue(j, qp);
 
-      double phi_true = lbs::acceleration::DiffusionMIPSolver::CallLuaXYZFunction(
-        L, "MMS_phi", qp_data.QPointXYZ(qp));
+      double phi_true =
+        lbs::DiffusionMIPSolver::CallLuaXYZFunction(L, "MMS_phi", qp_data.QPointXYZ(qp));
 
       local_error += std::pow(phi_true - phi_fem, 2.0) * qp_data.JxW(qp);
     }
   } // for cell
 
   double global_error = 0.0;
-  MPI_Allreduce(&local_error, &global_error, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
+  MPI_Allreduce(&local_error, &global_error, 1, MPI_DOUBLE, MPI_SUM, opensn::Chi::mpi.comm);
 
   global_error = std::sqrt(global_error);
 
-  Chi::log.Log() << "Error: " << std::scientific << global_error
-                 << " Num-cells: " << grid.GetGlobalNumberOfCells();
+  opensn::Chi::log.Log() << "Error: " << std::scientific << global_error
+                         << " Num-cells: " << grid.GetGlobalNumberOfCells();
 
-  return chi::ParameterBlock();
+  return ParameterBlock();
 }
 
-} // namespace chi_unit_sim_tests
+} //  namespace unit_sim_tests

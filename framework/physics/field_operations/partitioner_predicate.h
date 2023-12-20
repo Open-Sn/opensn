@@ -2,27 +2,23 @@
 
 #include "framework/physics/field_operations/field_operation.h"
 
-namespace chi
+namespace opensn
 {
 class GraphPartitioner;
-}
-
-namespace chi_physics::field_operations
-{
 
 class PartitionerPredicate : public FieldOperation
 {
 public:
-  static chi::InputParameters GetInputParameters();
-  explicit PartitionerPredicate(const chi::InputParameters& params);
+  static InputParameters GetInputParameters();
+  explicit PartitionerPredicate(const InputParameters& params);
 
   void Execute() override;
 
 protected:
-  chi::GraphPartitioner& partitioner_;
-  const chi::ParameterBlock result_field_param_;
+  GraphPartitioner& partitioner_;
+  const ParameterBlock result_field_param_;
   const size_t num_partitions_;
   const size_t result_component_;
 };
 
-} // namespace chi_physics::field_operations
+} // namespace opensn

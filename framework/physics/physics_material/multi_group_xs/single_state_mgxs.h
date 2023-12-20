@@ -2,7 +2,7 @@
 
 #include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 
-namespace chi_physics
+namespace opensn
 {
 
 /**
@@ -34,7 +34,7 @@ protected:
 
   std::vector<double> inv_velocity_;
 
-  std::vector<chi_math::SparseMatrix> transfer_matrices_;
+  std::vector<SparseMatrix> transfer_matrices_;
   std::vector<std::vector<double>> production_matrix_;
 
   std::vector<Precursor> precursors_;
@@ -54,7 +54,6 @@ private:
   std::vector<std::vector<AnglePairs>> scat_angles_gprime_g_;
 
 public:
-  // 00
   SingleStateMGXS()
     : MultiGroupXS(),
       num_groups_(0),
@@ -120,12 +119,9 @@ public:
 
   const std::vector<double>& InverseVelocity() const override { return inv_velocity_; }
 
-  const std::vector<chi_math::SparseMatrix>& TransferMatrices() const override
-  {
-    return transfer_matrices_;
-  }
+  const std::vector<SparseMatrix>& TransferMatrices() const override { return transfer_matrices_; }
 
-  const chi_math::SparseMatrix& TransferMatrix(unsigned int ell) const override
+  const SparseMatrix& TransferMatrix(unsigned int ell) const override
   {
     return transfer_matrices_.at(ell);
   }
@@ -153,4 +149,4 @@ public:
   const std::vector<double>& SigmaSGtoG() const override { return sigma_s_gtog_; }
 };
 
-} // namespace chi_physics
+} // namespace opensn

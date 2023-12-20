@@ -6,7 +6,9 @@
 
 #include "framework/console/console.h"
 
-namespace lbs::adjoint_lua_utils
+using namespace opensn;
+
+namespace opensnlua::lbs
 {
 
 RegisterLuaFunctionAsIs(chiAdjointSolverMakeExpRepFromP1Moments);
@@ -38,10 +40,10 @@ chiAdjointSolverMakeExpRepFromP1Moments(lua_State* L)
     verbose = lua_toboolean(L, 2);
   }
 
-  auto solution = lbs::MakeExpRepFromP1({P1[0], P1[1], P1[2], P1[3]}, verbose);
+  auto solution = opensn::lbs::MakeExpRepFromP1({P1[0], P1[1], P1[2], P1[3]}, verbose);
 
   lua_pushnumber(L, solution[0]);
   lua_pushnumber(L, solution[1]);
   return 2;
 }
-} // namespace lbs::adjoint_lua_utils
+} // namespace opensnlua::lbs

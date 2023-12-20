@@ -8,13 +8,15 @@
 
 #define scint static_cast<int>
 
+namespace opensn
+{
 namespace lbs
 {
 
 CBC_SweepChunk::CBC_SweepChunk(std::vector<double>& destination_phi,
                                std::vector<double>& destination_psi,
-                               const chi_mesh::MeshContinuum& grid,
-                               const chi_math::SpatialDiscretization& discretization,
+                               const MeshContinuum& grid,
+                               const SpatialDiscretization& discretization,
                                const std::vector<UnitCellMatrices>& unit_cell_matrices,
                                std::vector<lbs::CellLBSView>& cell_transport_views,
                                const std::vector<double>& source_moments,
@@ -60,11 +62,11 @@ CBC_SweepChunk::CBC_SweepChunk(std::vector<double>& destination_phi,
 }
 
 void
-CBC_SweepChunk::SetAngleSet(chi_mesh::sweep_management::AngleSet& angle_set)
+CBC_SweepChunk::SetAngleSet(AngleSet& angle_set)
 {
   cbc_sweep_depinterf_.fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
-  const chi::SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
+  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
 
   gs_ss_size_ = grp_ss_info.ss_size;
   gs_ss_begin_ = grp_ss_info.ss_begin;
@@ -80,8 +82,7 @@ CBC_SweepChunk::SetAngleSet(chi_mesh::sweep_management::AngleSet& angle_set)
 }
 
 void
-CBC_SweepChunk::SetCell(const chi_mesh::Cell* cell_ptr,
-                        chi_mesh::sweep_management::AngleSet& angle_set)
+CBC_SweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
 {
   cell_ptr_ = cell_ptr;
   cell_local_id_ = cell_ptr_->local_id_;
@@ -109,15 +110,15 @@ CBC_SweepChunk::SetCell(const chi_mesh::Cell* cell_ptr,
 }
 
 void
-CBC_SweepChunk::SetCells(const std::vector<const chi_mesh::Cell*>& cell_ptrs)
+CBC_SweepChunk::SetCells(const std::vector<const Cell*>& cell_ptrs)
 {
   cell_ptrs_ = cell_ptrs;
 }
 
 void
-CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
+CBC_SweepChunk::Sweep(AngleSet& angle_set)
 {
-  using FaceOrientation = chi_mesh::sweep_management::FaceOrientation;
+  using FaceOrientation = FaceOrientation;
   const auto& face_orientations = angle_set.GetSPDS().CellFaceOrientations()[cell_local_id_];
   const auto& sigma_t = xs_.at(cell_->material_id_)->SigmaTotal();
 
@@ -172,7 +173,7 @@ CBC_SweepChunk::Sweep(chi_mesh::sweep_management::AngleSet& angle_set)
       ExecuteKernels(mass_term_kernels_);
 
       // Solve system
-      chi_math::GaussElimination(Atemp_, b_[gsg], scint(cell_num_nodes_));
+      GaussElimination(Atemp_, b_[gsg], scint(cell_num_nodes_));
     }
 
     // Flux updates
@@ -316,3 +317,4 @@ CBC_SweepDependencyInterface::GetDownwindPsi(int face_node_local_idx) const
 }
 
 } // namespace lbs
+} // namespace opensn

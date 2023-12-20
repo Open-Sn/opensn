@@ -44,12 +44,10 @@ void LuaPopulateVectorFrom1DArray(const std::string& func_name,
                                   int table_arg_index,
                                   std::vector<double>& vec);
 
-namespace chi
+namespace opensn
 {
 class ParameterBlock;
-}
-namespace chi_lua
-{
+
 /**This static object is used to parse lua tables into parameter blocks.*/
 class TableParserAsParameterBlock
 {
@@ -59,13 +57,12 @@ private:
    * currently active, will be extended with a parameter of this primitive
    * type. If the value is another table, a new `Block`-type will be instantiated
    * and the table recursion will then operate on this new block.*/
-  static void RecursivelyParseTableValues(lua_State* L,
-                                          chi::ParameterBlock& block,
-                                          const std::string& key_str_name);
+  static void
+  RecursivelyParseTableValues(lua_State* L, ParameterBlock& block, const std::string& key_str_name);
 
   /**This function operates on table keys recursively. It has a specific
    * behavior if it detects an array.*/
-  static void RecursivelyParseTableKeys(lua_State* L, int t, chi::ParameterBlock& block);
+  static void RecursivelyParseTableKeys(lua_State* L, int t, ParameterBlock& block);
 
 public:
   /**\brief Parses a lua table into a hierarchical parameter block.
@@ -96,7 +93,7 @@ public:
    * chiUnitTests_Test_paramblock(--[[verbose=]]true, block)
    * \endcode
    */
-  static chi::ParameterBlock ParseTable(lua_State* L, int table_stack_index);
+  static ParameterBlock ParseTable(lua_State* L, int table_stack_index);
 };
 
 /**\brief This recursive routine operates on a parameter block and passes
@@ -106,8 +103,9 @@ public:
  * the parameter block will have its individual parameters exported as single
  * values, otherwise the block is exported as a table.
  */
-void PushParameterBlock(lua_State* L, const chi::ParameterBlock& block, int level = 0);
+void PushParameterBlock(lua_State* L, const ParameterBlock& block, int level = 0);
 
-chi::ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
-} // namespace chi_lua
+ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
+
+} // namespace opensn
 #endif

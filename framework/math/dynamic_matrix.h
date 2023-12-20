@@ -5,18 +5,16 @@
 #include <sstream>
 
 #include "framework/math/math.h"
+#include "framework/math/dynamic_vector.h"
 
-namespace chi_math
+namespace opensn
 {
 template <class NumberFormat>
 class DynamicMatrix;
-}
-
-#include "framework/math/dynamic_vector.h"
 
 /**General dynamic matrix utility.*/
 template <class NumberFormat>
-class chi_math::DynamicMatrix
+class DynamicMatrix
 {
   typedef std::pair<size_t, size_t> MatDim;
 
@@ -321,7 +319,7 @@ public:
   /**Obtains the inverse with Gauss-Elimination.*/
   DynamicMatrix Inverse() const
   {
-    auto inv_elems = chi_math::InverseGEPivoting(elements_);
+    auto inv_elems = InverseGEPivoting(elements_);
 
     return DynamicMatrix<NumberFormat>(inv_elems);
   }
@@ -372,14 +370,16 @@ public:
 
 /**Multiplication by a scalar from the left.*/
 template <class NumberFormat>
-chi_math::DynamicMatrix<NumberFormat>
-operator*(const double value, chi_math::DynamicMatrix<NumberFormat>& that)
+DynamicMatrix<NumberFormat>
+operator*(const double value, DynamicMatrix<NumberFormat>& that)
 {
   auto dim = that.Dimensions();
-  chi_math::DynamicMatrix<NumberFormat> newMatrix(dim.first, dim.second);
+  DynamicMatrix<NumberFormat> newMatrix(dim.first, dim.second);
   for (int i = 0; i < dim.first; ++i)
     for (int j = 0; j < dim.second; ++j)
       newMatrix.elements_[i][j] = that.elements_[i][j] * value;
 
   return newMatrix;
 }
+
+} // namespace opensn

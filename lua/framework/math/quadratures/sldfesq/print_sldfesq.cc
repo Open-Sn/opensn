@@ -10,6 +10,8 @@
 #include "framework/console/console.h"
 #include "sldfe_lua.h"
 
+using namespace opensn;
+
 RegisterLuaFunctionAsIs(chiPrintToPythonSLDFESQAngularQuadrature);
 
 int
@@ -23,13 +25,12 @@ chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
 
   try
   {
-    auto ref_quadrature = Chi::angular_quadrature_stack.at(handle);
-    if (ref_quadrature->type_ == chi_math::AngularQuadratureType::SLDFESQ)
+    auto ref_quadrature = opensn::Chi::angular_quadrature_stack.at(handle);
+    if (ref_quadrature->type_ == AngularQuadratureType::SLDFESQ)
     {
-      auto sldfesq =
-        std::dynamic_pointer_cast<chi_math::SimplifiedLDFESQ::Quadrature>(ref_quadrature);
+      auto sldfesq = std::dynamic_pointer_cast<SimplifiedLDFESQ::Quadrature>(ref_quadrature);
 
-      if (Chi::mpi.location_id == 0)
+      if (opensn::Chi::mpi.location_id == 0)
       {
         sldfesq->output_filename_prefix_ = file_name;
         sldfesq->PrintQuadratureToFile();
@@ -37,22 +38,22 @@ chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
     }
     else
     {
-      Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
-                                "Invalid angular quadrature type.";
-      Chi::Exit(EXIT_FAILURE);
+      opensn::Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+                                        "Invalid angular quadrature type.";
+      opensn::Chi::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
-    Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
-                              "Invalid handle to angular quadrature.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+                                      "Invalid handle to angular quadrature.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
   catch (...)
   {
-    Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
-                              "Call failed with unknown error.";
-    Chi::Exit(EXIT_FAILURE);
+    opensn::Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+                                      "Call failed with unknown error.";
+    opensn::Chi::Exit(EXIT_FAILURE);
   }
 
   return 0;

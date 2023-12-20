@@ -6,12 +6,14 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#define dcastPoint(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationPoint&>(x)
-#define dcastLine(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationLine&>(x)
-#define dcastVolume(x) dynamic_cast<chi_mesh::FieldFunctionInterpolationVolume&>(x)
+#define dcastPoint(x) dynamic_cast<opensn::FieldFunctionInterpolationPoint&>(x)
+#define dcastLine(x) dynamic_cast<opensn::FieldFunctionInterpolationLine&>(x)
+#define dcastVolume(x) dynamic_cast<opensn::FieldFunctionInterpolationVolume&>(x)
 
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
+
+using namespace opensn;
 
 RegisterLuaFunctionAsIs(chiFFInterpolationGetValue);
 
@@ -26,9 +28,10 @@ chiFFInterpolationGetValue(lua_State* L)
   // Get handle to field function
   const size_t ffihandle = lua_tonumber(L, 1);
 
-  auto p_ffi = Chi::GetStackItemPtr(Chi::field_func_interpolation_stack, ffihandle, fname);
+  auto p_ffi =
+    opensn::Chi::GetStackItemPtr(opensn::Chi::field_func_interpolation_stack, ffihandle, fname);
 
-  if (p_ffi->Type() == chi_mesh::ff_interpolation::Type::POINT)
+  if (p_ffi->Type() == FieldFunctionInterpolationType::POINT)
   {
     auto& cur_ffi_point = dcastPoint(*p_ffi);
     double value = cur_ffi_point.GetPointValue();
@@ -36,7 +39,7 @@ chiFFInterpolationGetValue(lua_State* L)
     lua_pushnumber(L, value);
     return 1;
   }
-  else if (p_ffi->Type() == chi_mesh::ff_interpolation::Type::LINE)
+  else if (p_ffi->Type() == FieldFunctionInterpolationType::LINE)
   {
     auto& cur_ffi_line = dcastLine(*p_ffi);
 
@@ -61,7 +64,7 @@ chiFFInterpolationGetValue(lua_State* L)
 
     return 1;
   }
-  else if (p_ffi->Type() == chi_mesh::ff_interpolation::Type::VOLUME)
+  else if (p_ffi->Type() == FieldFunctionInterpolationType::VOLUME)
   {
     auto& cur_ffi_volume = dcastVolume(*p_ffi);
     double value = cur_ffi_volume.GetOpValue();
@@ -71,8 +74,8 @@ chiFFInterpolationGetValue(lua_State* L)
   }
   else
   {
-    Chi::log.Log0Warning() << "chiFFInterpolationGetValue is currently only supported for "
-                           << " POINT, LINE and VOLUME interpolator types.";
+    opensn::Chi::log.Log0Warning() << "chiFFInterpolationGetValue is currently only supported for "
+                                   << " POINT, LINE and VOLUME interpolator types.";
   }
 
   return 0;
