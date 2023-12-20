@@ -45,43 +45,54 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument(
-    "-d", "--directory", default=None, type=str, required=True,
+    "-d", "--directory",
+    type=str, required=False,
+    default=os.path.abspath(os.path.dirname(__file__)),
     help="The test directory to process"
 )
 
 parser.add_argument(
-    "-t", "--test", default=None, type=str, required=False,
+    "-t", "--test",
+    type=str, required=False, default=None,
     help="A specific test to run"
 )
 
 parser.add_argument(
-    "--exe", default="build/test/opensn-test", type=str, required=False,
+    "--exe",
+    type=str, required=False,
+    default="build/test/opensn-test",
     help="The executable to use for testing"
 )
 
 parser.add_argument(
-    "-j", "--jobs", default=1, type=int, required=False,
+    "-j", "--jobs",
+    type=int, required=False, default=1,
     help="Allow N jobs at once"
 )
 
 parser.add_argument(
-    "-v", "--verbose", default=False, type=bool, required=False,
+    "-v", "--verbose",
+    type=bool, required=False, default=False,
     help="Controls verbose failure"
 )
 
 parser.add_argument(
-   "--mpi-cmd", default="mpiexec -n ", type=str, required=False,
-   help="MPI application launcher command"
+    "--mpi-cmd",
+    type=str, required=False, default="mpiexec -n ",
+    help="MPI application launcher command"
 )
 
-parser.add_argument("-w", "--weights", default=3, type=int, required=False,
-                    help="Test weight configuration. Single numeric value < 7,"
-                         " converted to binary gives the long, intermediate, "
-                         "short test weight configuration flag. For example:"
-                         " 111 -> [long, intermediate, short], "
-                         "7 -> 111 runs short, intermediate and long tests."
-                         "4 -> 100 runs only the long tests. 3-> 011 runs the "
-                         "short and intermediate tests.")
+parser.add_argument(
+    "-w", "--weights",
+    type=int, required=False, default=3,
+    help="Test weight configuration. Single numeric value < 7,"
+         " converted to binary gives the long, intermediate, "
+         "short test weight configuration flag. For example:"
+         " 111 -> [long, intermediate, short], "
+         "7 -> 111 runs short, intermediate and long tests."
+         "4 -> 100 runs only the long tests. 3-> 011 runs the "
+         "short and intermediate tests."
+)
 
 argv = parser.parse_args()  # argv = argument values
 
