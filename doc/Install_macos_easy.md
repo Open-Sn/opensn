@@ -1,179 +1,144 @@
-# Easy install on MacOS Machines
+# Easy Install on MacOS
 
 The following instructions were tested on MacOS Monterey (= version 12).
 
-### Step 0
+## Prerequisites
 
-Install ```Homebrew``` (Mac ports could be an alternative).
-
-### Step 1 - Installing GCC, GFortran and the basic environment
-
-Then, you may need to install, using brew, the following:
+The following packages should be installed via Homebrew
 - make
 - cmake
 - gcc
 - wget
 
-Each time, use: 
-```bash 
-brew install *package_name*
+To install any missing packages use
+```shell
+brew install <package name>
 ```
 
-I created a ```/Users/USERNAME/local/bin/``` directory where I symbolically linked 
-```gcc```, ```g++```, ```gfortran```
-```bash
-cd /Users/USERNAME/local/bin/
-ln -s /Users/USERNAME/local/homebrew/Cellar/gcc/12.2.0/bin/gcc-12 gcc
-ln -s /Users/USERNAME/local/homebrew/Cellar/gcc/12.2.0/bin/gfortran-12 gfortran
-ln -s /Users/USERNAME/local/homebrew/Cellar/gcc/12.2.0/bin/g++-12 g++
-```
+## Step 1 - MPICH
 
-In your ```.bashrc``` file (or ```.bash_profile```), add these lines_
-```bash
-export PATH=/Users/jean.ragusa/local/bin/:$PATH
+Download a suitable version of [MPICH 4+](https://www.mpich.org/static/downloads).
+Versions above 4.0 are recommended.
+Unpack the source into `/path/to/mpich`. Assuming MPICH will be built in
+`/path/to/mpich/build` and installed in `/path/to/mpich/install`, execute the
+following to configure, build, and install MPICH:
+```shell
+mkdir -p /path/to/mpich/build
+cd /path/to/mpich/build
 
-export CC=/Users/USERNAME/local/local/bin/gcc
-export CXX=/Users/USERNAME/local/local/bin/g++
-export FC=/Users/USERNAME/local/local/bin/gfortran
-```
-Source your ```.bashrc``` to take into accounts those updates:
-```bash
-source ~/.bashrc
-```
-Make sure the following environment variables have been properly set
-```bash
-$CC --version
-$CXX --version
-$FC --version
-```
-### Step 2 - MPICH
+/path/to/mpich/configure \
+--prefix=/path/to/mpich/install \
+CC=gcc-13 CXX=g++-13 FC=gfortran-13 F77=gfortran-13 \
+FCFLAGS=-fallow-argument-mismatch FFLAGS=-fallow-argument-mismatch
 
-Download ```MPICH``` from the web locally to your drive. Untar the ball. 
-
-Configure and install as follows:
-```bash
-./configure --prefix=$PWD/build FFLAGS=-fallow-argument-mismatch FCFLAGS=-fallow-argument-mismatch
-make
+make -j<N>
 make install
 ```
+It is recommended by MPICH that the build and install directories be outside
+the source tree `/path/to/mpich`.
 
-Check that everything went fine:
-```bash
-mpicc --version
+Check the installation:
+```shell
+/path/to/mpich/install/bin/mpicc --version
 ```
-Now, update your ```.bashrc``` file
-```bash
-export PATH=/Users/USERNAME/local/MPICH/mpich-4.0.3/build/bin:$PATH
- 
-export CC=/Users/USERNAME/local/MPICH/mpich-4.0.3/build/bin/mpicc
-export CXX=/Users/USERNAME/local/MPICH/mpich-4.0.3/build/bin/mpicxx
-export FC=/Users/USERNAME/local/MPICH/mpich-4.0.3/build/bin/mpifort
+If the installation was successful, a message similar to
 ```
-which means that, from now on, the C, C++, and Fortran compilers are the ones from MPICH.
-
-Make sure to ```source ~/.bashrc``` (or ```source ~/.bash_profile```) to take into accounts those updates.
-
-### Step 3 - Clone Chi-Tech
-
-**Note:** From now on, the rest of the instructions are identical to the ones from the 
-[Easy Linux instructions](./Install_ubuntu_easy.md)
-
-**Important:**  If you want to contribute to **Chi-Tech**, it is strongly recommended to first fork the **Chi-Tech** repository into your own Git account and then to clone your fork. 
-
-Clone the **Chi-Tech** repository.  Go the folder where you want to keep Chi-Tech relevant stuff:
-```bash
-    $ git clone https://github.com/chi-tech/chi-tech
+gcc-13 (Homebrew GCC 13.2.0) 13.2.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
+should appear. Ensure that the message displays the desired compilers.
+If successful, set the following evironment variables in the `~/.bashrc` or
+`~/.bash_profile` script:
+```shell
+export MPI_DIR="/path/to/mpich/install"
+export PATH="${MPI_DIR}/bin:${PATH}"
+
+export CC="${MPI_DIR}/mpicc"
+export CXX="${MPI_DIR}/mpicxx"
+export FC="${MPI_DIR}/mpifort"
+export F77="${MPI_DIR}/mpif77"
+```
+
+## Step 2 - Clone OpenSn
+
+The remainder of the instructions are identical to
+[Easy Linux instructions](./install_ubuntu_easy.md).
+
+Note:  If you want to contribute to OpenSn, it is strongly recommended
+to first fork the OpenSn repository into your own Git account and then to
+clone your fork.
+
+Clone the OpenSn repository or a fork:
+```shell
+git clone https://github.com/Open-Sn/opensn.git /path/to/opensn
+````
 or
-```bash
-    $ git clone https://github.com/YOUR-NAME/chi-tech
+```shell
+git clone https://github.com/<username>/opensn.git /path/to/opensn
 ```
 
-**Important:** We recommend building all the dependencies into a separate folder. For instance_,
-```bash
-    $ mkdir dependencies
+## Step 3 - Set Up the Enviroment
+
+Next, run the script to compile the necessary dependencies with
+```shell
+mkdir -p /path/to/dependencies
+cd /path/to/opensn
+python3 resources/configure_dependencies.py -d /path/to/dependencies
+```
+It is recommended that `path/to/dependencies` be outside the OpenSn
+source tree. Set environment variables for building OpenSn with the
+generated script:
+```shell
+source /path/to/dependencies/configure_deproots.sh
 ```
 
-Before building the dependencies, you need to export a few variables for the PETSc install:
-```bash
-    $ export CC=mpicc
-    $ export CXX=mpicxx
-    $ export FC=mpifort
+## Step 4 - Configure and Build OpenSn
+
+OpenSn is configured within a build directory with
+```shell
+cd /path/to/opensn
+mkdir build
+cd build
+cmake ..
+```
+This will configure the project for building it.
+In general, the build directory will be within the source tree.
+OpenSn can then be built within the build directory via
+```shell
+make -j<N>
 ```
 
-Go to the chi-tech folder you have just cloned and type:
-```bash
-    $ cd chi-tech
-    $ python3 resources/configure_dependencies.py -d ../dependencies
-```
-The configure script will attempt to download and install all the necessary 
-dependencies **and may take a long time**
+Note: OpenSn may need to be reconfigured with dependency changes, the addition
+of new files, etc. When this occurs, clear the `build` directory and repeat
+the configuration process above.
 
-### Step 4 - Configure environment
+## Step 5 - Run Regression Tests
 
-The next step in this process is to setup the environment variables for compiling
-Chi-Tech.
-
-```bash
-    $source ../dependencies/configure_deproots.sh
-```
-**Note:** You can replace ```$source ``` in the above with ```$. ```
-
-### Step 5 - Build Chi-Tech
-
-To compile Chi-Tech now just execute:
-```bash
-    $ ./configure.sh
-```
-The configure script will generate the CMake build scripts.
-
-In the main directory (i.e. *chi-tech/*), execute:
-```bash
-    $ make -j4
+To check if the code compiled correctly execute the test scripts:
+```shell
+cd /path/to/opensn
+test/run_tests -j<N>
 ```
 
-You can also use -j8 even if you don't have 8 processors, the make command
-will use threading where possible.
+## Step 6 - OpenSn Documentation
 
-Whenever recompilation is needed or the configuration has changed,
-you can run
-```bash
-    $ ./configure.sh clean
-    $ ./configure.sh
-    $ make -j4
-```
-
-### Step 6 - Run regression tests
-
-To check if the code compiled correctly, execute the test scripts:
-
-```bash
-    $ test/run_tests -d test/ -j8
-```
-
-### Step 8 - Chi-Tech documentation
-
-You can either access the documentation online [here](https://chi-tech.github.io), or generate it locally.
-
-To generate the documentation from your local working copy, first make sure
-Doxygen and LaTeX are installed:
-
-```bash
+The documentation can be found [online](https://chi-tech.github.io), or
+generated locally. To generate the documentation locally, first make sure
+doxygen and LaTeX are installed:
+```shell
 sudo apt-get install doxygen texlive
 ```
 
-The documentation is contained in the *doc* folder and can be generated
-using a script provided in that folder:
-
-```bash
-cd doc/
+The documentation is contained in the `doc` directory of the OpenSn source
+tree and can be generated with
+```shell
 ./YReGenerateDocumentation.sh
 ```
-
-Once finished, you can view the generated documentation by opening
-
-```bash
+from within the `doc` directory. Once finished, the generated documentation
+can be viewed with
+```shell
 doc/HTMLdocs/html/index.html
 ```
-
-in your favorite browser.
+in a web browser.
