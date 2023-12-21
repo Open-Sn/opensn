@@ -1,13 +1,13 @@
 """
-This is a utility script for the download and installation of chi-tech
+This is a utility script for the download and installation of OpenSn
 dependencies.
 """
 import os
 import sys
 import argparse
-import textwrap
-import subprocess
 import shutil
+import subprocess
+import textwrap
 from typing import Optional, TextIO
 
 if sys.version_info.major < 3:
@@ -40,27 +40,31 @@ Run the dependency builder.
 
 parser = argparse.ArgumentParser(
     description="This is a utility script for the download and installation" +
-                "of chi-tech dependencies.",
+                "of OpenSn dependencies.",
     epilog=arguments_help
 )
 
 parser.add_argument(
-    "-d", "--directory", default=None, type=str, required=True,
+    "-d", "--directory",
+    type=str, required=True, default=None,
     help="Directory into which the dependencies will be installed"
 )
 
 parser.add_argument(
-    "-j", "--jobs", default=4, type=int, required=False,
+    "-j", "--jobs",
+    type=int, required=False, default=4,
     help="Allow N compile jobs at once"
 )
 
 parser.add_argument(
-    "-v", "--verbose", default=False, type=bool, required=False,
+    "-v", "--verbose",
+    type=bool, required=False, default=False,
     help="Controls verbose failure"
 )
 
 parser.add_argument(
-    "-dl", "--download_only", default=False, type=bool, required=False,
+    "-dl", "--download_only",
+    type=bool, required=False, default=False,
     help="Controls verbose failure"
 )
 
@@ -81,16 +85,26 @@ log_file.write("***** ChiTech dependency configurator script *****\n\n")
 VERSION = 0
 URL = 1
 package_info = {
-    "readline": ["8.0",
-                 "ftp://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz"],
-    "ncurses": ["6.1",
-                "https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz"],
-    "lua": ["5.4.6",
-            "https://www.lua.org/ftp/lua-5.4.6.tar.gz"],
-    "petsc": ["3.17.0",
-              "https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz"],
-    "vtk": ["9.3.0.rc1",
-            "https://www.vtk.org/files/release/9.3/VTK-9.3.0.rc1.tar.gz"]
+    "readline": [
+        "8.0",
+        "ftp://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz"
+    ],
+    "ncurses": [
+        "6.1",
+        "https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz"
+    ],
+    "lua": [
+        "5.4.6",
+        "https://www.lua.org/ftp/lua-5.4.6.tar.gz"
+    ],
+    "petsc": [
+        "3.17.0",
+        "https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz"
+    ],
+    "vtk": [
+        "9.3.0",
+        "https://www.vtk.org/files/release/9.3/VTK-9.3.0.tar.gz"
+    ]
 }
 
 log_file.write("Packages in the dependency list:\n")
@@ -138,7 +152,7 @@ def ExecSub(command: str,
 make_command = "make"
 s, e, outstr = ExecSub(make_command + " --version")
 if outstr.find("GNU Make") >= 0:
-    make_command = "make OMAKE_PRINTDIR=gmake"
+    make_command = "make OMAKE_PRINTDIR=make"
 
 
 # ######################################
@@ -287,7 +301,7 @@ print()
 def InstallPackage(pkg: str, ver: str, gold_file: str):
     package_log_filename = f"{install_dir}/{pkg.upper()}/{pkg}_log.txt"
     MakeDirectory(f"{install_dir}/{pkg.upper()}")
-    pkg_install_dir = f"{install_dir}/{pkg.upper()}/{pkg}-{ver}/chi_build"
+    pkg_install_dir = f"{install_dir}/{pkg.upper()}/{pkg}-{ver}/build"
 
     shutil.copy(f"{install_dir}/downloads/{pkg}-{ver}.tar.gz",
                 f"{install_dir}/{pkg.upper()}/{pkg}-{ver}.tar.gz")
@@ -347,7 +361,9 @@ def InstallPackage(pkg: str, ver: str, gold_file: str):
 
 
 # ========================================== Install command for lua
-def InstallLuaPackage(pkg: str, ver: str, gold_file: str,
+def InstallLuaPackage(pkg: str,
+                      ver: str,
+                      gold_file: str,
                       readline_install: str,
                       ncurses_install: str):
     package_log_filename = f"{install_dir}/{pkg.upper()}/{pkg}_log.txt"
@@ -392,14 +408,18 @@ def InstallLuaPackage(pkg: str, ver: str, gold_file: str,
             os_tag = "macosx"
 
         command = f"make {os_tag} MYCFLAGS=-fPIC MYLIBS=-lncurses -j{argv.jobs}"
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
         if not success:
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
 
         command = "make local"
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
         if not success:
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
@@ -447,19 +467,17 @@ def InstallPETSC(pkg: str, ver: str, gold_file: str):
         if len(os.getenv("FC")) == 0:
             env_vars["FC"] = shutil.which("mpifort")
 
-        command = f"./configure --prefix={pkg_install_dir}"
-        command += """ \\
---download-hypre=1  \\
+        command = f"""./configure --prefix{pkg_install_dir} \\
+--with-shared-libraries=1  \\
 --with-ssl=0  \\
 --with-debugging=0  \\
 --with-pic=1  \\
---with-shared-libraries=1  \\
+--with-64-bit-indices=1  \\
+--download-hypre=1  \\
 --download-fblaslapack=1  \\
 --download-metis=1  \\
 --download-parmetis=1  \\
 --download-superlu_dist=1  \\
---with-cxx-dialect=C++11  \\
---with-64-bit-indices  \\
 CC=$CC CXX=$CXX FC=$FC  \\
 CFLAGS='-fPIC -fopenmp'  \\
 CXXFLAGS='-fPIC -fopenmp'  \\
@@ -469,24 +487,30 @@ F90FLAGS='-fPIC -fopenmp'  \\
 F77FLAGS='-fPIC -fopenmp'  \\
 COPTFLAGS='-O3 -march=native -mtune=native'  \\
 CXXOPTFLAGS='-O3 -march=native -mtune=native'  \\
-FOPTFLAGS='-O3 -march=native -mtune=native'  \\"""
-        command += f"PETSC_DIR={install_dir}/{pkg.upper()}/{pkg}-{ver}"
+FOPTFLAGS='-O3 -march=native -mtune=native'  \\
+PETSC_DIR={install_dir}/{pkg.upper()}/{pkg}-{ver}"""
 
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
         if not success:
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
 
         command = f"{make_command} all -j{argv.jobs}"
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
         if not success:
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
 
         command = f"{make_command} install"
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
         if not success:
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
@@ -520,7 +544,7 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
         ExtractPackage(pkg, ver)
 
         package_log_file = open(package_log_filename, "w")
-        MakeDirectory(f"{install_dir}/{pkg.upper()}/{pkg}-{ver}/chi_build")
+        MakeDirectory(f"{install_dir}/{pkg.upper()}/{pkg}-{ver}/build")
 
         print(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"", flush=True)
         log_file.write(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"")
@@ -535,37 +559,41 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
         if len(os.getenv("FC")) == 0:
             env_vars["FC"] = shutil.which("mpifort")
 
-        os.chdir("chi_build")
+        os.chdir("build")
 
         command = f"cmake -DCMAKE_INSTALL_PREFIX={pkg_install_dir} "
-        command += """ \\
--DBUILD_SHARED_LIBS:BOOL=ON \\
--DVTK_Group_MPI:BOOL=ON \\
--DVTK_GROUP_ENABLE_Qt=NO \\
--DVTK_GROUP_ENABLE_Rendering=NO \\
--DVTK_GROUP_ENABLE_Imaging=NO \\
+        command = f""" cmake -DCMAKE_INSTALL_PREFIX={pkg_install_dir} \\
+-DBUILD_SHARED_LIBS=ON \\
+-DVTK_USE_MPI=ON \\
 -DVTK_GROUP_ENABLE_StandAlone=WANT \\
--DVTK_GROUP_ENABLE_Web=NO \\
--DVTK_BUILD_TESTING:BOOL=OFF \\
+-DVTK_GROUP_ENABLE_Rendering=DONT_WANT \\
+-DVTK_GROUP_ENABLE_Imaging=DONT_WANT \\
+-DVTK_GROUP_ENABLE_Web=DONT_WANT \\
+-DVTK_GROUP_ENABLE_Qt=DONT_WANT \\
 -DCMAKE_BUILD_TYPE=Release \\
--DCMAKE_CXX_FLAGS=-std=c++11 \\
 ../
 """
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
         if not success:
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
 
         command = f"{make_command} -j{argv.jobs}"
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
         if not success:
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
 
         command = f"{make_command} install"
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
         if not success:
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
@@ -598,9 +626,9 @@ for pkg in package_info:
         success = InstallPackage(pkg, ver, gold_file="lib/libncurses.a")
     elif pkg == 'lua':
         readline_install = f"{install_dir}/{'readline'.upper()}/readline-" + \
-                           f"{package_info['readline'][VERSION]}/chi_build"
+                           f"{package_info['readline'][VERSION]}/build"
         ncurses_install = f"{install_dir}/{'ncurses'.upper()}/ncurses-" + \
-                          f"{package_info['ncurses'][VERSION]}/chi_build"
+                          f"{package_info['ncurses'][VERSION]}/build"
         success = InstallLuaPackage(pkg, ver, gold_file="lib/liblua.a",
                                     readline_install=readline_install,
                                     ncurses_install=ncurses_install)
@@ -621,10 +649,10 @@ if len(install_errors) > 0:
         log_file.write(pkg + " ")
     log_file.write("\n")
     print(error_beg +
-          f"Failed to install {len(install_errors)} package(s)\n" +
-          "Check the package's associated log file, i.e., PACKAGE/package_log.txt" +
-          "for information as to why the install failed. You could also try to " +
-          "manually install these packages")
+          f"Failed to install {len(install_errors)} package(s)\n"
+          "Check the package's associated log file, i.e., "
+          "PACKAGE/package_log.txt for information as to why the install "
+          "failed. You could also try to manually install these packages")
     print(error_end)
     exit(1)
 
@@ -659,7 +687,7 @@ module_file.close()
 ExecSub("chmod u+x configure_deproots.sh", log_file)
 log_file.close()
 
-print("\n########## Chi-Tech Dependency install complete ##########")
+print("\n########## OpenSn Dependency install complete ##########")
 print("\nWhen opening ChiTech in an IDE, the following environment variables" +
       " need to be set:\n")
 
@@ -668,9 +696,8 @@ print(f'PETSC_ROOT = {petsc_root}')
 print(f'VTK_DIR = {vtk_dir}')
 print()
 print(TextColors.WARNING +
-      "When compiling ChiTech, in a terminal, the following environment variables" +
-      " need to be set:\n" +
-      TextColors.ENDC)
+      "When compiling ChiTech, in a terminal, the following environment "
+      "variables need to be set:\n" + TextColors.ENDC)
 
 print(f'export LUA_ROOT="{lua_root}"')
 print(f'export PETSC_ROOT="{petsc_root}"')
