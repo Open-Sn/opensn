@@ -14,10 +14,10 @@ diffusion-reaction physics.
 
 Please visit the links below where you will find:
 
-- [Compilation and run instructions](doc/Start_install.md)
-- [Source code documentation](doc/Start_source_code_doc.md)
-- [User Tutorials](doc/Start_user_tutorials.md)
-- [Developer Tutorials](doc/Start_developer_tutorials.md)
-- [Simulation Gallery](doc/Gallery.md)
+- [Compilation and run instructions](doc/start_install.md)
+- [Source code documentation](doc/start_source_code_doc.md)
+- [User Tutorials](doc/start_user_tutorials.md)
+- [Developer Tutorials](doc/start_developer_tutorials.md)
+- [Simulation Gallery](doc/gallery.md)
 
 For help, please post on our [Discussions](https://github.com/Open-Sn/openSn/discussions) page.
