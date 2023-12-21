@@ -26,7 +26,7 @@ chiLBSWriteFluxMoments(lua_State* L)
   auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
     opensn::Chi::object_stack, solver_handle, fname);
 
-  lbs_solver.WriteFluxMoments(file_base, lbs_solver.PhiOldLocal());
+  lbs_solver.WriteFluxMoments(lbs_solver.PhiOldLocal(), file_base);
 
   return 0;
 }
@@ -50,7 +50,7 @@ chiLBSCreateAndWriteSourceMoments(lua_State* L)
     opensn::Chi::object_stack, solver_handle, fname);
 
   auto source_moments = lbs_solver.MakeSourceMomentsFromPhi();
-  lbs_solver.WriteFluxMoments(file_base, source_moments);
+  lbs_solver.WriteFluxMoments(source_moments, file_base);
 
   return 0;
 }
