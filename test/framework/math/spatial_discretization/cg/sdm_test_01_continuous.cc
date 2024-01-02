@@ -48,7 +48,7 @@ chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make SDM method
   const auto sdm_type = params.GetParamValue<std::string>("sdm_type");
@@ -70,8 +70,8 @@ chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  opensn::Chi::log.Log() << "Num local DOFs: " << num_local_dofs;
-  opensn::Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs;
+  opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
+  opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
   // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
@@ -90,7 +90,7 @@ chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   // Assemble the system
-  opensn::Chi::log.Log() << "Assembling system: ";
+  opensn::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -146,17 +146,17 @@ chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
     } // for i
   }   // for cell
 
-  opensn::Chi::log.Log() << "Global assembly";
+  opensn::log.Log() << "Global assembly";
 
   MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
   VecAssemblyBegin(b);
   VecAssemblyEnd(b);
 
-  opensn::Chi::log.Log() << "Done global assembly";
+  opensn::log.Log() << "Done global assembly";
 
   // Create Krylov Solver
-  opensn::Chi::log.Log() << "Solving: ";
+  opensn::log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCHYPRE, 1.0e-6, 1000);
 
@@ -187,7 +187,7 @@ chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
 
   const char* reason;
   KSPGetConvergedReasonString(petsc_solver.ksp, &reason);
-  opensn::Chi::log.Log() << "Done solving " << reason;
+  opensn::log.Log() << "Done solving " << reason;
 
   // Extract PETSc vector
   std::vector<double> field;
@@ -198,9 +198,9 @@ chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
     local_max = std::max(val, local_max);
 
   double global_max;
-  MPI_Allreduce(&local_max, &global_max, 1, MPI_DOUBLE, MPI_MAX, opensn::Chi::mpi.comm);
+  MPI_Allreduce(&local_max, &global_max, 1, MPI_DOUBLE, MPI_MAX, opensn::mpi.comm);
 
-  opensn::Chi::log.Log() << "Nodal max = " << global_max;
+  opensn::log.Log() << "Nodal max = " << global_max;
 
   // Clean up
   KSPDestroy(&petsc_solver.ksp);
@@ -209,7 +209,7 @@ chi_math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   VecDestroy(&b);
   MatDestroy(&A);
 
-  opensn::Chi::log.Log() << "Done cleanup";
+  opensn::log.Log() << "Done cleanup";
 
   // Create Field Function
   if (export_vtk)

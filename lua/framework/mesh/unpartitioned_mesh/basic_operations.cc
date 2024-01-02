@@ -94,10 +94,10 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
 
   if (verbose)
   {
-    opensn::Chi::log.Log() << "Cell type       : " << cell_type_str;
-    opensn::Chi::log.Log() << "Cell sub-type   : " << cell_sub_type_str;
-    opensn::Chi::log.Log() << "Cell num_faces  : " << cell_num_faces;
-    opensn::Chi::log.Log() << "Cell material_id: " << cell_material_id;
+    opensn::log.Log() << "Cell type       : " << cell_type_str;
+    opensn::log.Log() << "Cell sub-type   : " << cell_sub_type_str;
+    opensn::log.Log() << "Cell num_faces  : " << cell_num_faces;
+    opensn::log.Log() << "Cell material_id: " << cell_material_id;
   }
 
   std::vector<std::vector<uint64_t>> proxy_faces(cell_num_faces);
@@ -118,7 +118,7 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
       outstr << "face" << f << " ";
       for (auto val : vals)
         outstr << val << " ";
-      opensn::Chi::log.Log() << outstr.str();
+      opensn::log.Log() << outstr.str();
     }
 
     std::vector<uint64_t> proxy_face;

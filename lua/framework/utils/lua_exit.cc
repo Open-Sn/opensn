@@ -25,7 +25,7 @@ chiExit(lua_State* L)
     return_code = lua_tointeger(L, 1);
   }
 
-  opensn::Chi::Exit(return_code);
+  opensn::Exit(return_code);
   return 0;
 }
 

@@ -5,64 +5,64 @@
 #include "framework/logging/log_exceptions.h"
 
 /**Small utility macro for joining two words.*/
-#define ChiObjectFactoryJoinWordsA(x, y) x##y
+#define OpenSnObjectFactoryJoinWordsA(x, y) x##y
 /**IDK why this is needed. Seems like counter doesnt work properly without it*/
-#define ChiObjectFactoryJoinWordsB(x, y) ChiObjectFactoryJoinWordsA(x, y)
+#define OpenSnObjectFactoryJoinWordsB(x, y) OpenSnObjectFactoryJoinWordsA(x, y)
 
-/**Macro for registering an object within the ChiObjectFactory singleton.
+/**Macro for registering an object within the ObjectFactory singleton.
  * \param namespace_name Name of the namespace within which the object is.
  * \param object_name Name of the object in the registry.
  * Example:
  * \code
- * RegisterChiObject(kaka, Zorba);
+ * OpenSnRegisterObject(kaka, Zorba);
  * \endcode
- * \note Remember to include the header "ChiObject/ChiObjectFactory.h".*/
-#define RegisterChiObject(namespace_name, object_name)                                             \
-  static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
-    opensn::ChiObjectFactory::AddObjectToRegistry<object_name, ChiObject>(#namespace_name,         \
-                                                                          #object_name)
+ * \note Remember to include the header "framework/object_factory.h".*/
+#define OpenSnRegisterObject(namespace_name, object_name)                                          \
+  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
+                                            __COUNTER__) =                                         \
+    opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#namespace_name, #object_name)
 
 /**Macro for registering an object (parameters only) within the
- * ChiObjectFactory singleton.
+ * ObjectFactory singleton.
  * \param namespace_name Name of the namespace within which the object is.
  * \param object_name Name of the object in the registry.
  * Example:
  * \code
- * RegisterChiObjectParametersOnly(kaka, Zorba);
+ * OpenSnRegisterObjectParametersOnly(kaka, Zorba);
  * \endcode
  *
- * \note Remember to include the header "ChiObject/object_maker.h"*/
-#define RegisterChiObjectParametersOnly(namespace_name, object_name)                               \
-  static char ChiObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_, __COUNTER__) =   \
-    opensn::ChiObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name,          \
-                                                                         #object_name)
+ * \note Remember to include the header "framework/object_factory.h"*/
+#define OpenSnRegisterObjectParametersOnly(namespace_name, object_name)                            \
+  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
+                                            __COUNTER__) =                                         \
+    opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name,             \
+                                                                      #object_name)
 
 /**Macro for registering a pure input parameters block within the
- * ChiObjectFactory singleton AND giving it a custom name
+ * ObjectFactory singleton AND giving it a custom name
  * \param namespace_name Name of the namespace within which the object is.
  * \param block_name Name of the object in the registry.
  * \param syntax_function Actual syntax function for this object
  * Example:
  * \code
- * RegisterSyntaxBlock(kaka, Zorba, ZorbaSyntaxFunction);
+ * OpenSnRegisterSyntaxBlock(kaka, Zorba, ZorbaSyntaxFunction);
  * \endcode
  *
- * \note Remember to include the header "ChiObject/object_maker.h"*/
-#define RegisterSyntaxBlock(namespace_name, block_name, syntax_function)                           \
-  static char ChiObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) =    \
-    opensn::ChiObjectFactory::AddSyntaxBlockToRegistry(                                            \
-      #namespace_name, #block_name, syntax_function)
+ * \note Remember to include the header "framework/object_factory.h"*/
+#define OpenSnRegisterSyntaxBlock(namespace_name, block_name, syntax_function)                     \
+  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) = \
+    opensn::ObjectFactory::AddSyntaxBlockToRegistry(#namespace_name, #block_name, syntax_function)
 
 namespace opensn
 {
 
-class ChiObject;
+class Object;
 
-/**Singleton object for handling the registration and making of ChiObjects.*/
-class ChiObjectFactory
+/**Singleton object for handling the registration and making of `Object`s.*/
+class ObjectFactory
 {
 public:
-  using ObjectPtr = std::shared_ptr<ChiObject>;
+  using ObjectPtr = std::shared_ptr<Object>;
 
   using ObjectGetInParamsFunc = InputParameters (*)();
   using ObjectConstructorFunc = ObjectPtr (*)(const InputParameters&);
@@ -75,12 +75,12 @@ public:
   };
 
   // Deleted copy, move constructors and copy assignment operator
-  ChiObjectFactory(const ChiObjectFactory&) = delete;
-  ChiObjectFactory(const ChiObjectFactory&&) = delete;
-  ChiObjectFactory& operator=(const ChiObjectFactory&) = delete;
+  ObjectFactory(const ObjectFactory&) = delete;
+  ObjectFactory(const ObjectFactory&&) = delete;
+  ObjectFactory& operator=(const ObjectFactory&) = delete;
 
   /**Access to the singleton*/
-  static ChiObjectFactory& GetInstance() noexcept;
+  static ObjectFactory& GetInstance() noexcept;
 
   /**Returns a constant reference to the object registry.*/
   const std::map<std::string, ObjectRegistryEntry>& Registry() const;
@@ -137,7 +137,7 @@ public:
 
   /**Makes an object with the given parameters and places on the global
    * object stack. Returns a handle to the object. The object type is
-   * obtained from a string parameter name `chi_obj_type`.*/
+   * obtained from a string parameter name `obj_type`.*/
   size_t MakeRegisteredObject(const ParameterBlock& params) const;
   /**Makes an object with the given parameters and places on the global
    * object stack. Returns a handle to the object.*/
@@ -153,7 +153,7 @@ private:
   std::map<std::string, ObjectRegistryEntry> object_registry_;
 
   /**Private constructor because this is a singleton.*/
-  ChiObjectFactory() = default;
+  ObjectFactory() = default;
 
   /**Utility redirection to call an object's static `GetInputParameters`
    * function.*/

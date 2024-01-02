@@ -30,8 +30,8 @@ chiCFEMDiffusionSolverCreate(lua_State* L)
 
   lua_pushinteger(L, static_cast<lua_Integer>(opensn::Chi::object_stack.size() - 1));
 
-  opensn::Chi::log.LogAllVerbose1()
-    << "\nCFEMDiffusionSolverCreate: CFEM Diffusion solver created" << std::endl;
+  opensn::log.LogAllVerbose1() << "\nCFEMDiffusionSolverCreate: CFEM Diffusion solver created"
+                               << std::endl;
   return 1;
 }
 

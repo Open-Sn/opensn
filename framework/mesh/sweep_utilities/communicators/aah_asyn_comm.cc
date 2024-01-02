@@ -7,6 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"
 #include "framework/console/console.h"
+#include "framework/memory_usage.h"
 
 namespace opensn
 {
@@ -15,7 +16,7 @@ AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(FLUDS& fluds,
                                                            size_t num_groups,
                                                            size_t num_angles,
                                                            int sweep_eager_limit,
-                                                           const ChiMPICommunicatorSet& in_comm_set)
+                                                           const MPICommunicatorSet& in_comm_set)
   : AsynchronousCommunicator(fluds, in_comm_set), num_groups_(num_groups), num_angles_(num_angles)
 {
   done_sending = false;
@@ -263,9 +264,9 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
       if (not delayed_prelocI_message_received[prelocI][m])
       {
         int message_available = 0;
-        MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+        MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
                    max_num_mess * angle_set_num + m,
-                   comm_set_.LocICommunicator(Chi::mpi.location_id),
+                   comm_set_.LocICommunicator(opensn::mpi.location_id),
                    &message_available,
                    MPI_STATUS_IGNORE);
 
@@ -284,9 +285,9 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
         int error_code = MPI_Recv(&upstream_psi[block_addr],
                                   static_cast<int>(message_size),
                                   MPI_DOUBLE,
-                                  comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+                                  comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
                                   max_num_mess * angle_set_num + m,
-                                  comm_set_.LocICommunicator(Chi::mpi.location_id),
+                                  comm_set_.LocICommunicator(opensn::mpi.location_id),
                                   MPI_STATUS_IGNORE);
 
         delayed_prelocI_message_received[prelocI][m] = true;
@@ -306,7 +307,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
           err_stream << error_string << "\n";
           MPI_Error_string(error_code, error_string, &length_of_error_string);
           err_stream << error_string << "\n";
-          Chi::log.LogAllWarning() << err_stream.str();
+          log.LogAllWarning() << err_stream.str();
         }
       } // if not message already received
     }   // for message
@@ -343,9 +344,9 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
       if (!prelocI_message_received[prelocI][m])
       {
         int message_available = 0;
-        MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+        MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
                    max_num_mess * angle_set_num + m,
-                   comm_set_.LocICommunicator(Chi::mpi.location_id),
+                   comm_set_.LocICommunicator(opensn::mpi.location_id),
                    &message_available,
                    MPI_STATUS_IGNORE);
 
@@ -364,9 +365,9 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
         int error_code = MPI_Recv(&upstream_psi[block_addr],
                                   static_cast<int>(message_size),
                                   MPI_DOUBLE,
-                                  comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+                                  comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
                                   max_num_mess * angle_set_num + m,
-                                  comm_set_.LocICommunicator(Chi::mpi.location_id),
+                                  comm_set_.LocICommunicator(opensn::mpi.location_id),
                                   MPI_STATUS_IGNORE);
 
         prelocI_message_received[prelocI][m] = true;
@@ -385,7 +386,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
           err_stream << error_string << "\n";
           MPI_Error_string(error_code, error_string, &length_of_error_string);
           err_stream << error_string << "\n";
-          Chi::log.LogAllWarning() << err_stream.str();
+          log.LogAllWarning() << err_stream.str();
         }
       } // if not message already received
     }   // for message
@@ -444,13 +445,13 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
     fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, num_loc_sucs);
 
     // Make a memory query
-    double memory_mb = Chi::GetMemoryUsageInMB();
+    double memory_mb = GetMemoryUsageInMB();
 
-    std::shared_ptr<ChiLog::EventInfo> memory_event_info =
-      std::make_shared<ChiLog::EventInfo>(memory_mb);
+    std::shared_ptr<Logger::EventInfo> memory_event_info =
+      std::make_shared<Logger::EventInfo>(memory_mb);
 
-    Chi::log.LogEvent(
-      ChiLog::StdTags::MAX_MEMORY_USAGE, ChiLog::EventType::SINGLE_OCCURRENCE, memory_event_info);
+    log.LogEvent(
+      Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventType::SINGLE_OCCURRENCE, memory_event_info);
 
     data_initialized = true;
   }

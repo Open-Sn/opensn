@@ -10,14 +10,14 @@ namespace opensn
 InputParameters
 TimeIntegration::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.AddRequiredParameter<int>("method", "Integer representing time stepping scheme");
 
   return params;
 }
 
-TimeIntegration::TimeIntegration(const InputParameters& params) : ChiObject(params)
+TimeIntegration::TimeIntegration(const InputParameters& params) : Object(params)
 {
   const int method_option = params.GetParamValue<int>("method");
   if (method_option == scint(SteppingMethod::EXPLICIT_EULER))

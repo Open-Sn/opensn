@@ -54,7 +54,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   int n = 0;
   for (const auto& omega_n : quad.omegas_)
   {
-    if (opensn::Chi::mpi.location_id == 0 and verbose)
+    if (opensn::mpi.location_id == 0 and verbose)
       std::cout << "Sweep angle " << n << " " << omega_n.PrintStr() << std::endl;
 
     // Determine sweep ordering
@@ -118,7 +118,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
 ParameterBlock
 chi_math_Test01_WDD_IJK_Sweep(const InputParameters&)
 {
-  opensn::Chi::log.Log() << "GOLD_BEGIN";
+  opensn::log.Log() << "GOLD_BEGIN";
   bool verbose = true;
   const std::array<size_t, 3> mesh_divisions = {1, 1, 10};
   const std::array<double, 3> mesh_lengths = {1.0, 1.0, 10.0};
@@ -136,14 +136,14 @@ chi_math_Test01_WDD_IJK_Sweep(const InputParameters&)
 
   auto phi = WDD_IJK_Sweep2(mesh_divisions, mesh_lengths, bcs, sigma_t, q, *pquad, verbose);
 
-  if (opensn::Chi::mpi.location_id == 0 and verbose)
+  if (opensn::mpi.location_id == 0 and verbose)
   {
     std::cout << "order:\n";
     for (auto i : phi)
       std::cout << i << "\n";
   }
 
-  opensn::Chi::log.Log() << "GOLD_END";
+  opensn::log.Log() << "GOLD_END";
   return ParameterBlock();
 }
 

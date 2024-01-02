@@ -47,15 +47,15 @@ Console::FlushConsole()
       bool error = luaL_dostring(console_state_, command.c_str());
       if (error)
       {
-        Chi::log.LogAll() << lua_tostring(console_state_, -1);
+        log.LogAll() << lua_tostring(console_state_, -1);
         lua_pop(console_state_, 1);
       }
     }
   }
   catch (const std::exception& e)
   {
-    Chi::log.LogAllError() << e.what();
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << e.what();
+    Exit(EXIT_FAILURE);
   }
 #endif
 }
@@ -127,20 +127,20 @@ Console::LuaWrapperCall(lua_State* L)
 void
 Console::RunConsoleLoop(char*) const
 {
-  Chi::log.Log() << "Console loop started. "
-                 << "Type \"exit\" to quit (or Ctl-C).";
+  log.Log() << "Console loop started. "
+            << "Type \"exit\" to quit (or Ctl-C).";
 
   /** Wrapper to an MPI_Bcast call for a single integer
    * broadcast from location 0. */
   auto BroadcastSingleInteger = [](int* int_being_bcast)
-  { MPI_Bcast(int_being_bcast, 1, MPI_INT, 0, Chi::mpi.comm); };
+  { MPI_Bcast(int_being_bcast, 1, MPI_INT, 0, mpi.comm); };
 
   /** Wrapper to an MPI_Bcast call for an array of characters
    * broadcast from location 0. */
   auto HomeBroadcastStringAsRaw = [](std::string string_to_bcast, int length)
   {
     char* raw_string_to_bcast = string_to_bcast.data();
-    MPI_Bcast(raw_string_to_bcast, length, MPI_CHAR, 0, Chi::mpi.comm);
+    MPI_Bcast(raw_string_to_bcast, length, MPI_CHAR, 0, mpi.comm);
   };
 
   /** Wrapper to an MPI_Bcast call for an array of characters
@@ -148,7 +148,7 @@ Console::RunConsoleLoop(char*) const
   auto NonHomeBroadcastStringAsRaw = [](std::string& string_to_bcast, int length)
   {
     std::vector<char> raw_chars(length + 1, '\0');
-    MPI_Bcast(raw_chars.data(), length, MPI_CHAR, 0, Chi::mpi.comm);
+    MPI_Bcast(raw_chars.data(), length, MPI_CHAR, 0, mpi.comm);
 
     string_to_bcast = std::string(raw_chars.data());
   };
@@ -160,7 +160,7 @@ Console::RunConsoleLoop(char*) const
     bool error = luaL_dostring(console_state_, the_string.c_str());
     if (error)
     {
-      Chi::log.LogAll() << lua_tostring(console_state_, -1);
+      log.LogAll() << lua_tostring(console_state_, -1);
       lua_pop(console_state_, 1);
     }
   };
@@ -174,7 +174,7 @@ Console::RunConsoleLoop(char*) const
     return L;
   };
 
-  const bool HOME = Chi::mpi.location_id == 0;
+  const bool HOME = opensn::mpi.location_id == 0;
 
   while (not Chi::run_time::termination_posted_)
   {
@@ -199,19 +199,19 @@ Console::RunConsoleLoop(char*) const
     }
     catch (const Chi::RecoverableException& e)
     {
-      Chi::log.LogAllError() << e.what();
+      log.LogAllError() << e.what();
     }
     catch (const std::exception& e)
     {
-      Chi::log.LogAllError() << e.what();
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << e.what();
+      Exit(EXIT_FAILURE);
     }
 #endif
   } // while not termination posted
 
   Chi::run_time::termination_posted_ = true;
 
-  Chi::log.Log() << "Console loop stopped successfully.";
+  log.Log() << "Console loop stopped successfully.";
 }
 
 int
@@ -236,7 +236,7 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
 
     if (error > 0)
     {
-      Chi::log.LogAllError() << "LuaError: " << lua_tostring(this->console_state_, -1);
+      log.LogAllError() << "LuaError: " << lua_tostring(this->console_state_, -1);
       return EXIT_FAILURE;
     }
   }
@@ -567,25 +567,25 @@ Console::SetLuaConstant(const std::string& constant_name, const Varying& value)
 void
 Console::DumpRegister() const
 {
-  Chi::log.Log() << "\n\n";
+  log.Log() << "\n\n";
   for (const auto& [key, entry] : function_wrapper_registry_)
   {
-    if (Chi::log.GetVerbosity() == 0)
+    if (log.GetVerbosity() == 0)
     {
-      Chi::log.Log() << key;
+      log.Log() << key;
       continue;
     }
 
-    Chi::log.Log() << "LUA_FUNCWRAPPER_BEGIN " << key;
+    log.Log() << "LUA_FUNCWRAPPER_BEGIN " << key;
 
-    if (not entry.call_func) Chi::log.Log() << "SYNTAX_BLOCK";
+    if (not entry.call_func) log.Log() << "SYNTAX_BLOCK";
 
     const auto in_params = entry.get_in_params_func();
     in_params.DumpParameters();
 
-    Chi::log.Log() << "LUA_FUNCWRAPPER_END\n\n";
+    log.Log() << "LUA_FUNCWRAPPER_END\n\n";
   }
-  Chi::log.Log() << "\n\n";
+  log.Log() << "\n\n";
 }
 #endif
 
@@ -596,7 +596,7 @@ Console::UpdateConsoleBindings(const RegistryStatuses& old_statuses)
   auto ListHasValue = [](const std::vector<std::string>& list, const std::string& value)
   { return std::find(list.begin(), list.end(), value) != list.end(); };
 
-  const auto& object_factory = ChiObjectFactory::GetInstance();
+  const auto& object_factory = ObjectFactory::GetInstance();
   for (const auto& [key, _] : object_factory.Registry())
     if (not ListHasValue(old_statuses.objfactory_keys_, key)) SetObjectNamespaceTableStructure(key);
 

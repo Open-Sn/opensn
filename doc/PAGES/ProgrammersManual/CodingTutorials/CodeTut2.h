@@ -97,7 +97,7 @@ std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
 chi_math::VectorGhostCommunicator vgc(num_local_dofs,
                                       num_globl_dofs,
                                       ghost_ids,
-                                      Chi::mpi.comm);
+                                      mpi.comm);
 std::vector<double> field_wg = vgc.MakeGhostedVector(field);
 
 vgc.CommunicateGhostEntries(field_wg);
@@ -445,7 +445,7 @@ int main(int argc, char* argv[])
   chi_math::VectorGhostCommunicator vgc(num_local_dofs,
                                         num_globl_dofs,
                                         ghost_ids,
-                                        Chi::mpi.comm);
+                                        mpi.comm);
   std::vector<double> field_wg = vgc.MakeGhostedVector(field);
 
   vgc.CommunicateGhostEntries(field_wg);

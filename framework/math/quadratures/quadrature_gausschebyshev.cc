@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_math, QuadratureGaussChebyshev);
+OpenSnRegisterObject(chi_math, QuadratureGaussChebyshev);
 
 InputParameters
 QuadratureGaussChebyshev::GetInputParameters()
@@ -63,9 +63,9 @@ void
 QuadratureGaussChebyshev::Initialize(unsigned int N)
 {
   if (verbose_)
-    Chi::log.Log() << "Initializing Gauss-Chebyshev Quadrature "
-                      "with "
-                   << N << " q-points";
+    log.Log() << "Initializing Gauss-Chebyshev Quadrature "
+                 "with "
+              << N << " q-points";
 
   const double pi_N = M_PI / N;
   for (unsigned int n = 0; n < N; ++n)
@@ -76,8 +76,7 @@ QuadratureGaussChebyshev::Initialize(unsigned int N)
     qpoints_.emplace_back(xn);
     weights_.emplace_back(wn);
 
-    if (verbose_)
-      Chi::log.Log() << "root[" << n << "]=" << qpoints_[n][0] << ", weight=" << weights_[n];
+    if (verbose_) log.Log() << "root[" << n << "]=" << qpoints_[n][0] << ", weight=" << weights_[n];
   }
 
   range_ = {-1, +1};

@@ -33,9 +33,9 @@ chiCreateCustomAngularQuadrature(lua_State* L)
 
   if ((Na - Np != 0) or (Na - Nw != 0))
   {
-    opensn::Chi::log.LogAllError() << fname + ": Tables lengths supplied "
-                                              "are not of equal lengths.";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::log.LogAllError() << fname + ": Tables lengths supplied "
+                                         "are not of equal lengths.";
+    opensn::Exit(EXIT_FAILURE);
   }
 
   std::vector<double> azi_angles(Na, 0.0);
@@ -66,7 +66,7 @@ chiCreateCustomAngularQuadrature(lua_State* L)
     lua_pop(L, 1);
   }
 
-  opensn::Chi::log.Log() << "Creating Custom Angular Quadrature\n";
+  opensn::log.Log() << "Creating Custom Angular Quadrature\n";
 
   auto new_quad =
     std::make_shared<opensn::AngularQuadratureCustom>(azi_angles, pol_angles, weights, false);

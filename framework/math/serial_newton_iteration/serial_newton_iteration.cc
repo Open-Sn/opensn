@@ -28,7 +28,7 @@ NewtonIteration(const NonLinearFunction& non_linear_function,
       output << std::showpos << std::scientific << std::setprecision(3) << value << " ";
     output << "L2_norm_F_x_i=" << L2_norm_F_x_i;
 
-    Chi::log.Log() << output.str();
+    log.Log() << output.str();
   };
 
   // Declare and init variables

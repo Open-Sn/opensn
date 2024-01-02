@@ -7,7 +7,7 @@ namespace opensn
 InputParameters
 FieldFunction::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.AddRequiredParameter<std::string>("name",
                                            "Named to be associated with this field function");
@@ -30,7 +30,7 @@ FieldFunction::GetInputParameters()
 }
 
 FieldFunction::FieldFunction(const InputParameters& params)
-  : ChiObject(params),
+  : Object(params),
     text_name_(params.GetParamValue<std::string>("name")),
     unknown_((params.GetParamValue<std::string>("unknown_type") == "Scalar")
                ? opensn::Unknown(UnknownType::SCALAR)
@@ -52,7 +52,7 @@ FieldFunction::FieldFunction(const std::string& text_name, opensn::Unknown unkno
 }
 
 void
-FieldFunction::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
+FieldFunction::PushOntoStack(std::shared_ptr<Object>& new_object)
 {
   auto ff_ptr = std::dynamic_pointer_cast<FieldFunction>(new_object);
 

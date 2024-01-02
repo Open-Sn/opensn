@@ -20,7 +20,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_physics, FieldFunctionGridBased);
+OpenSnRegisterObject(chi_physics, FieldFunctionGridBased);
 
 InputParameters
 FieldFunctionGridBased::GetInputParameters()
@@ -177,7 +177,7 @@ FieldFunctionGridBased::MakeFieldVector(const SpatialDiscretization& discretizat
   auto field = std::make_unique<GhostedParallelSTLVector>(discretization.GetNumLocalDOFs(uk_man),
                                                           discretization.GetNumGlobalDOFs(uk_man),
                                                           discretization.GetGhostDOFIndices(uk_man),
-                                                          Chi::mpi.comm);
+                                                          mpi.comm);
 
   return field;
 }
@@ -207,7 +207,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
   const std::vector<std::shared_ptr<const FieldFunctionGridBased>>& ff_list)
 {
   const std::string fname = "chi_physics::FieldFunction::ExportMultipleToVTK";
-  Chi::log.Log() << "Exporting field functions to VTK with file base \"" << file_base_name << "\"";
+  log.Log() << "Exporting field functions to VTK with file base \"" << file_base_name << "\"";
 
   if (ff_list.empty())
     throw std::logic_error(fname + ": Cannot be used with empty field-function"
@@ -298,7 +298,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 
   WritePVTUFiles(ugrid, file_base_name);
 
-  Chi::log.Log() << "Done exporting field functions to VTK.";
+  log.Log() << "Done exporting field functions to VTK.";
 }
 
 std::vector<double>
@@ -361,12 +361,11 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
 
   // Communicate number of point hits
   size_t globl_num_point_hits;
-  MPI_Allreduce(
-    &local_num_point_hits, &globl_num_point_hits, 1, MPIU_SIZE_T, MPI_SUM, Chi::mpi.comm);
+  MPI_Allreduce(&local_num_point_hits, &globl_num_point_hits, 1, MPIU_SIZE_T, MPI_SUM, mpi.comm);
 
   std::vector<double> globl_point_value(num_components, 0.0);
   MPI_Allreduce(
-    local_point_value.data(), globl_point_value.data(), 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
+    local_point_value.data(), globl_point_value.data(), 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
 
   Scale(globl_point_value, 1.0 / static_cast<double>(globl_num_point_hits));
 

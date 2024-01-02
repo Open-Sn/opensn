@@ -71,7 +71,7 @@ BoundaryFunctionToLua::Evaluate(
   };
 
   // Get lua function
-  lua_State* L = Chi::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
   lua_getglobal(L, m_lua_function_name.c_str());
 
   // Error check lua function

@@ -41,11 +41,11 @@ chiVolumeMesherCreate(lua_State* L)
   {
     if (num_args != 3)
     {
-      opensn::Chi::log.LogAllError()
-        << fname + ": "
-                   "When specifying VOLUMEMESHER_EXTRUDER, the template type and "
-                   "handle must also be supplied.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::log.LogAllError() << fname +
+                                     ": "
+                                     "When specifying VOLUMEMESHER_EXTRUDER, the template type and "
+                                     "handle must also be supplied.";
+      opensn::Exit(EXIT_FAILURE);
     }
 
     LuaCheckNilValue(fname, L, 2);
@@ -66,19 +66,19 @@ chiVolumeMesherCreate(lua_State* L)
     }
     else
     {
-      opensn::Chi::log.LogAllError()
-        << "In call to " << __FUNCTION__ << ". Invalid template type specified.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::log.LogAllError() << "In call to " << __FUNCTION__
+                                << ". Invalid template type specified.";
+      opensn::Exit(EXIT_FAILURE);
     }
   }
   else if (mesher_type == opensn::VolumeMesherType::UNPARTITIONED)
   {
     if (num_args != 2)
     {
-      opensn::Chi::log.LogAllError() << fname + ": "
-                                                "When specifying VOLUMEMESHER_UNPARTITIONED, the "
-                                                "handle must also be supplied.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::log.LogAllError() << fname + ": "
+                                           "When specifying VOLUMEMESHER_UNPARTITIONED, the "
+                                           "handle must also be supplied.";
+      opensn::Exit(EXIT_FAILURE);
     }
 
     LuaCheckNilValue(fname, L, 2);
@@ -91,17 +91,17 @@ chiVolumeMesherCreate(lua_State* L)
   }
   else
   {
-    opensn::Chi::log.Log0Error() << "Invalid Volume mesher type in function "
-                                    "chiVolumeMesherCreate. Allowed options are"
-                                    "VOLUMEMESHER_EXTRUDER or "
-                                    "VOLUMEMESHER_UNPARTITIONED";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::log.Log0Error() << "Invalid Volume mesher type in function "
+                               "chiVolumeMesherCreate. Allowed options are"
+                               "VOLUMEMESHER_EXTRUDER or "
+                               "VOLUMEMESHER_UNPARTITIONED";
+    opensn::Exit(EXIT_FAILURE);
   }
 
   auto& cur_hndlr = opensn::GetCurrentHandler();
   cur_hndlr.SetVolumeMesher(new_mesher);
 
-  opensn::Chi::log.LogAllVerbose2() << "chiVolumeMesherCreate: Volume mesher created." << std::endl;
+  opensn::log.LogAllVerbose2() << "chiVolumeMesherCreate: Volume mesher created." << std::endl;
 
   return 0;
 }

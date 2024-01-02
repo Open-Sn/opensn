@@ -25,9 +25,8 @@ EventPublisher::PublishEvent(const Event& event)
       subscriber_sptr->ReceiveEventUpdate(event);
       ++subs;
     }
-  if (Chi::log.GetVerbosity() >= 1)
-    Chi::log.Log0Verbose1() << publisher_name_ << " published event name \"" << event.Name()
-                            << "\"";
+  if (log.GetVerbosity() >= 1)
+    log.Log0Verbose1() << publisher_name_ << " published event name \"" << event.Name() << "\"";
 }
 
 void

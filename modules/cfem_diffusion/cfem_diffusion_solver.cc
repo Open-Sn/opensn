@@ -32,9 +32,9 @@ void
 Solver::Initialize()
 {
   const std::string fname = "Solver::Initialize";
-  Chi::log.Log() << "\n"
-                 << Chi::program_timer.GetTimeString() << " " << TextName()
-                 << ": Initializing CFEM Diffusion solver ";
+  log.Log() << "\n"
+            << program_timer.GetTimeString() << " " << TextName()
+            << ": Initializing CFEM Diffusion solver ";
 
   // Get grid
   grid_ptr_ = GetCurrentHandler().GetGrid();
@@ -42,7 +42,7 @@ Solver::Initialize()
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
 
-  Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // BIDs
   auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
@@ -65,7 +65,7 @@ Solver::Initialize()
         {
           boundaries_.insert(
             std::make_pair(bndry_id, Boundary{BoundaryType::Reflecting, {0., 0., 0.}}));
-          Chi::log.Log() << "Boundary " << bndry_name << " set to reflecting.";
+          log.Log() << "Boundary " << bndry_name << " set to reflecting.";
           break;
         }
         case BoundaryType::Dirichlet:
@@ -73,7 +73,7 @@ Solver::Initialize()
           if (bndry_vals.empty()) bndry_vals.resize(1, 0.0);
           boundaries_.insert(
             std::make_pair(bndry_id, Boundary{BoundaryType::Dirichlet, {bndry_vals[0], 0., 0.}}));
-          Chi::log.Log() << "Boundary " << bndry_name << " set to dirichlet.";
+          log.Log() << "Boundary " << bndry_name << " set to dirichlet.";
           break;
         }
         case BoundaryType::Robin:
@@ -84,15 +84,15 @@ Solver::Initialize()
           boundaries_.insert(std::make_pair(
             bndry_id,
             Boundary{BoundaryType::Robin, {bndry_vals[0], bndry_vals[1], bndry_vals[2]}}));
-          Chi::log.Log() << "Boundary " << bndry_name << " set to robin." << bndry_vals[0] << ","
-                         << bndry_vals[1] << "," << bndry_vals[2];
+          log.Log() << "Boundary " << bndry_name << " set to robin." << bndry_vals[0] << ","
+                    << bndry_vals[1] << "," << bndry_vals[2];
           break;
         }
         case BoundaryType::Vacuum:
         {
           boundaries_.insert(
             std::make_pair(bndry_id, Boundary{BoundaryType::Robin, {0.25, 0.5, 0.}}));
-          Chi::log.Log() << "Boundary " << bndry_name << " set to vacuum.";
+          log.Log() << "Boundary " << bndry_name << " set to vacuum.";
           break;
         }
         case BoundaryType::Neumann:
@@ -102,7 +102,7 @@ Solver::Initialize()
                                    " Neumann needs 3 values in bndry vals.");
           boundaries_.insert(std::make_pair(
             bndry_id, Boundary{BoundaryType::Robin, {0., bndry_vals[0], bndry_vals[1]}}));
-          Chi::log.Log() << "Boundary " << bndry_name << " set to neumann." << bndry_vals[0];
+          log.Log() << "Boundary " << bndry_name << " set to neumann." << bndry_vals[0];
           break;
         }
       } // switch boundary type
@@ -110,8 +110,8 @@ Solver::Initialize()
     else
     {
       boundaries_.insert(std::make_pair(bndry_id, Boundary{BoundaryType::Dirichlet, {0., 0., 0.}}));
-      Chi::log.Log0Verbose1() << "No boundary preference found for boundary index " << bndry_name
-                              << "Dirichlet boundary added with zero boundary value.";
+      log.Log0Verbose1() << "No boundary preference found for boundary index " << bndry_name
+                         << "Dirichlet boundary added with zero boundary value.";
     }
   } // for bndry
 
@@ -123,8 +123,8 @@ Solver::Initialize()
   num_local_dofs_ = sdm.GetNumLocalDOFs(OneDofPerNode);
   num_globl_dofs_ = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  Chi::log.Log() << "Num local DOFs: " << num_local_dofs_;
-  Chi::log.Log() << "Num globl DOFs: " << num_globl_dofs_;
+  log.Log() << "Num local DOFs: " << num_local_dofs_;
+  log.Log() << "Num globl DOFs: " << num_globl_dofs_;
 
   // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs_);
@@ -158,17 +158,17 @@ Solver::Initialize()
 void
 Solver::Execute()
 {
-  Chi::log.Log() << "\nExecuting CFEM Diffusion solver";
+  log.Log() << "\nExecuting CFEM Diffusion solver";
 
   const auto& grid = *grid_ptr_;
   const auto& sdm = *sdm_ptr_;
 
 #ifdef OPENSN_WITH_LUA
-  lua_State* L = Chi::console.GetConsoleState();
+  lua_State* L = console.GetConsoleState();
 #endif
 
   // Assemble the system
-  Chi::log.Log() << "Assembling system: ";
+  log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -224,8 +224,8 @@ Solver::Execute()
         const auto& bval = bndry.values_[1];
         const auto& fval = bndry.values_[2];
 
-        Chi::log.Log0Verbose1() << "Boundary  set as Robin with a,b,f = (" << aval << "," << bval
-                                << "," << fval << ") ";
+        log.Log0Verbose1() << "Boundary  set as Robin with a,b,f = (" << aval << "," << bval << ","
+                           << fval << ") ";
         // true Robin when a!=0, otherwise, it is a Neumann:
         // Assert if b=0
         if (std::fabs(bval) < 1e-8)
@@ -308,17 +308,17 @@ Solver::Execute()
     } // for i
   }   // for cell
 
-  Chi::log.Log() << "Global assembly";
+  log.Log() << "Global assembly";
 
   MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY);
   VecAssemblyBegin(b_);
   VecAssemblyEnd(b_);
 
-  Chi::log.Log() << "Done global assembly";
+  log.Log() << "Done global assembly";
 
   // Create Krylov Solver
-  Chi::log.Log() << "Solving: ";
+  log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A_,
                                   TextName(),
@@ -332,7 +332,7 @@ Solver::Execute()
 
   UpdateFieldFunctions();
 
-  Chi::log.Log() << "Done solving";
+  log.Log() << "Done solving";
 }
 
 #ifdef OPENSN_WITH_LUA

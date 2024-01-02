@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi, PETScGraphPartitioner);
+OpenSnRegisterObject(chi, PETScGraphPartitioner);
 
 InputParameters
 PETScGraphPartitioner::GetInputParameters()
@@ -35,7 +35,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
                                  const std::vector<Vector3>&,
                                  int number_of_parts)
 {
-  Chi::log.Log0Verbose1() << "Partitioning with PETScGraphPartitioner";
+  log.Log0Verbose1() << "Partitioning with PETScGraphPartitioner";
   // Determine avg num faces per cell
   // This is done so we can reserve size better
   const size_t num_raw_cells = graph.size();
@@ -70,7 +70,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
       i_indices[i] = icount;
     }
 
-    Chi::log.Log0Verbose1() << "Done building indices.";
+    log.Log0Verbose1() << "Done building indices.";
 
     // Copy to raw arrays
     int64_t* i_indices_raw;
@@ -84,7 +84,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     for (int64_t j = 0; j < static_cast<int64_t>(j_indices.size()); ++j)
       j_indices_raw[j] = j_indices[j];
 
-    Chi::log.Log0Verbose1() << "Done copying to raw indices.";
+    log.Log0Verbose1() << "Done copying to raw indices.";
 
     // Create adjacency matrix
     Mat Adj; // Adjacency matrix
@@ -96,7 +96,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
                     nullptr,
                     &Adj);
 
-    Chi::log.Log0Verbose1() << "Done creating adjacency matrix.";
+    log.Log0Verbose1() << "Done creating adjacency matrix.";
 
     // Create partitioning
     MatPartitioning part;
@@ -109,7 +109,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     MatPartitioningDestroy(&part);
     MatDestroy(&Adj);
     ISPartitioningToNumbering(is, &isg);
-    Chi::log.Log0Verbose1() << "Done building paritioned index set.";
+    log.Log0Verbose1() << "Done building paritioned index set.";
 
     // Get cell global indices
     const int64_t* cell_pids_raw;
@@ -118,10 +118,10 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
       cell_pids[i] = cell_pids_raw[i];
     ISRestoreIndices(is, &cell_pids_raw);
 
-    Chi::log.Log0Verbose1() << "Done retrieving cell global indices.";
+    log.Log0Verbose1() << "Done retrieving cell global indices.";
   } // if more than 1 cell
 
-  Chi::log.Log0Verbose1() << "Done partitioning with PETScGraphPartitioner";
+  log.Log0Verbose1() << "Done partitioning with PETScGraphPartitioner";
   return cell_pids;
 }
 

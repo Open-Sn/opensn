@@ -59,7 +59,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) Chi::log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -211,10 +211,10 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
     MatInfo info;
     MatGetInfo(A_, MAT_GLOBAL_SUM, &info);
 
-    Chi::log.Log() << "Number of mallocs used = " << info.mallocs
-                   << "\nNumber of non-zeros allocated = " << info.nz_allocated
-                   << "\nNumber of non-zeros used = " << info.nz_used
-                   << "\nNumber of unneeded non-zeros = " << info.nz_unneeded;
+    log.Log() << "Number of mallocs used = " << info.mallocs
+              << "\nNumber of non-zeros allocated = " << info.nz_allocated
+              << "\nNumber of non-zeros used = " << info.nz_used
+              << "\nNumber of unneeded non-zeros = " << info.nz_unneeded;
   }
 
   if (options.perform_symmetry_check)
@@ -226,8 +226,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
   KSPSetOperators(ksp_, A_, A_);
 
-  if (options.verbose)
-    Chi::log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
   PC pc;
   KSPGetPC(ksp_, &pc);
@@ -248,7 +247,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) Chi::log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -374,8 +373,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
 
-  if (options.verbose)
-    Chi::log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
 }
 
 void
@@ -386,7 +384,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) Chi::log.Log() << Chi::program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -499,8 +497,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
 
-  if (options.verbose)
-    Chi::log.Log() << Chi::program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
 }
 
 } // namespace lbs

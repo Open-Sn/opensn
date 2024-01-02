@@ -75,13 +75,13 @@ TimingBlock::TimingBlock(const std::string& name) : name_(name)
 void
 TimingBlock::TimeSectionBegin()
 {
-  reference_time_ = Chi::program_timer.GetTime();
+  reference_time_ = program_timer.GetTime();
 }
 
 void
 TimingBlock::TimeSectionEnd()
 {
-  const double delta_t = Chi::program_timer.GetTime() - reference_time_;
+  const double delta_t = program_timer.GetTime() - reference_time_;
   total_time_ += delta_t;
   num_occurences_ += 1;
   last_delta_time_ = delta_t;

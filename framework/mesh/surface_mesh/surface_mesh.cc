@@ -97,9 +97,9 @@ SurfaceMesh::ExtractOpenEdgesToObj(const char* fileName)
 
   if (!outfile.is_open())
   {
-    Chi::log.LogAllError() << "In call to SurfaceMesh::ExtractOpenEdgesToObj. Failed"
-                           << " to open file: " << std::string(fileName);
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "In call to SurfaceMesh::ExtractOpenEdgesToObj. Failed"
+                      << " to open file: " << std::string(fileName);
+    Exit(EXIT_FAILURE);
   }
 
   outfile << "# ChiTech open edges file\n";
@@ -249,11 +249,11 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
   file.open(fileName);
   if (!file.is_open())
   {
-    Chi::log.LogAllError() << "Failed to open file: " << fileName << " in call "
-                           << "to ImportFromOBJFile \n";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "Failed to open file: " << fileName << " in call "
+                      << "to ImportFromOBJFile \n";
+    Exit(EXIT_FAILURE);
   }
-  Chi::log.Log() << "Loading surface mesh with transform " << transform.PrintStr();
+  log.Log() << "Loading surface mesh with transform " << transform.PrintStr();
 
   // Reading every line and determining size
   std::string file_line;
@@ -623,8 +623,8 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
   UpdateInternalConnectivity();
 
   // Check each vertex is accounted
-  Chi::log.Log() << "Surface mesh loaded with " << this->faces_.size() << " triangle faces and "
-                 << this->poly_faces_.size() << " polygon faces.";
+  log.Log() << "Surface mesh loaded with " << this->faces_.size() << " triangle faces and "
+            << this->poly_faces_.size() << " polygon faces.";
   // Exit(EXIT_FAILURE);
 
   return 0;
@@ -641,9 +641,9 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   file.open(node_filename);
   if (!file.is_open())
   {
-    Chi::log.LogAllError() << "Failed to open file: " << node_filename << " in call "
-                           << "to ImportFromOBJFile \n";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "Failed to open file: " << node_filename << " in call "
+                      << "to ImportFromOBJFile \n";
+    Exit(EXIT_FAILURE);
   }
 
   int num_verts;
@@ -666,9 +666,9 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   file.open(tria_filename);
   if (!file.is_open())
   {
-    Chi::log.LogAllError() << "Failed to open file: " << tria_filename << " in call "
-                           << "to ImportFromOBJFile \n";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "Failed to open file: " << tria_filename << " in call "
+                      << "to ImportFromOBJFile \n";
+    Exit(EXIT_FAILURE);
   }
 
   int num_tris;
@@ -765,8 +765,8 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   UpdateInternalConnectivity();
 
   // Check each vertex is accounted
-  Chi::log.Log() << "Surface mesh loaded with " << this->faces_.size() << " triangle faces and "
-                 << this->poly_faces_.size() << " polygon faces.";
+  log.Log() << "Surface mesh loaded with " << this->faces_.size() << " triangle faces and "
+            << this->poly_faces_.size() << " polygon faces.";
   // Exit(EXIT_FAILURE);
 
   return 0;
@@ -779,13 +779,13 @@ SurfaceMesh::CreateFromDivisions(std::vector<double>& vertices_1d_x,
   // Checks if vertices are empty
   if (vertices_1d_x.empty())
   {
-    Chi::log.LogAllError() << "SurfaceMesh::CreateFromDivisions. Empty vertex_x list.";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "SurfaceMesh::CreateFromDivisions. Empty vertex_x list.";
+    Exit(EXIT_FAILURE);
   }
   if (vertices_1d_y.empty())
   {
-    Chi::log.LogAllError() << "SurfaceMesh::CreateFromDivisions. Empty vertex_y list.";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "SurfaceMesh::CreateFromDivisions. Empty vertex_y list.";
+    Exit(EXIT_FAILURE);
   }
 
   // Populate 2D vertices
@@ -889,9 +889,9 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
   if (!file.is_open())
   {
-    Chi::log.LogAllError() << "Failed to open file: " << fileName << " in call "
-                           << "to ImportFromMshFiles \n";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "Failed to open file: " << fileName << " in call "
+                      << "to ImportFromMshFiles \n";
+    Exit(EXIT_FAILURE);
   }
 
   // Find section with node information and then read information
@@ -905,8 +905,8 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   int num_nodes;
   if (!(iss >> num_nodes))
   {
-    Chi::log.LogAllError() << "Failed while trying to read the number of nodes.\n";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "Failed while trying to read the number of nodes.\n";
+    Exit(EXIT_FAILURE);
   }
 
   vertices_.resize(num_nodes);
@@ -920,14 +920,14 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
     int vert_index;
     if (!(iss >> vert_index))
     {
-      Chi::log.LogAllError() << "Failed to read vertex index.\n";
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "Failed to read vertex index.\n";
+      Exit(EXIT_FAILURE);
     }
 
     if (!(iss >> vertex.x >> vertex.y >> vertex.z))
     {
-      Chi::log.LogAllError() << "Failed while reading the vertex coordinates.\n";
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "Failed while reading the vertex coordinates.\n";
+      Exit(EXIT_FAILURE);
     }
 
     vertices_[vert_index - 1] = vertex;
@@ -945,8 +945,8 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   int num_elems;
   if (!(iss >> num_elems))
   {
-    Chi::log.LogAllError() << "Failed to read number of elements.\n";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "Failed to read number of elements.\n";
+    Exit(EXIT_FAILURE);
   }
 
   for (int n = 0; n < num_elems; n++)
@@ -958,22 +958,22 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
     if (!(iss >> element_index >> elem_type >> num_tags))
     {
-      Chi::log.LogAllError() << "Failed while reading element index, element "
-                                "type, and number of tags.\n";
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "Failed while reading element index, element "
+                           "type, and number of tags.\n";
+      Exit(EXIT_FAILURE);
     }
 
     if (!(iss >> physical_reg))
     {
-      Chi::log.LogAllError() << "Failed while reading physical region.\n";
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "Failed while reading physical region.\n";
+      Exit(EXIT_FAILURE);
     }
 
     for (int i = 1; i < num_tags; i++)
       if (!(iss >> tag))
       {
-        Chi::log.LogAllError() << "Failed when reading tags.\n";
-        Chi::Exit(EXIT_FAILURE);
+        log.LogAllError() << "Failed when reading tags.\n";
+        Exit(EXIT_FAILURE);
       }
 
     if (elem_type == 2)
@@ -984,8 +984,8 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
       for (int i = 0; i < num_nodes; i++)
         if (!(iss >> nodes[i]))
         {
-          Chi::log.LogAllError() << "Failed when reading element node index.\n";
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "Failed when reading element node index.\n";
+          Exit(EXIT_FAILURE);
         }
 
       newFace->v_indices.resize(num_nodes);
@@ -1000,8 +1000,8 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
       for (int& node : nodes)
         if (!(iss >> node))
         {
-          Chi::log.LogAllError() << "Failed when reading element node index.\n";
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "Failed when reading element node index.\n";
+          Exit(EXIT_FAILURE);
         }
 
       newFace->v_indices.resize(num_nodes);
@@ -1231,8 +1231,8 @@ SurfaceMesh::CheckCyclicDependencies(int num_angles)
     auto topological_order = G.GenerateTopologicalSort();
     if (topological_order.empty())
     {
-      Chi::log.LogAllError() << "Function CheckCyclicDependencies. Detected cyclic depency.";
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "Function CheckCyclicDependencies. Detected cyclic depency.";
+      Exit(EXIT_FAILURE);
     }
 
     // Cleanup
@@ -1241,8 +1241,8 @@ SurfaceMesh::CheckCyclicDependencies(int num_angles)
 
   GetMeshStats();
 
-  Chi::log.Log() << "Cyclic dependency check complete. No cycles or "
-                 << "bad mesh elements were detected";
+  log.Log() << "Cyclic dependency check complete. No cycles or "
+            << "bad mesh elements were detected";
 }
 
 void
@@ -1317,17 +1317,17 @@ SurfaceMesh::GetMeshStats()
   }
   output << "Number of negative or zero faces = " << num_negative_areas;
 
-  Chi::log.Log() << output.str();
+  log.Log() << output.str();
 }
 
 void
 SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<double>& y_cuts)
 {
-  Chi::log.Log() << "X-cuts to be logged: " << x_cuts.size();
+  log.Log() << "X-cuts to be logged: " << x_cuts.size();
   //  for (auto& val : x_cuts)
   //    log.Log() << val;
   //
-  Chi::log.Log() << "Y-cuts to be logged: " << y_cuts.size();
+  log.Log() << "Y-cuts to be logged: " << y_cuts.size();
   //  for (auto& val : y_cuts)
   //    log.Log() << val;
 
@@ -1374,23 +1374,23 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
 
   double average = tot_bin_size / ((double)(I + 1) * (J + 1));
 
-  Chi::log.Log() << "Average faces per set: " << average;
-  Chi::log.Log() << "Maximum faces per set: " << max_bin_size << " at (i,j)= ( " << i_max << " , "
-                 << j_max << " )";
+  log.Log() << "Average faces per set: " << average;
+  log.Log() << "Maximum faces per set: " << max_bin_size << " at (i,j)= ( " << i_max << " , "
+            << j_max << " )";
 
-  if (i_max == I) Chi::log.Log() << "X greater than " << x_cuts[i_max - 1];
+  if (i_max == I) log.Log() << "X greater than " << x_cuts[i_max - 1];
   else if (i_max == 0)
-    Chi::log.Log() << "X less than " << x_cuts[0];
+    log.Log() << "X less than " << x_cuts[0];
   else
-    Chi::log.Log() << "X greater than " << x_cuts[i_max - 1] << " and less than " << x_cuts[i_max];
+    log.Log() << "X greater than " << x_cuts[i_max - 1] << " and less than " << x_cuts[i_max];
 
-  if (j_max == J) Chi::log.Log() << "Y greater than " << y_cuts[j_max - 1];
+  if (j_max == J) log.Log() << "Y greater than " << y_cuts[j_max - 1];
   else if (j_max == 0)
-    Chi::log.Log() << "Y less than " << y_cuts[0];
+    log.Log() << "Y less than " << y_cuts[0];
   else
-    Chi::log.Log() << "Y greater than " << y_cuts[j_max - 1] << " and less than " << y_cuts[j_max];
+    log.Log() << "Y greater than " << y_cuts[j_max - 1] << " and less than " << y_cuts[j_max];
 
-  Chi::log.Log() << "Max-to-average ratio: " << max_bin_size / average;
+  log.Log() << "Max-to-average ratio: " << max_bin_size / average;
 }
 
 void

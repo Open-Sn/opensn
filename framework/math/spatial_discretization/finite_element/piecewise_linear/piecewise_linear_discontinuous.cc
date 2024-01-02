@@ -78,21 +78,21 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   }
 
   // Allgather node_counts
-  locJ_block_size_.assign(Chi::mpi.process_count, 0);
+  locJ_block_size_.assign(opensn::mpi.process_count, 0);
   MPI_Allgather(&local_node_count,
                 1,
                 MPI_UNSIGNED_LONG_LONG,
                 locJ_block_size_.data(),
                 1,
                 MPI_UNSIGNED_LONG_LONG,
-                Chi::mpi.comm);
+                mpi.comm);
 
   // Assign
   // local_block_address
   uint64_t running_block_address = 0;
-  for (int locI = 0; locI < Chi::mpi.process_count; ++locI)
+  for (int locI = 0; locI < opensn::mpi.process_count; ++locI)
   {
-    if (locI == Chi::mpi.location_id)
+    if (locI == opensn::mpi.location_id)
       local_block_address_ = static_cast<int64_t>(running_block_address);
 
     running_block_address += locJ_block_size_[locI];
@@ -154,8 +154,8 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   }
 
   // Print info
-  Chi::log.LogAllVerbose2() << "Local dof count, start, total " << local_node_count << " "
-                            << local_block_address_ << " " << global_node_count;
+  log.LogAllVerbose2() << "Local dof count, start, total " << local_node_count << " "
+                       << local_block_address_ << " " << global_node_count;
 }
 
 void
@@ -266,7 +266,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     }   // for j
   }
 
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 }
 
 int64_t
@@ -281,7 +281,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
-  if (cell.partition_id_ == Chi::mpi.location_id)
+  if (cell.partition_id_ == opensn::mpi.location_id)
   {
     if (storage == UnknownStorageType::BLOCK)
     {
@@ -314,10 +314,10 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
 
     if (!found)
     {
-      Chi::log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
-                             << "with global index " << cell.global_id_ << " and partition-ID "
-                             << cell.partition_id_;
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
+                        << "with global index " << cell.global_id_ << " and partition-ID "
+                        << cell.partition_id_;
+      Exit(EXIT_FAILURE);
     }
 
     if (storage == UnknownStorageType::BLOCK)
@@ -349,7 +349,7 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
-  if (cell.partition_id_ == Chi::mpi.location_id)
+  if (cell.partition_id_ == opensn::mpi.location_id)
   {
     if (storage == UnknownStorageType::BLOCK)
     {
@@ -380,10 +380,10 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
 
     if (!found)
     {
-      Chi::log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
-                             << "with global index " << cell.global_id_ << " and partition-ID "
-                             << cell.partition_id_;
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
+                        << "with global index " << cell.global_id_ << " and partition-ID "
+                        << cell.partition_id_;
+      Exit(EXIT_FAILURE);
     }
 
     if (storage == UnknownStorageType::BLOCK)

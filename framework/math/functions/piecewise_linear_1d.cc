@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_math::functions, PiecewiseLinear1D);
+OpenSnRegisterObject(chi_math::functions, PiecewiseLinear1D);
 
 InputParameters
 PiecewiseLinear1D::GetInputParameters()

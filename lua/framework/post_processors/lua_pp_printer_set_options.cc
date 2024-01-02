@@ -16,7 +16,7 @@ InputParameters PostProcessorPrinterOptions();
 InputParameters GetSyntax_PPPrinterSetOptions();
 ParameterBlock PostProcessorPrinterSetOptions(const InputParameters& params);
 
-RegisterSyntaxBlock(chi, PostProcessorPrinterOptions, PostProcessorPrinterOptions);
+OpenSnRegisterSyntaxBlock(chi, PostProcessorPrinterOptions, PostProcessorPrinterOptions);
 
 RegisterWrapperFunction(chi,
                         PostProcessorPrinterSetOptions,
@@ -128,7 +128,7 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
             "Unsupported format \"" + option +
             "\" specified for option \"scalar_pp_table_format\"");
 
-        Chi::log.Log() << "PostProcessorPrinter scalar_pp_table_format set to "
+        log.Log() << "PostProcessorPrinter scalar_pp_table_format set to "
                        << option;
         break;
       }
@@ -138,7 +138,7 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
 
         printer.SetEventsOnWhichPrintPPs(list);
 
-        Chi::log.Log()
+        log.Log()
           << "PostProcessorPrinter events_on_which_to_print_postprocs set";
         break;
       }

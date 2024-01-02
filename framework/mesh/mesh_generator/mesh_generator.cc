@@ -12,12 +12,12 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_mesh, MeshGenerator);
+OpenSnRegisterObject(chi_mesh, MeshGenerator);
 
 InputParameters
 MeshGenerator::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("The base class for all mesh generators");
   params.SetDocGroup("doc_MeshGenerators");
@@ -42,7 +42,7 @@ MeshGenerator::GetInputParameters()
 }
 
 MeshGenerator::MeshGenerator(const InputParameters& params)
-  : ChiObject(params),
+  : Object(params),
     scale_(params.GetParamValue<double>("scale")),
     replicated_(params.GetParamValue<bool>("replicated_mesh"))
 {
@@ -62,7 +62,7 @@ MeshGenerator::MeshGenerator(const InputParameters& params)
     partitioner_handle = params.GetParamValue<size_t>("partitioner");
   else
   {
-    auto& factory = ChiObjectFactory::GetInstance();
+    auto& factory = ObjectFactory::GetInstance();
     auto valid_params = PETScGraphPartitioner::GetInputParameters();
     partitioner_handle =
       factory.MakeRegisteredObjectOfType("chi::PETScGraphPartitioner", ParameterBlock());
@@ -93,9 +93,10 @@ MeshGenerator::Execute()
   current_umesh = GenerateUnpartitionedMesh(std::move(current_umesh));
 
   std::vector<int64_t> cell_pids;
-  if (Chi::mpi.location_id == 0) cell_pids = PartitionMesh(*current_umesh, Chi::mpi.process_count);
+  if (opensn::mpi.location_id == 0)
+    cell_pids = PartitionMesh(*current_umesh, opensn::mpi.process_count);
 
-  BroadcastPIDs(cell_pids, 0, Chi::mpi.comm);
+  BroadcastPIDs(cell_pids, 0, mpi.comm);
 
   auto grid_ptr = SetupMesh(std::move(current_umesh), cell_pids);
 
@@ -108,7 +109,7 @@ MeshGenerator::Execute()
   auto& cur_hndlr = GetCurrentHandler();
   cur_hndlr.SetVolumeMesher(new_mesher);
 
-  Chi::mpi.Barrier();
+  opensn::mpi.Barrier();
 }
 
 void
@@ -125,26 +126,25 @@ MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
   const size_t num_local_cells = grid.local_cells.size();
   size_t num_global_cells = 0;
 
-  MPI_Allreduce(
-    &num_local_cells, &num_global_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, Chi::mpi.comm);
+  MPI_Allreduce(&num_local_cells, &num_global_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi.comm);
 
   size_t max_num_local_cells;
   MPI_Allreduce(
-    &num_local_cells, &max_num_local_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_MAX, Chi::mpi.comm);
+    &num_local_cells, &max_num_local_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_MAX, mpi.comm);
 
   size_t min_num_local_cells;
   MPI_Allreduce(
-    &num_local_cells, &min_num_local_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_MIN, Chi::mpi.comm);
+    &num_local_cells, &min_num_local_cells, 1, MPI_UNSIGNED_LONG_LONG, MPI_MIN, mpi.comm);
 
-  const size_t avg_num_local_cells = num_global_cells / Chi::mpi.process_count;
+  const size_t avg_num_local_cells = num_global_cells / opensn::mpi.process_count;
   const size_t num_local_ghosts = grid.cells.GetNumGhosts();
   const double local_ghost_to_local_cell_ratio = double(num_local_ghosts) / double(num_local_cells);
 
   double average_ghost_ratio;
   MPI_Allreduce(
-    &local_ghost_to_local_cell_ratio, &average_ghost_ratio, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
+    &local_ghost_to_local_cell_ratio, &average_ghost_ratio, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
 
-  average_ghost_ratio /= Chi::mpi.process_count;
+  average_ghost_ratio /= opensn::mpi.process_count;
 
   std::stringstream outstr;
   outstr << "Mesh statistics:\n";
@@ -155,9 +155,9 @@ MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
   outstr << min_num_local_cells << "\n";
   outstr << "  Ghost-to-local ratio (avg)    : " << average_ghost_ratio;
 
-  Chi::log.Log() << "\n" << outstr.str() << "\n\n";
+  log.Log() << "\n" << outstr.str() << "\n\n";
 
-  Chi::log.LogAllVerbose2() << Chi::mpi.location_id << "Local cells=" << num_local_cells;
+  log.LogAllVerbose2() << opensn::mpi.location_id << "Local cells=" << num_local_cells;
 }
 
 std::vector<int64_t>
@@ -210,8 +210,8 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_parti
   }
   avg_num_cells /= num_partitions;
 
-  Chi::log.Log() << "Partitioner num_cells allocated max,min,avg = " << max_num_cells << ","
-                 << min_num_cells << "," << avg_num_cells;
+  log.Log() << "Partitioner num_cells allocated max,min,avg = " << max_num_cells << ","
+            << min_num_cells << "," << avg_num_cells;
 
   return cell_pids;
 }
@@ -229,7 +229,8 @@ MeshGenerator::SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
   size_t cell_globl_id = 0;
   for (auto& raw_cell : input_umesh_ptr->GetRawCells())
   {
-    if (CellHasLocalScope(Chi::mpi.location_id, *raw_cell, cell_globl_id, vertex_subs, cell_pids))
+    if (CellHasLocalScope(
+          opensn::mpi.location_id, *raw_cell, cell_globl_id, vertex_subs, cell_pids))
     {
       auto cell = SetupCell(*raw_cell,
                             cell_globl_id,
@@ -264,12 +265,12 @@ MeshGenerator::SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
 void
 MeshGenerator::BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, MPI_Comm communicator)
 {
-  size_t data_count = Chi::mpi.location_id == root ? cell_pids.size() : 0;
+  size_t data_count = opensn::mpi.location_id == root ? cell_pids.size() : 0;
 
   // Broadcast data_count to all locations
   MPI_Bcast(&data_count, 1, MPI_UINT64_T, root, communicator);
 
-  if (Chi::mpi.location_id != root) cell_pids.assign(data_count, 0);
+  if (opensn::mpi.location_id != root) cell_pids.assign(data_count, 0);
 
   // Broadcast partitioning to all locations
   MPI_Bcast(cell_pids.data(), static_cast<int>(data_count), MPI_LONG_LONG_INT, root, communicator);

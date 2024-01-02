@@ -38,10 +38,9 @@ chiCreateCylindricalProductQuadrature(lua_State* L)
     const size_t lNa = lua_rawlen(L, 3);
     if (lNa != Np)
     {
-      opensn::Chi::log.LogAllError()
-        << "chiCreateCylindricalProductQuadrature : third argument, "
-        << ", if a lua table, must be of length equal to second argument.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::log.LogAllError() << "chiCreateCylindricalProductQuadrature : third argument, "
+                                << ", if a lua table, must be of length equal to second argument.";
+      opensn::Exit(EXIT_FAILURE);
     }
     vNa.resize(Np, 0);
     for (int n = 1; n <= lNa; ++n)
@@ -54,9 +53,9 @@ chiCreateCylindricalProductQuadrature(lua_State* L)
   }
   else
   {
-    opensn::Chi::log.LogAllError() << "chiCreateCylindricalProductQuadrature : third argument "
-                                   << "must be a number or a lua table.";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::log.LogAllError() << "chiCreateCylindricalProductQuadrature : third argument "
+                              << "must be a number or a lua table.";
+    opensn::Exit(EXIT_FAILURE);
   }
 
   bool verbose = false;
@@ -67,8 +66,8 @@ chiCreateCylindricalProductQuadrature(lua_State* L)
   {
     case ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV:
     {
-      opensn::Chi::log.Log() << "chiCreateCylindricalProductQuadrature : "
-                             << "Creating Gauss-Legendre-Legendre Quadrature\n";
+      opensn::log.Log() << "chiCreateCylindricalProductQuadrature : "
+                        << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
       const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
       std::vector<Quadrature> quad_azi;
@@ -85,8 +84,8 @@ chiCreateCylindricalProductQuadrature(lua_State* L)
     }
     case ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE:
     {
-      opensn::Chi::log.Log() << "chiCreateCylindricalProductQuadrature : "
-                             << "Creating Gauss-Legendre-Legendre Quadrature\n";
+      opensn::log.Log() << "chiCreateCylindricalProductQuadrature : "
+                        << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
       const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
       std::vector<Quadrature> quad_azi;
@@ -103,9 +102,9 @@ chiCreateCylindricalProductQuadrature(lua_State* L)
     }
     default:
     {
-      opensn::Chi::log.LogAllError() << "chiCreateCylindricalProductQuadrature : "
-                                     << "Unsupported quadrature type supplied, type=" << ident;
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::log.LogAllError() << "chiCreateCylindricalProductQuadrature : "
+                                << "Unsupported quadrature type supplied, type=" << ident;
+      opensn::Exit(EXIT_FAILURE);
     }
   }
 
@@ -156,8 +155,8 @@ chiCreateSphericalProductQuadrature(lua_State* L)
   {
     case ProductQuadratureType::GAUSS_CHEBYSHEV:
     {
-      opensn::Chi::log.Log() << "chiCreateSphericalProductQuadrature : "
-                             << "Creating Gauss-Chebyshev Quadrature\n";
+      opensn::log.Log() << "chiCreateSphericalProductQuadrature : "
+                        << "Creating Gauss-Chebyshev Quadrature\n";
 
       const auto quad_pol = QuadratureGaussChebyshev(Np, verbose);
       const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
@@ -170,8 +169,8 @@ chiCreateSphericalProductQuadrature(lua_State* L)
     }
     case ProductQuadratureType::GAUSS_LEGENDRE:
     {
-      opensn::Chi::log.Log() << "chiCreateSphericalProductQuadrature : "
-                             << "Creating Gauss-Legendre Quadrature\n";
+      opensn::log.Log() << "chiCreateSphericalProductQuadrature : "
+                        << "Creating Gauss-Legendre Quadrature\n";
 
       const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
       const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
@@ -184,9 +183,9 @@ chiCreateSphericalProductQuadrature(lua_State* L)
     }
     default:
     {
-      opensn::Chi::log.LogAllError() << "chiCreateSphericalProductQuadrature : "
-                                     << "Unsupported quadrature type supplied, type=" << ident;
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::log.LogAllError() << "chiCreateSphericalProductQuadrature : "
+                                << "Unsupported quadrature type supplied, type=" << ident;
+      opensn::Exit(EXIT_FAILURE);
     }
   }
 

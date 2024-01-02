@@ -16,8 +16,8 @@
 namespace opensn
 {
 
-class ChiMPICommunicatorSet;
-typedef std::shared_ptr<ChiMPICommunicatorSet> MPILocalCommSetPtr;
+class MPICommunicatorSet;
+typedef std::shared_ptr<MPICommunicatorSet> MPILocalCommSetPtr;
 
 class GridFaceHistogram;
 typedef std::shared_ptr<GridFaceHistogram> GridFaceHistogramPtr;

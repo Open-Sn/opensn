@@ -6,13 +6,13 @@
 
 namespace opensn
 {
-class ChiMPICommunicatorSet;
+class MPICommunicatorSet;
 class FLUDS;
 
 class AsynchronousCommunicator
 {
 public:
-  explicit AsynchronousCommunicator(FLUDS& fluds, const ChiMPICommunicatorSet& comm_set);
+  explicit AsynchronousCommunicator(FLUDS& fluds, const MPICommunicatorSet& comm_set);
   virtual ~AsynchronousCommunicator() = default;
 
   /**Obtains a data vector holding a spot into which outgoing data can be
@@ -25,7 +25,7 @@ public:
 
 protected:
   FLUDS& fluds_;
-  const ChiMPICommunicatorSet& comm_set_;
+  const MPICommunicatorSet& comm_set_;
 };
 
 } // namespace opensn

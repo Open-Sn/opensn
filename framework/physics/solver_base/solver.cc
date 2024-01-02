@@ -13,7 +13,7 @@ namespace opensn
 InputParameters
 Solver::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.AddRequiredParameter<std::string>(
     "name",
@@ -50,7 +50,7 @@ Solver::Solver(std::string in_text_name, std::initializer_list<BasicOption> in_o
 }
 
 Solver::Solver(const InputParameters& params)
-  : ChiObject(params),
+  : Object(params),
     timestepper_(InitTimeStepper(params)),
     text_name_(params.GetParamValue<std::string>("name"))
 {
@@ -76,7 +76,7 @@ Solver::InitTimeStepper(const InputParameters& params)
   }
   else
   {
-    auto& factory = ChiObjectFactory::GetInstance();
+    auto& factory = ObjectFactory::GetInstance();
 
     const std::string obj_type = "chi_physics::ConstantTimeStepper";
     auto valid_params = factory.GetRegisteredObjectParameters(obj_type);
@@ -148,25 +148,25 @@ Solver::GetFieldFunctions() const
 void
 Solver::Initialize()
 {
-  Chi::log.Log() << "\"Initialize()\" method not defined for " << TextName();
+  log.Log() << "\"Initialize()\" method not defined for " << TextName();
 }
 
 void
 Solver::Execute()
 {
-  Chi::log.Log() << "\"Execute()\" method not defined for " << TextName();
+  log.Log() << "\"Execute()\" method not defined for " << TextName();
 }
 
 void
 Solver::Step()
 {
-  Chi::log.Log() << "\"Step()\" method not defined for " << TextName();
+  log.Log() << "\"Step()\" method not defined for " << TextName();
 }
 
 void
 Solver::Advance()
 {
-  Chi::log.Log() << "\"Advance()\" method not defined for " << TextName();
+  log.Log() << "\"Advance()\" method not defined for " << TextName();
 }
 
 ParameterBlock
@@ -180,8 +180,8 @@ Solver::GetInfoWithPreCheck(const ParameterBlock& params) const
 {
   if (not params.Has("name"))
   {
-    Chi::log.LogAllWarning() << "chi_physics::Solver::GetInfo called without "
-                                "\"name\" in the parameter list";
+    log.LogAllWarning() << "chi_physics::Solver::GetInfo called without "
+                           "\"name\" in the parameter list";
     return ParameterBlock{};
   }
   return GetInfo(params);

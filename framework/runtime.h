@@ -44,7 +44,7 @@ class UnknownManager;
 
 class Timer;
 class Console;
-class ChiLog;
+class Logger;
 class PostProcessor;
 typedef std::shared_ptr<PostProcessor> PostProcessorPtr;
 /**Stores all the keys currently in the registries.*/
@@ -55,39 +55,18 @@ struct RegistryStatuses
   std::vector<std::string> console_lua_wrapper_keys_;
 };
 
-/**Simple structure for memory usage.*/
-struct CSTMemory
-{
-  double memory_bytes = 0.0;
-  double memory_kbytes = 0.0;
-  double memory_mbytes = 0.0;
-  double memory_gbytes = 0.0;
+class Object;
+typedef std::shared_ptr<Object> ChiObjectPtr;
 
-  CSTMemory() = default;
-
-  explicit CSTMemory(double in_mem)
-  {
-    memory_bytes = in_mem;
-    memory_kbytes = in_mem / 1024.0;
-    memory_mbytes = in_mem / 1024.0 / 1024.0;
-    memory_gbytes = in_mem / 1024.0 / 1024.0;
-  }
-
-  CSTMemory& operator=(const CSTMemory& in_struct) = default;
-};
-
-class ChiObject;
-typedef std::shared_ptr<ChiObject> ChiObjectPtr;
+extern Console& console;
+extern MPI_Info& mpi;
+extern Logger& log;
+extern Timer program_timer;
 
 /**General utilities in ChiTech*/
 class Chi
 {
 public:
-  static MPI_Info& mpi;
-  static Timer program_timer;
-  static Console& console;
-  static ChiLog& log;
-
   /** Global stack of handlers */
   static std::vector<MeshHandlerPtr> meshhandler_stack;
   static int current_mesh_handler;
@@ -107,16 +86,6 @@ public:
   static std::vector<PostProcessorPtr> postprocessor_stack;
 
   static const size_t SIZE_T_INVALID = ((size_t)-1);
-
-  /**
-   * Get current memory usage.
-   */
-  static CSTMemory GetMemoryUsage();
-
-  /**
-   * Get current memory usage in Megabytes.
-   */
-  static double GetMemoryUsageInMB();
 
   /**Data block for run-time quantities.*/
   class run_time
@@ -183,24 +152,9 @@ public:
   static int RunInteractive(int argc, char** argv);
   /**Runs ChiTech in pure batch mode. Start then finish.*/
   static int RunBatch(int argc, char** argv);
-  /**Initializes all necessary items for ChiTech.
-  \param argc int    Number of arguments supplied.
-  \param argv char** Array of strings representing each argument.
-  \param communicator MPI_Comm The main communicator, used system wide.
-   */
-  static int Initialize(int argc, char** argv, MPI_Comm communicator);
-  /**
-   * Finalizes ChiTech.
-   */
-  static void Finalize();
-  /** Exits the program appropriately.*/
-  static void Exit(int error_code);
 
   /**Builds a `RegistryStatuses` structure*/
   static RegistryStatuses GetStatusOfRegistries();
-
-  /** Gets the ChiTech-version string.*/
-  static std::string GetVersionStr();
 
 public:
   /**Attempts to retrieve an object of base-type `shared_ptr<T>` at the given
@@ -286,7 +240,7 @@ public:
    * \code
    * auto surf_mesh_ptr = Chi::GetStackItemPtr(
       Chi::object_stack, surf_mesh_hndle, fname);
-     // Returns std::shared_ptr<ChiObject>
+     // Returns std::shared_ptr<Object>
    * \endcode
    * */
   template <class T>
@@ -307,5 +261,28 @@ public:
     }
   }
 };
+
+/**
+ * Initializes all necessary items
+ * \param argc Number of arguments supplied.
+ * \param argv Array of strings representing each argument.
+ * \param communicator The main communicator, used system wide.
+ */
+int Initialize(int argc, char** argv, MPI_Comm communicator);
+
+/**
+ * Finalize the run
+ */
+void Finalize();
+
+/**
+ * Gets the version string.
+ */
+std::string GetVersionStr();
+
+/**
+ * Exits the program appropriately.
+ */
+void Exit(int error_code);
 
 } // namespace opensn

@@ -8,7 +8,7 @@ namespace opensn
 void
 SurfaceMesher::Execute()
 {
-  Chi::log.Log0Verbose1() << "This is an empty mesher. Nothing to execute.";
+  log.Log0Verbose1() << "This is an empty mesher. Nothing to execute.";
 }
 
 } // namespace opensn

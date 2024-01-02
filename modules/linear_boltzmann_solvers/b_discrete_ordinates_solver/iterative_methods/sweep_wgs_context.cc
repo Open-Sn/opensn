@@ -55,13 +55,12 @@ SweepWGSContext::PreSetupCallback()
       default:
         method_name = "KRYLOV_GMRES";
     }
-    Chi::log.Log() << "\n\n"
-                   << "********** Solving groupset " << groupset_.id_ << " with " << method_name
-                   << ".\n\n"
-                   << "Quadrature number of angles: " << groupset_.quadrature_->abscissae_.size()
-                   << "\n"
-                   << "Groups " << groupset_.groups_.front().id_ << " "
-                   << groupset_.groups_.back().id_ << "\n\n";
+    log.Log() << "\n\n"
+              << "********** Solving groupset " << groupset_.id_ << " with " << method_name
+              << ".\n\n"
+              << "Quadrature number of angles: " << groupset_.quadrature_->abscissae_.size() << "\n"
+              << "Groups " << groupset_.groups_.front().id_ << " " << groupset_.groups_.back().id_
+              << "\n\n";
   }
 }
 
@@ -103,10 +102,10 @@ SweepWGSContext::SystemSize()
 
   if (log_info_)
   {
-    Chi::log.Log() << "Total number of angular unknowns: " << num_psi_global << "\n"
-                   << "Number of lagged angular unknowns: " << num_delayed_psi_globl << "("
-                   << std::setprecision(2)
-                   << sc_double(num_delayed_psi_globl) * 100 / sc_double(num_psi_global) << "%)";
+    log.Log() << "Total number of angular unknowns: " << num_psi_global << "\n"
+              << "Number of lagged angular unknowns: " << num_delayed_psi_globl << "("
+              << std::setprecision(2)
+              << sc_double(num_delayed_psi_globl) * 100 / sc_double(num_psi_global) << "%)";
   }
 
   return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};
@@ -151,26 +150,26 @@ SweepWGSContext::PostSolveCallback()
   {
     double sweep_time = sweep_scheduler_.GetAverageSweepTime();
     double chunk_overhead_ratio = 1.0 - sweep_scheduler_.GetAngleSetTimings()[2];
-    double source_time = Chi::log.ProcessEvent(lbs_solver_.GetSourceEventTag(),
-                                               ChiLog::EventOperation::AVERAGE_DURATION);
+    double source_time =
+      log.ProcessEvent(lbs_solver_.GetSourceEventTag(), Logger::EventOperation::AVERAGE_DURATION);
     size_t num_angles = groupset_.quadrature_->abscissae_.size();
     size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
 
     if (log_info_)
     {
-      Chi::log.Log() << "\n\n";
-      Chi::log.Log() << "        Set Src Time/sweep (s):        " << source_time;
-      Chi::log.Log() << "        Average sweep time (s):        " << sweep_time;
-      Chi::log.Log() << "        Chunk-Overhead-Ratio  :        " << chunk_overhead_ratio;
-      Chi::log.Log() << "        Sweep Time/Unknown (ns):       "
-                     << sweep_time * 1.0e9 * Chi::mpi.process_count /
-                          static_cast<double>(num_unknowns);
-      Chi::log.Log() << "        Number of unknowns per sweep:  " << num_unknowns;
-      Chi::log.Log() << "\n\n";
+      log.Log() << "\n\n";
+      log.Log() << "        Set Src Time/sweep (s):        " << source_time;
+      log.Log() << "        Average sweep time (s):        " << sweep_time;
+      log.Log() << "        Chunk-Overhead-Ratio  :        " << chunk_overhead_ratio;
+      log.Log() << "        Sweep Time/Unknown (ns):       "
+                << sweep_time * 1.0e9 * opensn::mpi.process_count /
+                     static_cast<double>(num_unknowns);
+      log.Log() << "        Number of unknowns per sweep:  " << num_unknowns;
+      log.Log() << "\n\n";
 
-      std::string sweep_log_file_name = std::string("GS_") + std::to_string(groupset_.id_) +
-                                        std::string("_SweepLog_") +
-                                        std::to_string(Chi::mpi.location_id) + std::string(".log");
+      std::string sweep_log_file_name =
+        std::string("GS_") + std::to_string(groupset_.id_) + std::string("_SweepLog_") +
+        std::to_string(opensn::mpi.location_id) + std::string(".log");
       groupset_.PrintSweepInfoFile(sweep_scheduler_.SweepEventTag(), sweep_log_file_name);
     }
   }

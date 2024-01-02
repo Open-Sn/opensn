@@ -11,14 +11,13 @@ void
 CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
                                 std::vector<std::vector<int>>& global_dependencies)
 {
-  int P = Chi::mpi.process_count;
+  int P = opensn::mpi.process_count;
 
   // Communicate location dep
   // counts
   std::vector<int> depcount_per_loc(P, 0);
   int current_loc_dep_count = location_dependencies.size();
-  MPI_Allgather(
-    &current_loc_dep_count, 1, MPI_INT, depcount_per_loc.data(), 1, MPI_INT, Chi::mpi.comm);
+  MPI_Allgather(&current_loc_dep_count, 1, MPI_INT, depcount_per_loc.data(), 1, MPI_INT, mpi.comm);
 
   // Broadcast dependencies
   std::vector<int> raw_depvec_displs(P, 0);
@@ -38,7 +37,7 @@ CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
                  depcount_per_loc.data(),
                  raw_depvec_displs.data(),
                  MPI_INT,
-                 Chi::mpi.comm);
+                 mpi.comm);
 
   for (int locI = 0; locI < P; ++locI)
   {

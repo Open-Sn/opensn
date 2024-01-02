@@ -37,7 +37,7 @@ chiSolverCreate(lua_State* L)
 
   const auto params = TableParserAsParameterBlock::ParseTable(L, 1);
 
-  const auto& object_maker = ChiObjectFactory::GetInstance();
+  const auto& object_maker = ObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObject(params);
 
   lua_pushinteger(L, static_cast<lua_Integer>(handle));
@@ -153,32 +153,32 @@ chiSolverSetBasicOption(lua_State* L)
       case VaryingDataType::STRING:
         LuaCheckStringValue(fname, L, 3);
         option.SetStringValue(lua_tostring(L, 3));
-        opensn::Chi::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
-                               << " set to " << option.StringValue() << ".";
+        opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
+                          << " set to " << option.StringValue() << ".";
         break;
       case VaryingDataType::BOOL:
         LuaCheckBoolValue(fname, L, 3);
         option.SetBoolValue(lua_toboolean(L, 3));
-        opensn::Chi::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
-                               << " set to " << ((option.BoolValue()) ? "true" : "false") << ".";
+        opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
+                          << " set to " << ((option.BoolValue()) ? "true" : "false") << ".";
         break;
       case VaryingDataType::INTEGER:
         LuaCheckIntegerValue(fname, L, 3);
         option.SetIntegerValue(lua_tointeger(L, 3));
-        opensn::Chi::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
-                               << " set to " << option.IntegerValue() << ".";
+        opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
+                          << " set to " << option.IntegerValue() << ".";
         break;
       case VaryingDataType::FLOAT:
         LuaCheckNumberValue(fname, L, 3);
         option.SetFloatValue(lua_tonumber(L, 3));
-        opensn::Chi::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
-                               << " set to " << option.FloatValue() << ".";
+        opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
+                          << " set to " << option.FloatValue() << ".";
         break;
     }
   }
   catch (const std::out_of_range& oor)
   {
-    opensn::Chi::log.Log0Error() << fname << ": " << oor.what();
+    opensn::log.Log0Error() << fname << ": " << oor.what();
     throw oor;
   }
 

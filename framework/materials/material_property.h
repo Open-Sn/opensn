@@ -6,7 +6,7 @@ namespace opensn
 {
 
 /**Base class for a material property.*/
-class MaterialProperty : public ChiObject
+class MaterialProperty : public Object
 {
 private:
   const std::string name_;

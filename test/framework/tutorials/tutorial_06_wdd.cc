@@ -47,15 +47,15 @@ chiSimTest06_WDD(const InputParameters&)
 {
   const std::string fname = "chiSimTest06_WDD";
 
-  opensn::Chi::log.Log() << "chiSimTest06_WDD num_args = " << 0;
+  opensn::log.Log() << "chiSimTest06_WDD num_args = " << 0;
 
-  if (opensn::Chi::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
+  if (opensn::mpi.process_count != 1) throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // Make Orthogonal mapping
   const auto ijk_info = grid.GetIJKInfo();
@@ -85,8 +85,8 @@ chiSimTest06_WDD(const InputParameters&)
   const size_t num_local_nodes = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_globl_nodes = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
-  opensn::Chi::log.Log() << "Num local nodes: " << num_local_nodes;
-  opensn::Chi::log.Log() << "Num globl nodes: " << num_globl_nodes;
+  opensn::log.Log() << "Num local nodes: " << num_local_nodes;
+  opensn::log.Log() << "Num globl nodes: " << num_globl_nodes;
 
   // Make an angular quadrature
   std::shared_ptr<AngularQuadrature> quadrature;
@@ -101,7 +101,7 @@ chiSimTest06_WDD(const InputParameters&)
   else
     throw std::logic_error(fname + "Error with the dimensionality "
                                    "of the mesh.");
-  opensn::Chi::log.Log() << "Quadrature created." << std::endl;
+  opensn::log.Log() << "Quadrature created." << std::endl;
 
   // Set/Get params
   const size_t scat_order = 1;
@@ -117,8 +117,8 @@ chiSimTest06_WDD(const InputParameters&)
   const size_t num_moments = m_ell_em_map.size();
   const size_t num_dirs = quadrature->omegas_.size();
 
-  opensn::Chi::log.Log() << "End Set/Get params." << std::endl;
-  opensn::Chi::log.Log() << "Num Moments: " << num_moments << std::endl;
+  opensn::log.Log() << "End Set/Get params." << std::endl;
+  opensn::log.Log() << "Num Moments: " << num_moments << std::endl;
 
   // Make Unknown Managers
   const auto VecN = UnknownType::VECTOR_N;
@@ -133,7 +133,7 @@ chiSimTest06_WDD(const InputParameters&)
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   const size_t num_local_psi_dofs = sdm.GetNumLocalDOFs(psi_uk_man);
 
-  opensn::Chi::log.Log() << "End ukmanagers." << std::endl;
+  opensn::log.Log() << "End ukmanagers." << std::endl;
 
   // Make XSs
   SingleStateMGXS xs;
@@ -146,7 +146,7 @@ chiSimTest06_WDD(const InputParameters&)
   auto phi_new = phi_old;
   auto q_source = phi_old;
 
-  opensn::Chi::log.Log() << "End vectors." << std::endl;
+  opensn::log.Log() << "End vectors." << std::endl;
 
   // Make material source term
   for (const auto& cell : grid.local_cells)
@@ -287,7 +287,7 @@ chiSimTest06_WDD(const InputParameters&)
   };
 
   // Classic Richardson iteration
-  opensn::Chi::log.Log() << "Starting iterations" << std::endl;
+  opensn::log.Log() << "Starting iterations" << std::endl;
   for (size_t iter = 0; iter < 200; ++iter)
   {
     phi_new.assign(phi_new.size(), 0.0);
@@ -305,7 +305,7 @@ chiSimTest06_WDD(const InputParameters&)
       outstr << buffer;
     }
 
-    opensn::Chi::log.Log() << outstr.str();
+    opensn::log.Log() << outstr.str();
 
     phi_old = phi_new;
 

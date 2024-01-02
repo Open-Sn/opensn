@@ -8,7 +8,7 @@ namespace opensn
 {
 class Cell;
 
-class FieldFunction : public ChiObject
+class FieldFunction : public Object
 {
 private:
   std::string text_name_;
@@ -38,7 +38,7 @@ public:
 
   /**\brief Overrides the stack placement so that FieldFunctions go
    * to the field function stack.*/
-  void PushOntoStack(std::shared_ptr<ChiObject>& new_object) override;
+  void PushOntoStack(std::shared_ptr<Object>& new_object) override;
 
   virtual double Evaluate(const Cell& cell, const Vector3& position, unsigned int component) const
   {

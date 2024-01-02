@@ -73,8 +73,8 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
   } // for csoi
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
-  Chi::mpi.Barrier();
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
+  opensn::mpi.Barrier();
 
   // Populate boundary dependencies
   for (auto bndry : location_boundary_dependency_set)
@@ -104,8 +104,8 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   delayed_local_psi_Gn_block_stride = largest_face * delayed_lock_box.size();
   delayed_local_psi_Gn_block_strideG = delayed_local_psi_Gn_block_stride * /*G=*/1;
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
-  Chi::mpi.Barrier();
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
+  opensn::mpi.Barrier();
 
   // Clean up
   so_cell_outb_face_slot_indices.shrink_to_fit();
@@ -196,13 +196,12 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         }
         if (!found)
         {
-          Chi::log.LogAllError() << "Lock-box location not found in call to "
-                                 << "InitializeAlphaElements. Local Cell " << cell.local_id_
-                                 << " face " << f << " looking for cell "
-                                 << face.GetNeighborLocalID(grid) << " face " << ass_face
-                                 << " cat: " << face_categ << " omg=" << spds.Omega().PrintS()
-                                 << " lbsize=" << lock_box.size();
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "Lock-box location not found in call to "
+                            << "InitializeAlphaElements. Local Cell " << cell.local_id_ << " face "
+                            << f << " looking for cell " << face.GetNeighborLocalID(grid)
+                            << " face " << ass_face << " cat: " << face_categ
+                            << " omg=" << spds.Omega().PrintS() << " lbsize=" << lock_box.size();
+          Exit(EXIT_FAILURE);
         }
 
       } // if local
@@ -466,7 +465,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
               MPI_INT,
               locJ,
               101 + tag_index,
-              Chi::mpi.comm,
+              mpi.comm,
               &send_requests[deplocI]);
 
     // TODO: Watch eager limits on sent data
@@ -485,7 +484,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     int locJ = delayed_location_dependencies[prelocI];
 
     MPI_Status probe_status;
-    MPI_Probe(locJ, 101 + tag_index, Chi::mpi.comm, &probe_status);
+    MPI_Probe(locJ, 101 + tag_index, mpi.comm, &probe_status);
 
     int amount_to_receive = 0;
     MPI_Get_count(&probe_status, MPI_INT, &amount_to_receive);
@@ -498,7 +497,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
              MPI_INT,
              locJ,
              101 + tag_index,
-             Chi::mpi.comm,
+             mpi.comm,
              MPI_STATUS_IGNORE);
 
     DeSerializeCellInfo(
@@ -520,7 +519,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     int locJ = location_dependencies[prelocI];
 
     MPI_Status probe_status;
-    MPI_Probe(locJ, 101 + tag_index, Chi::mpi.comm, &probe_status);
+    MPI_Probe(locJ, 101 + tag_index, mpi.comm, &probe_status);
 
     int amount_to_receive = 0;
     MPI_Get_count(&probe_status, MPI_INT, &amount_to_receive);
@@ -533,7 +532,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
              MPI_INT,
              locJ,
              101 + tag_index,
-             Chi::mpi.comm,
+             mpi.comm,
              MPI_STATUS_IGNORE);
 
     DeSerializeCellInfo(
@@ -558,7 +557,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
               MPI_INT,
               locJ,
               101 + tag_index,
-              Chi::mpi.comm,
+              mpi.comm,
               &send_requests[deplocI]);
 
     // TODO: Watch eager limits on sent data
@@ -739,10 +738,10 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           }
           if (ass_cell < 0)
           {
-            Chi::log.LogAll() << "Required predecessor cell not located in call to"
-                              << " InitializeBetaElements. locJ=" << locJ << " prelocI=" << prelocI
-                              << " cell=" << face.neighbor_id_;
-            Chi::Exit(EXIT_FAILURE);
+            log.LogAll() << "Required predecessor cell not located in call to"
+                         << " InitializeBetaElements. locJ=" << locJ << " prelocI=" << prelocI
+                         << " cell=" << face.neighbor_id_;
+            Exit(EXIT_FAILURE);
           }
 
           // Find associated face
@@ -766,8 +765,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           }
           if (ass_face < 0)
           {
-            Chi::log.LogAll() << "Associated face not found in call to InitializeBetaElements";
-            Chi::Exit(EXIT_FAILURE);
+            log.LogAll() << "Associated face not found in call to InitializeBetaElements";
+            Exit(EXIT_FAILURE);
           }
 
           // Map dofs
@@ -789,9 +788,9 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
             if (!match_found)
             {
-              Chi::log.LogAll() << "Associated vertex not found in call to "
-                                   "InitializeBetaElements";
-              Chi::Exit(EXIT_FAILURE);
+              log.LogAll() << "Associated vertex not found in call to "
+                              "InitializeBetaElements";
+              Exit(EXIT_FAILURE);
             }
           }
 
@@ -822,11 +821,10 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           }
           if (ass_cell < 0)
           {
-            Chi::log.LogAll() << "Required predecessor cell not located in call to"
-                              << " InitializeBetaElements. locJ=" << locJ
-                              << " delayed prelocI=" << delayed_preLocI
-                              << " cell=" << face.neighbor_id_;
-            Chi::Exit(EXIT_FAILURE);
+            log.LogAll() << "Required predecessor cell not located in call to"
+                         << " InitializeBetaElements. locJ=" << locJ
+                         << " delayed prelocI=" << delayed_preLocI << " cell=" << face.neighbor_id_;
+            Exit(EXIT_FAILURE);
           }
 
           // Find associated face
@@ -862,8 +860,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           }
           if (ass_face < 0)
           {
-            Chi::log.LogAll() << "Associated face not found in call to InitializeBetaElements";
-            Chi::Exit(EXIT_FAILURE);
+            log.LogAll() << "Associated face not found in call to InitializeBetaElements";
+            Exit(EXIT_FAILURE);
           }
 
           // Map dofs
@@ -885,9 +883,9 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
             if (!match_found)
             {
-              Chi::log.LogAll() << "Associated vertex not found in call to "
-                                   "InitializeBetaElements";
-              Chi::Exit(EXIT_FAILURE);
+              log.LogAll() << "Associated vertex not found in call to "
+                              "InitializeBetaElements";
+              Exit(EXIT_FAILURE);
             }
           }
 

@@ -19,7 +19,7 @@ namespace lbs
 
 CBC_ASynchronousCommunicator::CBC_ASynchronousCommunicator(size_t angle_set_id,
                                                            FLUDS& fluds,
-                                                           const ChiMPICommunicatorSet& comm_set)
+                                                           const MPICommunicatorSet& comm_set)
   : AsynchronousCommunicator(fluds, comm_set),
     angle_set_id_(angle_set_id),
     cbc_fluds_(dynamic_cast<CBC_FLUDS&>(fluds))
@@ -121,9 +121,9 @@ CBC_ASynchronousCommunicator::ReceiveData()
   {
     int message_available = 0;
     MPI_Status status;
-    MPI_Info::Call(MPI_Iprobe(comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+    MPI_Info::Call(MPI_Iprobe(comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
                               static_cast<int>(angle_set_id_),
-                              comm_set_.LocICommunicator(Chi::mpi.location_id),
+                              comm_set_.LocICommunicator(opensn::mpi.location_id),
                               &message_available,
                               &status));
 
@@ -135,9 +135,9 @@ CBC_ASynchronousCommunicator::ReceiveData()
       MPI_Info::Call(MPI_Recv(recv_buffer.data(),
                               num_items,
                               MPI_BYTE,
-                              comm_set_.MapIonJ(locJ, Chi::mpi.location_id),
+                              comm_set_.MapIonJ(locJ, opensn::mpi.location_id),
                               status.MPI_TAG,
-                              comm_set_.LocICommunicator(Chi::mpi.location_id),
+                              comm_set_.LocICommunicator(opensn::mpi.location_id),
                               MPI_STATUS_IGNORE));
 
       ByteArray data_array(recv_buffer);

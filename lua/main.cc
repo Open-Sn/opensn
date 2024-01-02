@@ -23,18 +23,18 @@ main(int argc, char** argv)
   MPI_Comm_rank(communicator, &location_id);
   MPI_Comm_size(communicator, &number_processes);
 
-  opensn::Chi::mpi.SetCommunicator(communicator);
-  opensn::Chi::mpi.SetLocationID(location_id);
-  opensn::Chi::mpi.SetProcessCount(number_processes);
+  opensn::mpi.SetCommunicator(communicator);
+  opensn::mpi.SetLocationID(location_id);
+  opensn::mpi.SetProcessCount(number_processes);
 
   opensnlua::LoadRegisteredLuaItems();
-  opensn::Chi::console.PostMPIInfo(location_id, number_processes);
+  opensn::console.PostMPIInfo(location_id, number_processes);
 
   opensn::Chi::run_time::ParseArguments(argc, argv);
 
   opensn::Chi::run_time::InitPetSc(argc, argv);
 
-  auto& t_main = opensn::Chi::log.CreateTimingBlock("ChiTech");
+  auto& t_main = opensn::log.CreateTimingBlock("ChiTech");
   t_main.TimeSectionBegin();
   opensn::SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
@@ -44,7 +44,7 @@ main(int argc, char** argv)
   else
     error_code = opensn::Chi::RunBatch(argc, argv);
 
-  opensn::Chi::Finalize();
+  opensn::Finalize();
 
   return error_code;
 }

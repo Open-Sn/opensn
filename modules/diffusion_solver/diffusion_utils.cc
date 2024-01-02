@@ -22,7 +22,7 @@ KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* monitordestroy)
   VecNorm(Rhs, NORM_2, &rhs_norm);
   if (rhs_norm < 1.0e-25) rhs_norm = 1.0;
 
-  if (Chi::mpi.location_id == 0)
+  if (opensn::mpi.location_id == 0)
   {
     const auto ksp_name = "Diffusion";
 
@@ -30,7 +30,7 @@ KSPMonitorAChiTech(KSP ksp, PetscInt n, PetscReal rnorm, void* monitordestroy)
     buff << ksp_name << " iteration " << std::setw(4) << n << " - Residual " << std::scientific
          << std::setprecision(7) << rnorm / rhs_norm << std::endl;
 
-    Chi::log.Log() << buff.str();
+    log.Log() << buff.str();
   }
   return 0;
 }
@@ -54,7 +54,7 @@ DiffusionConvergenceTestNPT(
 
   double relative_residual = rnorm / rhs_norm;
 
-  Chi::log.Log() << "Iteration " << n << " Residual " << rnorm / rhs_norm;
+  log.Log() << "Iteration " << n << " Residual " << rnorm / rhs_norm;
 
   if (relative_residual < tol) *convergedReason = KSP_CONVERGED_RTOL;
 

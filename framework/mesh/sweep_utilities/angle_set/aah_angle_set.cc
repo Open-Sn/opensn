@@ -16,7 +16,7 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
                            std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBndry>>& sim_boundaries,
                            int sweep_eager_limit,
-                           const ChiMPICommunicatorSet& in_comm_set)
+                           const MPICommunicatorSet& in_comm_set)
   : AngleSet(id, in_numgrps, in_spds, in_fluds, angle_indices, sim_boundaries, in_ref_subset),
     async_comm_(*in_fluds, num_grps, angle_indices.size(), sweep_eager_limit, in_comm_set)
 {
@@ -57,9 +57,9 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
   {
     async_comm_.InitializeLocalAndDownstreamBuffers();
 
-    Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_BEGIN);
+    log.LogEvent(timing_tags[0], Logger::EventType::EVENT_BEGIN);
     sweep_chunk.Sweep(*this); // Execute chunk
-    Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_END);
+    log.LogEvent(timing_tags[0], Logger::EventType::EVENT_END);
 
     // Send outgoing psi and clear local and receive buffers
     async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));

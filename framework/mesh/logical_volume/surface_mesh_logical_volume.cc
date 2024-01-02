@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_mesh, SurfaceMeshLogicalVolume);
+OpenSnRegisterObject(chi_mesh, SurfaceMeshLogicalVolume);
 
 InputParameters
 SurfaceMeshLogicalVolume::GetInputParameters()

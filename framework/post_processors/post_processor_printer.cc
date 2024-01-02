@@ -209,10 +209,10 @@ PostProcessorPrinter::PrintPPsLatestValuesOnly(const std::string& pps_typename,
       outstr << PrintPPsHorizontal(scalar_ppnames_and_vals, event.Code());
     else if (scalar_pp_table_format_ == ScalarPPTableFormat::VERTICAL)
       outstr << PrintPPsVertical(scalar_ppnames_and_vals, event.Code());
-    Chi::log.Log() << "\n"
-                   << pps_typename << " post-processors latest values at event \"" << event.Name()
-                   << "\"\n"
-                   << outstr.str() << "\n";
+    log.Log() << "\n"
+              << pps_typename << " post-processors latest values at event \"" << event.Name()
+              << "\"\n"
+              << outstr.str() << "\n";
   }
 }
 
@@ -444,10 +444,9 @@ PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
     for (const auto& sub_matrix : sub_matrices)
       outstr << PrintPPsSubTimeHistory(sub_matrix);
 
-    Chi::log.Log() << "\n"
-                   << pps_typename << " post-processors history at event \"" << event.Name()
-                   << "\"\n"
-                   << outstr.str();
+    log.Log() << "\n"
+              << pps_typename << " post-processors history at event \"" << event.Name() << "\"\n"
+              << outstr.str();
   } // for each thing in pp_timehist_size_subs
 }
 

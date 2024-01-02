@@ -3,7 +3,7 @@
 namespace opensn
 {
 
-MeshModifier::MeshModifier(const InputParameters& params) : ChiObject(params)
+MeshModifier::MeshModifier(const InputParameters& params) : Object(params)
 {
 }
 

@@ -19,21 +19,21 @@ RegisterWrapperFunction(chi_unit_tests, chi_math_Test00, nullptr, chi_math_Test0
 ParameterBlock
 chi_math_Test00(const InputParameters& params)
 {
-  opensn::Chi::log.Log() << "GOLD_BEGIN";
+  opensn::log.Log() << "GOLD_BEGIN";
   // Dynamic Vector
   {
-    opensn::Chi::log.Log() << "Testing DynamicVector\n";
+    opensn::log.Log() << "Testing DynamicVector\n";
 
     DynamicVector<double> vec(5, 1.0);
 
-    opensn::Chi::log.Log() << vec.PrintStr();
+    opensn::log.Log() << vec.PrintStr();
   }
   // Dynamic Matrix
   {
-    opensn::Chi::log.Log() << "Testing DynamicMatrix\n";
+    opensn::log.Log() << "Testing DynamicMatrix\n";
     DynamicMatrix<double> mat(5, 7, 1.0);
 
-    opensn::Chi::log.Log() << mat.PrintStr();
+    opensn::log.Log() << mat.PrintStr();
   }
 
   // SparseMatrix
@@ -55,35 +55,33 @@ chi_math_Test00(const InputParameters& params)
 
     {
       auto& m = mat;
-      opensn::Chi::log.Log() << "----- SparseMatrix::PrintS() -----"
-                             << "\n"
-                             << m.PrintStr() << "\n";
+      opensn::log.Log() << "----- SparseMatrix::PrintS() -----"
+                        << "\n"
+                        << m.PrintStr() << "\n";
 
-      opensn::Chi::log.Log() << "----- for (const auto& entry : m.Row(2)) -----";
+      opensn::log.Log() << "----- for (const auto& entry : m.Row(2)) -----";
       for (const auto& entry : m.Row(2))
-        opensn::Chi::log.Log() << entry.row_index << " " << entry.column_index << " "
-                               << entry.value;
+        opensn::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
 
-      opensn::Chi::log.Log() << "----- after value*2 -----";
+      opensn::log.Log() << "----- after value*2 -----";
       for (const auto& [row_index, column_index, value] : m.Row(2))
         value *= 2;
 
       for (const auto& entry : m.Row(2))
-        opensn::Chi::log.Log() << entry.row_index << " " << entry.column_index << " "
-                               << entry.value;
+        opensn::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
     }
 
-    opensn::Chi::log.Log() << "----- for (auto entry : matrix) -----";
+    opensn::log.Log() << "----- for (auto entry : matrix) -----";
     for (const auto& entry : matrix)
-      opensn::Chi::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
+      opensn::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
 
     matrix.Compress();
-    opensn::Chi::log.Log() << "----- after compress -----";
+    opensn::log.Log() << "----- after compress -----";
     for (const auto& entry : matrix)
-      opensn::Chi::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
+      opensn::log.Log() << entry.row_index << " " << entry.column_index << " " << entry.value;
   }
 
-  opensn::Chi::log.Log() << "GOLD_END";
+  opensn::log.Log() << "GOLD_END";
   return ParameterBlock();
 }
 

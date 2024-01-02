@@ -192,23 +192,23 @@ CylindricalAngularQuadrature::Initialize(const Quadrature& quad_polar,
   //  --------------------------------------------------------------------------
   if (verbose)
   {
-    Chi::log.Log() << "map_directions" << std::endl;
+    log.Log() << "map_directions" << std::endl;
     for (const auto& dir : map_directions_)
     {
-      Chi::log.Log() << "polar level " << dir.first << " : ";
+      log.Log() << "polar level " << dir.first << " : ";
       for (const auto& q : dir.second)
-        Chi::log.Log() << q << ", ";
-      Chi::log.Log() << std::endl;
+        log.Log() << q << ", ";
+      log.Log() << std::endl;
     }
-    Chi::log.Log() << "curvilinear product quadrature : cylindrical" << std::endl;
+    log.Log() << "curvilinear product quadrature : cylindrical" << std::endl;
     for (size_t k = 0; k < weights_.size(); ++k)
-      Chi::log.Log() << "angle index " << k << ": weight = " << weights_[k] << ", (phi, theta) = ("
-                     << abscissae_[k].phi << ", " << abscissae_[k].theta << ")"
-                     << ", omega = " << omegas_[k].PrintStr()
-                     << ", fac_diamond_difference = " << fac_diamond_difference_[k]
-                     << ", fac_streaming_operator = " << fac_streaming_operator_[k] << std::endl;
+      log.Log() << "angle index " << k << ": weight = " << weights_[k] << ", (phi, theta) = ("
+                << abscissae_[k].phi << ", " << abscissae_[k].theta << ")"
+                << ", omega = " << omegas_[k].PrintStr()
+                << ", fac_diamond_difference = " << fac_diamond_difference_[k]
+                << ", fac_streaming_operator = " << fac_streaming_operator_[k] << std::endl;
     const auto sum_weights = std::accumulate(weights_.begin(), weights_.end(), 0.0);
-    Chi::log.Log() << "sum(weights) = " << sum_weights << std::endl;
+    log.Log() << "sum(weights) = " << sum_weights << std::endl;
   }
 }
 

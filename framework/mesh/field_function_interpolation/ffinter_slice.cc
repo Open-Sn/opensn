@@ -17,7 +17,7 @@ namespace opensn
 void
 FieldFunctionInterpolationSlice::Initialize()
 {
-  Chi::log.Log0Verbose1() << "Initializing slice interpolator.";
+  log.Log0Verbose1() << "Initializing slice interpolator.";
   // Check grid available
   if (field_functions_.empty())
     throw std::logic_error("Unassigned field function in slice "
@@ -182,9 +182,9 @@ FieldFunctionInterpolationSlice::Initialize()
       }
       else
       {
-        Chi::log.LogAllWarning() << "No face intersections encountered "
-                                    "for a cell that is indicated as being "
-                                    "intersected. Slice FF interp.";
+        log.LogAllWarning() << "No face intersections encountered "
+                               "for a cell that is indicated as being "
+                               "intersected. Slice FF interp.";
       }
 
       // Computing 2D transforms
@@ -297,7 +297,7 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
   std::ofstream ofile;
 
   std::string fileName = base_name;
-  fileName = fileName + std::to_string(Chi::mpi.location_id);
+  fileName = fileName + std::to_string(opensn::mpi.location_id);
   fileName = fileName + std::string(".py");
   ofile.open(fileName);
 
@@ -321,12 +321,12 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
            "    self.c = []\n\n";
 
   std::string offset;
-  if (Chi::mpi.location_id == 0)
+  if (opensn::mpi.location_id == 0)
   {
     std::string submod_name = base_name;
-    submod_name = submod_name + std::to_string(Chi::mpi.location_id + 1);
+    submod_name = submod_name + std::to_string(opensn::mpi.location_id + 1);
 
-    if (Chi::mpi.process_count > 1) { ofile << "import " << submod_name << "\n\n"; }
+    if (opensn::mpi.process_count > 1) { ofile << "import " << submod_name << "\n\n"; }
 
     ofile << "class BaseDataClass:\n"
           << "  def __init__(self):\n"
@@ -335,13 +335,13 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
 
     offset = std::string("    ");
   }
-  else if (Chi::mpi.process_count > 1)
+  else if (opensn::mpi.process_count > 1)
   {
 
-    if (Chi::mpi.location_id != (Chi::mpi.process_count - 1))
+    if (opensn::mpi.location_id != (opensn::mpi.process_count - 1))
     {
       std::string submod_name = base_name;
-      submod_name = submod_name + std::to_string(Chi::mpi.location_id + 1);
+      submod_name = submod_name + std::to_string(opensn::mpi.location_id + 1);
 
       ofile << "import " << submod_name << "\n\n";
     }
@@ -382,16 +382,16 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
     ofile << offset << "data_object.append(new_cell_data)\n";
   }
 
-  if (Chi::mpi.location_id != (Chi::mpi.process_count - 1))
+  if (opensn::mpi.location_id != (opensn::mpi.process_count - 1))
   {
     std::string submod_name = base_name;
-    submod_name = submod_name + std::to_string(Chi::mpi.location_id + 1);
+    submod_name = submod_name + std::to_string(opensn::mpi.location_id + 1);
 
     ofile << offset << "data_object = " << submod_name << ".AddData(data_object)\n\n";
   }
-  if (Chi::mpi.location_id > 0) { ofile << offset << "return data_object\n"; }
+  if (opensn::mpi.location_id > 0) { ofile << offset << "return data_object\n"; }
 
-  if (Chi::mpi.location_id == 0)
+  if (opensn::mpi.location_id == 0)
   {
     ofile << "data = BaseDataClass()\n"
           << "print(len(data.data_object))\n\n"
@@ -465,8 +465,8 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
 
   ofile.close();
 
-  Chi::log.Log() << "Exported Python files for field func \"" << field_functions_[0]->TextName()
-                 << "\" to base name \"" << base_name << "\" Successfully";
+  log.Log() << "Exported Python files for field func \"" << field_functions_[0]->TextName()
+            << "\" to base name \"" << base_name << "\" Successfully";
 }
 
 } // namespace opensn

@@ -10,7 +10,7 @@ namespace opensn
 {
 
 /** Class for defining base logical volumes.*/
-class LogicalVolume : public ChiObject
+class LogicalVolume : public Object
 {
 public:
   static InputParameters GetInputParameters();
@@ -19,7 +19,7 @@ public:
   virtual bool Inside(const Vector3& point) const { return false; }
 
 protected:
-  explicit LogicalVolume() : ChiObject() {}
+  explicit LogicalVolume() : Object() {}
   explicit LogicalVolume(const InputParameters& parameters);
 };
 

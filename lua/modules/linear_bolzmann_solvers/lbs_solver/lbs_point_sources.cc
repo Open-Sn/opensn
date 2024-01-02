@@ -40,7 +40,7 @@ chiLBSAddPointSource(lua_State* L)
 
   lbs_solver.AddPointSource(opensn::lbs::PointSource(location, groupwise_strength));
 
-  opensn::Chi::log.Log() << "LBS: Added point source at " << location.PrintStr();
+  opensn::log.Log() << "LBS: Added point source at " << location.PrintStr();
 
   return 0;
 }
@@ -61,7 +61,7 @@ chiLBSClearPointSources(lua_State* L)
 
   lbs_solver.ClearPointSources();
 
-  opensn::Chi::log.Log() << "LBS: Cleared all point sources";
+  opensn::log.Log() << "LBS: Cleared all point sources";
 
   return 0;
 }
@@ -82,7 +82,7 @@ chiLBSInitializePointSources(lua_State* L)
 
   lbs_solver.InitializePointSources();
 
-  opensn::Chi::log.Log() << "LBS: Initializing point sources.";
+  opensn::log.Log() << "LBS: Initializing point sources.";
 
   return 0;
 }

@@ -74,8 +74,8 @@ chiFFInterpolationGetValue(lua_State* L)
   }
   else
   {
-    opensn::Chi::log.Log0Warning() << "chiFFInterpolationGetValue is currently only supported for "
-                                   << " POINT, LINE and VOLUME interpolator types.";
+    opensn::log.Log0Warning() << "chiFFInterpolationGetValue is currently only supported for "
+                              << " POINT, LINE and VOLUME interpolator types.";
   }
 
   return 0;

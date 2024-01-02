@@ -11,11 +11,11 @@ namespace opensn
 AnglePairs&
 GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
 {
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Getting Discrete Scattering Angles" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Getting Discrete Scattering Angles" << '\n';
 
   for (int m = 0; m < mell.size(); m++)
   {
-    Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Moment " << m << " " << mell[m];
+    log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Moment " << m << " " << mell[m];
   }
 
   std::vector<double> in_mell;
@@ -36,13 +36,13 @@ GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
   Tvecdbl c;
   c.resize(2 * n, 0.0);
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "a,b,c:\n";
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "a,b,c:\n";
   for (int j = 0; j < 2 * n; j++)
   {
     a[j] = 0.0;
     b[j] = j / (2.0 * j + 1);
     c[j] = (j + 1.0) / (2 * j + 1);
-    Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << a[j] << " " << b[j] << " " << c[j] << " \n";
+    log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << a[j] << " " << b[j] << " " << c[j] << " \n";
   }
 
   MCA(in_mell, a, b, c);
@@ -51,11 +51,11 @@ GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
 
   for (int i = 0; i < n; i++)
   {
-    Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2)
+    log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2)
       << "i " << xn_wn_[i].first << " " << xn_wn_[i].second << '\n';
   }
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
 
   return xn_wn_;
 }
@@ -63,13 +63,13 @@ GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
 void
 GolubFischer::MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
 {
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "MCA Start" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "MCA Start" << '\n';
 
   int N = in_mell.size() - 1;
   int n = (N + 1) / 2;
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "N " << N << " n " << n << '\n';
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "alpha, beta" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "N " << N << " n " << n << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "alpha, beta" << '\n';
 
   alpha_.resize(n + 1, 0.0);
   beta_.resize(n + 1, 0.0);
@@ -84,7 +84,7 @@ GolubFischer::MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
   alpha_[0] = a[0] + c[0] * sigma[0][1] / sigma[0][0];
   beta_[0] = in_mell[0];
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << 0 << " " << alpha_[0] << " " << beta_[0] << "\n";
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << 0 << " " << alpha_[0] << " " << beta_[0] << "\n";
 
   for (int k = 1; k < n + 1; k++)
   {
@@ -102,23 +102,22 @@ GolubFischer::MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
                 c[k] * (sigma[k][k + 1] / sigma[k][k]);
     beta_[k] = c[k - 1] * sigma[k][k] / sigma[k - 1][k - 1];
 
-    Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2)
-      << k << " " << alpha_[k] << " " << beta_[k] << "\n";
+    log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << k << " " << alpha_[k] << " " << beta_[k] << "\n";
   }
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
 }
 
 void
 GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 {
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "RootsOrtho Start" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "RootsOrtho Start" << '\n';
 
   int maxiters = 1000;
   double tol = 1.0e-6;
   double adder = 0.999 * 2 / std::max(N - 1, 1);
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Check 1: Init guess" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Check 1: Init guess" << '\n';
 
   Tvecdbl xn;
   xn.resize(N, 0.0);
@@ -128,22 +127,22 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
   for (int i = 0; i < N; i++)
   {
     xn[i] = -0.999 + i * adder;
-    Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "x[" << i << "]=" << xn[i] << "\n";
+    log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "x[" << i << "]=" << xn[i] << "\n";
   }
 
   Tvecdbl norm;
   norm.resize(N + 1, 0.0);
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Check 2 " << in_beta[0] << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Check 2 " << in_beta[0] << '\n';
   norm[0] = in_beta[0];
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Check 3a norms" << '\n';
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << norm[0] << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Check 3a norms" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << norm[0] << '\n';
   for (int i = 1; i < (N + 1); i++)
   {
     norm[i] = in_beta[i] * norm[i - 1];
-    Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << norm[i] << '\n';
+    log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << norm[i] << '\n';
   }
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Check 3" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Check 3" << '\n';
 
   for (int k = 0; k < N; k++)
   {
@@ -164,15 +163,15 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
       double xnew = xold - (a / (b - a * c));
       if (std::isnan(xnew))
       {
-        Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2)
+        log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2)
           << "xnew " << i << " " << xnew << " y=" << a << std::endl;
-        Chi::Exit(EXIT_FAILURE);
+        Exit(EXIT_FAILURE);
       }
 
       double res = std::fabs(xnew - xold);
       xn[k] = xnew;
 
-      Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2)
+      log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2)
         << "xnew " << i << " " << xnew << " y=" << a << std::endl;
 
       if (res < tol) { break; }
@@ -215,7 +214,7 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
     xn_wn_[i].second = wn[i];
   }
 
-  Chi::log.Log(ChiLog::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
 }
 
 double

@@ -26,13 +26,13 @@ ParameterBlock
 chiSimTest93_RayTracing(const InputParameters&)
 {
   const std::string fname = "chiSimTest93_RayTracing";
-  opensn::Chi::log.Log() << "chiSimTest93_RayTracing";
+  opensn::log.Log() << "chiSimTest93_RayTracing";
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();
   const auto& grid = *grid_ptr;
 
-  opensn::Chi::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   const int dimension = (grid.Attributes() & DIMENSION_1)   ? 1
                         : (grid.Attributes() & DIMENSION_2) ? 2
@@ -75,8 +75,8 @@ chiSimTest93_RayTracing(const InputParameters&)
   const size_t num_fem_local_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   const size_t num_fem_globl_dofs = sdm.GetNumGlobalDOFs(phi_uk_man);
 
-  opensn::Chi::log.Log() << "Num local FEM DOFs: " << num_fem_local_dofs;
-  opensn::Chi::log.Log() << "Num globl FEM DOFs: " << num_fem_globl_dofs;
+  opensn::log.Log() << "Num local FEM DOFs: " << num_fem_local_dofs;
+  opensn::log.Log() << "Num globl FEM DOFs: " << num_fem_globl_dofs;
 
   // Define tallies
   std::vector<double> phi_tally(num_fem_local_dofs, 0.0);

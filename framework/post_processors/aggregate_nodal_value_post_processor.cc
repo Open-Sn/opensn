@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi, AggregateNodalValuePostProcessor);
+OpenSnRegisterObject(chi, AggregateNodalValuePostProcessor);
 
 InputParameters
 AggregateNodalValuePostProcessor::GetInputParameters()
@@ -122,21 +122,21 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   if (operation_ == "max")
   {
     double globl_max_value;
-    MPI_Allreduce(&local_max_value, &globl_max_value, 1, MPI_DOUBLE, MPI_MAX, Chi::mpi.comm);
+    MPI_Allreduce(&local_max_value, &globl_max_value, 1, MPI_DOUBLE, MPI_MAX, mpi.comm);
 
     value_ = ParameterBlock("", globl_max_value);
   }
   else if (operation_ == "min")
   {
     double globl_min_value;
-    MPI_Allreduce(&local_min_value, &globl_min_value, 1, MPI_DOUBLE, MPI_MIN, Chi::mpi.comm);
+    MPI_Allreduce(&local_min_value, &globl_min_value, 1, MPI_DOUBLE, MPI_MIN, mpi.comm);
 
     value_ = ParameterBlock("", globl_min_value);
   }
   else if (operation_ == "avg")
   {
     double globl_accumulation;
-    MPI_Allreduce(&local_accumulation, &globl_accumulation, 1, MPI_DOUBLE, MPI_SUM, Chi::mpi.comm);
+    MPI_Allreduce(&local_accumulation, &globl_accumulation, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
 
     const size_t num_globl_dofs =
       ref_ff.GetSpatialDiscretization().GetNumGlobalDOFs(ref_ff.GetUnknownManager());

@@ -26,8 +26,8 @@ SPDS::MapLocJToPrelocI(int locJ) const
     if (delayed_location_dependencies_[i] == locJ) { return -(i + 1); }
   }
 
-  Chi::log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToPrelocI.";
-  Chi::Exit(EXIT_FAILURE);
+  log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToPrelocI.";
+  Exit(EXIT_FAILURE);
   return 0;
 }
 
@@ -39,8 +39,8 @@ SPDS::MapLocJToDeplocI(int locJ) const
     if (location_successors_[i] == locJ) { return i; }
   }
 
-  Chi::log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToDeplocI.";
-  Chi::Exit(EXIT_FAILURE);
+  log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToDeplocI.";
+  Exit(EXIT_FAILURE);
   return 0;
 }
 
@@ -168,9 +168,9 @@ SPDS::PrintedGhostedGraph() const
 {
   constexpr double tolerance = 1.0e-16;
 
-  for (int p = 0; p < Chi::mpi.process_count; ++p)
+  for (int p = 0; p < opensn::mpi.process_count; ++p)
   {
-    if (p == Chi::mpi.location_id)
+    if (p == opensn::mpi.location_id)
     {
       std::cout << "// Printing directed graph for location " << p << ":\n";
       std::cout << "digraph DG {\n";
@@ -227,7 +227,7 @@ SPDS::PrintedGhostedGraph() const
       std::cout << "}\n";
 
     } // if current location
-    Chi::mpi.Barrier();
+    opensn::mpi.Barrier();
   } // for p
 }
 

@@ -11,12 +11,12 @@
 namespace opensn
 {
 
-RegisterChiObjectParametersOnly(chi, PostProcessor);
+OpenSnRegisterObjectParametersOnly(chi, PostProcessor);
 
 InputParameters
 PostProcessor::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("Base class for Post-Processors. For more general"
                                "information see \\ref doc_PostProcessors");
@@ -61,7 +61,7 @@ PostProcessor::GetInputParameters()
 }
 
 PostProcessor::PostProcessor(const InputParameters& params, PPType type)
-  : ChiObject(params),
+  : Object(params),
     name_(params.GetParamValue<std::string>("name")),
     subscribed_events_for_execution_(params.GetParamVectorValue<std::string>("execute_on")),
     subscribed_events_for_printing_(params.GetParamVectorValue<std::string>("print_on")),
@@ -117,7 +117,7 @@ PostProcessor::NumericPrecision() const
 }
 
 void
-PostProcessor::PushOntoStack(std::shared_ptr<ChiObject>& new_object)
+PostProcessor::PushOntoStack(std::shared_ptr<Object>& new_object)
 {
 
   auto pp_ptr = std::dynamic_pointer_cast<PostProcessor>(new_object);
@@ -149,11 +149,11 @@ PostProcessor::ReceiveEventUpdate(const Event& event)
     }
 
     Execute(event);
-    if (Chi::log.GetVerbosity() >= 1)
-      Chi::log.Log0Verbose1() << "Post processor \"" << Name()
-                              << "\" executed on "
-                                 "event \""
-                              << event.Name() << "\".";
+    if (log.GetVerbosity() >= 1)
+      log.Log0Verbose1() << "Post processor \"" << Name()
+                         << "\" executed on "
+                            "event \""
+                         << event.Name() << "\".";
   }
 }
 

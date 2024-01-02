@@ -6,21 +6,21 @@
 namespace opensn
 {
 
-class ChiObject
+class Object
 {
 private:
   size_t stack_id_ = Chi::SIZE_T_INVALID;
 
 public:
-  /**Returns the input parameters. For the base ChiObject, there
+  /**Returns the input parameters. For the base Object, there
    * are now parameters loaded.*/
   static InputParameters GetInputParameters();
 
   /**Default constructor. This will be removed in future.*/
-  ChiObject();
+  Object();
 
   /**Constructor with input parameters.*/
-  explicit ChiObject(const InputParameters& params);
+  explicit Object(const InputParameters& params);
 
   // Setters
   /**Sets the stack id of the object. This allows this
@@ -35,9 +35,9 @@ public:
   /**An overridable callback that is called by the ObjectMaker and by default
    * adds the object onto the object stack. This function can be used to
    * place the object on a different stack.*/
-  virtual void PushOntoStack(std::shared_ptr<ChiObject>& new_object);
+  virtual void PushOntoStack(std::shared_ptr<Object>& new_object);
 
-  virtual ~ChiObject() = default;
+  virtual ~Object() = default;
 };
 
 } // namespace opensn

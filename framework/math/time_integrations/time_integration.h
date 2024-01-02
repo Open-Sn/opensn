@@ -6,7 +6,7 @@
 namespace opensn
 {
 
-class TimeIntegration : public ChiObject
+class TimeIntegration : public Object
 {
 private:
   SteppingMethod method_;

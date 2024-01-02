@@ -21,7 +21,7 @@ CBC_AngleSet::CBC_AngleSet(size_t id,
                            const std::vector<size_t>& angle_indices,
                            std::map<uint64_t, SweepBndryPtr>& sim_boundaries,
                            size_t in_ref_subset,
-                           const ChiMPICommunicatorSet& comm_set)
+                           const MPICommunicatorSet& comm_set)
   : AngleSet(id, num_groups, spds, fluds, angle_indices, sim_boundaries, in_ref_subset),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
     async_comm_(id, *fluds, comm_set)
@@ -68,13 +68,13 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
       if (not cell_task.completed_) all_tasks_completed = false;
       if (cell_task.num_dependencies_ == 0 and not cell_task.completed_)
       {
-        Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_BEGIN);
+        log.LogEvent(timing_tags[0], Logger::EventType::EVENT_BEGIN);
         sweep_chunk.SetCell(cell_task.cell_ptr_, *this);
         sweep_chunk.Sweep(*this);
 
         for (uint64_t local_task_num : cell_task.successors_)
           --current_task_list_[local_task_num].num_dependencies_;
-        Chi::log.LogEvent(timing_tags[0], ChiLog::EventType::EVENT_END);
+        log.LogEvent(timing_tags[0], Logger::EventType::EVENT_END);
 
         cell_task.completed_ = true;
         a_task_executed = true;
@@ -88,13 +88,13 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
   //   if (not cell_task.completed_) all_tasks_completed = false;
   //   if (cell_task.num_dependencies_ == 0 and not cell_task.completed_)
   //   {
-  //     Chi::log.LogEvent(timing_tags[0], chi::ChiLog::EventType::EVENT_BEGIN);
+  //     log.LogEvent(timing_tags[0], chi::Logger::EventType::EVENT_BEGIN);
   //     sweep_chunk.SetCell(cell_task.cell_ptr_, *this);
   //     sweep_chunk.Sweep(*this);
   //
   //     for (uint64_t local_task_num : cell_task.successors_)
   //       --current_task_list_[local_task_num].num_dependencies_;
-  //     Chi::log.LogEvent(timing_tags[0], chi::ChiLog::EventType::EVENT_END);
+  //     log.LogEvent(timing_tags[0], chi::Logger::EventType::EVENT_END);
   //
   //     cell_task.completed_ = true;
   //     async_comm_.SendData();

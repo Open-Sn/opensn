@@ -49,7 +49,7 @@ VolumeMesher::GetCellXYPartitionID(Cell* cell)
 {
   std::pair<int, int> ij_id(0, 0);
 
-  if (Chi::mpi.process_count == 1) { return ij_id; }
+  if (opensn::mpi.process_count == 1) { return ij_id; }
 
   // Get the current handler
   auto& mesh_handler = GetCurrentHandler();
@@ -64,16 +64,16 @@ VolumeMesher::GetCellXYPartitionID(Cell* cell)
 
   if (x_remainder != 0)
   {
-    Chi::log.LogAllError() << "When specifying x-partitioning, the number of grp_subsets in x "
-                              "needs to be divisible by the number of partitions in x.";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "When specifying x-partitioning, the number of grp_subsets in x "
+                         "needs to be divisible by the number of partitions in x.";
+    Exit(EXIT_FAILURE);
   }
 
   if (y_remainder != 0)
   {
-    Chi::log.LogAllError() << "When specifying y-partitioning, the number of grp_subsets in y "
-                              "needs to be divisible by the number of partitions in y.";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "When specifying y-partitioning, the number of grp_subsets in y "
+                         "needs to be divisible by the number of partitions in y.";
+    Exit(EXIT_FAILURE);
   }
 
   size_t subsets_per_partitionx = num_x_subsets / vol_mesher.options.partition_x;
@@ -122,7 +122,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
   std::tuple<int, int, int> ijk_id(0, 0, 0);
   bool found_partition = false;
 
-  if (Chi::mpi.process_count == 1) { return ijk_id; }
+  if (opensn::mpi.process_count == 1) { return ijk_id; }
 
   // Get ij indices
   std::pair<int, int> ij_id = GetCellXYPartitionID(cell);
@@ -149,9 +149,9 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
 
       if ((num_sub_layers % vol_mesher.options.partition_z) != 0)
       {
-        Chi::log.LogAllError() << "Number of sub-layers in extruded mesh is not divisible "
-                               << "by the requested number of z-partitions.";
-        Chi::Exit(EXIT_FAILURE);
+        log.LogAllError() << "Number of sub-layers in extruded mesh is not divisible "
+                          << "by the requested number of z-partitions.";
+        Exit(EXIT_FAILURE);
       }
 
       int delta_zk = num_sub_layers / vol_mesher.options.partition_z;
@@ -167,7 +167,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
         {
           vol_mesher.options.zcuts.push_back(vertex_layers[layer_index]);
 
-          if (Chi::log.GetVerbosity() == ChiLog::LOG_LVL::LOG_0VERBOSE_2)
+          if (log.GetVerbosity() == Logger::LOG_LVL::LOG_0VERBOSE_2)
           {
             printf("Z-Cut %lu, %g\n", vol_mesher.options.zcuts.size(), vertex_layers[layer_index]);
           }
@@ -183,7 +183,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
 
       double z = cell->centroid_.z;
 
-      if (Chi::log.GetVerbosity() == ChiLog::LOG_0VERBOSE_2)
+      if (log.GetVerbosity() == Logger::LOG_0VERBOSE_2)
       {
         printf("zmax = %g, zmin = %g, cell_z = %g\n", zmax, zmin, z);
       }
@@ -220,7 +220,7 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
 
       double z = cell->centroid_.z;
 
-      if (Chi::log.GetVerbosity() == ChiLog::LOG_0VERBOSE_2)
+      if (log.GetVerbosity() == Logger::LOG_0VERBOSE_2)
       {
         printf("zmax = %g, zmin = %g, cell_z = %g\n", zmax, zmin, z);
       }
@@ -242,9 +242,9 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
   // item_id
   if (!found_partition)
   {
-    Chi::log.LogAllError() << "A cell was encountered for which "
-                              "no zpartition id was found";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "A cell was encountered for which "
+                         "no zpartition id was found";
+    Exit(EXIT_FAILURE);
   }
 
   return ijk_id;
@@ -266,10 +266,10 @@ VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPt
     // Check valid template cell
     if (raw_cell->type != CellType::POLYGON)
     {
-      Chi::log.LogAllError() << "VolumeMesher::CreatePolygonCells "
-                                "called with a cell not being of primary type"
-                                " CellType::POLYGON.";
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "VolumeMesher::CreatePolygonCells "
+                           "called with a cell not being of primary type"
+                           " CellType::POLYGON.";
+      Exit(EXIT_FAILURE);
     }
 
     // Make cell
@@ -277,7 +277,7 @@ VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPt
 
     cell->global_id_ = num_cells;
     cell->local_id_ = num_cells;
-    cell->partition_id_ = Chi::mpi.location_id;
+    cell->partition_id_ = opensn::mpi.location_id;
 
     cell->centroid_ = raw_cell->centroid;
     cell->material_id_ = raw_cell->material_id;
@@ -315,8 +315,8 @@ VolumeMesher::CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPt
 void
 VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int mat_id)
 {
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Setting material id from logical volume.";
+  log.Log0Verbose1() << program_timer.GetTimeString()
+                     << " Setting material id from logical volume.";
   // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
@@ -341,12 +341,11 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
   }
 
   int global_num_cells_modified;
-  MPI_Allreduce(
-    &num_cells_modified, &global_num_cells_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
+  MPI_Allreduce(&num_cells_modified, &global_num_cells_modified, 1, MPI_INT, MPI_SUM, mpi.comm);
 
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Done setting material id from logical volume. "
-                          << "Number of cells modified = " << global_num_cells_modified << ".";
+  log.Log0Verbose1() << program_timer.GetTimeString()
+                     << " Done setting material id from logical volume. "
+                     << "Number of cells modified = " << global_num_cells_modified << ".";
 }
 
 void
@@ -354,8 +353,7 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
                                     bool sense,
                                     const std::string& bndry_name)
 {
-  Chi::log.Log() << Chi::program_timer.GetTimeString()
-                 << " Setting boundary id from logical volume.";
+  log.Log() << program_timer.GetTimeString() << " Setting boundary id from logical volume.";
   // Get current mesh handler
   auto& handler = GetCurrentHandler();
 
@@ -382,22 +380,20 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
   }
 
   int global_num_faces_modified;
-  MPI_Allreduce(
-    &num_faces_modified, &global_num_faces_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
+  MPI_Allreduce(&num_faces_modified, &global_num_faces_modified, 1, MPI_INT, MPI_SUM, mpi.comm);
 
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
     grid_bndry_id_map[bndry_id] = bndry_name;
 
-  Chi::log.Log() << Chi::program_timer.GetTimeString()
-                 << " Done setting boundary id from logical volume. "
-                 << "Number of faces modified = " << global_num_faces_modified << ".";
+  log.Log() << program_timer.GetTimeString() << " Done setting boundary id from logical volume. "
+            << "Number of faces modified = " << global_num_faces_modified << ".";
 }
 
 void
 VolumeMesher::SetMatIDToAll(int mat_id)
 {
-  Chi::log.Log() << Chi::program_timer.GetTimeString() << " Setting material id " << mat_id
-                 << " to all cells.";
+  log.Log() << program_timer.GetTimeString() << " Setting material id " << mat_id
+            << " to all cells.";
 
   // Get current mesh handler
   auto& handler = GetCurrentHandler();
@@ -412,9 +408,9 @@ VolumeMesher::SetMatIDToAll(int mat_id)
   for (uint64_t ghost_id : ghost_ids)
     vol_cont->cells[ghost_id].material_id_ = mat_id;
 
-  Chi::mpi.Barrier();
-  Chi::log.Log() << Chi::program_timer.GetTimeString() << " Done setting material id " << mat_id
-                 << " to all cells";
+  opensn::mpi.Barrier();
+  log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
+            << " to all cells";
 }
 
 #ifdef OPENSN_WITH_LUA
@@ -423,11 +419,10 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
 {
   const std::string fname = "VolumeMesher::SetMatIDFromLuaFunction";
 
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Setting material id from lua function.";
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Setting material id from lua function.";
 
   // Define console call
-  auto L = Chi::console.GetConsoleState();
+  auto L = console.GetConsoleState();
   auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const Cell& cell)
   {
     // Load lua function
@@ -497,11 +492,11 @@ VolumeMesher::SetMatIDFromLuaFunction(const std::string& lua_fname)
 
   int globl_num_cells_modified;
   MPI_Allreduce(
-    &local_num_cells_modified, &globl_num_cells_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
+    &local_num_cells_modified, &globl_num_cells_modified, 1, MPI_INT, MPI_SUM, mpi.comm);
 
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Done setting material id from lua function. "
-                          << "Number of cells modified = " << globl_num_cells_modified << ".";
+  log.Log0Verbose1() << program_timer.GetTimeString()
+                     << " Done setting material id from lua function. "
+                     << "Number of cells modified = " << globl_num_cells_modified << ".";
 }
 #endif
 
@@ -511,14 +506,13 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
 {
   const std::string fname = "VolumeMesher::SetBndryIDFromLuaFunction";
 
-  if (Chi::mpi.process_count != 1)
+  if (opensn::mpi.process_count != 1)
     throw std::logic_error(fname + ": Can for now only be used in serial.");
 
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Setting boundary id from lua function.";
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Setting boundary id from lua function.";
 
   // Define console call
-  auto L = Chi::console.GetConsoleState();
+  auto L = console.GetConsoleState();
   auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const CellFace& face)
   {
     // Load lua function
@@ -608,18 +602,18 @@ VolumeMesher::SetBndryIDFromLuaFunction(const std::string& lua_fname)
 
   int globl_num_faces_modified;
   MPI_Allreduce(
-    &local_num_faces_modified, &globl_num_faces_modified, 1, MPI_INT, MPI_SUM, Chi::mpi.comm);
+    &local_num_faces_modified, &globl_num_faces_modified, 1, MPI_INT, MPI_SUM, mpi.comm);
 
-  Chi::log.Log0Verbose1() << Chi::program_timer.GetTimeString()
-                          << " Done setting boundary id from lua function. "
-                          << "Number of cells modified = " << globl_num_faces_modified << ".";
+  log.Log0Verbose1() << program_timer.GetTimeString()
+                     << " Done setting boundary id from lua function. "
+                     << "Number of cells modified = " << globl_num_faces_modified << ".";
 }
 #endif
 
 void
 VolumeMesher::SetupOrthogonalBoundaries()
 {
-  Chi::log.Log() << Chi::program_timer.GetTimeString() << " Setting orthogonal boundaries.";
+  log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
 
   // Get current mesh handler
   auto& handler = GetCurrentHandler();
@@ -657,15 +651,15 @@ VolumeMesher::SetupOrthogonalBoundaries()
         vol_cont->GetBoundaryIDMap()[bndry_id] = boundary_name;
       } // if bndry
 
-  Chi::mpi.Barrier();
-  Chi::log.Log() << Chi::program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
+  opensn::mpi.Barrier();
+  log.Log() << program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
 }
 
 void
 VolumeMesher::Execute()
 {
-  Chi::log.Log() << "Empty volume mesher, nothing executed.";
-  Chi::log.Log() << std::endl;
+  log.Log() << "Empty volume mesher, nothing executed.";
+  log.Log() << std::endl;
 }
 
 } // namespace opensn

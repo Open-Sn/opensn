@@ -36,10 +36,10 @@ SparseMatrix::Insert(size_t i, size_t j, double value)
 
   if ((i < 0) || (i >= row_size_) || (j < 0) || (j >= col_size_))
   {
-    Chi::log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
-                           << " i=" << i << " j=" << j << " bounds(" << row_size_ << ","
-                           << col_size_ << ")";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
+                      << " i=" << i << " j=" << j << " bounds(" << row_size_ << "," << col_size_
+                      << ")";
+    Exit(EXIT_FAILURE);
   }
 
   auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), j);
@@ -64,10 +64,10 @@ SparseMatrix::InsertAdd(size_t i, size_t j, double value)
 
   if ((i < 0) || (i >= row_size_) || (j < 0) || (j >= col_size_))
   {
-    Chi::log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
-                           << " i=" << i << " j=" << j << " bounds(" << row_size_ << ","
-                           << col_size_ << ")";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
+                      << " i=" << i << " j=" << j << " bounds(" << row_size_ << "," << col_size_
+                      << ")";
+    Exit(EXIT_FAILURE);
   }
 
   auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), j);
@@ -94,9 +94,9 @@ SparseMatrix::SetDiagonal(const std::vector<double>& diag)
   // Check size
   if (diag.size() != rowI_values_.size())
   {
-    Chi::log.LogAllError() << "Incompatible matrix-vector size encountered "
-                           << "in call to SparseMatrix::SetDiagonal.";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "Incompatible matrix-vector size encountered "
+                      << "in call to SparseMatrix::SetDiagonal.";
+    Exit(EXIT_FAILURE);
   }
 
   // Assign values
@@ -124,10 +124,10 @@ SparseMatrix::ValueIJ(size_t i, size_t j) const
   double retval = 0.0;
   if ((i < 0) || (i >= rowI_indices_.size()))
   {
-    Chi::log.LogAllError() << "Index i out of bounds"
-                           << " in call to SparseMatrix::ValueIJ"
-                           << " i=" << i;
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "Index i out of bounds"
+                      << " in call to SparseMatrix::ValueIJ"
+                      << " i=" << i;
+    Exit(EXIT_FAILURE);
   }
 
   if (not rowI_indices_[i].empty())
@@ -216,8 +216,8 @@ SparseMatrix::CheckInitialized() const
 {
   if (rowI_values_.empty())
   {
-    Chi::log.LogAllError() << "Illegal call to unitialized SparseMatrix matrix.";
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "Illegal call to unitialized SparseMatrix matrix.";
+    Exit(EXIT_FAILURE);
   }
 }
 

@@ -17,28 +17,28 @@ RegisterWrapperFunction(chi_unit_tests, LogTimingInfoTest, nullptr, LogTimingInf
 ParameterBlock
 LogTimingInfoTest(const InputParameters&)
 {
-  opensn::Chi::log.Log() << "LogTiming test";
-  auto& t_main = opensn::Chi::log.CreateTimingBlock("Timing_Main");
+  opensn::log.Log() << "LogTiming test";
+  auto& t_main = opensn::log.CreateTimingBlock("Timing_Main");
   t_main.TimeSectionBegin();
   {
     // Some overhead
     opensn::Sleep(std::chrono::milliseconds(200));
 
-    auto& t_1 = opensn::Chi::log.CreateOrGetTimingBlock("Part1", "Timing_Main");
+    auto& t_1 = opensn::log.CreateOrGetTimingBlock("Part1", "Timing_Main");
     t_1.TimeSectionBegin();
     {
       opensn::Sleep(std::chrono::milliseconds(300));
     }
     t_1.TimeSectionEnd();
 
-    auto& t_2 = opensn::Chi::log.CreateOrGetTimingBlock("Part2", "Timing_Main");
+    auto& t_2 = opensn::log.CreateOrGetTimingBlock("Part2", "Timing_Main");
     t_2.TimeSectionBegin();
     {
       opensn::Sleep(std::chrono::milliseconds(333));
     }
     t_2.TimeSectionEnd();
 
-    auto& t_3 = opensn::Chi::log.GetTimingBlock("Part2");
+    auto& t_3 = opensn::log.GetTimingBlock("Part2");
     t_3.TimeSectionBegin();
     {
       opensn::Sleep(std::chrono::milliseconds(123));
@@ -47,7 +47,7 @@ LogTimingInfoTest(const InputParameters&)
   }
   t_main.TimeSectionEnd();
 
-  opensn::Chi::log.Log() << opensn::Chi::log.GetTimingBlock("ChiTech").MakeGraphString();
+  opensn::log.Log() << opensn::log.GetTimingBlock("ChiTech").MakeGraphString();
 
   return ParameterBlock{};
 }

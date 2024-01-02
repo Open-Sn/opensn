@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
+#include "framework/memory_usage.h"
 #include <iomanip>
 
 namespace opensn
@@ -15,7 +16,7 @@ namespace opensn
 namespace lbs
 {
 
-RegisterChiObject(lbs, DiscreteOrdinatesCurvilinearSolver);
+OpenSnRegisterObject(lbs, DiscreteOrdinatesCurvilinearSolver);
 
 InputParameters
 DiscreteOrdinatesCurvilinearSolver::GetInputParameters()
@@ -46,7 +47,7 @@ DiscreteOrdinatesCurvilinearSolver::DiscreteOrdinatesCurvilinearSolver(
 void
 DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
 {
-  Chi::log.Log() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : enter";
+  log.Log() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : enter";
 
   //  --------------------------------------------------------------------------
   //  perform all verifications of Cartesian LBS
@@ -62,10 +63,10 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   if (coord_system_type_ != CoordinateSystemType::CYLINDRICAL &&
       coord_system_type_ != CoordinateSystemType::SPHERICAL)
   {
-    Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                           << "invalid coordinate system, static_cast<int>(type) = "
-                           << static_cast<int>(coord_system_type_);
-    Chi::Exit(EXIT_FAILURE);
+    log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                      << "invalid coordinate system, static_cast<int>(type) = "
+                      << static_cast<int>(coord_system_type_);
+    Exit(EXIT_FAILURE);
   }
 
   //  re-interpret geometry type to curvilinear
@@ -77,12 +78,12 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
       {
         default:
         {
-          Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                                 << "invalid geometry, static_cast<int>(type) = "
-                                 << static_cast<int>(options_.geometry_type) << " "
-                                 << "for curvilinear coordinate system, static_cast<int>(type) = "
-                                 << static_cast<int>(coord_system_type_);
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                            << "invalid geometry, static_cast<int>(type) = "
+                            << static_cast<int>(options_.geometry_type) << " "
+                            << "for curvilinear coordinate system, static_cast<int>(type) = "
+                            << static_cast<int>(coord_system_type_);
+          Exit(EXIT_FAILURE);
         }
       }
       break;
@@ -98,23 +99,23 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         }
         default:
         {
-          Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                                 << "invalid geometry, static_cast<int>(type) = "
-                                 << static_cast<int>(options_.geometry_type) << " "
-                                 << "for curvilinear coordinate system, static_cast<int>(type) = "
-                                 << static_cast<int>(coord_system_type_);
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                            << "invalid geometry, static_cast<int>(type) = "
+                            << static_cast<int>(options_.geometry_type) << " "
+                            << "for curvilinear coordinate system, static_cast<int>(type) = "
+                            << static_cast<int>(coord_system_type_);
+          Exit(EXIT_FAILURE);
         }
       }
       break;
     }
     default:
     {
-      Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                             << "invalid geometry, static_cast<int>(type) = "
-                             << static_cast<int>(options_.geometry_type) << " "
-                             << "for curvilinear coordinate system";
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                        << "invalid geometry, static_cast<int>(type) = "
+                        << static_cast<int>(options_.geometry_type) << " "
+                        << "for curvilinear coordinate system";
+      Exit(EXIT_FAILURE);
     }
   }
 
@@ -131,11 +132,11 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
           std::dynamic_pointer_cast<CylAngQuad>(angular_quad_ptr);
         if (!curvilinear_angular_quad_ptr)
         {
-          Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                                 << "invalid angular quadrature, static_cast<int>(type) = "
-                                 << static_cast<int>(angular_quad_ptr->type_)
-                                 << ", for groupset = " << gs;
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                            << "invalid angular quadrature, static_cast<int>(type) = "
+                            << static_cast<int>(angular_quad_ptr->type_)
+                            << ", for groupset = " << gs;
+          Exit(EXIT_FAILURE);
         }
         break;
       }
@@ -146,20 +147,20 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
           std::dynamic_pointer_cast<SphAngQuad>(angular_quad_ptr);
         if (!curvilinear_angular_quad_ptr)
         {
-          Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                                 << "invalid angular quadrature, static_cast<int>(type) = "
-                                 << static_cast<int>(angular_quad_ptr->type_)
-                                 << ", for groupset = " << gs;
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                            << "invalid angular quadrature, static_cast<int>(type) = "
+                            << static_cast<int>(angular_quad_ptr->type_)
+                            << ", for groupset = " << gs;
+          Exit(EXIT_FAILURE);
         }
         break;
       }
       default:
       {
-        Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                               << "invalid curvilinear coordinate system, static_cast<int>(type) = "
-                               << static_cast<int>(coord_system_type_);
-        Chi::Exit(EXIT_FAILURE);
+        log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                          << "invalid curvilinear coordinate system, static_cast<int>(type) = "
+                          << static_cast<int>(coord_system_type_);
+        Exit(EXIT_FAILURE);
       }
     }
 
@@ -171,10 +172,10 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
       {
         if (angleagg_method != lbs::AngleAggregationType::AZIMUTHAL)
         {
-          Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                                 << "invalid angle aggregation type, static_cast<int>(type) = "
-                                 << static_cast<int>(angleagg_method) << ", for groupset = " << gs;
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                            << "invalid angle aggregation type, static_cast<int>(type) = "
+                            << static_cast<int>(angleagg_method) << ", for groupset = " << gs;
+          Exit(EXIT_FAILURE);
         }
         break;
       }
@@ -182,19 +183,19 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
       {
         if (angleagg_method != lbs::AngleAggregationType::POLAR)
         {
-          Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                                 << "invalid angle aggregation type, static_cast<int>(type) = "
-                                 << static_cast<int>(angleagg_method) << ", for groupset = " << gs;
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                            << "invalid angle aggregation type, static_cast<int>(type) = "
+                            << static_cast<int>(angleagg_method) << ", for groupset = " << gs;
+          Exit(EXIT_FAILURE);
         }
         break;
       }
       default:
       {
-        Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                               << "invalid curvilinear coordinate system, static_cast<int>(type) = "
-                               << static_cast<int>(coord_system_type_);
-        Chi::Exit(EXIT_FAILURE);
+        log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                          << "invalid curvilinear coordinate system, static_cast<int>(type) = "
+                          << static_cast<int>(coord_system_type_);
+        Exit(EXIT_FAILURE);
       }
     }
   }
@@ -227,12 +228,12 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
               const auto& vertex = grid_ptr_->vertices[v_id];
               if (std::abs(vertex[d]) > 1.0e-12)
               {
-                Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
-                                          "PerformInputChecks : "
-                                       << "mesh contains boundary faces with outward-oriented unit "
-                                       << "normal vector " << (-1 * unit_normal_vectors[d]).PrintS()
-                                       << "with vertices characterised by v(" << d << ") != 0.";
-                Chi::Exit(EXIT_FAILURE);
+                log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
+                                     "PerformInputChecks : "
+                                  << "mesh contains boundary faces with outward-oriented unit "
+                                  << "normal vector " << (-1 * unit_normal_vectors[d]).PrintS()
+                                  << "with vertices characterised by v(" << d << ") != 0.";
+                Exit(EXIT_FAILURE);
               }
             }
             face_orthogonal = true;
@@ -241,22 +242,22 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         }
         if (!face_orthogonal)
         {
-          Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                                 << "mesh contains boundary faces not orthogonal with respect to "
-                                 << "Cartesian reference frame.";
-          Chi::Exit(EXIT_FAILURE);
+          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+                            << "mesh contains boundary faces not orthogonal with respect to "
+                            << "Cartesian reference frame.";
+          Exit(EXIT_FAILURE);
         }
       }
     }
   }
 
-  Chi::log.Log() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : exit";
+  log.Log() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : exit";
 }
 
 void
 DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
 {
-  Chi::log.Log() << "Initializing spatial discretization_.\n";
+  log.Log() << "Initializing spatial discretization_.\n";
 
   auto qorder = QuadratureOrder::INVALID_ORDER;
   auto system = CoordinateSystemType::UNDEFINED;
@@ -279,11 +280,11 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
     }
     default:
     {
-      Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
-                                "InitializeSpatialDiscretization : "
-                             << "invalid geometry, static_cast<int>(type) = "
-                             << static_cast<int>(options_.geometry_type);
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
+                           "InitializeSpatialDiscretization : "
+                        << "invalid geometry, static_cast<int>(type) = "
+                        << static_cast<int>(options_.geometry_type);
+      Exit(EXIT_FAILURE);
     }
   }
 
@@ -313,11 +314,11 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
     }
     default:
     {
-      Chi::log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
-                                "InitializeSpatialDiscretization : "
-                             << "invalid geometry, static_cast<int>(type) = "
-                             << static_cast<int>(options_.geometry_type);
-      Chi::Exit(EXIT_FAILURE);
+      log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
+                           "InitializeSpatialDiscretization : "
+                        << "invalid geometry, static_cast<int>(type) = "
+                        << static_cast<int>(options_.geometry_type);
+      Exit(EXIT_FAILURE);
     }
   }
 
@@ -329,7 +330,7 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
 void
 DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
 {
-  Chi::log.Log() << "Computing RZ secondary unit integrals.\n";
+  log.Log() << "Computing RZ secondary unit integrals.\n";
   const auto& sdm = *discretization_;
 
   // Define spatial weighting functions
@@ -376,9 +377,9 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
   for (const auto& cell : grid_ptr_->local_cells)
     secondary_unit_cell_matrices_[cell.local_id_] = ComputeCellUnitIntegrals(cell);
 
-  Chi::mpi.Barrier();
-  Chi::log.Log() << "Secondary Cell matrices computed.         Process memory = "
-                 << std::setprecision(3) << Chi::GetMemoryUsageInMB() << " MB";
+  opensn::mpi.Barrier();
+  log.Log() << "Secondary Cell matrices computed.         Process memory = " << std::setprecision(3)
+            << GetMemoryUsageInMB() << " MB";
 }
 
 std::shared_ptr<SweepChunk>

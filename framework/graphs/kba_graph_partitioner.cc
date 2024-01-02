@@ -13,7 +13,7 @@
 namespace opensn
 {
 
-RegisterChiObject(chi, KBAGraphPartitioner);
+OpenSnRegisterObject(chi, KBAGraphPartitioner);
 
 InputParameters
 KBAGraphPartitioner::GetInputParameters()
@@ -78,7 +78,7 @@ KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
                                const std::vector<Vector3>& centroids,
                                int number_of_parts)
 {
-  Chi::log.Log0Verbose1() << "Partitioning with KBAGraphPartitioner";
+  log.Log0Verbose1() << "Partitioning with KBAGraphPartitioner";
 
   ChiLogicalErrorIf(centroids.size() != graph.size(),
                     "Graph number of entries not equal to centroids' number of entries.");
@@ -118,7 +118,7 @@ KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
   } // for cell c
 
   if ((nx_ * ny_ * nz_) != number_of_parts)
-    Chi::log.Log0Warning() << "KBAGraphPartitioner::Partition nx_*ny_*nz_ != number_of_parts";
+    log.Log0Warning() << "KBAGraphPartitioner::Partition nx_*ny_*nz_ != number_of_parts";
 
   const auto pid_subsets = MakeSubSets(nx_ * ny_ * nz_, number_of_parts);
 
@@ -132,7 +132,7 @@ KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
     }
   }
 
-  Chi::log.Log0Verbose1() << "Done partitioning with KBAGraphPartitioner";
+  log.Log0Verbose1() << "Done partitioning with KBAGraphPartitioner";
 
   return real_pids;
 }

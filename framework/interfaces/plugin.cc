@@ -12,12 +12,12 @@
 namespace opensn
 {
 
-RegisterChiObject(chi, Plugin);
+OpenSnRegisterObject(chi, Plugin);
 
 InputParameters
 Plugin::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription(
@@ -33,9 +33,9 @@ Plugin::GetInputParameters()
 }
 
 Plugin::Plugin(const InputParameters& params)
-  : ChiObject(params), plugin_path_(params.GetParamValue<std::string>("plugin_path"))
+  : Object(params), plugin_path_(params.GetParamValue<std::string>("plugin_path"))
 {
-  Chi::log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
+  log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
   RegistryStatuses registry_statuses = Chi::GetStatusOfRegistries();
 
   AssertReadibleFile(plugin_path_);
@@ -58,7 +58,7 @@ Plugin::Plugin(const InputParameters& params)
   }
 
 #ifdef OPENSN_WITH_LUA
-  Chi::console.UpdateConsoleBindings(registry_statuses);
+  console.UpdateConsoleBindings(registry_statuses);
 #endif
 }
 

@@ -26,7 +26,7 @@ class MeshContinuum;
  * creates the real mesh can be hooked up to a partitioner that can also be
  * designed to be pluggable.
  */
-class MeshGenerator : public ChiObject
+class MeshGenerator : public Object
 {
 public:
   /**

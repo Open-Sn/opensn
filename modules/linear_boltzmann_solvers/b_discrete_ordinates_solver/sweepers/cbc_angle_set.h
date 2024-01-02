@@ -21,7 +21,7 @@ public:
                const std::vector<size_t>& angle_indices,
                std::map<uint64_t, SweepBndryPtr>& sim_boundaries,
                size_t in_ref_subset,
-               const ChiMPICommunicatorSet& comm_set);
+               const MPICommunicatorSet& comm_set);
 
   AsynchronousCommunicator* GetCommunicator() override;
   void InitializeDelayedUpstreamData() override {}

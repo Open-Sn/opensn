@@ -9,14 +9,14 @@
 namespace opensn
 {
 
-ChiLog&
-ChiLog::GetInstance() noexcept
+Logger&
+Logger::GetInstance() noexcept
 {
-  static ChiLog instance;
+  static Logger instance;
   return instance;
 }
 
-ChiLog::ChiLog() noexcept
+Logger::Logger() noexcept
 {
   verbosity_ = 0;
   std::string memory_usage_event("Maximum Memory Usage");
@@ -25,20 +25,20 @@ ChiLog::ChiLog() noexcept
   RepeatingEvent& ref_rep_event = repeating_events.back();
 
   ref_rep_event.Events().emplace_back(
-    Chi::program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
+    program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
 }
 
 LogStream
-ChiLog::Log(LOG_LVL level)
+Logger::Log(LOG_LVL level)
 {
   switch (level)
   {
     case LOG_0VERBOSE_0:
     case LOG_0:
     {
-      if (Chi::mpi.location_id == 0)
+      if (opensn::mpi.location_id == 0)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         return {&std::cout, header};
       }
       else
@@ -49,9 +49,9 @@ ChiLog::Log(LOG_LVL level)
     }
     case LOG_0WARNING:
     {
-      if (Chi::mpi.location_id == 0)
+      if (opensn::mpi.location_id == 0)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_YELLOW) + "**WARNING** ";
         return {&std::cout, header};
       }
@@ -63,9 +63,9 @@ ChiLog::Log(LOG_LVL level)
     }
     case LOG_0ERROR:
     {
-      if (Chi::mpi.location_id == 0)
+      if (opensn::mpi.location_id == 0)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_RED) + "**!**ERROR**!** ";
         return {&std::cerr, header};
       }
@@ -78,9 +78,9 @@ ChiLog::Log(LOG_LVL level)
 
     case LOG_0VERBOSE_1:
     {
-      if ((Chi::mpi.location_id == 0) && (verbosity_ >= 1))
+      if ((opensn::mpi.location_id == 0) && (verbosity_ >= 1))
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_CYAN);
         return {&std::cout, header};
       }
@@ -90,11 +90,11 @@ ChiLog::Log(LOG_LVL level)
         return {&dummy_stream_, header, true};
       }
     }
-    case ChiLog::LOG_LVL::LOG_0VERBOSE_2:
+    case Logger::LOG_LVL::LOG_0VERBOSE_2:
     {
-      if ((Chi::mpi.location_id == 0) && (verbosity_ >= 2))
+      if ((opensn::mpi.location_id == 0) && (verbosity_ >= 2))
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_MAGENTA);
         return {&std::cout, header};
       }
@@ -107,18 +107,18 @@ ChiLog::Log(LOG_LVL level)
     case LOG_ALLVERBOSE_0:
     case LOG_ALL:
     {
-      std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+      std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
       return {&std::cout, header};
     }
     case LOG_ALLWARNING:
     {
-      std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+      std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
       header += StringStreamColor(FG_YELLOW) + "**WARNING** ";
       return {&std::cout, header};
     }
     case LOG_ALLERROR:
     {
-      std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+      std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
       header += StringStreamColor(FG_RED) + "**!**ERROR**!** ";
       return {&std::cerr, header};
     }
@@ -127,7 +127,7 @@ ChiLog::Log(LOG_LVL level)
     {
       if (verbosity_ >= 1)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_CYAN);
         return {&std::cout, header};
       }
@@ -141,7 +141,7 @@ ChiLog::Log(LOG_LVL level)
     {
       if (verbosity_ >= 2)
       {
-        std::string header = "[" + std::to_string(Chi::mpi.location_id) + "]  ";
+        std::string header = "[" + std::to_string(opensn::mpi.location_id) + "]  ";
         header += StringStreamColor(FG_MAGENTA);
         return {&std::cout, header};
       }
@@ -158,32 +158,32 @@ ChiLog::Log(LOG_LVL level)
 }
 
 void
-ChiLog::SetVerbosity(int int_level)
+Logger::SetVerbosity(int int_level)
 {
   verbosity_ = std::min(int_level, 2);
 }
 
 int
-ChiLog::GetVerbosity() const
+Logger::GetVerbosity() const
 {
   return verbosity_;
 }
 
 size_t
-ChiLog::GetRepeatingEventTag(std::string event_name)
+Logger::GetRepeatingEventTag(std::string event_name)
 {
   repeating_events.emplace_back(event_name);
 
   RepeatingEvent& ref_rep_event = repeating_events.back();
 
   ref_rep_event.Events().emplace_back(
-    Chi::program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
+    program_timer.GetTime(), EventType::EVENT_CREATED, std::make_shared<EventInfo>());
 
   return repeating_events.size() - 1;
 }
 
 size_t
-ChiLog::GetExistingRepeatingEventTag(std::string event_name)
+Logger::GetExistingRepeatingEventTag(std::string event_name)
 {
   const size_t num_rep_events = repeating_events.size();
   for (size_t k = num_rep_events - 1; k != 0; --k)
@@ -193,27 +193,27 @@ ChiLog::GetExistingRepeatingEventTag(std::string event_name)
 }
 
 void
-ChiLog::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventInfo>& ev_info)
+Logger::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventInfo>& ev_info)
 {
   if (ev_tag >= repeating_events.size()) return;
 
   RepeatingEvent& ref_rep_event = repeating_events[ev_tag];
 
-  ref_rep_event.Events().emplace_back(Chi::program_timer.GetTime(), ev_type, ev_info);
+  ref_rep_event.Events().emplace_back(program_timer.GetTime(), ev_type, ev_info);
 }
 
 void
-ChiLog::LogEvent(size_t ev_tag, EventType ev_type)
+Logger::LogEvent(size_t ev_tag, EventType ev_type)
 {
   if (ev_tag >= repeating_events.size()) return;
 
   RepeatingEvent& ref_rep_event = repeating_events[ev_tag];
 
-  ref_rep_event.Events().emplace_back(Chi::program_timer.GetTime(), ev_type, nullptr);
+  ref_rep_event.Events().emplace_back(program_timer.GetTime(), ev_type, nullptr);
 }
 
 std::string
-ChiLog::PrintEventHistory(size_t ev_tag)
+Logger::PrintEventHistory(size_t ev_tag)
 {
   std::stringstream outstr;
   if (ev_tag >= repeating_events.size()) return outstr.str();
@@ -222,7 +222,7 @@ ChiLog::PrintEventHistory(size_t ev_tag)
 
   for (auto& event : ref_rep_event.Events())
   {
-    outstr << "[" << Chi::mpi.location_id << "] ";
+    outstr << "[" << opensn::mpi.location_id << "] ";
 
     char buf[100];
     snprintf(buf, 100, "%16.9f", event.ev_time / 1000.0);
@@ -252,7 +252,7 @@ ChiLog::PrintEventHistory(size_t ev_tag)
 }
 
 double
-ChiLog::ProcessEvent(size_t ev_tag, ChiLog::EventOperation ev_operation)
+Logger::ProcessEvent(size_t ev_tag, Logger::EventOperation ev_operation)
 {
   if (ev_tag >= repeating_events.size()) return 0.0;
 

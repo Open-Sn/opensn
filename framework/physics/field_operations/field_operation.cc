@@ -8,10 +8,10 @@ namespace opensn
 InputParameters
 FieldOperation::GetInputParameters()
 {
-  return ChiObject::GetInputParameters();
+  return Object::GetInputParameters();
 }
 
-FieldOperation::FieldOperation(const InputParameters& params) : ChiObject(params)
+FieldOperation::FieldOperation(const InputParameters& params) : Object(params)
 {
 }
 

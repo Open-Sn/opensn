@@ -34,13 +34,12 @@ chiSurfaceMesherCreate(lua_State* L)
     std::cerr << "ERROR: Illegal surface mesher specified"
                  "in chiSurfaceMesherCreate"
               << std::endl;
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::Exit(EXIT_FAILURE);
   }
 
   cur_hndlr.SetSurfaceMesher(new_mesher);
 
-  opensn::Chi::log.LogAllVerbose2()
-    << "chiSurfaceMesherCreate: Surface remesher created." << std::endl;
+  opensn::log.LogAllVerbose2() << "chiSurfaceMesherCreate: Surface remesher created." << std::endl;
 
   return 0;
 }

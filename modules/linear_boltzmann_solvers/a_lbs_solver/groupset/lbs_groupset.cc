@@ -14,12 +14,12 @@ namespace opensn
 {
 namespace lbs
 {
-RegisterChiObjectParametersOnly(lbs, LBSGroupset);
+OpenSnRegisterObjectParametersOnly(lbs, LBSGroupset);
 
 InputParameters
 lbs::LBSGroupset::GetInputParameters()
 {
-  InputParameters params = ChiObject::GetInputParameters();
+  InputParameters params = Object::GetInputParameters();
 
   // clang-format off
   params.SetGeneralDescription("Input Parameters for groupsets.");
@@ -128,7 +128,7 @@ lbs::LBSGroupset::GetInputParameters()
 lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
                               const int id,
                               const LBSSolver& lbs_solver)
-  : ChiObject(params), id_(id)
+  : Object(params), id_(id)
 {
   const std::string fname = __FUNCTION__;
 
@@ -253,8 +253,8 @@ lbs::LBSGroupset::BuildSubsets()
     size_t ss = 0;
     for (const auto& info : grp_subset_infos_)
     {
-      Chi::log.Log() << "Groupset " << id_ << " has group-subset " << ss << " " << info.ss_begin
-                     << "->" << info.ss_end;
+      log.Log() << "Groupset " << id_ << " has group-subset " << ss << " " << info.ss_begin << "->"
+                << info.ss_end;
       ++ss;
     }
   }
@@ -269,7 +269,7 @@ lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name
   ofile.open(file_name, std::ofstream::out);
 
   ofile << "Groupset Sweep information "
-        << "location " << Chi::mpi.location_id << "\n";
+        << "location " << opensn::mpi.location_id << "\n";
 
   // Print all anglesets
   for (int q = 0; q < angle_agg_->angle_set_groups.size(); ++q)
@@ -295,7 +295,7 @@ lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name
   }
 
   // Print event history
-  ofile << Chi::log.PrintEventHistory(ev_tag);
+  ofile << log.PrintEventHistory(ev_tag);
 
   ofile.close();
 }

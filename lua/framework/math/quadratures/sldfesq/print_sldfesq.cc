@@ -30,7 +30,7 @@ chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
     {
       auto sldfesq = std::dynamic_pointer_cast<SimplifiedLDFESQ::Quadrature>(ref_quadrature);
 
-      if (opensn::Chi::mpi.location_id == 0)
+      if (opensn::mpi.location_id == 0)
       {
         sldfesq->output_filename_prefix_ = file_name;
         sldfesq->PrintQuadratureToFile();
@@ -38,22 +38,22 @@ chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
     }
     else
     {
-      opensn::Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
-                                        "Invalid angular quadrature type.";
-      opensn::Chi::Exit(EXIT_FAILURE);
+      opensn::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+                                   "Invalid angular quadrature type.";
+      opensn::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
-    opensn::Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
-                                      "Invalid handle to angular quadrature.";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+                                 "Invalid handle to angular quadrature.";
+    opensn::Exit(EXIT_FAILURE);
   }
   catch (...)
   {
-    opensn::Chi::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
-                                      "Call failed with unknown error.";
-    opensn::Chi::Exit(EXIT_FAILURE);
+    opensn::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+                                 "Call failed with unknown error.";
+    opensn::Exit(EXIT_FAILURE);
   }
 
   return 0;

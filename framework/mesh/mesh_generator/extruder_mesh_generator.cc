@@ -7,9 +7,9 @@
 namespace opensn
 {
 
-RegisterChiObject(chi_mesh, ExtruderMeshGenerator);
+OpenSnRegisterObject(chi_mesh, ExtruderMeshGenerator);
 
-RegisterChiObjectParametersOnly(chi_mesh, ExtrusionLayer);
+OpenSnRegisterObjectParametersOnly(chi_mesh, ExtrusionLayer);
 
 InputParameters
 ExtrusionLayer::GetInputParameters()
@@ -99,15 +99,15 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
 
     layers_.push_back(ExtrusionLayer{h, n});
 
-    Chi::log.Log0Verbose1() << "Layer " << layer_block.Name() << " height=" << h
-                            << " num_sub_layers=" << n << " top-z=" << current_z_level;
+    log.Log0Verbose1() << "Layer " << layer_block.Name() << " height=" << h
+                       << " num_sub_layers=" << n << " top-z=" << current_z_level;
   } // layer_block in layers_param
 }
 
 std::unique_ptr<UnpartitionedMesh>
 ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
-  Chi::log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh";
+  log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh";
   const Vector3 khat(0.0, 0.0, 1.0);
 
   ChiInvalidArgumentIf(not(input_umesh->GetMeshAttributes() & DIMENSION_2),
@@ -293,7 +293,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   umesh->ComputeCentroidsAndCheckQuality();
   umesh->BuildMeshConnectivity();
 
-  Chi::log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh Done";
+  log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh Done";
   return umesh;
 }
 

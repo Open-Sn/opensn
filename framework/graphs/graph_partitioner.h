@@ -7,7 +7,7 @@ namespace opensn
 struct Vector3;
 
 /**Abstract base class for all partitioners*/
-class GraphPartitioner : public ChiObject
+class GraphPartitioner : public Object
 {
 public:
   /**Given a graph. Returns the partition ids of each row in the graph.*/
