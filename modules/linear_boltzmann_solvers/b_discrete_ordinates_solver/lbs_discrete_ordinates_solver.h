@@ -68,11 +68,20 @@ public:
   /**
    * Computes the angular flux based leakage from boundary surfaces.
    * \param groupset_id The groupset for which to compute the leakage.
-   * \param boundary_id uint64_t The boundary-id for which to perform the integration.
+   * \param boundary_id The boundary id for which to perform the integration.
    *
    * \return The leakage as a value.
    */
-  std::vector<double> ComputeLeakage(int groupset_id, uint64_t boundary_id) const;
+  std::vector<double> ComputeLeakage(unsigned int groupset_id, uint64_t boundary_id) const;
+
+  /**
+   * Computes the group-wise angular flux-based leakage from the specified boundaries.
+   *
+   * \param boundary_ids The boundary ids to compute leakages on.
+   * \return A map of boundary ids to group-wise leakages.
+   */
+  std::map<uint64_t, std::vector<double>>
+  ComputeLeakage(const std::vector<uint64_t>& boundary_ids) const;
 
 protected:
   explicit DiscreteOrdinatesSolver(const std::string& text_name);

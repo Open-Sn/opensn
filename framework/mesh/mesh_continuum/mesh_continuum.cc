@@ -634,7 +634,7 @@ std::vector<uint64_t>
 MeshContinuum::GetDomainUniqueBoundaryIDs() const
 {
   opensn::mpi.Barrier();
-  log.Log() << "Identifying unique boundary-ids.";
+  log.LogAllVerbose1() << "Identifying unique boundary-ids.";
 
   // Develop local bndry-id set
   std::set<uint64_t> local_bndry_ids_set;
