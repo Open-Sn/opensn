@@ -19,6 +19,19 @@
     ]
   },
   {
+    "file": "transport_1d_leakage.lua",
+    "comment": "1D LinearBSolver Test - Leakage",
+    "num_procs": 3,
+    "checks" : [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  zmax=",
+        "goldvalue": 0.109692,
+        "tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_1d_3a_dsa_ortho.lua",
     "comment": "1D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
