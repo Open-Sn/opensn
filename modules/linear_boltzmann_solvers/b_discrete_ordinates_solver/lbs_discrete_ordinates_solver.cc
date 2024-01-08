@@ -25,7 +25,6 @@
 #include "framework/mpi/mpi.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
-#include "framework/console/console.h"
 #include "framework/logging/log_exceptions.h"
 #include <iomanip>
 
@@ -662,62 +661,56 @@ DiscreteOrdinatesSolver::ComputeBalance()
 }
 
 std::vector<double>
-DiscreteOrdinatesSolver::ComputeLeakage(const int groupset_id, const uint64_t boundary_id) const
+DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
+                                        const uint64_t boundary_id) const
 {
-  const std::string fname = "lbs::SteadySolver::ComputeLeakage";
-
   // Perform checks
-  if (groupset_id < 0 or groupset_id >= groupsets_.size())
-    throw std::invalid_argument(fname + ": Invalid groupset_id specified.");
+  ChiInvalidArgumentIf(groupset_id < 0 or groupset_id >= groupsets_.size(), "Invalid groupset id.");
+  ChiLogicalErrorIf(not options_.save_angular_flux,
+                    "The option `save_angular_flux` must be set to `true` in order "
+                    "to compute outgoing currents.");
 
-  if (not options_.save_angular_flux)
-    throw std::logic_error(fname + ": Requires options.save_angular_flux to be"
-                                   " true.");
-
-  // Get info
   const auto& sdm = *discretization_;
   const auto& groupset = groupsets_.at(groupset_id);
   const auto& psi_uk_man = groupset.psi_uk_man_;
   const auto& quadrature = groupset.quadrature_;
 
-  const size_t num_angles = quadrature->omegas_.size();
+  const auto num_gs_angles = quadrature->omegas_.size();
+  const auto num_gs_groups = groupset.groups_.size();
 
-  const int gsi = groupset.groups_.front().id_;
-  const int gsf = groupset.groups_.back().id_;
-  const int gs_num_groups = gsf + 1 - gsi;
+  const auto gsi = groupset.groups_.front().id_;
+  const auto gsf = groupset.groups_.back().id_;
 
   // Start integration
-  std::vector<double> local_leakage(gs_num_groups, 0.0);
+  std::vector<double> local_leakage(num_gs_groups, 0.0);
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto& fe_values = unit_cell_matrices_[cell.local_id_];
 
-    size_t f = 0;
+    unsigned int f = 0;
     for (const auto& face : cell.faces_)
     {
       if (not face.has_neighbor_ and face.neighbor_id_ == boundary_id)
       {
-        const auto& IntF_shapeI = fe_values.face_Si_vectors[f];
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
-        for (size_t fi = 0; fi < num_face_nodes; ++fi)
+        const auto& int_f_shape_i = fe_values.face_Si_vectors[f];
+        const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+        for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
         {
-          const int i = cell_mapping.MapFaceNode(f, fi);
-          for (size_t n = 0; n < num_angles; ++n)
+          const auto i = cell_mapping.MapFaceNode(f, fi);
+          for (unsigned int n = 0; n < num_gs_angles; ++n)
           {
             const auto& omega = quadrature->omegas_[n];
             const auto& weight = quadrature->weights_[n];
-            const double mu = omega.Dot(face.normal_);
+            const auto mu = omega.Dot(face.normal_);
             if (mu > 0.0)
             {
-              for (int gi = 0; gi < gs_num_groups; ++gi)
+              for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
               {
-                const int g = gi + gsi;
-                const int64_t imap = sdm.MapDOFLocal(cell, i, psi_uk_man, n, g);
-
-                const double psi = psi_new_local_[groupset_id][imap];
-
-                local_leakage[gi] += weight * mu * psi * IntF_shapeI[i];
+                const auto g = gsg + gsi;
+                const auto imap = sdm.MapDOFLocal(cell, i, psi_uk_man, n, g);
+                const auto psi = psi_new_local_[groupset_id][imap];
+                local_leakage[gsg] += weight * mu * psi * int_f_shape_i[i];
               } // for g
             }   // outgoing
           }     // for n
@@ -727,10 +720,117 @@ DiscreteOrdinatesSolver::ComputeLeakage(const int groupset_id, const uint64_t bo
     } // for face
   }   // for cell
 
-  std::vector<double> global_leakage(gs_num_groups, 0.0);
-  MPI_Allreduce(
-    local_leakage.data(), global_leakage.data(), gs_num_groups, MPI_DOUBLE, MPI_SUM, mpi.comm);
+  // Communicate to obtain global leakage
+  // clang-format off
+  std::vector<double> global_leakage(num_gs_groups, 0.0);
+  MPI_Allreduce(local_leakage.data(),   // sendbuf
+                global_leakage.data(),  // recvbuf
+                num_gs_groups,          // count
+                MPI_DOUBLE,             // type
+                MPI_SUM,                // operation
+                opensn::mpi.comm);         // comm
+  // clang-format on
 
+  return global_leakage;
+}
+
+std::map<uint64_t, std::vector<double>>
+DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_ids) const
+{
+  // Perform checks
+  ChiLogicalErrorIf(not options_.save_angular_flux,
+                    "The option `save_angular_flux` must be set to `true` in order "
+                    "to compute outgoing currents.");
+
+  const auto unique_bids = grid_ptr_->GetDomainUniqueBoundaryIDs();
+  for (const auto& bid : boundary_ids)
+  {
+    const auto it = std::find(unique_bids.begin(), unique_bids.end(), bid);
+    ChiInvalidArgumentIf(it == unique_bids.end(),
+                         "Boundary ID " + std::to_string(bid) + "not found on grid.");
+  }
+
+  // Initialize local mapping
+  std::map<uint64_t, std::vector<double>> local_leakage;
+  for (const auto& bid : boundary_ids)
+    local_leakage[bid].assign(num_groups_, 0.0);
+
+  // Go through groupsets
+  for (unsigned int gs = 0; gs < groupsets_.size(); ++gs)
+  {
+    const auto& groupset = groupsets_.at(gs);
+    const auto& psi_uk_man = groupset.psi_uk_man_;
+    const auto& quadrature = groupset.quadrature_;
+
+    const auto num_gs_angles = quadrature->omegas_.size();
+    const auto num_gs_groups = groupset.groups_.size();
+    const auto first_gs_group = groupset.groups_.front().id_;
+
+    const auto& psi_gs = psi_new_local_[gs];
+
+    // Loop over cells for integration
+    for (const auto& cell : grid_ptr_->local_cells)
+    {
+      const auto& cell_mapping = discretization_->GetCellMapping(cell);
+      const auto& fe_values = unit_cell_matrices_.at(cell.local_id_);
+
+      unsigned int f = 0;
+      for (const auto& face : cell.faces_)
+      {
+        // If face is on the specified boundary...
+        const auto it = std::find(boundary_ids.begin(), boundary_ids.end(), face.neighbor_id_);
+        if (not face.has_neighbor_ and it != boundary_ids.end())
+        {
+          auto& bndry_leakage = local_leakage[face.neighbor_id_];
+          const auto& int_f_shape_i = fe_values.face_Si_vectors[f];
+          const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+          for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
+          {
+            const auto i = cell_mapping.MapFaceNode(f, fi);
+            for (unsigned int n = 0; n < num_gs_angles; ++n)
+            {
+              const auto& omega = quadrature->omegas_[n];
+              const auto& weight = quadrature->weights_[n];
+              const auto mu = omega.Dot(face.normal_);
+              if (mu <= 0.0) continue;
+
+              const auto coeff = weight * mu * int_f_shape_i[i];
+              for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
+              {
+                const auto g = first_gs_group + gsg;
+                const auto imap = discretization_->MapDOFLocal(cell, i, psi_uk_man, n, gsg);
+                bndry_leakage[g] += coeff * psi_gs[imap];
+              } // for groupset group gsg
+            }   // for angle n
+          }     // for face index fi
+        }       // if face on desired boundary
+        ++f;
+      } // for face
+    }   // for cell
+  }     // for groupset gs
+
+  // Serialize the data
+  std::vector<double> local_data;
+  for (const auto& [bid, bndry_leakage] : local_leakage)
+    for (const auto& val : bndry_leakage)
+      local_data.emplace_back(val);
+
+  // Communicate the data
+  // clang-format off
+  std::vector<double> global_data(local_data.size());
+  MPI_Allreduce(local_data.data(),    // sendbuf
+                global_data.data(),   // recvbuf
+                local_data.size(),    // count
+                MPI_DOUBLE,           // type
+                MPI_SUM,              // operation
+                opensn::mpi.comm);       // comm
+  // clang-format on
+
+  // Unpack the data
+  std::map<uint64_t, std::vector<double>> global_leakage;
+  for (unsigned int b = 0; b < boundary_ids.size(); ++b)
+    for (unsigned int g = 0; g < num_groups_; ++g)
+      global_leakage[boundary_ids[b]].push_back(global_data[b * num_groups_ + g]);
   return global_leakage;
 }
 
