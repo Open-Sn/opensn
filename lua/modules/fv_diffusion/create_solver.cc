@@ -4,8 +4,27 @@
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "lua/framework/math/functions/lua_scalar_spatial_material_function.h"
 
 using namespace opensn;
+
+using namespace opensn;
+using namespace opensnlua;
+
+namespace
+{
+
+std::shared_ptr<LuaScalarSpatialMaterialFunction>
+CreateFunction(const std::string& function_name)
+{
+  ParameterBlock blk;
+  blk.AddParameter("lua_function_name", function_name);
+  InputParameters params = LuaScalarSpatialMaterialFunction::GetInputParameters();
+  params.AssignParameters(blk);
+  return std::make_shared<LuaScalarSpatialMaterialFunction>(params);
+}
+
+} // namespace
 
 namespace opensnlua::fv_diffusion
 {
@@ -24,7 +43,19 @@ chiFVDiffusionSolverCreate(lua_State* L)
     solver_name = lua_tostring(L, 1);
   }
 
+  auto d_coef_function = CreateFunction("D_coef");
+  opensn::Chi::function_stack.push_back(d_coef_function);
+
+  auto q_ext_function = CreateFunction("Q_ext");
+  opensn::Chi::function_stack.push_back(q_ext_function);
+
+  auto sigma_a_function = CreateFunction("Sigma_a");
+  opensn::Chi::function_stack.push_back(sigma_a_function);
+
   auto new_solver = std::make_shared<opensn::fv_diffusion::Solver>(solver_name);
+  new_solver->SetDCoefFunction(d_coef_function);
+  new_solver->SetQExtFunction(q_ext_function);
+  new_solver->SetSigmaAFunction(sigma_a_function);
 
   opensn::Chi::object_stack.push_back(new_solver);
 

@@ -7,7 +7,7 @@
 #include "framework/mesh/field_function_interpolation/ffinter_slice.h"
 #include "framework/mesh/field_function_interpolation/ffinter_line.h"
 #include "framework/mesh/field_function_interpolation/ffinter_volume.h"
-
+#include "lua/framework/math/functions/lua_scalar_material_function.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
@@ -20,6 +20,7 @@
 #include "framework/console/console.h"
 
 using namespace opensn;
+using namespace opensnlua;
 
 RegisterLuaFunctionAsIs(chiFFInterpolationSetProperty);
 RegisterLuaConstantAsIs(PROBEPOINT, Varying(0));
@@ -31,9 +32,9 @@ RegisterLuaConstantAsIs(OPERATION, Varying(5));
 RegisterLuaConstantAsIs(OP_SUM, Varying(10));
 RegisterLuaConstantAsIs(OP_AVG, Varying(11));
 RegisterLuaConstantAsIs(OP_MAX, Varying(12));
-RegisterLuaConstantAsIs(OP_SUM_LUA, Varying(13));
-RegisterLuaConstantAsIs(OP_AVG_LUA, Varying(14));
-RegisterLuaConstantAsIs(OP_MAX_LUA, Varying(15));
+RegisterLuaConstantAsIs(OP_SUM_FUNC, Varying(13));
+RegisterLuaConstantAsIs(OP_AVG_FUNC, Varying(14));
+RegisterLuaConstantAsIs(OP_MAX_FUNC, Varying(15));
 RegisterLuaConstantAsIs(LOGICAL_VOLUME, Varying(8));
 
 RegisterLuaConstantAsIs(ADD_FIELDFUNCTION, Varying(9));
@@ -43,6 +44,21 @@ RegisterLuaConstantAsIs(LINE_FIRSTPOINT, Varying(11));
 RegisterLuaConstantAsIs(LINE_SECONDPOINT, Varying(12));
 RegisterLuaConstantAsIs(LINE_NUMBEROFPOINTS, Varying(13));
 RegisterLuaConstantAsIs(LINE_CUSTOM_ARRAY, Varying(14));
+
+namespace
+{
+
+std::shared_ptr<LuaScalarMaterialFunction>
+CreateFunction(const std::string& function_name)
+{
+  ParameterBlock blk;
+  blk.AddParameter("lua_function_name", function_name);
+  InputParameters params = LuaScalarMaterialFunction::GetInputParameters();
+  params.AssignParameters(blk);
+  return std::make_shared<LuaScalarMaterialFunction>(params);
+}
+
+} // namespace
 
 int
 chiFFInterpolationSetProperty(lua_State* L)
@@ -232,10 +248,10 @@ chiFFInterpolationSetProperty(lua_State* L)
     int op_type = lua_tonumber(L, 3);
 
     int OP_SUM = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM);
-    int OP_MAX_LUA = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX_LUA);
-    int OP_SUM_LUA = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM_LUA);
+    int OP_MAX_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX_FUNC);
+    int OP_SUM_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM_FUNC);
 
-    if (!((op_type >= OP_SUM) && (op_type <= OP_MAX_LUA)))
+    if (!((op_type >= OP_SUM) and (op_type <= OP_MAX_FUNC)))
     {
       opensn::log.LogAllError() << "Volume property FFI_PROP_OPERATION"
                                 << " used in chiFFInterpolationSetProperty. Unsupported OPERATON."
@@ -243,12 +259,13 @@ chiFFInterpolationSetProperty(lua_State* L)
       opensn::Exit(EXIT_FAILURE);
     }
 
-    if ((op_type >= OP_SUM_LUA) and (op_type <= OP_MAX_LUA))
+    if ((op_type >= OP_SUM_FUNC) and (op_type <= OP_MAX_FUNC))
     {
       if (numArgs != 4) LuaPostArgAmountError("chiFFInterpolationSetProperty", 4, numArgs);
-
       const char* func_name = lua_tostring(L, 4);
-      cur_ffi_volume.GetOperationLuaFunction() = std::string(func_name);
+      auto operation_function = CreateFunction(func_name);
+      opensn::Chi::function_stack.push_back(operation_function);
+      cur_ffi_volume.SetOperationFunction(operation_function);
     }
 
     cur_ffi_volume.GetOperationType() = static_cast<FieldFunctionInterpolationOperation>(op_type);

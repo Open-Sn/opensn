@@ -6,10 +6,16 @@
 #include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/console/console.h"
 
 namespace opensn
 {
+
+void
+FieldFunctionInterpolationVolume::SetOperationFunction(
+  std::shared_ptr<ScalarMaterialFunction> function)
+{
+  oper_function_ = function;
+}
 
 void
 FieldFunctionInterpolationVolume::Initialize()
@@ -82,11 +88,9 @@ FieldFunctionInterpolationVolume::Execute()
         ff_value += qp_data.ShapeValue(j, qp) * node_dof_values[j];
 
       double function_value = ff_value;
-#ifdef OPENSN_WITH_LUA
-      if (op_type_ >= FieldFunctionInterpolationOperation::OP_SUM_LUA and
-          op_type_ <= FieldFunctionInterpolationOperation::OP_MAX_LUA)
-        function_value = CallLuaFunction(ff_value, cell.material_id_);
-#endif
+      if (op_type_ >= FieldFunctionInterpolationOperation::OP_SUM_FUNC and
+          op_type_ <= FieldFunctionInterpolationOperation::OP_MAX_FUNC)
+        function_value = oper_function_->Evaluate(ff_value, cell.material_id_);
 
       local_volume += qp_data.JxW(qp);
       local_sum += function_value * qp_data.JxW(qp);
@@ -96,14 +100,14 @@ FieldFunctionInterpolationVolume::Execute()
   }   // for cell-id
 
   if (op_type_ == FieldFunctionInterpolationOperation::OP_SUM or
-      op_type_ == FieldFunctionInterpolationOperation::OP_SUM_LUA)
+      op_type_ == FieldFunctionInterpolationOperation::OP_SUM_FUNC)
   {
     double global_sum;
     MPI_Allreduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
     op_value_ = global_sum;
   }
   if (op_type_ == FieldFunctionInterpolationOperation::OP_AVG or
-      op_type_ == FieldFunctionInterpolationOperation::OP_AVG_LUA)
+      op_type_ == FieldFunctionInterpolationOperation::OP_AVG_FUNC)
   {
     double local_data[] = {local_volume, local_sum};
     double global_data[] = {0.0, 0.0};
@@ -114,31 +118,12 @@ FieldFunctionInterpolationVolume::Execute()
     op_value_ = global_sum / global_volume;
   }
   if (op_type_ == FieldFunctionInterpolationOperation::OP_MAX or
-      op_type_ == FieldFunctionInterpolationOperation::OP_MAX_LUA)
+      op_type_ == FieldFunctionInterpolationOperation::OP_MAX_FUNC)
   {
     double global_value;
     MPI_Allreduce(&local_max, &global_value, 1, MPI_DOUBLE, MPI_MAX, mpi.comm);
     op_value_ = global_value;
   }
 }
-
-#ifdef OPENSN_WITH_LUA
-double
-FieldFunctionInterpolationVolume::CallLuaFunction(double ff_value, int mat_id) const
-{
-  lua_State* L = console.GetConsoleState();
-  double ret_val = 0.0;
-
-  lua_getglobal(L, op_lua_func_.c_str());
-  lua_pushnumber(L, ff_value);
-  lua_pushnumber(L, mat_id);
-
-  // 2 arguments, 1 result, 0=original error object
-  if (lua_pcall(L, 2, 1, 0) == 0) { ret_val = lua_tonumber(L, -1); }
-  lua_pop(L, 1);
-
-  return ret_val;
-}
-#endif
 
 } // namespace opensn

@@ -29,10 +29,12 @@ class Solver;
 class Material;
 class MultiGroupXS;
 class FieldFunction;
+class Function;
 
 typedef std::shared_ptr<Material> MaterialPtr;
 typedef std::shared_ptr<MultiGroupXS> MultiGroupXSPtr;
 typedef std::shared_ptr<FieldFunction> FieldFunctionPtr;
+typedef std::shared_ptr<Function> FunctionPtr;
 
 class AngularQuadrature;
 class SpatialDiscretization;
@@ -84,6 +86,7 @@ public:
   static std::vector<ChiObjectPtr> object_stack;
   static std::vector<SpatialDiscretizationPtr> sdm_stack;
   static std::vector<PostProcessorPtr> postprocessor_stack;
+  static std::vector<FunctionPtr> function_stack;
 
   static const size_t SIZE_T_INVALID = ((size_t)-1);
 

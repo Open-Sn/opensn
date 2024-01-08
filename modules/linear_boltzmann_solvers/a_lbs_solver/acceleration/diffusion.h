@@ -47,12 +47,10 @@ protected:
 public:
   struct Options
   {
-    double residual_tolerance = 1.0e-4;    ///< Residual tol. relative to rhs
-    int max_iters = 100;                   ///< Maximum iterations
-    bool verbose = false;                  ///< Verbosity flag
-    bool perform_symmetry_check = false;   ///< For debugging only (very expensive)
-    std::string source_lua_function;       ///< for mms
-    std::string ref_solution_lua_function; ///< for mms
+    double residual_tolerance = 1.0e-4;  ///< Residual tol. relative to rhs
+    int max_iters = 100;                 ///< Maximum iterations
+    bool verbose = false;                ///< Verbosity flag
+    bool perform_symmetry_check = false; ///< For debugging only (very expensive)
     std::string additional_options_string;
     double penalty_factor = 4.0;
   } options;

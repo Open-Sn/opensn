@@ -13,11 +13,28 @@
 #include "framework/logging/log.h"
 
 #include "framework/console/console.h"
+#include "lua/framework/math/functions/lua_scalar_spatial_function.h"
 
 using namespace opensn;
+using namespace opensnlua;
 
 namespace unit_sim_tests
 {
+
+namespace
+{
+
+std::shared_ptr<LuaScalarSpatialFunction>
+CreateFunction(const std::string& function_name)
+{
+  ParameterBlock blk;
+  blk.AddParameter("lua_function_name", function_name);
+  InputParameters params = LuaScalarSpatialFunction::GetInputParameters();
+  params.AssignParameters(blk);
+  return std::make_shared<LuaScalarSpatialFunction>(params);
+}
+
+} // namespace
 
 ParameterBlock acceleration_Diffusion_DFEM(const InputParameters& params);
 
@@ -144,14 +161,21 @@ acceleration_Diffusion_DFEM(const InputParameters&)
                                                                IntS_shapeI};
   } // for cell
 
+  auto mms_phi_function = CreateFunction("MMS_phi");
+  opensn::Chi::function_stack.push_back(mms_phi_function);
+
+  auto mms_q_function = CreateFunction("MMS_q");
+  opensn::Chi::function_stack.push_back(mms_q_function);
+
   // Make solver
   lbs::DiffusionMIPSolver solver(
     "SimTest92_DSA", sdm, OneDofPerNode, bcs, matid_2_xs_map, unit_cell_matrices, true);
-  solver.options.ref_solution_lua_function = "MMS_phi";
-  solver.options.source_lua_function = "MMS_q";
   solver.options.verbose = true;
   solver.options.residual_tolerance = 1.0e-10;
   solver.options.perform_symmetry_check = true;
+
+  solver.SetReferenceSolutionFunction(mms_phi_function);
+  solver.SetSourceFunction(mms_q_function);
 
   solver.Initialize();
 
@@ -203,8 +227,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
       for (size_t j = 0; j < num_nodes; ++j)
         phi_fem += nodal_phi[j] * qp_data.ShapeValue(j, qp);
 
-      double phi_true =
-        lbs::DiffusionMIPSolver::CallLuaXYZFunction(L, "MMS_phi", qp_data.QPointXYZ(qp));
+      double phi_true = mms_phi_function->Evaluate(qp_data.QPointXYZ(qp));
 
       local_error += std::pow(phi_true - phi_fem, 2.0) * qp_data.JxW(qp);
     }

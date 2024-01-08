@@ -1,13 +1,13 @@
 #pragma once
 
-#ifdef OPENSN_WITH_LUA
-
 #include <utility>
 
 #include "framework/mesh/cell/cell.h"
 
 namespace opensn
 {
+class ResponseFunction;
+
 namespace lbs
 {
 
@@ -15,14 +15,14 @@ struct ResponseFunctionDesignation
 {
   const std::string name;
   const std::shared_ptr<LogicalVolume> logical_volume;
-  const std::string lua_functional;
+  std::shared_ptr<ResponseFunction> response_function;
 
   explicit ResponseFunctionDesignation(std::string in_name,
                                        std::shared_ptr<LogicalVolume> in_logical_volume,
-                                       std::string in_lua_function_name)
+                                       std::shared_ptr<ResponseFunction> in_response_function)
     : name(std::move(in_name)),
       logical_volume(std::move(in_logical_volume)),
-      lua_functional(std::move(in_lua_function_name))
+      response_function(in_response_function)
   {
   }
 
@@ -33,4 +33,3 @@ struct ResponseFunctionDesignation
 
 } // namespace lbs
 } // namespace opensn
-#endif
