@@ -569,70 +569,70 @@ LBSSolver::SetOptions(const InputParameters& params)
     {
       auto sdm_name = spec.GetValue<std::string>();
       if (sdm_name == "pwld")
-        Options().sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
+        options_.sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
     }
 
     else if (spec.Name() == "scattering_order")
-      Options().scattering_order = spec.GetValue<int>();
+      options_.scattering_order = spec.GetValue<int>();
 
     else if (spec.Name() == "sweep_eager_limit")
-      Options().sweep_eager_limit = spec.GetValue<int>();
+      options_.sweep_eager_limit = spec.GetValue<int>();
 
     else if (spec.Name() == "read_restart_data")
-      Options().read_restart_data = spec.GetValue<bool>();
+      options_.read_restart_data = spec.GetValue<bool>();
 
     else if (spec.Name() == "read_restart_folder_name")
-      Options().read_restart_folder_name = spec.GetValue<std::string>();
+      options_.read_restart_folder_name = spec.GetValue<std::string>();
 
     else if (spec.Name() == "read_restart_file_base")
-      Options().read_restart_file_base = spec.GetValue<std::string>();
+      options_.read_restart_file_base = spec.GetValue<std::string>();
 
     else if (spec.Name() == "write_restart_data")
-      Options().write_restart_data = spec.GetValue<bool>();
+      options_.write_restart_data = spec.GetValue<bool>();
 
     else if (spec.Name() == "write_restart_folder_name")
-      Options().write_restart_folder_name = spec.GetValue<std::string>();
+      options_.write_restart_folder_name = spec.GetValue<std::string>();
 
     else if (spec.Name() == "write_restart_file_base")
-      Options().write_restart_file_base = spec.GetValue<std::string>();
+      options_.write_restart_file_base = spec.GetValue<std::string>();
 
     else if (spec.Name() == "write_restart_interval")
-      Options().write_restart_interval = spec.GetValue<double>();
+      options_.write_restart_interval = spec.GetValue<double>();
 
     else if (spec.Name() == "use_precursors")
-      Options().use_precursors = spec.GetValue<bool>();
+      options_.use_precursors = spec.GetValue<bool>();
 
     else if (spec.Name() == "use_source_moments")
-      Options().use_src_moments = spec.GetValue<bool>();
+      options_.use_src_moments = spec.GetValue<bool>();
 
     else if (spec.Name() == "save_angular_flux")
-      Options().save_angular_flux = spec.GetValue<bool>();
+      options_.save_angular_flux = spec.GetValue<bool>();
 
     else if (spec.Name() == "verbose_inner_iterations")
-      Options().verbose_inner_iterations = spec.GetValue<bool>();
+      options_.verbose_inner_iterations = spec.GetValue<bool>();
 
     else if (spec.Name() == "verbose_ags_iterations")
-      Options().verbose_ags_iterations = spec.GetValue<bool>();
+      options_.verbose_ags_iterations = spec.GetValue<bool>();
 
     else if (spec.Name() == "verbose_outer_iterations")
-      Options().verbose_outer_iterations = spec.GetValue<bool>();
+      options_.verbose_outer_iterations = spec.GetValue<bool>();
 
     else if (spec.Name() == "power_field_function_on")
-      Options().power_field_function_on = spec.GetValue<bool>();
+      options_.power_field_function_on = spec.GetValue<bool>();
 
     else if (spec.Name() == "power_default_kappa")
-      Options().power_default_kappa = spec.GetValue<double>();
+      options_.power_default_kappa = spec.GetValue<double>();
 
     else if (spec.Name() == "power_normalization")
-      Options().power_normalization = spec.GetValue<double>();
+      options_.power_normalization = spec.GetValue<double>();
 
     else if (spec.Name() == "field_function_prefix_option")
     {
-      Options().field_function_prefix_option = spec.GetValue<std::string>();
+      options_.field_function_prefix_option = spec.GetValue<std::string>();
     }
 
     else if (spec.Name() == "field_function_prefix")
-      Options().field_function_prefix = spec.GetValue<std::string>();
+      options_.field_function_prefix = spec.GetValue<std::string>();
 
     else if (spec.Name() == "boundary_conditions")
     {
@@ -673,35 +673,23 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
     }
     case BoundaryType::INCIDENT_ISOTROPIC:
     {
-      if (not user_params.Has("group_strength"))
-      {
-        std::string message = fname;
-        message += ":boundary_conditions:"
-                   "type=\"incident_isotropic\" requires parameter "
-                   "\"group_strength\".";
+      ChiInvalidArgumentIf(not user_params.Has("group_strength"),
+                           "Boundary conditions with type=\"incident_isotropic\" "
+                           "require parameter \"group_strength\"");
 
-        throw std::invalid_argument(message);
-      }
       user_params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
-
       const auto group_strength = user_params.GetParamVectorValue<double>("group_strength");
-      BoundaryPreferences()[bid] = {type, group_strength};
+      boundary_preferences_[bid] = {type, group_strength};
       break;
     }
     case BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS:
     {
-      if (not user_params.Has("function_name"))
-      {
-        std::string message = fname;
-        message += ":boundary_conditions:"
-                   "type=\"incident_anisotropic_heterogeneous\" requires "
-                   "parameter \"function_name\".";
+      ChiInvalidArgumentIf(not user_params.Has("function_name"),
+                           "Boundary conditions with type=\"incident_anisotropic_heterogeneous\" "
+                           "require parameter \"function_name\".");
 
-        throw std::invalid_argument(message);
-      }
       const auto bndry_function_name = user_params.GetParamValue<std::string>("function_name");
-
-      BoundaryPreferences()[bid] = {type, {}, bndry_function_name};
+      boundary_preferences_[bid] = {type, {}, bndry_function_name};
       break;
     }
   }
