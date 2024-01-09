@@ -37,6 +37,7 @@ public:
   size_t ScatteringOrder() const override { return xs_.ScatteringOrder(); }
   size_t NumPrecursors() const override { return xs_.NumPrecursors(); }
   bool IsFissionable() const override { return xs_.IsFissionable(); }
+  double ScalingFactor() const override { return xs_.ScalingFactor(); }
 
   const std::vector<double>& SigmaTotal() const override { return xs_.SigmaTotal(); }
   const std::vector<double>& SigmaAbsorption() const override { return xs_.SigmaAbsorption(); }

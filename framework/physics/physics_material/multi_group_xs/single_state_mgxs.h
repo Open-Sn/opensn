@@ -42,6 +42,14 @@ public:
    */
   void MakeCombined(std::vector<std::pair<int, double>>& combinations);
 
+  /**
+   * Scale the cross sections by the specified factor.
+   *
+   * @note Scaling factors do not compound. Each time this routine is called, the cross sections
+   *       are scaled by the ratio of the argument and the existing scaling factor.
+   */
+  void SetScalingFactor(const double factor);
+
 private:
   void Clear();
 
@@ -61,6 +69,7 @@ public:
   size_t ScatteringOrder() const override { return scattering_order_; }
   size_t NumPrecursors() const override { return num_precursors_; }
   bool IsFissionable() const override { return is_fissionable_; }
+  double ScalingFactor() const override { return scaling_factor_; }
 
   const std::vector<double>& SigmaTotal() const override { return sigma_t_; }
   const std::vector<double>& SigmaAbsorption() const override { return sigma_a_; }
@@ -94,6 +103,8 @@ protected:
   size_t num_precursors_ = 0;   ///< Number of precursors
   bool is_fissionable_ = false;
   std::vector<std::vector<double>> e_bounds_; ///< Energy bin boundaries in MeV
+
+  double scaling_factor_ = 1.0; ///< An arbitrary scaling factor
 
   std::vector<double> sigma_t_; ///< Total cross section
   std::vector<double> sigma_a_; ///< Absorption cross section

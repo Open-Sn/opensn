@@ -124,11 +124,14 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
     xs = Chi::GetStackItemPtr(Chi::multigroup_xs_stack, combo.first, std::string(__FUNCTION__));
     xsecs.push_back(xs);
 
+    // Set the scaling factor
+    std::dynamic_pointer_cast<SingleStateMGXS>(xs)->SetScalingFactor(combo.second);
+
     // Increment densities
     if (xs->IsFissionable())
     {
       is_fissionable_ = true;
-      Nf_total += combo.second;
+      Nf_total += xs->ScalingFactor();
     }
 
     // Define and check number of groups
@@ -191,12 +194,9 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
   size_t precursor_count = 0;
   for (size_t x = 0; x < xsecs.size(); ++x)
   {
-    // Atom density
-    const auto N_i = combinations[x].second;
-
     // Fraction of fissile density
-    double ff_i = 0.0;
-    if (xsecs[x]->IsFissionable()) ff_i = N_i / Nf_total;
+    const auto N_i = xsecs[x]->ScalingFactor();
+    const auto ff_i = xsecs[x]->IsFissionable() ? N_i / Nf_total : 0.0;
 
     // Combine cross sections
     const auto& sig_t = xsecs[x]->SigmaTotal();
@@ -210,20 +210,20 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
     // fractional densities. The latter is done to preserve a unit spectra.
     for (size_t g = 0; g < n_grps; ++g)
     {
-      sigma_t_[g] += N_i * sig_t[g];
-      sigma_a_[g] += N_i * sig_a[g];
+      sigma_t_[g] += sig_t[g];
+      sigma_a_[g] += sig_a[g];
 
       if (xsecs[x]->IsFissionable())
       {
-        sigma_f_[g] += N_i * sig_f[g];
-        nu_sigma_f_[g] += N_i * sig_f[g];
+        sigma_f_[g] += sig_f[g];
+        nu_sigma_f_[g] += sig_f[g];
         for (size_t gp = 0; gp < num_groups_; ++gp)
-          production_matrix_[g][gp] += N_i * F[g][gp];
+          production_matrix_[g][gp] += F[g][gp];
 
         if (n_precs > 0)
         {
-          nu_prompt_sigma_f_[g] += N_i * nu_p_sig_f[g];
-          nu_delayed_sigma_f_[g] += N_i * nu_d_sig_f[g];
+          nu_prompt_sigma_f_[g] += nu_p_sig_f[g];
+          nu_delayed_sigma_f_[g] += nu_d_sig_f[g];
         }
       }
     } // for g
@@ -275,7 +275,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
           const auto& cols = Sm_other.rowI_indices_[g];
           const auto& vals = Sm_other.rowI_values_[g];
           for (size_t t = 0; t < cols.size(); ++t)
-            Sm.InsertAdd(g, t, vals[t] * N_i);
+            Sm.InsertAdd(g, t, vals[t]);
         }
       }
     }
@@ -1064,10 +1064,10 @@ SingleStateMGXS::ComputeDiffusionParameters()
     // Compute transport cross section
     if (sigma_1 >= sigma_t_[g])
     {
-      log.Log0Warning() << "Transport corrected diffusion coefficient failed for group " << g
-                        << " in call to " << __FUNCTION__ << ". "
+      log.Log0Warning() << "Transport cross section found to be less than zero for "
+                        << "group " << g << " in call to " << __FUNCTION__ << ". "
                         << "sigma_t=" << sigma_t_[g] << " sigma_1=" << sigma_1 << ". "
-                        << "Setting sigma_1 to zero for group " << g << ".";
+                        << "Setting sigma_1=0, sigma_tr=sigma_t for this group.";
       sigma_1 = 0.0;
     }
     sigma_tr_[g] = sigma_t_[g] - sigma_1;
@@ -1094,6 +1094,44 @@ SingleStateMGXS::ComputeDiffusionParameters()
   } // for g
 
   diffusion_initialized_ = true;
+}
+
+void
+SingleStateMGXS::SetScalingFactor(const double factor)
+{
+  const double m = factor / scaling_factor_;
+  scaling_factor_ = factor;
+
+  // Apply to STL vector-based data
+  for (size_t g = 0; g < num_groups_; ++g)
+  {
+    sigma_t_[g] *= m;
+    sigma_a_[g] *= m;
+
+    if (is_fissionable_)
+    {
+      sigma_f_[g] *= m;
+      nu_sigma_f_[g] *= m;
+      if (num_precursors_ > 0)
+      {
+        nu_prompt_sigma_f_[g] *= m;
+        nu_delayed_sigma_f_[g] *= m;
+      }
+
+      for (auto& x : production_matrix_[g])
+        x *= m;
+    }
+  }
+
+  // Apply to transfer matrices
+  for (auto& S_ell : transfer_matrices_)
+    for (size_t g = 0; g < num_groups_; ++g)
+      for (const auto& [_, gp, sig_ell] : S_ell.Row(g))
+        sig_ell *= m;
+
+  // Reinitialize diffusion
+  diffusion_initialized_ = false;
+  ComputeDiffusionParameters();
 }
 
 } // namespace opensn
