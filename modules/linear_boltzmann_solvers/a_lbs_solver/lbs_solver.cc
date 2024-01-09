@@ -432,11 +432,11 @@ LBSSolver::OptionsBlock()
 
   // clang-format off
   params.AddOptionalParameter("spatial_discretization", "pwld",
-    "What spatial discretization to use. Currently only `\"pwld\"` "
-    "is supported");
-  params.AddOptionalParameter("scattering_order",1,
+  "What spatial discretization to use. Currently only `\"pwld\"` "
+  "is supported");
+  params.AddOptionalParameter("scattering_order", 1,
   "Defines the level of harmonic expansion for the scattering source.");
-  params.AddOptionalParameter("sweep_eager_limit",32'000,
+  params.AddOptionalParameter("sweep_eager_limit", 32'000,
   "The eager limit to be used in message size during sweep initialization.\n"
   " This expects to be followed by a size in bytes (Max 64,0000)See note below."
   "\\n\\n"
@@ -451,45 +451,45 @@ LBSSolver::OptionsBlock()
   "on the given platform will start to suffer. One can gain a small amount of"
   "parallel efficiency by lowering this limit, however, there is a point where"
   "the parallel efficiency will actually get worse so use with caution.");
-  params.AddOptionalParameter("read_restart_data",false,
+  params.AddOptionalParameter("read_restart_data", false,
   "Flag indicating whether restart data is to be read.");
-  params.AddOptionalParameter("read_restart_folder_name","YRestart",
+  params.AddOptionalParameter("read_restart_folder_name", "YRestart",
   "Folder name to use when reading restart data.");
   params.AddOptionalParameter("read_restart_file_base","restart",
   "File base name to use when reading restart data.");
-  params.AddOptionalParameter("write_restart_data",false,
+  params.AddOptionalParameter("write_restart_data", false,
   "Flag indicating whether restart data is to be written.");
-  params.AddOptionalParameter("write_restart_folder_name","YRestart",
+  params.AddOptionalParameter("write_restart_folder_name", "YRestart",
   "Folder name to use when writing restart data.");
-  params.AddOptionalParameter("write_restart_file_base","restart",
+  params.AddOptionalParameter("write_restart_file_base", "restart",
   "File base name to use when writing restart data.");
-  params.AddOptionalParameter("write_restart_interval",30.0,
+  params.AddOptionalParameter("write_restart_interval", 30.0,
   "Interval at which restart data is to be written. Currently not implemented.");
-  params.AddOptionalParameter("use_precursors",false,
+  params.AddOptionalParameter("use_precursors", false,
   "Flag for using delayed neutron precursors.");
-  params.AddOptionalParameter("use_source_moments",false,
+  params.AddOptionalParameter("use_source_moments", false,
   "Flag for ignoring fixed sources and selectively using source moments "
   "obtained elsewhere.");
-  params.AddOptionalParameter("save_angular_flux",false,
+  params.AddOptionalParameter("save_angular_flux", false,
   "Flag indicating whether angular fluxes are to be stored or not.");
-  params.AddOptionalParameter("verbose_inner_iterations",true,
+  params.AddOptionalParameter("verbose_inner_iterations", true,
   "Flag to control verbosity of inner iterations.");
-  params.AddOptionalParameter("verbose_outer_iterations",true,
+  params.AddOptionalParameter("verbose_outer_iterations", true,
   "Flag to control verbosity of across-groupset iterations.");
-  params.AddOptionalParameter("verbose_ags_iterations",false,
+  params.AddOptionalParameter("verbose_ags_iterations", false,
   "Flag to control verbosity of across-groupset iterations.");
-  params.AddOptionalParameter("power_field_function_on",false,
+  params.AddOptionalParameter("power_field_function_on", false,
   "Flag to control the creation of the power generation field function. If set "
   "to `true` then a field function will be created with the general name "
   "`<solver_name>_power_generation`.");
-  params.AddOptionalParameter("power_default_kappa",3.20435e-11,
+  params.AddOptionalParameter("power_default_kappa", 3.20435e-11,
   "Default `kappa` value (Energy released per fission) to use for power "
   "generation when cross sections do not have `kappa` values. Default: "
   "3.20435e-11 Joule (corresponding to 200 MeV per fission).");
-  params.AddOptionalParameter("power_normalization",-1.0,
+  params.AddOptionalParameter("power_normalization", -1.0,
   "Power normalization factor to use. Supply a negative or zero number to turn "
   "this off.");
-  params.AddOptionalParameter("field_function_prefix_option","prefix",
+  params.AddOptionalParameter("field_function_prefix_option", "prefix",
   "Prefix option on field function names. Default: `\"prefix\"`. Can be "
   "`\"prefix\"` or "
   "`\"solver_name\"`. "
@@ -498,23 +498,23 @@ LBSSolver::OptionsBlock()
   "Therefore, default behavior is to export flux moment fields functions as "
   "`phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit group number and "
   "similarly for `YYY`.");
-  params.AddOptionalParameter("field_function_prefix","",
+  params.AddOptionalParameter("field_function_prefix", "",
   "Prefix to use on all field functions. Default: `\"\"`. "
   "By default this option is empty but if specified then flux moments will "
   "exported as `prefix_phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit "
   "group number and similarly for `YYY`. The underscore after \"prefix\" is "
   "added automatically.");
-  params.AddOptionalParameterArray("boundary_conditions",
-  {},
-  "A table contain sub-tables for each boundary specification.");
-  params.LinkParameterToBlock("boundary_conditions",
-                              "lbs::BoundaryOptionsBlock");
+  params.AddOptionalParameterArray("boundary_conditions", {},
+  "A array contain sub-tables for each boundary specification.");
+  params.AddOptionalParameter("reset_boundary_conditions", false,
+  "A flag to set all boundary conditions to vacuum. If this flag is passed with "
+  "a boundary conditions array, boundary conditions will be set to vacuum before "
+  "the specified table is applied.");
+  params.LinkParameterToBlock("boundary_conditions", "lbs::BoundaryOptionsBlock");
 
-  params.ConstrainParameterRange("spatial_discretization",
-      AllowableRangeList::New({"pwld"}));
-
-  params.ConstrainParameterRange("field_function_prefix_option",
-    AllowableRangeList::New({"prefix", "solver_name"}));
+  params.ConstrainParameterRange("spatial_discretization", AllowableRangeList::New({"pwld"}));
+  params.ConstrainParameterRange("field_function_prefix_option", AllowableRangeList::New({
+  "prefix", "solver_name"}));
   // clang-format on
 
   return params;
@@ -526,14 +526,12 @@ LBSSolver::BoundaryOptionsBlock()
   InputParameters params;
 
   // clang-format off
-  params.SetGeneralDescription(
-    "Set options for boundary conditions. See \\ref LBSBCs");
+  params.SetGeneralDescription("Set options for boundary conditions. See \\ref LBSBCs");
   params.SetDocGroup("LBSUtilities");
 
   params.AddRequiredParameter<std::string>("name",
   "Boundary name that identifies the specific boundary");
-  params.AddRequiredParameter<std::string>("type",
-  "Boundary type specification.");
+  params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
 
   params.AddOptionalParameterArray<double>("group_strength", {},
   "Required only if `type` is `\"incident_isotropic\"`. An array of isotropic "
@@ -547,8 +545,7 @@ LBSSolver::BoundaryOptionsBlock()
   "xmin", "xmax", "ymin", "ymax", "zmin", "zmax"}));
 
   params.ConstrainParameterRange("type", AllowableRangeList::New({
-  "vacuum", "incident_isotropic", "reflecting",
-  "incident_anisotropic_heterogeneous"}));
+  "vacuum", "incident_isotropic", "reflecting", "incident_anisotropic_heterogeneous"}));
   // clang-format on
 
   return params;
@@ -559,6 +556,11 @@ LBSSolver::SetOptions(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
 
+  // Handle order sensitive options
+  if (user_params.Has("reset_boundary_conditions"))
+    if (user_params.GetParamValue<bool>("reset_boundary_conditions")) boundary_preferences_.clear();
+
+  // Handle order insensitive options
   for (size_t p = 0; p < user_params.NumParameters(); ++p)
   {
     const auto& spec = user_params.GetParam(p);
@@ -635,12 +637,10 @@ LBSSolver::SetOptions(const InputParameters& params)
     else if (spec.Name() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-
       for (size_t b = 0; b < spec.NumParameters(); ++b)
       {
         auto bndry_params = BoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
-
         SetBoundaryOptions(bndry_params);
       }
     }
