@@ -62,15 +62,16 @@ ComputeLeakage(lua_State* L)
   const auto& solver = opensn::Chi::GetStackItem<opensn::lbs::DiscreteOrdinatesSolver>(
     opensn::Chi::object_stack, solver_handle, fname);
 
+  // Get the supported boundaries
+  const auto supported_boundary_names =
+    opensn::lbs::DiscreteOrdinatesSolver::supported_boundary_names;
+  const auto supported_boundary_ids = opensn::lbs::DiscreteOrdinatesSolver::supported_boundary_ids;
+
   // Get the boundaries to parse
   std::vector<uint64_t> bndry_ids;
   if (num_args > 1)
   {
     LuaCheckTableValue(fname, L, 2);
-
-    // Define mapping from boundary name to id
-    const std::map<std::string, uint64_t> bndry_map = {
-      {"xmax", 0}, {"xmin", 1}, {"ymax", 2}, {"ymin", 3}, {"zmax", 4}, {"zmin", 5}};
 
     // Get the boundaries
     const auto n_bndrys = lua_rawlen(L, 2);
@@ -78,7 +79,7 @@ ComputeLeakage(lua_State* L)
     {
       lua_pushinteger(L, b + 1);
       lua_gettable(L, 2);
-      bndry_ids.push_back(bndry_map.at(lua_tostring(L, -1)));
+      bndry_ids.push_back(supported_boundary_names.at(lua_tostring(L, -1)));
       lua_pop(L, 1);
     }
   }
@@ -88,15 +89,11 @@ ComputeLeakage(lua_State* L)
   // Compute the leakage
   const auto leakage = solver.ComputeLeakage(bndry_ids);
 
-  // Define mapping from boundary ids to names
-  const std::map<uint64_t, std::string> bndry_map = {
-    {0, "xmax"}, {1, "xmin"}, {2, "ymax"}, {3, "ymin"}, {4, "zmax"}, {5, "zmin"}};
-
   // Push to lua table
   lua_newtable(L);
   for (const auto& [bid, vals] : leakage)
   {
-    lua_pushstring(L, bndry_map.at(bid).c_str());
+    lua_pushstring(L, supported_boundary_ids.at(bid).c_str());
 
     lua_newtable(L);
     for (int g = 0; g < solver.NumGroups(); ++g)

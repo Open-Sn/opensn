@@ -50,6 +50,13 @@ namespace opensn
 {
 namespace lbs
 {
+
+std::map<std::string, uint64_t> LBSSolver::supported_boundary_names = {
+  {"xmax", 0}, {"xmin", 1}, {"ymax", 2}, {"ymin", 3}, {"zmax", 4}, {"zmin", 5}};
+
+std::map<uint64_t, std::string> LBSSolver::supported_boundary_ids = {
+  {0, "xmax"}, {1, "xmin"}, {2, "ymax"}, {3, "ymin"}, {4, "zmax"}, {5, "zmin"}};
+
 // OpenSnRegisterObject(lbs, LBSSolver); Should not be constructible
 
 OpenSnRegisterSyntaxBlock(lbs, OptionsBlock, LBSSolver::OptionsBlock);
@@ -652,9 +659,7 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
   const auto boundary_name = user_params.GetParamValue<std::string>("name");
   const auto bndry_type = user_params.GetParamValue<std::string>("type");
 
-  const std::map<std::string, uint64_t> supported_bndry_names = {
-    {"xmin", 1}, {"xmax", 0}, {"ymin", 3}, {"ymax", 2}, {"zmin", 5}, {"zmax", 4}};
-  const auto bid = supported_bndry_names.at(boundary_name);
+  const auto bid = supported_boundary_names.at(boundary_name);
   const std::map<std::string, lbs::BoundaryType> type_list = {
     {"vacuum", BoundaryType::VACUUM},
     {"incident_isotropic", BoundaryType::INCIDENT_ISOTROPIC},
