@@ -4,6 +4,7 @@
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/lua.h"
 
 using namespace opensn;
 

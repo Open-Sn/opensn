@@ -32,13 +32,6 @@ public:
    */
   void ExportToChiXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
 
-#ifdef OPENSN_WITH_LUA
-  /**
-   * Pushes all of the relevant items of the transport xs to a lua table.
-   */
-  void PushLuaTable(lua_State* L) const override;
-#endif
-
   virtual const unsigned int NumGroups() const = 0;
 
   virtual const unsigned int ScatteringOrder() const = 0;

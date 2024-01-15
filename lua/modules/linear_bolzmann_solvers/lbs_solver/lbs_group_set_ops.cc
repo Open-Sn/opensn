@@ -7,6 +7,7 @@
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/lua.h"
 
 #define sc_int static_cast<int>
 

@@ -2,9 +2,6 @@
 
 #include <string>
 #include <vector>
-#ifdef OPENSN_WITH_LUA
-#include "framework/lua.h"
-#endif
 
 namespace opensn
 {
@@ -32,11 +29,6 @@ public:
   PropertyType Type() { return type_; }
 
   virtual double GetScalarValue() { return 0.0; }
-
-#ifdef OPENSN_WITH_LUA
-  /** Base class method for pushing lua table.*/
-  virtual void PushLuaTable(lua_State* L) const;
-#endif
 };
 
 } // namespace opensn
