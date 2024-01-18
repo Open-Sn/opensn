@@ -5,9 +5,6 @@
 
 #include "modules/fv_diffusion/fv_diffusion_bndry.h"
 #include "framework/utils/timer.h"
-
-#include "framework/console/console.h"
-
 #include "framework/mesh/mesh.h"
 
 #include <map>

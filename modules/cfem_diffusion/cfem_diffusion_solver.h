@@ -5,9 +5,6 @@
 
 #include "modules/cfem_diffusion/cfem_diffusion_bndry.h"
 #include "framework/utils/timer.h"
-
-#include "framework/console/console.h"
-
 #include <map>
 
 #include "framework/mesh/mesh.h"

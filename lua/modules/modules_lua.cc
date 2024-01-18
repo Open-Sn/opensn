@@ -1,6 +1,6 @@
 #include "modules_lua.h"
 #include "framework/object_factory.h"
-
+#include "lua/framework/console/console.h"
 #include "diffusion_solver/diffusion_lua.h"
 #include "cfem_diffusion/ds_lua_utils.h"
 #include "dfem_diffusion/ip_lua_utils.h"

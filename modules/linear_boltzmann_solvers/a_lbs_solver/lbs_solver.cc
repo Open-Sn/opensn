@@ -1,7 +1,6 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/console/console.h"
 #include "framework/mpi/mpi.h"
 #include "framework/memory_usage.h"
 #include "framework/object_factory.h"
@@ -20,9 +19,6 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/physics/physics_material/physics_material.h"
 #include "framework/physics/field_function/field_function_grid_based.h"
-#ifdef OPENSN_WITH_LUA
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/tools/lbs_bndry_func_lua.h"
-#endif
 #include <algorithm>
 #include <iomanip>
 #include <sys/stat.h>
@@ -1467,12 +1463,10 @@ LBSSolver::InitializeBoundaries()
         sweep_boundaries_[bid] = mk_shrd(SweepIncHomoBndry)(G, mg_q);
       else if (bndry_pref.type == BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS)
       {
-#ifdef OPENSN_WITH_LUA
+        // FIXME:
+#if 0
         sweep_boundaries_[bid] = mk_shrd(SweepAniHeteroBndry)(
           G, std::make_unique<BoundaryFunctionToLua>(bndry_pref.source_function), bid);
-#else
-        // hard exit since this is a missing capability
-        exit(-1);
 #endif
       }
       else if (bndry_pref.type == lbs::BoundaryType::REFLECTING)

@@ -4,7 +4,6 @@
 #include "framework/mesh/surface_mesher/surface_mesher.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/utils/timer.h"
-#include "framework/console/console.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"

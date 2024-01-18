@@ -14,6 +14,7 @@ target_include_directories(libopensnlua
 target_link_libraries(libopensnlua
     PRIVATE
     ${LUA_LIBRARIES}
+    ${PETSC_LIBRARY}
     MPI::MPI_CXX
     libopensn
 )

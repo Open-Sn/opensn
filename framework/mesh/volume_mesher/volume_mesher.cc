@@ -4,7 +4,6 @@
 #include "framework/mesh/volume_mesher/extruder/volmesher_extruder.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "framework/console/console.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

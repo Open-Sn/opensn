@@ -1,7 +1,7 @@
-#include "framework/console/console.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/parameters/input_parameters.h"
+#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

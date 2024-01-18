@@ -1,13 +1,12 @@
-#ifdef OPENSN_WITH_LUA
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/tools/lbs_bndry_func_lua.h"
-
-#include "framework/lua.h"
-
+#include "lua/modules/linear_bolzmann_solvers/lbs_solver/tools/lbs_bndry_func_lua.h"
+#include "lua/framework/lua.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 
-namespace opensn
+using namespace opensn;
+
+namespace opensnlua
 {
 namespace lbs
 {
@@ -153,6 +152,4 @@ BoundaryFunctionToLua::Evaluate(
 }
 
 } // namespace lbs
-} // namespace opensn
-
-#endif
+} // namespace opensnlua

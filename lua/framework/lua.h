@@ -1,6 +1,5 @@
 #pragma once
 
-#ifdef OPENSN_WITH_LUA
 extern "C"
 {
 #include <lua.h>
@@ -12,6 +11,7 @@ extern "C"
 #include <string>
 #include <vector>
 #include <memory>
+#include "framework/parameters/parameter_block.h"
 
 /**Posts a generalized error message indicating that the
  * expected amount of arguments don't match the given amount.*/
@@ -44,9 +44,8 @@ void LuaPopulateVectorFrom1DArray(const std::string& func_name,
                                   int table_arg_index,
                                   std::vector<double>& vec);
 
-namespace opensn
+namespace opensnlua
 {
-class ParameterBlock;
 
 /**This static object is used to parse lua tables into parameter blocks.*/
 class TableParserAsParameterBlock
@@ -57,12 +56,13 @@ private:
    * currently active, will be extended with a parameter of this primitive
    * type. If the value is another table, a new `Block`-type will be instantiated
    * and the table recursion will then operate on this new block.*/
-  static void
-  RecursivelyParseTableValues(lua_State* L, ParameterBlock& block, const std::string& key_str_name);
+  static void RecursivelyParseTableValues(lua_State* L,
+                                          opensn::ParameterBlock& block,
+                                          const std::string& key_str_name);
 
   /**This function operates on table keys recursively. It has a specific
    * behavior if it detects an array.*/
-  static void RecursivelyParseTableKeys(lua_State* L, int t, ParameterBlock& block);
+  static void RecursivelyParseTableKeys(lua_State* L, int t, opensn::ParameterBlock& block);
 
 public:
   /**\brief Parses a lua table into a hierarchical parameter block.
@@ -93,7 +93,7 @@ public:
    * chiUnitTests_Test_paramblock(--[[verbose=]]true, block)
    * \endcode
    */
-  static ParameterBlock ParseTable(lua_State* L, int table_stack_index);
+  static opensn::ParameterBlock ParseTable(lua_State* L, int table_stack_index);
 };
 
 /**\brief This recursive routine operates on a parameter block and passes
@@ -103,9 +103,8 @@ public:
  * the parameter block will have its individual parameters exported as single
  * values, otherwise the block is exported as a table.
  */
-void PushParameterBlock(lua_State* L, const ParameterBlock& block, int level = 0);
+void PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level = 0);
 
-ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
+opensn::ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
 
-} // namespace opensn
-#endif
+} // namespace opensnlua

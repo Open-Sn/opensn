@@ -1,11 +1,11 @@
 #include "framework/parameters/parameter_block.h"
 
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 
 using namespace opensn;
 
@@ -30,7 +30,7 @@ chi_ParameterBlock_Test00(lua_State* L)
     if (lua_istable(L, 2))
     {
       opensn::log.Log() << "It is a block";
-      const auto param_block = TableParserAsParameterBlock::ParseTable(L, 2);
+      const auto param_block = opensnlua::TableParserAsParameterBlock::ParseTable(L, 2);
 
       {
         std::string outstr;

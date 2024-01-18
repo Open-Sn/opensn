@@ -25,7 +25,6 @@
 #include "framework/mpi/mpi.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
-#include "framework/console/console.h"
 #include "framework/logging/log_exceptions.h"
 #include <iomanip>
 

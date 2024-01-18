@@ -1,5 +1,4 @@
-#ifdef OPENSN_WITH_LUA
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 
 #include "framework/logging/log.h"
 
@@ -128,4 +127,3 @@ LuaPopulateVectorFrom1DArray(const std::string& func_name,
 invalid_table:
   throw std::invalid_argument("Invalid table used in call to " + func_name);
 }
-#endif
