@@ -562,6 +562,9 @@ protected:
   static void CleanUpTGDSA(LBSGroupset& groupset);
 
 public:
+  static std::map<std::string, uint64_t> supported_boundary_names;
+  static std::map<uint64_t, std::string> supported_boundary_ids;
+
   /**
    * Returns the input parameters for this object.
    */
