@@ -749,11 +749,4 @@ int chiLBSAddPointSource(lua_State* L);
  */
 int chiLBSClearPointSources(lua_State* L);
 
-/**Initializes the point sources. This is mostly
- * useful for adjoint response calculations.
- * \param SolverIndex int Handle to the solver.
- *
- *  \ingroup LBSLuaFunctions
- */
-int chiLBSInitializePointSources(lua_State* L);
 } // namespace opensnlua::lbs
