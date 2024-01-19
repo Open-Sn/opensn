@@ -23,24 +23,44 @@ if(OPENSN_WITH_LUA)
 endif()
 
 find_package(VTK QUIET)
-if(VTK_VERSION VERSION_LESS "8.90.0")
-    find_package(VTK COMPONENTS
-        vtkCommonCore vtkCommonDataModel
-        vtkIOLegacy vtkIOCore
-        vtkIOXML vtkParallelCore vtkIOParallelXML
-        vtkFiltersCore
-        vtkIOEnSight
-        vtkIOExodus
-        REQUIRED)
+if(VTK_VERSION VERSION_GREATER_EQUAL "9.0.0")
+    find_package(VTK
+        COMPONENTS
+            CommonCore
+            CommonDataModel
+            IOLegacy
+            IOCore
+            IOXML
+            ParallelCore
+            IOParallelXML
+            FiltersCore
+            IOEnSight
+            IOExodus
+        REQUIRED
+    )
+    message(STATUS "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")")
+elseif(VTK_VERSION VERSION_GREATER_EQUAL "8.0.0")
+    find_package(VTK
+        COMPONENTS
+            vtkCommonCore
+            vtkCommonDataModel
+            vtkIOLegacy
+            vtkIOCore
+            vtkIOXML
+            vtkParallelCore
+            vtkIOParallelXML
+            vtkFiltersCore
+            vtkIOEnSight
+            vtkIOExodus
+        REQUIRED
+    )
+    message(STATUS "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")")
 else()
-    find_package(VTK COMPONENTS
-        CommonCore CommonDataModel
-        IOLegacy IOCore
-        IOXML ParallelCore IOParallelXML
-        FiltersCore
-        IOEnSight
-        IOExodus
-        REQUIRED)
+    if (${VTK_DIR} STREQUAL VTK_DIR-NOTFOUND)
+        message(FATAL_ERROR "Could not find VTK")
+    else()
+        message(FATAL_ERROR "Found unsupported version of VTK: ${VTK_DIR}, version ${VTK_VERSION}")
+    endif()
 endif()
 
 find_package(PETSc 3.17 REQUIRED)
