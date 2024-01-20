@@ -4,12 +4,12 @@
   <img src="doc/HTMLimages/CoolPics/banner.png" width="700">
 </p>
 
-# openSn #
+# OpenSn #
 
-openSn is a large-scale scientific simulation engine being developed at 
+OpenSn is a large-scale scientific simulation engine being developed at 
 Texas A&M University as part of a research study on massively parallel 
-algorithms for modeling and simulation. Currently, the main physics modules 
-of openSn deal with solving the linear Boltzmann equation and 
+algorithms for modeling and simulation. The main physics modules 
+of OpenSn deal with solving the linear Boltzmann equation and 
 diffusion-reaction physics.
 
 Please visit the links below where you will find:
