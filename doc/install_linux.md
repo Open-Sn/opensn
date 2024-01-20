@@ -7,7 +7,7 @@ Some portions of this document indicate the use of `sudo`. If you do not have
 administrative privileges then have you system administrator assist you in 
 these steps.
 
-### Step 1 - Installing GCC, GFortran and the basic environment
+### Step 1 - Installing GCC, GFortran and the Basic Environment
 
 GCC is used to build and install Chi-Tech.
 GFortran and Python is used during the installation of PETSc
@@ -45,7 +45,7 @@ Now, install the remaining packages needed to build Chi-Tech and its dependencie
 sudo apt-get install cmake python git zlib1g-dev libx11-dev unzip
 ```
 
-### Step 2 - An MPI flavor
+### Step 2 - An MPI Flavor
 
 Install either OpenMPI or MPICH. If you have MOOSE or deal.ii installed then you
 are probably already set to go. **MPICH** is recommended for better performance.
@@ -244,21 +244,21 @@ Set the LUA_ROOT environment variable to the **Lua** install location:
 
 Add the export command to your bash profile.
 
-### Step 6 - Build Chi-Tech
+### Step 6 - Build OpenSn
 
-Clone the **Chi-Tech** repository.  Go the folder where you want to keep Chi-Tech relevant stuff:
+Clone the **OpenSn** repository.  Go the folder where you want to keep OpenSn relevant stuff:
 ```bash
-    $ git clone https://github.com/chi-tech/chi-tech
+    $ git clone https://github.com/Open-Sn/opensn.git /path/to/opensn
 ```
 
-Go to the chi-tech folder and type:
+Go to the opensn folder and type:
 ```bash
-    $ cd chi-tech
+    $ cd opensn
     $ ./configure.sh
 ```
 The configure script will generate the CMake build scripts.
 
-In the main directory (i.e. *chi-tech/*), execute:
+In the main build directory (e.g., `open/build/`), execute:
 ```bash
     $ make -j4
 ```
@@ -266,7 +266,7 @@ In the main directory (i.e. *chi-tech/*), execute:
 You can also use -j8 even if you don't have 8 processors, the make command
 will use threading where possible.
 
-### Step 7 - Run regression tests
+### Step 7 - Run Regression Tests
 
 To check if the code compiled correctly, execute the test scripts:
 
@@ -275,9 +275,9 @@ To check if the code compiled correctly, execute the test scripts:
 ```
 
 
-### Step 8 - Chi-Tech documentation
+### Step 8 - OpenSn Documentation
 
-You can either access the documentation online [here](https://chi-tech.github.io), or generate it locally.
+You can either access the documentation online [here](https://xxx.io), or generate it locally.
 
 To generate the documentation from your local working copy, first make sure
 Doxygen and LaTeX are installed:

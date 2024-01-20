@@ -5,8 +5,8 @@
 We have a set of easy instructions for users running Ubuntu 18.04+ (including WSL
 with Ubuntu 18.04, as well as newer Ubuntu LTS)
 
-Easy scripts - [Easy Linux instructions](./install_ubuntu_easy.md)
-Easy scripts - [Easy MacOS instructions](./install_macos_easy.md)
+- Easy scripts - [Easy Linux instructions](./install_linux_easy)
+- Easy scripts - [Easy MacOS instructions](./install_macos_easy.md)
 
 If the automated installation of dependencies fails, or if you don't have a system
 supporting it, then follow the instructions below: 
@@ -14,9 +14,10 @@ supporting it, then follow the instructions below:
 For Linux machines - [Linux installation instructions](./install_linux.md)  
 For MacOS machines - [MacOS installation instructions](./install_macos.md)
 
+The executable is typically found in `opensn/build/lua`
 
 ## Folder Layout
-Now that the code has been installed, let us comment on the subdirectory structure:
+The subdirectory structure is as follows:
 
 - [doc](./doc) contains 
   - scripts to generate the code documentation (these scripts were actually used during the installation instructions, above),
@@ -24,7 +25,7 @@ Now that the code has been installed, let us comment on the subdirectory structu
 - [external](./external) contains external library source code, such as VTK,
 - [framework](./framework) contains the source code that is agnostic of the physics, such as math, mesh, MPI, ...
 - [modules](./modules) contains the source code for specialized physics modules,
-- [resources](./resources) contains scripts, notes, data, and other misc. items,
+- [resources](./resources) contains python scripts, notes, data, and other misc. items,
 - [tests](./tests) contains tests for the regression suite (these can also serve as examples/tutorials),
 - [tutorials](./tutorials) contains tutorials. 
 
@@ -34,11 +35,11 @@ Now that the code has been installed, let us comment on the subdirectory structu
 ###  Serial run (interactive)
 Simply type:
 ```bash 
-path_to_exec/ChiTech  path_to_input_file/input_filename.lua
+path_to_exec/opensn  path_to_input_file/input_filename.lua
 ```
 where 
 - ```path_to_exec``` is the path to the directory where the executable was created and saved,
-- ```ChiTech``` is the (default) filename for the executable,
+- ```opensn``` is the (default) filename for the executable,
 - ```path_to_input_file``` is the path to the directory where the input file is located,
 - ```input_filename.lua``` is the name of the LUA input file
 
