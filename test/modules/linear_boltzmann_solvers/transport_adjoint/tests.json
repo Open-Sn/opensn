@@ -6,7 +6,7 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "QOI-value=",
+        "key": "QoI-value=",
         "goldvalue": 1.38397e-05,
         "tol": 1e-08
       }
@@ -44,7 +44,7 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "QOI-value=",
+        "key": "QoI-value=",
         "goldvalue": 2.90386e-05,
         "tol": 1e-08
       }
@@ -82,61 +82,61 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[0]=",
+        "key": "QoI-value[0]=",
         "goldvalue": 1.12687e-06,
         "tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[1]=",
+        "key": "QoI-value[1]=",
         "goldvalue": 2.95934e-06,
         "tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[2]=",
+        "key": "QoI-value[2]=",
         "goldvalue": 3.92975e-06,
         "tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[3]=",
+        "key": "QoI-value[3]=",
         "goldvalue": 4.18474e-06,
         "tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[4]=",
+        "key": "QoI-value[4]=",
         "goldvalue": 3.89649e-06,
         "tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[5]=",
+        "key": "QoI-value[5]=",
         "goldvalue": 3.30482e-06,
         "tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[6]=",
+        "key": "QoI-value[6]=",
         "goldvalue": 1.54506e-06,
         "tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[7]=",
+        "key": "QoI-value[7]=",
         "goldvalue": 6.74868e-07,
         "tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[8]=",
+        "key": "QoI-value[8]=",
         "goldvalue": 3.06178e-07,
         "tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "QOI-value[9]=",
+        "key": "QoI-value[9]=",
         "goldvalue": 2.07284e-07,
         "tol": 1.0
       }
