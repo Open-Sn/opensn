@@ -1,6 +1,6 @@
 # Easy Install on MacOS
 
-The following instructions were tested on MacOS Monterey (= version 12).
+The following instructions were tested on MacOS Sonoma (= version 14).
 
 ## Prerequisites
 
@@ -49,7 +49,7 @@ This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 should appear. Ensure that the message displays the desired compilers.
-If successful, set the following evironment variables in the `~/.bashrc` or
+If successful, set the following environment variables in the `~/.bashrc` or
 `~/.bash_profile` script:
 ```shell
 export MPI_DIR="/path/to/mpich/install"
@@ -62,9 +62,6 @@ export F77="${MPI_DIR}/mpif77"
 ```
 
 ## Step 2 - Clone OpenSn
-
-The remainder of the instructions are identical to
-[Easy Linux instructions](./install_ubuntu_easy.md).
 
 Note:  If you want to contribute to OpenSn, it is strongly recommended
 to first fork the OpenSn repository into your own Git account and then to
@@ -79,7 +76,7 @@ or
 git clone https://github.com/<username>/opensn.git /path/to/opensn
 ```
 
-## Step 3 - Set Up the Enviroment
+## Step 3 - Set Up the Environment
 
 Next, run the script to compile the necessary dependencies with
 ```shell
@@ -124,7 +121,7 @@ test/run_tests -j<N>
 
 ## Step 6 - OpenSn Documentation
 
-The documentation can be found [online](https://chi-tech.github.io), or
+The documentation can be found [online](https://xxx.io), or
 generated locally. To generate the documentation locally, first make sure
 doxygen and LaTeX are installed:
 ```shell

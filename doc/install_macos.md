@@ -49,7 +49,7 @@ This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 should appear. Ensure that the message displays the desired compilers.
-If successful, set the following evironment variables in the `~/.bashrc` or
+If successful, set the following environment variables in the `~/.bashrc` or
 `~/.bash_profile` script:
 ```shell
 export MPI_DIR="/path/to/mpich/install"
@@ -104,7 +104,7 @@ may be required in some circumstances with GNU compilers.
 After a successful build, PETSc will provide instructions for installing and
 checking the installations. Follow these instructions.
 
-After a successful install, add the following environment varibles to the
+After a successful install, add the following environment variables to the
 `~/.bashrc` or `~/.bash_profile` script:
 ```shell
 export PETSC_ROOT="/path/to/petsc/install"
@@ -142,7 +142,7 @@ After a successful install, set the following environment variables in the
 `~/.bashrc` or `~/.bash_profile` script:
 ```shell
 export VTK_DIR="/path/to/vtk/install"
-export CMAKE_PREFIX_PATH=${VTK_DIR}:${CMAKE_PREFIX_PATH}""
+export CMAKE_PREFIX_PATH=""${VTK_DIR}:${CMAKE_PREFIX_PATH}"
 ```
 
 ## Step 5 - Install Lua
@@ -224,7 +224,7 @@ test/run_tests -j<N>
 
 ## Step 8 - OpenSn Documentation
 
-The documentation can be found [online](https://chi-tech.github.io), or
+The documentation can be found [online](https://xxx.io), or
 generated locally. To generate the documentation locally, first make sure
 doxygen and LaTeX are installed:
 ```shell

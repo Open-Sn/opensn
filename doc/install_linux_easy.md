@@ -73,17 +73,17 @@ Which should display the same message the gcc call did, i.e.,
     This is free software; see the source for copying conditions.  There is NO
     warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-### Step 3 - Clone Chi-Tech
+### Step 3 - Clone OpenSn
 
-**Important:**  If you want to contribute to **Chi-Tech**, it is strongly recommended to first fork the **Chi-Tech** repository into your own Git account and then to clone your fork. 
+**Important:**  If you want to contribute to **OpenSn**, it is strongly recommended to first fork the **Chi-Tech** repository into your own Git account and then to clone your fork. 
 
-Clone the **Chi-Tech** repository.  Go the folder where you want to keep Chi-Tech relevant stuff:
+Clone the **OpenSn** repository.  Go the folder where you want to keep Chi-Tech relevant stuff:
 ```bash
-    $ git clone https://github.com/chi-tech/chi-tech
+    $ git clone https://github.com/Open-Sn/opensn.git /path/to/opensn
 ```
 or
 ```bash
-    $ git clone https://github.com/YOUR-NAME/chi-tech
+    $ git clone https://github.com/<username>/opensn.git /path/to/opensnh
 ```
 
 **Important:** We recommend building all the dependencies into a separate folder. For instance_,
@@ -98,9 +98,9 @@ Before building the dependencies, you need to export a few variables for the PET
     $ export FC=mpifort
 ```
 
-Go to the chi-tech folder you have just cloned and type:
+Go to the opensn folder you have just cloned and type:
 ```bash
-    $ cd chi-tech
+    $ cd opensn
     $ python3 resources/configure_dependencies.py -d ../dependencies
 ```
 The configure script will attempt to download and install all the necessary 
@@ -109,22 +109,22 @@ dependencies **and may take a long time**
 ### Step 4 - Configure environment
 
 The next step in this process is to setup the environment variables for compiling
-Chi-Tech.
+OpenSn.
 
 ```bash
     $source ../dependencies/configure_deproots.sh
 ```
 **Note:** You can replace ```$source ``` in the above with ```$. ```
 
-### Step 5 - Build Chi-Tech
+### Step 5 - Build OpenSn
 
-To compile Chi-Tech now just execute:
+To compile OpenSn now just execute:
 ```bash
     $ ./configure.sh
 ```
 The configure script will generate the CMake build scripts.
 
-In the main directory (i.e. *chi-tech/*), execute:
+In the main build directory (e.g., `opensn/build/`), execute:
 ```bash
     $ make -j4
 ```
@@ -148,9 +148,9 @@ To check if the code compiled correctly execute the test scripts:
     $ test/run_tests -d test/ -j8
 ```
 
-### Step 8 - Chi-Tech documentation
+### Step 8 - OpenSn Documentation
 
-You can either access the documentation online [here](https://chi-tech.github.io), or generate it locally.
+You can either access the documentation online [here](https://xxx.io), or generate it locally.
 
 To generate the documentation from your local working copy, first make sure
 Doxygen and LaTeX are installed:
@@ -159,7 +159,7 @@ Doxygen and LaTeX are installed:
 sudo apt-get install doxygen texlive
 ```
 
-The documentation is contained in the *doc* folder and can be generated
+The documentation is contained in the `doc/` folder and can be generated
 using a script provided in that folder:
 
 ```bash
