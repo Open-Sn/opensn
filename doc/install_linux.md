@@ -9,10 +9,10 @@ these steps.
 
 ### Step 1 - Installing GCC, GFortran and the Basic Environment
 
-GCC is used to build and install Chi-Tech.
+GCC is used to build and install OpenSn.
 GFortran and Python is used during the installation of PETSc
-(which Chi-Tech uses as a linear algebra backend) and
-OpenGL is required by VTK (used by Chi-Tech for visualization).
+(which OpenSn uses as a linear algebra backend) and
+OpenGL is required by VTK (used by OpenSn for visualization).
 These packages will therefore also need to be installed.
 
 Check to see if gcc is installed
@@ -39,7 +39,7 @@ If you still do not get the appropriate version when running either ``gcc --vers
 or ``gfortran --version`` then there are many online resources which may be able to
 assist you.
 
-Now, install the remaining packages needed to build Chi-Tech and its dependencies:
+Now, install the remaining packages needed to build OpenSn and its dependencies:
 
 ```bash
 sudo apt-get install cmake python git zlib1g-dev libx11-dev unzip
