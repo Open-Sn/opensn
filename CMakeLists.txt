@@ -13,6 +13,14 @@ include(GNUInstallDirs)
 include(CheckTypeSize)
 include(CheckSymbolExists)
 
+set(BuildValues "Release;Debug;RelWithDebInfo;MinSizeRel")
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
+    message(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
+endif()
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${BuildValues})
+
+
 option(OPENSN_WITH_LUA "Build with lua support" ON)
 
 # dependencies
