@@ -31,6 +31,7 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     add_custom_target(doc DEPENDS ${PROJECT_BINARY_DIR}/html/index.html)
 
     configure_file(index.rst src/index.rst)
+    configure_file(tutorials/index.rst src/tutorials/index.rst)
     copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("png" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("gif" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
