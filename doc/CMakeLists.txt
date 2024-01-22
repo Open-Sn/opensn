@@ -3,6 +3,19 @@ find_program(SPHINX_BUILD sphinx-build)
 mark_as_advanced(FORCE SPHINX_BUILD)
 
 if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
+    macro(copy_files ext srcDir destDir)
+        message(STATUS "Copying .${ext} files to ${destDir}")
+        file(MAKE_DIRECTORY ${destDir})
+
+        file(GLOB_RECURSE templateFiles RELATIVE ${srcDir} "${srcDir}/*.${ext}")
+        foreach(templateFile ${templateFiles})
+            set(srcTemplatePath ${srcDir}/${templateFile})
+            if(NOT IS_DIRECTORY ${srcTemplatePath})
+                configure_file(${srcTemplatePath} ${destDir}/${templateFile} COPYONLY)
+            endif()
+        endforeach()
+    endmacro()
+
     macro(lua2md src dest)
         add_custom_command(
             OUTPUT ${dest}
@@ -18,6 +31,9 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     add_custom_target(doc DEPENDS ${PROJECT_BINARY_DIR}/html/index.html)
 
     configure_file(index.rst src/index.rst)
+    copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
+    copy_files("png" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
+    copy_files("gif" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
 
     file(GLOB_RECURSE CONFIGURE_DEPENDS RST_FILES
         ${PROJECT_BINARY_DIR}/doc/*.rst
