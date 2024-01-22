@@ -142,3 +142,5 @@ endif()
 
 #
 configure_file(config.h.in config.h)
+
+add_subdirectory(doc)

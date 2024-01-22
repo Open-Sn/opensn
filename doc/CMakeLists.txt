@@ -1,0 +1,67 @@
+find_package(Doxygen QUIET)
+find_program(SPHINX_BUILD sphinx-build)
+mark_as_advanced(FORCE SPHINX_BUILD)
+
+if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
+    configure_file(Doxyfile.in Doxyfile)
+    configure_file(conf.py.in conf.py)
+
+    add_custom_target(doc DEPENDS ${PROJECT_BINARY_DIR}/html/index.html)
+
+    file(GLOB_RECURSE CONFIGURE_DEPENDS RST_FILES
+          ${PROJECT_SOURCE_DIR}/doc/*.rst
+          ${PROJECT_SOURCE_DIR}/doc/*.md
+    )
+    file(GLOB_RECURSE HEADER_FILES
+        ${PROJECT_SOURCE_DIR}/framework/*.h
+        ${PROJECT_SOURCE_DIR}/modules/*.h
+    )
+
+    add_custom_command(
+        OUTPUT
+            ${PROJECT_BINARY_DIR}/html/index.html
+        COMMAND
+            ${SPHINX_BUILD} -c ${PROJECT_BINARY_DIR}/doc -b html -d ${PROJECT_BINARY_DIR}/doc/.doctrees ${PROJECT_SOURCE_DIR}/doc html
+        DEPENDS
+            ${PROJECT_BINARY_DIR}/doc/conf.py
+            ${PROJECT_BINARY_DIR}/doc/xml/index.xml
+            ${RST_FILES}
+    )
+
+    add_custom_command(
+        OUTPUT
+            ${PROJECT_BINARY_DIR}/doc/xml/index.xml
+        COMMAND
+            doxygen Doxyfile
+        DEPENDS
+            ${PROJECT_BINARY_DIR}/doc/Doxyfile
+            ${HEADER_FILES}
+    )
+
+    add_custom_command(
+        TARGET doc
+        POST_BUILD
+        COMMAND echo "Open ${PROJECT_BINARY_DIR}/doc/html/index.html in your browser to view the documentation."
+    )
+
+else()
+    add_custom_target(doc)
+
+    add_custom_command(
+        TARGET doc
+        COMMAND echo "Unable to generate documentation:"
+    )
+    if (NOT DOXYGEN_FOUND)
+        add_custom_command(
+            TARGET doc
+            COMMAND echo "- 'doxygen' is not installed."
+        )
+    endif()
+
+    if (${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
+        add_custom_command(
+            TARGET doc
+            COMMAND echo "- 'sphinx-build' is not installed."
+        )
+    endif()
+endif()
