@@ -1,7 +1,6 @@
 #include "framework/lua.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
-#include "framework/mesh/surface_mesher/surface_mesher.h"
 #include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
@@ -314,13 +313,11 @@ chiVolumeMesherSetProperty(lua_State* L)
   else if (property_index == VMP::CUTS_Y)
   {
     double p = lua_tonumber(L, 2);
-    cur_hndlr.GetSurfaceMesher().AddYCut(p);
     volume_mesher.options.ycuts.push_back(p);
   }
   else if (property_index == VMP::CUTS_X)
   {
     double p = lua_tonumber(L, 2);
-    cur_hndlr.GetSurfaceMesher().AddXCut(p);
     volume_mesher.options.xcuts.push_back(p);
   }
   else if (property_index == VMP::PARTITION_TYPE)
