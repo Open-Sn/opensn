@@ -1,5 +1,4 @@
 #include "framework/lua.h"
-#include "framework/mesh/volume_mesher/extruder/volmesher_extruder.h"
 #include "framework/mesh/volume_mesher/predefined_unpartitioned/volmesher_predefunpart.h"
 
 #include "framework/mesh/mesh_handler/mesh_handler.h"
@@ -37,41 +36,7 @@ chiVolumeMesherCreate(lua_State* L)
 
   std::shared_ptr<opensn::VolumeMesher> new_mesher = nullptr;
 
-  if (mesher_type == opensn::VolumeMesherType::EXTRUDER)
-  {
-    if (num_args != 3)
-    {
-      opensn::log.LogAllError() << fname +
-                                     ": "
-                                     "When specifying VOLUMEMESHER_EXTRUDER, the template type and "
-                                     "handle must also be supplied.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-
-    LuaCheckNilValue(fname, L, 2);
-    LuaCheckNilValue(fname, L, 3);
-
-    int template_type = lua_tonumber(L, 2);
-    int template_handle = lua_tonumber(L, 3);
-
-    const auto UNPART_MESH_TEMPLATE =
-      opensn::VolumeMesherExtruder::TemplateType::UNPARTITIONED_MESH;
-
-    if (template_type == (int)UNPART_MESH_TEMPLATE)
-    {
-      auto p_umesh =
-        opensn::Chi::GetStackItemPtr(opensn::Chi::unpartitionedmesh_stack, template_handle, fname);
-
-      new_mesher = std::make_shared<opensn::VolumeMesherExtruder>(p_umesh);
-    }
-    else
-    {
-      opensn::log.LogAllError() << "In call to " << __FUNCTION__
-                                << ". Invalid template type specified.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-  }
-  else if (mesher_type == opensn::VolumeMesherType::UNPARTITIONED)
+  if (mesher_type == opensn::VolumeMesherType::UNPARTITIONED)
   {
     if (num_args != 2)
     {

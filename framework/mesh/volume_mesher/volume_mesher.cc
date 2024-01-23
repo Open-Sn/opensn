@@ -1,7 +1,6 @@
 #include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
-#include "framework/mesh/volume_mesher/extruder/volmesher_extruder.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/utils/timer.h"
@@ -134,68 +133,6 @@ VolumeMesher::GetCellXYZPartitionID(Cell* cell)
     std::get<1>(ijk_id) = ij_id.second;
     std::get<2>(ijk_id) = 0;
   }
-  else if (vol_mesher.Type() == VolumeMesherType::EXTRUDER)
-  {
-    auto extruder = dynamic_cast<VolumeMesherExtruder&>(vol_mesher);
-    const auto& vertex_layers = extruder.GetVertexLayers();
-    // Create virtual cuts
-    if (vol_mesher.options.zcuts.empty())
-    {
-      size_t num_sub_layers = vertex_layers.size() - 1;
-
-      if ((num_sub_layers % vol_mesher.options.partition_z) != 0)
-      {
-        log.LogAllError() << "Number of sub-layers in extruded mesh is not divisible "
-                          << "by the requested number of z-partitions.";
-        Exit(EXIT_FAILURE);
-      }
-
-      int delta_zk = num_sub_layers / vol_mesher.options.partition_z;
-      for (int k = 0; k < (vol_mesher.options.partition_z); k++)
-      {
-        int layer_index = k * delta_zk + delta_zk;
-        if (layer_index > (vertex_layers.size() - 1))
-        {
-          layer_index = (int)vertex_layers.size() - 1;
-          vol_mesher.options.zcuts.push_back(vertex_layers[layer_index]);
-        }
-        else
-        {
-          vol_mesher.options.zcuts.push_back(vertex_layers[layer_index]);
-
-          if (log.GetVerbosity() == Logger::LOG_LVL::LOG_0VERBOSE_2)
-          {
-            printf("Z-Cut %lu, %g\n", vol_mesher.options.zcuts.size(), vertex_layers[layer_index]);
-          }
-        }
-      }
-    }
-
-    // Scan cuts for location
-    double zmin = -1.0e-16;
-    for (int k = 0; k < (vol_mesher.options.zcuts.size()); k++)
-    {
-      double zmax = vol_mesher.options.zcuts[k];
-
-      double z = cell->centroid_.z;
-
-      if (log.GetVerbosity() == Logger::LOG_0VERBOSE_2)
-      {
-        printf("zmax = %g, zmin = %g, cell_z = %g\n", zmax, zmin, z);
-      }
-
-      if ((z > zmin) && (z < zmax))
-      {
-        std::get<0>(ijk_id) = ij_id.first;
-        std::get<1>(ijk_id) = ij_id.second;
-        std::get<2>(ijk_id) = k;
-
-        found_partition = true;
-        break;
-      }
-      zmin = zmax;
-    }
-  } // if typeid
   else if (vol_mesher.Type() == VolumeMesherType::UNPARTITIONED)
   {
     if (vol_mesher.options.zcuts.empty())
