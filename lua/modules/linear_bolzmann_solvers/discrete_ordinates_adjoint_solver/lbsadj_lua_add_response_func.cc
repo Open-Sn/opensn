@@ -1,7 +1,7 @@
 #include "lbsadj_lua_utils.h"
 
 #include "modules/linear_boltzmann_solvers/c_discrete_ordinates_adjoint_solver/lbs_adj_solver.h"
-#include "lua/framework/math/functions/lua_response_function.h"
+#include "lua/framework/math/functions/lua_spatial_material_function.h"
 #include "framework/runtime.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 
@@ -15,14 +15,14 @@ namespace opensnlua::lbs
 namespace
 {
 
-std::shared_ptr<LuaResponseFunction>
+std::shared_ptr<LuaSpatialMaterialFunction>
 CreateResponseFunction(const std::string& function_name)
 {
   ParameterBlock blk;
   blk.AddParameter("lua_function_name", function_name);
-  InputParameters params = LuaResponseFunction::GetInputParameters();
+  InputParameters params = LuaSpatialMaterialFunction::GetInputParameters();
   params.AssignParameters(blk);
-  return std::make_shared<LuaResponseFunction>(params);
+  return std::make_shared<LuaSpatialMaterialFunction>(params);
 }
 
 } // namespace

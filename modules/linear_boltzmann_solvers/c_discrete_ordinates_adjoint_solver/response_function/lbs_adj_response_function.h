@@ -6,7 +6,7 @@
 
 namespace opensn
 {
-class ResponseFunction;
+class SpatialMaterialFunction;
 
 namespace lbs
 {
@@ -15,11 +15,12 @@ struct ResponseFunctionDesignation
 {
   const std::string name;
   const std::shared_ptr<LogicalVolume> logical_volume;
-  std::shared_ptr<ResponseFunction> response_function;
+  std::shared_ptr<SpatialMaterialFunction> response_function;
 
-  explicit ResponseFunctionDesignation(std::string in_name,
-                                       std::shared_ptr<LogicalVolume> in_logical_volume,
-                                       std::shared_ptr<ResponseFunction> in_response_function)
+  explicit ResponseFunctionDesignation(
+    std::string in_name,
+    std::shared_ptr<LogicalVolume> in_logical_volume,
+    std::shared_ptr<SpatialMaterialFunction> in_response_function)
     : name(std::move(in_name)),
       logical_volume(std::move(in_logical_volume)),
       response_function(in_response_function)

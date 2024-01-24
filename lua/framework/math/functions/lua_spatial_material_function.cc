@@ -1,4 +1,4 @@
-#include "lua/framework/math/functions/lua_response_function.h"
+#include "lua/framework/math/functions/lua_spatial_material_function.h"
 #include "framework/lua.h"
 #include "framework/runtime.h"
 #include "framework/console/console.h"
@@ -9,25 +9,27 @@ namespace opensnlua
 {
 
 InputParameters
-LuaResponseFunction::GetInputParameters()
+LuaSpatialMaterialFunction::GetInputParameters()
 {
-  InputParameters params = ResponseFunction::GetInputParameters();
+  InputParameters params = SpatialMaterialFunction::GetInputParameters();
   params.AddRequiredParameter<std::string>("lua_function_name", "Name of the lua function");
   return params;
 }
 
-LuaResponseFunction::LuaResponseFunction(const InputParameters& params)
-  : ResponseFunction(params),
+LuaSpatialMaterialFunction::LuaSpatialMaterialFunction(const InputParameters& params)
+  : opensn::SpatialMaterialFunction(params),
     lua_function_name_(params.GetParamValue<std::string>("lua_function_name"))
 {
 }
 
 std::vector<double>
-LuaResponseFunction::Evaluate(int num_groups, const opensn::Vector3& xyz, int mat_id) const
+LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
+                                     int mat_id,
+                                     int num_components) const
 {
   const std::string fname = "LuaResponseFunction::Evaluate";
 
-  std::vector<double> response(num_groups, 0.0);
+  std::vector<double> response(num_components, 0.0);
 
   // Utility lambdas
   auto PushVector3AsTable = [](lua_State* L, const Vector3& vec)
@@ -51,7 +53,7 @@ LuaResponseFunction::Evaluate(int num_groups, const opensn::Vector3& xyz, int ma
   // Return default if none provided
   if (lua_function_name_.empty())
   {
-    response.assign(num_groups, 1.0);
+    response.assign(num_components, 1.0);
     return response;
   }
 
@@ -91,14 +93,13 @@ LuaResponseFunction::Evaluate(int num_groups, const opensn::Vector3& xyz, int ma
   lua_pop(L, 1); // pop the table, or error code
 
   // Check return value
-  ChiLogicalErrorIf(lua_return.size() > response.size(),
-                    "Call lua-function, " + lua_function_name_ + ", returned a vector of size " +
-                      std::to_string(response.size()) +
-                      " which is greater than the number of groups " + std::to_string(num_groups) +
-                      ".");
+  ChiLogicalErrorIf(lua_return.size() != response.size(),
+                    "Call to lua function " + lua_function_name_ + " returned a vector of " +
+                      "size " + std::to_string(lua_return.size()) + ", which is not the same as " +
+                      "the number of groups " + std::to_string(num_components) + ".");
 
-  for (size_t g = 0; g < num_groups; ++g)
-    response[g] = lua_return[g];
+  for (size_t c = 0; c < num_components; ++c)
+    response[c] = lua_return[c];
 
   return response;
 }

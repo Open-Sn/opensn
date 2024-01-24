@@ -50,7 +50,7 @@ public:
    */
   size_t AddResponseFunction(const std::string& qoi_name,
                              std::shared_ptr<LogicalVolume> logical_volume,
-                             std::shared_ptr<ResponseFunction> function);
+                             std::shared_ptr<SpatialMaterialFunction> function);
 
   /**
    * Exports an importance map in binary format.
