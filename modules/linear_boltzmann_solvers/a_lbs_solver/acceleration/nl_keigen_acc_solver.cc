@@ -11,22 +11,30 @@
 
 #include <iomanip>
 
-#define CheckContext(x)                                                                            \
-  if (not x)                                                                                       \
-  throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": context casting failure")
-#define GetNLKDiffContextPtr(x)                                                                    \
-  std::dynamic_pointer_cast<NLKEigenDiffContext>(x);                                               \
-  CheckContext(x)
-
 namespace opensn
 {
 namespace lbs
 {
 
+namespace
+{
+
+std::shared_ptr<NLKEigenDiffContext>
+GetNLKDiffContextPtr(const NonLinearSolver::NLSolverContextPtr& context,
+                     const std::string& func_name)
+{
+  auto nlk_eigen_diff_context = std::dynamic_pointer_cast<NLKEigenDiffContext>(context);
+  if (not nlk_eigen_diff_context)
+    throw std::runtime_error(std::string(func_name) + ": context casting failure");
+  return nlk_eigen_diff_context;
+}
+
+} // namespace
+
 void
 NLKEigenDiffSolver::SetMonitor()
 {
-  auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_);
+  auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   if (nl_context_ptr->verbosity_level_ >= 1)
     SNESMonitorSet(
@@ -43,7 +51,7 @@ NLKEigenDiffSolver::SetMonitor()
 void
 NLKEigenDiffSolver::SetSystemSize()
 {
-  auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_);
+  auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& diff_solver = nl_context_ptr->diff_solver_;
   auto sizes = diff_solver.GetNumPhiIterativeUnknowns();
@@ -63,7 +71,7 @@ NLKEigenDiffSolver::SetSystem()
 void
 NLKEigenDiffSolver::SetFunction()
 {
-  auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_);
+  auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   SNESSetFunction(
     nl_solver_, r_, NLKEigenAccResidualFunction, &nl_context_ptr->kresid_func_context_);
@@ -85,7 +93,7 @@ NLKEigenDiffSolver::SetInitialGuess()
 void
 NLKEigenDiffSolver::PostSolveCallback()
 {
-  auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_);
+  auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& lbs_solver = nl_context_ptr->lbs_solver_;
   auto& groupsets = lbs_solver.Groupsets();

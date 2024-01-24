@@ -19,8 +19,6 @@
 #include <vtkCellData.h>
 #include <algorithm>
 
-#define scvtkid static_cast<vtkIdType>
-
 namespace opensn
 {
 
@@ -175,7 +173,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
 
       // Exodus node- and cell indices are 1-based
       // therefore we add a 1 here.
-      global_node_id_list->InsertNextValue(scvtkid(v + 1));
+      global_node_id_list->InsertNextValue(static_cast<vtkIdType>(v + 1));
     }
 
     // Load cells
@@ -191,7 +189,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
 
       // Exodus node- and cell indices are 1-based
       // therefore we add a 1 here.
-      global_elem_id_list->InsertNextValue(scvtkid(cell.global_id_ + 1));
+      global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell.global_id_ + 1));
     } // for local cells
 
     // Set arrays
@@ -293,14 +291,14 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
 
         // Exodus node- and cell indices are 1-based
         // therefore we add a 1 here.
-        node_global_ids->InsertNextValue(scvtkid(vid + 1));
+        node_global_ids->InsertNextValue(static_cast<vtkIdType>(vid + 1));
       }
 
       // Load cells
       for (uint64_t vid : vid_set)
       {
-        std::vector<vtkIdType> cell_vids = {scvtkid(vertex_map[vid])};
-        ugrid->InsertNextCell(VTK_VERTEX, scvtkid(1), cell_vids.data());
+        std::vector<vtkIdType> cell_vids = {static_cast<vtkIdType>(vertex_map[vid])};
+        ugrid->InsertNextCell(VTK_VERTEX, static_cast<vtkIdType>(1), cell_vids.data());
       }
 
       ugrid->SetPoints(points);
@@ -353,7 +351,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
       for (const auto& face_info : face_list)
       {
         UploadFaceGeometry(*face_info.face_ptr, vertex_map, ugrid);
-        src_cell_global_ids->InsertNextValue(scvtkid(face_info.source_cell_id));
+        src_cell_global_ids->InsertNextValue(static_cast<vtkIdType>(face_info.source_cell_id));
         src_cell_face_id->InsertNextValue(face_info.source_face_id);
       }
 

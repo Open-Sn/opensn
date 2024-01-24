@@ -2,8 +2,6 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
 
-#define GetGSContextPtr(x) std::dynamic_pointer_cast<WGSContext>(x)
-
 namespace opensn
 {
 namespace lbs
@@ -18,7 +16,7 @@ AGSContext::SystemSize()
   std::set<int> groupset_list_group_ids;
   for (auto& wgs_solver : sub_solvers_list_)
   {
-    auto gs_context_ptr = GetGSContextPtr(wgs_solver->GetContext());
+    auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
     for (const auto& group : gs_context_ptr->groupset_.groups_)
       groupset_list_group_ids.insert(group.id_);
   }

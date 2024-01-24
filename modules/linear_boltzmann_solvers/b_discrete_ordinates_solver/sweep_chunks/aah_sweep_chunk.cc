@@ -3,8 +3,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/sweep_utilities/fluds/aah_fluds.h"
 
-#define scint static_cast<int>
-
 namespace opensn
 {
 namespace lbs
@@ -181,7 +179,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         ExecuteKernels(mass_term_kernels_);
 
         // Solve system
-        GaussElimination(Atemp_, b_[gsg], scint(cell_num_nodes_));
+        GaussElimination(Atemp_, b_[gsg], static_cast<int>(cell_num_nodes_));
       }
 
       // Flux updates

@@ -23,11 +23,19 @@
 #include <fstream>
 #include <map>
 
-#define ErrorReadingFile(fname)                                                                    \
-  std::runtime_error("Failed to open file: " + options.file_name + " in call to " + #fname + ".")
-
 namespace opensn
 {
+
+namespace
+{
+
+std::string
+ErrorReadingFileStr(const std::string& file_name, const std::string& function_name)
+{
+  return std::string("Failed to open file: " + file_name + " in call to " + function_name + ".");
+}
+
+} // namespace
 
 UnpartitionedMesh::~UnpartitionedMesh()
 {
@@ -885,7 +893,8 @@ UnpartitionedMesh::ReadFromVTU(const UnpartitionedMesh::Options& options)
   // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open()) throw ErrorReadingFile(ReadFromVTU);
+  if (!file.is_open())
+    throw std::runtime_error(ErrorReadingFileStr(options.file_name, "ReadFromVTU"));
   file.close();
 
   // Read the file
@@ -956,7 +965,8 @@ UnpartitionedMesh::ReadFromPVTU(const UnpartitionedMesh::Options& options)
   // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open()) throw ErrorReadingFile(ReadFromVTU);
+  if (!file.is_open())
+    throw std::runtime_error(ErrorReadingFileStr(options.file_name, "ReadFromPVTU"));
   file.close();
 
   // Read the file
@@ -1027,7 +1037,8 @@ UnpartitionedMesh::ReadFromEnsightGold(const UnpartitionedMesh::Options& options
   // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open()) throw ErrorReadingFile(ReadFromEnsightGold);
+  if (!file.is_open())
+    throw std::runtime_error(ErrorReadingFileStr(options.file_name, "ReadFromEnsightGold"));
   file.close();
 
   // Read the file
@@ -1848,7 +1859,8 @@ UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
   // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open()) throw ErrorReadingFile(ReadFromExodus);
+  if (!file.is_open())
+    throw std::runtime_error(ErrorReadingFileStr(options.file_name, "ReadFromExodus"));
   file.close();
 
   // Read the file

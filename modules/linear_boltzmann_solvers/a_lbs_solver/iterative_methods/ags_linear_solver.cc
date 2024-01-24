@@ -12,10 +12,6 @@
 
 #include <iomanip>
 
-#define sc_int64_t static_cast<int64_t>
-
-#define GetAGSContextPtr(x) std::dynamic_pointer_cast<AGSContext>(x)
-
 namespace opensn
 {
 namespace lbs
@@ -24,7 +20,7 @@ namespace lbs
 void
 AGSLinearSolver::SetSystemSize()
 {
-  auto ags_context_ptr = GetAGSContextPtr(context_ptr_);
+  auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
 
   const auto sizes = ags_context_ptr->SystemSize();
 
@@ -35,17 +31,17 @@ AGSLinearSolver::SetSystemSize()
 void
 AGSLinearSolver::SetSystem()
 {
-  x_ = CreateVector(sc_int64_t(num_local_dofs_), sc_int64_t(num_global_dofs_));
+  x_ = CreateVector(static_cast<int64_t>(num_local_dofs_), static_cast<int64_t>(num_global_dofs_));
 
   VecSet(x_, 0.0);
   VecDuplicate(x_, &b_);
 
   // Create the matrix-shell
   MatCreateShell(PETSC_COMM_WORLD,
-                 sc_int64_t(num_local_dofs_),
-                 sc_int64_t(num_local_dofs_),
-                 sc_int64_t(num_global_dofs_),
-                 sc_int64_t(num_global_dofs_),
+                 static_cast<int64_t>(num_local_dofs_),
+                 static_cast<int64_t>(num_local_dofs_),
+                 static_cast<int64_t>(num_global_dofs_),
+                 static_cast<int64_t>(num_global_dofs_),
                  &(*context_ptr_),
                  &A_);
 
@@ -60,7 +56,7 @@ AGSLinearSolver::SetSystem()
 void
 AGSLinearSolver::SetPreconditioner()
 {
-  auto ags_context_ptr = GetAGSContextPtr(context_ptr_);
+  auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
 
   ags_context_ptr->SetPreconditioner(ksp_);
 }
@@ -78,7 +74,7 @@ AGSLinearSolver::SetInitialGuess()
 void
 AGSLinearSolver::Solve()
 {
-  auto ags_context_ptr = GetAGSContextPtr(context_ptr_);
+  auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
   auto& lbs_solver = ags_context_ptr->lbs_solver_;
 
   const int gid_i = GroupSpanFirstID();

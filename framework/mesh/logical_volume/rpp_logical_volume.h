@@ -8,6 +8,16 @@ namespace opensn
 /**Rectangular Parallel Piped (RPP) logical volume*/
 class RPPLogicalVolume : public LogicalVolume
 {
+  enum CornerName
+  {
+    XMAX = 0,
+    XMIN = 1,
+    YMAX = 2,
+    YMIN = 3,
+    ZMAX = 4,
+    ZMIN = 5
+  };
+
 public:
   static InputParameters GetInputParameters();
   explicit RPPLogicalVolume(const InputParameters& params);

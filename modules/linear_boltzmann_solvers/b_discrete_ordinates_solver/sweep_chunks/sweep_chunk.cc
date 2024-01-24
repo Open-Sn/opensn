@@ -7,8 +7,6 @@
 #include "framework/logging/log.h"
 #include "framework/logging/log_exceptions.h"
 
-#define scint static_cast<int>
-
 namespace opensn
 {
 namespace lbs
@@ -154,7 +152,7 @@ SweepChunk::KernelFEMSTDMassTerms()
     double temp_src = 0.0;
     for (int m = 0; m < num_moments_; ++m)
     {
-      const size_t ir = cell_transport_view_->MapDOF(i, m, scint(g_));
+      const size_t ir = cell_transport_view_->MapDOF(i, m, static_cast<int>(g_));
       temp_src += m2d_op[m][direction_num_] * q_moments_[ir];
     } // for m
     source_[i] = temp_src;

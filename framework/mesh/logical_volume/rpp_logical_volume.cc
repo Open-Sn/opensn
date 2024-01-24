@@ -42,13 +42,6 @@ RPPLogicalVolume::RPPLogicalVolume(const InputParameters& params)
 {
 }
 
-#define XMAX 0
-#define XMIN 1
-#define YMAX 2
-#define YMIN 3
-#define ZMAX 4
-#define ZMIN 5
-
 bool
 RPPLogicalVolume::Inside(const Vector3& point) const
 {

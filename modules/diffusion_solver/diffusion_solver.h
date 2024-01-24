@@ -12,12 +12,6 @@
 #include "framework/utils/timer.h"
 #include <petscksp.h>
 
-#define DIFFUSION_MATERIALS_REGULAR 10
-#define DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTR 11
-#define DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTF 12
-#define DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTF_JPART 13
-#define DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTF_JFULL 14
-
 namespace opensn
 {
 namespace diffusion
@@ -39,6 +33,15 @@ private:
   double time_solve_ = 0.0;
   bool verbose_info_ = true;
 
+  enum MaterialMode
+  {
+    REGULAR = 10,
+    FROM_TRANSPORTXS_TTR = 11,
+    FROM_TRANSPORTXS_TTF = 12,
+    FROM_TRANSPORTXS_TTF_JPART = 13,
+    FROM_TRANSPORTXS_TTF_JFULL = 14
+  };
+
 public:
   typedef unsigned int uint;
   typedef std::pair<BoundaryType, std::vector<double>> BoundaryInfo;
@@ -53,7 +56,7 @@ public:
 
   UnknownManager unknown_manager_;
 
-  int material_mode_ = DIFFUSION_MATERIALS_REGULAR;
+  MaterialMode material_mode_ = REGULAR;
 
   bool common_items_initialized_ = false;
 

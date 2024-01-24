@@ -10,17 +10,6 @@
 #include "framework/utils/timer.h"
 #include <utility>
 
-#define DefaultBCDirichlet                                                                         \
-  BoundaryCondition                                                                                \
-  {                                                                                                \
-    BCType::DIRICHLET,                                                                             \
-    {                                                                                              \
-      0, 0, 0                                                                                      \
-    }                                                                                              \
-  }
-
-#define scdouble static_cast<double>
-
 namespace opensn
 {
 namespace lbs
@@ -242,7 +231,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
         } // internal face
         else
         {
-          auto bc = DefaultBCDirichlet;
+          BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
@@ -463,7 +452,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
         if (not face.has_neighbor_)
         {
-          auto bc = DefaultBCDirichlet;
+          BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
@@ -742,7 +731,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
         } // internal face
         else
         {
-          auto bc = DefaultBCDirichlet;
+          BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
@@ -930,7 +919,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
         if (not face.has_neighbor_)
         {
-          auto bc = DefaultBCDirichlet;
+          BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
@@ -1074,7 +1063,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
         if (not face.has_neighbor_)
         {
-          auto bc = DefaultBCDirichlet;
+          BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
@@ -1195,7 +1184,9 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
       else
       {
         hp = 2.0 * volume / surface_area;
-        hp += sqrt(2.0 * volume / (scdouble(num_faces) * sin(2.0 * M_PI / scdouble(num_faces))));
+        hp +=
+          sqrt(2.0 * volume /
+               (static_cast<double>(num_faces) * sin(2.0 * M_PI / static_cast<double>(num_faces))));
       }
     }
   }

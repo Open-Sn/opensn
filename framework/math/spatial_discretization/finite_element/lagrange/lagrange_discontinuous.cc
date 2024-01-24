@@ -7,8 +7,6 @@
 #include "framework/mpi/mpi.h"
 #include "framework/mpi/mpi_utils.h"
 
-#define sc_int64 static_cast<int64_t>
-
 namespace opensn
 {
 
@@ -285,14 +283,14 @@ LagrangeDiscontinuous::MapDOF(const Cell& cell,
   {
     if (storage == UnknownStorageType::BLOCK)
     {
-      int64_t address = sc_int64(local_block_address_ * num_unknowns) +
+      int64_t address = static_cast<int64_t>(local_block_address_ * num_unknowns) +
                         cell_local_block_address_[cell.local_id_] +
                         local_base_block_size_ * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
-      int64_t address = sc_int64(local_block_address_ * num_unknowns) +
+      int64_t address = static_cast<int64_t>(local_block_address_ * num_unknowns) +
                         cell_local_block_address_[cell.local_id_] * num_unknowns +
                         node * num_unknowns + block_id;
       return address;
@@ -322,14 +320,15 @@ LagrangeDiscontinuous::MapDOF(const Cell& cell,
 
     if (storage == UnknownStorageType::BLOCK)
     {
-      int64_t address = sc_int64(neighbor_cell_block_address_[index].second) +
+      int64_t address = static_cast<int64_t>(neighbor_cell_block_address_[index].second) +
                         locJ_block_size_[cell.partition_id_] * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
-      int64_t address = sc_int64(neighbor_cell_block_address_[index].second * num_unknowns) +
-                        node * num_unknowns + block_id;
+      int64_t address =
+        static_cast<int64_t>(neighbor_cell_block_address_[index].second * num_unknowns) +
+        node * num_unknowns + block_id;
       return address;
     }
   }
@@ -353,14 +352,15 @@ LagrangeDiscontinuous::MapDOFLocal(const Cell& cell,
   {
     if (storage == UnknownStorageType::BLOCK)
     {
-      int64_t address = sc_int64(cell_local_block_address_[cell.local_id_]) +
+      int64_t address = static_cast<int64_t>(cell_local_block_address_[cell.local_id_]) +
                         local_base_block_size_ * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
-      int64_t address = sc_int64(cell_local_block_address_[cell.local_id_] * num_unknowns) +
-                        node * num_unknowns + block_id;
+      int64_t address =
+        static_cast<int64_t>(cell_local_block_address_[cell.local_id_] * num_unknowns) +
+        node * num_unknowns + block_id;
       return address;
     }
   }
@@ -388,14 +388,15 @@ LagrangeDiscontinuous::MapDOFLocal(const Cell& cell,
 
     if (storage == UnknownStorageType::BLOCK)
     {
-      int64_t address = sc_int64(neighbor_cell_block_address_[index].second) +
+      int64_t address = static_cast<int64_t>(neighbor_cell_block_address_[index].second) +
                         locJ_block_size_[cell.partition_id_] * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
-      int64_t address = sc_int64(neighbor_cell_block_address_[index].second * num_unknowns) +
-                        node * num_unknowns + block_id;
+      int64_t address =
+        static_cast<int64_t>(neighbor_cell_block_address_[index].second * num_unknowns) +
+        node * num_unknowns + block_id;
       return address;
     }
   }
