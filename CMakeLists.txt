@@ -20,7 +20,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${BuildValues})
 
-
+option(OPENSN_WITH_DOCS "Enable documentation" OFF)
 option(OPENSN_WITH_LUA "Build with lua support" ON)
 
 # dependencies
@@ -143,4 +143,6 @@ endif()
 #
 configure_file(config.h.in config.h)
 
-add_subdirectory(doc)
+if(OPENSN_WITH_DOCS)
+    add_subdirectory(doc)
+endif()
