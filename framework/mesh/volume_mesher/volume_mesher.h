@@ -87,26 +87,6 @@ public:
    */
   VolumeMesherType Type() const;
 
-  /**
-   * Obtains the xy partition IDs of a cell.
-   * Cell xy_partition ids are obtained from the surface mesher.
-   */
-  static std::pair<int, int> GetCellXYPartitionID(Cell* cell);
-
-  /**
-   * Obtains the xyz partition IDs of a cell.
-   * Cell xy_partition ids are obtained from
-   * the surface mesher. z id is obtained from the volume mesher.
-   */
-  static std::tuple<int, int, int> GetCellXYZPartitionID(Cell* cell);
-
-  /**
-   * Creates 2D polygon cells for each face of an unpartitioned mesh.
-   */
-  static void CreatePolygonCells(const UnpartitionedMesh& umesh, MeshContinuumPtr& grid);
-  /**
-   * Sets material id's using a logical volume.
-   */
   static void SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int mat_id);
 
   /**
