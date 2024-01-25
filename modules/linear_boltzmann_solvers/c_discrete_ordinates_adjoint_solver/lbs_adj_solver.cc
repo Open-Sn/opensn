@@ -143,7 +143,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
           const auto dof_map = transport_view.MapDOF(i, 0, g);
           const auto& phi = phi_old_local_[dof_map];
 
-          local_integral += q * phi * fe_values.Vi_vectors[i];
+          local_integral += q * phi * fe_values.intV_shapeI[i];
         } // for node
       }   // check source value >0
     }     // for group
@@ -195,7 +195,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
         const auto src = distributed_source(cell, nodes[i], num_groups_);
 
         // Contribute to the source moments
-        const auto& intV_shapeI = fe_values.Vi_vectors[i];
+        const auto& intV_shapeI = fe_values.intV_shapeI[i];
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
         for (const auto& group : groups_)
           local_integral += src[group.id_] * intV_shapeI;
@@ -266,7 +266,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
         double volume_total = 0.0;
         for (int i = 0; i < num_nodes; ++i)
         {
-          double IntV_shapeI = fe_values.Vi_vectors[i];
+          double IntV_shapeI = fe_values.intV_shapeI[i];
           cell_p1_avg += nodal_p1_moments[i][g] * IntV_shapeI;
           volume_total += IntV_shapeI;
         } // for node i

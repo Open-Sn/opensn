@@ -324,14 +324,14 @@ public:
 
 struct UnitCellMatrices
 {
-  MatDbl K_matrix;
-  MatVec3 G_matrix;
-  MatDbl M_matrix;
-  VecDbl Vi_vectors;
+  MatDbl intV_gradshapeI_gradshapeJ;
+  MatVec3 intV_shapeI_gradshapeJ;
+  MatDbl intV_shapeI_shapeJ;
+  VecDbl intV_shapeI;
 
-  std::vector<MatDbl> face_M_matrices;
-  std::vector<MatVec3> face_G_matrices;
-  std::vector<VecDbl> face_Si_vectors;
+  std::vector<MatDbl> intS_shapeI_shapeJ;
+  std::vector<MatVec3> intS_shapeI_gradshapeJ;
+  std::vector<VecDbl> intS_shapeI;
 };
 
 enum class AGSSchemeEntryType
