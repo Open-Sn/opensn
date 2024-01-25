@@ -6,9 +6,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#define uint unsigned int
-#define scint static_cast<int>
-
 namespace opensn
 {
 
@@ -42,14 +39,14 @@ QuadratureGaussChebyshev::QuadratureGaussChebyshev(const InputParameters& params
 
   if (assigned_params.Has("order"))
   {
-    const uint N = static_cast<uint>(order_);
-    Initialize(N);
+    const auto n = static_cast<unsigned int>(order_);
+    Initialize(n);
   }
   else
   {
-    const uint N = assigned_params.GetParamValue<uint>("N");
-    order_ = static_cast<QuadratureOrder>(std::min(scint(N), 43));
-    Initialize(N);
+    const auto n = assigned_params.GetParamValue<unsigned int>("N");
+    order_ = static_cast<QuadratureOrder>(std::min(n, 43u));
+    Initialize(n);
   }
 }
 

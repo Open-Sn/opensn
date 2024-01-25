@@ -3,15 +3,15 @@
 The following instructions were tested on Ubuntu 18.04 LTS and newer LTS (22.04 currently); other Linux
 distributions might require some minor tweaking.
 
-Some portions of this document indicate the use of `sudo`. If you do not have 
-administrative privileges then have your system administrator assist you in 
+Some portions of this document indicate the use of `sudo`. If you do not have
+administrative privileges then have your system administrator assist you in
 these steps.
 
-### Step 1 - Installing GCC, GFortran and the basic environment
+## Step 1 - Installing GCC, GFortran and the basic environment
 
 - GCC is required.
 - GFortran and Python are used during the installation of PETSc
-(which OpenSn uses as a linear algebra backend) 
+(which OpenSn uses as a linear algebra backend)
 - OpenGL has become optional and VTK can be used, through ViSiT and Paraview, for visualization.
 
 The above packages will therefore need to be installed.
@@ -39,7 +39,7 @@ sudo apt-get install build-essential gfortran
 If you still do not get the appropriate version when running either ``gcc --version``
 or ``gfortran --version`` then there are many online resources which may be able to
 assist you. One issue commonly seen is that the repositories on your system are not
-updated in which case just run ```sudo apt update```, possibly followed by 
+updated in which case just run ```sudo apt update```, possibly followed by
 ```sudo apt upgrade```.
 
 Now, install the remaining packages needed to build OpenSn and its dependencies:
@@ -49,7 +49,7 @@ sudo apt-get install cmake python3 git zlib1g-dev libx11-dev unzip
 ```
 (note the use of python3)
 
-### Step 2 - An MPI flavor
+## Step 2 - An MPI flavor
 
 Install either OpenMPI or MPICH. If you have MOOSE or deal.ii installed then you
 are probably already set to go. **MPICH** is recommended for better performance.
@@ -73,9 +73,9 @@ Which should display the same message the gcc call did, i.e.,
     This is free software; see the source for copying conditions.  There is NO
     warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-### Step 3 - Clone OpenSn
+## Step 3 - Clone OpenSn
 
-**Important:**  If you want to contribute to **OpenSn**, it is strongly recommended to first fork the **OpenSn** repository into your own Git account and then to clone your fork. 
+**Important:**  If you want to contribute to **OpenSn**, it is strongly recommended to first fork the **OpenSn** repository into your own Git account and then to clone your fork.
 
 Clone the **OpenSn** repository.  Go the folder where you want to keep OpenSn relevant stuff:
 ```bash
@@ -103,10 +103,10 @@ Go to the opensn folder you have just cloned and type:
     $ cd opensn
     $ python3 resources/configure_dependencies.py -d ../dependencies
 ```
-The configure script will attempt to download and install all the necessary 
+The configure script will attempt to download and install all the necessary
 dependencies **and may take a long time**
 
-### Step 4 - Configure environment
+## Step 4 - Configure environment
 
 The next step in this process is to setup the environment variables for compiling
 OpenSn.
@@ -116,7 +116,7 @@ OpenSn.
 ```
 **Note:** You can replace ```$source ``` in the above with ```$. ```
 
-### Step 5 - Build OpenSn
+## Step 5 - Build OpenSn
 
 To compile OpenSn now just execute:
 ```bash
@@ -140,7 +140,7 @@ you can run
     $ make -j4
 ```
 
-### Step 6 - Run regression tests
+## Step 6 - Run regression tests
 
 To check if the code compiled correctly execute the test scripts:
 
@@ -148,7 +148,7 @@ To check if the code compiled correctly execute the test scripts:
     $ test/run_tests -d test/ -j8
 ```
 
-### Step 8 - OpenSn Documentation
+## Step 8 - OpenSn Documentation
 
 You can either access the documentation online [here](https://xxx.io), or generate it locally.
 

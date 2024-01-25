@@ -3,11 +3,11 @@
 The following instructions were tested on Ubuntu 18.04 LTS; other Linux
 distributions might require some minor tweaking.
 
-Some portions of this document indicate the use of `sudo`. If you do not have 
-administrative privileges then have you system administrator assist you in 
+Some portions of this document indicate the use of `sudo`. If you do not have
+administrative privileges then have you system administrator assist you in
 these steps.
 
-### Step 1 - Installing GCC, GFortran and the Basic Environment
+## Step 1 - Installing GCC, GFortran and the Basic Environment
 
 GCC is used to build and install OpenSn.
 GFortran and Python is used during the installation of PETSc
@@ -45,7 +45,7 @@ Now, install the remaining packages needed to build OpenSn and its dependencies:
 sudo apt-get install cmake python git zlib1g-dev libx11-dev unzip
 ```
 
-### Step 2 - An MPI Flavor
+## Step 2 - An MPI Flavor
 
 Install either OpenMPI or MPICH. If you have MOOSE or deal.ii installed then you
 are probably already set to go. **MPICH** is recommended for better performance.
@@ -69,7 +69,7 @@ Which should display the same message the gcc call did, i.e.
     This is free software; see the source for copying conditions.  There is NO
     warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-In order to ensure that all installations downstream of this install with the 
+In order to ensure that all installations downstream of this install with the
 required mpi wrappers, do the following:
 ```shell
 export CC=mpicc
@@ -77,7 +77,7 @@ export CXX=mpicxx
 export FC=mpifort
 ```
 
-### Step 3 - PETSc
+## Step 3 - PETSc
 
 The current supported version is
 [petsc version 3.17.0](https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz).
@@ -144,7 +144,7 @@ export PETSC_ROOT=$PWD/install
 
 Again, this is also something you'd like to add to your bash profile.
 
-### Step 4 - Install the Visualization Tool Kit
+## Step 4 - Install the Visualization Tool Kit
 
 In your projects folder install VTK using the following commands:
 
@@ -184,9 +184,9 @@ export VTK_DIR=$PWD/install
 
 Again, this is also something you'd like to add to your bash profile.
 
-### Step 5 - Install Lua
+## Step 5 - Install Lua
 
-#### Step 5a - Install ncurses
+### Step 5a - Install ncurses
 Navigate to a folder to install `ncurses`
 ```shell
 wget https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz
@@ -204,7 +204,7 @@ and then
 make install
 ```
 
-#### Step 5b - Install readline
+### Step 5b - Install readline
 Navigate to a folder to install `readline`
 ```shell
 wget ftp://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz
@@ -222,9 +222,9 @@ and then
 make install
 ```
 
-#### Step 5c - The actual lua installation
+### Step 5c - The actual lua installation
 
-Download and extract **Lua** version 5.3.5 from https://www.lua.org. 
+Download and extract **Lua** version 5.3.5 from https://www.lua.org.
 Before installing **Lua** edit the Makefile and set INSTALL_TOP to your desired
 install location.  Install **Lua** as follows:
 ```bash
@@ -234,7 +234,7 @@ $ make linux
 $ make local
 ```
 If the install complains about missing **readline** includes or libraries, it may
-be necessary to install **readline** first, that would probably require 
+be necessary to install **readline** first, that would probably require
 **ncurses** in turn.
 
 Set the LUA_ROOT environment variable to the **Lua** install location:
@@ -244,7 +244,7 @@ Set the LUA_ROOT environment variable to the **Lua** install location:
 
 Add the export command to your bash profile.
 
-### Step 6 - Build OpenSn
+## Step 6 - Build OpenSn
 
 Clone the **OpenSn** repository.  Go the folder where you want to keep OpenSn relevant stuff:
 ```bash
@@ -266,7 +266,7 @@ In the main build directory (e.g., `opensn/build/`), execute:
 You can also use -j8 even if you don't have 8 processors, the make command
 will use threading where possible.
 
-### Step 7 - Run Regression Tests
+## Step 7 - Run Regression Tests
 
 To check if the code compiled correctly, execute the test scripts:
 
@@ -275,7 +275,7 @@ To check if the code compiled correctly, execute the test scripts:
 ```
 
 
-### Step 8 - OpenSn Documentation
+## Step 8 - OpenSn Documentation
 
 You can either access the documentation online [here](https://xxx.io), or generate it locally.
 

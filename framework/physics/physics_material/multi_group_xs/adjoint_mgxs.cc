@@ -5,7 +5,7 @@ namespace opensn
 
 AdjointMGXS::AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
 {
-  // transpose transfer matrices
+  // Transpose transfer matrices
   for (unsigned int ell = 0; ell <= xs_.ScatteringOrder(); ++ell)
   {
     const auto& S_ell = xs_.TransferMatrix(ell);
@@ -22,17 +22,15 @@ AdjointMGXS::AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
     transposed_transfer_matrices_.push_back(S_ell_transpose);
   } // for ell
 
-  // transpose production matrices
+  // Transpose production matrices
   if (xs_.IsFissionable())
   {
+    transposed_production_matrices_.clear();
+    transposed_production_matrices_.resize(xs_.NumGroups());
     const auto& F = xs_.ProductionMatrix();
     for (size_t g = 0; g < xs_.NumGroups(); ++g)
-    {
-      std::vector<double> F_g_transpose;
       for (size_t gp = 0; gp < xs_.NumGroups(); ++gp)
-        F_g_transpose.emplace_back(F[gp][g]);
-      transposed_production_matrices_.push_back(F_g_transpose);
-    }
+        transposed_production_matrices_[g].push_back(F[gp][g]);
   }
 }
 

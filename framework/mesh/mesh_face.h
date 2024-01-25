@@ -65,8 +65,6 @@ struct Face
   }
 };
 
-#define NEIGHBOR 0
-
 // ######################################################### Struct
 /**Data structure for a polygon face.
 

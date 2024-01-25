@@ -59,8 +59,8 @@ TestObject::GetInputParameters()
 
 TestObject::TestObject(const InputParameters& params)
   : solver_type_(params.GetParamValue<std::string>("solver_type")),
-    sub_obj1_(MakeInpParamsForObj(TestSubObject, params.GetParam("sub_obj1"))),
-    sub_obj2_(MakeInpParamsForObj(TestSubObject, params.GetParam("sub_obj2")))
+    sub_obj1_(InputParameters::MakeForObject<TestSubObject>(params.GetParam("sub_obj1"))),
+    sub_obj2_(InputParameters::MakeForObject<TestSubObject>(params.GetParam("sub_obj2")))
 {
   opensn::log.Log() << "TestObject created "
                     << "solver_type=" << solver_type_;

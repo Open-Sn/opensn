@@ -8,12 +8,6 @@
 #include "framework/mpi/mpi.h"
 #include "framework/mpi/mpi_utils_map_all2all.h"
 
-#define sc_int64 static_cast<int64_t>
-
-#define MappingError                                                                               \
-  "SpatialDiscretization_FV::OrderNodes: "                                                         \
-  "Error mapping neighbor cells"
-
 namespace opensn
 {
 
@@ -95,6 +89,8 @@ FiniteVolume::CreateCellMappings()
 void
 FiniteVolume::OrderNodes()
 {
+  static std::string mapping_error = "FiniteVolume::OrderNodes: Error mapping neighbor cells";
+
   // Communicate node counts
   const uint64_t local_num_nodes = ref_grid_.local_cells.size();
   locJ_block_size_.assign(opensn::mpi.process_count, 0);
@@ -138,7 +134,7 @@ FiniteVolume::OrderNodes()
     local_ids.reserve(gids.size());
     for (uint64_t gid : gids)
     {
-      if (not ref_grid_.IsCellLocal(gid)) throw std::logic_error(MappingError);
+      if (not ref_grid_.IsCellLocal(gid)) throw std::logic_error(mapping_error);
 
       const auto& local_cell = ref_grid_.cells[gid];
       local_ids.push_back(local_cell.local_id_);
@@ -159,14 +155,14 @@ FiniteVolume::OrderNodes()
       const auto& lid_list = mapped_nb_gids.at(pid);
 
       if (gid_list.size() != lid_list.size())
-        throw std::logic_error(MappingError + std::string(" Size-mismatch."));
+        throw std::logic_error(mapping_error + std::string(" Size-mismatch."));
 
       for (size_t i = 0; i < gid_list.size(); ++i)
         neighbor_cell_local_ids_.insert(std::make_pair(gid_list[i], lid_list[i]));
     }
     catch (const std::out_of_range& oor)
     {
-      throw std::logic_error(MappingError + std::string(" OOR."));
+      throw std::logic_error(mapping_error + std::string(" OOR."));
     }
   } // for pid_list_pair
 
@@ -233,21 +229,21 @@ FiniteVolume::MapDOF(const Cell& cell,
   if (cell.partition_id_ == opensn::mpi.location_id)
   {
     if (storage == UnknownStorageType::BLOCK)
-      address =
-        sc_int64(local_block_address_) * num_unknowns + num_local_cells * block_id + cell.local_id_;
+      address = static_cast<int64_t>(local_block_address_) * num_unknowns +
+                num_local_cells * block_id + cell.local_id_;
     else if (storage == UnknownStorageType::NODAL)
-      address =
-        sc_int64(local_block_address_) * num_unknowns + cell.local_id_ * num_unknowns + block_id;
+      address = static_cast<int64_t>(local_block_address_) * num_unknowns +
+                cell.local_id_ * num_unknowns + block_id;
   }
   else
   {
     const uint64_t ghost_local_id = neighbor_cell_local_ids_.at(cell.global_id_);
 
     if (storage == UnknownStorageType::BLOCK)
-      address = sc_int64(locJ_block_address_[cell.partition_id_]) * num_unknowns +
+      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id_]) * num_unknowns +
                 locJ_block_size_[cell.partition_id_] * block_id + ghost_local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = sc_int64(locJ_block_address_[cell.partition_id_]) * num_unknowns +
+      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id_]) * num_unknowns +
                 ghost_local_id * num_unknowns + block_id;
   }
 
@@ -273,9 +269,9 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   if (cell.partition_id_ == opensn::mpi.location_id)
   {
     if (storage == UnknownStorageType::BLOCK)
-      address = sc_int64(num_local_cells) * block_id + cell.local_id_;
+      address = static_cast<int64_t>(num_local_cells) * block_id + cell.local_id_;
     else if (storage == UnknownStorageType::NODAL)
-      address = sc_int64(cell.local_id_) * num_unknowns + block_id;
+      address = static_cast<int64_t>(cell.local_id_) * num_unknowns + block_id;
   }
   else
   {
@@ -284,9 +280,11 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
     const uint64_t ghost_local_id = ref_grid_.cells.GetGhostLocalID(cell.global_id_);
 
     if (storage == UnknownStorageType::BLOCK)
-      address = sc_int64(num_local_dofs) + sc_int64(num_ghost_nodes) * block_id + ghost_local_id;
+      address = static_cast<int64_t>(num_local_dofs) +
+                static_cast<int64_t>(num_ghost_nodes) * block_id + ghost_local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = sc_int64(num_local_dofs) + num_unknowns * sc_int64(ghost_local_id) + block_id;
+      address = static_cast<int64_t>(num_local_dofs) +
+                num_unknowns * static_cast<int64_t>(ghost_local_id) + block_id;
   }
 
   return address;

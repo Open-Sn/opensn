@@ -14,8 +14,6 @@
 
 #include <filesystem>
 
-#define scint static_cast<int>
-
 namespace opensn
 {
 
@@ -211,10 +209,10 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
 
     WriteBinaryValue(ofile, num_parts); // int
 
-    WriteBinaryValue(ofile, scint(umesh.GetMeshAttributes())); // int
-    WriteBinaryValue(ofile, mesh_options.ortho_Nx);            // size_t
-    WriteBinaryValue(ofile, mesh_options.ortho_Ny);            // size_t
-    WriteBinaryValue(ofile, mesh_options.ortho_Nz);            // size_t
+    WriteBinaryValue(ofile, static_cast<int>(umesh.GetMeshAttributes())); // int
+    WriteBinaryValue(ofile, mesh_options.ortho_Nx);                       // size_t
+    WriteBinaryValue(ofile, mesh_options.ortho_Ny);                       // size_t
+    WriteBinaryValue(ofile, mesh_options.ortho_Nz);                       // size_t
 
     WriteBinaryValue(ofile, raw_vertices.size()); // size_t
 
@@ -225,8 +223,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     {
       WriteBinaryValue(ofile, bid); // uint64_t
       const size_t num_chars = bname.size();
-      WriteBinaryValue(ofile, num_chars);          // size_t
-      ofile.write(bname.data(), scint(num_chars)); // characters
+      WriteBinaryValue(ofile, num_chars);                     // size_t
+      ofile.write(bname.data(), static_cast<int>(num_chars)); // characters
     }
 
     // Write how many cells and vertices in file
@@ -248,7 +246,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       t_serialize.TimeSectionEnd();
       if (serial_data.Size() > BUFFER_SIZE)
       {
-        ofile.write((char*)serial_data.Data().data(), scint(serial_data.Size()));
+        ofile.write((char*)serial_data.Data().data(), static_cast<int>(serial_data.Size()));
         const size_t cap = serial_data.Data().capacity();
         serial_data.Clear();
         serial_data.Data().reserve(cap);
@@ -257,7 +255,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     }
     if (serial_data.Size() > 0)
     {
-      ofile.write((char*)serial_data.Data().data(), scint(serial_data.Size()));
+      ofile.write((char*)serial_data.Data().data(), static_cast<int>(serial_data.Size()));
       serial_data.Clear();
     }
 
@@ -269,13 +267,13 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       serial_data.Write(raw_vertices[vid]);
       if (serial_data.Size() > BUFFER_SIZE)
       {
-        ofile.write((char*)serial_data.Data().data(), scint(serial_data.Size()));
+        ofile.write((char*)serial_data.Data().data(), static_cast<int>(serial_data.Size()));
         serial_data.Clear();
       }
     }
     if (serial_data.Size() > 0)
     {
-      ofile.write((char*)serial_data.Data().data(), scint(serial_data.Size()));
+      ofile.write((char*)serial_data.Data().data(), static_cast<int>(serial_data.Size()));
       serial_data.Clear();
     }
     t_verts.TimeSectionEnd();

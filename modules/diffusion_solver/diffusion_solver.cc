@@ -74,7 +74,7 @@ Solver::GetMaterialProperties(const Cell& cell,
   sigmaa.resize(cell_dofs, 0.0);
 
   // REGULAR MATERIAL
-  if (material_mode_ == DIFFUSION_MATERIALS_REGULAR)
+  if (material_mode_ == REGULAR)
   {
     // We absolutely need the diffusion coefficient so process error
     if ((property_map_D < 0) || (property_map_D >= material->properties_.size()))
@@ -126,7 +126,7 @@ Solver::GetMaterialProperties(const Cell& cell,
   // TRANSPORT XS D
   // TRANSPORT XS SIGA
   // SCALAR       Q
-  else if (material_mode_ == DIFFUSION_MATERIALS_FROM_TRANSPORTXS_TTR)
+  else if (material_mode_ == FROM_TRANSPORTXS_TTR)
   {
     // Setting D and Sigma_a
     bool transportxs_found = false;

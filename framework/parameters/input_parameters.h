@@ -5,8 +5,6 @@
 
 #include <map>
 
-#define MakeInpParamsForObj(x, y) InputParameters::MakeForObject<x>(y)
-
 namespace opensn
 {
 

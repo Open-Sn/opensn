@@ -10,13 +10,12 @@
 
 #include <iomanip>
 
-#define sc_double static_cast<double>
-#define PCShellPtr PetscErrorCode (*)(PC, Vec, Vec)
-
 namespace opensn
 {
 namespace lbs
 {
+
+typedef PetscErrorCode (*PCShellPtr)(PC, Vec, Vec);
 
 SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
                                  LBSGroupset& groupset,
@@ -105,7 +104,9 @@ SweepWGSContext::SystemSize()
     log.Log() << "Total number of angular unknowns: " << num_psi_global << "\n"
               << "Number of lagged angular unknowns: " << num_delayed_psi_globl << "("
               << std::setprecision(2)
-              << sc_double(num_delayed_psi_globl) * 100 / sc_double(num_psi_global) << "%)";
+              << static_cast<double>(num_delayed_psi_globl) * 100 /
+                   static_cast<double>(num_psi_global)
+              << "%)";
   }
 
   return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};

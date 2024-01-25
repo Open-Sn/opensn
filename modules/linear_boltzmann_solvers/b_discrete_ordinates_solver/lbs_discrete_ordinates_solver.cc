@@ -28,38 +28,6 @@
 #include "framework/logging/log_exceptions.h"
 #include <iomanip>
 
-#define ParallelParmetisNeedsCycles                                                                \
-  "When using PARMETIS type partitioning then groupset iterative method"                           \
-  " must be NPT_CLASSICRICHARDSON_CYCLES or NPT_GMRES_CYCLES"
-
-#define IsParallel opensn::mpi.process_count > 1
-
-#define IsPartitionTypeParmetis                                                                    \
-  mesher.options.partition_type == VolumeMesher::PartitionType::PARMETIS
-
-#define POLAR_ILLEGAL_GEOTYPE                                                                      \
-  (fname + ": The simulation is using polar angle aggregation for which only "                     \
-           "certain geometry types are supported, i.e., ORTHOGONAL, DIMENSION_2 "                  \
-           "or 3D EXTRUDED.")
-
-#define POLAR_ONLY_PRODUCT                                                                         \
-  (fname + ": The simulation is using polar angle aggregation for which only "                     \
-           "Product-type quadratures are supported.")
-
-#define PRODUCT_QUAD_CASTING_FAILED                                                                \
-  (fname + ": Casting the angular quadrature to the product quadrature base, failed.")
-
-#define AZIMUTHAL_ILLEGAL_GEOTYPE                                                                  \
-  (fname + ": The simulation is using azimuthal angle aggregation for which only "                 \
-           "ONED_SPHERICAL or TWOD_CYLINDRICAL derived geometry types are supported.")
-
-#define AZIMUTHAL_ONLY_PRODUCT                                                                     \
-  (fname + ": The simulation is using azimuthal angle aggregation for which only "                 \
-           "Product-type quadratures are supported.")
-
-#define LogicCheck(condition, message)                                                             \
-  if ((condition)) throw std::logic_error(fname + (message));
-
 namespace opensn
 {
 namespace lbs
@@ -847,12 +815,15 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     for (const auto& groupset : groupsets_)
     {
       bool no_cycles_parmetis_partitioning =
-        (IsPartitionTypeParmetis and (not groupset.allow_cycles_));
+        ((mesher.options.partition_type == VolumeMesher::PartitionType::PARMETIS) and
+         (not groupset.allow_cycles_));
 
       bool is_1D_geometry = options_.geometry_type == GeometryType::ONED_SLAB;
 
-      if (no_cycles_parmetis_partitioning and not is_1D_geometry and IsParallel)
-        throw std::logic_error(ParallelParmetisNeedsCycles);
+      if (no_cycles_parmetis_partitioning and not is_1D_geometry and
+          (opensn::mpi.process_count > 1))
+        throw std::logic_error("When using PARMETIS type partitioning then groupset iterative "
+                               "method must be NPT_CLASSICRICHARDSON_CYCLES or NPT_GMRES_CYCLES");
     } // for groupset
   }
 
@@ -942,11 +913,13 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
   const std::string fname = __FUNCTION__;
 
   // Checks
-  LogicCheck(quadrature.omegas_.empty(), ": Quadrature with no omegas cannot be used.")
-    LogicCheck(quadrature.weights_.empty(), ": Quadrature with no weights cannot be used.")
+  if (quadrature.omegas_.empty())
+    throw std::logic_error(fname + ": Quadrature with no omegas cannot be used.");
+  if (quadrature.weights_.empty())
+    throw std::logic_error(fname + ": Quadrature with no weights cannot be used.");
 
-    // Build groupings
-    UniqueSOGroupings unq_so_grps;
+  // Build groupings
+  UniqueSOGroupings unq_so_grps;
   switch (agg_type)
   {
     // Single
@@ -970,12 +943,15 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
       // Check geometry types
       const auto grid_attribs = grid.Attributes();
       if (not(grid_attribs & ORTHOGONAL or grid_attribs & DIMENSION_2 or grid_attribs & EXTRUDED))
-        throw std::logic_error(POLAR_ILLEGAL_GEOTYPE);
+        throw std::logic_error(
+          fname + ": The simulation is using polar angle aggregation for which only certain "
+                  "geometry types are supported, i.e., ORTHOGONAL, DIMENSION_2 or 3D EXTRUDED.");
 
       // Check quadrature type
       const auto quad_type = quadrature.type_;
       if (quad_type != AngularQuadratureType::ProductQuadrature)
-        throw std::logic_error(POLAR_ONLY_PRODUCT);
+        throw std::logic_error(fname + ": The simulation is using polar angle aggregation for "
+                                       "which only Product-type quadratures are supported.");
 
       // Process Product Quadrature
       try
@@ -1017,7 +993,8 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
       } // try product quadrature
       catch (const std::bad_cast& bc)
       {
-        throw std::runtime_error(PRODUCT_QUAD_CASTING_FAILED);
+        throw std::runtime_error(
+          fname + ": Casting the angular quadrature to the product quadrature base, failed.");
       }
 
       break;
@@ -1029,12 +1006,15 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
       // Check geometry types
       if (not(lbs_geo_type == GeometryType::ONED_SPHERICAL or
               lbs_geo_type == GeometryType::TWOD_CYLINDRICAL))
-        throw std::logic_error(AZIMUTHAL_ILLEGAL_GEOTYPE);
+        throw std::logic_error(
+          fname + ": The simulation is using azimuthal angle aggregation for which only "
+                  "ONED_SPHERICAL or TWOD_CYLINDRICAL derived geometry types are supported.");
 
       // Check quadrature type
       const auto quad_type = quadrature.type_;
       if (quad_type != AngularQuadratureType::ProductQuadrature)
-        throw std::logic_error(AZIMUTHAL_ONLY_PRODUCT);
+        throw std::logic_error(fname + ": The simulation is using azimuthal angle aggregation for "
+                                       "which only Product-type quadratures are supported.");
 
       // Process Product Quadrature
       try
@@ -1060,7 +1040,8 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
       } // try product quadrature
       catch (const std::bad_cast& bc)
       {
-        throw std::runtime_error(PRODUCT_QUAD_CASTING_FAILED);
+        throw std::runtime_error(
+          fname + ": Casting the angular quadrature to the product quadrature base, failed.");
       }
 
       break;

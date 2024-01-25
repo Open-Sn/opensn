@@ -6,14 +6,6 @@
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"
 
-#define ExceptionReflectedAngleError                                                               \
-  std::logic_error(fname + "Reflected angle not found for angle " + std::to_string(n) +            \
-                   " with direction " + quadrature->omegas_[n].PrintStr() +                        \
-                   ". This can happen for two reasons: i) A quadrature is used"                    \
-                   " that is not symmetric about the axis associated with the "                    \
-                   "reflected boundary, or ii) the reflecting boundary is not "                    \
-                   "aligned with any reflecting axis of the quadrature.")
-
 namespace opensn
 {
 
@@ -150,7 +142,13 @@ AngleAggregation::InitializeReflectingBCs()
             break;
           }
 
-        if (index_map[n] < 0) throw ExceptionReflectedAngleError;
+        if (index_map[n] < 0)
+          throw std::logic_error(
+            fname + ": Reflected angle not found for angle " + std::to_string(n) +
+            " with direction " + quadrature->omegas_[n].PrintStr() +
+            ". This can happen for two reasons: i) A quadrature is used that is not symmetric "
+            "about the axis associated with the reflected boundary, or ii) the reflecting boundary "
+            "is not aligned with any reflecting axis of the quadrature.");
       }
 
       // Initialize storage for all outbound directions
