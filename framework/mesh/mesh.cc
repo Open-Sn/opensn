@@ -1,8 +1,7 @@
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/runtime.h"
-#include "framework/mesh/surface_mesher/predefined/surfmesher_predefined.h"
-#include "framework/mesh/volume_mesher/predefined_unpartitioned/volmesher_predefunpart.h"
+#include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/logging/log.h"
 
 namespace opensn
@@ -86,12 +85,6 @@ CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
   umesh->BuildMeshConnectivity();
 
   Chi::unpartitionedmesh_stack.push_back(umesh);
-
-  // Create meshers
-  handler.SetSurfaceMesher(std::make_shared<SurfaceMesherPredefined>());
-  handler.SetVolumeMesher(std::make_shared<VolumeMesherPredefinedUnpartitioned>(umesh));
-
-  //  handler.GetVolumeMesher().Execute();
 
   return Chi::unpartitionedmesh_stack.size() - 1;
 }
@@ -179,12 +172,6 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
   umesh->BuildMeshConnectivity();
 
   Chi::unpartitionedmesh_stack.push_back(umesh);
-
-  // Create meshers
-  handler.SetSurfaceMesher(std::make_shared<SurfaceMesherPredefined>());
-  handler.SetVolumeMesher(std::make_shared<VolumeMesherPredefinedUnpartitioned>(umesh));
-
-  handler.GetSurfaceMesher().Execute();
 
   return Chi::unpartitionedmesh_stack.size() - 1;
 }
@@ -336,12 +323,6 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
   umesh->BuildMeshConnectivity();
 
   Chi::unpartitionedmesh_stack.push_back(umesh);
-
-  // Create meshers
-  handler.SetSurfaceMesher(std::make_shared<SurfaceMesherPredefined>());
-  handler.SetVolumeMesher(std::make_shared<VolumeMesherPredefinedUnpartitioned>(umesh));
-
-  handler.GetSurfaceMesher().Execute();
 
   return Chi::unpartitionedmesh_stack.size() - 1;
 }

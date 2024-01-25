@@ -1,8 +1,7 @@
 #include "framework/lua.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
-#include "framework/mesh/surface_mesher/surface_mesher.h"
-#include "framework/mesh/volume_mesher/extruder/volmesher_extruder.h"
+#include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
@@ -314,13 +313,11 @@ chiVolumeMesherSetProperty(lua_State* L)
   else if (property_index == VMP::CUTS_Y)
   {
     double p = lua_tonumber(L, 2);
-    cur_hndlr.GetSurfaceMesher().AddYCut(p);
     volume_mesher.options.ycuts.push_back(p);
   }
   else if (property_index == VMP::CUTS_X)
   {
     double p = lua_tonumber(L, 2);
-    cur_hndlr.GetSurfaceMesher().AddXCut(p);
     volume_mesher.options.xcuts.push_back(p);
   }
   else if (property_index == VMP::PARTITION_TYPE)
@@ -333,31 +330,6 @@ chiVolumeMesherSetProperty(lua_State* L)
     {
       opensn::log.LogAllError() << "Unsupported partition type used in call to " << fname << ".";
       opensn::Exit(EXIT_FAILURE);
-    }
-  }
-
-  else if (property_index == VMP::EXTRUSION_LAYER)
-  {
-    if (volume_mesher.Type() == VolumeMesherType::EXTRUDER)
-    {
-      auto& mesher = dynamic_cast<VolumeMesherExtruder&>(volume_mesher);
-
-      double layer_height = lua_tonumber(L, 2);
-      int subdivisions = 1;
-
-      if (num_args >= 3) { subdivisions = lua_tonumber(L, 3); }
-      VolumeMesherExtruder::MeshLayer new_layer;
-      new_layer.height = layer_height;
-      new_layer.sub_divisions = subdivisions;
-
-      if (num_args == 4) { new_layer.name = std::string(lua_tostring(L, 4)); }
-      mesher.AddLayer(new_layer);
-    }
-    else
-    {
-      fprintf(stdout,
-              "VolumeMesherExtruder is not the current volume mesher"
-              " therefore the z-layer property is ignored.\n");
     }
   }
 
