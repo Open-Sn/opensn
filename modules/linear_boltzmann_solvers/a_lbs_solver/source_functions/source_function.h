@@ -47,7 +47,7 @@ public:
   /**Sets the source moments for the groups in the current group set.
    *
    * \param groupset The groupset the under consideration.
-   * \param destination_q A vector to contribute the source to.
+   * \param q A vector to contribute the source to.
    * \param phi_local The primary STL vector to operate off.
    * \param source_flags Flags for adding specific terms into the
    *        destination vector. Available flags are for applying
@@ -55,10 +55,10 @@ public:
    *        and across/within-groups fission.
    *
    */
-  virtual void operator()(LBSGroupset& groupset,
-                          std::vector<double>& destination_q,
+  virtual void operator()(const LBSGroupset& groupset,
+                          std::vector<double>& q,
                           const std::vector<double>& phi,
-                          SourceFlags source_flags);
+                          const SourceFlags source_flags);
 
   virtual double AddSourceMoments() const;
 
@@ -68,17 +68,17 @@ public:
                                    const std::vector<double>& nu_delayed_sigma_f,
                                    const double* phi) const;
 
-  virtual void AddAdditionalSources(LBSGroupset& groupset,
-                                    std::vector<double>& destination_q,
+  virtual void AddAdditionalSources(const LBSGroupset& groupset,
+                                    std::vector<double>& q,
                                     const std::vector<double>& phi,
-                                    SourceFlags source_flags)
+                                    const SourceFlags source_flags)
   {
-    AddPointSources(groupset, destination_q, phi, source_flags);
+    AddPointSources(groupset, q, phi, source_flags);
   }
 
   /**Adds point sources to the source moments.*/
-  void AddPointSources(LBSGroupset& groupset,
-                       std::vector<double>& destination_q,
+  void AddPointSources(const LBSGroupset& groupset,
+                       std::vector<double>& q,
                        const std::vector<double>& phi,
                        SourceFlags source_flags);
 };
