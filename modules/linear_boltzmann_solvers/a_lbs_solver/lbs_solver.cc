@@ -192,9 +192,9 @@ LBSSolver::Groupsets() const
 }
 
 void
-LBSSolver::AddPointSource(PointSource psrc)
+LBSSolver::AddPointSource(PointSource&& point_source)
 {
-  point_sources_.push_back(std::move(psrc));
+  point_sources_.push_back(std::move(point_source));
 }
 
 void
@@ -207,6 +207,24 @@ const std::vector<PointSource>&
 LBSSolver::PointSources() const
 {
   return point_sources_;
+}
+
+void
+LBSSolver::AddDistributedSource(DistributedSource&& distributed_source)
+{
+  distributed_sources_.push_back(std::move(distributed_source));
+}
+
+void
+LBSSolver::ClearDistributedSources()
+{
+  distributed_sources_.clear();
+}
+
+const std::vector<DistributedSource>&
+LBSSolver::DistributedSources() const
+{
+  return distributed_sources_;
 }
 
 const std::map<int, XSPtr>&
@@ -496,16 +514,20 @@ LBSSolver::OptionsBlock()
   "group number and similarly for `YYY`. The underscore after \"prefix\" is "
   "added automatically.");
   params.AddOptionalParameterArray("boundary_conditions", {},
-  "A array contain sub-tables for each boundary specification.");
-  params.AddOptionalParameter("reset_boundary_conditions", false,
-  "A flag to set all boundary conditions to vacuum. If this flag is passed with "
-  "a boundary conditions array, boundary conditions will be set to vacuum before "
-  "the specified table is applied.");
+  "An array contain tables for each boundary specification.");
   params.LinkParameterToBlock("boundary_conditions", "lbs::BoundaryOptionsBlock");
+  params.AddOptionalParameter("clear_boundary_conditions", false,
+  "A flag to clear all existing boundary conditions. If no additional boundary conditions "
+  "are supplied, this results in all boundaries being vacuum.");
   params.AddOptionalParameterArray("point_sources", {},
   "An array containing handles to point sources.");
   params.AddOptionalParameter("clear_point_sources", false,
   "A flag to clear all point sources from the solver.");
+  params.AddOptionalParameterArray("distributed_sources", {},
+  "An array containing handles to distributed sources.");
+  params.AddOptionalParameter("clear_distributed_sources", false,
+  "A flag to clear existing distributed sources.");
+
   params.ConstrainParameterRange("spatial_discretization", AllowableRangeList::New({"pwld"}));
   params.ConstrainParameterRange("field_function_prefix_option", AllowableRangeList::New({
   "prefix", "solver_name"}));
@@ -551,10 +573,12 @@ LBSSolver::SetOptions(const InputParameters& params)
   const auto& user_params = params.ParametersAtAssignment();
 
   // Handle order sensitive options
-  if (user_params.Has("reset_boundary_conditions"))
-    if (user_params.GetParamValue<bool>("reset_boundary_conditions")) boundary_preferences_.clear();
+  if (user_params.Has("clear_boundary_conditions"))
+    if (user_params.GetParamValue<bool>("clear_boundary_conditions")) boundary_preferences_.clear();
   if (user_params.Has("clear_point_sources"))
     if (user_params.GetParamValue<bool>("clear_point_sources")) point_sources_.clear();
+  if (user_params.Has("clear_distributed_sources"))
+    if (user_params.GetParamValue<bool>("clear_distributed_sources")) distributed_sources_.clear();
 
   // Handle order insensitive options
   for (size_t p = 0; p < user_params.NumParameters(); ++p)
@@ -653,6 +677,19 @@ LBSSolver::SetOptions(const InputParameters& params)
         if (discretization_) point_sources_.back().Initialize(*this);
       }
     }
+
+    else if (spec.Name() == "distributed_sources")
+    {
+      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+      for (const auto& sub_param : spec)
+      {
+        distributed_sources_.push_back(Chi::GetStackItem<DistributedSource>(
+          Chi::object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
+
+        // If the discretization is defined, initialization is possible
+        if (discretization_) distributed_sources_.back().Initialize(*this);
+      }
+    }
   } // for p
 }
 
@@ -721,7 +758,11 @@ LBSSolver::Initialize()
 
   // Initialize point sources
   for (auto& point_source : point_sources_)
-    if (point_source.NumGlobalSubscribers() == 0) point_source.Initialize(*this);
+    point_source.Initialize(*this);
+
+  // Initialize distributed sources
+  for (auto& distributed_source : distributed_sources_)
+    distributed_source.Initialize(*this);
 
   source_event_tag_ = log.GetRepeatingEventTag("Set Source");
 }

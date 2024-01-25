@@ -74,13 +74,20 @@ public:
                                     const SourceFlags source_flags)
   {
     AddPointSources(groupset, q, phi, source_flags);
+    AddDistributedSources(groupset, q, phi, source_flags);
   }
 
   /**Adds point sources to the source moments.*/
   void AddPointSources(const LBSGroupset& groupset,
                        std::vector<double>& q,
                        const std::vector<double>& phi,
-                       SourceFlags source_flags);
+                       const SourceFlags source_flags);
+
+  /**Adds distributed sources to the source moments.*/
+  void AddDistributedSources(const LBSGroupset& groupset,
+                             std::vector<double>& q,
+                             const std::vector<double>& phi,
+                             const SourceFlags source_flags);
 };
 
 } // namespace lbs

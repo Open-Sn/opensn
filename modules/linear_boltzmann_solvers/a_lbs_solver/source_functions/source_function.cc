@@ -121,9 +121,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
           }
 
           // Apply fission sources
-          const bool fission_avail = ell == 0 and xs.IsFissionable();
-
-          if (fission_avail)
+          if (xs.IsFissionable() and ell == 0)
           {
             const auto& F_g = F[g];
             if (apply_ags_fission_src_)
@@ -194,7 +192,9 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 
   // Apply point sources
   if (not lbs_solver_.Options().use_src_moments and apply_fixed_src)
+  {
     for (const auto& point_source : lbs_solver_.PointSources())
+    {
       for (const auto& subscriber : point_source.Subscribers())
       {
         auto& transport_view = transport_views[subscriber.cell_local_id];
@@ -210,6 +210,52 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
             q[uk_map + g] += strength[g] * node_weights[i] * volume_weight;
         } // for node i
       }   // for subscriber
+    }     // for point source
+  }
+}
+
+void
+SourceFunction::AddDistributedSources(const LBSGroupset& groupset,
+                                      std::vector<double>& q,
+                                      const std::vector<double>&,
+                                      const SourceFlags source_flags)
+{
+  const bool apply_fixed_src = source_flags & APPLY_FIXED_SOURCES;
+
+  const auto& grid = lbs_solver_.Grid();
+  const auto& discretization = lbs_solver_.SpatialDiscretization();
+  const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
+  const auto num_groups = lbs_solver_.NumGroups();
+
+  const auto gs_i = groupset.groups_.front().id_;
+  const auto gs_f = groupset.groups_.back().id_;
+
+  // Go through each distributed source, and its subscribing cells
+  if (not lbs_solver_.Options().use_src_moments and apply_fixed_src)
+  {
+    for (const auto& distributed_source : lbs_solver_.DistributedSources())
+    {
+      for (const auto local_id : distributed_source.Subscribers())
+      {
+        const auto& cell = grid.local_cells[local_id];
+        const auto& transport_view = cell_transport_views[local_id];
+        const auto nodes = discretization.GetCellNodeLocations(cell);
+        const auto num_cell_nodes = discretization.GetCellNumNodes(cell);
+
+        // Go through each of the cell nodes
+        for (size_t i = 0; i < num_cell_nodes; ++i)
+        {
+          // Compute group-wise values for this node
+          const auto src = distributed_source(cell, nodes[i], num_groups);
+
+          // Contribute to the source moments
+          const auto dof_map = transport_view.MapDOF(i, 0, 0);
+          for (size_t g = gs_i; g <= gs_f; ++g)
+            q[dof_map + g] += src[g];
+        } // for node i
+      }   // for subscriber
+    }     // for distributed source
+  }
 }
 
 } // namespace lbs
