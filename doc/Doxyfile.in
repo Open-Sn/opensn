@@ -1,23 +1,9 @@
-# All text after a double hash (##) is considered a comment and is placed in
-# front of the TAG it is preceding.
-#
-# All text after a single hash (#) is considered a comment and will be ignored.
-# The format is:
-# TAG = value [value, ...]
-# For lists, items can also be appended using:
-# TAG += value [value, ...]
-# Values that contain spaces should be placed between quotes (\" \").
-
-#---------------------------------------------------------------------------
-# Project related configuration options
-#---------------------------------------------------------------------------
-
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "Chi-Tech"
+PROJECT_NAME           = @PROJECT_NAME@
 PROJECT_NUMBER         =
 PROJECT_BRIEF          =
-PROJECT_LOGO           = "doc/HTMLimages/Logo2_Small.bmp"
-OUTPUT_DIRECTORY       = "doc/HTMLdocs"
+PROJECT_LOGO           =
+OUTPUT_DIRECTORY       = @PROJECT_BINARY_DIR@/doc
 CREATE_SUBDIRS         = YES
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
@@ -27,8 +13,8 @@ ABBREVIATE_BRIEF       =
 ALWAYS_DETAILED_SEC    = YES
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
-STRIP_FROM_PATH        =
-STRIP_FROM_INC_PATH    =
+STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@
+STRIP_FROM_INC_PATH    = @PROJECT_SOURCE_DIR@
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
 QT_AUTOBRIEF           = NO
@@ -95,7 +81,7 @@ SHOW_USED_FILES        = YES
 SHOW_FILES             = YES
 SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    =
-LAYOUT_FILE            = doc/DoxyLayout.xml
+LAYOUT_FILE            =
 CITE_BIB_FILES         =
 
 #---------------------------------------------------------------------------
@@ -113,23 +99,21 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = "doc/generated_files" "framework" "doc/PAGES"
-INPUT                 += "modules"
+INPUT                  = @PROJECT_SOURCE_DIR@/framework
+INPUT                 += @PROJECT_SOURCE_DIR@/modules
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          =
 RECURSIVE              = YES
 
-EXCLUDE                = "framework/ChiLua/" "framework/LuaTest/lua_test.cc"
+EXCLUDE                =
 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = "*.py"
-EXCLUDE_PATTERNS      += */lua/*
 EXCLUDE_SYMBOLS        =
-EXAMPLE_PATH           = "doc/PAGES" "doc/generated_files/input_docs"
-EXAMPLE_PATH          += "test/example"
+EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       =
 EXAMPLE_RECURSIVE      = NO
-IMAGE_PATH             = "doc/HTMLimages"
+IMAGE_PATH             =
 INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
@@ -159,7 +143,7 @@ IGNORE_PREFIX          =
 #---------------------------------------------------------------------------
 # Configuration options related to the HTML output
 #---------------------------------------------------------------------------
-GENERATE_HTML          = YES
+GENERATE_HTML          = NO
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            =
@@ -169,7 +153,6 @@ HTML_EXTRA_STYLESHEET  =
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
-HTML_TIMESTAMP         = NO
 HTML_DYNAMIC_SECTIONS  = NO
 HTML_INDEX_NUM_ENTRIES = 100
 GENERATE_DOCSET        = NO
@@ -200,7 +183,6 @@ ENUM_VALUES_PER_LINE   = 4
 TREEVIEW_WIDTH         = 300
 EXT_LINKS_IN_WINDOW    = NO
 FORMULA_FONTSIZE       = 12
-FORMULA_TRANSPARENT    = YES
 USE_MATHJAX            = FALSE
 MATHJAX_FORMAT         = HTML-CSS
 MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
@@ -217,7 +199,7 @@ EXTRA_SEARCH_MAPPINGS  =
 #---------------------------------------------------------------------------
 # Configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
-GENERATE_LATEX         = YES
+GENERATE_LATEX         = NO
 LATEX_OUTPUT           = latex
 LATEX_CMD_NAME         = latex
 MAKEINDEX_CMD_NAME     = makeindex
@@ -234,7 +216,6 @@ LATEX_BATCHMODE        = NO
 LATEX_HIDE_INDICES     = NO
 #LATEX_SOURCE_CODE      = NO
 LATEX_BIB_STYLE        = plain
-LATEX_TIMESTAMP        = NO
 
 #---------------------------------------------------------------------------
 # Configuration options related to the RTF output
@@ -259,7 +240,7 @@ MAN_LINKS              = NO
 #---------------------------------------------------------------------------
 # Configuration options related to the XML output
 #---------------------------------------------------------------------------
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 XML_OUTPUT             = xml
 XML_PROGRAMLISTING     = YES
 
@@ -313,9 +294,6 @@ DIA_PATH               =
 HIDE_UNDOC_RELATIONS   = YES
 HAVE_DOT               = NO
 DOT_NUM_THREADS        = 0
-DOT_FONTNAME           = Helvetica
-DOT_FONTSIZE           = 10
-DOT_FONTPATH           =
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = YES
 GROUP_GRAPHS           = YES
@@ -339,7 +317,6 @@ PLANTUML_CFG_FILE      =
 PLANTUML_INCLUDE_PATH  =
 DOT_GRAPH_MAX_NODES    = 50
 MAX_DOT_GRAPH_DEPTH    = 0
-DOT_TRANSPARENT        = NO
 DOT_MULTI_TARGETS      = NO
 GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
