@@ -1001,7 +1001,7 @@ LBSSolver::InitMaterials()
       const auto& xs_ptr = matid_to_xs_map_[cell.material_id_];
       auto& transport_view = cell_transport_views_[cell.local_id_];
 
-      transport_view.ReassingXS(*xs_ptr);
+      transport_view.ReassignXS(*xs_ptr);
     }
 
   log.Log0Verbose1() << "Materials Initialized:\n" << materials_list.str() << "\n";

@@ -58,7 +58,7 @@ DiscreteOrdinatesAdjointSolver::Initialize()
   matid_to_xs_map_ = std::move(matid_to_adj_xs_map);
 
   for (const auto& cell : grid_ptr_->local_cells)
-    cell_transport_views_[cell.local_id_].ReassingXS(*matid_to_xs_map_[cell.material_id_]);
+    cell_transport_views_[cell.local_id_].ReassignXS(*matid_to_xs_map_[cell.material_id_]);
 
   // Initialize source func
   using namespace std::placeholders;
