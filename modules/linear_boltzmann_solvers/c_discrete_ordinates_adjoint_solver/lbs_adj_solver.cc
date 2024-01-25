@@ -1,8 +1,8 @@
 #include "modules/linear_boltzmann_solvers/c_discrete_ordinates_adjoint_solver/lbs_adj_solver.h"
 #include "modules/linear_boltzmann_solvers/c_discrete_ordinates_adjoint_solver/lbs_adjoint.h"
-#include "framework/object_factory.h"
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/source_functions/adjoint_src_function.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/source_functions/source_function.h"
+
 #include "framework/physics/physics_material/multi_group_xs/adjoint_mgxs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
@@ -10,12 +10,12 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi.h"
+#include "framework/object_factory.h"
+
 #include <utility>
 #include <fstream>
 
-namespace opensn
-{
-namespace lbs
+namespace opensn::lbs
 {
 
 OpenSnRegisterObject(lbs, DiscreteOrdinatesAdjointSolver);
@@ -38,19 +38,11 @@ DiscreteOrdinatesAdjointSolver::GetInputParameters()
 DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const InputParameters& params)
   : lbs::DiscreteOrdinatesSolver(params)
 {
-  basic_options_.AddOption<std::string>("REFERENCE_RF", std::string());
 }
 
 DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const std::string& solver_name)
   : lbs::DiscreteOrdinatesSolver(solver_name)
 {
-  basic_options_.AddOption<std::string>("REFERENCE_RF", std::string());
-}
-
-const std::vector<lbs::DiscreteOrdinatesAdjointSolver::RespFuncAndSubs>&
-DiscreteOrdinatesAdjointSolver::GetResponseFunctions() const
-{
-  return response_functions_;
 }
 
 void
@@ -58,13 +50,19 @@ DiscreteOrdinatesAdjointSolver::Initialize()
 {
   LBSSolver::Initialize();
 
-  MakeAdjointXSs();
-  InitQOIs();
+  // Create adjoint cross sections
+  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_adj_xs_map;
+  for (const auto& [matid, xs] : matid_to_xs_map_)
+    matid_to_adj_xs_map[matid] =
+      std::make_shared<AdjointMGXS>(*std::dynamic_pointer_cast<MultiGroupXS>(xs));
+  matid_to_xs_map_ = std::move(matid_to_adj_xs_map);
+
+  for (const auto& cell : grid_ptr_->local_cells)
+    cell_transport_views_[cell.local_id_].ReassingXS(*matid_to_xs_map_[cell.material_id_]);
 
   // Initialize source func
-  auto src_function = std::make_shared<AdjointSourceFunction>(*this);
-
   using namespace std::placeholders;
+  auto src_function = std::make_shared<SourceFunction>(*this);
   active_set_source_function_ =
     std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4);
 
@@ -77,70 +75,18 @@ DiscreteOrdinatesAdjointSolver::Initialize()
     InitWGDSA(groupset);
     InitTGDSA(groupset);
   }
+  InitializeSolverSchemes();
 
-  InitializeSolverSchemes(); // j
   source_event_tag_ = log.GetRepeatingEventTag("Set Source");
-}
-
-void
-DiscreteOrdinatesAdjointSolver::MakeAdjointXSs()
-{
-  // Create adjoint cross sections
-  using AdjXS = AdjointMGXS;
-
-  // define the actual cross-sections
-  std::map<int, XSPtr> matid_to_adj_xs_map;
-  for (const auto& matid_xs_pair : matid_to_xs_map_)
-  {
-    const auto matid = matid_xs_pair.first;
-    const auto fwd_xs = std::dynamic_pointer_cast<MultiGroupXS>(matid_xs_pair.second);
-    matid_to_adj_xs_map[matid] = std::make_shared<AdjXS>(*fwd_xs);
-  } // for each mat
-  matid_to_xs_map_ = std::move(matid_to_adj_xs_map);
-
-  // reassign transport view to adjoint cross-sections
-  if (grid_ptr_->local_cells.size() == cell_transport_views_.size())
-    for (const auto& cell : grid_ptr_->local_cells)
-    {
-      const auto& xs_ptr = matid_to_xs_map_[cell.material_id_];
-      auto& transport_view = cell_transport_views_[cell.local_id_];
-
-      transport_view.ReassingXS(*xs_ptr);
-    }
-}
-
-void
-DiscreteOrdinatesAdjointSolver::InitQOIs()
-{
-  // Initialize QOIs
-  for (auto& qoi_pair : response_functions_)
-  {
-    const auto& qoi_designation = qoi_pair.first;
-    auto& qoi_cell_subscription = qoi_pair.second;
-
-    for (const auto& cell : grid_ptr_->local_cells)
-      if (qoi_designation.logical_volume->Inside(cell.centroid_))
-        qoi_cell_subscription.push_back(cell.local_id_);
-
-    size_t num_local_subs = qoi_cell_subscription.size();
-    size_t num_globl_subs = 0;
-
-    MPI_Allreduce(&num_local_subs, &num_globl_subs, 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, mpi.comm);
-
-    log.Log() << "LBAdjointSolver: Number of cells subscribed to " << qoi_designation.name << " = "
-              << num_globl_subs;
-  }
 }
 
 void
 DiscreteOrdinatesAdjointSolver::Execute()
 {
-  const std::string fname = __FUNCTION__;
-
   primary_ags_solver_->Setup();
   primary_ags_solver_->Solve();
 
-  // Apply post processing
+  // Apply post-processing
   log.Log() << "LBAdjointSolver: post-processing.";
   std::set<int> set_group_numbers;
   for (const auto& groupset : groupsets_)
@@ -160,11 +106,10 @@ DiscreteOrdinatesAdjointSolver::Execute()
       for (int m = 0; m < num_moments_; ++m)
       {
         const auto& ell = m_to_ell_em_map[m].ell;
-
-        size_t dof_map_g0 = cell_view.MapDOF(i, m, 0); // unknown map
+        const auto dof_map = cell_view.MapDOF(i, m, 0);
 
         for (int g : set_group_numbers)
-          phi_old_local_[dof_map_g0 + g] *= pow(-1.0, ell);
+          phi_old_local_[dof_map + g] *= pow(-1.0, ell);
       } // for moment
     }   // node i
   }     // for cell
@@ -172,26 +117,100 @@ DiscreteOrdinatesAdjointSolver::Execute()
   UpdateFieldFunctions();
 }
 
-size_t
-DiscreteOrdinatesAdjointSolver::AddResponseFunction(const std::string& qoi_name,
-                                                    std::shared_ptr<LogicalVolume> logical_volume,
-                                                    std::shared_ptr<ResponseFunction> function)
+double
+DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
 {
-  // Make the designation
-  ResponseFunctionDesignation qoi_designation(qoi_name, std::move(logical_volume), function);
-  // Make empty subscriber list (will be populated during initialize)
-  std::vector<size_t> cell_rf_subscriptions;
+  double local_integral = 0.0;
 
-  response_functions_.emplace_back(qoi_designation, cell_rf_subscriptions);
+  // Material sources
+  for (const auto& cell : grid_ptr_->local_cells)
+  {
+    if (matid_to_src_map_.count(cell.material_id_) == 0) continue; // Skip if no src
 
-  return response_functions_.size() - 1;
+    const auto& transport_view = cell_transport_views_[cell.local_id_];
+    const auto& source = matid_to_src_map_[cell.material_id_];
+    const auto& fe_values = unit_cell_matrices_[cell.local_id_];
+
+    for (const auto& group : groups_)
+    {
+      const auto& g = group.id_;
+      const auto& q = source->source_value_g_[g];
+
+      if (q > 0.0)
+      {
+        for (int i = 0; i < transport_view.NumNodes(); ++i)
+        {
+          const auto dof_map = transport_view.MapDOF(i, 0, g);
+          const auto& phi = phi_old_local_[dof_map];
+
+          local_integral += q * phi * fe_values.Vi_vectors[i];
+        } // for node
+      }   // check source value >0
+    }     // for group
+  }       // for cell
+
+  // Point sources
+  for (const auto& point_source : point_sources_)
+  {
+    for (const auto& subscriber : point_source.Subscribers())
+    {
+      const auto& cell = grid_ptr_->local_cells[subscriber.cell_local_id];
+      const auto& transport_view = cell_transport_views_[cell.local_id_];
+      const auto& source_strength = point_source.Strength();
+      const auto& shape_values = subscriber.shape_values;
+
+      for (const auto& group : groups_)
+      {
+        const auto& g = group.id_;
+        const auto& S = source_strength[g] * subscriber.volume_weight;
+
+        if (S > 0.0)
+        {
+          const auto num_nodes = transport_view.NumNodes();
+          for (int i = 0; i < num_nodes; ++i)
+          {
+            const auto dof_map = transport_view.MapDOF(i, 0, g);
+            const auto& phi = phi_old_local_[dof_map];
+
+            local_integral += S * phi * shape_values[i];
+          } // for node
+        }   // check source value >0
+      }     // for group
+    }       // for cell
+  }         // for point source
+
+  // Distributed sources
+  for (const auto& distributed_source : distributed_sources_)
+  {
+    for (const auto& local_id : distributed_source.Subscribers())
+    {
+      const auto& cell = grid_ptr_->local_cells[local_id];
+      const auto& transport_view = cell_transport_views_[local_id];
+      const auto& fe_values = unit_cell_matrices_[local_id];
+      const auto nodes = discretization_->GetCellNodeLocations(cell);
+
+      for (int i = 0; i < transport_view.NumNodes(); ++i)
+      {
+        // Compute group-wise values for this node
+        const auto src = distributed_source(cell, nodes[i], num_groups_);
+
+        // Contribute to the source moments
+        const auto& intV_shapeI = fe_values.Vi_vectors[i];
+        const auto dof_map = transport_view.MapDOF(i, 0, 0);
+        for (const auto& group : groups_)
+          local_integral += src[group.id_] * intV_shapeI;
+      }
+    }
+  }
+
+  double global_integral = 0.0;
+  MPI_Allreduce(&local_integral, &global_integral, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
+  return global_integral;
 }
 
 void
 DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name)
 {
-  const std::string fname = __FUNCTION__;
-
   // Determine cell averaged importance map
   std::set<int> set_group_numbers;
   for (const auto& groupset : groupsets_)
@@ -225,14 +244,14 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
           const auto& ell = m_to_ell_em_map[m].ell;
           const auto& em = m_to_ell_em_map[m].m;
 
-          size_t dof_map_g0 = cell_view.MapDOF(i, m, 0); // unknown map
+          size_t dof_map = cell_view.MapDOF(i, m, 0); // unknown map
 
           for (int g : set_group_numbers)
           {
-            if (ell == 0 and em == 0) p1_moments[g](0) = std::fabs(phi_old_local_[dof_map_g0 + g]);
-            if (ell == 1 and em == 1) p1_moments[g](1) = phi_old_local_[dof_map_g0 + g];
-            if (ell == 1 and em == -1) p1_moments[g](2) = phi_old_local_[dof_map_g0 + g];
-            if (ell == 1 and em == 0) p1_moments[g](3) = phi_old_local_[dof_map_g0 + g];
+            if (ell == 0 and em == 0) p1_moments[g](0) = std::fabs(phi_old_local_[dof_map + g]);
+            if (ell == 1 and em == 1) p1_moments[g](1) = phi_old_local_[dof_map + g];
+            if (ell == 1 and em == -1) p1_moments[g](2) = phi_old_local_[dof_map + g];
+            if (ell == 1 and em == 0) p1_moments[g](3) = phi_old_local_[dof_map + g];
           } // for g
         }   // for m
 
@@ -318,15 +337,9 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
     log.LogAll() << "  Location " << locationJ << " appending data.";
 
     std::ofstream file(file_name, is_home ? loc0_io_flags : locJ_io_flags);
-
-    if (not file.is_open())
-    {
-      std::stringstream outstr;
-
-      outstr << fname << ": Location " << opensn::mpi.location_id << ", failed to open file "
-             << file_name;
-      throw std::logic_error(outstr.str());
-    }
+    ChiLogicalErrorIf(not file.is_open(),
+                      std::string(__FUNCTION__) + ": Location " + std::to_string(mpi.location_id) +
+                        ", failed to open file " + file_name + ".");
 
     if (is_home)
     {
@@ -366,74 +379,4 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   opensn::mpi.Barrier();
 }
 
-double
-DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
-{
-  double local_integral = 0.0;
-
-  // Material sources
-  for (const auto& cell : grid_ptr_->local_cells)
-  {
-    if (matid_to_src_map_.count(cell.material_id_) == 0) continue; // Skip if no src
-
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
-    const auto& source = matid_to_src_map_[cell.material_id_];
-    const auto& fe_values = unit_cell_matrices_[cell.local_id_];
-
-    for (const auto& group : groups_)
-    {
-      const int g = group.id_;
-      const double Q = source->source_value_g_[g];
-
-      if (Q > 0.0)
-      {
-        const int num_nodes = transport_view.NumNodes();
-        for (int i = 0; i < num_nodes; ++i)
-        {
-          const size_t dof_map = transport_view.MapDOF(i, 0, g); // unknown map
-
-          const double phi = phi_old_local_[dof_map];
-
-          local_integral += Q * phi * fe_values.Vi_vectors[i];
-        } // for node
-      }   // check source value >0
-    }     // for group
-  }       // for cell
-
-  // Point sources
-  for (const auto& point_source : point_sources_)
-    for (const auto& subscriber : point_source.Subscribers())
-    {
-      const auto& cell = grid_ptr_->local_cells[subscriber.cell_local_id];
-      const auto& transport_view = cell_transport_views_[cell.local_id_];
-      const auto& source_strength = point_source.Strength();
-      const auto& shape_values = subscriber.shape_values;
-
-      for (const auto& group : groups_)
-      {
-        const int g = group.id_;
-        const double S = source_strength[g] * subscriber.volume_weight;
-
-        if (S > 0.0)
-        {
-          const int num_nodes = transport_view.NumNodes();
-          for (int i = 0; i < num_nodes; ++i)
-          {
-            const size_t dof_map = transport_view.MapDOF(i, 0, g); // unknown
-                                                                   // map
-
-            const double phi_i = phi_old_local_[dof_map];
-
-            local_integral += S * phi_i * shape_values[i];
-          } // for node
-        }   // check source value >0
-      }     // for group
-    }       // for cell
-
-  double global_integral = 0.0;
-  MPI_Allreduce(&local_integral, &global_integral, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
-  return global_integral;
-}
-
-} // namespace lbs
-} // namespace opensn
+} // namespace opensn::lbs

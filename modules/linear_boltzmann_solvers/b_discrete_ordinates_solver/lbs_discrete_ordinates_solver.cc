@@ -108,10 +108,9 @@ DiscreteOrdinatesSolver::Initialize()
 {
   LBSSolver::Initialize();
 
-  auto src_function = std::make_shared<SourceFunction>(*this);
-
   // Initialize source func
   using namespace std::placeholders;
+  auto src_function = std::make_shared<SourceFunction>(*this);
   active_set_source_function_ =
     std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4);
 
@@ -124,8 +123,8 @@ DiscreteOrdinatesSolver::Initialize()
     InitWGDSA(groupset);
     InitTGDSA(groupset);
   }
+  InitializeSolverSchemes();
 
-  InitializeSolverSchemes(); // j
   source_event_tag_ = log.GetRepeatingEventTag("Set Source");
 }
 
