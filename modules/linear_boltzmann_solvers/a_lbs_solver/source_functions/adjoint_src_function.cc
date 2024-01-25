@@ -14,10 +14,10 @@ AdjointSourceFunction::AdjointSourceFunction(const LBSSolver& lbs_solver)
 }
 
 void
-AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
-                                               std::vector<double>& destination_q,
+AdjointSourceFunction::AddVolumetricQOISources(const LBSGroupset& groupset,
+                                               std::vector<double>& q,
                                                const std::vector<double>&,
-                                               SourceFlags source_flags)
+                                               const SourceFlags source_flags)
 {
   const std::string fname = "AdjointSourceFunction::AddVolumetricQOISources";
 
@@ -57,7 +57,7 @@ AdjointSourceFunction::AddVolumetricQOISources(LBSGroupset& groupset,
           {
             size_t uk_map = full_cell_view.MapDOF(i, 0, 0); // unknown map
             for (size_t g = gs_i; g <= gs_f; ++g)
-              destination_q[uk_map + g] += response[g];
+              q[uk_map + g] += response[g];
           } // for node
         }   // for local cell-id of qoi
       }     // if ref-qoi

@@ -55,5 +55,24 @@ int chiLBSSetOptions(lua_State* L);
  *
  */
 int chiLBSSetPhiFromFieldFunction(lua_State* L);
+
+/**
+ * Adds a point source to an LBS solver.
+ *
+ * \param SolverIndex int Handle to the solver.
+ * \param PointSourceIndex int Handle to the point source
+ * \ingroup LBSLuaFunctions
+ */
+int AddPointSource(lua_State* L);
+
+/**
+ * Clears the point sources within an LBS solver.
+ * This is primarily useful for adjoint problems.
+ *
+ * \param int Handle to LBS solver.
+ * \ingroup LBSLuaFunctions
+ */
+int ClearPointSources(lua_State* L);
+
 void RegisterLuaEntities(lua_State* L);
 } // namespace opensnlua::lbs
