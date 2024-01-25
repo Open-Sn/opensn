@@ -33,58 +33,42 @@ public:
   explicit AdjointMGXS(const MultiGroupXS& xs);
 
   // Accessors
-  const unsigned int NumGroups() const override { return xs_.NumGroups(); }
-
-  const unsigned int ScatteringOrder() const override { return xs_.ScatteringOrder(); }
-
-  const unsigned int NumPrecursors() const override { return xs_.NumPrecursors(); }
-
-  const bool IsFissionable() const override { return xs_.IsFissionable(); }
-
-  const bool DiffusionInitialized() const override { return xs_.DiffusionInitialized(); }
-
-  const bool ScatteringInitialized() const override { return xs_.ScatteringInitialized(); }
+  size_t NumGroups() const override { return xs_.NumGroups(); }
+  size_t ScatteringOrder() const override { return xs_.ScatteringOrder(); }
+  size_t NumPrecursors() const override { return xs_.NumPrecursors(); }
+  bool IsFissionable() const override { return xs_.IsFissionable(); }
+  double ScalingFactor() const override { return xs_.ScalingFactor(); }
 
   const std::vector<double>& SigmaTotal() const override { return xs_.SigmaTotal(); }
-
   const std::vector<double>& SigmaAbsorption() const override { return xs_.SigmaAbsorption(); }
-
-  const std::vector<double>& SigmaFission() const override { return xs_.SigmaFission(); }
-
-  const std::vector<double>& NuSigmaF() const override { return xs_.NuSigmaF(); }
-
-  const std::vector<double>& NuPromptSigmaF() const override { return xs_.NuPromptSigmaF(); }
-
-  const std::vector<double>& NuDelayedSigmaF() const override { return xs_.NuDelayedSigmaF(); }
-
-  const std::vector<double>& InverseVelocity() const override { return xs_.InverseVelocity(); }
-
   const std::vector<SparseMatrix>& TransferMatrices() const override
   {
     return transposed_transfer_matrices_;
   }
-
   const SparseMatrix& TransferMatrix(unsigned int ell) const override
   {
     return transposed_transfer_matrices_.at(ell);
   }
 
-  const std::vector<std::vector<double>> ProductionMatrix() const override
+  const std::vector<double>& SigmaFission() const override { return xs_.SigmaFission(); }
+  const std::vector<double>& NuSigmaF() const override { return xs_.NuSigmaF(); }
+  const std::vector<double>& NuPromptSigmaF() const override { return xs_.NuPromptSigmaF(); }
+  const std::vector<double>& NuDelayedSigmaF() const override { return xs_.NuDelayedSigmaF(); }
+  const std::vector<std::vector<double>>& ProductionMatrix() const override
   {
     return transposed_production_matrices_;
   }
-
   const std::vector<Precursor>& Precursors() const override { return xs_.Precursors(); }
 
+  const std::vector<double>& InverseVelocity() const override { return xs_.InverseVelocity(); }
+
+  bool DiffusionInitialized() const override { return xs_.DiffusionInitialized(); }
+  const std::vector<double>& SigmaTransport() const override { return xs_.SigmaTransport(); }
   const std::vector<double>& DiffusionCoefficient() const override
   {
     return xs_.DiffusionCoefficient();
   }
-
-  std::vector<double> SigmaTransport() const override { return xs_.SigmaTransport(); }
-
   const std::vector<double>& SigmaRemoval() const override { return xs_.SigmaRemoval(); }
-
   const std::vector<double>& SigmaSGtoG() const override { return xs_.SigmaSGtoG(); }
 };
 
