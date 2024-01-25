@@ -17,21 +17,21 @@ public:
 
   double AddSourceMoments() const override { return 0.0; }
 
-  void AddAdditionalSources(LBSGroupset& groupset,
-                            std::vector<double>& destination_q,
+  void AddAdditionalSources(const LBSGroupset& groupset,
+                            std::vector<double>& q,
                             const std::vector<double>& phi,
-                            SourceFlags source_flags) override
+                            const SourceFlags source_flags) override
   {
     // Inhibit -> AddPointSources
     // Add     -> AddVolumetricQOISources
-    AddVolumetricQOISources(groupset, destination_q, phi, source_flags);
+    AddVolumetricQOISources(groupset, q, phi, source_flags);
   }
 
   /**Adds Quantities of Interest to the nodal sources.*/
-  void AddVolumetricQOISources(LBSGroupset& groupset,
-                               std::vector<double>& destination_q,
+  void AddVolumetricQOISources(const LBSGroupset& groupset,
+                               std::vector<double>& q,
                                const std::vector<double>& phi,
-                               SourceFlags source_flags);
+                               const SourceFlags source_flags);
 };
 
 } // namespace lbs

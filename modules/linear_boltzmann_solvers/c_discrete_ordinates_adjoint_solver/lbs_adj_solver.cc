@@ -402,19 +402,17 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
 
   // Point sources
   for (const auto& point_source : point_sources_)
-  {
-    const auto& info_list = point_source.ContainingCellsInfo();
-    for (const auto& info : info_list)
+    for (const auto& subscriber : point_source.Subscribers())
     {
-      const auto& cell = grid_ptr_->local_cells[info.cell_local_id];
+      const auto& cell = grid_ptr_->local_cells[subscriber.cell_local_id];
       const auto& transport_view = cell_transport_views_[cell.local_id_];
       const auto& source_strength = point_source.Strength();
-      const auto& shape_values = info.shape_values;
+      const auto& shape_values = subscriber.shape_values;
 
       for (const auto& group : groups_)
       {
         const int g = group.id_;
-        const double S = source_strength[g] * info.volume_weight;
+        const double S = source_strength[g] * subscriber.volume_weight;
 
         if (S > 0.0)
         {
@@ -431,12 +429,9 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
         }   // check source value >0
       }     // for group
     }       // for cell
-  }         // for point source
 
   double global_integral = 0.0;
-
   MPI_Allreduce(&local_integral, &global_integral, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
-
   return global_integral;
 }
 

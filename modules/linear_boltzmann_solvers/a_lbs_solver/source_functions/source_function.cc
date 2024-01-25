@@ -16,10 +16,10 @@ SourceFunction::SourceFunction(const LBSSolver& lbs_solver) : lbs_solver_(lbs_so
 }
 
 void
-SourceFunction::operator()(LBSGroupset& groupset,
-                           std::vector<double>& destination_q,
+SourceFunction::operator()(const LBSGroupset& groupset,
+                           std::vector<double>& q,
                            const std::vector<double>& phi_local,
-                           SourceFlags source_flags)
+                           const SourceFlags source_flags)
 {
   if (source_flags.Empty()) return;
 
@@ -139,14 +139,14 @@ SourceFunction::operator()(LBSGroupset& groupset,
           }
 
           // Add to destination vector
-          destination_q[uk_map + g] += rhs;
+          q[uk_map + g] += rhs;
 
         } // for g
       }   // for m
     }     // for dof i
   }       // for cell
 
-  AddAdditionalSources(groupset, destination_q, phi_local, source_flags);
+  AddAdditionalSources(groupset, q, phi_local, source_flags);
 
   log.LogEvent(source_event_tag, Logger::EventType::EVENT_END);
 }
@@ -180,40 +180,36 @@ SourceFunction::AddDelayedFission(const PrecursorList& precursors,
 }
 
 void
-SourceFunction::AddPointSources(LBSGroupset& groupset,
-                                std::vector<double>& destination_q,
+SourceFunction::AddPointSources(const LBSGroupset& groupset,
+                                std::vector<double>& q,
                                 const std::vector<double>&,
-                                SourceFlags source_flags)
+                                const SourceFlags source_flags)
 {
   const bool apply_fixed_src = (source_flags & APPLY_FIXED_SOURCES);
 
-  const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
+  const auto& transport_views = lbs_solver_.GetCellTransportViews();
 
-  const auto gs_i = static_cast<size_t>(groupset.groups_.front().id_);
-  const auto gs_f = static_cast<size_t>(groupset.groups_.back().id_);
+  const auto gs_i = groupset.groups_.front().id_;
+  const auto gs_f = groupset.groups_.back().id_;
 
   // Apply point sources
   if (not lbs_solver_.Options().use_src_moments and apply_fixed_src)
     for (const auto& point_source : lbs_solver_.PointSources())
-    {
-      const auto& info_list = point_source.ContainingCellsInfo();
-      for (const auto& info : info_list)
+      for (const auto& subscriber : point_source.Subscribers())
       {
-        auto& transport_view = cell_transport_views[info.cell_local_id];
+        auto& transport_view = transport_views[subscriber.cell_local_id];
 
         const auto& strength = point_source.Strength();
-        const auto& node_weights = info.node_weights;
-        const double vol_w = info.volume_weight;
+        const auto& node_weights = subscriber.node_weights;
+        const auto volume_weight = subscriber.volume_weight;
 
-        const int num_nodes = transport_view.NumNodes();
-        for (int i = 0; i < num_nodes; ++i)
+        for (size_t i = 0; i < transport_view.NumNodes(); ++i)
         {
-          const size_t uk_map = transport_view.MapDOF(i, 0, 0);
+          const auto uk_map = transport_view.MapDOF(i, 0, 0);
           for (size_t g = gs_i; g <= gs_f; ++g)
-            destination_q[uk_map + g] += strength[g] * node_weights[i] * vol_w;
+            q[uk_map + g] += strength[g] * node_weights[i] * volume_weight;
         } // for node i
-      }   // for cell
-    }     // for point source
+      }   // for subscriber
 }
 
 } // namespace lbs

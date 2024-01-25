@@ -9,7 +9,7 @@
 #include "framework/mesh/sweep_utilities/sweep_namespace.h"
 #include "framework/mesh/sweep_utilities/sweep_boundary/sweep_boundary.h"
 
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/point_source/lbs_point_source.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/point_source/point_source.h"
 
 #include <petscksp.h>
 
@@ -96,10 +96,10 @@ public:
   size_t NumPrecursors() const;
 
   /**
-   * Returns the maximum number of precursors, for a material, as encountered accross all the
-   * materials. This will only be non-zero after initialization.
+   * Returns the maximum number of precursors defined on any material. This will only be
+   * non-zero after initialization.
    */
-  size_t GetMaxPrecursorsPerMaterial() const;
+  size_t MaxPrecursorsPerMaterial() const;
 
   /**
    * Adds a group to the list of groups. If group id < 0, the id will be logically derived from the
@@ -142,6 +142,11 @@ public:
   const std::map<int, IsotropicSrcPtr>& GetMatID2IsoSrcMap() const;
 
   /**
+   * Obtains a reference to the grid.
+   */
+  const MeshContinuum& Grid() const;
+
+  /**
    * Obtains a reference to the spatial discretization.
    */
   const class SpatialDiscretization& SpatialDiscretization() const;
@@ -152,9 +157,9 @@ public:
   const std::vector<UnitCellMatrices>& GetUnitCellMatrices() const;
 
   /**
-   * Obtains a reference to the grid.
+   * Returns read-only access to the unit ghost cell matrices.
    */
-  const MeshContinuum& Grid() const;
+  const std::map<uint64_t, UnitCellMatrices>& GetUnitGhostCellMatrices() const;
 
   /**
    * Returns a reference to the list of local cell transport views.
@@ -276,11 +281,6 @@ public:
    * Initializes default materials and physics materials.
    */
   void InitMaterials();
-
-  /**
-   * Intializes all point sources.
-   */
-  void InitializePointSources();
 
   /**Initializes the Within-Group DSA solver. */
   void InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);
