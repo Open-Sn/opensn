@@ -2,11 +2,14 @@
 #include "framework/lua.h"
 #include "framework/runtime.h"
 #include "framework/console/console.h"
+#include "framework/object_factory.h"
 
 using namespace opensn;
 
 namespace opensnlua
 {
+
+OpenSnRegisterObject(opensn, LuaSpatialMaterialFunction);
 
 InputParameters
 LuaSpatialMaterialFunction::GetInputParameters()
@@ -27,10 +30,6 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
                                      int mat_id,
                                      int num_components) const
 {
-  const std::string fname = "LuaResponseFunction::Evaluate";
-
-  std::vector<double> response(num_components, 0.0);
-
   // Utility lambdas
   auto PushVector3AsTable = [](lua_State* L, const Vector3& vec)
   {
@@ -51,11 +50,7 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
 
   // Check response function given
   // Return default if none provided
-  if (lua_function_name_.empty())
-  {
-    response.assign(num_components, 1.0);
-    return response;
-  }
+  if (lua_function_name_.empty()) return std::vector<double>(num_components, 1.0);
 
   // Load lua function
   lua_State* L = console.GetConsoleState();
@@ -75,7 +70,7 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
   std::vector<double> lua_return;
   if (lua_pcall(L, 2, 1, 0) == 0)
   {
-    LuaCheckTableValue(fname, L, -1);
+    LuaCheckTableValue(__FUNCTION__, L, -1);
     const size_t table_length = lua_rawlen(L, -1);
     lua_return.reserve(table_length);
     for (size_t i = 0; i < table_length; ++i)
@@ -93,15 +88,12 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
   lua_pop(L, 1); // pop the table, or error code
 
   // Check return value
-  ChiLogicalErrorIf(lua_return.size() != response.size(),
+  ChiLogicalErrorIf(lua_return.size() != num_components,
                     "Call to lua function " + lua_function_name_ + " returned a vector of " +
                       "size " + std::to_string(lua_return.size()) + ", which is not the same as " +
                       "the number of groups " + std::to_string(num_components) + ".");
 
-  for (size_t c = 0; c < num_components; ++c)
-    response[c] = lua_return[c];
-
-  return response;
+  return lua_return;
 }
 
 } // namespace opensnlua
