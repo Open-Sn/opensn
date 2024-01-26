@@ -1,0 +1,36 @@
+name: github-pages
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt install \
+            cmake \
+            make \
+            doxygen \
+            sphinx-doc
+          sudo pip install -r doc/requirements.txt
+
+      - name: Build doco
+        run: |
+          cmake -S . -B ${{ github.workspace }}/build
+          make -C ${{ github.workspace }}/build doc
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: ${{ github.workspace }}/build/doc/html
