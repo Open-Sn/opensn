@@ -56,7 +56,7 @@ chiSolverInitialize(lua_State* L)
 
   const int solver_handle = lua_tonumber(L, 1);
 
-  auto& solver = opensn::Chi::GetStackItem<Solver>(opensn::Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   PhysicsEventPublisher::GetInstance().SolverInitialize(solver);
 
@@ -75,7 +75,7 @@ chiSolverExecute(lua_State* L)
 
   const int solver_handle = lua_tonumber(L, 1);
 
-  auto& solver = opensn::Chi::GetStackItem<Solver>(opensn::Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   PhysicsEventPublisher::GetInstance().SolverExecute(solver);
 
@@ -94,7 +94,7 @@ chiSolverStep(lua_State* L)
 
   const int solver_handle = lua_tonumber(L, 1);
 
-  auto& solver = opensn::Chi::GetStackItem<Solver>(opensn::Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   PhysicsEventPublisher::GetInstance().SolverStep(solver);
 
@@ -113,7 +113,7 @@ chiSolverAdvance(lua_State* L)
 
   const int solver_handle = lua_tonumber(L, 1);
 
-  auto& solver = opensn::Chi::GetStackItem<Solver>(opensn::Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   PhysicsEventPublisher::GetInstance().SolverAdvance(solver);
 
@@ -137,7 +137,7 @@ chiSolverSetBasicOption(lua_State* L)
   const int solver_handle = lua_tointeger(L, 1);
   const std::string option_name = lua_tostring(L, 2);
 
-  auto& solver = opensn::Chi::GetStackItem<Solver>(opensn::Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   try
   {
@@ -197,8 +197,7 @@ chiSolverGetName(lua_State* L)
 
   const int solver_handle = lua_tonumber(L, 1);
 
-  const auto& solver =
-    opensn::Chi::GetStackItem<Solver>(opensn::Chi::object_stack, solver_handle, fname);
+  const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   lua_pushstring(L, solver.TextName().c_str());
 
@@ -215,8 +214,7 @@ chiSolverGetFieldFunctionList(lua_State* L)
   // Getting solver
   const int solver_handle = lua_tonumber(L, 1);
 
-  const auto& solver =
-    opensn::Chi::GetStackItem<Solver>(opensn::Chi::object_stack, solver_handle, fname);
+  const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   // Push up new table
   lua_newtable(L);
@@ -225,7 +223,7 @@ chiSolverGetFieldFunctionList(lua_State* L)
     lua_pushinteger(L, static_cast<lua_Integer>(ff) + 1);
     int pff_count = -1;
     bool found = false;
-    for (auto& pff : opensn::Chi::field_function_stack) // pff pointer to field func
+    for (auto& pff : opensn::field_function_stack) // pff pointer to field func
     {
       ++pff_count;
       if (pff == solver.GetFieldFunctions()[ff])
@@ -260,8 +258,7 @@ chiSolverGetInfo(lua_State* L)
 
   const size_t solver_handle = lua_tointeger(L, 1);
 
-  const auto& solver =
-    opensn::Chi::GetStackItem<Solver>(opensn::Chi::object_stack, solver_handle, fname);
+  const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   ParameterBlock params;
   if (lua_isstring(L, 2)) params.AddParameter("name", std::string(lua_tostring(L, 2)));
@@ -291,7 +288,7 @@ chiSolverSetProperties(lua_State* L)
 
   const size_t solver_handle = lua_tointeger(L, 1);
 
-  auto& solver = opensn::Chi::GetStackItem<Solver>(opensn::Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   LuaCheckTableValue(fname, L, 2);
   auto property_block = TableParserAsParameterBlock::ParseTable(L, 2);

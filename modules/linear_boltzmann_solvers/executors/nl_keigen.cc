@@ -49,8 +49,8 @@ XXNonLinearKEigen::GetInputParameters()
 
 XXNonLinearKEigen::XXNonLinearKEigen(const InputParameters& params)
   : opensn::Solver(params),
-    lbs_solver_(Chi::GetStackItem<LBSSolver>(Chi::object_stack,
-                                             params.GetParamValue<size_t>("lbs_solver_handle"))),
+    lbs_solver_(
+      GetStackItem<LBSSolver>(object_stack, params.GetParamValue<size_t>("lbs_solver_handle"))),
     nl_context_(std::make_shared<NLKEigenAGSContext>(lbs_solver_)),
     nl_solver_(nl_context_),
     reinit_phi_1_(params.GetParamValue<bool>("reinit_phi_1")),

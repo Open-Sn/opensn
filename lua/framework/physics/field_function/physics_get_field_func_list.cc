@@ -27,7 +27,7 @@ chiGetFieldFunctionHandleByName(lua_State* L)
 
   size_t ff_handle_counter = 0;
   std::vector<size_t> handles_that_matched;
-  for (const auto& pff : opensn::Chi::field_function_stack)
+  for (const auto& pff : opensn::field_function_stack)
   {
     if (pff->TextName() == ff_name) handles_that_matched.emplace_back(ff_handle_counter);
     ++ff_handle_counter;

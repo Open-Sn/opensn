@@ -592,7 +592,7 @@ std::vector<const PostProcessor*>
 PostProcessorPrinter::GetScalarPostProcessorsList(const Event& event)
 {
   std::vector<const PostProcessor*> scalar_pp_list;
-  for (const auto& pp : Chi::postprocessor_stack)
+  for (const auto& pp : postprocessor_stack)
   {
     const auto& scope = pp->PrintScope();
 
@@ -609,7 +609,7 @@ std::vector<const PostProcessor*>
 PostProcessorPrinter::GetVectorPostProcessorsList(const Event& event)
 {
   std::vector<const PostProcessor*> scalar_pp_list;
-  for (const auto& pp : Chi::postprocessor_stack)
+  for (const auto& pp : postprocessor_stack)
   {
     const auto& scope = pp->PrintScope();
 
@@ -626,7 +626,7 @@ std::vector<const PostProcessor*>
 PostProcessorPrinter::GetArbitraryPostProcessorsList(const Event& event)
 {
   std::vector<const PostProcessor*> scalar_pp_list;
-  for (const auto& pp : Chi::postprocessor_stack)
+  for (const auto& pp : postprocessor_stack)
   {
     const auto& scope = pp->PrintScope();
 

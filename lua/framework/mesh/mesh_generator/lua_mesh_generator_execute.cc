@@ -27,8 +27,7 @@ chiMeshGeneratorExecute(lua_State* L)
 
   const size_t handle = lua_tointeger(L, 1);
 
-  auto& generator =
-    opensn::Chi::GetStackItem<MeshGenerator>(opensn::Chi::object_stack, handle, fname);
+  auto& generator = opensn::GetStackItem<MeshGenerator>(opensn::object_stack, handle, fname);
   generator.Execute();
 
   return 0;

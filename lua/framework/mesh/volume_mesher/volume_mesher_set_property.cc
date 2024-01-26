@@ -348,7 +348,7 @@ chiVolumeMesherSetProperty(lua_State* L)
     if (num_args == 4) sense = lua_toboolean(L, 4);
 
     const auto& log_vol =
-      opensn::Chi::GetStackItem<LogicalVolume>(opensn::Chi::object_stack, volume_hndl, fname);
+      opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_hndl, fname);
 
     VolumeMesher::SetMatIDFromLogical(log_vol, sense, mat_id);
   }
@@ -372,7 +372,7 @@ chiVolumeMesherSetProperty(lua_State* L)
     ChiLogicalErrorIf(bndry_name.empty(), "argument 3 must not be an empty string.");
 
     const auto& log_vol =
-      opensn::Chi::GetStackItem<LogicalVolume>(opensn::Chi::object_stack, volume_hndl, fname);
+      opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_hndl, fname);
 
     VolumeMesher::SetBndryIDFromLogical(log_vol, sense, bndry_name);
   }

@@ -514,13 +514,13 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
     std::string str_file_name(fileName);
     std::string file_base_name = str_file_name.substr(0, str_file_name.find('.'));
 
-    if (Chi::material_stack.empty())
+    if (material_stack.empty())
     {
       log.Log0Warning() << "ExportCellsToObj: No mesh will be exported because there "
                         << "are no physics materials present";
     }
 
-    for (int mat = 0; mat < Chi::material_stack.size(); mat++)
+    for (int mat = 0; mat < material_stack.size(); mat++)
     {
       std::string mat_base_name = file_base_name + std::string("_m") + std::to_string(mat);
       std::string mat_file_name = mat_base_name + std::string(".obj");

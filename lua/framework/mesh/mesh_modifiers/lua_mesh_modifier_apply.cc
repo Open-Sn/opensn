@@ -37,8 +37,7 @@ MeshModifiersApply(const InputParameters& params)
 
   for (const size_t handle : handles)
   {
-    auto& modifier =
-      opensn::Chi::GetStackItem<MeshModifier>(opensn::Chi::object_stack, handle, fname);
+    auto& modifier = opensn::GetStackItem<MeshModifier>(opensn::object_stack, handle, fname);
 
     modifier.Apply();
   }

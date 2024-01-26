@@ -105,7 +105,7 @@ LuaApp::ParseArguments(int argc, char** argv)
     }
     else if (argument.find("--suppress-color") != std::string::npos)
     {
-      opensn::Chi::suppress_color_ = true;
+      opensn::suppress_color = true;
     }
     else if (argument.find("--dump-object-registry") != std::string::npos)
     {
@@ -166,14 +166,13 @@ LuaApp::RunInteractive(int argc, char** argv)
 {
   if (not supress_beg_end_timelog_)
   {
-    opensn::log.Log() << Timer::GetLocalDateTimeString()
-                      << " Running ChiTech in interactive-mode with " << mpi.process_count
-                      << " processes.";
+    opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name
+                      << " in interactive-mode with " << mpi.process_count << " processes.";
 
-    opensn::log.Log() << "ChiTech version " << GetVersionStr();
+    opensn::log.Log() << opensn::name << " version " << GetVersionStr();
   }
 
-  opensn::log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
+  opensn::log.Log() << opensn::name << " number of arguments supplied: " << argc - 1;
 
   opensn::log.LogAll();
 
@@ -199,7 +198,8 @@ LuaApp::RunInteractive(int argc, char** argv)
   if (not supress_beg_end_timelog_)
   {
     opensn::log.Log() << "Final program time " << program_timer.GetTimeString();
-    opensn::log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution.";
+    opensn::log.Log() << Timer::GetLocalDateTimeString() << " " << opensn::name
+                      << " finished execution.";
   }
 
   return 0;
@@ -210,13 +210,13 @@ LuaApp::RunBatch(int argc, char** argv)
 {
   if (not supress_beg_end_timelog_)
   {
-    opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running ChiTech in batch-mode with "
-                      << mpi.process_count << " processes.";
+    opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name
+                      << " in batch-mode with " << mpi.process_count << " processes.";
 
-    opensn::log.Log() << "ChiTech version " << GetVersionStr();
+    opensn::log.Log() << opensn::name << " version " << GetVersionStr();
   }
 
-  opensn::log.Log() << "ChiTech number of arguments supplied: " << argc - 1;
+  opensn::log.Log() << opensn::name << " number of arguments supplied: " << argc - 1;
 
   if (argc <= 1) opensn::log.Log() << command_line_help_string_;
   console.FlushConsole();
@@ -252,8 +252,8 @@ LuaApp::RunBatch(int argc, char** argv)
   if (not supress_beg_end_timelog_)
   {
     opensn::log.Log() << "\nFinal program time " << program_timer.GetTimeString();
-    opensn::log.Log() << Timer::GetLocalDateTimeString() << " ChiTech finished execution of "
-                      << input_file_name_;
+    opensn::log.Log() << Timer::GetLocalDateTimeString() << " " << opensn::name
+                      << " finished execution of " << input_file_name_;
   }
 
   return error_code;

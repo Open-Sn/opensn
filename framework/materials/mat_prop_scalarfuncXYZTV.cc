@@ -28,8 +28,8 @@ typedef FunctionDimAToDimB SFXYZV;
 
 MaterialPropertyScalarFuncXYZTV::MaterialPropertyScalarFuncXYZTV(const InputParameters& params)
   : MaterialProperty(params),
-    function_(Chi::GetStackItem<SFXYZV>(
-      Chi::object_stack, params.GetParamValue<size_t>("function_handle"), __FUNCTION__)),
+    function_(GetStackItem<SFXYZV>(
+      object_stack, params.GetParamValue<size_t>("function_handle"), __FUNCTION__)),
     dependent_variables_(params.GetParamVectorValue<std::string>("dependent_variables"))
 {
   printf("Test eval: %g %g\n", 400.0, Evaluate({400.0}));

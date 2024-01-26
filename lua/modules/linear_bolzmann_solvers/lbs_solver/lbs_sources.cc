@@ -32,8 +32,8 @@ chiLBSAddPointSource(lua_State* L)
 
   // Process solver handle
   const int solver_handle = lua_tointeger(L, 1);
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, __FUNCTION__);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
   // Proces location
   const double x = lua_tonumber(L, 2);
@@ -73,8 +73,8 @@ chiLBSClearPointSources(lua_State* L)
 
   // Process solver handle
   const int solver_handle = lua_tointeger(L, 1);
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, __FUNCTION__);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
   lbs_solver.ClearPointSources();
   opensn::log.Log() << "Cleared all point sources.";
@@ -93,13 +93,13 @@ AddPointSource(lua_State* L)
 
   // Process solver handle
   const int solver_handle = lua_tointeger(L, 1);
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, __FUNCTION__);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
   // Process point source handle
   int pt_src_handle = lua_tointeger(L, 2);
-  lbs_solver.AddPointSource(std::move(opensn::Chi::GetStackItem<opensn::lbs::PointSource>(
-    opensn::Chi::object_stack, pt_src_handle, __FUNCTION__)));
+  lbs_solver.AddPointSource(std::move(opensn::GetStackItem<opensn::lbs::PointSource>(
+    opensn::object_stack, pt_src_handle, __FUNCTION__)));
   return 1;
 }
 
@@ -114,8 +114,8 @@ ClearPointSources(lua_State* L)
 
   // Process solver handle
   const int solver_handle = lua_tointeger(L, 1);
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, __FUNCTION__);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
   lbs_solver.ClearPointSources();
   opensn::log.Log() << "Cleared all point sources.";
@@ -133,13 +133,12 @@ AddDistributedSource(lua_State* L)
   LuaCheckIntegerValue(__FUNCTION__, L, 2);
 
   const int solver_handle = lua_tointeger(L, 1);
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    Chi::object_stack, solver_handle, __FUNCTION__);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(object_stack, solver_handle, __FUNCTION__);
 
   const int src_handle = lua_tointeger(L, 2);
-  lbs_solver.AddDistributedSource(
-    std::move(opensn::Chi::GetStackItem<opensn::lbs::DistributedSource>(
-      Chi::object_stack, src_handle, __FUNCTION__)));
+  lbs_solver.AddDistributedSource(std::move(
+    opensn::GetStackItem<opensn::lbs::DistributedSource>(object_stack, src_handle, __FUNCTION__)));
 
   opensn::log.Log() << lbs_solver.TextName() << ": Added distributed source.";
   return 0;
@@ -156,8 +155,8 @@ ClearDistributedSources(lua_State* L)
 
   // Process solver handle
   const int solver_handle = lua_tointeger(L, 1);
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, __FUNCTION__);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
   lbs_solver.ClearDistributedSources();
   opensn::log.Log() << "Cleared all distributed sources.";

@@ -29,8 +29,8 @@ chiUnpartitionedMeshUploadVertex(lua_State* L)
   const double y = lua_tonumber(L, 3);
   const double z = lua_tonumber(L, 4);
 
-  auto& mesh = opensn::Chi::GetStackItem<opensn::UnpartitionedMesh>(
-    opensn::Chi::unpartitionedmesh_stack, handle, fname);
+  auto& mesh =
+    opensn::GetStackItem<opensn::UnpartitionedMesh>(opensn::unpartitionedmesh_stack, handle, fname);
 
   mesh.GetVertices().emplace_back(x, y, z);
 
@@ -55,8 +55,8 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
   bool verbose = false;
   if (num_args == 3) verbose = lua_toboolean(L, 3);
 
-  auto& mesh = opensn::Chi::GetStackItem<opensn::UnpartitionedMesh>(
-    opensn::Chi::unpartitionedmesh_stack, handle, fname);
+  auto& mesh =
+    opensn::GetStackItem<opensn::UnpartitionedMesh>(opensn::unpartitionedmesh_stack, handle, fname);
 
   LuaCheckTableValue(fname, L, 2);
 
@@ -151,8 +151,8 @@ chiUnpartitionedMeshFinalizeEmpty(lua_State* L)
 
   const int handle = lua_tointeger(L, 1);
 
-  auto& mesh = opensn::Chi::GetStackItem<opensn::UnpartitionedMesh>(
-    opensn::Chi::unpartitionedmesh_stack, handle, fname);
+  auto& mesh =
+    opensn::GetStackItem<opensn::UnpartitionedMesh>(opensn::unpartitionedmesh_stack, handle, fname);
 
   mesh.ComputeCentroidsAndCheckQuality();
   mesh.BuildMeshConnectivity();

@@ -27,8 +27,8 @@ chiLBSWriteGroupsetAngularFlux(lua_State* L)
   const std::string file_base = lua_tostring(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;
@@ -66,8 +66,8 @@ chiLBSReadGroupsetAngularFlux(lua_State* L)
   const std::string file_base = lua_tostring(L, 3);
 
   // Get pointer to solver
-  auto& lbs_solver = opensn::Chi::GetStackItem<opensn::lbs::LBSSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& lbs_solver =
+    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
   opensn::lbs::LBSGroupset* groupset = nullptr;

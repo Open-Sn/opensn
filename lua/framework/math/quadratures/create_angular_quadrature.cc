@@ -71,8 +71,8 @@ chiCreateCustomAngularQuadrature(lua_State* L)
   auto new_quad =
     std::make_shared<opensn::AngularQuadratureCustom>(azi_angles, pol_angles, weights, false);
 
-  opensn::Chi::angular_quadrature_stack.push_back(new_quad);
-  size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
+  opensn::angular_quadrature_stack.push_back(new_quad);
+  size_t index = opensn::angular_quadrature_stack.size() - 1;
   lua_pushinteger(L, static_cast<lua_Integer>(index));
 
   return 1;

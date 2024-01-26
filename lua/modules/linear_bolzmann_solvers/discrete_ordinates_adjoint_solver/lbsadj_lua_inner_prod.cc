@@ -21,8 +21,8 @@ chiAdjointSolverComputeInnerProduct(lua_State* L)
   LuaCheckNilValue(fname, L, 1);
 
   const int solver_handle = lua_tointeger(L, 1);
-  auto& solver = opensn::Chi::GetStackItem<opensn::lbs::DiscreteOrdinatesAdjointSolver>(
-    opensn::Chi::object_stack, solver_handle, fname);
+  auto& solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesAdjointSolver>(
+    opensn::object_stack, solver_handle, fname);
 
   const double response = solver.ComputeInnerProduct();
   lua_pushnumber(L, response);

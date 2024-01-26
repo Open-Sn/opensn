@@ -31,7 +31,7 @@ FieldFunctionInterface::GetFieldFunction() const
   if (field_function_param_.Type() == ParameterBlockType::STRING)
   {
     const auto name = field_function_param_.GetValue<std::string>();
-    for (const auto& ff_ptr : Chi::field_function_stack)
+    for (const auto& ff_ptr : field_function_stack)
       if (ff_ptr->TextName() == name) ref_ff_ptr = ff_ptr;
 
     ChiInvalidArgumentIf(ref_ff_ptr == nullptr, "Field function \"" + name + "\" not found.");
@@ -39,8 +39,7 @@ FieldFunctionInterface::GetFieldFunction() const
   else if (field_function_param_.Type() == ParameterBlockType::INTEGER)
   {
     const auto handle = field_function_param_.GetValue<size_t>();
-    ref_ff_ptr =
-      Chi::GetStackItemPtrAsType<FieldFunction>(Chi::field_function_stack, handle, __FUNCTION__);
+    ref_ff_ptr = GetStackItemPtrAsType<FieldFunction>(field_function_stack, handle, __FUNCTION__);
   }
   else
     ChiInvalidArgument("Argument can only be STRING or INTEGER");

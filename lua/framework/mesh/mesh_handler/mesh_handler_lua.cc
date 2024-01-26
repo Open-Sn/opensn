@@ -36,14 +36,14 @@ chiMeshHandlerSetCurrent(lua_State* L)
 
   int handle = lua_tonumber(L, 1);
 
-  if ((handle < 0) or (handle >= opensn::Chi::meshhandler_stack.size()))
+  if ((handle < 0) or (handle >= opensn::meshhandler_stack.size()))
   {
     opensn::log.LogAllError() << "Invalid handle to mesh handler specified "
                               << "in call to chiMeshHandlerSetCurrent";
     opensn::Exit(EXIT_FAILURE);
   }
 
-  opensn::Chi::current_mesh_handler = handle;
+  opensn::current_mesh_handler = handle;
 
   opensn::log.LogAllVerbose2() << "chiMeshHandlerSetCurrent: set to " << handle;
 

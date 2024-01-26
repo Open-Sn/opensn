@@ -58,8 +58,8 @@ FieldFunction::PushOntoStack(std::shared_ptr<Object>& new_object)
 
   ChiLogicalErrorIf(not ff_ptr, "Bad trouble when casting object to field function");
 
-  Chi::field_function_stack.push_back(ff_ptr);
-  new_object->SetStackID(Chi::field_function_stack.size() - 1);
+  field_function_stack.push_back(ff_ptr);
+  new_object->SetStackID(field_function_stack.size() - 1);
 }
 
 } // namespace opensn

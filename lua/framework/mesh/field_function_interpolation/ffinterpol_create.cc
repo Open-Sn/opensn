@@ -31,8 +31,8 @@ chiFFInterpolationCreate(lua_State* L)
   {
     auto new_ffi = new FieldFunctionInterpolationPoint;
 
-    opensn::Chi::field_func_interpolation_stack.emplace_back(new_ffi);
-    const size_t index = opensn::Chi::field_func_interpolation_stack.size() - 1;
+    opensn::field_func_interpolation_stack.emplace_back(new_ffi);
+    const size_t index = opensn::field_func_interpolation_stack.size() - 1;
     opensn::log.LogAllVerbose2() << "Created point Field Function Interpolation";
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
@@ -41,8 +41,8 @@ chiFFInterpolationCreate(lua_State* L)
   {
     auto new_ffi = new FieldFunctionInterpolationSlice;
 
-    opensn::Chi::field_func_interpolation_stack.emplace_back(new_ffi);
-    const size_t index = opensn::Chi::field_func_interpolation_stack.size() - 1;
+    opensn::field_func_interpolation_stack.emplace_back(new_ffi);
+    const size_t index = opensn::field_func_interpolation_stack.size() - 1;
     opensn::log.LogAllVerbose2() << "Created slice Field Function Interpolation";
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
@@ -51,8 +51,8 @@ chiFFInterpolationCreate(lua_State* L)
   {
     auto new_ffi = new FieldFunctionInterpolationLine;
 
-    opensn::Chi::field_func_interpolation_stack.emplace_back(new_ffi);
-    const size_t index = opensn::Chi::field_func_interpolation_stack.size() - 1;
+    opensn::field_func_interpolation_stack.emplace_back(new_ffi);
+    const size_t index = opensn::field_func_interpolation_stack.size() - 1;
     opensn::log.LogAllVerbose2() << "Created line Field Function Interpolation";
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
@@ -61,8 +61,8 @@ chiFFInterpolationCreate(lua_State* L)
   {
     auto new_ffi = new FieldFunctionInterpolationVolume;
 
-    opensn::Chi::field_func_interpolation_stack.emplace_back(new_ffi);
-    const size_t index = opensn::Chi::field_func_interpolation_stack.size() - 1;
+    opensn::field_func_interpolation_stack.emplace_back(new_ffi);
+    const size_t index = opensn::field_func_interpolation_stack.size() - 1;
     opensn::log.LogAllVerbose2() << "Created Volume Field Function Interpolation";
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;

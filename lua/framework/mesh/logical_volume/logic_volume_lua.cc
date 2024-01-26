@@ -310,7 +310,7 @@ chiLogicalVolumeCreate(lua_State* L)
                                    "number. Found not to be";
         opensn::Exit(EXIT_FAILURE);
       }
-      if (lua_tointeger(L, 2 * p + 1) >= static_cast<lua_Number>(opensn::Chi::object_stack.size()))
+      if (lua_tointeger(L, 2 * p + 1) >= static_cast<lua_Number>(opensn::object_stack.size()))
       {
         opensn::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
                                    " argument "
@@ -358,8 +358,7 @@ chiLogicalVolumePointSense(lua_State* L)
 
   const int lv_handle = lua_tointeger(L, 1);
 
-  const auto& lv =
-    opensn::Chi::GetStackItem<LogicalVolume>(opensn::Chi::object_stack, lv_handle, fname);
+  const auto& lv = opensn::GetStackItem<LogicalVolume>(opensn::object_stack, lv_handle, fname);
 
   const Vector3 point(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
 

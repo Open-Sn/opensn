@@ -10,19 +10,19 @@ namespace opensn
 MeshHandler&
 GetCurrentHandler()
 {
-  if (Chi::meshhandler_stack.empty())
+  if (meshhandler_stack.empty())
     throw std::logic_error("chi_mesh::GetCurrentHandler: No handlers on stack");
 
-  return Chi::GetStackItem<MeshHandler>(Chi::meshhandler_stack, Chi::current_mesh_handler);
+  return GetStackItem<MeshHandler>(meshhandler_stack, current_mesh_handler);
 }
 
 size_t
 PushNewHandlerAndGetIndex()
 {
-  Chi::meshhandler_stack.push_back(std::make_shared<MeshHandler>());
+  meshhandler_stack.push_back(std::make_shared<MeshHandler>());
 
-  int index = (int)Chi::meshhandler_stack.size() - 1;
-  Chi::current_mesh_handler = index;
+  int index = (int)meshhandler_stack.size() - 1;
+  current_mesh_handler = index;
 
   return index;
 }
@@ -84,9 +84,9 @@ CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
   umesh->ComputeCentroidsAndCheckQuality();
   umesh->BuildMeshConnectivity();
 
-  Chi::unpartitionedmesh_stack.push_back(umesh);
+  unpartitionedmesh_stack.push_back(umesh);
 
-  return Chi::unpartitionedmesh_stack.size() - 1;
+  return unpartitionedmesh_stack.size() - 1;
 }
 
 size_t
@@ -171,9 +171,9 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
   umesh->ComputeCentroidsAndCheckQuality();
   umesh->BuildMeshConnectivity();
 
-  Chi::unpartitionedmesh_stack.push_back(umesh);
+  unpartitionedmesh_stack.push_back(umesh);
 
-  return Chi::unpartitionedmesh_stack.size() - 1;
+  return unpartitionedmesh_stack.size() - 1;
 }
 
 size_t
@@ -322,9 +322,9 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
   umesh->ComputeCentroidsAndCheckQuality();
   umesh->BuildMeshConnectivity();
 
-  Chi::unpartitionedmesh_stack.push_back(umesh);
+  unpartitionedmesh_stack.push_back(umesh);
 
-  return Chi::unpartitionedmesh_stack.size() - 1;
+  return unpartitionedmesh_stack.size() - 1;
 }
 
 } // namespace opensn

@@ -28,30 +28,30 @@ Logger& log = Logger::GetInstance();
 MPI_Info& mpi = MPI_Info::GetInstance();
 Timer program_timer;
 
-std::vector<MeshHandlerPtr> Chi::meshhandler_stack;
-int Chi::current_mesh_handler = -1;
+std::vector<MeshHandlerPtr> meshhandler_stack;
+int current_mesh_handler = -1;
 
-std::vector<SurfaceMeshPtr> Chi::surface_mesh_stack;
-std::vector<FFInterpPtr> Chi::field_func_interpolation_stack;
-std::vector<UnpartMeshPtr> Chi::unpartitionedmesh_stack;
+std::vector<SurfaceMeshPtr> surface_mesh_stack;
+std::vector<FFInterpPtr> field_func_interpolation_stack;
+std::vector<UnpartMeshPtr> unpartitionedmesh_stack;
 
-std::vector<MaterialPtr> Chi::material_stack;
-std::vector<MultiGroupXSPtr> Chi::multigroup_xs_stack;
-std::vector<FieldFunctionPtr> Chi::field_function_stack;
+std::vector<MaterialPtr> material_stack;
+std::vector<MultiGroupXSPtr> multigroup_xs_stack;
+std::vector<FieldFunctionPtr> field_function_stack;
 
-std::vector<AngularQuadraturePtr> Chi::angular_quadrature_stack;
+std::vector<AngularQuadraturePtr> angular_quadrature_stack;
 
-std::vector<ChiObjectPtr> Chi::object_stack;
-std::vector<SpatialDiscretizationPtr> Chi::sdm_stack;
-std::vector<PostProcessorPtr> Chi::postprocessor_stack;
-std::vector<FunctionPtr> Chi::function_stack;
+std::vector<ChiObjectPtr> object_stack;
+std::vector<SpatialDiscretizationPtr> sdm_stack;
+std::vector<PostProcessorPtr> postprocessor_stack;
+std::vector<FunctionPtr> function_stack;
 
-bool Chi::suppress_color_ = false;
+bool suppress_color = false;
 
 int
 Initialize()
 {
-  auto& t_main = log.CreateTimingBlock("ChiTech");
+  auto& t_main = log.CreateTimingBlock(opensn::name);
   t_main.TimeSectionBegin();
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
@@ -61,20 +61,20 @@ Initialize()
 void
 Finalize()
 {
-  auto& t_main = log.GetTimingBlock("ChiTech");
+  auto& t_main = log.GetTimingBlock(opensn::name);
   t_main.TimeSectionEnd();
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
-  Chi::meshhandler_stack.clear();
+  meshhandler_stack.clear();
 
-  Chi::surface_mesh_stack.clear();
-  Chi::object_stack.clear();
-  Chi::field_func_interpolation_stack.clear();
-  Chi::unpartitionedmesh_stack.clear();
+  surface_mesh_stack.clear();
+  object_stack.clear();
+  field_func_interpolation_stack.clear();
+  unpartitionedmesh_stack.clear();
 
-  Chi::object_stack.clear();
-  Chi::material_stack.clear();
-  Chi::multigroup_xs_stack.clear();
-  Chi::function_stack.clear();
+  object_stack.clear();
+  material_stack.clear();
+  multigroup_xs_stack.clear();
+  function_stack.clear();
 }
 
 void

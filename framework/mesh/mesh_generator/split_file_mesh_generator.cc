@@ -105,7 +105,7 @@ SplitFileMeshGenerator::Execute()
     auto new_mesher = std::make_shared<VolumeMesher>(VolumeMesherType::UNPARTITIONED);
     new_mesher->SetContinuum(grid_ptr);
 
-    if (Chi::current_mesh_handler < 0) PushNewHandlerAndGetIndex();
+    if (current_mesh_handler < 0) PushNewHandlerAndGetIndex();
 
     auto& cur_hndlr = GetCurrentHandler();
     cur_hndlr.SetVolumeMesher(new_mesher);
@@ -116,7 +116,7 @@ SplitFileMeshGenerator::Execute()
     log.Log0Warning() << "After creating a split-mesh with mpi-processes < "
                          "num_parts the program will now auto terminate. This is not an error "
                          "and is the default behavior for the SplitFileMeshGenerator.\n"
-                      << log.GetTimingBlock("ChiTech").MakeGraphString();
+                      << log.GetTimingBlock(opensn::name).MakeGraphString();
     Exit(EXIT_SUCCESS);
   }
 

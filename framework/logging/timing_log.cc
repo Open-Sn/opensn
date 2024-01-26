@@ -24,11 +24,11 @@ TimingLog::CreateTimingBlock(const std::string& name, const std::string& parent_
 
   if (parent_name.empty())
   {
-    if (name != "ChiTech")
+    if (name != opensn::name)
     {
-      auto iter = timing_blocks_.find("ChiTech");
+      auto iter = timing_blocks_.find(opensn::name);
       ChiLogicalErrorIf(iter == timing_blocks_.end(),
-                        "Bad error, could not fine the \"ChiTech\" timing block");
+                        "Bad error, could not fine the \"" + opensn::name + "\" timing block");
 
       iter->second->AddChild(*saved_pointer);
     }
@@ -122,7 +122,7 @@ TimingBlock::AddChild(const TimingBlock& child_block)
 std::string
 TimingBlock::MakeGraphString()
 {
-  if (name_ == "ChiTech") TimeSectionEnd();
+  if (name_ == opensn::name) TimeSectionEnd();
 
   std::vector<std::vector<std::string>> string_matrix;
 

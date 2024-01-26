@@ -63,8 +63,8 @@ Solver::InitTimeStepper(const InputParameters& params)
 
   if (user_params.Has("timestepper"))
   {
-    auto stepper = Chi::GetStackItemPtrAsType<TimeStepper>(
-      Chi::object_stack, params.GetParamValue<size_t>("timestepper"), __FUNCTION__);
+    auto stepper = GetStackItemPtrAsType<TimeStepper>(
+      object_stack, params.GetParamValue<size_t>("timestepper"), __FUNCTION__);
 
     stepper->SetTimeStepSize(params.GetParamValue<double>("dt"));
     stepper->SetTime(params.GetParamValue<double>("time"));
@@ -94,8 +94,8 @@ Solver::InitTimeStepper(const InputParameters& params)
     valid_params.AssignParameters(custom_params);
 
     auto stepper = std::make_shared<ConstantTimeStepper>(valid_params);
-    Chi::object_stack.push_back(stepper);
-    stepper->SetStackID(Chi::object_stack.size() - 1);
+    object_stack.push_back(stepper);
+    stepper->SetStackID(object_stack.size() - 1);
 
     return stepper;
   }

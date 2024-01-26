@@ -42,8 +42,8 @@ XXPowerIterationKEigen::GetInputParameters()
 
 XXPowerIterationKEigen::XXPowerIterationKEigen(const InputParameters& params)
   : opensn::Solver(params),
-    lbs_solver_(Chi::GetStackItem<LBSSolver>(Chi::object_stack,
-                                             params.GetParamValue<size_t>("lbs_solver_handle"))),
+    lbs_solver_(
+      GetStackItem<LBSSolver>(object_stack, params.GetParamValue<size_t>("lbs_solver_handle"))),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
     reinit_phi_1_(params.GetParamValue<bool>("reinit_phi_1")),

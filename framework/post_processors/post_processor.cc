@@ -123,8 +123,8 @@ PostProcessor::PushOntoStack(std::shared_ptr<Object>& new_object)
   auto pp_ptr = std::dynamic_pointer_cast<PostProcessor>(new_object);
   ChiLogicalErrorIf(not pp_ptr, "Failure to cast new object to PostProcessor");
 
-  Chi::postprocessor_stack.push_back(pp_ptr);
-  new_object->SetStackID(Chi::postprocessor_stack.size() - 1);
+  postprocessor_stack.push_back(pp_ptr);
+  new_object->SetStackID(postprocessor_stack.size() - 1);
 
   auto new_subscriber = std::dynamic_pointer_cast<EventSubscriber>(pp_ptr);
 

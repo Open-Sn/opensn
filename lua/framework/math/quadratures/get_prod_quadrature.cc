@@ -24,7 +24,7 @@ chiGetProductQuadrature(lua_State* L)
   std::shared_ptr<ProductQuadrature> quad;
   try
   {
-    auto ang_quad = opensn::Chi::angular_quadrature_stack.at(handle);
+    auto ang_quad = opensn::angular_quadrature_stack.at(handle);
     if (ang_quad->type_ == AngularQuadratureType::ProductQuadrature)
       quad = std::static_pointer_cast<ProductQuadrature>(ang_quad);
     else

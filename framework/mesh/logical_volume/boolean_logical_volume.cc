@@ -46,8 +46,7 @@ BooleanLogicalVolume::BooleanLogicalVolume(const InputParameters& params) : Logi
     part_params.AssignParameters(part);
 
     const size_t lv_handle = part_params.GetParamValue<size_t>("lv");
-    auto lv_ptr =
-      Chi::GetStackItemPtrAsType<LogicalVolume>(Chi::object_stack, lv_handle, __FUNCTION__);
+    auto lv_ptr = GetStackItemPtrAsType<LogicalVolume>(object_stack, lv_handle, __FUNCTION__);
 
     parts.emplace_back(part_params.GetParamValue<bool>("op"), lv_ptr);
   }

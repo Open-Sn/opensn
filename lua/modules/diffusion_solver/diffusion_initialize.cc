@@ -11,8 +11,8 @@ chiDiffusionInitialize(lua_State* L)
 {
   int solver_index = lua_tonumber(L, 1);
 
-  auto& solver = opensn::Chi::GetStackItem<diffusion::Solver>(
-    opensn::Chi::object_stack, solver_index, __FUNCTION__);
+  auto& solver =
+    opensn::GetStackItem<diffusion::Solver>(opensn::object_stack, solver_index, __FUNCTION__);
 
   bool success = solver.Initialize(true);
 

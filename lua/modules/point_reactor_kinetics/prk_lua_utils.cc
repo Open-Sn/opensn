@@ -27,8 +27,8 @@ chiPRKGetParam(lua_State* L)
 
   const int handle = lua_tointeger(L, 1);
 
-  auto solver = opensn::Chi::GetStackItem<opensn::prk::TransientSolver>(
-    opensn::Chi::object_stack, handle, fname);
+  auto solver =
+    opensn::GetStackItem<opensn::prk::TransientSolver>(opensn::object_stack, handle, fname);
 
   const std::string param_name = lua_tostring(L, 2);
 
@@ -60,8 +60,8 @@ chiPRKSetParam(lua_State* L)
 
   const int handle = lua_tointeger(L, 1);
 
-  auto& solver = opensn::Chi::GetStackItem<opensn::prk::TransientSolver>(
-    opensn::Chi::object_stack, handle, fname);
+  auto& solver =
+    opensn::GetStackItem<opensn::prk::TransientSolver>(opensn::object_stack, handle, fname);
 
   const std::string param_name = lua_tostring(L, 2);
 
@@ -105,8 +105,8 @@ SetParam(const InputParameters& params)
   const std::string fname = __FUNCTION__;
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& solver = opensn::Chi::GetStackItem<opensn::prk::TransientSolver>(
-    opensn::Chi::object_stack, handle, fname);
+  auto& solver =
+    opensn::GetStackItem<opensn::prk::TransientSolver>(opensn::object_stack, handle, fname);
 
   const auto param_name = params.GetParamValue<std::string>("arg1");
   const auto& value_param = params.GetParam("arg2");
@@ -151,8 +151,8 @@ GetParam(const InputParameters& params)
   const std::string fname = __FUNCTION__;
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& solver = opensn::Chi::GetStackItem<opensn::prk::TransientSolver>(
-    opensn::Chi::object_stack, handle, fname);
+  auto& solver =
+    opensn::GetStackItem<opensn::prk::TransientSolver>(opensn::object_stack, handle, fname);
 
   const auto param_name = params.GetParamValue<std::string>("arg1");
   ParameterBlock outputs;

@@ -76,8 +76,8 @@ chiCreateCylindricalProductQuadrature(lua_State* L)
       const auto new_quad =
         std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
 
-      opensn::Chi::angular_quadrature_stack.push_back(new_quad);
-      const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
+      opensn::angular_quadrature_stack.push_back(new_quad);
+      const size_t index = opensn::angular_quadrature_stack.size() - 1;
       lua_pushinteger(L, static_cast<lua_Integer>(index));
 
       return 1;
@@ -94,8 +94,8 @@ chiCreateCylindricalProductQuadrature(lua_State* L)
       const auto new_quad =
         std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
 
-      opensn::Chi::angular_quadrature_stack.push_back(new_quad);
-      const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
+      opensn::angular_quadrature_stack.push_back(new_quad);
+      const size_t index = opensn::angular_quadrature_stack.size() - 1;
       lua_pushinteger(L, static_cast<lua_Integer>(index));
 
       return 1;
@@ -161,8 +161,8 @@ chiCreateSphericalProductQuadrature(lua_State* L)
       const auto quad_pol = QuadratureGaussChebyshev(Np, verbose);
       const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
 
-      opensn::Chi::angular_quadrature_stack.push_back(new_quad);
-      const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
+      opensn::angular_quadrature_stack.push_back(new_quad);
+      const size_t index = opensn::angular_quadrature_stack.size() - 1;
       lua_pushnumber(L, static_cast<lua_Number>(index));
 
       return 1;
@@ -175,8 +175,8 @@ chiCreateSphericalProductQuadrature(lua_State* L)
       const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
       const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
 
-      opensn::Chi::angular_quadrature_stack.push_back(new_quad);
-      const size_t index = opensn::Chi::angular_quadrature_stack.size() - 1;
+      opensn::angular_quadrature_stack.push_back(new_quad);
+      const size_t index = opensn::angular_quadrature_stack.size() - 1;
       lua_pushnumber(L, static_cast<lua_Number>(index));
 
       return 1;
