@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 2: Other Forms of Output &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 3: Basic Transport Simulation" href="basic_transport_simulation.html" />
+    <link rel="prev" title="Tutorial 1: Basic Diffusion Simulation" href="basic_diffusion_simulation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install_linux.html">Compiling on Personal Linux Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install_linux_easy.html">Easy install on Ubuntu Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install_macos.html">Compiling on MacOS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install_macos_easy.html">Easy Install on MacOS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Basic Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="basic_diffusion_simulation.html">Tutorial 1: Basic Diffusion Simulation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial 2: Other Forms of Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-make-a-copy-of-tutorial01-input">Step 1 - Make a copy of Tutorial01 input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-obtain-a-list-of-field-functions-associated-with-the-solver">Step 2 - Obtain a list of field functions associated with the solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-create-a-slice-interpolator">Step 3 - Create a slice interpolator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-initialize-and-execute">Step 4 - Initialize and execute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-5-run-the-python-file">Step 5 - Run the python file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fully-commented-code">Fully commented code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="basic_transport_simulation.html">Tutorial 3: Basic Transport Simulation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Basic Tutorials</a></li>
+      <li class="breadcrumb-item active">Tutorial 2: Other Forms of Output</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-2-other-forms-of-output">
+<h1>Tutorial 2: Other Forms of Output<a class="headerlink" href="#tutorial-2-other-forms-of-output" title="Link to this heading"></a></h1>
+<p>Solver modules in OpenSn connect their solution information to a concept
+called a <em>Field Function</em>. A field function is considered fully defined
+when it is connected to both a grid (mesh) and a spatial discretization.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/field_function_hierarchy.png"><img alt="../_images/field_function_hierarchy.png" src="../_images/field_function_hierarchy.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Figure 1 - Hierarchy of field functions</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<section id="step-1-make-a-copy-of-tutorial01-input">
+<h2>Step 1 - Make a copy of Tutorial01 input<a class="headerlink" href="#step-1-make-a-copy-of-tutorial01-input" title="Link to this heading"></a></h2>
+<p>In the same folder (or any of your choice) make a copy of the input you used for Tutorial 1.
+We will be adding some items to this input file.</p>
+</section>
+<section id="step-2-obtain-a-list-of-field-functions-associated-with-the-solver">
+<h2>Step 2 - Obtain a list of field functions associated with the solver<a class="headerlink" href="#step-2-obtain-a-list-of-field-functions-associated-with-the-solver" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span><span class="p">,</span><span class="n">count</span> <span class="o">=</span> <span class="n">chiSolverGetFieldFunctionList</span><span class="p">(</span><span class="n">phys1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function call <code class="docutils literal notranslate"><span class="pre">chiSolverGetFieldFunctionList()</span></code> provides us with two items. A
+lua-table and a count of how many items there are in the table. The items
+in “fflist” are the text names of the field functions. Each solver has its
+own defaults.</p>
+</section>
+<section id="step-3-create-a-slice-interpolator">
+<h2>Step 3 - Create a slice interpolator<a class="headerlink" href="#step-3-create-a-slice-interpolator" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">slice1</span> <span class="o">=</span> <span class="n">chiFFInterpolationCreate</span><span class="p">(</span><span class="n">SLICE</span><span class="p">)</span>
+<span class="n">chiFFInterpolationSetProperty</span><span class="p">(</span><span class="n">slice1</span><span class="p">,</span><span class="n">SLICE_POINT</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">chiFFInterpolationSetProperty</span><span class="p">(</span><span class="n">slice1</span><span class="p">,</span><span class="n">ADD_FIELDFUNCTION</span><span class="p">,</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The first call creates an interpolator of type <code class="docutils literal notranslate"><span class="pre">SLICE</span></code>. At the time of writing this
+tutorial we support <code class="docutils literal notranslate"><span class="pre">LINE</span></code>, <code class="docutils literal notranslate"><span class="pre">SLICE</span></code> and <code class="docutils literal notranslate"><span class="pre">VOLUME</span></code>. The default orientation of a slice
+interpolator is with the cutting plane’s normal pointing in the direction
+of <span class="math notranslate nohighlight">\(\hat{k}\)</span> and the reference point at (0,0,0). A change in reference
+point is achieved with a call to <code class="docutils literal notranslate"><span class="pre">chiFFInterpolationSetProperty()</span></code> with
+a property index <code class="docutils literal notranslate"><span class="pre">SLICE_POINT</span></code>. The last line here is to add a field function to
+this interpolator. We use the same function but this time with a property index
+<code class="docutils literal notranslate"><span class="pre">ADD_FIELDFUNCTION</span></code>.</p>
+</section>
+<section id="step-4-initialize-and-execute">
+<h2>Step 4 - Initialize and execute<a class="headerlink" href="#step-4-initialize-and-execute" title="Link to this heading"></a></h2>
+<p>For very complex meshes it might be prudent to perform initialization before
+actually solving the systems, since
+this established the necessary interpolation parameters and allows one to
+execute the interpolator multiple times after that with minimal cost.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chiFFInterpolationInitialize</span><span class="p">(</span><span class="n">slice1</span><span class="p">)</span>
+<span class="n">chiFFInterpolationExecute</span><span class="p">(</span><span class="n">slice1</span><span class="p">)</span>
+<span class="n">chiFFInterpolationExportPython</span><span class="p">(</span><span class="n">slice1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">chiFFInterpolationInitialize()</span></code> and <code class="docutils literal notranslate"><span class="pre">chiFFInterpolationExecute()</span></code> should be
+intuitive to understand. The last function call here is <code class="docutils literal notranslate"><span class="pre">chiFFInterpolationExportPython()</span></code>
+which is a utility to export a slice to a python file. Inside this python
+file there are some default visualization commands but the major utility here
+is that the field function is now represented as python variables so that
+the user can define custom visualizations.</p>
+</section>
+<section id="step-5-run-the-python-file">
+<h2>Step 5 - Run the python file<a class="headerlink" href="#step-5-run-the-python-file" title="Link to this heading"></a></h2>
+<p>Being a useful scripting system, the lua console can itself invoke processes.
+Here the default export name of the python file will be “ZPFFI00.py”. Its
+actually “ZPFFI0”, for Plane-Field-Function-Interpolator-0 but the last digit
+denotes the processor identification in
+such a way that the user merely needs to execute the 0-index and the rest will
+be loaded.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">local</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;python ZPFFI00.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output produced is shown below:</p>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../_images/ff_output.png"><img alt="../_images/ff_output.png" src="../_images/ff_output.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Figure 2 - Output produced by python script</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fully-commented-code">
+<h2>Fully commented code<a class="headerlink" href="#fully-commented-code" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="c1">############################################### Setup mesh</span>
+<span class="n">chiMeshHandlerCreate</span><span class="p">()</span>
+
+<span class="n">nodes</span><span class="o">=</span><span class="p">{}</span>
+<span class="n">N</span><span class="o">=</span><span class="mi">32</span>
+<span class="n">ds</span><span class="o">=</span><span class="mf">2.0</span><span class="o">/</span><span class="n">N</span>
+<span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">N</span> <span class="n">do</span>
+    <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="n">ds</span>
+<span class="n">end</span>
+<span class="n">surf_mesh</span><span class="p">,</span><span class="n">region1</span> <span class="o">=</span> <span class="n">chiMeshCreateUnpartitioned3DOrthoMesh</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">)</span>
+
+<span class="o">--</span> <span class="n">chiVolumeMesherSetProperty</span><span class="p">(</span><span class="n">PARTITION_TYPE</span><span class="p">,</span><span class="n">KBA_STYLE_XYZ</span><span class="p">)</span>
+<span class="o">--</span> <span class="n">chiVolumeMesherSetKBAPartitioningPxPyPz</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">--</span> <span class="n">chiVolumeMesherSetKBACutsX</span><span class="p">({</span><span class="mf">0.0</span><span class="p">})</span>
+<span class="o">--</span> <span class="n">chiVolumeMesherSetKBACutsY</span><span class="p">({</span><span class="mf">0.0</span><span class="p">})</span>
+
+<span class="n">chiVolumeMesherExecute</span><span class="p">();</span>
+
+<span class="n">material</span> <span class="o">=</span> <span class="n">chiPhysicsAddMaterial</span><span class="p">(</span><span class="s2">&quot;Test Material&quot;</span><span class="p">);</span>
+
+<span class="o">--</span> <span class="n">Set</span> <span class="n">Material</span> <span class="n">IDs</span>
+<span class="n">vol0</span> <span class="o">=</span> <span class="n">chiLogicalVolumeCreate</span><span class="p">(</span><span class="n">RPP</span><span class="p">,</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">chiVolumeMesherSetProperty</span><span class="p">(</span><span class="n">MATID_FROMLOGICAL</span><span class="p">,</span><span class="n">vol0</span><span class="p">,</span><span class="n">material</span><span class="p">)</span>
+
+<span class="n">chiRegionExportMeshToVTK</span><span class="p">(</span><span class="n">region1</span><span class="p">,</span><span class="s2">&quot;Mesh&quot;</span><span class="p">)</span>
+<span class="o">--</span><span class="c1">############################################### Add material properties</span>
+
+
+<span class="o">--</span> <span class="n">Set</span> <span class="n">material</span> <span class="n">properties</span>
+<span class="n">chiPhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">material</span><span class="p">,</span><span class="n">SCALAR_VALUE</span><span class="p">,</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+<span class="n">chiPhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">material</span><span class="p">,</span><span class="s2">&quot;k&quot;</span><span class="p">,</span><span class="n">SINGLE_VALUE</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="n">chiPhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">material</span><span class="p">,</span><span class="n">SCALAR_VALUE</span><span class="p">,</span><span class="s2">&quot;q&quot;</span><span class="p">)</span>
+<span class="n">chiPhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">material</span><span class="p">,</span><span class="s2">&quot;q&quot;</span><span class="p">,</span><span class="n">SINGLE_VALUE</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>
+
+
+<span class="o">--</span><span class="c1">############################################### Setup Physics</span>
+<span class="n">phys1</span> <span class="o">=</span> <span class="n">chiDiffusionCreateSolver</span><span class="p">();</span>
+<span class="n">chiSolverAddRegion</span><span class="p">(</span><span class="n">phys1</span><span class="p">,</span><span class="n">region1</span><span class="p">)</span>
+<span class="n">chiSolverSetBasicOption</span><span class="p">(</span><span class="n">phys1</span><span class="p">,</span><span class="s2">&quot;discretization_method&quot;</span><span class="p">,</span><span class="s2">&quot;PWLC&quot;</span><span class="p">);</span>
+<span class="n">chiSolverSetBasicOption</span><span class="p">(</span><span class="n">phys1</span><span class="p">,</span><span class="s2">&quot;residual_tolerance&quot;</span><span class="p">,</span><span class="mf">1.0e-6</span><span class="p">)</span>
+
+<span class="o">--</span><span class="c1">############################################### Initialize and</span>
+<span class="o">--</span>                                                <span class="n">Execute</span> <span class="n">Solver</span>
+<span class="n">chiDiffusionInitialize</span><span class="p">(</span><span class="n">phys1</span><span class="p">)</span>
+<span class="n">chiDiffusionExecute</span><span class="p">(</span><span class="n">phys1</span><span class="p">)</span>
+
+<span class="o">----</span><span class="c1">############################################### Visualize the field function</span>
+<span class="n">fflist</span><span class="p">,</span><span class="n">count</span> <span class="o">=</span> <span class="n">chiGetFieldFunctionList</span><span class="p">(</span><span class="n">phys1</span><span class="p">)</span>
+<span class="n">chiExportFieldFunctionToVTK</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;Tutorial1Output&quot;</span><span class="p">,</span><span class="s2">&quot;Temperature&quot;</span><span class="p">)</span>
+
+<span class="n">slice1</span> <span class="o">=</span> <span class="n">chiFFInterpolationCreate</span><span class="p">(</span><span class="n">SLICE</span><span class="p">)</span>
+<span class="n">chiFFInterpolationSetProperty</span><span class="p">(</span><span class="n">slice1</span><span class="p">,</span><span class="n">SLICE_POINT</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">chiFFInterpolationSetProperty</span><span class="p">(</span><span class="n">slice1</span><span class="p">,</span><span class="n">ADD_FIELDFUNCTION</span><span class="p">,</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">chiFFInterpolationInitialize</span><span class="p">(</span><span class="n">slice1</span><span class="p">)</span>
+<span class="n">chiFFInterpolationExecute</span><span class="p">(</span><span class="n">slice1</span><span class="p">)</span>
+<span class="n">chiFFInterpolationExportPython</span><span class="p">(</span><span class="n">slice1</span><span class="p">)</span>
+
+<span class="n">local</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;python ZPFFI00.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="basic_diffusion_simulation.html" class="btn btn-neutral float-left" title="Tutorial 1: Basic Diffusion Simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="basic_transport_simulation.html" class="btn btn-neutral float-right" title="Tutorial 3: Basic Transport Simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
