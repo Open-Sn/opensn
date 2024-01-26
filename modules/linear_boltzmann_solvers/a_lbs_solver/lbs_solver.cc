@@ -1279,7 +1279,7 @@ LBSSolver::InitializeParrays()
 
     // compute cell volumes
     double cell_volume = 0.0;
-    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id_].Vi_vectors;
+    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id_].intV_shapeI;
     for (size_t i = 0; i < num_nodes; ++i)
       cell_volume += IntV_shapeI[i];
 
@@ -2708,7 +2708,7 @@ LBSSolver::UpdateFieldFunctions()
       const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.NumNodes();
 
-      const auto& Vi = unit_cell_matrices_[cell.local_id_].Vi_vectors;
+      const auto& Vi = unit_cell_matrices_[cell.local_id_].intV_shapeI;
 
       const auto& xs = matid_to_xs_map_.at(cell.material_id_);
 
@@ -2819,7 +2819,7 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
     for (int i = 0; i < num_nodes; ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-      const double IntV_ShapeI = cell_matrices.Vi_vectors[i];
+      const double IntV_ShapeI = cell_matrices.intV_shapeI[i];
 
       // Loop over groups
       for (size_t g = first_grp; g <= last_grp; ++g)
@@ -2867,7 +2867,7 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
     for (int i = 0; i < num_nodes; ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-      const double IntV_ShapeI = cell_matrices.Vi_vectors[i];
+      const double IntV_ShapeI = cell_matrices.intV_shapeI[i];
 
       // Loop over groups
       for (size_t g = first_grp; g <= last_grp; ++g)
@@ -2912,7 +2912,7 @@ LBSSolver::ComputePrecursors()
       for (int i = 0; i < transport_view.NumNodes(); ++i)
       {
         const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-        const double node_V_fraction = fe_values.Vi_vectors[i] / cell_volume;
+        const double node_V_fraction = fe_values.intV_shapeI[i] / cell_volume;
 
         // Loop over groups
         for (unsigned int g = 0; g < groups_.size(); ++g)

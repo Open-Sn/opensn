@@ -91,7 +91,7 @@ SweepChunkPWLRZ::CellDataCallback()
 {
   const auto& fe_intgrl_values_secondary = secondary_unit_cell_matrices_[cell_local_id_];
 
-  Maux_ = &fe_intgrl_values_secondary.M_matrix;
+  Maux_ = &fe_intgrl_values_secondary.intV_shapeI_shapeJ;
 }
 
 void

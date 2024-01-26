@@ -525,8 +525,8 @@ DiscreteOrdinatesSolver::ComputeBalance()
     const auto& transport_view = cell_transport_views_[cell.local_id_];
     const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id_];
     const size_t num_nodes = transport_view.NumNodes();
-    const auto& IntV_shapeI = fe_intgrl_values.Vi_vectors;
-    const auto& IntS_shapeI = fe_intgrl_values.face_Si_vectors;
+    const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
+    const auto& IntS_shapeI = fe_intgrl_values.intS_shapeI;
 
     // Inflow
     // This is essentially an integration over
@@ -660,7 +660,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
     {
       if (not face.has_neighbor_ and face.neighbor_id_ == boundary_id)
       {
-        const auto& int_f_shape_i = fe_values.face_Si_vectors[f];
+        const auto& int_f_shape_i = fe_values.intS_shapeI[f];
         const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
         for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
         {
@@ -749,7 +749,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
         if (not face.has_neighbor_ and it != boundary_ids.end())
         {
           auto& bndry_leakage = local_leakage[face.neighbor_id_];
-          const auto& int_f_shape_i = fe_values.face_Si_vectors[f];
+          const auto& int_f_shape_i = fe_values.intS_shapeI[f];
           const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
           for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
           {

@@ -68,7 +68,7 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
       // Map the point source to the finite element space
       std::vector<double> shape_vals;
       cell_mapping.ShapeValues(location_, shape_vals);
-      const auto M_inv = Inverse(fe_values.M_matrix);
+      const auto M_inv = Inverse(fe_values.intV_shapeI_shapeJ);
       const auto node_wgts = MatMul(M_inv, shape_vals);
 
       // Increment the total volume
@@ -90,7 +90,7 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
     {
       const auto& fe_values = ghost_unit_cell_matrices.at(nbr_cell.global_id_);
       total_volume +=
-        std::accumulate(fe_values.Vi_vectors.begin(), fe_values.Vi_vectors.end(), 0.0);
+        std::accumulate(fe_values.intV_shapeI.begin(), fe_values.intV_shapeI.end(), 0.0);
     }
   }
 

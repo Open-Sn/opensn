@@ -96,10 +96,10 @@ CBC_SweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
 
   // Get Cell matrices
   const auto& fe_intgrl_values = unit_cell_matrices_[cell_local_id_];
-  G_ = &fe_intgrl_values.G_matrix;
-  M_ = &fe_intgrl_values.M_matrix;
-  M_surf_ = &fe_intgrl_values.face_M_matrices;
-  IntS_shapeI_ = &fe_intgrl_values.face_Si_vectors;
+  G_ = &fe_intgrl_values.intV_shapeI_gradshapeJ;
+  M_ = &fe_intgrl_values.intV_shapeI_shapeJ;
+  M_surf_ = &fe_intgrl_values.intS_shapeI_shapeJ;
+  IntS_shapeI_ = &fe_intgrl_values.intS_shapeI;
 
   for (auto& callback : cell_data_callbacks_)
     callback();
