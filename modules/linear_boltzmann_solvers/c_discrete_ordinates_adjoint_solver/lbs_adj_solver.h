@@ -5,7 +5,6 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 #include "framework/math/math.h"
 
-#include "modules/linear_boltzmann_solvers/c_discrete_ordinates_adjoint_solver/response_function/lbs_adj_response_function.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 
 namespace opensn
@@ -13,15 +12,20 @@ namespace opensn
 namespace lbs
 {
 
+/**
+ * An adjoint discrete ordinates solver.
+ *
+ * This class provides functionality to perform all necessary modifications
+ * for an adjoint discrete ordinates solve. This includes transposing the
+ * group-to-group transfers, reversing the angles, and evaluating inner
+ * products with forward material and point sources for response evaluations.
+ *
+ * @note In general, distributed sources should be used for volumetric QoIs.
+ *       The user is responsible for ensuring that only the appropriate
+ *       sources are active in the problem.
+ */
 class DiscreteOrdinatesAdjointSolver : public DiscreteOrdinatesSolver
 {
-protected:
-  typedef std::vector<size_t> VecSize_t;
-  typedef std::pair<ResponseFunctionDesignation, VecSize_t> RespFuncAndSubs;
-
-public:
-  std::vector<std::vector<double>> m_moment_buffers_;
-
 public:
   explicit DiscreteOrdinatesAdjointSolver(const InputParameters& params);
   explicit DiscreteOrdinatesAdjointSolver(const std::string& solver_name);
@@ -38,27 +42,12 @@ public:
   double ComputeInnerProduct();
 
   /**
-   * Returns the list of volumetric response functions.
-   */
-  const std::vector<RespFuncAndSubs>& GetResponseFunctions() const;
-
-  void MakeAdjointXSs();
-  void InitQOIs();
-
-  /**
-   * Subscribes cells to QOIs.
-   */
-  size_t AddResponseFunction(const std::string& qoi_name,
-                             std::shared_ptr<LogicalVolume> logical_volume,
-                             std::shared_ptr<ResponseFunction> function);
-
-  /**
    * Exports an importance map in binary format.
    */
   void ExportImportanceMap(const std::string& file_name);
 
-protected:
-  std::vector<RespFuncAndSubs> response_functions_;
+public:
+  std::vector<std::vector<double>> flux_moment_buffers_;
 
 public:
   /**

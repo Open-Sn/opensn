@@ -319,7 +319,7 @@ public:
       return 0.0;
   }
 
-  void ReassingXS(const MultiGroupXS& xs_mapped) { xs_ = &xs_mapped; }
+  void ReassignXS(const MultiGroupXS& xs) { xs_ = &xs; }
 };
 
 struct UnitCellMatrices

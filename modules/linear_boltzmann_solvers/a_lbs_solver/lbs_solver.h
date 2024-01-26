@@ -10,6 +10,7 @@
 #include "framework/mesh/sweep_utilities/sweep_boundary/sweep_boundary.h"
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/point_source/point_source.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/distributed_source/distributed_source.h"
 
 #include <petscksp.h>
 
@@ -117,19 +118,34 @@ public:
   const std::vector<LBSGroupset>& Groupsets() const;
 
   /**
-   * Adds a point source to the solver's point source list.
+   * Adds a point source to the solver.
    */
-  void AddPointSource(PointSource psrc);
+  void AddPointSource(PointSource&& point_source);
 
   /**
-   * Clears all the point sources from the solver's point source list.
+   * Clears all the point sources from the solver.
    */
   void ClearPointSources();
 
   /**
-   * Const accessor to the list of point sources.
+   * Constant accessor to the list of point sources.
    */
   const std::vector<PointSource>& PointSources() const;
+
+  /**
+   * Adds a distributed source to the solver.
+   */
+  void AddDistributedSource(DistributedSource&& distributed_source);
+
+  /**
+   * Clears all the distributed sources from the solver.
+   */
+  void ClearDistributedSources();
+
+  /**
+   * Constant accessor to the list of distributed sources.
+   */
+  const std::vector<DistributedSource>& DistributedSources() const;
 
   /**
    * Returns a reference to the map of material ids to XSs.
@@ -514,13 +530,15 @@ protected:
 
   std::vector<LBSGroup> groups_;
   std::vector<LBSGroupset> groupsets_;
-  std::vector<PointSource> point_sources_;
 
   std::map<int, XSPtr> matid_to_xs_map_;
   std::map<int, IsotropicSrcPtr> matid_to_src_map_;
 
-  std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;
+  std::vector<PointSource> point_sources_;
+  std::vector<DistributedSource> distributed_sources_;
+
   MeshContinuumPtr grid_ptr_;
+  std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;
   MPILocalCommSetPtr grid_local_comm_set_ = nullptr;

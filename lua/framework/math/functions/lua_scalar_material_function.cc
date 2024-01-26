@@ -2,11 +2,14 @@
 #include "framework/lua.h"
 #include "framework/runtime.h"
 #include "framework/console/console.h"
+#include "framework/object_factory.h"
 
 using namespace opensn;
 
 namespace opensnlua
 {
+
+OpenSnRegisterObject(opensn, LuaScalarMaterialFunction);
 
 InputParameters
 LuaScalarMaterialFunction::GetInputParameters()

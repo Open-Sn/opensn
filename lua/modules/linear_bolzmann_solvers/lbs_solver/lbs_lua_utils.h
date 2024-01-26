@@ -74,5 +74,22 @@ int AddPointSource(lua_State* L);
  */
 int ClearPointSources(lua_State* L);
 
+/**
+ * Adds a distributed source to an LBS solver.
+ *
+ * \param SolverIndex int Handle to the solver.
+ * \param DistributedSourceHandle int Handle to the distributed source
+ * \ingroup LBSLuaFunctions
+ */
+int AddDistributedSource(lua_State* L);
+
+/**
+ * Clears the distributed sources within an LBS solver.
+ *
+ * \param int Handle to LBS solver.
+ * \ingroup LBSLuaFunctions
+ */
+int ClearDistributedSources(lua_State* L);
+
 void RegisterLuaEntities(lua_State* L);
 } // namespace opensnlua::lbs

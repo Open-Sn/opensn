@@ -24,26 +24,35 @@ meshgen = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes }
 chi_mesh.MeshGenerator.Execute(meshgen)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({ infx = true,
-                                          infy = true,
-                                          infz = true })
+chiVolumeMesherSetMatIDToAll(0)
+
+vol1a = chi_mesh.RPPLogicalVolume.Create(
+    {
+        infx = true,
+        ymin = 0.0, ymax = 0.8 * L,
+        infz = true
+    }
+)
+
+chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol1a, 1)
+
+vol0 = chi_mesh.RPPLogicalVolume.Create(
+    {
+        xmin = 2.5 - 0.166666, xmax = 2.5 + 0.166666,
+        infy = true,
+        infz = true
+    }
+)
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol0, 0)
 
-vol1 = chi_mesh.RPPLogicalVolume.Create({ infx = true,
-                                          ymin = 0.0, ymax = 0.8 * L,
-                                          infz = true })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol1, 1)
-
-vol0b = chi_mesh.RPPLogicalVolume.Create({ xmin = -0.166666 + 2.5, xmax = 0.166666 + 2.5,
-                                           infy = true,
-                                           infz = true })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol0b, 0)
-
-vol1b = chi_mesh.RPPLogicalVolume.Create({ xmin = -1 + 2.5, xmax = 1 + 2.5,
-                                           ymin = 0.9 * L, ymax = L,
-                                           infz = true })
+vol1b = chi_mesh.RPPLogicalVolume.Create(
+    {
+        xmin = -1 + 2.5, xmax = 1 + 2.5,
+        ymin = 0.9 * L, ymax = L,
+        infz = true
+    }
+)
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol1b, 1)
-
 
 --############################################### Add materials
 num_groups = 10
@@ -52,6 +61,7 @@ materials = {}
 materials[1] = chiPhysicsAddMaterial("Test Material1");
 materials[2] = chiPhysicsAddMaterial("Test Material2");
 
+-- Cross sections
 chiPhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
                               SIMPLEXS1, num_groups, 0.01, 0.01)
@@ -60,6 +70,30 @@ chiPhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
 chiPhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
                               SIMPLEXS1, num_groups, 0.1 * 20, 0.8)
 
+-- Distributed sources
+qoi_vol = chi_mesh.RPPLogicalVolume.Create(
+    {
+        xmin = 0.5, xmax = 0.8333,
+        ymin = 4.16666, ymax = 4.33333,
+        infz = true
+    }
+)
+
+function ResponseFunction(xyz, mat_id)
+    response = {}
+    for g = 1, num_groups do
+        if g == 6 then response[g] = 1.0 else response[g] = 0.0 end
+    end
+    return response
+end
+response_func = opensn.LuaSpatialMaterialFunction.Create({ lua_function_name = "ResponseFunction" })
+
+dsrc = lbs.DistributedSource.Create(
+    {
+        logical_volume_handle = qoi_vol,
+        function_handle = response_func
+    }
+)
 
 --############################################### Setup Physics
 pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
@@ -79,26 +113,13 @@ lbs_block = {
     }
 }
 
-lbs_options = { scattering_order = 1 }
+lbs_options = {
+    scattering_order = 1,
+    distributed_sources = { dsrc }
+}
 
 phys = lbs.DiscreteOrdinatesAdjointSolver.Create(lbs_block)
 lbs.SetOptions(phys, lbs_options)
-
---############################################### Create QoI Region
-qoi_vol = chi_mesh.RPPLogicalVolume.Create({ xmin = 0.5, xmax = 0.8333,
-                                             ymin = 4.16666, ymax = 4.33333,
-                                             infz = true })
-
-function ResponseFunction(cell_centroid, material_id)
-    response = {}
-    for g = 1, num_groups do
-        if g == 6 then response[g] = 1.0 else response[g] = 0.0 end
-    end
-    return response
-end
-
-chiAdjointSolverAddResponseFunction(phys, "QoI", qoi_vol, "ResponseFunction")
-chiSolverSetBasicOption(phys, "REFERENCE_RF", "QoI")
 
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })

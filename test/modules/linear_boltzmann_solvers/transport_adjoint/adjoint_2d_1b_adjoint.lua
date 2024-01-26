@@ -18,37 +18,50 @@ ds = L / N
 
 nodes = {}
 for i = 0, N do
-    nodes[i + 1] =  i * ds
+    nodes[i + 1] = i * ds
 end
 meshgen = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 chi_mesh.MeshGenerator.Execute(meshgen)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create({ infx = true,
-                                          infy = true,
-                                          infz = true })
+chiVolumeMesherSetMatIDToAll(0)
+
+vol1a = chi_mesh.RPPLogicalVolume.Create(
+    {
+        infx = true,
+        ymin = 0.0, ymax = 0.8 * L,
+        infz = true
+    }
+)
+
+chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol1a, 1)
+
+vol0 = chi_mesh.RPPLogicalVolume.Create(
+    {
+        xmin = 2.5 - 0.166666, xmax = 2.5 + 0.166666,
+        infy = true,
+        infz = true
+    }
+)
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol0, 0)
 
-vol1 = chi_mesh.RPPLogicalVolume.Create({ ymin = 0.0, ymax = 0.8 * L,
-                                          infx = true,
-                                          infz = true })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol1, 1)
-
-vol0b = chi_mesh.RPPLogicalVolume.Create({ xmin = -0.166666 + 2.5, xmax = 0.166666 + 2.5,
-                                           infy = true,
-                                           infz = true })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol0b, 0)
-
-vol2 = chi_mesh.RPPLogicalVolume.Create({ xmin = -0.166666 + 2.5, xmax = 0.166666 + 2.5,
-                                          ymin = 0.0, ymax = 2 * 0.166666,
-                                          infz = true })
+vol2 = chi_mesh.RPPLogicalVolume.Create(
+    {
+        xmin = 2.5 - 0.166666, xmax = 2.5 + 0.166666,
+        ymin = 0.0, ymax = 2 * 0.166666,
+        infz = true
+    }
+)
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol2, 2)
 
-vol1b = chi_mesh.RPPLogicalVolume.Create({ xmin = -1 + 2.5, xmax = 1 + 2.5,
-                                           ymin = 0.9 * L, ymax = L,
-                                           infz = true })
+vol1b = chi_mesh.RPPLogicalVolume.Create(
+    {
+        xmin = -1 + 2.5, xmax = 1 + 2.5,
+        ymin = 0.9 * L, ymax = L,
+        infz = true
+    }
+)
 chiVolumeMesherSetProperty(MATID_FROMLOGICAL, vol1b, 1)
-
 
 --############################################### Add materials
 num_groups = 1
@@ -71,6 +84,16 @@ chiPhysicsMaterialAddProperty(materials[3], TRANSPORT_XSECTIONS)
 chiPhysicsMaterialSetProperty(materials[3], TRANSPORT_XSECTIONS,
                               SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
 
+-- Distributed source
+qoi_vol = chi_mesh.RPPLogicalVolume.Create(
+    {
+        xmin = 0.5, xmax = 0.8333,
+        ymin = 4.16666, ymax = 4.33333,
+        infz = true
+    }
+)
+dsrc = lbs.DistributedSource.Create({ logical_volume_handle = qoi_vol })
+
 --############################################### Setup Physics
 pquad0 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)
 chiOptimizeAngularQuadratureForPolarSymmetry(pquad0, 4.0 * math.pi)
@@ -89,18 +112,13 @@ lbs_block = {
     }
 }
 
-lbs_options = { scattering_order = 1 }
+lbs_options = {
+    scattering_order = 1,
+    distributed_sources = { dsrc }
+}
 
 phys = lbs.DiscreteOrdinatesAdjointSolver.Create(lbs_block)
 lbs.SetOptions(phys, lbs_options)
-
---############################################### Create QoI region
-qoi_vol = chi_mesh.RPPLogicalVolume.Create({ xmin = 0.5, xmax = 0.8333,
-                                             ymin = 4.16666, ymax = 4.33333,
-                                             infz = true })
-
-chiAdjointSolverAddResponseFunction(phys, "QoI", qoi_vol)
-chiSolverSetBasicOption(phys, "REFERENCE_RF", "QoI")
 
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
