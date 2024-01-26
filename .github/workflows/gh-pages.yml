@@ -21,13 +21,15 @@ jobs:
           sudo apt install \
             cmake \
             make \
+            mpich \
             doxygen \
             sphinx-doc
           sudo pip install -r doc/requirements.txt
 
       - name: Build doco
         run: |
-          cmake -S . -B ${{ github.workspace }}/build
+          cmake -S . -B ${{ github.workspace }}/build \
+            -DOPENSN_WITH_DOCS=ON
           make -C ${{ github.workspace }}/build doc
 
       - name: Deploy
