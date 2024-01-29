@@ -13,9 +13,7 @@
 namespace opensn
 {
 class MeshContinuum;
-typedef std::shared_ptr<MeshContinuum> MeshContinuumPtr;
 class SpatialDiscretization;
-typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
 
 namespace mg_diffusion
 {
@@ -44,9 +42,9 @@ struct TwoGridCollapsedInfo
 class Solver : public opensn::Solver
 {
 public:
-  MeshContinuumPtr grid_ptr_ = nullptr;
+  std::shared_ptr<MeshContinuum> grid_ptr_ = nullptr;
 
-  SDMPtr sdm_ptr_ = nullptr;
+  std::shared_ptr<SpatialDiscretization> sdm_ptr_ = nullptr;
 
   uint num_groups_ = 0;
   uint last_fast_group_ = 0;

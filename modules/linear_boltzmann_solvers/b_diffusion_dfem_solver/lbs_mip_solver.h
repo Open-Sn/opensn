@@ -9,11 +9,8 @@ namespace lbs
 
 class DiffusionDFEMSolver : public LBSSolver
 {
-protected:
-  typedef std::shared_ptr<DiffusionMIPSolver> MIPSolverPtr;
-
 public:
-  std::vector<MIPSolverPtr> gs_mip_solvers_;
+  std::vector<std::shared_ptr<DiffusionMIPSolver>> gs_mip_solvers_;
 
 public:
   explicit DiffusionDFEMSolver(const InputParameters& params);

@@ -60,9 +60,10 @@ FieldFunctionGridBased::FieldFunctionGridBased(const InputParameters& params)
   ghosted_field_vector_->Set(params.GetParamValue<double>("initial_value"));
 }
 
-FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
-                                               SDMPtr& discretization_ptr,
-                                               opensn::Unknown unknown)
+FieldFunctionGridBased::FieldFunctionGridBased(
+  const std::string& text_name,
+  std::shared_ptr<SpatialDiscretization>& discretization_ptr,
+  opensn::Unknown unknown)
   : FieldFunction(text_name, std::move(unknown)),
     sdm_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*sdm_, GetUnknownManager())),
@@ -71,7 +72,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
 }
 
 FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
-                                               SDMPtr& sdm_ptr,
+                                               std::shared_ptr<SpatialDiscretization>& sdm_ptr,
                                                opensn::Unknown unknown,
                                                const std::vector<double>& field_vector)
   : FieldFunction(text_name, std::move(unknown)),
@@ -86,7 +87,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
 }
 
 FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
-                                               SDMPtr& sdm_ptr,
+                                               std::shared_ptr<SpatialDiscretization>& sdm_ptr,
                                                opensn::Unknown unknown,
                                                double field_value)
   : FieldFunction(text_name, std::move(unknown)),
@@ -115,7 +116,7 @@ FieldFunctionGridBased::FieldVector()
   return ghosted_field_vector_->LocalSTLData();
 }
 
-SDMPtr
+std::shared_ptr<SpatialDiscretization>
 FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();

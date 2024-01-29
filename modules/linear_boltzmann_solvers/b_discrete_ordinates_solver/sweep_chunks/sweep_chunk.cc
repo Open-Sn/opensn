@@ -20,7 +20,7 @@ SweepChunk::SweepChunk(std::vector<double>& destination_phi,
                        std::vector<lbs::CellLBSView>& cell_transport_views,
                        const std::vector<double>& source_moments,
                        const LBSGroupset& groupset,
-                       const std::map<int, XSPtr>& xs,
+                       const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
                        int num_moments,
                        int max_num_cell_dofs,
                        std::unique_ptr<SweepDependencyInterface> sweep_dependency_interface_ptr)

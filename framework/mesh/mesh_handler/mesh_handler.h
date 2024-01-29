@@ -20,7 +20,7 @@ public:
    * get a smart-pointer to a grid object. If a volume-mesher has not
    * been created, or if a grid is not available, this method will
    * throw `std::logic_error`.*/
-  MeshContinuumPtr& GetGrid() const;
+  std::shared_ptr<MeshContinuum>& GetGrid() const;
 
   /**Returns true if the surface mesher has been set.*/
   bool HasSurfaceMesher() const { return surface_mesher_ != nullptr; }

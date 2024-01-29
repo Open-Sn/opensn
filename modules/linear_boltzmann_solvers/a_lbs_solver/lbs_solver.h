@@ -18,10 +18,7 @@ namespace opensn
 {
 
 class MPICommunicatorSet;
-typedef std::shared_ptr<MPICommunicatorSet> MPILocalCommSetPtr;
-
 class GridFaceHistogram;
-typedef std::shared_ptr<GridFaceHistogram> GridFaceHistogramPtr;
 
 class TimeIntegration;
 
@@ -34,10 +31,6 @@ struct WGSContext;
 /**Base class for all Linear Boltzmann Solvers.*/
 class LBSSolver : public opensn::Solver
 {
-public:
-  typedef std::shared_ptr<AGSLinearSolver> AGSLinSolverPtr;
-  typedef std::shared_ptr<LinearSolver> LinSolvePtr;
-
 public:
   explicit LBSSolver(const std::string& text_name);
   /**
@@ -150,12 +143,12 @@ public:
   /**
    * Returns a reference to the map of material ids to XSs.
    */
-  const std::map<int, XSPtr>& GetMatID2XSMap() const;
+  const std::map<int, std::shared_ptr<MultiGroupXS>>& GetMatID2XSMap() const;
 
   /**
    * Returns a reference to the map of material ids to Isotropic Srcs.
    */
-  const std::map<int, IsotropicSrcPtr>& GetMatID2IsoSrcMap() const;
+  const std::map<int, std::shared_ptr<IsotropicMultiGrpSource>>& GetMatID2IsoSrcMap() const;
 
   /**
    * Obtains a reference to the grid.
@@ -269,9 +262,9 @@ public:
 
   SetSourceFunction GetActiveSetSourceFunction() const;
 
-  AGSLinSolverPtr GetPrimaryAGSSolver();
+  std::shared_ptr<AGSLinearSolver> GetPrimaryAGSSolver();
 
-  std::vector<LinSolvePtr>& GetWGSSolvers();
+  std::vector<std::shared_ptr<LinearSolver>>& GetWGSSolvers();
 
   WGSContext& GetWGSContext(int groupset_id);
 
@@ -531,18 +524,18 @@ protected:
   std::vector<LBSGroup> groups_;
   std::vector<LBSGroupset> groupsets_;
 
-  std::map<int, XSPtr> matid_to_xs_map_;
-  std::map<int, IsotropicSrcPtr> matid_to_src_map_;
+  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map_;
+  std::map<int, std::shared_ptr<IsotropicMultiGrpSource>> matid_to_src_map_;
 
   std::vector<PointSource> point_sources_;
   std::vector<DistributedSource> distributed_sources_;
 
-  MeshContinuumPtr grid_ptr_;
+  std::shared_ptr<MeshContinuum> grid_ptr_;
   std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;
-  MPILocalCommSetPtr grid_local_comm_set_ = nullptr;
-  GridFaceHistogramPtr grid_face_histogram_ = nullptr;
+  std::shared_ptr<MPICommunicatorSet> grid_local_comm_set_ = nullptr;
+  std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
 
   std::vector<UnitCellMatrices> unit_cell_matrices_;
   std::map<uint64_t, UnitCellMatrices> unit_ghost_cell_matrices_;
@@ -564,9 +557,9 @@ protected:
 
   SetSourceFunction active_set_source_function_;
 
-  std::vector<AGSLinSolverPtr> ags_solvers_;
-  std::vector<LinSolvePtr> wgs_solvers_;
-  AGSLinSolverPtr primary_ags_solver_;
+  std::vector<std::shared_ptr<AGSLinearSolver>> ags_solvers_;
+  std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
+  std::shared_ptr<AGSLinearSolver> primary_ags_solver_;
 
   std::map<std::pair<size_t, size_t>, size_t> phi_field_functions_local_map_;
   size_t power_gen_fieldfunc_local_handle_ = 0;

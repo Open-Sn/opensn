@@ -828,7 +828,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 
   // Define sweep ordering groups
   quadrature_unq_so_grouping_map_.clear();
-  std::map<AngQuadPtr, bool> quadrature_allow_cycles_map_;
+  std::map<std::shared_ptr<AngularQuadrature>, bool> quadrature_allow_cycles_map_;
   for (auto& groupset : groupsets_)
   {
     if (quadrature_unq_so_grouping_map_.count(groupset.quadrature_) == 0)

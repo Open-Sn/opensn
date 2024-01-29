@@ -20,7 +20,7 @@ namespace opensn
 namespace lbs
 {
 
-WGSLinearSolver::WGSLinearSolver(WGSContextPtr gs_context_ptr)
+WGSLinearSolver::WGSLinearSolver(std::shared_ptr<WGSContext> gs_context_ptr)
   : LinearSolver(IterativeMethodPETScName(gs_context_ptr->groupset_.iterative_method_),
                  gs_context_ptr)
 {

@@ -33,8 +33,7 @@ private:
   std::map<std::string, bool> type_mismatch_allowed_tags_;
   std::map<std::string, std::string> parameter_link_;
 
-  typedef std::unique_ptr<AllowableRange> AllowableRangePtr;
-  std::map<std::string, AllowableRangePtr> constraint_tags_;
+  std::map<std::string, std::unique_ptr<AllowableRange>> constraint_tags_;
 
   std::string general_description_;
 
@@ -171,7 +170,8 @@ public:
    * is specified.*/
   void MarkParamaterRenamed(const std::string& param_name, const std::string& renaming_description);
   /**Creates a range based constraint for a given parameter.*/
-  void ConstrainParameterRange(const std::string& param_name, AllowableRangePtr allowable_range);
+  void ConstrainParameterRange(const std::string& param_name,
+                               std::unique_ptr<AllowableRange> allowable_range);
   /**\brief Sets a tag for the given parameter that will allow its type to be
    * mismatched upon assignment.*/
   void SetParameterTypeMismatchAllowed(const std::string& param_name);

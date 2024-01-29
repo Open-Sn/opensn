@@ -6,7 +6,6 @@
 namespace opensn
 {
 class FieldFunctionGridBased;
-typedef std::shared_ptr<FieldFunctionGridBased> FieldFunctionGridBasedPtr;
 
 enum class FieldFunctionInterpolationType : int
 {
@@ -52,12 +51,15 @@ class FieldFunctionInterpolation
 protected:
   FieldFunctionInterpolationType type_;
   unsigned int ref_component_ = 0;
-  std::vector<FieldFunctionGridBasedPtr> field_functions_;
+  std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
 
 public:
   explicit FieldFunctionInterpolation(FieldFunctionInterpolationType type) : type_(type) {}
 
-  std::vector<FieldFunctionGridBasedPtr>& GetFieldFunctions() { return field_functions_; }
+  std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions()
+  {
+    return field_functions_;
+  }
 
   FieldFunctionInterpolationType Type() const { return type_; }
 

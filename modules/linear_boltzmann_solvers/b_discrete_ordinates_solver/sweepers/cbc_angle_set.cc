@@ -19,7 +19,7 @@ CBC_AngleSet::CBC_AngleSet(size_t id,
                            const SPDS& spds,
                            std::shared_ptr<FLUDS>& fluds,
                            const std::vector<size_t>& angle_indices,
-                           std::map<uint64_t, SweepBndryPtr>& sim_boundaries,
+                           std::map<uint64_t, std::shared_ptr<SweepBndry>>& sim_boundaries,
                            size_t in_ref_subset,
                            const MPICommunicatorSet& comm_set)
   : AngleSet(id, num_groups, spds, fluds, angle_indices, sim_boundaries, in_ref_subset),

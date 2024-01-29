@@ -28,23 +28,23 @@ Logger& log = Logger::GetInstance();
 MPI_Info& mpi = MPI_Info::GetInstance();
 Timer program_timer;
 
-std::vector<MeshHandlerPtr> meshhandler_stack;
+std::vector<std::shared_ptr<MeshHandler>> meshhandler_stack;
 int current_mesh_handler = -1;
 
-std::vector<SurfaceMeshPtr> surface_mesh_stack;
-std::vector<FFInterpPtr> field_func_interpolation_stack;
-std::vector<UnpartMeshPtr> unpartitionedmesh_stack;
+std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
+std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
+std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
 
-std::vector<MaterialPtr> material_stack;
-std::vector<MultiGroupXSPtr> multigroup_xs_stack;
-std::vector<FieldFunctionPtr> field_function_stack;
+std::vector<std::shared_ptr<Material>> material_stack;
+std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
+std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 
-std::vector<AngularQuadraturePtr> angular_quadrature_stack;
+std::vector<std::shared_ptr<AngularQuadrature>> angular_quadrature_stack;
 
-std::vector<ChiObjectPtr> object_stack;
-std::vector<SpatialDiscretizationPtr> sdm_stack;
-std::vector<PostProcessorPtr> postprocessor_stack;
-std::vector<FunctionPtr> function_stack;
+std::vector<std::shared_ptr<Object>> object_stack;
+std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
+std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
+std::vector<std::shared_ptr<Function>> function_stack;
 
 bool suppress_color = false;
 

@@ -14,11 +14,10 @@ class LBSSolver;
 
 struct AGSContext : public LinearSolverContext
 {
-  typedef std::shared_ptr<LinearSolver> LinSolveBaseTypePtr;
   LBSSolver& lbs_solver_;
-  std::vector<LinSolveBaseTypePtr> sub_solvers_list_;
+  std::vector<std::shared_ptr<LinearSolver>> sub_solvers_list_;
 
-  AGSContext(LBSSolver& lbs_solver, std::vector<LinSolveBaseTypePtr> sub_solvers_list)
+  AGSContext(LBSSolver& lbs_solver, std::vector<std::shared_ptr<LinearSolver>> sub_solvers_list)
     : lbs_solver_(lbs_solver), sub_solvers_list_(std::move(sub_solvers_list))
   {
   }

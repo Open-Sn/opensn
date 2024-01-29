@@ -11,9 +11,7 @@ namespace lbs
 class NLKEigenvalueAGSSolver : public NonLinearSolver
 {
 public:
-  typedef std::shared_ptr<NLKEigenAGSContext> NLKAGSContextPtr;
-
-  explicit NLKEigenvalueAGSSolver(NLKAGSContextPtr nlk_ags_context_ptr)
+  explicit NLKEigenvalueAGSSolver(std::shared_ptr<NLKEigenAGSContext> nlk_ags_context_ptr)
     : NonLinearSolver(nlk_ags_context_ptr)
   {
   }

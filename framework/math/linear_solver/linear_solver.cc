@@ -3,14 +3,15 @@
 namespace opensn
 {
 
-LinearSolver::LinearSolver(const std::string& iterative_method, LinSolveContextPtr context_ptr)
+LinearSolver::LinearSolver(const std::string& iterative_method,
+                           std::shared_ptr<LinearSolverContext> context_ptr)
   : solver_name_(iterative_method), iterative_method_(iterative_method), context_ptr_(context_ptr)
 {
 }
 
 LinearSolver::LinearSolver(const std::string& solver_name,
                            const std::string& iterative_method,
-                           LinSolveContextPtr context_ptr)
+                           std::shared_ptr<LinearSolverContext> context_ptr)
   : solver_name_(solver_name), iterative_method_(iterative_method), context_ptr_(context_ptr)
 {
 }

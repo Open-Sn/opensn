@@ -12,23 +12,19 @@ namespace lbs
 
 class XXPowerIterationKEigenSCDSA : public XXPowerIterationKEigen
 {
-  typedef std::shared_ptr<DiffusionSolver> DiffusionSolverPtr;
-  typedef std::shared_ptr<VectorGhostCommunicator> VecGhostCommPtr;
-  typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
-
 protected:
   int accel_pi_max_its_;
   double accel_pi_k_tol_;
   bool accel_pi_verbose_;
-  DiffusionSolverPtr diffusion_solver_ = nullptr;
+  std::shared_ptr<DiffusionSolver> diffusion_solver_ = nullptr;
 
   const std::string diffusion_solver_sdm_;
 
-  SDMPtr continuous_sdm_ptr_ = nullptr;
+  std::shared_ptr<SpatialDiscretization> continuous_sdm_ptr_ = nullptr;
   bool requires_ghosts_ = false;
   struct GhostInfo
   {
-    VecGhostCommPtr vector_ghost_communicator = nullptr;
+    std::shared_ptr<VectorGhostCommunicator> vector_ghost_communicator = nullptr;
     std::map<int64_t, int64_t> ghost_global_id_2_local_map;
   };
   GhostInfo lbs_pwld_ghost_info_;

@@ -64,21 +64,18 @@ struct TwoGridCollapsedInfo
 
 TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme);
 
-typedef std::shared_ptr<SweepBoundary> SwpBndryPtr;
-
 /**Translates sweep boundary conditions to that used in diffusion acceleration
  * methods.*/
 std::map<uint64_t, BoundaryCondition>
-TranslateBCs(const std::map<uint64_t, SwpBndryPtr>& sweep_boundaries,
+TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
              bool vaccum_bcs_are_dirichlet = true);
-
-typedef std::shared_ptr<MultiGroupXS> MGXSPtr;
 
 /**Makes a packaged set of XSs, suitable for diffusion, for a particular
  * set of groups.*/
-std::map<int, Multigroup_D_and_sigR> PackGroupsetXS(const std::map<int, MGXSPtr>& matid_to_xs_map,
-                                                    int first_grp_index,
-                                                    int last_group_index);
+std::map<int, Multigroup_D_and_sigR>
+PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_map,
+               int first_grp_index,
+               int last_group_index);
 
 } // namespace lbs
 } // namespace opensn

@@ -13,9 +13,7 @@
 namespace opensn
 {
 class MeshContinuum;
-typedef std::shared_ptr<MeshContinuum> MeshContinuumPtr;
 class SpatialDiscretization;
-typedef std::shared_ptr<SpatialDiscretization> SDMPtr;
 class ScalarSpatialMaterialFunction;
 
 namespace fv_diffusion
@@ -27,9 +25,9 @@ namespace fv_diffusion
 class Solver : public opensn::Solver
 {
 public:
-  MeshContinuumPtr grid_ptr_ = nullptr;
+  std::shared_ptr<MeshContinuum> grid_ptr_ = nullptr;
 
-  SDMPtr sdm_ptr_ = nullptr;
+  std::shared_ptr<SpatialDiscretization> sdm_ptr_ = nullptr;
 
   size_t num_local_dofs_ = 0;
   size_t num_globl_dofs_ = 0;

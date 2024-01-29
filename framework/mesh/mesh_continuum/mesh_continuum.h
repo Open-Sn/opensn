@@ -24,9 +24,6 @@ class MeshGenerator;
 class MeshContinuum
 {
 private:
-  typedef std::shared_ptr<MPICommunicatorSet> MPILocalCommSetPtr;
-
-private:
   std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
   std::vector<std::unique_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
 
@@ -170,7 +167,7 @@ public:
    * Gets the communicator-set for interprocess communication,
    * associated with this mesh. If not created yet, it will create it.
    */
-  MPILocalCommSetPtr MakeMPILocalCommunicatorSet() const;
+  std::shared_ptr<MPICommunicatorSet> MakeMPILocalCommunicatorSet() const;
 
   /**
    * Returns the total number of global cells.

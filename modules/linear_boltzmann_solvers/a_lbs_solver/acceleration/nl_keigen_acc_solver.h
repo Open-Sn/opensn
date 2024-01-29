@@ -14,9 +14,7 @@ namespace lbs
 class NLKEigenDiffSolver : public NonLinearSolver
 {
 public:
-  typedef std::shared_ptr<NLKEigenDiffContext> NLKEigenDiffContextPtr;
-
-  explicit NLKEigenDiffSolver(NLKEigenDiffContextPtr nlk_diff_context_ptr)
+  explicit NLKEigenDiffSolver(std::shared_ptr<NLKEigenDiffContext> nlk_diff_context_ptr)
     : NonLinearSolver(nlk_diff_context_ptr)
   {
   }

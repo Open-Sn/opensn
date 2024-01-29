@@ -14,68 +14,44 @@ namespace opensn
 const std::string name = "OpenSn";
 
 class MeshHandler;
-typedef std::shared_ptr<MeshHandler> MeshHandlerPtr;
-
 class SurfaceMesh;
-typedef std::shared_ptr<SurfaceMesh> SurfaceMeshPtr;
-
 class FieldFunctionInterpolation;
-typedef FieldFunctionInterpolation FFInterp;
-typedef std::shared_ptr<FFInterp> FFInterpPtr;
-
 class UnpartitionedMesh;
-typedef std::shared_ptr<UnpartitionedMesh> UnpartitionedMeshPtr;
-typedef UnpartitionedMeshPtr UnpartMeshPtr;
-
 class Solver;
 class Material;
 class MultiGroupXS;
 class FieldFunction;
 class Function;
-
-typedef std::shared_ptr<Material> MaterialPtr;
-typedef std::shared_ptr<MultiGroupXS> MultiGroupXSPtr;
-typedef std::shared_ptr<FieldFunction> FieldFunctionPtr;
-typedef std::shared_ptr<Function> FunctionPtr;
-
 class AngularQuadrature;
 class SpatialDiscretization;
-
-typedef std::shared_ptr<AngularQuadrature> AngularQuadraturePtr;
-typedef std::shared_ptr<SpatialDiscretization> SpatialDiscretizationPtr;
-
 class UnknownManager;
-
 class Timer;
 class Logger;
 class PostProcessor;
-typedef std::shared_ptr<PostProcessor> PostProcessorPtr;
-
 class Object;
-typedef std::shared_ptr<Object> ChiObjectPtr;
 
 extern MPI_Info& mpi;
 extern Logger& log;
 extern Timer program_timer;
 
 /** Global stack of handlers */
-extern std::vector<MeshHandlerPtr> meshhandler_stack;
+extern std::vector<std::shared_ptr<MeshHandler>> meshhandler_stack;
 extern int current_mesh_handler;
 
-extern std::vector<SurfaceMeshPtr> surface_mesh_stack;
-extern std::vector<FFInterpPtr> field_func_interpolation_stack;
-extern std::vector<UnpartMeshPtr> unpartitionedmesh_stack;
+extern std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
+extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
+extern std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
 
-extern std::vector<MaterialPtr> material_stack;
-extern std::vector<MultiGroupXSPtr> multigroup_xs_stack;
-extern std::vector<FieldFunctionPtr> field_function_stack;
+extern std::vector<std::shared_ptr<Material>> material_stack;
+extern std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
+extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 
-extern std::vector<AngularQuadraturePtr> angular_quadrature_stack;
+extern std::vector<std::shared_ptr<AngularQuadrature>> angular_quadrature_stack;
 
-extern std::vector<ChiObjectPtr> object_stack;
-extern std::vector<SpatialDiscretizationPtr> sdm_stack;
-extern std::vector<PostProcessorPtr> postprocessor_stack;
-extern std::vector<FunctionPtr> function_stack;
+extern std::vector<std::shared_ptr<Object>> object_stack;
+extern std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
+extern std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
+extern std::vector<std::shared_ptr<Function>> function_stack;
 
 const size_t SIZE_T_INVALID = ((size_t)-1);
 

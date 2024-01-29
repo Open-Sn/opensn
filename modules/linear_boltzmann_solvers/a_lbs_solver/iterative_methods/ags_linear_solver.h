@@ -12,8 +12,6 @@ namespace lbs
 class AGSLinearSolver : public LinearSolver
 {
 public:
-  typedef std::shared_ptr<AGSContext> AGSContextPtr;
-
   /**Constructor.
    * \param iterative_method string Across Groupset iterative method.
    * \param ags_context_ptr Pointer Pointer to the context to use.
@@ -21,7 +19,7 @@ public:
    * \param groupspan_last_id int Last group index.
    * \param verbose bool Flag to enable verbose output.*/
   AGSLinearSolver(std::string iterative_method,
-                  AGSContextPtr ags_context_ptr,
+                  std::shared_ptr<AGSContext> ags_context_ptr,
                   int groupspan_first_id,
                   int groupspan_last_id,
                   bool verbose = true)
