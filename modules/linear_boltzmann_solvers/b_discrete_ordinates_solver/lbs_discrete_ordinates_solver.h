@@ -45,6 +45,10 @@ public:
   void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs_ids,
                                                   Vec x_src,
                                                   PhiSTLOption which_phi) override;
+  /**
+   * Reorient an adjoint solution to account for backwards streaming.
+   */
+  void ReorientAdjointSolution() override;
 
   /**
    * Zeroes all the outflow data-structures required to compute

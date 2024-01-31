@@ -474,6 +474,13 @@ public:
                                                           Vec x_src,
                                                           PhiSTLOption which_phi);
 
+  /**
+   * A method for post-processing an adjoint solution.
+   *
+   * @note This does nothing for diffusion-based solvers.
+   */
+  virtual void ReorientAdjointSolution(){};
+
 protected:
   /**
    * Performs general input checks before initialization continues.

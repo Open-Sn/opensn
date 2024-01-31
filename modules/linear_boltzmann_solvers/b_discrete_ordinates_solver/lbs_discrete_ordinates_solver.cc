@@ -484,6 +484,109 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::v
 }
 
 void
+DiscreteOrdinatesSolver::ReorientAdjointSolution()
+{
+  for (const auto& groupset : groupsets_)
+  {
+    int gs = groupset.id_;
+
+    // Moment map for flux moments
+    const auto& moment_map = groupset.quadrature_->GetMomentToHarmonicsIndexMap();
+
+    // Angular flux info
+    auto& psi = psi_new_local_[gs];
+    const auto& uk_man = groupset.psi_uk_man_;
+
+    // Build reversed angle mapping
+    std::map<int, int> reversed_angle_map;
+    if (options_.save_angular_flux)
+    {
+      const auto& omegas = groupset.quadrature_->omegas_;
+      const auto num_gs_angles = omegas.size();
+
+      // Go through angles until all are paired
+      std::set<size_t> visited;
+      for (int idir = 0; idir < num_gs_angles; ++idir)
+      {
+        // Skip if already encountered
+        if (visited.count(idir) > 0) continue;
+
+        bool found = true;
+        for (int jdir = 0; jdir < num_gs_angles; ++jdir)
+        {
+          // Angles are opposite if their sum is zero
+          const auto sum = grid_ptr_->Attributes() & DIMENSION_1
+                             ? Vector3(0.0, 0.0, omegas[idir].z + omegas[jdir].z)
+                             : omegas[idir] + omegas[jdir];
+          const bool opposite = sum.NormSquare() < 1.0e-8;
+
+          // Add opposites to mapping
+          if (opposite)
+          {
+            found = true;
+            reversed_angle_map[idir] = jdir;
+
+            visited.insert(idir);
+            visited.insert(jdir);
+          }
+        } // for angle n
+
+        ChiLogicalErrorIf(not found,
+                          "Opposing angle for " + omegas[idir].PrintStr() + " in groupset " +
+                            std::to_string(gs) + " not found.");
+
+      } // for angle m
+    }   // if saving angular flux
+
+    const auto num_gs_groups = groupset.groups_.size();
+    const auto gsg_i = groupset.groups_.front().id_;
+    const auto gsg_f = groupset.groups_.back().id_;
+
+    for (const auto& cell : grid_ptr_->local_cells)
+    {
+      const auto& transport_view = cell_transport_views_[cell.local_id_];
+      for (int i = 0; i < transport_view.NumNodes(); ++i)
+      {
+        // Reorient flux moments
+        //
+        // Because flux moments are integrated angular fluxes, the
+        // angular flux and spherical harmonics must be evaluated at
+        // opposite angles in the quadrature integration. Taking advantage
+        // of the even/odd nature of the spherical harmonics, i.e.
+        // Y_{\ell,m}(-\Omega) = (-1)^\ell Y_{\ell,m}(\Omega), the flux
+        // moments must be multiplied by (-1)^\ell.
+        for (int imom = 0; imom < num_moments_; ++imom)
+        {
+          const auto& ell = moment_map[imom].ell;
+          const auto dof_map = transport_view.MapDOF(i, imom, 0);
+
+          for (int g = gsg_i; g <= gsg_f; ++g)
+          {
+            phi_new_local_[dof_map + g] *= std::pow(-1.0, ell);
+            phi_old_local_[dof_map + g] *= std::pow(-1.0, ell);
+          } // for group g
+        }   // for moment m
+
+        // Reorient angular flux
+        if (options_.save_angular_flux)
+        {
+          for (const auto& [idir, jdir] : reversed_angle_map)
+          {
+            const auto dof_map =
+              std::make_pair(discretization_->MapDOFLocal(cell, i, uk_man, idir, 0),
+                             discretization_->MapDOFLocal(cell, i, uk_man, jdir, 0));
+
+            for (int gsg = 0; gsg < num_gs_groups; ++gsg)
+              std::swap(psi[dof_map.first + gsg], psi[dof_map.second + gsg]);
+          }
+        }
+      } // for node i
+    }   // for cell
+
+  } // for groupset
+}
+
+void
 DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 {
   for (auto& cell_transport_view : cell_transport_views_)
