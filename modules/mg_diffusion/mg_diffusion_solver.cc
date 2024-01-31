@@ -209,11 +209,12 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     // Check valid ids
     if (mat_id < 0)
     {
-      throw std::logic_error("MG-diff-InitMaterials: Cells encountered with no assigned material.");
+      throw std::logic_error(
+        "MG-diff-InitializeMaterials: Cells encountered with no assigned material.");
     }
     if (static_cast<size_t>(mat_id) >= num_physics_mats)
     {
-      throw std::logic_error("MG-diff-InitMaterials: Cells encountered with "
+      throw std::logic_error("MG-diff-InitializeMaterials: Cells encountered with "
                              "material id that matches no material in physics material library.");
     }
 
@@ -236,11 +237,12 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
 
         if (mg_source->source_value_g_.size() < num_groups_)
         {
-          log.LogAllWarning() << "MG-Diff-InitMaterials: Isotropic Multigroup source specified "
-                                 "in "
-                              << "material \"" << current_material->name_ << "\" has fewer "
-                              << "energy groups than called for in the simulation. "
-                              << "Source will be ignored.";
+          log.LogAllWarning()
+            << "MG-Diff-InitializeMaterials: Isotropic Multigroup source specified "
+               "in "
+            << "material \"" << current_material->name_ << "\" has fewer "
+            << "energy groups than called for in the simulation. "
+            << "Source will be ignored.";
         }
         else { matid_to_src_map[mat_id] = mg_source; }
       } // P0 source
@@ -249,7 +251,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     // Check valid property
     if (!found_transport_xs)
     {
-      log.LogAllError() << "MG-Diff-InitMaterials: Found no transport cross-section property "
+      log.LogAllError() << "MG-Diff-InitializeMaterials: Found no transport cross-section property "
                            "for "
                         << "material \"" << current_material->name_ << "\".";
       Exit(EXIT_FAILURE);
@@ -257,8 +259,9 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     // Check number of groups legal
     if (matid_to_xs_map[mat_id]->NumGroups() != num_groups_)
     {
-      log.LogAllError() << "MG-Diff-InitMaterials: Found material \"" << current_material->name_
-                        << "\" has " << matid_to_xs_map[mat_id]->NumGroups() << " groups and "
+      log.LogAllError() << "MG-Diff-InitializeMaterials: Found material \""
+                        << current_material->name_ << "\" has "
+                        << matid_to_xs_map[mat_id]->NumGroups() << " groups and "
                         << "the simulation has " << num_groups_ << " groups. The material "
                         << "must have the same number of groups.";
       Exit(EXIT_FAILURE);
@@ -267,8 +270,8 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     // Check number of moments
     if (matid_to_xs_map[mat_id]->ScatteringOrder() > 1)
     {
-      log.Log0Warning() << "MG-Diff-InitMaterials: Found material \"" << current_material->name_
-                        << "\" has a scattering order of "
+      log.Log0Warning() << "MG-Diff-InitializeMaterials: Found material \""
+                        << current_material->name_ << "\" has a scattering order of "
                         << matid_to_xs_map[mat_id]->ScatteringOrder() << " and"
                         << " the simulation has a scattering order of One (MG-Diff)"
                         << " The higher moments will therefore not be used.";

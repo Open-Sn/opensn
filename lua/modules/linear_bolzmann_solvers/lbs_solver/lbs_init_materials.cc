@@ -24,7 +24,7 @@ chiLBSInitializeMaterials(lua_State* L)
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
-  lbs_solver.InitMaterials();
+  lbs_solver.InitializeMaterials();
 
   return 0;
 }

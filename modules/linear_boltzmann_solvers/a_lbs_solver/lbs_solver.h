@@ -289,7 +289,7 @@ public:
   /**
    * Initializes default materials and physics materials.
    */
-  void InitMaterials();
+  void InitializeMaterials();
 
   /**Initializes the Within-Group DSA solver. */
   void InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);

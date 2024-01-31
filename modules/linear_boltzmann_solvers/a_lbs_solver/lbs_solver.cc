@@ -18,6 +18,7 @@
 #include "framework/math/time_integrations/time_integration.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/physics/physics_material/physics_material.h"
+#include "framework/physics/physics_material/multi_group_xs/adjoint_mgxs.h"
 #include "framework/physics/field_function/field_function_grid_based.h"
 #include <algorithm>
 #include <iomanip>
@@ -480,6 +481,8 @@ LBSSolver::OptionsBlock()
   "obtained elsewhere.");
   params.AddOptionalParameter("save_angular_flux", false,
   "Flag indicating whether angular fluxes are to be stored or not.");
+  params.AddOptionalParameter("adjoint", false,
+  "Flag for toggling whether the solver is in adjoint mode.");
   params.AddOptionalParameter("verbose_inner_iterations", true,
   "Flag to control verbosity of inner iterations.");
   params.AddOptionalParameter("verbose_outer_iterations", true,
@@ -578,6 +581,38 @@ LBSSolver::SetOptions(const InputParameters& params)
     if (user_params.GetParamValue<bool>("clear_point_sources")) point_sources_.clear();
   if (user_params.Has("clear_distributed_sources"))
     if (user_params.GetParamValue<bool>("clear_distributed_sources")) distributed_sources_.clear();
+  if (user_params.Has("adjoint"))
+  {
+    const bool adjoint = user_params.GetParamValue<bool>("adjoint");
+    if (adjoint != options_.adjoint)
+    {
+      options_.adjoint = adjoint;
+
+      // If a discretization exists, the solver has already been initialized.
+      // Reinitialize the materials to obtain the appropriate xs and clear the
+      // sources to prepare for defining the adjoint problem
+      if (discretization_)
+      {
+        // The materials are reinitialized here to ensure that the proper cross sections
+        // are available to the solver. Because an adjoint solve requires volumetric or
+        // point sources, the material-based sources are not set within the initialize routine.
+        InitializeMaterials();
+
+        // Forward and adjoint sources are fundamentally different, so any existing sources
+        // should be cleared and reset through options upon changing modes.
+        point_sources_.clear();
+        distributed_sources_.clear();
+        boundary_preferences_.clear();
+
+        // Set all solutions to zero.
+        phi_old_local_.assign(phi_old_local_.size(), 0.0);
+        phi_new_local_.assign(phi_new_local_.size(), 0.0);
+        for (auto& psi : psi_new_local_)
+          psi.assign(psi.size(), 0.0);
+        precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
+      }
+    }
+  }
 
   // Handle order insensitive options
   for (size_t p = 0; p < user_params.NumParameters(); ++p)
@@ -748,7 +783,7 @@ LBSSolver::Initialize()
 
   mpi_comm.barrier();
 
-  InitMaterials();                   // c
+  InitializeMaterials();             // c
   InitializeSpatialDiscretization(); // d
   InitializeGroupsets();             // e
   ComputeNumberOfMoments();          // f
@@ -856,14 +891,15 @@ LBSSolver::PrintSimHeader()
 }
 
 void
-LBSSolver::InitMaterials()
+LBSSolver::InitializeMaterials()
 {
-  const std::string fname = "lbs::SteadyStateSolver::InitMaterials";
   log.Log0Verbose1() << "Initializing Materials";
 
   // Create set of material ids locally relevant
-  std::set<int> unique_material_ids;
+  const size_t num_physics_mats = material_stack.size();
+
   int invalid_mat_cell_count = 0;
+  std::set<int> unique_material_ids;
   for (auto& cell : grid_ptr_->local_cells)
   {
     unique_material_ids.insert(cell.material_id_);
@@ -877,10 +913,10 @@ LBSSolver::InitMaterials()
     if (cell.material_id_ < 0) ++invalid_mat_cell_count;
   }
 
-  if (invalid_mat_cell_count > 0)
-  {
-    log.LogAllWarning() << "Number of invalid material cells: " << invalid_mat_cell_count;
-  }
+  log.Log() << "Invalid cell materials " << invalid_mat_cell_count;
+  ChiLogicalErrorIf(invalid_mat_cell_count > 0,
+                    std::to_string(invalid_mat_cell_count) +
+                      " cells encountered with an invalid material id.");
 
   // Get ready for processing
   std::stringstream materials_list;
@@ -888,75 +924,60 @@ LBSSolver::InitMaterials()
   matid_to_src_map_.clear();
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Process materials found
-  const size_t num_physics_mats = material_stack.size();
 
   for (const int& mat_id : unique_material_ids)
   {
     materials_list << "Material id " << mat_id;
 
-    // Check valid ids
-    if (mat_id < 0)
-      throw std::logic_error(fname + ": Cells encountered with no assigned "
-                                     "material.");
-    if (static_cast<size_t>(mat_id) >= num_physics_mats)
-      throw std::logic_error(fname + ": Cells encountered with material id that"
-                                     " matches no material in physics material "
-                                     "library.");
-
-    auto current_material = GetStackItemPtr(material_stack, mat_id, fname);
+    const auto& current_material = GetStackItemPtr(material_stack, mat_id, __FUNCTION__);
 
     // Extract properties
-    using MatProperty = PropertyType;
     bool found_transport_xs = false;
     for (const auto& property : current_material->properties_)
     {
-      if (property->Type() == MatProperty::TRANSPORT_XSECTIONS)
+      if (property->Type() == PropertyType::TRANSPORT_XSECTIONS)
       {
-        auto transp_xs = std::static_pointer_cast<MultiGroupXS>(property);
-        matid_to_xs_map_[mat_id] = transp_xs;
+        // If forward mode, use the existing xs on stack.
+        // If adjoint mode, create adjoint xs.
+        auto xs = std::static_pointer_cast<MultiGroupXS>(property);
+        matid_to_xs_map_[mat_id] = not options_.adjoint ? xs : std::make_shared<AdjointMGXS>(*xs);
         found_transport_xs = true;
       } // transport xs
-      if (property->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
-      {
-        auto mg_source = std::static_pointer_cast<IsotropicMultiGrpSource>(property);
 
-        if (mg_source->source_value_g_.size() < groups_.size())
+      if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
+      {
+        const auto& src = std::static_pointer_cast<IsotropicMultiGrpSource>(property);
+
+        if (src->source_value_g_.size() < groups_.size())
         {
-          log.LogAllWarning() << fname + ": Isotropic Multigroup source specified in "
+          log.LogAllWarning() << __FUNCTION__ << ": IsotropicMultiGrpSource specified in "
                               << "material \"" << current_material->name_ << "\" has fewer "
                               << "energy groups than called for in the simulation. "
                               << "Source will be ignored.";
         }
-        else { matid_to_src_map_[mat_id] = mg_source; }
+        else { matid_to_src_map_[mat_id] = src; }
       } // P0 source
     }   // for property
 
     // Check valid property
-    if (!found_transport_xs)
-    {
-      log.LogAllError() << fname + ": Found no transport cross-section property for "
-                        << "material \"" << current_material->name_ << "\".";
-      Exit(EXIT_FAILURE);
-    }
+    ChiLogicalErrorIf(not found_transport_xs,
+                      "Material \"" + current_material->name_ + "\" does not contain " +
+                        "transport cross sections.");
+
     // Check number of groups legal
-    if (matid_to_xs_map_[mat_id]->NumGroups() < groups_.size())
-    {
-      log.LogAllError() << fname + ": Found material \"" << current_material->name_ << "\" has "
-                        << matid_to_xs_map_[mat_id]->NumGroups() << " groups and"
-                        << " the simulation has " << groups_.size() << " groups."
-                        << " The material must have a greater or equal amount of groups.";
-      Exit(EXIT_FAILURE);
-    }
+    ChiLogicalErrorIf(matid_to_xs_map_[mat_id]->NumGroups() < groups_.size(),
+                      "Material \"" + current_material->name_ + "\" has fewer groups (" +
+                        std::to_string(matid_to_xs_map_[mat_id]->NumGroups()) + ") than " +
+                        "the simulation (" + std::to_string(groups_.size()) + "). " +
+                        "A material must have at least as many groups as the simulation.");
 
     // Check number of moments
     if (matid_to_xs_map_[mat_id]->ScatteringOrder() < options_.scattering_order)
     {
-      log.Log0Warning() << fname + ": Found material \"" << current_material->name_
-                        << "\" has a scattering order of "
-                        << matid_to_xs_map_[mat_id]->ScatteringOrder()
-                        << " and the simulation has a scattering order of "
-                        << options_.scattering_order
-                        << ". The higher moments will therefore not be used.";
+      log.Log0Warning() << __FUNCTION__ << ": Material \"" << current_material->name_
+                        << "\" has a lower scattering order ("
+                        << matid_to_xs_map_[mat_id]->ScatteringOrder() << ") "
+                        << "than the simulation (" << options_.scattering_order << ").";
     }
 
     materials_list << " number of moments " << matid_to_xs_map_[mat_id]->ScatteringOrder() + 1
@@ -982,14 +1003,13 @@ LBSSolver::InitMaterials()
   // check compatibility when precursors are on
   if (options_.use_precursors)
   {
-    for (const auto& mat_id_xs : matid_to_xs_map_)
+    for (const auto& [mat_id, xs] : matid_to_xs_map_)
     {
-      const auto& xs = mat_id_xs.second;
-      if (xs->IsFissionable() && num_precursors_ == 0)
-        throw std::logic_error("Incompatible cross section data encountered."
-                               "When delayed neutron data is present for one "
-                               "fissionable material, it must be present for "
-                               "all fissionable materials.");
+      ChiLogicalErrorIf(xs->IsFissionable() and num_precursors_ == 0,
+                        "Incompatible cross section data encountered for material ID " +
+                          std::to_string(mat_id) + ". When delayed neutron data is present " +
+                          "for one fissionable matrial, it must be present for all fissionable "
+                          "materials.");
     }
   }
 

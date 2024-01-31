@@ -229,6 +229,8 @@ struct Options
 
   bool save_angular_flux = false;
 
+  bool adjoint = false;
+
   bool verbose_inner_iterations = true;
   bool verbose_ags_iterations = false;
   bool verbose_outer_iterations = true;
