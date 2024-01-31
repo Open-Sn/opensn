@@ -114,10 +114,11 @@ lbs_block = {
 
 lbs_options = {
     scattering_order = 1,
-    distributed_sources = { dsrc }
+    adjoint = true,
+    distributed_sources = { dsrc },
 }
 
-phys = lbs.DiscreteOrdinatesAdjointSolver.Create(lbs_block)
+phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 lbs.SetOptions(phys, lbs_options)
 
 --############################################### Initialize and Execute Solver
