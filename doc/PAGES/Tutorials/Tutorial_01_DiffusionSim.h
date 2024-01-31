@@ -94,13 +94,13 @@ many options for logical volumes ranging from primitive parametric surfaces
  we will use a rectangular paralellipiped (RPP or brick) as follows.
 
 \code
-material = chiPhysicsAddMaterial("Test Material");
+material = PhysicsAddMaterial("Test Material");
 
 vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 \endcode
 
-We first create a material using the chiPhysicsAddMaterial() function.
+We first create a material using the PhysicsAddMaterial() function.
  The handle of this material will essentially be zero but it is not technically
  required by the VolumeMesherSetProperty() function since this function
  operates on the integer supplied.
@@ -225,7 +225,7 @@ surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 chiVolumeMesherExecute();
 
-material = chiPhysicsAddMaterial("Test Material");
+material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)

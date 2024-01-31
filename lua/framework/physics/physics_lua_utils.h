@@ -16,14 +16,14 @@
  * Example lua code:
  * \code
  * materials = {}
- * materials[1] = chiPhysicsAddMaterial("Test Material");
+ * materials[1] = PhysicsAddMaterial("Test Material");
  * \endcode
  *
  *
  * \ingroup LuaPhysicsMaterials
  * \author Jan
  */
-int chiPhysicsAddMaterial(lua_State* L);
+int PhysicsAddMaterial(lua_State* L);
 
 /** Adds a material property to a material.
  *
@@ -139,7 +139,7 @@ int chiPhysicsMaterialAddProperty(lua_State* L);
  * Simple temperature independent thermal conductivity:
  * \code
  * materials = {}
- * materials[1] = chiPhysicsAddMaterial("Test Material");
+ * materials[1] = PhysicsAddMaterial("Test Material");
  * chiPhysicsMaterialAddProperty(materials[0],THERMAL_CONDUCTIVITY)
  * chiPhysicsMaterialSetProperty(materials[0],THERMAL_CONDUCTIVITY,SINGLE_VALUE,13.7)
  * \endcode
@@ -150,7 +150,7 @@ int chiPhysicsMaterialAddProperty(lua_State* L);
  * Isotropic Multigroup source set from a lua table/array (12 groups):
  * \code
  * materials = {}
- * materials[1] = chiPhysicsAddMaterial("Test Material");
+ * materials[1] = PhysicsAddMaterial("Test Material");
  *
  * chiPhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
  *

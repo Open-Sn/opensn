@@ -43,7 +43,7 @@ sigmat = 25.0
 ratioc = 0.1
 source = sigmat * (1 - ratioc)
 
-material0 = chiPhysicsAddMaterial("Material_0");
+material0 = PhysicsAddMaterial("Material_0");
 chiPhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 chiPhysicsMaterialAddProperty(material0,ISOTROPIC_MG_SOURCE)
 chiPhysicsMaterialSetProperty(material0, TRANSPORT_XSECTIONS,

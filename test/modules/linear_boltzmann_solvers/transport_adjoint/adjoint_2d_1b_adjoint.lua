@@ -67,9 +67,9 @@ VolumeMesherSetProperty(MATID_FROMLOGICAL, vol1b, 1)
 num_groups = 1
 
 materials = {}
-materials[1] = chiPhysicsAddMaterial("Test Material");
-materials[2] = chiPhysicsAddMaterial("Test Material2");
-materials[3] = chiPhysicsAddMaterial("Test Material3");
+materials[1] = PhysicsAddMaterial("Test Material");
+materials[2] = PhysicsAddMaterial("Test Material2");
+materials[3] = PhysicsAddMaterial("Test Material3");
 
 -- Cross sections
 chiPhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)

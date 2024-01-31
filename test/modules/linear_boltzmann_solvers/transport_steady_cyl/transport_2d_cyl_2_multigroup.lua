@@ -47,7 +47,7 @@ for g = 2, ngrp do
   source[g] = 0
 end
 
-material0 = chiPhysicsAddMaterial("Material_0");
+material0 = PhysicsAddMaterial("Material_0");
 chiPhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 chiPhysicsMaterialAddProperty(material0,ISOTROPIC_MG_SOURCE)
 chiPhysicsMaterialSetProperty(material0, TRANSPORT_XSECTIONS,

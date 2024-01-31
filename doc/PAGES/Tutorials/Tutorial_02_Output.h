@@ -94,7 +94,7 @@ surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 chiVolumeMesherExecute();
 
-material = chiPhysicsAddMaterial("Test Material");
+material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)

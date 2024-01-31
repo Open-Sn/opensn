@@ -8,7 +8,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
-material = chiPhysicsAddMaterial("Test Material");
+material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)

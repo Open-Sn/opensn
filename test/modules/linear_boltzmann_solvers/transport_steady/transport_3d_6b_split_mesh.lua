@@ -71,7 +71,7 @@ VolumeMesherSetMatIDToAll(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = chiPhysicsAddMaterial("Test Material");
+materials[1] = PhysicsAddMaterial("Test Material");
 
 chiPhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
 

@@ -41,8 +41,8 @@ MeshHandlerExportMeshToVTK("TheMesh")
 
 --############################################### Add materials
 materials = {}
-materials[1] = chiPhysicsAddMaterial("Strong fuel");
-materials[2] = chiPhysicsAddMaterial("Weak fuel");
+materials[1] = PhysicsAddMaterial("Strong fuel");
+materials[2] = PhysicsAddMaterial("Weak fuel");
 
 chiPhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
 chiPhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)

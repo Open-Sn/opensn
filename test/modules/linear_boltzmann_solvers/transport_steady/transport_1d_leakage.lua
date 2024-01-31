@@ -30,7 +30,7 @@ num_groups = 1
 sigma_t = 1.0
 
 materials = {}
-materials[1] = chiPhysicsAddMaterial("Test Material");
+materials[1] = PhysicsAddMaterial("Test Material");
 chiPhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 
 chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,

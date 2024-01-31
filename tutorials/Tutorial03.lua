@@ -13,7 +13,7 @@ vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 --############################################### Add material
-material0 = chiPhysicsAddMaterial("Test Material");
+material0 = PhysicsAddMaterial("Test Material");
 
 chiPhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1

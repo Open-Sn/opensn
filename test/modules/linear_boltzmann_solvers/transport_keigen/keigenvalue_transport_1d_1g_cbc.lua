@@ -58,7 +58,7 @@ VolumeMesherSetMatIDToAll(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = chiPhysicsAddMaterial("Fissile Material")
+materials[1] = PhysicsAddMaterial("Fissile Material")
 
 chiPhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 
