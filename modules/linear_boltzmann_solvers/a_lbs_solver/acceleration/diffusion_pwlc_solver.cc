@@ -118,7 +118,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
             VecSetValue(rhs_, imap, -entry_aij * bcvalue, ADD_VALUES);
           }
 
-          entry_rhs_i += qg[j] * intV_shapeI_shapeJ[i][j];
+          entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
         } // for j
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -304,7 +304,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
             VecSetValue(rhs_, imap, -entry_aij * bcvalue, ADD_VALUES);
           }
 
-          entry_rhs_i += qg[j] * intV_shapeI_shapeJ[i][j];
+          entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
         } // for j
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -428,7 +428,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; j++)
-          entry_rhs_i += qg[j] * intV_shapeI_shapeJ[i][j];
+          entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
