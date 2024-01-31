@@ -105,7 +105,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
             if (not source_function_)
               entry_rhs_i +=
-                qg[j] * qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp) * qp_data.JxW(qp);
+                qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp) * qp_data.JxW(qp) * qg[j];
           } // for qp
           MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
         } // for j
@@ -427,7 +427,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
             for (size_t qp : qp_data.QuadraturePointIndices())
             {
               entry_rhs_i +=
-                qg[j] * qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp) * qp_data.JxW(qp);
+                qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp) * qp_data.JxW(qp) * qg[j];
             } // for qp
           }   // for j
         else
@@ -621,7 +621,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           const double entry_aij =
             Dg * intV_gradshapeI_gradshapeJ[i][j] + sigr_g * intV_shapeI_shapeJ[i][j];
 
-          entry_rhs_i += qg[j] * intV_shapeI_shapeJ[i][j];
+          entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
 
           MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
         } // for j
@@ -901,7 +901,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; j++)
-          entry_rhs_i += qg[j] * intV_shapeI_shapeJ[i][j];
+          entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
@@ -1046,7 +1046,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; j++)
-          entry_rhs_i += qg[j] * intV_shapeI_shapeJ[i][j];
+          entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
