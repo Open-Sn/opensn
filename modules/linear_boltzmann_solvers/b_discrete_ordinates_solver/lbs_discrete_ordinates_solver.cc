@@ -191,7 +191,7 @@ DiscreteOrdinatesSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
 }
 
 void
-DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset,
+DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
                                                            Vec x,
                                                            PhiSTLOption which_phi)
 {
@@ -248,8 +248,8 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset
 }
 
 void
-DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset,
-                                                           Vec x_src,
+DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
+                                                           Vec x,
                                                            PhiSTLOption which_phi)
 {
   std::vector<double>* y_ptr;
@@ -266,7 +266,7 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset
   }
 
   const double* x_ref;
-  VecGetArrayRead(x_src, &x_ref);
+  VecGetArrayRead(x, &x_ref);
 
   int gsi = groupset.groups_.front().id_;
   int gsf = groupset.groups_.back().id_;
@@ -300,11 +300,11 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset
       groupset.angle_agg_->SetOldDelayedAngularDOFsFromArray(index, x_ref);
   }
 
-  VecRestoreArrayRead(x_src, &x_ref);
+  VecRestoreArrayRead(x, &x_ref);
 }
 
 void
-DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
+DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
                                                        PhiSTLOption from_which_phi,
                                                        PhiSTLOption to_which_phi)
 {
@@ -361,9 +361,8 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
 }
 
 void
-DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& gs_ids,
-                                                                Vec x,
-                                                                PhiSTLOption which_phi)
+DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
+  const std::vector<int>& groupset_ids, Vec x, PhiSTLOption which_phi)
 {
   const std::vector<double>* y_ptr;
   switch (which_phi)
@@ -382,7 +381,7 @@ DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vecto
   VecGetArray(x, &x_ref);
 
   int64_t index = -1;
-  for (int gs_id : gs_ids)
+  for (int gs_id : groupset_ids)
   {
     auto& groupset = groupsets_.at(gs_id);
 
@@ -423,9 +422,8 @@ DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vecto
 }
 
 void
-DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs_ids,
-                                                                    Vec x_src,
-                                                                    PhiSTLOption which_phi)
+DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
+  const std::vector<int>& groupset_ids, Vec x, PhiSTLOption which_phi)
 {
   std::vector<double>* y_ptr;
   switch (which_phi)
@@ -441,10 +439,10 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::v
   }
 
   const double* x_ref;
-  VecGetArrayRead(x_src, &x_ref);
+  VecGetArrayRead(x, &x_ref);
 
   int64_t index = -1;
-  for (int gs_id : gs_ids)
+  for (int gs_id : groupset_ids)
   {
     auto& groupset = groupsets_.at(gs_id);
 
@@ -480,7 +478,7 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::v
     }
   } // for groupset id
 
-  VecRestoreArrayRead(x_src, &x_ref);
+  VecRestoreArrayRead(x, &x_ref);
 }
 
 void

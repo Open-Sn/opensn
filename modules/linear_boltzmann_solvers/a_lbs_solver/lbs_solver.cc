@@ -2967,7 +2967,9 @@ LBSSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
 }
 
 void
-LBSSolver::SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset, Vec x, PhiSTLOption which_phi)
+LBSSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
+                                             Vec x,
+                                             PhiSTLOption which_phi)
 {
   const std::vector<double>* y_ptr;
   switch (which_phi)
@@ -3012,8 +3014,8 @@ LBSSolver::SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset, Vec x, PhiST
 }
 
 void
-LBSSolver::SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset,
-                                             Vec x_src,
+LBSSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
+                                             Vec x,
                                              PhiSTLOption which_phi)
 {
   std::vector<double>* y_ptr;
@@ -3030,7 +3032,7 @@ LBSSolver::SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset,
   }
 
   const double* x_ref;
-  VecGetArrayRead(x_src, &x_ref);
+  VecGetArrayRead(x, &x_ref);
 
   int gsi = groupset.groups_.front().id_;
   int gsf = groupset.groups_.back().id_;
@@ -3055,12 +3057,12 @@ LBSSolver::SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset,
     }     // for dof
   }       // for cell
 
-  VecRestoreArrayRead(x_src, &x_ref);
+  VecRestoreArrayRead(x, &x_ref);
 }
 
 void
-LBSSolver::GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
-                                         const std::vector<double>& x_src,
+LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
+                                         const std::vector<double>& x,
                                          std::vector<double>& y)
 {
   int gsi = groupset.groups_.front().id_;
@@ -3077,7 +3079,7 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
         size_t mapping = transport_view.MapDOF(i, m, gsi);
         for (int g = 0; g < gss; g++)
         {
-          y[mapping + g] = x_src[mapping + g];
+          y[mapping + g] = x[mapping + g];
         } // for g
       }   // for moment
     }     // for dof
@@ -3085,7 +3087,7 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
 }
 
 void
-LBSSolver::GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
+LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
                                          PhiSTLOption from_which_phi,
                                          PhiSTLOption to_which_phi)
 {
@@ -3174,11 +3176,11 @@ LBSSolver::SetGroupScopedPETScVecFromPrimarySTLvector(int first_group_id,
 void
 LBSSolver::SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
                                                       int last_group_id,
-                                                      Vec x_src,
+                                                      Vec x,
                                                       std::vector<double>& y)
 {
   const double* x_ref;
-  VecGetArrayRead(x_src, &x_ref);
+  VecGetArrayRead(x, &x_ref);
 
   int gsi = first_group_id;
   int gsf = last_group_id;
@@ -3203,11 +3205,11 @@ LBSSolver::SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
     }     // for dof
   }       // for cell
 
-  VecRestoreArrayRead(x_src, &x_ref);
+  VecRestoreArrayRead(x, &x_ref);
 }
 
 void
-LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& gs_ids,
+LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groupset_ids,
                                                   Vec x,
                                                   PhiSTLOption which_phi)
 {
@@ -3228,7 +3230,7 @@ LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& gs_ids
   VecGetArray(x, &x_ref);
 
   int64_t index = -1;
-  for (int gs_id : gs_ids)
+  for (int gs_id : groupset_ids)
   {
     const auto& groupset = groupsets_.at(gs_id);
 
@@ -3259,8 +3261,8 @@ LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& gs_ids
 }
 
 void
-LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs_ids,
-                                                      Vec x_src,
+LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& groupset_ids,
+                                                      Vec x,
                                                       PhiSTLOption which_phi)
 {
   std::vector<double>* y_ptr;
@@ -3277,10 +3279,10 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs
   }
 
   const double* x_ref;
-  VecGetArrayRead(x_src, &x_ref);
+  VecGetArrayRead(x, &x_ref);
 
   int64_t index = -1;
-  for (int gs_id : gs_ids)
+  for (int gs_id : groupset_ids)
   {
     const auto& groupset = groupsets_.at(gs_id);
 
@@ -3307,7 +3309,7 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs
     }       // for cell
   }         // for groupset id
 
-  VecRestoreArrayRead(x_src, &x_ref);
+  VecRestoreArrayRead(x, &x_ref);
 }
 
 } // namespace lbs
