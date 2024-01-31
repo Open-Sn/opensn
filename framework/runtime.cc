@@ -14,7 +14,6 @@
 
 #include "framework/object_factory.h"
 
-#include "framework/mpi/mpi.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 
@@ -25,7 +24,7 @@ namespace opensn
 
 // Global variables
 Logger& log = Logger::GetInstance();
-MPI_Info& mpi = MPI_Info::GetInstance();
+mpi::Communicator mpi_comm;
 Timer program_timer;
 
 std::vector<std::shared_ptr<MeshHandler>> meshhandler_stack;
@@ -80,7 +79,7 @@ Finalize()
 void
 Exit(int error_code)
 {
-  MPI_Abort(mpi.comm, error_code);
+  mpi_comm.abort(error_code);
 }
 
 std::string

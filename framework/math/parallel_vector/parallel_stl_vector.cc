@@ -1,6 +1,6 @@
 #include "framework/math/parallel_vector/parallel_stl_vector.h"
 
-#include "framework/mpi/mpi_utils_map_all2all.h"
+#include "framework/mpi/mpi_utils.h"
 #include "framework/data_types/byte_array.h"
 
 #include <petsc.h>
@@ -13,12 +13,14 @@
 #include <cmath>
 #include <numeric>
 
+namespace mpi = mpicpp_lite;
+
 namespace opensn
 {
 
 ParallelSTLVector::ParallelSTLVector(const uint64_t local_size,
                                      const uint64_t global_size,
-                                     const MPI_Comm communicator)
+                                     const mpi::Communicator& communicator)
   : ParallelVector(local_size, global_size, communicator),
     extents_(DefineExtents(local_size, process_count_, communicator)),
     values_(local_size_, 0.0)
@@ -323,36 +325,28 @@ ParallelSTLVector::ComputeNorm(NormType norm_type) const
   {
     case NormType::L1_NORM:
     {
-      const double local_norm_val =
+      double norm_val =
         std::accumulate(values_.begin(), values_.begin() + static_cast<int>(local_size_), 0.0);
-
-      double global_norm_val;
-      MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_SUM, comm_);
-
-      return global_norm_val;
+      comm_.all_reduce(norm_val, mpi::op::sum<double>());
+      return norm_val;
     }
     case NormType::L2_NORM:
     {
-      double local_norm_val = 0.0;
+      double norm_val = 0.0;
       for (size_t i = 0; i < local_size_; ++i)
       {
         const double value = values_[i];
-        local_norm_val += value * value;
+        norm_val += value * value;
       }
-      double global_norm_val;
-      MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_SUM, comm_);
-
-      return std::sqrt(global_norm_val);
+      comm_.all_reduce(norm_val, mpi::op::sum<double>());
+      return std::sqrt(norm_val);
     }
     case NormType::LINF_NORM:
     {
-      const double local_norm_val =
+      double norm_val =
         *std::max_element(values_.begin(), values_.begin() + static_cast<int>(local_size_));
-
-      double global_norm_val;
-      MPI_Allreduce(&local_norm_val, &global_norm_val, 1, MPI_DOUBLE, MPI_MAX, comm_);
-
-      return global_norm_val;
+      comm_.all_reduce(norm_val, mpi::op::max<double>());
+      return norm_val;
     }
     default:
       return 0.0;
@@ -370,7 +364,7 @@ ParallelSTLVector::Assemble()
 
   // Now, determine the global operation mode
   short global_mode;
-  MPI_Allreduce(&local_mode, &global_mode, 1, MPI_SHORT, MPI_MAX, comm_);
+  comm_.all_reduce(local_mode, global_mode, mpi::op::max<short>());
 
   // If the mode is to do nothing, exit
   if (global_mode == 0) return;
@@ -433,8 +427,7 @@ ParallelSTLVector::Assemble()
   // To do this, each process must send to each other process the information
   // that it needs. With each process knowing what each other process needs
   // from it, a map of information to be sent is obtained.
-  std::map<int, std::vector<std::byte>> pid_recv_map_bytes =
-    MapAllToAll(pid_send_map_bytes, MPI_BYTE);
+  std::map<int, std::vector<std::byte>> pid_recv_map_bytes = MapAllToAll(pid_send_map_bytes);
 
   // The received information is now processed, unpacked, and the
   // necessary operations performed
@@ -475,11 +468,13 @@ ParallelSTLVector::Assemble()
 }
 
 std::vector<uint64_t>
-ParallelSTLVector::DefineExtents(uint64_t local_size, int comm_size, MPI_Comm communicator)
+ParallelSTLVector::DefineExtents(uint64_t local_size,
+                                 int comm_size,
+                                 const mpi::Communicator& communicator)
 {
   // Get the local vector sizes per processor
-  std::vector<uint64_t> local_sizes(comm_size, 0);
-  MPI_Allgather(&local_size, 1, MPI_UINT64_T, local_sizes.data(), 1, MPI_UINT64_T, communicator);
+  std::vector<uint64_t> local_sizes;
+  communicator.all_gather(local_size, local_sizes);
 
   // With the vector sizes per processor, now the offsets for each
   // processor can be defined using a cumulative sum per processor.

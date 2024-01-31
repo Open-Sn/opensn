@@ -5,8 +5,9 @@
 #include <string>
 #include <stdexcept>
 #include <memory>
+#include "mpicpp-lite/mpicpp-lite.h"
 
-#include "framework/mpi/mpi.h"
+namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
@@ -30,7 +31,7 @@ class Logger;
 class PostProcessor;
 class Object;
 
-extern MPI_Info& mpi;
+extern mpi::Communicator mpi_comm;
 extern Logger& log;
 extern Timer program_timer;
 

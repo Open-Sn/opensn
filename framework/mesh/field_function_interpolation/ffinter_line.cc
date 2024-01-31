@@ -6,7 +6,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mpi/mpi.h"
 #include <fstream>
 
 namespace opensn
@@ -111,7 +110,7 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
   std::ofstream ofile;
 
   std::string fileName = base_name;
-  fileName = fileName + std::to_string(opensn::mpi.location_id);
+  fileName = fileName + std::to_string(opensn::mpi_comm.rank());
   fileName = fileName + std::string(".py");
   ofile.open(fileName);
 
@@ -121,12 +120,12 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
 
   std::string offset;
   std::string submod_name;
-  if (opensn::mpi.location_id == 0)
+  if (opensn::mpi_comm.rank() == 0)
   {
     submod_name = base_name;
-    submod_name = submod_name + std::to_string(opensn::mpi.location_id + 1);
+    submod_name = submod_name + std::to_string(opensn::mpi_comm.rank() + 1);
 
-    if (opensn::mpi.process_count > 1) { ofile << "import " << submod_name << "\n\n"; }
+    if (opensn::mpi_comm.size() > 1) { ofile << "import " << submod_name << "\n\n"; }
 
     for (int ff = 0; ff < field_functions_.size(); ff++)
     {
@@ -140,13 +139,13 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
 
     offset = std::string("");
   }
-  else if (opensn::mpi.process_count > 1)
+  else if (opensn::mpi_comm.size() > 1)
   {
 
-    if (opensn::mpi.location_id != (opensn::mpi.process_count - 1))
+    if (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1))
     {
       submod_name = base_name;
-      submod_name = submod_name + std::to_string(opensn::mpi.location_id + 1);
+      submod_name = submod_name + std::to_string(opensn::mpi_comm.rank() + 1);
 
       ofile << "import " << submod_name << "\n\n";
     }
@@ -156,7 +155,7 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
   {
     const auto& ff_ctx = ff_contexts_[ff];
 
-    if (opensn::mpi.process_count > 1 and opensn::mpi.location_id != 0)
+    if (opensn::mpi_comm.size() > 1 and opensn::mpi_comm.rank() != 0)
     {
       ofile << "def AddData" << ff << "(data" << ff << "):\n";
 
@@ -164,7 +163,7 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
     }
     for (int p = 0; p < interpolation_points_.size(); p++)
     {
-      if ((not ff_ctx.interpolation_points_has_ass_cell[p]) && (opensn::mpi.location_id != 0))
+      if ((not ff_ctx.interpolation_points_has_ass_cell[p]) && (opensn::mpi_comm.rank() != 0))
       {
         continue;
       }
@@ -182,8 +181,7 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
 
     ofile << offset << "done=True\n";
     ofile << "\n\n";
-    if ((opensn::mpi.process_count > 1) &&
-        (opensn::mpi.location_id != (opensn::mpi.process_count - 1)))
+    if ((opensn::mpi_comm.size() > 1) && (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1)))
     {
       ofile << offset << submod_name << ".AddData" << ff << "(data" << ff << ")\n";
     }
@@ -193,7 +191,7 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
   {
     int ff = ca + field_functions_.size();
 
-    if (opensn::mpi.process_count > 1 and opensn::mpi.location_id != 0)
+    if (opensn::mpi_comm.size() > 1 and opensn::mpi_comm.rank() != 0)
     {
       ofile << "def AddData" << ff << "(data" << ff << "):\n";
 
@@ -201,7 +199,7 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
     }
 
     std::string op("= ");
-    if (opensn::mpi.location_id != 0) op = std::string("+= ");
+    if (opensn::mpi_comm.rank() != 0) op = std::string("+= ");
 
     for (int p = 0; p < interpolation_points_.size(); p++)
     {
@@ -219,14 +217,13 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
     }
     ofile << offset << "done=True\n";
     ofile << "\n\n";
-    if ((opensn::mpi.process_count > 1) &&
-        (opensn::mpi.location_id != (opensn::mpi.process_count - 1)))
+    if ((opensn::mpi_comm.size() > 1) && (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1)))
     {
       ofile << offset << submod_name << ".AddData" << ff << "(data" << ff << ")\n";
     }
   }
 
-  if (opensn::mpi.location_id == 0)
+  if (opensn::mpi_comm.rank() == 0)
   {
     ofile << "plt.figure(1)\n";
     for (int ff = 0; ff < field_functions_.size(); ff++)

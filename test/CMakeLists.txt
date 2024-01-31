@@ -9,6 +9,7 @@ target_include_directories(opensn-test
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
     ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/external
 )
 
 target_link_libraries(opensn-test

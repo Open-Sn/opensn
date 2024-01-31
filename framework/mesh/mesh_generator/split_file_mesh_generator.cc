@@ -69,10 +69,10 @@ SplitFileMeshGenerator::SplitFileMeshGenerator(const InputParameters& params)
 void
 SplitFileMeshGenerator::Execute()
 {
-  const int num_mpi = opensn::mpi.process_count;
+  const int num_mpi = opensn::mpi_comm.size();
   const int num_parts = num_mpi == 1 ? num_parts_ : num_mpi;
 
-  if (opensn::mpi.location_id == 0 and (not read_only_))
+  if (opensn::mpi_comm.rank() == 0 and (not read_only_))
   {
     // Execute all input generators
     // Note these could be empty
@@ -93,9 +93,9 @@ SplitFileMeshGenerator::Execute()
   } // if home location
 
   // Other locations wait here for files to be written
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 
-  if (opensn::mpi.process_count == num_parts)
+  if (opensn::mpi_comm.size() == num_parts)
   {
     log.Log() << "Reading split-mesh";
     auto mesh_info = ReadSplitMesh();
@@ -120,7 +120,7 @@ SplitFileMeshGenerator::Execute()
     Exit(EXIT_SUCCESS);
   }
 
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 }
 
 void
@@ -317,7 +317,7 @@ SplitFileMeshGenerator::SerializeCell(const UnpartitionedMesh::LightWeightCell& 
 SplitFileMeshGenerator::SplitMeshInfo
 SplitFileMeshGenerator::ReadSplitMesh()
 {
-  const int pid = opensn::mpi.location_id;
+  const int pid = opensn::mpi_comm.rank();
   const std::filesystem::path dir_path = std::filesystem::absolute(split_mesh_dir_path_);
   const std::filesystem::path file_path =
     dir_path.string() + "/" + split_file_prefix_ + "_" + std::to_string(pid) + ".cmesh";
@@ -332,11 +332,11 @@ SplitFileMeshGenerator::ReadSplitMesh()
   // Read mesh attributes and general info
   const size_t file_num_parts = ReadBinaryValue<int>(ifile);
 
-  ChiLogicalErrorIf(opensn::mpi.process_count != file_num_parts,
+  ChiLogicalErrorIf(opensn::mpi_comm.size() != file_num_parts,
                     "Split mesh files with prefix \"" + split_file_prefix_ +
                       "\" has been created with " + std::to_string(file_num_parts) +
                       " parts but is now being read with " +
-                      std::to_string(opensn::mpi.process_count) + " processes.");
+                      std::to_string(opensn::mpi_comm.size()) + " processes.");
 
   info_block.mesh_attributes_ = ReadBinaryValue<int>(ifile);
   info_block.ortho_Nx_ = ReadBinaryValue<size_t>(ifile);

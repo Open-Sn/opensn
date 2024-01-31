@@ -122,21 +122,21 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   if (operation_ == "max")
   {
     double globl_max_value;
-    MPI_Allreduce(&local_max_value, &globl_max_value, 1, MPI_DOUBLE, MPI_MAX, mpi.comm);
+    mpi_comm.all_reduce(local_max_value, globl_max_value, mpi::op::sum<double>());
 
     value_ = ParameterBlock("", globl_max_value);
   }
   else if (operation_ == "min")
   {
     double globl_min_value;
-    MPI_Allreduce(&local_min_value, &globl_min_value, 1, MPI_DOUBLE, MPI_MIN, mpi.comm);
+    mpi_comm.all_reduce(local_min_value, globl_min_value, mpi::op::min<double>());
 
     value_ = ParameterBlock("", globl_min_value);
   }
   else if (operation_ == "avg")
   {
     double globl_accumulation;
-    MPI_Allreduce(&local_accumulation, &globl_accumulation, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
+    mpi_comm.all_reduce(local_accumulation, globl_accumulation, mpi::op::sum<double>());
 
     const size_t num_globl_dofs =
       ref_ff.GetSpatialDiscretization().GetNumGlobalDOFs(ref_ff.GetUnknownManager());

@@ -6,7 +6,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/logging/log_exceptions.h"
-#include "framework/mpi/mpi.h"
 #include "framework/utils/utils.h"
 #include "lua/framework/interfaces/plugin.h"
 #include "framework/runtime.h"
@@ -127,29 +126,6 @@ Console::RunConsoleLoop(char*) const
   opensn::log.Log() << "Console loop started. "
                     << "Type \"exit\" to quit (or Ctl-C).";
 
-  /** Wrapper to an MPI_Bcast call for a single integer
-   * broadcast from location 0. */
-  auto BroadcastSingleInteger = [](int* int_being_bcast)
-  { MPI_Bcast(int_being_bcast, 1, MPI_INT, 0, mpi.comm); };
-
-  /** Wrapper to an MPI_Bcast call for an array of characters
-   * broadcast from location 0. */
-  auto HomeBroadcastStringAsRaw = [](std::string string_to_bcast, int length)
-  {
-    char* raw_string_to_bcast = string_to_bcast.data();
-    MPI_Bcast(raw_string_to_bcast, length, MPI_CHAR, 0, mpi.comm);
-  };
-
-  /** Wrapper to an MPI_Bcast call for an array of characters
-   * broadcast from location 0. This call is for non-home locations. */
-  auto NonHomeBroadcastStringAsRaw = [](std::string& string_to_bcast, int length)
-  {
-    std::vector<char> raw_chars(length + 1, '\0');
-    MPI_Bcast(raw_chars.data(), length, MPI_CHAR, 0, mpi.comm);
-
-    string_to_bcast = std::string(raw_chars.data());
-  };
-
   /** Executes a string within the lua-console. */
   auto LuaDoString = [this](const std::string& the_string)
   {
@@ -161,15 +137,7 @@ Console::RunConsoleLoop(char*) const
     }
   };
 
-  auto ConsoleInputNumChars = [](const std::string& input)
-  {
-    int L = static_cast<int>(input.size());
-    if (input == std::string("exit")) L = -1;
-
-    return L;
-  };
-
-  const bool HOME = opensn::mpi.location_id == 0;
+  const bool HOME = opensn::mpi_comm.rank() == 0;
 
   while (true)
   {
@@ -177,15 +145,8 @@ Console::RunConsoleLoop(char*) const
 
     if (HOME) std::cin >> console_input; // Home will be waiting here
 
-    int console_input_len = ConsoleInputNumChars(console_input);
-
-    BroadcastSingleInteger(&console_input_len); // Non-Home locs wait here
-
-    if (console_input_len < 0) break;
-    else if (HOME)
-      HomeBroadcastStringAsRaw(console_input, console_input_len);
-    else
-      NonHomeBroadcastStringAsRaw(console_input, console_input_len);
+    mpi_comm.broadcast(console_input, 0);
+    if (console_input == "exit") break;
 
     try
     {

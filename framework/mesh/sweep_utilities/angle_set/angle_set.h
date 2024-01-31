@@ -5,8 +5,6 @@
 #include "framework/mesh/sweep_utilities/sweep_boundary/sweep_boundary.h"
 #include "framework/mesh/sweep_utilities/fluds/fluds.h"
 
-#include "framework/mpi/mpi.h"
-
 #include <memory>
 
 namespace opensn

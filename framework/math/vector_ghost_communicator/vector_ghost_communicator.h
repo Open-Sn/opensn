@@ -3,8 +3,9 @@
 #include <vector>
 #include <cstdint>
 #include <map>
+#include "mpicpp-lite/mpicpp-lite.h"
 
-#include <mpi.h>
+namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
@@ -17,7 +18,7 @@ public:
   VectorGhostCommunicator(uint64_t local_size,
                           uint64_t global_size,
                           const std::vector<int64_t>& ghost_ids,
-                          MPI_Comm communicator);
+                          const mpi::Communicator& communicator);
 
   /**Copy constructor.*/
   VectorGhostCommunicator(const VectorGhostCommunicator& other);
@@ -31,7 +32,7 @@ public:
   uint64_t NumGhosts() const { return ghost_ids_.size(); }
   const std::vector<int64_t>& GhostIndices() const { return ghost_ids_; }
 
-  MPI_Comm Communicator() const { return comm_; }
+  const mpi::Communicator& Communicator() const { return comm_; }
 
   int64_t MapGhostToLocal(int64_t ghost_id) const;
 
@@ -44,7 +45,7 @@ protected:
   const uint64_t local_size_;
   const uint64_t global_size_;
   const std::vector<int64_t> ghost_ids_;
-  const MPI_Comm comm_;
+  const mpi::Communicator& comm_;
 
   const int location_id_;
   const int process_count_;

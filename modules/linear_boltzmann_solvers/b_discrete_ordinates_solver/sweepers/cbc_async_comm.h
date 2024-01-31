@@ -7,8 +7,10 @@
 
 #include "framework/mesh/sweep_utilities/communicators/async_comm.h"
 
-#include "framework/mpi/mpi.h"
 #include "framework/data_types/byte_array.h"
+#include "mpicpp-lite/mpicpp-lite.h"
+
+namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
@@ -55,7 +57,7 @@ protected:
   struct BufferItem
   {
     int destination_ = 0;
-    MPI_Request mpi_request_ = 0;
+    mpi::Request mpi_request_;
     bool send_initiated_ = false;
     bool completed_ = false;
     ByteArray data_array_;

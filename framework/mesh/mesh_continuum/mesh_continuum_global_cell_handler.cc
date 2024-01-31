@@ -1,7 +1,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 #include "framework/runtime.h"
-#include "framework/mpi/mpi.h"
 #include "framework/logging/log.h"
 
 namespace opensn
@@ -10,7 +9,7 @@ namespace opensn
 void
 GlobalCellHandler::push_back(std::unique_ptr<Cell> new_cell)
 {
-  if (new_cell->partition_id_ == static_cast<uint64_t>(opensn::mpi.location_id))
+  if (new_cell->partition_id_ == static_cast<uint64_t>(opensn::mpi_comm.rank()))
   {
     new_cell->local_id_ = local_cells_ref_.size();
 

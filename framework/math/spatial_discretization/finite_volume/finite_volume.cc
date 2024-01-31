@@ -5,8 +5,7 @@
 #include "framework/math/spatial_discretization/cell_mappings/finite_volume_mapping.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/logging/log.h"
-#include "framework/mpi/mpi.h"
-#include "framework/mpi/mpi_utils_map_all2all.h"
+#include "framework/mpi/mpi_utils.h"
 
 namespace opensn
 {
@@ -93,20 +92,18 @@ FiniteVolume::OrderNodes()
 
   // Communicate node counts
   const uint64_t local_num_nodes = ref_grid_.local_cells.size();
-  locJ_block_size_.assign(opensn::mpi.process_count, 0);
-  MPI_Allgather(
-    &local_num_nodes, 1, MPI_UINT64_T, locJ_block_size_.data(), 1, MPI_UINT64_T, mpi.comm);
+  mpi_comm.all_gather(local_num_nodes, locJ_block_size_);
 
   // Build block addresses
-  locJ_block_address_.assign(opensn::mpi.process_count, 0);
+  locJ_block_address_.assign(opensn::mpi_comm.size(), 0);
   uint64_t global_num_nodes = 0;
-  for (int j = 0; j < opensn::mpi.process_count; ++j)
+  for (int j = 0; j < opensn::mpi_comm.size(); ++j)
   {
     locJ_block_address_[j] = global_num_nodes;
     global_num_nodes += locJ_block_size_[j];
   }
 
-  local_block_address_ = locJ_block_address_[opensn::mpi.location_id];
+  local_block_address_ = locJ_block_address_[opensn::mpi_comm.rank()];
 
   local_base_block_size_ = local_num_nodes;
   globl_base_block_size_ = global_num_nodes;
@@ -121,7 +118,7 @@ FiniteVolume::OrderNodes()
   }
 
   // Communicate neighbor ids requiring mapping
-  const auto query_nb_gids = MapAllToAll(sorted_nb_gids, MPI_UINT64_T, mpi.comm);
+  const auto query_nb_gids = MapAllToAll(sorted_nb_gids, mpi_comm);
 
   // Map the ids
   std::map<uint64_t, std::vector<uint64_t>> mapped_query_nb_gids;
@@ -142,7 +139,7 @@ FiniteVolume::OrderNodes()
   }   // for pid_list_pair
 
   // Communicate back the mapped ids
-  const auto mapped_nb_gids = MapAllToAll(mapped_query_nb_gids, MPI_UINT64_T, mpi.comm);
+  const auto mapped_nb_gids = MapAllToAll(mapped_query_nb_gids, mpi_comm);
 
   // Create the neighbor cell mapping
   neighbor_cell_local_ids_.clear();
@@ -226,7 +223,7 @@ FiniteVolume::MapDOF(const Cell& cell,
   if (component >= num_unknowns) return -1;
 
   int64_t address = -1;
-  if (cell.partition_id_ == opensn::mpi.location_id)
+  if (cell.partition_id_ == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
       address = static_cast<int64_t>(local_block_address_) * num_unknowns +
@@ -266,7 +263,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   if (component >= num_unknowns) return -1;
 
   int64_t address = -1;
-  if (cell.partition_id_ == opensn::mpi.location_id)
+  if (cell.partition_id_ == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
       address = static_cast<int64_t>(num_local_cells) * block_id + cell.local_id_;

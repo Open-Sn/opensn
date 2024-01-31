@@ -8,6 +8,7 @@ target_include_directories(libopensnlua
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/external
     ${LUA_INCLUDE_DIR}
 )
 
@@ -36,6 +37,7 @@ target_include_directories(opensn
     $<INSTALL_INTERFACE:include/opensn>
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
+    ${PROJECT_SOURCE_DIR}/external
 )
 
 target_link_libraries(opensn

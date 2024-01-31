@@ -6,18 +6,17 @@ namespace opensn
 {
 
 double
-Vec2NormMPI(const VecDbl& x, MPI_Comm comm)
+Vec2NormMPI(const VecDbl& x, const mpi::Communicator& comm)
 {
   size_t n = x.size();
-  double local_sum = 0.;
+  double sum = 0.;
 
   for (size_t i = 0; i != n; i++)
-    local_sum += x[i] * x[i];
+    sum += x[i] * x[i];
 
-  double global_sum;
-  MPI_Allreduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, comm);
+  comm.all_reduce(sum, mpi::op::sum<double>());
 
-  return sqrt(global_sum);
+  return sqrt(sum);
 }
 
 } // namespace opensn

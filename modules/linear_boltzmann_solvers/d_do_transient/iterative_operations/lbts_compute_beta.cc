@@ -46,7 +46,7 @@ lbs::DiscOrdTransientSolver::ComputeBeta()
 
   // Allreduce global DNPR
   double DNPR = 0.0;
-  MPI_Allreduce(&localDNPR, &DNPR, 1, MPI_DOUBLE, MPI_SUM,  mpi.comm);
+  mpi_comm.all_reduce(localDNPR, DNPR, mpi::op::sum<double>());
 
   return DNPR / (DNPR + FPR);
 }

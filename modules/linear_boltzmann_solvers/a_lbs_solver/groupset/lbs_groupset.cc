@@ -4,7 +4,6 @@
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mpi/mpi.h"
 
 #include <fstream>
 
@@ -268,7 +267,7 @@ lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name
   ofile.open(file_name, std::ofstream::out);
 
   ofile << "Groupset Sweep information "
-        << "location " << opensn::mpi.location_id << "\n";
+        << "location " << opensn::mpi_comm.rank() << "\n";
 
   // Print all anglesets
   for (int q = 0; q < angle_agg_->angle_set_groups.size(); ++q)

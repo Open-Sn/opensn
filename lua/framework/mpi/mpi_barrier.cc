@@ -13,7 +13,7 @@ int
 chiMPIBarrier(lua_State* L)
 {
 
-  MPI_Barrier(opensn::mpi.comm);
+  opensn::mpi_comm.barrier();
   return 0;
 }
 

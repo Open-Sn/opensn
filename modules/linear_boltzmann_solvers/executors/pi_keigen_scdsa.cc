@@ -144,7 +144,7 @@ XXPowerIterationKEigenSCDSA::XXPowerIterationKEigenSCDSA(const InputParameters& 
   //
   // log.Log() << "Initializing diffusion solver";
   // diffusion_solver_->Initialize();
-  //  opensn::mpi.Barrier();
+  //  opensn::mpi_comm.barrier();
   // log.Log() << "Done Initializing diffusion solver";
   //
   // log.Log() << "Assembling A and b";
@@ -217,7 +217,7 @@ XXPowerIterationKEigenSCDSA::Initialize()
 
   log.Log() << "Initializing diffusion solver";
   diffusion_solver_->Initialize();
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
   log.Log() << "Done Initializing diffusion solver";
 
   log.Log() << "Assembling A and b";
@@ -527,7 +527,7 @@ XXPowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretizatio
 
   // Create the vector ghost communicator
   auto vgc = std::make_shared<VectorGhostCommunicator>(
-    num_local_dofs, num_globl_dofs, global_indices, mpi.comm);
+    num_local_dofs, num_globl_dofs, global_indices, mpi_comm);
 
   // Create the map
   std::map<int64_t, int64_t> ghost_global_id_2_local_map;

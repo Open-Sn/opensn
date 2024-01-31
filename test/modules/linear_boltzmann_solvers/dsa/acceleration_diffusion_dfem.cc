@@ -233,7 +233,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
   } // for cell
 
   double global_error = 0.0;
-  MPI_Allreduce(&local_error, &global_error, 1, MPI_DOUBLE, MPI_SUM, opensn::mpi.comm);
+  opensn::mpi_comm.all_reduce(local_error, global_error, mpi::op::sum<double>());
 
   global_error = std::sqrt(global_error);
 

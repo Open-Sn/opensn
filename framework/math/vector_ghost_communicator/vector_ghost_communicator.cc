@@ -14,13 +14,13 @@ namespace opensn
 VectorGhostCommunicator::VectorGhostCommunicator(const uint64_t local_size,
                                                  const uint64_t global_size,
                                                  const std::vector<int64_t>& ghost_ids,
-                                                 const MPI_Comm communicator)
+                                                 const mpi::Communicator& communicator)
   : local_size_(local_size),
     global_size_(global_size),
     ghost_ids_(ghost_ids),
     comm_(communicator),
-    location_id_(GetLocationID(communicator)),
-    process_count_(GetProcessCount(communicator)),
+    location_id_(communicator.rank()),
+    process_count_(communicator.size()),
     extents_(BuildLocationExtents(local_size, communicator)),
     cached_parallel_data_(MakeCachedParallelData())
 {
@@ -71,7 +71,7 @@ VectorGhostCommunicator::MakeCachedParallelData()
   // MPI utility MapAllToAll in Chi-Tech accomplishes this task,
   // returning a mapping of processes to the global ids that this
   // process needs to send.
-  std::map<int, std::vector<int64_t>> send_map = MapAllToAll(recv_map, MPI_INT64_T, comm_);
+  std::map<int, std::vector<int64_t>> send_map = MapAllToAll(recv_map, comm_);
 
   // With this information, the amount of information that needs
   // to be sent can be determined.
@@ -175,15 +175,12 @@ VectorGhostCommunicator::CommunicateGhostEntries(std::vector<double>& ghosted_ve
   std::vector<double> recv_data(recv_size, 0.0);
 
   // Communicate the ghost data
-  MPI_Alltoallv(send_data.data(),
-                cached_parallel_data_.sendcounts_.data(),
-                cached_parallel_data_.senddispls_.data(),
-                MPI_DOUBLE,
-                recv_data.data(),
-                cached_parallel_data_.recvcounts_.data(),
-                cached_parallel_data_.recvdispls_.data(),
-                MPI_DOUBLE,
-                comm_);
+  comm_.all_to_all(send_data,
+                   cached_parallel_data_.sendcounts_,
+                   cached_parallel_data_.senddispls_,
+                   recv_data,
+                   cached_parallel_data_.recvcounts_,
+                   cached_parallel_data_.recvdispls_);
 
   // Lastly, populate the local vector with ghost data. All ghost data is
   // appended to the back of the local vector. Using the mapping between

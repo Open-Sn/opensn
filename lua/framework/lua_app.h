@@ -1,7 +1,9 @@
 #pragma once
 
 #include <string>
-#include "mpi.h"
+#include "mpicpp-lite/mpicpp-lite.h"
+
+namespace mpi = mpicpp_lite;
 
 namespace opensnlua
 {
@@ -9,7 +11,7 @@ namespace opensnlua
 class LuaApp
 {
 public:
-  LuaApp(MPI_Comm comm);
+  LuaApp(const mpi::Communicator& comm);
   ~LuaApp();
 
   int Run(int argc, char** argv);

@@ -74,7 +74,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   } // for csoi
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 
   // Populate boundary dependencies
   for (auto bndry : location_boundary_dependency_set)
@@ -105,7 +105,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   delayed_local_psi_Gn_block_strideG = delayed_local_psi_Gn_block_stride * /*G=*/1;
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 
   // Clean up
   so_cell_outb_face_slot_indices.shrink_to_fit();
@@ -445,8 +445,8 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   // Send delayed successor information
   const auto& location_successors = spds.GetLocationSuccessors();
   const auto& delayed_location_successors = spds.GetDelayedLocationSuccessors();
-  std::vector<MPI_Request> send_requests;
-  send_requests.resize(location_successors.size(), MPI_Request());
+  std::vector<mpi::Request> send_requests;
+  send_requests.resize(location_successors.size());
   std::vector<std::vector<int>> multi_face_indices(location_successors.size(), std::vector<int>());
   for (int deplocI = 0; deplocI < location_successors.size(); deplocI++)
   {
@@ -460,13 +460,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
 
     SerializeCellInfo(cell_views, multi_face_indices[deplocI], deplocI_face_dof_count[deplocI]);
 
-    MPI_Isend(multi_face_indices[deplocI].data(),
-              static_cast<int>(multi_face_indices[deplocI].size()),
-              MPI_INT,
-              locJ,
-              101 + tag_index,
-              mpi.comm,
-              &send_requests[deplocI]);
+    send_requests[deplocI] = mpi_comm.isend(locJ, 101 + tag_index, multi_face_indices[deplocI]);
 
     // TODO: Watch eager limits on sent data
 
@@ -483,22 +477,8 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   {
     int locJ = delayed_location_dependencies[prelocI];
 
-    MPI_Status probe_status;
-    MPI_Probe(locJ, 101 + tag_index, mpi.comm, &probe_status);
-
-    int amount_to_receive = 0;
-    MPI_Get_count(&probe_status, MPI_INT, &amount_to_receive);
-
     std::vector<int> face_indices;
-    face_indices.resize(amount_to_receive, 0);
-
-    MPI_Recv(face_indices.data(),
-             amount_to_receive,
-             MPI_INT,
-             locJ,
-             101 + tag_index,
-             mpi.comm,
-             MPI_STATUS_IGNORE);
+    mpi_comm.recv(locJ, 101 + tag_index, face_indices);
 
     DeSerializeCellInfo(
       delayed_prelocI_cell_views[prelocI], &face_indices, delayed_prelocI_face_dof_count[prelocI]);
@@ -518,22 +498,8 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   {
     int locJ = location_dependencies[prelocI];
 
-    MPI_Status probe_status;
-    MPI_Probe(locJ, 101 + tag_index, mpi.comm, &probe_status);
-
-    int amount_to_receive = 0;
-    MPI_Get_count(&probe_status, MPI_INT, &amount_to_receive);
-
     std::vector<int> face_indices;
-    face_indices.resize(amount_to_receive, 0);
-
-    MPI_Recv(face_indices.data(),
-             amount_to_receive,
-             MPI_INT,
-             locJ,
-             101 + tag_index,
-             mpi.comm,
-             MPI_STATUS_IGNORE);
+    mpi_comm.recv(locJ, 101 + tag_index, face_indices);
 
     DeSerializeCellInfo(
       prelocI_cell_views[prelocI], &face_indices, prelocI_face_dof_count[prelocI]);
@@ -552,13 +518,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
 
     SerializeCellInfo(cell_views, multi_face_indices[deplocI], deplocI_face_dof_count[deplocI]);
 
-    MPI_Isend(multi_face_indices[deplocI].data(),
-              static_cast<int>(multi_face_indices[deplocI].size()),
-              MPI_INT,
-              locJ,
-              101 + tag_index,
-              mpi.comm,
-              &send_requests[deplocI]);
+    send_requests[deplocI] = mpi_comm.isend(locJ, 101 + tag_index, multi_face_indices[deplocI]);
 
     // TODO: Watch eager limits on sent data
 
@@ -568,7 +528,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
 
   // Verify sends completed
   for (int deplocI = 0; deplocI < location_successors.size(); deplocI++)
-    MPI_Wait(&send_requests[deplocI], MPI_STATUS_IGNORE);
+    mpi::wait(send_requests[deplocI]);
   multi_face_indices.clear();
   multi_face_indices.shrink_to_fit();
 

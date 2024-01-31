@@ -8,7 +8,6 @@
 #include "framework/physics/field_function/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mpi/mpi.h"
 #include <fstream>
 
 namespace opensn
@@ -297,7 +296,7 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
   std::ofstream ofile;
 
   std::string fileName = base_name;
-  fileName = fileName + std::to_string(opensn::mpi.location_id);
+  fileName = fileName + std::to_string(opensn::mpi_comm.rank());
   fileName = fileName + std::string(".py");
   ofile.open(fileName);
 
@@ -321,12 +320,12 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
            "    self.c = []\n\n";
 
   std::string offset;
-  if (opensn::mpi.location_id == 0)
+  if (opensn::mpi_comm.rank() == 0)
   {
     std::string submod_name = base_name;
-    submod_name = submod_name + std::to_string(opensn::mpi.location_id + 1);
+    submod_name = submod_name + std::to_string(opensn::mpi_comm.rank() + 1);
 
-    if (opensn::mpi.process_count > 1) { ofile << "import " << submod_name << "\n\n"; }
+    if (opensn::mpi_comm.size() > 1) { ofile << "import " << submod_name << "\n\n"; }
 
     ofile << "class BaseDataClass:\n"
           << "  def __init__(self):\n"
@@ -335,13 +334,13 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
 
     offset = std::string("    ");
   }
-  else if (opensn::mpi.process_count > 1)
+  else if (opensn::mpi_comm.size() > 1)
   {
 
-    if (opensn::mpi.location_id != (opensn::mpi.process_count - 1))
+    if (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1))
     {
       std::string submod_name = base_name;
-      submod_name = submod_name + std::to_string(opensn::mpi.location_id + 1);
+      submod_name = submod_name + std::to_string(opensn::mpi_comm.rank() + 1);
 
       ofile << "import " << submod_name << "\n\n";
     }
@@ -382,16 +381,16 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
     ofile << offset << "data_object.append(new_cell_data)\n";
   }
 
-  if (opensn::mpi.location_id != (opensn::mpi.process_count - 1))
+  if (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1))
   {
     std::string submod_name = base_name;
-    submod_name = submod_name + std::to_string(opensn::mpi.location_id + 1);
+    submod_name = submod_name + std::to_string(opensn::mpi_comm.rank() + 1);
 
     ofile << offset << "data_object = " << submod_name << ".AddData(data_object)\n\n";
   }
-  if (opensn::mpi.location_id > 0) { ofile << offset << "return data_object\n"; }
+  if (opensn::mpi_comm.rank() > 0) { ofile << offset << "return data_object\n"; }
 
-  if (opensn::mpi.location_id == 0)
+  if (opensn::mpi_comm.rank() == 0)
   {
     ofile << "data = BaseDataClass()\n"
           << "print(len(data.data_object))\n\n"

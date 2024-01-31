@@ -4,7 +4,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/mpi/mpi.h"
 #include "framework/utils/utils.h"
 #include <vtkPolygon.h>
 #include <vtkLine.h>
@@ -1134,7 +1133,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
     Exit(EXIT_FAILURE);
   }
 
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
   log.Log() << "Making Unpartitioned mesh from wavefront file " << options.file_name;
 
   typedef std::pair<uint64_t, uint64_t> Edge;
@@ -1495,7 +1494,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   }
 
   log.Log() << "Making Unpartitioned mesh from msh format file " << options.file_name;
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 
   // Declarations
   std::string file_line;

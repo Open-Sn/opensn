@@ -54,7 +54,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   int n = 0;
   for (const auto& omega_n : quad.omegas_)
   {
-    if (opensn::mpi.location_id == 0 and verbose)
+    if (opensn::mpi_comm.rank() == 0 and verbose)
       std::cout << "Sweep angle " << n << " " << omega_n.PrintStr() << std::endl;
 
     // Determine sweep ordering
@@ -136,7 +136,7 @@ chi_math_Test01_WDD_IJK_Sweep(const InputParameters&)
 
   auto phi = WDD_IJK_Sweep2(mesh_divisions, mesh_lengths, bcs, sigma_t, q, *pquad, verbose);
 
-  if (opensn::mpi.location_id == 0 and verbose)
+  if (opensn::mpi_comm.rank() == 0 and verbose)
   {
     std::cout << "order:\n";
     for (auto i : phi)

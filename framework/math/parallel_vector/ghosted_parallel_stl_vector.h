@@ -1,8 +1,10 @@
 #pragma once
 
 #include "framework/math/parallel_vector/parallel_stl_vector.h"
-
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "mpicpp-lite/mpicpp-lite.h"
+
+namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
@@ -17,7 +19,7 @@ public:
   GhostedParallelSTLVector(const uint64_t local_size,
                            const uint64_t global_size,
                            const std::vector<int64_t>& ghost_ids,
-                           const MPI_Comm communicator = MPI_COMM_WORLD)
+                           const mpi::Communicator& communicator = MPI_COMM_WORLD)
     : ParallelSTLVector(local_size, global_size, communicator),
       ghost_comm_(local_size, global_size, ghost_ids, communicator)
   {

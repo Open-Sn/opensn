@@ -6,7 +6,6 @@
 
 #include "framework/logging/log.h"
 
-#include "framework/mpi/mpi.h"
 #include "framework/console/console.h"
 #include "sldfe_lua.h"
 
@@ -30,7 +29,7 @@ chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
     {
       auto sldfesq = std::dynamic_pointer_cast<SimplifiedLDFESQ::Quadrature>(ref_quadrature);
 
-      if (opensn::mpi.location_id == 0)
+      if (opensn::mpi_comm.rank() == 0)
       {
         sldfesq->output_filename_prefix_ = file_name;
         sldfesq->PrintQuadratureToFile();

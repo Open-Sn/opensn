@@ -8,8 +8,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h"
 
-#include "framework/mpi/mpi.h"
-
 namespace opensn
 {
 template <typename T>

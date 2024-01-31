@@ -1,11 +1,12 @@
 #pragma once
 
 #include "framework/mesh/sweep_utilities/sweep_namespace.h"
-#include "framework/mpi/mpi.h"
-
 #include "framework/mesh/sweep_utilities/communicators/async_comm.h"
+#include "mpicpp-lite/mpicpp-lite.h"
 
 typedef unsigned long long int u_ll_int;
+
+namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
@@ -42,7 +43,7 @@ private:
   std::vector<std::vector<bool>> prelocI_message_received;
   std::vector<std::vector<bool>> delayed_prelocI_message_received;
 
-  std::vector<std::vector<MPI_Request>> deplocI_message_request;
+  std::vector<std::vector<mpi::Request>> deplocI_message_request;
 
 public:
   int max_num_mess;

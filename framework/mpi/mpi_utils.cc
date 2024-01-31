@@ -3,31 +3,13 @@
 namespace opensn
 {
 
-int
-GetLocationID(MPI_Comm mpi_comm)
-{
-  int location_id;
-  MPI_Comm_rank(mpi_comm, &location_id);
-
-  return location_id;
-}
-
-int
-GetProcessCount(MPI_Comm mpi_comm)
-{
-  int process_count;
-  MPI_Comm_size(mpi_comm, &process_count);
-
-  return process_count;
-}
-
 std::vector<uint64_t>
-BuildLocationExtents(uint64_t local_size, MPI_Comm comm)
+BuildLocationExtents(uint64_t local_size, const mpi::Communicator& comm)
 {
-  const int process_count = GetProcessCount(comm);
+  const int process_count = comm.size();
   // Get the local vector sizes per process
-  std::vector<uint64_t> local_sizes(process_count, 0);
-  MPI_Allgather(&local_size, 1, MPI_UINT64_T, local_sizes.data(), 1, MPI_UINT64_T, comm);
+  std::vector<uint64_t> local_sizes;
+  comm.all_gather(local_size, local_sizes);
 
   // With the vector sizes per processor, now the offsets for each
   // processor can be defined using a cumulative sum per processor.

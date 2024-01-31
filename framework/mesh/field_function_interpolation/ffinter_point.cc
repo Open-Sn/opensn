@@ -5,7 +5,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 #include "framework/runtime.h"
-#include "framework/mpi/mpi.h"
 
 namespace opensn
 {
@@ -26,29 +25,8 @@ FieldFunctionInterpolationPoint::Initialize()
       cells_potentially_owning_point.push_back(cell.global_id_);
   }
 
-  const int local_count = static_cast<int>(cells_potentially_owning_point.size());
-  std::vector<int> locI_count(opensn::mpi.process_count, 0);
-  MPI_Allgather(&local_count, 1, MPI_INT, locI_count.data(), 1, MPI_INT, mpi.comm);
-
-  std::vector<int> recvdispls(opensn::mpi.process_count, 0);
-
-  int running_count = 0;
-  for (int locI = 0; locI < opensn::mpi.process_count; ++locI)
-  {
-    recvdispls[locI] = running_count;
-    running_count += locI_count[locI];
-  }
-
-  const auto& sendbuf = cells_potentially_owning_point;
-  std::vector<uint64_t> recvbuf(running_count, 0);
-  MPI_Allgatherv(sendbuf.data(),
-                 local_count,
-                 MPI_UINT64_T,
-                 recvbuf.data(),
-                 locI_count.data(),
-                 recvdispls.data(),
-                 MPI_UINT64_T,
-                 mpi.comm);
+  std::vector<uint64_t> recvbuf;
+  mpi_comm.all_gather(cells_potentially_owning_point, recvbuf);
 
   if (recvbuf.empty()) throw std::logic_error(fname + ": No cell identified containing the point.");
 
@@ -104,7 +82,7 @@ double
 FieldFunctionInterpolationPoint::GetPointValue() const
 {
   double global_point_value;
-  MPI_Allreduce(&point_value_, &global_point_value, 1, MPI_DOUBLE, MPI_SUM, mpi.comm);
+  mpi_comm.all_reduce(point_value_, global_point_value, mpi::op::sum<double>());
 
   return global_point_value;
 }

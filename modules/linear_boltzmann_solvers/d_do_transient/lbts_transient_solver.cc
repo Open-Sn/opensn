@@ -117,7 +117,7 @@ DiscOrdTransientSolver::Step()
     solver.Setup();
     solver.Solve();
 
-     opensn::mpi.Barrier();
+     opensn::mpi_comm.barrier();
   }
 
   // Compute t^{n+1} value

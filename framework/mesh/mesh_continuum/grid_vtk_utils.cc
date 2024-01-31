@@ -569,10 +569,10 @@ WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_
   // Construct file name
   std::string base_filename = std::string(file_base_name);
   std::string location_filename = base_filename + std::string("_") +
-                                  std::to_string(opensn::mpi.location_id) + std::string(".vtu");
+                                  std::to_string(opensn::mpi_comm.rank()) + std::string(".vtu");
 
   // Write master file
-  if (opensn::mpi.location_id == 0)
+  if (opensn::mpi_comm.rank() == 0)
   {
     std::string pvtu_file_name = base_filename + std::string(".pvtu");
 
@@ -580,14 +580,14 @@ WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_
 
     pgrid_writer->EncodeAppendedDataOff();
     pgrid_writer->SetFileName(pvtu_file_name.c_str());
-    pgrid_writer->SetNumberOfPieces(opensn::mpi.process_count);
-    pgrid_writer->SetStartPiece(opensn::mpi.location_id);
-    pgrid_writer->SetEndPiece(opensn::mpi.process_count - 1);
+    pgrid_writer->SetNumberOfPieces(opensn::mpi_comm.size());
+    pgrid_writer->SetStartPiece(opensn::mpi_comm.rank());
+    pgrid_writer->SetEndPiece(opensn::mpi_comm.size() - 1);
     pgrid_writer->SetInputData(ugrid);
 
     pgrid_writer->Write();
   }
-  opensn::mpi.Barrier();
+  opensn::mpi_comm.barrier();
 
   // Serial output each piece
   auto grid_writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
