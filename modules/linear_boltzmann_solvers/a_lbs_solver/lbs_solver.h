@@ -289,7 +289,7 @@ public:
   /**
    * Initializes default materials and physics materials.
    */
-  void InitMaterials();
+  void InitializeMaterials();
 
   /**Initializes the Within-Group DSA solver. */
   void InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);
@@ -422,25 +422,25 @@ public:
    * Assembles a vector for a given groupset from a source vector.
    */
   virtual void
-  SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset, Vec x, PhiSTLOption which_phi);
+  SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset, Vec x, PhiSTLOption which_phi);
 
   /**
    * Assembles a vector for a given groupset from a source vector.
    */
   virtual void
-  SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset, Vec x_src, PhiSTLOption which_phi);
+  SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset, Vec x, PhiSTLOption which_phi);
 
   /**
    * Assembles a vector for a given groupset from a source vector.
    */
-  virtual void GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
-                                             const std::vector<double>& x_src,
+  virtual void GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
+                                             const std::vector<double>& x,
                                              std::vector<double>& y);
 
   /**
    * Assembles a vector for a given groupset from a source vector.
    */
-  virtual void GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
+  virtual void GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
                                              PhiSTLOption from_which_phi,
                                              PhiSTLOption to_which_phi);
 
@@ -457,22 +457,29 @@ public:
    */
   virtual void SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
                                                           int last_group_id,
-                                                          Vec x_src,
+                                                          Vec x,
                                                           std::vector<double>& y);
 
   /**
    * Assembles a PETSc vector from multiple groupsets.
    */
-  virtual void SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& gs_ids,
+  virtual void SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groupset_ids,
                                                       Vec x,
                                                       PhiSTLOption which_phi);
 
   /**
    * Disassembles a multiple Groupset PETSc vector STL vectors.
    */
-  virtual void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs_ids,
-                                                          Vec x_src,
+  virtual void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& groupset_ids,
+                                                          Vec x,
                                                           PhiSTLOption which_phi);
+
+  /**
+   * A method for post-processing an adjoint solution.
+   *
+   * @note This does nothing for diffusion-based solvers.
+   */
+  virtual void ReorientAdjointSolution(){};
 
 protected:
   /**

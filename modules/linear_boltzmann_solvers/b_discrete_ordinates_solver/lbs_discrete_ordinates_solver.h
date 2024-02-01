@@ -31,20 +31,25 @@ public:
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
   void Initialize() override;
   void ScalePhiVector(PhiSTLOption which_phi, double value) override;
-  void
-  SetGSPETScVecFromPrimarySTLvector(LBSGroupset& groupset, Vec x, PhiSTLOption which_phi) override;
-  void SetPrimarySTLvectorFromGSPETScVec(LBSGroupset& groupset,
-                                         Vec x_src,
+  void SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
+                                         Vec x,
                                          PhiSTLOption which_phi) override;
-  void GSScopedCopyPrimarySTLvectors(LBSGroupset& groupset,
+  void SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
+                                         Vec x,
+                                         PhiSTLOption which_phi) override;
+  void GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
                                      PhiSTLOption from_which_phi,
                                      PhiSTLOption to_which_phi) override;
-  void SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& gs_ids,
+  void SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groupset_ids,
                                               Vec x,
                                               PhiSTLOption which_phi) override;
-  void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gs_ids,
-                                                  Vec x_src,
+  void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& groupset_ids,
+                                                  Vec x,
                                                   PhiSTLOption which_phi) override;
+  /**
+   * Reorient an adjoint solution to account for backwards streaming.
+   */
+  void ReorientAdjointSolution() override;
 
   /**
    * Zeroes all the outflow data-structures required to compute
