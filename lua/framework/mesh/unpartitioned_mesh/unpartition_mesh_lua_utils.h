@@ -8,8 +8,8 @@ namespace opensnlua
 {
 
 /**Creates an empty unpartitioned mesh. An empty unpartitioned mesh
- * is meant to be manipulated with calls to chiUnpartitionedMeshUploadVertex()
- * and chiUnpartitionedMeshUploadCell(). It essentially supports building a mesh
+ * is meant to be manipulated with calls to UnpartitionedMeshUploadVertex()
+ * and UnpartitionedMeshUploadCell(). It essentially supports building a mesh
  * manually.
  *
  * ##_
@@ -17,12 +17,12 @@ namespace opensnlua
  * ###Example
  * Example usage
  * \code
- * umesh = chiCreateEmptyUnpartitionedMesh()
+ * umesh = CreateEmptyUnpartitionedMesh()
  * \endcode
  *
  * \ingroup LuaUnpartitionedMesh
  */
-int chiCreateEmptyUnpartitionedMesh(lua_State* L);
+int CreateEmptyUnpartitionedMesh(lua_State* L);
 
 /**Destroy an unpartitioned mesh. This routine should be called for
  * memory sensitive simulations because each process will have a full
@@ -35,12 +35,12 @@ int chiCreateEmptyUnpartitionedMesh(lua_State* L);
  * ###Example
  * Example usage
  * \code
- * chiDestroyUnpartitionedMesh(umesh)
+ * DestroyUnpartitionedMesh(umesh)
  * \endcode
  *
  * \ingroup LuaUnpartitionedMesh
  */
-int chiDestroyUnpartitionedMesh(lua_State* L);
+int DestroyUnpartitionedMesh(lua_State* L);
 
 /**Creates an unpartitioned mesh from VTK Unstructured mesh files.
  *
@@ -55,21 +55,21 @@ int chiDestroyUnpartitionedMesh(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
- * umesh = chiUnpartitionedMeshFromVTU("ZMeshTest_0.vtu")
+ * umesh = UnpartitionedMeshFromVTU("ZMeshTest_0.vtu")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * SurfaceMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  *
  * \return Handle A handle to the newly created UnpartitionedMesh
  */
-int chiUnpartitionedMeshFromVTU(lua_State* L);
+int UnpartitionedMeshFromVTU(lua_State* L);
 
 /**Creates an unpartitioned mesh from VTK Partitioned Unstructured mesh files
  * (.pvtu).
@@ -85,21 +85,21 @@ int chiUnpartitionedMeshFromVTU(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
- * umesh = chiUnpartitionedMeshFromPVTU("ZMeshTest_0.vtu")
+ * umesh = UnpartitionedMeshFromPVTU("ZMeshTest_0.vtu")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * SurfaceMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  *
  * \return Handle A handle to the newly created UnpartitionedMesh
  */
-int chiUnpartitionedMeshFromPVTU(lua_State* L);
+int UnpartitionedMeshFromPVTU(lua_State* L);
 
 /**Creates an unpartitioned mesh from starccm+ exported
  * Ensight Gold mesh files.
@@ -114,20 +114,20 @@ int chiUnpartitionedMeshFromPVTU(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
- * umesh = chiUnpartitionedMeshFromEnsightGold("resources/TestObjects/Sphere.case")
+ * umesh = UnpartitionedMeshFromEnsightGold("resources/TestObjects/Sphere.case")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * SurfaceMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  * \return Handle A handle to the newly created UnpartitionedMesh
  */
-int chiUnpartitionedMeshFromEnsightGold(lua_State* L);
+int UnpartitionedMeshFromEnsightGold(lua_State* L);
 
 /**Creates an unpartitioned mesh from a wavefront .obj file.
  *
@@ -140,21 +140,21 @@ int chiUnpartitionedMeshFromEnsightGold(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
  * umesh =
- * chiUnpartitionedMeshFromWavefrontOBJ("resources/TestObjects/TriangleMesh2x2.obj")
+ * UnpartitionedMeshFromWavefrontOBJ("resources/TestObjects/TriangleMesh2x2.obj")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * SurfaceMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  * \return Handle A handle to the newly created UnpartitionedMesh
  */
-int chiUnpartitionedMeshFromWavefrontOBJ(lua_State* L);
+int UnpartitionedMeshFromWavefrontOBJ(lua_State* L);
 
 /**Creates an unpartitioned mesh from a .msh file.
  *
@@ -167,21 +167,21 @@ int chiUnpartitionedMeshFromWavefrontOBJ(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
- * umesh = chiUnpartitionedMeshFromMshFormat("File.msh")
+ * umesh = UnpartitionedMeshFromMshFormat("File.msh")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * SurfaceMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  *
  * \return Handle A handle to the newly created UnpartitionedMesh
  */
-int chiUnpartitionedMeshFromMshFormat(lua_State* L);
+int UnpartitionedMeshFromMshFormat(lua_State* L);
 
 /**Creates an unpartitioned mesh from ExodusII format.
  *
@@ -195,20 +195,20 @@ int chiUnpartitionedMeshFromMshFormat(lua_State* L);
  * ### Example
  * An example mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  *
- * umesh = chiUnpartitionedMeshFromExodusII("resources/TestObjects/Mesh.e")
+ * umesh = UnpartitionedMeshFromExodusII("resources/TestObjects/Mesh.e")
  *
- * chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- * chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ * SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ * VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
  *
- * chiSurfaceMesherExecute()
- * chiVolumeMesherExecute()
+ * SurfaceMesherExecute()
+ * VolumeMesherExecute()
  * \endcode
  *
  * \return Handle A handle to the newly created UnpartitionedMesh
  */
-int chiUnpartitionedMeshFromExodusII(lua_State* L);
+int UnpartitionedMeshFromExodusII(lua_State* L);
 
 /**Uploads a vertex.
  *
@@ -222,15 +222,15 @@ int chiUnpartitionedMeshFromExodusII(lua_State* L);
  * ###Example
  * Example usage
  * \code
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
  * \endcode
  *
  * \ingroup LuaUnpartitionedMesh
  */
-int chiUnpartitionedMeshUploadVertex(lua_State* L);
+int UnpartitionedMeshUploadVertex(lua_State* L);
 
 /**Uploads a cell
  *
@@ -259,15 +259,15 @@ int chiUnpartitionedMeshUploadVertex(lua_State* L);
  * ###Example
  * Example usage
  * \code
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
  *
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 1)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 1)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 1)
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 1)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 0, 1)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 0, 1)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 1, 1)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 1, 1)
  *
  * cell = {}
  * cell.type        = "POLYHEDRON"
@@ -281,13 +281,13 @@ int chiUnpartitionedMeshUploadVertex(lua_State* L);
  * cell.face4 = {4,5,6,7}
  * cell.face5 = {0,3,2,1}
  *
- * chiUnpartitionedMeshUploadCell(umesh, cell, true)
- * chiUnpartitionedMeshFinalizeEmpty(umesh)
+ * UnpartitionedMeshUploadCell(umesh, cell, true)
+ * UnpartitionedMeshFinalizeEmpty(umesh)
  * \endcode
  *
  * \ingroup LuaUnpartitionedMesh
  */
-int chiUnpartitionedMeshUploadCell(lua_State* L);
+int UnpartitionedMeshUploadCell(lua_State* L);
 
 /**Finalizes a mesh. This usually involves computing centroids and
  * establishing connectivity.
@@ -299,15 +299,15 @@ int chiUnpartitionedMeshUploadCell(lua_State* L);
  * ###Example
  * Example usage
  * \code
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
  *
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 0, 1)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 0, 1)
- * chiUnpartitionedMeshUploadVertex(umesh, 1, 1, 1)
- * chiUnpartitionedMeshUploadVertex(umesh, 0, 1, 1)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 0, 1)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 0, 1)
+ * UnpartitionedMeshUploadVertex(umesh, 1, 1, 1)
+ * UnpartitionedMeshUploadVertex(umesh, 0, 1, 1)
  *
  * cell = {}
  * cell.type        = "POLYHEDRON"
@@ -321,12 +321,12 @@ int chiUnpartitionedMeshUploadCell(lua_State* L);
  * cell.face4 = {4,5,6,7}
  * cell.face5 = {0,3,2,1}
  *
- * chiUnpartitionedMeshUploadCell(umesh, cell, true)
- * chiUnpartitionedMeshFinalizeEmpty(umesh)
+ * UnpartitionedMeshUploadCell(umesh, cell, true)
+ * UnpartitionedMeshFinalizeEmpty(umesh)
  * \endcode
  *
  * \ingroup LuaUnpartitionedMesh
  */
-int chiUnpartitionedMeshFinalizeEmpty(lua_State* L);
+int UnpartitionedMeshFinalizeEmpty(lua_State* L);
 
 } // namespace opensnlua

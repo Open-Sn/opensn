@@ -8,17 +8,17 @@
  * \ingroup LuaMeshHandler
  * \author Jan
  */
-int chiMeshHandlerCreate(lua_State* L);
+int MeshHandlerCreate(lua_State* L);
 
 /** Sets the given mesh handler as "current".
  *
  * \param HandlerHandler int Handle to the mesh handler previously created
- *        with a call to chiMeshHandlerCreate.
+ *        with a call to MeshHandlerCreate.
  *
  * \ingroup LuaMeshHandler
  * \author Jan
  */
-int chiMeshHandlerSetCurrent(lua_State* L);
+int MeshHandlerSetCurrent(lua_State* L);
 
 /**Exports the mesh to a wavefront.obj format.
  * \param FileName char Base name of the file to be used.
@@ -26,13 +26,13 @@ int chiMeshHandlerSetCurrent(lua_State* L);
  *                      the extruder's surface mesh by material.
  * \ingroup LuaMeshHandler
  */
-int chiMeshHandlerExportMeshToObj(lua_State* L);
+int MeshHandlerExportMeshToObj(lua_State* L);
 
 /**Exports the mesh to vtu format.
  * \param FileName char Base name of the file to be used.
  * \ingroup LuaMeshHandler
  */
-int chiMeshHandlerExportMeshToVTK(lua_State* L);
+int MeshHandlerExportMeshToVTK(lua_State* L);
 
 /**Exports the mesh to exodus format (.e extensions).
  * \param FileName char Base name of the file to be used.
@@ -42,4 +42,4 @@ int chiMeshHandlerExportMeshToVTK(lua_State* L);
  *                               Default = `false`.
  * \ingroup LuaMeshHandler
  */
-int chiMeshHandlerExportMeshToExodus(lua_State* L);
+int MeshHandlerExportMeshToExodus(lua_State* L);

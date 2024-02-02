@@ -16,13 +16,13 @@ namespace opensnlua
  *
  * Example:
  * \code
- * chiSolverCreate({type=cfem_diffusion.Solver})
+ * SolverCreate({type=cfem_diffusion.Solver})
  * \endcode
  *
  * \ingroup doc_PhysicsSolver
  * \deprecated This function is deprecated and will be removed soon.
  */
-int chiSolverCreate(lua_State* L);
+int SolverCreate(lua_State* L);
 
 /** Initializes the solver at the given handle.
  *
@@ -31,7 +31,7 @@ int chiSolverCreate(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverInitialize(lua_State* L);
+int SolverInitialize(lua_State* L);
 
 /** Executes the solver at the given handle.
  *
@@ -40,7 +40,7 @@ int chiSolverInitialize(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverExecute(lua_State* L);
+int SolverExecute(lua_State* L);
 
 /** Performs a single timestep for the solver at the given handle.
  *
@@ -49,7 +49,7 @@ int chiSolverExecute(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverStep(lua_State* L);
+int SolverStep(lua_State* L);
 
 /** Advances the time values of the solver at the given handle.
  *
@@ -58,7 +58,7 @@ int chiSolverStep(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverAdvance(lua_State* L);
+int SolverAdvance(lua_State* L);
 
 /** Sets a basic option of a solver.
  *
@@ -70,7 +70,7 @@ int chiSolverAdvance(lua_State* L);
  * \deprecated This function is deprecated and will be removed soon.
  * \author Jan
  */
-int chiSolverSetBasicOption(lua_State* L);
+int SolverSetBasicOption(lua_State* L);
 
 /** Returns the text name of the solver.
  *
@@ -79,7 +79,7 @@ int chiSolverSetBasicOption(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverGetName(lua_State* L);
+int SolverGetName(lua_State* L);
 
 /**Obtains a named list of the field functions associated with a solver.
  *
@@ -87,7 +87,7 @@ int chiSolverGetName(lua_State* L);
  *
  * \ingroup doc_PhysicsSolver
  */
-int chiSolverGetFieldFunctionList(lua_State* L);
+int SolverGetFieldFunctionList(lua_State* L);
 
 /** Returns arbitrary info specific for each solver.
  *
@@ -98,7 +98,7 @@ int chiSolverGetFieldFunctionList(lua_State* L);
  * \ingroup doc_PhysicsSolver
  * \author Jan
  */
-int chiSolverGetInfo(lua_State* L);
+int SolverGetInfo(lua_State* L);
 
 /**Sets a property of a solver.
  * \param handle int Solver handle.
@@ -107,5 +107,5 @@ int chiSolverGetInfo(lua_State* L);
  *
  * \ingroup doc_PhysicsSolver
  */
-int chiSolverSetProperties(lua_State* L);
+int SolverSetProperties(lua_State* L);
 } // namespace opensnlua

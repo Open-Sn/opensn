@@ -14,7 +14,7 @@
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiCreateCustomAngularQuadrature(lua_State* L);
+int CreateCustomAngularQuadrature(lua_State* L);
 
 /** Creates a curvilinear product quadrature suitable for cylindrical
  * geometries.
@@ -49,8 +49,8 @@ int chiCreateCustomAngularQuadrature(lua_State* L);
  *
  * \ingroup LuaQuadrature
  */
-int chiCreateCylindricalProductQuadrature(lua_State* L);
-int chiCreateSphericalProductQuadrature(lua_State* L);
+int CreateCylindricalProductQuadrature(lua_State* L);
+int CreateSphericalProductQuadrature(lua_State* L);
 
 /** Creates a Product-quadrature.
  *
@@ -90,7 +90,7 @@ int chiCreateSphericalProductQuadrature(lua_State* L);
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiCreateProductQuadrature(lua_State* L);
+int CreateProductQuadrature(lua_State* L);
 
 /** Creates a quadrature.
  *
@@ -109,7 +109,7 @@ int chiCreateProductQuadrature(lua_State* L);
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiCreateLineQuadrature(lua_State* L);
+int CreateLineQuadrature(lua_State* L);
 
 /** Get the values of a product quadrature
  *
@@ -121,7 +121,7 @@ int chiCreateLineQuadrature(lua_State* L);
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiGetProductQuadrature(lua_State* L);
+int GetProductQuadrature(lua_State* L);
 
 /**Optimizes the indicated angular quadrature for polar symmetry.
  *
@@ -135,11 +135,11 @@ int chiGetProductQuadrature(lua_State* L);
  *  ###Example:
  *  Example:
  * \code
- * pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)
- * chiOptimizeAngularQuadratureForPolarSymmetry(pqaud, 4.0*math.pi)
+ * pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)
+ * OptimizeAngularQuadratureForPolarSymmetry(pqaud, 4.0*math.pi)
  * \endcode
  *
  * \ingroup LuaQuadrature
  * \author Jan
  */
-int chiOptimizeAngularQuadratureForPolarSymmetry(lua_State* L);
+int OptimizeAngularQuadratureForPolarSymmetry(lua_State* L);

@@ -11,26 +11,26 @@ for i=1,(N+1) do
     nodes[i] = xmin + k*dx
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
-chiVolumeMesherSetupOrthogonalBoundaries()
+VolumeMesherSetupOrthogonalBoundaries()
 
-chi_unit_tests.chiSimTest93_RayTracing()
+unit_tests.SimTest93_RayTracing()
 
 
 --###############################################
 --############################################### Add materials
 materials = {}
-materials[1] = chiPhysicsAddMaterial("Test Material");
+materials[1] = PhysicsAddMaterial("Test Material");
 
-chiPhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
 
 num_groups = 1
-chiPhysicsMaterialSetProperty(materials[1],
+PhysicsMaterialSetProperty(materials[1],
         TRANSPORT_XSECTIONS,
         SIMPLEXS0,1,0.27)
 
@@ -38,29 +38,29 @@ chiPhysicsMaterialSetProperty(materials[1],
 
 ----############################################### Setup Physics
 --solver_name = "LBS"
---phys1 = chiLBSCreateSolver(solver_name)
+--phys1 = LBSCreateSolver(solver_name)
 --
 ----========== Groups
 --grp = {}
 --for g=1,num_groups do
---    grp[g] = chiLBSCreateGroup(phys1)
+--    grp[g] = LBSCreateGroup(phys1)
 --end
 --
 ----========== ProdQuad
---pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12*2*4, 12*4)
---chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+--pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12*2*4, 12*4)
+--OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
 --
 ----========== Groupset def
---gs0 = chiLBSCreateGroupset(phys1)
+--gs0 = LBSCreateGroupset(phys1)
 --cur_gs = gs0
---chiLBSGroupsetAddGroups(phys1,cur_gs,0,num_groups-1)
---chiLBSGroupsetSetQuadrature(phys1,cur_gs,pquad)
---chiLBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
---chiLBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
---chiLBSGroupsetSetIterativeMethod(phys1,cur_gs,KRYLOV_RICHARDSON)
---chiLBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-6)
---chiLBSGroupsetSetMaxIterations(phys1,cur_gs,0)
---chiLBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
+--LBSGroupsetAddGroups(phys1,cur_gs,0,num_groups-1)
+--LBSGroupsetSetQuadrature(phys1,cur_gs,pquad)
+--LBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
+--LBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
+--LBSGroupsetSetIterativeMethod(phys1,cur_gs,KRYLOV_RICHARDSON)
+--LBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-6)
+--LBSGroupsetSetMaxIterations(phys1,cur_gs,0)
+--LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
 --
 ----############################################### Set boundary conditions
 --
@@ -70,15 +70,15 @@ chiPhysicsMaterialSetProperty(materials[1],
 --    src[g] = 0.0
 --end
 --src[1] = 1.0
---chiLBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
+--LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 --
 ----############################################### Set solver properties
---chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
---chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
+--LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
+--LBSSetProperty(phys1,SCATTERING_ORDER,0)
 --
 ----############################################### Initialize and Execute Solver
---chiSolverInitialize(phys1)
---chiSolverExecute(phys1)
+--SolverInitialize(phys1)
+--SolverExecute(phys1)
 
 
 
@@ -87,8 +87,8 @@ chiPhysicsMaterialSetProperty(materials[1],
 
 --############################################### Setup Physics
 solver_name = "LBS"
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12*2*4, 12*4)
-chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12*2*4, 12*4)
+OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
 lbs_block =
 {
     name = solver_name,
@@ -114,18 +114,18 @@ for g=1,num_groups do
     src[g] = 0.0
 end
 src[1] = 1.0
-chiLBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
+LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-chiSolverInitialize(ss_solver)
-chiSolverExecute(ss_solver)
+SolverInitialize(ss_solver)
+SolverExecute(ss_solver)
 
-ff_m0 = chiLBSGetScalarFieldFunctionList(phys1)
+ff_m0 = LBSGetScalarFieldFunctionList(phys1)
 
-chiExportMultiFieldFunctionToVTK({ff_m0[1]},"SimTest_93_LBS_"..solver_name)
-chiMPIBarrier()
-if (chi_location_id == 0) then
+ExportMultiFieldFunctionToVTK({ff_m0[1]},"SimTest_93_LBS_"..solver_name)
+MPIBarrier()
+if (location_id == 0) then
     os.execute("rm SimTest_93*")
 end

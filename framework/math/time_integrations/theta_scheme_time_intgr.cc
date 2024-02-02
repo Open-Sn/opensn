@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_math, ThetaSchemeTimeIntegration);
+OpenSnRegisterObjectInNamespace(math, ThetaSchemeTimeIntegration);
 
 InputParameters
 ThetaSchemeTimeIntegration::GetInputParameters()

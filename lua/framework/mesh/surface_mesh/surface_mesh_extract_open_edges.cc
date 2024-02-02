@@ -18,10 +18,10 @@ using namespace opensn;
  * \author Jan
  */
 int
-chiSurfaceMeshExtractOpenEdgesToObj(lua_State* L)
+SurfaceMeshExtractOpenEdgesToObj(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("chiSurfaceMeshExtractOpenEdgesToObj", 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError("SurfaceMeshExtractOpenEdgesToObj", 2, num_args);
 
   auto& cur_hndlr = opensn::GetCurrentHandler();
 

@@ -8,10 +8,10 @@ namespace opensnlua::diffusion_solver
 void
 RegisterLuaEntities(lua_State* L)
 {
-  LUA_FMACRO1(chiDiffusionCreateSolver);
-  LUA_FMACRO1(chiDiffusionInitialize);
-  LUA_FMACRO1(chiDiffusionExecute);
-  LUA_FMACRO1(chiDiffusionSetProperty);
+  LUA_FMACRO1(DiffusionCreateSolver);
+  LUA_FMACRO1(DiffusionInitialize);
+  LUA_FMACRO1(DiffusionExecute);
+  LUA_FMACRO1(DiffusionSetProperty);
 }
 
 } // namespace opensnlua::diffusion_solver

@@ -10,7 +10,7 @@ namespace unit_tests
 
 ParameterBlock ExampleTest(const InputParameters&);
 
-RegisterWrapperFunction(chi_unit_tests, ExampleTest, nullptr, ExampleTest);
+RegisterWrapperFunctionNamespace(unit_tests, ExampleTest, nullptr, ExampleTest);
 
 ParameterBlock
 ExampleTest(const InputParameters&)

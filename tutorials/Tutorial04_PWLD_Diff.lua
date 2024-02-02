@@ -12,55 +12,55 @@ for i=0,N do
     nodes[i+1] = xmin + i*ds
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-material = chiPhysicsAddMaterial("Homogenous_Material");
+material = PhysicsAddMaterial("Homogenous_Material");
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 -- Setboundary IDs
 -- xmin,xmax,ymin,ymax,zmin,zmax
-e_vol = chiLogicalVolumeCreate(RPP,0.99999,1000,-1000,1000,-1000,1000)
-w_vol = chiLogicalVolumeCreate(RPP,-1000,0.00001,-1000,1000,-1000,1000)
-n_vol = chiLogicalVolumeCreate(RPP,-1000,1000,0.99999,1000,-1000,1000)
-s_vol = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,0.00001,-1000,1000)
+e_vol = LogicalVolumeCreate(RPP,0.99999,1000,-1000,1000,-1000,1000)
+w_vol = LogicalVolumeCreate(RPP,-1000,0.00001,-1000,1000,-1000,1000)
+n_vol = LogicalVolumeCreate(RPP,-1000,1000,0.99999,1000,-1000,1000)
+s_vol = LogicalVolumeCreate(RPP,-1000,1000,-1000,0.00001,-1000,1000)
 
 e_bndry = 0
 w_bndry = 1
 n_bndry = 2
 s_bndry = 3
 
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
-chiMeshHandlerExportMeshToVTK("Mesh")
+MeshHandlerExportMeshToVTK("Mesh")
 
 --############################################### Add material properties
 -- Set material properties
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"D")
-chiPhysicsMaterialSetProperty(material,"D",SINGLE_VALUE,1.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"D")
+PhysicsMaterialSetProperty(material,"D",SINGLE_VALUE,1.0)
 
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,0.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
+PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,0.0)
 
 --############################################### Setup Physics
-phys1 = chiDiffusionCreateSolver()
-chiSolverSetBasicOption(phys1,"discretization_method","PWLD_MIP");
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
-chiDiffusionSetProperty(phys1,"boundary_type",e_bndry,"robin", 0.25, 0.5, 0.0)
-chiDiffusionSetProperty(phys1,"boundary_type",n_bndry,"reflecting")
-chiDiffusionSetProperty(phys1,"boundary_type",s_bndry,"reflecting")
-chiDiffusionSetProperty(phys1,"boundary_type",w_bndry,"robin", 0.25, 0.5, 1.0)
+phys1 = DiffusionCreateSolver()
+SolverSetBasicOption(phys1,"discretization_method","PWLD_MIP");
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+DiffusionSetProperty(phys1,"boundary_type",e_bndry,"robin", 0.25, 0.5, 0.0)
+DiffusionSetProperty(phys1,"boundary_type",n_bndry,"reflecting")
+DiffusionSetProperty(phys1,"boundary_type",s_bndry,"reflecting")
+DiffusionSetProperty(phys1,"boundary_type",w_bndry,"robin", 0.25, 0.5, 1.0)
 
 --############################################### Initialize and
 --                                                Execute Solver
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
-fflist,count = chiGetFieldFunctionList(phys1)
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial4_Diff_PWLD_Output","Flux_Diff_IP")
+fflist,count = GetFieldFunctionList(phys1)
+ExportFieldFunctionToVTK(fflist[1],"Tutorial4_Diff_PWLD_Output","Flux_Diff_IP")

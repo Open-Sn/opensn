@@ -14,16 +14,16 @@
  * ### Example
  * An example 1D mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  * nodes={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
- * chiMeshCreateUnpartitioned1DOrthoMesh(nodes)
- * chiVolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
- * chiVolumeMesherExecute();
+ * MeshCreateUnpartitioned1DOrthoMesh(nodes)
+ * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
+ * VolumeMesherExecute();
  * \endcode
  *
  * \author Nak
  */
-int chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L);
+int MeshCreateUnpartitioned1DOrthoMesh(lua_State* L);
 
 /** Creates a 2D Orthogonal Mesh from arrays of 1D vertices.
  *
@@ -41,17 +41,17 @@ int chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L);
  * ### Example
  * An example 2D mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  * nodesx={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * nodesy={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
- * chiMeshCreateUnpartitioned2DOrthoMesh(nodesx,nodesy)
- * chiVolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
- * chiVolumeMesherExecute();
+ * MeshCreateUnpartitioned2DOrthoMesh(nodesx,nodesy)
+ * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
+ * VolumeMesherExecute();
  * \endcode
  *
  *  \author Nak
  */
-int chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L);
+int MeshCreateUnpartitioned2DOrthoMesh(lua_State* L);
 
 /** Creates a 3D Orthogonal Mesh from arrays of 1D vertices. The
  * underlying mesher is an extruder.
@@ -72,15 +72,15 @@ int chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L);
  * ### Example
  * An example 3D mesh creation below:
  * \code
- * chiMeshHandlerCreate()
+ * MeshHandlerCreate()
  * nodesx={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * nodesy={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
  * nodesz={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
- * chiMeshCreateUnpartitioned3DOrthoMesh(nodesx,nodesy,nodesz)
- * chiVolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
- * chiVolumeMesherExecute();
+ * MeshCreateUnpartitioned3DOrthoMesh(nodesx,nodesy,nodesz)
+ * VolumeMesherSetProperty(PARTITION_TYPE,PARMETIS)
+ * VolumeMesherExecute();
  * \endcode
  *
  *  \author Nak
  */
-int chiMeshCreateUnpartitioned3DOrthoMesh(lua_State* L);
+int MeshCreateUnpartitioned3DOrthoMesh(lua_State* L);

@@ -38,16 +38,16 @@ CreateFunction(const std::string& function_name)
 
 ParameterBlock acceleration_Diffusion_DFEM(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests,
-                        acceleration_Diffusion_DFEM,
-                        nullptr,
-                        acceleration_Diffusion_DFEM);
+RegisterWrapperFunctionNamespace(unit_tests,
+                                 acceleration_Diffusion_DFEM,
+                                 nullptr,
+                                 acceleration_Diffusion_DFEM);
 
 ParameterBlock
 acceleration_Diffusion_DFEM(const InputParameters&)
 {
   typedef std::map<int, lbs::Multigroup_D_and_sigR> MatID2XSMap;
-  opensn::log.Log() << "chiSimTest92_DSA";
+  opensn::log.Log() << "SimTest92_DSA";
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();

@@ -10,18 +10,18 @@ Example:
 Suppose this is a 3D simulation, 2 groups, scattering order of 1
 (resulting in 4 moments)
 \code
-phys1 = chiLBSCreateSolver()
-chiSolverAddRegion(phys1,region1)
+phys1 = LBSCreateSolver()
+SolverAddRegion(phys1,region1)
 --
 -- Add Groupset construction here
 --
-chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
-chiLBSSetProperty(phys1,SCATTERING_ORDER,1)
+LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
+LBSSetProperty(phys1,SCATTERING_ORDER,1)
 --
-chiLBSInitialize(phys1)
-chiLBSExecute(phys1)
+LBSInitialize(phys1)
+LBSExecute(phys1)
 --
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 \endcode
 
 will create field functions
@@ -37,10 +37,10 @@ phi_g001_m003
 \endcode
 
 We can get the scalar field functions with a call to
-`chiLBSGetScalarFieldFunctionList` which will return a table with the field
+`LBSGetScalarFieldFunctionList` which will return a table with the field
 function handles of only the scalar fields. E.g.,
 \code
-fflist = chiLBSGetScalarFieldFunctionList(phys1)
+fflist = LBSGetScalarFieldFunctionList(phys1)
 \endcode
 with `fflist` containing handles to
 \code
@@ -51,7 +51,7 @@ phi_g001_m000
 Additionally, LBS can create a power generation field function with the
 default name `power_generation`.
 \code
-chiLBSSetOptions(phys1,
+LBSSetOptions(phys1,
 {
   spatial_discretization = "pwld",
   scattering_order = 2,
@@ -64,7 +64,7 @@ chiLBSSetOptions(phys1,
 All of the field function can be supplied with a prefix, either using the
 solver name
 \code
-chiLBSSetOptions(phys1,
+LBSSetOptions(phys1,
 {
   spatial_discretization = "pwld",
   scattering_order = 2,
@@ -78,7 +78,7 @@ chiLBSSetOptions(phys1,
 
 or by setting a different prefix
 \code
-chiLBSSetOptions(phys1,
+LBSSetOptions(phys1,
 {
   spatial_discretization = "pwld",
   scattering_order = 2,

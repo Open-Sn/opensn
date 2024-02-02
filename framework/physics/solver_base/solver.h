@@ -53,7 +53,7 @@ public:
    *
    * \section Properties Properties that can be set
    * The following properties can be set via the lua call
-   * `chiSolverSetProperties`
+   * `SolverSetProperties`
    * \copydoc opensn::Solver::SetProperties
    *
    * Base solver settable properties:

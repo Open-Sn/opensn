@@ -13,7 +13,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi, KBAGraphPartitioner);
+OpenSnRegisterObject(KBAGraphPartitioner);
 
 InputParameters
 KBAGraphPartitioner::GetInputParameters()

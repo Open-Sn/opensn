@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi, PETScGraphPartitioner);
+OpenSnRegisterObject(PETScGraphPartitioner);
 
 InputParameters
 PETScGraphPartitioner::GetInputParameters()

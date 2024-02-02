@@ -8,7 +8,7 @@
  * \ingroup LuaDiffusion
  * \author Jan
  */
-int chiDiffusionCreateSolver(lua_State* L);
+int DiffusionCreateSolver(lua_State* L);
 
 /** Initialize the Diffusion solver.
  *
@@ -18,7 +18,7 @@ int chiDiffusionCreateSolver(lua_State* L);
  * \ingroup LuaDiffusion
  * \author Jan
  */
-int chiDiffusionInitialize(lua_State* L);
+int DiffusionInitialize(lua_State* L);
 
 /** Initialize the Diffusion solver.
  *
@@ -28,7 +28,7 @@ int chiDiffusionInitialize(lua_State* L);
  * \ingroup LuaDiffusion
  * \author Jan
  */
-int chiDiffusionExecute(lua_State* L);
+int DiffusionExecute(lua_State* L);
 
 /** Sets a property of a Diffusion solver. Please also consult the whitepaper
  * for the Diffusion solver (<a
@@ -50,7 +50,7 @@ int chiDiffusionExecute(lua_State* L);
  *  then type value.\n\n
  *
  * \code
- * chiDiffusionSetProperty(solver,"boundary_type",2,"dirichlet",1.0)
+ * DiffusionSetProperty(solver,"boundary_type",2,"dirichlet",1.0)
  * \endcode
  *
  * ### BoundaryTypeName
@@ -80,7 +80,7 @@ int chiDiffusionExecute(lua_State* L);
  * \ingroup LuaDiffusion
  * \author Jan
  */
-int chiDiffusionSetProperty(lua_State* L);
+int DiffusionSetProperty(lua_State* L);
 
 namespace opensnlua::diffusion_solver
 {

@@ -11,8 +11,8 @@ namespace opensnlua::fv_diffusion
 void
 RegisterLuaEntities(lua_State* L)
 {
-  LUA_FMACRO1(chiFVDiffusionSolverCreate);
-  LUA_FMACRO1(chiFVDiffusionSetBCProperty);
+  LUA_FMACRO1(FVDiffusionSolverCreate);
+  LUA_FMACRO1(FVDiffusionSetBCProperty);
 
   LUA_CMACRO1(MAX_ITERATIONS, 1);
   LUA_CMACRO1(TOLERANCE, 2);

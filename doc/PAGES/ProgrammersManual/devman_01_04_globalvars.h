@@ -64,8 +64,8 @@ chi::angular_quadrature_stack;
 
 General MPI information like the current location id and the total amount
  of parallel processes is contained in CHI_MPI:
- - chi_objects::MPI_Info::location_id
- - chi_objects::MPI_Info::process_count
+ - objects::MPI_Info::location_id
+ - objects::MPI_Info::process_count
 
 Additionally, by including the headers for chi_mpi, developers have access to
  all the classic mpi headers.
@@ -84,7 +84,7 @@ Printing information in a parallel environment can be a very involved
 process. One can't simply use `std::cout <<` on every process otherwise
 the output to the log will be chaotic. For this reason we employ a common
  logging utility which returns an output string-stream using the function
- call ChiLog::Log.
+ call Log::Log.
 
 Connecting to chi::log is done as follows
 \code
@@ -99,18 +99,18 @@ void Function()
 \endcode
 
 The logger has calls of differing verbosity:
- - `chi_objects::ChiLog::Log0()`,                      Used only for location 0
- - `chi_objects::ChiLog::Log0Warning()`,               Warning only for location 0
- - `chi_objects::ChiLog::Log0Error()`,                 Error only for location 0
- - `chi_objects::ChiLog::Log0Verbose0()`,             Default verbosity level
- - `chi_objects::ChiLog::Log0Verbose1()`,             Used only if verbosity level equals 1
- - `chi_objects::ChiLog::Log0Verbose2()`,             Used only if verbosity level equals 2
- - `chi_objects::ChiLog::LogAll()`,                    Verbose level 0 all locations
- - `chi_objects::ChiLog::LogAllWarning()`,             Warning for any location
- - `chi_objects::ChiLog::LogAllError()`,               Error for any location
- - `chi_objects::ChiLog::LogAllVerbose0()`,     Default verbosity level
- - `chi_objects::ChiLog::LogAllVerbose1()`,     Used only if verbosity level equals 1
- - `chi_objects::ChiLog::LogAllVerbose2()`,     Used only if verbosity level equals 2
+ - `objects::Log::Log0()`,                      Used only for location 0
+ - `objects::Log::Log0Warning()`,               Warning only for location 0
+ - `objects::Log::Log0Error()`,                 Error only for location 0
+ - `objects::Log::Log0Verbose0()`,             Default verbosity level
+ - `objects::Log::Log0Verbose1()`,             Used only if verbosity level equals 1
+ - `objects::Log::Log0Verbose2()`,             Used only if verbosity level equals 2
+ - `objects::Log::LogAll()`,                    Verbose level 0 all locations
+ - `objects::Log::LogAllWarning()`,             Warning for any location
+ - `objects::Log::LogAllError()`,               Error for any location
+ - `objects::Log::LogAllVerbose0()`,     Default verbosity level
+ - `objects::Log::LogAllVerbose1()`,     Used only if verbosity level equals 1
+ - `objects::Log::LogAllVerbose2()`,     Used only if verbosity level equals 2
 
 
 

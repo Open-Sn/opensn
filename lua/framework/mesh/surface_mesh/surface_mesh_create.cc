@@ -11,10 +11,10 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiSurfaceMeshCreate);
+RegisterLuaFunctionAsIs(SurfaceMeshCreate);
 
 int
-chiSurfaceMeshCreate(lua_State* L)
+SurfaceMeshCreate(lua_State* L)
 {
   auto new_mesh = new SurfaceMesh;
 
@@ -23,7 +23,7 @@ chiSurfaceMeshCreate(lua_State* L)
   size_t index = opensn::surface_mesh_stack.size() - 1;
   lua_pushnumber(L, static_cast<lua_Number>(index));
 
-  opensn::log.LogAllVerbose2() << "chiSurfaceMeshCreate: "
+  opensn::log.LogAllVerbose2() << "SurfaceMeshCreate: "
                                   "Empty SurfaceMesh object, "
                                << index << ", created" << std::endl;
 

@@ -15,9 +15,9 @@ namespace opensnlua::lbs
 {
 
 int
-chiLBSAddPointSource(lua_State* L)
+LBSAddPointSource(lua_State* L)
 {
-  opensn::log.Log0Warning() << "chiLBSAddPointSource has been deprecated and will be removed soon. "
+  opensn::log.Log0Warning() << "LBSAddPointSource has been deprecated and will be removed soon. "
                                "Consider using lbs.AddPointSource instead, or setting point "
                                "sources via LBSSolver::Options.";
 
@@ -60,7 +60,7 @@ chiLBSAddPointSource(lua_State* L)
 }
 
 int
-chiLBSClearPointSources(lua_State* L)
+LBSClearPointSources(lua_State* L)
 {
   opensn::log.Log0Warning() << "chiLBSClearPointSource has been deprecated and will "
                                "be removed soon. Consider using lbs.ClearPointSources instead, "
@@ -81,7 +81,7 @@ chiLBSClearPointSources(lua_State* L)
   return 0;
 }
 
-RegisterLuaFunction(AddPointSource, lbs, AddPointSource);
+RegisterLuaFunctionNamespace(AddPointSource, lbs, AddPointSource);
 int
 AddPointSource(lua_State* L)
 {
@@ -103,7 +103,7 @@ AddPointSource(lua_State* L)
   return 1;
 }
 
-RegisterLuaFunction(ClearPointSources, lbs, ClearPointSources);
+RegisterLuaFunctionNamespace(ClearPointSources, lbs, ClearPointSources);
 int
 ClearPointSources(lua_State* L)
 {
@@ -122,7 +122,7 @@ ClearPointSources(lua_State* L)
   return 0;
 }
 
-RegisterLuaFunction(AddDistributedSource, lbs, AddDistributedSource);
+RegisterLuaFunctionNamespace(AddDistributedSource, lbs, AddDistributedSource);
 int
 AddDistributedSource(lua_State* L)
 {
@@ -144,7 +144,7 @@ AddDistributedSource(lua_State* L)
   return 0;
 }
 
-RegisterLuaFunction(ClearDistributedSources, lbs, ClearDistributedSources);
+RegisterLuaFunctionNamespace(ClearDistributedSources, lbs, ClearDistributedSources);
 int
 ClearDistributedSources(lua_State* L)
 {

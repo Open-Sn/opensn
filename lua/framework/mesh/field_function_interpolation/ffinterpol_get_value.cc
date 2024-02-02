@@ -15,15 +15,15 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiFFInterpolationGetValue);
+RegisterLuaFunctionAsIs(FFInterpolationGetValue);
 
 int
-chiFFInterpolationGetValue(lua_State* L)
+FFInterpolationGetValue(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError("chiFFInterpolationGetValue", 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError("FFInterpolationGetValue", 1, num_args);
 
   // Get handle to field function
   const size_t ffihandle = lua_tonumber(L, 1);
@@ -73,7 +73,7 @@ chiFFInterpolationGetValue(lua_State* L)
   }
   else
   {
-    opensn::log.Log0Warning() << "chiFFInterpolationGetValue is currently only supported for "
+    opensn::log.Log0Warning() << "FFInterpolationGetValue is currently only supported for "
                               << " POINT, LINE and VOLUME interpolator types.";
   }
 

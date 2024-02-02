@@ -4,15 +4,15 @@
 
 Simply define the x- and y-nodes each in a lua table as shown below and call
 the function chiMeshCreate2DOrthoMesh(). As per usual, a mesh-handler needs to be
-created through chiMeshHandlerCreate() and the whole process is concluded with
-a call to chiVolumeMesherExecute().
+created through MeshHandlerCreate() and the whole process is concluded with
+a call to VolumeMesherExecute().
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 nodesx={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
 nodesy={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}
-chiMeshCreateUnpartitioned2DOrthoMesh(nodesx,nodesy)
-chiVolumeMesherExecute();
+MeshCreateUnpartitioned2DOrthoMesh(nodesx,nodesy)
+VolumeMesherExecute();
 \endcode
 
 */

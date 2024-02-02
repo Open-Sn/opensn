@@ -16,8 +16,8 @@ namespace opensnlua::dfem_diffusion
 void
 RegisterLuaEntities(lua_State* L)
 {
-  LUA_FMACRO1(chiDFEMDiffusionSolverCreate);
-  LUA_FMACRO1(chiDFEMDiffusionSetBCProperty);
+  LUA_FMACRO1(DFEMDiffusionSolverCreate);
+  LUA_FMACRO1(DFEMDiffusionSetBCProperty);
 
   LUA_CMACRO1(MAX_ITERATIONS, 1);
   LUA_CMACRO1(TOLERANCE, 2);

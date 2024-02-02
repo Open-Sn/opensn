@@ -10,7 +10,7 @@ namespace opensnlua::cfem_diffusion
  * \return Handle int Handle to the created solver.
  * \ingroup LuaDiffusion
  */
-int chiCFEMDiffusionSolverCreate(lua_State* L);
+int CFEMDiffusionSolverCreate(lua_State* L);
 
 /** Sets a property of a Diffusion solver. Please also consult the whitepaper
  * for the Diffusion solver (<a
@@ -32,7 +32,7 @@ int chiCFEMDiffusionSolverCreate(lua_State* L);
  *  then type value.\n\n
  *
  * \code
- * chiDiffusionsetBCproperty(solver,"boundary_type",2,"dirichlet",1.0)
+ * DiffusionsetBCproperty(solver,"boundary_type",2,"dirichlet",1.0)
  * \endcode
  *
  * ### BoundaryTypeName
@@ -62,7 +62,7 @@ int chiCFEMDiffusionSolverCreate(lua_State* L);
  * \ingroup LuaDiffusion
  * \author Jan
  */
-int chiCFEMDiffusionSetBCProperty(lua_State* L);
+int CFEMDiffusionSetBCProperty(lua_State* L);
 
 void RegisterLuaEntities(lua_State* L);
 } // namespace opensnlua::cfem_diffusion

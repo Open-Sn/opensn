@@ -27,7 +27,7 @@
 ## Step 2 - Create a mesh handler
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 \endcode
 
 This function call creates a new mesh handler and pushes it to a global
@@ -44,7 +44,8 @@ centered on operating on a specific chi_mesh::MeshHandler object. Physics/math
  (32,768 total) as shown in Figure 1.
 
 
- \image html "Meshing/CubeMeshTut1.png"  "Figure 1 - Mesh spanning from [-1,-1,-1] to [1,1,1]" width=350px
+ \image html "Meshing/CubeMeshTut1.png"  "Figure 1 - Mesh spanning from [-1,-1,-1] to [1,1,1]"
+width=350px
 
 The first step of this process is to define an array of nodes starting from -1.0
 with a distance \f$ ds \f$ between each of them. In lua we can create this array
@@ -59,12 +60,12 @@ end
 \endcode
 
 Note here that lua arrays cannot use `nodes[0]` since arrays in lua are not
-zero based. The next step is call chiMeshCreateUnpartitioned3DOrthoMesh with
+zero based. The next step is call MeshCreateUnpartitioned3DOrthoMesh with
 the node arrangement along the X-direction, Y-direction and Z-direction,
 which in our case is the same,
 
 \code
-surf_mesh, region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
+surf_mesh, region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 \endcode
 
 Some work has been encapsulated behind the scenes here. Firstly, a 2D surface
@@ -82,7 +83,7 @@ The underlying mesher for a 3D mesh is an extruded mesh from 2D. This mesh
  are not going to set any partitioning parameters we will just execute it now.
 
 \code
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 \endcode
 
 ## Step 5 - Assign material- and boundary IDs and
@@ -90,49 +91,49 @@ chiVolumeMesherExecute();
 Materials ID's can conveniently be specified using logical volumes. There are
 many options for logical volumes ranging from primitive parametric surfaces
  to non-convex user generated surfaces using surface meshes
- (see chiLogicalVolumeCreate). For this tutorial
+ (see LogicalVolumeCreate). For this tutorial
  we will use a rectangular paralellipiped (RPP or brick) as follows.
 
 \code
-material = chiPhysicsAddMaterial("Test Material");
+material = PhysicsAddMaterial("Test Material");
 
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 \endcode
 
-We first create a material using the chiPhysicsAddMaterial() function.
+We first create a material using the PhysicsAddMaterial() function.
  The handle of this material will essentially be zero but it is not technically
- required by the chiVolumeMesherSetProperty() function since this function
+ required by the VolumeMesherSetProperty() function since this function
  operates on the integer supplied.
 This material is added to the physics environment and therefore has scope over
 all mesh handlers and all physics entities. We then create a logical volume
- using the function chiLogicalVolumeCreate() with arguments RPP,
+ using the function LogicalVolumeCreate() with arguments RPP,
  specifying that we will be using a Rectangular Parallelipiped and then a
  series of dimensions specifying xmin-xmax-ymin-ymax-zmin-zmax. Every cell
  centroid within these dimensions will be flagged as being "within" the logical
  volume.
 
 Actually setting the mesh's material id's is a utility facilitated by a
- volume mesher property and hence we call chiVolumeMesherSetProperty()
+ volume mesher property and hence we call VolumeMesherSetProperty()
  with a property index MATID_FROMLOGICAL. Next we provided a handle to the
  logical volume (vol0) and the desired material id. Logical volumes are very
  diverse and their uses are discussed elsewhere. There is an additional utility,
- chiVolumeMesherSetMatIDToAll(), which will set all cell-material-ids without
+ VolumeMesherSetMatIDToAll(), which will set all cell-material-ids without
  requiring a logical volume, however, in this tutorial we opted to show the
  logical volume route.
 
 ### Boundary IDs
 By default all boundaries are unassigned (i.e., -1). There are two utilities
  that set the boundary id's the first of which is essentially identical to how
- material ids are set, chiVolumeMesherSetProperty(), but this time the property
+ material ids are set, VolumeMesherSetProperty(), but this time the property
  index is BNDRYID_FROMLOGICAL. The second way is to use
- chiVolumeMesherSetupOrthogonalBoundaries() which requires no arguments and will
+ VolumeMesherSetupOrthogonalBoundaries() which requires no arguments and will
  asssign standard indices to a boundary if it is aligned with the orthogonal
  cartesian directions.
 
 The culmination of this step is all done within a physics agnostic framework.
 The user can even export the mesh for visualization using the function
- chiMeshHandlerExportMeshToObj().
+ MeshHandlerExportMeshToObj().
 
 ### Boundary IDs
 
@@ -146,21 +147,21 @@ Now that the cells have been assigned a material id we need to add
  scalar values.
 
 \code
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
+PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
+PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 \endcode
 
 In this code we created the material properties using the function
- chiPhysicsMaterialAddProperty() which requires a handle to the reference
+ PhysicsMaterialAddProperty() which requires a handle to the reference
  material, the property type (SCALAR_VALUE), and a name for the property.
  Unlike extrusion layers the property name can be used in further calls to refer
  to the specific property.
 
 Material property values are set using the function
- chiPhysicsMaterialSetProperty() which again expects a handle to the
+ PhysicsMaterialSetProperty() which again expects a handle to the
  reference material, then either a material property id or name (in this case
  name), then an operation index and value(s). For this case we used an operation
  index SINGLE_VALUE which is the only operation supported by SCALAR_VALUE. In
@@ -172,37 +173,37 @@ Material property values are set using the function
 The following sequence of function calls completely define the diffusion solver.
 
 \code
-phys1 = chiDiffusionCreateSolver()
-chiSolverSetBasicOption(phys1,"discretization_method","PWLC")
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+phys1 = DiffusionCreateSolver()
+SolverSetBasicOption(phys1,"discretization_method","PWLC")
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 \endcode
 
 We first create the diffusion solver with a call to
- chiDiffusionCreateSolver(). This creates the solver and pushes it onto
+ DiffusionCreateSolver(). This creates the solver and pushes it onto
  the physics handler. The function returns the handle.
 
 Next we can set numerous diffusion solver properties which can comprehensively
- be viewed in its specific documentation (chiDiffusionSetProperty()).
+ be viewed in its specific documentation (DiffusionSetProperty()).
 
 ## Step 7 - Initialize and Solve
 
 The final step of this process is to initialize and execute the diffusion solver.
 
 \code
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 \endcode
 
 ## Step 8 - Post-processing
 The execution of a Chi-Tech physics module culminates in the creation of one or
  more field functions. These field functions should all be populated for use
  during the initialization phase of the solver. Users can get handles to all
- the field functions by using the chiGetFieldFunctionList call. Thereafter, the
+ the field functions by using the GetFieldFunctionList call. Thereafter, the
  field function can be exported to VTK-format which can be read by Paraview.
 
 \code
-fflist,count = chiGetFieldFunctionList(phys1)
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+fflist,count = GetFieldFunctionList(phys1)
+ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 \endcode
 
 
@@ -213,7 +214,7 @@ Here is the complete input file with comments
 
 \code
 --############################################### Setup mesh
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 nodes={}
 N=32
@@ -221,41 +222,41 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
+surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 
-material = chiPhysicsAddMaterial("Test Material");
+material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
-chiMeshHandlerExportMeshToVTK("Mesh")
+MeshHandlerExportMeshToVTK("Mesh")
 --############################################### Add material properties
 
 
 -- Set material properties
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
+PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
+PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics
-phys1 = chiDiffusionCreateSolver()
-chiSolverSetBasicOption(phys1,"discretization_method","PWLC");
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+phys1 = DiffusionCreateSolver()
+SolverSetBasicOption(phys1,"discretization_method","PWLC");
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 
 --############################################### Initialize and
 --                                                Execute Solver
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
-fflist,count = chiGetFieldFunctionList(phys1)
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+fflist,count = GetFieldFunctionList(phys1)
+ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 \endcode
 
 
@@ -298,7 +299,7 @@ The output produced will look as follows:
 [0]  Done partitioning mesh.
 [0]  Cells loaded.
 [0]  VolumeMesherPredefinedUnpartitioned: Cells created = 32768
-[0]  00:00:00 chiVolumeMesherExecute: Volume meshing completed. Memory used = 43.5 MB
+[0]  00:00:00 VolumeMesherExecute: Volume meshing completed. Memory used = 43.5 MB
 [0]  Total process memory used after meshing 104 MB
 [0]  00:00:00 Setting material id from logical volume.
 [0]  00:00:00 Done setting material id from logical volume. Number of cells modified = 32768.

@@ -9,9 +9,9 @@ namespace opensnlua::lbs
 {
 
 int
-chiLBSComputeFissionRate(lua_State* L)
+LBSComputeFissionRate(lua_State* L)
 {
-  const std::string fname = "chiLBSComputeFissionRate";
+  const std::string fname = "LBSComputeFissionRate";
   const int num_args = lua_gettop(L);
 
   if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);

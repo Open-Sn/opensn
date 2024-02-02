@@ -35,11 +35,11 @@ enum class PropertyCode : int
 };
 
 int
-chiLBSSetProperty(lua_State* L)
+LBSSetProperty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
-  opensn::log.Log0Warning() << fname + " has been deprecated. Use chiLBSSetOptions instead.";
+  opensn::log.Log0Warning() << fname + " has been deprecated. Use LBSSetOptions instead.";
 
   const int numArgs = lua_gettop(L);
   if (numArgs < 2) LuaPostArgAmountError(fname, 2, numArgs);
@@ -68,12 +68,11 @@ chiLBSSetProperty(lua_State* L)
     if (scpcode(method) == PropertyCode::PWLD)
       lbs_solver.Options().sd_type = SDMType::PIECEWISE_LINEAR_DISCONTINUOUS;
     else
-      throw std::invalid_argument(
-        "Invalid option for Discretization method in chiLBSSetProperty.\n");
+      throw std::invalid_argument("Invalid option for Discretization method in LBSSetProperty.\n");
   }
   else if (scpcode(property) == PropertyCode::BOUNDARY_CONDITION)
   {
-    if (numArgs < 4) LuaPostArgAmountError("chiLBSSetProperty", 4, numArgs);
+    if (numArgs < 4) LuaPostArgAmountError("LBSSetProperty", 4, numArgs);
 
     LuaCheckNilValue(fname, L, 3);
     LuaCheckNilValue(fname, L, 4);
@@ -84,7 +83,7 @@ chiLBSSetProperty(lua_State* L)
     if (!((bident >= scint(PropertyCode::XMAX)) && (bident <= scint(PropertyCode::ZMIN))))
     {
       opensn::log.LogAllError() << "Unknown boundary identifier encountered "
-                                   "in call to chiLBSSetProperty";
+                                   "in call to LBSSetProperty";
       opensn::Exit(EXIT_FAILURE);
     }
 
@@ -97,11 +96,11 @@ chiLBSSetProperty(lua_State* L)
     }
     else if (btype == (int)opensn::lbs::BoundaryType::INCIDENT_ISOTROPIC)
     {
-      if (numArgs != 5) LuaPostArgAmountError("chiLBSSetProperty", 5, numArgs);
+      if (numArgs != 5) LuaPostArgAmountError("LBSSetProperty", 5, numArgs);
 
       if (lbs_solver.Groups().empty())
       {
-        opensn::log.Log0Error() << "In call to chiLBSSetProperty, setting "
+        opensn::log.Log0Error() << "In call to LBSSetProperty, setting "
                                 << "incident isotropic flux boundary type: Number of solver groups"
                                 << " is zero. Boundary fluxes can only be set after group structure"
                                 << " has been defined.";
@@ -110,7 +109,7 @@ chiLBSSetProperty(lua_State* L)
 
       if (!lua_istable(L, 5))
       {
-        opensn::log.LogAllError() << "In call to chiLBSSetProperty, setting "
+        opensn::log.LogAllError() << "In call to LBSSetProperty, setting "
                                   << "incident isotropic flux boundary type,"
                                   << " argument 5 should be a lua table and was detected as"
                                      " not being one.";
@@ -129,7 +128,7 @@ chiLBSSetProperty(lua_State* L)
 
       if (table_len != lbs_solver.Groups().size())
       {
-        opensn::log.Log0Error() << "In call to chiLBSSetProperty, setting "
+        opensn::log.Log0Error() << "In call to LBSSetProperty, setting "
                                 << "incident isotropic flux boundary type: "
                                 << "Number of groups in boundary flux specification is "
                                 << table_len << " but solver has a total of "
@@ -164,7 +163,7 @@ chiLBSSetProperty(lua_State* L)
     {
       opensn::log.LogAllError() << "Unsupported boundary type encountered "
                                    "in call to "
-                                << LuaSourceInfo(L, "chiLBSSetProperty");
+                                << LuaSourceInfo(L, "LBSSetProperty");
       opensn::Exit(EXIT_FAILURE);
     }
   }
@@ -177,7 +176,7 @@ chiLBSSetProperty(lua_State* L)
     if (scattering_order < 0)
     {
       opensn::log.Log0Error() << "Invalid scattering order in call to "
-                              << "chiLBSSetProperty:SCATTERING_ORDER. "
+                              << "LBSSetProperty:SCATTERING_ORDER. "
                                  "Value must be > 0.";
       opensn::Exit(EXIT_FAILURE);
     }
@@ -186,7 +185,7 @@ chiLBSSetProperty(lua_State* L)
   }
   else if (scpcode(property) == PropertyCode::SWEEP_EAGER_LIMIT)
   {
-    if (numArgs != 3) LuaPostArgAmountError("chiLBSSetProperty:SWEEP_EAGER_LIMIT", 3, numArgs);
+    if (numArgs != 3) LuaPostArgAmountError("LBSSetProperty:SWEEP_EAGER_LIMIT", 3, numArgs);
 
     LuaCheckNilValue(fname, L, 3);
 
@@ -291,7 +290,7 @@ chiLBSSetProperty(lua_State* L)
     opensn::log.Log() << "LBS option: use_precursors set to " << flag;
   }
   else
-    throw std::logic_error(fname + ": Invalid property in chiLBSSetProperty.\n");
+    throw std::logic_error(fname + ": Invalid property in LBSSetProperty.\n");
 
   return 0;
 }

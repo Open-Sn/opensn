@@ -12,10 +12,7 @@ namespace opensn
 InputParameters GetSyntax_PrintPostProcessors();
 ParameterBlock PrintPostProcessors(const InputParameters& params);
 
-RegisterWrapperFunction(chi,
-                        PrintPostProcessors,
-                        GetSyntax_PrintPostProcessors,
-                        PrintPostProcessors);
+RegisterWrapperFunction(PrintPostProcessors, GetSyntax_PrintPostProcessors, PrintPostProcessors);
 
 InputParameters
 GetSyntax_PrintPostProcessors()

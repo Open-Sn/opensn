@@ -11,7 +11,7 @@ namespace opensnlua::mg_diffusion
 {
 
 int
-chiCFEMMGDiffusionSolverCreate(lua_State* L)
+CFEMMGDiffusionSolverCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -30,7 +30,7 @@ chiCFEMMGDiffusionSolverCreate(lua_State* L)
 
   lua_pushinteger(L, static_cast<lua_Integer>(opensn::object_stack.size() - 1));
 
-  opensn::log.LogAllVerbose1() << "\nchiCFEMMGDiffusionSolverCreate: CFEM "
+  opensn::log.LogAllVerbose1() << "\nCFEMMGDiffusionSolverCreate: CFEM "
                                   "Multigroup Diffusion solver created"
                                << std::endl;
   return 1;

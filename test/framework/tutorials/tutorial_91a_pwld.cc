@@ -24,16 +24,16 @@ namespace unit_sim_tests
 {
 
 /**PWLD Sweep. */
-ParameterBlock chiSimTest91_PWLD(const InputParameters&);
+ParameterBlock SimTest91_PWLD(const InputParameters&);
 
-RegisterWrapperFunction(chi_unit_tests, chiSimTest91_PWLD, nullptr, chiSimTest91_PWLD);
+RegisterWrapperFunctionNamespace(unit_tests, SimTest91_PWLD, nullptr, SimTest91_PWLD);
 
 ParameterBlock
-chiSimTest91_PWLD(const InputParameters&)
+SimTest91_PWLD(const InputParameters&)
 {
-  const std::string fname = "chiSimTest91_PWLD";
+  const std::string fname = "SimTest91_PWLD";
 
-  opensn::log.Log() << "chiSimTest91_PWLD num_args = " << 0;
+  opensn::log.Log() << "SimTest91_PWLD num_args = " << 0;
 
   if (opensn::mpi_comm.size() != 1) throw std::logic_error(fname + ": Is serial only.");
 

@@ -13,7 +13,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiCreateProductQuadrature);
+RegisterLuaFunctionAsIs(CreateProductQuadrature);
 
 RegisterLuaConstantAsIs(GAUSS_LEGENDRE, Varying(1));
 RegisterLuaConstantAsIs(GAUSS_CHEBYSHEV, Varying(2));
@@ -22,7 +22,7 @@ RegisterLuaConstantAsIs(GAUSS_LEGENDRE_CHEBYSHEV, Varying(4));
 RegisterLuaConstantAsIs(CUSTOM_QUADRATURE, Varying(5));
 
 int
-chiCreateProductQuadrature(lua_State* L)
+CreateProductQuadrature(lua_State* L)
 {
   int num_args = lua_gettop(L);
   // Parse argument
@@ -31,7 +31,7 @@ chiCreateProductQuadrature(lua_State* L)
 
   if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE)
   {
-    if (num_args < 2) LuaPostArgAmountError("chiCreateProductQuadrature", 2, num_args);
+    if (num_args < 2) LuaPostArgAmountError("CreateProductQuadrature", 2, num_args);
 
     int Np = lua_tonumber(L, 2);
     if (num_args == 3) verbose = lua_toboolean(L, 3);
@@ -55,7 +55,7 @@ chiCreateProductQuadrature(lua_State* L)
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE)
   {
-    if (num_args < 3) LuaPostArgAmountError("chiCreateProductQuadrature", 3, num_args);
+    if (num_args < 3) LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
 
     int Na = lua_tonumber(L, 2);
     int Np = lua_tonumber(L, 3);
@@ -80,7 +80,7 @@ chiCreateProductQuadrature(lua_State* L)
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV)
   {
-    if (num_args < 3) LuaPostArgAmountError("chiCreateProductQuadrature", 3, num_args);
+    if (num_args < 3) LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
 
     int Na = lua_tonumber(L, 2);
     int Np = lua_tonumber(L, 3);
@@ -106,26 +106,25 @@ chiCreateProductQuadrature(lua_State* L)
   else if (ident == (int)ProductQuadratureType::CUSTOM_QUADRATURE)
   {
     if (num_args < 4)
-      LuaPostArgAmountError("chiCreateProductQuadrature:CUSTOM_QUADRATURE", 3, num_args);
+      LuaPostArgAmountError("CreateProductQuadrature:CUSTOM_QUADRATURE", 3, num_args);
 
     if (not lua_istable(L, 2))
     {
       opensn::log.LogAllError()
-        << "chiCreateProductQuadrature:CUSTOM_QUADRATURE, second argument must "
+        << "CreateProductQuadrature:CUSTOM_QUADRATURE, second argument must "
         << "be a lua table.";
       opensn::Exit(EXIT_FAILURE);
     }
     if (not lua_istable(L, 3))
     {
-      opensn::log.LogAllError()
-        << "chiCreateProductQuadrature:CUSTOM_QUADRATURE, third argument must "
-        << "be a lua table.";
+      opensn::log.LogAllError() << "CreateProductQuadrature:CUSTOM_QUADRATURE, third argument must "
+                                << "be a lua table.";
       opensn::Exit(EXIT_FAILURE);
     }
     if (not lua_istable(L, 4))
     {
       opensn::log.LogAllError()
-        << "chiCreateProductQuadrature:CUSTOM_QUADRATURE, fourth argument must "
+        << "CreateProductQuadrature:CUSTOM_QUADRATURE, fourth argument must "
         << "be a lua table.";
       opensn::Exit(EXIT_FAILURE);
     }
@@ -183,10 +182,9 @@ chiCreateProductQuadrature(lua_State* L)
   }
   else
   {
-    opensn::log.LogAllError()
-      << "In call to chiCreateProductQuadrature. Unsupported quadrature type"
-         " supplied. Given: "
-      << ident;
+    opensn::log.LogAllError() << "In call to CreateProductQuadrature. Unsupported quadrature type"
+                                 " supplied. Given: "
+                              << ident;
     opensn::Exit(EXIT_FAILURE);
   }
   return 0;

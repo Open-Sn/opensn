@@ -7,7 +7,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_mesh, OrthogonalMeshGenerator);
+OpenSnRegisterObjectInNamespace(mesh, OrthogonalMeshGenerator);
 
 InputParameters
 OrthogonalMeshGenerator::GetInputParameters()

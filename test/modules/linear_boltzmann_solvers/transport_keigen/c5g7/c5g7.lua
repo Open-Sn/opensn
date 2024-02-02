@@ -1,16 +1,16 @@
 -- Final k-eigenvalue    :         1.1925596 (265)
 dofile("mesh/gmesh_coarse.lua")
 
---chiMeshHandlerExportMeshToVTK("ZMesh")
+--MeshHandlerExportMeshToVTK("ZMesh")
 --os.exit()
 
 dofile("materials/materials.lua")
 
 --############################################### Setup Physics
 --========== ProdQuad
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
---pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,1, 1)
-chiOptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
+--pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,1, 1)
+OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
 
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create
@@ -54,8 +54,8 @@ if (k_method == "pi") then
         lbs_solver_handle = phys1,
         k_tol = 1.0e-8
     })
-    chiSolverInitialize(k_solver)
-    chiSolverExecute(k_solver)
+    SolverInitialize(k_solver)
+    SolverExecute(k_solver)
 elseif (k_method == "pi_scdsa") then
     k_solver = lbs.XXPowerIterationKEigenSCDSA.Create
     ({
@@ -66,11 +66,11 @@ elseif (k_method == "pi_scdsa") then
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
     })
-    chiLBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
-    chiLBSGroupsetSetMaxIterations(phys1, 0, 1)
+    LBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
+    LBSGroupsetSetMaxIterations(phys1, 0, 1)
 
-    chiSolverInitialize(k_solver)
-    chiSolverExecute(k_solver)
+    SolverInitialize(k_solver)
+    SolverExecute(k_solver)
 elseif (k_method == "pi_scdsa_pwlc") then
     k_solver = lbs.XXPowerIterationKEigenSCDSA.Create
     ({
@@ -81,11 +81,11 @@ elseif (k_method == "pi_scdsa_pwlc") then
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
     })
-    chiLBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
-    chiLBSGroupsetSetMaxIterations(phys1, 0, 1)
+    LBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
+    LBSGroupsetSetMaxIterations(phys1, 0, 1)
 
-    chiSolverInitialize(k_solver)
-    chiSolverExecute(k_solver)
+    SolverInitialize(k_solver)
+    SolverExecute(k_solver)
 elseif (k_method == "jfnk") then
     k_solver = lbs.XXNonLinearKEigen.Create
     ({
@@ -96,15 +96,15 @@ elseif (k_method == "jfnk") then
         l_max_its = 20,
         num_free_power_iterations = 2,
     })
-    chiSolverInitialize(k_solver)
-    chiSolverExecute(k_solver)
+    SolverInitialize(k_solver)
+    SolverExecute(k_solver)
 else
-    chiLog(LOG_0ERROR, "k_method must be specified. \"pi\", "..
+    Log(LOG_0ERROR, "k_method must be specified. \"pi\", "..
       "\"pi_scdsa\", \"pi_scdsa_pwlc\" or \"jfnk\"");
     os.exit(1)
 end
 
 if (master_export == nil) then
-    fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
-    chiExportMultiFieldFunctionToVTK(fflist,"solutions/ZPhi")
+    fflist,count = LBSGetScalarFieldFunctionList(phys1)
+    ExportMultiFieldFunctionToVTK(fflist,"solutions/ZPhi")
 end

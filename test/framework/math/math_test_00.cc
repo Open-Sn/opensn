@@ -12,12 +12,12 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock chi_math_Test00(const InputParameters& params);
+ParameterBlock math_Test00(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests, chi_math_Test00, nullptr, chi_math_Test00);
+RegisterWrapperFunctionNamespace(unit_tests, math_Test00, nullptr, math_Test00);
 
 ParameterBlock
-chi_math_Test00(const InputParameters& params)
+math_Test00(const InputParameters& params)
 {
   opensn::log.Log() << "GOLD_BEGIN";
   // Dynamic Vector

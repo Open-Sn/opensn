@@ -15,7 +15,7 @@ using namespace opensn;
 
 namespace opensn::lua_utils
 {
-int chiMakeObject(lua_State* L);
+int MakeObject(lua_State* L);
 }
 
 namespace opensnlua
@@ -23,7 +23,7 @@ namespace opensnlua
 
 Console& console = Console::GetInstance();
 
-RegisterLuaFunction(Console::LuaWrapperCall, chi_console, LuaWrapperCall);
+RegisterLuaFunctionNamespace(Console::LuaWrapperCall, console, LuaWrapperCall);
 
 Console&
 Console::GetInstance() noexcept
@@ -181,7 +181,7 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
         lua_pushstring(L, argv[i - 1]);
         lua_settable(L, -3);
       }
-      lua_setglobal(L, "chiArgs");
+      lua_setglobal(L, "Args");
     }
     int error = luaL_dofile(this->console_state_, fileName.c_str());
 
@@ -200,10 +200,10 @@ Console::PostMPIInfo(int location_id, int number_of_processes) const
   lua_State* L = this->console_state_;
 
   lua_pushinteger(L, location_id);
-  lua_setglobal(L, "chi_location_id");
+  lua_setglobal(L, "location_id");
 
   lua_pushinteger(L, number_of_processes);
-  lua_setglobal(L, "chi_number_of_processes");
+  lua_setglobal(L, "number_of_processes");
 }
 
 void
@@ -290,14 +290,21 @@ Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_na
                                                  WrapperCallFunc actual_function,
                                                  bool ignore_null_call_func)
 {
-  const std::string name =
-    (namespace_name.empty()) ? name_in_lua : namespace_name + "::" + name_in_lua;
+  return AddWrapperToRegistryInNamespaceWithName(
+    namespace_name + "::" + name_in_lua, syntax_function, actual_function, ignore_null_call_func);
+}
 
+char
+Console::AddWrapperToRegistryInNamespaceWithName(const std::string& name_in_lua,
+                                                 WrapperGetInParamsFunc syntax_function,
+                                                 WrapperCallFunc actual_function,
+                                                 bool ignore_null_call_func)
+{
   auto& console = GetInstance();
   auto& registry = console.function_wrapper_registry_;
 
-  ChiLogicalErrorIf(registry.count(name) > 0,
-                    std::string("Attempted to register lua-function wrapper \"") + name +
+  ChiLogicalErrorIf(registry.count(name_in_lua) > 0,
+                    std::string("Attempted to register lua-function wrapper \"") + name_in_lua +
                       "\" but a wrapper with the same name already exists");
 
   if (not syntax_function) syntax_function = DefaultGetInParamsFunc;
@@ -309,7 +316,7 @@ Console::AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_na
   reg_entry.get_in_params_func = syntax_function;
   reg_entry.call_func = actual_function;
 
-  registry.insert(std::make_pair(name, reg_entry));
+  registry.insert(std::make_pair(name_in_lua, reg_entry));
 
   return 0;
 }
@@ -348,7 +355,7 @@ Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_na
   auto MakeChunk = [&L, &full_lua_name]()
   {
     std::string chunk_code = "local params = ...; ";
-    chunk_code += "return chi_console.LuaWrapperCall(\"" + full_lua_name + "\", ...)";
+    chunk_code += "return console.LuaWrapperCall(\"" + full_lua_name + "\", ...)";
 
     luaL_loadstring(L, chunk_code.c_str());
   };
@@ -390,7 +397,7 @@ Console::SetObjectNamespaceTableStructure(const std::string& full_lua_name)
 
     lua_pushstring(L, "Create");
     std::string chunk_code = "local params = ...; ";
-    chunk_code += "return chiMakeObjectType(\"" + full_name + "\", ...)";
+    chunk_code += "return MakeObjectType(\"" + full_name + "\", ...)";
 
     luaL_loadstring(L, chunk_code.c_str());
     lua_settable(L, -3);

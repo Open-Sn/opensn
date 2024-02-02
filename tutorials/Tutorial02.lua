@@ -5,48 +5,48 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
-material = chiPhysicsAddMaterial("Test Material");
+material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
-chiRegionExportMeshToVTK(region1,"Mesh")
+RegionExportMeshToVTK(region1,"Mesh")
 --############################################### Add material properties
 
 
 -- Set material properties
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
+PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
+PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics
-phys1 = chiDiffusionCreateSolver();
-chiSolverAddRegion(phys1,region1)
-chiSolverSetBasicOption(phys1,"discretization_method","PWLC");
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+phys1 = DiffusionCreateSolver();
+SolverAddRegion(phys1,region1)
+SolverSetBasicOption(phys1,"discretization_method","PWLC");
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
 
 --############################################### Initialize and
 --                                                Execute Solver
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
-fflist,count = chiGetFieldFunctionList(phys1)
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+fflist,count = GetFieldFunctionList(phys1)
+ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
 
-slice1 = chiFFInterpolationCreate(SLICE)
-chiFFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
-chiFFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
+slice1 = FFInterpolationCreate(SLICE)
+FFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
+FFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
 
-chiFFInterpolationInitialize(slice1)
-chiFFInterpolationExecute(slice1)
-chiFFInterpolationExportPython(slice1)
+FFInterpolationInitialize(slice1)
+FFInterpolationExecute(slice1)
+FFInterpolationExportPython(slice1)
 
 local handle = io.popen("python ZPFFI00.py")

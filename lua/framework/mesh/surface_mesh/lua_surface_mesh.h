@@ -10,14 +10,14 @@
  * ### Example
  * Example usage:
  * \code
- * surfmesh = chiSurfaceMeshCreate()
+ * surfmesh = SurfaceMeshCreate()
  * \endcode
  *
  * \return Handle int Handle to the created surface mesh.
  * \ingroup LuaSurfaceMesh
  * \author Jan
  */
-int chiSurfaceMeshCreate(lua_State* L);
+int SurfaceMeshCreate(lua_State* L);
 
 /** Loads mesh data from a wavefront object.
  *
@@ -35,23 +35,23 @@ int chiSurfaceMeshCreate(lua_State* L);
  * Example usage:
  * \code
  * -- Basic example
- * surfmesh1 = chiSurfaceMeshCreate()
- * chiSurfaceMeshImportFromOBJFile(surfmesh1, "MeshFile1.obj")
+ * surfmesh1 = SurfaceMeshCreate()
+ * SurfaceMeshImportFromOBJFile(surfmesh1, "MeshFile1.obj")
  *
  * -- Surface mesh used as Logical volume
- * lv_surfmesh1 = chiSurfaceMeshCreate()
- * chiSurfaceMeshImportFromOBJFile(lv_surfmesh1, "MeshFile3D.obj", false)
+ * lv_surfmesh1 = SurfaceMeshCreate()
+ * SurfaceMeshImportFromOBJFile(lv_surfmesh1, "MeshFile3D.obj", false)
  *
- * lv1 = chiLogicalVolumeCreate(SURFACE, lv_surfmesh1)
+ * lv1 = LogicalVolumeCreate(SURFACE, lv_surfmesh1)
  *
  * -- Surface mesh with transform
  * dx = 1.5
  * dy = -2.5
- * lv_surfmesh2 = chiSurfaceMeshCreate()
- * chiSurfaceMeshImportFromOBJFile(lv_surfmesh2, "MeshFile3D.obj", false,
+ * lv_surfmesh2 = SurfaceMeshCreate()
+ * SurfaceMeshImportFromOBJFile(lv_surfmesh2, "MeshFile3D.obj", false,
  * {dx,dy,0.0})
  *
- * lv2 = chiLogicalVolumeCreate(SURFACE, lv_surfmesh2)
+ * lv2 = LogicalVolumeCreate(SURFACE, lv_surfmesh2)
  * \endcode
  *
  * \return success bool Return true if file was successfully loaded and false
@@ -59,7 +59,7 @@ int chiSurfaceMeshCreate(lua_State* L);
  * \ingroup LuaSurfaceMesh
  * \author Jan
  */
-int chiSurfaceMeshImportFromOBJFile(lua_State* L);
+int SurfaceMeshImportFromOBJFile(lua_State* L);
 
 /** Loads mesh data from a wavefront object.
  *
@@ -73,7 +73,7 @@ int chiSurfaceMeshImportFromOBJFile(lua_State* L);
  * \ingroup LuaSurfaceMesh
  * \author Jan
  */
-int chiSurfaceMeshImportFromTriangleFiles(lua_State* L);
+int SurfaceMeshImportFromTriangleFiles(lua_State* L);
 
 /** Exports mesh as a .obj format.
  *
@@ -83,7 +83,7 @@ int chiSurfaceMeshImportFromTriangleFiles(lua_State* L);
  * \ingroup LuaSurfaceMesh
  * \author Jan
  */
-int chiSurfaceMeshExportToObj(lua_State* L);
+int SurfaceMeshExportToObj(lua_State* L);
 
 /** Exports mesh as a .poly format.
  *
@@ -93,7 +93,7 @@ int chiSurfaceMeshExportToObj(lua_State* L);
  * \ingroup LuaSurfaceMesh
  * \author Jan
  */
-int chiSurfaceMeshExportPolyFile(lua_State* L);
+int SurfaceMeshExportPolyFile(lua_State* L);
 
 /** Builds sweep ordering for a number of angles and checks whether any
  * cyclic dependencies are encountered.
@@ -105,7 +105,7 @@ int chiSurfaceMeshExportPolyFile(lua_State* L);
  * \ingroup LuaSurfaceMesh
  * \author Jan
  */
-int chiSurfaceMeshCheckCycles(lua_State* L);
+int SurfaceMeshCheckCycles(lua_State* L);
 
 /** Computes load balancing parameters for given predictive x and y cuts
  * without actually performing cuts.
@@ -117,4 +117,4 @@ int chiSurfaceMeshCheckCycles(lua_State* L);
  * \ingroup LuaSurfaceMesh
  * \author Jan
  */
-int chiComputeLoadBalancing(lua_State* L);
+int ComputeLoadBalancing(lua_State* L);

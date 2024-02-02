@@ -9,12 +9,12 @@ namespace opensnlua
 
 /**Gracefully exits ChiTech.
  * \param return_code int Return code, defaults to 0 (Success).*/
-int chiExit(lua_State* L);
+int Exit(lua_State* L);
 
-RegisterLuaFunctionAsIs(chiExit);
+RegisterLuaFunctionAsIs(Exit);
 
 int
-chiExit(lua_State* L)
+Exit(lua_State* L)
 {
   const int num_args = lua_gettop(L);
 

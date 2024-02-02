@@ -65,13 +65,13 @@ parameters and return values. Some specific notes in the lua-register file
  .
  .
  .
-RegisterFunction(chiLBSGroupsetSetGroupSubsets)
-RegisterFunction(chiLBSGroupsetSetIterativeMethod)
-RegisterFunction(chiLBSGroupsetSetResidualTolerance)
-RegisterFunction(chiLBSGroupsetSetMaxIterations)
-RegisterFunction(chiLBSGroupsetSetGMRESRestartIntvl)
-RegisterFunction(chiLBSGroupsetSetWGDSA)
-RegisterFunction(chiLBSGroupsetSetTGDSA)
+RegisterFunction(LBSGroupsetSetGroupSubsets)
+RegisterFunction(LBSGroupsetSetIterativeMethod)
+RegisterFunction(LBSGroupsetSetResidualTolerance)
+RegisterFunction(LBSGroupsetSetMaxIterations)
+RegisterFunction(LBSGroupsetSetGMRESRestartIntvl)
+RegisterFunction(LBSGroupsetSetWGDSA)
+RegisterFunction(LBSGroupsetSetTGDSA)
 
 //module:Test scripts
 RegisterFunction(chiLuaTest)

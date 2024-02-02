@@ -30,14 +30,14 @@
  * \ingroup LuaVolumeMesher
  * \author Jan
  */
-int chiVolumeMesherCreate(lua_State* L);
+int VolumeMesherCreate(lua_State* L);
 
 /** Executes the volume meshing pipeline.
  *
  * \ingroup LuaVolumeMesher
  * \author Jan
  */
-int chiVolumeMesherExecute(lua_State* L);
+int VolumeMesherExecute(lua_State* L);
 
 /** Sets a volume mesher property.
  *
@@ -107,7 +107,7 @@ int chiVolumeMesherExecute(lua_State* L);
  * \ingroup LuaVolumeMesher
  * \author Jan
  */
-int chiVolumeMesherSetProperty(lua_State* L);
+int VolumeMesherSetProperty(lua_State* L);
 
 /**Sets the Px, Py and Pz partititioning parameters for a
  * KBA-type partitioning. This also fixes the process count required to
@@ -118,32 +118,32 @@ int chiVolumeMesherSetProperty(lua_State* L);
  * \param Pz int Number partitions in z.
  * \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetKBAPartitioningPxPyPz(lua_State* L);
+int VolumeMesherSetKBAPartitioningPxPyPz(lua_State* L);
 
 /**Sets the x-cuts for KBA type partitioning with a lua array.
  * \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetKBACutsX(lua_State* L);
+int VolumeMesherSetKBACutsX(lua_State* L);
 
 /**Sets the y-cuts for KBA type partitioning with a lua array.
  * \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetKBACutsY(lua_State* L);
+int VolumeMesherSetKBACutsY(lua_State* L);
 
 /**Sets the z-cuts for KBA type partitioning with a lua array.
  * \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetKBACutsZ(lua_State* L);
+int VolumeMesherSetKBACutsZ(lua_State* L);
 
 /** Sets all cell-material id's to the supplied value.
  * \param material_id int The id.
  * \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetMatIDToAll(lua_State* L);
+int VolumeMesherSetMatIDToAll(lua_State* L);
 
 /** Sets boundary numbers on boundaries orthogonal to the cardinal directions
  * as xmax=0, xmin=1, ymax=2, ymin=3, zmax=4, zmin=5.
  *
  * \ingroup LuaVolumeMesher
  */
-int chiVolumeMesherSetupOrthogonalBoundaries(lua_State* L);
+int VolumeMesherSetupOrthogonalBoundaries(lua_State* L);

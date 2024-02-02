@@ -10,10 +10,10 @@ using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionAsIs(chiLogSetVerbosity);
-RegisterLuaFunctionAsIs(chiLog);
-RegisterLuaFunctionAsIs(chiLogProcessEvent);
-RegisterLuaFunctionAsIs(chiLogPrintTimingGraph);
+RegisterLuaFunctionAsIs(LogSetVerbosity);
+RegisterLuaFunctionAsIs(Log);
+RegisterLuaFunctionAsIs(LogProcessEvent);
+RegisterLuaFunctionAsIs(LogPrintTimingGraph);
 
 RegisterLuaConstantAsIs(LOG_0, Varying(1));
 RegisterLuaConstantAsIs(LOG_0WARNING, Varying(2));
@@ -29,7 +29,7 @@ RegisterLuaConstantAsIs(LOG_ALLVERBOSE_1, Varying(11));
 RegisterLuaConstantAsIs(LOG_ALLVERBOSE_2, Varying(12));
 
 int
-chiLogSetVerbosity(lua_State* L)
+LogSetVerbosity(lua_State* L)
 {
   int num_args = lua_gettop(L);
 
@@ -43,11 +43,11 @@ chiLogSetVerbosity(lua_State* L)
 }
 
 int
-chiLog(lua_State* L)
+Log(lua_State* L)
 {
   int num_args = lua_gettop(L);
 
-  if (num_args != 2) LuaPostArgAmountError("chiLog", 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError("Log", 2, num_args);
 
   int mode = lua_tonumber(L, 1);
   const char* message = lua_tostring(L, 2);
@@ -58,7 +58,7 @@ chiLog(lua_State* L)
 }
 
 int
-chiLogProcessEvent(lua_State* L)
+LogProcessEvent(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -94,7 +94,7 @@ chiLogProcessEvent(lua_State* L)
 }
 
 int
-chiLogPrintTimingGraph(lua_State* L)
+LogPrintTimingGraph(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

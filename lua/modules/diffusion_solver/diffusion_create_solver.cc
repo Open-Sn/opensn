@@ -10,7 +10,7 @@
 using namespace opensn;
 
 int
-chiDiffusionCreateSolver(lua_State* L)
+DiffusionCreateSolver(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -29,6 +29,6 @@ chiDiffusionCreateSolver(lua_State* L)
 
   lua_pushinteger(L, static_cast<lua_Integer>(opensn::object_stack.size() - 1));
 
-  opensn::log.LogAllVerbose1() << "chiDiffusionCreateSolver: Diffusion solver created" << std::endl;
+  opensn::log.LogAllVerbose1() << "DiffusionCreateSolver: Diffusion solver created" << std::endl;
   return 1;
 }

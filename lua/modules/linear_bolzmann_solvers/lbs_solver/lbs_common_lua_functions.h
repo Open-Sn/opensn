@@ -58,7 +58,7 @@ namespace opensnlua::lbs
  *  to be followed by a boolean.\n\n
  *
  * \code
- * chiLBSSetProperty(phys1,READ_RESTART_DATA,"YRestart1")
+ * LBSSetProperty(phys1,READ_RESTART_DATA,"YRestart1")
  * \endcode
  *
  * WRITE_RESTART_DATA\n
@@ -71,7 +71,7 @@ namespace opensnlua::lbs
  *  "YRestart", "restart" and 30 minutes respectively.\n\n
  *
  * \code
- * chiLBSSetProperty(phys1,WRITE_RESTART_DATA,"YRestart1","restart",1)
+ * LBSSetProperty(phys1,WRITE_RESTART_DATA,"YRestart1","restart",1)
  * \endcode
  *
  * ###Discretization methods
@@ -96,7 +96,7 @@ namespace opensnlua::lbs
  * LBSBoundaryTypes.VACUUM\n
  * Specifies a vaccuum boundary condition. It is not followed by any value.\n
  * \code
- * chiLBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
+ * LBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
  *                       LBSBoundaryTypes.VACUUM);
  * \endcode
  * \n
@@ -110,7 +110,7 @@ namespace opensnlua::lbs
  *     bsrc[g] = 0.0
  * end
  * bsrc[1] = 1.0
- * chiLBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
+ * LBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
  *                       LBSBoundaryTypes.INCIDENT_ISOTROPIC, bsrc);
  * \endcode
  * \n
@@ -119,7 +119,7 @@ namespace opensnlua::lbs
  * conditions are used this enduces a cyclic dependency which will increase the
  * iteration convergence behavior.\n
  * \code
- * chiLBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
+ * LBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
  *                       LBSBoundaryTypes.REFLECTING);
  * \endcode
  * \n
@@ -173,7 +173,7 @@ namespace opensnlua::lbs
  *     return psi
  * end
  *
- * chiLBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
+ * LBSSetProperty(phys1,BOUNDARY_CONDITION,XMIN,
  *                       LBSBoundaryTypes.INCIDENT_ANISTROPIC_HETEROGENEOUS,
  *                       "luaBoundaryFunctionA");
  * \endcode
@@ -193,7 +193,7 @@ namespace opensnlua::lbs
  *
  * \ingroup LBSLuaFunctions
  */
-int chiLBSSetProperty(lua_State* L);
+int LBSSetProperty(lua_State* L);
 
 /**Create a groupset.
  * \param SolverIndex int Handle to the solver for which the set is to be created.
@@ -202,12 +202,12 @@ int chiLBSSetProperty(lua_State* L);
  *
  * Example:
  * \code
- * gs0 = chiLBSCreateGroupset(phys1)
+ * gs0 = LBSCreateGroupset(phys1)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSCreateGroupset(lua_State* L);
+int LBSCreateGroupset(lua_State* L);
 
 /**Create a group.
  * \param SolverIndex int Handle to the solver for which the group
@@ -222,13 +222,13 @@ int chiLBSCreateGroupset(lua_State* L);
  * --========== Groups
  * grp = {}
  * for g=1,num_groups do
- *     grp[g] = chiLBSCreateGroup(phys1)
+ *     grp[g] = LBSCreateGroup(phys1)
  * end
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSCreateGroup(lua_State* L);
+int LBSCreateGroup(lua_State* L);
 
 /**Adds a block of groups to a groupset.
  * \param SolverIndex int Handle to the solver for which the group
@@ -244,16 +244,16 @@ int chiLBSCreateGroup(lua_State* L);
  * \code
  * grp = {}
  * for g=1,num_groups do
- *     grp[g] = chiLBSCreateGroup(phys1)
+ *     grp[g] = LBSCreateGroup(phys1)
  * end
  *
- * chiLBSGroupsetAddGroups(phys1,cur_gs,0,15)
+ * LBSGroupsetAddGroups(phys1,cur_gs,0,15)
  * \endcode
  *
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetAddGroups(lua_State* L);
+int LBSGroupsetAddGroups(lua_State* L);
 
 /**Sets the product quadrature used for the groupset
  * \param SolverIndex int Handle to the solver for which the group
@@ -268,14 +268,14 @@ int chiLBSGroupsetAddGroups(lua_State* L);
  *
  * Example:
  * \code
- * pquad0 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
+ * pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
  *
- * chiLBSGroupsetSetQuadrature(phys1,cur_gs,pquad0)
+ * LBSGroupsetSetQuadrature(phys1,cur_gs,pquad0)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetQuadrature(lua_State* L);
+int LBSGroupsetSetQuadrature(lua_State* L);
 
 /**Sets the the type of angle aggregation to use for this groupset.
  * \param SolverIndex int Handle to the solver for which the group
@@ -299,12 +299,12 @@ int chiLBSGroupsetSetQuadrature(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetAngleAggregationType(phys1,cur_gs,LBSGroupset.ANGLE_AGG_POLAR)
+ * LBSGroupsetSetAngleAggregationType(phys1,cur_gs,LBSGroupset.ANGLE_AGG_POLAR)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetAngleAggregationType(lua_State* L);
+int LBSGroupsetSetAngleAggregationType(lua_State* L);
 
 /**Sets the angle aggregation divisions
  * \param SolverIndex int Handle to the solver for which the group
@@ -326,12 +326,12 @@ int chiLBSGroupsetSetAngleAggregationType(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
+ * LBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetAngleAggDiv(lua_State* L);
+int LBSGroupsetSetAngleAggDiv(lua_State* L);
 
 /**Sets the number of group-subsets to use for groupset. Default 1.
  * \param SolverIndex int Handle to the solver for which the group
@@ -345,12 +345,12 @@ int chiLBSGroupsetSetAngleAggDiv(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
+ * LBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetGroupSubsets(lua_State* L);
+int LBSGroupsetSetGroupSubsets(lua_State* L);
 
 /**Sets the number of group-subsets to use for groupset. Default 1.
  * \param SolverIndex int Handle to the solver for which the group
@@ -439,13 +439,13 @@ int chiLBSGroupsetSetGroupSubsets(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_CLASSICRICHARDSON)
- * chiLBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_GMRES)
+ * LBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_CLASSICRICHARDSON)
+ * LBSGroupsetSetIterativeMethod(phys1,cur_gs,NPT_GMRES)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetIterativeMethod(lua_State* L);
+int LBSGroupsetSetIterativeMethod(lua_State* L);
 
 /**Sets the residual tolerance for the iterative method of the groupset.
  *
@@ -463,12 +463,12 @@ int chiLBSGroupsetSetIterativeMethod(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-4)
+ * LBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-4)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetResidualTolerance(lua_State* L);
+int LBSGroupsetSetResidualTolerance(lua_State* L);
 
 /**Sets the maximum number of iterations for the groupset iterative method.
  * \param SolverIndex int Handle to the solver for which the group
@@ -482,12 +482,12 @@ int chiLBSGroupsetSetResidualTolerance(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetMaxIterations(phys1,cur_gs,200)
+ * LBSGroupsetSetMaxIterations(phys1,cur_gs,200)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetMaxIterations(lua_State* L);
+int LBSGroupsetSetMaxIterations(lua_State* L);
 
 /**Sets the restart interval for GMRES if applied to the groupset.
  * \param SolverIndex int Handle to the solver for which the group
@@ -501,12 +501,12 @@ int chiLBSGroupsetSetMaxIterations(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,15)
+ * LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,15)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L);
+int LBSGroupsetSetGMRESRestartIntvl(lua_State* L);
 
 /**Enables or disables the printing of a sweep log.
  * \param SolverIndex int Handle to the solver for which the group
@@ -520,12 +520,12 @@ int chiLBSGroupsetSetGMRESRestartIntvl(lua_State* L);
  *
  * Example:
  * \code
- * chiLBSGroupsetSetEnableSweepLog(phys1,cur_gs,true)
+ * LBSGroupsetSetEnableSweepLog(phys1,cur_gs,true)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetEnableSweepLog(lua_State* L);
+int LBSGroupsetSetEnableSweepLog(lua_State* L);
 
 /**Sets the Within-Group Diffusion Synthetic Acceleration parameters
  * for this groupset. If this call is being made then it is assumed
@@ -553,12 +553,12 @@ int chiLBSGroupsetSetEnableSweepLog(lua_State* L);
  * \code
  * petsc_options =                  " -pc_hypre_boomeramg_strong_threshold 0.8"
  * petsc_options = petsc_options .. " -pc_hypre_boomeramg_max_levels 25"
- * chiLBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,false,petsc_options)
+ * LBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,false,petsc_options)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetWGDSA(lua_State* L);
+int LBSGroupsetSetWGDSA(lua_State* L);
 
 /**Sets the Two-Grid Diffusion Synthetic Acceleration parameters
  * for this groupset. If this call is being made then it is assumed
@@ -586,12 +586,12 @@ int chiLBSGroupsetSetWGDSA(lua_State* L);
  * \code
  * petsc_options =                  " -pc_hypre_boomeramg_strong_threshold 0.8"
  * petsc_options = petsc_options .. " -pc_hypre_boomeramg_max_levels 25"
- * chiLBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,false,petsc_options)
+ * LBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,false,petsc_options)
  * \endcode
  *
  * \ingroup LuaLBSGroupsets
  */
-int chiLBSGroupsetSetTGDSA(lua_State* L);
+int LBSGroupsetSetTGDSA(lua_State* L);
 
 /**Obtains a list of field functions, related only to scalar flux,
  * from the transport solver.
@@ -602,7 +602,7 @@ int chiLBSGroupsetSetTGDSA(lua_State* L);
  * \return Pair Table and count. Returns an array of handles and the amount of
  * elements in it (indexed from 1). \ingroup LBSLuaFunctions \author Jan
  */
-int chiLBSGetScalarFieldFunctionList(lua_State* L);
+int LBSGetScalarFieldFunctionList(lua_State* L);
 
 /**Writes the angular fluxes of a LBS groupset to file.
  *
@@ -616,7 +616,7 @@ int chiLBSGetScalarFieldFunctionList(lua_State* L);
  *                         will append its id to the back plus an extension ".data"
  *
  */
-int chiLBSWriteGroupsetAngularFlux(lua_State* L);
+int LBSWriteGroupsetAngularFlux(lua_State* L);
 
 /**Reads the angular fluxes of a LBS groupset from a file.
  *
@@ -630,7 +630,7 @@ int chiLBSWriteGroupsetAngularFlux(lua_State* L);
  *                         will append its id to the back plus an extension ".data"
  *
  */
-int chiLBSReadGroupsetAngularFlux(lua_State* L);
+int LBSReadGroupsetAngularFlux(lua_State* L);
 
 /**Writes the flux-moments of a LBS solution to file (phi_old_local).
  *
@@ -641,7 +641,7 @@ int chiLBSReadGroupsetAngularFlux(lua_State* L);
  *                         will append its id to the back plus an extension ".data"
  *
  */
-int chiLBSWriteFluxMoments(lua_State* L);
+int LBSWriteFluxMoments(lua_State* L);
 
 /**Creates scattered source-moments, based on a LBS solution, and writes them
  * to file.
@@ -653,7 +653,7 @@ int chiLBSWriteFluxMoments(lua_State* L);
  *                         will append its id to the back plus an extension ".data"
  *
  */
-int chiLBSCreateAndWriteSourceMoments(lua_State* L);
+int LBSCreateAndWriteSourceMoments(lua_State* L);
 
 /**Reads flux-moments from a file and creates a scattering source from these
  * moments to be used instead of a regular material/boundary source.
@@ -670,7 +670,7 @@ int chiLBSCreateAndWriteSourceMoments(lua_State* L);
  *                              with the ".data" appended. Default: false.
  *
  */
-int chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L);
+int LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L);
 
 /**Reads the source-moments from a file to a specific
  * ext_src_moments_local-vector
@@ -687,7 +687,7 @@ int chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L);
  *                              be used without adding the location-id, but still
  *                              with the ".data" appended. Default: false.
  */
-int chiLBSReadSourceMoments(lua_State* L);
+int LBSReadSourceMoments(lua_State* L);
 
 /**Reads flux-moments from a file to phi_old_local (the initial flux solution).
  *
@@ -702,7 +702,7 @@ int chiLBSReadSourceMoments(lua_State* L);
  *                              be used without adding the location-id, but still
  *                              with the ".data" appended. Default: false.
  */
-int chiLBSReadFluxMoments(lua_State* L);
+int LBSReadFluxMoments(lua_State* L);
 
 /**Computes and returns the fission rate.
  *
@@ -716,7 +716,7 @@ int chiLBSReadFluxMoments(lua_State* L);
  * \ingroup LBSLuaFunctions
  * \author Jan
  */
-int chiLBSComputeFissionRate(lua_State* L);
+int LBSComputeFissionRate(lua_State* L);
 
 /**Initializes or reinitializes the materials. This normally happens
  * automatically during solver initialization but if the user wants to
@@ -728,7 +728,7 @@ int chiLBSComputeFissionRate(lua_State* L);
  * \ingroup LBSLuaFunctions
  * \author Jan
  */
-int chiLBSInitializeMaterials(lua_State* L);
+int LBSInitializeMaterials(lua_State* L);
 
 /**Adds a point source to an LBS solver.
  * \param SolverIndex int Handle to the solver.
@@ -739,7 +739,7 @@ int chiLBSInitializeMaterials(lua_State* L);
  *
  *  \ingroup LBSLuaFunctions
  */
-int chiLBSAddPointSource(lua_State* L);
+int LBSAddPointSource(lua_State* L);
 
 /**Clears all the point sources from the solver. This is mostly
  * useful for adjoint response calculations.
@@ -747,6 +747,6 @@ int chiLBSAddPointSource(lua_State* L);
  *
  *  \ingroup LBSLuaFunctions
  */
-int chiLBSClearPointSources(lua_State* L);
+int LBSClearPointSources(lua_State* L);
 
 } // namespace opensnlua::lbs

@@ -19,9 +19,9 @@ namespace lbs::lbts_lua_utils
 
 \author Zachary Hardy*/
 int
-chiLBTSAdvanceTimeData(lua_State* L)
+LBTSAdvanceTimeData(lua_State* L)
 {
-  const std::string fname = "chiLBTSSetProperty";
+  const std::string fname = "LBTSSetProperty";
   const int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
 

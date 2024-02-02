@@ -38,16 +38,16 @@ std::vector<double> SetSource(const MeshContinuum& grid,
                               const std::vector<YlmIndices>& m_ell_em_map);
 
 /**WDD Sweep. */
-ParameterBlock chiSimTest06_WDD(const InputParameters&);
+ParameterBlock SimTest06_WDD(const InputParameters&);
 
-RegisterWrapperFunction(chi_unit_testsB, chiSimTest06_WDD, nullptr, chiSimTest06_WDD);
+RegisterWrapperFunctionNamespace(unit_testsB, SimTest06_WDD, nullptr, SimTest06_WDD);
 
 ParameterBlock
-chiSimTest06_WDD(const InputParameters&)
+SimTest06_WDD(const InputParameters&)
 {
-  const std::string fname = "chiSimTest06_WDD";
+  const std::string fname = "SimTest06_WDD";
 
-  opensn::log.Log() << "chiSimTest06_WDD num_args = " << 0;
+  opensn::log.Log() << "SimTest06_WDD num_args = " << 0;
 
   if (opensn::mpi_comm.size() != 1) throw std::logic_error(fname + ": Is serial only.");
 

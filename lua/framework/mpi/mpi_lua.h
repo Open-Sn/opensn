@@ -10,6 +10,6 @@ namespace opensnlua
  * \ingroup chiMPI
  * \author Jan
  */
-int chiMPIBarrier(lua_State* L);
+int MPIBarrier(lua_State* L);
 
 } // namespace opensnlua

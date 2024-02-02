@@ -12,7 +12,7 @@ namespace opensnlua
  * \ingroup LuaLogging
  * \author Jan
  */
-int chiLogSetVerbosity(lua_State* L);
+int LogSetVerbosity(lua_State* L);
 
 /**Logs a message depending on the log type specified.
  *
@@ -50,7 +50,7 @@ int chiLogSetVerbosity(lua_State* L);
  * \ingroup LuaLogging
  * \author Jan
  */
-int chiLog(lua_State* L);
+int Log(lua_State* L);
 /**Processes the sub-events of a repeating event and converts it to a
  * meaningful value (floating-point).
  *
@@ -61,11 +61,11 @@ int chiLog(lua_State* L);
  * \ingroup LuaLogging
  * \return double The processed value.
  */
-int chiLogProcessEvent(lua_State* L);
+int LogProcessEvent(lua_State* L);
 /**Prints the performance graph.
  * \params rank int Optional argument to print the graph for a specific rank.
  *
  * \ingroup LuaLogging
  * */
-int chiLogPrintTimingGraph(lua_State* L);
+int LogPrintTimingGraph(lua_State* L);
 } // namespace opensnlua

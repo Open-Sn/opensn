@@ -101,15 +101,13 @@ GetStackItem(std::vector<std::shared_ptr<T>>& stack,
     std::shared_ptr<T>& item = stack.at(handle);
     std::shared_ptr<R> ret_item = std::dynamic_pointer_cast<R>(item);
     if (not ret_item)
-      throw std::logic_error("chi::GetStackItem: Invalid return type used. "
-                             "Calling function: " +
+      throw std::logic_error("GetStackItem: Invalid return type used. Calling function: " +
                              calling_function_name);
     return *ret_item;
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range("chi::GetStackItem: Invalid handle used. "
-                            "Calling function: " +
+    throw std::out_of_range("GetStackItem: Invalid handle used. Calling function: " +
                             calling_function_name);
   }
 }
@@ -139,8 +137,7 @@ GetStackItemPtrAsType(std::vector<std::shared_ptr<P>>& stack,
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range("chi::GetStackItem: Invalid handle used. "
-                            "Calling function: " +
+    throw std::out_of_range("GetStackItem: Invalid handle used. Calling function: " +
                             calling_function_name);
   }
 
@@ -175,8 +172,7 @@ GetStackItemPtr(std::vector<std::shared_ptr<T>>& stack,
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range("chi::GetStackItem: Invalid handle used. "
-                            "Calling function: " +
+    throw std::out_of_range("GetStackItem: Invalid handle used. Calling function: " +
                             calling_function_name);
   }
 }

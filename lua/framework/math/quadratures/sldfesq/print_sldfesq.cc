@@ -11,13 +11,13 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiPrintToPythonSLDFESQAngularQuadrature);
+RegisterLuaFunctionAsIs(PrintToPythonSLDFESQAngularQuadrature);
 
 int
-chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
+PrintToPythonSLDFESQAngularQuadrature(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("chiPrintToPythonSLDFESQAngularQuadrature", 2, num_args);
+  if (num_args != 2) LuaPostArgAmountError("PrintToPythonSLDFESQAngularQuadrature", 2, num_args);
 
   int handle = lua_tonumber(L, 1);
   const char* file_name = lua_tostring(L, 2);
@@ -37,20 +37,20 @@ chiPrintToPythonSLDFESQAngularQuadrature(lua_State* L)
     }
     else
     {
-      opensn::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+      opensn::log.LogAllError() << "PrintToPythonSLDFESQAngularQuadrature: "
                                    "Invalid angular quadrature type.";
       opensn::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+    opensn::log.LogAllError() << "PrintToPythonSLDFESQAngularQuadrature: "
                                  "Invalid handle to angular quadrature.";
     opensn::Exit(EXIT_FAILURE);
   }
   catch (...)
   {
-    opensn::log.LogAllError() << "chiPrintToPythonSLDFESQAngularQuadrature: "
+    opensn::log.LogAllError() << "PrintToPythonSLDFESQAngularQuadrature: "
                                  "Call failed with unknown error.";
     opensn::Exit(EXIT_FAILURE);
   }

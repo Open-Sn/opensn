@@ -6,14 +6,14 @@ num_procs = 4
 --       variable=[[argument]]
 
 --############################################### Check num_procs
-if (check_num_procs == nil and chi_number_of_processes ~= num_procs) then
-    chiLog(LOG_0ERROR,"Incorrect amount of processors. " ..
+if (check_num_procs == nil and number_of_processes ~= num_procs) then
+    Log(LOG_0ERROR,"Incorrect amount of processors. " ..
                       "Expected "..tostring(num_procs)..
                       ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
 end
 
-chiMPIBarrier()
+MPIBarrier()
 
 -- ##################################################
 -- ##### Parameters #####
@@ -50,21 +50,21 @@ for i=0,n_cells do
   nodes[i+1] = i*dx
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = chiPhysicsAddMaterial("Fissile Material")
+materials[1] = PhysicsAddMaterial("Fissile Material")
 
-chiPhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 
 xs_file = "simple_fissile.cxs"
-chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-                              CHI_XSFILE, xs_file)
+PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
+                           CHI_XSFILE, xs_file)
 
 --############################################### Setup Physics
 num_groups = 1
@@ -76,7 +76,7 @@ lbs_block =
     {
       groups_from_to = {0, num_groups-1},
       angular_quadrature_handle =
-        chiCreateProductQuadrature(GAUSS_LEGENDRE,n_angles),
+        CreateProductQuadrature(GAUSS_LEGENDRE,n_angles),
       inner_linear_method = "gmres",
       l_max_its = si_max_iterations,
       l_abs_tol = si_tolerance,
@@ -105,8 +105,8 @@ k_solver0 = lbs.XXNonLinearKEigen.Create
   nl_max_its = kes_max_iterations,
   nl_abs_tol = kes_tolerance
 })
-chiSolverInitialize(k_solver0)
-chiSolverExecute(k_solver0)
+SolverInitialize(k_solver0)
+SolverExecute(k_solver0)
 
 --############################################### Get field functions
 --############################################### Line plot

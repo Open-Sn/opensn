@@ -2,7 +2,7 @@ sub_obj = {
   num_groups = 2,
 }
 
-chi_unit_testsB.ChildTestObject.Create(
+unit_testsB.ChildTestObject.Create(
   {
     solver_type = "C",
     coupled_field = "T",
@@ -11,7 +11,7 @@ chi_unit_testsB.ChildTestObject.Create(
   })
 
 --Required parameter "format". Should create a deprecation error.
-chi_unit_testsB.TestObject.Create(
+unit_testsB.TestObject.Create(
   {
     solver_type = "B",
     coupled_field = "T",

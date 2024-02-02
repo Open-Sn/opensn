@@ -153,10 +153,10 @@ static registration, i.e.,
 `ChiObjectFactory`, therefore, we use a macro. That works as follows.
 
 In order to register an object within the `ChiObjectFactory` we created a macro
-called `OpenSnRegisterObject(namespace_name, obj_name)`. The arguments to this
+called `OpenSnRegisterObjectInNamespace(namespace_name, obj_name)`. The arguments to this
 macro, `namespace_name` and `obj_name`, then get used to construct the following
 \code
-OpenSnRegisterObject(namespace_name, ObjectName);
+OpenSnRegisterObjectInNamespace(namespace_name, ObjectName);
 //
 // becomes:
 //
@@ -213,7 +213,7 @@ In the definition (`.cc`) file we then have
 namespace zorba
 {
 
-OpenSnRegisterObject(chi_unit_tests, CoolObject);
+OpenSnRegisterObjectInNamespace(unit_tests, CoolObject);
 
 chi::InputParameters CoolObject::GetInputParameters()
 {
@@ -334,14 +334,14 @@ different mechanisms:
 
 \subsection DevManParametersSecFAQ6 FAQ6 Constrained ranges
 Parameters in an input parameters block can be constrained to the following
-- `chi_data_types::AllowableRangeList`, created with a `std::vector` of a
+- `data_types::AllowableRangeList`, created with a `std::vector` of a
   specific type. The parameter can then only be one of those types.
-- `chi_data_types::AllowableRangeLowLimit`. Parameter must be >= than the
+- `data_types::AllowableRangeLowLimit`. Parameter must be >= than the
   value specified when the range is specified as closed or just > that the value
   specified when the range is specified as open.
-- `chi_data_types::AllowableRangeHighLimit` same as the low limit but just with
+- `data_types::AllowableRangeHighLimit` same as the low limit but just with
   a smaller than comparison.
-- `chi_data_types::AllowableRangeLowHighLimit` combination of both a high and
+- `data_types::AllowableRangeLowHighLimit` combination of both a high and
   a low limit range.
 
 Example:
@@ -353,7 +353,7 @@ chi::InputParameters StrangeSolver::GetInputParameters()
   params.AddRequiredParameter<std::string>(
   "sdm_type", "The spatial discretization type to be used");
 
-  using namespace chi_data_types;
+  using namespace data_types;
   params.ConstrainParameterRange(
     "sdm_type", AllowableRangeList::New({"FV", "PWLC", "PWLD"}));
   // etc.

@@ -11,10 +11,10 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterWrapperFunction(chi_mesh,
-                        MeshModifiersApply,
-                        MeshModifiersApply_Syntax,
-                        MeshModifiersApply);
+RegisterWrapperFunctionNamespace(mesh,
+                                 MeshModifiersApply,
+                                 MeshModifiersApply_Syntax,
+                                 MeshModifiersApply);
 
 InputParameters
 MeshModifiersApply_Syntax()

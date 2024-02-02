@@ -6,11 +6,11 @@
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
 
-RegisterLuaFunctionAsIs(chiFFInterpolationInitialize);
-RegisterLuaFunctionAsIs(chiFFInterpolationExecute);
+RegisterLuaFunctionAsIs(FFInterpolationInitialize);
+RegisterLuaFunctionAsIs(FFInterpolationExecute);
 
 int
-chiFFInterpolationInitialize(lua_State* L)
+FFInterpolationInitialize(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -26,7 +26,7 @@ chiFFInterpolationInitialize(lua_State* L)
 }
 
 int
-chiFFInterpolationExecute(lua_State* L)
+FFInterpolationExecute(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

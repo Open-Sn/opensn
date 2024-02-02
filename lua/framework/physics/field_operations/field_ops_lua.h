@@ -7,6 +7,6 @@ namespace opensnlua
 
 /**Executes a field function operation.
  * \param handle int Handle to the field function operation object.*/
-int chiFieldOperationExecute(lua_State* L);
+int FieldOperationExecute(lua_State* L);
 
 } // namespace opensnlua

@@ -5,7 +5,7 @@ which allows for a very intricate type of boundary condition to be specified.
 
 For example, consider the boundary condition applied to boundary `zmax` below:
 \code
-chiLBSSetOptions(phys1,
+LBSSetOptions(phys1,
 {
   spatial_discretization = "pwld",
   scattering_order = 2,

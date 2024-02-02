@@ -13,7 +13,7 @@ namespace opensn
 {
 namespace lbs
 {
-OpenSnRegisterObjectParametersOnly(lbs, LBSGroupset);
+OpenSnRegisterObjectParametersOnlyInNamespace(lbs, LBSGroupset);
 
 InputParameters
 lbs::LBSGroupset::GetInputParameters()

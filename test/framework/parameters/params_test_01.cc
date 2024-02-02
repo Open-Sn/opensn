@@ -8,7 +8,7 @@
 namespace unit_tests
 {
 
-OpenSnRegisterObject(chi_unit_testsB, TestObject);
+OpenSnRegisterObjectInNamespace(unit_testsB, TestObject);
 
 InputParameters
 TestObject::GetInputParameters()
@@ -17,7 +17,7 @@ TestObject::GetInputParameters()
 
   // clang-format off
   params.SetGeneralDescription(
-  "\\defgroup chi_unit_tests__TestObject chi_unit_testsB.TestObject\n"
+  "\\defgroup unit_tests__TestObject unit_testsB.TestObject\n"
   "\\ingroup DocUnitTests\n"
   "General test object");
   // clang-format on
@@ -25,12 +25,12 @@ TestObject::GetInputParameters()
   params.AddOptionalParameter("solver_type", "A", "The solver type.");
   params.AddRequiredParameter<std::string>("coupled_field", "The text name of the coupled field.");
   params.AddRequiredParameterBlock("sub_obj1",
-                                   "A block of parameters for chi_unit_testsB::TestSubObject");
+                                   "A block of parameters for unit_testsB::TestSubObject");
 
   ParameterBlock sub_obj2_param_block("sub_obj2");
   sub_obj2_param_block.AddParameter("num_groups", 99);
   params.AddOptionalParameterBlock(
-    "sub_obj2", sub_obj2_param_block, "A block of parameters for chi_unit_testsB::TestSubObject");
+    "sub_obj2", sub_obj2_param_block, "A block of parameters for unit_testsB::TestSubObject");
 
   params.AddOptionalParameter("limiter_type", 1, "Type of limiter to use in the solver");
   params.MarkParamaterDeprecatedWarning("limiter_type");
@@ -66,7 +66,7 @@ TestObject::TestObject(const InputParameters& params)
                     << "solver_type=" << solver_type_;
 }
 
-OpenSnRegisterObject(chi_unit_testsB, TestSubObject);
+OpenSnRegisterObjectInNamespace(unit_testsB, TestSubObject);
 
 InputParameters
 TestSubObject::GetInputParameters()
@@ -75,7 +75,7 @@ TestSubObject::GetInputParameters()
 
   // clang-format off
   params.SetGeneralDescription(
-  "\\defgroup chi_unit_tests__TestSubObject chi_unit_testsB.TestSubObject\n"
+  "\\defgroup unit_tests__TestSubObject unit_testsB.TestSubObject\n"
   "\\ingroup DocUnitTests\n"
   "General test sub-object");
   // clang-format on
@@ -92,7 +92,7 @@ TestSubObject::TestSubObject(const InputParameters& params)
                     << "num_groups=" << num_groups_;
 }
 
-OpenSnRegisterObject(chi_unit_testsB, ChildTestObject);
+OpenSnRegisterObjectInNamespace(unit_testsB, ChildTestObject);
 
 InputParameters
 ChildTestObject::GetInputParameters()
@@ -101,7 +101,7 @@ ChildTestObject::GetInputParameters()
 
   // clang-format off
   params.SetGeneralDescription(
-  "\\defgroup chi_unit_tests__ChildTestObject chi_unit_testsB.ChildTestObject\n"
+  "\\defgroup unit_tests__ChildTestObject unit_testsB.ChildTestObject\n"
   "\\ingroup DocUnitTests\n"
   "General test child-object inheriting option from parent");
   // clang-format on

@@ -5,41 +5,41 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
-material = chiPhysicsAddMaterial("Test Material");
+material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
-chiVolumeMesherSetupOrthogonalBoundaries()
+VolumeMesherSetupOrthogonalBoundaries()
 
-chiMeshHandlerExportMeshToVTK("Mesh")
+MeshHandlerExportMeshToVTK("Mesh")
 --############################################### Add material properties
 
 
 -- Set material properties
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-chiPhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
+PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
 
-chiPhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-chiPhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
+PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics
-phys1 = chiDiffusionCreateSolver()
-chiSolverSetBasicOption(phys1,"discretization_method","PWLC");
-chiSolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
-chiDiffusionSetProperty(phys1,"boundary_type",4,"reflecting")
-chiDiffusionSetProperty(phys1,"boundary_type",5,"reflecting")
+phys1 = DiffusionCreateSolver()
+SolverSetBasicOption(phys1,"discretization_method","PWLC");
+SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+DiffusionSetProperty(phys1,"boundary_type",4,"reflecting")
+DiffusionSetProperty(phys1,"boundary_type",5,"reflecting")
 
 --############################################### Initialize and
 --                                                Execute Solver
-chiDiffusionInitialize(phys1)
-chiDiffusionExecute(phys1)
+DiffusionInitialize(phys1)
+DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
-fflist,count = chiGetFieldFunctionList(phys1)
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+fflist,count = GetFieldFunctionList(phys1)
+ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")

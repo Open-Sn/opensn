@@ -22,7 +22,7 @@ namespace opensn
    * ./opensn InputFile.lua -v 1
    * \endcode
    *
-   * The lua command `chiLogSetVerbosity(int_level)` achieves the same.\n\n
+   * The lua command `LogSetVerbosity(int_level)` achieves the same.\n\n
    *
    * Printing a log under the auspices of a verbosity level again has
    * numerous options. Firstly, any log can be a normal log, a warning

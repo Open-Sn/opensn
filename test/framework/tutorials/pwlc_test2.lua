@@ -11,11 +11,11 @@ for i=1,(N+1) do
     nodes[i] = xmin + k*dx
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 function MMS_phi(x,y,z)
     return math.cos(math.pi*x) + math.cos(math.pi*y)
@@ -24,8 +24,8 @@ function MMS_q(x,y,z)
     return math.pi*math.pi * (math.cos(math.pi*x)+math.cos(math.pi*y))
 end
 
-chi_unit_tests.chiSimTest04_PWLC()
-chiMPIBarrier()
-if (chi_location_id == 0) then
+unit_tests.SimTest04_PWLC()
+MPIBarrier()
+if (location_id == 0) then
     os.execute("rm CodeTut4_PWLC*")
 end

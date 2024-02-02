@@ -20,12 +20,12 @@ namespace unit_sim_tests
 
 /**This is a simple test of the Finite Volume spatial discretization applied
  * to Laplace's problem but with a manufactured solution. */
-ParameterBlock chiSimTest04_PWLC(const InputParameters& params);
+ParameterBlock SimTest04_PWLC(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests, chiSimTest04_PWLC, nullptr, chiSimTest04_PWLC);
+RegisterWrapperFunctionNamespace(unit_tests, SimTest04_PWLC, nullptr, SimTest04_PWLC);
 
 ParameterBlock
-chiSimTest04_PWLC(const InputParameters& params)
+SimTest04_PWLC(const InputParameters& params)
 {
   opensn::log.Log() << "Coding Tutorial 4";
 

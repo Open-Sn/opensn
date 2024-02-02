@@ -26,7 +26,7 @@ CreateFunction(const std::string& function_name)
 } // namespace
 
 int
-chiCFEMDiffusionSolverCreate(lua_State* L)
+CFEMDiffusionSolverCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   int num_args = lua_gettop(L);

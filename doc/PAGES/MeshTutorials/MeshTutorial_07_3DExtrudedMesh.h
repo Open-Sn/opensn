@@ -21,42 +21,42 @@ Thus, in order to obtain a 3D extruded mesh, you need
  there is meshio but there are other possibilities).
 
 \code
- chiMeshHandlerCreate()
+ MeshHandlerCreate()
 
  mesh2d_file = "your_mesh.obj"
- umesh = chiUnpartitionedMeshFromWavefrontOBJ(mesh2d_file)
+ umesh = UnpartitionedMeshFromWavefrontOBJ(mesh2d_file)
 \endcode
 or
 \code
- chiMeshHandlerCreate()
+ MeshHandlerCreate()
 
  mesh2d_file = "your_mesh.vtu"
- umesh = chiUnpartitionedMeshFromVTU(mesh2d_file, "attribute")
+ umesh = UnpartitionedMeshFromVTU(mesh2d_file, "attribute")
 \endcode
 
  ## The extrusion process
 
  \code
- chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
- chiVolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
- chiVolumeMesherCreate(VOLUMEMESHER_EXTRUDER,
+ SurfaceMesherCreate(SURFACEMESHER_PREDEFINED)
+ VolumeMesherCreate(VOLUMEMESHER_UNPARTITIONED, umesh)
+ VolumeMesherCreate(VOLUMEMESHER_EXTRUDER,
                       ExtruderTemplateType.UNPARTITIONED_MESH,
                       umesh);
 
  nbr_planes_in_layer = 10
  height=0.1
- chiVolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Charlie");
- chiVolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Chuck");
- chiVolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Bob");
- chiVolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"SarahConner");
+ VolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Charlie");
+ VolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Chuck");
+ VolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"Bob");
+ VolumeMesherSetProperty(EXTRUSION_LAYER,height,nbr_planes_in_layer,"SarahConner");
 
- chiVolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
- chiVolumeMesherSetKBAPartitioningPxPyPz(1,1,1)
+ VolumeMesherSetProperty(PARTITION_TYPE,KBA_STYLE_XYZ)
+ VolumeMesherSetKBAPartitioningPxPyPz(1,1,1)
 
- chiSurfaceMesherExecute();
- chiVolumeMesherExecute();
+ SurfaceMesherExecute();
+ VolumeMesherExecute();
 
- chiMeshHandlerExportMeshToVTK("export_mesh_without_IDs")
+ MeshHandlerExportMeshToVTK("export_mesh_without_IDs")
  \endcode
 
   ## Completing the 3D mesh
@@ -66,7 +66,8 @@ or
  a material ID for cells (identified by their centroids) that are included in the LV.
 
  We have several ways of defining a Logical Volume, LV:
- 1. Using pre-defined volumes, such as RPP (rectangular paralleliped)and  RCC (right circular cylinder),
+ 1. Using pre-defined volumes, such as RPP (rectangular paralleliped)and  RCC (right circular
+cylinder),
  2. Using a surface mesh read in as an```.obj``` file,
  3. Using lua functions to describe the  surface mesh of the LV.
 
@@ -75,25 +76,25 @@ or
  ### LV of pre-defined type
  \code
 -- Logical Volumes
-my_LV = chiLogicalVolumeCreate(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
-chiMeshHandlerExportMeshToVTK("export_mesh_with_IDs")
+my_LV = LogicalVolumeCreate(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
+MeshHandlerExportMeshToVTK("export_mesh_with_IDs")
  \endcode
 
   ### LV defined as read-in surfaces
  \code
-surf_LV = chiSurfaceMeshCreate()
-chiSurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
-my_LV = chiLogicalVolumeCreate(SURFACE, surf_LV)
+surf_LV = SurfaceMeshCreate()
+SurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
+my_LV = LogicalVolumeCreate(SURFACE, surf_LV)
 
- chiVolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
-chiMeshHandlerExportMeshToVTK("export_mesh_with_IDs")
+ VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
+MeshHandlerExportMeshToVTK("export_mesh_with_IDs")
  \endcode
 
   ### LV using a Lua function
  \code
-chiVolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "my_LV_func.lua")
-chiMeshHandlerExportMeshToVTK("export_mesh_with_IDs")
+VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "my_LV_func.lua")
+MeshHandlerExportMeshToVTK("export_mesh_with_IDs")
  \endcode
 
  where the Lua function was previously defined, e.g.,

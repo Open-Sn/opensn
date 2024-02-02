@@ -13,7 +13,7 @@
 namespace opensn::lbs
 {
 
-OpenSnRegisterObject(lbs, DistributedSource);
+OpenSnRegisterObjectInNamespace(lbs, DistributedSource);
 
 InputParameters
 DistributedSource::GetInputParameters()

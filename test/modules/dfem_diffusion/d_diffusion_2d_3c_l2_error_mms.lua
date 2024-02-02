@@ -9,11 +9,11 @@ for i=1,(N+1) do
     nodes[i] = xmin + k*dx
 end
  
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
  
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 -- governing law: -(u_xx + u_yy) = q, on domain [0,1]x[0,1]
 -- when the exact solution is chosen u(x,y) = sin(pi.x) * sin(pi.y)
@@ -36,40 +36,39 @@ end
 
 -- Set boundary IDs
 -- xmin,xmax,ymin,ymax,zmin,zmax
-e_vol = chi_mesh.RPPLogicalVolume.Create({xmin=0.99999,xmax=1000.0  , infy=true, infz=true})
-w_vol = chi_mesh.RPPLogicalVolume.Create({xmin=-1000.0,xmax=-0.99999, infy=true, infz=true})
-n_vol = chi_mesh.RPPLogicalVolume.Create({ymin=0.99999,ymax=1000.0  , infx=true, infz=true})
-s_vol = chi_mesh.RPPLogicalVolume.Create({ymin=-1000.0,ymax=-0.99999, infx=true, infz=true})
+e_vol = mesh.RPPLogicalVolume.Create({xmin=0.99999,xmax=1000.0  , infy=true, infz=true})
+w_vol = mesh.RPPLogicalVolume.Create({xmin=-1000.0,xmax=-0.99999, infy=true, infz=true})
+n_vol = mesh.RPPLogicalVolume.Create({ymin=0.99999,ymax=1000.0  , infx=true, infz=true})
+s_vol = mesh.RPPLogicalVolume.Create({ymin=-1000.0,ymax=-0.99999, infx=true, infz=true})
 
 e_bndry = 0
 w_bndry = 1
 n_bndry = 2
 s_bndry = 3
 
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
-chiVolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
+VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
 --############################################### Call Lua Sim Test
-chiSimTest_IP_MMS_L2error() --simtest_IP_MMS_L2_handle becomes available here
+SimTest_IP_MMS_L2error() --simtest_IP_MMS_L2_handle becomes available here
 
 --############################################### Export VTU
 if (master_export == nil) then
-    chiExportFieldFunctionToVTK(simtest_IP_MMS_L2_handle,"DFEMDiff2D_MMS","flux")
+    ExportFieldFunctionToVTK(simtest_IP_MMS_L2_handle,"DFEMDiff2D_MMS","flux")
 end
 
 ----############################################### Volume integrations
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 --
-ffvol = chiFFInterpolationCreate(VOLUME)
-chiFFInterpolationSetProperty(ffvol,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(ffvol,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(ffvol,ADD_FIELDFUNCTION,simtest_IP_MMS_L2_handle)
+ffvol = FFInterpolationCreate(VOLUME)
+FFInterpolationSetProperty(ffvol,OPERATION,OP_MAX)
+FFInterpolationSetProperty(ffvol,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(ffvol,ADD_FIELDFUNCTION,simtest_IP_MMS_L2_handle)
 --
-chiFFInterpolationInitialize(ffvol)
-chiFFInterpolationExecute(ffvol)
-maxval = chiFFInterpolationGetValue(ffvol)
+FFInterpolationInitialize(ffvol)
+FFInterpolationExecute(ffvol)
+maxval = FFInterpolationGetValue(ffvol)
 
-chiLog(LOG_0,string.format("Max-value=%.6f", maxval))
-
+Log(LOG_0,string.format("Max-value=%.6f", maxval))

@@ -13,9 +13,9 @@ function PrintTable(t, indent)
 end
 
 print("GOLD_BEGIN")
-q = chi_math.QuadratureGaussLegendre.Create({N = 4, verbose = true})
+q = math.QuadratureGaussLegendre.Create({N = 4, verbose = true})
 
-qdata = chi_math.Get1DQuadratureData(q)
+qdata = math.Get1DQuadratureData(q)
 
 print("qpoints:")
 PrintTable(qdata.qpoints, 2)
@@ -24,21 +24,21 @@ PrintTable(qdata.weights, 2)
 print()
 
 --################################################
-q = chi_math.QuadratureGaussChebyshev.Create({N = 4, verbose = true})
+q = math.QuadratureGaussChebyshev.Create({N = 4, verbose = true})
 
-qdata = chi_math.Get1DQuadratureData(q)
+qdata = math.Get1DQuadratureData(q)
 
 print("qpoints:")
 PrintTable(qdata.qpoints, 2)
 print("weights:")
 PrintTable(qdata.weights, 2)
 
-print("chiLegendre(0, 0.25)", chiLegendre(0, 0.25))
-print("chiLegendre(1, 0.25)", chiLegendre(1, 0.25))
-print("chiLegendreDerivative(0, 0.25)", chiLegendreDerivative(0, 0.25))
-print("chiLegendreDerivative(1, 0.25)", chiLegendreDerivative(1, 0.25))
+print("Legendre(0, 0.25)", Legendre(0, 0.25))
+print("Legendre(1, 0.25)", Legendre(1, 0.25))
+print("LegendreDerivative(0, 0.25)", LegendreDerivative(0, 0.25))
+print("LegendreDerivative(1, 0.25)", LegendreDerivative(1, 0.25))
 
-print("chiYlm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0)", chiYlm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0))
-print("chiYlm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0)", chiYlm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0))
+print("Ylm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0)", Ylm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0))
+print("Ylm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0)", Ylm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0))
 
 print("GOLD_END")

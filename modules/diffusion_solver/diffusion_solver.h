@@ -106,13 +106,13 @@ public:
    * use for source. "property_map_sigma"    | int    | 2             | Material
    * property index to use for interaction coefficient.
    *
-   * To set these options use the command chiSolverSetBasicOption() with
+   * To set these options use the command SolverSetBasicOption() with
    * an option-name and value in the table above.
    *
    * ## Example
    * Example usage
    * \code
-   * chiSolverSetBasicOption(phys1, "discretization_method", "PWLC")
+   * SolverSetBasicOption(phys1, "discretization_method", "PWLC")
    * \endcode
    */
   explicit Solver(const std::string& in_solver_name);

@@ -10,9 +10,9 @@ namespace opensnlua::lbs
 {
 
 int
-chiLBSWriteFluxMoments(lua_State* L)
+LBSWriteFluxMoments(lua_State* L)
 {
-  const std::string fname = "chiLBSWriteFluxMoments";
+  const std::string fname = "LBSWriteFluxMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
@@ -33,9 +33,9 @@ chiLBSWriteFluxMoments(lua_State* L)
 }
 
 int
-chiLBSCreateAndWriteSourceMoments(lua_State* L)
+LBSCreateAndWriteSourceMoments(lua_State* L)
 {
-  const std::string fname = "chiLBSCreateAndWriteSourceMoments";
+  const std::string fname = "LBSCreateAndWriteSourceMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
@@ -57,9 +57,9 @@ chiLBSCreateAndWriteSourceMoments(lua_State* L)
 }
 
 int
-chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
+LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
 {
-  const std::string fname = "chiLBSReadFluxMomentsAndMakeSourceMoments";
+  const std::string fname = "LBSReadFluxMomentsAndMakeSourceMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
   if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);
@@ -93,9 +93,9 @@ chiLBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
 }
 
 int
-chiLBSReadSourceMoments(lua_State* L)
+LBSReadSourceMoments(lua_State* L)
 {
-  const std::string fname = "chiLBSReadSourceMoments";
+  const std::string fname = "LBSReadSourceMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
   if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);
@@ -123,9 +123,9 @@ chiLBSReadSourceMoments(lua_State* L)
 }
 
 int
-chiLBSReadFluxMoments(lua_State* L)
+LBSReadFluxMoments(lua_State* L)
 {
-  const std::string fname = "chiLBSReadFluxMoments";
+  const std::string fname = "LBSReadFluxMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
   if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);

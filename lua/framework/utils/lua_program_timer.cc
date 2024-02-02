@@ -12,12 +12,12 @@ namespace opensnlua
 
 /**Returns the program time as determined from the home location (involves a
  * collective broadcast).*/
-int chiProgramTime(lua_State* L);
+int ProgramTime(lua_State* L);
 
-RegisterLuaFunctionAsIs(chiProgramTime);
+RegisterLuaFunctionAsIs(ProgramTime);
 
 int
-chiProgramTime(lua_State* L)
+ProgramTime(lua_State* L)
 {
   double time;
   if (opensn::mpi_comm.rank() == 0) time = opensn::program_timer.GetTime() / 1000.0;

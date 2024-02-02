@@ -30,7 +30,7 @@ namespace opensnlua::fv_diffusion
 {
 
 int
-chiFVDiffusionSolverCreate(lua_State* L)
+FVDiffusionSolverCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   int num_args = lua_gettop(L);

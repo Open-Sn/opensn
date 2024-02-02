@@ -7,7 +7,7 @@
 using namespace opensn;
 
 int
-chiDiffusionInitialize(lua_State* L)
+DiffusionInitialize(lua_State* L)
 {
   int solver_index = lua_tonumber(L, 1);
 

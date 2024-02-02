@@ -12,7 +12,7 @@ chi_mesh.BooleanLogicalVolume.Create
 
 ## Additional Example B
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 mesh={}
 N=40
@@ -23,8 +23,8 @@ for i=1,(N+1) do
   k=i-1
   mesh[i] = xmin + k*dx
 end
-chiMeshCreateUnpartitioned3DOrthoMesh(mesh,mesh,mesh)
-chiVolumeMesherExecute();
+MeshCreateUnpartitioned3DOrthoMesh(mesh,mesh,mesh)
+VolumeMesherExecute();
 
 lv1 = chi_mesh.SphereLogicalVolume.Create({r = 1.3, x=1.0, y=-1.0, z=2.0})
 
@@ -36,9 +36,9 @@ lv3 = chi_mesh.BooleanLogicalVolume.Create
   parts = { { op=true, lv=lv2 },
             { op=false, lv=lv1 } }
 })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL, lv3, 1)
+VolumeMesherSetProperty(MATID_FROMLOGICAL, lv3, 1)
 
-chiMeshHandlerExportMeshToVTK("lv_boolean_test1")
+MeshHandlerExportMeshToVTK("lv_boolean_test1")
 \endcode
 
 \image html framework/chi_mesh/LogicalVolume/lv_boolean_test1.png width=500px

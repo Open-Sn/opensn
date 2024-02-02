@@ -11,13 +11,13 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiGetProductQuadrature);
+RegisterLuaFunctionAsIs(GetProductQuadrature);
 
 int
-chiGetProductQuadrature(lua_State* L)
+GetProductQuadrature(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError("chiGetProductQuadrature", 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError("GetProductQuadrature", 1, num_args);
 
   int handle = lua_tonumber(L, 1);
 
@@ -29,14 +29,14 @@ chiGetProductQuadrature(lua_State* L)
       quad = std::static_pointer_cast<ProductQuadrature>(ang_quad);
     else
     {
-      opensn::log.LogAllError() << "chiGetProductQuadrature: Provided quadrature handle points to "
+      opensn::log.LogAllError() << "GetProductQuadrature: Provided quadrature handle points to "
                                    "a quadrature that is not a product quadrature.";
       opensn::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "chiGetProductQuadrature: Invalid quadrature handle.";
+    opensn::log.LogAllError() << "GetProductQuadrature: Invalid quadrature handle.";
     opensn::Exit(EXIT_FAILURE);
   }
 

@@ -9,10 +9,10 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiPhysicsAddMaterial);
+RegisterLuaFunctionAsIs(PhysicsAddMaterial);
 
 int
-chiPhysicsAddMaterial(lua_State* L)
+PhysicsAddMaterial(lua_State* L)
 {
   int numArgs = lua_gettop(L);
 

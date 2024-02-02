@@ -6,10 +6,10 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiVolumeMesherSetMatIDToAll);
+RegisterLuaFunctionAsIs(VolumeMesherSetMatIDToAll);
 
 int
-chiVolumeMesherSetMatIDToAll(lua_State* L)
+VolumeMesherSetMatIDToAll(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);

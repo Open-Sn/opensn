@@ -7,10 +7,10 @@
 namespace opensnlua
 {
 
-RegisterLuaFunctionAsIs(chiMPIBarrier);
+RegisterLuaFunctionAsIs(MPIBarrier);
 
 int
-chiMPIBarrier(lua_State* L)
+MPIBarrier(lua_State* L)
 {
 
   opensn::mpi_comm.barrier();

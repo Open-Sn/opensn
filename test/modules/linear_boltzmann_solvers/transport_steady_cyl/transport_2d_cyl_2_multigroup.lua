@@ -9,8 +9,8 @@ num_procs = 4
 
 
 --############################################### Check num_procs
-if (check_num_procs==nil and chi_number_of_processes ~= num_procs) then
-    chiLog(LOG_0ERROR,"Incorrect amount of processors. " ..
+if (check_num_procs==nil and number_of_processes ~= num_procs) then
+    Log(LOG_0ERROR,"Incorrect amount of processors. " ..
                       "Expected "..tostring(num_procs)..
                       ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -29,13 +29,13 @@ for d = 1, dim do
   end
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes[1],nodes[2]} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes[1],nodes[2]} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = chi_mesh.RPPLogicalVolume.Create
+vol0 = mesh.RPPLogicalVolume.Create
 ({ xmin=0.0,xmax=length[1],ymin=0.0,ymax=length[2], infz=true })
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 --############################################### Add materials
 ngrp = 2
@@ -47,16 +47,16 @@ for g = 2, ngrp do
   source[g] = 0
 end
 
-material0 = chiPhysicsAddMaterial("Material_0");
-chiPhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
-chiPhysicsMaterialAddProperty(material0,ISOTROPIC_MG_SOURCE)
-chiPhysicsMaterialSetProperty(material0, TRANSPORT_XSECTIONS,
-                              SIMPLEXS1, ngrp, sigmat, ratioc)
-chiPhysicsMaterialSetProperty(material0, ISOTROPIC_MG_SOURCE,
-                              FROM_ARRAY, source)
+material0 = PhysicsAddMaterial("Material_0");
+PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(material0,ISOTROPIC_MG_SOURCE)
+PhysicsMaterialSetProperty(material0, TRANSPORT_XSECTIONS,
+                           SIMPLEXS1, ngrp, sigmat, ratioc)
+PhysicsMaterialSetProperty(material0, ISOTROPIC_MG_SOURCE,
+                           FROM_ARRAY, source)
 
 --############################################### Setup Physics
-pquad0 = chiCreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
+pquad0 = CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
 
 lbs_block =
 {
@@ -90,37 +90,37 @@ lbs.SetOptions(phys1, lbs_options)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-chiSolverInitialize(ss_solver)
-chiSolverExecute(ss_solver)
+SolverInitialize(ss_solver)
+SolverExecute(ss_solver)
 
 --############################################### Exports
-fflist, count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist, count = LBSGetScalarFieldFunctionList(phys1)
 if master_export == nil then
-  chiExportMultiFieldFunctionToVTK(fflist, "ZRZPhi")
+  ExportMultiFieldFunctionToVTK(fflist, "ZRZPhi")
 end
 
 --  volume integrations - energy group 1
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi, OPERATION, OP_MAX)
-chiFFInterpolationSetProperty(curffi, LOGICAL_VOLUME, vol0)
-chiFFInterpolationSetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
+FFInterpolationSetProperty(curffi, OPERATION, OP_MAX)
+FFInterpolationSetProperty(curffi, LOGICAL_VOLUME, vol0)
+FFInterpolationSetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
-chiLog(LOG_0,string.format("Max-valueG1=%.5f", maxval))
+Log(LOG_0,string.format("Max-valueG1=%.5f", maxval))
 
 --  volume integrations - energy group 2
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[2])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[2])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
-chiLog(LOG_0,string.format("Max-valueG2=%.5f", maxval))
+Log(LOG_0,string.format("Max-valueG2=%.5f", maxval))

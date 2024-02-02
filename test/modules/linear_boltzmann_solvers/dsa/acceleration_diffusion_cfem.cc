@@ -21,16 +21,16 @@ namespace unit_sim_tests
 
 ParameterBlock acceleration_Diffusion_CFEM(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests,
-                        acceleration_Diffusion_CFEM,
-                        nullptr,
-                        acceleration_Diffusion_CFEM);
+RegisterWrapperFunctionNamespace(unit_tests,
+                                 acceleration_Diffusion_CFEM,
+                                 nullptr,
+                                 acceleration_Diffusion_CFEM);
 
 ParameterBlock
 acceleration_Diffusion_CFEM(const InputParameters&)
 {
   typedef std::map<int, lbs::Multigroup_D_and_sigR> MatID2XSMap;
-  opensn::log.Log() << "chiSimTest92_DSA";
+  opensn::log.Log() << "SimTest92_DSA";
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();

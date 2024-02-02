@@ -57,7 +57,7 @@ PostProcessorPrinter::SubscribeToSystemWideEventPublisher()
   auto subscriber_ptr = std::dynamic_pointer_cast<EventSubscriber>(helper_ptr);
 
   ChiLogicalErrorIf(not subscriber_ptr,
-                    "Failure to cast chi::PPPrinterSubscribeHelper to chi::EventSubscriber");
+                    "Failure to cast PPPrinterSubscribeHelper to EventSubscriber");
 
   publisher.AddSubscriber(subscriber_ptr);
 

@@ -8,10 +8,10 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionAsIs(chiFieldOperationExecute);
+RegisterLuaFunctionAsIs(FieldOperationExecute);
 
 int
-chiFieldOperationExecute(lua_State* L)
+FieldOperationExecute(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

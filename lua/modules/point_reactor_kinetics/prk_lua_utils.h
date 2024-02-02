@@ -10,7 +10,7 @@ namespace opensnlua::prk
  * \param param_name  string Name of the parameter to retrieve.
  * \return Varying
  */
-int chiPRKGetParam(lua_State* L);
+int PRKGetParam(lua_State* L);
 
 /**Gets a parameter from the prk::TransientSolver.
  *
@@ -19,7 +19,7 @@ int chiPRKGetParam(lua_State* L);
  * \param value Varying The value to be set to the parameter.
  * \return Varying
  */
-int chiPRKSetParam(lua_State* L);
+int PRKSetParam(lua_State* L);
 
 opensn::InputParameters GetSyntax_SetParam();
 opensn::ParameterBlock SetParam(const opensn::InputParameters& params);

@@ -16,12 +16,12 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock chi_math_Test01_WDD_IJK_Sweep(const InputParameters& params);
+ParameterBlock math_Test01_WDD_IJK_Sweep(const InputParameters& params);
 
-RegisterWrapperFunction(chi_unit_tests,
-                        chi_math_Test01_WDD_IJK_Sweep,
-                        nullptr,
-                        chi_math_Test01_WDD_IJK_Sweep);
+RegisterWrapperFunctionNamespace(unit_tests,
+                                 math_Test01_WDD_IJK_Sweep,
+                                 nullptr,
+                                 math_Test01_WDD_IJK_Sweep);
 
 typedef NDArray<double> IJKArrayDbl;
 
@@ -116,7 +116,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
 }
 
 ParameterBlock
-chi_math_Test01_WDD_IJK_Sweep(const InputParameters&)
+math_Test01_WDD_IJK_Sweep(const InputParameters&)
 {
   opensn::log.Log() << "GOLD_BEGIN";
   bool verbose = true;

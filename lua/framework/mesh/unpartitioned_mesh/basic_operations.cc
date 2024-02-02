@@ -8,12 +8,12 @@
 namespace opensnlua
 {
 
-RegisterLuaFunctionAsIs(chiUnpartitionedMeshUploadVertex);
-RegisterLuaFunctionAsIs(chiUnpartitionedMeshUploadCell);
-RegisterLuaFunctionAsIs(chiUnpartitionedMeshFinalizeEmpty);
+RegisterLuaFunctionAsIs(UnpartitionedMeshUploadVertex);
+RegisterLuaFunctionAsIs(UnpartitionedMeshUploadCell);
+RegisterLuaFunctionAsIs(UnpartitionedMeshFinalizeEmpty);
 
 int
-chiUnpartitionedMeshUploadVertex(lua_State* L)
+UnpartitionedMeshUploadVertex(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -41,7 +41,7 @@ chiUnpartitionedMeshUploadVertex(lua_State* L)
 }
 
 int
-chiUnpartitionedMeshUploadCell(lua_State* L)
+UnpartitionedMeshUploadCell(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -141,7 +141,7 @@ chiUnpartitionedMeshUploadCell(lua_State* L)
 }
 
 int
-chiUnpartitionedMeshFinalizeEmpty(lua_State* L)
+UnpartitionedMeshFinalizeEmpty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

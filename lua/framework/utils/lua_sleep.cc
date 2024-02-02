@@ -10,12 +10,12 @@ namespace opensnlua
 /**Makes the program sleep for the specified time in milliseconds.
  * \param time int Time in milliseconds to sleep for.
  * */
-int chiSleep(lua_State* L);
+int Sleep(lua_State* L);
 
-RegisterLuaFunctionAsIs(chiSleep);
+RegisterLuaFunctionAsIs(Sleep);
 
 int
-chiSleep(lua_State* L)
+Sleep(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

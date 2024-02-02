@@ -3,7 +3,7 @@ sub_obj = {
 }
 
 --Optional parameter "limiter_type". Should create a deprecation warning
-chi_unit_testsB.TestObject.Create(
+unit_testsB.TestObject.Create(
   {
     solver_type = "B",
     coupled_field = "T",
@@ -12,7 +12,7 @@ chi_unit_testsB.TestObject.Create(
   })
 
 --Optional parameter "scheme". Should create a deprecation error.
-chi_unit_testsB.TestObject.Create(
+unit_testsB.TestObject.Create(
   {
     solver_type = "B",
     coupled_field = "T",

@@ -25,7 +25,7 @@ CreateFunction(const std::string& function_name)
 } // namespace
 
 int
-chiDFEMDiffusionSolverCreate(lua_State* L)
+DFEMDiffusionSolverCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -56,7 +56,7 @@ chiDFEMDiffusionSolverCreate(lua_State* L)
 
   lua_pushinteger(L, static_cast<lua_Integer>(opensn::object_stack.size() - 1));
 
-  opensn::log.LogAllVerbose1() << "\nchiDFEMDiffusionSolverCreate: DFEM Diffusion solver created"
+  opensn::log.LogAllVerbose1() << "\nDFEMDiffusionSolverCreate: DFEM Diffusion solver created"
                                << std::endl;
   return 1;
 }

@@ -4,7 +4,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 int
-chiMeshHandlerExportMeshToObj(lua_State* L)
+MeshHandlerExportMeshToObj(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;
@@ -26,7 +26,7 @@ chiMeshHandlerExportMeshToObj(lua_State* L)
 }
 
 int
-chiMeshHandlerExportMeshToVTK(lua_State* L)
+MeshHandlerExportMeshToVTK(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;
@@ -45,7 +45,7 @@ chiMeshHandlerExportMeshToVTK(lua_State* L)
 }
 
 int
-chiMeshHandlerExportMeshToExodus(lua_State* L)
+MeshHandlerExportMeshToExodus(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;

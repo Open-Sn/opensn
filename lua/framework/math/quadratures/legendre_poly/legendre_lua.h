@@ -7,7 +7,7 @@
  *
  * \ingroup LuaMath
  */
-int chiLegendre(lua_State* L);
+int Legendre(lua_State* L);
 
 /**Provides the function evaluation of the derivative of Pn at value x
  *
@@ -16,7 +16,7 @@ int chiLegendre(lua_State* L);
  *
  * \ingroup LuaMath
  */
-int chiLegendreDerivative(lua_State* L);
+int LegendreDerivative(lua_State* L);
 
 /**Provides the function evaluation of the spherical harmonics.
  *
@@ -30,4 +30,4 @@ int chiLegendreDerivative(lua_State* L);
  *
  * \ingroup LuaMath
  */
-int chiYlm(lua_State* L);
+int Ylm(lua_State* L);

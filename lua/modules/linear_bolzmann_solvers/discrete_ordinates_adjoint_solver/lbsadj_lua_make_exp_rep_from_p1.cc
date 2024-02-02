@@ -11,10 +11,10 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionAsIs(chiAdjointSolverMakeExpRepFromP1Moments);
+RegisterLuaFunctionAsIs(AdjointSolverMakeExpRepFromP1Moments);
 
 int
-chiAdjointSolverMakeExpRepFromP1Moments(lua_State* L)
+AdjointSolverMakeExpRepFromP1Moments(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

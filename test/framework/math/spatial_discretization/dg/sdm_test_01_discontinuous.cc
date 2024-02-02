@@ -17,16 +17,16 @@ using namespace opensn;
 namespace unit_tests
 {
 
-InputParameters chi_math_SDM_Test02Syntax();
-ParameterBlock chi_math_SDM_Test02_DisContinuous(const InputParameters& input_parameters);
+InputParameters math_SDM_Test02Syntax();
+ParameterBlock math_SDM_Test02_DisContinuous(const InputParameters& input_parameters);
 
-RegisterWrapperFunction(chi_unit_tests,
-                        chi_math_SDM_Test02_DisContinuous,
-                        chi_math_SDM_Test02Syntax,
-                        chi_math_SDM_Test02_DisContinuous);
+RegisterWrapperFunctionNamespace(unit_tests,
+                                 math_SDM_Test02_DisContinuous,
+                                 math_SDM_Test02Syntax,
+                                 math_SDM_Test02_DisContinuous);
 
 InputParameters
-chi_math_SDM_Test02Syntax()
+math_SDM_Test02Syntax()
 {
   InputParameters params;
 
@@ -48,7 +48,7 @@ int MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
 double HPerpendicular(const CellMapping& cell_mapping, unsigned int f);
 
 ParameterBlock
-chi_math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
+math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
 {
   const ParameterBlock& params = input_parameters.GetParam("arg0");
 

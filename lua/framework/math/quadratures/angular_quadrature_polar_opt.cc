@@ -10,10 +10,10 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiOptimizeAngularQuadratureForPolarSymmetry);
+RegisterLuaFunctionAsIs(OptimizeAngularQuadratureForPolarSymmetry);
 
 int
-chiOptimizeAngularQuadratureForPolarSymmetry(lua_State* L)
+OptimizeAngularQuadratureForPolarSymmetry(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

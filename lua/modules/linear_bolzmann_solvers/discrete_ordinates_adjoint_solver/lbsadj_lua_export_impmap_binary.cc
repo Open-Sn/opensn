@@ -11,10 +11,10 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionAsIs(chiAdjointSolverExportImportanceMapBinary);
+RegisterLuaFunctionAsIs(AdjointSolverExportImportanceMapBinary);
 
 int
-chiAdjointSolverExportImportanceMapBinary(lua_State* L)
+AdjointSolverExportImportanceMapBinary(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

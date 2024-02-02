@@ -5,8 +5,8 @@
 
 -- Check num_procs
 num_procs = 3
-if (check_num_procs == nil and chi_number_of_processes ~= num_procs) then
-    chiLog(LOG_0ERROR, "Incorrect amount of processors. " ..
+if (check_num_procs == nil and number_of_processes ~= num_procs) then
+    Log(LOG_0ERROR, "Incorrect amount of processors. " ..
         "Expected " .. tostring(num_procs) ..
         ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -21,23 +21,23 @@ for i = 1, (N + 1) do
     nodes[i] = (i - 1) * L / N
 end
 
-meshgen = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-chi_mesh.MeshGenerator.Execute(meshgen)
-chiVolumeMesherSetMatIDToAll(0)
+meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+mesh.MeshGenerator.Execute(meshgen)
+VolumeMesherSetMatIDToAll(0)
 
 -- Add materials
 num_groups = 1
 sigma_t = 1.0
 
 materials = {}
-materials[1] = chiPhysicsAddMaterial("Test Material");
-chiPhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
+materials[1] = PhysicsAddMaterial("Test Material");
+PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 
-chiPhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-                              SIMPLEXS0, num_groups, sigma_t)
+PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
+                           SIMPLEXS0, num_groups, sigma_t)
 
 -- Setup Physics
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE, 128)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE, 128)
 lbs_block = {
     num_groups = num_groups,
     groupsets = {
@@ -78,11 +78,11 @@ lbs.SetOptions(phys, lbs_options)
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
 -- Solve the problem
-chiSolverInitialize(ss_solver)
-chiSolverExecute(ss_solver)
+SolverInitialize(ss_solver)
+SolverExecute(ss_solver)
 
 -- Compute the leakage
 leakage = lbs.ComputeLeakage(phys)
 for k, v in pairs(leakage) do
-    chiLog(LOG_0, string.format("%s=%.5e", k, v[1]))
+    Log(LOG_0, string.format("%s=%.5e", k, v[1]))
 end

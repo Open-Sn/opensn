@@ -4,7 +4,7 @@ sub_obj = {
 
 --Optional parameter "use_my_stuff". Should create an error with
 --                                   renaming message
-chi_unit_testsB.TestObject.Create(
+unit_testsB.TestObject.Create(
   {
     solver_type = "B",
     coupled_field = "T",

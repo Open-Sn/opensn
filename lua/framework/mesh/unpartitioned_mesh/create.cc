@@ -11,18 +11,18 @@ using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionAsIs(chiCreateEmptyUnpartitionedMesh);
-RegisterLuaFunctionAsIs(chiDestroyUnpartitionedMesh);
+RegisterLuaFunctionAsIs(CreateEmptyUnpartitionedMesh);
+RegisterLuaFunctionAsIs(DestroyUnpartitionedMesh);
 
-RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromVTU);
-RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromPVTU);
-RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromEnsightGold);
-RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromWavefrontOBJ);
-RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromMshFormat);
-RegisterLuaFunctionAsIs(chiUnpartitionedMeshFromExodusII);
+RegisterLuaFunctionAsIs(UnpartitionedMeshFromVTU);
+RegisterLuaFunctionAsIs(UnpartitionedMeshFromPVTU);
+RegisterLuaFunctionAsIs(UnpartitionedMeshFromEnsightGold);
+RegisterLuaFunctionAsIs(UnpartitionedMeshFromWavefrontOBJ);
+RegisterLuaFunctionAsIs(UnpartitionedMeshFromMshFormat);
+RegisterLuaFunctionAsIs(UnpartitionedMeshFromExodusII);
 
 int
-chiCreateEmptyUnpartitionedMesh(lua_State* L)
+CreateEmptyUnpartitionedMesh(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
 
@@ -34,7 +34,7 @@ chiCreateEmptyUnpartitionedMesh(lua_State* L)
 }
 
 int
-chiDestroyUnpartitionedMesh(lua_State* L)
+DestroyUnpartitionedMesh(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -55,7 +55,7 @@ chiDestroyUnpartitionedMesh(lua_State* L)
 }
 
 int
-chiUnpartitionedMeshFromVTU(lua_State* L)
+UnpartitionedMeshFromVTU(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -84,7 +84,7 @@ chiUnpartitionedMeshFromVTU(lua_State* L)
 }
 
 int
-chiUnpartitionedMeshFromPVTU(lua_State* L)
+UnpartitionedMeshFromPVTU(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -113,7 +113,7 @@ chiUnpartitionedMeshFromPVTU(lua_State* L)
 }
 
 int
-chiUnpartitionedMeshFromEnsightGold(lua_State* L)
+UnpartitionedMeshFromEnsightGold(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -141,7 +141,7 @@ chiUnpartitionedMeshFromEnsightGold(lua_State* L)
 }
 
 int
-chiUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
+UnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -166,7 +166,7 @@ chiUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 }
 
 int
-chiUnpartitionedMeshFromMshFormat(lua_State* L)
+UnpartitionedMeshFromMshFormat(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -191,7 +191,7 @@ chiUnpartitionedMeshFromMshFormat(lua_State* L)
 }
 
 int
-chiUnpartitionedMeshFromExodusII(lua_State* L)
+UnpartitionedMeshFromExodusII(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);

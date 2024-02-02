@@ -13,10 +13,10 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionAsIs(chiLBSSetPhiFromFieldFunction);
+RegisterLuaFunctionAsIs(LBSSetPhiFromFieldFunction);
 
 int
-chiLBSSetPhiFromFieldFunction(lua_State* L)
+LBSSetPhiFromFieldFunction(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

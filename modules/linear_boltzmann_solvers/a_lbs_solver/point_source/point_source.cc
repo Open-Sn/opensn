@@ -13,7 +13,7 @@ namespace opensn
 namespace lbs
 {
 
-OpenSnRegisterObject(lbs, PointSource);
+OpenSnRegisterObjectInNamespace(lbs, PointSource);
 
 InputParameters
 PointSource::GetInputParameters()

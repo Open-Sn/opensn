@@ -11,41 +11,41 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiMeshHandlerCreate);
-RegisterLuaFunctionAsIs(chiMeshHandlerSetCurrent);
-RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToObj);
-RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToVTK);
-RegisterLuaFunctionAsIs(chiMeshHandlerExportMeshToExodus);
+RegisterLuaFunctionAsIs(MeshHandlerCreate);
+RegisterLuaFunctionAsIs(MeshHandlerSetCurrent);
+RegisterLuaFunctionAsIs(MeshHandlerExportMeshToObj);
+RegisterLuaFunctionAsIs(MeshHandlerExportMeshToVTK);
+RegisterLuaFunctionAsIs(MeshHandlerExportMeshToExodus);
 
 int
-chiMeshHandlerCreate(lua_State* L)
+MeshHandlerCreate(lua_State* L)
 {
   int index = (int)PushNewHandlerAndGetIndex();
   lua_pushnumber(L, index);
 
-  opensn::log.LogAllVerbose2() << "chiMeshHandlerCreate: Mesh Handler " << index << " created\n";
+  opensn::log.LogAllVerbose2() << "MeshHandlerCreate: Mesh Handler " << index << " created\n";
 
   return 1;
 }
 
 int
-chiMeshHandlerSetCurrent(lua_State* L)
+MeshHandlerSetCurrent(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError("chiMeshHandlerSetCurrent", 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError("MeshHandlerSetCurrent", 1, num_args);
 
   int handle = lua_tonumber(L, 1);
 
   if ((handle < 0) or (handle >= opensn::meshhandler_stack.size()))
   {
     opensn::log.LogAllError() << "Invalid handle to mesh handler specified "
-                              << "in call to chiMeshHandlerSetCurrent";
+                              << "in call to MeshHandlerSetCurrent";
     opensn::Exit(EXIT_FAILURE);
   }
 
   opensn::current_mesh_handler = handle;
 
-  opensn::log.LogAllVerbose2() << "chiMeshHandlerSetCurrent: set to " << handle;
+  opensn::log.LogAllVerbose2() << "MeshHandlerSetCurrent: set to " << handle;
 
   return 0;
 }

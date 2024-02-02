@@ -16,17 +16,17 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiLogicalVolumeCreate);
+RegisterLuaFunctionAsIs(LogicalVolumeCreate);
 RegisterLuaConstantAsIs(SPHERE, Varying(1));
 RegisterLuaConstantAsIs(SPHERE_ORIGIN, Varying(2));
 RegisterLuaConstantAsIs(RPP, Varying(3));
 RegisterLuaConstantAsIs(RCC, Varying(4));
 RegisterLuaConstantAsIs(SURFACE, Varying(9));
 RegisterLuaConstantAsIs(BOOLEAN, Varying(10));
-RegisterLuaFunctionAsIs(chiLogicalVolumePointSense);
+RegisterLuaFunctionAsIs(LogicalVolumePointSense);
 
 int
-chiLogicalVolumeCreate(lua_State* L)
+LogicalVolumeCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
@@ -58,7 +58,7 @@ chiLogicalVolumeCreate(lua_State* L)
     if (num_args != 2)
     {
       opensn::log.Log0Error() << "Incorrect amount of arguments provided "
-                                 "for chiMeshCreateLogicalVolume(SO...";
+                                 "for MeshCreateLogicalVolume(SO...";
       opensn::Exit(EXIT_FAILURE);
     }
     double r = lua_tonumber(L, 2);
@@ -72,7 +72,7 @@ chiLogicalVolumeCreate(lua_State* L)
     params.AddParameter("r", r);
 
     const size_t handle =
-      object_maker.MakeRegisteredObjectOfType("chi_mesh::SphereLogicalVolume", params);
+      object_maker.MakeRegisteredObjectOfType("mesh::SphereLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -84,7 +84,7 @@ chiLogicalVolumeCreate(lua_State* L)
     if (num_args != 5)
     {
       opensn::log.Log0Error() << "Incorrect amount of arguments provided "
-                                 "for chiMeshCreateLogicalVolume(S...";
+                                 "for MeshCreateLogicalVolume(S...";
       opensn::Exit(EXIT_FAILURE);
     }
     double x = lua_tonumber(L, 2);
@@ -105,7 +105,7 @@ chiLogicalVolumeCreate(lua_State* L)
     params.AddParameter("z", z);
 
     const size_t handle =
-      object_maker.MakeRegisteredObjectOfType("chi_mesh::SphereLogicalVolume", params);
+      object_maker.MakeRegisteredObjectOfType("mesh::SphereLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -117,7 +117,7 @@ chiLogicalVolumeCreate(lua_State* L)
     if (num_args != 7)
     {
       opensn::log.Log0Error() << "Incorrect amount of arguments provided "
-                                 "for chiMeshCreateLogicalVolume(RPP...";
+                                 "for MeshCreateLogicalVolume(RPP...";
       opensn::Exit(EXIT_FAILURE);
     }
     double xmin = lua_tonumber(L, 2);
@@ -141,8 +141,7 @@ chiLogicalVolumeCreate(lua_State* L)
     params.AddParameter("zmin", zmin);
     params.AddParameter("zmax", zmax);
 
-    const size_t handle =
-      object_maker.MakeRegisteredObjectOfType("chi_mesh::RPPLogicalVolume", params);
+    const size_t handle = object_maker.MakeRegisteredObjectOfType("mesh::RPPLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -154,7 +153,7 @@ chiLogicalVolumeCreate(lua_State* L)
     if (num_args != 8)
     {
       opensn::log.Log0Error() << "Incorrect amount of arguments provided "
-                                 "for chiMeshCreateLogicalVolume(RCC...";
+                                 "for MeshCreateLogicalVolume(RCC...";
       opensn::Exit(EXIT_FAILURE);
     }
     double x0 = lua_tonumber(L, 2);
@@ -181,8 +180,7 @@ chiLogicalVolumeCreate(lua_State* L)
     params.AddParameter("vz", vz);
     params.AddParameter("r", r);
 
-    const size_t handle =
-      object_maker.MakeRegisteredObjectOfType("chi_mesh::RCCLogicalVolume", params);
+    const size_t handle = object_maker.MakeRegisteredObjectOfType("mesh::RCCLogicalVolume", params);
 
     opensn::log.Log0Verbose1() << "Created RCC Logical volume with x0,y0,z0,vx,vy,vz,r = " << x0
                                << " " << y0 << " " << z0 << " " << vx << " " << vy << " " << vz
@@ -194,7 +192,7 @@ chiLogicalVolumeCreate(lua_State* L)
   // SURFACE
   else if (type_index == LVSURFACE)
   {
-    if (num_args != 2) LuaPostArgAmountError("chiMeshCreateLogicalVolume:SURFACE", 2, num_args);
+    if (num_args != 2) LuaPostArgAmountError("MeshCreateLogicalVolume:SURFACE", 2, num_args);
 
     int surf_mesh_hndle = lua_tonumber(L, 2);
 
@@ -211,7 +209,7 @@ chiLogicalVolumeCreate(lua_State* L)
     params.AddParameter("surface_mesh_handle", surf_mesh_hndle);
 
     const size_t handle =
-      object_maker.MakeRegisteredObjectOfType("chi_mesh::SurfaceMeshLogicalVolume", params);
+      object_maker.MakeRegisteredObjectOfType("mesh::SurfaceMeshLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -222,7 +220,7 @@ chiLogicalVolumeCreate(lua_State* L)
     // if (num_args % 2 != 0)
     //{
     //   chi::log.Log0Error() << "Incorrect amount of arguments provided "
-    //                           "for chiMeshCreateLogicalVolume(BOOLEAN..."
+    //                           "for MeshCreateLogicalVolume(BOOLEAN..."
     //                           " Expected pairs of (bool,volumeHandle)";
     //   chi::Exit(EXIT_FAILURE);
     // }
@@ -235,7 +233,7 @@ chiLogicalVolumeCreate(lua_State* L)
     //   // Checking first part of pair
     //   if (not lua_isboolean(L, 2 * p))
     //   {
-    //     chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
+    //     chi::log.Log0Error() << "MeshCreateLogicalVolume(BOOLEAN..."
     //                             " argument "
     //                          << 2 * p
     //                          << " expected to be "
@@ -245,7 +243,7 @@ chiLogicalVolumeCreate(lua_State* L)
     //   // Checking second part of pair
     //   if (not lua_isnumber(L, 2 * p + 1))
     //   {
-    //     chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
+    //     chi::log.Log0Error() << "MeshCreateLogicalVolume(BOOLEAN..."
     //                             " argument "
     //                          << 2 * p + 1
     //                          << " expected to be "
@@ -255,7 +253,7 @@ chiLogicalVolumeCreate(lua_State* L)
     //   if (lua_tonumber(L, 2 * p + 1) >=
     //       static_cast<lua_Number>(chi::object_stack.size()))
     //   {
-    //     chi::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
+    //     chi::log.Log0Error() << "MeshCreateLogicalVolume(BOOLEAN..."
     //                             " argument "
     //                          << 2 * p + 1 << " points to non-existent
     //                          volume.";
@@ -282,7 +280,7 @@ chiLogicalVolumeCreate(lua_State* L)
 
     ChiInvalidArgumentIf(num_args % 2 != 0,
                          "Incorrect amount of arguments provided for "
-                         "chiMeshCreateLogicalVolume(BOOLEAN..."
+                         "MeshCreateLogicalVolume(BOOLEAN..."
                          " Expected pairs of (bool,volumeHandle)");
 
     ParameterBlock params;
@@ -293,7 +291,7 @@ chiLogicalVolumeCreate(lua_State* L)
       // Checking first part of pair
       if (not lua_isboolean(L, 2 * p))
       {
-        opensn::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
+        opensn::log.Log0Error() << "MeshCreateLogicalVolume(BOOLEAN..."
                                    " argument "
                                 << 2 * p
                                 << " expected to be "
@@ -303,7 +301,7 @@ chiLogicalVolumeCreate(lua_State* L)
       // Checking second part of pair
       if (not lua_isnumber(L, 2 * p + 1))
       {
-        opensn::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
+        opensn::log.Log0Error() << "MeshCreateLogicalVolume(BOOLEAN..."
                                    " argument "
                                 << 2 * p + 1
                                 << " expected to be "
@@ -312,7 +310,7 @@ chiLogicalVolumeCreate(lua_State* L)
       }
       if (lua_tointeger(L, 2 * p + 1) >= static_cast<lua_Number>(opensn::object_stack.size()))
       {
-        opensn::log.Log0Error() << "chiMeshCreateLogicalVolume(BOOLEAN..."
+        opensn::log.Log0Error() << "MeshCreateLogicalVolume(BOOLEAN..."
                                    " argument "
                                 << 2 * p + 1 << " points to non-existent volume.";
         opensn::Exit(EXIT_FAILURE);
@@ -330,7 +328,7 @@ chiLogicalVolumeCreate(lua_State* L)
     params.ChangeToArray();
 
     const size_t handle =
-      object_maker.MakeRegisteredObjectOfType("chi_mesh::BooleanLogicalVolume", params);
+      object_maker.MakeRegisteredObjectOfType("mesh::BooleanLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;
@@ -340,7 +338,7 @@ chiLogicalVolumeCreate(lua_State* L)
   else
   {
     opensn::log.Log0Error() << "Unrecognized volume type used in "
-                               "chiLogicalVolumeCreate.";
+                               "LogicalVolumeCreate.";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -348,9 +346,9 @@ chiLogicalVolumeCreate(lua_State* L)
 }
 
 int
-chiLogicalVolumePointSense(lua_State* L)
+LogicalVolumePointSense(lua_State* L)
 {
-  const std::string fname = "chiLogicalVolumePointSense";
+  const std::string fname = "LogicalVolumePointSense";
   const int num_args = lua_gettop(L);
   if (num_args != 4) LuaPostArgAmountError(fname, 4, num_args);
 

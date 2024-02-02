@@ -9,11 +9,11 @@
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionAsIs(chiAdjointSolverReadFluxMomentsToBuffer);
-RegisterLuaFunctionAsIs(chiAdjointSolverApplyFluxMomentBuffer);
+RegisterLuaFunctionAsIs(AdjointSolverReadFluxMomentsToBuffer);
+RegisterLuaFunctionAsIs(AdjointSolverApplyFluxMomentBuffer);
 
 int
-chiAdjointSolverReadFluxMomentsToBuffer(lua_State* L)
+AdjointSolverReadFluxMomentsToBuffer(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
@@ -40,7 +40,7 @@ chiAdjointSolverReadFluxMomentsToBuffer(lua_State* L)
 }
 
 int
-chiAdjointSolverApplyFluxMomentBuffer(lua_State* L)
+AdjointSolverApplyFluxMomentBuffer(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);

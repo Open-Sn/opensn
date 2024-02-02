@@ -11,14 +11,14 @@ for i=1,(N+1) do
     nodes[i] = xmin + k*dx
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
-chi_unit_testsB.chiSimTest06_WDD();
-chiMPIBarrier()
-if (chi_location_id == 0) then
+unit_testsB.SimTest06_WDD();
+MPIBarrier()
+if (location_id == 0) then
     os.execute("rm SimTest_06*")
 end

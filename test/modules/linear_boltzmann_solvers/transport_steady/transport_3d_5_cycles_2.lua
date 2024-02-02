@@ -10,46 +10,46 @@ num_procs = 4
 
 
 --############################################### Check num_procs
-if (check_num_procs==nil and chi_number_of_processes ~= num_procs) then
-  chiLog(LOG_0ERROR,"Incorrect amount of processors. " ..
+if (check_num_procs==nil and number_of_processes ~= num_procs) then
+  Log(LOG_0ERROR,"Incorrect amount of processors. " ..
     "Expected "..tostring(num_procs)..
     ". Pass check_num_procs=false to override if possible.")
   os.exit(false)
 end
 
 --############################################### Setup mesh
-meshgen1 = chi_mesh.MeshGenerator.Create
+meshgen1 = mesh.MeshGenerator.Create
 ({
   inputs =
   {
-    chi_mesh.FromFileMeshGenerator.Create
+    mesh.FromFileMeshGenerator.Create
     ({
       filename = "../../../../resources/TestMeshes/Sphere.case"
     }),
   },
-  partitioner = chi.KBAGraphPartitioner.Create
+  partitioner = KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2, nz=1,
     xcuts = {0.0}, ycuts = {0.0}
   })
 })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Add materials
 materials = {}
-materials[1] = chiPhysicsAddMaterial("Test Material");
-materials[2] = chiPhysicsAddMaterial("Test Material2");
+materials[1] = PhysicsAddMaterial("Test Material");
+materials[2] = PhysicsAddMaterial("Test Material2");
 
-chiPhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-chiPhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)
 
-chiPhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
-chiPhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
+PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
 
 num_groups = 5
-chiPhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
   CHI_XSFILE,"xs_graphite_pure.cxs")
-chiPhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
+PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
   CHI_XSFILE,"xs_graphite_pure.cxs")
 
 src={}
@@ -57,12 +57,12 @@ for g=1,num_groups do
   src[g] = 0.0
 end
 
-chiPhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 src[1]=1.0
-chiPhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 --############################################### Setup Physics
-pquad0 = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
+pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
 
 lbs_block =
 {
@@ -94,61 +94,59 @@ lbs.SetOptions(phys1, lbs_options)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-chiSolverInitialize(ss_solver)
-chiSolverExecute(ss_solver)
+SolverInitialize(ss_solver)
+SolverExecute(ss_solver)
 
 --############################################### Get field functions
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
 --############################################### Slice plot
 --slices = {}
 --for k=1,count do
---    slices[k] = chiFFInterpolationCreate(SLICE)
---    chiFFInterpolationSetProperty(slices[k],SLICE_POINT,0.0,0.0,0.8001)
---    chiFFInterpolationSetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
---    --chiFFInterpolationSetProperty(slices[k],SLICE_TANGENT,0.393,1.0-0.393,0)
---    --chiFFInterpolationSetProperty(slices[k],SLICE_NORMAL,-(1.0-0.393),-0.393,0.0)
---    --chiFFInterpolationSetProperty(slices[k],SLICE_BINORM,0.0,0.0,1.0)
---    chiFFInterpolationInitialize(slices[k])
---    chiFFInterpolationExecute(slices[k])
---    chiFFInterpolationExportPython(slices[k])
+--    slices[k] = FFInterpolationCreate(SLICE)
+--    FFInterpolationSetProperty(slices[k],SLICE_POINT,0.0,0.0,0.8001)
+--    FFInterpolationSetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
+--    --FFInterpolationSetProperty(slices[k],SLICE_TANGENT,0.393,1.0-0.393,0)
+--    --FFInterpolationSetProperty(slices[k],SLICE_NORMAL,-(1.0-0.393),-0.393,0.0)
+--    --FFInterpolationSetProperty(slices[k],SLICE_BINORM,0.0,0.0,1.0)
+--    FFInterpolationInitialize(slices[k])
+--    FFInterpolationExecute(slices[k])
+--    FFInterpolationExportPython(slices[k])
 --end
 
 --############################################### Volume integrations
-vol0 = chi_mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-ffi1 = chiFFInterpolationCreate(VOLUME)
+vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
-chiLog(LOG_0,string.format("Max-value1=%.5e", maxval))
+Log(LOG_0,string.format("Max-value1=%.5e", maxval))
 
-ffi1 = chiFFInterpolationCreate(VOLUME)
+ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
-chiFFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-chiFFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-chiFFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[2])
+FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
+FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
+FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[2])
 
-chiFFInterpolationInitialize(curffi)
-chiFFInterpolationExecute(curffi)
-maxval = chiFFInterpolationGetValue(curffi)
+FFInterpolationInitialize(curffi)
+FFInterpolationExecute(curffi)
+maxval = FFInterpolationGetValue(curffi)
 
-chiLog(LOG_0,string.format("Max-value2=%.5e", maxval))
+Log(LOG_0,string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if (master_export == nil) then
-  chiExportMultiFieldFunctionToVTK(fflist,"ZPhi3D")
-  chiExportFieldFunctionToVTK(fflist[1],"ZPhi3D_g0")
+  ExportMultiFieldFunctionToVTK(fflist,"ZPhi3D")
+  ExportFieldFunctionToVTK(fflist[1],"ZPhi3D_g0")
 end
 
 --############################################### Plots
-if (chi_location_id == 0 and master_export == nil) then
+if (location_id == 0 and master_export == nil) then
   print("Execution completed")
 end
-
-

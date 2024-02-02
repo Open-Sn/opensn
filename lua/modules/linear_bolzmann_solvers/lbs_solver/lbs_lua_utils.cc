@@ -24,7 +24,7 @@ namespace opensnlua::lbs
 void
 RegisterLuaEntities(lua_State* L)
 {
-  RegisterFunction(chiLBSSetProperty);
+  RegisterFunction(LBSSetProperty);
   RegisterNumber(DISCRETIZATION_METHOD, 1);
   RegisterNumber(PWLD, 3);
   RegisterNumber(PWLD1D, 4);
@@ -57,45 +57,45 @@ RegisterLuaEntities(lua_State* L)
   RegisterNumberValueToTable(INCIDENT_ANISTROPIC_HETEROGENEOUS, 4, LBSBoundaryTypes);
 
   RegisterTable(LBSGroupset);
-  RegisterFunction(chiLBSCreateGroupset);
-  RegisterFunction(chiLBSCreateGroup);
-  RegisterFunction(chiLBSGroupsetAddGroups);
-  RegisterFunction(chiLBSGroupsetSetQuadrature);
-  RegisterFunction(chiLBSGroupsetSetAngleAggregationType);
+  RegisterFunction(LBSCreateGroupset);
+  RegisterFunction(LBSCreateGroup);
+  RegisterFunction(LBSGroupsetAddGroups);
+  RegisterFunction(LBSGroupsetSetQuadrature);
+  RegisterFunction(LBSGroupsetSetAngleAggregationType);
   RegisterNumberValueToTable(ANGLE_AGG_SINGLE, 1, LBSGroupset);
   RegisterNumberValueToTable(ANGLE_AGG_POLAR, 2, LBSGroupset);
   RegisterNumberValueToTable(ANGLE_AGG_AZIMUTHAL, 3, LBSGroupset);
-  RegisterFunction(chiLBSGroupsetSetAngleAggDiv);
-  RegisterFunction(chiLBSGroupsetSetGroupSubsets);
-  RegisterFunction(chiLBSGroupsetSetIterativeMethod);
+  RegisterFunction(LBSGroupsetSetAngleAggDiv);
+  RegisterFunction(LBSGroupsetSetGroupSubsets);
+  RegisterFunction(LBSGroupsetSetIterativeMethod);
   RegisterNumber(KRYLOV_RICHARDSON, 5);
   RegisterNumber(KRYLOV_RICHARDSON_CYCLES, 6);
   RegisterNumber(KRYLOV_GMRES, 7);
   RegisterNumber(KRYLOV_GMRES_CYCLES, 8);
   RegisterNumber(KRYLOV_BICGSTAB, 9);
   RegisterNumber(KRYLOV_BICGSTAB_CYCLES, 10);
-  RegisterFunction(chiLBSGroupsetSetResidualTolerance);
-  RegisterFunction(chiLBSGroupsetSetMaxIterations);
-  RegisterFunction(chiLBSGroupsetSetGMRESRestartIntvl);
-  RegisterFunction(chiLBSGroupsetSetEnableSweepLog);
-  RegisterFunction(chiLBSGroupsetSetWGDSA);
-  RegisterFunction(chiLBSGroupsetSetTGDSA);
+  RegisterFunction(LBSGroupsetSetResidualTolerance);
+  RegisterFunction(LBSGroupsetSetMaxIterations);
+  RegisterFunction(LBSGroupsetSetGMRESRestartIntvl);
+  RegisterFunction(LBSGroupsetSetEnableSweepLog);
+  RegisterFunction(LBSGroupsetSetWGDSA);
+  RegisterFunction(LBSGroupsetSetTGDSA);
 
-  RegisterFunction(chiLBSGetScalarFieldFunctionList);
+  RegisterFunction(LBSGetScalarFieldFunctionList);
 
-  RegisterFunction(chiLBSWriteGroupsetAngularFlux);
-  RegisterFunction(chiLBSReadGroupsetAngularFlux);
+  RegisterFunction(LBSWriteGroupsetAngularFlux);
+  RegisterFunction(LBSReadGroupsetAngularFlux);
 
-  RegisterFunction(chiLBSWriteFluxMoments);
-  RegisterFunction(chiLBSCreateAndWriteSourceMoments);
-  RegisterFunction(chiLBSReadFluxMomentsAndMakeSourceMoments);
-  RegisterFunction(chiLBSReadSourceMoments);
-  RegisterFunction(chiLBSReadFluxMoments);
+  RegisterFunction(LBSWriteFluxMoments);
+  RegisterFunction(LBSCreateAndWriteSourceMoments);
+  RegisterFunction(LBSReadFluxMomentsAndMakeSourceMoments);
+  RegisterFunction(LBSReadSourceMoments);
+  RegisterFunction(LBSReadFluxMoments);
 
-  RegisterFunction(chiLBSComputeFissionRate);
-  RegisterFunction(chiLBSInitializeMaterials);
+  RegisterFunction(LBSComputeFissionRate);
+  RegisterFunction(LBSInitializeMaterials);
 
-  RegisterFunction(chiLBSAddPointSource);
-  RegisterFunction(chiLBSClearPointSources);
+  RegisterFunction(LBSAddPointSource);
+  RegisterFunction(LBSClearPointSources);
 }
 } // namespace opensnlua::lbs

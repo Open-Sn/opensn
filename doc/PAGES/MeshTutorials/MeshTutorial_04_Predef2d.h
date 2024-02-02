@@ -10,7 +10,7 @@ subsequent meshing operations. This will also serve as a global subspace for
 other meshing objects that will be added.
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 \endcode
 
 We next import a surface mesh (chi_mesh::SurfaceMesh) that will define our
@@ -18,8 +18,8 @@ We next import a surface mesh (chi_mesh::SurfaceMesh) that will define our
 on predefined meshes**.
 
 \code
-newSurfMesh = chiSurfaceMeshCreate();
-chiSurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
+newSurfMesh = SurfaceMeshCreate();
+SurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
 \endcode
 
 The next step is to break up the boundaries of this mesh into edges that we can
@@ -58,11 +58,11 @@ we create a chi_mesh::SurfaceMesher with the type *SURFACEMESHER_PREDEFINED* as
  well as a chi_mesh::VolumeMesher with the type *VOLUMEMESHER_PREDEFINED2D*.
 
 \code
-chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED);
-chiVolumeMesherCreate(VOLUMEMESHER_PREDEFINED2D);
+SurfaceMesherCreate(SURFACEMESHER_PREDEFINED);
+VolumeMesherCreate(VOLUMEMESHER_PREDEFINED2D);
 --
-chiSurfaceMesherExecute();
-chiVolumeMesherExecute()
+SurfaceMesherExecute();
+VolumeMesherExecute()
 \endcode
 
 The *SURFACEMESHER_PREDEFINED* is just a pass-through mesher, in contrast to the
@@ -73,11 +73,11 @@ The *SURFACEMESHER_PREDEFINED* is just a pass-through mesher, in contrast to the
 ### Complete code segment
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 --
-newSurfMesh = chiSurfaceMeshCreate();
-chiSurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
-loops,loop_count = chiSurfaceMeshGetEdgeLoops(newSurfMesh)
+newSurfMesh = SurfaceMeshCreate();
+SurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
+loops,loop_count = SurfaceMeshGetEdgeLoops(newSurfMesh)
 --
 --
 line_mesh = {};
@@ -98,11 +98,11 @@ for k=1,line_mesh_count do
   chiRegionAddLineBoundary(region1,line_mesh[k]);
 end
 --
-chiSurfaceMesherCreate(SURFACEMESHER_PREDEFINED);
-chiVolumeMesherCreate(VOLUMEMESHER_PREDEFINED2D);
+SurfaceMesherCreate(SURFACEMESHER_PREDEFINED);
+VolumeMesherCreate(VOLUMEMESHER_PREDEFINED2D);
 --
-chiSurfaceMesherExecute();
-chiVolumeMesherExecute()
+SurfaceMesherExecute();
+VolumeMesherExecute()
 \endcode
 
 */

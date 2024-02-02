@@ -1,17 +1,17 @@
-meshgen1 = chi_mesh.MeshGenerator.Create
+meshgen1 = mesh.MeshGenerator.Create
 ({
   inputs =
   {
-    chi_mesh.FromFileMeshGenerator.Create
+    mesh.FromFileMeshGenerator.Create
     ({
       filename="triangle_mesh_2x2.obj"
     }),
-    chi_mesh.ExtruderMeshGenerator.Create
+    mesh.ExtruderMeshGenerator.Create
     ({
       layers = {{z=1.1, n=2}, {z=2.1, n=3}}
     })
   }
 })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+mesh.MeshGenerator.Execute(meshgen1)
 
---chiMeshHandlerExportMeshToVTK("ZMeshTest")
+--MeshHandlerExportMeshToVTK("ZMeshTest")

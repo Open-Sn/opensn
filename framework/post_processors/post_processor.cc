@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectParametersOnly(chi, PostProcessor);
+OpenSnRegisterObjectParametersOnly(PostProcessor);
 
 InputParameters
 PostProcessor::GetInputParameters()

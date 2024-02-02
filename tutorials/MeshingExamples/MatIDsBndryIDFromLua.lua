@@ -9,12 +9,12 @@ for i=1,(N+1) do
     nodes[i] = xmin + k*dx
 end
 
-meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
-chi_mesh.MeshGenerator.Execute(meshgen1)
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
+mesh.MeshGenerator.Execute(meshgen1)
 
-chiMeshHandlerExportMeshToVTK("ZMeshPhase1")
+MeshHandlerExportMeshToVTK("ZMeshPhase1")
 
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 
 --Sets a middle square to material 1
 function MatIDFunction1(x,y,z,cur_id)
@@ -26,9 +26,9 @@ function MatIDFunction1(x,y,z,cur_id)
     return cur_id
 end
 
-chiVolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
+VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
 
-chiMeshHandlerExportMeshToVTK("ZMeshPhase2")
+MeshHandlerExportMeshToVTK("ZMeshPhase2")
 
 --Setting left, right, top and bottom boundaries
 -- left = 0
@@ -60,6 +60,6 @@ function BndryIDFunction1(x,y,z,nx,ny,nz,cur_bid)
     return cur_bid
 end
 
-chiVolumeMesherSetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
+VolumeMesherSetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
 
-chiMeshHandlerExportMeshToVTK("ZMeshPhase3")
+MeshHandlerExportMeshToVTK("ZMeshPhase3")

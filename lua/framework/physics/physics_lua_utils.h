@@ -16,14 +16,14 @@
  * Example lua code:
  * \code
  * materials = {}
- * materials[1] = chiPhysicsAddMaterial("Test Material");
+ * materials[1] = PhysicsAddMaterial("Test Material");
  * \endcode
  *
  *
  * \ingroup LuaPhysicsMaterials
  * \author Jan
  */
-int chiPhysicsAddMaterial(lua_State* L);
+int PhysicsAddMaterial(lua_State* L);
 
 /** Adds a material property to a material.
  *
@@ -64,13 +64,13 @@ int chiPhysicsAddMaterial(lua_State* L);
  * ### Example\n
  * Example lua code:
  * \code
- * chiPhysicsMaterialAddProperty(materials[i],TRANSPORT_XSECTIONS)
+ * PhysicsMaterialAddProperty(materials[i],TRANSPORT_XSECTIONS)
  * \endcode
  *
  * \ingroup LuaPhysicsMaterials
  * \author Jan
  */
-int chiPhysicsMaterialAddProperty(lua_State* L);
+int PhysicsMaterialAddProperty(lua_State* L);
 
 /** Sets a material property for a given material.
  *
@@ -126,7 +126,7 @@ int chiPhysicsMaterialAddProperty(lua_State* L);
  * Supply handle to an existing cross-section and simply swap them out.
  *
  * \code
- * chiPhysicsMaterialSetProperty(materials[1],
+ * PhysicsMaterialSetProperty(materials[1],
  *                               TRANSPORT_XSECTIONS,
  *                               CHI_XSFILE,
  *                               "xs_3_170.cxs",
@@ -139,9 +139,9 @@ int chiPhysicsMaterialAddProperty(lua_State* L);
  * Simple temperature independent thermal conductivity:
  * \code
  * materials = {}
- * materials[1] = chiPhysicsAddMaterial("Test Material");
- * chiPhysicsMaterialAddProperty(materials[0],THERMAL_CONDUCTIVITY)
- * chiPhysicsMaterialSetProperty(materials[0],THERMAL_CONDUCTIVITY,SINGLE_VALUE,13.7)
+ * materials[1] = PhysicsAddMaterial("Test Material");
+ * PhysicsMaterialAddProperty(materials[0],THERMAL_CONDUCTIVITY)
+ * PhysicsMaterialSetProperty(materials[0],THERMAL_CONDUCTIVITY,SINGLE_VALUE,13.7)
  * \endcode
  *
  * where the thermal conductivity has been set to 13.7.\n
@@ -150,22 +150,22 @@ int chiPhysicsMaterialAddProperty(lua_State* L);
  * Isotropic Multigroup source set from a lua table/array (12 groups):
  * \code
  * materials = {}
- * materials[1] = chiPhysicsAddMaterial("Test Material");
+ * materials[1] = PhysicsAddMaterial("Test Material");
  *
- * chiPhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+ * PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
  *
  * num_groups = 12
  * src={}
  * for g=1,num_groups do
  *     src[g] = 0.0
  * end
- * chiPhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+ * PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
  * \endcode
  *
  * ### Developer Info
  * Checklist for adding a new material property:
  *  - Make sure you followed the steps depicted in the developer info section for
- *    the ChiLua::chiPhysicsMaterialAddProperty function.
+ *    the ChiLua::PhysicsMaterialAddProperty function.
  *  - Now under the "If user supplied name then find property index"-section
  *    add the appropriate code for setting the property index.
  *  - Add an else-if block for your property similar to the others. It should be
@@ -176,7 +176,7 @@ int chiPhysicsMaterialAddProperty(lua_State* L);
  * \ingroup LuaPhysicsMaterials
  * \author Jan
  */
-int chiPhysicsMaterialSetProperty(lua_State* L);
+int PhysicsMaterialSetProperty(lua_State* L);
 
 /** Returns a rich lua data-structure of the required property.
  *
@@ -187,4 +187,4 @@ int chiPhysicsMaterialSetProperty(lua_State* L);
  * \ingroup LuaPhysicsMaterials
  * \return Lua table of the desired property.
  */
-int chiPhysicsMaterialGetProperty(lua_State* L);
+int PhysicsMaterialGetProperty(lua_State* L);

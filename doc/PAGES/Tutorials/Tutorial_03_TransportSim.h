@@ -18,7 +18,7 @@ Let us tackle a basic transport simulation on a 3D mesh\n
 As was done in Tutorials 1 and 2 we create the 3D mesh as follows:
 
 \code
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 nodes={}
 N=32
@@ -26,17 +26,17 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
+surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 \endcode
 
 Next we set the material IDs:
 
 \code
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 \endcode
 
 ## Step 3 - Add a material with a transport cross-section
@@ -45,11 +45,11 @@ Similar to the diffusion tutorial we have to create a material, then add a
  property to it, and then to set the property.
 
 \code
-material0 = chiPhysicsAddMaterial("Test Material");
+material0 = PhysicsAddMaterial("Test Material");
 
-chiPhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1
-chiPhysicsMaterialSetProperty(material0,
+PhysicsMaterialSetProperty(material0,
                               TRANSPORT_XSECTIONS,
                               SIMPLEXS1,
                               num_groups,     --Num grps
@@ -66,21 +66,21 @@ The general material property TRANSPORT_XSECTIONS is used for
 
 \code
 --############################################### Setup Physics
-phys1 = chiLBSCreateSolver()
-chiSolverAddRegion(phys1,region1)
+phys1 = LBSCreateSolver()
+SolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
-    chiLBSCreateGroup(phys1)
+    LBSCreateGroup(phys1)
 end
 
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
 
 --========== Groupset def
-gs0 = chiLBSCreateGroupset(phys1)
-chiLBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
-chiLBSGroupsetSetQuadrature(phys1,gs0,pquad)
-chiLBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
-chiLBSGroupsetSetIterativeMethod(NPT_GMRES_CYCLES)
+gs0 = LBSCreateGroupset(phys1)
+LBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
+LBSGroupsetSetQuadrature(phys1,gs0,pquad)
+LBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
+LBSGroupsetSetIterativeMethod(NPT_GMRES_CYCLES)
 
 --========== Boundary conditions
 bsrc = {}
@@ -88,42 +88,42 @@ for k=1,num_groups do
     bsrc[k] = 0.0
 end
 bsrc[1] = 0.5
-chiLBSSetProperty(phys1,BOUNDARY_CONDITION,
+LBSSetProperty(phys1,BOUNDARY_CONDITION,
                   YMIN,LBSBoundaryTypes.INCIDENT_ISOTROPIC,bsrc);
 
 --========== Solvers
-chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD1D)
-chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
+LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD1D)
+LBSSetProperty(phys1,SCATTERING_ORDER,0)
 \endcode
 
- A transport solver is invoked by using a call to chiLBSCreateSolver().
+ A transport solver is invoked by using a call to LBSCreateSolver().
  This creates a derived object based on a base physics solver so the
  mesh region gets added to the
- solver using the generic call chiSolverAddRegion(). Past this point we need
- to create the single required group with chiLBSCreateGroup(), although we put
+ solver using the generic call SolverAddRegion(). Past this point we need
+ to create the single required group with LBSCreateGroup(), although we put
  this in a loop for in-case we want to increase the number of groups, and then a
  quadrature rule for integration of the angular fluxes. Since we are dealing
  with a 3D simulation we will be integrating over \f$ \theta \f$, the polar
  angle, and \f$ \varphi \f$, the azimuthal angle. A quadrature with favorable
  parallel properties is the Gauss-Legendre-Chebyshev quadrature. We create this
  quadrature with a call to
- chiCreateProductQuadrature() and specifying GAUSS_LEGENDRE_CHEBYSHEV as the rule
+ CreateProductQuadrature() and specifying GAUSS_LEGENDRE_CHEBYSHEV as the rule
  and we then specify 2 azimuthal angles per octant and 2 polar angles per octant.
 
  The next step in the process is to assign a group-set. Group-sets are very
  useful aggregation features in higher dimension simulations but here we
  only have a single groupset. The group-set is created with a call to
- chiLBSCreateGroupset(). Next we add groups to the group-set using a range,
+ LBSCreateGroupset(). Next we add groups to the group-set using a range,
  however, since we only have one group here the range will be 0 to 0. The
  final piece of a groupset is to add a quadrature which is achieved with a
- call to chiLBSGroupsetSetQuadrature().
+ call to LBSGroupsetSetQuadrature().
 
 
 ## Step 5 - Initialize and Execute
 
 \code
-chiLBSInitialize(phys1)
-chiLBSExecute(phys1)
+LBSInitialize(phys1)
+LBSExecute(phys1)
 \endcode
 
 This should be intuitive.
@@ -131,21 +131,21 @@ This should be intuitive.
 ## Step 6 - Add output
 
 \code
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
-cline = chiFFInterpolationCreate(LINE)
-chiFFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
-chiFFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
-chiFFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+cline = FFInterpolationCreate(LINE)
+FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
+FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
+FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
 
-chiFFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
+FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
 
-chiFFInterpolationInitialize(cline)
-chiFFInterpolationExecute(cline)
-chiFFInterpolationExportPython(cline)
+FFInterpolationInitialize(cline)
+FFInterpolationExecute(cline)
+FFInterpolationExportPython(cline)
 
-if (chi_location_id == 0) then
+if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")
 end
 \endcode
@@ -164,7 +164,7 @@ Instead of using a SLICE interpolator we instead opt to use a LINE interpolator.
 
 \code
 --############################################### Setup mesh
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 nodes={}
 N=32
@@ -172,25 +172,25 @@ ds=2.0/N
 for i=0,N do
     nodes[i+1] = -1.0 + i*ds
 end
-surf_mesh,region1 = chiMeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
+surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
---chiSurfaceMesherSetProperty(PARTITION_X,2)
---chiSurfaceMesherSetProperty(PARTITION_Y,2)
---chiSurfaceMesherSetProperty(CUT_X,0.0)
---chiSurfaceMesherSetProperty(CUT_Y,0.0)
+--SurfaceMesherSetProperty(PARTITION_X,2)
+--SurfaceMesherSetProperty(PARTITION_Y,2)
+--SurfaceMesherSetProperty(CUT_X,0.0)
+--SurfaceMesherSetProperty(CUT_Y,0.0)
 
-chiVolumeMesherExecute();
+VolumeMesherExecute();
 
 -- Set Material IDs
-vol0 = chiLogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-chiVolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
 
 --############################################### Add material
-material0 = chiPhysicsAddMaterial("Test Material");
+material0 = PhysicsAddMaterial("Test Material");
 
-chiPhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
+PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1
-chiPhysicsMaterialSetProperty(material0,
+PhysicsMaterialSetProperty(material0,
                               TRANSPORT_XSECTIONS,
                               SIMPLEXS1,
                               num_groups,     --Num grps
@@ -198,21 +198,21 @@ chiPhysicsMaterialSetProperty(material0,
                               0.2)   --Scattering ratio
 
 --############################################### Setup Physics
-phys1 = chiLBSCreateSolver()
-chiSolverAddRegion(phys1,region1)
+phys1 = LBSCreateSolver()
+SolverAddRegion(phys1,region1)
 
 for k=1,num_groups do
-    chiLBSCreateGroup(phys1)
+    LBSCreateGroup(phys1)
 end
 
-pquad = chiCreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2,2)
+pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2,2)
 
 --========== Groupset def
-gs0 = chiLBSCreateGroupset(phys1)
-chiLBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
-chiLBSGroupsetSetQuadrature(phys1,gs0,pquad)
-chiLBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
-chiLBSGroupsetSetIterativeMethod(phys1,gs0,NPT_GMRES_CYCLES)
+gs0 = LBSCreateGroupset(phys1)
+LBSGroupsetAddGroups(phys1,gs0,0,num_groups-1)
+LBSGroupsetSetQuadrature(phys1,gs0,pquad)
+LBSGroupsetSetAngleAggregationType(phys1,gs0,LBSGroupset.ANGLE_AGG_SINGLE)
+LBSGroupsetSetIterativeMethod(phys1,gs0,NPT_GMRES_CYCLES)
 
 --========== Boundary conditions
 bsrc = {}
@@ -220,34 +220,34 @@ for k=1,num_groups do
     bsrc[k] = 0.0
 end
 bsrc[1] = 0.5
-chiLBSSetProperty(phys1,BOUNDARY_CONDITION,
+LBSSetProperty(phys1,BOUNDARY_CONDITION,
                   YMIN,LBSBoundaryTypes.INCIDENT_ISOTROPIC,bsrc);
 
 --========== Solvers
-chiLBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
-chiLBSSetProperty(phys1,SCATTERING_ORDER,0)
+LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
+LBSSetProperty(phys1,SCATTERING_ORDER,0)
 
-chiLBSInitialize(phys1)
-chiLBSExecute(phys1)
+LBSInitialize(phys1)
+LBSExecute(phys1)
 
 --############################################### Setup Output
-fflist,count = chiLBSGetScalarFieldFunctionList(phys1)
+fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
-cline = chiFFInterpolationCreate(LINE)
-chiFFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
-chiFFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
-chiFFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+cline = FFInterpolationCreate(LINE)
+FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
+FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
+FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
 
-chiFFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
+FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
 
-chiFFInterpolationInitialize(cline)
-chiFFInterpolationExecute(cline)
-chiFFInterpolationExportPython(cline)
+FFInterpolationInitialize(cline)
+FFInterpolationExecute(cline)
+FFInterpolationExportPython(cline)
 
-chiExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
+ExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
 
-if (chi_location_id == 0) then
+if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")
 end
 \endcode

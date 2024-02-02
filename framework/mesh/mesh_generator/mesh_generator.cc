@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_mesh, MeshGenerator);
+OpenSnRegisterObjectInNamespace(mesh, MeshGenerator);
 
 InputParameters
 MeshGenerator::GetInputParameters()
@@ -64,7 +64,7 @@ MeshGenerator::MeshGenerator(const InputParameters& params)
     auto& factory = ObjectFactory::GetInstance();
     auto valid_params = PETScGraphPartitioner::GetInputParameters();
     partitioner_handle =
-      factory.MakeRegisteredObjectOfType("chi::PETScGraphPartitioner", ParameterBlock());
+      factory.MakeRegisteredObjectOfType("PETScGraphPartitioner", ParameterBlock());
   }
   partitioner_ = &GetStackItem<GraphPartitioner>(object_stack, partitioner_handle, __FUNCTION__);
 }

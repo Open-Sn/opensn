@@ -216,12 +216,12 @@ Description of what you are looking at:
                       then copy Input.lua.out from the out/ directory and use that as the gold.
 [Python error] = A python error occurred. Run with -v 1 to see the error.
 
-[ 1]test/framework/chi_misc_utils/chi_misc_utils_test_00.lua......................................................Passed
+[ 1]test/framework/misc_utils/misc_utils_test_00.lua......................................................Passed
 [ 1]test/framework/parameters/params_test_00.lua..................................................................Passed
 [ 1]test/framework/parameters/params_test_01a.lua.................................................................Passed
 [ 1]test/framework/parameters/params_test_01b.lua.................................................................Passed
 [ 1]test/framework/parameters/params_test_01c.lua.................................................................Passed
-[ 2]test/framework/chi_data_types/chi_data_types_test_00.lua......................................................Passed
+[ 2]test/framework/data_types/data_types_test_00.lua......................................................Passed
 [ 1]test/framework/parameters/params_test_01d.lua.................................................................Passed
 [ 4]test/framework/chi_mesh/ReadWavefrontObj1.lua.................................................................Passed
 [ 1]test/framework/tutorials/fv_test1.lua.........................................................................Passed

@@ -10,7 +10,7 @@ Quadrature::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
-  params.SetGeneralDescription("\\defgroup chi_math__Quadrature\n"
+  params.SetGeneralDescription("\\defgroup math__Quadrature\n"
                                "\\ingroup LuaQuadrature\n"
                                "Base class for 1D quadratures");
 

@@ -13,7 +13,7 @@ nodes = {-1.0,-0.75,-0.5,-0.25,0.0,0.25,0.5,0.75,1.0}
 meshgen1 = chi_mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes}
 }) chi_mesh.MeshGenerator.Execute(meshgen1)
 
-chiMeshHandlerExportMeshToVTK("ZMeshTest")
+MeshHandlerExportMeshToVTK("ZMeshTest")
 \endcode
 
 In this example we created a set of nodes (monotonically increasing in value)
@@ -32,7 +32,7 @@ processes, we can see the mesh and it's partitioning below.
 meshgen1 = chi_mesh.FromFileMeshGenerator.Create({
 filename="TriangleMesh2x2.obj" }) chi_mesh.MeshGenerator.Execute(meshgen1)
 
-chiMeshHandlerExportMeshToVTK("ZMeshTest")
+MeshHandlerExportMeshToVTK("ZMeshTest")
 \endcode
 
 In this example we created a mesh by reading it from a file, using the
@@ -62,7 +62,7 @@ meshgen1 = chi_mesh.ExtruderMeshGenerator.Create
 })
 chi_mesh.MeshGenerator.Execute(meshgen1)
 
-chiMeshHandlerExportMeshToVTK("ZMeshTest")
+MeshHandlerExportMeshToVTK("ZMeshTest")
 \endcode
 
 In this example we use an \ref chi_mesh__ExtruderMeshGenerator with another
@@ -98,7 +98,7 @@ meshgen1 = chi_mesh.ExtruderMeshGenerator.Create
 })
 chi_mesh.MeshGenerator.Execute(meshgen1)
 
-chiMeshHandlerExportMeshToVTK("ZMeshTest")
+MeshHandlerExportMeshToVTK("ZMeshTest")
 \endcode
 
 \image html framework/chi_mesh/MeshGenerators/ParExample1.png width=500px
@@ -123,7 +123,7 @@ meshgen1 = chi_mesh.ExtruderMeshGenerator.Create
 })
 chi_mesh.MeshGenerator.Execute(meshgen1)
 
-chiMeshHandlerExportMeshToVTK("ZMeshTest")
+MeshHandlerExportMeshToVTK("ZMeshTest")
 \endcode
 
 \image html framework/chi_mesh/MeshGenerators/ParExample2.png width=500px

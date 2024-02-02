@@ -7,7 +7,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(chi_physics::field_operations, FieldCopyOperation);
+OpenSnRegisterObjectInNamespace(physics::field_operations, FieldCopyOperation);
 
 InputParameters
 FieldCopyOperation::GetInputParameters()

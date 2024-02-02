@@ -14,7 +14,7 @@ namespace opensnlua::lbs
  * \ingroup LBSLuaFunctions
  * \author Jan
  */
-int chiLBSComputeBalance(lua_State* L);
+int LBSComputeBalance(lua_State* L);
 
 /**
  * Computes the leakage for the specified groupset and boundary id.
@@ -28,7 +28,7 @@ int chiLBSComputeBalance(lua_State* L);
  * \ingroup LBSLuaFunctions
  * \author Jan
  */
-int chiLBSComputeLeakage(lua_State* L);
+int LBSComputeLeakage(lua_State* L);
 
 /**
  * Computes the group-wise leakage on all boundaries.

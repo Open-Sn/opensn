@@ -9,15 +9,15 @@
 #include "lua_mesh_ortho_macros.h"
 #include "framework/console/console.h"
 
-RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned1DOrthoMesh);
-RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned2DOrthoMesh);
-RegisterLuaFunctionAsIs(chiMeshCreateUnpartitioned3DOrthoMesh);
+RegisterLuaFunctionAsIs(MeshCreateUnpartitioned1DOrthoMesh);
+RegisterLuaFunctionAsIs(MeshCreateUnpartitioned2DOrthoMesh);
+RegisterLuaFunctionAsIs(MeshCreateUnpartitioned3DOrthoMesh);
 
 int
-chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L)
+MeshCreateUnpartitioned1DOrthoMesh(lua_State* L)
 {
   // Check argc
-  const char func_name[] = "chiMeshCreateUnpartitioned1DOrthoMesh";
+  const char func_name[] = "MeshCreateUnpartitioned1DOrthoMesh";
   int num_args = lua_gettop(L);
   if (num_args != 1) LuaPostArgAmountError(func_name, 1, num_args);
 
@@ -57,10 +57,10 @@ chiMeshCreateUnpartitioned1DOrthoMesh(lua_State* L)
 }
 
 int
-chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L)
+MeshCreateUnpartitioned2DOrthoMesh(lua_State* L)
 {
   // Check argc
-  const char func_name[] = "chiMeshCreateUnpartitioned2DOrthoMesh";
+  const char func_name[] = "MeshCreateUnpartitioned2DOrthoMesh";
   int num_args = lua_gettop(L);
   if (num_args != 2) LuaPostArgAmountError(func_name, 2, num_args);
 
@@ -117,10 +117,10 @@ chiMeshCreateUnpartitioned2DOrthoMesh(lua_State* L)
 }
 
 int
-chiMeshCreateUnpartitioned3DOrthoMesh(lua_State* L)
+MeshCreateUnpartitioned3DOrthoMesh(lua_State* L)
 {
   // Check argc
-  const char func_name[] = "chiMeshCreateUnpartitioned3DOrthoMesh";
+  const char func_name[] = "MeshCreateUnpartitioned3DOrthoMesh";
   int num_args = lua_gettop(L);
   if (num_args != 3) LuaPostArgAmountError(func_name, 3, num_args);
 

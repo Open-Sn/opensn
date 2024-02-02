@@ -31,7 +31,7 @@ For our specific problem we will choose \f$ q(\mathbf{x})=1 \f$ and \f$ \mathcal
 domain, either 1D, 2D or 3D, with each dimension always between \f$ -1,+1 \f$. We can generate the
 mesh for this problem using an input file \code
 --############################################### Setup mesh
-chiMeshHandlerCreate()
+MeshHandlerCreate()
 
 mesh={}
 N=20
@@ -43,13 +43,13 @@ for i=1,(N+1) do
     mesh[i] = xmin + k*dx
 end
 
---chiMeshCreateUnpartitioned3DOrthoMesh(mesh,mesh,mesh)
-chiMeshCreateUnpartitioned2DOrthoMesh(mesh,mesh)
---chiMeshCreateUnpartitioned1DOrthoMesh(mesh)
-chiVolumeMesherExecute();
+--MeshCreateUnpartitioned3DOrthoMesh(mesh,mesh,mesh)
+MeshCreateUnpartitioned2DOrthoMesh(mesh,mesh)
+--MeshCreateUnpartitioned1DOrthoMesh(mesh)
+VolumeMesherExecute();
 
 --############################################### Set Material IDs
-chiVolumeMesherSetMatIDToAll(0)
+VolumeMesherSetMatIDToAll(0)
 \endcode
 This code can be used to generate any of the following meshes,
 \image html CodingTutorials/OrthoMesh_1D_2D_3D.png "[From left to right] 1D, 2D, 3D orthogonal mesh"

@@ -9,13 +9,13 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(chiCreateSLDFESQAngularQuadrature);
+RegisterLuaFunctionAsIs(CreateSLDFESQAngularQuadrature);
 
 int
-chiCreateSLDFESQAngularQuadrature(lua_State* L)
+CreateSLDFESQAngularQuadrature(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError("chiCreateSLDFESQAngularQuadrature", 1, num_args);
+  if (num_args != 1) LuaPostArgAmountError("CreateSLDFESQAngularQuadrature", 1, num_args);
 
   int init_refinement_level = lua_tonumber(L, 1);
 

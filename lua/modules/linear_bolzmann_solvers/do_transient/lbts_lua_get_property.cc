@@ -36,9 +36,9 @@ Returns the simulation time before the latest timestep.\n\n
 
 \author Zachary Hardy*/
 int
-chiLBTSGetProperty(lua_State* L)
+LBTSGetProperty(lua_State* L)
 {
-  const std::string fname = "chiLBTSSetProperty";
+  const std::string fname = "LBTSSetProperty";
   const int num_args = lua_gettop(L);
   if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
