@@ -1,4 +1,4 @@
-#include "framework/physics/physics_event_publisher.h"
+#include "framework/event_system/physics_event_publisher.h"
 #include "framework/event_system/event.h"
 #include "framework/event_system/system_wide_event_publisher.h"
 

@@ -1,10 +1,7 @@
 #include "modules/point_reactor_kinetics/point_reactor_kinetics.h"
-
 #include "framework/physics/time_steppers/time_stepper.h"
-#include "framework/physics/physics_event_publisher.h"
-
+#include "framework/event_system/physics_event_publisher.h"
 #include "framework/object_factory.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

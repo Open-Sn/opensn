@@ -1,7 +1,7 @@
 #include "physics_solver_lua_utils.h"
 #include "framework/physics/solver_base/solver.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/physics/physics_event_publisher.h"
+#include "framework/event_system/physics_event_publisher.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
