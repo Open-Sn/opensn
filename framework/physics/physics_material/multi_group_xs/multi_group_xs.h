@@ -22,7 +22,7 @@ public:
   MultiGroupXS() : MaterialProperty(PropertyType::TRANSPORT_XSECTIONS) {}
 
   /**
-   * Exports the cross section information to ChiTech format.
+   * Exports the cross section information to OpenSn format.
    *
    * \param file_name The name of the file to save the cross sections to.
    * \param fission_scaling A factor to scale fission data to. This is
@@ -30,7 +30,7 @@ public:
    *      create exactly critical cross sections for a transient initial
    *      condition.
    */
-  void ExportToChiXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
+  void ExportToOpenSnXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
 
   virtual size_t NumGroups() const = 0;
   virtual size_t ScatteringOrder() const = 0;

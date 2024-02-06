@@ -285,7 +285,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
 }
 
 void
-SingleStateMGXS::MakeFromChiXSFile(const std::string& file_name)
+SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
 {
   Clear();
 

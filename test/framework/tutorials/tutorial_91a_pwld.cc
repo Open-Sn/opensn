@@ -121,7 +121,7 @@ SimTest91_PWLD(const InputParameters&)
 
   // Make XSs
   SingleStateMGXS xs;
-  xs.MakeFromChiXSFile("xs_graphite_pure.cxs");
+  xs.MakeFromOpenSnXSFile("xs_graphite_pure.cxs");
 
   // Initializes vectors
   std::vector<double> phi_old(num_local_phi_dofs, 0.0);

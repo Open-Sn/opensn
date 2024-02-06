@@ -116,8 +116,8 @@ int PhysicsMaterialAddProperty(lua_State* L);
  *
  * ####_
  *
- * CHI_XSFILE\n
- * Loads transport cross-sections from CHI type cross-section files. Expects
+ * OPENSN_XSFILE\n
+ * Loads transport cross-sections from OpenSn cross-section files. Expects
  * to be followed by a filepath specifying the xs-file.
  *
  * ####_
@@ -128,7 +128,7 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * \code
  * PhysicsMaterialSetProperty(materials[1],
  *                               TRANSPORT_XSECTIONS,
- *                               CHI_XSFILE,
+ *                               OPENSN_XSFILE,
  *                               "xs_3_170.cxs",
  *                               "2518")
  * \endcode

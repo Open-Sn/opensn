@@ -13,7 +13,7 @@ enum class OperationType
   SIMPLEXS0 = 20,
   SIMPLEXS1 = 21,
   EXISTING = 22,
-  CHI_XSFILE = 23
+  OPENSN_XSFILE = 23
 };
 
 class FieldFunctionGridBased;

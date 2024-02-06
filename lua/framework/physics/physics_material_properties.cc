@@ -338,13 +338,13 @@ PhysicsMaterialSetProperty(lua_State* L)
 
         prop->MakeSimple1(G, sigma_t, c);
       }
-      else if (operation_index == static_cast<int>(OpType::CHI_XSFILE))
+      else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
       {
         if (numArgs != 4) LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
 
         const char* file_name_c = lua_tostring(L, 4);
 
-        prop->MakeFromChiXSFile(std::string(file_name_c));
+        prop->MakeFromOpenSnXSFile(std::string(file_name_c));
       }
       else if (operation_index == static_cast<int>(OpType::EXISTING))
       {

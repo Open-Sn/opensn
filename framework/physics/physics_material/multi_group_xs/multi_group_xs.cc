@@ -8,8 +8,8 @@ namespace opensn
 {
 
 void
-MultiGroupXS::ExportToChiXSFile(const std::string& file_name,
-                                const double fission_scaling /* = 1.0 */) const
+MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name,
+                                   const double fission_scaling /* = 1.0 */) const
 {
   log.Log() << "Exporting transport cross section to file: " << file_name;
 
@@ -46,7 +46,7 @@ MultiGroupXS::ExportToChiXSFile(const std::string& file_name,
   std::ofstream ofile(file_name);
 
   // Write the header info
-  ofile << "# Exported cross section from ChiTech\n";
+  ofile << "# Exported cross section from OpenSn\n";
   ofile << "# Date: " << Timer::GetLocalDateTimeString() << "\n";
   ofile << "NUM_GROUPS " << NumGroups() << "\n";
   ofile << "NUM_MOMENTS " << ScatteringOrder() + 1 << "\n";

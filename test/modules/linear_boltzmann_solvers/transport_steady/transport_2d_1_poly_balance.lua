@@ -50,9 +50,9 @@ PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
 
 num_groups = 1
 PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-  CHI_XSFILE,"tests/transport_steady/simple_scatter.cxs")
+  OPENSN_XSFILE,"tests/transport_steady/simple_scatter.cxs")
 PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
-  CHI_XSFILE,"tests/transport_steady/simple_scatter.cxs")
+  OPENSN_XSFILE,"tests/transport_steady/simple_scatter.cxs")
 
 --PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
 --PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)

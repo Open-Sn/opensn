@@ -51,11 +51,11 @@ PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
 xs_strong_fuel_micro = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_strong_fuel_micro, CHI_XSFILE, "tests/transport_transient/xs_inf_k1_6_1g.cxs")
+PhysicsTransportXSSet(xs_strong_fuel_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_k1_6_1g.cxs")
 xs_weak_fuelA_micro = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_weak_fuelA_micro, CHI_XSFILE, "tests/transport_transient/xs_inf_critical_1g.cxs")
+PhysicsTransportXSSet(xs_weak_fuelA_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_critical_1g.cxs")
 xs_weak_fuelB_micro = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_weak_fuelB_micro, CHI_XSFILE, "tests/transport_transient/xs_inf_weak2_1g.cxs")
+PhysicsTransportXSSet(xs_weak_fuelB_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_weak2_1g.cxs")
 
 atom_density = 0.056559
 xs_strong_fuel = PhysicsTransportXSMakeCombined({{xs_strong_fuel_micro, atom_density}}) --critical
