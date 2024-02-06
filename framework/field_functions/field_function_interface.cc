@@ -1,7 +1,5 @@
-#include "framework/physics/field_function/field_function_interface.h"
-
-#include "framework/physics/field_function/field_function.h"
-
+#include "framework/field_functions/field_function_interface.h"
+#include "framework/field_functions/field_function.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

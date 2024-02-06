@@ -1,12 +1,10 @@
 #include "framework/lua.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
-
-#include "framework/physics/field_function/field_function_grid_based.h"
-
-#include "framework/mesh/field_function_interpolation/ffinter_point.h"
-#include "framework/mesh/field_function_interpolation/ffinter_slice.h"
-#include "framework/mesh/field_function_interpolation/ffinter_line.h"
-#include "framework/mesh/field_function_interpolation/ffinter_volume.h"
+#include "framework/field_functions/field_function_grid_based.h"
+#include "framework/field_functions/interpolation/ffinter_point.h"
+#include "framework/field_functions/interpolation/ffinter_slice.h"
+#include "framework/field_functions/interpolation/ffinter_line.h"
+#include "framework/field_functions/interpolation/ffinter_volume.h"
 #include "lua/framework/math/functions/lua_scalar_material_function.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

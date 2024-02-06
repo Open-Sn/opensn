@@ -1,8 +1,7 @@
 #include "framework/lua.h"
-#include "framework/mesh/field_function_interpolation/ffinter_point.h"
-#include "framework/mesh/field_function_interpolation/ffinter_line.h"
-#include "framework/mesh/field_function_interpolation/ffinter_volume.h"
-
+#include "framework/field_functions/interpolation/ffinter_point.h"
+#include "framework/field_functions/interpolation/ffinter_line.h"
+#include "framework/field_functions/interpolation/ffinter_volume.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

@@ -1,13 +1,10 @@
 #include "framework/post_processors/cell_volume_integral_post_processor.h"
-
 #include "framework/event_system/event.h"
-
-#include "framework/physics/field_function/field_function_grid_based.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-
 #include "framework/object_factory.h"
 
 namespace opensn

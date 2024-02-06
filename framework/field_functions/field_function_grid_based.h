@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/physics/field_function/field_function.h"
+#include "framework/field_functions/field_function.h"
 
 #include "framework/mesh/mesh.h"
 

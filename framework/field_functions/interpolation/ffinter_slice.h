@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/mesh/field_function_interpolation/ffinterpolation.h"
+#include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/mesh/mesh.h"
 
 namespace opensn
