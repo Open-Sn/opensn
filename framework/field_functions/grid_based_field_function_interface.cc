@@ -1,6 +1,5 @@
-#include "framework/physics/field_function/grid_based_field_function_interface.h"
-
-#include "framework/physics/field_function/field_function_grid_based.h"
+#include "framework/field_functions/grid_based_field_function_interface.h"
+#include "framework/field_functions/field_function_grid_based.h"
 
 namespace opensn
 {

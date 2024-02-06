@@ -1,8 +1,6 @@
 #include "framework/post_processors/aggregate_nodal_value_post_processor.h"
-
 #include "framework/object_factory.h"
-
-#include "framework/physics/field_function/field_function_grid_based.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/logical_volume/logical_volume.h"

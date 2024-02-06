@@ -1,7 +1,6 @@
-#include "framework/physics/field_operations/partitioner_predicate.h"
-
+#include "framework/field_functions/operations/partitioner_predicate.h"
 #include "framework/graphs/graph_partitioner.h"
-#include "framework/physics/field_function/field_function_grid_based.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 

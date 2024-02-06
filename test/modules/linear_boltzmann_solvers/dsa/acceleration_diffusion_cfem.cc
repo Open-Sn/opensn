@@ -1,17 +1,12 @@
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
-
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
-
-#include "framework/physics/field_function/field_function_grid_based.h"
-
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include "lua/framework/console/console.h"
 
 using namespace opensn;

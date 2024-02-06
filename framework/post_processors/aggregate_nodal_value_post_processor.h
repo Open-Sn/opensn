@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework/post_processors/post_processor.h"
-#include "framework/physics/field_function/grid_based_field_function_interface.h"
+#include "framework/field_functions/grid_based_field_function_interface.h"
 #include "framework/mesh/logical_volume/logical_volume_interface.h"
 
 namespace opensn

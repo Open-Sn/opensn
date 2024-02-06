@@ -1,7 +1,5 @@
 #include "framework/lua.h"
-
-#include "framework/mesh/field_function_interpolation/ffinterpolation.h"
-
+#include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "ffinterpol_lua.h"

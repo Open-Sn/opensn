@@ -1,4 +1,4 @@
-#include "framework/physics/field_operations/field_operation.h"
+#include "framework/field_functions/operations/field_operation.h"
 
 namespace opensn
 {

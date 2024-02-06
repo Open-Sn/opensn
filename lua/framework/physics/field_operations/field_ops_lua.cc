@@ -1,6 +1,5 @@
 #include "field_ops_lua.h"
-#include "framework/physics/field_operations/field_operation.h"
-
+#include "framework/field_functions/operations/field_operation.h"
 #include "framework/console/console.h"
 
 using namespace opensn;

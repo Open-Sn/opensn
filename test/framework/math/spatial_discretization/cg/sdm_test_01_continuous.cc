@@ -1,15 +1,11 @@
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/lagrange/lagrange_continuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-
-#include "framework/physics/field_function/field_function_grid_based.h"
-
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include "lua/framework/console/console.h"
 
 using namespace opensn;

@@ -1,4 +1,4 @@
-#include "framework/physics/field_function/field_function.h"
+#include "framework/field_functions/field_function.h"
 #include "framework/logging/log_exceptions.h"
 
 namespace opensn

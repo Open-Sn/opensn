@@ -1,7 +1,7 @@
 #pragma once
 
-#include "framework/physics/field_operations/field_operation.h"
-#include "framework/physics/field_function/field_function_grid_based.h"
+#include "framework/field_functions/operations/field_operation.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/functions/function_dimA_to_dimB.h"
 
 namespace opensn

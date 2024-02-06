@@ -5,7 +5,7 @@
 #include "framework/physics/physics_material/physics_material.h"
 #include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
-#include "framework/physics/field_function/field_function_grid_based.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include <algorithm>
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

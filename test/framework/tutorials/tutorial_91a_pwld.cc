@@ -1,21 +1,15 @@
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular_quadrature_base.h"
 #include "framework/math/quadratures/angular_product_quadrature.h"
 #include "framework/math/math_range.h"
-
-#include "framework/physics/field_function/field_function_grid_based.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/physics_material/multi_group_xs/single_state_mgxs.h"
-
 #include "framework/data_types/ndarray.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include "lua/framework/console/console.h"
-
 #include <iomanip>
 
 using namespace opensn;

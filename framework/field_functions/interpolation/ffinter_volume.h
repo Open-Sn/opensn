@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/mesh/field_function_interpolation/ffinterpolation.h"
+#include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/math/functions/scalar_material_function.h"
 

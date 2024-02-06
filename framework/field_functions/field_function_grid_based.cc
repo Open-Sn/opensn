@@ -1,4 +1,4 @@
-#include "framework/physics/field_function/field_function_grid_based.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/finite_volume/finite_volume.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
