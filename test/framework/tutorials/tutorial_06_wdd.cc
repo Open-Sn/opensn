@@ -158,7 +158,6 @@ SimTest06_WDD(const InputParameters&)
   IJKArrayDbl psi_ds_y(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
   IJKArrayDbl psi_ds_z(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
 
-  typedef Vector3 Vec3;
   auto SweepChunk = [&ijk_info,
                      &ijk_mapping,
                      &cell_ortho_sizes,
@@ -175,7 +174,7 @@ SimTest06_WDD(const InputParameters&)
                      &psi_ds_x,
                      &psi_ds_y,
                      &psi_ds_z](const std::array<int64_t, 3>& ijk,
-                                const Vec3& omega,
+                                const Vector3& omega,
                                 const size_t d,
                                 const MultiGroupXS& cell_xs)
   {

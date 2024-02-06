@@ -164,11 +164,10 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   }
 
   // Build vertices
-  typedef Vector3 Vec3;
   auto& extruded_vertices = umesh->Vertices();
   for (const double z_level : z_levels)
     for (const auto& template_vertex : template_vertices)
-      extruded_vertices.push_back(Vec3(template_vertex.x, template_vertex.y, z_level));
+      extruded_vertices.push_back(Vector3(template_vertex.x, template_vertex.y, z_level));
 
   // Build cells
   size_t k = 0;
