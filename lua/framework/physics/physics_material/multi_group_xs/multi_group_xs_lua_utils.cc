@@ -16,14 +16,14 @@ RegisterLuaFunctionAsIs(PhysicsTransportXSSet);
 RegisterLuaFunctionAsIs(PhysicsTransportXSMakeCombined);
 RegisterLuaFunctionAsIs(PhysicsTransportXSSetCombined);
 RegisterLuaFunctionAsIs(PhysicsTransportXSGet);
-RegisterLuaFunctionAsIs(PhysicsTransportXSExportToChiTechFormat);
+RegisterLuaFunctionAsIs(PhysicsTransportXSExportToOpenSnFormat);
 
 RegisterLuaConstantAsIs(SINGLE_VALUE, Varying(0));
 RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));
 RegisterLuaConstantAsIs(SIMPLEXS0, Varying(20));
 RegisterLuaConstantAsIs(SIMPLEXS1, Varying(21));
 RegisterLuaConstantAsIs(EXISTING, Varying(22));
-RegisterLuaConstantAsIs(CHI_XSFILE, Varying(23));
+RegisterLuaConstantAsIs(OPENSN_XSFILE, Varying(23));
 
 namespace
 {
@@ -262,13 +262,13 @@ PhysicsTransportXSSet(lua_State* L)
 
     xs->MakeSimple1(n_grps, sigma_t, c);
   }
-  else if (operation_index == static_cast<int>(OpType::CHI_XSFILE))
+  else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
   {
     if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
 
     const char* file_name_c = lua_tostring(L, 3);
 
-    xs->MakeFromChiXSFile(std::string(file_name_c));
+    xs->MakeFromOpenSnXSFile(std::string(file_name_c));
   }
   else
   {
@@ -427,7 +427,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
 }
 
 int
-PhysicsTransportXSExportToChiTechFormat(lua_State* L)
+PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
 {
   const auto fname = std::string(__FUNCTION__);
   const int num_args = lua_gettop(L);
@@ -453,7 +453,7 @@ PhysicsTransportXSExportToChiTechFormat(lua_State* L)
   LuaCheckNilValue(fname, L, 2);
   std::string file_name = lua_tostring(L, 2);
 
-  xs->ExportToChiXSFile(file_name);
+  xs->ExportToOpenSnXSFile(file_name);
 
   return 0;
 }

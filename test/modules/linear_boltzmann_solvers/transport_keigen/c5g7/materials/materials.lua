@@ -6,13 +6,13 @@ for m=0,6 do
 end
 
 -- GMesh mesh
-PhysicsTransportXSSet(xs["0"],CHI_XSFILE,"materials/XS_water.cxs")
-PhysicsTransportXSSet(xs["1"],CHI_XSFILE,"materials/XS_UO2.cxs")
-PhysicsTransportXSSet(xs["2"],CHI_XSFILE,"materials/XS_7pMOX.cxs")
-PhysicsTransportXSSet(xs["3"],CHI_XSFILE,"materials/XS_guide_tube.cxs")
-PhysicsTransportXSSet(xs["4"],CHI_XSFILE,"materials/XS_4_3pMOX.cxs")
-PhysicsTransportXSSet(xs["5"],CHI_XSFILE,"materials/XS_8_7pMOX.cxs")
-PhysicsTransportXSSet(xs["6"],CHI_XSFILE,"materials/XS_fission_chamber.cxs")
+PhysicsTransportXSSet(xs["0"],OPENSN_XSFILE,"materials/XS_water.xs")
+PhysicsTransportXSSet(xs["1"],OPENSN_XSFILE,"materials/XS_UO2.xs")
+PhysicsTransportXSSet(xs["2"],OPENSN_XSFILE,"materials/XS_7pMOX.xs")
+PhysicsTransportXSSet(xs["3"],OPENSN_XSFILE,"materials/XS_guide_tube.xs")
+PhysicsTransportXSSet(xs["4"],OPENSN_XSFILE,"materials/XS_4_3pMOX.xs")
+PhysicsTransportXSSet(xs["5"],OPENSN_XSFILE,"materials/XS_8_7pMOX.xs")
+PhysicsTransportXSSet(xs["6"],OPENSN_XSFILE,"materials/XS_fission_chamber.xs")
 
 water_xs = PhysicsTransportXSGet(xs["0"])
 

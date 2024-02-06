@@ -7,8 +7,8 @@
  * \code
  * xs_graphite_clean = PhysicsTransportXSCreate()
  * PhysicsTransportXSSet(xs_grph_clean,
- *                          CHI_XSFILE,
- *                          "test/xs_graphite_pure.cxs")
+ *                       OPENSN_XSFILE,
+ *                       "test/xs_graphite_pure.xs")
  *
  * PhysicsMaterialSetProperty(materials[2],
  *                               TRANSPORT_XSECTIONS,
@@ -58,8 +58,8 @@ int PhysicsTransportXSCreate(lua_State* L);
  *
  * ####_
  *
- * CHI_XSFILE\n
- * Loads transport cross sections from CHI type cross section files. Expects
+ * OPENSN_XSFILE\n
+ * Loads transport cross sections from OpenSn cross section files. Expects
  * to be followed by a filepath specifying the xs-file.
  *
  *
@@ -91,9 +91,9 @@ int PhysicsTransportXSSet(lua_State* L);
  * xs_2 = PhysicsTransportXSCreate()
  * xs_3 = PhysicsTransportXSCreate()
  *
- * PhysicsTransportXSSet(xs_1,CHI_XSFILE,"test/xs_graphite_pure.cxs")
- * PhysicsTransportXSSet(xs_2,CHI_XSFILE,"test/xs_3_170.cxs")
- * PhysicsTransportXSSet(xs_3,CHI_XSFILE,"test/xs_air50RH.cxs")
+ * PhysicsTransportXSSet(xs_1,OPENSN_XSFILE,"test/xs_graphite_pure.xs")
+ * PhysicsTransportXSSet(xs_2,OPENSN_XSFILE,"test/xs_3_170.xs")
+ * PhysicsTransportXSSet(xs_3,OPENSN_XSFILE,"test/xs_air50RH.xs")
  *
  * combo ={{xs_1, 0.5e5},
  *         {xs_2, 0.4e3},
@@ -130,9 +130,9 @@ int PhysicsTransportXSMakeCombined(lua_State* L);
  * xs_2 = PhysicsTransportXSCreate()
  * xs_3 = PhysicsTransportXSCreate()
  *
- * PhysicsTransportXSSet(xs_1,CHI_XSFILE,"test/xs_graphite_pure.cxs")
- * PhysicsTransportXSSet(xs_2,CHI_XSFILE,"test/xs_3_170.cxs")
- * PhysicsTransportXSSet(xs_3,CHI_XSFILE,"test/xs_air50RH.cxs")
+ * PhysicsTransportXSSet(xs_1,OPENSN_XSFILE,"test/xs_graphite_pure.xs")
+ * PhysicsTransportXSSet(xs_2,OPENSN_XSFILE,"test/xs_3_170.xs")
+ * PhysicsTransportXSSet(xs_3,OPENSN_XSFILE,"test/xs_air50RH.xs")
  *
  * combo ={{xs_1, 0.5e5},
  *         {xs_2, 0.4e3},
@@ -163,11 +163,11 @@ int PhysicsTransportXSSetCombined(lua_State* L);
  */
 int PhysicsTransportXSGet(lua_State* L);
 
-/** Exports a cross section to ChiTech format.
+/** Exports a cross section to OpenSn format.
  *
  * \param XS_handle int Handle to the cross section to be exported.
  * \param file_name string The name of the file to which the XS is to be exported.
  *
  * \ingroup LuaTransportXSs
  */
-int PhysicsTransportXSExportToChiTechFormat(lua_State* L);
+int PhysicsTransportXSExportToOpenSnFormat(lua_State* L);

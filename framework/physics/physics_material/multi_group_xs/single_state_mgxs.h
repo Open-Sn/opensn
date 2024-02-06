@@ -55,9 +55,9 @@ private:
 
 public:
   /**
-   * This method populates a transport cross section from a Chi cross section file.
+   * This method populates a transport cross section from a OpenSn cross section file.
    */
-  void MakeFromChiXSFile(const std::string& file_name);
+  void MakeFromOpenSnXSFile(const std::string& file_name);
 
 private:
   void ComputeAbsorption();
