@@ -60,7 +60,7 @@ AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, int face_dof, int n)
   int index =
     nonlocal_psi_Gn_blockstride * num_groups_ * n + slot * num_groups_ + face_dof * num_groups_;
 
-  if ((index < 0) || (index > deplocI_outgoing_psi_[depLocI].size()))
+  if ((index < 0) or (index > deplocI_outgoing_psi_[depLocI].size()))
   {
     log.LogAllError() << "Invalid index " << index << " encountered in non-local outgoing Psi"
                       << " max allowed " << deplocI_outgoing_psi_[depLocI].size();

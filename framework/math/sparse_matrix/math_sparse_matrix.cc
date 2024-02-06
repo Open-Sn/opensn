@@ -34,7 +34,7 @@ SparseMatrix::Insert(size_t i, size_t j, double value)
 {
   CheckInitialized();
 
-  if ((i < 0) || (i >= row_size_) || (j < 0) || (j >= col_size_))
+  if ((i < 0) or (i >= row_size_) or (j < 0) or (j >= col_size_))
   {
     log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
                       << " i=" << i << " j=" << j << " bounds(" << row_size_ << "," << col_size_
@@ -62,7 +62,7 @@ SparseMatrix::InsertAdd(size_t i, size_t j, double value)
 {
   CheckInitialized();
 
-  if ((i < 0) || (i >= row_size_) || (j < 0) || (j >= col_size_))
+  if ((i < 0) or (i >= row_size_) or (j < 0) or (j >= col_size_))
   {
     log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
                       << " i=" << i << " j=" << j << " bounds(" << row_size_ << "," << col_size_
@@ -122,7 +122,7 @@ double
 SparseMatrix::ValueIJ(size_t i, size_t j) const
 {
   double retval = 0.0;
-  if ((i < 0) || (i >= rowI_indices_.size()))
+  if ((i < 0) or (i >= rowI_indices_.size()))
   {
     log.LogAllError() << "Index i out of bounds"
                       << " in call to SparseMatrix::ValueIJ"

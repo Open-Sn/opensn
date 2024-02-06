@@ -80,7 +80,7 @@ CylindricalAngularQuadrature::Initialize(const Quadrature& quad_polar,
                                 "polar quadrature weights sum to zero.");
 
   //  defined on range [-1;+1]
-  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps ||
+  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps or
       std::abs(polar_quad.GetRange().second - polar_quad_span.second) > eps)
     polar_quad.SetRange(polar_quad_span);
 
@@ -107,7 +107,7 @@ CylindricalAngularQuadrature::Initialize(const Quadrature& quad_polar,
                                   "azimuthal quadrature weights sum to zero.");
 
     //  defined on range [-1;+1]
-    if (std::abs(azimu_quad.GetRange().first - azimu_quad_span.first) > eps ||
+    if (std::abs(azimu_quad.GetRange().first - azimu_quad_span.first) > eps or
         std::abs(azimu_quad.GetRange().second - azimu_quad_span.second) > eps)
       azimu_quad.SetRange(azimu_quad_span);
 

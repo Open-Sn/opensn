@@ -54,7 +54,7 @@ SphericalAngularQuadrature::Initialize(const Quadrature& quad_polar, const bool 
                                 "polar quadrature weights sum to zero.");
 
   //  defined on range [-1;+1]
-  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps ||
+  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps or
       std::abs(polar_quad.GetRange().second - polar_quad_span.second) > eps)
     polar_quad.SetRange(polar_quad_span);
 

@@ -205,13 +205,13 @@ void
 lbs::LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order,
                                        lbs::GeometryType geometry_type)
 {
-  if (geometry_type == lbs::GeometryType::ONED_SLAB ||
-      geometry_type == lbs::GeometryType::ONED_CYLINDRICAL ||
+  if (geometry_type == lbs::GeometryType::ONED_SLAB or
+      geometry_type == lbs::GeometryType::ONED_CYLINDRICAL or
       geometry_type == lbs::GeometryType::ONED_SPHERICAL)
   {
     quadrature_->BuildDiscreteToMomentOperator(scattering_order, 1);
   }
-  else if (geometry_type == lbs::GeometryType::TWOD_CARTESIAN ||
+  else if (geometry_type == lbs::GeometryType::TWOD_CARTESIAN or
            geometry_type == lbs::GeometryType::TWOD_CYLINDRICAL)
   {
     quadrature_->BuildDiscreteToMomentOperator(scattering_order, 2);
@@ -226,13 +226,13 @@ void
 lbs::LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order,
                                        lbs::GeometryType geometry_type)
 {
-  if (geometry_type == lbs::GeometryType::ONED_SLAB ||
-      geometry_type == lbs::GeometryType::ONED_CYLINDRICAL ||
+  if (geometry_type == lbs::GeometryType::ONED_SLAB or
+      geometry_type == lbs::GeometryType::ONED_CYLINDRICAL or
       geometry_type == lbs::GeometryType::ONED_SPHERICAL)
   {
     quadrature_->BuildMomentToDiscreteOperator(scattering_order, 1);
   }
-  else if (geometry_type == lbs::GeometryType::TWOD_CARTESIAN ||
+  else if (geometry_type == lbs::GeometryType::TWOD_CARTESIAN or
            geometry_type == lbs::GeometryType::TWOD_CYLINDRICAL)
   {
     quadrature_->BuildMomentToDiscreteOperator(scattering_order, 2);

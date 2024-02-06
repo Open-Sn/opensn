@@ -333,7 +333,7 @@ VolumeMesherSetProperty(lua_State* L)
 
   else if (property_index == VMP::MATID_FROMLOGICAL)
   {
-    if (!((num_args == 3) || (num_args == 4)))
+    if (!((num_args == 3) or (num_args == 4)))
     {
       opensn::log.LogAllError() << "Invalid amount of arguments used for "
                                    "VolumeMesherSetProperty("
@@ -353,7 +353,7 @@ VolumeMesherSetProperty(lua_State* L)
 
   else if (property_index == VMP::BNDRYID_FROMLOGICAL)
   {
-    if (!((num_args == 3) || (num_args == 4)))
+    if (!((num_args == 3) or (num_args == 4)))
     {
       opensn::log.LogAllError() << "Invalid amount of arguments used for "
                                    "VolumeMesherSetProperty("
