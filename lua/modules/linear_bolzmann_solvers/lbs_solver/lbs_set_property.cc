@@ -76,8 +76,8 @@ LBSSetProperty(lua_State* L)
     const int bident = lua_tonumber(L, 3);
     const int btype = lua_tonumber(L, 4);
 
-    if (!((bident >= static_cast<int>(PropertyCode::XMAX)) and
-          (bident <= static_cast<int>(PropertyCode::ZMIN))))
+    if (not((bident >= static_cast<int>(PropertyCode::XMAX)) and
+            (bident <= static_cast<int>(PropertyCode::ZMIN))))
     {
       opensn::log.LogAllError() << "Unknown boundary identifier encountered "
                                    "in call to LBSSetProperty";
@@ -104,7 +104,7 @@ LBSSetProperty(lua_State* L)
         opensn::Exit(EXIT_FAILURE);
       }
 
-      if (!lua_istable(L, 5))
+      if (not lua_istable(L, 5))
       {
         opensn::log.LogAllError() << "In call to LBSSetProperty, setting "
                                   << "incident isotropic flux boundary type,"

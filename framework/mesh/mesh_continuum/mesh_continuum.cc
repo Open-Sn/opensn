@@ -418,7 +418,7 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
 void
 MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int options) const
 {
-  if (!per_material)
+  if (not per_material)
   {
     FILE* of = fopen(fileName, "w");
 
@@ -787,7 +787,7 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
       afv++;
     }
 
-    if (!found)
+    if (not found)
     {
       log.LogAllError() << "Face DOF mapping failed in call to "
                         << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
@@ -827,7 +827,7 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
       ++acv;
     }
 
-    if (!found)
+    if (not found)
     {
       log.LogAllError() << "Face DOF mapping failed in call to "
                         << "MeshContinuum::FindAssociatedVertices. Could not find a matching"

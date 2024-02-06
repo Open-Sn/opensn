@@ -889,7 +889,7 @@ UnpartitionedMesh::ReadFromVTU(const UnpartitionedMesh::Options& options)
   // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open())
+  if (not file.is_open())
     throw std::runtime_error(ErrorReadingFileStr(options.file_name, "ReadFromVTU"));
   file.close();
 
@@ -961,7 +961,7 @@ UnpartitionedMesh::ReadFromPVTU(const UnpartitionedMesh::Options& options)
   // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open())
+  if (not file.is_open())
     throw std::runtime_error(ErrorReadingFileStr(options.file_name, "ReadFromPVTU"));
   file.close();
 
@@ -1033,7 +1033,7 @@ UnpartitionedMesh::ReadFromEnsightGold(const UnpartitionedMesh::Options& options
   // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open())
+  if (not file.is_open())
     throw std::runtime_error(ErrorReadingFileStr(options.file_name, "ReadFromEnsightGold"));
   file.close();
 
@@ -1126,7 +1126,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   // Opening the file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open())
+  if (not file.is_open())
   {
     log.LogAllError() << "Failed to open file: " << options.file_name << " in call "
                       << "to ImportFromOBJFile \n";
@@ -1486,7 +1486,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   // Opening the file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open())
+  if (not file.is_open())
   {
     log.LogAllError() << "Failed to open file: " << options.file_name << " in call "
                       << "to ReadFromMsh \n";
@@ -1511,7 +1511,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
   double format;
-  if (!(iss >> format)) throw std::logic_error(fname + ": Failed to read the file format.");
+  if (not(iss >> format)) throw std::logic_error(fname + ": Failed to read the file format.");
   else if (format != 2.2)
     throw std::logic_error(fname + ": Currently, only msh format 2.2 is supported.");
 
@@ -1523,7 +1523,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
   int num_nodes;
-  if (!(iss >> num_nodes))
+  if (not(iss >> num_nodes))
     throw std::logic_error(fname + ": Failed while trying to read "
                                    "the number of nodes.");
 
@@ -1536,10 +1536,10 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
     iss = std::istringstream(file_line);
 
     int vert_index;
-    if (!(iss >> vert_index)) throw std::logic_error(fname + ": Failed to read vertex index.");
+    if (not(iss >> vert_index)) throw std::logic_error(fname + ": Failed to read vertex index.");
 
-    if (!(iss >> vertices_[vert_index - 1].x >> vertices_[vert_index - 1].y >>
-          vertices_[vert_index - 1].z))
+    if (not(iss >> vertices_[vert_index - 1].x >> vertices_[vert_index - 1].y >>
+            vertices_[vert_index - 1].z))
       throw std::logic_error(fname + ": Failed while reading the vertex "
                                      "coordinates.");
   }
@@ -1550,7 +1550,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   {
     std::vector<int> raw_nodes(num_nodes, 0);
     for (int i = 0; i < num_nodes; ++i)
-      if (!(iss >> raw_nodes[i]))
+      if (not(iss >> raw_nodes[i]))
         throw std::logic_error(fname + ": Failed when reading element "
                                        "node index.");
 
@@ -1628,7 +1628,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
   int num_elems;
-  if (!(iss >> num_elems)) throw std::logic_error(fname + ": Failed to read number of elements.");
+  if (not(iss >> num_elems)) throw std::logic_error(fname + ": Failed to read number of elements.");
 
   for (int n = 0; n < num_elems; n++)
   {
@@ -1637,15 +1637,15 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
 
-    if (!(iss >> element_index >> elem_type >> num_tags))
+    if (not(iss >> element_index >> elem_type >> num_tags))
       throw std::logic_error(fname + ": Failed while reading element index, "
                                      "element type, and number of tags.");
 
-    if (!(iss >> physical_reg))
+    if (not(iss >> physical_reg))
       throw std::logic_error(fname + ": Failed while reading physical region.");
 
     for (int i = 1; i < num_tags; i++)
-      if (!(iss >> tag)) throw std::logic_error(fname + ": Failed when reading tags.");
+      if (not(iss >> tag)) throw std::logic_error(fname + ": Failed when reading tags.");
 
     if (IsElementType3D(elem_type))
     {
@@ -1669,7 +1669,7 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  if (!(iss >> num_elems)) throw std::logic_error(fname + ": Failed to read number of elements.");
+  if (not(iss >> num_elems)) throw std::logic_error(fname + ": Failed to read number of elements.");
 
   for (int n = 0; n < num_elems; n++)
   {
@@ -1678,15 +1678,15 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
 
-    if (!(iss >> element_index >> elem_type >> num_tags))
+    if (not(iss >> element_index >> elem_type >> num_tags))
       throw std::logic_error(fname + ": Failed while reading element index, "
                                      "element type, and number of tags.");
 
-    if (!(iss >> physical_reg))
+    if (not(iss >> physical_reg))
       throw std::logic_error(fname + ": Failed while reading physical region.");
 
     for (int i = 1; i < num_tags; i++)
-      if (!(iss >> tag)) throw std::logic_error(fname + ": Failed when reading tags.");
+      if (not(iss >> tag)) throw std::logic_error(fname + ": Failed when reading tags.");
 
     if (elem_type == 15) // skip point type elements
       continue;
@@ -1855,7 +1855,7 @@ UnpartitionedMesh::ReadFromExodus(const UnpartitionedMesh::Options& options)
   // Attempt to open file
   std::ifstream file;
   file.open(options.file_name);
-  if (!file.is_open())
+  if (not file.is_open())
     throw std::runtime_error(ErrorReadingFileStr(options.file_name, "ReadFromExodus"));
   file.close();
 

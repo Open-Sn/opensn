@@ -31,7 +31,7 @@ PieceWiseLinearSlabMapping::SlabShape(uint32_t index,
                                       uint32_t edge) const
 {
   double xi = 0.0;
-  if (!on_surface) xi = qpoint.x;
+  if (not on_surface) xi = qpoint.x;
   else
     xi = static_cast<double>(edge);
 

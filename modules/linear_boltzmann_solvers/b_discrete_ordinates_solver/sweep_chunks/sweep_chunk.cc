@@ -33,7 +33,7 @@ SweepChunk::SweepChunk(std::vector<double>& destination_phi,
     groupset_(groupset),
     xs_(xs),
     num_moments_(num_moments),
-    save_angular_flux_(!destination_psi.empty()),
+    save_angular_flux_(not destination_psi.empty()),
     sweep_dependency_interface_ptr_(std::move(sweep_dependency_interface_ptr)),
     sweep_dependency_interface_(*sweep_dependency_interface_ptr_),
     groupset_angle_group_stride_(groupset_.psi_uk_man_.NumberOfUnknowns() *

@@ -456,7 +456,7 @@ BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
     auto cell_data = ugrid->GetCellData();
     const auto vtk_abstract_array_ptr = cell_data->GetAbstractArray(field_name.c_str());
 
-    if (!vtk_abstract_array_ptr)
+    if (not vtk_abstract_array_ptr)
     {
       log.Log0Warning() << "The VTU file : \"" << file_name << "\" "
                         << "does not contain a vtkCellData field of name : \"" << field_name
@@ -465,7 +465,7 @@ BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
     }
 
     cell_id_array_ptr = vtkArrayDownCast<vtkDataArray>(vtk_abstract_array_ptr);
-    if (!cell_id_array_ptr)
+    if (not cell_id_array_ptr)
     {
       log.Log0Warning() << "The VTU file : \"" << file_name << "\" "
                         << "with vtkCellData field of name : \"" << field_name << "\" "

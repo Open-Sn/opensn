@@ -249,7 +249,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     }   // for property
 
     // Check valid property
-    if (!found_transport_xs)
+    if (not found_transport_xs)
     {
       log.LogAllError() << "MG-Diff-InitializeMaterials: Found no transport cross-section property "
                            "for "

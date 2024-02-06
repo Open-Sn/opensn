@@ -61,7 +61,7 @@ SphericalAngularQuadrature::Initialize(const Quadrature& quad_polar, const bool 
   //  abscissae sorted in ascending order
   auto lt_qp = [](const QuadraturePointXYZ& qp0, const QuadraturePointXYZ& qp1)
   { return qp0[0] < qp1[0]; };
-  if (!std::is_sorted(polar_quad.qpoints_.begin(), polar_quad.qpoints_.end(), lt_qp))
+  if (not std::is_sorted(polar_quad.qpoints_.begin(), polar_quad.qpoints_.end(), lt_qp))
     throw std::invalid_argument("SphericalAngularQuadrature::Initialize : "
                                 "polar quadrature abscissae not in ascending order.");
 

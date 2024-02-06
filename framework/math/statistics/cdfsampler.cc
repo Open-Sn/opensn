@@ -23,7 +23,7 @@ CDFSampler::SubIntvl::SubIntvl(std::string offset,
   cbin_i = ibin;
   cbin_f = fbin;
 
-  if (!inhibited)
+  if (not inhibited)
   {
     size_t cdf_size = cbin_f - cbin_i + 1;
     size_t intvl_size = ceil(cdf_size / (double)subdiv_factor);
@@ -220,7 +220,7 @@ SampleCDF(double x, std::vector<double> cdf_bin)
   //  refine_limit_reached = true;
   // Recursively refine
   int refine_count = 0;
-  while (!refine_limit_reached)
+  while (not refine_limit_reached)
   {
     int intvl_size = 0;
     if (x <= cdf_bin[indA]) refine_limit_reached = true;

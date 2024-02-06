@@ -508,7 +508,7 @@ PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
 
   // Perform convergence loop
   bool converged = false;
-  while (!converged and it_counter < max_it)
+  while (not converged and it_counter < max_it)
   {
     // Update old eigenvalue
     lambda0 = std::fabs(lambda);

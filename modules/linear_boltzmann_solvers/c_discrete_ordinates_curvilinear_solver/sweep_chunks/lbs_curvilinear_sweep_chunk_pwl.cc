@@ -42,7 +42,7 @@ SweepChunkPWLRZ::SweepChunkPWLRZ(
   const auto curvilinear_product_quadrature =
     std::dynamic_pointer_cast<CurvilinearAngularQuadrature>(groupset_.quadrature_);
 
-  if (!curvilinear_product_quadrature)
+  if (curvilinear_product_quadrature == nullptr)
     throw std::invalid_argument("D_DO_RZ_SteadyState::SweepChunkPWL::SweepChunkPWL : "
                                 "invalid angular quadrature");
 

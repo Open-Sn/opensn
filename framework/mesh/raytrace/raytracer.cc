@@ -33,7 +33,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
     throw std::logic_error("Unsupported cell type encountered in call to "
                            "RayTrace.");
 
-  if (!intersection_found)
+  if (not intersection_found)
   {
     if (function_depth < 5)
     {
@@ -429,7 +429,7 @@ CheckLineIntersectStrip(const Vector3& strip_point0,
   bool intersects_plane = CheckPlaneLineIntersect(
     strip_normal, strip_point0, line_point0, line_point1, plane_intersection_point, &weights);
 
-  if (!intersects_plane) return false;
+  if (not intersects_plane) return false;
 
   Vector3 edge_vec = strip_point1 - strip_point0;
   Vector3 ints_vec1 = plane_intersection_point - strip_point0;

@@ -239,7 +239,7 @@ FFInterpolationSetProperty(lua_State* L)
     int OP_MAX_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX_FUNC);
     int OP_SUM_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM_FUNC);
 
-    if (!((op_type >= OP_SUM) and (op_type <= OP_MAX_FUNC)))
+    if (not((op_type >= OP_SUM) and (op_type <= OP_MAX_FUNC)))
     {
       opensn::log.LogAllError() << "Volume property FFI_PROP_OPERATION"
                                 << " used in FFInterpolationSetProperty. Unsupported OPERATON."

@@ -46,7 +46,7 @@ ComputeLoadBalancing(lua_State* L)
     opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, surf_handle, __FUNCTION__);
 
   // Extract x-cuts
-  if (!lua_istable(L, 2))
+  if (not lua_istable(L, 2))
   {
     opensn::log.LogAllError() << "In call to ComputeLoadBalancing: "
                               << " expected table for argument 2. Incompatible value supplied.";
@@ -65,7 +65,7 @@ ComputeLoadBalancing(lua_State* L)
   }
 
   // Extract y-cuts
-  if (!lua_istable(L, 3))
+  if (not lua_istable(L, 3))
   {
     opensn::log.LogAllError() << "In call to ComputeLoadBalancing: "
                               << " expected table for argument 3. Incompatible value supplied.";

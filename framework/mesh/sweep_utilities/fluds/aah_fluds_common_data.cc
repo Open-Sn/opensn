@@ -194,7 +194,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
             break;
           }
         }
-        if (!found)
+        if (not found)
         {
           log.LogAllError() << "Lock-box location not found in call to "
                             << "InitializeAlphaElements. Local Cell " << cell.local_id_ << " face "
@@ -299,7 +299,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       }
 
       // If an open slot was not found push a new one
-      if (!slot_found)
+      if (not slot_found)
       {
         outb_face_slot_indices.push_back(lock_box.size());
         lock_box.push_back(std::pair<int, short>(cell_g_index, f));
@@ -356,7 +356,7 @@ AAH_FLUDSCommonData::AddFaceViewToDepLocI(int deplocI,
   }
 
   // If the cell is not there yet
-  if (!cell_already_there)
+  if (not cell_already_there)
   {
     CompactCellView new_cell_view;
     new_cell_view.first = cell_g_index;
@@ -746,7 +746,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
               }
             }
 
-            if (!match_found)
+            if (not match_found)
             {
               log.LogAll() << "Associated vertex not found in call to "
                               "InitializeBetaElements";
@@ -805,7 +805,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
                 }
               }
 
-              if (!match_found)
+              if (not match_found)
               {
                 face_matches = false;
                 break;
@@ -841,7 +841,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
               }
             }
 
-            if (!match_found)
+            if (not match_found)
             {
               log.LogAll() << "Associated vertex not found in call to "
                               "InitializeBetaElements";

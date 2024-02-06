@@ -91,7 +91,7 @@ PhysicsMaterialAddProperty(lua_State* L)
   const std::string fname = __FUNCTION__;
   const int numArgs = lua_gettop(L);
 
-  if (!((numArgs >= 2) and (numArgs <= 3)))
+  if (not((numArgs >= 2) and (numArgs <= 3)))
   {
     opensn::log.Log0Error() << "Incorrect amount of arguments "
                                "in PhysicsMaterialAddProperty";
@@ -228,7 +228,7 @@ PhysicsMaterialSetProperty(lua_State* L)
   auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
 
   // If user supplied name then find property index
-  if (!lua_isnumber(L, 2))
+  if (not lua_isnumber(L, 2))
   {
     for (auto& property : cur_material->properties_)
       if (property->property_name == property_index_name)
@@ -436,7 +436,7 @@ PhysicsMaterialSetProperty(lua_State* L)
       {
         if (numArgs != 4) LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
 
-        if (!lua_istable(L, 4))
+        if (not lua_istable(L, 4))
         {
           opensn::log.LogAllError() << "In call to PhysicsMaterialSetProperty: "
                                     << "Material \"" << cur_material->name_ << "\", when setting "
@@ -510,7 +510,7 @@ PhysicsMaterialGetProperty(lua_State* L)
   auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
 
   // If user supplied name then find property index
-  if (!lua_isnumber(L, 2))
+  if (not lua_isnumber(L, 2))
   {
     for (auto& property : cur_material->properties_)
       if (property->property_name == property_index_name)
