@@ -205,9 +205,9 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
   std::map<uint64_t, ListOfFaces> boundary_id_faces_map;
   for (const auto& cell : grid.local_cells)
   {
-    // Here we build a face mapping because ChiTech's face orientation
+    // Here we build a face mapping because OpenSn's face orientation
     // for prisms (wedges) and hexahedrons differ from that of VTK.
-    // ChiTech's orientation for prisms and hexes actually matches that
+    // OpenSn's orientation for prisms and hexes actually matches that
     // of Exodus but VTK assumes the incoming mesh to be conformant to
     // VTK and therefore, internally performs a mapping. Fortunately,
     // the only relevant cell-types, for which a special mapping is

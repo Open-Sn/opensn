@@ -7,8 +7,10 @@
 namespace opensnlua
 {
 
-/**Gracefully exits ChiTech.
- * \param return_code int Return code, defaults to 0 (Success).*/
+/**
+ * Gracefully exits OpenSn.
+ * \param return_code int Return code, defaults to 0 (Success).
+ */
 int Exit(lua_State* L);
 
 RegisterLuaFunctionAsIs(Exit);
