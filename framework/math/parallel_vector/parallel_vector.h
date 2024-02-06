@@ -4,8 +4,8 @@
 #pragma once
 
 #include "framework/math/math.h"
-#include "framework/math/petsc_utils/petsc_forward_declarations.h"
 #include "mpicpp-lite/mpicpp-lite.h"
+#include "petscvec.h"
 #include <cstdint>
 
 namespace mpi = mpicpp_lite;
