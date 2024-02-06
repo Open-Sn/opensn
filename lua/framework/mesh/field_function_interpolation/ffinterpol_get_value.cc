@@ -4,11 +4,6 @@
 #include "framework/field_functions/interpolation/ffinter_volume.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
-#define dcastPoint(x) dynamic_cast<opensn::FieldFunctionInterpolationPoint&>(x)
-#define dcastLine(x) dynamic_cast<opensn::FieldFunctionInterpolationLine&>(x)
-#define dcastVolume(x) dynamic_cast<opensn::FieldFunctionInterpolationVolume&>(x)
-
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
 
@@ -31,7 +26,7 @@ FFInterpolationGetValue(lua_State* L)
 
   if (p_ffi->Type() == FieldFunctionInterpolationType::POINT)
   {
-    auto& cur_ffi_point = dcastPoint(*p_ffi);
+    auto& cur_ffi_point = dynamic_cast<opensn::FieldFunctionInterpolationPoint&>(*p_ffi);
     double value = cur_ffi_point.GetPointValue();
 
     lua_pushnumber(L, value);
@@ -39,7 +34,7 @@ FFInterpolationGetValue(lua_State* L)
   }
   else if (p_ffi->Type() == FieldFunctionInterpolationType::LINE)
   {
-    auto& cur_ffi_line = dcastLine(*p_ffi);
+    auto& cur_ffi_line = dynamic_cast<opensn::FieldFunctionInterpolationLine&>(*p_ffi);
 
     lua_newtable(L);
 
@@ -64,7 +59,7 @@ FFInterpolationGetValue(lua_State* L)
   }
   else if (p_ffi->Type() == FieldFunctionInterpolationType::VOLUME)
   {
-    auto& cur_ffi_volume = dcastVolume(*p_ffi);
+    auto& cur_ffi_volume = dynamic_cast<opensn::FieldFunctionInterpolationVolume&>(*p_ffi);
     double value = cur_ffi_volume.GetOpValue();
 
     lua_pushnumber(L, value);

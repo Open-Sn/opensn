@@ -8,12 +8,6 @@
 #include "lua/framework/math/functions/lua_scalar_material_function.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
-#define dcastPoint(x) dynamic_cast<FieldFunctionInterpolationPoint&>(x)
-#define dcastLine(x) dynamic_cast<FieldFunctionInterpolationLine&>(x)
-#define dcastSlice(x) dynamic_cast<FieldFunctionInterpolationSlice&>(x)
-#define dcastVolume(x) dynamic_cast<FieldFunctionInterpolationVolume&>(x)
-
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
 
@@ -117,7 +111,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::PROBEPOINT)
   {
-    auto& cur_ffi = dcastPoint(*p_ffi);
+    auto& cur_ffi = dynamic_cast<FieldFunctionInterpolationPoint&>(*p_ffi);
 
     double x = lua_tonumber(L, 3);
     double y = lua_tonumber(L, 4);
@@ -127,7 +121,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::SLICEPOINT)
   {
-    auto& cur_ffi_slice = dcastSlice(*p_ffi);
+    auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
 
     double x = lua_tonumber(L, 3);
     double y = lua_tonumber(L, 4);
@@ -137,7 +131,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::SLICENORMAL)
   {
-    auto& cur_ffi_slice = dcastSlice(*p_ffi);
+    auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
 
     double x = lua_tonumber(L, 3);
     double y = lua_tonumber(L, 4);
@@ -147,7 +141,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::SLICETANGENT)
   {
-    auto& cur_ffi_slice = dcastSlice(*p_ffi);
+    auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
 
     double x = lua_tonumber(L, 3);
     double y = lua_tonumber(L, 4);
@@ -157,7 +151,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::SLICEBINORM)
   {
-    auto& cur_ffi_slice = dcastSlice(*p_ffi);
+    auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
 
     double x = lua_tonumber(L, 3);
     double y = lua_tonumber(L, 4);
@@ -169,7 +163,7 @@ FFInterpolationSetProperty(lua_State* L)
   {
     if (numArgs != 5) LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
 
-    auto& cur_ffi_line = dcastLine(*p_ffi);
+    auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
     Vector3 point(lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
     cur_ffi_line.GetInitialPoint() = point;
@@ -178,7 +172,7 @@ FFInterpolationSetProperty(lua_State* L)
   {
     if (numArgs != 5) LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
 
-    auto& cur_ffi_line = dcastLine(*p_ffi);
+    auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
     Vector3 point(lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
     cur_ffi_line.GetFinalPoint() = point;
@@ -187,7 +181,7 @@ FFInterpolationSetProperty(lua_State* L)
   {
     if (numArgs != 3) LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
 
-    auto& cur_ffi_line = dcastLine(*p_ffi);
+    auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
     int num_points = lua_tonumber(L, 3);
 
@@ -204,7 +198,7 @@ FFInterpolationSetProperty(lua_State* L)
   {
     if (numArgs != 3) LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
 
-    auto& cur_ffi_line = dcastLine(*p_ffi);
+    auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
     if (not lua_istable(L, 3))
     {
@@ -237,7 +231,7 @@ FFInterpolationSetProperty(lua_State* L)
                              " used in FFInterpolationSetProperty can only be used with "
                              "Volume type interpolations.");
 
-    auto& cur_ffi_volume = dcastVolume(*p_ffi);
+    auto& cur_ffi_volume = dynamic_cast<FieldFunctionInterpolationVolume&>(*p_ffi);
 
     int op_type = lua_tonumber(L, 3);
 
@@ -278,7 +272,7 @@ FFInterpolationSetProperty(lua_State* L)
                              " used in FFInterpolationSetProperty can only be used with "
                              "Volume type interpolations.");
 
-    auto& cur_ffi_volume = dcastVolume(*p_ffi);
+    auto& cur_ffi_volume = dynamic_cast<FieldFunctionInterpolationVolume&>(*p_ffi);
 
     cur_ffi_volume.GetLogicalVolume() = p_logical_volume;
   }

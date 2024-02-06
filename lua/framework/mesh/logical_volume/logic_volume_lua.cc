@@ -1,16 +1,9 @@
 #include "framework/lua.h"
-
 #include "framework/mesh/logical_volume/logical_volume.h"
-
 #include "framework/object_factory.h"
-
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/runtime.h"
-
 #include "framework/logging/log.h"
-
-#define scint static_cast<int>
-
 #include "logic_volume_lua.h"
 #include "framework/console/console.h"
 
@@ -43,12 +36,12 @@ LogicalVolumeCreate(lua_State* L)
     LVBOOLEAN = 10
   };
 
-  const int LVSPHERE = scint(LogicalVolumeType::LVSPHERE);
-  const int LVSPHERE_ORIGIN = scint(LogicalVolumeType::LVSPHERE_ORIGIN);
-  const int LVRPP = scint(LogicalVolumeType::LVRPP);
-  const int LVRCC = scint(LogicalVolumeType::LVRCC);
-  const int LVSURFACE = scint(LogicalVolumeType::LVSURFACE);
-  const int LVBOOLEAN = scint(LogicalVolumeType::LVBOOLEAN);
+  const int LVSPHERE = static_cast<int>(LogicalVolumeType::LVSPHERE);
+  const int LVSPHERE_ORIGIN = static_cast<int>(LogicalVolumeType::LVSPHERE_ORIGIN);
+  const int LVRPP = static_cast<int>(LogicalVolumeType::LVRPP);
+  const int LVRCC = static_cast<int>(LogicalVolumeType::LVRCC);
+  const int LVSURFACE = static_cast<int>(LogicalVolumeType::LVSURFACE);
+  const int LVBOOLEAN = static_cast<int>(LogicalVolumeType::LVBOOLEAN);
 
   auto& object_maker = ObjectFactory::GetInstance();
 

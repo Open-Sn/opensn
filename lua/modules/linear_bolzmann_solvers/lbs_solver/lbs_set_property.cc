@@ -1,8 +1,4 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
-
-#define scpcode static_cast<PropertyCode>
-#define scint static_cast<int>
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/lua.h"
@@ -57,7 +53,7 @@ LBSSetProperty(lua_State* L)
   const int property = lua_tonumber(L, 2);
 
   // Handle properties
-  if (scpcode(property) == PropertyCode::DISCRETIZATION_METHOD)
+  if (static_cast<PropertyCode>(property) == PropertyCode::DISCRETIZATION_METHOD)
   {
     LuaCheckNilValue(fname, L, 3);
 
@@ -65,12 +61,12 @@ LBSSetProperty(lua_State* L)
 
     typedef SpatialDiscretizationType SDMType;
 
-    if (scpcode(method) == PropertyCode::PWLD)
+    if (static_cast<PropertyCode>(method) == PropertyCode::PWLD)
       lbs_solver.Options().sd_type = SDMType::PIECEWISE_LINEAR_DISCONTINUOUS;
     else
       throw std::invalid_argument("Invalid option for Discretization method in LBSSetProperty.\n");
   }
-  else if (scpcode(property) == PropertyCode::BOUNDARY_CONDITION)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::BOUNDARY_CONDITION)
   {
     if (numArgs < 4) LuaPostArgAmountError("LBSSetProperty", 4, numArgs);
 
@@ -80,7 +76,8 @@ LBSSetProperty(lua_State* L)
     const int bident = lua_tonumber(L, 3);
     const int btype = lua_tonumber(L, 4);
 
-    if (!((bident >= scint(PropertyCode::XMAX)) && (bident <= scint(PropertyCode::ZMIN))))
+    if (!((bident >= static_cast<int>(PropertyCode::XMAX)) &&
+          (bident <= static_cast<int>(PropertyCode::ZMIN))))
     {
       opensn::log.LogAllError() << "Unknown boundary identifier encountered "
                                    "in call to LBSSetProperty";
@@ -167,7 +164,7 @@ LBSSetProperty(lua_State* L)
       opensn::Exit(EXIT_FAILURE);
     }
   }
-  else if (scpcode(property) == PropertyCode::SCATTERING_ORDER)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::SCATTERING_ORDER)
   {
     LuaCheckNilValue(fname, L, 3);
 
@@ -183,7 +180,7 @@ LBSSetProperty(lua_State* L)
 
     lbs_solver.Options().scattering_order = scattering_order;
   }
-  else if (scpcode(property) == PropertyCode::SWEEP_EAGER_LIMIT)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::SWEEP_EAGER_LIMIT)
   {
     if (numArgs != 3) LuaPostArgAmountError("LBSSetProperty:SWEEP_EAGER_LIMIT", 3, numArgs);
 
@@ -192,7 +189,7 @@ LBSSetProperty(lua_State* L)
     const int limit = lua_tonumber(L, 3);
     lbs_solver.Options().sweep_eager_limit = limit;
   }
-  else if (scpcode(property) == PropertyCode::READ_RESTART_DATA)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::READ_RESTART_DATA)
   {
     if (numArgs >= 3)
     {
@@ -212,7 +209,7 @@ LBSSetProperty(lua_State* L)
     }
     lbs_solver.Options().read_restart_data = true;
   }
-  else if (scpcode(property) == PropertyCode::WRITE_RESTART_DATA)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::WRITE_RESTART_DATA)
   {
     if (numArgs >= 3)
     {
@@ -239,7 +236,7 @@ LBSSetProperty(lua_State* L)
     }
     lbs_solver.Options().write_restart_data = true;
   }
-  else if (scpcode(property) == PropertyCode::SAVE_ANGULAR_FLUX)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::SAVE_ANGULAR_FLUX)
   {
     LuaCheckNilValue(fname, L, 3);
 
@@ -249,7 +246,7 @@ LBSSetProperty(lua_State* L)
 
     opensn::log.Log() << "LBS option to save angular flux set to " << save_flag;
   }
-  else if (scpcode(property) == PropertyCode::USE_SOURCE_MOMENTS)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::USE_SOURCE_MOMENTS)
   {
     LuaCheckNilValue(fname, L, 3);
 
@@ -259,7 +256,7 @@ LBSSetProperty(lua_State* L)
 
     opensn::log.Log() << "LBS option to use source moments set to " << use_flag;
   }
-  else if (scpcode(property) == PropertyCode::VERBOSE_INNER_ITERATIONS)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::VERBOSE_INNER_ITERATIONS)
   {
     LuaCheckNilValue(fname, L, 3);
 
@@ -269,7 +266,7 @@ LBSSetProperty(lua_State* L)
 
     opensn::log.Log() << "LBS option: verbose_inner_iterations set to " << flag;
   }
-  else if (scpcode(property) == PropertyCode::VERBOSE_OUTER_ITERATIONS)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::VERBOSE_OUTER_ITERATIONS)
   {
     LuaCheckNilValue(fname, L, 3);
 
@@ -279,7 +276,7 @@ LBSSetProperty(lua_State* L)
 
     opensn::log.Log() << "LBS option: verbose_outer_iterations set to " << flag;
   }
-  else if (scpcode(property) == PropertyCode::USE_PRECURSORS)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::USE_PRECURSORS)
   {
     LuaCheckNilValue(fname, L, 3);
 

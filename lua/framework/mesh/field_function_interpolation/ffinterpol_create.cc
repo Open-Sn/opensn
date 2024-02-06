@@ -5,9 +5,6 @@
 #include "framework/field_functions/interpolation/ffinter_volume.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
-#define scint(x) static_cast<int>(x)
-
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
 
@@ -26,7 +23,7 @@ FFInterpolationCreate(lua_State* L)
 
   // Process types
   int ffitype = lua_tonumber(L, 1);
-  if (ffitype == scint(FieldFunctionInterpolationType::POINT))
+  if (ffitype == static_cast<int>(FieldFunctionInterpolationType::POINT))
   {
     auto new_ffi = new FieldFunctionInterpolationPoint;
 
@@ -36,7 +33,7 @@ FFInterpolationCreate(lua_State* L)
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
   }
-  else if (ffitype == scint(FieldFunctionInterpolationType::SLICE))
+  else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::SLICE))
   {
     auto new_ffi = new FieldFunctionInterpolationSlice;
 
@@ -46,7 +43,7 @@ FFInterpolationCreate(lua_State* L)
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
   }
-  else if (ffitype == scint(FieldFunctionInterpolationType::LINE))
+  else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::LINE))
   {
     auto new_ffi = new FieldFunctionInterpolationLine;
 
@@ -56,7 +53,7 @@ FFInterpolationCreate(lua_State* L)
     lua_pushnumber(L, static_cast<lua_Number>(index));
     return 1;
   }
-  else if (ffitype == scint(FieldFunctionInterpolationType::VOLUME))
+  else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::VOLUME))
   {
     auto new_ffi = new FieldFunctionInterpolationVolume;
 
