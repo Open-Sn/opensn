@@ -14,7 +14,7 @@ enum class PropertyType
 };
 
 /** Base class for material properties.*/
-class MaterialProperty
+class PhysicsMaterialProperty
 {
 private:
   const PropertyType type_;
@@ -22,9 +22,9 @@ private:
 public:
   std::string property_name;
 
-  explicit MaterialProperty(PropertyType in_type) : type_(in_type) {}
+  explicit PhysicsMaterialProperty(PropertyType in_type) : type_(in_type) {}
 
-  virtual ~MaterialProperty() = default;
+  virtual ~PhysicsMaterialProperty() = default;
 
   PropertyType Type() { return type_; }
 

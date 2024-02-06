@@ -26,7 +26,7 @@ namespace
 {
 
 void
-ScalarPropertyPushTable(lua_State* L, std::shared_ptr<MaterialProperty> property)
+ScalarPropertyPushTable(lua_State* L, std::shared_ptr<PhysicsMaterialProperty> property)
 {
   lua_newtable(L);
   lua_pushstring(L, "is_empty");
@@ -73,7 +73,7 @@ MaterialPropertyPushLuaTable(lua_State* L)
 }
 
 void
-PropertyPushLuaTable(lua_State* L, std::shared_ptr<MaterialProperty> property)
+PropertyPushLuaTable(lua_State* L, std::shared_ptr<PhysicsMaterialProperty> property)
 {
   if (property->Type() == PropertyType::SCALAR_VALUE) ScalarPropertyPushTable(L, property);
   else if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)

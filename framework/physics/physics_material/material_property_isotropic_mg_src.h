@@ -6,12 +6,12 @@ namespace opensn
 {
 
 /** Basic thermal conductivity material property.*/
-class IsotropicMultiGrpSource : public MaterialProperty
+class IsotropicMultiGrpSource : public PhysicsMaterialProperty
 {
 public:
   std::vector<double> source_value_g_;
 
-  IsotropicMultiGrpSource() : MaterialProperty(PropertyType::ISOTROPIC_MG_SOURCE) {}
+  IsotropicMultiGrpSource() : PhysicsMaterialProperty(PropertyType::ISOTROPIC_MG_SOURCE) {}
 };
 
 } // namespace opensn
