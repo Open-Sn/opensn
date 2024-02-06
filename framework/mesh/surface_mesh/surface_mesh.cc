@@ -169,7 +169,7 @@ SurfaceMesh::UpdateInternalConnectivity()
 
         for (size_t e2 = 0; e2 < 3; e2++)
         {
-          if ((curface_edge[0] == other_face.e_index[e2][1]) &&
+          if ((curface_edge[0] == other_face.e_index[e2][1]) and
               (curface_edge[1] == other_face.e_index[e2][0]))
           {
             curface_edge[2] = ofi; // cell index
@@ -185,7 +185,7 @@ SurfaceMesh::UpdateInternalConnectivity()
 
         for (size_t e2 = 0; e2 < 3; e2++)
         {
-          if ((curface_edge[0] == other_face.e_index[e2][1]) &&
+          if ((curface_edge[0] == other_face.e_index[e2][1]) and
               (curface_edge[1] == other_face.e_index[e2][0]))
           {
             curface_edge[2] = ofi; // cell index
@@ -212,7 +212,7 @@ SurfaceMesh::UpdateInternalConnectivity()
 
         for (size_t e2 = 0; e2 < other_face->edges.size(); e2++)
         {
-          if ((curface_edge[0] == other_face->edges[e2][1]) &&
+          if ((curface_edge[0] == other_face->edges[e2][1]) and
               (curface_edge[1] == other_face->edges[e2][0]))
           {
             curface_edge[2] = ofi; // cell index
@@ -228,7 +228,7 @@ SurfaceMesh::UpdateInternalConnectivity()
 
         for (size_t e2 = 0; e2 < other_face->edges.size(); e2++)
         {
-          if ((curface_edge[0] == other_face->edges[e2][1]) &&
+          if ((curface_edge[0] == other_face->edges[e2][1]) and
               (curface_edge[1] == other_face->edges[e2][0]))
           {
             curface_edge[2] = ofi; // cell index
@@ -376,7 +376,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     if (first_word.compare("f") == 0)
     {
       int number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
-      if ((number_of_verts == 3) && (!as_poly))
+      if ((number_of_verts == 3) and (!as_poly))
       {
         Face* newFace = new Face;
 

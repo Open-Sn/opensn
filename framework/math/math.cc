@@ -103,7 +103,7 @@ SwapRow(size_t r1, size_t r2, MatDbl& A)
   size_t AC = 0;
   if (AR) AC = A[0].size();
 
-  assert(r1 >= 0 && r1 < AR && r2 >= 0 && r2 < AR);
+  assert(r1 >= 0 and r1 < AR and r2 >= 0 and r2 < AR);
 
   for (size_t j = 0; j < AC; j++)
     std::swap(A[r1][j], A[r2][j]);
@@ -116,7 +116,7 @@ SwapColumn(size_t c1, size_t c2, MatDbl& A)
   assert(A[0].size());
   size_t AR = A.size();
 
-  if (A.size()) assert(c1 >= 0 && c1 < A[0].size() && c2 >= 0 && c2 < A[0].size());
+  if (A.size()) assert(c1 >= 0 and c1 < A[0].size() and c2 >= 0 and c2 < A[0].size());
 
   for (size_t i = 0; i < AR; i++)
     std::swap(A[i][c1], A[i][c2]);
@@ -163,12 +163,12 @@ MatMul(const MatDbl& A, const MatDbl& B)
 {
   size_t AR = A.size();
 
-  assert(AR != 0 && B.size() != 0);
+  assert(AR != 0 and B.size() != 0);
 
   size_t AC = A[0].size();
   size_t BC = B[0].size();
 
-  assert(AC != 0 && BC != 0 && AC == B.size());
+  assert(AC != 0 and BC != 0 and AC == B.size());
 
   size_t CR = AR;
   size_t CC = BC;
@@ -190,13 +190,13 @@ MatAdd(const MatDbl& A, const MatDbl& B)
   size_t AR = A.size();
   size_t BR = A.size();
 
-  assert(AR != 0 && B.size() != 0);
+  assert(AR != 0 and B.size() != 0);
   assert(AR == BR);
 
   size_t AC = A[0].size();
   size_t BC = B[0].size();
 
-  assert(AC != 0 && BC != 0);
+  assert(AC != 0 and BC != 0);
   assert(AC == BC);
 
   MatDbl C(AR, VecDbl(AC, 0.0));
@@ -214,13 +214,13 @@ MatSubtract(const MatDbl& A, const MatDbl& B)
   size_t AR = A.size();
   size_t BR = A.size();
 
-  assert(AR != 0 && B.size() != 0);
+  assert(AR != 0 and B.size() != 0);
   assert(AR == BR);
 
   size_t AC = A[0].size();
   size_t BC = B[0].size();
 
-  assert(AC != 0 && BC != 0);
+  assert(AC != 0 and BC != 0);
   assert(AC == BC);
 
   MatDbl C(AR, VecDbl(AC, 0.0));
@@ -280,7 +280,7 @@ SubMatrix(const size_t r, const size_t c, const MatDbl& A)
   size_t C = 0;
   if (R) C = A[0].size();
 
-  assert((r >= 0) && (r < R) && (c >= 0) && (c < C));
+  assert((r >= 0) and (r < R) and (c >= 0) and (c < C));
 
   MatDbl B(R - 1, VecDbl(C - 1));
   for (size_t i = 0, ii = 0; i < R; ++i)
@@ -508,7 +508,7 @@ PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
 
   // Perform convergence loop
   bool converged = false;
-  while (!converged && it_counter < max_it)
+  while (!converged and it_counter < max_it)
   {
     // Update old eigenvalue
     lambda0 = std::fabs(lambda);

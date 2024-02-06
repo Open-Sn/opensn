@@ -76,7 +76,7 @@ LBSSetProperty(lua_State* L)
     const int bident = lua_tonumber(L, 3);
     const int btype = lua_tonumber(L, 4);
 
-    if (!((bident >= static_cast<int>(PropertyCode::XMAX)) &&
+    if (!((bident >= static_cast<int>(PropertyCode::XMAX)) and
           (bident <= static_cast<int>(PropertyCode::ZMIN))))
     {
       opensn::log.LogAllError() << "Unknown boundary identifier encountered "

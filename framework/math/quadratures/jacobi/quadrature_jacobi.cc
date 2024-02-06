@@ -9,7 +9,7 @@ namespace opensn
 void
 QuadratureJacobi::Initialize(QuadratureOrder order)
 {
-  if ((m_alpha_ == 1) && (m_beta_ == 0))
+  if ((m_alpha_ == 1) and (m_beta_ == 0))
   {
     switch (order)
     {
@@ -755,9 +755,9 @@ QuadratureJacobi::Initialize(QuadratureOrder order)
         throw std::invalid_argument("Quadrature rule " + std::to_string((int)order) +
                                     " not supported!");
     } // end switch(_order + 2*p)
-  }   // end if ((_alpha == 1) && (_beta == 0))
+  }   // end if ((_alpha == 1) and (_beta == 0))
 
-  else if ((m_alpha_ == 2) && (m_beta_ == 0))
+  else if ((m_alpha_ == 2) and (m_beta_ == 0))
   {
 
     switch (order)

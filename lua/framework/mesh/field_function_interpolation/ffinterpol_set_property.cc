@@ -72,14 +72,14 @@ FFInterpolationSetProperty(lua_State* L)
                              " used in FFInterpolationSetProperty but FFI is not a point-probe.");
 
   // Check slice properties
-  if ((property >= FieldFunctionInterpolationProperty::SLICEPOINT) &&
+  if ((property >= FieldFunctionInterpolationProperty::SLICEPOINT) and
       (property <= FieldFunctionInterpolationProperty::SLICEBINORM))
     if (p_ffi->Type() != FieldFunctionInterpolationType::SLICE)
       throw std::logic_error("Slice property" + std::to_string(static_cast<int>(property)) +
                              " used in FFInterpolationSetProperty but FFI is not a slice.");
 
   // Check Line properties
-  if ((property >= FieldFunctionInterpolationProperty::FIRSTPOINT) &&
+  if ((property >= FieldFunctionInterpolationProperty::FIRSTPOINT) and
       (property <= FieldFunctionInterpolationProperty::NUMBEROFPOINTS))
     if (p_ffi->Type() != FieldFunctionInterpolationType::LINE)
       throw std::logic_error("Line property " + std::to_string(static_cast<int>(property)) +

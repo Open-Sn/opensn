@@ -163,14 +163,14 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           int c = cell.local_id_;
           int d = face.GetNeighborLocalID(grid);
 
-          if ((a == c) && (b == d))
+          if ((a == c) and (b == d))
           {
             is_cyclic = true;
             inco_face_face_category.back() *= -1;
             inco_face_face_category.back() -= 1;
           }
 
-          if ((a == d) && (b == c))
+          if ((a == d) and (b == c))
           {
             is_cyclic = true;
             inco_face_face_category.back() *= -1;
@@ -186,7 +186,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         bool found = false;
         for (auto& lock_box_slot : lock_box)
         {
-          if ((lock_box_slot.first == face.neighbor_id_) && (lock_box_slot.second == ass_face))
+          if ((lock_box_slot.first == face.neighbor_id_) and (lock_box_slot.second == ass_face))
           {
             lock_box_slot.first = -1;
             lock_box_slot.second = -1;
@@ -263,14 +263,14 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           int c = cell.local_id_;
           int d = face.GetNeighborLocalID(grid);
 
-          if ((a == c) && (b == d))
+          if ((a == c) and (b == d))
           {
             temp_lock_box = &delayed_lock_box;
             outb_face_face_category.back() *= -1;
             outb_face_face_category.back() -= 1;
           }
 
-          if ((a == d) && (b == c))
+          if ((a == d) and (b == c))
           {
             temp_lock_box = &delayed_lock_box;
             outb_face_face_category.back() *= -1;

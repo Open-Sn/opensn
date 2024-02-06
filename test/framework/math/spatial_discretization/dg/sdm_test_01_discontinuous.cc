@@ -51,7 +51,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
   const double penalty_factor =
     params.Has("penalty_factor") ? params.GetParamValue<double>("penalty_factor") : 4.0;
 
-  const bool export_vtk = params.Has("export_vtk") && params.GetParamValue<bool>("export_vtk");
+  const bool export_vtk = params.Has("export_vtk") and params.GetParamValue<bool>("export_vtk");
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();
@@ -485,7 +485,7 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
 
     if (num_faces == 4) // Tet
       hp = 3 * volume / surface_area;
-    else if (num_faces == 6 && num_vertices == 8) // Hex
+    else if (num_faces == 6 and num_vertices == 8) // Hex
       hp = volume / surface_area;
     else // Polyhedron
       hp = 6 * volume / surface_area;

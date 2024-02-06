@@ -67,13 +67,13 @@ SphericalAngularQuadrature::Initialize(const Quadrature& quad_polar, const bool 
 
   //  existence of zero-weight abscissae at the start and at the end of the
   //  interval
-  if (std::abs(polar_quad.weights_.front()) > eps &&
+  if (std::abs(polar_quad.weights_.front()) > eps and
       std::abs(polar_quad.qpoints_.front()[0] - polar_quad_span.first) > eps)
   {
     polar_quad.weights_.emplace(polar_quad.weights_.begin(), 0);
     polar_quad.qpoints_.emplace(polar_quad.qpoints_.begin(), polar_quad_span.first);
   }
-  if (std::abs(polar_quad.weights_.back()) > eps &&
+  if (std::abs(polar_quad.weights_.back()) > eps and
       std::abs(polar_quad.qpoints_.back()[0] - polar_quad_span.second) > eps)
   {
     polar_quad.weights_.emplace(polar_quad.weights_.end(), 0);

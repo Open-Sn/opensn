@@ -1201,7 +1201,7 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
 
     if (num_faces == 4) // Tet
       hp = 3 * volume / surface_area;
-    else if (num_faces == 6 && num_vertices == 8) // Hex
+    else if (num_faces == 6 and num_vertices == 8) // Hex
       hp = volume / surface_area;
     else // Polyhedron
       hp = 6 * volume / surface_area;

@@ -59,7 +59,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   //  --------------------------------------------------------------------------
 
   //  coordinate system must be curvilinear
-  if (coord_system_type_ != CoordinateSystemType::CYLINDRICAL &&
+  if (coord_system_type_ != CoordinateSystemType::CYLINDRICAL and
       coord_system_type_ != CoordinateSystemType::SPHERICAL)
   {
     log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "

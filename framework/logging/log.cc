@@ -78,7 +78,7 @@ Logger::Log(LOG_LVL level)
 
     case LOG_0VERBOSE_1:
     {
-      if ((opensn::mpi_comm.rank() == 0) && (verbosity_ >= 1))
+      if ((opensn::mpi_comm.rank() == 0) and (verbosity_ >= 1))
       {
         std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
         header += StringStreamColor(FG_CYAN);
@@ -92,7 +92,7 @@ Logger::Log(LOG_LVL level)
     }
     case Logger::LOG_LVL::LOG_0VERBOSE_2:
     {
-      if ((opensn::mpi_comm.rank() == 0) && (verbosity_ >= 2))
+      if ((opensn::mpi_comm.rank() == 0) and (verbosity_ >= 2))
       {
         std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
         header += StringStreamColor(FG_MAGENTA);

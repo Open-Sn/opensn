@@ -34,7 +34,7 @@ Event::Parameters() const
 bool
 Event::IsSolverEvent() const
 {
-  return (code_ >= SolverPreInitialize) && (code_ <= SolverAdvanced);
+  return (code_ >= SolverPreInitialize) and (code_ <= SolverAdvanced);
 }
 
 Event::EventCode

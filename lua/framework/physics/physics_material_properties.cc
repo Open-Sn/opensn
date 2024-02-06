@@ -91,7 +91,7 @@ PhysicsMaterialAddProperty(lua_State* L)
   const std::string fname = __FUNCTION__;
   const int numArgs = lua_gettop(L);
 
-  if (!((numArgs >= 2) && (numArgs <= 3)))
+  if (!((numArgs >= 2) and (numArgs <= 3)))
   {
     opensn::log.Log0Error() << "Incorrect amount of arguments "
                                "in PhysicsMaterialAddProperty";

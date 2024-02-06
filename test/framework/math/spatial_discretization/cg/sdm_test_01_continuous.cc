@@ -36,7 +36,7 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
 {
   const ParameterBlock& params = input_parameters.GetParam("arg0");
 
-  const bool export_vtk = params.Has("export_vtk") && params.GetParamValue<bool>("export_vtk");
+  const bool export_vtk = params.Has("export_vtk") and params.GetParamValue<bool>("export_vtk");
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();

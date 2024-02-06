@@ -120,13 +120,13 @@ CylindricalAngularQuadrature::Initialize(const Quadrature& quad_polar,
 
     //  existence of zero-weight abscissae at the start and at the end of the
     //  interval
-    if (std::abs(azimu_quad.weights_.front()) > eps &&
+    if (std::abs(azimu_quad.weights_.front()) > eps and
         std::abs(azimu_quad.qpoints_.front()[0] - azimu_quad_span.first) > eps)
     {
       azimu_quad.weights_.emplace(azimu_quad.weights_.begin(), 0);
       azimu_quad.qpoints_.emplace(azimu_quad.qpoints_.begin(), azimu_quad_span.first);
     }
-    if (std::abs(azimu_quad.weights_.back()) > eps &&
+    if (std::abs(azimu_quad.weights_.back()) > eps and
         std::abs(azimu_quad.qpoints_.back()[0] - azimu_quad_span.second) > eps)
     {
       azimu_quad.weights_.emplace(azimu_quad.weights_.end(), 0);
