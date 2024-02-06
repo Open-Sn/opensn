@@ -102,7 +102,7 @@ SurfaceMesh::ExtractOpenEdgesToObj(const char* fileName)
     Exit(EXIT_FAILURE);
   }
 
-  outfile << "# ChiTech open edges file\n";
+  outfile << "# OpenSn open edges file\n";
   outfile << "# Single surface mesh\n";
 
   for (auto vert_pair : edges)
@@ -1075,8 +1075,8 @@ SurfaceMesh::ExportToOBJFile(const char* fileName)
     return;
   }
 
-  fprintf(outputFile, "# Exported mesh file from tringulation script\n");
-  fprintf(outputFile, "o %s\n", "ChitechTriMesh");
+  fprintf(outputFile, "# Exported mesh file from triangulation script\n");
+  fprintf(outputFile, "o %s\n", "OpenSnTriMesh");
 
   std::vector<Vertex>::iterator cur_v;
   for (cur_v = this->vertices_.begin(); cur_v != this->vertices_.end(); cur_v++)

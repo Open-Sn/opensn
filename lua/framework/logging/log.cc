@@ -98,7 +98,7 @@ LogPrintTimingGraph(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  auto& chitech_timing = opensn::log.GetTimingBlock(opensn::name);
+  auto& timing = opensn::log.GetTimingBlock(opensn::name);
 
   int rank = 0;
   if (num_args >= 1)
@@ -112,7 +112,7 @@ LogPrintTimingGraph(lua_State* L)
                          " >= " + std::to_string(opensn::mpi_comm.size()));
 
   if (opensn::mpi_comm.rank() == rank)
-    opensn::log.LogAll() << "\nPerformance Graph:\n" << chitech_timing.MakeGraphString();
+    opensn::log.LogAll() << "\nPerformance Graph:\n" << timing.MakeGraphString();
 
   return 0;
 }

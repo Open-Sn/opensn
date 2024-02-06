@@ -394,7 +394,7 @@ UnpartitionedMesh::CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 
   switch (sub_type)
   {
-    // The cell vertex ids in VTK is the same as in ChiTech so we don't
+    // The cell vertex ids in VTK is the same as in OpenSn so we don't
     // need to remap the vertices. We do however need to remap the faces.
     case CellType::HEXAHEDRON:
     {
