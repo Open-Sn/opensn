@@ -45,7 +45,7 @@ PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
 xs = PhysicsTransportXSCreate()
-xs_file = "tests/transport_transient/subcritical_1g.cxs"
+xs_file = "tests/transport_transient/subcritical_1g.xs"
 PhysicsTransportXSSet(xs, OPENSN_XSFILE, xs_file)
 
 -- Define macroscopic cross sections

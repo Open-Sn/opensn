@@ -136,7 +136,7 @@ SimTest06_WDD(const InputParameters&)
 
   // Make XSs
   SingleStateMGXS xs;
-  xs.MakeFromOpenSnXSFile("xs_graphite_pure.cxs");
+  xs.MakeFromOpenSnXSFile("xs_graphite_pure.xs");
 
   // Initializes vectors
   std::vector<double> phi_old(num_local_phi_dofs, 0.0);

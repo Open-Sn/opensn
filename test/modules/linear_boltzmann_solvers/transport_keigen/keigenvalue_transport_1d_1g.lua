@@ -62,7 +62,7 @@ materials[1] = PhysicsAddMaterial("Fissile Material")
 
 PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
 
-xs_file = "simple_fissile.cxs"
+xs_file = "simple_fissile.xs"
 PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
                            OPENSN_XSFILE, xs_file)
 

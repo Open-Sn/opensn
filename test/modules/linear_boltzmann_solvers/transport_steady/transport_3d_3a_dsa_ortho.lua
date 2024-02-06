@@ -58,9 +58,9 @@ PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
 --        SIMPLEXS1,num_groups,1.0,0.999)
 num_groups = 168
 PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,"xs_graphite_pure.cxs")
+  OPENSN_XSFILE,"xs_graphite_pure.xs")
 PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,"xs_air50RH.cxs")
+  OPENSN_XSFILE,"xs_air50RH.xs")
 
 src={}
 for g=1,num_groups do

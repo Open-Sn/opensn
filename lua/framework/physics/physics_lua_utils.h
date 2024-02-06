@@ -129,7 +129,7 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * PhysicsMaterialSetProperty(materials[1],
  *                               TRANSPORT_XSECTIONS,
  *                               OPENSN_XSFILE,
- *                               "xs_3_170.cxs",
+ *                               "xs_3_170.xs",
  *                               "2518")
  * \endcode
  *

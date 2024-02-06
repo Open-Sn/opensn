@@ -8,7 +8,7 @@
  * xs_graphite_clean = PhysicsTransportXSCreate()
  * PhysicsTransportXSSet(xs_grph_clean,
  *                       OPENSN_XSFILE,
- *                       "test/xs_graphite_pure.cxs")
+ *                       "test/xs_graphite_pure.xs")
  *
  * PhysicsMaterialSetProperty(materials[2],
  *                               TRANSPORT_XSECTIONS,
@@ -91,9 +91,9 @@ int PhysicsTransportXSSet(lua_State* L);
  * xs_2 = PhysicsTransportXSCreate()
  * xs_3 = PhysicsTransportXSCreate()
  *
- * PhysicsTransportXSSet(xs_1,OPENSN_XSFILE,"test/xs_graphite_pure.cxs")
- * PhysicsTransportXSSet(xs_2,OPENSN_XSFILE,"test/xs_3_170.cxs")
- * PhysicsTransportXSSet(xs_3,OPENSN_XSFILE,"test/xs_air50RH.cxs")
+ * PhysicsTransportXSSet(xs_1,OPENSN_XSFILE,"test/xs_graphite_pure.xs")
+ * PhysicsTransportXSSet(xs_2,OPENSN_XSFILE,"test/xs_3_170.xs")
+ * PhysicsTransportXSSet(xs_3,OPENSN_XSFILE,"test/xs_air50RH.xs")
  *
  * combo ={{xs_1, 0.5e5},
  *         {xs_2, 0.4e3},
@@ -130,9 +130,9 @@ int PhysicsTransportXSMakeCombined(lua_State* L);
  * xs_2 = PhysicsTransportXSCreate()
  * xs_3 = PhysicsTransportXSCreate()
  *
- * PhysicsTransportXSSet(xs_1,OPENSN_XSFILE,"test/xs_graphite_pure.cxs")
- * PhysicsTransportXSSet(xs_2,OPENSN_XSFILE,"test/xs_3_170.cxs")
- * PhysicsTransportXSSet(xs_3,OPENSN_XSFILE,"test/xs_air50RH.cxs")
+ * PhysicsTransportXSSet(xs_1,OPENSN_XSFILE,"test/xs_graphite_pure.xs")
+ * PhysicsTransportXSSet(xs_2,OPENSN_XSFILE,"test/xs_3_170.xs")
+ * PhysicsTransportXSSet(xs_3,OPENSN_XSFILE,"test/xs_air50RH.xs")
  *
  * combo ={{xs_1, 0.5e5},
  *         {xs_2, 0.4e3},
