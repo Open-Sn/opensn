@@ -12,6 +12,7 @@ Welcome to OpenSn documentation.
    install_linux_easy.md
    install_macos.md
    install_macos_easy.md
+   coding_standard.md
 
 .. toctree::
    :maxdepth: 2
