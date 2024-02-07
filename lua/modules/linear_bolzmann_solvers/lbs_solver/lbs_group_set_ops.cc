@@ -1,15 +1,10 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
-
 #include "framework/math/quadratures/angular_product_quadrature.h"
-
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_group.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/lua.h"
-
-#define sc_int static_cast<int>
 
 using namespace opensn;
 
@@ -367,48 +362,48 @@ LBSGroupsetSetIterativeMethod(lua_State* L)
 
   {
     using opensn::lbs::IterativeMethod;
-    if (iter_method == sc_int(IterativeMethod::CLASSICRICHARDSON))
+    if (iter_method == static_cast<int>(IterativeMethod::CLASSICRICHARDSON))
     {
       groupset->iterative_method_ = IterativeMethod::CLASSICRICHARDSON;
     }
-    else if (iter_method == sc_int(IterativeMethod::CLASSICRICHARDSON_CYCLES))
+    else if (iter_method == static_cast<int>(IterativeMethod::CLASSICRICHARDSON_CYCLES))
     {
       groupset->allow_cycles_ = true;
       groupset->iterative_method_ = IterativeMethod::CLASSICRICHARDSON;
     }
-    else if (iter_method == sc_int(IterativeMethod::GMRES))
+    else if (iter_method == static_cast<int>(IterativeMethod::GMRES))
     {
       throw std::invalid_argument(fname + "Deprecated iterative method GMRES, "
                                           "use KRYLOV_GMRES.");
     }
-    else if (iter_method == sc_int(IterativeMethod::GMRES_CYCLES))
+    else if (iter_method == static_cast<int>(IterativeMethod::GMRES_CYCLES))
     {
       throw std::invalid_argument(fname + "Deprecated iterative method GMRES_CYCLES, "
                                           "use KRYLOV_GMRES_CYCLES.");
     }
-    else if (iter_method == sc_int(IterativeMethod::KRYLOV_RICHARDSON))
+    else if (iter_method == static_cast<int>(IterativeMethod::KRYLOV_RICHARDSON))
     {
       groupset->iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
     }
-    else if (iter_method == sc_int(IterativeMethod::KRYLOV_RICHARDSON_CYCLES))
+    else if (iter_method == static_cast<int>(IterativeMethod::KRYLOV_RICHARDSON_CYCLES))
     {
       groupset->allow_cycles_ = true;
       groupset->iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
     }
-    else if (iter_method == sc_int(IterativeMethod::KRYLOV_GMRES))
+    else if (iter_method == static_cast<int>(IterativeMethod::KRYLOV_GMRES))
     {
       groupset->iterative_method_ = IterativeMethod::KRYLOV_GMRES;
     }
-    else if (iter_method == sc_int(IterativeMethod::KRYLOV_GMRES_CYCLES))
+    else if (iter_method == static_cast<int>(IterativeMethod::KRYLOV_GMRES_CYCLES))
     {
       groupset->allow_cycles_ = true;
       groupset->iterative_method_ = IterativeMethod::KRYLOV_GMRES;
     }
-    else if (iter_method == sc_int(IterativeMethod::KRYLOV_BICGSTAB))
+    else if (iter_method == static_cast<int>(IterativeMethod::KRYLOV_BICGSTAB))
     {
       groupset->iterative_method_ = IterativeMethod::KRYLOV_BICGSTAB;
     }
-    else if (iter_method == sc_int(IterativeMethod::KRYLOV_BICGSTAB_CYCLES))
+    else if (iter_method == static_cast<int>(IterativeMethod::KRYLOV_BICGSTAB_CYCLES))
     {
       groupset->allow_cycles_ = true;
       groupset->iterative_method_ = IterativeMethod::KRYLOV_BICGSTAB;
