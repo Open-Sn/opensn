@@ -13,7 +13,7 @@ namespace opensn
 class Material
 {
 public:
-  std::vector<std::shared_ptr<MaterialProperty>> properties_{};
+  std::vector<std::shared_ptr<PhysicsMaterialProperty>> properties_{};
   std::string name_ = "Unnamed Material";
 };
 

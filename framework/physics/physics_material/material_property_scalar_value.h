@@ -6,12 +6,12 @@ namespace opensn
 {
 
 /**Simple scalar material property.*/
-class ScalarValue : public MaterialProperty
+class ScalarValue : public PhysicsMaterialProperty
 {
 public:
   double value_ = 1.0;
 
-  ScalarValue() : MaterialProperty(PropertyType::SCALAR_VALUE) {}
+  ScalarValue() : PhysicsMaterialProperty(PropertyType::SCALAR_VALUE) {}
 
   double GetScalarValue() override { return value_; }
 };

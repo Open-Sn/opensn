@@ -6,7 +6,7 @@
 namespace opensn
 {
 
-class MultiGroupXS : public MaterialProperty
+class MultiGroupXS : public PhysicsMaterialProperty
 {
 public:
   /**
@@ -19,7 +19,7 @@ public:
     std::vector<double> emission_spectrum;
   };
 
-  MultiGroupXS() : MaterialProperty(PropertyType::TRANSPORT_XSECTIONS) {}
+  MultiGroupXS() : PhysicsMaterialProperty(PropertyType::TRANSPORT_XSECTIONS) {}
 
   /**
    * Exports the cross section information to OpenSn format.
