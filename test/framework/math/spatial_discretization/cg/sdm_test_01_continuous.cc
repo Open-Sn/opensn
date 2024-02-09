@@ -1,7 +1,6 @@
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
-#include "framework/math/spatial_discretization/finite_element/lagrange/lagrange_continuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
@@ -51,10 +50,12 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   bool is_DG = false;
   {
     using namespace opensn;
-    if (sdm_type == "PWLC") sdm_ptr = PieceWiseLinearContinuous::New(grid);
-    else if (sdm_type == "LagrangeC") { sdm_ptr = LagrangeContinuous::New(grid); }
+    // clang-format off
+    if (sdm_type == "PWLC")
+      sdm_ptr = PieceWiseLinearContinuous::New(grid);
     else
       ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
+    // clang-format on
   }
 
   auto& sdm = *sdm_ptr;
@@ -88,7 +89,7 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
     const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
@@ -98,9 +99,9 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
 
     // Assemble continuous kernels
     {
-      const auto& shape = qp_data.ShapeValues();
-      const auto& shape_grad = qp_data.ShapeGradValues();
-      const auto& JxW = qp_data.JxW_Values();
+      const auto& shape = fe_vol_data.ShapeValues();
+      const auto& shape_grad = fe_vol_data.ShapeGradValues();
+      const auto& JxW = fe_vol_data.JxW_Values();
       for (size_t i = 0; i < num_nodes; ++i)
       {
         if (bndry_nodes.find(i) != bndry_nodes.end()) continue;
@@ -108,12 +109,12 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
         {
           if (bndry_nodes.find(j) != bndry_nodes.end()) continue;
           double entry_aij = 0.0;
-          for (size_t qp : qp_data.QuadraturePointIndices())
+          for (size_t qp : fe_vol_data.QuadraturePointIndices())
             entry_aij += shape_grad[i][qp].Dot(shape_grad[j][qp]) * JxW[qp];
 
           Acell[i][j] = entry_aij;
         } // for j
-        for (size_t qp : qp_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.QuadraturePointIndices())
           cell_rhs[i] += 1.0 * shape[i][qp] * JxW[qp];
       } // for i
     }   // continuous kernels

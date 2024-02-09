@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/spatial_discretization/cell_mappings/piecewise_linear_base_mapping.h"
+#include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
 #include "framework/math/quadratures/quadrature_tetrahedron.h"
 #include "framework/math/quadratures/quadrature_triangle.h"
 #include "framework/mesh/cell/cell.h"
@@ -24,9 +24,9 @@ public:
                                    const QuadratureTetrahedron& volume_quadrature,
                                    const QuadratureTriangle& surface_quadrature);
 
-  VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
+  VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;
 
-  SurfaceQuadraturePointData MakeSurfaceQuadraturePointData(size_t face_index) const override;
+  SurfaceFiniteElementData MakeSurfaceFiniteElementData(size_t face_index) const override;
 
   /**
    * Actual shape functions as function of cartesian coordinates

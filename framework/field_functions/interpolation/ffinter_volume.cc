@@ -3,7 +3,7 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
-#include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
+#include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
@@ -60,7 +60,7 @@ FieldFunctionInterpolationVolume::Execute()
     const auto& cell = grid.local_cells[cell_local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     std::vector<double> node_dof_values(num_nodes, 0.0);
     for (size_t i = 0; i < num_nodes; ++i)
@@ -81,19 +81,19 @@ FieldFunctionInterpolationVolume::Execute()
       local_min = std::fmin(node_dof_values[i], local_min);
     }
 
-    for (const size_t qp : qp_data.QuadraturePointIndices())
+    for (const size_t qp : fe_vol_data.QuadraturePointIndices())
     {
       double ff_value = 0.0;
       for (size_t j = 0; j < num_nodes; ++j)
-        ff_value += qp_data.ShapeValue(j, qp) * node_dof_values[j];
+        ff_value += fe_vol_data.ShapeValue(j, qp) * node_dof_values[j];
 
       double function_value = ff_value;
       if (op_type_ >= FieldFunctionInterpolationOperation::OP_SUM_FUNC and
           op_type_ <= FieldFunctionInterpolationOperation::OP_MAX_FUNC)
         function_value = oper_function_->Evaluate(ff_value, cell.material_id_);
 
-      local_volume += qp_data.JxW(qp);
-      local_sum += function_value * qp_data.JxW(qp);
+      local_volume += fe_vol_data.JxW(qp);
+      local_sum += function_value * fe_vol_data.JxW(qp);
       local_max = std::fmax(ff_value, local_max);
       local_min = std::fmin(ff_value, local_min);
     } // for qp

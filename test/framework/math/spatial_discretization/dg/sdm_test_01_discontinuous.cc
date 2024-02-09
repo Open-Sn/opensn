@@ -1,7 +1,6 @@
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/math/spatial_discretization/finite_element/lagrange/lagrange_discontinuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
@@ -66,10 +65,12 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
 
   {
     using namespace opensn;
-    if (sdm_type == "PWLD") { sdm_ptr = PieceWiseLinearDiscontinuous::New(grid); }
-    else if (sdm_type == "LagrangeD") { sdm_ptr = LagrangeDiscontinuous::New(grid); }
+    // clang-format off
+    if (sdm_type == "PWLD")
+      sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
     else
       ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
+    // clang-format on
   }
 
   auto& sdm = *sdm_ptr;
@@ -103,7 +104,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
     const auto& cc_nodes = cell_mapping.GetNodeLocations();
@@ -143,7 +144,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
       const auto& face = cell.faces_[f];
       const auto& n_f = face.normal_;
       const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
-      const auto fqp_data = cell_mapping.MakeSurfaceQuadraturePointData(f);
+      const auto fqp_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
       const double hm = HPerpendicular(cell_mapping, f);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/spatial_discretization/cell_mappings/piecewise_linear_base_mapping.h"
+#include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
 #include "framework/math/quadratures/quadrature_line.h"
 #include "framework/mesh/cell/cell.h"
 #include <array>
@@ -18,9 +18,9 @@ public:
                              const MeshContinuum& ref_grid,
                              const QuadratureLine& volume_quadrature);
 
-  VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
+  VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;
 
-  SurfaceQuadraturePointData MakeSurfaceQuadraturePointData(size_t face_index) const override;
+  SurfaceFiniteElementData MakeSurfaceFiniteElementData(size_t face_index) const override;
 
   /**
    * Define standard slab linear shape functions

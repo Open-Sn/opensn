@@ -1,4 +1,4 @@
-#include "framework/math/spatial_discretization/cell_mappings/piecewise_linear_base_mapping.h"
+#include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 

@@ -2,8 +2,6 @@
 #include "framework/math/spatial_discretization/finite_volume/finite_volume.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/math/spatial_discretization/finite_element/lagrange/lagrange_continuous.h"
-#include "framework/math/spatial_discretization/finite_element/lagrange/lagrange_discontinuous.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -43,8 +41,7 @@ FieldFunctionGridBased::GetInputParameters()
   params.AddOptionalParameter(
     "coordinate_system", "cartesian", "Coordinate system to apply to element mappings");
 
-  params.ConstrainParameterRange(
-    "sdm_type", AllowableRangeList::New({"FV", "PWLC", "PWLD", "LagrangeC", "LagrangeD"}));
+  params.ConstrainParameterRange("sdm_type", AllowableRangeList::New({"FV", "PWLC", "PWLD"}));
   params.ConstrainParameterRange(
     "coordinate_system", AllowableRangeList::New({"cartesian", "cylindrical", "spherical"}));
 
@@ -126,8 +123,6 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   typedef FiniteVolume FV;
   typedef PieceWiseLinearContinuous PWLC;
   typedef PieceWiseLinearDiscontinuous PWLD;
-  typedef LagrangeContinuous LagC;
-  typedef LagrangeDiscontinuous LagD;
 
   if (sdm_type == "FV") return FV::New(*grid_ptr);
 
@@ -159,13 +154,12 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
     if (cs == "spherical") q_order = QuadratureOrder::FOURTH;
   }
 
-  if (sdm_type == "PWLC") return PWLC::New(*grid_ptr, q_order, cs_type);
+  // clang-format off
+  if (sdm_type == "PWLC")
+    return PWLC::New(*grid_ptr, q_order, cs_type);
   else if (sdm_type == "PWLD")
     return PWLD::New(*grid_ptr, q_order, cs_type);
-  else if (sdm_type == "LagrangeC")
-    return LagC::New(*grid_ptr, q_order, cs_type);
-  else if (sdm_type == "LagrangeD")
-    return LagD::New(*grid_ptr, q_order, cs_type);
+  // clang-format on
 
   // If not returned by now
   ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");

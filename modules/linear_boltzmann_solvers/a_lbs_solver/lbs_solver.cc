@@ -1071,7 +1071,7 @@ LBSSolver::ComputeUnitIntegrals()
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_faces = cell.faces_.size();
     const size_t cell_num_nodes = cell_mapping.NumNodes();
-    const auto vol_qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     MatDbl IntV_gradshapeI_gradshapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
     MatVec3 IntV_shapeI_gradshapeJ(cell_num_nodes, VecVec3(cell_num_nodes));
@@ -1087,34 +1087,34 @@ LBSSolver::ComputeUnitIntegrals()
     {
       for (unsigned int j = 0; j < cell_num_nodes; ++j)
       {
-        for (const auto& qp : vol_qp_data.QuadraturePointIndices())
+        for (const auto& qp : fe_vol_data.QuadraturePointIndices())
         {
           IntV_gradshapeI_gradshapeJ[i][j] +=
-            swf(vol_qp_data.QPointXYZ(qp)) *
-            vol_qp_data.ShapeGrad(i, qp).Dot(vol_qp_data.ShapeGrad(j, qp)) *
-            vol_qp_data.JxW(qp); // K-matrix
+            swf(fe_vol_data.QPointXYZ(qp)) *
+            fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) *
+            fe_vol_data.JxW(qp); // K-matrix
 
           IntV_shapeI_gradshapeJ[i][j] +=
-            swf(vol_qp_data.QPointXYZ(qp)) * vol_qp_data.ShapeValue(i, qp) *
-            vol_qp_data.ShapeGrad(j, qp) * vol_qp_data.JxW(qp); // G-matrix
+            swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) *
+            fe_vol_data.ShapeGrad(j, qp) * fe_vol_data.JxW(qp); // G-matrix
 
           IntV_shapeI_shapeJ[i][j] +=
-            swf(vol_qp_data.QPointXYZ(qp)) * vol_qp_data.ShapeValue(i, qp) *
-            vol_qp_data.ShapeValue(j, qp) * vol_qp_data.JxW(qp); // M-matrix
+            swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) *
+            fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp); // M-matrix
         }                                                        // for qp
       }                                                          // for j
 
-      for (const auto& qp : vol_qp_data.QuadraturePointIndices())
+      for (const auto& qp : fe_vol_data.QuadraturePointIndices())
       {
         IntV_shapeI[i] +=
-          swf(vol_qp_data.QPointXYZ(qp)) * vol_qp_data.ShapeValue(i, qp) * vol_qp_data.JxW(qp);
+          swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       } // for qp
     }   // for i
 
     //  surface integrals
     for (size_t f = 0; f < cell_num_faces; ++f)
     {
-      const auto faces_qp_data = cell_mapping.MakeSurfaceQuadraturePointData(f);
+      const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
       IntS_shapeI_shapeJ[f].resize(cell_num_nodes, VecDbl(cell_num_nodes));
       IntS_shapeI[f].resize(cell_num_nodes);
       IntS_shapeI_gradshapeJ[f].resize(cell_num_nodes, VecVec3(cell_num_nodes));
@@ -1123,21 +1123,21 @@ LBSSolver::ComputeUnitIntegrals()
       {
         for (unsigned int j = 0; j < cell_num_nodes; ++j)
         {
-          for (const auto& qp : faces_qp_data.QuadraturePointIndices())
+          for (const auto& qp : fe_srf_data.QuadraturePointIndices())
           {
-            IntS_shapeI_shapeJ[f][i][j] += swf(faces_qp_data.QPointXYZ(qp)) *
-                                           faces_qp_data.ShapeValue(i, qp) *
-                                           faces_qp_data.ShapeValue(j, qp) * faces_qp_data.JxW(qp);
-            IntS_shapeI_gradshapeJ[f][i][j] +=
-              swf(faces_qp_data.QPointXYZ(qp)) * faces_qp_data.ShapeValue(i, qp) *
-              faces_qp_data.ShapeGrad(j, qp) * faces_qp_data.JxW(qp);
+            IntS_shapeI_shapeJ[f][i][j] += swf(fe_srf_data.QPointXYZ(qp)) *
+                                           fe_srf_data.ShapeValue(i, qp) *
+                                           fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
+            IntS_shapeI_gradshapeJ[f][i][j] += swf(fe_srf_data.QPointXYZ(qp)) *
+                                               fe_srf_data.ShapeValue(i, qp) *
+                                               fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
           } // for qp
         }   // for j
 
-        for (const auto& qp : faces_qp_data.QuadraturePointIndices())
+        for (const auto& qp : fe_srf_data.QuadraturePointIndices())
         {
-          IntS_shapeI[f][i] += swf(faces_qp_data.QPointXYZ(qp)) * faces_qp_data.ShapeValue(i, qp) *
-                               faces_qp_data.JxW(qp);
+          IntS_shapeI[f][i] +=
+            swf(fe_srf_data.QPointXYZ(qp)) * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp
       }   // for i
     }     // for f

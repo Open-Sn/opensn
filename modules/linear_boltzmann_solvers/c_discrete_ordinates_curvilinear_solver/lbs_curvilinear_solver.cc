@@ -342,7 +342,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     //    const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.NumNodes();
-    const auto vol_qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     MatDbl IntV_shapeI_shapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
 
@@ -351,11 +351,11 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
     {
       for (unsigned int j = 0; j < cell_num_nodes; ++j)
       {
-        for (const auto& qp : vol_qp_data.QuadraturePointIndices())
+        for (const auto& qp : fe_vol_data.QuadraturePointIndices())
         {
-          IntV_shapeI_shapeJ[i][j] += swf(vol_qp_data.QPointXYZ(qp)) *
-                                      vol_qp_data.ShapeValue(i, qp) *
-                                      vol_qp_data.ShapeValue(j, qp) * vol_qp_data.JxW(qp);
+          IntV_shapeI_shapeJ[i][j] += swf(fe_vol_data.QPointXYZ(qp)) *
+                                      fe_vol_data.ShapeValue(i, qp) *
+                                      fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
         } // for qp
       }   // for j
     }     // for i

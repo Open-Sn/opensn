@@ -10,7 +10,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
+#include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "modules/mg_diffusion/mg_diffusion_bndry.h"
 #include "modules/mg_diffusion/tools.h"
 #include <iomanip>
@@ -422,7 +422,7 @@ Solver::Compute_TwoGrid_VolumeFractions()
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
     VF_[counter].resize(num_nodes, 0.0);
@@ -430,8 +430,8 @@ Solver::Compute_TwoGrid_VolumeFractions()
     for (size_t i = 0; i < num_nodes; ++i)
     {
       double vol_frac_shape_i = 0.0;
-      for (size_t qp : qp_data.QuadraturePointIndices())
-        vol_frac_shape_i += qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
+      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        vol_frac_shape_i += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       vol_frac_shape_i /= cell_mapping.CellVolume();
       VF_[counter][i] = vol_frac_shape_i;
     } // for i
@@ -521,7 +521,7 @@ Solver::Assemble_A_bext()
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
     const auto& xs = matid_to_xs_map.at(cell.material_id_);
@@ -553,11 +553,13 @@ Solver::Assemble_A_bext()
       {
         double entry_mij = 0.0;
         double entry_kij = 0.0;
-        for (size_t qp : qp_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.QuadraturePointIndices())
         {
-          entry_mij += qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp) * qp_data.JxW(qp);
+          entry_mij +=
+            fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
 
-          entry_kij += qp_data.ShapeGrad(i, qp).Dot(qp_data.ShapeGrad(j, qp)) * qp_data.JxW(qp);
+          entry_kij +=
+            fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) * fe_vol_data.JxW(qp);
         } // for qp
         for (uint g = 0; g < num_groups_; ++g)
           Acell[g][i][j] = entry_mij * sigma_r[g] + entry_kij * D[g];
@@ -566,8 +568,8 @@ Solver::Assemble_A_bext()
           Acell[num_groups_][i][j] = entry_mij * collapsed_sig_a + entry_kij * collapsed_D;
       } // for j
       double entry_rhsi = 0.0;
-      for (size_t qp : qp_data.QuadraturePointIndices())
-        entry_rhsi += qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
+      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        entry_rhsi += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       for (uint g = 0; g < num_groups_; ++g)
         rhs_cell[g][i] = entry_rhsi * (qext->source_value_g_[g]);
     } // for i
@@ -586,7 +588,7 @@ Solver::Assemble_A_bext()
       //   for two-grid, it is homogenous Robin
       if (bndry.type_ == BoundaryType::Robin)
       {
-        const auto qp_face_data = cell_mapping.MakeSurfaceQuadraturePointData(f);
+        const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
         const size_t num_face_nodes = face.vertex_ids_.size();
 
         auto& aval = bndry.mg_values_[0];
@@ -618,8 +620,8 @@ Solver::Assemble_A_bext()
               const uint i = cell_mapping.MapFaceNode(f, fi);
 
               double entry_rhsi = 0.0;
-              for (size_t qp : qp_face_data.QuadraturePointIndices())
-                entry_rhsi += qp_face_data.ShapeValue(i, qp) * qp_face_data.JxW(qp);
+              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                entry_rhsi += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
               if (g < num_groups_) // check due to two-grid
                 rhs_cell[g][i] += fval[g] / bval[g] * entry_rhsi;
 
@@ -627,9 +629,9 @@ Solver::Assemble_A_bext()
               {
                 const uint j = cell_mapping.MapFaceNode(f, fj);
                 double entry_aij = 0.0;
-                for (size_t qp : qp_face_data.QuadraturePointIndices())
-                  entry_aij += qp_face_data.ShapeValue(i, qp) * qp_face_data.ShapeValue(j, qp) *
-                               qp_face_data.JxW(qp);
+                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  entry_aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
+                               fe_srf_data.JxW(qp);
                 Acell[g][i][j] += aval[g] / bval[g] * entry_aij;
               } // for fj
             }   // for fi
@@ -789,7 +791,7 @@ Solver::Assemble_RHS(const unsigned int g, const int64_t verbose)
   for (const auto& cell : mg_diffusion::Solver::grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
     const auto& xs = matid_to_xs_map.at(cell.material_id_);
@@ -813,9 +815,9 @@ Solver::Assemble_RHS(const unsigned int g, const int64_t verbose)
 
             // get flux at node j
             const double flxj_gp = xlocal[jmap];
-            for (size_t qp : qp_data.QuadraturePointIndices())
-              inscatter_g += sigma_sm * flxj_gp * qp_data.ShapeValue(i, qp) *
-                             qp_data.ShapeValue(j, qp) * qp_data.JxW(qp);
+            for (size_t qp : fe_vol_data.QuadraturePointIndices())
+              inscatter_g += sigma_sm * flxj_gp * fe_vol_data.ShapeValue(i, qp) *
+                             fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
           } // for j
           // add inscattering value to vector
           VecSetValue(b_, imap, inscatter_g, ADD_VALUES);
@@ -855,7 +857,7 @@ Solver::Assemble_RHS_TwoGrid(const int64_t verbose)
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
     const auto& S = matid_to_xs_map.at(cell.material_id_)->TransferMatrix(0);
@@ -882,9 +884,9 @@ Solver::Assemble_RHS_TwoGrid(const int64_t verbose)
 
               // get flux at node j
               const double delta_flxj_gp = xlocal[jmap] - xlocal_old[jmap];
-              for (size_t qp : qp_data.QuadraturePointIndices())
-                inscatter_g += sigma_sm * delta_flxj_gp * qp_data.ShapeValue(i, qp) *
-                               qp_data.ShapeValue(j, qp) * qp_data.JxW(qp);
+              for (size_t qp : fe_vol_data.QuadraturePointIndices())
+                inscatter_g += sigma_sm * delta_flxj_gp * fe_vol_data.ShapeValue(i, qp) *
+                               fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
             } // for j
             // add inscattering value to vector
             VecSetValue(b_, imap, inscatter_g, ADD_VALUES);

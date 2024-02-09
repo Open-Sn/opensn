@@ -277,14 +277,14 @@ SimTest93_RayTracing(const InputParameters&)
   {
     // Compute mass matrix and its inverse
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto& qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto& fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
     MatDbl M(num_nodes, VecDbl(num_nodes, 0.0));
-    for (auto qp : qp_data.QuadraturePointIndices())
+    for (auto qp : fe_vol_data.QuadraturePointIndices())
       for (size_t i = 0; i < num_nodes; ++i)
         for (size_t j = 0; j < num_nodes; ++j)
-          M[i][j] += qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp) * qp_data.JxW(qp);
+          M[i][j] += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
 
     auto M_inv = Inverse(M);
 
