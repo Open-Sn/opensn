@@ -4,7 +4,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
-#include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
+#include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

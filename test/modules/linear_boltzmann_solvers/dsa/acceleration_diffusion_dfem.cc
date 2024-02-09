@@ -83,7 +83,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_faces = cell.faces_.size();
     const size_t cell_num_nodes = cell_mapping.NumNodes();
-    const auto vol_qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     MatDbl IntV_gradshapeI_gradshapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
     MatDbl IntV_shapeI_shapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
@@ -98,28 +98,28 @@ acceleration_Diffusion_DFEM(const InputParameters&)
     {
       for (unsigned int j = 0; j < cell_num_nodes; ++j)
       {
-        for (const auto& qp : vol_qp_data.QuadraturePointIndices())
+        for (const auto& qp : fe_vol_data.QuadraturePointIndices())
         {
           IntV_gradshapeI_gradshapeJ[i][j] +=
-            vol_qp_data.ShapeGrad(i, qp).Dot(vol_qp_data.ShapeGrad(j, qp)) *
-            vol_qp_data.JxW(qp); // K-matrix
+            fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) *
+            fe_vol_data.JxW(qp); // K-matrix
 
-          IntV_shapeI_shapeJ[i][j] += vol_qp_data.ShapeValue(i, qp) *
-                                      vol_qp_data.ShapeValue(j, qp) *
-                                      vol_qp_data.JxW(qp); // M-matrix
+          IntV_shapeI_shapeJ[i][j] += fe_vol_data.ShapeValue(i, qp) *
+                                      fe_vol_data.ShapeValue(j, qp) *
+                                      fe_vol_data.JxW(qp); // M-matrix
         }                                                  // for qp
       }                                                    // for j
 
-      for (const auto& qp : vol_qp_data.QuadraturePointIndices())
+      for (const auto& qp : fe_vol_data.QuadraturePointIndices())
       {
-        IntV_shapeI[i] += vol_qp_data.ShapeValue(i, qp) * vol_qp_data.JxW(qp);
+        IntV_shapeI[i] += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       } // for qp
     }   // for i
 
     //  surface integrals
     for (size_t f = 0; f < cell_num_faces; ++f)
     {
-      const auto faces_qp_data = cell_mapping.MakeSurfaceQuadraturePointData(f);
+      const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
       IntS_shapeI_shapeJ[f].resize(cell_num_nodes, VecDbl(cell_num_nodes));
       IntS_shapeI[f].resize(cell_num_nodes);
       IntS_shapeI_gradshapeJ[f].resize(cell_num_nodes, VecVec3(cell_num_nodes));
@@ -128,19 +128,19 @@ acceleration_Diffusion_DFEM(const InputParameters&)
       {
         for (unsigned int j = 0; j < cell_num_nodes; ++j)
         {
-          for (const auto& qp : faces_qp_data.QuadraturePointIndices())
+          for (const auto& qp : fe_srf_data.QuadraturePointIndices())
           {
-            IntS_shapeI_shapeJ[f][i][j] += faces_qp_data.ShapeValue(i, qp) *
-                                           faces_qp_data.ShapeValue(j, qp) * faces_qp_data.JxW(qp);
-            IntS_shapeI_gradshapeJ[f][i][j] += faces_qp_data.ShapeValue(i, qp) *
-                                               faces_qp_data.ShapeGrad(j, qp) *
-                                               faces_qp_data.JxW(qp);
+            IntS_shapeI_shapeJ[f][i][j] += fe_srf_data.ShapeValue(i, qp) *
+                                           fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
+            IntS_shapeI_gradshapeJ[f][i][j] += fe_srf_data.ShapeValue(i, qp) *
+                                               fe_srf_data.ShapeGrad(j, qp) *
+                                               fe_srf_data.JxW(qp);
           } // for qp
         }   // for j
 
-        for (const auto& qp : faces_qp_data.QuadraturePointIndices())
+        for (const auto& qp : fe_srf_data.QuadraturePointIndices())
         {
-          IntS_shapeI[f][i] += faces_qp_data.ShapeValue(i, qp) * faces_qp_data.JxW(qp);
+          IntS_shapeI[f][i] += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp
       }   // for i
     }     // for f
@@ -204,7 +204,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     // Grab nodal phi values
     std::vector<double> nodal_phi(num_nodes, 0.0);
@@ -215,15 +215,15 @@ acceleration_Diffusion_DFEM(const InputParameters&)
     } // for j
 
     // Quadrature loop
-    for (size_t qp : qp_data.QuadraturePointIndices())
+    for (size_t qp : fe_vol_data.QuadraturePointIndices())
     {
       double phi_fem = 0.0;
       for (size_t j = 0; j < num_nodes; ++j)
-        phi_fem += nodal_phi[j] * qp_data.ShapeValue(j, qp);
+        phi_fem += nodal_phi[j] * fe_vol_data.ShapeValue(j, qp);
 
-      double phi_true = mms_phi_function->Evaluate(qp_data.QPointXYZ(qp));
+      double phi_true = mms_phi_function->Evaluate(fe_vol_data.QPointXYZ(qp));
 
-      local_error += std::pow(phi_true - phi_fem, 2.0) * qp_data.JxW(qp);
+      local_error += std::pow(phi_true - phi_fem, 2.0) * fe_vol_data.JxW(qp);
     }
   } // for cell
 

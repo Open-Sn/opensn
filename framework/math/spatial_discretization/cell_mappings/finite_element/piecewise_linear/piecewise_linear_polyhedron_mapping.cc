@@ -1,7 +1,7 @@
-#include "framework/math/spatial_discretization/cell_mappings/piecewise_linear/piecewise_linear_polyhedron_mapping.h"
+#include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polyhedron_mapping.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
-#include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
+#include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 
 namespace opensn
 {
@@ -512,8 +512,8 @@ PieceWiseLinearPolyhedronMapping::GradShapeValues(const Vector3& xyz,
     gradshape_values.emplace_back(GradShapeValue(i, xyz));
 }
 
-VolumetricQuadraturePointData
-PieceWiseLinearPolyhedronMapping::MakeVolumetricQuadraturePointData() const
+VolumetricFiniteElementData
+PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
 {
   // Determine number of internal qpoints
   size_t num_tets = 0;
@@ -583,17 +583,17 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricQuadraturePointData() const
 
   V_num_nodes = num_nodes_;
 
-  return VolumetricQuadraturePointData(V_quadrature_point_indices,
-                                       V_qpoints_xyz,
-                                       V_shape_value,
-                                       V_shape_grad,
-                                       V_JxW,
-                                       face_node_mappings_,
-                                       V_num_nodes);
+  return VolumetricFiniteElementData(V_quadrature_point_indices,
+                                     V_qpoints_xyz,
+                                     V_shape_value,
+                                     V_shape_grad,
+                                     V_JxW,
+                                     face_node_mappings_,
+                                     V_num_nodes);
 }
 
-SurfaceQuadraturePointData
-PieceWiseLinearPolyhedronMapping::MakeSurfaceQuadraturePointData(size_t face_index) const
+SurfaceFiniteElementData
+PieceWiseLinearPolyhedronMapping::MakeSurfaceFiniteElementData(size_t face_index) const
 {
   const bool ON_SURFACE = true;
 
@@ -658,14 +658,14 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceQuadraturePointData(size_t face_ind
 
   F_num_nodes = face_data_[f].sides.size();
 
-  return SurfaceQuadraturePointData(F_quadrature_point_indices,
-                                    F_qpoints_xyz,
-                                    F_shape_value,
-                                    F_shape_grad,
-                                    F_JxW,
-                                    F_normals,
-                                    face_node_mappings_,
-                                    F_num_nodes);
+  return SurfaceFiniteElementData(F_quadrature_point_indices,
+                                  F_qpoints_xyz,
+                                  F_shape_value,
+                                  F_shape_grad,
+                                  F_JxW,
+                                  F_normals,
+                                  face_node_mappings_,
+                                  F_num_nodes);
 }
 
 } // namespace opensn

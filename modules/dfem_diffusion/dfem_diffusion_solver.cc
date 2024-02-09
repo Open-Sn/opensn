@@ -191,7 +191,7 @@ Solver::Execute()
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     const auto imat = cell.material_id_;
     MatDbl Acell(num_nodes, VecDbl(num_nodes, 0.0));
@@ -206,20 +206,20 @@ Solver::Execute()
       {
         const int64_t jmap = sdm.MapDOF(cell, j);
         double entry_aij = 0.0;
-        for (size_t qp : qp_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.QuadraturePointIndices())
         {
-          entry_aij += (d_coef_function_->Evaluate(imat, qp_data.QPointXYZ(qp)) *
-                          qp_data.ShapeGrad(i, qp).Dot(qp_data.ShapeGrad(j, qp)) +
-                        sigma_a_function_->Evaluate(imat, qp_data.QPointXYZ(qp)) *
-                          qp_data.ShapeValue(i, qp) * qp_data.ShapeValue(j, qp)) *
-                       qp_data.JxW(qp);
+          entry_aij += (d_coef_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+                          fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) +
+                        sigma_a_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+                          fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp)) *
+                       fe_vol_data.JxW(qp);
         } // for qp
         MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
       } // for j
       double entry_rhs_i = 0.0;
-      for (size_t qp : qp_data.QuadraturePointIndices())
-        entry_rhs_i += q_ext_function_->Evaluate(imat, qp_data.QPointXYZ(qp)) *
-                       qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
+      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        entry_rhs_i += q_ext_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+                       fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       VecSetValue(b_, imap, entry_rhs_i, ADD_VALUES);
     } // for i
 
@@ -230,7 +230,7 @@ Solver::Execute()
       const auto& face = cell.faces_[f];
       const auto& n_f = face.normal_;
       const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
-      const auto fqp_data = cell_mapping.MakeSurfaceQuadraturePointData(f);
+      const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
       const double hm = HPerpendicular(cell, f);
 
@@ -269,12 +269,12 @@ Solver::Execute()
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp);
 
             double aij = 0.0;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fe_srf_data.QuadraturePointIndices())
               aij += Ckappa *
-                     (d_coef_function_->Evaluate(imat, fqp_data.QPointXYZ(qp)) / hm +
-                      d_coef_function_->Evaluate(imat_neigh, fqp_data.QPointXYZ(qp)) / hp_neigh) /
-                     2. * fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) *
-                     fqp_data.JxW(qp);
+                     (d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) / hm +
+                      d_coef_function_->Evaluate(imat_neigh, fe_srf_data.QPointXYZ(qp)) / hp_neigh) /
+                     2. * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
+                     fe_srf_data.JxW(qp);
 
             MatSetValue(A_, imap, jmmap, aij, ADD_VALUES);
             MatSetValue(A_, imap, jpmap, -aij, ADD_VALUES);
@@ -303,9 +303,9 @@ Solver::Execute()
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp);
 
             Vector3 vec_aij;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
-              vec_aij += d_coef_function_->Evaluate(imat, fqp_data.QPointXYZ(qp)) *
-                         fqp_data.ShapeValue(jm, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp);
+            for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              vec_aij += d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) *
+                         fe_srf_data.ShapeValue(jm, qp) * fe_srf_data.ShapeGrad(i, qp) * fe_srf_data.JxW(qp);
             const double aij = -0.5 * n_f.Dot(vec_aij);
 
             MatSetValue(A_, imap, jmmap, aij, ADD_VALUES);
@@ -328,9 +328,9 @@ Solver::Execute()
             const int64_t jmap = sdm.MapDOF(cell, j);
 
             Vector3 vec_aij;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
-              vec_aij += d_coef_function_->Evaluate(imat, fqp_data.QPointXYZ(qp)) *
-                         fqp_data.ShapeValue(im, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
+            for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              vec_aij += d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) *
+                         fe_srf_data.ShapeValue(im, qp) * fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
             const double aij = -0.5 * n_f.Dot(vec_aij);
 
             MatSetValue(A_, immap, jmap, aij, ADD_VALUES);
@@ -345,7 +345,7 @@ Solver::Execute()
         // Robin boundary
         if (bndry.type_ == BoundaryType::Robin)
         {
-          const auto qp_face_data = cell_mapping.MakeSurfaceQuadraturePointData(f);
+          const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
           const auto& aval = bndry.values_[0];
           const auto& bval = bndry.values_[1];
@@ -371,8 +371,8 @@ Solver::Execute()
                 const int64_t jr = sdm.MapDOF(cell, j);
 
                 double aij = 0.0;
-                for (size_t qp : fqp_data.QuadraturePointIndices())
-                  aij += fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(j, qp) * fqp_data.JxW(qp);
+                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
                 aij *= (aval / bval);
 
                 MatSetValue(A_, ir, jr, aij, ADD_VALUES);
@@ -382,8 +382,8 @@ Solver::Execute()
             if (std::fabs(fval) >= 1.0e-12)
             {
               double rhs_val = 0.0;
-              for (size_t qp : fqp_data.QuadraturePointIndices())
-                rhs_val += fqp_data.ShapeValue(i, qp) * fqp_data.JxW(qp);
+              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                rhs_val += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
               rhs_val *= (fval / bval);
 
               VecSetValue(b_, ir, rhs_val, ADD_VALUES);
@@ -411,9 +411,9 @@ Solver::Execute()
               const int64_t jmmap = sdm.MapDOF(cell, jm);
 
               double aij = 0.0;
-              for (size_t qp : fqp_data.QuadraturePointIndices())
-                aij += Ckappa * d_coef_function_->Evaluate(imat, fqp_data.QPointXYZ(qp)) / hm *
-                       fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
+              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                aij += Ckappa * d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) / hm *
+                       fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) * fe_srf_data.JxW(qp);
               double aij_bc_value = aij * bc_value;
 
               MatSetValue(A_, imap, jmmap, aij, ADD_VALUES);
@@ -435,11 +435,11 @@ Solver::Execute()
               const int64_t jmap = sdm.MapDOF(cell, j);
 
               Vector3 vec_aij;
-              for (size_t qp : fqp_data.QuadraturePointIndices())
-                vec_aij += (fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) +
-                            fqp_data.ShapeValue(i, qp) * fqp_data.ShapeGrad(j, qp)) *
-                           fqp_data.JxW(qp) *
-                           d_coef_function_->Evaluate(imat, fqp_data.QPointXYZ(qp));
+              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                vec_aij += (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) +
+                            fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp)) *
+                           fe_srf_data.JxW(qp) *
+                           d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp));
 
               const double aij = -n_f.Dot(vec_aij);
               double aij_bc_value = aij * bc_value;

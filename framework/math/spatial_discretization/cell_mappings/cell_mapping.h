@@ -11,8 +11,8 @@ namespace opensn
 class MeshContinuum;
 struct Vector3;
 class Cell;
-class VolumetricQuadraturePointData;
-class SurfaceQuadraturePointData;
+class VolumetricFiniteElementData;
+class SurfaceFiniteElementData;
 
 /**Base class for all cell mappings.
  * \ingroup doc_CellMappings*/
@@ -61,12 +61,12 @@ public:
   /**Returns the node locations associated with this element.*/
   const std::vector<Vector3>& GetNodeLocations() const;
 
-  /**Makes the volumetric/internal quadrature point data for this element.*/
-  virtual VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const = 0;
+  /**Makes the volumetric/internal finite element data for this element.*/
+  virtual VolumetricFiniteElementData MakeVolumetricFiniteElementData() const = 0;
 
-  /**Makes the surface quadrature point data for this element, at the specified
+  /**Makes the surface finite element data for this element, at the specified
    * face.*/
-  virtual SurfaceQuadraturePointData MakeSurfaceQuadraturePointData(size_t face_index) const = 0;
+  virtual SurfaceFiniteElementData MakeSurfaceFiniteElementData(size_t face_index) const = 0;
 
   virtual ~CellMapping() = default;
 

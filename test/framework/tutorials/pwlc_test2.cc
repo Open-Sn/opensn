@@ -99,7 +99,7 @@ SimTest04_PWLC(const InputParameters& params)
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const auto cell_node_xyzs = cell_mapping.GetNodeLocations();
 
     const size_t num_nodes = cell_mapping.NumNodes();
@@ -111,15 +111,15 @@ SimTest04_PWLC(const InputParameters& params)
       for (size_t j = 0; j < num_nodes; ++j)
       {
         double entry_aij = 0.0;
-        for (size_t qp : qp_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.QuadraturePointIndices())
         {
-          entry_aij += qp_data.ShapeGrad(i, qp).Dot(qp_data.ShapeGrad(j, qp)) * qp_data.JxW(qp);
+          entry_aij += fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) * fe_vol_data.JxW(qp);
         } // for qp
         Acell[i][j] = entry_aij;
       } // for j
-      for (size_t qp : qp_data.QuadraturePointIndices())
-        cell_rhs[i] += CallLuaXYZFunction("MMS_q", qp_data.QPointXYZ(qp)) *
-                       qp_data.ShapeValue(i, qp) * qp_data.JxW(qp);
+      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        cell_rhs[i] += CallLuaXYZFunction("MMS_q", fe_vol_data.QPointXYZ(qp)) *
+                       fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
     } // for i
 
     // Flag nodes for being on dirichlet boundary
@@ -216,7 +216,7 @@ SimTest04_PWLC(const InputParameters& params)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto qp_data = cell_mapping.MakeVolumetricQuadraturePointData();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     // Grab nodal phi values
     std::vector<double> nodal_phi(num_nodes, 0.0);
@@ -227,15 +227,15 @@ SimTest04_PWLC(const InputParameters& params)
     } // for j
 
     // Quadrature loop
-    for (size_t qp : qp_data.QuadraturePointIndices())
+    for (size_t qp : fe_vol_data.QuadraturePointIndices())
     {
       double phi_fem = 0.0;
       for (size_t j = 0; j < num_nodes; ++j)
-        phi_fem += nodal_phi[j] * qp_data.ShapeValue(j, qp);
+        phi_fem += nodal_phi[j] * fe_vol_data.ShapeValue(j, qp);
 
-      double phi_true = CallLuaXYZFunction("MMS_phi", qp_data.QPointXYZ(qp));
+      double phi_true = CallLuaXYZFunction("MMS_phi", fe_vol_data.QPointXYZ(qp));
 
-      local_error += std::pow(phi_true - phi_fem, 2.0) * qp_data.JxW(qp);
+      local_error += std::pow(phi_true - phi_fem, 2.0) * fe_vol_data.JxW(qp);
     }
   } // for cell
 

@@ -2,7 +2,6 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/acceleration.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/math/spatial_discretization/finite_element/quadrature_point_data.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

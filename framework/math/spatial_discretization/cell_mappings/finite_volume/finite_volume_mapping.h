@@ -50,9 +50,9 @@ public:
     gradshape_values.assign(num_nodes_, Vector3(0, 0, 0));
   }
 
-  VolumetricQuadraturePointData MakeVolumetricQuadraturePointData() const override;
+  VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;
 
-  SurfaceQuadraturePointData MakeSurfaceQuadraturePointData(size_t face_index) const override;
+  SurfaceFiniteElementData MakeSurfaceFiniteElementData(size_t face_index) const override;
 };
 
 } // namespace opensn
