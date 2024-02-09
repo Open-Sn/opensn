@@ -555,9 +555,11 @@ Solver::Assemble_A_bext()
         double entry_kij = 0.0;
         for (size_t qp : fe_vol_data.QuadraturePointIndices())
         {
-          entry_mij += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
+          entry_mij +=
+            fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
 
-          entry_kij += fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) * fe_vol_data.JxW(qp);
+          entry_kij +=
+            fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) * fe_vol_data.JxW(qp);
         } // for qp
         for (uint g = 0; g < num_groups_; ++g)
           Acell[g][i][j] = entry_mij * sigma_r[g] + entry_kij * D[g];

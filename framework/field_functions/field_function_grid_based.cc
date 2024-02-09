@@ -41,8 +41,7 @@ FieldFunctionGridBased::GetInputParameters()
   params.AddOptionalParameter(
     "coordinate_system", "cartesian", "Coordinate system to apply to element mappings");
 
-  params.ConstrainParameterRange(
-    "sdm_type", AllowableRangeList::New({"FV", "PWLC", "PWLD"}));
+  params.ConstrainParameterRange("sdm_type", AllowableRangeList::New({"FV", "PWLC", "PWLD"}));
   params.ConstrainParameterRange(
     "coordinate_system", AllowableRangeList::New({"cartesian", "cylindrical", "spherical"}));
 
@@ -155,8 +154,7 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
     if (cs == "spherical") q_order = QuadratureOrder::FOURTH;
   }
 
-  if (sdm_type == "PWLC")
-    return PWLC::New(*grid_ptr, q_order, cs_type);
+  if (sdm_type == "PWLC") return PWLC::New(*grid_ptr, q_order, cs_type);
   else if (sdm_type == "PWLD")
     return PWLD::New(*grid_ptr, q_order, cs_type);
 

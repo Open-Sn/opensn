@@ -119,11 +119,10 @@ acceleration_Diffusion_CFEM(const InputParameters&)
         {
           for (const auto& qp : fe_srf_data.QuadraturePointIndices())
           {
-            IntS_shapeI_shapeJ[f][i][j] += fe_srf_data.ShapeValue(i, qp) *
-                                           fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
-            IntS_shapeI_gradshapeJ[f][i][j] += fe_srf_data.ShapeValue(i, qp) *
-                                               fe_srf_data.ShapeGrad(j, qp) *
-                                               fe_srf_data.JxW(qp);
+            IntS_shapeI_shapeJ[f][i][j] +=
+              fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
+            IntS_shapeI_gradshapeJ[f][i][j] +=
+              fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
           } // for qp
         }   // for j
 

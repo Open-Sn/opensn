@@ -1128,16 +1128,16 @@ LBSSolver::ComputeUnitIntegrals()
             IntS_shapeI_shapeJ[f][i][j] += swf(fe_srf_data.QPointXYZ(qp)) *
                                            fe_srf_data.ShapeValue(i, qp) *
                                            fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
-            IntS_shapeI_gradshapeJ[f][i][j] +=
-              swf(fe_srf_data.QPointXYZ(qp)) * fe_srf_data.ShapeValue(i, qp) *
-              fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
+            IntS_shapeI_gradshapeJ[f][i][j] += swf(fe_srf_data.QPointXYZ(qp)) *
+                                               fe_srf_data.ShapeValue(i, qp) *
+                                               fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
           } // for qp
         }   // for j
 
         for (const auto& qp : fe_srf_data.QuadraturePointIndices())
         {
-          IntS_shapeI[f][i] += swf(fe_srf_data.QPointXYZ(qp)) * fe_srf_data.ShapeValue(i, qp) *
-                               fe_srf_data.JxW(qp);
+          IntS_shapeI[f][i] +=
+            swf(fe_srf_data.QPointXYZ(qp)) * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp
       }   // for i
     }     // for f
