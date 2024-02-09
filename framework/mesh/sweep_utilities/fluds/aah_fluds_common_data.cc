@@ -163,14 +163,14 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           int c = cell.local_id_;
           int d = face.GetNeighborLocalID(grid);
 
-          if ((a == c) && (b == d))
+          if ((a == c) and (b == d))
           {
             is_cyclic = true;
             inco_face_face_category.back() *= -1;
             inco_face_face_category.back() -= 1;
           }
 
-          if ((a == d) && (b == c))
+          if ((a == d) and (b == c))
           {
             is_cyclic = true;
             inco_face_face_category.back() *= -1;
@@ -186,7 +186,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         bool found = false;
         for (auto& lock_box_slot : lock_box)
         {
-          if ((lock_box_slot.first == face.neighbor_id_) && (lock_box_slot.second == ass_face))
+          if ((lock_box_slot.first == face.neighbor_id_) and (lock_box_slot.second == ass_face))
           {
             lock_box_slot.first = -1;
             lock_box_slot.second = -1;
@@ -194,7 +194,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
             break;
           }
         }
-        if (!found)
+        if (not found)
         {
           log.LogAllError() << "Lock-box location not found in call to "
                             << "InitializeAlphaElements. Local Cell " << cell.local_id_ << " face "
@@ -263,14 +263,14 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           int c = cell.local_id_;
           int d = face.GetNeighborLocalID(grid);
 
-          if ((a == c) && (b == d))
+          if ((a == c) and (b == d))
           {
             temp_lock_box = &delayed_lock_box;
             outb_face_face_category.back() *= -1;
             outb_face_face_category.back() -= 1;
           }
 
-          if ((a == d) && (b == c))
+          if ((a == d) and (b == c))
           {
             temp_lock_box = &delayed_lock_box;
             outb_face_face_category.back() *= -1;
@@ -299,7 +299,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       }
 
       // If an open slot was not found push a new one
-      if (!slot_found)
+      if (not slot_found)
       {
         outb_face_slot_indices.push_back(lock_box.size());
         lock_box.push_back(std::pair<int, short>(cell_g_index, f));
@@ -356,7 +356,7 @@ AAH_FLUDSCommonData::AddFaceViewToDepLocI(int deplocI,
   }
 
   // If the cell is not there yet
-  if (!cell_already_there)
+  if (not cell_already_there)
   {
     CompactCellView new_cell_view;
     new_cell_view.first = cell_g_index;
@@ -746,7 +746,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
               }
             }
 
-            if (!match_found)
+            if (not match_found)
             {
               log.LogAll() << "Associated vertex not found in call to "
                               "InitializeBetaElements";
@@ -805,7 +805,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
                 }
               }
 
-              if (!match_found)
+              if (not match_found)
               {
                 face_matches = false;
                 break;
@@ -841,7 +841,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
               }
             }
 
-            if (!match_found)
+            if (not match_found)
             {
               log.LogAll() << "Associated vertex not found in call to "
                               "InitializeBetaElements";

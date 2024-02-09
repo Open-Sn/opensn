@@ -52,7 +52,7 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
   int num_cells_modified = 0;
   for (auto& cell : vol_cont->local_cells)
   {
-    if (log_vol.Inside(cell.centroid_) && sense)
+    if (log_vol.Inside(cell.centroid_) and sense)
     {
       cell.material_id_ = mat_id;
       ++num_cells_modified;
@@ -63,7 +63,7 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = vol_cont->cells[ghost_id];
-    if (log_vol.Inside(cell.centroid_) && sense) cell.material_id_ = mat_id;
+    if (log_vol.Inside(cell.centroid_) and sense) cell.material_id_ = mat_id;
   }
 
   int global_num_cells_modified;
@@ -97,7 +97,7 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
     for (auto& face : cell.faces_)
     {
       if (face.has_neighbor_) continue;
-      if (log_vol.Inside(face.centroid_) && sense)
+      if (log_vol.Inside(face.centroid_) and sense)
       {
         face.neighbor_id_ = bndry_id;
         ++num_faces_modified;

@@ -302,7 +302,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
       ++index;
     }
 
-    if (!found)
+    if (not found)
     {
       log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
                         << "with global index " << cell.global_id_ << " and partition-ID "
@@ -370,7 +370,7 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
       ++index;
     }
 
-    if (!found)
+    if (not found)
     {
       log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
                         << "with global index " << cell.global_id_ << " and partition-ID "

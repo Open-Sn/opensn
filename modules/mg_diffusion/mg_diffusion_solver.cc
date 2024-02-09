@@ -249,7 +249,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     }   // for property
 
     // Check valid property
-    if (!found_transport_xs)
+    if (not found_transport_xs)
     {
       log.LogAllError() << "MG-Diff-InitializeMaterials: Found no transport cross-section property "
                            "for "
@@ -305,7 +305,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
       {
         for (const auto& [row_g, gp, sigma_sm] : S.Row(g))
         {
-          if ((std::fabs(sigma_sm) > 1e-10) && (gp > row_g))
+          if ((std::fabs(sigma_sm) > 1e-10) and (gp > row_g))
             lfg = std::min(lfg, static_cast<unsigned int>(row_g));
         }
       }
@@ -316,7 +316,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Compute two-grid params
   do_two_grid_ = basic_options_("do_two_grid").BoolValue();
-  if ((lfg == num_groups_) && do_two_grid_)
+  if ((lfg == num_groups_) and do_two_grid_)
   {
     log.Log0Error() << "Two-grid is not possible with no upscattering.";
     do_two_grid_ = false;
@@ -761,7 +761,7 @@ Solver::Execute()
                 << std::setprecision(7) << thermal_error_all << std::endl;
 
     ++thermal_iteration;
-  } while ((thermal_error_all > thermal_tol) && (thermal_iteration < max_thermal_iters));
+  } while ((thermal_error_all > thermal_tol) and (thermal_iteration < max_thermal_iters));
 
   if (iverbose > 0)
   {

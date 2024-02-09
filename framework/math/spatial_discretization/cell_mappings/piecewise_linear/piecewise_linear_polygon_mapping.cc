@@ -94,7 +94,7 @@ PieceWiseLinearPolygonMapping::TriShape(uint32_t index, const Vector3& qpoint, b
 {
   double xi;
   double eta;
-  if (!on_surface)
+  if (not on_surface)
   {
     xi = qpoint.x;
     eta = qpoint.y;

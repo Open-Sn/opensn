@@ -52,7 +52,7 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
 
   // Print iteration information
   std::string offset;
-  if (context->groupset_.apply_wgdsa_ || context->groupset_.apply_tgdsa_)
+  if (context->groupset_.apply_wgdsa_ or context->groupset_.apply_tgdsa_)
     offset = std::string("    ");
 
   std::stringstream iter_info;

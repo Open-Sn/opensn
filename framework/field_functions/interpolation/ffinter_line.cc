@@ -163,7 +163,7 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
     }
     for (int p = 0; p < interpolation_points_.size(); p++)
     {
-      if ((not ff_ctx.interpolation_points_has_ass_cell[p]) && (opensn::mpi_comm.rank() != 0))
+      if ((not ff_ctx.interpolation_points_has_ass_cell[p]) and (opensn::mpi_comm.rank() != 0))
       {
         continue;
       }
@@ -181,7 +181,8 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
 
     ofile << offset << "done=True\n";
     ofile << "\n\n";
-    if ((opensn::mpi_comm.size() > 1) && (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1)))
+    if ((opensn::mpi_comm.size() > 1) and
+        (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1)))
     {
       ofile << offset << submod_name << ".AddData" << ff << "(data" << ff << ")\n";
     }
@@ -217,7 +218,8 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
     }
     ofile << offset << "done=True\n";
     ofile << "\n\n";
-    if ((opensn::mpi_comm.size() > 1) && (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1)))
+    if ((opensn::mpi_comm.size() > 1) and
+        (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1)))
     {
       ofile << offset << submod_name << ".AddData" << ff << "(data" << ff << ")\n";
     }

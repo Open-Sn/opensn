@@ -59,7 +59,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   //  --------------------------------------------------------------------------
 
   //  coordinate system must be curvilinear
-  if (coord_system_type_ != CoordinateSystemType::CYLINDRICAL &&
+  if (coord_system_type_ != CoordinateSystemType::CYLINDRICAL and
       coord_system_type_ != CoordinateSystemType::SPHERICAL)
   {
     log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
@@ -129,7 +129,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         typedef CylindricalAngularQuadrature CylAngQuad;
         const auto curvilinear_angular_quad_ptr =
           std::dynamic_pointer_cast<CylAngQuad>(angular_quad_ptr);
-        if (!curvilinear_angular_quad_ptr)
+        if (curvilinear_angular_quad_ptr == nullptr)
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angular quadrature, static_cast<int>(type) = "
@@ -144,7 +144,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         typedef SphericalAngularQuadrature SphAngQuad;
         const auto curvilinear_angular_quad_ptr =
           std::dynamic_pointer_cast<SphAngQuad>(angular_quad_ptr);
-        if (!curvilinear_angular_quad_ptr)
+        if (curvilinear_angular_quad_ptr == nullptr)
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angular quadrature, static_cast<int>(type) = "
@@ -209,7 +209,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   {
     for (const auto& face : cell.faces_)
     {
-      if (!face.has_neighbor_)
+      if (not face.has_neighbor_)
       {
         bool face_orthogonal = false;
         for (size_t d = 0; d < unit_normal_vectors.size(); ++d)
@@ -239,7 +239,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
             break;
           }
         }
-        if (!face_orthogonal)
+        if (not face_orthogonal)
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "mesh contains boundary faces not orthogonal with respect to "

@@ -54,26 +54,26 @@ SphericalAngularQuadrature::Initialize(const Quadrature& quad_polar, const bool 
                                 "polar quadrature weights sum to zero.");
 
   //  defined on range [-1;+1]
-  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps ||
+  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps or
       std::abs(polar_quad.GetRange().second - polar_quad_span.second) > eps)
     polar_quad.SetRange(polar_quad_span);
 
   //  abscissae sorted in ascending order
   auto lt_qp = [](const QuadraturePointXYZ& qp0, const QuadraturePointXYZ& qp1)
   { return qp0[0] < qp1[0]; };
-  if (!std::is_sorted(polar_quad.qpoints_.begin(), polar_quad.qpoints_.end(), lt_qp))
+  if (not std::is_sorted(polar_quad.qpoints_.begin(), polar_quad.qpoints_.end(), lt_qp))
     throw std::invalid_argument("SphericalAngularQuadrature::Initialize : "
                                 "polar quadrature abscissae not in ascending order.");
 
   //  existence of zero-weight abscissae at the start and at the end of the
   //  interval
-  if (std::abs(polar_quad.weights_.front()) > eps &&
+  if (std::abs(polar_quad.weights_.front()) > eps and
       std::abs(polar_quad.qpoints_.front()[0] - polar_quad_span.first) > eps)
   {
     polar_quad.weights_.emplace(polar_quad.weights_.begin(), 0);
     polar_quad.qpoints_.emplace(polar_quad.qpoints_.begin(), polar_quad_span.first);
   }
-  if (std::abs(polar_quad.weights_.back()) > eps &&
+  if (std::abs(polar_quad.weights_.back()) > eps and
       std::abs(polar_quad.qpoints_.back()[0] - polar_quad_span.second) > eps)
   {
     polar_quad.weights_.emplace(polar_quad.weights_.end(), 0);

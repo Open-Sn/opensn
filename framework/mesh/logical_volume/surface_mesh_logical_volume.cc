@@ -136,7 +136,7 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
         std::pair<double, double> weights;
         bool intersects_plane = CheckPlaneLineIntersect(
           surf_mesh->GetTriangles()[fi].geometric_normal, v0, point, fc, intp, &weights);
-        if (!intersects_plane) continue;
+        if (not intersects_plane) continue;
 
         // Check if the line intersects the triangle
         bool intersects_triangle = true;
@@ -168,7 +168,7 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
         if (x1p.Dot(face_norm) < 0.0) intersects_triangle = false;
         if (x2p.Dot(face_norm) < 0.0) intersects_triangle = false;
 
-        if (!intersects_triangle) continue;
+        if (not intersects_triangle) continue;
 
         // Determine the sense with the triangle
         double sense_with_this_tri = p_to_fc.Dot(surf_mesh->GetTriangles()[fi].geometric_normal);
@@ -186,9 +186,9 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
       } // for inner iter face
     }   // if sense negative
 
-    if ((closest_distance < distance_to_face) && closest_sense_pos) good_to_go = true;
+    if ((closest_distance < distance_to_face) and closest_sense_pos) good_to_go = true;
 
-    if (!good_to_go) return false;
+    if (not good_to_go) return false;
   } // for f
 
   return true;

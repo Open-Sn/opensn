@@ -163,7 +163,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
   // Loop till done
   bool finished = false;
   size_t scheduled_angleset = 0;
-  while (!finished)
+  while (not finished)
   {
     finished = true;
     for (auto& rule_value : rule_values_)

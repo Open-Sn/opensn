@@ -156,7 +156,7 @@ FieldFunctionInterpolationSlice::Initialize()
             }
 
             // No duplicate
-            if (!duplicate_found)
+            if (not duplicate_found)
             {
               FFIFaceEdgeIntersection face_isds;
 
@@ -214,7 +214,7 @@ FieldFunctionInterpolationSlice::Initialize()
       cell_isds.intersections.push_back(unsorted_points[0]);
       unsorted_points.erase(unsorted_points.begin());
 
-      while (!unsorted_points.empty())
+      while (not unsorted_points.empty())
       {
         for (int p = 0; p < unsorted_points.size(); p++)
         {
@@ -235,7 +235,7 @@ FieldFunctionInterpolationSlice::Initialize()
             } // if not p
           }   // for pr
 
-          if (!illegal_value)
+          if (not illegal_value)
           {
             cell_isds.intersections.push_back(unsorted_points[p]);
             unsorted_points.erase(unsorted_points.begin() + p);

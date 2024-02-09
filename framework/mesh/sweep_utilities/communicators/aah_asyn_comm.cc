@@ -293,7 +293,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 
   // Resize FLUDS non-local incoming Data
   const size_t num_loc_deps = spds.GetLocationDependencies().size();
-  if (!upstream_data_initialized)
+  if (not upstream_data_initialized)
   {
     fluds_.AllocatePrelocIOutgoingPsi(num_groups_, num_angles_, num_loc_deps);
 
@@ -309,7 +309,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
     size_t num_mess = prelocI_message_count[prelocI];
     for (int m = 0; m < num_mess; m++)
     {
-      if (!prelocI_message_received[prelocI][m])
+      if (not prelocI_message_received[prelocI][m])
       {
         auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
         auto source = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
@@ -331,10 +331,10 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
       } // if not message already received
     }   // for message
 
-    if (!ready_to_execute) break;
+    if (not ready_to_execute) break;
   } // for predecessor
 
-  if (!ready_to_execute) return AngleSetStatus::RECEIVING;
+  if (not ready_to_execute) return AngleSetStatus::RECEIVING;
   else
     return AngleSetStatus::READY_TO_EXECUTE;
 }
@@ -371,7 +371,7 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
 void
 AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
 {
-  if (!data_initialized)
+  if (not data_initialized)
   {
     const auto& spds = fluds_.GetSPDS();
 

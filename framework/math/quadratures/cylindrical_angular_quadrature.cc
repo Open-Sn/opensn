@@ -80,7 +80,7 @@ CylindricalAngularQuadrature::Initialize(const Quadrature& quad_polar,
                                 "polar quadrature weights sum to zero.");
 
   //  defined on range [-1;+1]
-  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps ||
+  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps or
       std::abs(polar_quad.GetRange().second - polar_quad_span.second) > eps)
     polar_quad.SetRange(polar_quad_span);
 
@@ -107,7 +107,7 @@ CylindricalAngularQuadrature::Initialize(const Quadrature& quad_polar,
                                   "azimuthal quadrature weights sum to zero.");
 
     //  defined on range [-1;+1]
-    if (std::abs(azimu_quad.GetRange().first - azimu_quad_span.first) > eps ||
+    if (std::abs(azimu_quad.GetRange().first - azimu_quad_span.first) > eps or
         std::abs(azimu_quad.GetRange().second - azimu_quad_span.second) > eps)
       azimu_quad.SetRange(azimu_quad_span);
 
@@ -120,13 +120,13 @@ CylindricalAngularQuadrature::Initialize(const Quadrature& quad_polar,
 
     //  existence of zero-weight abscissae at the start and at the end of the
     //  interval
-    if (std::abs(azimu_quad.weights_.front()) > eps &&
+    if (std::abs(azimu_quad.weights_.front()) > eps and
         std::abs(azimu_quad.qpoints_.front()[0] - azimu_quad_span.first) > eps)
     {
       azimu_quad.weights_.emplace(azimu_quad.weights_.begin(), 0);
       azimu_quad.qpoints_.emplace(azimu_quad.qpoints_.begin(), azimu_quad_span.first);
     }
-    if (std::abs(azimu_quad.weights_.back()) > eps &&
+    if (std::abs(azimu_quad.weights_.back()) > eps and
         std::abs(azimu_quad.qpoints_.back()[0] - azimu_quad_span.second) > eps)
     {
       azimu_quad.weights_.emplace(azimu_quad.weights_.end(), 0);

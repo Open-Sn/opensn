@@ -37,7 +37,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
 
   if (executed_)
   {
-    if (!async_comm_.DoneSending()) async_comm_.ClearDownstreamBuffers();
+    if (not async_comm_.DoneSending()) async_comm_.ClearDownstreamBuffers();
     return AngleSetStatus::FINISHED;
   }
 
@@ -79,7 +79,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
 AngleSetStatus
 AAH_AngleSet::FlushSendBuffers()
 {
-  if (!async_comm_.DoneSending()) async_comm_.ClearDownstreamBuffers();
+  if (not async_comm_.DoneSending()) async_comm_.ClearDownstreamBuffers();
 
   if (async_comm_.DoneSending()) return AngleSetStatus::MESSAGES_SENT;
 

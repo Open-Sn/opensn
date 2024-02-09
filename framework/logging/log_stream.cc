@@ -13,7 +13,7 @@ LogStream::~LogStream()
   while (std::getline(*this, line))
     oline += log_header_ + line + '\n' + StringStreamColor(RESET);
 
-  if (!oline.empty()) *log_stream_ << oline << std::flush;
+  if (not oline.empty()) *log_stream_ << oline << std::flush;
 }
 
 } // namespace opensn

@@ -33,7 +33,7 @@ lbs::SweepChunkPWLTransientTheta::SweepChunkPWLTransientTheta(
     num_moments_(num_moments),
     num_groups_(groupset.groups_.size()),
     max_num_cell_dofs_(max_num_cell_dofs),
-    save_angular_flux_(!destination_psi.empty()),
+    save_angular_flux_(not destination_psi.empty()),
     psi_prev_(psi_prev_ref),
     theta_(input_theta),
     dt_(time_step),
@@ -78,7 +78,7 @@ lbs::SweepChunkPWLTransientTheta::Upwinder::GetDownwindPsi(int fi,
 void
 lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* angle_set)
 {
-  if (!a_and_b_initialized_)
+  if (not a_and_b_initialized_)
   {
     Amat_.resize(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
     Atemp_.resize(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
