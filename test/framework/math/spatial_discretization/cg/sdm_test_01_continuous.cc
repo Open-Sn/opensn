@@ -50,9 +50,12 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   bool is_DG = false;
   {
     using namespace opensn;
-    if (sdm_type == "PWLC") sdm_ptr = PieceWiseLinearContinuous::New(grid);
+    // clang-format off
+    if (sdm_type == "PWLC")
+      sdm_ptr = PieceWiseLinearContinuous::New(grid);
     else
       ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
+    // clang-format on
   }
 
   auto& sdm = *sdm_ptr;

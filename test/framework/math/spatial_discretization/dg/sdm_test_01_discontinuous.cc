@@ -65,9 +65,12 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
 
   {
     using namespace opensn;
-    if (sdm_type == "PWLD") sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
+    // clang-format off
+    if (sdm_type == "PWLD")
+      sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
     else
       ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
+    // clang-format on
   }
 
   auto& sdm = *sdm_ptr;

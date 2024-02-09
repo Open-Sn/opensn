@@ -154,9 +154,12 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
     if (cs == "spherical") q_order = QuadratureOrder::FOURTH;
   }
 
-  if (sdm_type == "PWLC") return PWLC::New(*grid_ptr, q_order, cs_type);
+  // clang-format off
+  if (sdm_type == "PWLC")
+    return PWLC::New(*grid_ptr, q_order, cs_type);
   else if (sdm_type == "PWLD")
     return PWLD::New(*grid_ptr, q_order, cs_type);
+  // clang-format on
 
   // If not returned by now
   ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
