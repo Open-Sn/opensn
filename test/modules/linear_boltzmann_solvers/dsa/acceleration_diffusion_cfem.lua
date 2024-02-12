@@ -18,7 +18,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Set Material IDs
 VolumeMesherSetMatIDToAll(0)
 
-VolumeMesherSetupOrthogonalBoundaries()
+mesh.SetupOrthogonalBoundaries()
 
 function MMS_phi(x,y,z)
     return math.cos(math.pi*x) + math.cos(math.pi*y)

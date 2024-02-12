@@ -94,12 +94,6 @@ public:
    * Sets material id's for all cells to the specified material id.
    */
   static void SetMatIDToAll(int mat_id);
-
-  /**
-   * Sets boundary numbers on boundaries orthogonal to the cardinal directions as "XMAX", "XMIN",
-   * "YMAX", "YMIN", "ZMAX", "ZMIN".
-   */
-  static void SetupOrthogonalBoundaries();
 };
 
 } // namespace opensn

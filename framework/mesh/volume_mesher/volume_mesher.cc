@@ -122,46 +122,4 @@ VolumeMesher::SetMatIDToAll(int mat_id)
             << " to all cells";
 }
 
-void
-VolumeMesher::SetupOrthogonalBoundaries()
-{
-  log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
-
-  auto vol_cont = GetCurrentMesh();
-
-  const Vector3 ihat(1.0, 0.0, 0.0);
-  const Vector3 jhat(0.0, 1.0, 0.0);
-  const Vector3 khat(0.0, 0.0, 1.0);
-
-  for (auto& cell : vol_cont->local_cells)
-    for (auto& face : cell.faces_)
-      if (not face.has_neighbor_)
-      {
-        Vector3& n = face.normal_;
-
-        std::string boundary_name;
-        if (n.Dot(ihat) > 0.999)
-          boundary_name = "XMAX";
-        else if (n.Dot(ihat) < -0.999)
-          boundary_name = "XMIN";
-        else if (n.Dot(jhat) > 0.999)
-          boundary_name = "YMAX";
-        else if (n.Dot(jhat) < -0.999)
-          boundary_name = "YMIN";
-        else if (n.Dot(khat) > 0.999)
-          boundary_name = "ZMAX";
-        else if (n.Dot(khat) < -0.999)
-          boundary_name = "ZMIN";
-
-        uint64_t bndry_id = vol_cont->MakeBoundaryID(boundary_name);
-
-        face.neighbor_id_ = bndry_id;
-
-        vol_cont->GetBoundaryIDMap()[bndry_id] = boundary_name;
-      } // if bndry
-
-  opensn::mpi_comm.barrier();
-  log.Log() << program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
-}
-
 } // namespace opensn
