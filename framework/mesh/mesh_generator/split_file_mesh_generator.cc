@@ -4,7 +4,6 @@
 #include "framework/utils/utils.h"
 
 #include "framework/runtime.h"
-#include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 #include "framework/logging/log.h"

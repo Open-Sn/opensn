@@ -26,7 +26,7 @@ function MatIDFunction1(x,y,z,cur_id)
     return cur_id
 end
 
-VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
+mesh.SetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
 
 mesh.ExportToVTK("ZMeshPhase2")
 
@@ -60,6 +60,6 @@ function BndryIDFunction1(x,y,z,nx,ny,nz,cur_bid)
     return cur_bid
 end
 
-VolumeMesherSetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
+mesh.SetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
 
 mesh.ExportToVTK("ZMeshPhase3")

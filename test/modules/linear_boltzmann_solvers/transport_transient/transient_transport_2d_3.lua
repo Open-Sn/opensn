@@ -35,7 +35,7 @@ mesh.SetMatIDToAll(0)
 vol0 = mesh.RPPLogicalVolume.Create({xmin=-L/16, xmax=L/16,
                                          ymin=-L/16, ymax=L/16,
                                          zmin=-L/16, zmax=L/16})
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,1)
+mesh.SetProperty(MATID_FROMLOGICAL,vol0,1)
 
 mesh.ExportToVTK("TheMesh")
 

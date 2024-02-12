@@ -1,55 +1,39 @@
-#include "framework/lua.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/volume_mesher/volume_mesher.h"
-#include "framework/utils/timer.h"
+#include "lua/framework/mesh/lua_mesh_set_ids.h"
 #include "framework/runtime.h"
-#include "framework/mesh/logical_volume/logical_volume.h"
-
-#include <iostream>
-#include "volume_mesher_lua.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
 #include "framework/console/console.h"
+#include "framework/utils/timer.h"
+
+RegisterLuaFunctionNamespace(MeshSetMatIDToAll, mesh, SetMatIDToAll);
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(VolumeMesherSetProperty);
-
-RegisterLuaConstantAsIs(FORCE_POLYGONS, Varying(1));
-RegisterLuaConstantAsIs(MESH_GLOBAL, Varying(2));
-RegisterLuaConstantAsIs(PARTITION_Z, Varying(3));
-RegisterLuaConstantAsIs(VOLUMEPARTITION_Y, Varying(4));
-RegisterLuaConstantAsIs(VOLUMEPARTITION_X, Varying(5));
-RegisterLuaConstantAsIs(CUTS_Z, Varying(6));
-RegisterLuaConstantAsIs(CUTS_Y, Varying(7));
-RegisterLuaConstantAsIs(CUTS_X, Varying(8));
-RegisterLuaConstantAsIs(PARTITION_TYPE, Varying(9));
-RegisterLuaConstantAsIs(KBA_STYLE_XYZ, Varying(2));
-RegisterLuaConstantAsIs(PARMETIS, Varying(3));
-RegisterLuaConstantAsIs(EXTRUSION_LAYER, Varying(10));
-RegisterLuaConstantAsIs(MATID_FROMLOGICAL, Varying(11));
-RegisterLuaConstantAsIs(BNDRYID_FROMLOGICAL, Varying(12));
-RegisterLuaConstantAsIs(MATID_FROM_LUA_FUNCTION, Varying(13));
-RegisterLuaConstantAsIs(BNDRYID_FROM_LUA_FUNCTION, Varying(14));
-
-using namespace opensn;
-
-namespace
+int
+MeshSetMatIDToAll(lua_State* L)
 {
+  int num_args = lua_gettop(L);
+  if (num_args != 1)
+    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
-/**
- * Sets material id's using a lua function. The lua function is called with for each cell with 4
- * arguments, the cell's centroid x,y,z values and the cell's current material id.
- *
- * The lua function's prototype should be:
- * \code
- * function LuaFuncName(x,y,z,id)
- *   --stuff
- * end
- * \endcode
- */
+  LuaCheckNilValue(__FUNCTION__, L, 1);
+
+  int mat_id = lua_tonumber(L, 1);
+
+  auto vol_cont = GetCurrentMesh();
+  vol_cont->SetMatIDToAll(mat_id);
+  mpi_comm.barrier();
+  opensn::log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
+                    << " to all cells";
+
+  return 0;
+}
+
 void
 SetMatIDFromLuaFunction(const std::string& lua_fname)
 {
-  const std::string fname = "VolumeMesher::SetMatIDFromLuaFunction";
+  const std::string fname = "SetMatIDFromLuaFunction";
 
   opensn::log.Log0Verbose1() << program_timer.GetTimeString()
                              << " Setting material id from lua function.";
@@ -126,21 +110,10 @@ SetMatIDFromLuaFunction(const std::string& lua_fname)
                              << "Number of cells modified = " << globl_num_cells_modified << ".";
 }
 
-/**Sets boundary id's using a lua function. The lua function is called for each boundary face
- * with 7 arguments, the face's centroid x,y,z values, the face's normal x,y,z values and the
- * face's current boundary id. The function must return a new_bndry_name (string).
- *
- * The lua function's prototype should be:
- * \code
- * function LuaFuncName(x,y,z,nx,ny,nz,id)
- * --stuff
- * end
- * \endcode
- */
 void
-SetBndryIDFromLuaFunction(const std::string& lua_fname)
+SetBoundaryIDFromLuaFunction(const std::string& lua_fname)
 {
-  const std::string fname = "VolumeMesher::SetBndryIDFromLuaFunction";
+  const std::string fname = "SetBoundaryIDFromLuaFunction";
 
   ChiLogicalErrorIf(opensn::mpi_comm.size() != 1, "Can for now only be used in serial.");
 
@@ -238,137 +211,4 @@ SetBndryIDFromLuaFunction(const std::string& lua_fname)
   opensn::log.Log0Verbose1() << program_timer.GetTimeString()
                              << " Done setting boundary id from lua function. "
                              << "Number of cells modified = " << globl_num_faces_modified << ".";
-}
-
-} // namespace
-
-int
-VolumeMesherSetProperty(lua_State* L)
-{
-  const std::string fname = "VolumeMesherSetProperty";
-
-  // Get property index
-  const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError(fname, 2, num_args);
-
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  int property_index = lua_tonumber(L, 1);
-
-  typedef VolumeMesherProperty VMP;
-
-  // Selects property
-  if (property_index == VMP::FORCE_POLYGONS)
-  {
-    bool force_condition = lua_toboolean(L, 2);
-  }
-
-  else if (property_index == VMP::MESH_GLOBAL)
-  {
-    bool mesh_global = lua_toboolean(L, 2);
-  }
-
-  else if (property_index == VMP::PARTITION_Z)
-  {
-    int pz = lua_tonumber(L, 2);
-    opensn::log.LogAllVerbose1() << "Partition z set to " << pz;
-  }
-  else if (property_index == VMP::PARTITION_Y)
-  {
-    int p = lua_tonumber(L, 2);
-    opensn::log.LogAllVerbose1() << "Partition y set to " << p;
-  }
-  else if (property_index == VMP::PARTITION_X)
-  {
-    int p = lua_tonumber(L, 2);
-    opensn::log.LogAllVerbose1() << "Partition x set to " << p;
-  }
-  else if (property_index == VMP::CUTS_Z)
-  {
-    double p = lua_tonumber(L, 2);
-  }
-  else if (property_index == VMP::CUTS_Y)
-  {
-    double p = lua_tonumber(L, 2);
-  }
-  else if (property_index == VMP::CUTS_X)
-  {
-    double p = lua_tonumber(L, 2);
-  }
-  else if (property_index == VMP::PARTITION_TYPE)
-  {
-    int p = lua_tonumber(L, 2);
-  }
-
-  else if (property_index == VMP::MATID_FROMLOGICAL)
-  {
-    if (not((num_args == 3) or (num_args == 4)))
-    {
-      opensn::log.LogAllError() << "Invalid amount of arguments used for "
-                                   "VolumeMesherSetProperty("
-                                   "MATID_FROMLOGICAL...";
-      opensn::Exit(EXIT_FAILURE);
-    }
-    int volume_hndl = lua_tonumber(L, 2);
-    int mat_id = lua_tonumber(L, 3);
-    int sense = true;
-    if (num_args == 4)
-      sense = lua_toboolean(L, 4);
-
-    const auto& log_vol =
-      opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_hndl, fname);
-
-    VolumeMesher::SetMatIDFromLogical(log_vol, sense, mat_id);
-  }
-
-  else if (property_index == VMP::BNDRYID_FROMLOGICAL)
-  {
-    if (not((num_args == 3) or (num_args == 4)))
-    {
-      opensn::log.LogAllError() << "Invalid amount of arguments used for "
-                                   "VolumeMesherSetProperty("
-                                   "BNDRYID_FROMLOGICAL...";
-      opensn::Exit(EXIT_FAILURE);
-    }
-    LuaCheckNilValue(fname, L, 2);
-    LuaCheckStringValue(fname, L, 3);
-    int volume_hndl = lua_tonumber(L, 2);
-    std::string bndry_name = lua_tostring(L, 3);
-    int sense = true;
-    if (num_args == 4)
-      sense = lua_toboolean(L, 4);
-
-    ChiLogicalErrorIf(bndry_name.empty(), "argument 3 must not be an empty string.");
-
-    const auto& log_vol =
-      opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_hndl, fname);
-
-    VolumeMesher::SetBndryIDFromLogical(log_vol, sense, bndry_name);
-  }
-  else if (property_index == VMP::MATID_FROM_LUA_FUNCTION)
-  {
-    LuaCheckStringValue(fname, L, 2);
-
-    const std::string lua_fname = lua_tostring(L, 2);
-
-    SetMatIDFromLuaFunction(lua_fname);
-  }
-  else if (property_index == VMP::BNDRYID_FROM_LUA_FUNCTION)
-  {
-    LuaCheckStringValue(fname, L, 2);
-
-    const std::string lua_fname = lua_tostring(L, 2);
-
-    SetBndryIDFromLuaFunction(lua_fname);
-  }
-  else
-  {
-    opensn::log.LogAllError() << "Invalid property specified " << property_index
-                              << " in call to VolumeMesherSetProperty().";
-    opensn::Exit(EXIT_FAILURE);
-  }
-
-  return 0;
 }

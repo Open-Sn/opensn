@@ -6,7 +6,6 @@
 #include "framework/mesh/cell/cell.h"
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/volume_mesher/volume_mesher.h"
 
 #include "framework/mesh/sweep_utilities/spds/spds.h"
 

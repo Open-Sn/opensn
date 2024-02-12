@@ -23,6 +23,6 @@ lv3 = mesh.BooleanLogicalVolume.Create
   parts = { { op=true, lv=lv2 },
             { op=false, lv=lv1 } }
 })
-VolumeMesherSetProperty(MATID_FROMLOGICAL, lv3, 1)
+mesh.SetProperty(MATID_FROMLOGICAL, lv3, 1)
 
 mesh.ExportToVTK("lv_boolean_test1")

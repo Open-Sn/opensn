@@ -1,7 +1,6 @@
 #include "framework/lua.h"
 #include "framework/data_types/varying.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
