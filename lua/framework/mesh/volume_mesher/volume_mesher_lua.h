@@ -113,11 +113,6 @@ int VolumeMesherSetProperty(lua_State* L);
  */
 int VolumeMesherSetKBAPartitioningPxPyPz(lua_State* L);
 
-/**Sets the z-cuts for KBA type partitioning with a lua array.
- * \ingroup LuaVolumeMesher
- */
-int VolumeMesherSetKBACutsZ(lua_State* L);
-
 /** Sets all cell-material id's to the supplied value.
  * \param material_id int The id.
  * \ingroup LuaVolumeMesher
