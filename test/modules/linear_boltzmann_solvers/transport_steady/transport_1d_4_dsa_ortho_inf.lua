@@ -34,7 +34,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-VolumeMesherSetMatIDToAll(0)
+mesh.SetMatIDToAll(0)
 
 
 --############################################### Add materials

@@ -102,24 +102,4 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
             << "Number of faces modified = " << global_num_faces_modified << ".";
 }
 
-void
-VolumeMesher::SetMatIDToAll(int mat_id)
-{
-  log.Log() << program_timer.GetTimeString() << " Setting material id " << mat_id
-            << " to all cells.";
-
-  auto vol_cont = GetCurrentMesh();
-
-  for (auto& cell : vol_cont->local_cells)
-    cell.material_id_ = mat_id;
-
-  const auto& ghost_ids = vol_cont->cells.GetGhostGlobalIDs();
-  for (uint64_t ghost_id : ghost_ids)
-    vol_cont->cells[ghost_id].material_id_ = mat_id;
-
-  opensn::mpi_comm.barrier();
-  log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
-            << " to all cells";
-}
-
 } // namespace opensn

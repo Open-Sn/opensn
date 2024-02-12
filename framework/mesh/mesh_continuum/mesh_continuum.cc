@@ -1131,4 +1131,15 @@ MeshContinuum::GetGlobalNumberOfCells() const
   return num_cells;
 }
 
+void
+MeshContinuum::SetMatIDToAll(int mat_id)
+{
+  for (auto& cell : local_cells)
+    cell.material_id_ = mat_id;
+
+  const auto& ghost_ids = cells.GetGhostGlobalIDs();
+  for (uint64_t ghost_id : ghost_ids)
+    cells[ghost_id].material_id_ = mat_id;
+}
+
 } // namespace opensn

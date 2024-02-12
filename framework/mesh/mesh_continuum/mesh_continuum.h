@@ -208,6 +208,11 @@ public:
 
   std::pair<Vector3, Vector3> GetLocalBoundingBox() const;
 
+  /**
+   * Sets material id's for all cells to the specified material id.
+   */
+  void SetMatIDToAll(int mat_id);
+
 private:
   friend class VolumeMesher;
   friend class MeshGenerator;

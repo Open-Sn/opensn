@@ -16,7 +16,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-VolumeMesherSetMatIDToAll(0)
+mesh.SetMatIDToAll(0)
 
 mesh.SetupOrthogonalBoundaries()
 

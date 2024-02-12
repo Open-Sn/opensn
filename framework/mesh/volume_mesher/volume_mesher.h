@@ -89,11 +89,6 @@ public:
    */
   static void
   SetBndryIDFromLogical(const LogicalVolume& log_vol, bool sense, const std::string& bndry_name);
-
-  /**
-   * Sets material id's for all cells to the specified material id.
-   */
-  static void SetMatIDToAll(int mat_id);
 };
 
 } // namespace opensn

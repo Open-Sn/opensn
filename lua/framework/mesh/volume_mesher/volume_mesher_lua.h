@@ -71,9 +71,3 @@
  * \author Jan
  */
 int VolumeMesherSetProperty(lua_State* L);
-
-/** Sets all cell-material id's to the supplied value.
- * \param material_id int The id.
- * \ingroup LuaVolumeMesher
- */
-int VolumeMesherSetMatIDToAll(lua_State* L);

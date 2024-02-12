@@ -34,7 +34,7 @@ meshgen1 = mesh.MeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-VolumeMesherSetMatIDToAll(0)
+mesh.SetMatIDToAll(0)
 
 
 --############################################### Add materials

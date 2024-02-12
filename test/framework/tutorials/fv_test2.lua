@@ -16,7 +16,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-VolumeMesherSetMatIDToAll(0)
+mesh.SetMatIDToAll(0)
 
 unit_sim_tests.SimTest02_FV();
 MPIBarrier()

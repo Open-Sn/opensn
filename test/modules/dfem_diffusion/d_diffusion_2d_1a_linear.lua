@@ -8,12 +8,12 @@ for i=1,(N+1) do
     k=i-1
     nodes[i] = xmin + k*dx
 end
- 
+
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-VolumeMesherSetMatIDToAll(0)
+mesh.SetMatIDToAll(0)
 
 D = {1.0}
 Q = {0.0}
