@@ -48,11 +48,6 @@ class BooleanLogicalVolume;
 // Mesh handler
 class MeshHandler;
 
-// Surface Meshers
-class SurfaceMesher;
-class SurfaceMesherPassthrough;
-class SurfaceMesherPredefined;
-
 // Volume meshers
 class VolumeMesher;
 class VolumeMesherExtruder;

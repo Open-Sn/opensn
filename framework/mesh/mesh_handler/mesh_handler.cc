@@ -25,16 +25,6 @@ MeshHandler::GetGrid() const
   return grid_ptr;
 }
 
-SurfaceMesher&
-MeshHandler::GetSurfaceMesher()
-{
-  if (surface_mesher_ == nullptr)
-    throw std::logic_error("MeshHandler::GetSurfaceMesher: "
-                           "Surface mesher undefined This usually means a "
-                           "grid is not defined or is incomplete.");
-  return *surface_mesher_;
-}
-
 VolumeMesher&
 MeshHandler::GetVolumeMesher()
 {
@@ -43,16 +33,6 @@ MeshHandler::GetVolumeMesher()
                            "Volume mesher undefined This usually means a "
                            "grid is not defined or is incomplete.");
   return *volume_mesher_;
-}
-
-const SurfaceMesher&
-MeshHandler::GetSurfaceMesher() const
-{
-  if (surface_mesher_ == nullptr)
-    throw std::logic_error("MeshHandler::GetSurfaceMesher: "
-                           "Surface mesher undefined This usually means a "
-                           "grid is not defined or is incomplete.");
-  return *surface_mesher_;
 }
 
 const VolumeMesher&
