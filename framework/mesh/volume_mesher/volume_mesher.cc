@@ -26,12 +26,6 @@ VolumeMesher::GetContinuum()
   return grid_ptr_;
 }
 
-void
-VolumeMesher::SetGridAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis)
-{
-  grid_ptr_->SetAttributes(new_attribs, ortho_Nis);
-}
-
 VolumeMesherType
 VolumeMesher::Type() const
 {

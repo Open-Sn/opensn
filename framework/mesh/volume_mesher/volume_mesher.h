@@ -78,11 +78,6 @@ public:
   std::shared_ptr<MeshContinuum>& GetContinuum();
 
   /**
-   * Sets grid attributes. This is normally a private member of the grid but this class is a friend.
-   */
-  void SetGridAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis = {0, 0, 0});
-
-  /**
    * Gets the volume mesher's type.
    */
   VolumeMesherType Type() const;
