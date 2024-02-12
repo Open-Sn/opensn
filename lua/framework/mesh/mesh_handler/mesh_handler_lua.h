@@ -2,14 +2,6 @@
 
 #include "framework/lua.h"
 
-/** Creates a mesh handler and sets it as "current".
- *
- * \return Handle int Handle to the created mesh handler.
- * \ingroup LuaMeshHandler
- * \author Jan
- */
-int MeshHandlerCreate(lua_State* L);
-
 /**Exports the mesh to a wavefront.obj format.
  * \param FileName char Base name of the file to be used.
  * \param ExportByMaterial bool Default: False. Flag indicating whether to export
