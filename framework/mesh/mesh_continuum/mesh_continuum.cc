@@ -2,7 +2,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi_comm_set.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include "framework/mesh/cell/cell.h"

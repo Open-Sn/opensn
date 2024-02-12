@@ -2,7 +2,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/dfem_diffusion/dfem_diffusion_bndry.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -53,7 +52,7 @@ Solver::Initialize()
             << ": Initializing DFEM Diffusion solver ";
 
   // Get grid
-  grid_ptr_ = GetCurrentHandler().GetGrid();
+  grid_ptr_ = GetCurrentMesh();
   const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");

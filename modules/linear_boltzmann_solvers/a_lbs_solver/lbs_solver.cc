@@ -9,7 +9,6 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/point_source/point_source.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/sweep_utilities/sweep_boundary/boundary_reflecting.h"
 #include "framework/mesh/sweep_utilities/sweep_boundary/boundary_vacuum.h"
@@ -856,7 +855,7 @@ LBSSolver::PerformInputChecks()
     Exit(EXIT_FAILURE);
   }
 
-  grid_ptr_ = GetCurrentHandler().GetGrid();
+  grid_ptr_ = GetCurrentMesh();
 
   if (grid_ptr_ == nullptr)
   {

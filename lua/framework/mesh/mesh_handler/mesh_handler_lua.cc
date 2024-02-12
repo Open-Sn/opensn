@@ -1,6 +1,5 @@
 #include "framework/lua.h"
 
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/runtime.h"
 
 #include "framework/logging/log.h"

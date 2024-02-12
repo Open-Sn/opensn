@@ -1,6 +1,5 @@
 #include "framework/lua.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
@@ -91,11 +90,8 @@ SetMatIDFromLuaFunction(const std::string& lua_fname)
     return lua_return;
   };
 
-  // Get current mesh handler
-  auto& handler = GetCurrentHandler();
-
   // Get back mesh
-  MeshContinuum& grid = *handler.GetGrid();
+  MeshContinuum& grid = *GetCurrentMesh();
 
   int local_num_cells_modified = 0;
   for (auto& cell : grid.local_cells)
@@ -192,11 +188,7 @@ SetBndryIDFromLuaFunction(const std::string& lua_fname)
     return lua_return_bname;
   };
 
-  // Get current mesh handler
-  auto& handler = GetCurrentHandler();
-
-  // Get back mesh
-  MeshContinuum& grid = *handler.GetGrid();
+  MeshContinuum& grid = *GetCurrentMesh();
 
   // Check if name already has id
   auto& grid_bndry_id_map = grid.GetBoundaryIDMap();
@@ -254,9 +246,6 @@ int
 VolumeMesherSetProperty(lua_State* L)
 {
   const std::string fname = "VolumeMesherSetProperty";
-  // Get current mesh handler
-  auto& cur_hndlr = GetCurrentHandler();
-  auto& volume_mesher = cur_hndlr.GetVolumeMesher();
 
   // Get property index
   const int num_args = lua_gettop(L);
@@ -274,59 +263,43 @@ VolumeMesherSetProperty(lua_State* L)
   if (property_index == VMP::FORCE_POLYGONS)
   {
     bool force_condition = lua_toboolean(L, 2);
-    volume_mesher.options.force_polygons = force_condition;
   }
 
   else if (property_index == VMP::MESH_GLOBAL)
   {
     bool mesh_global = lua_toboolean(L, 2);
-    volume_mesher.options.mesh_global = mesh_global;
   }
 
   else if (property_index == VMP::PARTITION_Z)
   {
     int pz = lua_tonumber(L, 2);
-    volume_mesher.options.partition_z = pz;
     opensn::log.LogAllVerbose1() << "Partition z set to " << pz;
   }
   else if (property_index == VMP::PARTITION_Y)
   {
     int p = lua_tonumber(L, 2);
-    volume_mesher.options.partition_y = p;
     opensn::log.LogAllVerbose1() << "Partition y set to " << p;
   }
   else if (property_index == VMP::PARTITION_X)
   {
     int p = lua_tonumber(L, 2);
-    volume_mesher.options.partition_x = p;
     opensn::log.LogAllVerbose1() << "Partition x set to " << p;
   }
   else if (property_index == VMP::CUTS_Z)
   {
     double p = lua_tonumber(L, 2);
-    volume_mesher.options.zcuts.push_back(p);
   }
   else if (property_index == VMP::CUTS_Y)
   {
     double p = lua_tonumber(L, 2);
-    volume_mesher.options.ycuts.push_back(p);
   }
   else if (property_index == VMP::CUTS_X)
   {
     double p = lua_tonumber(L, 2);
-    volume_mesher.options.xcuts.push_back(p);
   }
   else if (property_index == VMP::PARTITION_TYPE)
   {
     int p = lua_tonumber(L, 2);
-    if (p >= VolumeMesher::PartitionType::KBA_STYLE_XYZ and
-        p <= VolumeMesher::PartitionType::PARMETIS)
-      volume_mesher.options.partition_type = (VolumeMesher::PartitionType)p;
-    else
-    {
-      opensn::log.LogAllError() << "Unsupported partition type used in call to " << fname << ".";
-      opensn::Exit(EXIT_FAILURE);
-    }
   }
 
   else if (property_index == VMP::MATID_FROMLOGICAL)

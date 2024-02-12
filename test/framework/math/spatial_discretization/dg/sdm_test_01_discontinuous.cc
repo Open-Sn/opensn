@@ -1,4 +1,3 @@
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
@@ -53,7 +52,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
   const bool export_vtk = params.Has("export_vtk") and params.GetParamValue<bool>("export_vtk");
 
   // Get grid
-  auto grid_ptr = GetCurrentHandler().GetGrid();
+  auto grid_ptr = GetCurrentMesh();
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();

@@ -1,4 +1,3 @@
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular_quadrature_base.h"
@@ -33,7 +32,7 @@ SimTest91_PWLD(const InputParameters&)
     throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
-  auto grid_ptr = GetCurrentHandler().GetGrid();
+  auto grid_ptr = GetCurrentMesh();
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
@@ -193,8 +192,8 @@ SimTest91_PWLD(const InputParameters&)
       for (unsigned int i = 0; i < num_nodes; ++i)
         for (unsigned int j = 0; j < num_nodes; ++j)
           for (const auto& qp : fe_srf_data.QuadraturePointIndices())
-            IntS_shapeI_shapeJ[i][j] += fe_srf_data.ShapeValue(i, qp) *
-                                        fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
+            IntS_shapeI_shapeJ[i][j] +=
+              fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
 
       faces_Mmatrices.push_back(std::move(IntS_shapeI_shapeJ));
     } // for face f

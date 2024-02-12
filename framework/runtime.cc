@@ -3,7 +3,6 @@
 #include "config.h"
 
 #include "framework/math/math.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 
 #include "framework/physics/physics_namespace.h"
 
@@ -27,7 +26,7 @@ Logger& log = Logger::GetInstance();
 mpi::Communicator mpi_comm;
 Timer program_timer;
 
-std::vector<std::shared_ptr<MeshHandler>> meshhandler_stack;
+std::vector<std::shared_ptr<MeshContinuum>> mesh_stack;
 int current_mesh_handler = -1;
 
 std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
@@ -63,7 +62,7 @@ Finalize()
   auto& t_main = log.GetTimingBlock(opensn::name);
   t_main.TimeSectionEnd();
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
-  meshhandler_stack.clear();
+  mesh_stack.clear();
 
   surface_mesh_stack.clear();
   object_stack.clear();

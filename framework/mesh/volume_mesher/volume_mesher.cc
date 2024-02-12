@@ -1,6 +1,5 @@
 #include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/utils/timer.h"
@@ -37,11 +36,7 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
 {
   log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Setting material id from logical volume.";
-  // Get current mesh handler
-  auto& handler = GetCurrentHandler();
-
-  // Get back mesh
-  std::shared_ptr<MeshContinuum> vol_cont = handler.GetGrid();
+  std::shared_ptr<MeshContinuum> vol_cont = GetCurrentMesh();
 
   int num_cells_modified = 0;
   for (auto& cell : vol_cont->local_cells)
@@ -75,11 +70,7 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
                                     const std::string& bndry_name)
 {
   log.Log() << program_timer.GetTimeString() << " Setting boundary id from logical volume.";
-  // Get current mesh handler
-  auto& handler = GetCurrentHandler();
-
-  // Get back mesh
-  std::shared_ptr<MeshContinuum> vol_cont = handler.GetGrid();
+  std::shared_ptr<MeshContinuum> vol_cont = GetCurrentMesh();
 
   // Check if name already has id
   auto& grid_bndry_id_map = vol_cont->GetBoundaryIDMap();
@@ -117,11 +108,7 @@ VolumeMesher::SetMatIDToAll(int mat_id)
   log.Log() << program_timer.GetTimeString() << " Setting material id " << mat_id
             << " to all cells.";
 
-  // Get current mesh handler
-  auto& handler = GetCurrentHandler();
-
-  // Get back mesh
-  auto vol_cont = handler.GetGrid();
+  auto vol_cont = GetCurrentMesh();
 
   for (auto& cell : vol_cont->local_cells)
     cell.material_id_ = mat_id;
@@ -140,11 +127,7 @@ VolumeMesher::SetupOrthogonalBoundaries()
 {
   log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
 
-  // Get current mesh handler
-  auto& handler = GetCurrentHandler();
-
-  // Get back mesh
-  auto vol_cont = handler.GetGrid();
+  auto vol_cont = GetCurrentMesh();
 
   const Vector3 ihat(1.0, 0.0, 0.0);
   const Vector3 jhat(0.0, 1.0, 0.0);

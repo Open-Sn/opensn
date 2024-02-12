@@ -1,5 +1,4 @@
 #include "framework/lua.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/field_functions/interpolation/ffinter_point.h"
 #include "framework/field_functions/interpolation/ffinter_slice.h"

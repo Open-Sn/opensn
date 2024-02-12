@@ -24,8 +24,6 @@ SurfaceMeshExtractOpenEdgesToObj(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError("SurfaceMeshExtractOpenEdgesToObj", 2, num_args);
 
-  auto& cur_hndlr = opensn::GetCurrentHandler();
-
   int surf_handle = lua_tonumber(L, 1);
   const char* file_name = lua_tostring(L, 2);
 

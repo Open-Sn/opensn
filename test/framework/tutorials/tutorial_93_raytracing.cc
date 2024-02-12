@@ -1,4 +1,3 @@
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/raytrace/raytracer.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
@@ -25,7 +24,7 @@ SimTest93_RayTracing(const InputParameters&)
   opensn::log.Log() << "SimTest93_RayTracing";
 
   // Get grid
-  auto grid_ptr = GetCurrentHandler().GetGrid();
+  auto grid_ptr = GetCurrentMesh();
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
@@ -287,7 +286,8 @@ SimTest93_RayTracing(const InputParameters&)
     for (auto qp : fe_vol_data.QuadraturePointIndices())
       for (size_t i = 0; i < num_nodes; ++i)
         for (size_t j = 0; j < num_nodes; ++j)
-          M[i][j] += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
+          M[i][j] +=
+            fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
 
     auto M_inv = Inverse(M);
 

@@ -1,5 +1,4 @@
 #include "framework/mesh/mesh_generator/mesh_generator.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/graphs/graph_partitioner.h"
@@ -97,16 +96,7 @@ MeshGenerator::Execute()
   BroadcastPIDs(cell_pids, 0, mpi_comm);
 
   auto grid_ptr = SetupMesh(std::move(current_umesh), cell_pids);
-
-  // Assign the mesh to a VolumeMesher
-  auto new_mesher = std::make_shared<VolumeMesher>(VolumeMesherType::UNPARTITIONED);
-  new_mesher->SetContinuum(grid_ptr);
-
-  if (current_mesh_handler < 0)
-    PushNewHandlerAndGetIndex();
-
-  auto& cur_hndlr = GetCurrentHandler();
-  cur_hndlr.SetVolumeMesher(new_mesher);
+  mesh_stack.push_back(grid_ptr);
 
   opensn::mpi_comm.barrier();
 }
