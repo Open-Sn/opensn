@@ -12,7 +12,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
-MeshHandlerExportMeshToVTK("ZMeshPhase1")
+mesh.ExportToVTK("ZMeshPhase1")
 
 VolumeMesherSetMatIDToAll(0)
 
@@ -28,7 +28,7 @@ end
 
 VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
 
-MeshHandlerExportMeshToVTK("ZMeshPhase2")
+mesh.ExportToVTK("ZMeshPhase2")
 
 --Setting left, right, top and bottom boundaries
 -- left = 0
@@ -62,4 +62,4 @@ end
 
 VolumeMesherSetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
 
-MeshHandlerExportMeshToVTK("ZMeshPhase3")
+mesh.ExportToVTK("ZMeshPhase3")

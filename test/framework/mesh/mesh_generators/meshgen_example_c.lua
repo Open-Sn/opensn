@@ -10,5 +10,3 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create
   layers = {{z=1.1, n=2}, {z=2.1, n=3}}
 })
 mesh.MeshGenerator.Execute(meshgen1)
-
---MeshHandlerExportMeshToVTK("ZMeshTest")

@@ -8,10 +8,10 @@ for i=1,(N+1) do
     k=i-1
     nodes[i] = xmin + k*dx
 end
- 
+
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
- 
+
 --############################################### Set Material IDs
 VolumeMesherSetMatIDToAll(0)
 
@@ -48,8 +48,6 @@ VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
 VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
 VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
 VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
-
---MeshHandlerExportMeshToVTK("Mesh")
 
 --############################################### Add material properties
 --#### CFEM solver

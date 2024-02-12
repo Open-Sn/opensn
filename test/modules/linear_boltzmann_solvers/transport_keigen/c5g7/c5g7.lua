@@ -1,7 +1,6 @@
 -- Final k-eigenvalue    :         1.1925596 (265)
 dofile("mesh/gmesh_coarse.lua")
 
---MeshHandlerExportMeshToVTK("ZMesh")
 --os.exit()
 
 dofile("materials/materials.lua")

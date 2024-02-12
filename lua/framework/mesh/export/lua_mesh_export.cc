@@ -1,9 +1,15 @@
 #include "framework/lua.h"
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "lua/framework/mesh/export/lua_mesh_export.h"
+#include "lua/framework/console/console.h"
+
+RegisterLuaFunctionNamespace(MeshExportToObj, mesh, ExportToObj);
+RegisterLuaFunctionNamespace(MeshExportToVTK, mesh, ExportToVTK);
+RegisterLuaFunctionNamespace(MeshExportToExodus, mesh, ExportToExodus);
 
 int
-MeshHandlerExportMeshToObj(lua_State* L)
+MeshExportToObj(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;
@@ -24,7 +30,7 @@ MeshHandlerExportMeshToObj(lua_State* L)
 }
 
 int
-MeshHandlerExportMeshToVTK(lua_State* L)
+MeshExportToVTK(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;
@@ -41,7 +47,7 @@ MeshHandlerExportMeshToVTK(lua_State* L)
 }
 
 int
-MeshHandlerExportMeshToExodus(lua_State* L)
+MeshExportToExodus(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;

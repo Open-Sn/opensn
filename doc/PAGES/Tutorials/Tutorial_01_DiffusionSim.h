@@ -133,7 +133,7 @@ By default all boundaries are unassigned (i.e., -1). There are two utilities
 
 The culmination of this step is all done within a physics agnostic framework.
 The user can even export the mesh for visualization using the function
- MeshHandlerExportMeshToObj().
+ mesh.ExportToObj().
 
 ### Boundary IDs
 
@@ -232,7 +232,7 @@ material = PhysicsAddMaterial("Test Material");
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
-MeshHandlerExportMeshToVTK("Mesh")
+mesh.ExportToVTK("Mesh")
 --############################################### Add material properties
 
 
