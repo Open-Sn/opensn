@@ -82,9 +82,10 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
 
       if (owns_face)
       {
-        // clang-format off
-        if (mu > tolerance) orientation = FOOUTGOING;
-        else if (mu < tolerance) orientation = FOINCOMING;
+        if (mu > tolerance)
+          orientation = FOOUTGOING;
+        else if (mu < tolerance)
+          orientation = FOINCOMING;
 
         cell_face_orientations_[cell.local_id_][f] = orientation;
 
@@ -92,17 +93,21 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
         {
           const auto& adj_cell = grid_.cells[face.neighbor_id_];
           const auto ass_face = face.GetNeighborAssociatedFace(grid_);
-          auto& adj_face_ori =
-            cell_face_orientations_[adj_cell.local_id_][ass_face];
+          auto& adj_face_ori = cell_face_orientations_[adj_cell.local_id_][ass_face];
 
           switch (orientation)
           {
-            case FOPARALLEL: adj_face_ori = FOPARALLEL; break;
-            case FOINCOMING: adj_face_ori = FOOUTGOING; break;
-            case FOOUTGOING: adj_face_ori = FOINCOMING; break;
+            case FOPARALLEL:
+              adj_face_ori = FOPARALLEL;
+              break;
+            case FOINCOMING:
+              adj_face_ori = FOOUTGOING;
+              break;
+            case FOOUTGOING:
+              adj_face_ori = FOINCOMING;
+              break;
           }
         }
-        // clang-format on
       } // if face owned
       else if (face.has_neighbor_ and not grid_.IsCellLocal(face.neighbor_id_))
       {

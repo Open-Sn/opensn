@@ -20,7 +20,8 @@ PRKGetParam(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckStringValue(fname, L, 2);
@@ -32,7 +33,8 @@ PRKGetParam(lua_State* L)
 
   const std::string param_name = lua_tostring(L, 2);
 
-  if (param_name == "population_prev") lua_pushnumber(L, solver.PopulationPrev());
+  if (param_name == "population_prev")
+    lua_pushnumber(L, solver.PopulationPrev());
   else if (param_name == "population_next")
     lua_pushnumber(L, solver.PopulationNew());
   else if (param_name == "period")
@@ -52,7 +54,8 @@ PRKSetParam(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckStringValue(fname, L, 2);
@@ -138,10 +141,10 @@ GetParamSyntax()
   params.AddRequiredParameter<size_t>("arg0", "Handle to a <TT>prk::TransientSolver</TT> object.");
   params.AddRequiredParameter<std::string>("arg1", "Text name of the parameter to get.");
 
-  // clang-format off
-  params.ConstrainParameterRange("arg1", AllowableRangeList::New({
-    "population_prev", "population_next", "period", "time_prev", "time_next"}));
-  // clang-format on
+  params.ConstrainParameterRange(
+    "arg1",
+    AllowableRangeList::New(
+      {"population_prev", "population_next", "period", "time_prev", "time_next"}));
   return params;
 }
 
@@ -157,7 +160,8 @@ GetParam(const InputParameters& params)
   const auto param_name = params.GetParamValue<std::string>("arg1");
   ParameterBlock outputs;
 
-  if (param_name == "population_prev") outputs.AddParameter("", solver.PopulationPrev());
+  if (param_name == "population_prev")
+    outputs.AddParameter("", solver.PopulationPrev());
   else if (param_name == "population_next")
     outputs.AddParameter("", solver.PopulationNew());
   else if (param_name == "period")

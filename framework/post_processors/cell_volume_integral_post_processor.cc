@@ -19,10 +19,7 @@ CellVolumeIntegralPostProcessor::GetInputParameters()
   params += GridBasedFieldFunctionInterface::GetInputParameters();
   params += LogicalVolumeInterface::GetInputParameters();
 
-  // clang-format off
-  params.SetGeneralDescription(
-  "Computes the volumetric integral of a field-function as a scalar.");
-  // clang-format on
+  params.SetGeneralDescription("Computes the volumetric integral of a field-function as a scalar.");
   params.SetDocGroup("doc_PostProcessors");
 
   params.AddOptionalParameter(

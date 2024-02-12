@@ -12,10 +12,8 @@ PiecewiseLinear1D::GetInputParameters()
 {
   InputParameters params = FunctionDimAToDimB::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription("Piecewise linear function");
   params.SetDocGroup("DocMathFunctions");
-  // clang-format on
 
   params.AddRequiredParameterArray("x_values", "The x-values used in the interpolation function.");
   params.AddRequiredParameterArray("y_values", "The x-values used in the interpolation function.");

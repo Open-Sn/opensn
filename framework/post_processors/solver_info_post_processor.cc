@@ -18,13 +18,11 @@ SolverInfoPostProcessor::GetInputParameters()
 {
   InputParameters params = PostProcessor::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription(
-"A post processor that can get basic info for any object based on "
-"Solver. This solver's execution does not filter whether solver"
-"events are for the relevant solver. This is done to avoid differing "
-"time-histories.");
-  // clang-format on
+    "A post processor that can get basic info for any object based on "
+    "Solver. This solver's execution does not filter whether solver"
+    "events are for the relevant solver. This is done to avoid differing "
+    "time-histories.");
   params.SetDocGroup("doc_PostProcessors");
 
   params.AddRequiredParameter<size_t>("solver", "A handle to the solver.");

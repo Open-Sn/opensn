@@ -159,10 +159,16 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
     rite_face.has_neighbor = true;
 
     // boundary logic
-    // clang-format off
-    if (c == 0) { left_face.neighbor = 5 /*ZMIN*/; left_face.has_neighbor = false; }
-    if (c == max_cz) { rite_face.neighbor = 4 /*ZMAX*/; rite_face.has_neighbor = false; }
-    // clang-format on
+    if (c == 0)
+    {
+      left_face.neighbor = 5 /*ZMIN*/;
+      left_face.has_neighbor = false;
+    }
+    if (c == max_cz)
+    {
+      rite_face.neighbor = 4 /*ZMAX*/;
+      rite_face.has_neighbor = false;
+    }
 
     cell->faces.push_back(left_face);
     cell->faces.push_back(rite_face);
@@ -250,18 +256,40 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
           face.vertex_ids = std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[0]};
 
         face.neighbor = true;
-        // clang-format off
-        if (v == 1 and i != max_j) face.neighbor = cmap[i][j+1]/*XMAX*/;
-        if (v == 3 and i != 0     ) face.neighbor = cmap[i][j-1]/*XMIN*/;
-        if (v == 2 and i != max_i) face.neighbor = cmap[i+1][j]/*YMAX*/;
-        if (v == 0 and i != 0     ) face.neighbor = cmap[i-1][j]/*YMIN*/;
+        if (v == 1 and i != max_j)
+          face.neighbor = cmap[i][j + 1]; /*XMAX*/
+        if (v == 3 and i != 0)
+          face.neighbor = cmap[i][j - 1]; /*XMIN*/
+        if (v == 2 and i != max_i)
+          face.neighbor = cmap[i + 1][j]; /*YMAX*/
+        if (v == 0 and i != 0)
+          face.neighbor = cmap[i - 1][j]; /*YMIN*/
 
         // boundary logic
-        if (v == 1 and j == max_j) { face.neighbor = 0 /*XMAX*/; face.has_neighbor = false; }
-        if (v == 3 and j == 0     ) { face.neighbor = 1 /*XMIN*/; face.has_neighbor = false; }
-        if (v == 2 and i == max_i) { face.neighbor = 2 /*YMAX*/; face.has_neighbor = false; }
-        if (v == 0 and i == 0     ) { face.neighbor = 3 /*YMIN*/; face.has_neighbor = false; }
-        // clang-format on
+        if (v == 1 and j == max_j)
+        {
+          /*XMAX*/
+          face.neighbor = 0;
+          face.has_neighbor = false;
+        }
+        if (v == 3 and j == 0)
+        {
+          /*XMIN*/
+          face.neighbor = 1;
+          face.has_neighbor = false;
+        }
+        if (v == 2 and i == max_i)
+        {
+          /*YMAX*/
+          face.neighbor = 2;
+          face.has_neighbor = false;
+        }
+        if (v == 0 and i == 0)
+        {
+          /*YMIN*/
+          face.neighbor = 3;
+          face.has_neighbor = false;
+        }
 
         cell->faces.push_back(face);
       }

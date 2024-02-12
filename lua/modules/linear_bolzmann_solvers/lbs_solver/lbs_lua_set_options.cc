@@ -16,17 +16,12 @@ GetSyntax_SetOptions()
 {
   opensn::InputParameters params;
 
-  // clang-format off
   params.SetGeneralDescription("Set options from a large list of parameters");
   params.SetDocGroup("LBSLuaFunctions");
 
-  params.AddRequiredParameter<size_t>(
-    "arg0", "Handle to a <TT>lbs::LBSSolver</TT> object.");
-  params.AddRequiredParameterBlock(
-    "arg1", "Block of parameters for <TT>lbs::OptionsBlock</TT>");
+  params.AddRequiredParameter<size_t>("arg0", "Handle to a <TT>lbs::LBSSolver</TT> object.");
+  params.AddRequiredParameterBlock("arg1", "Block of parameters for <TT>lbs::OptionsBlock</TT>");
   params.LinkParameterToBlock("arg1", "lbs::OptionsBlock");
-
-  // clang-format on
 
   return params;
 }

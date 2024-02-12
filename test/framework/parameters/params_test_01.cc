@@ -15,12 +15,9 @@ TestObject::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
-  // clang-format off
-  params.SetGeneralDescription(
-  "\\defgroup unit_tests__TestObject unit_testsB.TestObject\n"
-  "\\ingroup DocUnitTests\n"
-  "General test object");
-  // clang-format on
+  params.SetGeneralDescription("\\defgroup unit_tests__TestObject unit_testsB.TestObject\n"
+                               "\\ingroup DocUnitTests\n"
+                               "General test object");
 
   params.AddOptionalParameter("solver_type", "A", "The solver type.");
   params.AddRequiredParameter<std::string>("coupled_field", "The text name of the coupled field.");
@@ -73,12 +70,9 @@ TestSubObject::GetInputParameters()
 {
   InputParameters params;
 
-  // clang-format off
-  params.SetGeneralDescription(
-  "\\defgroup unit_tests__TestSubObject unit_testsB.TestSubObject\n"
-  "\\ingroup DocUnitTests\n"
-  "General test sub-object");
-  // clang-format on
+  params.SetGeneralDescription("\\defgroup unit_tests__TestSubObject unit_testsB.TestSubObject\n"
+                               "\\ingroup DocUnitTests\n"
+                               "General test sub-object");
 
   params.AddRequiredParameter<size_t>("num_groups", "Number of groups to use in the simulation");
 
@@ -99,12 +93,10 @@ ChildTestObject::GetInputParameters()
 {
   InputParameters params = TestObject::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription(
-  "\\defgroup unit_tests__ChildTestObject unit_testsB.ChildTestObject\n"
-  "\\ingroup DocUnitTests\n"
-  "General test child-object inheriting option from parent");
-  // clang-format on
+    "\\defgroup unit_tests__ChildTestObject unit_testsB.ChildTestObject\n"
+    "\\ingroup DocUnitTests\n"
+    "General test child-object inheriting option from parent");
 
   params.ChangeExistingParamToOptional("coupled_field", "Q");
   params.ChangeExistingParamToRequired<std::string>("solver_type");

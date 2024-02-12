@@ -17,9 +17,7 @@ BooleanLogicalVolume::GetInputParameters()
 {
   InputParameters params = LogicalVolume::GetInputParameters();
 
-  // clang-format off
   params.SetDocGroup("LuaLogicVolumes\n");
-  // clang-format on
 
   params.AddRequiredParameterArray(
     "parts",

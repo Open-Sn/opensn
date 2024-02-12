@@ -105,18 +105,16 @@ private:
   class VaryingArbitraryType : public VaryingType
   {
   public:
-    // clang-format off
     explicit VaryingArbitraryType(T value)
-      : VaryingType(IsByteArray<T>::value ? VaryingDataType::ARBITRARY_BYTES :
-                    IsString<T>::value ? VaryingDataType::STRING :
-                    IsBool<T>::value ? VaryingDataType::BOOL :
-                    IsInteger<T>::value ? VaryingDataType::INTEGER :
-                    IsFloat<T>::value ? VaryingDataType::FLOAT :
-                    VaryingDataType::VOID),
-      value_(value)
+      : VaryingType(IsByteArray<T>::value ? VaryingDataType::ARBITRARY_BYTES
+                    : IsString<T>::value  ? VaryingDataType::STRING
+                    : IsBool<T>::value    ? VaryingDataType::BOOL
+                    : IsInteger<T>::value ? VaryingDataType::INTEGER
+                    : IsFloat<T>::value   ? VaryingDataType::FLOAT
+                                          : VaryingDataType::VOID),
+        value_(value)
     {
     }
-    // clang-format on
     std::string StringValue() const override;
     bool BoolValue() const override;
     int64_t IntegerValue() const override;

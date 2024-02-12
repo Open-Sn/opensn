@@ -16,11 +16,8 @@ QuadratureGaussChebyshev::GetInputParameters()
 {
   InputParameters params = Quadrature::GetInputParameters();
 
-  // clang-format off
-  params.SetGeneralDescription(
-  "Implementation of a Gauss-Chebyshev quadrature");
+  params.SetGeneralDescription("Implementation of a Gauss-Chebyshev quadrature");
   params.SetDocGroup("LuaQuadrature");
-  // clang-format on
 
   params.ChangeExistingParamToOptional("order", 0);
 

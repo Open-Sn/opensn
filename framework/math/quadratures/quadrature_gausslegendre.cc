@@ -19,10 +19,8 @@ QuadratureGaussLegendre::GetInputParameters()
 {
   InputParameters params = Quadrature::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription("General Gauss-Legendre quadrature");
   params.SetDocGroup("LuaQuadrature");
-  // clang-format on
 
   params.ChangeExistingParamToOptional("order", 0);
   params.AddOptionalParameter(
