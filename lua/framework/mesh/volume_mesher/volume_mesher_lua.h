@@ -32,13 +32,6 @@
  */
 int VolumeMesherCreate(lua_State* L);
 
-/** Executes the volume meshing pipeline.
- *
- * \ingroup LuaVolumeMesher
- * \author Jan
- */
-int VolumeMesherExecute(lua_State* L);
-
 /** Sets a volume mesher property.
  *
  * \param PropertyIndex int Index of the property to change. See below

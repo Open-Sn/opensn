@@ -105,8 +105,6 @@ public:
    * "YMAX", "YMIN", "ZMAX", "ZMIN".
    */
   static void SetupOrthogonalBoundaries();
-
-  virtual void Execute();
 };
 
 } // namespace opensn

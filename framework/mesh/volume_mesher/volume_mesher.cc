@@ -187,11 +187,4 @@ VolumeMesher::SetupOrthogonalBoundaries()
   log.Log() << program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
 }
 
-void
-VolumeMesher::Execute()
-{
-  log.Log() << "Empty volume mesher, nothing executed.";
-  log.Log() << std::endl;
-}
-
 } // namespace opensn
