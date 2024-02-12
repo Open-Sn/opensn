@@ -31,8 +31,6 @@ RegisterLuaConstantAsIs(BNDRYID_FROMLOGICAL, Varying(12));
 RegisterLuaConstantAsIs(MATID_FROM_LUA_FUNCTION, Varying(13));
 RegisterLuaConstantAsIs(BNDRYID_FROM_LUA_FUNCTION, Varying(14));
 
-RegisterLuaFunctionAsIs(VolumeMesherSetKBAPartitioningPxPyPz);
-
 using namespace opensn;
 
 namespace
@@ -398,32 +396,6 @@ VolumeMesherSetProperty(lua_State* L)
                               << " in call to VolumeMesherSetProperty().";
     opensn::Exit(EXIT_FAILURE);
   }
-
-  return 0;
-}
-
-int
-VolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
-{
-  int num_args = lua_gettop(L);
-  if (num_args != 3)
-    LuaPostArgAmountError(__FUNCTION__, 3, num_args);
-
-  LuaCheckNilValue(__FUNCTION__, L, 1);
-  LuaCheckNilValue(__FUNCTION__, L, 2);
-  LuaCheckNilValue(__FUNCTION__, L, 3);
-
-  // Get current mesh handler
-  auto& cur_hndlr = GetCurrentHandler();
-  auto& vol_mesher = cur_hndlr.GetVolumeMesher();
-
-  int px = lua_tonumber(L, 1);
-  int py = lua_tonumber(L, 2);
-  int pz = lua_tonumber(L, 3);
-
-  vol_mesher.options.partition_x = px;
-  vol_mesher.options.partition_y = py;
-  vol_mesher.options.partition_z = pz;
 
   return 0;
 }

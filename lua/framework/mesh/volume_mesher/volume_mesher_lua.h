@@ -102,17 +102,6 @@ int VolumeMesherCreate(lua_State* L);
  */
 int VolumeMesherSetProperty(lua_State* L);
 
-/**Sets the Px, Py and Pz partititioning parameters for a
- * KBA-type partitioning. This also fixes the process count required to
- * a total of Px*Py*Pz.
- *
- * \param Px int Number partitions in x.
- * \param Py int Number partitions in y.
- * \param Pz int Number partitions in z.
- * \ingroup LuaVolumeMesher
- */
-int VolumeMesherSetKBAPartitioningPxPyPz(lua_State* L);
-
 /** Sets all cell-material id's to the supplied value.
  * \param material_id int The id.
  * \ingroup LuaVolumeMesher
