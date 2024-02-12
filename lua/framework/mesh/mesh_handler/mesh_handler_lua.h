@@ -10,16 +10,6 @@
  */
 int MeshHandlerCreate(lua_State* L);
 
-/** Sets the given mesh handler as "current".
- *
- * \param HandlerHandler int Handle to the mesh handler previously created
- *        with a call to MeshHandlerCreate.
- *
- * \ingroup LuaMeshHandler
- * \author Jan
- */
-int MeshHandlerSetCurrent(lua_State* L);
-
 /**Exports the mesh to a wavefront.obj format.
  * \param FileName char Base name of the file to be used.
  * \param ExportByMaterial bool Default: False. Flag indicating whether to export
