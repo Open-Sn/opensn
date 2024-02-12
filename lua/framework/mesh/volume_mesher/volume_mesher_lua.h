@@ -113,11 +113,6 @@ int VolumeMesherSetProperty(lua_State* L);
  */
 int VolumeMesherSetKBAPartitioningPxPyPz(lua_State* L);
 
-/**Sets the x-cuts for KBA type partitioning with a lua array.
- * \ingroup LuaVolumeMesher
- */
-int VolumeMesherSetKBACutsX(lua_State* L);
-
 /**Sets the y-cuts for KBA type partitioning with a lua array.
  * \ingroup LuaVolumeMesher
  */

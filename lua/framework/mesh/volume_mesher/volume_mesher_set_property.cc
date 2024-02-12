@@ -32,7 +32,6 @@ RegisterLuaConstantAsIs(MATID_FROM_LUA_FUNCTION, Varying(13));
 RegisterLuaConstantAsIs(BNDRYID_FROM_LUA_FUNCTION, Varying(14));
 
 RegisterLuaFunctionAsIs(VolumeMesherSetKBAPartitioningPxPyPz);
-RegisterLuaFunctionAsIs(VolumeMesherSetKBACutsX);
 RegisterLuaFunctionAsIs(VolumeMesherSetKBACutsY);
 RegisterLuaFunctionAsIs(VolumeMesherSetKBACutsZ);
 
@@ -427,24 +426,6 @@ VolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
   vol_mesher.options.partition_x = px;
   vol_mesher.options.partition_y = py;
   vol_mesher.options.partition_z = pz;
-
-  return 0;
-}
-
-int
-VolumeMesherSetKBACutsX(lua_State* L)
-{
-  int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
-
-  LuaCheckNilValue(__FUNCTION__, L, 1);
-
-  std::vector<double> cuts;
-  LuaPopulateVectorFrom1DArray(__FUNCTION__, L, 1, cuts);
-
-  auto& mesh_handler = GetCurrentHandler();
-  mesh_handler.GetVolumeMesher().options.xcuts = cuts;
 
   return 0;
 }
