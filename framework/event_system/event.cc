@@ -54,7 +54,8 @@ Event::GetStandardCode(const std::string& event_name)
   };
 
   const auto it = event_name_2_code_map.find(event_name);
-  if (it != event_name_2_code_map.end()) return it->second;
+  if (it != event_name_2_code_map.end())
+    return it->second;
 
   return Event::Unknown;
 }

@@ -18,7 +18,10 @@ Ylm(unsigned int ell, int m, double varphi, double theta)
     return pow(-1.0, _m) * sqrt(2.0 * Factorial(_ell - _m) / Factorial(_ell + _m)) * Plm *
            sin(_m * varphi);
   }
-  else if (m == 0) { return Plm; }
+  else if (m == 0)
+  {
+    return Plm;
+  }
   else
   {
     return pow(-1.0, _m) * sqrt(2.0 * Factorial(_ell - _m) / Factorial(_ell + _m)) * Plm *

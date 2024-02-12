@@ -59,7 +59,8 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -232,7 +233,8 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
         else
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id_) > 0)
+            bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -240,7 +242,8 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::SLAB)
+              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYHEDRON)
@@ -324,7 +327,8 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             const double bval = bc.values[1];
             const double fval = bc.values[2];
 
-            if (std::fabs(bval) < 1.0e-12) continue; // a and f assumed zero
+            if (std::fabs(bval) < 1.0e-12)
+              continue; // a and f assumed zero
 
             for (size_t fi = 0; fi < num_face_nodes; fi++)
             {
@@ -373,12 +377,14 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   {
     PetscBool symmetry = PETSC_FALSE;
     MatIsSymmetric(A_, 1.0e-6, &symmetry);
-    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
+    if (symmetry == PETSC_FALSE)
+      throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   KSPSetOperators(ksp_, A_, A_);
 
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
   PC pc;
   KSPGetPC(ksp_, &pc);
@@ -395,7 +401,8 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   VecSet(rhs_, 0.0);
 
@@ -456,7 +463,8 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
         if (not face.has_neighbor_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id_) > 0)
+            bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -464,7 +472,8 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::SLAB)
+              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYHEDRON)
@@ -541,7 +550,8 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
             const double bval = bc.values[1];
             const double fval = bc.values[2];
 
-            if (std::fabs(bval) < 1.0e-12) continue; // a and f assumed zero
+            if (std::fabs(bval) < 1.0e-12)
+              continue; // a and f assumed zero
 
             for (size_t fi = 0; fi < num_face_nodes; fi++)
             {
@@ -569,7 +579,8 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
   KSPSetOperators(ksp_, A_, A_);
 
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
   PC pc;
   KSPGetPC(ksp_, &pc);
@@ -586,7 +597,8 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -738,7 +750,8 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
         else
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id_) > 0)
+            bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -746,7 +759,8 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::SLAB)
+              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYHEDRON)
@@ -799,7 +813,8 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
             const double bval = bc.values[1];
             const double fval = bc.values[2];
 
-            if (std::fabs(bval) < 1.0e-12) continue; // a and f assumed zero
+            if (std::fabs(bval) < 1.0e-12)
+              continue; // a and f assumed zero
 
             for (size_t fi = 0; fi < num_face_nodes; fi++)
             {
@@ -852,12 +867,14 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   {
     PetscBool symmetry = PETSC_FALSE;
     MatIsSymmetric(A_, 1.0e-6, &symmetry);
-    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
+    if (symmetry == PETSC_FALSE)
+      throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   KSPSetOperators(ksp_, A_, A_);
 
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
   PC pc;
   KSPGetPC(ksp_, &pc);
@@ -874,7 +891,8 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -927,7 +945,8 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
         if (not face.has_neighbor_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id_) > 0)
+            bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -935,7 +954,8 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::SLAB)
+              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYHEDRON)
@@ -982,7 +1002,8 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
             const double bval = bc.values[1];
             const double fval = bc.values[2];
 
-            if (std::fabs(bval) < 1.0e-12) continue; // a and f assumed zero
+            if (std::fabs(bval) < 1.0e-12)
+              continue; // a and f assumed zero
 
             for (size_t fi = 0; fi < num_face_nodes; fi++)
             {
@@ -1005,7 +1026,8 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
 
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Assembly completed";
 }
 
 void
@@ -1016,7 +1038,8 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -1072,7 +1095,8 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
         if (not face.has_neighbor_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id_) > 0)
+            bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -1080,7 +1104,8 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB) kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+            if (cell.Type() == CellType::SLAB)
+              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell.Type() == CellType::POLYHEDRON)
@@ -1127,7 +1152,8 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
             const double bval = bc.values[1];
             const double fval = bc.values[2];
 
-            if (std::fabs(bval) < 1.0e-12) continue; // a and f assumed zero
+            if (std::fabs(bval) < 1.0e-12)
+              continue; // a and f assumed zero
 
             for (size_t fi = 0; fi < num_face_nodes; fi++)
             {
@@ -1152,7 +1178,8 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
 
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Assembly completed";
 }
 
 double
@@ -1178,18 +1205,21 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == CellType::SLAB) hp = volume / 2.0;
+  if (cell.Type() == CellType::SLAB)
+    hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
   else if (cell.Type() == CellType::POLYGON)
   {
-    if (num_faces == 3) hp = 2.0 * volume / face_area;
+    if (num_faces == 3)
+      hp = 2.0 * volume / face_area;
     else if (num_faces == 4)
       hp = volume / face_area;
     else // Nv > 4
     {
       const double surface_area = ComputeSurfaceArea();
 
-      if (num_faces % 2 == 0) hp = 4.0 * volume / surface_area;
+      if (num_faces % 2 == 0)
+        hp = 4.0 * volume / surface_area;
       else
       {
         hp = 2.0 * volume / surface_area;
@@ -1239,7 +1269,8 @@ DiffusionMIPSolver::MapFaceNodeDisc(const Cell& cur_cell,
   for (size_t fj = 0; fj < adj_face_num_nodes; ++fj)
   {
     const int j = adj_cell_mapping.MapFaceNode(acf, fj);
-    if ((node_i_loc - ac_node_locs[j]).NormSquare() < epsilon) return j;
+    if ((node_i_loc - ac_node_locs[j]).NormSquare() < epsilon)
+      return j;
   }
 
   throw std::logic_error(

@@ -80,7 +80,8 @@ PostProcessor::PostProcessor(const InputParameters& params, PPType type)
 PPNumericFormat
 PostProcessor::ConstructNumericFormat(const std::string& format_string)
 {
-  if (format_string == "fixed") return PPNumericFormat::FIXED;
+  if (format_string == "fixed")
+    return PPNumericFormat::FIXED;
   else if (format_string == "floating_point")
     return PPNumericFormat::FLOATING_POINT;
   else if (format_string == "scientific")
@@ -237,10 +238,12 @@ std::string
 PostProcessor::ConvertValueToString(const ParameterBlock& value) const
 {
   const PPType type = FigureTypeFromValue(value);
-  if (type == PPType::SCALAR) return ConvertScalarValueToString(value);
+  if (type == PPType::SCALAR)
+    return ConvertScalarValueToString(value);
   else if (type == PPType::VECTOR)
   {
-    if (value.NumParameters() == 0) return "";
+    if (value.NumParameters() == 0)
+      return "";
     const auto& first_entry = value.GetParam(0);
     const auto first_entry_type = first_entry.Type();
 
@@ -280,15 +283,18 @@ PostProcessor::FigureTypeFromValue(const ParameterBlock& value)
   auto IsScalar = [&scalar_types](const ParameterBlockType& block_type)
   { return std::find(scalar_types.begin(), scalar_types.end(), block_type) != scalar_types.end(); };
 
-  if (not value.HasValue() and value.NumParameters() == 0) return PPType::NO_VALUE;
+  if (not value.HasValue() and value.NumParameters() == 0)
+    return PPType::NO_VALUE;
   else if (IsScalar(value.Type()))
     return PPType::SCALAR;
   else if (value.Type() == ParameterBlockType::ARRAY)
   {
-    if (value.NumParameters() == 0) return PPType::NO_VALUE;
+    if (value.NumParameters() == 0)
+      return PPType::NO_VALUE;
     else
     {
-      if (IsScalar(value.GetParam(0).Type())) return PPType::VECTOR;
+      if (IsScalar(value.GetParam(0).Type()))
+        return PPType::VECTOR;
       else
         return PPType::ARBITRARY;
     }

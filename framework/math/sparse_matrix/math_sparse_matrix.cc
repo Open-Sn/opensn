@@ -203,7 +203,10 @@ SparseMatrix::PrintStr() const
         out << std::setprecision(2) << std::scientific << std::setw(9) << rowI_values_[i][jr]
             << " ";
       }
-      else { out << std::setprecision(0) << std::fixed << std::setw(9) << 0.0 << " "; }
+      else
+      {
+        out << std::setprecision(0) << std::fixed << std::setw(9) << 0.0 << " ";
+      }
     }
     out << "\n";
   }

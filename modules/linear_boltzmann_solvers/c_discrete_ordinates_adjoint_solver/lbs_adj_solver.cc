@@ -123,7 +123,8 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
   // Material sources
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    if (matid_to_src_map_.count(cell.material_id_) == 0) continue; // Skip if no src
+    if (matid_to_src_map_.count(cell.material_id_) == 0)
+      continue; // Skip if no src
 
     const auto& transport_view = cell_transport_views_[cell.local_id_];
     const auto& source = matid_to_src_map_[cell.material_id_];
@@ -246,10 +247,14 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
 
           for (int g : set_group_numbers)
           {
-            if (ell == 0 and em == 0) p1_moments[g](0) = std::fabs(phi_old_local_[dof_map + g]);
-            if (ell == 1 and em == 1) p1_moments[g](1) = phi_old_local_[dof_map + g];
-            if (ell == 1 and em == -1) p1_moments[g](2) = phi_old_local_[dof_map + g];
-            if (ell == 1 and em == 0) p1_moments[g](3) = phi_old_local_[dof_map + g];
+            if (ell == 0 and em == 0)
+              p1_moments[g](0) = std::fabs(phi_old_local_[dof_map + g]);
+            if (ell == 1 and em == 1)
+              p1_moments[g](1) = phi_old_local_[dof_map + g];
+            if (ell == 1 and em == -1)
+              p1_moments[g](2) = phi_old_local_[dof_map + g];
+            if (ell == 1 and em == 0)
+              p1_moments[g](3) = phi_old_local_[dof_map + g];
           } // for g
         }   // for m
 
@@ -330,7 +335,8 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   {
     log.LogAll() << "  Barrier at " << locationJ;
     opensn::mpi_comm.barrier();
-    if (opensn::mpi_comm.rank() != locationJ) continue;
+    if (opensn::mpi_comm.rank() != locationJ)
+      continue;
 
     log.LogAll() << "  Location " << locationJ << " appending data.";
 

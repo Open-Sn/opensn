@@ -20,7 +20,8 @@ SurfaceMeshImportFromOBJFile(lua_State* L)
 
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args < 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   int handle = lua_tonumber(L, 1);
 
@@ -28,7 +29,8 @@ SurfaceMeshImportFromOBJFile(lua_State* L)
   const std::string file_name = lua_tolstring(L, 2, &length);
 
   bool as_poly = true;
-  if (num_args >= 3) as_poly = lua_toboolean(L, 3);
+  if (num_args >= 3)
+    as_poly = lua_toboolean(L, 3);
 
   auto& surface_mesh =
     opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);
@@ -41,7 +43,8 @@ SurfaceMeshImportFromOBJFile(lua_State* L)
   {
     std::vector<double> T;
     LuaPopulateVectorFrom1DArray(fname, L, 4, T);
-    if (T.size() != 3) throw std::invalid_argument(fname + ": Argument 4. Table length not 3.");
+    if (T.size() != 3)
+      throw std::invalid_argument(fname + ": Argument 4. Table length not 3.");
     Tvec = Vector3(T[0], T[1], T[2]);
     opensn::log.Log0Verbose2() << "Transform vector: " << Tvec.PrintStr();
   }
@@ -64,7 +67,10 @@ SurfaceMeshImportFromTriangleFiles(lua_State* L)
   const char* temp = lua_tolstring(L, 2, &length);
 
   bool as_poly = true;
-  if (num_args == 3) { as_poly = lua_toboolean(L, 3); }
+  if (num_args == 3)
+  {
+    as_poly = lua_toboolean(L, 3);
+  }
 
   auto& surface_mesh =
     opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);
@@ -87,7 +93,10 @@ SurfaceMeshImportFromMshFiles(lua_State* L)
   const char* temp = lua_tolstring(L, 2, &length);
 
   bool as_poly = true;
-  if (num_args == 3) { as_poly = lua_toboolean(L, 3); }
+  if (num_args == 3)
+  {
+    as_poly = lua_toboolean(L, 3);
+  }
 
   auto& surface_mesh =
     opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);

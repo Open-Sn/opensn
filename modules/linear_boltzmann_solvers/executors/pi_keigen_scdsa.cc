@@ -222,7 +222,8 @@ XXPowerIterationKEigenSCDSA::Initialize()
 
   log.Log() << "Assembling A and b";
   std::vector<double> dummy_rhs;
-  if (diffusion_solver_sdm_ == "pwld") dummy_rhs.assign(sdm.GetNumLocalDOFs(uk_man), 0.0);
+  if (diffusion_solver_sdm_ == "pwld")
+    dummy_rhs.assign(sdm.GetNumLocalDOFs(uk_man), 0.0);
   else
     dummy_rhs.assign(continuous_sdm_ptr_->GetNumLocalAndGhostDOFs(uk_man), 0.0);
 
@@ -329,7 +330,8 @@ XXPowerIterationKEigenSCDSA::Execute()
         log.Log() << "PISCDSA iteration " << k << " lambda " << lambda_kp1 << " lambda change "
                   << lambda_change;
 
-      if (lambda_change < accel_pi_k_tol_) break;
+      if (lambda_change < accel_pi_k_tol_)
+        break;
 
       lambda_k = lambda_kp1;
       epsilon_k = epsilon_kp1;
@@ -351,7 +353,8 @@ XXPowerIterationKEigenSCDSA::Execute()
     k_eff_prev = k_eff_;
     nit += 1;
 
-    if (k_eff_change < std::max(k_tolerance_, 1.0e-12)) converged = true;
+    if (k_eff_change < std::max(k_tolerance_, 1.0e-12))
+      converged = true;
 
     // Print iteration summary
     if (lbs_solver_.Options().verbose_outer_iterations)
@@ -361,12 +364,14 @@ XXPowerIterationKEigenSCDSA::Execute()
                   << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
                   << std::setprecision(7) << k_eff_ << "  k_eff change " << std::setw(12)
                   << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
-      if (converged) k_iter_info << " CONVERGED\n";
+      if (converged)
+        k_iter_info << " CONVERGED\n";
 
       log.Log() << k_iter_info.str();
     }
 
-    if (converged) break;
+    if (converged)
+      break;
   } // for k iterations
 
   // Print summary
@@ -616,7 +621,8 @@ XXPowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      if (vid_set.find(cell.vertex_ids_[i]) == vid_set.end()) continue;
+      if (vid_set.find(cell.vertex_ids_[i]) == vid_set.end())
+        continue;
 
       for (size_t u = 0; u < num_unknowns; ++u)
       {

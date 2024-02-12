@@ -17,7 +17,8 @@ UnpartitionedMeshUploadVertex(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 4) LuaPostArgAmountError(fname, 4, num_args);
+  if (num_args != 4)
+    LuaPostArgAmountError(fname, 4, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -45,15 +46,18 @@ UnpartitionedMeshUploadCell(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args < 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
-  if (num_args == 3) LuaCheckBoolValue(fname, L, 3);
+  if (num_args == 3)
+    LuaCheckBoolValue(fname, L, 3);
 
   const int handle = lua_tointeger(L, 1);
   bool verbose = false;
-  if (num_args == 3) verbose = lua_toboolean(L, 3);
+  if (num_args == 3)
+    verbose = lua_toboolean(L, 3);
 
   auto& mesh =
     opensn::GetStackItem<opensn::UnpartitionedMesh>(opensn::unpartitionedmesh_stack, handle, fname);
@@ -145,7 +149,8 @@ UnpartitionedMeshFinalizeEmpty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckNilValue(fname, L, 1);
 

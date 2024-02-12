@@ -124,7 +124,8 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   typedef PieceWiseLinearContinuous PWLC;
   typedef PieceWiseLinearDiscontinuous PWLD;
 
-  if (sdm_type == "FV") return FV::New(*grid_ptr);
+  if (sdm_type == "FV")
+    return FV::New(*grid_ptr);
 
   CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN;
   std::string cs = "cartesian";
@@ -132,9 +133,12 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   {
     cs = params.GetParamValue<std::string>("coordinate_system");
 
-    if (cs == "cartesian") cs_type = CoordinateSystemType::CARTESIAN;
-    if (cs == "cylindrical") cs_type = CoordinateSystemType::CYLINDRICAL;
-    if (cs == "spherical") cs_type = CoordinateSystemType::SPHERICAL;
+    if (cs == "cartesian")
+      cs_type = CoordinateSystemType::CARTESIAN;
+    if (cs == "cylindrical")
+      cs_type = CoordinateSystemType::CYLINDRICAL;
+    if (cs == "spherical")
+      cs_type = CoordinateSystemType::SPHERICAL;
   }
 
   QuadratureOrder q_order = QuadratureOrder::SECOND;
@@ -149,17 +153,18 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   }
   else // Defaulted
   {
-    if (cs == "cartesian") q_order = QuadratureOrder::SECOND;
-    if (cs == "cylindrical") q_order = QuadratureOrder::THIRD;
-    if (cs == "spherical") q_order = QuadratureOrder::FOURTH;
+    if (cs == "cartesian")
+      q_order = QuadratureOrder::SECOND;
+    if (cs == "cylindrical")
+      q_order = QuadratureOrder::THIRD;
+    if (cs == "spherical")
+      q_order = QuadratureOrder::FOURTH;
   }
 
-  // clang-format off
   if (sdm_type == "PWLC")
     return PWLC::New(*grid_ptr, q_order, cs_type);
   else if (sdm_type == "PWLD")
     return PWLD::New(*grid_ptr, q_order, cs_type);
-  // clang-format on
 
   // If not returned by now
   ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
@@ -238,7 +243,8 @@ FieldFunctionGridBased::ExportMultipleToVTK(
     for (uint c = 0; c < num_comps; ++c)
     {
       std::string component_name = ff_ptr->TextName() + unknown.text_name_;
-      if (num_comps > 1) component_name += unknown.component_text_names_[c];
+      if (num_comps > 1)
+        component_name += unknown.component_text_names_[c];
 
       vtkNew<vtkDoubleArray> point_array;
       vtkNew<vtkDoubleArray> cell_array;

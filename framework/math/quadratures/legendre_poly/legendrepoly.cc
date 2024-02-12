@@ -12,9 +12,15 @@ Legendre(int N, double x)
   double Pn = x;
   double Pnp1 = 0;
 
-  if (N == 0) { return 1; }
+  if (N == 0)
+  {
+    return 1;
+  }
 
-  if (N == 1) { return x; }
+  if (N == 1)
+  {
+    return x;
+  }
 
   for (int n = 2; n <= N; n++)
   {
@@ -30,9 +36,15 @@ Legendre(int N, double x)
 double
 dLegendredx(int N, double x)
 {
-  if (N == 0) { return 0; }
+  if (N == 0)
+  {
+    return 0;
+  }
 
-  if (N == 1) { return 1; }
+  if (N == 1)
+  {
+    return 1;
+  }
 
   double retval = (N * x / (x * x - 1)) * Legendre(N, x);
   retval -= (N / (x * x - 1)) * Legendre(N - 1, x);
@@ -44,9 +56,15 @@ double
 d2Legendredx2(int N, double x)
 {
   double epsilon = 1.0e-8;
-  if (N == 0) { return 0.0; }
+  if (N == 0)
+  {
+    return 0.0;
+  }
 
-  if (N == 1) { return 0.0; }
+  if (N == 1)
+  {
+    return 0.0;
+  }
 
   double xpos = std::min(x + epsilon, 1.0 - 1.0e-10);
   double xneg = std::max(x - epsilon, -1.0 + 1.0e-10);

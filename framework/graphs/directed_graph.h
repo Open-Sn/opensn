@@ -51,9 +51,11 @@ public:
         do
         {
           ++ref_element;
-          if (ref_element >= ref_block.vertices_.size()) stop = true;
+          if (ref_element >= ref_block.vertices_.size())
+            stop = true;
           if (not stop)
-            if (ref_block.vertex_valid_flags_[ref_element]) stop = true;
+            if (ref_block.vertex_valid_flags_[ref_element])
+              stop = true;
         } while (not stop);
         return i;
       }
@@ -63,9 +65,11 @@ public:
         do
         {
           ++ref_element;
-          if (ref_element >= ref_block.vertices_.size()) stop = true;
+          if (ref_element >= ref_block.vertices_.size())
+            stop = true;
           if (not stop)
-            if (ref_block.vertex_valid_flags_[ref_element]) stop = true;
+            if (ref_block.vertex_valid_flags_[ref_element])
+              stop = true;
         } while (not stop);
         return *this;
       }
@@ -78,14 +82,18 @@ public:
     iterator begin()
     {
       size_t count = 0;
-      if (vertex_valid_flags_.empty()) return {*this, count};
-      if (vertex_valid_flags_[count]) return {*this, count};
+      if (vertex_valid_flags_.empty())
+        return {*this, count};
+      if (vertex_valid_flags_[count])
+        return {*this, count};
 
       // Get next valid or end
       while (true)
       {
-        if (count >= vertices_.size()) return {*this, count};
-        if (vertex_valid_flags_[count]) return {*this, count};
+        if (count >= vertices_.size())
+          return {*this, count};
+        if (vertex_valid_flags_[count])
+          return {*this, count};
         ++count;
       }
     }
@@ -98,7 +106,8 @@ public:
     {
       size_t count = 0;
       for (bool val : vertex_valid_flags_)
-        if (val) ++count;
+        if (val)
+          ++count;
 
       return count;
     }
@@ -135,7 +144,8 @@ public:
   {
     size_t count = 0;
     for (auto& v : vertices)
-      if (v.ds_edge.empty() and not v.us_edge.empty()) ++count;
+      if (v.ds_edge.empty() and not v.us_edge.empty())
+        ++count;
     return count;
   }
 
@@ -143,7 +153,8 @@ public:
   {
     size_t count = 0;
     for (auto& v : vertices)
-      if (v.us_edge.empty() and not v.ds_edge.empty()) ++count;
+      if (v.us_edge.empty() and not v.ds_edge.empty())
+        ++count;
     return count;
   }
 

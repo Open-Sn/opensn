@@ -160,7 +160,8 @@ AngleAggregation::InitializeReflectingBCs()
       for (int n = 0; n < tot_num_angles; ++n)
       {
         // Only continue if omega is outgoing
-        if (quadrature->omegas_[n].Dot(rbndry.Normal()) < 0.0) continue;
+        if (quadrature->omegas_[n].Dot(rbndry.Normal()) < 0.0)
+          continue;
 
         // For cells
         auto& cell_vec = heteroflux_new[n];
@@ -179,7 +180,8 @@ AngleAggregation::InitializeReflectingBCs()
               break;
             }
           }
-          if (not on_ref_bndry) continue;
+          if (not on_ref_bndry)
+            continue;
 
           // If cell on ref bndry
           cell_vec[c].resize(cell.faces_.size());
@@ -204,13 +206,16 @@ AngleAggregation::InitializeReflectingBCs()
       // reflecting boundary
       for (const auto& [otherbid, otherbndry] : sim_boundaries)
       {
-        if (bid == otherbid) continue;
-        if (not otherbndry->IsReflecting()) continue;
+        if (bid == otherbid)
+          continue;
+        if (not otherbndry->IsReflecting())
+          continue;
 
         const auto& otherRbndry = dynamic_cast<const BoundaryReflecting&>(*otherbndry);
 
         if (rbndry.Normal().Dot(otherRbndry.Normal()) < (0.0 - epsilon))
-          if (bid < otherbid) rbndry.SetOpposingReflected(true);
+          if (bid < otherbid)
+            rbndry.SetOpposingReflected(true);
       }
 
       if (rbndry.IsOpposingReflected())
@@ -228,7 +233,8 @@ std::pair<size_t, size_t>
 AngleAggregation::GetNumDelayedAngularDOFs()
 {
   // Check if this is already developed
-  if (num_ang_unknowns_avail) return number_angular_unknowns;
+  if (num_ang_unknowns_avail)
+    return number_angular_unknowns;
 
   // If not developed
   size_t local_ang_unknowns = 0;

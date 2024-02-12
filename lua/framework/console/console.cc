@@ -84,7 +84,8 @@ Console::LuaWrapperCall(lua_State* L)
   {
     const std::string arg_name = "arg" + std::to_string(p - 2);
 
-    if (lua_isboolean(L, p)) main_arguments_block.AddParameter(arg_name, lua_toboolean(L, p));
+    if (lua_isboolean(L, p))
+      main_arguments_block.AddParameter(arg_name, lua_toboolean(L, p));
     else if (lua_isinteger(L, p))
       main_arguments_block.AddParameter(arg_name, lua_tointeger(L, p));
     else if (lua_isnumber(L, p))
@@ -143,10 +144,12 @@ Console::RunConsoleLoop(char*) const
   {
     std::string console_input;
 
-    if (HOME) std::cin >> console_input; // Home will be waiting here
+    if (HOME)
+      std::cin >> console_input; // Home will be waiting here
 
     mpi_comm.broadcast(console_input, 0);
-    if (console_input == "exit") break;
+    if (console_input == "exit")
+      break;
 
     try
     {
@@ -307,7 +310,8 @@ Console::AddWrapperToRegistryInNamespaceWithName(const std::string& name_in_lua,
                     std::string("Attempted to register lua-function wrapper \"") + name_in_lua +
                       "\" but a wrapper with the same name already exists");
 
-  if (not syntax_function) syntax_function = DefaultGetInParamsFunc;
+  if (not syntax_function)
+    syntax_function = DefaultGetInParamsFunc;
 
   if (not ignore_null_call_func)
     ChiLogicalErrorIf(not actual_function, "Problem with get_in_params_func");
@@ -363,7 +367,8 @@ Console::SetLuaFuncWrapperNamespaceTableStructure(const std::string& full_lua_na
   const auto table_names = StringSplit(full_lua_name, "::");
   std::vector<std::string> namespace_names;
   for (const auto& table_name : table_names)
-    if (table_name != table_names.back()) namespace_names.push_back(table_name);
+    if (table_name != table_names.back())
+      namespace_names.push_back(table_name);
 
   const auto& function_name = table_names.back();
 
@@ -456,7 +461,8 @@ Console::SetLuaConstant(const std::string& constant_name, const Varying& value)
 
   auto PushVaryingValue = [&L](const Varying& var_value)
   {
-    if (var_value.Type() == VaryingDataType::BOOL) lua_pushboolean(L, var_value.BoolValue());
+    if (var_value.Type() == VaryingDataType::BOOL)
+      lua_pushboolean(L, var_value.BoolValue());
     else if (var_value.Type() == VaryingDataType::STRING)
       lua_pushstring(L, var_value.StringValue().c_str());
     else if (var_value.Type() == VaryingDataType::INTEGER)
@@ -477,7 +483,10 @@ Console::SetLuaConstant(const std::string& constant_name, const Varying& value)
   {
     std::vector<std::string> namespace_names;
     for (const auto& table_name : path_names)
-      if (table_name != path_names.back()) { namespace_names.push_back(table_name); }
+      if (table_name != path_names.back())
+      {
+        namespace_names.push_back(table_name);
+      }
 
     FleshOutLuaTableStructure(namespace_names);
     lua_pushstring(L, path_names.back().c_str());
@@ -502,7 +511,8 @@ Console::DumpRegister() const
 
     opensn::log.Log() << "LUA_FUNCWRAPPER_BEGIN " << key;
 
-    if (not entry.call_func) opensn::log.Log() << "SYNTAX_BLOCK";
+    if (not entry.call_func)
+      opensn::log.Log() << "SYNTAX_BLOCK";
 
     const auto in_params = entry.get_in_params_func();
     in_params.DumpParameters();
@@ -520,7 +530,8 @@ Console::UpdateConsoleBindings(const RegistryStatuses& old_statuses)
 
   const auto& object_factory = ObjectFactory::GetInstance();
   for (const auto& [key, _] : object_factory.Registry())
-    if (not ListHasValue(old_statuses.objfactory_keys_, key)) SetObjectNamespaceTableStructure(key);
+    if (not ListHasValue(old_statuses.objfactory_keys_, key))
+      SetObjectNamespaceTableStructure(key);
 
   for (const auto& [key, entry] : lua_function_registry_)
     if (not ListHasValue(old_statuses.objfactory_keys_, key))
@@ -528,7 +539,8 @@ Console::UpdateConsoleBindings(const RegistryStatuses& old_statuses)
 
   for (const auto& [key, entry] : function_wrapper_registry_)
     if (not ListHasValue(old_statuses.objfactory_keys_, key))
-      if (entry.call_func) SetLuaFuncWrapperNamespaceTableStructure(key);
+      if (entry.call_func)
+        SetLuaFuncWrapperNamespaceTableStructure(key);
 }
 
 } // namespace opensnlua

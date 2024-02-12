@@ -29,7 +29,8 @@ SimTest91_PWLD(const InputParameters&)
 
   opensn::log.Log() << "SimTest91_PWLD num_args = " << 0;
 
-  if (opensn::mpi_comm.size() != 1) throw std::logic_error(fname + ": Is serial only.");
+  if (opensn::mpi_comm.size() != 1)
+    throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
   auto grid_ptr = GetCurrentHandler().GetGrid();
@@ -50,9 +51,12 @@ SimTest91_PWLD(const InputParameters&)
   const auto Dim3 = DIMENSION_3;
 
   int dimension = 0;
-  if (grid.Attributes() & Dim1) dimension = 1;
-  if (grid.Attributes() & Dim2) dimension = 2;
-  if (grid.Attributes() & Dim3) dimension = 3;
+  if (grid.Attributes() & Dim1)
+    dimension = 1;
+  if (grid.Attributes() & Dim2)
+    dimension = 2;
+  if (grid.Attributes() & Dim3)
+    dimension = 3;
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
@@ -68,7 +72,8 @@ SimTest91_PWLD(const InputParameters&)
 
   // Make an angular quadrature
   std::shared_ptr<AngularQuadrature> quadrature;
-  if (dimension == 1) quadrature = std::make_shared<AngularQuadratureProdGL>(8);
+  if (dimension == 1)
+    quadrature = std::make_shared<AngularQuadratureProdGL>(8);
   else if (dimension == 2)
   {
     quadrature = std::make_shared<AngularQuadratureProdGLC>(8, 8);
@@ -345,13 +350,16 @@ SimTest91_PWLD(const InputParameters&)
       const auto& weight = quadrature->weights_[d];
 
       std::vector<int64_t> iorder, jorder, korder;
-      if (omega.x > 0.0) iorder = Range<int64_t>(0, Nx);
+      if (omega.x > 0.0)
+        iorder = Range<int64_t>(0, Nx);
       else
         iorder = Range<int64_t>(Nx - 1, -1, -1);
-      if (omega.y > 0.0) jorder = Range<int64_t>(0, Ny);
+      if (omega.y > 0.0)
+        jorder = Range<int64_t>(0, Ny);
       else
         jorder = Range<int64_t>(Ny - 1, -1, -1);
-      if (omega.z > 0.0) korder = Range<int64_t>(0, Nz);
+      if (omega.z > 0.0)
+        korder = Range<int64_t>(0, Nz);
       else
         korder = Range<int64_t>(Nz - 1, -1, -1);
 
@@ -476,7 +484,8 @@ SimTest91_PWLD(const InputParameters&)
 
     phi_old = phi_new;
 
-    if (rel_change < 1.0e-6 and iter > 0) break;
+    if (rel_change < 1.0e-6 and iter > 0)
+      break;
   } // for iteration
 
   // Create Field Functions
@@ -506,9 +515,12 @@ SimTest91_PWLD(const InputParameters&)
   ff_list[0]->UpdateFieldVector(m0_phi);
 
   std::array<unsigned int, 3> j_map = {0, 0, 0};
-  if (dimension == 1 and num_moments >= 2) j_map = {0, 0, 1};
-  if (dimension == 2 and num_moments >= 3) j_map = {2, 1, 0};
-  if (dimension == 3 and num_moments >= 4) j_map = {3, 1, 2};
+  if (dimension == 1 and num_moments >= 2)
+    j_map = {0, 0, 1};
+  if (dimension == 2 and num_moments >= 3)
+    j_map = {2, 1, 0};
+  if (dimension == 3 and num_moments >= 4)
+    j_map = {3, 1, 2};
 
   sdm.CopyVectorWithUnknownScope(phi_old, mx_phi, phi_uk_man, j_map[0], m0_uk_man, 0);
   sdm.CopyVectorWithUnknownScope(phi_old, my_phi, phi_uk_man, j_map[1], m0_uk_man, 0);

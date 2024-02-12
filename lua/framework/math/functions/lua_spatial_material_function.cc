@@ -50,7 +50,8 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
 
   // Check response function given
   // Return default if none provided
-  if (lua_function_name_.empty()) return std::vector<double>(num_components, 1.0);
+  if (lua_function_name_.empty())
+    return std::vector<double>(num_components, 1.0);
 
   // Load lua function
   lua_State* L = console.GetConsoleState();

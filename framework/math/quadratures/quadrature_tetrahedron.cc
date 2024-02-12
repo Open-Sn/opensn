@@ -175,7 +175,6 @@ QuadratureTetrahedron::KeastRule(const std::vector<std::vector<double>>& rule_da
 
   typedef Vector3 Point;
 
-  // clang-format off
   // Like the Dunavant rule, the input data should have 4 columns.  These
   // columns have the following format and implied permutations (w=weight).
   // {a, 0, 0, w} = 1-permutation  (a,a,a)
@@ -183,7 +182,6 @@ QuadratureTetrahedron::KeastRule(const std::vector<std::vector<double>>& rule_da
   // {a, 0, b, w} = 6-permutation  (a,a,b), (a,b,b), (b,b,a), (b,a,b), (b,a,a), (a,b,a)
   // {a, b, c, w} = 12-permutation (a,a,b), (a,a,c), (b,a,a), (c,a,a), (a,b,a), (a,c,a)
   //                               (a,b,c), (a,c,b), (b,a,c), (b,c,a), (c,a,b), (c,b,a)
-  // clang-format on
 
   // Always insert into the points & weights vector relative to the offset
   unsigned int offset = 0;
@@ -205,14 +203,16 @@ QuadratureTetrahedron::KeastRule(const std::vector<std::vector<double>>& rule_da
 
     if (rule_data[p][1] != static_cast<double>(0.0))
     {
-      if (rule_data[p][2] != static_cast<double>(0.0)) pointtype = 12;
+      if (rule_data[p][2] != static_cast<double>(0.0))
+        pointtype = 12;
       else
         pointtype = 4;
     }
     else
     {
       // The second entry is zero.  What about the third?
-      if (rule_data[p][2] != static_cast<double>(0.0)) pointtype = 6;
+      if (rule_data[p][2] != static_cast<double>(0.0))
+        pointtype = 6;
     }
 
     switch (pointtype)

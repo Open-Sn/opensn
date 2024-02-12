@@ -33,11 +33,17 @@ LogSetVerbosity(lua_State* L)
 {
   int num_args = lua_gettop(L);
 
-  if (num_args == 0) { return 0; }
+  if (num_args == 0)
+  {
+    return 0;
+  }
   else
   {
     int level = lua_tonumber(L, 1);
-    if (level <= 2) { opensn::log.SetVerbosity(level); }
+    if (level <= 2)
+    {
+      opensn::log.SetVerbosity(level);
+    }
   }
   return 0;
 }
@@ -47,7 +53,8 @@ Log(lua_State* L)
 {
   int num_args = lua_gettop(L);
 
-  if (num_args != 2) LuaPostArgAmountError("Log", 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError("Log", 2, num_args);
 
   int mode = lua_tonumber(L, 1);
   const char* message = lua_tostring(L, 2);
@@ -62,7 +69,8 @@ LogProcessEvent(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckStringValue(fname, L, 1);
   LuaCheckStringValue(fname, L, 2);

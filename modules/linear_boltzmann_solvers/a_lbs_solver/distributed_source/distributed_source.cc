@@ -53,7 +53,8 @@ lbs::DistributedSource::Initialize(const LBSSolver& lbs_solver)
 {
   subscribers_.clear();
   for (const auto& cell : lbs_solver.Grid().local_cells)
-    if (logical_volume_ptr_->Inside(cell.centroid_)) subscribers_.push_back(cell.local_id_);
+    if (logical_volume_ptr_->Inside(cell.centroid_))
+      subscribers_.push_back(cell.local_id_);
 
   num_local_subsribers_ = subscribers_.size();
   mpi_comm.all_reduce(num_local_subsribers_, num_global_subscribers_, mpi::op::sum<size_t>());

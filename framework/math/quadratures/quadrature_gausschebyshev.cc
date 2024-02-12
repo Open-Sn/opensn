@@ -16,11 +16,8 @@ QuadratureGaussChebyshev::GetInputParameters()
 {
   InputParameters params = Quadrature::GetInputParameters();
 
-  // clang-format off
-  params.SetGeneralDescription(
-  "Implementation of a Gauss-Chebyshev quadrature");
+  params.SetGeneralDescription("Implementation of a Gauss-Chebyshev quadrature");
   params.SetDocGroup("LuaQuadrature");
-  // clang-format on
 
   params.ChangeExistingParamToOptional("order", 0);
 
@@ -73,7 +70,8 @@ QuadratureGaussChebyshev::Initialize(unsigned int N)
     qpoints_.emplace_back(xn);
     weights_.emplace_back(wn);
 
-    if (verbose_) log.Log() << "root[" << n << "]=" << qpoints_[n][0] << ", weight=" << weights_[n];
+    if (verbose_)
+      log.Log() << "root[" << n << "]=" << qpoints_[n][0] << ", weight=" << weights_[n];
   }
 
   range_ = {-1, +1};

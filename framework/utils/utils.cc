@@ -39,7 +39,8 @@ StringSplit(const std::string& input, const std::string& delim)
 
   while (first_scope != NPOS)
   {
-    if (first_scope != 0) output.push_back(remainder.substr(0, first_scope));
+    if (first_scope != 0)
+      output.push_back(remainder.substr(0, first_scope));
 
     remainder = remainder.substr(first_scope + delim.size(), NPOS);
     first_scope = remainder.find_first_of(delim);
@@ -55,7 +56,8 @@ StringUpToFirstReverse(const std::string& input, const std::string& search_strin
   constexpr size_t NPOS = std::string::npos;
   std::string output = input;
   const size_t last_scope = input.find_last_of(search_string);
-  if (last_scope != NPOS) output = input.substr(last_scope + search_string.size(), NPOS);
+  if (last_scope != NPOS)
+    output = input.substr(last_scope + search_string.size(), NPOS);
 
   return output;
 }
@@ -85,7 +87,8 @@ PrintIterationProgress(const size_t current_iteration,
   const auto& N = total_num_iterations;
 
   // If on the first iteration then do nothing
-  if (i == 0) return {};
+  if (i == 0)
+    return {};
 
   // Prepare an output stream
   std::stringstream output;

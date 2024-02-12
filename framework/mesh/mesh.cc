@@ -72,8 +72,10 @@ CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
     left_face.vertex_ids = {c};
     rite_face.vertex_ids = {c + 1};
 
-    if (c == 0) left_face.neighbor = 5 /*ZMIN*/;
-    if (c == (zverts.size() - 2)) rite_face.neighbor = 4 /*ZMAX*/;
+    if (c == 0)
+      left_face.neighbor = 5 /*ZMIN*/;
+    if (c == (zverts.size() - 2))
+      rite_face.neighbor = 4 /*ZMAX*/;
 
     cell->faces.push_back(left_face);
     cell->faces.push_back(rite_face);
@@ -156,10 +158,14 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
           face.vertex_ids = std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[0]};
 
         // boundary logic
-        if (j == (Nx - 2) and v == 1) face.neighbor = 0 /*XMAX*/;
-        if (j == 0 and v == 3) face.neighbor = 1 /*XMIN*/;
-        if (i == (Ny - 2) and v == 2) face.neighbor = 2 /*YMAX*/;
-        if (i == 0 and v == 0) face.neighbor = 3 /*YMIN*/;
+        if (j == (Nx - 2) and v == 1)
+          face.neighbor = 0 /*XMAX*/;
+        if (j == 0 and v == 3)
+          face.neighbor = 1 /*XMIN*/;
+        if (i == (Ny - 2) and v == 2)
+          face.neighbor = 2 /*YMAX*/;
+        if (i == 0 and v == 0)
+          face.neighbor = 3 /*YMIN*/;
 
         cell->faces.push_back(face);
       }

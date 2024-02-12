@@ -94,10 +94,14 @@ public:
 
     static_assert(is_supported, "Value type not supported for parameter block");
 
-    if (IsBool<T>::value) type_ = ParameterBlockType::BOOLEAN;
-    if (IsFloat<T>::value) type_ = ParameterBlockType::FLOAT;
-    if (IsString<T>::value) type_ = ParameterBlockType::STRING;
-    if (IsInteger<T>::value) type_ = ParameterBlockType::INTEGER;
+    if (IsBool<T>::value)
+      type_ = ParameterBlockType::BOOLEAN;
+    if (IsFloat<T>::value)
+      type_ = ParameterBlockType::FLOAT;
+    if (IsString<T>::value)
+      type_ = ParameterBlockType::STRING;
+    if (IsInteger<T>::value)
+      type_ = ParameterBlockType::INTEGER;
 
     value_ptr_ = std::make_unique<Varying>(value);
   }
@@ -233,7 +237,8 @@ public:
                              ParameterBlockTypeName(Type()));
 
     std::vector<T> vec;
-    if (parameters_.empty()) return vec;
+    if (parameters_.empty())
+      return vec;
 
     // Check the first sub-param is of the right type
     const auto& front_param = parameters_.front();
@@ -268,42 +273,55 @@ public:
   }
 
   // Iterator
-  // clang-format off
   class iterator
   {
   public:
     ParameterBlock& ref_block;
     size_t ref_id;
 
-    iterator(ParameterBlock& in_block, size_t i) :
-             ref_block(in_block), ref_id(i) {}
+    iterator(ParameterBlock& in_block, size_t i) : ref_block(in_block), ref_id(i) {}
 
-    iterator operator++()    { iterator i = *this; ref_id++; return i; }
-    iterator operator++(int) { ref_id++; return *this; }
+    iterator operator++()
+    {
+      iterator i = *this;
+      ref_id++;
+      return i;
+    }
+    iterator operator++(int)
+    {
+      ref_id++;
+      return *this;
+    }
 
     ParameterBlock& operator*() { return ref_block.parameters_[ref_id]; }
     bool operator==(const iterator& rhs) const { return ref_id == rhs.ref_id; }
     bool operator!=(const iterator& rhs) const { return ref_id != rhs.ref_id; }
   };
+
   class const_iterator
   {
   public:
     const ParameterBlock& ref_block;
     size_t ref_id;
 
-    const_iterator(const ParameterBlock& in_block, size_t i) :
-                   ref_block(in_block), ref_id(i) {}
+    const_iterator(const ParameterBlock& in_block, size_t i) : ref_block(in_block), ref_id(i) {}
 
-    const_iterator operator++(){ const_iterator i = *this; ref_id++; return i; }
-    const_iterator operator++(int) { ref_id++; return *this; }
+    const_iterator operator++()
+    {
+      const_iterator i = *this;
+      ref_id++;
+      return i;
+    }
+    const_iterator operator++(int)
+    {
+      ref_id++;
+      return *this;
+    }
 
     const ParameterBlock& operator*() { return ref_block.parameters_[ref_id]; }
-    bool operator==(const const_iterator& rhs) const
-    { return ref_id == rhs.ref_id; }
-    bool operator!=(const const_iterator& rhs) const
-    { return ref_id != rhs.ref_id; }
+    bool operator==(const const_iterator& rhs) const { return ref_id == rhs.ref_id; }
+    bool operator!=(const const_iterator& rhs) const { return ref_id != rhs.ref_id; }
   };
-  // clang-format on
 
   iterator begin() { return {*this, 0}; }
   iterator end() { return {*this, parameters_.size()}; }

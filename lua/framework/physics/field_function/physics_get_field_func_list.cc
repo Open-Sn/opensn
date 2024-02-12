@@ -15,7 +15,8 @@ GetFieldFunctionHandleByName(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckStringValue(fname, L, 1);
@@ -26,7 +27,8 @@ GetFieldFunctionHandleByName(lua_State* L)
   std::vector<size_t> handles_that_matched;
   for (const auto& pff : opensn::field_function_stack)
   {
-    if (pff->TextName() == ff_name) handles_that_matched.emplace_back(ff_handle_counter);
+    if (pff->TextName() == ff_name)
+      handles_that_matched.emplace_back(ff_handle_counter);
     ++ff_handle_counter;
   }
 

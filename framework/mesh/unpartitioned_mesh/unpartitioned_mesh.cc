@@ -79,7 +79,8 @@ UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
         auto E01 = v1 - v0;
         auto n = E01.Cross(khat).Normalized();
 
-        if (n.Dot(v0 - cell->centroid) < 0.0) ++num_negative_volume_elements;
+        if (n.Dot(v0 - cell->centroid) < 0.0)
+          ++num_negative_volume_elements;
       } // for v
     }
     else if (cell->type == CellType::POLYHEDRON)
@@ -111,7 +112,8 @@ UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
           auto E1 = fv2 - face_centroid;
           auto n = E0.Cross(E1).Normalized();
 
-          if (n.Dot(fv1 - cell->centroid) < 0.0) ++num_negative_volume_elements;
+          if (n.Dot(fv1 - cell->centroid) < 0.0)
+            ++num_negative_volume_elements;
         }
       } // for face
     }   // if polyhedron
@@ -172,10 +174,12 @@ uint64_t
 UnpartitionedMesh::MakeBoundaryID(const std::string& boundary_name)
 {
   auto& boundary_id_map = mesh_options_.boundary_id_map;
-  if (boundary_id_map.empty()) return 0;
+  if (boundary_id_map.empty())
+    return 0;
 
   for (const auto& [id, name] : boundary_id_map)
-    if (boundary_name == name) return id;
+    if (boundary_name == name)
+      return id;
 
   uint64_t max_id = 0;
   for (const auto& [id, name] : boundary_id_map)
@@ -203,7 +207,8 @@ UnpartitionedMesh::BuildMeshConnectivity()
   int num_bndry_faces = 0;
   for (auto& cell : raw_cells_)
     for (auto& face : cell->faces)
-      if (not face.has_neighbor) ++num_bndry_faces;
+      if (not face.has_neighbor)
+        ++num_bndry_faces;
 
   log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Number of unconnected faces "
@@ -235,14 +240,18 @@ UnpartitionedMesh::BuildMeshConnectivity()
     {
       for (auto& cur_cell_face : cell->faces)
       {
-        if (cur_cell_face.has_neighbor) { continue; }
+        if (cur_cell_face.has_neighbor)
+        {
+          continue;
+        }
         const std::set<uint64_t> cfvids(cur_cell_face.vertex_ids.begin(),
                                         cur_cell_face.vertex_ids.end());
 
         std::set<size_t> cells_to_search;
         for (uint64_t vid : cfvids)
           for (uint64_t cell_id : vertex_cell_subscriptions_.at(vid))
-            if (cell_id != cur_cell_id) cells_to_search.insert(cell_id);
+            if (cell_id != cur_cell_id)
+              cells_to_search.insert(cell_id);
 
         for (uint64_t adj_cell_id : cells_to_search)
         {
@@ -250,7 +259,10 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
           for (auto& adj_cell_face : adj_cell->faces)
           {
-            if (adj_cell_face.has_neighbor) { continue; }
+            if (adj_cell_face.has_neighbor)
+            {
+              continue;
+            }
             const std::set<uint64_t> afvids(adj_cell_face.vertex_ids.begin(),
                                             adj_cell_face.vertex_ids.end());
 
@@ -296,7 +308,8 @@ UnpartitionedMesh::BuildMeshConnectivity()
         break;
       }
 
-    if (cell_on_boundary) internal_cells_on_boundary.push_back(cell);
+    if (cell_on_boundary)
+      internal_cells_on_boundary.push_back(cell);
   }
 
   // Populate vertex subscriptions to boundary cells
@@ -315,7 +328,8 @@ UnpartitionedMesh::BuildMeshConnectivity()
   for (auto& cell : internal_cells_on_boundary)
     for (auto& face : cell->faces)
     {
-      if (face.has_neighbor) continue;
+      if (face.has_neighbor)
+        continue;
       std::set<uint64_t> cfvids(face.vertex_ids.begin(), face.vertex_ids.end());
 
       std::set<size_t> cells_to_search;
@@ -340,7 +354,8 @@ UnpartitionedMesh::BuildMeshConnectivity()
   num_bndry_faces = 0;
   for (auto cell : raw_cells_)
     for (auto& face : cell->faces)
-      if (not face.has_neighbor) ++num_bndry_faces;
+      if (not face.has_neighbor)
+        ++num_bndry_faces;
 
   log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Number of boundary faces "
@@ -660,10 +675,12 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
       auto vtk_celldim = vtk_cell->GetCellDimension();
       const vtkIdType cell_gid = cell_gids->GetValue(c) + cid_offset;
 
-      if (vtk_celldim != dimension_to_copy) continue;
+      if (vtk_celldim != dimension_to_copy)
+        continue;
 
       LightWeightCell* raw_cell;
-      if (vtk_celldim == 3) raw_cell = CreateCellFromVTKPolyhedron(vtk_cell);
+      if (vtk_celldim == 3)
+        raw_cell = CreateCellFromVTKPolyhedron(vtk_cell);
       else if (vtk_celldim == 2)
         raw_cell = CreateCellFromVTKPolygon(vtk_cell);
       else if (vtk_celldim == 1)
@@ -703,11 +720,13 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
 
     // Check all cells assigned
     for (vtkIdType c = 0; c < total_cell_count; ++c)
-      if (cells[c] == nullptr) throw std::logic_error(fname + ": Cell pointer not assigned ");
+      if (cells[c] == nullptr)
+        throw std::logic_error(fname + ": Cell pointer not assigned ");
 
     // Check all points assigned
     for (vtkIdType p = 0; p < total_point_count; ++p)
-      if (vertices[p] == nullptr) throw std::logic_error(fname + ": Vertex pointer not assigned");
+      if (vertices[p] == nullptr)
+        throw std::logic_error(fname + ": Vertex pointer not assigned");
 
     raw_cells_ = cells;
     vertices_.reserve(total_point_count);
@@ -722,9 +741,11 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
       auto vtk_cell = ugrid.GetCell(static_cast<vtkIdType>(c));
       auto vtk_celldim = vtk_cell->GetCellDimension();
 
-      if (vtk_celldim != dimension_to_copy) continue;
+      if (vtk_celldim != dimension_to_copy)
+        continue;
 
-      if (vtk_celldim == 3) raw_cells_.push_back(CreateCellFromVTKPolyhedron(vtk_cell));
+      if (vtk_celldim == 3)
+        raw_cells_.push_back(CreateCellFromVTKPolyhedron(vtk_cell));
       else if (vtk_celldim == 2)
         raw_cells_.push_back(CreateCellFromVTKPolygon(vtk_cell));
       else if (vtk_celldim == 1)
@@ -786,7 +807,8 @@ UnpartitionedMesh::SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bnd
   std::vector<LightWeightFace*> bndry_faces;
   for (auto& cell_ptr : raw_cells_)
     for (auto& face : cell_ptr->faces)
-      if (not face.has_neighbor) bndry_faces.push_back(&face);
+      if (not face.has_neighbor)
+        bndry_faces.push_back(&face);
 
   log.Log() << "Number of boundary faces: " << bndry_faces.size();
 
@@ -832,7 +854,8 @@ UnpartitionedMesh::SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bnd
       }
     } // for point in boundary block
 
-    if (mapping_failed) continue;
+    if (mapping_failed)
+      continue;
 
     // Build vertex subscriptions
     std::map<uint64_t, std::set<size_t>> vertex_face_subs;
@@ -1191,7 +1214,8 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
         {
           double numValue = std::stod(sub_word);
 
-          if (k == 1) newVertex.x = numValue;
+          if (k == 1)
+            newVertex.x = numValue;
           else if (k == 2)
             newVertex.y = numValue;
           else if (k == 3)
@@ -1205,7 +1229,10 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
         }
 
         // Stop word extraction on line end
-        if (end_of_word == std::string::npos) { break; }
+        if (end_of_word == std::string::npos)
+        {
+          break;
+        }
       }
       file_vertices.push_back(newVertex);
     } // if (first_word == "v")
@@ -1216,7 +1243,8 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
       size_t number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
 
       CellType sub_type = CellType::POLYGON;
-      if (number_of_verts == 3) sub_type = CellType::TRIANGLE;
+      if (number_of_verts == 3)
+        sub_type = CellType::TRIANGLE;
       else if (number_of_verts == 4)
         sub_type = CellType::QUADRILATERAL;
 
@@ -1252,7 +1280,10 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
         }
 
         // Stop word extraction on line end
-        if (end_of_word == std::string::npos) { break; }
+        if (end_of_word == std::string::npos)
+        {
+          break;
+        }
       }
 
       // Build faces
@@ -1291,8 +1322,10 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
         try
         {
           int vertex_id = std::stoi(sub_word);
-          if (k == 1) edge.first = vertex_id - 1;
-          if (k == 2) edge.second = vertex_id - 1;
+          if (k == 1)
+            edge.first = vertex_id - 1;
+          if (k == 2)
+            edge.second = vertex_id - 1;
         }
 
         // Catch conversion error
@@ -1330,7 +1363,8 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   size_t main_block_id = 0;
   for (size_t block_id = 0; block_id < block_data.size(); ++block_id)
   {
-    if (not block_data[block_id].edges.empty()) bndry_block_ids.push_back(block_id);
+    if (not block_data[block_id].edges.empty())
+      bndry_block_ids.push_back(block_id);
     if (not block_data[block_id].cells.empty())
     {
       ++num_cell_blocks;
@@ -1436,13 +1470,17 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
   BuildMeshConnectivity();
 
   // Set boundary ids
-  if (bndry_block_ids.empty()) { mesh_options_.boundary_id_map[0] = "Default Boundary"; }
+  if (bndry_block_ids.empty())
+  {
+    mesh_options_.boundary_id_map[0] = "Default Boundary";
+  }
   else
   {
     std::vector<LightWeightFace*> bndry_faces;
     for (auto& cell_ptr : raw_cells_)
       for (auto& face : cell_ptr->faces)
-        if (not face.has_neighbor) bndry_faces.push_back(&face);
+        if (not face.has_neighbor)
+          bndry_faces.push_back(&face);
 
     size_t bndry_id = 0;
     for (size_t bid : bndry_block_ids)
@@ -1506,19 +1544,22 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   // Check the format of this input
   // Role file forward until "$MeshFormat" line is encountered.
   while (std::getline(file, file_line))
-    if (format_section_name == file_line) break;
+    if (format_section_name == file_line)
+      break;
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
   double format;
-  if (not(iss >> format)) throw std::logic_error(fname + ": Failed to read the file format.");
+  if (not(iss >> format))
+    throw std::logic_error(fname + ": Failed to read the file format.");
   else if (format != 2.2)
     throw std::logic_error(fname + ": Currently, only msh format 2.2 is supported.");
 
   // Find section with node information and then read the nodes
   file.seekg(0);
   while (std::getline(file, file_line))
-    if (node_section_name == file_line) break;
+    if (node_section_name == file_line)
+      break;
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
@@ -1536,7 +1577,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
     iss = std::istringstream(file_line);
 
     int vert_index;
-    if (not(iss >> vert_index)) throw std::logic_error(fname + ": Failed to read vertex index.");
+    if (not(iss >> vert_index))
+      throw std::logic_error(fname + ": Failed to read vertex index.");
 
     if (not(iss >> vertices_[vert_index - 1].x >> vertices_[vert_index - 1].y >>
             vertices_[vert_index - 1].z))
@@ -1556,14 +1598,16 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
 
     std::vector<uint64_t> nodes(num_nodes, 0);
     for (int i = 0; i < num_nodes; ++i)
-      if ((raw_nodes[i] - 1) >= 0) nodes[i] = raw_nodes[i] - 1;
+      if ((raw_nodes[i] - 1) >= 0)
+        nodes[i] = raw_nodes[i] - 1;
     return nodes;
   };
 
   /**Lamda for checking if an element is 1D.*/
   auto IsElementType1D = [](int element_type)
   {
-    if (element_type == 1) return true;
+    if (element_type == 1)
+      return true;
 
     return false;
   };
@@ -1571,7 +1615,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   /**Lamda for checking if an element is 2D.*/
   auto IsElementType2D = [](int element_type)
   {
-    if (element_type == 2 or element_type == 3) return true;
+    if (element_type == 2 or element_type == 3)
+      return true;
 
     return false;
   };
@@ -1579,7 +1624,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   /**Lamda for checking if an element is 2D.*/
   auto IsElementType3D = [](int element_type)
   {
-    if (element_type >= 4 and element_type <= 7) return true;
+    if (element_type >= 4 and element_type <= 7)
+      return true;
 
     return false;
   };
@@ -1587,7 +1633,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   /**Lambda for checking supported elements.*/
   auto IsElementSupported = [](int element_type)
   {
-    if (element_type >= 1 and element_type <= 7) return true;
+    if (element_type >= 1 and element_type <= 7)
+      return true;
 
     return false;
   };
@@ -1597,7 +1644,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   {
     CellType cell_type = CellType::GHOST;
 
-    if (element_type == 1) cell_type = CellType::SLAB;
+    if (element_type == 1)
+      cell_type = CellType::SLAB;
     else if (element_type == 2)
       cell_type = CellType::TRIANGLE;
     else if (element_type == 3)
@@ -1623,12 +1671,14 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   bool mesh_is_2D_assumption = true;
   file.seekg(0);
   while (std::getline(file, file_line))
-    if (elements_section_name == file_line) break;
+    if (elements_section_name == file_line)
+      break;
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
   int num_elems;
-  if (not(iss >> num_elems)) throw std::logic_error(fname + ": Failed to read number of elements.");
+  if (not(iss >> num_elems))
+    throw std::logic_error(fname + ": Failed to read number of elements.");
 
   for (int n = 0; n < num_elems; n++)
   {
@@ -1645,7 +1695,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
       throw std::logic_error(fname + ": Failed while reading physical region.");
 
     for (int i = 1; i < num_tags; i++)
-      if (not(iss >> tag)) throw std::logic_error(fname + ": Failed when reading tags.");
+      if (not(iss >> tag))
+        throw std::logic_error(fname + ": Failed when reading tags.");
 
     if (IsElementType3D(elem_type))
     {
@@ -1665,11 +1716,13 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
   // Now we will actually read the elements.
   file.seekg(0);
   while (std::getline(file, file_line))
-    if (elements_section_name == file_line) break;
+    if (elements_section_name == file_line)
+      break;
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  if (not(iss >> num_elems)) throw std::logic_error(fname + ": Failed to read number of elements.");
+  if (not(iss >> num_elems))
+    throw std::logic_error(fname + ": Failed to read number of elements.");
 
   for (int n = 0; n < num_elems; n++)
   {
@@ -1686,7 +1739,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
       throw std::logic_error(fname + ": Failed while reading physical region.");
 
     for (int i = 1; i < num_tags; i++)
-      if (not(iss >> tag)) throw std::logic_error(fname + ": Failed when reading tags.");
+      if (not(iss >> tag))
+        throw std::logic_error(fname + ": Failed when reading tags.");
 
     if (elem_type == 15) // skip point type elements
       continue;
@@ -1697,7 +1751,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
     log.Log0Verbose2() << "Reading element: " << file_line << " type: " << elem_type;
 
     int num_cell_nodes;
-    if (elem_type == 1) num_cell_nodes = 2;
+    if (elem_type == 1)
+      num_cell_nodes = 2;
     else if (elem_type == 2) // 3-node triangle
       num_cell_nodes = 3;
     else if (elem_type == 3 or elem_type == 4) // 4-node quadrangle or tet
@@ -1740,7 +1795,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
       }
     }
 
-    if (raw_cell == nullptr) continue;
+    if (raw_cell == nullptr)
+      continue;
 
     auto& cell = *raw_cell;
     cell.material_id = physical_reg;
@@ -1835,7 +1891,8 @@ UnpartitionedMesh::ReadFromMsh(const Options& options)
 
   // Always do this
   MeshAttributes dimension = DIMENSION_2;
-  if (not mesh_is_2D_assumption) dimension = DIMENSION_3;
+  if (not mesh_is_2D_assumption)
+    dimension = DIMENSION_3;
 
   attributes_ = dimension | UNSTRUCTURED;
 
@@ -1974,7 +2031,8 @@ UnpartitionedMesh::PushProxyCell(const std::string& type_str,
 {
   const std::string fname = __FUNCTION__;
   CellType type;
-  if (type_str == "SLAB") type = CellType::SLAB;
+  if (type_str == "SLAB")
+    type = CellType::SLAB;
   else if (type_str == "POLYGON")
     type = CellType::POLYGON;
   else if (type_str == "POLYHEDRON")
@@ -1983,7 +2041,8 @@ UnpartitionedMesh::PushProxyCell(const std::string& type_str,
     throw std::logic_error(fname + ": Unsupported cell primary type.");
 
   CellType sub_type;
-  if (sub_type_str == "SLAB") sub_type = CellType::SLAB;
+  if (sub_type_str == "SLAB")
+    sub_type = CellType::SLAB;
   else if (sub_type_str == "POLYGON")
     sub_type = CellType::POLYGON;
   else if (sub_type_str == "TRIANGLE")
@@ -2022,9 +2081,12 @@ UnpartitionedMesh::PushProxyCell(const std::string& type_str,
   raw_cells_.push_back(cell);
 
   MeshAttributes dimension;
-  if (type == CellType::SLAB) dimension = DIMENSION_1;
-  if (type == CellType::POLYGON) dimension = DIMENSION_2;
-  if (type == CellType::POLYHEDRON) dimension = DIMENSION_3;
+  if (type == CellType::SLAB)
+    dimension = DIMENSION_1;
+  if (type == CellType::POLYGON)
+    dimension = DIMENSION_2;
+  if (type == CellType::POLYHEDRON)
+    dimension = DIMENSION_3;
 
   attributes_ = dimension | UNSTRUCTURED;
 }

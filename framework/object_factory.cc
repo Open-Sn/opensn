@@ -27,7 +27,8 @@ ObjectFactory::RegistryHasKey(const std::string& key) const
 size_t
 ObjectFactory::MakeRegisteredObject(const ParameterBlock& params) const
 {
-  if (log.GetVerbosity() >= 2) log.Log() << "Making object with type from parameters";
+  if (log.GetVerbosity() >= 2)
+    log.Log() << "Making object with type from parameters";
 
   const std::string fname = __PRETTY_FUNCTION__;
 
@@ -45,14 +46,16 @@ size_t
 ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
                                           const ParameterBlock& params) const
 {
-  if (log.GetVerbosity() >= 2) log.Log() << "Making object with specified type";
+  if (log.GetVerbosity() >= 2)
+    log.Log() << "Making object with specified type";
 
   const std::string fname = __PRETTY_FUNCTION__;
 
   if (object_registry_.count(type) == 0)
     throw std::logic_error(fname + ": No registered type \"" + type + "\" found.");
 
-  if (log.GetVerbosity() >= 2) log.Log() << "Making object type " << type;
+  if (log.GetVerbosity() >= 2)
+    log.Log() << "Making object type " << type;
 
   auto object_entry = object_registry_.at(type);
 
@@ -65,11 +68,13 @@ ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
   input_params.SetObjectType(type);
   input_params.SetErrorOriginScope(type);
 
-  if (log.GetVerbosity() >= 2) log.Log() << "Assigning parameters for object " << type;
+  if (log.GetVerbosity() >= 2)
+    log.Log() << "Assigning parameters for object " << type;
 
   input_params.AssignParameters(params);
 
-  if (log.GetVerbosity() >= 2) log.Log() << "Constructing object " << type;
+  if (log.GetVerbosity() >= 2)
+    log.Log() << "Constructing object " << type;
 
   auto new_object = object_entry.constructor_func(input_params);
 
@@ -107,7 +112,8 @@ ObjectFactory::DumpRegister() const
 
     log.Log() << "OBJECT_BEGIN " << key;
 
-    if (entry.constructor_func == nullptr) log.Log() << "NOT_CONSTRUCTIBLE";
+    if (entry.constructor_func == nullptr)
+      log.Log() << "NOT_CONSTRUCTIBLE";
 
     const auto in_params = entry.get_in_params_func();
     in_params.DumpParameters();

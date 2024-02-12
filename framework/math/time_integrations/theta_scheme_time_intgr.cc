@@ -12,10 +12,8 @@ ThetaSchemeTimeIntegration::GetInputParameters()
 {
   InputParameters params = TimeIntegration::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription("Generalized theta-scheme");
   params.SetDocGroup("DocTimeIntegrations");
-  // clang-format on
 
   params.ChangeExistingParamToOptional("method", static_cast<int>(SteppingMethod::THETA_SCHEME));
 

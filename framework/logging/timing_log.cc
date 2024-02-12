@@ -52,7 +52,8 @@ TimingLog::CreateOrGetTimingBlock(const std::string& name, const std::string& pa
 {
   auto iter = timing_blocks_.find(name);
 
-  if (iter == timing_blocks_.end()) return CreateTimingBlock(name, parent_name);
+  if (iter == timing_blocks_.end())
+    return CreateTimingBlock(name, parent_name);
 
   return *iter->second;
 }
@@ -102,7 +103,8 @@ TimingBlock::TotalTime() const
 double
 TimingBlock::AverageTime() const
 {
-  if (num_occurences_ == 0) return 0.0;
+  if (num_occurences_ == 0)
+    return 0.0;
 
   return total_time_ / static_cast<double>(num_occurences_);
 }
@@ -122,7 +124,8 @@ TimingBlock::AddChild(const TimingBlock& child_block)
 std::string
 TimingBlock::MakeGraphString()
 {
-  if (name_ == opensn::name) TimeSectionEnd();
+  if (name_ == opensn::name)
+    TimeSectionEnd();
 
   std::vector<std::vector<std::string>> string_matrix;
 
@@ -163,7 +166,8 @@ TimingBlock::MakeGraphString()
     for (size_t j = 0; j < J; ++j)
     {
       outstr << std::string(max_col_widths[j] + 1, '-');
-      if (j < (J - 1)) outstr << "*-";
+      if (j < (J - 1))
+        outstr << "*-";
     }
     outstr << "*\n";
   };
@@ -173,7 +177,8 @@ TimingBlock::MakeGraphString()
   outstr << "| ";
   for (size_t j = 0; j < J; ++j)
   {
-    if (j == 0) RightPad(headers[j], max_col_widths[j]);
+    if (j == 0)
+      RightPad(headers[j], max_col_widths[j]);
     else
       LeftPad(headers[j], max_col_widths[j] + 1);
     outstr << headers[j] << " |";
@@ -187,7 +192,8 @@ TimingBlock::MakeGraphString()
     outstr << "| ";
     for (size_t j = 0; j < J; ++j)
     {
-      if (j == 0) RightPad(string_matrix[i][j], max_col_widths[j]);
+      if (j == 0)
+        RightPad(string_matrix[i][j], max_col_widths[j]);
       else
         LeftPad(string_matrix[i][j], max_col_widths[j] + 1);
       outstr << string_matrix[i][j] << " |";

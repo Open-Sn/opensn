@@ -63,7 +63,8 @@ VolumeMesher::SetMatIDFromLogical(const LogicalVolume& log_vol, bool sense, int 
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = vol_cont->cells[ghost_id];
-    if (log_vol.Inside(cell.centroid_) and sense) cell.material_id_ = mat_id;
+    if (log_vol.Inside(cell.centroid_) and sense)
+      cell.material_id_ = mat_id;
   }
 
   int global_num_cells_modified;
@@ -96,7 +97,8 @@ VolumeMesher::SetBndryIDFromLogical(const LogicalVolume& log_vol,
   {
     for (auto& face : cell.faces_)
     {
-      if (face.has_neighbor_) continue;
+      if (face.has_neighbor_)
+        continue;
       if (log_vol.Inside(face.centroid_) and sense)
       {
         face.neighbor_id_ = bndry_id;
@@ -161,7 +163,8 @@ VolumeMesher::SetupOrthogonalBoundaries()
         Vector3& n = face.normal_;
 
         std::string boundary_name;
-        if (n.Dot(ihat) > 0.999) boundary_name = "XMAX";
+        if (n.Dot(ihat) > 0.999)
+          boundary_name = "XMAX";
         else if (n.Dot(ihat) < -0.999)
           boundary_name = "XMIN";
         else if (n.Dot(jhat) > 0.999)

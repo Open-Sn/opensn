@@ -19,7 +19,8 @@ MeshCreateUnpartitioned1DOrthoMesh(lua_State* L)
   // Check argc
   const char func_name[] = "MeshCreateUnpartitioned1DOrthoMesh";
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(func_name, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(func_name, 1, num_args);
 
   // Check args table
   if (not lua_istable(L, 1))
@@ -62,7 +63,8 @@ MeshCreateUnpartitioned2DOrthoMesh(lua_State* L)
   // Check argc
   const char func_name[] = "MeshCreateUnpartitioned2DOrthoMesh";
   int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(func_name, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(func_name, 2, num_args);
 
   // Check args table
   if (not lua_istable(L, 1))
@@ -122,7 +124,8 @@ MeshCreateUnpartitioned3DOrthoMesh(lua_State* L)
   // Check argc
   const char func_name[] = "MeshCreateUnpartitioned3DOrthoMesh";
   int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(func_name, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(func_name, 3, num_args);
 
   // Check args table
   if (not lua_istable(L, 1))

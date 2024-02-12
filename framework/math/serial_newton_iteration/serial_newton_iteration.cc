@@ -38,7 +38,8 @@ NewtonIteration(const NonLinearFunction& non_linear_function,
 
   double L2_norm_F_x_i = Vec2Norm(F_x_i);
 
-  if (verbose) PrintIterationInfo(0, x_i, F_x_i, L2_norm_F_x_i);
+  if (verbose)
+    PrintIterationInfo(0, x_i, F_x_i, L2_norm_F_x_i);
 
   // Perform iterations
   unsigned int i = 0;
@@ -52,7 +53,8 @@ NewtonIteration(const NonLinearFunction& non_linear_function,
 
     L2_norm_F_x_i = Vec2Norm(F_x_i);
 
-    if (verbose) PrintIterationInfo(i, x_i, F_x_i, L2_norm_F_x_i);
+    if (verbose)
+      PrintIterationInfo(i, x_i, F_x_i, L2_norm_F_x_i);
   }
 
   return x_i;

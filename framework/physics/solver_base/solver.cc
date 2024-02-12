@@ -194,12 +194,18 @@ Solver::SetProperties(const ParameterBlock& params)
   {
     const std::string param_name = param.Name();
 
-    if (param_name == "dt") timestepper_->SetTimeStepSize(param.GetValue<double>());
-    if (param_name == "time") timestepper_->SetTime(param.GetValue<double>());
-    if (param_name == "start_time") timestepper_->SetStartTime(param.GetValue<double>());
-    if (param_name == "end_time") timestepper_->SetEndTime(param.GetValue<double>());
-    if (param_name == "max_time_steps") timestepper_->SetMaxTimeSteps(param.GetValue<int>());
-    if (param_name == "dt_min") timestepper_->SetMinimumTimeStepSize(param.GetValue<int>());
+    if (param_name == "dt")
+      timestepper_->SetTimeStepSize(param.GetValue<double>());
+    if (param_name == "time")
+      timestepper_->SetTime(param.GetValue<double>());
+    if (param_name == "start_time")
+      timestepper_->SetStartTime(param.GetValue<double>());
+    if (param_name == "end_time")
+      timestepper_->SetEndTime(param.GetValue<double>());
+    if (param_name == "max_time_steps")
+      timestepper_->SetMaxTimeSteps(param.GetValue<int>());
+    if (param_name == "dt_min")
+      timestepper_->SetMinimumTimeStepSize(param.GetValue<int>());
   }
 }
 

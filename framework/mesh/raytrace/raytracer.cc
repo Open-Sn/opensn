@@ -16,7 +16,8 @@ RayTracer::Grid() const
 RayTracerOutputInformation
 RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth)
 {
-  if (not cell_sizes_.empty()) SetTolerancesFromCellSize(cell_sizes_[cell.local_id_]);
+  if (not cell_sizes_.empty())
+    SetTolerancesFromCellSize(cell_sizes_[cell.local_id_]);
 
   RayTracerOutputInformation oi;
 
@@ -99,7 +100,8 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
       {
         size_t ref_cell_id = 0;
         for (size_t cid = 0; cid < cell.vertex_ids_.size(); ++cid)
-          if (cell.vertex_ids_[cid] == vid) ref_cell_id = cid + 1;
+          if (cell.vertex_ids_[cid] == vid)
+            ref_cell_id = cid + 1;
 
         outstr << ref_cell_id << "// ";
       }
@@ -166,14 +168,17 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
         const auto v02 = v2 - v0;
         const auto n_est = v01.Cross(v02);
 
-        if (n_est.Dot(omega_i) > 0.0) continue;
+        if (n_est.Dot(omega_i) > 0.0)
+          continue;
 
         intersects_cell = CheckLineIntersectTriangle2(v0, v1, v2, pos_i, omega_i, I);
-        if (intersects_cell) break;
+        if (intersects_cell)
+          break;
       } // for side
     }   // POLYHEDRON
 
-    if (intersects_cell) break;
+    if (intersects_cell)
+      break;
     ++f;
   } // for face
 
@@ -231,7 +236,8 @@ RayTracer::TraceSlab(const Cell& cell,
       intersection_found = true;
       break;
     }
-    if (intersects) backward_tolerance_hit = true;
+    if (intersects)
+      backward_tolerance_hit = true;
   } // for faces
 }
 
@@ -258,7 +264,8 @@ RayTracer::TracePolygon(const Cell& cell,
   face_intersections.reserve(num_faces);
   for (int f = 0; f < num_faces; f++)
   {
-    if (cell.faces_[f].normal_.Dot(omega_i) < 0.0) continue;
+    if (cell.faces_[f].normal_.Dot(omega_i) < 0.0)
+      continue;
 
     RayTracerOutputInformation face_oi;
 
@@ -281,9 +288,11 @@ RayTracer::TracePolygon(const Cell& cell,
       face_oi.destination_face_neighbor = cell.faces_[f].neighbor_id_;
       intersection_found = true;
       face_intersections.emplace_back(std::move(face_oi));
-      if (not perform_concavity_checks_) break;
+      if (not perform_concavity_checks_)
+        break;
     } // if intersects
-    if ((D < backward_tolerance_) and intersects) backward_tolerance_hit = true;
+    if ((D < backward_tolerance_) and intersects)
+      backward_tolerance_hit = true;
   } // for faces
 
   // Determine closest intersection
@@ -340,7 +349,8 @@ RayTracer::TracePolyhedron(const Cell& cell,
       auto v02 = v2 - v0;
       auto n_est = v01.Cross(v02);
 
-      if (n_est.Dot(omega_i) < 0.0) continue;
+      if (n_est.Dot(omega_i) < 0.0)
+        continue;
 
       RayTracerOutputInformation triangle_oi;
 
@@ -356,11 +366,13 @@ RayTracer::TracePolyhedron(const Cell& cell,
 
         intersection_found = true;
         triangle_intersections.emplace_back(std::move(triangle_oi));
-        if (not perform_concavity_checks_) break;
+        if (not perform_concavity_checks_)
+          break;
       } // if intersects
     }   // for side
 
-    if (intersection_found and (not perform_concavity_checks_)) break;
+    if (intersection_found and (not perform_concavity_checks_))
+      break;
   } // for faces
 
   // Determine closest intersection
@@ -407,7 +419,8 @@ CheckPlaneLineIntersect(const Normal& plane_normal,
     double w1 = 1.0 - w0;
     intersection_point = line_point_0 * w1 + line_point_1 * w0;
 
-    if (weights != nullptr) *weights = {w0, w1};
+    if (weights != nullptr)
+      *weights = {w0, w1};
     return true;
   }
 
@@ -429,7 +442,8 @@ CheckLineIntersectStrip(const Vector3& strip_point0,
   bool intersects_plane = CheckPlaneLineIntersect(
     strip_normal, strip_point0, line_point0, line_point1, plane_intersection_point, &weights);
 
-  if (not intersects_plane) return false;
+  if (not intersects_plane)
+    return false;
 
   Vector3 edge_vec = strip_point1 - strip_point0;
   Vector3 ints_vec1 = plane_intersection_point - strip_point0;
@@ -473,7 +487,8 @@ CheckLineIntersectTriangle2(const Vector3& tri_point0,
   // the dot product of the other leg with this h will be close
   // to zero.
   double a = edge1.Dot(h);
-  if (std::fabs(a) < epsilon) return false;
+  if (std::fabs(a) < epsilon)
+    return false;
 
   Vector3 s = ray_posi - tri_point0;
 
@@ -483,7 +498,8 @@ CheckLineIntersectTriangle2(const Vector3& tri_point0,
   // v01 projected onto h, or negative, there is now way
   // the ray can intersect
   double u = f * (s.Dot(h));
-  if (u < 0.0 or u > 1.0) return false;
+  if (u < 0.0 or u > 1.0)
+    return false;
 
   Vector3 q = s.Cross(edge1);
 
@@ -491,18 +507,23 @@ CheckLineIntersectTriangle2(const Vector3& tri_point0,
   // v01 projected onto h, or negative, there is now way
   // the ray can intersect
   double v = f * ray_dir.Dot(q);
-  if (v < 0.0 or (u + v) > 1.0) return false;
+  if (v < 0.0 or (u + v) > 1.0)
+    return false;
 
   double t = f * edge2.Dot(q);
 
-  if (distance_to_intersection != nullptr) *distance_to_intersection = t;
+  if (distance_to_intersection != nullptr)
+    *distance_to_intersection = t;
 
   if (t > epsilon and t < (1.0 / epsilon))
   {
     intersection_point = ray_posi + ray_dir * t;
     return true;
   }
-  else { return false; }
+  else
+  {
+    return false;
+  }
 }
 
 bool
@@ -525,7 +546,8 @@ CheckPointInTriangle(
   bool dp1 = (vc1.Dot(n) >= 0.0);
   bool dp2 = (vc2.Dot(n) >= 0.0);
 
-  if (dp0 and dp1 and dp2) return true;
+  if (dp0 and dp1 and dp2)
+    return true;
   else
     return false;
 }
@@ -545,7 +567,8 @@ CheckPlaneTetIntersect(const Normal& plane_normal,
 
     bool new_sense = (dotp >= 0.0);
 
-    if (i == 0) current_sense = new_sense;
+    if (i == 0)
+      current_sense = new_sense;
     else if (new_sense != current_sense)
       return true;
   }
@@ -632,7 +655,8 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
 
         if (intersects)
         {
-          if (d < track_length) distance_set.insert(d);
+          if (d < track_length)
+            distance_set.insert(d);
         }
       } // for edge
 
@@ -655,7 +679,8 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
 
         if (intersects)
         {
-          if (d < track_length) distance_set.insert(d);
+          if (d < track_length)
+            distance_set.insert(d);
         }
       } // for edge
     }   // for face

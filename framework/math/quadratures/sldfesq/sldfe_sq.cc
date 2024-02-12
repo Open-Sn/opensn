@@ -60,7 +60,8 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
     for (int i = 0; i < 4; ++i)
     {
       area += sq.sub_sqr_weights[i];
-      if (area < 0.0) negative_weights_found = true;
+      if (area < 0.0)
+        negative_weights_found = true;
     }
     total_area += area;
     area_max = std::fmax(area_max, area);
@@ -68,7 +69,8 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
   }
   double area_avg = total_area / initial_octant_SQs_.size();
 
-  if (negative_weights_found) log.Log0Warning() << "SLDFESQ Quadrature detected negative weights.";
+  if (negative_weights_found)
+    log.Log0Warning() << "SLDFESQ Quadrature detected negative weights.";
 
   // Print Statistics
   double time = timer.GetTime() / 1000.0;
@@ -300,7 +302,8 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
     log.Log() << k << " " << std::fabs(change);
     log.Log() << "  ";
 
-    if (rho_change_total < 1.0e-2) break;
+    if (rho_change_total < 1.0e-2)
+      break;
     //    if (std::fabs(change) < 1.0e-2) break;
   }
   //  log.Log() << "rhos: "
@@ -403,7 +406,8 @@ SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(std::array<Verte
     auto v1 = vertices_xyz[v];
     auto v2 = vertices_xyz[(v < (num_verts - 1)) ? v + 1 : 0];
 
-    if ((v1 - v0).Cross(v2 - v0).Dot(v0) < 0.0) std::swap(v1, v2);
+    if ((v1 - v0).Cross(v2 - v0).Dot(v0) < 0.0)
+      std::swap(v1, v2);
 
     // Lambda for spherical excess
     auto GetSphericalExcess = [](const Vector3& vA, const Vector3& vB, const Vector3& vC)
@@ -646,7 +650,8 @@ SimplifiedLDFESQ::Quadrature::PopulateQuadratureAbscissae()
       double theta = acos(omega.z);
       double phi = acos(omega.x / sin(theta));
 
-      if (omega.y / sin(theta) < 0.0) phi = 2.0 * M_PI - phi;
+      if (omega.y / sin(theta) < 0.0)
+        phi = 2.0 * M_PI - phi;
 
       const auto abscissa = QuadraturePointPhiTheta(phi, theta);
 
@@ -772,7 +777,8 @@ SimplifiedLDFESQ::Quadrature::TestIntegration(int test_case, double ref_solution
 
   double h = 1.0 / sqrt(8.0 * Nd);
   double I_riemann = ref_solution;
-  if (NR > 0) I_riemann = std::fabs(RiemannIntegral(F, NR));
+  if (NR > 0)
+    I_riemann = std::fabs(RiemannIntegral(F, NR));
 
   double I_quadrature = std::fabs(QuadratureSSIntegral(F));
 
@@ -1041,11 +1047,13 @@ SimplifiedLDFESQ::Quadrature::LocallyRefine(const Vector3& ref_dir,
   {
     bool sq_to_be_split = false;
 
-    if (not dir_as_plane_normal) sq_to_be_split = sq.centroid_xyz.Dot(ref_dir_n) > mu_cone;
+    if (not dir_as_plane_normal)
+      sq_to_be_split = sq.centroid_xyz.Dot(ref_dir_n) > mu_cone;
     else
       sq_to_be_split = std::fabs(sq.centroid_xyz.Dot(ref_dir_n)) < (sin(cone_size));
 
-    if (not sq_to_be_split) new_deployment.push_back(sq);
+    if (not sq_to_be_split)
+      new_deployment.push_back(sq);
     else
     {
       auto new_sqs = SplitSQ(sq, legendre);

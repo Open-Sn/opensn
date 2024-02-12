@@ -105,18 +105,16 @@ private:
   class VaryingArbitraryType : public VaryingType
   {
   public:
-    // clang-format off
     explicit VaryingArbitraryType(T value)
-      : VaryingType(IsByteArray<T>::value ? VaryingDataType::ARBITRARY_BYTES :
-                    IsString<T>::value ? VaryingDataType::STRING :
-                    IsBool<T>::value ? VaryingDataType::BOOL :
-                    IsInteger<T>::value ? VaryingDataType::INTEGER :
-                    IsFloat<T>::value ? VaryingDataType::FLOAT :
-                    VaryingDataType::VOID),
-      value_(value)
+      : VaryingType(IsByteArray<T>::value ? VaryingDataType::ARBITRARY_BYTES
+                    : IsString<T>::value  ? VaryingDataType::STRING
+                    : IsBool<T>::value    ? VaryingDataType::BOOL
+                    : IsInteger<T>::value ? VaryingDataType::INTEGER
+                    : IsFloat<T>::value   ? VaryingDataType::FLOAT
+                                          : VaryingDataType::VOID),
+        value_(value)
     {
     }
-    // clang-format on
     std::string StringValue() const override;
     bool BoolValue() const override;
     int64_t IntegerValue() const override;
@@ -130,7 +128,8 @@ private:
 
     bool operator==(const VaryingType& that) const override
     {
-      if (type_ != that.Type()) return false;
+      if (type_ != that.Type())
+        return false;
 
       switch (this->Type())
       {
@@ -153,7 +152,8 @@ private:
     bool operator!=(const VaryingType& that) const override { return not(*this == that); }
     bool operator>(const VaryingType& that) const override
     {
-      if (type_ != that.Type()) return false;
+      if (type_ != that.Type())
+        return false;
 
       switch (this->Type())
       {
@@ -174,7 +174,8 @@ private:
     }
     bool operator<(const VaryingType& that) const override
     {
-      if (type_ != that.Type()) return false;
+      if (type_ != that.Type())
+        return false;
 
       switch (this->Type())
       {
@@ -227,9 +228,18 @@ public:
     constexpr bool is_supported_type = IsBool<T>::value or IsFloat<T>::value or IsInteger<T>::value;
     static_assert(is_supported_type, "Constructor called with unsupported type");
 
-    if (IsBool<T>::value) { type_ = VaryingDataType::BOOL; }
-    else if (IsFloat<T>::value) { type_ = VaryingDataType::FLOAT; }
-    else if (IsInteger<T>::value) { type_ = VaryingDataType::INTEGER; }
+    if (IsBool<T>::value)
+    {
+      type_ = VaryingDataType::BOOL;
+    }
+    else if (IsFloat<T>::value)
+    {
+      type_ = VaryingDataType::FLOAT;
+    }
+    else if (IsInteger<T>::value)
+    {
+      type_ = VaryingDataType::INTEGER;
+    }
 
     data_ = Helper(CastValue(value));
   }

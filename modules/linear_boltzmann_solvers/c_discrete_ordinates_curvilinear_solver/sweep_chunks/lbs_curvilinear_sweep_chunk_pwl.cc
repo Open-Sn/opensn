@@ -159,7 +159,8 @@ SweepChunkPWLRZ::KernelFEMRZUpwindSurfaceIntegrals()
     //  at this point it is necessary to confirm only the orientation.
     const bool incident_on_symmetric_boundary =
       (face_normal.Dot(normal_vector_boundary_) < -0.999999);
-    if (incident_on_symmetric_boundary) return;
+    if (incident_on_symmetric_boundary)
+      return;
   }
 
   const auto& M_surf_f = (*M_surf_)[f];

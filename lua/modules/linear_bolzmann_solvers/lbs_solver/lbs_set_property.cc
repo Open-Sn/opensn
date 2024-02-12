@@ -38,7 +38,8 @@ LBSSetProperty(lua_State* L)
   opensn::log.Log0Warning() << fname + " has been deprecated. Use LBSSetOptions instead.";
 
   const int numArgs = lua_gettop(L);
-  if (numArgs < 2) LuaPostArgAmountError(fname, 2, numArgs);
+  if (numArgs < 2)
+    LuaPostArgAmountError(fname, 2, numArgs);
 
   LuaCheckNilValue(fname, L, 1);
 
@@ -68,7 +69,8 @@ LBSSetProperty(lua_State* L)
   }
   else if (static_cast<PropertyCode>(property) == PropertyCode::BOUNDARY_CONDITION)
   {
-    if (numArgs < 4) LuaPostArgAmountError("LBSSetProperty", 4, numArgs);
+    if (numArgs < 4)
+      LuaPostArgAmountError("LBSSetProperty", 4, numArgs);
 
     LuaCheckNilValue(fname, L, 3);
     LuaCheckNilValue(fname, L, 4);
@@ -93,7 +95,8 @@ LBSSetProperty(lua_State* L)
     }
     else if (btype == (int)opensn::lbs::BoundaryType::INCIDENT_ISOTROPIC)
     {
-      if (numArgs != 5) LuaPostArgAmountError("LBSSetProperty", 5, numArgs);
+      if (numArgs != 5)
+        LuaPostArgAmountError("LBSSetProperty", 5, numArgs);
 
       if (lbs_solver.Groups().empty())
       {
@@ -182,7 +185,8 @@ LBSSetProperty(lua_State* L)
   }
   else if (static_cast<PropertyCode>(property) == PropertyCode::SWEEP_EAGER_LIMIT)
   {
-    if (numArgs != 3) LuaPostArgAmountError("LBSSetProperty:SWEEP_EAGER_LIMIT", 3, numArgs);
+    if (numArgs != 3)
+      LuaPostArgAmountError("LBSSetProperty:SWEEP_EAGER_LIMIT", 3, numArgs);
 
     LuaCheckNilValue(fname, L, 3);
 

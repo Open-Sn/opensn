@@ -221,7 +221,8 @@ VectorGhostCommunicator::FindOwnerPID(const int64_t global_id) const
                          " vs [0," + std::to_string(global_size_) + ")");
 
   for (int p = 0; p < process_count_; ++p)
-    if (global_id >= extents_[p] and global_id < extents_[p + 1]) return p;
+    if (global_id >= extents_[p] and global_id < extents_[p + 1])
+      return p;
   return -1;
 }
 

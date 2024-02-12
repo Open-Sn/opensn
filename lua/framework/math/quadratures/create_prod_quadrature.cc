@@ -31,10 +31,12 @@ CreateProductQuadrature(lua_State* L)
 
   if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE)
   {
-    if (num_args < 2) LuaPostArgAmountError("CreateProductQuadrature", 2, num_args);
+    if (num_args < 2)
+      LuaPostArgAmountError("CreateProductQuadrature", 2, num_args);
 
     int Np = lua_tonumber(L, 2);
-    if (num_args == 3) verbose = lua_toboolean(L, 3);
+    if (num_args == 3)
+      verbose = lua_toboolean(L, 3);
 
     opensn::log.Log() << "Creating Gauss-Legendre Quadrature\n";
 
@@ -55,11 +57,13 @@ CreateProductQuadrature(lua_State* L)
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE)
   {
-    if (num_args < 3) LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
+    if (num_args < 3)
+      LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
 
     int Na = lua_tonumber(L, 2);
     int Np = lua_tonumber(L, 3);
-    if (num_args == 4) verbose = lua_toboolean(L, 4);
+    if (num_args == 4)
+      verbose = lua_toboolean(L, 4);
 
     opensn::log.Log() << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
@@ -80,11 +84,13 @@ CreateProductQuadrature(lua_State* L)
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV)
   {
-    if (num_args < 3) LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
+    if (num_args < 3)
+      LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
 
     int Na = lua_tonumber(L, 2);
     int Np = lua_tonumber(L, 3);
-    if (num_args == 4) verbose = lua_toboolean(L, 4);
+    if (num_args == 4)
+      verbose = lua_toboolean(L, 4);
 
     opensn::log.Log() << "Creating Gauss-Legendre-ChebyShev Quadrature\n";
 
@@ -128,7 +134,8 @@ CreateProductQuadrature(lua_State* L)
         << "be a lua table.";
       opensn::Exit(EXIT_FAILURE);
     }
-    if (num_args == 5) verbose = lua_toboolean(L, 4);
+    if (num_args == 5)
+      verbose = lua_toboolean(L, 4);
 
     size_t Na = lua_rawlen(L, 2);
     size_t Np = lua_rawlen(L, 3);

@@ -12,7 +12,8 @@ DFEMDiffusionSetBCProperty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args < 2) LuaPostArgAmountError(fname, num_args, 2);
+  if (num_args < 2)
+    LuaPostArgAmountError(fname, num_args, 2);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);

@@ -112,7 +112,6 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
     const std::string param_name = param.Name();
 
     uint32_t param_name_hash = opensn::hash_djb2a(param_name);
-    // clang-format off
     switch (param_name_hash)
     {
       case "scalar_pp_table_format"_hash:
@@ -123,12 +122,10 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
         else if (option == "horizontal")
           printer.SetScalarPPTableFormat(ScalarPPTableFormat::HORIZONTAL);
         else
-          ChiInvalidArgument(
-            "Unsupported format \"" + option +
-            "\" specified for option \"scalar_pp_table_format\"");
+          ChiInvalidArgument("Unsupported format \"" + option +
+                             "\" specified for option \"scalar_pp_table_format\"");
 
-        log.Log() << "PostProcessorPrinter scalar_pp_table_format set to "
-                       << option;
+        log.Log() << "PostProcessorPrinter scalar_pp_table_format set to " << option;
         break;
       }
       case "events_on_which_to_print_postprocs"_hash:
@@ -137,27 +134,33 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
 
         printer.SetEventsOnWhichPrintPPs(list);
 
-        log.Log()
-          << "PostProcessorPrinter events_on_which_to_print_postprocs set";
+        log.Log() << "PostProcessorPrinter events_on_which_to_print_postprocs set";
         break;
       }
       case "print_scalar_time_history"_hash:
-        { printer.SetPrintScalarTimeHistory(param.GetValue<bool>()); break; }
+        printer.SetPrintScalarTimeHistory(param.GetValue<bool>());
+        break;
       case "print_vector_time_history"_hash:
-        { printer.SetPrintVectorTimeHistory(param.GetValue<bool>()); break;}
+        printer.SetPrintVectorTimeHistory(param.GetValue<bool>());
+        break;
       case "per_column_size_scalars"_hash:
-        { printer.SetScalarPerColumnSize(param.GetValue<bool>()); break;}
+        printer.SetScalarPerColumnSize(param.GetValue<bool>());
+        break;
       case "per_column_size_vectors"_hash:
-        { printer.SetVectorPerColumnSize(param.GetValue<bool>()); break;}
+        printer.SetVectorPerColumnSize(param.GetValue<bool>());
+        break;
       case "table_column_limit"_hash:
-        { printer.SetTableColumnLimit(param.GetValue<size_t>()); break;}
+        printer.SetTableColumnLimit(param.GetValue<size_t>());
+        break;
       case "time_history_limit"_hash:
-        { printer.SetTimeHistoryLimit(param.GetValue<size_t>()); break;}
+        printer.SetTimeHistoryLimit(param.GetValue<size_t>());
+        break;
       case "csv_filename"_hash:
-        { printer.SetCSVFilename(param.GetValue<std::string>()); break;}
-      default: ChiInvalidArgument("Invalid option \"" + param.Name() + "\"");
-    }// switch
-    // clang-format on
+        printer.SetCSVFilename(param.GetValue<std::string>());
+        break;
+      default:
+        ChiInvalidArgument("Invalid option \"" + param.Name() + "\"");
+    } // switch
   }
   return ParameterBlock{};
 }

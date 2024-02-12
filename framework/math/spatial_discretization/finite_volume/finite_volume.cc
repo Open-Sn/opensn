@@ -131,7 +131,8 @@ FiniteVolume::OrderNodes()
     local_ids.reserve(gids.size());
     for (uint64_t gid : gids)
     {
-      if (not ref_grid_.IsCellLocal(gid)) throw std::logic_error(mapping_error);
+      if (not ref_grid_.IsCellLocal(gid))
+        throw std::logic_error(mapping_error);
 
       const auto& local_cell = ref_grid_.cells[gid];
       local_ids.push_back(local_cell.local_id_);
@@ -196,9 +197,11 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 
         for (auto& face : cell.faces_)
         {
-          if (not face.has_neighbor_) continue;
+          if (not face.has_neighbor_)
+            continue;
 
-          if (face.IsNeighborLocal(ref_grid_)) nodal_nnz_in_diag[i] += 1;
+          if (face.IsNeighborLocal(ref_grid_))
+            nodal_nnz_in_diag[i] += 1;
           else
             nodal_nnz_off_diag[i] += 1;
         }
@@ -220,7 +223,8 @@ FiniteVolume::MapDOF(const Cell& cell,
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
   const size_t num_local_cells = ref_grid_.local_cells.size();
 
-  if (component >= num_unknowns) return -1;
+  if (component >= num_unknowns)
+    return -1;
 
   int64_t address = -1;
   if (cell.partition_id_ == opensn::mpi_comm.rank())
@@ -260,7 +264,8 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
   const size_t num_local_cells = ref_grid_.local_cells.size();
 
-  if (component >= num_unknowns) return -1;
+  if (component >= num_unknowns)
+    return -1;
 
   int64_t address = -1;
   if (cell.partition_id_ == opensn::mpi_comm.rank())

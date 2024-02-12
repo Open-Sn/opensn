@@ -20,27 +20,23 @@ lbs::LBSGroupset::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription("Input Parameters for groupsets.");
   params.SetDocGroup("LuaLBSGroupsets");
 
-  params.AddRequiredParameterArray(
-    "groups_from_to", "The first and last group id this groupset operates on."
-                      " e.g. A 4 group problem <TT>groups_from_to= {0, 3}</TT>");
+  params.AddRequiredParameterArray("groups_from_to",
+                                   "The first and last group id this groupset operates on."
+                                   " e.g. A 4 group problem <TT>groups_from_to= {0, 3}</TT>");
 
   params.AddRequiredParameter<size_t>("angular_quadrature_handle",
                                       "A handle to an angular quadrature");
   params.AddOptionalParameter(
-    "angle_aggregation_type",
-    "polar",
-    "The angle aggregation method to use during sweeping");
+    "angle_aggregation_type", "polar", "The angle aggregation method to use during sweeping");
 
-  params.AddOptionalParameter(
-    "angle_aggregation_num_subsets",
-    1,
-    "The number of subsets to apply to sets of "
-    "angles that have been aggregated. This is useful for increasing "
-    "pipeline size for parallel simulations");
+  params.AddOptionalParameter("angle_aggregation_num_subsets",
+                              1,
+                              "The number of subsets to apply to sets of "
+                              "angles that have been aggregated. This is useful for increasing "
+                              "pipeline size for parallel simulations");
 
   params.AddOptionalParameter(
     "groupset_num_subsets",
@@ -49,26 +45,20 @@ lbs::LBSGroupset::GetInputParameters()
     "useful for increasing pipeline size for parallel simulations");
 
   params.AddOptionalParameter(
-    "inner_linear_method",
-    "richardson",
-    "The iterative method to use for inner linear solves");
+    "inner_linear_method", "richardson", "The iterative method to use for inner linear solves");
 
   params.AddOptionalParameter(
     "l_abs_tol", 1.0e-6, "Inner linear solver residual absolute tolerance");
-  params.AddOptionalParameter(
-    "l_max_its", 200, "Inner linear solver maximum iterations");
+  params.AddOptionalParameter("l_max_its", 200, "Inner linear solver maximum iterations");
   params.AddOptionalParameter("gmres_restart_interval",
                               30,
                               "If this inner linear solver is gmres, sets the"
                               " number of iterations before a restart occurs.");
 
   params.AddOptionalParameter(
-    "allow_cycles",
-    true,
-    "Flag indicating whether cycles are to be allowed or not");
+    "allow_cycles", true, "Flag indicating whether cycles are to be allowed or not");
 
-  params.AddOptionalParameter(
-    "log_sweep_events", false, "Turns on a log of sweep events");
+  params.AddOptionalParameter("log_sweep_events", false, "Turns on a log of sweep events");
 
   // WG DSA options
   params.AddOptionalParameter("apply_wgdsa",
@@ -77,49 +67,34 @@ lbs::LBSGroupset::GetInputParameters()
                               "Synthetic Acceleration for this groupset");
   params.AddOptionalParameter(
     "wgdsa_l_abs_tol", 1.0e-4, "Within-group DSA linear absolute tolerance");
-  params.AddOptionalParameter(
-    "wgdsa_l_max_its", 30, "Within-group DSA linear maximum iterations");
+  params.AddOptionalParameter("wgdsa_l_max_its", 30, "Within-group DSA linear maximum iterations");
   params.AddOptionalParameter(
     "wgdsa_verbose", false, "If true, WGDSA routines will print verbosely");
-  params.AddOptionalParameter(
-    "wgdsa_petsc_options", "", "PETSc options to pass to WGDSA solver");
+  params.AddOptionalParameter("wgdsa_petsc_options", "", "PETSc options to pass to WGDSA solver");
 
   // TG DSA options
   params.AddOptionalParameter(
-    "apply_tgdsa",
-    false,
-    "Flag to turn on Two-Grid Acceleration for this groupset");
-  params.AddOptionalParameter(
-    "tgdsa_l_abs_tol", 1.0e-4, "Two-Grid DSA linear absolute tolerance");
-  params.AddOptionalParameter(
-    "tgdsa_l_max_its", 30, "Two-Grid DSA linear maximum iterations");
+    "apply_tgdsa", false, "Flag to turn on Two-Grid Acceleration for this groupset");
+  params.AddOptionalParameter("tgdsa_l_abs_tol", 1.0e-4, "Two-Grid DSA linear absolute tolerance");
+  params.AddOptionalParameter("tgdsa_l_max_its", 30, "Two-Grid DSA linear maximum iterations");
   params.AddOptionalParameter(
     "tgdsa_verbose", false, "If true, TGDSA routines will print verbosely");
-  params.AddOptionalParameter(
-    "tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
+  params.AddOptionalParameter("tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
 
   // Constraints
-  params.ConstrainParameterRange(
-    "angle_aggregation_type",
-    AllowableRangeList::New({"polar", "single", "azimuthal"}));
+  params.ConstrainParameterRange("angle_aggregation_type",
+                                 AllowableRangeList::New({"polar", "single", "azimuthal"}));
 
-  params.ConstrainParameterRange("angle_aggregation_num_subsets",
-                                 AllowableRangeLowLimit::New(1));
+  params.ConstrainParameterRange("angle_aggregation_num_subsets", AllowableRangeLowLimit::New(1));
 
-  params.ConstrainParameterRange("groupset_num_subsets",
-                                 AllowableRangeLowLimit::New(1));
+  params.ConstrainParameterRange("groupset_num_subsets", AllowableRangeLowLimit::New(1));
 
-  params.ConstrainParameterRange(
-    "inner_linear_method",
-    AllowableRangeList::New({"richardson", "gmres", "bicgstab"}));
+  params.ConstrainParameterRange("inner_linear_method",
+                                 AllowableRangeList::New({"richardson", "gmres", "bicgstab"}));
 
-  params.ConstrainParameterRange("l_abs_tol",
-                                 AllowableRangeLowLimit::New(1.0e-18));
+  params.ConstrainParameterRange("l_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("l_max_its", AllowableRangeLowLimit::New(0));
-  params.ConstrainParameterRange("gmres_restart_interval",
-                                 AllowableRangeLowLimit::New(1));
-
-  // clang-format on
+  params.ConstrainParameterRange("gmres_restart_interval", AllowableRangeLowLimit::New(1));
 
   return params;
 }
@@ -161,7 +136,8 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
 
   // Angle aggregation
   const auto angle_agg_typestr = params.GetParamValue<std::string>("angle_aggregation_type");
-  if (angle_agg_typestr == "polar") angleagg_method_ = AngleAggregationType::POLAR;
+  if (angle_agg_typestr == "polar")
+    angleagg_method_ = AngleAggregationType::POLAR;
   else if (angle_agg_typestr == "single")
     angleagg_method_ = AngleAggregationType::SINGLE;
   else if (angle_agg_typestr == "azimuthal")
@@ -171,7 +147,8 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
 
   // Inner solver
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
-  if (inner_linear_method == "richardson") iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
+  if (inner_linear_method == "richardson")
+    iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
   else if (inner_linear_method == "gmres")
     iterative_method_ = IterativeMethod::KRYLOV_GMRES;
   else if (inner_linear_method == "bicgstab")
@@ -261,7 +238,8 @@ lbs::LBSGroupset::BuildSubsets()
 void
 lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name)
 {
-  if (not log_sweep_events_) return;
+  if (not log_sweep_events_)
+    return;
 
   std::ofstream ofile;
   ofile.open(file_name, std::ofstream::out);

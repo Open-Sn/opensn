@@ -61,7 +61,8 @@ MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
       recvdispls[pid] = displacement;
       displacement += recvcounts[pid];
 
-      if (recvcounts[pid] > 0) sender_pids_set.insert(static_cast<K>(pid));
+      if (recvcounts[pid] > 0)
+        sender_pids_set.insert(static_cast<K>(pid));
     } // for pid
   }
 

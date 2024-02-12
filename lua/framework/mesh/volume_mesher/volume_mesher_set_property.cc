@@ -219,7 +219,8 @@ SetBndryIDFromLuaFunction(const std::string& lua_fname)
           face.neighbor_id_ = bndry_id;
           ++local_num_faces_modified;
 
-          if (grid_bndry_id_map.count(bndry_id) == 0) grid_bndry_id_map[bndry_id] = bndry_name;
+          if (grid_bndry_id_map.count(bndry_id) == 0)
+            grid_bndry_id_map[bndry_id] = bndry_name;
         }
       } // for bndry face
 
@@ -238,7 +239,8 @@ SetBndryIDFromLuaFunction(const std::string& lua_fname)
           face.neighbor_id_ = bndry_id;
           ++local_num_faces_modified;
 
-          if (grid_bndry_id_map.count(bndry_id) == 0) grid_bndry_id_map[bndry_id] = bndry_name;
+          if (grid_bndry_id_map.count(bndry_id) == 0)
+            grid_bndry_id_map[bndry_id] = bndry_name;
         }
       } // for bndry face
   }     // for ghost cell id
@@ -263,7 +265,8 @@ VolumeMesherSetProperty(lua_State* L)
 
   // Get property index
   const int num_args = lua_gettop(L);
-  if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args < 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -343,7 +346,8 @@ VolumeMesherSetProperty(lua_State* L)
     int volume_hndl = lua_tonumber(L, 2);
     int mat_id = lua_tonumber(L, 3);
     int sense = true;
-    if (num_args == 4) sense = lua_toboolean(L, 4);
+    if (num_args == 4)
+      sense = lua_toboolean(L, 4);
 
     const auto& log_vol =
       opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_hndl, fname);
@@ -365,7 +369,8 @@ VolumeMesherSetProperty(lua_State* L)
     int volume_hndl = lua_tonumber(L, 2);
     std::string bndry_name = lua_tostring(L, 3);
     int sense = true;
-    if (num_args == 4) sense = lua_toboolean(L, 4);
+    if (num_args == 4)
+      sense = lua_toboolean(L, 4);
 
     ChiLogicalErrorIf(bndry_name.empty(), "argument 3 must not be an empty string.");
 
@@ -404,7 +409,8 @@ int
 VolumeMesherSetKBAPartitioningPxPyPz(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(__FUNCTION__, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(__FUNCTION__, 3, num_args);
 
   LuaCheckNilValue(__FUNCTION__, L, 1);
   LuaCheckNilValue(__FUNCTION__, L, 2);
@@ -429,7 +435,8 @@ int
 VolumeMesherSetKBACutsX(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
   LuaCheckNilValue(__FUNCTION__, L, 1);
 
@@ -446,7 +453,8 @@ int
 VolumeMesherSetKBACutsY(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
   LuaCheckNilValue(__FUNCTION__, L, 1);
 
@@ -463,7 +471,8 @@ int
 VolumeMesherSetKBACutsZ(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
   LuaCheckNilValue(__FUNCTION__, L, 1);
 

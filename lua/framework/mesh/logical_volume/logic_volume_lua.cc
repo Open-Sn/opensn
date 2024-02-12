@@ -185,7 +185,8 @@ LogicalVolumeCreate(lua_State* L)
   // SURFACE
   else if (type_index == LVSURFACE)
   {
-    if (num_args != 2) LuaPostArgAmountError("MeshCreateLogicalVolume:SURFACE", 2, num_args);
+    if (num_args != 2)
+      LuaPostArgAmountError("MeshCreateLogicalVolume:SURFACE", 2, num_args);
 
     int surf_mesh_hndle = lua_tonumber(L, 2);
 
@@ -343,7 +344,8 @@ LogicalVolumePointSense(lua_State* L)
 {
   const std::string fname = "LogicalVolumePointSense";
   const int num_args = lua_gettop(L);
-  if (num_args != 4) LuaPostArgAmountError(fname, 4, num_args);
+  if (num_args != 4)
+    LuaPostArgAmountError(fname, 4, num_args);
 
   LuaCheckNilValue(fname, L, 1);
 
@@ -353,7 +355,8 @@ LogicalVolumePointSense(lua_State* L)
 
   const Vector3 point(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
 
-  if (lv.Inside(point)) lua_pushboolean(L, true);
+  if (lv.Inside(point))
+    lua_pushboolean(L, true);
   else
     lua_pushboolean(L, false);
 

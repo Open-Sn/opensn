@@ -177,7 +177,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
             inco_face_face_category.back() -= 1;
           }
         }
-        if (is_cyclic) continue;
+        if (is_cyclic)
+          continue;
 
         // Find associated face for dof mapping and lock box
         auto ass_face = (short)face.GetNeighborAssociatedFace(grid);
@@ -210,7 +211,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       {
         const Vector3& face_norm = face.normal_;
 
-        if (face_norm.Dot(ihat) > 0.999) location_boundary_dependency_set.insert(0);
+        if (face_norm.Dot(ihat) > 0.999)
+          location_boundary_dependency_set.insert(0);
         else if (face_norm.Dot(ihat) < -0.999)
           location_boundary_dependency_set.insert(1);
         else if (face_norm.Dot(jhat) > 0.999)
@@ -282,7 +284,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       LockBox& lock_box = *temp_lock_box;
 
       // Check if this face is the max size
-      if (num_face_dofs > largest_face) largest_face = static_cast<int>(num_face_dofs);
+      if (num_face_dofs > largest_face)
+        largest_face = static_cast<int>(num_face_dofs);
 
       // Find a open slot
       bool slot_found = false;
@@ -404,7 +407,10 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
         int out_f = -1;
         for (size_t af = 0; af < adj_cell.faces_.size(); ++af)
         {
-          if (face_oris[af] == FaceOrientation::OUTGOING) { ++out_f; }
+          if (face_oris[af] == FaceOrientation::OUTGOING)
+          {
+            ++out_f;
+          }
 
           if (af == ass_face)
           {
@@ -454,7 +460,8 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
 
     std::vector<int>::const_iterator delayed_successor =
       std::find(delayed_location_successors.begin(), delayed_location_successors.end(), locJ);
-    if ((delayed_successor == delayed_location_successors.end())) continue;
+    if ((delayed_successor == delayed_location_successors.end()))
+      continue;
 
     std::vector<CompactCellView> cell_views = deplocI_cell_views[deplocI];
 
@@ -512,7 +519,8 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
 
     auto delayed_successor =
       std::find(delayed_location_successors.begin(), delayed_location_successors.end(), locJ);
-    if ((delayed_successor != delayed_location_successors.end())) continue;
+    if ((delayed_successor != delayed_location_successors.end()))
+      continue;
 
     std::vector<CompactCellView> cell_views = deplocI_cell_views[deplocI];
 
@@ -715,7 +723,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
             std::set<int> afvids(adj_face.second.begin(), adj_face.second.end());
 
-            if (cfvids != afvids) face_matches = false;
+            if (cfvids != afvids)
+              face_matches = false;
 
             if (face_matches)
             {

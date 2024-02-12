@@ -115,7 +115,8 @@ AGSLinearSolver::Solve()
 
     lbs_solver.QMomentsLocal() = saved_qmoms; // Restore qmoms
 
-    if (error_norm < tolerance_options_.residual_absolute) break;
+    if (error_norm < tolerance_options_.residual_absolute)
+      break;
   } // for iteration
 
   VecDestroy(&x_old);

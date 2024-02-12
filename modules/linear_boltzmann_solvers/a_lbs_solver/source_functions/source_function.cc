@@ -21,7 +21,8 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                            const std::vector<double>& phi_local,
                            const SourceFlags source_flags)
 {
-  if (source_flags.Empty()) return;
+  if (source_flags.Empty())
+    return;
 
   const size_t source_event_tag = lbs_solver_.GetSourceEventTag();
   log.LogEvent(source_event_tag, Logger::EventType::EVENT_BEGIN);
@@ -84,7 +85,8 @@ SourceFunction::operator()(const LBSGroupset& groupset,
         const double* phi = &phi_local[uk_map];
 
         // Declare moment src
-        if (P0_src and ell == 0) fixed_src_moments_ = P0_src->source_value_g_.data();
+        if (P0_src and ell == 0)
+          fixed_src_moments_ = P0_src->source_value_g_.data();
         else
           fixed_src_moments_ = default_zero_src_.data();
 
@@ -99,7 +101,8 @@ SourceFunction::operator()(const LBSGroupset& groupset,
           double rhs = 0.0;
 
           // Apply fixed sources
-          if (apply_fixed_src_) rhs += this->AddSourceMoments();
+          if (apply_fixed_src_)
+            rhs += this->AddSourceMoments();
 
           // Apply scattering sources
           if (ell < S.size())
@@ -108,14 +111,16 @@ SourceFunction::operator()(const LBSGroupset& groupset,
             // Add Across GroupSet Scattering (AGS)
             if (apply_ags_scatter_src_)
               for (const auto& [_, gp, sigma_sm] : S_ell.Row(g))
-                if (gp < gs_i_ or gp > gs_f_) rhs += sigma_sm * phi[gp];
+                if (gp < gs_i_ or gp > gs_f_)
+                  rhs += sigma_sm * phi[gp];
 
             // Add Within GroupSet Scattering (WGS)
             if (apply_wgs_scatter_src_)
               for (const auto& [_, gp, sigma_sm] : S_ell.Row(g))
                 if (gp >= gs_i_ and gp <= gs_f_)
                 {
-                  if (suppress_wg_scatter_src_ and g_ == gp) continue;
+                  if (suppress_wg_scatter_src_ and g_ == gp)
+                    continue;
                   rhs += sigma_sm * phi[gp];
                 }
           }
@@ -126,7 +131,8 @@ SourceFunction::operator()(const LBSGroupset& groupset,
             const auto& F_g = F[g];
             if (apply_ags_fission_src_)
               for (size_t gp = first_grp_; gp <= last_grp_; ++gp)
-                if (gp < gs_i_ or gp > gs_f_) rhs += F_g[gp] * phi[gp];
+                if (gp < gs_i_ or gp > gs_f_)
+                  rhs += F_g[gp] * phi[gp];
 
             if (apply_wgs_fission_src_)
               for (size_t gp = gs_i_; gp <= gs_f_; ++gp)

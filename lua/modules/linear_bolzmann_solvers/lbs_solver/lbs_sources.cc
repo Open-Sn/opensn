@@ -22,7 +22,8 @@ LBSAddPointSource(lua_State* L)
                                "sources via LBSSolver::Options.";
 
   const int num_args = lua_gettop(L);
-  if (num_args != 5) LuaPostArgAmountError(__FUNCTION__, 5, num_args);
+  if (num_args != 5)
+    LuaPostArgAmountError(__FUNCTION__, 5, num_args);
 
   LuaCheckIntegerValue(__FUNCTION__, L, 1);
   LuaCheckNumberValue(__FUNCTION__, L, 2);
@@ -67,7 +68,8 @@ LBSClearPointSources(lua_State* L)
                                "or clearing point sources via LBSSolver::Options.";
 
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
   LuaCheckIntegerValue(__FUNCTION__, L, 1);
 
@@ -86,7 +88,8 @@ int
 AddPointSource(lua_State* L)
 {
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(__FUNCTION__, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(__FUNCTION__, 2, num_args);
 
   LuaCheckIntegerValue(__FUNCTION__, L, 1);
   LuaCheckIntegerValue(__FUNCTION__, L, 2);
@@ -108,7 +111,8 @@ int
 ClearPointSources(lua_State* L)
 {
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
   LuaCheckIntegerValue(__FUNCTION__, L, 1);
 
@@ -127,7 +131,8 @@ int
 AddDistributedSource(lua_State* L)
 {
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(__FUNCTION__, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(__FUNCTION__, 2, num_args);
 
   LuaCheckIntegerValue(__FUNCTION__, L, 1);
   LuaCheckIntegerValue(__FUNCTION__, L, 2);
@@ -149,7 +154,8 @@ int
 ClearDistributedSources(lua_State* L)
 {
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
   LuaCheckIntegerValue(__FUNCTION__, L, 1);
 

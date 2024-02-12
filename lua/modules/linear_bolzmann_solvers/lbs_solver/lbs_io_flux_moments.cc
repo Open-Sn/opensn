@@ -15,7 +15,8 @@ LBSWriteFluxMoments(lua_State* L)
   const std::string fname = "LBSWriteFluxMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -38,7 +39,8 @@ LBSCreateAndWriteSourceMoments(lua_State* L)
   const std::string fname = "LBSCreateAndWriteSourceMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -62,7 +64,8 @@ LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
   const std::string fname = "LBSReadFluxMomentsAndMakeSourceMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);
+  if ((num_args != 2) and (num_args != 3))
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -98,7 +101,8 @@ LBSReadSourceMoments(lua_State* L)
   const std::string fname = "LBSReadSourceMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);
+  if ((num_args != 2) and (num_args != 3))
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -128,7 +132,8 @@ LBSReadFluxMoments(lua_State* L)
   const std::string fname = "LBSReadFluxMoments";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if ((num_args != 2) and (num_args != 3)) LuaPostArgAmountError(fname, 2, num_args);
+  if ((num_args != 2) and (num_args != 3))
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);

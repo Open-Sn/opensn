@@ -18,7 +18,8 @@ MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
   KSPGetRhs(ksp, &Rhs);
   double rhs_norm;
   VecNorm(Rhs, NORM_2, &rhs_norm);
-  if (rhs_norm < 1.0e-12) rhs_norm = 1.0;
+  if (rhs_norm < 1.0e-12)
+    rhs_norm = 1.0;
 
   // Get solver name
   const char* ksp_name;
@@ -27,7 +28,8 @@ MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
   // Default to this if ksp_name is NULL
   const char NONAME_SOLVER[] = "NoName-Solver\0";
 
-  if (ksp_name == nullptr) ksp_name = NONAME_SOLVER;
+  if (ksp_name == nullptr)
+    ksp_name = NONAME_SOLVER;
 
   KSPAppContext* my_app_context;
   KSPGetApplicationContext(ksp, &my_app_context);

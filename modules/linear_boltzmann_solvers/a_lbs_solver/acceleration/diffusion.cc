@@ -111,9 +111,11 @@ DiffusionSolver::AddToRHS(const std::vector<double>& values)
 void
 DiffusionSolver::Initialize()
 {
-  if (options.verbose) log.Log() << text_name_ << ": Initializing PETSc items";
+  if (options.verbose)
+    log.Log() << text_name_ << ": Initializing PETSc items";
 
-  if (options.verbose) log.Log() << text_name_ << ": Global number of DOFs=" << num_global_dofs_;
+  if (options.verbose)
+    log.Log() << text_name_ << ": Global number of DOFs=" << num_global_dofs_;
 
   opensn::mpi_comm.barrier();
   log.Log() << "Sparsity pattern";
@@ -132,7 +134,8 @@ DiffusionSolver::Initialize()
   opensn::mpi_comm.barrier();
 
   // Create RHS
-  if (not requires_ghosts_) rhs_ = CreateVector(num_local_dofs_, num_global_dofs_);
+  if (not requires_ghosts_)
+    rhs_ = CreateVector(num_local_dofs_, num_global_dofs_);
   else
     rhs_ = CreateVectorWithGhosts(num_local_dofs_,
                                   num_global_dofs_,
@@ -187,7 +190,8 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
   VecDuplicate(rhs_, &x);
   VecSet(x, 0.0);
 
-  if (not use_initial_guess) KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
+  if (not use_initial_guess)
+    KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
   else
     KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
 
@@ -198,7 +202,8 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
   {
     PetscBool symmetry = PETSC_FALSE;
     MatIsSymmetric(A_, 1.0e-6, &symmetry);
-    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
+    if (symmetry == PETSC_FALSE)
+      throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   if (options.verbose)
@@ -259,7 +264,8 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
   VecDuplicate(rhs_, &x);
   VecSet(x, 0.0);
 
-  if (not use_initial_guess) KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
+  if (not use_initial_guess)
+    KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
   else
     KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
 
@@ -270,7 +276,8 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
   {
     PetscBool symmetry = PETSC_FALSE;
     MatIsSymmetric(A_, 1.0e-6, &symmetry);
-    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
+    if (symmetry == PETSC_FALSE)
+      throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   if (options.verbose)
@@ -284,7 +291,10 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
     log.Log() << "RHS-norm " << rhs_norm;
   }
 
-  if (use_initial_guess) { VecCopy(petsc_solution, x); }
+  if (use_initial_guess)
+  {
+    VecCopy(petsc_solution, x);
+  }
 
   // Solve
   KSPSolve(ksp_, rhs_, x);

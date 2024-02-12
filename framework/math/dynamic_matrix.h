@@ -140,7 +140,8 @@ public:
 
   MatDim Dimensions() const
   {
-    if (elements_.empty()) return {0, 0};
+    if (elements_.empty())
+      return {0, 0};
     else
       return {elements_.size(), elements_[0].size()};
   }
@@ -361,7 +362,8 @@ public:
         out << elements_[i][j] << " ";
       out << elements_[i][dim.second - 1];
 
-      if (i < (dim.first - 1)) out << "\n";
+      if (i < (dim.first - 1))
+        out << "\n";
     }
 
     return out.str();

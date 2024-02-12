@@ -21,8 +21,10 @@ Range(T start, T end, D delta = 1)
 
   std::vector<T> sequence = {};
 
-  if (forward and start >= end) return sequence;
-  if (not forward and start <= end) return sequence;
+  if (forward and start >= end)
+    return sequence;
+  if (not forward and start <= end)
+    return sequence;
 
   T i = start;
   bool terminate = false;
@@ -31,11 +33,14 @@ Range(T start, T end, D delta = 1)
     sequence.push_back(i);
     i += delta;
 
-    if (forward and i >= end) terminate = true;
-    if (not forward and i <= end) terminate = true;
+    if (forward and i >= end)
+      terminate = true;
+    if (not forward and i <= end)
+      terminate = true;
 
     // Wrap-around check
-    if (not forward and i > start) terminate = true;
+    if (not forward and i > start)
+      terminate = true;
   }
 
   return sequence;

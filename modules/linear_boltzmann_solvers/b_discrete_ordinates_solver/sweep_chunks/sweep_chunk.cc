@@ -132,7 +132,8 @@ SweepChunk::KernelFEMUpwindSurfaceIntegrals()
       const double mu_Nij = -mu * M_surf_f[i][j];
       Amat_[i][j] += mu_Nij;
 
-      if (psi == nullptr) continue;
+      if (psi == nullptr)
+        continue;
 
       for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
         b_[gsg][i] += psi[gsg] * mu_Nij;
@@ -196,7 +197,8 @@ SweepChunk::KernelPhiUpdate()
 void
 SweepChunk::KernelPsiUpdate()
 {
-  if (not save_angular_flux_) return;
+  if (not save_angular_flux_)
+    return;
 
   auto& output_psi = GetDestinationPsi();
   double* cell_psi_data =
