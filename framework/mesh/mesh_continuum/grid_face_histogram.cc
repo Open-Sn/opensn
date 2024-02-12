@@ -19,7 +19,8 @@ GridFaceHistogram::MapFaceHistogramBins(size_t num_face_verts) const
   for (auto category : face_categories_)
   {
     category_counter++;
-    if (num_face_verts <= category.first) return category_counter;
+    if (num_face_verts <= category.first)
+      return category_counter;
   }
 
   return 0;

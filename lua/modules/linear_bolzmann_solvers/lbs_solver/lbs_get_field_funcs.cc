@@ -14,7 +14,8 @@ LBSGetScalarFieldFunctionList(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNumberValue(fname, L, 1);
@@ -31,7 +32,8 @@ LBSGetScalarFieldFunctionList(lua_State* L)
     size_t stack_ff_counter = 0;
     for (auto& stack_ff : opensn::field_function_stack)
     {
-      if (stack_ff == local_ff) return stack_ff_counter;
+      if (stack_ff == local_ff)
+        return stack_ff_counter;
 
       ++stack_ff_counter;
     }
@@ -51,7 +53,8 @@ LBSGetScalarFieldFunctionList(lua_State* L)
       const size_t ff = lbs_solver.MapPhiFieldFunction(g, m);
       auto local_ff = lbs_solver.GetFieldFunctions()[ff];
 
-      if (m != 0) continue;
+      if (m != 0)
+        continue;
 
       lua_pushinteger(L, 1 + count++);
       lua_pushinteger(L, static_cast<lua_Integer>(GetStackFFHandle(local_ff)));

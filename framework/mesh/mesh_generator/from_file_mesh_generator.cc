@@ -65,7 +65,8 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
 
   log.Log() << "FromFileMeshGenerator: Generating UnpartitionedMesh";
 
-  if (extension == ".obj") umesh->ReadFromWavefrontOBJ(options);
+  if (extension == ".obj")
+    umesh->ReadFromWavefrontOBJ(options);
   else if (extension == ".msh")
     umesh->ReadFromMsh(options);
   else if (extension == ".e")

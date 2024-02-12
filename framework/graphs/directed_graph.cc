@@ -107,7 +107,8 @@ DirectedGraph::DFSAlgorithm(std::vector<size_t>& traversal,
   visited[cur_vid] = true;
 
   for (auto v : vertices[cur_vid].ds_edge)
-    if (not visited[v]) DFSAlgorithm(traversal, visited, v);
+    if (not visited[v])
+      DFSAlgorithm(traversal, visited, v);
 }
 
 void
@@ -148,7 +149,8 @@ DirectedGraph::SCCAlgorithm(size_t u,
     }
     w = stack.top();
     sub_SCC.push_back(w);
-    if (sub_SCC.size() > 1) SCCs.push_back(sub_SCC);
+    if (sub_SCC.size() > 1)
+      SCCs.push_back(sub_SCC);
     on_stack[w] = false;
     stack.pop();
   }
@@ -169,7 +171,8 @@ DirectedGraph::FindStronglyConnectedComponents()
   int time = 0;
 
   for (size_t v = 0; v < V; ++v)
-    if (disc[v] == -1) SCCAlgorithm(v, time, disc, low, on_stack, stack, SCCs);
+    if (disc[v] == -1)
+      SCCAlgorithm(v, time, disc, low, on_stack, stack, SCCs);
 
   return SCCs;
 }
@@ -189,7 +192,8 @@ DirectedGraph::GenerateTopologicalSort()
 
   // Identify vertices that have no incoming edge
   for (auto& vertex : cur_vertices)
-    if (vertex.us_edge.empty()) S.push_back(&vertex);
+    if (vertex.us_edge.empty())
+      S.push_back(&vertex);
 
   if (S.empty())
   {
@@ -214,14 +218,17 @@ DirectedGraph::GenerateTopologicalSort()
       node_n->ds_edge.erase(m);
       node_m->us_edge.erase(n);
 
-      if (node_m->us_edge.empty()) S.push_back(node_m);
+      if (node_m->us_edge.empty())
+        S.push_back(node_m);
     }
   }
 
 endofalgo:
 {
-  if (has_cycles) return {};
-  if (L.size() != vertices.size()) return {};
+  if (has_cycles)
+    return {};
+  if (L.size() != vertices.size())
+    return {};
 }
 
   return L;
@@ -277,7 +284,8 @@ DirectedGraph::FindApproxMinimumFAS()
     for (auto& u : TG.vertices)
     {
       double delta = GetVertexDelta(u);
-      if (delta > max_delta.second) max_delta = std::make_pair(u.id, delta);
+      if (delta > max_delta.second)
+        max_delta = std::make_pair(u.id, delta);
     }
 
     // Remove max delta
@@ -298,7 +306,8 @@ DirectedGraph::FindApproxMinimumFAS()
 void
 DirectedGraph::PrintGraphviz(int location_mask)
 {
-  if (opensn::mpi_comm.rank() != location_mask) return;
+  if (opensn::mpi_comm.rank() != location_mask)
+    return;
 
   std::stringstream o;
   std::string offset("    ");
@@ -325,7 +334,8 @@ DirectedGraph::PrintGraphviz(int location_mask)
 void
 DirectedGraph::PrintSubGraphviz(const std::vector<int>& verts_to_print, int location_mask)
 {
-  if (opensn::mpi_comm.rank() != location_mask) return;
+  if (opensn::mpi_comm.rank() != location_mask)
+    return;
 
   std::stringstream o;
   std::string offset("    ");
@@ -393,7 +403,8 @@ DirectedGraph::RemoveCyclicDependencies()
               edges_to_remove.emplace_back(u, v);
               break;
             }
-          if (found) break;
+          if (found)
+            break;
         } // for u
       }   // tri-connected
         // If n-connected
@@ -449,7 +460,8 @@ DirectedGraph::RemoveCyclicDependencies()
           for (size_t v : u.ds_edge)
           {
             int adj_map = smap[v];
-            if (adj_map < cur_map) edges_to_rem.emplace_back(u.id, v);
+            if (adj_map < cur_map)
+              edges_to_rem.emplace_back(u.id, v);
           }
         }
 

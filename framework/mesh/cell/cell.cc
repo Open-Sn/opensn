@@ -88,8 +88,10 @@ Cell::operator=(const Cell& other)
 bool
 CellFace::IsNeighborLocal(const MeshContinuum& grid) const
 {
-  if (not has_neighbor_) return false;
-  if (opensn::mpi_comm.size() == 1) return true;
+  if (not has_neighbor_)
+    return false;
+  if (opensn::mpi_comm.size() == 1)
+    return true;
 
   auto& adj_cell = grid.cells[neighbor_id_];
 
@@ -99,8 +101,10 @@ CellFace::IsNeighborLocal(const MeshContinuum& grid) const
 int
 CellFace::GetNeighborPartitionID(const MeshContinuum& grid) const
 {
-  if (not has_neighbor_) return -1;
-  if (opensn::mpi_comm.size() == 1) return 0;
+  if (not has_neighbor_)
+    return -1;
+  if (opensn::mpi_comm.size() == 1)
+    return 0;
 
   auto& adj_cell = grid.cells[neighbor_id_];
 
@@ -110,8 +114,10 @@ CellFace::GetNeighborPartitionID(const MeshContinuum& grid) const
 uint64_t
 CellFace::GetNeighborLocalID(const MeshContinuum& grid) const
 {
-  if (not has_neighbor_) return -1;
-  if (opensn::mpi_comm.size() == 1) return neighbor_id_; // cause global_ids=local_ids
+  if (not has_neighbor_)
+    return -1;
+  if (opensn::mpi_comm.size() == 1)
+    return neighbor_id_; // cause global_ids=local_ids
 
   auto& adj_cell = grid.cells[neighbor_id_];
 
@@ -178,7 +184,8 @@ CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
 double
 CellFace::ComputeFaceArea(const MeshContinuum& grid) const
 {
-  if (vertex_ids_.size() <= 1) return 1.0;
+  if (vertex_ids_.size() <= 1)
+    return 1.0;
   else if (vertex_ids_.size() == 2)
   {
     const auto& v0 = grid.vertices[vertex_ids_[0]];

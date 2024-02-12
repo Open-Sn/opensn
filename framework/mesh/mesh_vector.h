@@ -58,9 +58,12 @@ struct Vector3
       std::vector<double> vec = list;
       for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
       {
-        if (i == 0) x = vec[i];
-        if (i == 1) y = vec[i];
-        if (i == 2) z = vec[i];
+        if (i == 0)
+          x = vec[i];
+        if (i == 1)
+          y = vec[i];
+        if (i == 2)
+          z = vec[i];
       }
     }
   }
@@ -73,9 +76,12 @@ struct Vector3
       std::vector<double> vec = list;
       for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
       {
-        if (i == 0) x = vec[i];
-        if (i == 1) y = vec[i];
-        if (i == 2) z = vec[i];
+        if (i == 0)
+          x = vec[i];
+        if (i == 1)
+          y = vec[i];
+        if (i == 2)
+          z = vec[i];
       }
     }
   }
@@ -290,7 +296,8 @@ struct Vector3
   /**Returns a copy of the value at the given index.*/
   double operator[](const size_t i) const
   {
-    if (i == 0) return this->x;
+    if (i == 0)
+      return this->x;
     else if (i == 1)
       return this->y;
     else if (i == 2)
@@ -302,7 +309,8 @@ struct Vector3
   /**Returns a reference of the value at the given index.*/
   double& operator()(const size_t i)
   {
-    if (i == 0) return this->x;
+    if (i == 0)
+      return this->x;
     else if (i == 1)
       return this->y;
     else if (i == 2)

@@ -12,7 +12,8 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
   auto& log = Logger::GetInstance();
 
   unsigned int last_unknown_end = -1;
-  if (not unknowns_.empty()) last_unknown_end = unknowns_.back().GetMapEnd();
+  if (not unknowns_.empty())
+    last_unknown_end = unknowns_.back().GetMapEnd();
 
   unsigned int new_unknown_index = unknowns_.size();
 
@@ -80,7 +81,8 @@ UnknownManager::MapUnknown(unsigned int unknown_id, unsigned int component) cons
 unsigned int
 UnknownManager::GetTotalUnknownStructureSize() const
 {
-  if (unknowns_.empty()) return 0;
+  if (unknowns_.empty())
+    return 0;
 
   return unknowns_.back().GetMapEnd() + 1;
 }

@@ -82,7 +82,8 @@ NonLinearSolver::PostSetupCallback()
 void
 NonLinearSolver::Setup()
 {
-  if (IsSystemSet()) return;
+  if (IsSystemSet())
+    return;
   this->PreSetupCallback();
 
   SNESCreate(mpi_comm, &nl_solver_);
@@ -90,7 +91,8 @@ NonLinearSolver::Setup()
   SNESSetOptionsPrefix(nl_solver_, solver_name_.c_str());
 
   SNESSetType(nl_solver_, options_.petsc_snes_type_.c_str());
-  if (options_.nl_method_ == "LINEAR") SNESSetType(nl_solver_, SNESKSPONLY);
+  if (options_.nl_method_ == "LINEAR")
+    SNESSetType(nl_solver_, SNESKSPONLY);
   SNESLineSearch linesearch;
   SNESGetLineSearch(nl_solver_, &linesearch);
   SNESLineSearchSetType(linesearch, SNESLINESEARCHBT);
@@ -148,7 +150,8 @@ NonLinearSolver::Solve()
   SNESConvergedReason conv_reason;
   SNESGetConvergedReason(nl_solver_, &conv_reason);
 
-  if (conv_reason > 0) converged_ = true;
+  if (conv_reason > 0)
+    converged_ = true;
 
   const char* strreason;
   SNESGetConvergedReasonString(nl_solver_, &strreason);

@@ -261,7 +261,8 @@ CylindricalAngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order,
     {
       for (unsigned int l = 0; l <= scattering_order; ++l)
         for (int m = 0; m <= l; ++m)
-          if ((l + m) % 2 == 0) m_to_ell_em_map_.emplace_back(l, m);
+          if ((l + m) % 2 == 0)
+            m_to_ell_em_map_.emplace_back(l, m);
     }
     else if (dimension == 2)
       for (unsigned int l = 0; l <= scattering_order; ++l)

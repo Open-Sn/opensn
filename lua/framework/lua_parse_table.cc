@@ -88,7 +88,8 @@ TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
   {
     if (lua_type(L, -2) == LUA_TSTRING)
     {
-      if (number_key_encountered) ExceptionMixStringNumberKeys;
+      if (number_key_encountered)
+        ExceptionMixStringNumberKeys;
 
       string_key_encountered = true;
       const std::string key_str_name = lua_tostring(L, -2);
@@ -100,9 +101,11 @@ TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
     // - All the keys in the table must be numbers
     if (lua_type(L, -2) == LUA_TNUMBER)
     {
-      if (string_key_encountered) ExceptionMixStringNumberKeys;
+      if (string_key_encountered)
+        ExceptionMixStringNumberKeys;
 
-      if (block.Type() != opensn::ParameterBlockType::ARRAY) block.ChangeToArray();
+      if (block.Type() != opensn::ParameterBlockType::ARRAY)
+        block.ChangeToArray();
 
       number_key_encountered = true;
       const std::string key_str_name = std::to_string(key_number_index);
@@ -145,26 +148,32 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
       break;
     case opensn::ParameterBlockType::ARRAY:
     {
-      if (level > 0) lua_newtable(L);
+      if (level > 0)
+        lua_newtable(L);
       const size_t num_params = block.NumParameters();
       for (size_t k = 0; k < num_params; ++k)
       {
-        if (level > 0) lua_pushinteger(L, static_cast<lua_Integer>(k) + 1);
+        if (level > 0)
+          lua_pushinteger(L, static_cast<lua_Integer>(k) + 1);
         PushParameterBlock(L, block.GetParam(k), level + 1);
-        if (level > 0) lua_settable(L, -3);
+        if (level > 0)
+          lua_settable(L, -3);
       }
       break;
     }
     case opensn::ParameterBlockType::BLOCK:
     {
-      if (level > 0) lua_newtable(L);
+      if (level > 0)
+        lua_newtable(L);
       const size_t num_params = block.NumParameters();
       for (size_t k = 0; k < num_params; ++k)
       {
         const auto& param = block.GetParam(k);
-        if (level > 0) lua_pushstring(L, param.Name().c_str());
+        if (level > 0)
+          lua_pushstring(L, param.Name().c_str());
         PushParameterBlock(L, block.GetParam(k), level + 1);
-        if (level > 0) lua_settable(L, -3);
+        if (level > 0)
+          lua_settable(L, -3);
       }
       break;
     }
@@ -185,7 +194,8 @@ StackItemToParameterBlock(lua_State* L, int index)
       return opensn::ParameterBlock("", lua_toboolean(L, index));
     case LUA_TNUMBER:
     {
-      if (lua_isinteger(L, index)) return opensn::ParameterBlock("", lua_tointeger(L, index));
+      if (lua_isinteger(L, index))
+        return opensn::ParameterBlock("", lua_tointeger(L, index));
       else
         return opensn::ParameterBlock("", lua_tonumber(L, index));
     }

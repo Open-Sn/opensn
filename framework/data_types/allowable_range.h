@@ -32,7 +32,8 @@ public:
     const Varying vvalue(value);
     std::stringstream outstr;
 
-    if (not scope.empty()) outstr << "Parameter \"" << scope << "\": ";
+    if (not scope.empty())
+      outstr << "Parameter \"" << scope << "\": ";
 
     outstr << "Value " << vvalue << " out of range. ";
     outstr << "Constraints: " << AllowableRangeStr() << ".";
@@ -90,7 +91,8 @@ protected:
     for (const auto& value : list_)
     {
       outstr << value;
-      if (value != list_.back()) outstr << ", ";
+      if (value != list_.back())
+        outstr << ", ";
     }
     return outstr.str();
   }
@@ -123,15 +125,18 @@ protected:
   friend class AllowableRangeLowHighLimit;
   bool ChildIsAllowable(Varying value) const override
   {
-    if (value.Type() != low_limit_.Type()) return false;
+    if (value.Type() != low_limit_.Type())
+      return false;
 
-    if (low_closed_) return value >= low_limit_;
+    if (low_closed_)
+      return value >= low_limit_;
     else
       return value > low_limit_;
   }
   std::string AllowableRangeStr() const override
   {
-    if (low_closed_) return std::string(">= ") + low_limit_.PrintStr();
+    if (low_closed_)
+      return std::string(">= ") + low_limit_.PrintStr();
     else
       return std::string("> ") + low_limit_.PrintStr();
   }
@@ -162,15 +167,18 @@ protected:
   friend class AllowableRangeLowHighLimit;
   bool ChildIsAllowable(Varying value) const override
   {
-    if (value.Type() != hi_limit_.Type()) return false;
+    if (value.Type() != hi_limit_.Type())
+      return false;
 
-    if (hi_closed_) return value <= hi_limit_;
+    if (hi_closed_)
+      return value <= hi_limit_;
     else
       return value < hi_limit_;
   }
   std::string AllowableRangeStr() const override
   {
-    if (hi_closed_) return std::string("<= ") + hi_limit_.PrintStr();
+    if (hi_closed_)
+      return std::string("<= ") + hi_limit_.PrintStr();
     else
       return std::string("< ") + hi_limit_.PrintStr();
   }

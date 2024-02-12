@@ -205,14 +205,16 @@ QuadratureTetrahedron::KeastRule(const std::vector<std::vector<double>>& rule_da
 
     if (rule_data[p][1] != static_cast<double>(0.0))
     {
-      if (rule_data[p][2] != static_cast<double>(0.0)) pointtype = 12;
+      if (rule_data[p][2] != static_cast<double>(0.0))
+        pointtype = 12;
       else
         pointtype = 4;
     }
     else
     {
       // The second entry is zero.  What about the third?
-      if (rule_data[p][2] != static_cast<double>(0.0)) pointtype = 6;
+      if (rule_data[p][2] != static_cast<double>(0.0))
+        pointtype = 6;
     }
 
     switch (pointtype)

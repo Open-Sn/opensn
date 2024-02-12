@@ -150,12 +150,14 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
       {
         const auto& face = cell_->faces_[f];
 
-        if (face_orientations[f] != FaceOrientation::INCOMING) continue;
+        if (face_orientations[f] != FaceOrientation::INCOMING)
+          continue;
 
         const bool local = cell_transport_view_->IsFaceLocal(f);
         const bool boundary = not face.has_neighbor_;
 
-        if (local) ++in_face_counter;
+        if (local)
+          ++in_face_counter;
         else if (not boundary)
           ++preloc_face_counter;
 
@@ -189,7 +191,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
       int out_face_counter = -1;
       for (int f = 0; f < cell_num_faces_; ++f)
       {
-        if (face_orientations[f] != FaceOrientation::OUTGOING) continue;
+        if (face_orientations[f] != FaceOrientation::OUTGOING)
+          continue;
 
         // Set flags and counters
         out_face_counter++;
@@ -198,7 +201,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         const bool boundary = not face.has_neighbor_;
         const int locality = cell_transport_view_->FaceLocality(f);
 
-        if (not boundary and not local) ++deploc_face_counter;
+        if (not boundary and not local)
+          ++deploc_face_counter;
 
         sweep_dependency_interface_.SetupOutgoingFace(
           f, cell_mapping_->NumFaceNodes(f), face.neighbor_id_, local, boundary, locality);

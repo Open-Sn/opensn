@@ -121,7 +121,8 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 
   sweep_scheduler_.SetBoundarySourceActiveFlag(use_bndry_source_flag);
 
-  if (scope & ZERO_INCOMING_DELAYED_PSI) sweep_scheduler_.ZeroIncomingDelayedPsi();
+  if (scope & ZERO_INCOMING_DELAYED_PSI)
+    sweep_scheduler_.ZeroIncomingDelayedPsi();
 
   // Sweep
   sweep_scheduler_.ZeroOutputFluxDataStructures();

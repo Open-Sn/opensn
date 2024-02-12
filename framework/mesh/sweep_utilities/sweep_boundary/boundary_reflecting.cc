@@ -48,11 +48,13 @@ BoundaryReflecting::UpdateAnglesReadyStatus(const std::vector<size_t>& angles, s
 bool
 BoundaryReflecting::CheckAnglesReadyStatus(const std::vector<size_t>& angles, size_t gs_ss)
 {
-  if (opposing_reflected_) return true;
+  if (opposing_reflected_)
+    return true;
   bool ready_flag = true;
   for (auto& n : angles)
     if (not hetero_boundary_flux_[reflected_anglenum_[n]].empty())
-      if (not angle_readyflags_[n][gs_ss]) return false;
+      if (not angle_readyflags_[n][gs_ss])
+        return false;
 
   return ready_flag;
 }

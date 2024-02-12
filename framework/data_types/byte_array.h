@@ -80,7 +80,8 @@ public:
         " num_bytes to read: " + std::to_string(num_bytes));
 
     T value = *reinterpret_cast<const T*>(&raw_data_[address]);
-    if (next_address != nullptr) *next_address = address + num_bytes;
+    if (next_address != nullptr)
+      *next_address = address + num_bytes;
 
     return value;
   }

@@ -26,7 +26,8 @@ GetNLKAGSContextPtr(const std::shared_ptr<NonLinearSolverContext>& context,
                     const std::string& func_name)
 {
   auto nlk_ags_context = std::dynamic_pointer_cast<NLKEigenAGSContext>(context);
-  if (not nlk_ags_context) throw std::runtime_error(func_name + ": context casting failure");
+  if (not nlk_ags_context)
+    throw std::runtime_error(func_name + ": context casting failure");
   return nlk_ags_context;
 }
 

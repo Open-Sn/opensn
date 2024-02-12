@@ -49,7 +49,8 @@ LocallyRefineSLDFESQAngularQuadrature(lua_State* L)
   double cone_size = lua_tonumber(L, 3);
 
   bool ref_dir_as_plane_normal = false;
-  if (num_args == 4) ref_dir_as_plane_normal = lua_toboolean(L, 4);
+  if (num_args == 4)
+    ref_dir_as_plane_normal = lua_toboolean(L, 4);
 
   try
   {

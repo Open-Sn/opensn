@@ -42,7 +42,8 @@ AAH_ASynchronousCommunicator::ClearLocalAndReceiveBuffers()
 void
 AAH_ASynchronousCommunicator::ClearDownstreamBuffers()
 {
-  if (done_sending) return;
+  if (done_sending)
+    return;
 
   done_sending = true;
   for (auto& locI_requests : deplocI_message_request)
@@ -55,7 +56,8 @@ AAH_ASynchronousCommunicator::ClearDownstreamBuffers()
       }
     }
 
-  if (done_sending) fluds_.ClearSendPsi();
+  if (done_sending)
+    fluds_.ClearSendPsi();
 }
 
 void
@@ -281,7 +283,8 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
     }   // for message
   }     // for delayed predecessor
 
-  if (not all_messages_received) return false;
+  if (not all_messages_received)
+    return false;
 
   return true;
 }
@@ -331,10 +334,12 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
       } // if not message already received
     }   // for message
 
-    if (not ready_to_execute) break;
+    if (not ready_to_execute)
+      break;
   } // for predecessor
 
-  if (not ready_to_execute) return AngleSetStatus::RECEIVING;
+  if (not ready_to_execute)
+    return AngleSetStatus::RECEIVING;
   else
     return AngleSetStatus::READY_TO_EXECUTE;
 }

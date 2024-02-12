@@ -128,7 +128,8 @@ SimTest04_PWLC(const InputParameters& params)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      if (face.has_neighbor_) continue;
+      if (face.has_neighbor_)
+        continue;
 
       const size_t num_face_nodes = face.vertex_ids_.size();
       for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -156,7 +157,8 @@ SimTest04_PWLC(const InputParameters& params)
       {
         for (size_t j = 0; j < num_nodes; ++j)
         {
-          if (not node_boundary_flag[j]) MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
+          if (not node_boundary_flag[j])
+            MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
           else
           {
             double bval = CallLuaXYZFunction("MMS_phi", cell_node_xyzs[j]);

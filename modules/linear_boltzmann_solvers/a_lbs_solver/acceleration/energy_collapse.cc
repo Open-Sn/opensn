@@ -59,7 +59,8 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
   // it will screw up the power iteration
   // initial guess of 1.0. Here we reset them
   for (int g = 0; g < num_groups; g++)
-    if (sigma_t[g] < 1.0e-16) A[g][g] = 1.0;
+    if (sigma_t[g] < 1.0e-16)
+      A[g][g] = 1.0;
 
   MatDbl Ainv = Inverse(A);
   MatDbl C = MatMul(Ainv, B);

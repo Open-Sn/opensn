@@ -63,7 +63,8 @@ WGSLinearSolver::SetSystemSize()
 void
 WGSLinearSolver::SetSystem()
 {
-  if (IsSystemSet()) return;
+  if (IsSystemSet())
+    return;
 
   x_ = CreateVector(static_cast<int64_t>(num_local_dofs_), static_cast<int64_t>(num_global_dofs_));
 
@@ -90,7 +91,8 @@ WGSLinearSolver::SetSystem()
 void
 WGSLinearSolver::SetPreconditioner()
 {
-  if (IsSystemSet()) return;
+  if (IsSystemSet())
+    return;
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   gs_context_ptr->SetPreconditioner(ksp_);
@@ -131,7 +133,8 @@ WGSLinearSolver::SetInitialGuess()
   if (init_guess_norm > 1.0e-10)
   {
     KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
-    if (gs_context_ptr->log_info_) log.Log() << "Using phi_old as initial guess.";
+    if (gs_context_ptr->log_info_)
+      log.Log() << "Using phi_old as initial guess.";
   }
 }
 
@@ -143,7 +146,8 @@ WGSLinearSolver::SetRHS()
   auto& groupset = gs_context_ptr->groupset_;
   auto& lbs_solver = gs_context_ptr->lbs_solver_;
 
-  if (gs_context_ptr->log_info_) log.Log() << program_timer.GetTimeString() << " Computing b";
+  if (gs_context_ptr->log_info_)
+    log.Log() << program_timer.GetTimeString() << " Computing b";
 
   // SetSource for RHS
   saved_q_moments_local_ = lbs_solver.QMomentsLocal();

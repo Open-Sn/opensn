@@ -86,7 +86,8 @@ Solver::Initialize()
         }
         case BoundaryType::Dirichlet:
         {
-          if (bndry_vals.empty()) bndry_vals.resize(1, 0.0);
+          if (bndry_vals.empty())
+            bndry_vals.resize(1, 0.0);
           boundaries_.insert(
             std::make_pair(bndry_id, Boundary{BoundaryType::Dirichlet, {bndry_vals[0], 0., 0.}}));
           log.Log() << "Boundary " << bndry_name << " set to dirichlet.";
@@ -159,7 +160,8 @@ Solver::Initialize()
   if (field_functions_.empty())
   {
     std::string solver_name;
-    if (not TextName().empty()) solver_name = TextName() + "-";
+    if (not TextName().empty())
+      solver_name = TextName() + "-";
 
     std::string text_name = solver_name + "phi";
 
@@ -220,7 +222,8 @@ Solver::Execute()
     {
       const auto& face = cell.faces_[f];
       // not a boundary face
-      if (face.has_neighbor_) continue;
+      if (face.has_neighbor_)
+        continue;
 
       const auto& bndry = boundaries_[face.neighbor_id_];
 

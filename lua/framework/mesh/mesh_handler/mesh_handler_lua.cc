@@ -32,7 +32,8 @@ int
 MeshHandlerSetCurrent(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError("MeshHandlerSetCurrent", 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError("MeshHandlerSetCurrent", 1, num_args);
 
   int handle = lua_tonumber(L, 1);
 

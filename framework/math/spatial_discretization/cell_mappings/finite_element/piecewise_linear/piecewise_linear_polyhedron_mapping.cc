@@ -171,10 +171,22 @@ PieceWiseLinearPolyhedronMapping::TetShape(uint32_t index, const Vector3& qpoint
 {
   double value = 0.0;
 
-  if (index == 0) { value = 1.0 - qpoint.x - qpoint.y - qpoint.z; }
-  if (index == 1) { value = qpoint.x; }
-  if (index == 2) { value = qpoint.y; }
-  if (index == 3) { value = qpoint.z; }
+  if (index == 0)
+  {
+    value = 1.0 - qpoint.x - qpoint.y - qpoint.z;
+  }
+  if (index == 1)
+  {
+    value = qpoint.x;
+  }
+  if (index == 2)
+  {
+    value = qpoint.y;
+  }
+  if (index == 3)
+  {
+    value = qpoint.z;
+  }
 
   return value;
 }
@@ -183,10 +195,22 @@ double
 PieceWiseLinearPolyhedronMapping::TetGradShape_x(const uint32_t index)
 {
   double value = 0.0;
-  if (index == 0) { value = -1.0; }
-  if (index == 1) { value = 1.0; }
-  if (index == 2) { value = 0.0; }
-  if (index == 3) { value = 0.0; }
+  if (index == 0)
+  {
+    value = -1.0;
+  }
+  if (index == 1)
+  {
+    value = 1.0;
+  }
+  if (index == 2)
+  {
+    value = 0.0;
+  }
+  if (index == 3)
+  {
+    value = 0.0;
+  }
 
   return value;
 }
@@ -195,10 +219,22 @@ double
 PieceWiseLinearPolyhedronMapping::TetGradShape_y(const uint32_t index)
 {
   double value = 0.0;
-  if (index == 0) { value = -1.0; }
-  if (index == 1) { value = 0.0; }
-  if (index == 2) { value = 1.0; }
-  if (index == 3) { value = 0.0; }
+  if (index == 0)
+  {
+    value = -1.0;
+  }
+  if (index == 1)
+  {
+    value = 0.0;
+  }
+  if (index == 2)
+  {
+    value = 1.0;
+  }
+  if (index == 3)
+  {
+    value = 0.0;
+  }
 
   return value;
 }
@@ -207,10 +243,22 @@ double
 PieceWiseLinearPolyhedronMapping::TetGradShape_z(const uint32_t index)
 {
   double value = 0.0;
-  if (index == 0) { value = -1.0; }
-  if (index == 1) { value = 0.0; }
-  if (index == 2) { value = 0.0; }
-  if (index == 3) { value = 1.0; }
+  if (index == 0)
+  {
+    value = -1.0;
+  }
+  if (index == 1)
+  {
+    value = 0.0;
+  }
+  if (index == 2)
+  {
+    value = 0.0;
+  }
+  if (index == 3)
+  {
+    value = 1.0;
+  }
 
   return value;
 }
@@ -383,8 +431,14 @@ PieceWiseLinearPolyhedronMapping::ShapeValue(const int i, const Vector3& xyz) co
 
         if (node_side_maps_[i].face_map[f].side_map[s].part_of_face)
         {
-          if (node_side_maps_[i].face_map[f].side_map[s].index == 0) { Ni = 1 - xi - eta - zeta; }
-          if (node_side_maps_[i].face_map[f].side_map[s].index == 2) { Ni = eta; }
+          if (node_side_maps_[i].face_map[f].side_map[s].index == 0)
+          {
+            Ni = 1 - xi - eta - zeta;
+          }
+          if (node_side_maps_[i].face_map[f].side_map[s].index == 2)
+          {
+            Ni = eta;
+          }
 
           Nf = face_betaf_[f] * xi;
         }
@@ -428,7 +482,8 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
 
           if (side_map.part_of_face)
           {
-            if (side_map.index == 0) Ni = 1 - xi - eta - zeta;
+            if (side_map.index == 0)
+              Ni = 1 - xi - eta - zeta;
             else if (side_map.index == 2)
               Ni = eta;
 

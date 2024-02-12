@@ -105,7 +105,8 @@ SplitFileMeshGenerator::Execute()
     auto new_mesher = std::make_shared<VolumeMesher>(VolumeMesherType::UNPARTITIONED);
     new_mesher->SetContinuum(grid_ptr);
 
-    if (current_mesh_handler < 0) PushNewHandlerAndGetIndex();
+    if (current_mesh_handler < 0)
+      PushNewHandlerAndGetIndex();
 
     auto& cur_hndlr = GetCurrentHandler();
     cur_hndlr.SetVolumeMesher(new_mesher);
@@ -173,7 +174,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
         uint64_t cell_global_id = 0;
         for (auto cell_pid : cell_pids)
         {
-          if (cell_pid == pid) local_cells_needed.push_back(cell_global_id);
+          if (cell_pid == pid)
+            local_cells_needed.push_back(cell_global_id);
           ++cell_global_id;
         }
       }
@@ -189,7 +191,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
           vertices_needed.insert(vid);
           for (uint64_t ghost_gid : vertex_subs[vid])
           {
-            if (ghost_gid == cell_global_id) continue;
+            if (ghost_gid == cell_global_id)
+              continue;
             cells_needed.insert(ghost_gid);
 
             const auto& ghost_raw_cell = *raw_cells[ghost_gid];

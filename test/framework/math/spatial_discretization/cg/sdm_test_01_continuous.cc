@@ -50,12 +50,10 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   bool is_DG = false;
   {
     using namespace opensn;
-    // clang-format off
     if (sdm_type == "PWLC")
       sdm_ptr = PieceWiseLinearContinuous::New(grid);
     else
       ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
-    // clang-format on
   }
 
   auto& sdm = *sdm_ptr;
@@ -104,10 +102,12 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
       const auto& JxW = fe_vol_data.JxW_Values();
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        if (bndry_nodes.find(i) != bndry_nodes.end()) continue;
+        if (bndry_nodes.find(i) != bndry_nodes.end())
+          continue;
         for (size_t j = 0; j < num_nodes; ++j)
         {
-          if (bndry_nodes.find(j) != bndry_nodes.end()) continue;
+          if (bndry_nodes.find(j) != bndry_nodes.end())
+            continue;
           double entry_aij = 0.0;
           for (size_t qp : fe_vol_data.QuadraturePointIndices())
             entry_aij += shape_grad[i][qp].Dot(shape_grad[j][qp]) * JxW[qp];

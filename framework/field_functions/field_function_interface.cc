@@ -30,7 +30,8 @@ FieldFunctionInterface::GetFieldFunction() const
   {
     const auto name = field_function_param_.GetValue<std::string>();
     for (const auto& ff_ptr : field_function_stack)
-      if (ff_ptr->TextName() == name) ref_ff_ptr = ff_ptr;
+      if (ff_ptr->TextName() == name)
+        ref_ff_ptr = ff_ptr;
 
     ChiInvalidArgumentIf(ref_ff_ptr == nullptr, "Field function \"" + name + "\" not found.");
   }

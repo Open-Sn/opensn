@@ -130,7 +130,8 @@ private:
 
     bool operator==(const VaryingType& that) const override
     {
-      if (type_ != that.Type()) return false;
+      if (type_ != that.Type())
+        return false;
 
       switch (this->Type())
       {
@@ -153,7 +154,8 @@ private:
     bool operator!=(const VaryingType& that) const override { return not(*this == that); }
     bool operator>(const VaryingType& that) const override
     {
-      if (type_ != that.Type()) return false;
+      if (type_ != that.Type())
+        return false;
 
       switch (this->Type())
       {
@@ -174,7 +176,8 @@ private:
     }
     bool operator<(const VaryingType& that) const override
     {
-      if (type_ != that.Type()) return false;
+      if (type_ != that.Type())
+        return false;
 
       switch (this->Type())
       {
@@ -227,9 +230,18 @@ public:
     constexpr bool is_supported_type = IsBool<T>::value or IsFloat<T>::value or IsInteger<T>::value;
     static_assert(is_supported_type, "Constructor called with unsupported type");
 
-    if (IsBool<T>::value) { type_ = VaryingDataType::BOOL; }
-    else if (IsFloat<T>::value) { type_ = VaryingDataType::FLOAT; }
-    else if (IsInteger<T>::value) { type_ = VaryingDataType::INTEGER; }
+    if (IsBool<T>::value)
+    {
+      type_ = VaryingDataType::BOOL;
+    }
+    else if (IsFloat<T>::value)
+    {
+      type_ = VaryingDataType::FLOAT;
+    }
+    else if (IsInteger<T>::value)
+    {
+      type_ = VaryingDataType::INTEGER;
+    }
 
     data_ = Helper(CastValue(value));
   }

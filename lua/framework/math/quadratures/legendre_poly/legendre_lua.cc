@@ -40,7 +40,8 @@ int
 Ylm(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 4) LuaPostArgAmountError("Ylm", 4, num_args);
+  if (num_args != 4)
+    LuaPostArgAmountError("Ylm", 4, num_args);
 
   int ell = lua_tonumber(L, 1);
   int m = lua_tonumber(L, 2);

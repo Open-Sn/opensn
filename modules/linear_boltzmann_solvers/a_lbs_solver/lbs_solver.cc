@@ -162,7 +162,8 @@ LBSSolver::MaxPrecursorsPerMaterial() const
 void
 LBSSolver::AddGroup(int id)
 {
-  if (id < 0) groups_.emplace_back(static_cast<int>(groups_.size()));
+  if (id < 0)
+    groups_.emplace_back(static_cast<int>(groups_.size()));
   else
     groups_.emplace_back(id);
 }
@@ -576,11 +577,14 @@ LBSSolver::SetOptions(const InputParameters& params)
 
   // Handle order sensitive options
   if (user_params.Has("clear_boundary_conditions"))
-    if (user_params.GetParamValue<bool>("clear_boundary_conditions")) boundary_preferences_.clear();
+    if (user_params.GetParamValue<bool>("clear_boundary_conditions"))
+      boundary_preferences_.clear();
   if (user_params.Has("clear_point_sources"))
-    if (user_params.GetParamValue<bool>("clear_point_sources")) point_sources_.clear();
+    if (user_params.GetParamValue<bool>("clear_point_sources"))
+      point_sources_.clear();
   if (user_params.Has("clear_distributed_sources"))
-    if (user_params.GetParamValue<bool>("clear_distributed_sources")) distributed_sources_.clear();
+    if (user_params.GetParamValue<bool>("clear_distributed_sources"))
+      distributed_sources_.clear();
   if (user_params.Has("adjoint"))
   {
     const bool adjoint = user_params.GetParamValue<bool>("adjoint");
@@ -708,7 +712,8 @@ LBSSolver::SetOptions(const InputParameters& params)
           GetStackItem<PointSource>(object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
 
         // If the discretization is defined, initialization is possible
-        if (discretization_) point_sources_.back().Initialize(*this);
+        if (discretization_)
+          point_sources_.back().Initialize(*this);
       }
     }
 
@@ -721,7 +726,8 @@ LBSSolver::SetOptions(const InputParameters& params)
           object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
 
         // If the discretization is defined, initialization is possible
-        if (discretization_) distributed_sources_.back().Initialize(*this);
+        if (discretization_)
+          distributed_sources_.back().Initialize(*this);
       }
     }
   } // for p
@@ -845,7 +851,8 @@ LBSSolver::PerformInputChecks()
 
   // Determine geometry type
   const auto grid_attribs = grid_ptr_->Attributes();
-  if (grid_attribs & DIMENSION_1) options_.geometry_type = GeometryType::ONED_SLAB;
+  if (grid_attribs & DIMENSION_1)
+    options_.geometry_type = GeometryType::ONED_SLAB;
   else if (grid_attribs & DIMENSION_2)
     options_.geometry_type = GeometryType::TWOD_CARTESIAN;
   else if (grid_attribs & DIMENSION_3)
@@ -903,14 +910,16 @@ LBSSolver::InitializeMaterials()
   for (auto& cell : grid_ptr_->local_cells)
   {
     unique_material_ids.insert(cell.material_id_);
-    if (cell.material_id_ < 0) ++invalid_mat_cell_count;
+    if (cell.material_id_ < 0)
+      ++invalid_mat_cell_count;
   }
   const auto& ghost_cell_ids = grid_ptr_->cells.GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid_ptr_->cells[cell_id];
     unique_material_ids.insert(cell.material_id_);
-    if (cell.material_id_ < 0) ++invalid_mat_cell_count;
+    if (cell.material_id_ < 0)
+      ++invalid_mat_cell_count;
   }
 
   log.Log() << "Invalid cell materials " << invalid_mat_cell_count;
@@ -955,7 +964,10 @@ LBSSolver::InitializeMaterials()
                               << "energy groups than called for in the simulation. "
                               << "Source will be ignored.";
         }
-        else { matid_to_src_map_[mat_id] = src; }
+        else
+        {
+          matid_to_src_map_[mat_id] = src;
+        }
       } // P0 source
     }   // for property
 
@@ -998,7 +1010,8 @@ LBSSolver::InitializeMaterials()
   }
 
   // if no precursors, turn off precursors
-  if (num_precursors_ == 0) options_.use_precursors = false;
+  if (num_precursors_ == 0)
+    options_.use_precursors = false;
 
   // check compatibility when precursors are on
   if (options_.use_precursors)
@@ -1317,7 +1330,8 @@ LBSSolver::InitializeParrays()
         Vector3& n = face.normal_;
 
         int boundary_id = -1;
-        if (n.Dot(ihat) > 0.999) boundary_id = 0;
+        if (n.Dot(ihat) > 0.999)
+          boundary_id = 0;
         else if (n.Dot(ihat) < -0.999)
           boundary_id = 1;
         else if (n.Dot(jhat) > 0.999)
@@ -1329,7 +1343,8 @@ LBSSolver::InitializeParrays()
         else if (n.Dot(khat) < -0.999)
           boundary_id = 5;
 
-        if (boundary_id >= 0) face.neighbor_id_ = boundary_id;
+        if (boundary_id >= 0)
+          face.neighbor_id_ = boundary_id;
         cell_on_boundary = true;
 
         face_local_flags[f] = false;
@@ -1346,7 +1361,8 @@ LBSSolver::InitializeParrays()
       ++f;
     } // for f
 
-    if (num_nodes > max_cell_dof_count_) max_cell_dof_count_ = num_nodes;
+    if (num_nodes > max_cell_dof_count_)
+      max_cell_dof_count_ = num_nodes;
 
     cell_transport_views_.emplace_back(cell_phi_address,
                                        num_nodes,
@@ -1406,7 +1422,8 @@ LBSSolver::InitializeParrays()
 void
 LBSSolver::InitializeFieldFunctions()
 {
-  if (not field_functions_.empty()) return;
+  if (not field_functions_.empty())
+    return;
 
   // Initialize Field Functions
   //                                              for flux moments
@@ -1420,9 +1437,11 @@ LBSSolver::InitializeFieldFunctions()
       if (options_.field_function_prefix_option == "prefix")
       {
         prefix = options_.field_function_prefix;
-        if (not prefix.empty()) prefix += "_";
+        if (not prefix.empty())
+          prefix += "_";
       }
-      if (options_.field_function_prefix_option == "solver_name") prefix = TextName() + "_";
+      if (options_.field_function_prefix_option == "solver_name")
+        prefix = TextName() + "_";
 
       char buff[100];
       snprintf(
@@ -1446,9 +1465,11 @@ LBSSolver::InitializeFieldFunctions()
     if (options_.field_function_prefix_option == "prefix")
     {
       prefix = options_.field_function_prefix;
-      if (not prefix.empty()) prefix += "_";
+      if (not prefix.empty())
+        prefix += "_";
     }
-    if (options_.field_function_prefix_option == "solver_name") prefix = TextName() + "_";
+    if (options_.field_function_prefix_option == "solver_name")
+      prefix = TextName() + "_";
 
     auto power_ff = std::make_shared<FieldFunctionGridBased>(
       prefix + "power_generation", discretization_, Unknown(UnknownType::SCALAR));
@@ -1470,7 +1491,8 @@ LBSSolver::InitializeBoundaries()
     std::set<uint64_t> local_unique_bids_set;
     for (const auto& cell : grid_ptr_->local_cells)
       for (const auto& face : cell.faces_)
-        if (not face.has_neighbor_) local_unique_bids_set.insert(face.neighbor_id_);
+        if (not face.has_neighbor_)
+          local_unique_bids_set.insert(face.neighbor_id_);
 
     std::vector<uint64_t> local_unique_bids(local_unique_bids_set.begin(),
                                             local_unique_bids_set.end());
@@ -1523,7 +1545,8 @@ LBSSolver::InitializeBoundaries()
           for (const auto& face : cell.faces_)
             if (not face.has_neighbor_ and face.neighbor_id_ == bid)
             {
-              if (not n_ptr) n_ptr = std::make_unique<Vec3>(face.normal_);
+              if (not n_ptr)
+                n_ptr = std::make_unique<Vec3>(face.normal_);
               if (std::fabs(face.normal_.Dot(*n_ptr) - 1.0) > EPSILON)
                 throw std::logic_error(fname +
                                        ": Not all face normals are, within tolerance, locally the "
@@ -1640,7 +1663,8 @@ lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 void
 lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
 {
-  if (groupset.apply_wgdsa_) groupset.wgdsa_solver_ = nullptr;
+  if (groupset.apply_wgdsa_)
+    groupset.wgdsa_solver_ = nullptr;
 }
 
 std::vector<double>
@@ -1843,7 +1867,8 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
 void
 lbs::LBSSolver::CleanUpTGDSA(LBSGroupset& groupset)
 {
-  if (groupset.apply_tgdsa_) groupset.tgdsa_solver_ = nullptr;
+  if (groupset.apply_tgdsa_)
+    groupset.tgdsa_solver_ = nullptr;
 }
 
 void
@@ -1878,7 +1903,8 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
       {
         double R_g = 0.0;
         for (const auto& [row_g, gprime, sigma_sm] : S.Row(gsi + g))
-          if (gprime >= gsi and gprime != (gsi + g)) R_g += sigma_sm * phi_in_mapped[gprime];
+          if (gprime >= gsi and gprime != (gsi + g))
+            R_g += sigma_sm * phi_in_mapped[gprime];
 
         delta_phi_mapped += R_g;
       } // for g
@@ -2046,7 +2072,8 @@ LBSSolver::ReadRestartData(const std::string& folder_name, const std::string& fi
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
 
   // Write status message
-  if (global_succeeded) log.Log() << "Successfully read restart data";
+  if (global_succeeded)
+    log.Log() << "Successfully read restart data";
   else
     log.Log0Error() << "Failed to read restart data: "
                     << folder_name + std::string("/") + file_base + std::string("X.r");
@@ -2571,7 +2598,8 @@ LBSSolver::ReadFluxMoments(const std::string& file_base,
       file_nodes.emplace_back(x, y, z);
     } // for file node i
 
-    if (not grid_ptr_->IsCellLocal(file_cell_global_id)) continue;
+    if (not grid_ptr_->IsCellLocal(file_cell_global_id))
+      continue;
 
     const auto& cell = grid_ptr_->cells[file_cell_global_id];
 
@@ -2709,7 +2737,8 @@ LBSSolver::UpdateFieldFunctions()
 
       const auto& xs = matid_to_xs_map_.at(cell.material_id_);
 
-      if (not xs->IsFissionable()) continue;
+      if (not xs->IsFissionable())
+        continue;
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
@@ -2782,7 +2811,8 @@ LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
           const int64_t imapA = sdm.MapDOFLocal(cell, i);
           const int64_t imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
 
-          if (which_phi == PhiSTLOption::PHI_OLD) phi_old_local_[imapB] = ff_data[imapA];
+          if (which_phi == PhiSTLOption::PHI_OLD)
+            phi_old_local_[imapB] = ff_data[imapA];
           else if (which_phi == PhiSTLOption::PHI_NEW)
             phi_new_local_[imapB] = ff_data[imapA];
         } // for node
@@ -2809,7 +2839,8 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
     const auto& F = xs.ProductionMatrix();
     const auto& nu_delayed_sigma_f = xs.NuDelayedSigmaF();
 
-    if (not xs.IsFissionable()) continue;
+    if (not xs.IsFissionable())
+      continue;
 
     // Loop over nodes
     const int num_nodes = transport_view.NumNodes();
@@ -2857,7 +2888,8 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
     const auto& sigma_f = xs.SigmaFission();
 
     // skip non-fissionable material
-    if (not xs.IsFissionable()) continue;
+    if (not xs.IsFissionable())
+      continue;
 
     // Loop over nodes
     const int num_nodes = transport_view.NumNodes();

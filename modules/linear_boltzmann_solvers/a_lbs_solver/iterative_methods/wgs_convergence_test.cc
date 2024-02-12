@@ -31,7 +31,8 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
       residual_scale = 1.0;
       break;
     case ResidualScaleType::RHS_NORM:
-      if (context->rhs_norm > 1.0e-25) residual_scale = 1.0 / context->rhs_norm;
+      if (context->rhs_norm > 1.0e-25)
+        residual_scale = 1.0 / context->rhs_norm;
       break;
     case ResidualScaleType::RHS_PRECONDITIONED_NORM:
       if (context->rhs_preconditioned_norm > 1.0e-25)
@@ -68,7 +69,8 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
     iter_info << " CONVERGED\n";
   }
 
-  if (context->log_info_) log.Log() << iter_info.str() << std::endl;
+  if (context->log_info_)
+    log.Log() << iter_info.str() << std::endl;
 
   return KSP_CONVERGED_ITERATING;
 }

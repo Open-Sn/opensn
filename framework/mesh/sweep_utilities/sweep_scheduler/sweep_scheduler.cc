@@ -22,7 +22,8 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
 {
   angle_agg_.InitializeReflectingBCs();
 
-  if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH) InitializeAlgoDOG();
+  if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
+    InitializeAlgoDOG();
 
   // Initialize delayed upstream data
   for (auto& angsetgrp : in_angle_agg.angle_set_groups)
@@ -207,7 +208,8 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
         scheduled_angleset++; // Schedule the next angleset
       }
 
-      if (status != Status::FINISHED) finished = false;
+      if (status != Status::FINISHED)
+        finished = false;
     } // for each angleset rule
   }   // while not finished
 
@@ -224,7 +226,8 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
         if (angle_set->FlushSendBuffers() == Status::MESSAGES_PENDING)
           received_delayed_data = false;
 
-        if (not angle_set->ReceiveDelayedData()) received_delayed_data = false;
+        if (not angle_set->ReceiveDelayedData())
+          received_delayed_data = false;
       }
   }
 
@@ -285,7 +288,8 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
         if (angle_set->FlushSendBuffers() == Status::MESSAGES_PENDING)
           received_delayed_data = false;
 
-        if (not angle_set->ReceiveDelayedData()) received_delayed_data = false;
+        if (not angle_set->ReceiveDelayedData())
+          received_delayed_data = false;
       }
   }
 
@@ -309,7 +313,8 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 void
 SweepScheduler::Sweep()
 {
-  if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT) ScheduleAlgoFIFO(sweep_chunk_);
+  if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
+    ScheduleAlgoFIFO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     ScheduleAlgoDOG(sweep_chunk_);
 }

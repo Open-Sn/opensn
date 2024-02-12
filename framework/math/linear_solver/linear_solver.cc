@@ -73,7 +73,8 @@ LinearSolver::PostSetupCallback()
 void
 LinearSolver::Setup()
 {
-  if (IsSystemSet()) return;
+  if (IsSystemSet())
+    return;
   PreSetupCallback();
 
   KSPCreate(PETSC_COMM_WORLD, &ksp_);
@@ -120,7 +121,8 @@ LinearSolver::Solve()
   PreSolveCallback();
   SetInitialGuess();
   SetRHS();
-  if (not suppress_kspsolve_) KSPSolve(ksp_, b_, x_);
+  if (not suppress_kspsolve_)
+    KSPSolve(ksp_, b_, x_);
   PostSolveCallback();
 }
 

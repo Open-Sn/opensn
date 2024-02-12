@@ -1239,7 +1239,8 @@ QuadratureTriangle::dunavant_rule(const double rule_data[][4], const unsigned in
 
     if (rule_data[p][1] != static_cast<double>(0.0))
     {
-      if (rule_data[p][2] != static_cast<double>(0.0)) pointtype = 6;
+      if (rule_data[p][2] != static_cast<double>(0.0))
+        pointtype = 6;
       else
         pointtype = 3;
     }

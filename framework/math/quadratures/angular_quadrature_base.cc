@@ -59,7 +59,8 @@ AngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimens
 void
 AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order, int dimension)
 {
-  if (d2m_op_built_) return;
+  if (d2m_op_built_)
+    return;
 
   d2m_op_.clear();
   MakeHarmonicIndices(scattering_order, dimension);
@@ -104,7 +105,8 @@ AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order, 
 void
 AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order, int dimension)
 {
-  if (m2d_op_built_) return;
+  if (m2d_op_built_)
+    return;
 
   m2d_op_.clear();
   MakeHarmonicIndices(scattering_order, dimension);

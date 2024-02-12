@@ -161,7 +161,8 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::FIRSTPOINT)
   {
-    if (numArgs != 5) LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
+    if (numArgs != 5)
+      LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
@@ -170,7 +171,8 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::SECONDPOINT)
   {
-    if (numArgs != 5) LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
+    if (numArgs != 5)
+      LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
@@ -179,7 +181,8 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::NUMBEROFPOINTS)
   {
-    if (numArgs != 3) LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    if (numArgs != 3)
+      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
@@ -196,7 +199,8 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::CUSTOM_ARRAY)
   {
-    if (numArgs != 3) LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    if (numArgs != 3)
+      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
@@ -249,7 +253,8 @@ FFInterpolationSetProperty(lua_State* L)
 
     if ((op_type >= OP_SUM_FUNC) and (op_type <= OP_MAX_FUNC))
     {
-      if (numArgs != 4) LuaPostArgAmountError("FFInterpolationSetProperty", 4, numArgs);
+      if (numArgs != 4)
+        LuaPostArgAmountError("FFInterpolationSetProperty", 4, numArgs);
       const char* func_name = lua_tostring(L, 4);
       auto operation_function = CreateFunction(func_name);
       opensn::function_stack.push_back(operation_function);
@@ -260,7 +265,8 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::LOGICAL_VOLUME)
   {
-    if (numArgs != 3) LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    if (numArgs != 3)
+      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
 
     int logvol_hndle = lua_tonumber(L, 3);
 

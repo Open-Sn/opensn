@@ -99,7 +99,8 @@ OrthogonalMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<Unpartitioned
                        "OrthogonalMeshGenerator can not be preceded by another"
                        " mesh generator because it cannot process an input mesh");
 
-  if (node_sets_.size() == 1) return CreateUnpartitioned1DOrthoMesh(node_sets_[0]);
+  if (node_sets_.size() == 1)
+    return CreateUnpartitioned1DOrthoMesh(node_sets_[0]);
   else if (node_sets_.size() == 2)
     return CreateUnpartitioned2DOrthoMesh(node_sets_[0], node_sets_[1]);
   else if (node_sets_.size() == 3)

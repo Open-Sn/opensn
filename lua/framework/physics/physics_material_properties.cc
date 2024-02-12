@@ -75,7 +75,8 @@ MaterialPropertyPushLuaTable(lua_State* L)
 void
 PropertyPushLuaTable(lua_State* L, std::shared_ptr<PhysicsMaterialProperty> property)
 {
-  if (property->Type() == PropertyType::SCALAR_VALUE) ScalarPropertyPushTable(L, property);
+  if (property->Type() == PropertyType::SCALAR_VALUE)
+    ScalarPropertyPushTable(L, property);
   else if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
     IsotropicMGSourcePropertyPushTable(
       L, std::dynamic_pointer_cast<IsotropicMultiGrpSource>(property));
@@ -102,7 +103,10 @@ PhysicsMaterialAddProperty(lua_State* L)
   int property_index = lua_tonumber(L, 2);
 
   const char* provided_name = "";
-  if (numArgs == 3) { provided_name = lua_tostring(L, 3); }
+  if (numArgs == 3)
+  {
+    provided_name = lua_tostring(L, 3);
+  }
 
   // Get reference to material
   auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
@@ -119,7 +123,8 @@ PhysicsMaterialAddProperty(lua_State* L)
     prop->property_name =
       std::string("Property ") + std::to_string(cur_material->properties_.size());
 
-    if (numArgs == 3) prop->property_name = std::string(provided_name);
+    if (numArgs == 3)
+      prop->property_name = std::string(provided_name);
 
     cur_material->properties_.push_back(prop);
     opensn::log.Log0Verbose1() << "Scalar Value Property added to material"
@@ -148,7 +153,8 @@ PhysicsMaterialAddProperty(lua_State* L)
     prop->property_name =
       std::string("Property ") + std::to_string(cur_material->properties_.size());
 
-    if (numArgs == 3) prop->property_name = std::string(provided_name);
+    if (numArgs == 3)
+      prop->property_name = std::string(provided_name);
 
     cur_material->properties_.push_back(prop);
     opensn::log.Log0Verbose1() << "Transport cross-sections added to material"
@@ -183,7 +189,8 @@ PhysicsMaterialAddProperty(lua_State* L)
     prop->property_name =
       std::string("Property ") + std::to_string(cur_material->properties_.size());
 
-    if (numArgs == 3) prop->property_name = std::string(provided_name);
+    if (numArgs == 3)
+      prop->property_name = std::string(provided_name);
 
     cur_material->properties_.push_back(prop);
     opensn::log.Log0Verbose1() << "Isotropic Multigroup Source added to material"
@@ -215,7 +222,8 @@ PhysicsMaterialSetProperty(lua_State* L)
   int material_index = lua_tonumber(L, 1);
   int property_index = -1;
   std::string property_index_name;
-  if (lua_isnumber(L, 2)) property_index = lua_tonumber(L, 2);
+  if (lua_isnumber(L, 2))
+    property_index = lua_tonumber(L, 2);
   else
   {
     const char* temp_name = lua_tostring(L, 2);
@@ -246,7 +254,8 @@ PhysicsMaterialSetProperty(lua_State* L)
     if (lua_isnumber(L, 2))
     {
       for (int p = 0; p < cur_material->properties_.size(); p++)
-        if (cur_material->properties_[p]->Type() == MatProperty::SCALAR_VALUE) location_of_prop = p;
+        if (cur_material->properties_[p]->Type() == MatProperty::SCALAR_VALUE)
+          location_of_prop = p;
     }
     else
     {
@@ -321,7 +330,8 @@ PhysicsMaterialSetProperty(lua_State* L)
       // Process operation
       if (operation_index == static_cast<int>(OpType::SIMPLEXS0))
       {
-        if (numArgs != 5) LuaPostArgAmountError("PhysicsMaterialSetProperty", 5, numArgs);
+        if (numArgs != 5)
+          LuaPostArgAmountError("PhysicsMaterialSetProperty", 5, numArgs);
 
         int G = lua_tonumber(L, 4);
         double sigma_t = lua_tonumber(L, 5);
@@ -330,7 +340,8 @@ PhysicsMaterialSetProperty(lua_State* L)
       }
       else if (operation_index == static_cast<int>(OpType::SIMPLEXS1))
       {
-        if (numArgs != 6) LuaPostArgAmountError("PhysicsMaterialSetProperty", 6, numArgs);
+        if (numArgs != 6)
+          LuaPostArgAmountError("PhysicsMaterialSetProperty", 6, numArgs);
 
         int G = lua_tonumber(L, 4);
         double sigma_t = lua_tonumber(L, 5);
@@ -340,7 +351,8 @@ PhysicsMaterialSetProperty(lua_State* L)
       }
       else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
       {
-        if (numArgs != 4) LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
+        if (numArgs != 4)
+          LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
 
         const char* file_name_c = lua_tostring(L, 4);
 
@@ -348,7 +360,8 @@ PhysicsMaterialSetProperty(lua_State* L)
       }
       else if (operation_index == static_cast<int>(OpType::EXISTING))
       {
-        if (numArgs != 4) LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
+        if (numArgs != 4)
+          LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
 
         LuaCheckNilValue("PhysicsMaterialSetProperty", L, 4);
         int handle = lua_tonumber(L, 4);
@@ -422,7 +435,8 @@ PhysicsMaterialSetProperty(lua_State* L)
 
       if (operation_index == static_cast<int>(OpType::SINGLE_VALUE))
       {
-        if (numArgs != 4) LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
+        if (numArgs != 4)
+          LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
 
         double value = lua_tonumber(L, 4);
 
@@ -434,7 +448,8 @@ PhysicsMaterialSetProperty(lua_State* L)
       }
       else if (operation_index == static_cast<int>(OpType::FROM_ARRAY))
       {
-        if (numArgs != 4) LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
+        if (numArgs != 4)
+          LuaPostArgAmountError("PhysicsMaterialSetProperty", 4, numArgs);
 
         if (not lua_istable(L, 4))
         {
@@ -494,12 +509,14 @@ PhysicsMaterialGetProperty(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("PhysicsMaterialGetProperty", 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError("PhysicsMaterialGetProperty", 2, num_args);
 
   int material_index = lua_tonumber(L, 1);
   int property_index = -1;
   std::string property_index_name;
-  if (lua_isnumber(L, 2)) property_index = lua_tonumber(L, 2);
+  if (lua_isnumber(L, 2))
+    property_index = lua_tonumber(L, 2);
   else
   {
     const char* temp_name = lua_tostring(L, 2);

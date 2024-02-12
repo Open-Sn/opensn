@@ -46,7 +46,8 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   {
     Set(output, 0.0);
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
-    if (suppress_wgs) source_flags |= SUPPRESS_WG_SCATTER;
+    if (suppress_wgs)
+      source_flags |= SUPPRESS_WG_SCATTER;
     active_set_source_function(front_gs, output, input, source_flags);
   };
 

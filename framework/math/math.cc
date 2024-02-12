@@ -30,14 +30,16 @@ OmegaToPhiThetaSafe(const Vector3& omega)
   double theta = acos(mu);
 
   // Handling omega aligned to k_hat
-  if (std::fabs(omega_hat.z) < 1.0e-16) return {0.0, theta};
+  if (std::fabs(omega_hat.z) < 1.0e-16)
+    return {0.0, theta};
 
   double cos_phi = omega_hat.x / sin(theta);
   cos_phi = std::min(cos_phi, 1.0);
   cos_phi = std::max(cos_phi, -1.0);
 
   // Computing varphi for NE and NW quadrant
-  if (omega_hat.y >= 0.0) return {acos(cos_phi), theta};
+  if (omega_hat.y >= 0.0)
+    return {acos(cos_phi), theta};
   // Computing varphi for SE and SW quadrant
   else
     return {2.0 * M_PI - acos(cos_phi), theta};
@@ -48,7 +50,8 @@ PrintMatrix(const MatDbl& A)
 {
   size_t AR = A.size();
   size_t AC = 0;
-  if (AR) AC = A[0].size();
+  if (AR)
+    AC = A[0].size();
   else
     std::cout << "A has no rows" << std::endl;
 
@@ -85,7 +88,8 @@ Transpose(const MatDbl& A)
   assert(A[0].size());
   size_t AR = A.size();
   size_t AC = 0;
-  if (AR) AC = A[0].size();
+  if (AR)
+    AC = A[0].size();
 
   MatDbl T(AC, VecDbl(AR));
   for (size_t i = 0; i < AR; i++)
@@ -101,7 +105,8 @@ SwapRow(size_t r1, size_t r2, MatDbl& A)
   assert(A[0].size());
   size_t AR = A.size();
   size_t AC = 0;
-  if (AR) AC = A[0].size();
+  if (AR)
+    AC = A[0].size();
 
   assert(r1 >= 0 and r1 < AR and r2 >= 0 and r2 < AR);
 
@@ -116,7 +121,8 @@ SwapColumn(size_t c1, size_t c2, MatDbl& A)
   assert(A[0].size());
   size_t AR = A.size();
 
-  if (A.size()) assert(c1 >= 0 and c1 < A[0].size() and c2 >= 0 and c2 < A[0].size());
+  if (A.size())
+    assert(c1 >= 0 and c1 < A[0].size() and c2 >= 0 and c2 < A[0].size());
 
   for (size_t i = 0; i < AR; i++)
     std::swap(A[i][c1], A[i][c2]);
@@ -127,7 +133,8 @@ MatMul(const MatDbl& A, const double c)
 {
   size_t R = A.size();
   size_t C = 0;
-  if (R) C = A[0].size();
+  if (R)
+    C = A[0].size();
 
   MatDbl B(R, VecDbl(C, 0.));
 
@@ -237,8 +244,12 @@ Determinant(const MatDbl& A)
 {
   size_t R = A.size();
 
-  if (R == 1) return A[0][0];
-  else if (R == 2) { return A[0][0] * A[1][1] - A[0][1] * A[1][0]; }
+  if (R == 1)
+    return A[0][0];
+  else if (R == 2)
+  {
+    return A[0][0] * A[1][1] - A[0][1] * A[1][0];
+  }
   else if (R == 3)
   {
     return A[0][0] * A[1][1] * A[2][2] + A[0][1] * A[1][2] * A[2][0] + A[0][2] * A[1][0] * A[2][1] -
@@ -278,7 +289,8 @@ SubMatrix(const size_t r, const size_t c, const MatDbl& A)
 {
   size_t R = A.size();
   size_t C = 0;
-  if (R) C = A[0].size();
+  if (R)
+    C = A[0].size();
 
   assert((r >= 0) and (r < R) and (c >= 0) and (c < C));
 
@@ -351,7 +363,8 @@ InverseGEPivoting(const MatDbl& A)
     // Find a row with the largest pivot value
     unsigned int max_row = c; // nzr = non-zero row
     for (unsigned int r = c; r < R; ++r)
-      if (std::fabs(B[r][c]) > std::fabs(B[max_row][c])) max_row = r;
+      if (std::fabs(B[r][c]) > std::fabs(B[max_row][c]))
+        max_row = r;
 
     if (max_row != c)
     {
@@ -407,7 +420,8 @@ Inverse(const MatDbl& A)
     f = 1. / f;
   }
 
-  if (R == 1) M[0][0] = f;
+  if (R == 1)
+    M[0][0] = f;
   else if (R == 2)
   {
     M[0][0] = A[1][1];
@@ -504,7 +518,8 @@ PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
   VecDbl Ay = MatMul(A, y);
   double lambda = Dot(y, Ay);
   y = VecMul(Ay, 1. / Vec2Norm(Ay));
-  if (lambda < 0.) Scale(y, -1.0);
+  if (lambda < 0.)
+    Scale(y, -1.0);
 
   // Perform convergence loop
   bool converged = false;
@@ -518,12 +533,14 @@ PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
     y = VecMul(Ay, 1. / Vec2Norm(Ay));
 
     // Check if converged or not
-    if (std::fabs(std::fabs(lambda) - lambda0) <= tol) converged = true;
+    if (std::fabs(std::fabs(lambda) - lambda0) <= tol)
+      converged = true;
     // Update counter
     ++it_counter;
   }
 
-  if (lambda < 0.) Scale(y, -1.0);
+  if (lambda < 0.)
+    Scale(y, -1.0);
 
   // Renormalize eigenvector for the last time
   y = VecMul(Ay, 1. / lambda);

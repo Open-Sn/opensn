@@ -36,7 +36,8 @@ PieceWiseLinearContinuous::New(const MeshContinuum& grid,
 
       ChiLogicalErrorIf(not fe_ptr, "Casting failure to FE");
 
-      if (fe_ptr->GetQuadratureOrder() != q_order) break;
+      if (fe_ptr->GetQuadratureOrder() != q_order)
+        break;
 
       auto sdm_ptr = std::dynamic_pointer_cast<PieceWiseLinearContinuous>(fe_ptr);
 
@@ -95,7 +96,8 @@ PieceWiseLinearContinuous::OrderNodes()
     for (const uint64_t pid : ls_node_ids_psubs[node_id]) // pid = partition id
       smallest_partition_id = std::min(smallest_partition_id, pid);
 
-    if (smallest_partition_id == opensn::mpi_comm.rank()) local_node_ids.push_back(node_id);
+    if (smallest_partition_id == opensn::mpi_comm.rank())
+      local_node_ids.push_back(node_id);
     else
       nonlocal_node_ids_map[smallest_partition_id].push_back(node_id);
   }
@@ -136,7 +138,8 @@ PieceWiseLinearContinuous::OrderNodes()
     const auto& node_list = key_value.second;
 
     for (const uint64_t node_id : node_list)
-      if (node_mapping_.count(node_id) == 0) throw std::logic_error("Error mapping query node.");
+      if (node_mapping_.count(node_id) == 0)
+        throw std::logic_error("Error mapping query node.");
       else
       {
         const int64_t mapping = node_mapping_.at(node_id);
@@ -263,7 +266,8 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
     for (unsigned int i = 0; i < cell_mapping.NumNodes(); ++i)
     {
       const int64_t ir = MapDOF(cell, i);
-      if (ir < 0) IR_MAP_ERROR();
+      if (ir < 0)
+        IR_MAP_ERROR();
 
       if (dof_handler.IsMapLocal(ir))
       {
@@ -273,12 +277,15 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         for (unsigned int j = 0; j < cell_mapping.NumNodes(); ++j)
         {
           const int64_t jr = MapDOF(cell, j);
-          if (jr < 0) JR_MAP_ERROR();
+          if (jr < 0)
+            JR_MAP_ERROR();
 
-          if (IS_VALUE_IN_VECTOR(node_links, jr)) continue;
+          if (IS_VALUE_IN_VECTOR(node_links, jr))
+            continue;
 
           node_links.push_back(jr);
-          if (dof_handler.IsMapLocal(jr)) nodal_nnz_in_diag[il] += 1;
+          if (dof_handler.IsMapLocal(jr))
+            nodal_nnz_in_diag[il] += 1;
           else
             nodal_nnz_off_diag[il] += 1;
         } // for j
@@ -303,7 +310,8 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
     for (unsigned int i = 0; i < cell_mapping.NumNodes(); ++i)
     {
       const int64_t ir = MapDOF(cell, i);
-      if (ir < 0) IR_MAP_ERROR();
+      if (ir < 0)
+        IR_MAP_ERROR();
 
       if (not dof_handler.IsMapLocal(ir))
       {
@@ -325,9 +333,11 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         for (unsigned int j = 0; j < cell_mapping.NumNodes(); ++j)
         {
           const int64_t jr = MapDOF(cell, j);
-          if (jr < 0) JR_MAP_ERROR();
+          if (jr < 0)
+            JR_MAP_ERROR();
 
-          if (IS_VALUE_IN_VECTOR(node_links, jr)) continue;
+          if (IS_VALUE_IN_VECTOR(node_links, jr))
+            continue;
           else
             node_links.push_back(jr);
         } // for j
@@ -389,17 +399,20 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   {
     const int64_t ir = ir_linkage.first;
 
-    if (not dof_handler.IsMapLocal(ir)) IR_MAP_ERROR();
+    if (not dof_handler.IsMapLocal(ir))
+      IR_MAP_ERROR();
 
     int64_t il = dof_handler.MapIRLocal(ir);
     std::vector<int64_t>& node_links = nodal_connections[il];
 
     for (int64_t jr : ir_linkage.second)
     {
-      if (IS_VALUE_IN_VECTOR(node_links, jr)) continue;
+      if (IS_VALUE_IN_VECTOR(node_links, jr))
+        continue;
 
       node_links.push_back(jr);
-      if (dof_handler.IsMapLocal(jr)) nodal_nnz_in_diag[il] += 1;
+      if (dof_handler.IsMapLocal(jr))
+        nodal_nnz_in_diag[il] += 1;
       else
         nodal_nnz_off_diag[il] += 1;
     }
@@ -471,7 +484,8 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
     {
       const int64_t local_id = global_id - static_cast<int64_t>(locJ_block_address_[locJ]);
 
-      if (local_id < 0 or local_id >= locJ_block_size_[locJ]) continue;
+      if (local_id < 0 or local_id >= locJ_block_size_[locJ])
+        continue;
 
       address = static_cast<int64_t>(locJ_block_address_[locJ] * num_unknowns) +
                 static_cast<int64_t>(locJ_block_size_[locJ] * block_id) + local_id;
@@ -577,7 +591,8 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_mana
           {
             const int64_t local_id = global_id - static_cast<int64_t>(locJ_block_address_[locJ]);
 
-            if (local_id < 0 or local_id >= locJ_block_size_[locJ]) continue;
+            if (local_id < 0 or local_id >= locJ_block_size_[locJ])
+              continue;
 
             address = static_cast<int64_t>(locJ_block_address_[locJ] * num_unknown_comps) +
                       static_cast<int64_t>(locJ_block_size_[locJ] * block_id) + local_id;

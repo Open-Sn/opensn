@@ -161,7 +161,8 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
 
   // Angle aggregation
   const auto angle_agg_typestr = params.GetParamValue<std::string>("angle_aggregation_type");
-  if (angle_agg_typestr == "polar") angleagg_method_ = AngleAggregationType::POLAR;
+  if (angle_agg_typestr == "polar")
+    angleagg_method_ = AngleAggregationType::POLAR;
   else if (angle_agg_typestr == "single")
     angleagg_method_ = AngleAggregationType::SINGLE;
   else if (angle_agg_typestr == "azimuthal")
@@ -171,7 +172,8 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
 
   // Inner solver
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
-  if (inner_linear_method == "richardson") iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
+  if (inner_linear_method == "richardson")
+    iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
   else if (inner_linear_method == "gmres")
     iterative_method_ = IterativeMethod::KRYLOV_GMRES;
   else if (inner_linear_method == "bicgstab")
@@ -261,7 +263,8 @@ lbs::LBSGroupset::BuildSubsets()
 void
 lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name)
 {
-  if (not log_sweep_events_) return;
+  if (not log_sweep_events_)
+    return;
 
   std::ofstream ofile;
   ofile.open(file_name, std::ofstream::out);

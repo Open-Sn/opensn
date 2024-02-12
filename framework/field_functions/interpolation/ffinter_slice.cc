@@ -34,7 +34,8 @@ FieldFunctionInterpolationSlice::Initialize()
     if (cell.Type() == CellType::SLAB)
       throw std::logic_error("FieldFunctionInterpolationSlice "
                              "does not support 1D cells.");
-    if (cell.Type() == CellType::POLYGON) intersecting_cell_indices.push_back(cell_local_index);
+    if (cell.Type() == CellType::POLYGON)
+      intersecting_cell_indices.push_back(cell_local_index);
     else if (cell.Type() == CellType::POLYHEDRON)
     {
       bool intersects = false;
@@ -64,9 +65,10 @@ FieldFunctionInterpolationSlice::Initialize()
             intersects = true;
             break; // from for e
           }
-        }                      // for e
-        if (intersects) break; // from for f
-      }                        // for f
+        } // for e
+        if (intersects)
+          break; // from for f
+      }          // for f
     }
     else
       throw std::logic_error("Unsupported cell type in call "
@@ -325,7 +327,10 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
     std::string submod_name = base_name;
     submod_name = submod_name + std::to_string(opensn::mpi_comm.rank() + 1);
 
-    if (opensn::mpi_comm.size() > 1) { ofile << "import " << submod_name << "\n\n"; }
+    if (opensn::mpi_comm.size() > 1)
+    {
+      ofile << "import " << submod_name << "\n\n";
+    }
 
     ofile << "class BaseDataClass:\n"
           << "  def __init__(self):\n"
@@ -388,7 +393,10 @@ FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
 
     ofile << offset << "data_object = " << submod_name << ".AddData(data_object)\n\n";
   }
-  if (opensn::mpi_comm.rank() > 0) { ofile << offset << "return data_object\n"; }
+  if (opensn::mpi_comm.rank() > 0)
+  {
+    ofile << offset << "return data_object\n";
+  }
 
   if (opensn::mpi_comm.rank() == 0)
   {

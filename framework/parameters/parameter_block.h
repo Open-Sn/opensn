@@ -94,10 +94,14 @@ public:
 
     static_assert(is_supported, "Value type not supported for parameter block");
 
-    if (IsBool<T>::value) type_ = ParameterBlockType::BOOLEAN;
-    if (IsFloat<T>::value) type_ = ParameterBlockType::FLOAT;
-    if (IsString<T>::value) type_ = ParameterBlockType::STRING;
-    if (IsInteger<T>::value) type_ = ParameterBlockType::INTEGER;
+    if (IsBool<T>::value)
+      type_ = ParameterBlockType::BOOLEAN;
+    if (IsFloat<T>::value)
+      type_ = ParameterBlockType::FLOAT;
+    if (IsString<T>::value)
+      type_ = ParameterBlockType::STRING;
+    if (IsInteger<T>::value)
+      type_ = ParameterBlockType::INTEGER;
 
     value_ptr_ = std::make_unique<Varying>(value);
   }
@@ -233,7 +237,8 @@ public:
                              ParameterBlockTypeName(Type()));
 
     std::vector<T> vec;
-    if (parameters_.empty()) return vec;
+    if (parameters_.empty())
+      return vec;
 
     // Check the first sub-param is of the right type
     const auto& front_param = parameters_.front();

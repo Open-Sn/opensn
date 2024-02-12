@@ -102,8 +102,10 @@ LuaPopulateVectorFrom1DArray(const std::string& func_name,
   lua_pushnil(L);
   while (lua_next(L, table_arg_index) != 0)
   {
-    if (not lua_isinteger(L, -2)) goto invalid_table;
-    if (not lua_isnumber(L, -1)) goto invalid_table;
+    if (not lua_isinteger(L, -2))
+      goto invalid_table;
+    if (not lua_isnumber(L, -1))
+      goto invalid_table;
     int key = lua_tonumber(L, -2);
     double val = lua_tonumber(L, -1);
 

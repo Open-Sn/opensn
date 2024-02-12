@@ -82,12 +82,14 @@ TimeStepper::MaxTimeSteps() const
 bool
 TimeStepper::IsActive() const
 {
-  if (max_time_steps_ >= 0 and (t_index_ >= max_time_steps_)) return false;
+  if (max_time_steps_ >= 0 and (t_index_ >= max_time_steps_))
+    return false;
 
   bool active =
     (time_ >= (start_time_ - general_tolerance_) and time_ <= (end_time_ + general_tolerance_));
 
-  if (std::fabs(end_time_ - time_) < general_tolerance_) active = false;
+  if (std::fabs(end_time_ - time_) < general_tolerance_)
+    active = false;
 
   return active;
 }

@@ -31,13 +31,15 @@ public:
 
   double ShapeValue(int i, const Vector3& xyz) const override
   {
-    if (ref_grid_.CheckPointInsideCell(cell_, xyz)) return 1.0;
+    if (ref_grid_.CheckPointInsideCell(cell_, xyz))
+      return 1.0;
     else
       return 0.0;
   }
   void ShapeValues(const Vector3& xyz, std::vector<double>& shape_values) const override
   {
-    if (ref_grid_.CheckPointInsideCell(cell_, xyz)) shape_values.assign(num_nodes_, 1.0);
+    if (ref_grid_.CheckPointInsideCell(cell_, xyz))
+      shape_values.assign(num_nodes_, 1.0);
     else
       shape_values.assign(num_nodes_, 0.0);
   }

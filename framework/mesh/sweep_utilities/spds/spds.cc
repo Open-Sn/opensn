@@ -16,12 +16,18 @@ SPDS::MapLocJToPrelocI(int locJ) const
 {
   for (int i = 0; i < location_dependencies_.size(); i++)
   {
-    if (location_dependencies_[i] == locJ) { return i; }
+    if (location_dependencies_[i] == locJ)
+    {
+      return i;
+    }
   }
 
   for (int i = 0; i < delayed_location_dependencies_.size(); i++)
   {
-    if (delayed_location_dependencies_[i] == locJ) { return -(i + 1); }
+    if (delayed_location_dependencies_[i] == locJ)
+    {
+      return -(i + 1);
+    }
   }
 
   log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToPrelocI.";
@@ -34,7 +40,10 @@ SPDS::MapLocJToDeplocI(int locJ) const
 {
   for (int i = 0; i < location_successors_.size(); i++)
   {
-    if (location_successors_[i] == locJ) { return i; }
+    if (location_successors_[i] == locJ)
+    {
+      return i;
+    }
   }
 
   log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToDeplocI.";
@@ -68,7 +77,8 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
       const double mu = omega.Dot(face.normal_);
 
       bool owns_face = true;
-      if (face.has_neighbor_ and cell.global_id_ > face.neighbor_id_) owns_face = false;
+      if (face.has_neighbor_ and cell.global_id_ > face.neighbor_id_)
+        owns_face = false;
 
       if (owns_face)
       {
@@ -103,7 +113,8 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
         auto& cur_face_ori = cell_face_orientations_[cell.local_id_][f];
 
         const double adj_mu = omega.Dot(adj_face.normal_);
-        if (adj_mu > tolerance) orientation = FOOUTGOING;
+        if (adj_mu > tolerance)
+          orientation = FOOUTGOING;
         else if (adj_mu < tolerance)
           orientation = FOINCOMING;
 

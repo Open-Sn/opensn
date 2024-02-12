@@ -32,7 +32,8 @@ LBSCreateGroup(lua_State* L)
 {
   const std::string fname = "LBSCreateGroup";
   const int num_args = lua_gettop(L);
-  if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   // Get solver
   LuaCheckNumberValue(fname, L, 1);
@@ -62,7 +63,8 @@ LBSGroupsetAddGroups(lua_State* L)
   const std::string fname = "LBSGroupsetAddGroups";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 4) LuaPostArgAmountError(fname, 4, num_args);
+  if (num_args != 4)
+    LuaPostArgAmountError(fname, 4, num_args);
   int solver_handle = lua_tonumber(L, 1);
   int grpset_index = lua_tonumber(L, 2);
   int from = lua_tonumber(L, 3);
@@ -83,7 +85,8 @@ LBSGroupsetAddGroups(lua_State* L)
     opensn::log.LogAllError() << "LBSGroupsetAddGroups: Invalid handle to groupset\n";
     opensn::Exit(EXIT_FAILURE);
   }
-  if (groupset == nullptr) throw std::runtime_error("LBSGroupsetAddGroups: Bad trouble.");
+  if (groupset == nullptr)
+    throw std::runtime_error("LBSGroupsetAddGroups: Bad trouble.");
 
   // Add the groups
   if (to < from)
@@ -107,7 +110,8 @@ LBSGroupsetAddGroups(lua_State* L)
       opensn::log.LogAllError() << "LBSGroupsetAddGroups: Invalid group added to groupset\n";
       opensn::Exit(EXIT_FAILURE);
     }
-    if (group == nullptr) throw std::runtime_error("LBSGroupsetAddGroups: Bad trouble.");
+    if (group == nullptr)
+      throw std::runtime_error("LBSGroupsetAddGroups: Bad trouble.");
 
     groupset->groups_.push_back(*group);
   }
@@ -120,7 +124,8 @@ LBSGroupsetSetQuadrature(lua_State* L)
   const std::string fname = "LBSGroupsetSetQuadrature";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -146,7 +151,8 @@ LBSGroupsetSetQuadrature(lua_State* L)
                                  "in LBSGroupsetSetQuadrature.";
     opensn::Exit(EXIT_FAILURE);
   }
-  if (groupset == nullptr) throw std::logic_error("LBSGroupsetSetQuadrature: Bad trouble");
+  if (groupset == nullptr)
+    throw std::logic_error("LBSGroupsetSetQuadrature: Bad trouble");
 
   // Obtain pointer to quadrature
   std::shared_ptr<AngularQuadrature> ang_quad;
@@ -189,7 +195,8 @@ LBSGroupsetSetAngleAggregationType(lua_State* L)
   const std::string fname = "LBSGroupsetSetAngleAggregationType";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -240,7 +247,8 @@ LBSGroupsetSetAngleAggDiv(lua_State* L)
   const std::string fname = "LBSGroupsetSetAngleAggDiv";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -287,7 +295,8 @@ LBSGroupsetSetGroupSubsets(lua_State* L)
   const std::string fname = "LBSGroupsetSetGroupSubsets";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -334,7 +343,8 @@ LBSGroupsetSetIterativeMethod(lua_State* L)
   const std::string fname = "LBSGroupsetSetIterativeMethod";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -425,7 +435,8 @@ LBSGroupsetSetResidualTolerance(lua_State* L)
   const std::string fname = "LBSGroupsetSetResidualTolerance";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -475,7 +486,8 @@ LBSGroupsetSetMaxIterations(lua_State* L)
   const std::string fname = "LBSGroupsetSetMaxIterations";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -522,7 +534,8 @@ LBSGroupsetSetGMRESRestartIntvl(lua_State* L)
   const std::string fname = "LBSGroupsetSetGMRESRestartIntvl";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -569,7 +582,8 @@ LBSGroupsetSetEnableSweepLog(lua_State* L)
   const std::string fname = "LBSGroupsetSetEnableSweepLog";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -609,7 +623,8 @@ LBSGroupsetSetWGDSA(lua_State* L)
   const std::string fname = "LBSGroupsetSetWGDSA";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args < 4) LuaPostArgAmountError(fname, 4, num_args);
+  if (num_args < 4)
+    LuaPostArgAmountError(fname, 4, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -622,9 +637,11 @@ LBSGroupsetSetWGDSA(lua_State* L)
   bool verbose = false;
   const char* petsc_string = "";
 
-  if (num_args >= 5) verbose = lua_toboolean(L, 5);
+  if (num_args >= 5)
+    verbose = lua_toboolean(L, 5);
 
-  if (num_args == 6) petsc_string = lua_tostring(L, 6);
+  if (num_args == 6)
+    petsc_string = lua_tostring(L, 6);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -662,7 +679,8 @@ LBSGroupsetSetTGDSA(lua_State* L)
   const std::string fname = "LBSGroupsetSetTGDSA";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args < 4) LuaPostArgAmountError(fname, 4, num_args);
+  if (num_args < 4)
+    LuaPostArgAmountError(fname, 4, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -675,9 +693,11 @@ LBSGroupsetSetTGDSA(lua_State* L)
   bool verbose = false;
   const char* petsc_string = "";
 
-  if (num_args >= 5) verbose = lua_toboolean(L, 5);
+  if (num_args >= 5)
+    verbose = lua_toboolean(L, 5);
 
-  if (num_args == 6) petsc_string = lua_tostring(L, 6);
+  if (num_args == 6)
+    petsc_string = lua_tostring(L, 6);
 
   // Get pointer to solver
   auto& lbs_solver =

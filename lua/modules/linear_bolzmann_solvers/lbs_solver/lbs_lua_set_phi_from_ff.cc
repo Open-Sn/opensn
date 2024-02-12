@@ -20,7 +20,8 @@ LBSSetPhiFromFieldFunction(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckTableValue(fname, L, 2);
@@ -42,7 +43,8 @@ LBSSetPhiFromFieldFunction(lua_State* L)
     if (spec.Name() == "which_phi")
     {
       const auto phi_str = spec.GetValue<std::string>();
-      if (phi_str == "old") phi_option = opensn::lbs::PhiSTLOption::PHI_OLD;
+      if (phi_str == "old")
+        phi_option = opensn::lbs::PhiSTLOption::PHI_OLD;
       else if (phi_str == "new")
         phi_option = opensn::lbs::PhiSTLOption::PHI_NEW;
       else
@@ -50,8 +52,14 @@ LBSSetPhiFromFieldFunction(lua_State* L)
                                        " \"old\" or \"new\". ") +
                            "\"" + phi_str + "\" is not allowed.");
     }
-    else if (spec.Name() == "m_ids") { moment_indices = spec.GetVectorValue<size_t>(); }
-    else if (spec.Name() == "g_ids") { group_indices = spec.GetVectorValue<size_t>(); }
+    else if (spec.Name() == "m_ids")
+    {
+      moment_indices = spec.GetVectorValue<size_t>();
+    }
+    else if (spec.Name() == "g_ids")
+    {
+      group_indices = spec.GetVectorValue<size_t>();
+    }
     else
       ChiInvalidArgument(std::string("Unsupported option ") + spec.Name());
 

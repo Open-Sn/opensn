@@ -74,7 +74,10 @@ SurfaceMesh::CheckNegativeSense(double x, double y, double z)
     Vector3 p_xyz = xyz - p;
     double dprod = cur_face->assigned_normal.Dot(p_xyz);
 
-    if (dprod < 0.0) { return true; }
+    if (dprod < 0.0)
+    {
+      return true;
+    }
   }
 
   return false;
@@ -88,7 +91,10 @@ SurfaceMesh::ExtractOpenEdgesToObj(const char* fileName)
   {
     for (auto edge : face->edges)
     {
-      if (edge[2] < 0) { edges.push_back(std::pair<int, int>(edge[0], edge[1])); }
+      if (edge[2] < 0)
+      {
+        edges.push_back(std::pair<int, int>(edge[0], edge[1]));
+      }
     } // for edge
   }   // for face
 
@@ -285,7 +291,8 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
         {
           double numValue = std::stod(sub_word);
 
-          if (k == 1) newVertex.x = numValue + transform.x;
+          if (k == 1)
+            newVertex.x = numValue + transform.x;
           else if (k == 2)
             newVertex.y = numValue + transform.y;
           else if (k == 3)
@@ -299,7 +306,10 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
         }
 
         // Stop word extraction on line end
-        if (end_of_word == std::string::npos) { break; }
+        if (end_of_word == std::string::npos)
+        {
+          break;
+        }
       }
       this->vertices_.push_back(newVertex);
     }
@@ -320,9 +330,18 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
         {
           double numValue = std::stod(sub_word);
           //*newVertex->value[k-1] = numValue;
-          if (k == 1) { newVertex.x = numValue; }
-          else if (k == 2) { newVertex.y = numValue; }
-          else if (k == 3) { newVertex.z = numValue; }
+          if (k == 1)
+          {
+            newVertex.x = numValue;
+          }
+          else if (k == 2)
+          {
+            newVertex.y = numValue;
+          }
+          else if (k == 3)
+          {
+            newVertex.z = numValue;
+          }
         }
 
         // Catch conversion error
@@ -333,7 +352,10 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
         }
 
         // Stop word extraction on line end
-        if (end_of_word == std::string::npos) { break; }
+        if (end_of_word == std::string::npos)
+        {
+          break;
+        }
       }
       this->tex_vertices_.push_back(newVertex);
     }
@@ -354,9 +376,18 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
         {
           double numValue = std::stod(sub_word);
           //*newNormal->value[k-1] = numValue;
-          if (k == 1) { newNormal.x = numValue; }
-          else if (k == 2) { newNormal.y = numValue; }
-          else if (k == 3) { newNormal.z = numValue; }
+          if (k == 1)
+          {
+            newNormal.x = numValue;
+          }
+          else if (k == 2)
+          {
+            newNormal.y = numValue;
+          }
+          else if (k == 3)
+          {
+            newNormal.z = numValue;
+          }
         }
 
         // Catch conversion error
@@ -367,7 +398,10 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
         }
 
         // Stop word extraction on line end
-        if (end_of_word == std::string::npos) { break; }
+        if (end_of_word == std::string::npos)
+        {
+          break;
+        }
       }
       this->normals_.push_back(newNormal);
     }
@@ -433,7 +467,10 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
           }
 
           // Stop word extraction on line end
-          if (end_of_word == std::string::npos) { break; }
+          if (end_of_word == std::string::npos)
+          {
+            break;
+          }
         }
 
         // Set edges
@@ -505,7 +542,10 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
           }
 
           // Stop word extraction on line end
-          if (end_of_word == std::string::npos) { break; }
+          if (end_of_word == std::string::npos)
+          {
+            break;
+          }
         }
 
         for (int v = 0; v < (newFace->v_indices.size()); v++)
@@ -517,7 +557,10 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
           side_indices[2] = -1;
           side_indices[3] = -1;
 
-          if ((v + 1) >= newFace->v_indices.size()) { side_indices[1] = newFace->v_indices[0]; }
+          if ((v + 1) >= newFace->v_indices.size())
+          {
+            side_indices[1] = newFace->v_indices[0];
+          }
 
           newFace->edges.push_back(side_indices);
         }
@@ -841,7 +884,8 @@ SurfaceMesh::CreateFromDivisions(std::vector<double>& vertices_1d_x,
         side_indices[2] = -1;
         side_indices[3] = -1;
 
-        if ((v + 1) >= new_face->v_indices.size()) side_indices[1] = new_face->v_indices[0];
+        if ((v + 1) >= new_face->v_indices.size())
+          side_indices[1] = new_face->v_indices[0];
 
         new_face->edges.push_back(side_indices);
       } // for v
@@ -897,7 +941,8 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   // Find section with node information and then read information
   while (std::getline(file, line))
   {
-    if (node_section_name.compare(line) == 0) break;
+    if (node_section_name.compare(line) == 0)
+      break;
   }
 
   std::getline(file, line);
@@ -937,7 +982,8 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   file.seekg(0);
   while (std::getline(file, line))
   {
-    if (elements_section_name.compare(line) == 0) break;
+    if (elements_section_name.compare(line) == 0)
+      break;
   }
 
   std::getline(file, line);
@@ -1008,7 +1054,10 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
       for (int i = 0; i < num_nodes; i++)
         newFace->v_indices[i] = nodes[i] - 1;
     }
-    else { continue; }
+    else
+    {
+      continue;
+    }
 
     const size_t total_nodes = newFace->v_indices.size();
 
@@ -1017,7 +1066,8 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
       int* side_indices = new int[total_nodes];
       side_indices[0] = newFace->v_indices[e];
 
-      if (e < total_nodes - 1) side_indices[1] = newFace->v_indices[e + 1];
+      if (e < total_nodes - 1)
+        side_indices[1] = newFace->v_indices[e + 1];
       else
         side_indices[1] = newFace->v_indices[0];
 
@@ -1278,9 +1328,11 @@ SurfaceMesh::GetMeshStats()
     } // for edge
 
     areas[c] = area;
-    if (area > max_area) max_area = area;
+    if (area > max_area)
+      max_area = area;
 
-    if (area <= 0.0) num_negative_areas += 1;
+    if (area <= 0.0)
+      num_negative_areas += 1;
   } // for cell
 
   // Sort the areas
@@ -1300,7 +1352,8 @@ SurfaceMesh::GetMeshStats()
     for (int i = 0; i < 10; i++)
     {
 
-      if (area <= histo_bins[i]) home_bin = i;
+      if (area <= histo_bins[i])
+        home_bin = i;
 
     } // check bins
 
@@ -1343,11 +1396,13 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
     int ref_j = 0;
     for (size_t i = 0; i < I; ++i)
     {
-      if (poly_face->face_centroid.x >= x_cuts[i]) ref_i = i + 1;
+      if (poly_face->face_centroid.x >= x_cuts[i])
+        ref_i = i + 1;
     } // for i
     for (size_t j = 0; j < J; ++j)
     {
-      if (poly_face->face_centroid.y >= y_cuts[j]) ref_j = j + 1;
+      if (poly_face->face_centroid.y >= y_cuts[j])
+        ref_j = j + 1;
     } // for j
 
     IJ_bins[ref_i][ref_j] += 1;
@@ -1378,13 +1433,15 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
   log.Log() << "Maximum faces per set: " << max_bin_size << " at (i,j)= ( " << i_max << " , "
             << j_max << " )";
 
-  if (i_max == I) log.Log() << "X greater than " << x_cuts[i_max - 1];
+  if (i_max == I)
+    log.Log() << "X greater than " << x_cuts[i_max - 1];
   else if (i_max == 0)
     log.Log() << "X less than " << x_cuts[0];
   else
     log.Log() << "X greater than " << x_cuts[i_max - 1] << " and less than " << x_cuts[i_max];
 
-  if (j_max == J) log.Log() << "Y greater than " << y_cuts[j_max - 1];
+  if (j_max == J)
+    log.Log() << "Y greater than " << y_cuts[j_max - 1];
   else if (j_max == 0)
     log.Log() << "Y less than " << y_cuts[0];
   else
@@ -1441,7 +1498,10 @@ SurfaceMesh::SplitByPatch(std::vector<SurfaceMesh*>& patches)
           break;
         }
       }
-      if (matchFound) { break; }
+      if (matchFound)
+      {
+        break;
+      }
     }
 
     // If no match found, create new list
@@ -1512,14 +1572,26 @@ SurfaceMesh::SplitByPatch(std::vector<SurfaceMesh*>& patches)
                   break;
                 }
               }
-              if (updateMade) { break; }
+              if (updateMade)
+              {
+                break;
+              }
             }
-            if (updateMade) { break; }
+            if (updateMade)
+            {
+              break;
+            }
           }
-          if (updateMade) { break; }
+          if (updateMade)
+          {
+            break;
+          }
         }
 
-        if (updateMade) { break; }
+        if (updateMade)
+        {
+          break;
+        }
       }
 
       if (not updateMade)

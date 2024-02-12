@@ -17,7 +17,8 @@ FFInterpolationGetValue(lua_State* L)
   const std::string fname = __FUNCTION__;
 
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError("FFInterpolationGetValue", 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError("FFInterpolationGetValue", 1, num_args);
 
   // Get handle to field function
   const size_t ffihandle = lua_tonumber(L, 1);

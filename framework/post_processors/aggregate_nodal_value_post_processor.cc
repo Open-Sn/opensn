@@ -58,7 +58,8 @@ AggregateNodalValuePostProcessor::Initialize()
   else
   {
     for (const auto& cell : grid.local_cells)
-      if (logical_volume_ptr_->Inside(cell.centroid_)) cell_local_ids_.push_back(cell.local_id_);
+      if (logical_volume_ptr_->Inside(cell.centroid_))
+        cell_local_ids_.push_back(cell.local_id_);
   }
 
   initialized_ = true;
@@ -67,7 +68,8 @@ AggregateNodalValuePostProcessor::Initialize()
 void
 AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 {
-  if (not initialized_) Initialize();
+  if (not initialized_)
+    Initialize();
 
   const auto* grid_field_function = GetGridBasedFieldFunction();
 

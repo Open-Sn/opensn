@@ -41,9 +41,11 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
 {
   typedef AngleSetStatus Status;
 
-  if (executed_) return Status::FINISHED;
+  if (executed_)
+    return Status::FINISHED;
 
-  if (current_task_list_.empty()) current_task_list_ = cbc_spds_.TaskList();
+  if (current_task_list_.empty())
+    current_task_list_ = cbc_spds_.TaskList();
 
   sweep_chunk.SetAngleSet(*this);
 
@@ -56,7 +58,8 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
 
   // Check if boundaries allow for execution
   for (auto& [bid, bndry] : ref_boundaries_)
-    if (not bndry->CheckAnglesReadyStatus(angles_, ref_group_subset_)) return Status::NOT_FINISHED;
+    if (not bndry->CheckAnglesReadyStatus(angles_, ref_group_subset_))
+      return Status::NOT_FINISHED;
 
   bool all_tasks_completed = true;
   bool a_task_executed = true;
@@ -65,7 +68,8 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
     a_task_executed = false;
     for (auto& cell_task : current_task_list_)
     {
-      if (not cell_task.completed_) all_tasks_completed = false;
+      if (not cell_task.completed_)
+        all_tasks_completed = false;
       if (cell_task.num_dependencies_ == 0 and not cell_task.completed_)
       {
         log.LogEvent(timing_tags[0], Logger::EventType::EVENT_BEGIN);
@@ -138,7 +142,8 @@ CBC_AngleSet::PsiBndry(uint64_t bndry_map,
     return ref_boundaries_[bndry_map]->HeterogeneousPsiIncoming(
       cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
 
-  if (not surface_source_active) return ref_boundaries_[bndry_map]->ZeroFlux(g);
+  if (not surface_source_active)
+    return ref_boundaries_[bndry_map]->ZeroFlux(g);
 
   return ref_boundaries_[bndry_map]->HeterogeneousPsiIncoming(
     cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);

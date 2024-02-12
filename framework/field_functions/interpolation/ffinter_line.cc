@@ -82,7 +82,8 @@ FieldFunctionInterpolationLine::Execute()
     ff_ctx.interpolation_points_values.assign(number_of_points_, 0.0);
     for (int p = 0; p < number_of_points_; ++p)
     {
-      if (not ff_ctx.interpolation_points_has_ass_cell[p]) continue;
+      if (not ff_ctx.interpolation_points_has_ass_cell[p])
+        continue;
 
       const auto cell_local_index = ff_ctx.interpolation_points_ass_cell[p];
       const auto& cell = grid.local_cells[cell_local_index];
@@ -125,7 +126,10 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
     submod_name = base_name;
     submod_name = submod_name + std::to_string(opensn::mpi_comm.rank() + 1);
 
-    if (opensn::mpi_comm.size() > 1) { ofile << "import " << submod_name << "\n\n"; }
+    if (opensn::mpi_comm.size() > 1)
+    {
+      ofile << "import " << submod_name << "\n\n";
+    }
 
     for (int ff = 0; ff < field_functions_.size(); ff++)
     {
@@ -200,7 +204,8 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
     }
 
     std::string op("= ");
-    if (opensn::mpi_comm.rank() != 0) op = std::string("+= ");
+    if (opensn::mpi_comm.rank() != 0)
+      op = std::string("+= ");
 
     for (int p = 0; p < interpolation_points_.size(); p++)
     {
@@ -211,7 +216,8 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
       double d = delta_d_ * p;
       double value = 0.0;
 
-      if (p < custom_arrays_[ca].size()) value = custom_arrays_[ca][p];
+      if (p < custom_arrays_[ca].size())
+        value = custom_arrays_[ca][p];
 
       ofile << offset << "data" << ff << "[" << p << ",3] = " << d << "\n";
       ofile << offset << "data" << ff << "[" << p << ",4] " << op << value << "\n";

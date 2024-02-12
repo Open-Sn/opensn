@@ -219,7 +219,8 @@ PhysicsTransportXSSet(lua_State* L)
   const auto fname = std::string(__FUNCTION__);
   const int num_args = lua_gettop(L);
 
-  if (num_args < 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args < 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   // Process xs handle
   LuaCheckIntegerValue(fname, L, 1);
@@ -245,7 +246,8 @@ PhysicsTransportXSSet(lua_State* L)
   using OpType = OperationType;
   if (operation_index == static_cast<int>(OpType::SIMPLEXS0))
   {
-    if (num_args != 4) LuaPostArgAmountError(fname, 4, num_args);
+    if (num_args != 4)
+      LuaPostArgAmountError(fname, 4, num_args);
 
     const int n_grps = lua_tointeger(L, 3);
     const double sigma_t = lua_tonumber(L, 4);
@@ -254,7 +256,8 @@ PhysicsTransportXSSet(lua_State* L)
   }
   else if (operation_index == static_cast<int>(OpType::SIMPLEXS1))
   {
-    if (num_args != 5) LuaPostArgAmountError(fname, 5, num_args);
+    if (num_args != 5)
+      LuaPostArgAmountError(fname, 5, num_args);
 
     const int n_grps = lua_tointeger(L, 3);
     const double sigma_t = lua_tonumber(L, 4);
@@ -264,7 +267,8 @@ PhysicsTransportXSSet(lua_State* L)
   }
   else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
   {
-    if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+    if (num_args != 3)
+      LuaPostArgAmountError(fname, 3, num_args);
 
     const char* file_name_c = lua_tostring(L, 3);
 
@@ -284,7 +288,8 @@ PhysicsTransportXSGet(lua_State* L)
   const auto fname = std::string(__FUNCTION__);
   const int num_args = lua_gettop(L);
 
-  if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   // Process xs handle
   LuaCheckNilValue(fname, L, 1);
@@ -313,7 +318,8 @@ PhysicsTransportXSMakeCombined(lua_State* L)
   const auto fname = std::string(__FUNCTION__);
   const int num_args = lua_gettop(L);
 
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   // Process table
   LuaCheckTableValue(fname, L, 1);
@@ -368,7 +374,8 @@ PhysicsTransportXSSetCombined(lua_State* L)
   const auto fname = std::string(__FUNCTION__);
   int num_args = lua_gettop(L);
 
-  if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args < 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   // Process xs handle
   LuaCheckIntegerValue(fname, L, 1);
@@ -432,7 +439,8 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
   const auto fname = std::string(__FUNCTION__);
   const int num_args = lua_gettop(L);
 
-  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   // Process xs handle
   LuaCheckIntegerValue(fname, L, 1);

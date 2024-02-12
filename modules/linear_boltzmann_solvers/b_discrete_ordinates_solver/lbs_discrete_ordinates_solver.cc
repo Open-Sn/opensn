@@ -507,7 +507,8 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
       for (int idir = 0; idir < num_gs_angles; ++idir)
       {
         // Skip if already encountered
-        if (visited.count(idir) > 0) continue;
+        if (visited.count(idir) > 0)
+          continue;
 
         bool found = true;
         for (int jdir = 0; jdir < num_gs_angles; ++jdir)
@@ -849,7 +850,8 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
               const auto& omega = quadrature->omegas_[n];
               const auto& weight = quadrature->weights_[n];
               const auto mu = omega.Dot(face.normal_);
-              if (mu <= 0.0) continue;
+              if (mu <= 0.0)
+                continue;
 
               const auto coeff = weight * mu * int_f_shape_i[i];
               for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
@@ -930,7 +932,8 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 
     for (const auto& so_grouping : unique_so_groupings)
     {
-      if (so_grouping.empty()) continue;
+      if (so_grouping.empty())
+        continue;
 
       const size_t master_dir_id = so_grouping.front();
       const auto& omega = quadrature->omegas_[master_dir_id];
@@ -1049,7 +1052,8 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
         std::vector<size_t> upward_polar_ids;
         std::vector<size_t> dnward_polar_ids;
         for (size_t p = 0; p < num_pol; ++p)
-          if (product_quad.polar_ang_[p] > M_PI_2) upward_polar_ids.push_back(p);
+          if (product_quad.polar_ang_[p] > M_PI_2)
+            upward_polar_ids.push_back(p);
           else
             dnward_polar_ids.push_back(p);
 
@@ -1068,8 +1072,10 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
         // Stack id's for all azimuthal angles
         for (size_t a = 0; a < num_azi; ++a)
         {
-          if (not upward_polar_ids.empty()) MapPolarAndAzimuthalIDs(upward_polar_ids, a);
-          if (not dnward_polar_ids.empty()) MapPolarAndAzimuthalIDs(dnward_polar_ids, a);
+          if (not upward_polar_ids.empty())
+            MapPolarAndAzimuthalIDs(upward_polar_ids, a);
+          if (not dnward_polar_ids.empty())
+            MapPolarAndAzimuthalIDs(dnward_polar_ids, a);
         } // for azi-id a
 
       } // try product quadrature
@@ -1109,7 +1115,8 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
           std::vector<unsigned int> group1;
           std::vector<unsigned int> group2;
           for (const auto& dir_id : dir_set.second)
-            if (quadrature.abscissae_[dir_id].phi > M_PI_2) group1.push_back(dir_id);
+            if (quadrature.abscissae_[dir_id].phi > M_PI_2)
+              group1.push_back(dir_id);
             else
               group2.push_back(dir_id);
 

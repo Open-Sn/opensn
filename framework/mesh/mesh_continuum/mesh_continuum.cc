@@ -59,7 +59,10 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
     // It receives the count.
     mpi_comm.broadcast(locI_num_connections, locI);
 
-    if (opensn::mpi_comm.rank() != locI) { global_graph[locI].resize(locI_num_connections, -1); }
+    if (opensn::mpi_comm.rank() != locI)
+    {
+      global_graph[locI].resize(locI_num_connections, -1);
+    }
     else
     {
       std::copy(
@@ -119,7 +122,8 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
   for (const auto& cell : local_cells)
   {
     const int mat_id = cell.material_id_;
-    if (block_id_map.count(mat_id) == 0) block_id_map[mat_id] = cell.SubType();
+    if (block_id_map.count(mat_id) == 0)
+      block_id_map[mat_id] = cell.SubType();
     else
     {
       if (cell.SubType() != block_id_map.at(mat_id))
@@ -214,7 +218,8 @@ MeshContinuum::ExportCellsToExodus(const std::string& file_base_name,
     // required, are the prisms and hexes.
     const size_t num_faces = cell.faces_.size();
     std::vector<int> face_mapping(num_faces, 0);
-    if (cell.SubType() == CellType::WEDGE) face_mapping = {2, 3, 4, 0, 1};
+    if (cell.SubType() == CellType::WEDGE)
+      face_mapping = {2, 3, 4, 0, 1};
     else if (cell.SubType() == CellType::HEXAHEDRON)
       face_mapping = {2, 1, 3, 0, 4, 5};
     else
@@ -524,7 +529,8 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
       {
         if (cell.Type() == CellType::POLYHEDRON)
         {
-          if (cell.material_id_ != mat) continue;
+          if (cell.material_id_ != mat)
+            continue;
 
           for (const auto& face : cell.faces_)
           {
@@ -623,7 +629,8 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
   std::set<uint64_t> local_bndry_ids_set;
   for (auto& cell : local_cells)
     for (auto& face : cell.faces_)
-      if (not face.has_neighbor_) local_bndry_ids_set.insert(face.neighbor_id_);
+      if (not face.has_neighbor_)
+        local_bndry_ids_set.insert(face.neighbor_id_);
 
   // Vectorify it
   std::vector<uint64_t> local_bndry_ids(local_bndry_ids_set.begin(), local_bndry_ids_set.end());
@@ -723,7 +730,8 @@ MeshContinuum::IsCellLocal(uint64_t cell_global_index) const
 {
   auto native_index = global_cell_id_to_local_id_map_.find(cell_global_index);
 
-  if (native_index != global_cell_id_to_local_id_map_.end()) return true;
+  if (native_index != global_cell_id_to_local_id_map_.end())
+    return true;
 
   return false;
 }
@@ -864,7 +872,8 @@ MeshContinuum::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned 
     }
   } // for adj faces
 
-  if (not map_found) throw std::logic_error("MeshContinuum::MapCellFace: Mapping failure.");
+  if (not map_found)
+    throw std::logic_error("MeshContinuum::MapCellFace: Mapping failure.");
 
   return fmap;
 }
@@ -895,7 +904,8 @@ MeshContinuum::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 {
   size_t count = 0;
   for (const auto& cell : local_cells)
-    if (log_vol.Inside(cell.centroid_)) ++count;
+    if (log_vol.Inside(cell.centroid_))
+      ++count;
   mpi_comm.all_reduce(count, mpi::op::sum<size_t>());
   return count;
 }
@@ -915,7 +925,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
 
     const auto pc = point - c;
 
-    if (pc.Dot(n) > 0.0) return true;
+    if (pc.Dot(n) > 0.0)
+      return true;
     else
       return false;
   };
@@ -931,7 +942,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
 
     const double v0p_dot_v01 = v0p.Dot(v01);
 
-    if (not(v0p_dot_v01 >= 0 and v0p_dot_v01 < v01.Norm())) inside = false;
+    if (not(v0p_dot_v01 >= 0 and v0p_dot_v01 < v01.Norm()))
+      inside = false;
   } // slab
 
   else if (cell.Type() == CellType::POLYGON)
@@ -990,7 +1002,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
           break;
         }
       } // for side
-      if (inside) break;
+      if (inside)
+        break;
     } // for face
   }   // polyhedron
   else
@@ -1061,10 +1074,12 @@ MeshContinuum::MakeCellOrthoSizes() const
 uint64_t
 MeshContinuum::MakeBoundaryID(const std::string& boundary_name) const
 {
-  if (boundary_id_map_.empty()) return 0;
+  if (boundary_id_map_.empty())
+    return 0;
 
   for (const auto& [id, name] : boundary_id_map_)
-    if (boundary_name == name) return id;
+    if (boundary_name == name)
+      return id;
 
   uint64_t max_id = 0;
   for (const auto& [id, name] : boundary_id_map_)

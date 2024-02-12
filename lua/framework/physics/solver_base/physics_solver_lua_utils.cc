@@ -28,7 +28,8 @@ SolverCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckTableValue(fname, L, 1);
 
@@ -47,7 +48,8 @@ SolverInitialize(lua_State* L)
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
 
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
   LuaCheckNilValue(fname, L, 1);
   LuaCheckIntegerValue(fname, L, 1);
 
@@ -66,7 +68,8 @@ SolverExecute(lua_State* L)
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
 
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
   LuaCheckNilValue(fname, L, 1);
   LuaCheckIntegerValue(fname, L, 1);
 
@@ -85,7 +88,8 @@ SolverStep(lua_State* L)
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
 
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
   LuaCheckNilValue(fname, L, 1);
   LuaCheckIntegerValue(fname, L, 1);
 
@@ -104,7 +108,8 @@ SolverAdvance(lua_State* L)
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
 
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
   LuaCheckNilValue(fname, L, 1);
   LuaCheckIntegerValue(fname, L, 1);
 
@@ -122,7 +127,8 @@ SolverSetBasicOption(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -188,7 +194,8 @@ SolverGetName(lua_State* L)
   const std::string fname = "SolverGetName";
   const int num_args = lua_gettop(L);
 
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
   LuaCheckNilValue(fname, L, 1);
   LuaCheckIntegerValue(fname, L, 1);
 
@@ -206,7 +213,8 @@ SolverGetFieldFunctionList(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError("GetFieldFunctionList", 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError("GetFieldFunctionList", 1, num_args);
 
   // Getting solver
   const int solver_handle = lua_tonumber(L, 1);
@@ -249,7 +257,8 @@ SolverGetInfo(lua_State* L)
   const std::string fname = "SolverGetInfo";
   const int num_args = lua_gettop(L);
 
-  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(fname, 2, num_args);
   LuaCheckNilValue(fname, L, 1);
   LuaCheckIntegerValue(fname, L, 1);
 
@@ -258,7 +267,8 @@ SolverGetInfo(lua_State* L)
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   ParameterBlock params;
-  if (lua_isstring(L, 2)) params.AddParameter("name", std::string(lua_tostring(L, 2)));
+  if (lua_isstring(L, 2))
+    params.AddParameter("name", std::string(lua_tostring(L, 2)));
   else if (lua_istable(L, 2))
     params = TableParserAsParameterBlock::ParseTable(L, 2);
   else
@@ -278,7 +288,8 @@ SolverSetProperties(lua_State* L)
 {
   const std::string fname = "SolverSetProperties";
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckIntegerValue(fname, L, 1);

@@ -86,7 +86,8 @@ Solver::Initialize()
         }
         case BoundaryType::Dirichlet:
         {
-          if (bndry_vals.empty()) bndry_vals.resize(1, 0.0);
+          if (bndry_vals.empty())
+            bndry_vals.resize(1, 0.0);
           boundaries_.insert(
             std::make_pair(bndry_id, Boundary{BoundaryType::Dirichlet, {bndry_vals[0], 0., 0.}}));
           log.Log() << "Boundary " << bndry_name << " set to dirichlet.";
@@ -160,7 +161,8 @@ Solver::Initialize()
   if (field_functions_.empty())
   {
     std::string solver_name;
-    if (not TextName().empty()) solver_name = TextName() + "-";
+    if (not TextName().empty())
+      solver_name = TextName() + "-";
 
     std::string text_name = solver_name + "phi";
 
@@ -249,9 +251,12 @@ Solver::Execute()
 
         // Compute Ckappa IP
         double Ckappa = 1.0;
-        if (cell.Type() == CellType::SLAB) Ckappa = 2.0;
-        if (cell.Type() == CellType::POLYGON) Ckappa = 2.0;
-        if (cell.Type() == CellType::POLYHEDRON) Ckappa = 4.0;
+        if (cell.Type() == CellType::SLAB)
+          Ckappa = 2.0;
+        if (cell.Type() == CellType::POLYGON)
+          Ckappa = 2.0;
+        if (cell.Type() == CellType::POLYHEDRON)
+          Ckappa = 4.0;
 
         // Assembly penalty terms
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -399,9 +404,12 @@ Solver::Execute()
           const double bc_value = bndry.values_[0];
           // Compute kappa
           double Ckappa = 2.0;
-          if (cell.Type() == CellType::SLAB) Ckappa = 4.0; // fmax(4.0*Dg/hm,0.25);
-          if (cell.Type() == CellType::POLYGON) Ckappa = 4.0;
-          if (cell.Type() == CellType::POLYHEDRON) Ckappa = 8.0;
+          if (cell.Type() == CellType::SLAB)
+            Ckappa = 4.0; // fmax(4.0*Dg/hm,0.25);
+          if (cell.Type() == CellType::POLYGON)
+            Ckappa = 4.0;
+          if (cell.Type() == CellType::POLYHEDRON)
+            Ckappa = 8.0;
 
           // Assembly penalty terms
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -523,18 +531,21 @@ Solver::HPerpendicular(const Cell& cell, unsigned int f)
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == CellType::SLAB) hp = volume / 2.0;
+  if (cell.Type() == CellType::SLAB)
+    hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
   else if (cell.Type() == CellType::POLYGON)
   {
-    if (num_faces == 3) hp = 2.0 * volume / face_area;
+    if (num_faces == 3)
+      hp = 2.0 * volume / face_area;
     else if (num_faces == 4)
       hp = volume / face_area;
     else // Nv > 4
     {
       const double surface_area = ComputeSurfaceArea();
 
-      if (num_faces % 2 == 0) hp = 4.0 * volume / surface_area;
+      if (num_faces % 2 == 0)
+        hp = 4.0 * volume / surface_area;
       else
       {
         hp = 2.0 * volume / surface_area;
@@ -586,7 +597,8 @@ Solver::MapFaceNodeDisc(const Cell& cur_cell,
   for (size_t fj = 0; fj < adj_face_num_nodes; ++fj)
   {
     const int j = adj_cell_mapping.MapFaceNode(acf, fj);
-    if ((node_i_loc - ac_node_locs[j]).NormSquare() < epsilon) return j;
+    if ((node_i_loc - ac_node_locs[j]).NormSquare() < epsilon)
+      return j;
   }
 
   throw std::logic_error("Solver::MapFaceNodeDisc: Mapping failure.");
