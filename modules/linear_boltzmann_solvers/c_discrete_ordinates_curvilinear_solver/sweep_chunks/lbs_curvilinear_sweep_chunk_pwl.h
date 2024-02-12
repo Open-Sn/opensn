@@ -46,23 +46,6 @@ public:
                   const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
                   int num_moments,
                   int max_num_cell_dofs);
-
-protected:
-  // operations
-
-  /**Cell data callback.*/
-  void CellDataCallback();
-  /**Direction data callback.*/
-  void DirectionDataCallback();
-  /**Applies diamond differencing on azimuthal directions.*/
-  void PostCellDirSweepCallback();
-
-  // rz kernels
-
-  /**Assembles the volumetric gradient term.*/
-  void KernelFEMRZVolumetricGradientTerm();
-  /**Performs the integral over the surface of a face.*/
-  void KernelFEMRZUpwindSurfaceIntegrals();
 };
 
 } // namespace lbs
