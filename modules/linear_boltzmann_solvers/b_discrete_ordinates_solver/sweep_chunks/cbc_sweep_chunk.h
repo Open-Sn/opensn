@@ -68,7 +68,7 @@ public:
   void Sweep(AngleSet& angle_set) override;
 
 protected:
-  CBC_SweepDependencyInterface& cbc_sweep_depinterf_;
+  CBC_SweepDependencyInterface sweep_dependency_interface_;
   Cell const* cell_ptr_ = nullptr;
   uint64_t cell_local_id_ = 0;
 

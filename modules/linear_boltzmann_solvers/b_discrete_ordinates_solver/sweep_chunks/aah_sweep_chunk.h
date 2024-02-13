@@ -14,17 +14,11 @@ namespace lbs
  * to upstream data.*/
 struct AAH_SweepDependencyInterface : public SweepDependencyInterface
 {
-  AAH_FLUDS* fluds_ = nullptr;
+  const double* GetUpwindPsi(int face_node_local_idx) const override 
+  { return nullptr; }
 
-  size_t spls_index = 0;
-
-  int in_face_counter = 0;
-  int preloc_face_counter = 0;
-  int out_face_counter = 0;
-  int deploc_face_counter = 0;
-
-  const double* GetUpwindPsi(int face_node_local_idx) const override;
-  double* GetDownwindPsi(int face_node_local_idx) const override;
+  double* GetDownwindPsi(int face_node_local_idx) const override
+  { return nullptr; }
 };
 
 /**The new sweep chunk class.*/

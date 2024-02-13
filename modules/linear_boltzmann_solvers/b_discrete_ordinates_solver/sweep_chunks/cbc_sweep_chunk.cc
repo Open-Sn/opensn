@@ -32,16 +32,16 @@ CBC_SweepChunk::CBC_SweepChunk(std::vector<double>& destination_phi,
                groupset,
                xs,
                num_moments,
-               max_num_cell_dofs,
-               std::make_unique<CBC_SweepDependencyInterface>()),
-    cbc_sweep_depinterf_(dynamic_cast<CBC_SweepDependencyInterface&>(sweep_dependency_interface_))
+               max_num_cell_dofs)
 {
+  sweep_dependency_interface_.groupset_angle_group_stride_ = groupset_angle_group_stride_;
+  sweep_dependency_interface_.groupset_group_stride_ = groupset_group_stride_;
 }
 
 void
 CBC_SweepChunk::SetAngleSet(AngleSet& angle_set)
 {
-  cbc_sweep_depinterf_.fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
+  sweep_dependency_interface_.fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
   const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
 
@@ -54,8 +54,8 @@ CBC_SweepChunk::SetAngleSet(AngleSet& angle_set)
   sweep_dependency_interface_.gs_ss_begin_ = gs_ss_begin_;
   sweep_dependency_interface_.gs_gi_ = gs_gi_;
 
-  cbc_sweep_depinterf_.group_stride_ = angle_set.GetNumGroups();
-  cbc_sweep_depinterf_.group_angle_stride_ = angle_set.GetNumGroups() * angle_set.GetNumAngles();
+  sweep_dependency_interface_.group_stride_ = angle_set.GetNumGroups();
+  sweep_dependency_interface_.group_angle_stride_ = angle_set.GetNumGroups() * angle_set.GetNumAngles();
 }
 
 void
@@ -80,7 +80,7 @@ CBC_SweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
   M_surf_ = &fe_intgrl_values.intS_shapeI_shapeJ;
   IntS_shapeI_ = &fe_intgrl_values.intS_shapeI;
 
-  cbc_sweep_depinterf_.cell_transport_view_ = cell_transport_view_;
+  sweep_dependency_interface_.cell_transport_view_ = cell_transport_view_;
 }
 
 void
@@ -246,7 +246,29 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
       sweep_dependency_interface_.SetupOutgoingFace(
         f, cell_mapping_->NumFaceNodes(f), face.neighbor_id_, local, boundary, locality);
 
-      OutgoingSurfaceOperations();
+      const auto& IntF_shapeI = (*IntS_shapeI_)[f];
+      const double mu = face_mu_values_[f];
+      const double wt = direction_qweight_;
+
+      const bool on_boundary = sweep_dependency_interface_.on_boundary_;
+      const bool is_reflecting_boundary = sweep_dependency_interface_.is_reflecting_bndry_;
+
+      const size_t num_face_nodes = cell_mapping_->NumFaceNodes(f);
+      for (int fi = 0; fi < num_face_nodes; ++fi)
+      {
+        const int i = cell_mapping_->MapFaceNode(f, fi);
+
+        double* psi = sweep_dependency_interface_.GetDownwindPsi(fi);
+
+        if (psi != nullptr)
+          if (not on_boundary or is_reflecting_boundary)
+            for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+              psi[gsg] = b_[gsg][i];
+        if (on_boundary and not is_reflecting_boundary)
+          for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+            cell_transport_view_->AddOutflow(gs_gi_ + gsg, wt * mu * b_[gsg][i] * IntF_shapeI[i]);
+
+      } // for fi
     } // for face
 
   } // for n

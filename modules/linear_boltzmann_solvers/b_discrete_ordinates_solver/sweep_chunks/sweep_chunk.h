@@ -72,8 +72,7 @@ public:
              const LBSGroupset& groupset,
              const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
              int num_moments,
-             int max_num_cell_dofs,
-             std::unique_ptr<SweepDependencyInterface> sweep_dependency_interface_ptr);
+             int max_num_cell_dofs);
 
 protected:
   const MeshContinuum& grid_;
@@ -85,9 +84,6 @@ protected:
   const std::map<int, std::shared_ptr<MultiGroupXS>>& xs_;
   const int num_moments_;
   const bool save_angular_flux_;
-
-  std::unique_ptr<SweepDependencyInterface> sweep_dependency_interface_ptr_;
-  SweepDependencyInterface& sweep_dependency_interface_;
 
   const size_t groupset_angle_group_stride_;
   const size_t groupset_group_stride_;
@@ -120,13 +116,6 @@ protected:
   size_t g_ = 0;
   size_t gsg_ = 0;
   double sigma_tg_ = 0.0;
-
-  // 02 operations
-  /**Operations when outgoing fluxes are handled including passing
-   * face angular fluxes downstream and computing
-   * balance parameters (i.e. outflow)
-   * */
-  virtual void OutgoingSurfaceOperations();
 };
 
 } // namespace lbs
