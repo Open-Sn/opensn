@@ -152,7 +152,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
           const double mu_Nij = -mu * M_surf_f[i][j];
           Amat_[i][j] += mu_Nij;
 
-          if (psi == nullptr) continue;
+          if (psi == nullptr)
+            continue;
 
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
             b_[gsg][i] += psi[gsg] * mu_Nij;
