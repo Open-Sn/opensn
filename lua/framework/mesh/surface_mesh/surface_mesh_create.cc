@@ -18,10 +18,10 @@ SurfaceMeshCreate(lua_State* L)
 {
   auto new_mesh = new SurfaceMesh;
 
-  opensn::surface_mesh_stack.emplace_back(new_mesh);
+  opensn::object_stack.emplace_back(new_mesh);
 
-  size_t index = opensn::surface_mesh_stack.size() - 1;
-  lua_pushnumber(L, static_cast<lua_Number>(index));
+  size_t index = opensn::object_stack.size() - 1;
+  lua_pushinteger(L, static_cast<lua_Integer>(index));
 
   opensn::log.LogAllVerbose2() << "SurfaceMeshCreate: "
                                   "Empty SurfaceMesh object, "
