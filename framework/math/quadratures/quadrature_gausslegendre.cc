@@ -19,10 +19,8 @@ QuadratureGaussLegendre::GetInputParameters()
 {
   InputParameters params = Quadrature::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription("General Gauss-Legendre quadrature");
   params.SetDocGroup("LuaQuadrature");
-  // clang-format on
 
   params.ChangeExistingParamToOptional("order", 0);
   params.AddOptionalParameter(
@@ -123,9 +121,12 @@ QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, doubl
   // at higher N since the roots start to get
   // squeezed to -1 and 1.
   int num_search_intvls = 1000;
-  if (N > 64) num_search_intvls *= 10;
-  if (N > 256) num_search_intvls *= 10;
-  if (N > 768) num_search_intvls *= 10;
+  if (N > 64)
+    num_search_intvls *= 10;
+  if (N > 256)
+    num_search_intvls *= 10;
+  if (N > 768)
+    num_search_intvls *= 10;
 
   if (N > 2056)
   {
@@ -146,7 +147,8 @@ QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, doubl
     double x_i = -1.0 + i * delta;
     double x_ip1 = x_i + delta;
 
-    if (Legendre(N, x_i) * Legendre(N, x_ip1) < 0.0) xk[++counter] = (x_ip1 + x_i) / 2.0;
+    if (Legendre(N, x_i) * Legendre(N, x_ip1) < 0.0)
+      xk[++counter] = (x_ip1 + x_i) / 2.0;
   }
 
   // Apply algorithm
@@ -185,7 +187,8 @@ QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, doubl
 
       xk[k] = xold - c;
 
-      if (std::fabs(xk[k] - xold) < tol) break;
+      if (std::fabs(xk[k] - xold) < tol)
+        break;
     } // for iteration
   }   // for k
 

@@ -30,12 +30,14 @@ PieceWiseLinearSlabMapping::SlabShape(uint32_t index,
                                       uint32_t edge) const
 {
   double xi = 0.0;
-  if (not on_surface) xi = qpoint.x;
+  if (not on_surface)
+    xi = qpoint.x;
   else
     xi = static_cast<double>(edge);
 
   double value = 0.0;
-  if (index == 0) value = 1.0 - xi;
+  if (index == 0)
+    value = 1.0 - xi;
   else if (index == 1)
     value = xi;
 
@@ -47,7 +49,8 @@ PieceWiseLinearSlabMapping::SlabGradShape(uint32_t index) const
 {
   double value = 0.0;
 
-  if (index == 0) value = -1.0 / h_;
+  if (index == 0)
+    value = -1.0 / h_;
   else
     value = 1.0 / h_;
 
@@ -67,7 +70,8 @@ PieceWiseLinearSlabMapping::ShapeValue(const int i, const Vector3& xyz) const
 
   if ((xi >= -1.0e-6) and (xi <= 1.0 + 1.0e-6))
   {
-    if (i == 0) return 1.0 - xi;
+    if (i == 0)
+      return 1.0 - xi;
     else
       return xi;
   } // if in cell
@@ -91,7 +95,8 @@ PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, std::vector<double>&
   {
     for (int i = 0; i < num_nodes_; i++)
     {
-      if (i == 0) shape_values[i] = 1.0 - xi;
+      if (i == 0)
+        shape_values[i] = 1.0 - xi;
       else
         shape_values[i] = xi;
     } // for dof
@@ -103,7 +108,8 @@ PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, std::vector<double>&
 Vector3
 PieceWiseLinearSlabMapping::GradShapeValue(const int i, const Vector3& xyz) const
 {
-  if (i == 0) return Vector3(0.0, 0.0, -1.0 / h_);
+  if (i == 0)
+    return Vector3(0.0, 0.0, -1.0 / h_);
   else
     return Vector3(0.0, 0.0, 1.0 / h_);
 }

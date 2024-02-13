@@ -54,7 +54,8 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
       local_DG.AddEdge(c, successor.first, successor.second);
 
   // Remove local cycles if allowed
-  if (verbose_) PrintedGhostedGraph();
+  if (verbose_)
+    PrintedGhostedGraph();
 
   if (cycle_allowance_flag)
   {
@@ -171,7 +172,8 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     int rlocI = edge_to_remove.first;
     int locI = edge_to_remove.second;
 
-    if (opensn::mpi_comm.rank() == 0) TDG.RemoveEdge(rlocI, locI);
+    if (opensn::mpi_comm.rank() == 0)
+      TDG.RemoveEdge(rlocI, locI);
 
     if (locI == opensn::mpi_comm.rank())
     {
@@ -181,7 +183,8 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
       delayed_location_dependencies_.push_back(rlocI);
     }
 
-    if (rlocI == opensn::mpi_comm.rank()) delayed_location_successors_.push_back(locI);
+    if (rlocI == opensn::mpi_comm.rank())
+      delayed_location_successors_.push_back(locI);
   }
 
   // Generate topological sort
@@ -226,20 +229,23 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   for (int k = 0; k < opensn::mpi_comm.size(); k++)
   {
     int loc = glob_linear_sweep_order[k];
-    if (global_dependencies[loc].empty()) glob_sweep_order_rank[k] = 0;
+    if (global_dependencies[loc].empty())
+      glob_sweep_order_rank[k] = 0;
     else
     {
       int max_rank = -1;
       for (auto dep_loc : global_dependencies[loc])
       {
-        if (dep_loc < 0) continue;
+        if (dep_loc < 0)
+          continue;
         int dep_mapped_index = glob_order_mapping[dep_loc];
 
         if (glob_sweep_order_rank[dep_mapped_index] > max_rank)
           max_rank = glob_sweep_order_rank[dep_mapped_index];
       }
       glob_sweep_order_rank[k] = max_rank + 1;
-      if ((max_rank + 1) > abs_max_rank) abs_max_rank = max_rank + 1;
+      if ((max_rank + 1) > abs_max_rank)
+        abs_max_rank = max_rank + 1;
     }
   }
 
@@ -251,7 +257,8 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
 
     for (int k = 0; k < opensn::mpi_comm.size(); k++)
     {
-      if (glob_sweep_order_rank[k] == r) new_stdg.item_id.push_back(glob_linear_sweep_order[k]);
+      if (glob_sweep_order_rank[k] == r)
+        new_stdg.item_id.push_back(glob_linear_sweep_order[k]);
     }
     global_sweep_planes_.push_back(new_stdg);
   }

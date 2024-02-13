@@ -19,7 +19,8 @@ Sleep(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   LuaCheckIntegerValue(fname, L, 1);
   const int64_t time_to_sleep = lua_tointeger(L, 1);

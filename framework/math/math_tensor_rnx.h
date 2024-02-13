@@ -293,7 +293,8 @@ struct TensorRNX<2, N, NumberFormat>
       const auto& row = this->operator[](i);
       for (int j = 0; j < (N - 1); ++j)
         out << row[j] << " ";
-      if (i == (N - 1)) out << row[N - 1] << "]";
+      if (i == (N - 1))
+        out << row[N - 1] << "]";
       else
         out << row[N - 1] << "\n";
     }

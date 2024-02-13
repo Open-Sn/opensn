@@ -18,7 +18,8 @@ CreateLineQuadrature(lua_State* L)
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
 
-  if (not((num_args == 2) or (num_args == 3))) LuaPostArgAmountError(fname, 2, num_args);
+  if (not((num_args == 2) or (num_args == 3)))
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -27,7 +28,8 @@ CreateLineQuadrature(lua_State* L)
   int ident = lua_tonumber(L, 1);
   int N = lua_tonumber(L, 2);
   bool verbose = false;
-  if (num_args == 3) verbose = lua_toboolean(L, 3);
+  if (num_args == 3)
+    verbose = lua_toboolean(L, 3);
 
   ParameterBlock params;
   params.AddParameter("verbose", verbose);

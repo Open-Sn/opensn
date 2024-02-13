@@ -89,7 +89,8 @@ SimTest03_PWLC(const InputParameters&)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      if (face.has_neighbor_) continue;
+      if (face.has_neighbor_)
+        continue;
 
       const size_t num_face_nodes = face.vertex_ids_.size();
       for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -116,7 +117,8 @@ SimTest03_PWLC(const InputParameters&)
       {
         for (size_t j = 0; j < num_nodes; ++j)
         {
-          if (not node_boundary_flag[j]) MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
+          if (not node_boundary_flag[j])
+            MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
         } // for j
         VecSetValue(b, imap[i], cell_rhs[i], ADD_VALUES);
       }

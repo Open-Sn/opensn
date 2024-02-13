@@ -26,7 +26,8 @@ GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
 
   xn_wn_.resize(n, std::pair<double, double>(0.0, 0.0));
 
-  if (N == 0) return xn_wn_;
+  if (N == 0)
+    return xn_wn_;
 
   /* Legendre recurrence coefficients */
   Tvecdbl a;
@@ -92,8 +93,14 @@ GolubFischer::MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
     {
       double sigmakm2ell = 0.0;
 
-      if (k == 1) { sigmakm2ell = 0.0; }
-      else { sigmakm2ell = sigma[k - 2][ell]; }
+      if (k == 1)
+      {
+        sigmakm2ell = 0.0;
+      }
+      else
+      {
+        sigmakm2ell = sigma[k - 2][ell];
+      }
       sigma[k][ell] = c[ell] * sigma[k - 1][ell + 1] -
                       (alpha_[k - 1] - a[ell]) * sigma[k - 1][ell] - beta_[k - 1] * sigmakm2ell +
                       b[ell] * sigma[k - 1][ell - 1];
@@ -174,7 +181,10 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
       log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2)
         << "xnew " << i << " " << xnew << " y=" << a << std::endl;
 
-      if (res < tol) { break; }
+      if (res < tol)
+      {
+        break;
+      }
 
       i = i + 1;
     } // while
@@ -220,9 +230,15 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 double
 GolubFischer::Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 {
-  if (ell == 0) { return 1; }
+  if (ell == 0)
+  {
+    return 1;
+  }
 
-  if (ell == 1) { return (x - in_alpha[0]); }
+  if (ell == 1)
+  {
+    return (x - in_alpha[0]);
+  }
 
   double Pnm1 = 1.0;
   double Pn = (x - in_alpha[0]);

@@ -39,7 +39,8 @@ EventPublisher::AddSubscriber(std::shared_ptr<EventSubscriber>& subscriber_sptr)
                          [&wptr](const std::weak_ptr<EventSubscriber>& ptr1)
                          { return ptr1.lock() == wptr.lock(); });
 
-  if (it == subscribers_.end()) subscribers_.push_back(std::move(wptr));
+  if (it == subscribers_.end())
+    subscribers_.push_back(std::move(wptr));
 }
 
 } // namespace opensn

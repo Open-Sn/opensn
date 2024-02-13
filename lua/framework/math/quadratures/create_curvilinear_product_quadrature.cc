@@ -22,7 +22,8 @@ CreateCylindricalProductQuadrature(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args < 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args < 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   const int ident = lua_tonumber(L, 1);
   const int Np = lua_tonumber(L, 2);
@@ -59,7 +60,8 @@ CreateCylindricalProductQuadrature(lua_State* L)
   }
 
   bool verbose = false;
-  if (num_args == 4) verbose = lua_toboolean(L, 4);
+  if (num_args == 4)
+    verbose = lua_toboolean(L, 4);
 
   const auto prod_quad_type = static_cast<ProductQuadratureType>(ident);
   switch (prod_quad_type)
@@ -143,12 +145,14 @@ int
 CreateSphericalProductQuadrature(lua_State* L)
 {
   const int num_args = lua_gettop(L);
-  if (num_args < 2) LuaPostArgAmountError("CreateSphericalProductQuadrature", 2, num_args);
+  if (num_args < 2)
+    LuaPostArgAmountError("CreateSphericalProductQuadrature", 2, num_args);
 
   const int ident = lua_tonumber(L, 1);
   const int Np = lua_tonumber(L, 2);
   bool verbose = false;
-  if (num_args == 3) verbose = lua_toboolean(L, 3);
+  if (num_args == 3)
+    verbose = lua_toboolean(L, 3);
 
   const auto prod_quad_type = static_cast<ProductQuadratureType>(ident);
   switch (prod_quad_type)

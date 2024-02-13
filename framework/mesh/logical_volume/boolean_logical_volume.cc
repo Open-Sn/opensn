@@ -17,9 +17,7 @@ BooleanLogicalVolume::GetInputParameters()
 {
   InputParameters params = LogicalVolume::GetInputParameters();
 
-  // clang-format off
   params.SetDocGroup("LuaLogicVolumes\n");
-  // clang-format on
 
   params.AddRequiredParameterArray(
     "parts",
@@ -73,7 +71,8 @@ BooleanLogicalVolume::Inside(const Vector3& point) const
 {
   for (const auto& part : parts)
   {
-    if (part.first != part.second->Inside(point)) return false;
+    if (part.first != part.second->Inside(point))
+      return false;
   }
 
   return true;

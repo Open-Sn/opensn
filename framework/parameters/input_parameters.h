@@ -138,7 +138,8 @@ public:
     auto& param = GetParam(name);
     param = ParameterBlock(name, value);
     parameter_class_tags_[name] = InputParameterTag::OPTIONAL;
-    if (not doc_string.empty()) parameter_doc_string_[name] = doc_string;
+    if (not doc_string.empty())
+      parameter_doc_string_[name] = doc_string;
   }
 
   template <typename T>
@@ -147,7 +148,8 @@ public:
     auto& param = GetParam(name);
     param = ParameterBlock(name, Varying::DefaultValue<T>());
     parameter_class_tags_[name] = InputParameterTag::REQUIRED;
-    if (not doc_string.empty()) parameter_doc_string_[name] = doc_string;
+    if (not doc_string.empty())
+      parameter_doc_string_[name] = doc_string;
   }
 
 public:

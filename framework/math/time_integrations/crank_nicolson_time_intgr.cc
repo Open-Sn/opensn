@@ -12,10 +12,8 @@ CrankNicolsonTimeIntegration::GetInputParameters()
 {
   InputParameters params = ThetaSchemeTimeIntegration::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription("General Crank-Nicolson Time Integration");
   params.SetDocGroup("DocTimeIntegrations");
-  // clang-format on
 
   params.ChangeExistingParamToOptional("method", static_cast<int>(SteppingMethod::CRANK_NICOLSON));
   params.ChangeExistingParamToOptional("theta", 0.5);

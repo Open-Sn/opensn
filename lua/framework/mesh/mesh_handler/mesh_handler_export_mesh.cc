@@ -9,12 +9,14 @@ MeshHandlerExportMeshToObj(lua_State* L)
   // Check arguments
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   const std::string file_name = lua_tostring(L, 1);
 
   bool per_material = false;
-  if (num_args == 2) per_material = lua_toboolean(L, 2);
+  if (num_args == 2)
+    per_material = lua_toboolean(L, 2);
 
   // Get current handler
   auto& cur_hndlr = opensn::GetCurrentHandler();
@@ -31,7 +33,8 @@ MeshHandlerExportMeshToVTK(lua_State* L)
   // Check arguments
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   const std::string file_name = lua_tostring(L, 1);
 
@@ -50,7 +53,8 @@ MeshHandlerExportMeshToExodus(lua_State* L)
   // Check arguments
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args < 1) LuaPostArgAmountError(fname, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(fname, 1, num_args);
 
   const std::string file_name = lua_tostring(L, 1);
 

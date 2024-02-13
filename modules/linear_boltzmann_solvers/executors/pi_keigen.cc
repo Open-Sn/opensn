@@ -82,7 +82,8 @@ XXPowerIterationKEigen::Initialize()
 
   ChiLogicalErrorIf(not front_wgs_context_, ": Casting failure");
 
-  if (reinit_phi_1_) lbs_solver_.SetPhiVectorScalarValues(phi_old_local_, 1.0);
+  if (reinit_phi_1_)
+    lbs_solver_.SetPhiVectorScalarValues(phi_old_local_, 1.0);
 }
 
 void
@@ -117,7 +118,8 @@ XXPowerIterationKEigen::Execute()
     F_prev = F_new;
     nit += 1;
 
-    if (k_eff_change < std::max(k_tolerance_, 1.0e-12)) converged = true;
+    if (k_eff_change < std::max(k_tolerance_, 1.0e-12))
+      converged = true;
 
     // Print iteration summary
     if (lbs_solver_.Options().verbose_outer_iterations)
@@ -127,12 +129,14 @@ XXPowerIterationKEigen::Execute()
                   << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
                   << std::setprecision(7) << k_eff_ << "  k_eff change " << std::setw(12)
                   << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
-      if (converged) k_iter_info << " CONVERGED\n";
+      if (converged)
+        k_iter_info << " CONVERGED\n";
 
       log.Log() << k_iter_info.str();
     }
 
-    if (converged) break;
+    if (converged)
+      break;
   } // for k iterations
 
   // Print summary
@@ -157,7 +161,8 @@ XXPowerIterationKEigen::Execute()
 void
 XXPowerIterationKEigen::SetLBSFissionSource(const VecDbl& input, const bool additive)
 {
-  if (not additive) Set(q_moments_local_, 0.0);
+  if (not additive)
+    Set(q_moments_local_, 0.0);
   active_set_source_function_(
     front_gs_, q_moments_local_, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 }
@@ -167,9 +172,11 @@ XXPowerIterationKEigen::SetLBSScatterSource(const VecDbl& input,
                                             const bool additive,
                                             const bool suppress_wg_scat)
 {
-  if (not additive) Set(q_moments_local_, 0.0);
+  if (not additive)
+    Set(q_moments_local_, 0.0);
   SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
-  if (suppress_wg_scat) source_flags |= SUPPRESS_WG_SCATTER;
+  if (suppress_wg_scat)
+    source_flags |= SUPPRESS_WG_SCATTER;
   active_set_source_function_(front_gs_, q_moments_local_, input, source_flags);
 }
 

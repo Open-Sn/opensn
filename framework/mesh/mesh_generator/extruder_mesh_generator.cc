@@ -16,10 +16,7 @@ ExtrusionLayer::GetInputParameters()
 {
   InputParameters params;
 
-  // clang-format off
-  params.SetGeneralDescription(
-  "A collection of parameters defining an extrusion layer.");
-  // clang-format on
+  params.SetGeneralDescription("A collection of parameters defining an extrusion layer.");
   params.SetDocGroup("doc_MeshGenerators");
 
   params.AddOptionalParameter("h", 1.0, "Layer height. Cannot be specified if \"z\" is specified.");
@@ -39,17 +36,13 @@ ExtruderMeshGenerator::GetInputParameters()
 {
   InputParameters params = MeshGenerator::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription(
-"Extrudes 2D geometry. Extrusion layers are"
-" specified using an \\ref mesh__ExtrusionLayer specification which takes "
-"either pairs of"
-" parameters: Pair A = \"n\" and \"z\", or Pair B = \"n\" and \"h\". When pair "
-"A is used then the z-levels will be computed automatically. Vice versa, when "
-"pair B is used then the h-levels will be computed automatically. Layers can be"
-" specified with a mixture of Pair A and Pair B. For example: Two main layers,"
-" one specified using a height, and the other specified using a z-level.");
-  // clang-format on
+    "Extrudes 2D geometry. Extrusion layers are specified using an \\ref mesh__ExtrusionLayer "
+    "specification which takes either pairs of parameters: Pair A = \"n\" and \"z\", or Pair B = "
+    "\"n\" and \"h\". When pair A is used then the z-levels will be computed automatically. Vice "
+    "versa, when pair B is used then the h-levels will be computed automatically. Layers can be "
+    "specified with a mixture of Pair A and Pair B. For example: Two main layers, one specified "
+    "using a height, and the other specified using a z-level.");
   params.SetDocGroup("MeshGenerator");
 
   params.AddRequiredParameterArray("layers", "A list of layers");
@@ -85,7 +78,8 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
 
     auto n = valid_params.GetParamValue<uint32_t>("n");
     double h;
-    if (layer_block.Has("h")) h = valid_params.GetParamValue<double>("h");
+    if (layer_block.Has("h"))
+      h = valid_params.GetParamValue<double>("h");
     else
     {
       double z = valid_params.GetParamValue<double>("z");
@@ -184,14 +178,17 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
       {
         // Determine cell sub-type
         CellType extruded_subtype;
-        // clang-format off
         switch (template_cell->sub_type)
         {
-          case CellType::TRIANGLE:      extruded_subtype = CellType::WEDGE; break;
-          case CellType::QUADRILATERAL: extruded_subtype = CellType::HEXAHEDRON; break;
-          default:                      extruded_subtype = CellType::POLYHEDRON;
+          case CellType::TRIANGLE:
+            extruded_subtype = CellType::WEDGE;
+            break;
+          case CellType::QUADRILATERAL:
+            extruded_subtype = CellType::HEXAHEDRON;
+            break;
+          default:
+            extruded_subtype = CellType::POLYHEDRON;
         }
-        // clang-format on
 
         // Create new cell
         auto new_cell_ptr =
@@ -213,13 +210,11 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
         {
           UnpartitionedMesh::LightWeightFace new_face;
 
-          // clang-format off
           new_face.vertex_ids.resize(4, -1);
           new_face.vertex_ids[0] = tc_face.vertex_ids[0] + k * num_template_vertices;
           new_face.vertex_ids[1] = tc_face.vertex_ids[1] + k * num_template_vertices;
           new_face.vertex_ids[2] = tc_face.vertex_ids[1] + (k + 1) * num_template_vertices;
           new_face.vertex_ids[3] = tc_face.vertex_ids[0] + (k + 1) * num_template_vertices;
-          // clang-format on
 
           if (tc_face.has_neighbor)
           {

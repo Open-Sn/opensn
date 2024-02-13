@@ -25,7 +25,8 @@ SpatialDiscretization::GetCellMapping(const Cell& cell) const
                                      "GetCellMapping";
   try
   {
-    if (Grid().IsCellLocal(cell.global_id_)) return *cell_mappings_.at(cell.local_id_);
+    if (Grid().IsCellLocal(cell.global_id_))
+      return *cell_mappings_.at(cell.local_id_);
     else
       return *nb_cell_mappings_.at(cell.global_id_);
   }
@@ -109,7 +110,8 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const Cell& cell) const
   // Determine non-boundary nodes
   std::set<uint32_t> internal_nodes;
   for (size_t i = 0; i < num_nodes; ++i)
-    if (boundary_nodes.find(i) == boundary_nodes.end()) internal_nodes.insert(i);
+    if (boundary_nodes.find(i) == boundary_nodes.end())
+      internal_nodes.insert(i);
 
   return {internal_nodes, boundary_nodes};
 }
@@ -158,7 +160,8 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
               break;
             }
           } // for ai
-          if (face_adj_mapping[fi] < 0) throw std::logic_error("Face node mapping failed");
+          if (face_adj_mapping[fi] < 0)
+            throw std::logic_error("Face node mapping failed");
         } // for fi
       }   // if internal face
 

@@ -21,9 +21,11 @@ ParameterBlock_Test00(lua_State* L)
   opensn::log.Log() << "GOLD_BEGIN";
   const int num_args = lua_gettop(L);
   bool verbose = false;
-  if (num_args >= 1) verbose = lua_toboolean(L, 1);
+  if (num_args >= 1)
+    verbose = lua_toboolean(L, 1);
 
-  if (verbose) opensn::log.Log() << "Hello world";
+  if (verbose)
+    opensn::log.Log() << "Hello world";
 
   if (num_args == 2)
   {

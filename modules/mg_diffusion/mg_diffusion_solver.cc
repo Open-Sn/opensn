@@ -76,14 +76,16 @@ Solver::Initialize()
   for (auto& cell : grid.local_cells)
   {
     unique_material_ids.insert(cell.material_id_);
-    if (cell.material_id_ < 0) ++invalid_mat_cell_count;
+    if (cell.material_id_ < 0)
+      ++invalid_mat_cell_count;
   }
   const auto& ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid.cells[cell_id];
     unique_material_ids.insert(cell.material_id_);
-    if (cell.material_id_ < 0) ++invalid_mat_cell_count;
+    if (cell.material_id_ < 0)
+      ++invalid_mat_cell_count;
   }
 
   if (invalid_mat_cell_count > 0)
@@ -161,7 +163,8 @@ Solver::Initialize()
     //                                                        ghost_dof_indices);
   }
 
-  if (do_two_grid_) mg_diffusion::Solver::Compute_TwoGrid_VolumeFractions();
+  if (do_two_grid_)
+    mg_diffusion::Solver::Compute_TwoGrid_VolumeFractions();
 
   // Create Mats and ExtVecs
   mg_diffusion::Solver::Assemble_A_bext();
@@ -174,7 +177,8 @@ Solver::Initialize()
     for (uint g = 0; g < mg_diffusion::Solver::num_groups_; ++g)
     {
       std::string solver_name;
-      if (not TextName().empty()) solver_name = TextName() + "-";
+      if (not TextName().empty())
+        solver_name = TextName() + "-";
 
       char buff[100];
       int dummy = snprintf(buff, 4, "%03d", g);
@@ -228,7 +232,8 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
         auto transp_xs = std::static_pointer_cast<MultiGroupXS>(property);
         matid_to_xs_map[mat_id] = transp_xs;
         found_transport_xs = true;
-        if (first_material_read) num_groups_ = transp_xs->NumGroups();
+        if (first_material_read)
+          num_groups_ = transp_xs->NumGroups();
 
       } // transport xs
       if (property->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
@@ -244,7 +249,10 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
             << "energy groups than called for in the simulation. "
             << "Source will be ignored.";
         }
-        else { matid_to_src_map[mat_id] = mg_source; }
+        else
+        {
+          matid_to_src_map[mat_id] = mg_source;
+        }
       } // P0 source
     }   // for property
 
@@ -580,7 +588,8 @@ Solver::Assemble_A_bext()
     {
       const auto& face = cell.faces_[f];
       // not a boundary face
-      if (face.has_neighbor_) continue;
+      if (face.has_neighbor_)
+        continue;
 
       auto& bndry = boundaries_[face.neighbor_id_];
 
@@ -780,7 +789,8 @@ Solver::Execute()
 void
 Solver::Assemble_RHS(const unsigned int g, const int64_t verbose)
 {
-  if (verbose > 2) log.Log() << "\nAssemblying RHS for group " + std::to_string(g);
+  if (verbose > 2)
+    log.Log() << "\nAssemblying RHS for group " + std::to_string(g);
 
   // copy the external source vector for group g into b
   VecSet(b_, 0.0);
@@ -834,7 +844,8 @@ Solver::Assemble_RHS(const unsigned int g, const int64_t verbose)
 void
 Solver::SolveOneGroupProblem(const unsigned int g, const int64_t verbose)
 {
-  if (verbose > 1) log.Log() << "Solving group: " << g;
+  if (verbose > 1)
+    log.Log() << "Solving group: " << g;
 
   KSPSetOperators(petsc_solver_.ksp, A_[g], A_[g]);
   KSPSolve(petsc_solver_.ksp, b_, x_[g]);
@@ -842,13 +853,15 @@ Solver::SolveOneGroupProblem(const unsigned int g, const int64_t verbose)
   // this is required to compute the inscattering RHS correctly in parallel
   CommunicateGhostEntries(x_[g]);
 
-  if (verbose > 1) log.Log() << "Done solving group " << g;
+  if (verbose > 1)
+    log.Log() << "Done solving group " << g;
 }
 
 void
 Solver::Assemble_RHS_TwoGrid(const int64_t verbose)
 {
-  if (verbose > 2) log.Log() << "\nAssemblying RHS for two-grid ";
+  if (verbose > 2)
+    log.Log() << "\nAssemblying RHS for two-grid ";
 
   VecSet(b_, 0.0);
 
@@ -907,7 +920,8 @@ Solver::Assemble_RHS_TwoGrid(const int64_t verbose)
 void
 Solver::Update_Flux_With_TwoGrid(const int64_t verbose)
 {
-  if (verbose > 2) log.Log() << "\nUpdating Thermal fluxes from two-grid";
+  if (verbose > 2)
+    log.Log() << "\nUpdating Thermal fluxes from two-grid";
 
   const auto& grid = *grid_ptr_;
   const auto& sdm = *sdm_ptr_;

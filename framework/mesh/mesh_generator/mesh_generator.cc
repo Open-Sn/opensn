@@ -102,7 +102,8 @@ MeshGenerator::Execute()
   auto new_mesher = std::make_shared<VolumeMesher>(VolumeMesherType::UNPARTITIONED);
   new_mesher->SetContinuum(grid_ptr);
 
-  if (current_mesh_handler < 0) PushNewHandlerAndGetIndex();
+  if (current_mesh_handler < 0)
+    PushNewHandlerAndGetIndex();
 
   auto& cur_hndlr = GetCurrentHandler();
   cur_hndlr.SetVolumeMesher(new_mesher);
@@ -176,7 +177,8 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_parti
     {
       CellGraphNode cell_graph_node; // <-- Note A
       for (auto& face : raw_cell_ptr->faces)
-        if (face.has_neighbor) cell_graph_node.push_back(face.neighbor);
+        if (face.has_neighbor)
+          cell_graph_node.push_back(face.neighbor);
 
       cell_graph.push_back(cell_graph_node);
       cell_centroids.push_back(raw_cell_ptr->centroid);
@@ -273,18 +275,22 @@ MeshGenerator::CellHasLocalScope(int location_id,
                                  const std::vector<std::set<uint64_t>>& vertex_subscriptions,
                                  const std::vector<int64_t>& cell_partition_ids) const
 {
-  if (replicated_) return true;
+  if (replicated_)
+    return true;
   // First determine if the cell is a local cell
   int cell_pid = static_cast<int>(cell_partition_ids[cell_global_id]);
-  if (cell_pid == location_id) return true;
+  if (cell_pid == location_id)
+    return true;
 
   // Now determine if the cell is a ghost cell
   for (uint64_t vid : lwcell.vertex_ids)
     for (uint64_t cid : vertex_subscriptions[vid])
     {
-      if (cid == cell_global_id) continue;
+      if (cid == cell_global_id)
+        continue;
       int adj_pid = static_cast<int>(cell_partition_ids[cid]);
-      if (adj_pid == location_id) return true;
+      if (adj_pid == location_id)
+        return true;
     }
 
   return false;
@@ -323,7 +329,8 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       // A slab face is very easy. If it is the first face
       // the normal is -khat. If it is the second face then
       // it is +khat.
-      if (face_counter == 0) newFace.normal_ = Vector3(0.0, 0.0, -1.0);
+      if (face_counter == 0)
+        newFace.normal_ = Vector3(0.0, 0.0, -1.0);
       else
         newFace.normal_ = Vector3(0.0, 0.0, 1.0);
     }

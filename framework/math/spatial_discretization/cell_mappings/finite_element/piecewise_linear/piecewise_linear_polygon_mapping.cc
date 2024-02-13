@@ -81,8 +81,14 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
       side_mapping[side] = -1;
 
       const CellFace& face = poly_cell.faces_[side];
-      if (face.vertex_ids_[0] == vindex) { side_mapping[side] = 0; }
-      if (face.vertex_ids_[1] == vindex) { side_mapping[side] = 1; }
+      if (face.vertex_ids_[0] == vindex)
+      {
+        side_mapping[side] = 0;
+      }
+      if (face.vertex_ids_[1] == vindex)
+      {
+        side_mapping[side] = 1;
+      }
     }
     node_to_side_map_.push_back(side_mapping);
   }
@@ -105,7 +111,8 @@ PieceWiseLinearPolygonMapping::TriShape(uint32_t index, const Vector3& qpoint, b
   }
 
   double value = 0.0;
-  if (index == 0) value = 1.0 - xi - eta;
+  if (index == 0)
+    value = 1.0 - xi - eta;
   else if (index == 1)
     value = xi;
   else if (index == 2)
@@ -122,7 +129,8 @@ PieceWiseLinearPolygonMapping::SideShape(uint32_t side,
 {
   int index = node_to_side_map_[i][side];
   double value = 0.0;
-  if (index == 0 or index == 1) value = TriShape(index, qpoint, on_surface);
+  if (index == 0 or index == 1)
+    value = TriShape(index, qpoint, on_surface);
 
   value += beta_ * TriShape(2, qpoint, on_surface);
 
@@ -190,8 +198,14 @@ PieceWiseLinearPolygonMapping::ShapeValue(const int i, const Vector3& xyz) const
       int index = node_to_side_map_[i][s];
       double value = 0.0;
 
-      if (index == 0) { value = 1.0 - xi - eta; }
-      if (index == 1) { value = xi; }
+      if (index == 0)
+      {
+        value = 1.0 - xi - eta;
+      }
+      if (index == 1)
+      {
+        value = xi;
+      }
 
       value += beta_ * eta;
 
@@ -223,8 +237,14 @@ PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz,
         int index = node_to_side_map_[i][s];
         double value = 0.0;
 
-        if (index == 0) { value = 1.0 - xi - eta; }
-        if (index == 1) { value = xi; }
+        if (index == 0)
+        {
+          value = 1.0 - xi - eta;
+        }
+        if (index == 1)
+        {
+          value = xi;
+        }
 
         value += beta_ * eta;
 

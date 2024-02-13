@@ -18,7 +18,8 @@ AdjointSolverExportImportanceMapBinary(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError(fname, 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError(fname, 2, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);

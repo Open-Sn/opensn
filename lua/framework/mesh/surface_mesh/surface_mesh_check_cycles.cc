@@ -19,7 +19,8 @@ int
 SurfaceMeshCheckCycles(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("SurfaceMeshCheckCycles", 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError("SurfaceMeshCheckCycles", 2, num_args);
 
   auto& cur_hndlr = opensn::GetCurrentHandler();
 
@@ -37,7 +38,8 @@ int
 ComputeLoadBalancing(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError("ComputeLoadBalancing", 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError("ComputeLoadBalancing", 3, num_args);
 
   // Get reference surface mesh
   int surf_handle = lua_tonumber(L, 1);

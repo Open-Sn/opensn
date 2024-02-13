@@ -27,7 +27,8 @@ FieldFunctionInterpolationPoint::Initialize()
   std::vector<uint64_t> recvbuf;
   mpi_comm.all_gather(cells_potentially_owning_point, recvbuf);
 
-  if (recvbuf.empty()) throw std::logic_error(fname + ": No cell identified containing the point.");
+  if (recvbuf.empty())
+    throw std::logic_error(fname + ": No cell identified containing the point.");
 
   uint64_t owning_cell_gid = recvbuf.front();
   for (const uint64_t gid : recvbuf)
@@ -46,7 +47,8 @@ FieldFunctionInterpolationPoint::Initialize()
 void
 FieldFunctionInterpolationPoint::Execute()
 {
-  if (not locally_owned_) return;
+  if (not locally_owned_)
+    return;
 
   const auto& ref_ff = *field_functions_.front();
   const auto& sdm = ref_ff.GetSpatialDiscretization();

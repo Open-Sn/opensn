@@ -48,12 +48,18 @@ RPPLogicalVolume::Inside(const Vector3& point) const
   constexpr std::array<bool, 6> true_condition = {true, true, true, true, true, true};
   std::array<bool, 6> condition = {false, false, false, false, false, false};
 
-  if (point.x <= xmax_ or infx_) condition[XMAX] = true;
-  if (point.x >= xmin_ or infx_) condition[XMIN] = true;
-  if (point.y <= ymax_ or infy_) condition[YMAX] = true;
-  if (point.y >= ymin_ or infy_) condition[YMIN] = true;
-  if (point.z <= zmax_ or infz_) condition[ZMAX] = true;
-  if (point.z >= zmin_ or infz_) condition[ZMIN] = true;
+  if (point.x <= xmax_ or infx_)
+    condition[XMAX] = true;
+  if (point.x >= xmin_ or infx_)
+    condition[XMIN] = true;
+  if (point.y <= ymax_ or infy_)
+    condition[YMAX] = true;
+  if (point.y >= ymin_ or infy_)
+    condition[YMIN] = true;
+  if (point.z <= zmax_ or infz_)
+    condition[ZMAX] = true;
+  if (point.z >= zmin_ or infz_)
+    condition[ZMIN] = true;
 
   return condition == true_condition;
 }

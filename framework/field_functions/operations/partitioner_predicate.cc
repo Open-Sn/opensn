@@ -92,7 +92,8 @@ PartitionerPredicate::Execute()
     {
       CellGraphNode cell_graph_node; // <-- Note A
       for (const auto& face : cell.faces_)
-        if (face.has_neighbor_) cell_graph_node.push_back(face.neighbor_id_);
+        if (face.has_neighbor_)
+          cell_graph_node.push_back(face.neighbor_id_);
 
       cell_graph.push_back(cell_graph_node);
       cell_centroids.push_back(cell.centroid_);

@@ -12,10 +12,8 @@ PiecewiseLinear1D::GetInputParameters()
 {
   InputParameters params = FunctionDimAToDimB::GetInputParameters();
 
-  // clang-format off
   params.SetGeneralDescription("Piecewise linear function");
   params.SetDocGroup("DocMathFunctions");
-  // clang-format on
 
   params.AddRequiredParameterArray("x_values", "The x-values used in the interpolation function.");
   params.AddRequiredParameterArray("y_values", "The x-values used in the interpolation function.");
@@ -54,7 +52,8 @@ PiecewiseLinear1D::PiecewiseLinear1D(const InputParameters& params)
 std::vector<double>
 PiecewiseLinear1D::Evaluate(const std::vector<double>& values) const
 {
-  if (values.size() != 1) ChiInvalidArgument("Can only be called with 1 argument.");
+  if (values.size() != 1)
+    ChiInvalidArgument("Can only be called with 1 argument.");
 
   return {ScalarFunction1Parameter(values.front())};
 }
@@ -62,7 +61,8 @@ PiecewiseLinear1D::Evaluate(const std::vector<double>& values) const
 std::vector<double>
 PiecewiseLinear1D::EvaluateSlope(const std::vector<double>& values) const
 {
-  if (values.size() != 1) ChiInvalidArgument("Can only be called with 1 argument.");
+  if (values.size() != 1)
+    ChiInvalidArgument("Can only be called with 1 argument.");
 
   return {ScalarFunctionSlope1Parameter(values.front())};
 }
@@ -70,9 +70,11 @@ PiecewiseLinear1D::EvaluateSlope(const std::vector<double>& values) const
 double
 PiecewiseLinear1D::ScalarFunction1Parameter(double x) const
 {
-  if (x < x_values_.front()) return y_values_.front();
+  if (x < x_values_.front())
+    return y_values_.front();
 
-  if (x >= x_values_.back()) return y_values_.back();
+  if (x >= x_values_.back())
+    return y_values_.back();
 
   const size_t max_k = num_vals_ - 1;
   for (size_t k = 0; k < max_k; ++k)
@@ -88,13 +90,18 @@ PiecewiseLinear1D::ScalarFunction1Parameter(double x) const
 double
 PiecewiseLinear1D::ScalarFunctionSlope1Parameter(double x) const
 {
-  if (x < x_values_.front()) return 0.0;
+  if (x < x_values_.front())
+    return 0.0;
 
-  if (x >= x_values_.back()) return 0.0;
+  if (x >= x_values_.back())
+    return 0.0;
 
   const size_t max_k = num_vals_ - 1;
   for (size_t k = 0; k < max_k; ++k)
-    if ((x >= x_values_[k]) and (x < x_values_[k + 1])) { return slopes_[k]; }
+    if ((x >= x_values_[k]) and (x < x_values_[k + 1]))
+    {
+      return slopes_[k];
+    }
 
   ChiLogicalError("Bad trouble");
 }

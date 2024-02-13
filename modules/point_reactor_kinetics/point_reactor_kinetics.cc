@@ -161,7 +161,8 @@ TransientSolver::Step()
   {
     double theta = 1.0;
 
-    if (time_integration_ == "implicit_euler") theta = 1.0;
+    if (time_integration_ == "implicit_euler")
+      theta = 1.0;
     else if (time_integration_ == "crank_nicolson")
       theta = 0.5;
 
@@ -174,14 +175,19 @@ TransientSolver::Step()
 
     x_tp1_ = x_t_ + (1.0 / theta) * (x_theta - x_t_);
   }
-  else if (time_integration_ == "explicit_euler") { x_tp1_ = x_t_ + dt * A_ * x_t_ + dt * q_; }
+  else if (time_integration_ == "explicit_euler")
+  {
+    x_tp1_ = x_t_ + dt * A_ * x_t_ + dt * q_;
+  }
   else
     ChiLogicalError("Unsupported time integration scheme.");
 
   period_tph_ = dt / std::log(x_tp1_[0] / x_t_[0]);
 
-  if (period_tph_ > 0.0 and period_tph_ > 1.0e6) period_tph_ = 1.0e6;
-  if (period_tph_ < 0.0 and period_tph_ < -1.0e6) period_tph_ = -1.0e6;
+  if (period_tph_ > 0.0 and period_tph_ > 1.0e6)
+    period_tph_ = 1.0e6;
+  if (period_tph_ < 0.0 and period_tph_ < -1.0e6)
+    period_tph_ = -1.0e6;
 }
 
 void
@@ -196,7 +202,8 @@ TransientSolver::GetInfo(const ParameterBlock& params) const
 {
   const auto param_name = params.GetParamValue<std::string>("name");
 
-  if (param_name == "neutron_population") return ParameterBlock("", x_t_[0]);
+  if (param_name == "neutron_population")
+    return ParameterBlock("", x_t_[0]);
   else if (param_name == "population_next")
     return ParameterBlock("", PopulationNew());
   else if (param_name == "period")
@@ -280,7 +287,8 @@ TransientSolver::SetProperties(const ParameterBlock& params)
   for (const auto& param : params)
   {
     const std::string& param_name = param.Name();
-    if (param_name == "rho") SetRho(param.GetValue<double>());
+    if (param_name == "rho")
+      SetRho(param.GetValue<double>());
   }
 }
 

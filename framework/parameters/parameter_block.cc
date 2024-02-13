@@ -44,7 +44,8 @@ ParameterBlock::ParameterBlock(const ParameterBlock& other)
   type_ = other.type_;
   name_ = other.name_;
 
-  if (other.value_ptr_) value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
+  if (other.value_ptr_)
+    value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
 
   parameters_ = other.parameters_;
   error_origin_scope_ = other.error_origin_scope_;
@@ -58,7 +59,8 @@ ParameterBlock::operator=(const ParameterBlock& other)
     type_ = other.type_;
     name_ = other.name_;
 
-    if (other.value_ptr_) value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
+    if (other.value_ptr_)
+      value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
 
     parameters_ = other.parameters_;
     error_origin_scope_ = other.error_origin_scope_;
@@ -263,7 +265,8 @@ ParameterBlock&
 ParameterBlock::GetParam(const std::string& param_name)
 {
   for (auto& param : parameters_)
-    if (param.Name() == param_name) return param;
+    if (param.Name() == param_name)
+      return param;
 
   throw std::out_of_range(error_origin_scope_ + ":" + std::string(__PRETTY_FUNCTION__) +
                           ": Parameter \"" + param_name + "\" not present in block");
@@ -288,7 +291,8 @@ const ParameterBlock&
 ParameterBlock::GetParam(const std::string& param_name) const
 {
   for (const auto& param : parameters_)
-    if (param.Name() == param_name) return param;
+    if (param.Name() == param_name)
+      return param;
 
   throw std::out_of_range(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
                           ": Parameter \"" + param_name + "\" not present in block");
@@ -316,7 +320,8 @@ ParameterBlock::RecursiveDumpToString(std::string& outstr, const std::string& of
   outstr += offset + this->Name() + " = \n";
   outstr += offset + "{\n";
 
-  if (HasValue()) outstr += value_ptr_->PrintStr();
+  if (HasValue())
+    outstr += value_ptr_->PrintStr();
 
   for (const auto& param : parameters_)
   {

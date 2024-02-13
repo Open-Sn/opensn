@@ -38,7 +38,8 @@ DestroyUnpartitionedMesh(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   const int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(func_name, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(func_name, 1, num_args);
 
   LuaCheckNilValue(func_name, L, 1);
 
@@ -59,14 +60,17 @@ UnpartitionedMeshFromVTU(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
-  if (num_args < 1) LuaPostArgAmountError(func_name, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(func_name, 1, num_args);
 
   LuaCheckNilValue(func_name, L, 1);
-  if (num_args >= 2) LuaCheckNilValue(func_name, L, 2);
+  if (num_args >= 2)
+    LuaCheckNilValue(func_name, L, 2);
 
   const char* temp = lua_tostring(L, 1);
   const char* field = "";
-  if (num_args >= 2) field = lua_tostring(L, 2);
+  if (num_args >= 2)
+    field = lua_tostring(L, 2);
   auto new_object = new UnpartitionedMesh;
 
   UnpartitionedMesh::Options options;
@@ -88,14 +92,17 @@ UnpartitionedMeshFromPVTU(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
-  if (num_args < 1) LuaPostArgAmountError(func_name, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(func_name, 1, num_args);
 
   LuaCheckNilValue(func_name, L, 1);
-  if (num_args >= 2) LuaCheckNilValue(func_name, L, 2);
+  if (num_args >= 2)
+    LuaCheckNilValue(func_name, L, 2);
 
   const char* temp = lua_tostring(L, 1);
   const char* field = "";
-  if (num_args >= 2) field = lua_tostring(L, 2);
+  if (num_args >= 2)
+    field = lua_tostring(L, 2);
   auto new_object = new opensn::UnpartitionedMesh;
 
   opensn::UnpartitionedMesh::Options options;
@@ -117,14 +124,17 @@ UnpartitionedMeshFromEnsightGold(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
-  if (num_args < 1) LuaPostArgAmountError(func_name, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(func_name, 1, num_args);
 
   LuaCheckNilValue(func_name, L, 1);
-  if (num_args >= 2) LuaCheckNilValue(func_name, L, 2);
+  if (num_args >= 2)
+    LuaCheckNilValue(func_name, L, 2);
 
   const char* temp = lua_tostring(L, 1);
   double scale = 1.0;
-  if (num_args >= 2) scale = lua_tonumber(L, 2);
+  if (num_args >= 2)
+    scale = lua_tonumber(L, 2);
   auto new_object = new opensn::UnpartitionedMesh;
 
   opensn::UnpartitionedMesh::Options options;
@@ -145,7 +155,8 @@ UnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
-  if (num_args < 1) LuaPostArgAmountError(func_name, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(func_name, 1, num_args);
 
   LuaCheckNilValue(func_name, L, 1);
 
@@ -170,7 +181,8 @@ UnpartitionedMeshFromMshFormat(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
-  if (num_args < 1) LuaPostArgAmountError(func_name, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(func_name, 1, num_args);
 
   LuaCheckNilValue(func_name, L, 1);
 
@@ -195,14 +207,17 @@ UnpartitionedMeshFromExodusII(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
-  if (num_args < 1) LuaPostArgAmountError(func_name, 1, num_args);
+  if (num_args < 1)
+    LuaPostArgAmountError(func_name, 1, num_args);
 
   LuaCheckNilValue(func_name, L, 1);
-  if (num_args >= 2) LuaCheckNilValue(func_name, L, 2);
+  if (num_args >= 2)
+    LuaCheckNilValue(func_name, L, 2);
 
   const char* temp = lua_tostring(L, 1);
   double scale = 1.0;
-  if (num_args >= 2) scale = lua_tonumber(L, 2);
+  if (num_args >= 2)
+    scale = lua_tonumber(L, 2);
   auto new_object = new opensn::UnpartitionedMesh;
 
   opensn::UnpartitionedMesh::Options options;

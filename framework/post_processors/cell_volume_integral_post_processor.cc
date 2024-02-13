@@ -19,10 +19,7 @@ CellVolumeIntegralPostProcessor::GetInputParameters()
   params += GridBasedFieldFunctionInterface::GetInputParameters();
   params += LogicalVolumeInterface::GetInputParameters();
 
-  // clang-format off
-  params.SetGeneralDescription(
-  "Computes the volumetric integral of a field-function as a scalar.");
-  // clang-format on
+  params.SetGeneralDescription("Computes the volumetric integral of a field-function as a scalar.");
   params.SetDocGroup("doc_PostProcessors");
 
   params.AddOptionalParameter(
@@ -63,7 +60,8 @@ CellVolumeIntegralPostProcessor::Initialize()
   else
   {
     for (const auto& cell : grid.local_cells)
-      if (logical_volume_ptr_->Inside(cell.centroid_)) cell_local_ids_.push_back(cell.local_id_);
+      if (logical_volume_ptr_->Inside(cell.centroid_))
+        cell_local_ids_.push_back(cell.local_id_);
   }
 
   initialized_ = true;
@@ -72,7 +70,8 @@ CellVolumeIntegralPostProcessor::Initialize()
 void
 CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 {
-  if (not initialized_) Initialize();
+  if (not initialized_)
+    Initialize();
 
   const auto* grid_field_function = GetGridBasedFieldFunction();
 
@@ -122,7 +121,8 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 
   double globl_integral;
   mpi_comm.all_reduce(local_integral, globl_integral, mpi::op::sum<double>());
-  if (not compute_volume_average_) value_ = ParameterBlock("", globl_integral);
+  if (not compute_volume_average_)
+    value_ = ParameterBlock("", globl_integral);
   else
   {
     double globl_volume;

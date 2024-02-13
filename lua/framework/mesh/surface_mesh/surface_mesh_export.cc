@@ -22,7 +22,8 @@ SurfaceMeshExportToObj(lua_State* L)
 
   // Get arguments
   int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("SurfaceMeshExportObj", 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError("SurfaceMeshExportObj", 2, num_args);
 
   int handle = lua_tonumber(L, 1);
 
@@ -44,7 +45,8 @@ SurfaceMeshExportPolyFile(lua_State* L)
 
   // Get arguments
   int num_args = lua_gettop(L);
-  if (num_args != 2) LuaPostArgAmountError("SurfaceMeshExportPolyFile", 2, num_args);
+  if (num_args != 2)
+    LuaPostArgAmountError("SurfaceMeshExportPolyFile", 2, num_args);
 
   int handle = lua_tonumber(L, 1);
 

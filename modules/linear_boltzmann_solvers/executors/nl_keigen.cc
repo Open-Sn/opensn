@@ -80,7 +80,8 @@ XXNonLinearKEigen::Initialize()
 void
 XXNonLinearKEigen::Execute()
 {
-  if (reinit_phi_1_) lbs_solver_.SetPhiVectorScalarValues(lbs_solver_.PhiOldLocal(), 1.0);
+  if (reinit_phi_1_)
+    lbs_solver_.SetPhiVectorScalarValues(lbs_solver_.PhiOldLocal(), 1.0);
 
   if (num_free_power_its_ > 0)
   {

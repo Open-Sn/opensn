@@ -16,7 +16,8 @@ LBSWriteGroupsetAngularFlux(lua_State* L)
   const std::string fname = "LBSWriteGroupsetAngularFlux";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);
@@ -55,7 +56,8 @@ LBSReadGroupsetAngularFlux(lua_State* L)
   const std::string fname = "LBSReadGroupsetAngularFlux";
   // Get arguments
   const int num_args = lua_gettop(L);
-  if (num_args != 3) LuaPostArgAmountError(fname, 3, num_args);
+  if (num_args != 3)
+    LuaPostArgAmountError(fname, 3, num_args);
 
   LuaCheckNilValue(fname, L, 1);
   LuaCheckNilValue(fname, L, 2);

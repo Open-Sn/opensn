@@ -295,7 +295,8 @@ Varying::PrintStr(bool with_type) const
 {
   std::stringstream outstr;
 
-  if (this->Type() == VaryingDataType::STRING) outstr << "\"" << this->StringValue() << "\"";
+  if (this->Type() == VaryingDataType::STRING)
+    outstr << "\"" << this->StringValue() << "\"";
   else if (this->Type() == VaryingDataType::FLOAT)
     outstr << this->FloatValue() << (with_type ? "(double)" : "");
   else if (this->Type() == VaryingDataType::INTEGER)

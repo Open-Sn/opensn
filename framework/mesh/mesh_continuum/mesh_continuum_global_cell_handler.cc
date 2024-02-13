@@ -92,7 +92,8 @@ GlobalCellHandler::GetGhostLocalID(uint64_t cell_global_index) const
 {
   auto foreign_location = global_cell_id_to_foreign_id_map.find(cell_global_index);
 
-  if (foreign_location != global_cell_id_to_foreign_id_map.end()) return foreign_location->second;
+  if (foreign_location != global_cell_id_to_foreign_id_map.end())
+    return foreign_location->second;
 
   std::stringstream ostr;
   ostr << "Grid GetGhostLocalID failed to find cell " << cell_global_index;

@@ -102,7 +102,8 @@ SimTest93_RayTracing(const InputParameters&)
       source_cell_ptr = &cell;
       break;
     }
-  if (source_cell_ptr == nullptr) throw std::logic_error(fname + ": Source cell not found.");
+  if (source_cell_ptr == nullptr)
+    throw std::logic_error(fname + ": Source cell not found.");
 
   const uint64_t source_cell_id = source_cell_ptr->global_id_;
 
@@ -222,7 +223,8 @@ SimTest93_RayTracing(const InputParameters&)
   const size_t num_particles = 100'000;
   for (size_t n = 0; n < num_particles; ++n)
   {
-    if (n % size_t(num_particles / 10.0) == 0) std::cout << "#particles = " << n << "\n";
+    if (n % size_t(num_particles / 10.0) == 0)
+      std::cout << "#particles = " << n << "\n";
     // Create the particle
     const auto omega = SampleRandomDirection();
     Particle particle{source_pos, omega, 0, 1.0, source_cell_id, true};
@@ -252,7 +254,8 @@ SimTest93_RayTracing(const InputParameters&)
         const auto& f = destination_info.destination_face_index;
         const auto& current_cell_face = cell.faces_[f];
 
-        if (current_cell_face.has_neighbor_) particle.cell_id = current_cell_face.neighbor_id_;
+        if (current_cell_face.has_neighbor_)
+          particle.cell_id = current_cell_face.neighbor_id_;
         else
           particle.alive = false; // Death at the boundary
       }

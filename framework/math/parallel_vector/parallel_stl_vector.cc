@@ -367,7 +367,8 @@ ParallelSTLVector::Assemble()
   comm_.all_reduce(local_mode, global_mode, mpi::op::max<short>());
 
   // If the mode is to do nothing, exit
-  if (global_mode == 0) return;
+  if (global_mode == 0)
+    return;
 
   // Next, ensure that all operation types are compatible
   ChiLogicalErrorIf(local_mode != 0 and local_mode != global_mode,
@@ -385,7 +386,8 @@ ParallelSTLVector::Assemble()
   for (const auto& op : op_cache)
   {
     const int op_pid = FindOwnerPID(op.first);
-    if (op_pid == location_id_) local_cache.emplace_back(op);
+    if (op_pid == location_id_)
+      local_cache.emplace_back(op);
     else
       nonlocal_cache.emplace_back(op);
   }
@@ -397,7 +399,8 @@ ParallelSTLVector::Assemble()
     ChiLogicalErrorIf(local_id < 0 or local_id >= local_size_,
                       "Invalid mapping from global to local.");
 
-    if (global_op_type == OpType::SET_VALUE) values_[local_id] = value;
+    if (global_op_type == OpType::SET_VALUE)
+      values_[local_id] = value;
     else
       values_[local_id] += value;
   }
@@ -457,7 +460,8 @@ ParallelSTLVector::Assemble()
                           " during vector assembly.");
 
       // Contribute to the local vector
-      if (global_op_type == OpType ::SET_VALUE) values_[local_id] = value;
+      if (global_op_type == OpType ::SET_VALUE)
+        values_[local_id] = value;
       else
         values_[local_id] += value;
     }
@@ -494,7 +498,8 @@ ParallelSTLVector::FindOwnerPID(const uint64_t global_id) const
   ChiInvalidArgumentIf(global_id >= global_size_, "Invalid global id specified.");
 
   for (int p = 0; p < process_count_; ++p)
-    if (global_id >= extents_[p] and global_id < extents_[p + 1]) return p;
+    if (global_id >= extents_[p] and global_id < extents_[p + 1])
+      return p;
   return -1;
 }
 

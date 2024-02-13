@@ -28,7 +28,8 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
 
-    if (not wgs_context) throw std::logic_error(fname + ": Cast failed.");
+    if (not wgs_context)
+      throw std::logic_error(fname + ": Cast failed.");
 
     wgs_context->lhs_src_scope_ = APPLY_WGS_SCATTER_SOURCES;
     wgs_context->rhs_src_scope_ = APPLY_AGS_SCATTER_SOURCES | APPLY_FIXED_SOURCES;
@@ -151,7 +152,8 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
     k_eff_prev = k_eff;
     nit += 1;
 
-    if (k_eff_change < std::max(tolerance, 1.0e-12)) converged = true;
+    if (k_eff_change < std::max(tolerance, 1.0e-12))
+      converged = true;
 
     // Print iteration summary
     if (lbs_solver.Options().verbose_outer_iterations)
@@ -161,12 +163,14 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
                   << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
                   << std::setprecision(7) << k_eff << "  k_eff change " << std::setw(12)
                   << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
-      if (converged) k_iter_info << " CONVERGED\n";
+      if (converged)
+        k_iter_info << " CONVERGED\n";
 
       log.Log() << k_iter_info.str();
     }
 
-    if (converged) break;
+    if (converged)
+      break;
   } // for k iterations
 
   // Print summary

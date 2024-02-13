@@ -84,7 +84,8 @@ SingleStateMGXS::MakeSimple1(unsigned int num_groups, double sigma_t, double c)
   for (size_t g = 0; g < num_groups_; ++g)
   {
     // Down-scattering
-    if (g > 0) S.Insert(g, g - 1, sigma_t * c * 0.5);
+    if (g > 0)
+      S.Insert(g, g - 1, sigma_t * c * 0.5);
 
     // Up-scattering
     if (g > num_groups_ / 2)
@@ -135,7 +136,8 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
     }
 
     // Define and check number of groups
-    if (xsecs.size() == 1) n_grps = xs->NumGroups();
+    if (xsecs.size() == 1)
+      n_grps = xs->NumGroups();
     ChiLogicalErrorIf(xs->NumGroups() != n_grps,
                       "All cross sections being combined must have the same group structure.");
 
@@ -146,7 +148,8 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
   // Check that the fissile and precursor densities are greater than
   // machine precision. If this condition is not met, the material is assumed
   // to be either not fissile, have zero precursors, or both.
-  if (Nf_total < 1.0e-12) is_fissionable_ = false;
+  if (Nf_total < 1.0e-12)
+    is_fissionable_ = false;
 
   // Check to ensure that all fissionable cross sections contain either
   // prompt/delayed fission data or total fission data
@@ -252,7 +255,8 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
     }
 
     // Set inverse velocity data
-    if (x == 0 and xsecs[x]->InverseVelocity().empty()) inv_velocity_ = xsecs[x]->InverseVelocity();
+    if (x == 0 and xsecs[x]->InverseVelocity().empty())
+      inv_velocity_ = xsecs[x]->InverseVelocity();
     ChiLogicalErrorIf(
       xsecs[x]->InverseVelocity() != inv_velocity_,
       "All cross sections being combined must have the same group-wise velocities.");
@@ -396,7 +400,8 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       {
         // Get data from current line
         line_stream >> i >> j >> value;
-        if (entry_prefix == "G_PRECURSOR_VAL") destination.at(j).at(i) = value; // hack
+        if (entry_prefix == "G_PRECURSOR_VAL")
+          destination.at(j).at(i) = value; // hack
         else
           destination.at(i).at(j) = value;
       }
@@ -813,7 +818,8 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
   } // while not EOF, read each lines
   file.close();
 
-  if (sigma_a_.empty()) ComputeAbsorption();
+  if (sigma_a_.empty())
+    ComputeAbsorption();
   ComputeDiffusionParameters();
 
   //
@@ -855,7 +861,8 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
                         "the prompt fission spectrum should be specified.");
 
       // Initialize total fission neutron yield from prompt
-      if (not nu_prompt.empty()) nu = nu_prompt;
+      if (not nu_prompt.empty())
+        nu = nu_prompt;
 
       // Check delayed neutron data
       if (num_precursors_ > 0)
@@ -899,7 +906,8 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       {
         sigma_f_ = nu_sigma_f_;
         for (size_t g = 0; g < num_groups_; ++g)
-          if (nu_sigma_f_[g] > 0.0) sigma_f_[g] /= nu[g];
+          if (nu_sigma_f_[g] > 0.0)
+            sigma_f_[g] /= nu[g];
       }
 
       // Compute total production cross section
@@ -957,7 +965,8 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       // Check for reasonable fission neutron yield
       nu = nu_sigma_f_;
       for (size_t g = 0; g < num_groups_; ++g)
-        if (sigma_f_[g] > 0.0) nu[g] /= sigma_f_[g];
+        if (sigma_f_[g] > 0.0)
+          nu[g] /= sigma_f_[g];
 
       ChiLogicalErrorIf(
         not IsNonNegative(nu),
@@ -1032,7 +1041,8 @@ SingleStateMGXS::ComputeAbsorption()
 void
 SingleStateMGXS::ComputeDiffusionParameters()
 {
-  if (diffusion_initialized_) return;
+  if (diffusion_initialized_)
+    return;
 
   // Initialize diffusion data
   sigma_tr_.resize(num_groups_, 0.0);

@@ -65,12 +65,10 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
 
   {
     using namespace opensn;
-    // clang-format off
     if (sdm_type == "PWLD")
       sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
     else
       ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
-    // clang-format on
   }
 
   auto& sdm = *sdm_ptr;
@@ -123,10 +121,12 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
       const auto& JxW = qp_data.JxW_Values();
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        if (bndry_nodes.find(i) != bndry_nodes.end()) continue;
+        if (bndry_nodes.find(i) != bndry_nodes.end())
+          continue;
         for (size_t j = 0; j < num_nodes; ++j)
         {
-          if (bndry_nodes.find(j) != bndry_nodes.end()) continue;
+          if (bndry_nodes.find(j) != bndry_nodes.end())
+            continue;
           double entry_aij = 0.0;
           for (size_t qp : qp_data.QuadraturePointIndices())
             entry_aij += shape_grad[i][qp].Dot(shape_grad[j][qp]) * JxW[qp];
@@ -160,7 +160,8 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
 
         // Compute kappa
         double kappa = 1.0;
-        if (cell.Type() == CellType::SLAB) kappa = 2.0 * penalty_factor * (D / hp + D / hm) * 0.5;
+        if (cell.Type() == CellType::SLAB)
+          kappa = 2.0 * penalty_factor * (D / hp + D / hm) * 0.5;
         if (cell.Type() == CellType::POLYGON)
           kappa = 2.0 * penalty_factor * (D / hp + D / hm) * 0.5;
         if (cell.Type() == CellType::POLYHEDRON)
@@ -262,9 +263,12 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
 
         // Compute kappa
         double kappa = 1.0;
-        if (cell.Type() == CellType::SLAB) kappa = 4.0 * penalty_factor * D / hm;
-        if (cell.Type() == CellType::POLYGON) kappa = 4.0 * penalty_factor * D / hm;
-        if (cell.Type() == CellType::POLYHEDRON) kappa = 8.0 * penalty_factor * D / hm;
+        if (cell.Type() == CellType::SLAB)
+          kappa = 4.0 * penalty_factor * D / hm;
+        if (cell.Type() == CellType::POLYGON)
+          kappa = 4.0 * penalty_factor * D / hm;
+        if (cell.Type() == CellType::POLYHEDRON)
+          kappa = 8.0 * penalty_factor * D / hm;
 
         // Assembly penalty terms
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -428,7 +432,8 @@ MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
   for (size_t fj = 0; fj < adj_face_num_nodes; ++fj)
   {
     const int j = adj_cell_mapping.MapFaceNode(acf, fj);
-    if ((node_i_loc - ac_node_locs[j]).NormSquare() < epsilon) return j;
+    if ((node_i_loc - ac_node_locs[j]).NormSquare() < epsilon)
+      return j;
   }
 
   throw std::logic_error(
@@ -458,18 +463,21 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == CellType::SLAB) hp = volume / 2.0;
+  if (cell.Type() == CellType::SLAB)
+    hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
   else if (cell.Type() == CellType::POLYGON)
   {
-    if (num_faces == 3) hp = 2.0 * volume / face_area;
+    if (num_faces == 3)
+      hp = 2.0 * volume / face_area;
     else if (num_faces == 4)
       hp = volume / face_area;
     else // Nv > 4
     {
       const double surface_area = ComputeSurfaceArea();
 
-      if (num_faces % 2 == 0) hp = 4.0 * volume / surface_area;
+      if (num_faces % 2 == 0)
+        hp = 4.0 * volume / surface_area;
       else
       {
         hp = 2.0 * volume / surface_area;

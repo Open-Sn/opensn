@@ -118,7 +118,10 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
     double a = std::log(phi / 4.0 / M_PI);
     double b = 0.0;
 
-    if (verbose) { log.Log() << "Solution: " << a << " " << b; }
+    if (verbose)
+    {
+      log.Log() << "Solution: " << a << " " << b;
+    }
 
     return {a, b};
   }
@@ -130,7 +133,10 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
     double a = solution[0];
     double b = solution[1];
 
-    if (verbose) { log.Log() << "Solution: " << a << " " << b; }
+    if (verbose)
+    {
+      log.Log() << "Solution: " << a << " " << b;
+    }
 
     return {a, b};
   }

@@ -37,7 +37,8 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
 
   if (executed_)
   {
-    if (not async_comm_.DoneSending()) async_comm_.ClearDownstreamBuffers();
+    if (not async_comm_.DoneSending())
+      async_comm_.ClearDownstreamBuffers();
     return AngleSetStatus::FINISHED;
   }
 
@@ -52,7 +53,8 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
       break;
     }
 
-  if (status == Status::RECEIVING) return status;
+  if (status == Status::RECEIVING)
+    return status;
   else if (status == Status::READY_TO_EXECUTE and permission == ExecutionPermission::EXECUTE)
   {
     async_comm_.InitializeLocalAndDownstreamBuffers();
@@ -79,9 +81,11 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
 AngleSetStatus
 AAH_AngleSet::FlushSendBuffers()
 {
-  if (not async_comm_.DoneSending()) async_comm_.ClearDownstreamBuffers();
+  if (not async_comm_.DoneSending())
+    async_comm_.ClearDownstreamBuffers();
 
-  if (async_comm_.DoneSending()) return AngleSetStatus::MESSAGES_SENT;
+  if (async_comm_.DoneSending())
+    return AngleSetStatus::MESSAGES_SENT;
 
   return AngleSetStatus::MESSAGES_PENDING;
 }
@@ -125,7 +129,8 @@ AAH_AngleSet::PsiBndry(uint64_t bndry_map,
     return ref_boundaries_[bndry_map]->HeterogeneousPsiIncoming(
       cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
 
-  if (not surface_source_active) return ref_boundaries_[bndry_map]->ZeroFlux(g);
+  if (not surface_source_active)
+    return ref_boundaries_[bndry_map]->ZeroFlux(g);
 
   return ref_boundaries_[bndry_map]->HeterogeneousPsiIncoming(
     cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);

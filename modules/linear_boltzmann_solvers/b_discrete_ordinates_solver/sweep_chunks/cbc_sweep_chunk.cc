@@ -128,7 +128,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
     {
       const auto& face = cell_->faces_[f];
 
-      if (face_orientations[f] != FaceOrientation::INCOMING) continue;
+      if (face_orientations[f] != FaceOrientation::INCOMING)
+        continue;
 
       const bool local = cell_transport_view_->IsFaceLocal(f);
       const bool boundary = not face.has_neighbor_;
@@ -232,7 +233,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
     // Perform outgoing surface operations
     for (int f = 0; f < cell_num_faces_; ++f)
     {
-      if (face_orientations[f] != FaceOrientation::OUTGOING) continue;
+      if (face_orientations[f] != FaceOrientation::OUTGOING)
+        continue;
 
       // Set flags and counters
       const auto& face = cell_->faces_[f];
@@ -346,7 +348,8 @@ CBC_SweepDependencyInterface::GetDownwindPsi(int face_node_local_idx) const
 {
   double* psi = nullptr;
 
-  if (on_local_face_) psi = nullptr; // We don't write local face outputs
+  if (on_local_face_)
+    psi = nullptr; // We don't write local face outputs
   else if (not on_boundary_)
   {
     const size_t addr_offset =

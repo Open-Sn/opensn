@@ -8,10 +8,12 @@ namespace opensn
 double
 AssocLegendre(unsigned int ell, int m, double x)
 {
-  if (abs(m) > ell) return 0.0;
+  if (abs(m) > ell)
+    return 0.0;
 
   // ell=0, m=0
-  if (ell == 0) return 1.0;
+  if (ell == 0)
+    return 1.0;
 
   // ell=1, m=0,
   double Pn = x;
@@ -21,8 +23,10 @@ AssocLegendre(unsigned int ell, int m, double x)
 
   if (ell == 1)
   {
-    if (m == 0) return Pn;
-    if (m == 1) return Pnpos;
+    if (m == 0)
+      return Pn;
+    if (m == 1)
+      return Pnpos;
   }
 
   double Pmlp1;

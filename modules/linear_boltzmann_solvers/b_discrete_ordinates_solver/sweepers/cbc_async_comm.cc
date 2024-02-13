@@ -34,7 +34,8 @@ CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
   MessageKey key{location_id, cell_global_id, face_id};
 
   std::vector<double>& data = outgoing_message_queue_[key];
-  if (data.empty()) data.assign(data_size, 0.0);
+  if (data.empty())
+    data.assign(data_size, 0.0);
 
   return data;
 }
@@ -93,7 +94,8 @@ CBC_ASynchronousCommunicator::SendData()
 
     if (not buffer_item.completed_)
     {
-      if (mpi::test(buffer_item.mpi_request_)) buffer_item.completed_ = true;
+      if (mpi::test(buffer_item.mpi_request_))
+        buffer_item.completed_ = true;
       else
         all_messages_sent = false;
     }

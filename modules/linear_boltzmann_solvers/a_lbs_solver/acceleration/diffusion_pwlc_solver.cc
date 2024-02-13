@@ -49,7 +49,8 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -77,9 +78,11 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       if (not face.has_neighbor_)
       {
         BoundaryCondition bc;
-        if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+        if (bcs_.count(face.neighbor_id_) > 0)
+          bc = bcs_.at(face.neighbor_id_);
 
-        if (bc.type != BCType::DIRICHLET) continue;
+        if (bc.type != BCType::DIRICHLET)
+          continue;
 
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -100,7 +103,8 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; i++)
       {
-        if (node_is_dirichlet[i].first) continue;
+        if (node_is_dirichlet[i].first)
+          continue;
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; j++)
@@ -110,7 +114,8 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
           const double entry_aij =
             Dg * intV_gradshapeI_gradshapeJ[i][j] + sigr_g * intV_shapeI_shapeJ[i][j];
 
-          if (not node_is_dirichlet[j].first) MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
+          if (not node_is_dirichlet[j].first)
+            MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
           else
           {
             const double bcvalue = node_is_dirichlet[j].second;
@@ -135,7 +140,8 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
         if (not face.has_neighbor_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id_) > 0)
+            bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -159,7 +165,8 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
             const double bval = bc.values[1];
             const double fval = bc.values[2];
 
-            if (std::fabs(bval) < 1.0e-12) continue; // a and f assumed zero
+            if (std::fabs(bval) < 1.0e-12)
+              continue; // a and f assumed zero
 
             for (size_t fi = 0; fi < num_face_nodes; fi++)
             {
@@ -212,12 +219,14 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   {
     PetscBool symmetry = PETSC_FALSE;
     MatIsSymmetric(A_, 1.0e-6, &symmetry);
-    if (symmetry == PETSC_FALSE) throw std::logic_error(fname + ":Symmetry check failed");
+    if (symmetry == PETSC_FALSE)
+      throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   KSPSetOperators(ksp_, A_, A_);
 
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
   PC pc;
   KSPGetPC(ksp_, &pc);
@@ -238,7 +247,8 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -266,9 +276,11 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
       if (not face.has_neighbor_)
       {
         BoundaryCondition bc;
-        if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+        if (bcs_.count(face.neighbor_id_) > 0)
+          bc = bcs_.at(face.neighbor_id_);
 
-        if (bc.type != BCType::DIRICHLET) continue;
+        if (bc.type != BCType::DIRICHLET)
+          continue;
 
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -289,7 +301,8 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 
       for (size_t i = 0; i < num_nodes; i++)
       {
-        if (node_is_dirichlet[i].first) continue;
+        if (node_is_dirichlet[i].first)
+          continue;
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; j++)
@@ -320,7 +333,8 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
         if (not face.has_neighbor_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id_) > 0)
+            bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -342,7 +356,8 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
             const double bval = bc.values[1];
             const double fval = bc.values[2];
 
-            if (std::fabs(bval) < 1.0e-12) continue; // a and f assumed zero
+            if (std::fabs(bval) < 1.0e-12)
+              continue; // a and f assumed zero
 
             for (size_t fi = 0; fi < num_face_nodes; fi++)
             {
@@ -365,7 +380,8 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
 
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Assembly completed";
 }
 
 void
@@ -376,7 +392,8 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Starting assembly";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
   const size_t num_groups = uk_man_.unknowns_.front().num_components_;
 
@@ -403,9 +420,11 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
       if (not face.has_neighbor_)
       {
         BoundaryCondition bc;
-        if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+        if (bcs_.count(face.neighbor_id_) > 0)
+          bc = bcs_.at(face.neighbor_id_);
 
-        if (bc.type != BCType::DIRICHLET) continue;
+        if (bc.type != BCType::DIRICHLET)
+          continue;
 
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -423,7 +442,8 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
       // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; i++)
       {
-        if (node_is_dirichlet[i]) continue;
+        if (node_is_dirichlet[i])
+          continue;
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; j++)
@@ -443,7 +463,8 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
         if (not face.has_neighbor_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0) bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id_) > 0)
+            bc = bcs_.at(face.neighbor_id_);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -464,7 +485,8 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
             const double bval = bc.values[1];
             const double fval = bc.values[2];
 
-            if (std::fabs(bval) < 1.0e-12) continue; // a and f assumed zero
+            if (std::fabs(bval) < 1.0e-12)
+              continue; // a and f assumed zero
 
             for (size_t fi = 0; fi < num_face_nodes; fi++)
             {
@@ -489,7 +511,8 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
 
-  if (options.verbose) log.Log() << program_timer.GetTimeString() << " Assembly completed";
+  if (options.verbose)
+    log.Log() << program_timer.GetTimeString() << " Assembly completed";
 }
 
 } // namespace lbs

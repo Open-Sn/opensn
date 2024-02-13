@@ -283,7 +283,8 @@ public:
       face_locality_(face_locality),
       neighbor_cell_ptrs_(neighbor_cell_ptrs)
   {
-    if (cell_on_boundary) outflow_.resize(num_groups_, 0.0);
+    if (cell_on_boundary)
+      outflow_.resize(num_groups_, 0.0);
   }
 
   size_t MapDOF(int node, int moment, int grp) const
@@ -304,16 +305,19 @@ public:
   void ZeroOutflow() { outflow_.assign(outflow_.size(), 0.0); }
   void ZeroOutflow(int g)
   {
-    if (g < outflow_.size()) outflow_[g] = 0.0;
+    if (g < outflow_.size())
+      outflow_[g] = 0.0;
   }
   void AddOutflow(int g, double intS_mu_psi)
   {
-    if (g < outflow_.size()) outflow_[g] += intS_mu_psi;
+    if (g < outflow_.size())
+      outflow_[g] += intS_mu_psi;
   }
 
   double GetOutflow(int g) const
   {
-    if (g < outflow_.size()) return outflow_[g];
+    if (g < outflow_.size())
+      return outflow_[g];
     else
       return 0.0;
   }

@@ -47,7 +47,8 @@ struct Matrix3x3
     Vector3 n = vec;
     Vector3 khat(0.0, 0.0, 1.0);
 
-    if (n.Dot(khat) > 0.9999999) R.SetDiagonalVec(1.0, 1.0, 1.0);
+    if (n.Dot(khat) > 0.9999999)
+      R.SetDiagonalVec(1.0, 1.0, 1.0);
     else if (n.Dot(khat) < -0.9999999)
       R.SetDiagonalVec(1.0, 1.0, -1.0);
     else
@@ -186,11 +187,13 @@ struct Matrix3x3
     int k = -1;
     for (int i = 0; i < 3; i++)
     {
-      if (i == ir) continue;
+      if (i == ir)
+        continue;
 
       for (int j = 0; j < 3; j++)
       {
-        if (j == jr) continue;
+        if (j == jr)
+          continue;
 
         k++;
         int kr = j + 3 * i;
@@ -263,7 +266,8 @@ struct Matrix3x3
       {
         out << inM.GetIJ(i, j) << " ";
       }
-      if (i != 2) out << "\n";
+      if (i != 2)
+        out << "\n";
       else
         out << "]\n";
     }
@@ -281,7 +285,8 @@ struct Matrix3x3
       {
         out << GetIJ(i, j) << " ";
       }
-      if (i != 2) out << "\n ";
+      if (i != 2)
+        out << "\n ";
       else
         out << "]";
     }

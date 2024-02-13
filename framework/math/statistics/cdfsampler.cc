@@ -41,7 +41,8 @@ CDFSampler::SubIntvl::SubIntvl(std::string offset,
         int beg = ibin + i * intvl_size;
         int end = ibin + (i + 1) * intvl_size - 1;
 
-        if (i == (subdiv_factor - 1)) end = fbin;
+        if (i == (subdiv_factor - 1))
+          end = fbin;
 
         //        chi::log.Log()
         //          << offset
@@ -59,10 +60,12 @@ CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor, int final
   : ref_cdf_(in_cdf)
 {
   // Setting sub-division factor
-  if (subdiv_factor >= 1) this->subdiv_factor_ = subdiv_factor;
+  if (subdiv_factor >= 1)
+    this->subdiv_factor_ = subdiv_factor;
   else
   {
-    if (in_cdf.size() <= 10) this->subdiv_factor_ = 1;
+    if (in_cdf.size() <= 10)
+      this->subdiv_factor_ = 1;
     else if (in_cdf.size() <= 10000)
       this->subdiv_factor_ = 10;
     else
@@ -70,8 +73,12 @@ CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor, int final
   }
 
   // Setting final resolution
-  if (final_res >= 3) this->final_res_ = final_res;
-  else { this->final_res_ = 100; }
+  if (final_res >= 3)
+    this->final_res_ = final_res;
+  else
+  {
+    this->final_res_ = 100;
+  }
 
   //  chi::log.Log()
   //    << "Factors: " << this->subdiv_factor
@@ -92,7 +99,8 @@ CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor, int final
       int beg = i * intvl_size;
       int end = (i + 1) * intvl_size - 1;
 
-      if (i == (this->subdiv_factor_ - 1)) end = cdf_size - 1;
+      if (i == (this->subdiv_factor_ - 1))
+        end = cdf_size - 1;
 
       //      chi::log.Log()
       //        << "Sub-interval " << beg
@@ -111,7 +119,8 @@ CDFSampler::Sample(double x)
   int cdf_size = ref_cdf_.size();
 
   // Check bracket lo and hi
-  if (x <= ref_cdf_[0]) ret_val = 0;
+  if (x <= ref_cdf_[0])
+    ret_val = 0;
   else if (x >= ref_cdf_[cdf_size - 1])
     ret_val = cdf_size - 1;
   // Check internal
@@ -123,7 +132,8 @@ CDFSampler::Sample(double x)
     int num_sub_intvls = sub_intvls_.size();
     for (int s = 0; s < num_sub_intvls; s++)
     {
-      if (sub_intvls_[s]->Sample(x, range)) break;
+      if (sub_intvls_[s]->Sample(x, range))
+        break;
     }
 
     // Sample range
@@ -190,7 +200,8 @@ CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
     int num_sub_intvls = sub_intvls.size();
     for (int s = 0; s < num_sub_intvls; s++)
     {
-      if (sub_intvls[s]->Sample(x, range)) return true;
+      if (sub_intvls[s]->Sample(x, range))
+        return true;
     }
   }
 
@@ -213,7 +224,8 @@ SampleCDF(double x, std::vector<double> cdf_bin)
 
   bool refine_limit_reached = false;
 
-  if ((indB - indA) <= fine_limit) refine_limit_reached = true;
+  if ((indB - indA) <= fine_limit)
+    refine_limit_reached = true;
 
   //  chi::log.Log() << "************ new prob x=" << x
   //   << " " << indA << " " << indB << " " << indC;
@@ -223,7 +235,8 @@ SampleCDF(double x, std::vector<double> cdf_bin)
   while (not refine_limit_reached)
   {
     int intvl_size = 0;
-    if (x <= cdf_bin[indA]) refine_limit_reached = true;
+    if (x <= cdf_bin[indA])
+      refine_limit_reached = true;
     else if (x > cdf_bin[indC])
       refine_limit_reached = true;
     else if ((x >= cdf_bin[indA]) and (x < cdf_bin[indB]))
@@ -262,7 +275,8 @@ SampleCDF(double x, std::vector<double> cdf_bin)
   // Perform final lookup
   int ret_val = -1;
 
-  if (x <= cdf_bin[0]) ret_val = 0;
+  if (x <= cdf_bin[0])
+    ret_val = 0;
   else if (x >= cdf_bin[cdf_size - 1])
     ret_val = cdf_size - 1;
   else

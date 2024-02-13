@@ -53,7 +53,8 @@ RCCLogicalVolume::Inside(const Vector3& point) const
 
   // Check if point is within normal extents
   const double p0r_dot_cud = p0r.Dot(cyl_unit_dir);
-  if (p0r_dot_cud < 0.0 or p0r_dot_cud > cyl_length) return false;
+  if (p0r_dot_cud < 0.0 or p0r_dot_cud > cyl_length)
+    return false;
 
   // Building rotation matrix
   // This rotation matrix must be such that,
@@ -78,7 +79,8 @@ RCCLogicalVolume::Inside(const Vector3& point) const
   const Vec3 p0r_projected(p0r.Dot(tangent), p0r.Dot(binorm), 0.0);
 
   // Determine if point is within cylinder
-  if (p0r_projected.NormSquare() <= r_ * r_) return true;
+  if (p0r_projected.NormSquare() <= r_ * r_)
+    return true;
   else
     return false;
 }

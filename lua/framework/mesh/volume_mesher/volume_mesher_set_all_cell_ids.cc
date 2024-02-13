@@ -12,7 +12,8 @@ int
 VolumeMesherSetMatIDToAll(lua_State* L)
 {
   int num_args = lua_gettop(L);
-  if (num_args != 1) LuaPostArgAmountError(__FUNCTION__, 1, num_args);
+  if (num_args != 1)
+    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
   LuaCheckNilValue(__FUNCTION__, L, 1);
 

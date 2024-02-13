@@ -2,7 +2,7 @@
 BasedOnStyle: LLVM
 AlignTrailingComments: 'true'
 AllowShortBlocksOnASingleLine: 'true'
-AllowShortIfStatementsOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: 'false'
 AlwaysBreakTemplateDeclarations: 'Yes'
 BinPackArguments: 'false'

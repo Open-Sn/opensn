@@ -55,7 +55,8 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
       local_DG.AddEdge(c, successor.first, successor.second);
 
   // Remove local cycles if allowed
-  if (verbose_) PrintedGhostedGraph();
+  if (verbose_)
+    PrintedGhostedGraph();
 
   if (cycle_allowance_flag)
   {
@@ -116,7 +117,8 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
     for (size_t f = 0; f < num_faces; ++f)
       if (cell_face_orientations_[cell.local_id_][f] == INCOMING)
       {
-        if (cell.faces_[f].has_neighbor_) ++num_dependencies;
+        if (cell.faces_[f].has_neighbor_)
+          ++num_dependencies;
       }
       else if (cell_face_orientations_[cell.local_id_][f] == OUTGOING)
       {

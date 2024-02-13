@@ -144,7 +144,8 @@ public:
       {
         dimensions_[i] = val;
         ++i;
-        if (i >= N) break;
+        if (i >= N)
+          break;
       }
     }
 
@@ -279,7 +280,8 @@ public:
       {
         dimensions_[i] = val;
         ++i;
-        if (i >= N) break;
+        if (i >= N)
+          break;
       }
     }
 

@@ -119,7 +119,10 @@ public:
 
   void bounds_check(const size_t a, const size_t b) const
   {
-    if (a != b) { throw std::length_error("Mismatched sizes of DVectorNX"); }
+    if (a != b)
+    {
+      throw std::length_error("Mismatched sizes of DVectorNX");
+    }
   }
 
   /**Component-wise addition of two vectors.

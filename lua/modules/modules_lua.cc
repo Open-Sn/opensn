@@ -39,7 +39,8 @@ LoadRegisteredLuaItems()
 
   // Registering LuaFunctionWrappers
   for (const auto& [key, entry] : console.GetFunctionWrapperRegistry())
-    if (entry.call_func) Console::SetLuaFuncWrapperNamespaceTableStructure(key);
+    if (entry.call_func)
+      Console::SetLuaFuncWrapperNamespaceTableStructure(key);
 
   for (const auto& [key, value] : console.GetLuaConstantsRegistry())
     Console::SetLuaConstant(key, value);

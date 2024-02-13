@@ -139,7 +139,8 @@ InputParameters::LinkParameterToBlock(const std::string& param_name, const std::
 std::string
 InputParameters::GetParameterDocumentationLink(const std::string& param_name) const
 {
-  if (parameter_link_.count(param_name) > 0) return parameter_link_.at(param_name);
+  if (parameter_link_.count(param_name) > 0)
+    return parameter_link_.at(param_name);
   return {};
 }
 
@@ -158,7 +159,8 @@ InputParameters::IsParameterIgnored(const std::string& param_name)
 
   {
     auto& list = system_ignored_param_names_;
-    if (std::find(list.begin(), list.end(), param_name) != list.end()) ignored = true;
+    if (std::find(list.begin(), list.end(), param_name) != list.end())
+      ignored = true;
   }
 
   return ignored;
@@ -225,7 +227,8 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   // have any form of deprecation is ignored.
   for (const auto& [param_index, tag] : parameter_class_tags_)
   {
-    if (tag != InputParameterTag::REQUIRED) continue;
+    if (tag != InputParameterTag::REQUIRED)
+      continue;
 
     const auto& req_param = GetParam(param_index);
     const auto& req_param_name = req_param.Name();
@@ -253,7 +256,8 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     for (const auto& param : params.Parameters())
     {
       const auto& param_name = param.Name();
-      if (IsParameterIgnored(param_name)) continue;
+      if (IsParameterIgnored(param_name))
+        continue;
       if (not this->Has(param_name))
         err_stream << "Invalid param \"" << param_name << "\" supplied.\n";
       else if (renamed_error_tags_.count(param_name) > 0)
@@ -278,7 +282,8 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     {
       const auto& param_name = param.Name();
 
-      if (IsParameterIgnored(param_name)) continue;
+      if (IsParameterIgnored(param_name))
+        continue;
 
       if (this->Has(param_name) and (dep_warns.count(param_name) > 0))
         log.Log0Warning() << "Parameter \"" << param_name << "\" has been deprecated "
@@ -296,7 +301,8 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     {
       const auto& param_name = param.Name();
 
-      if (IsParameterIgnored(param_name)) continue;
+      if (IsParameterIgnored(param_name))
+        continue;
 
       if (this->Has(param_name) and (dep_errs.count(param_name) > 0))
       {
@@ -312,7 +318,8 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   {
     const auto& param_name = param.Name();
 
-    if (IsParameterIgnored(param_name)) continue;
+    if (IsParameterIgnored(param_name))
+      continue;
 
     auto& input_param = GetParam(param_name);
 
@@ -341,7 +348,8 @@ InputParameters::AssignParameters(const ParameterBlock& params)
       }
     } // if constraint
 
-    if (log.GetVerbosity() >= 2) log.Log0Verbose2() << "Setting parameter " << param_name;
+    if (log.GetVerbosity() >= 2)
+      log.Log0Verbose2() << "Setting parameter " << param_name;
     input_param = param;
   } // for input params
 
@@ -354,7 +362,8 @@ void
 InputParameters::MarkParamaterDeprecatedWarning(const std::string& param_name,
                                                 const std::string& deprecation_message)
 {
-  if (Has(param_name)) deprecation_warning_tags_[param_name] = deprecation_message;
+  if (Has(param_name))
+    deprecation_warning_tags_[param_name] = deprecation_message;
   else
     throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
 }
@@ -363,7 +372,8 @@ void
 InputParameters::MarkParamaterDeprecatedError(const std::string& param_name,
                                               const std::string& deprecation_message)
 {
-  if (Has(param_name)) deprecation_error_tags_[param_name] = deprecation_message;
+  if (Has(param_name))
+    deprecation_error_tags_[param_name] = deprecation_message;
   else
     throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
 }
@@ -372,7 +382,8 @@ void
 InputParameters::MarkParamaterRenamed(const std::string& param_name,
                                       const std::string& renaming_description)
 {
-  if (Has(param_name)) renamed_error_tags_[param_name] = renaming_description;
+  if (Has(param_name))
+    renamed_error_tags_[param_name] = renaming_description;
   else
     throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
 }
@@ -455,7 +466,10 @@ InputParameters::DumpParameters() const
     }
 
     const auto& linkage = GetParameterDocumentationLink(param_name);
-    if (not linkage.empty()) { log.Log() << sp4 << "LINKS " << linkage; }
+    if (not linkage.empty())
+    {
+      log.Log() << sp4 << "LINKS " << linkage;
+    }
 
     log.Log() << sp2 << "PARAM_END";
   }

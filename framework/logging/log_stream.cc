@@ -7,13 +7,15 @@ namespace opensn
 
 LogStream::~LogStream()
 {
-  if (dummy_) return;
+  if (dummy_)
+    return;
 
   std::string line, oline;
   while (std::getline(*this, line))
     oline += log_header_ + line + '\n' + StringStreamColor(RESET);
 
-  if (not oline.empty()) *log_stream_ << oline << std::flush;
+  if (not oline.empty())
+    *log_stream_ << oline << std::flush;
 }
 
 } // namespace opensn

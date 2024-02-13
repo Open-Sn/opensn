@@ -45,7 +45,8 @@ LuaApp::InitPetSc(int argc, char** argv)
 {
   PETSC_COMM_WORLD = mpi_comm;
   PetscOptionsInsertString(nullptr, "-error_output_stderr");
-  if (not allow_petsc_error_handler_) PetscOptionsInsertString(nullptr, "-no_signal_handler");
+  if (not allow_petsc_error_handler_)
+    PetscOptionsInsertString(nullptr, "-no_signal_handler");
 
   PetscCall(PetscInitialize(&argc, &argv, nullptr, nullptr));
 
@@ -63,7 +64,8 @@ LuaApp::Run(int argc, char** argv)
   ParseArguments(argc, argv);
   if (not termination_posted_)
   {
-    if (sim_option_interactive_) error_code = RunInteractive(argc, argv);
+    if (sim_option_interactive_)
+      error_code = RunInteractive(argc, argv);
     else
       error_code = RunBatch(argc, argv);
   }
@@ -107,7 +109,10 @@ LuaApp::ParseArguments(int argc, char** argv)
       termination_posted_ = true;
     }
     // No-graphics option
-    else if (argument.find("-b") != std::string::npos) { sim_option_interactive_ = false; } //-b
+    else if (argument.find("-b") != std::string::npos)
+    {
+      sim_option_interactive_ = false;
+    } //-b
     // Verbosity
     else if (argument.find("-v") != std::string::npos)
     {
@@ -212,7 +217,8 @@ LuaApp::RunBatch(int argc, char** argv)
 
   opensn::log.Log() << opensn::name << " number of arguments supplied: " << argc - 1;
 
-  if (argc <= 1) opensn::log.Log() << command_line_help_string_;
+  if (argc <= 1)
+    opensn::log.Log() << command_line_help_string_;
   console.FlushConsole();
 
 #ifndef NDEBUG

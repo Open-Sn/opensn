@@ -187,7 +187,8 @@ Logger::GetExistingRepeatingEventTag(std::string event_name)
 {
   const size_t num_rep_events = repeating_events.size();
   for (size_t k = num_rep_events - 1; k != 0; --k)
-    if (repeating_events[k].Name() == event_name) return k;
+    if (repeating_events[k].Name() == event_name)
+      return k;
 
   ChiLogicalError("Tag could not be found for repeating event name \"" + event_name + "\"");
 }
@@ -195,7 +196,8 @@ Logger::GetExistingRepeatingEventTag(std::string event_name)
 void
 Logger::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventInfo>& ev_info)
 {
-  if (ev_tag >= repeating_events.size()) return;
+  if (ev_tag >= repeating_events.size())
+    return;
 
   RepeatingEvent& ref_rep_event = repeating_events[ev_tag];
 
@@ -205,7 +207,8 @@ Logger::LogEvent(size_t ev_tag, EventType ev_type, const std::shared_ptr<EventIn
 void
 Logger::LogEvent(size_t ev_tag, EventType ev_type)
 {
-  if (ev_tag >= repeating_events.size()) return;
+  if (ev_tag >= repeating_events.size())
+    return;
 
   RepeatingEvent& ref_rep_event = repeating_events[ev_tag];
 
@@ -216,7 +219,8 @@ std::string
 Logger::PrintEventHistory(size_t ev_tag)
 {
   std::stringstream outstr;
-  if (ev_tag >= repeating_events.size()) return outstr.str();
+  if (ev_tag >= repeating_events.size())
+    return outstr.str();
 
   RepeatingEvent& ref_rep_event = repeating_events[ev_tag];
 
@@ -244,7 +248,8 @@ Logger::PrintEventHistory(size_t ev_tag)
         break;
     }
 
-    if (event.ev_info != nullptr) outstr << event.ev_info->GetString();
+    if (event.ev_info != nullptr)
+      outstr << event.ev_info->GetString();
     outstr << std::endl;
   }
 
@@ -254,7 +259,8 @@ Logger::PrintEventHistory(size_t ev_tag)
 double
 Logger::ProcessEvent(size_t ev_tag, Logger::EventOperation ev_operation)
 {
-  if (ev_tag >= repeating_events.size()) return 0.0;
+  if (ev_tag >= repeating_events.size())
+    return 0.0;
 
   RepeatingEvent& ref_rep_event = repeating_events[ev_tag];
 
@@ -277,8 +283,10 @@ Logger::ProcessEvent(size_t ev_tag, Logger::EventOperation ev_operation)
       double start_time = 0.0;
       for (auto& event : ref_rep_event.Events())
       {
-        if (event.ev_type == EventType::EVENT_BEGIN) start_time = event.ev_time;
-        if (event.ev_type == EventType::EVENT_END) ret_val += event.ev_time - start_time;
+        if (event.ev_type == EventType::EVENT_BEGIN)
+          start_time = event.ev_time;
+        if (event.ev_type == EventType::EVENT_END)
+          ret_val += event.ev_time - start_time;
       } // for events
       ret_val *= 1000.0;
       break;
@@ -289,7 +297,8 @@ Logger::ProcessEvent(size_t ev_tag, Logger::EventOperation ev_operation)
       int counter = 0;
       for (auto& event : ref_rep_event.Events())
       {
-        if (event.ev_type == EventType::EVENT_BEGIN) start_time = event.ev_time;
+        if (event.ev_type == EventType::EVENT_BEGIN)
+          start_time = event.ev_time;
 
         if (event.ev_type == EventType::EVENT_END)
         {
@@ -308,7 +317,8 @@ Logger::ProcessEvent(size_t ev_tag, Logger::EventOperation ev_operation)
         if ((event.ev_type == EventType::SINGLE_OCCURRENCE) or
             (event.ev_type == EventType::EVENT_BEGIN) or (event.ev_type == EventType::EVENT_END))
         {
-          if (event.ev_info != nullptr) ret_val = std::max(event.ev_info->arb_value, ret_val);
+          if (event.ev_info != nullptr)
+            ret_val = std::max(event.ev_info->arb_value, ret_val);
         }
       } // for events
       break;
@@ -329,7 +339,8 @@ Logger::ProcessEvent(size_t ev_tag, Logger::EventOperation ev_operation)
           }
         }
       } // for events
-      if (count == 0) count = 1;
+      if (count == 0)
+        count = 1;
       ret_val /= count;
       break;
     }

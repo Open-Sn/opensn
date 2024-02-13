@@ -8,7 +8,8 @@ BasicOptions::operator()(const std::string& option_name) const
 {
   for (const auto& option : options_)
   {
-    if (option.Name() == option_name) return option;
+    if (option.Name() == option_name)
+      return option;
   }
 
   throw std::out_of_range("Basic option " + option_name + " does not appear to exist.");
@@ -17,7 +18,8 @@ BasicOptions::operator()(const std::string& option_name) const
 const BasicOption&
 BasicOptions::operator()(size_t index) const
 {
-  if (index < options_.size()) return options_[index];
+  if (index < options_.size())
+    return options_[index];
 
   throw std::out_of_range("Basic option with index " + std::to_string(index) +
                           " does not appear to exist.");
@@ -28,7 +30,8 @@ BasicOptions::operator[](const std::string& option_name)
 {
   for (auto& option : options_)
   {
-    if (option.Name() == option_name) return option;
+    if (option.Name() == option_name)
+      return option;
   }
 
   throw std::out_of_range("Basic option \"" + option_name + "\" does not appear to exist.");
@@ -37,7 +40,8 @@ BasicOptions::operator[](const std::string& option_name)
 BasicOption&
 BasicOptions::operator[](size_t index)
 {
-  if (index < options_.size()) return options_[index];
+  if (index < options_.size())
+    return options_[index];
 
   throw std::out_of_range("Basic option with index " + std::to_string(index) +
                           " does not appear to exist.");
@@ -77,7 +81,8 @@ BasicOptions::GetOptionIndexFromName(const std::string& option_name) const
   size_t index = 0;
   for (const auto& option : options_)
   {
-    if (option.Name() == option_name) return index;
+    if (option.Name() == option_name)
+      return index;
     ++index;
   }
 

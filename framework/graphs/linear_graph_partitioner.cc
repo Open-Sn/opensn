@@ -17,13 +17,11 @@ LinearGraphPartitioner::GetInputParameters()
 {
   InputParameters params = GraphPartitioner::GetInputParameters();
 
-  // clang-format off
-  params.SetGeneralDescription("Basic linear partitioning. "
-"This type of partitioner works basically only for testing. Orthogonal meshes"
-" can produce decent partitioning but for unstructured grids it can be pretty"
-" bad. It partitions cells based on their linear index \"global_id\" instead "
-"of actually working with the graph.");
-  // clang-format on
+  params.SetGeneralDescription(
+    "Basic linear partitioning. This type of partitioner works basically only for testing. "
+    "Orthogonal meshes can produce decent partitioning but for unstructured grids it can be pretty "
+    "bad. It partitions cells based on their linear index \"global_id\" instead of actually "
+    "working with the graph.");
   params.SetDocGroup("Graphs");
 
   params.AddOptionalParameter("all_to_rank",

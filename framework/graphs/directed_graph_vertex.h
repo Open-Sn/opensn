@@ -45,7 +45,8 @@ struct GraphVertex
 
   GraphVertex& operator=(const GraphVertex& in_v)
   {
-    if (this == &in_v) return *this;
+    if (this == &in_v)
+      return *this;
 
     this->id = in_v.id;
     this->context = in_v.context;
