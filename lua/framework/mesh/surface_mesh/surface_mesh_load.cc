@@ -32,7 +32,7 @@ SurfaceMeshImportFromOBJFile(lua_State* L)
     as_poly = lua_toboolean(L, 3);
 
   auto& surface_mesh =
-    opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);
+    opensn::GetStackItem<SurfaceMesh>(opensn::object_stack, handle, __FUNCTION__);
 
   opensn::log.Log0Verbose2() << fname << ": Loading Wavefront .obj file: " << std::endl;
 
