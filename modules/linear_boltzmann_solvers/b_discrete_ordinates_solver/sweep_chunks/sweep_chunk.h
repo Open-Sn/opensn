@@ -76,8 +76,6 @@ public:
              std::unique_ptr<SweepDependencyInterface> sweep_dependency_interface_ptr);
 
 protected:
-  typedef std::function<void()> CallbackFunction;
-
   const MeshContinuum& grid_;
   const SpatialDiscretization& grid_fe_view_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
@@ -115,62 +113,20 @@ protected:
   const MatDbl* M_ = nullptr;
   const std::vector<MatDbl>* M_surf_ = nullptr;
   const std::vector<VecDbl>* IntS_shapeI_ = nullptr;
-
-  /**Callbacks at phase 1 : cell data established*/
-  std::vector<CallbackFunction> cell_data_callbacks_;
-
   std::vector<double> face_mu_values_;
   size_t direction_num_ = 0;
   Vector3 omega_;
   double direction_qweight_ = 0.0;
-
-  /**Callbacks at phase 2 : direction data established*/
-  std::vector<CallbackFunction> direction_data_callbacks_and_kernels_;
-
-  /**Callbacks at phase 3 : Surface integrals*/
-  std::vector<CallbackFunction> surface_integral_kernels_;
-
   size_t g_ = 0;
   size_t gsg_ = 0;
   double sigma_tg_ = 0.0;
 
-  /**Callbacks at phase 4 : group by group mass terms*/
-  std::vector<CallbackFunction> mass_term_kernels_;
-
-  /**Callbacks at phase 5 : flux updates*/
-  std::vector<CallbackFunction> flux_update_kernels_;
-
-  /**Callbacks at phase 6 : Post cell-dir sweep*/
-  std::vector<CallbackFunction> post_cell_dir_sweep_callbacks_;
-
   // 02 operations
-  /**Registers a kernel as a named callback function*/
-  void RegisterKernel(const std::string& name, CallbackFunction function);
-  /**Returns a kernel if the given name exists.*/
-  CallbackFunction Kernel(const std::string& name) const;
-  /**Executes the supplied kernels list.*/
-  static void ExecuteKernels(const std::vector<CallbackFunction>& kernels);
   /**Operations when outgoing fluxes are handled including passing
    * face angular fluxes downstream and computing
    * balance parameters (i.e. outflow)
    * */
   virtual void OutgoingSurfaceOperations();
-
-  // kernels
-public:
-  /**Assembles the volumetric gradient term.*/
-  void KernelFEMVolumetricGradientTerm();
-  /**Performs the integral over the surface of a face.*/
-  void KernelFEMUpwindSurfaceIntegrals();
-  /**Assembles angular sources and applies the mass matrix terms.*/
-  void KernelFEMSTDMassTerms();
-  /**Adds a single direction's contribution to the moment integrals.*/
-  void KernelPhiUpdate();
-  /**Updates angular fluxes.*/
-  void KernelPsiUpdate();
-
-private:
-  std::map<std::string, CallbackFunction> kernels_;
 };
 
 } // namespace lbs

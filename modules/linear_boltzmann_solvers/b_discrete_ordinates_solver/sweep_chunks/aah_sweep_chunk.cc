@@ -32,27 +32,6 @@ AAH_SweepChunk::AAH_SweepChunk(const MeshContinuum& grid,
                max_num_cell_dofs,
                std::make_unique<AAH_SweepDependencyInterface>())
 {
-  // Register kernels
-  RegisterKernel("FEMVolumetricGradTerm",
-                 std::bind(&SweepChunk::KernelFEMVolumetricGradientTerm, this));
-  RegisterKernel("FEMUpwindSurfaceIntegrals",
-                 std::bind(&SweepChunk::KernelFEMUpwindSurfaceIntegrals, this));
-  RegisterKernel("FEMSSTDMassTerms", std::bind(&SweepChunk::KernelFEMSTDMassTerms, this));
-  RegisterKernel("KernelPhiUpdate", std::bind(&SweepChunk::KernelPhiUpdate, this));
-  RegisterKernel("KernelPsiUpdate", std::bind(&SweepChunk::KernelPsiUpdate, this));
-
-  // Setup callbacks
-  cell_data_callbacks_ = {};
-
-  direction_data_callbacks_and_kernels_ = {Kernel("FEMVolumetricGradTerm")};
-
-  surface_integral_kernels_ = {Kernel("FEMUpwindSurfaceIntegrals")};
-
-  mass_term_kernels_ = {Kernel("FEMSSTDMassTerms")};
-
-  flux_update_kernels_ = {Kernel("KernelPhiUpdate"), Kernel("KernelPsiUpdate")};
-
-  post_cell_dir_sweep_callbacks_ = {};
 }
 
 void
@@ -104,9 +83,6 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
     M_surf_ = &fe_intgrl_values.intS_shapeI_shapeJ;
     IntS_shapeI_ = &fe_intgrl_values.intS_shapeI;
 
-    for (auto& callback : cell_data_callbacks_)
-      callback();
-
     // Loop over angles in set
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
@@ -131,7 +107,10 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
       for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
         b_[gsg].assign(cell_num_nodes_, 0.0);
 
-      ExecuteKernels(direction_data_callbacks_and_kernels_);
+      const auto& G = *G_;
+      for (int i = 0; i < cell_num_nodes_; ++i)
+        for (int j = 0; j < cell_num_nodes_; ++j)
+          Amat_[i][j] = omega_.Dot(G[i][j]);
 
       // Upwinding structure
       aah_sweep_depinterf.in_face_counter = 0;
@@ -168,8 +147,28 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         aah_sweep_depinterf.preloc_face_counter = preloc_face_counter;
 
         // IntSf_mu_psi_Mij_dA
-        ExecuteKernels(surface_integral_kernels_);
-      } // for f
+        const size_t cf = sweep_dependency_interface_.current_face_idx_;
+        const auto& M_surf_f = (*M_surf_)[cf];
+        const double mu = face_mu_values_[cf];
+        const size_t num_face_nodes = sweep_dependency_interface_.num_face_nodes_;
+        for (int fi = 0; fi < num_face_nodes; ++fi)
+        {
+          const int i = cell_mapping_->MapFaceNode(cf, fi);
+          for (int fj = 0; fj < num_face_nodes; ++fj)
+          {
+            const int j = cell_mapping_->MapFaceNode(cf, fj);
+            const double* psi = sweep_dependency_interface_.GetUpwindPsi(fj);
+            const double mu_Nij = -mu * M_surf_f[i][j];
+            Amat_[i][j] += mu_Nij;
+
+            if (psi == nullptr)
+              continue;
+
+            for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+              b_[gsg][i] += psi[gsg] * mu_Nij;
+          } // for face node j
+        }   // for face node i
+      }     // for f
 
       // Looping over groups, assembling mass terms
       for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
@@ -178,14 +177,69 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         gsg_ = gsg;
         sigma_tg_ = sigma_t[g_];
 
-        ExecuteKernels(mass_term_kernels_);
+        const auto& M = *M_;
+        const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
+
+        // Contribute source moments q = M_n^T * q_moms
+        for (int i = 0; i < cell_num_nodes_; ++i)
+        {
+          double temp_src = 0.0;
+          for (int m = 0; m < num_moments_; ++m)
+          {
+            const size_t ir = cell_transport_view_->MapDOF(i, m, static_cast<int>(g_));
+            temp_src += m2d_op[m][direction_num_] * q_moments_[ir];
+          } // for m
+          source_[i] = temp_src;
+        } // for i
+
+        // Mass Matrix and Source
+        // Atemp  = Amat + sigma_tgr * M
+        // b     += M * q
+        for (int i = 0; i < cell_num_nodes_; ++i)
+        {
+          double temp = 0.0;
+          for (int j = 0; j < cell_num_nodes_; ++j)
+          {
+            const double Mij = M[i][j];
+            Atemp_[i][j] = Amat_[i][j] + Mij * sigma_tg_;
+            temp += Mij * source_[j];
+          } // for j
+          b_[gsg_][i] += temp;
+        } // for i
 
         // Solve system
         GaussElimination(Atemp_, b_[gsg], static_cast<int>(cell_num_nodes_));
       }
 
       // Flux updates
-      ExecuteKernels(flux_update_kernels_);
+      const auto& d2m_op = groupset_.quadrature_->GetDiscreteToMomentOperator();
+      auto& output_phi = GetDestinationPhi();
+
+      for (int m = 0; m < num_moments_; ++m)
+      {
+        const double wn_d2m = d2m_op[m][direction_num_];
+        for (int i = 0; i < cell_num_nodes_; ++i)
+        {
+          const size_t ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
+          for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+            output_phi[ir + gsg] += wn_d2m * b_[gsg][i];
+        }
+      }
+
+      if (save_angular_flux_)
+      {
+        auto& output_psi = GetDestinationPsi();
+        double* cell_psi_data =
+          &output_psi[grid_fe_view_.MapDOFLocal(*cell_, 0, groupset_.psi_uk_man_, 0, 0)];
+
+        for (size_t i = 0; i < cell_num_nodes_; ++i)
+        {
+          const size_t imap = i * groupset_angle_group_stride_ +
+                              direction_num_ * groupset_group_stride_ + gs_ss_begin_;
+          for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+            cell_psi_data[imap + gsg] = b_[gsg][i];
+        } // for i
+      }
 
       // Perform outgoing surface operations
       int out_face_counter = -1;
@@ -213,7 +267,6 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         OutgoingSurfaceOperations();
       } // for face
 
-      ExecuteKernels(post_cell_dir_sweep_callbacks_);
     } // for n
   }   // for cell
 }
