@@ -210,28 +210,6 @@ int UnpartitionedMeshFromMshFormat(lua_State* L);
  */
 int UnpartitionedMeshFromExodusII(lua_State* L);
 
-/**Uploads a vertex.
- *
- * \param handle int Handle to mesh.
- * \param x      double x-coordinate.
- * \param y      double y-coordinate.
- * \param z      double z-coordinate.
- *
- * ## _
- *
- * ###Example
- * Example usage
- * \code
- * UnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
- * UnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
- * UnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
- * UnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
- * \endcode
- *
- * \ingroup LuaUnpartitionedMesh
- */
-int UnpartitionedMeshUploadVertex(lua_State* L);
-
 /**Uploads a cell
  *
  * \param handle int Handle to mesh.

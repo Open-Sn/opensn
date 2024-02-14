@@ -8,38 +8,8 @@
 namespace opensnlua
 {
 
-RegisterLuaFunctionAsIs(UnpartitionedMeshUploadVertex);
 RegisterLuaFunctionAsIs(UnpartitionedMeshUploadCell);
 RegisterLuaFunctionAsIs(UnpartitionedMeshFinalizeEmpty);
-
-int
-UnpartitionedMeshUploadVertex(lua_State* L)
-{
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 4)
-    LuaPostArgAmountError(fname, 4, num_args);
-
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-  LuaCheckNilValue(fname, L, 3);
-  LuaCheckNilValue(fname, L, 4);
-
-  const int handle = lua_tointeger(L, 1);
-  const double x = lua_tonumber(L, 2);
-  const double y = lua_tonumber(L, 3);
-  const double z = lua_tonumber(L, 4);
-
-  auto& mesh =
-    opensn::GetStackItem<opensn::UnpartitionedMesh>(opensn::unpartitionedmesh_stack, handle, fname);
-
-  mesh.GetVertices().emplace_back(x, y, z);
-
-  size_t vert_handle = mesh.GetVertices().size() - 1;
-
-  lua_pushinteger(L, static_cast<lua_Integer>(vert_handle));
-  return 1;
-}
 
 int
 UnpartitionedMeshUploadCell(lua_State* L)
