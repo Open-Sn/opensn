@@ -49,6 +49,10 @@ public:
   {
   }
 
+  virtual ~FieldFunctionInterpolationSlice()
+  {
+  }
+
   Normal& GetNormal() { return normal_; }
   Normal& GetBiNorm() { return binorm_; }
   Normal& GetTangent() { return tangent_; }

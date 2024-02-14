@@ -14,7 +14,6 @@ class SweepChunkPWLRZ : public lbs::AAH_SweepChunk
 {
   //  Attributes
 private:
-  const std::vector<lbs::UnitCellMatrices>& secondary_unit_cell_matrices_;
   /** Unknown manager. */
   UnknownManager unknown_manager_;
   /** Sweeping dependency angular intensity (for each polar level). */
@@ -23,13 +22,6 @@ private:
   std::map<unsigned int, unsigned int> map_polar_level_;
   /** Normal vector to determine symmetric boundary condition. */
   Vector3 normal_vector_boundary_;
-
-  // Runtime params
-  const MatDbl* Maux_ = nullptr;
-
-  unsigned int polar_level_ = 0;
-  double fac_diamond_difference_ = 0.0;
-  double fac_streaming_operator_ = 0.0;
 
   //  Methods
 public:
