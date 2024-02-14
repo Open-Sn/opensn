@@ -185,8 +185,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
             b[gsg][i] += psi[gsg] * mu_Nij;
         } // for face node j
-      }   // for face node i
-    }     // for f
+      } // for face node i
+    } // for f
 
     // Looping over groups, assembling mass terms
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
