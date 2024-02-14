@@ -18,7 +18,7 @@ int MeshSetUniformMaterialID(lua_State* L);
  * end
  * \endcode
  */
-void SetMatIDFromLuaFunction(const std::string& lua_fname);
+int MeshSetMaterialIDFromLuaFunction(lua_State* L);
 
 /**
  * Set specified material IDs using a LogicalVolume

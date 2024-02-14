@@ -93,7 +93,7 @@ mesh.ExportToVTK("export_mesh_with_IDs")
 
   ### LV using a Lua function
  \code
-VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "my_LV_func.lua")
+mesh.SetMaterialIDFromFunction("my_LV_func.lua")
 mesh.ExportToVTK("export_mesh_with_IDs")
  \endcode
 

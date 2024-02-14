@@ -14,11 +14,9 @@ RegisterLuaFunctionNamespace(MeshSetProperty, mesh, SetProperty);
 
 enum MeshProperty
 {
-  MATID_FROM_LUA_FUNCTION = 13,
   BNDRYID_FROM_LUA_FUNCTION = 14
 };
 
-RegisterLuaConstantAsIs(MATID_FROM_LUA_FUNCTION, Varying(13));
 RegisterLuaConstantAsIs(BNDRYID_FROM_LUA_FUNCTION, Varying(14));
 
 int
@@ -36,15 +34,7 @@ MeshSetProperty(lua_State* L)
 
   int property_index = lua_tonumber(L, 1);
 
-  if (property_index == MeshProperty::MATID_FROM_LUA_FUNCTION)
-  {
-    LuaCheckStringValue(fname, L, 2);
-
-    const std::string lua_fname = lua_tostring(L, 2);
-
-    SetMatIDFromLuaFunction(lua_fname);
-  }
-  else if (property_index == MeshProperty::BNDRYID_FROM_LUA_FUNCTION)
+  if (property_index == MeshProperty::BNDRYID_FROM_LUA_FUNCTION)
   {
     LuaCheckStringValue(fname, L, 2);
 

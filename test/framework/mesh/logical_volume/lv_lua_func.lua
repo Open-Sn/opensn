@@ -28,7 +28,7 @@ function MatIDFunction1(x,y,z,cur_id)
     return cur_id
 end
 -- assign mat ID 11 to lv using lua function
-mesh.SetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
+mesh.SetMaterialIDFromFunction("MatIDFunction1")
 
 -- export to vtk
 mesh.ExportToVTK("lv_lua_func_out")

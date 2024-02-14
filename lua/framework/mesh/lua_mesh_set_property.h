@@ -11,12 +11,6 @@
  * ##_
  *
  * ###PropertyIndex:
- *  MATID_FROM_LUA_FUNCTION = <B>LuaFunctionName:[string]</B>. For each cell, will
- *                            call a lua function that can change the material id.
- *                            The lua function must have 4 parameters,
- *                            the cell's centroid x,y,z values (doubles) and the
- *                            current cell-material id (int). The function must
- *                            return a material id.
  *  BNDRYID_FROM_LUA_FUNCTION = <B>LuaFunctionName:[string]</B>. For each boundary
  *                            face, will call a lua function that can change the
  *                            boundary id.

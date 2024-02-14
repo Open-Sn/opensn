@@ -26,7 +26,7 @@ function MatIDFunction1(x,y,z,cur_id)
     return cur_id
 end
 
-mesh.SetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
+mesh.SetMaterialIDFromFunction("MatIDFunction1")
 
 mesh.ExportToVTK("ZMeshPhase2")
 

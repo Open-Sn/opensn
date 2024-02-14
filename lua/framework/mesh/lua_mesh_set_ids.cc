@@ -13,6 +13,7 @@ RegisterLuaFunctionNamespace(MeshSetMaterialIDFromLogicalVolume,
 RegisterLuaFunctionNamespace(MeshSetBoundaryIDFromLogicalVolume,
                              mesh,
                              SetBoundaryIDFromLogicalVolume);
+RegisterLuaFunctionNamespace(MeshSetMaterialIDFromLuaFunction, mesh, SetMaterialIDFromFunction);
 
 using namespace opensn;
 
@@ -67,84 +68,97 @@ MeshSetMaterialIDFromLogicalVolume(lua_State* L)
   return 0;
 }
 
-void
-SetMatIDFromLuaFunction(const std::string& lua_fname)
+int
+MeshSetMaterialIDFromLuaFunction(lua_State* L)
 {
-  const std::string fname = "SetMatIDFromLuaFunction";
+  const std::string fname = "mesh.SetMaterialIDFromLuaFunction";
 
-  opensn::log.Log0Verbose1() << program_timer.GetTimeString()
-                             << " Setting material id from lua function.";
-
-  // Define console call
-  auto L = opensnlua::console.GetConsoleState();
-  auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const Cell& cell)
+  const int num_args = lua_gettop(L);
+  if (num_args == 1)
   {
-    // Load lua function
-    lua_getglobal(L, lua_fname.c_str());
+    opensn::log.Log0Verbose1() << program_timer.GetTimeString()
+                               << " Setting material id from lua function.";
 
-    // Error check lua function
-    if (not lua_isfunction(L, -1))
-      ChiLogicalError("Attempted to access lua-function, " + lua_fname +
-                      ", but it seems the function could not be retrieved.");
+    LuaCheckStringValue(fname, L, 1);
 
-    const auto& xyz = cell.centroid_;
+    const std::string lua_fname = lua_tostring(L, 1);
 
-    // Push arguments
-    lua_pushnumber(L, xyz.x);
-    lua_pushnumber(L, xyz.y);
-    lua_pushnumber(L, xyz.z);
-    lua_pushinteger(L, cell.material_id_);
-
-    // Call lua function
-    // 4 arguments, 1 result (double), 0=original error object
-    int lua_return;
-    if (lua_pcall(L, 4, 1, 0) == 0)
+    auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const Cell& cell)
     {
-      LuaCheckNumberValue(fname, L, -1);
-      lua_return = lua_tointeger(L, -1);
-    }
-    else
-      ChiLogicalError("Attempted to call lua-function, " + lua_fname + ", but the call failed.");
+      // Load lua function
+      lua_getglobal(L, lua_fname.c_str());
 
-    lua_pop(L, 1); // pop the int, or error code
+      // Error check lua function
+      if (not lua_isfunction(L, -1))
+        ChiLogicalError("Attempted to access lua-function, " + lua_fname +
+                        ", but it seems the function could not be retrieved.");
 
-    return lua_return;
-  };
+      const auto& xyz = cell.centroid_;
 
-  // Get back mesh
-  MeshContinuum& grid = *GetCurrentMesh();
+      // Push arguments
+      lua_pushnumber(L, xyz.x);
+      lua_pushnumber(L, xyz.y);
+      lua_pushnumber(L, xyz.z);
+      lua_pushinteger(L, cell.material_id_);
 
-  int local_num_cells_modified = 0;
-  for (auto& cell : grid.local_cells)
+      // Call lua function
+      // 4 arguments, 1 result (double), 0=original error object
+      int lua_return;
+      if (lua_pcall(L, 4, 1, 0) == 0)
+      {
+        LuaCheckNumberValue(fname, L, -1);
+        lua_return = lua_tointeger(L, -1);
+      }
+      else
+        ChiLogicalError("Attempted to call lua-function, " + lua_fname + ", but the call failed.");
+
+      lua_pop(L, 1); // pop the int, or error code
+
+      return lua_return;
+    };
+
+    // Get back mesh
+    MeshContinuum& grid = *GetCurrentMesh();
+
+    int local_num_cells_modified = 0;
+    for (auto& cell : grid.local_cells)
+    {
+      int new_matid = CallLuaXYZFunction(cell);
+
+      if (cell.material_id_ != new_matid)
+      {
+        cell.material_id_ = new_matid;
+        ++local_num_cells_modified;
+      }
+    } // for local cell
+
+    const auto& ghost_ids = grid.cells.GetGhostGlobalIDs();
+    for (uint64_t ghost_id : ghost_ids)
+    {
+      auto& cell = grid.cells[ghost_id];
+      int new_matid = CallLuaXYZFunction(cell);
+
+      if (cell.material_id_ != new_matid)
+      {
+        cell.material_id_ = new_matid;
+        ++local_num_cells_modified;
+      }
+    } // for ghost cell id
+
+    int global_num_cells_modified;
+    mpi_comm.all_reduce(local_num_cells_modified, global_num_cells_modified, mpi::op::sum<int>());
+
+    opensn::log.Log0Verbose1() << program_timer.GetTimeString()
+                               << " Done setting material id from lua function. "
+                               << "Number of cells modified = " << global_num_cells_modified << ".";
+  }
+  else
   {
-    int new_matid = CallLuaXYZFunction(cell);
-
-    if (cell.material_id_ != new_matid)
-    {
-      cell.material_id_ = new_matid;
-      ++local_num_cells_modified;
-    }
-  } // for local cell
-
-  const auto& ghost_ids = grid.cells.GetGhostGlobalIDs();
-  for (uint64_t ghost_id : ghost_ids)
-  {
-    auto& cell = grid.cells[ghost_id];
-    int new_matid = CallLuaXYZFunction(cell);
-
-    if (cell.material_id_ != new_matid)
-    {
-      cell.material_id_ = new_matid;
-      ++local_num_cells_modified;
-    }
-  } // for ghost cell id
-
-  int globl_num_cells_modified;
-  mpi_comm.all_reduce(local_num_cells_modified, globl_num_cells_modified, mpi::op::sum<int>());
-
-  opensn::log.Log0Verbose1() << program_timer.GetTimeString()
-                             << " Done setting material id from lua function. "
-                             << "Number of cells modified = " << globl_num_cells_modified << ".";
+    opensn::log.LogAllError()
+      << "Invalid number of arguments when calling 'mesh.SetMaterialIDFromLuaFunction'";
+    opensn::Exit(EXIT_FAILURE);
+  }
+  return 0;
 }
 
 void
