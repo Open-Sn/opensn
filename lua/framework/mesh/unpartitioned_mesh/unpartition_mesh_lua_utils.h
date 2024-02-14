@@ -210,44 +210,4 @@ int UnpartitionedMeshFromMshFormat(lua_State* L);
  */
 int UnpartitionedMeshFromExodusII(lua_State* L);
 
-/**Finalizes a mesh. This usually involves computing centroids and
- * establishing connectivity.
- *
- * \param handle int Handle to mesh.
- *
- * ## _
- *
- * ###Example
- * Example usage
- * \code
- * UnpartitionedMeshUploadVertex(umesh, 0, 0, 0)
- * UnpartitionedMeshUploadVertex(umesh, 1, 0, 0)
- * UnpartitionedMeshUploadVertex(umesh, 1, 1, 0)
- * UnpartitionedMeshUploadVertex(umesh, 0, 1, 0)
- *
- * UnpartitionedMeshUploadVertex(umesh, 0, 0, 1)
- * UnpartitionedMeshUploadVertex(umesh, 1, 0, 1)
- * UnpartitionedMeshUploadVertex(umesh, 1, 1, 1)
- * UnpartitionedMeshUploadVertex(umesh, 0, 1, 1)
- *
- * cell = {}
- * cell.type        = "POLYHEDRON"
- * cell.sub_type    = "HEXAHEDRON"
- * cell.num_faces   = 6
- * cell.material_id = 0
- * cell.face0 = {1,2,6,5}
- * cell.face1 = {0,4,7,3}
- * cell.face2 = {2,3,7,6}
- * cell.face3 = {0,1,5,4}
- * cell.face4 = {4,5,6,7}
- * cell.face5 = {0,3,2,1}
- *
- * UnpartitionedMeshUploadCell(umesh, cell, true)
- * UnpartitionedMeshFinalizeEmpty(umesh)
- * \endcode
- *
- * \ingroup LuaUnpartitionedMesh
- */
-int UnpartitionedMeshFinalizeEmpty(lua_State* L);
-
 } // namespace opensnlua
