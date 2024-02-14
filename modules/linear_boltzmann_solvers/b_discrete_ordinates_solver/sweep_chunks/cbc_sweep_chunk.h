@@ -29,8 +29,6 @@ public:
 
   void SetCell(Cell const* cell_ptr, AngleSet& angle_set) override;
 
-  void SetCells(const std::vector<const Cell*>& cell_ptrs) override;
-
   void Sweep(AngleSet& angle_set) override;
 
 private:
@@ -46,8 +44,8 @@ private:
   uint64_t cell_local_id_;
   const CellMapping* cell_mapping_;
   CellLBSView* cell_transport_view_;
-  size_t cell_num_faces_ = 0;
-  size_t cell_num_nodes_ = 0;
+  size_t cell_num_faces_;
+  size_t cell_num_nodes_;
  
   MatVec3 G_;
   MatDbl M_;

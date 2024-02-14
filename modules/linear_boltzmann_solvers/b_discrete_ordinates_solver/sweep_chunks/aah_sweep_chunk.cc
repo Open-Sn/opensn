@@ -1,5 +1,4 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks/aah_sweep_chunk.h"
-
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/sweep_utilities/fluds/aah_fluds.h"
 

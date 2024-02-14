@@ -38,11 +38,8 @@ public:
   /**Sets the currently active FLUx Data Structure*/
   virtual void SetAngleSet(AngleSet& angle_set) {}
 
-  /**For cell-by-cell methods or computing the residual on a
-   * single cell.*/
+  /**For cell-by-cell methods or computing the residual on a single cell.*/
   virtual void SetCell(Cell const* cell_ptr, AngleSet& angle_set) {}
-
-  virtual void SetCells(const std::vector<const Cell*>& cell_ptrs) {}
 
   virtual ~SweepChunk() = default;
 
