@@ -28,9 +28,11 @@ SweepChunk::SweepChunk(std::vector<double>& destination_phi,
     num_moments_(num_moments),
     max_num_cell_dofs_(max_num_cell_dofs),
     save_angular_flux_(not destination_psi.empty()),
-    groupset_angle_group_stride_(groupset_.psi_uk_man_.NumberOfUnknowns()*groupset_.groups_.size()),
+    groupset_angle_group_stride_(groupset_.psi_uk_man_.NumberOfUnknowns() *
+                                 groupset_.groups_.size()),
     groupset_group_stride_(groupset_.groups_.size())
-{}
+{
+}
 
 } // namespace lbs
 } // namespace opensn

@@ -44,7 +44,8 @@ CBC_SweepChunk::CBC_SweepChunk(std::vector<double>& destination_phi,
     cell_transport_view_(nullptr),
     cell_num_faces_(0),
     cell_num_nodes_(0)
-{}
+{
+}
 
 void
 CBC_SweepChunk::SetAngleSet(AngleSet& angle_set)
@@ -52,7 +53,7 @@ CBC_SweepChunk::SetAngleSet(AngleSet& angle_set)
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
   const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
-  
+
   gs_ss_size_ = grp_ss_info.ss_size;
   gs_ss_begin_ = grp_ss_info.ss_begin;
   gs_gi_ = groupset_.groups_[gs_ss_begin_].id_;
@@ -85,13 +86,16 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
   const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset_.quadrature_->GetDiscreteToMomentOperator();
 
-  std::vector<std::vector<double>> Amat(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> Atemp(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> b(groupset_.groups_.size(), std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> Amat(max_num_cell_dofs_,
+                                        std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> Atemp(max_num_cell_dofs_,
+                                         std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> b(groupset_.groups_.size(),
+                                     std::vector<double>(max_num_cell_dofs_));
   std::vector<double> source(max_num_cell_dofs_);
 
   const auto& face_orientations = angle_set.GetSPDS().CellFaceOrientations()[cell_local_id_];
-   std::vector<double> face_mu_values(cell_num_faces_);
+  std::vector<double> face_mu_values(cell_num_faces_);
 
   const auto& sigma_t = xs_.at(cell_->material_id_)->SigmaTotal();
 
@@ -132,7 +136,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
       if (is_local_face)
       {
         psi_upwnd_data_block = &fluds_->GetLocalUpwindDataBlock();
-        psi_local_face_upwnd_data = fluds_->GetLocalCellUpwindPsi(*psi_upwnd_data_block, *cell_transport_view_->FaceNeighbor(f));
+        psi_local_face_upwnd_data = fluds_->GetLocalCellUpwindPsi(
+          *psi_upwnd_data_block, *cell_transport_view_->FaceNeighbor(f));
       }
       else if (not is_boundary_face)
       {
@@ -157,8 +162,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
           {
             assert(psi_local_face_upwind_data);
             const unsigned int adj_cell_node = face_nodal_mapping->cell_node_mapping_[fj];
-            psi = &psi_local_face_upwnd_data[adj_cell_node*groupset_angle_group_stride_ +
-              direction_num*groupset_group_stride_ + gs_ss_begin_];
+            psi = &psi_local_face_upwnd_data[adj_cell_node * groupset_angle_group_stride_ +
+                                             direction_num * groupset_group_stride_ + gs_ss_begin_];
           }
           else if (not is_boundary_face)
           {
@@ -182,8 +187,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
             b[gsg][i] += psi[gsg] * mu_Nij;
         } // for face node j
-      } // for face node i
-    } // for f
+      }   // for face node i
+    }     // for f
 
     // Looping over groups, assembling mass terms
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
@@ -233,7 +238,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
           output_phi[ir + gsg] += wn_d2m * b[gsg][i];
       }
     }
- 
+
     // Save angular flux during sweep
     if (save_angular_flux_)
     {
@@ -243,8 +248,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
 
       for (size_t i = 0; i < cell_num_nodes_; ++i)
       {
-        const size_t imap = i * groupset_angle_group_stride_ + 
-                            direction_num * groupset_group_stride_ + gs_ss_begin_;
+        const size_t imap =
+          i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_ + gs_ss_begin_;
         for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
           cell_psi_data[imap + gsg] = b[gsg][i];
       }
@@ -262,7 +267,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
       const bool is_reflecting_boundary_face =
         (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id_]->IsReflecting());
       const auto& IntF_shapeI = IntS_shapeI_[f];
-     
+
       const int locality = cell_transport_view_->FaceLocality(f);
       const size_t num_face_nodes = cell_mapping_->NumFaceNodes(f);
       auto& face_nodal_mapping = fluds_->CommonData().GetFaceNodalMapping(cell_local_id_, f);
@@ -285,7 +290,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
         if (is_boundary_face and not is_reflecting_boundary_face)
         {
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-            cell_transport_view_->AddOutflow(gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
+            cell_transport_view_->AddOutflow(gs_gi_ + gsg,
+                                             wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
         }
 
         double* psi = nullptr;
@@ -298,12 +304,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
           psi = &(*psi_dnwnd_data)[addr_offset];
         }
         else if (is_reflecting_boundary_face)
-          psi = angle_set.ReflectingPsiOutBoundBndry(face.neighbor_id_,
-                                                     direction_num,
-                                                     cell_local_id_,
-                                                     f,
-                                                     fi,
-                                                     gs_ss_begin_);
+          psi = angle_set.ReflectingPsiOutBoundBndry(
+            face.neighbor_id_, direction_num, cell_local_id_, f, fi, gs_ss_begin_);
         if (psi)
         {
           if (not is_boundary_face or is_reflecting_boundary_face)
@@ -313,8 +315,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
           }
         }
       } // for fi
-    } // for face
-  } // for angleset/subset
+    }   // for face
+  }     // for angleset/subset
 }
 
 } // namespace lbs

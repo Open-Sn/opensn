@@ -29,7 +29,8 @@ AAH_SweepChunk::AAH_SweepChunk(const MeshContinuum& grid,
                xs,
                num_moments,
                max_num_cell_dofs)
-{}
+{
+}
 
 void
 AAH_SweepChunk::Sweep(AngleSet& angle_set)
@@ -47,9 +48,12 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
   const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset_.quadrature_->GetDiscreteToMomentOperator();
 
-  std::vector<std::vector<double>> Amat(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> Atemp(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> b(groupset_.groups_.size(), std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> Amat(max_num_cell_dofs_,
+                                        std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> Atemp(max_num_cell_dofs_,
+                                         std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> b(groupset_.groups_.size(),
+                                     std::vector<double>(max_num_cell_dofs_));
   std::vector<double> source(max_num_cell_dofs_);
 
   // Loop over each cell
@@ -69,7 +73,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
     std::vector<double> face_mu_values(cell_num_faces);
 
     const auto& sigma_t = xs_.at(cell.material_id_)->SigmaTotal();
-    
+
     // Get cell matrices
     const auto& G = unit_cell_matrices_[cell_local_id].intV_shapeI_gradshapeJ;
     const auto& M = unit_cell_matrices_[cell_local_id].intV_shapeI_shapeJ;
@@ -106,7 +110,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
       {
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
-   
+
         auto& cell_face = cell.faces_[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not cell_face.has_neighbor_;
@@ -128,7 +132,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
 
             const double mu_Nij = -face_mu_values[f] * M_surf[f][i][j];
             Amat[i][j] += mu_Nij;
-          
+
             const double* psi;
             if (is_local_face)
               psi = fluds.UpwindPsi(spls_index, in_face_counter, fj, 0, as_ss_idx);
@@ -144,14 +148,14 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
                                        gs_ss_begin,
                                        IsSurfaceSourceActive());
 
-            if(not psi)
+            if (not psi)
               continue;
 
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
               b[gsg][i] += psi[gsg] * mu_Nij;
           } // for face node j
-        } // for face node i
-      } // for f
+        }   // for face node i
+      }     // for f
 
       // Looping over groups, assembling mass terms
       for (int gsg = 0; gsg < gs_ss_size; ++gsg)
@@ -189,7 +193,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         GaussElimination(Atemp, b[gsg], static_cast<int>(cell_num_nodes));
       } // for gsg
 
-      // Update phi     
+      // Update phi
       auto& output_phi = GetDestinationPhi();
       for (int m = 0; m < num_moments_; ++m)
       {
@@ -201,7 +205,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
             output_phi[ir + gsg] += wn_d2m * b[gsg][i];
         }
       }
-      
+
       // Save angular flux during sweep
       if (save_angular_flux_)
       {
@@ -211,8 +215,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const size_t imap = i * groupset_angle_group_stride_ +
-                              direction_num * groupset_group_stride_ + gs_ss_begin;
+          const size_t imap =
+            i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_ + gs_ss_begin;
           for (int gsg = 0; gsg < gs_ss_size; ++gsg)
             cell_psi_data[imap + gsg] = b[gsg][i];
         }
@@ -233,7 +237,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         const bool is_reflecting_boundary_face =
           (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id_]->IsReflecting());
         const auto& IntF_shapeI = unit_cell_matrices_[cell_local_id].intS_shapeI[f];
-       
+
         if (not is_boundary_face and not is_local_face)
           ++deploc_face_counter;
 
@@ -245,7 +249,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
           if (is_boundary_face and not is_reflecting_boundary_face)
           {
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-              cell_transport_view.AddOutflow(gs_gi + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
+              cell_transport_view.AddOutflow(gs_gi + gsg,
+                                             wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
           }
 
           double* psi = nullptr;
@@ -254,12 +259,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
           else if (not is_boundary_face)
             psi = fluds.NLOutgoingPsi(deploc_face_counter, fi, as_ss_idx);
           else if (is_reflecting_boundary_face)
-            psi = angle_set.ReflectingPsiOutBoundBndry(face.neighbor_id_,
-                                                       direction_num,
-                                                       cell_local_id,
-                                                       f,
-                                                       fi,
-                                                       gs_ss_begin);
+            psi = angle_set.ReflectingPsiOutBoundBndry(
+              face.neighbor_id_, direction_num, cell_local_id, f, fi, gs_ss_begin);
           else
             continue;
 
@@ -269,9 +270,9 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
               psi[gsg] = b[gsg][i];
           }
         } // for fi
-      } // for face
-    } // for angleset/subset
-  } // for cell
+      }   // for face
+    }     // for angleset/subset
+  }       // for cell
 }
 
 } // namespace lbs

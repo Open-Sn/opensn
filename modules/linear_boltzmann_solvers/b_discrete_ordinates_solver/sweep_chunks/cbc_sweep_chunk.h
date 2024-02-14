@@ -46,7 +46,7 @@ private:
   CellLBSView* cell_transport_view_;
   size_t cell_num_faces_;
   size_t cell_num_nodes_;
- 
+
   MatVec3 G_;
   MatDbl M_;
   std::vector<MatDbl> M_surf_;
