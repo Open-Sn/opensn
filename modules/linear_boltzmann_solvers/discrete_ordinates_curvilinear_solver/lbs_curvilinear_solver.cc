@@ -346,7 +346,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
     const size_t cell_num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    MatDbl IntV_shapeI_shapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
+    MatDbl IntV_shapeI_shapeJ(cell_num_nodes, std::vector<double>(cell_num_nodes));
 
     // Volume integrals
     for (unsigned int i = 0; i < cell_num_nodes; ++i)

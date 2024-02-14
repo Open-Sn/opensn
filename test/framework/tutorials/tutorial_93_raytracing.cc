@@ -278,7 +278,7 @@ SimTest93_RayTracing(const InputParameters&)
     const auto& fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    MatDbl M(num_nodes, VecDbl(num_nodes, 0.0));
+    MatDbl M(num_nodes, std::vector<double>(num_nodes, 0.0));
     for (auto qp : fe_vol_data.QuadraturePointIndices())
       for (size_t i = 0; i < num_nodes; ++i)
         for (size_t j = 0; j < num_nodes; ++j)
@@ -288,7 +288,7 @@ SimTest93_RayTracing(const InputParameters&)
     auto M_inv = Inverse(M);
 
     // Apply projection
-    VecDbl T(num_nodes, 0.0);
+    std::vector<double> T(num_nodes, 0.0);
     for (size_t m = 0; m < num_moments; ++m)
       for (size_t g = 0; g < num_groups; ++g)
       {

@@ -37,8 +37,8 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   const auto& Sf = nl_context_ptr->Sf_;
 
   // Lambdas
-  auto SetLBSFissionSource =
-    [&active_set_source_function, &front_gs, &densities_local](const VecDbl& input, VecDbl& output)
+  auto SetLBSFissionSource = [&active_set_source_function, &front_gs, &densities_local](
+                               const std::vector<double>& input, std::vector<double>& output)
   {
     Set(output, 0.0);
     active_set_source_function(front_gs,
@@ -48,8 +48,9 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
                                APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
 
-  auto SetLBSScatterSource = [&active_set_source_function, &front_gs, &densities_local](
-                               const VecDbl& input, VecDbl& output, bool suppress_wgs)
+  auto SetLBSScatterSource =
+    [&active_set_source_function, &front_gs, &densities_local](
+      const std::vector<double>& input, std::vector<double>& output, bool suppress_wgs)
   {
     Set(output, 0.0);
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
@@ -59,7 +60,8 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   };
 
   auto SetPhi0FissionSource =
-    [&front_gs, &lbs_solver, &phi_temp, &SetLBSFissionSource, &q_moments_local](const VecDbl& input)
+    [&front_gs, &lbs_solver, &phi_temp, &SetLBSFissionSource, &q_moments_local](
+      const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
     lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
@@ -71,8 +73,8 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   };
 
   auto SetPhi0ScatterSource =
-    [&front_gs, &lbs_solver, &phi_temp, &SetLBSScatterSource, &q_moments_local](const VecDbl& input,
-                                                                                bool suppress_wgs)
+    [&front_gs, &lbs_solver, &phi_temp, &SetLBSScatterSource, &q_moments_local](
+      const std::vector<double>& input, bool suppress_wgs)
   {
     Set(phi_temp, 0.0);
     lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);
@@ -83,7 +85,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     return output;
   };
 
-  auto Phi0FissionProdL2Norm = [&front_gs, &lbs_solver, &phi_temp](const VecDbl& input)
+  auto Phi0FissionProdL2Norm = [&front_gs, &lbs_solver, &phi_temp](const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
     lbs_solver.GSProjectBackPhi0(front_gs, input, phi_temp);

@@ -329,8 +329,8 @@ CFEMSolver::Execute()
 
     const auto imat = cell.material_id_;
     const size_t num_nodes = cell_mapping.NumNodes();
-    MatDbl Acell(num_nodes, VecDbl(num_nodes, 0.0));
-    VecDbl cell_rhs(num_nodes, 0.0);
+    MatDbl Acell(num_nodes, std::vector<double>(num_nodes, 0.0));
+    std::vector<double> cell_rhs(num_nodes, 0.0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {

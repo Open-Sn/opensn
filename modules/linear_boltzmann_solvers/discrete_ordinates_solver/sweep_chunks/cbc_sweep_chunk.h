@@ -54,7 +54,7 @@ private:
   MatVec3 G_;
   MatDbl M_;
   std::vector<MatDbl> M_surf_;
-  std::vector<VecDbl> IntS_shapeI_;
+  std::vector<std::vector<double>> IntS_shapeI_;
 };
 
 } // namespace lbs

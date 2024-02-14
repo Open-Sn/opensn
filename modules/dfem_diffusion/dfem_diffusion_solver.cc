@@ -199,8 +199,8 @@ Solver::Execute()
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     const auto imat = cell.material_id_;
-    MatDbl Acell(num_nodes, VecDbl(num_nodes, 0.0));
-    VecDbl cell_rhs(num_nodes, 0.0);
+    MatDbl Acell(num_nodes, std::vector<double>(num_nodes, 0.0));
+    std::vector<double> cell_rhs(num_nodes, 0.0);
 
     // Assemble volumetric terms
     for (size_t i = 0; i < num_nodes; ++i)

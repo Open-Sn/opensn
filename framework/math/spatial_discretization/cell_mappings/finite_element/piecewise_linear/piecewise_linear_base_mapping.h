@@ -18,7 +18,6 @@ class PieceWiseLinearBaseMapping : public CellMapping
 {
 protected:
 public:
-  typedef std::vector<double> VecDbl;
   typedef std::vector<Vector3> VecVec3;
 
 public:
