@@ -22,9 +22,7 @@ public:
   {
   }
 
-  virtual ~FieldFunctionInterpolationPoint()
-  {
-  }
+  virtual ~FieldFunctionInterpolationPoint() {}
 
   Vector3& GetPointOfInterest() { return point_of_interest_; }
 

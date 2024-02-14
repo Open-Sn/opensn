@@ -35,9 +35,7 @@ public:
   {
   }
 
-  virtual ~FieldFunctionInterpolationLine()
-  {
-  }
+  virtual ~FieldFunctionInterpolationLine() {}
 
   int& GetNumberOfPoints() { return number_of_points_; }
   Vector3& GetInitialPoint() { return pi_; }

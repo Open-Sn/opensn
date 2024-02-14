@@ -39,9 +39,7 @@ public:
   {
   }
 
-  virtual ~FieldFunctionInterpolationVolume()
-  {
-  }
+  virtual ~FieldFunctionInterpolationVolume() {}
 
   std::shared_ptr<LogicalVolume>& GetLogicalVolume() { return logical_volume_; }
 
