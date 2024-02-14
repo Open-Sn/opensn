@@ -477,7 +477,7 @@ Solver::Execute()
   //  MatView(A, PETSC_VIEWER_STDERR_WORLD);
   //
   //  PetscViewer viewer;
-  //  PetscViewerASCIIOpen(PETSC_COMM_WORLD,"A.m",&viewer);
+  //  PetscViewerASCIIOpen(opensn::mpi_comm,"A.m",&viewer);
   //  PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_MATLAB);
   //  MatView(A,viewer);
   //  PetscViewerPopFormat(viewer);
