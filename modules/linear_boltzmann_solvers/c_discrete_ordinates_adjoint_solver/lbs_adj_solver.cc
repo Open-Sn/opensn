@@ -36,6 +36,11 @@ DiscreteOrdinatesAdjointSolver::GetInputParameters()
 DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const InputParameters& params)
   : lbs::DiscreteOrdinatesSolver(params)
 {
+  log.Log0Warning() << "The lbs::DiscreteOrdinatesAdjointSolver is deprecated and may be "
+                       "removed in the future.\n"
+                    << "Please use the adjoint option with lbs::LBSSolver for obtaining "
+                       "adjoint solutions and lbs::ResponseEvaluator for folding it against "
+                       "forward sources.";
 }
 
 DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const std::string& solver_name)
