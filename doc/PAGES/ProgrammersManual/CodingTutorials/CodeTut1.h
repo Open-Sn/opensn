@@ -49,7 +49,7 @@ MeshCreateUnpartitioned2DOrthoMesh(mesh,mesh)
 VolumeMesherExecute();
 
 --############################################### Set Material IDs
-mesh.SetMatIDToAll(0)
+mesh.SetUniformMaterialID(0)
 \endcode
 This code can be used to generate any of the following meshes,
 \image html CodingTutorials/OrthoMesh_1D_2D_3D.png "[From left to right] 1D, 2D, 3D orthogonal mesh"
@@ -308,7 +308,7 @@ MeshCreateUnpartitioned2DOrthoMesh(mesh,mesh)
 VolumeMesherExecute();
 
 --############################################### Set Material IDs
-mesh.SetMatIDToAll(0)
+mesh.SetUniformMaterialID(0)
 \endcode
 This is known as ChiTech lua-console input file. It contains lua code.
 

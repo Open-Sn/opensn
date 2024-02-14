@@ -62,7 +62,7 @@ meshgen1 = mesh.SplitFileMeshGenerator.Create
 
 mesh.MeshGenerator.Execute(meshgen1)
 
-mesh.SetMatIDToAll(0)
+mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}

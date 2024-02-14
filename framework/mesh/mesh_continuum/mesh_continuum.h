@@ -211,7 +211,7 @@ public:
   /**
    * Sets material id's for all cells to the specified material id.
    */
-  void SetMatIDToAll(int mat_id);
+  void SetUniformMaterialID(int mat_id);
 
   /**
    * Sets material id's using a logical volume.

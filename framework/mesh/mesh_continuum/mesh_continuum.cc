@@ -1132,7 +1132,7 @@ MeshContinuum::GetGlobalNumberOfCells() const
 }
 
 void
-MeshContinuum::SetMatIDToAll(int mat_id)
+MeshContinuum::SetUniformMaterialID(int mat_id)
 {
   for (auto& cell : local_cells)
     cell.material_id_ = mat_id;

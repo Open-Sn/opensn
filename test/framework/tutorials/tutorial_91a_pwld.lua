@@ -13,7 +13,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-mesh.SetMatIDToAll(0)
+mesh.SetUniformMaterialID(0)
 
 
 unit_tests.SimTest91_PWLD();

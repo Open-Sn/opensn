@@ -5,7 +5,7 @@
 /**
  * Sets all cell-material id's to the supplied value.
  */
-int MeshSetMatIDToAll(lua_State* L);
+int MeshSetUniformMaterialID(lua_State* L);
 
 /**
  * Sets material id's using a lua function. The lua function is called with for each cell with 4

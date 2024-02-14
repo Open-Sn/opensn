@@ -6,12 +6,12 @@
 #include "framework/console/console.h"
 #include "framework/utils/timer.h"
 
-RegisterLuaFunctionNamespace(MeshSetMatIDToAll, mesh, SetMatIDToAll);
+RegisterLuaFunctionNamespace(MeshSetUniformMaterialID, mesh, SetUniformMaterialID);
 
 using namespace opensn;
 
 int
-MeshSetMatIDToAll(lua_State* L)
+MeshSetUniformMaterialID(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 1)
@@ -22,7 +22,7 @@ MeshSetMatIDToAll(lua_State* L)
   int mat_id = lua_tonumber(L, 1);
 
   auto vol_cont = GetCurrentMesh();
-  vol_cont->SetMatIDToAll(mat_id);
+  vol_cont->SetUniformMaterialID(mat_id);
   mpi_comm.barrier();
   opensn::log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
                     << " to all cells";
