@@ -1,7 +1,6 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
-
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 
@@ -10,18 +9,6 @@ namespace opensn
 namespace lbs
 {
 
-/**Simple utility structure for controlling counters and calls
- * to upstream data.*/
-struct AAH_SweepDependencyInterface : public SweepDependencyInterface
-{
-  const double* GetUpwindPsi(int face_node_local_idx) const override 
-  { return nullptr; }
-
-  double* GetDownwindPsi(int face_node_local_idx) const override
-  { return nullptr; }
-};
-
-/**The new sweep chunk class.*/
 class AAH_SweepChunk : public SweepChunk
 {
 public:
@@ -37,7 +24,6 @@ public:
                  int num_moments,
                  int max_num_cell_dofs);
 
-  // 01
   void Sweep(AngleSet& angle_set) override;
 };
 

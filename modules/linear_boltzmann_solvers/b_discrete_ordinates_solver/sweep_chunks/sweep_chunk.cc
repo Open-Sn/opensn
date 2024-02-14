@@ -35,43 +35,9 @@ SweepChunk::SweepChunk(std::vector<double>& destination_phi,
     save_angular_flux_(not destination_psi.empty()),
     groupset_angle_group_stride_(groupset_.psi_uk_man_.NumberOfUnknowns() *
                                  groupset_.groups_.size()),
-    groupset_group_stride_(groupset_.groups_.size())
-{
-  Amat_.resize(max_num_cell_dofs, std::vector<double>(max_num_cell_dofs));
-  Atemp_.resize(max_num_cell_dofs, std::vector<double>(max_num_cell_dofs));
-  b_.resize(groupset.groups_.size(), std::vector<double>(max_num_cell_dofs, 0.0));
-  source_.resize(max_num_cell_dofs, 0.0);
-}
-
-void
-SweepDependencyInterface::SetupIncomingFace(
-  int face_id, size_t num_face_nodes, uint64_t neighbor_id, bool on_local_face, bool on_boundary)
-{
-  current_face_idx_ = face_id;
-  num_face_nodes_ = num_face_nodes;
-  neighbor_id_ = neighbor_id;
-  on_local_face_ = on_local_face;
-  on_boundary_ = on_boundary;
-}
-
-void
-SweepDependencyInterface::SetupOutgoingFace(int face_id,
-                                            size_t num_face_nodes,
-                                            uint64_t neighbor_id,
-                                            bool on_local_face,
-                                            bool on_boundary,
-                                            int locality)
-{
-  current_face_idx_ = face_id;
-  num_face_nodes_ = num_face_nodes;
-  neighbor_id_ = neighbor_id;
-  face_locality_ = locality;
-  on_local_face_ = on_local_face;
-  on_boundary_ = on_boundary;
-
-  is_reflecting_bndry_ =
-    (on_boundary_ and angle_set_->GetBoundaries()[neighbor_id_]->IsReflecting());
-}
+    groupset_group_stride_(groupset_.groups_.size()),
+    max_num_cell_dofs_(max_num_cell_dofs)
+{}
 
 } // namespace lbs
 } // namespace opensn

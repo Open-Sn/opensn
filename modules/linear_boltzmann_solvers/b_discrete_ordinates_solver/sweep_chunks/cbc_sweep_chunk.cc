@@ -92,6 +92,11 @@ CBC_SweepChunk::SetCells(const std::vector<const Cell*>& cell_ptrs)
 void
 CBC_SweepChunk::Sweep(AngleSet& angle_set)
 {
+  std::vector<std::vector<double>> Amat(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> Atemp(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> b(groupset_.groups_.size(), std::vector<double>(max_num_cell_dofs_));
+  std::vector<double> source(max_num_cell_dofs_);
+
   using FaceOrientation = FaceOrientation;
   const auto& face_orientations = angle_set.GetSPDS().CellFaceOrientations()[cell_local_id_];
   const auto& sigma_t = xs_.at(cell_->material_id_)->SigmaTotal();
@@ -111,12 +116,12 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
 
     // Reset right-handside
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-      b_[gsg].assign(cell_num_nodes_, 0.0);
+      b[gsg].assign(cell_num_nodes_, 0.0);
 
     const auto& G = *G_;
     for (int i = 0; i < cell_num_nodes_; ++i)
       for (int j = 0; j < cell_num_nodes_; ++j)
-        Amat_[i][j] = omega_.Dot(G[i][j]);
+        Amat[i][j] = omega_.Dot(G[i][j]);
 
     // Update face orientations
     face_mu_values_.assign(cell_num_faces_, 0.0);
@@ -150,13 +155,13 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
           const int j = cell_mapping_->MapFaceNode(cf, fj);
           const double* psi = sweep_dependency_interface_.GetUpwindPsi(fj);
           const double mu_Nij = -mu * M_surf_f[i][j];
-          Amat_[i][j] += mu_Nij;
+          Amat[i][j] += mu_Nij;
 
           if (psi == nullptr)
             continue;
 
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-            b_[gsg][i] += psi[gsg] * mu_Nij;
+            b[gsg][i] += psi[gsg] * mu_Nij;
         } // for face node j
       }   // for face node i
     }     // for f
@@ -180,7 +185,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
           const size_t ir = cell_transport_view_->MapDOF(i, m, static_cast<int>(g_));
           temp_src += m2d_op[m][direction_num_] * q_moments_[ir];
         } // for m
-        source_[i] = temp_src;
+        source[i] = temp_src;
       } // for i
 
       // Mass Matrix and Source
@@ -192,14 +197,14 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
         for (int j = 0; j < cell_num_nodes_; ++j)
         {
           const double Mij = M[i][j];
-          Atemp_[i][j] = Amat_[i][j] + Mij * sigma_tg_;
-          temp += Mij * source_[j];
+          Atemp[i][j] = Amat[i][j] + Mij * sigma_tg_;
+          temp += Mij * source[j];
         } // for j
-        b_[gsg_][i] += temp;
+        b[gsg_][i] += temp;
       } // for i
 
       // Solve system
-      GaussElimination(Atemp_, b_[gsg], static_cast<int>(cell_num_nodes_));
+      GaussElimination(Atemp, b[gsg], static_cast<int>(cell_num_nodes_));
     }
 
     // Flux updates
@@ -212,7 +217,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
       {
         const size_t ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
         for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-          output_phi[ir + gsg] += wn_d2m * b_[gsg][i];
+          output_phi[ir + gsg] += wn_d2m * b[gsg][i];
       }
     }
 
@@ -227,7 +232,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
         const size_t imap =
           i * groupset_angle_group_stride_ + direction_num_ * groupset_group_stride_ + gs_ss_begin_;
         for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-          cell_psi_data[imap + gsg] = b_[gsg][i];
+          cell_psi_data[imap + gsg] = b[gsg][i];
       } // for i
     }
 
@@ -263,10 +268,10 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
         if (psi != nullptr)
           if (not on_boundary or is_reflecting_boundary)
             for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-              psi[gsg] = b_[gsg][i];
+              psi[gsg] = b[gsg][i];
         if (on_boundary and not is_reflecting_boundary)
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-            cell_transport_view_->AddOutflow(gs_gi_ + gsg, wt * mu * b_[gsg][i] * IntF_shapeI[i]);
+            cell_transport_view_->AddOutflow(gs_gi_ + gsg, wt * mu * b[gsg][i] * IntF_shapeI[i]);
 
       } // for fi
     } // for face

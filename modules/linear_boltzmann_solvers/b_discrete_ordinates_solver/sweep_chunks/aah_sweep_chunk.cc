@@ -48,6 +48,11 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
   const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset_.quadrature_->GetDiscreteToMomentOperator();
 
+  std::vector<std::vector<double>> Amat(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> Atemp(max_num_cell_dofs_, std::vector<double>(max_num_cell_dofs_));
+  std::vector<std::vector<double>> b(groupset_.groups_.size(), std::vector<double>(max_num_cell_dofs_));
+  std::vector<double> source(max_num_cell_dofs_);
+
   // Loop over each cell
   const auto& spds = angle_set.GetSPDS();
   const auto& spls = spds.GetSPLS().item_id;
@@ -55,27 +60,25 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     auto cell_local_id = spls[spls_index];
-    cell_ = &grid_.local_cells[cell_local_id];
-    auto cell_mapping = &grid_fe_view_.GetCellMapping(*cell_);
-    auto cell_transport_view = &grid_transport_view_[cell_->local_id_];
-    const auto& face_orientations = spds.CellFaceOrientations()[cell_local_id];
+    auto& cell = grid_.local_cells[cell_local_id];
+    auto& cell_mapping = grid_fe_view_.GetCellMapping(cell);
+    auto& cell_transport_view = grid_transport_view_[cell_local_id];
+    auto cell_num_faces = cell.faces_.size();
+    auto cell_num_nodes = cell_mapping.NumNodes();
 
-    auto cell_num_faces = cell_->faces_.size();
-    auto cell_num_nodes = cell_mapping->NumNodes();
-    const auto& sigma_t = xs_.at(cell_->material_id_)->SigmaTotal();
+    const auto& face_orientations = spds.CellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
 
+    const auto& sigma_t = xs_.at(cell.material_id_)->SigmaTotal();
+    
     // Get cell matrices
     const auto& G = unit_cell_matrices_[cell_local_id].intV_shapeI_gradshapeJ;
     const auto& M = unit_cell_matrices_[cell_local_id].intV_shapeI_shapeJ;
     const auto& M_surf = unit_cell_matrices_[cell_local_id].intS_shapeI_shapeJ;
 
-    // Loop over angles in set
+    // Loop over angles in set (as = angleset, ss = subset)
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
-
-    // as = angle set
-    // ss = subset
     const std::vector<size_t>& as_angle_indices = angle_set.GetAngleIndices();
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
@@ -88,15 +91,15 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
 
       // Reset right-hand side
       for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-        b_[gsg].assign(cell_num_nodes, 0.0);
+        b[gsg].assign(cell_num_nodes, 0.0);
 
       for (int i = 0; i < cell_num_nodes; ++i)
         for (int j = 0; j < cell_num_nodes; ++j)
-          Amat_[i][j] = omega.Dot(G[i][j]);
+          Amat[i][j] = omega.Dot(G[i][j]);
 
       // Update face orientations
       for (int f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell_->faces_[f].normal_);
+        face_mu_values[f] = omega.Dot(cell.faces_[f].normal_);
 
       // Surface integrals
       int in_face_counter = -1;
@@ -105,8 +108,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
    
-        auto& cell_face = cell_->faces_[f];
-        const bool is_local_face = cell_transport_view->IsFaceLocal(f);
+        auto& cell_face = cell.faces_[f];
+        const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not cell_face.has_neighbor_;
 
         if (is_local_face)
@@ -115,13 +118,14 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
           ++preloc_face_counter;
 
         // IntSf_mu_psi_Mij_dA
-        const size_t num_face_nodes = cell_mapping->NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
         for (int fi = 0; fi < num_face_nodes; ++fi)
         {
-          const int i = cell_mapping->MapFaceNode(f, fi);
+          const int i = cell_mapping.MapFaceNode(f, fi);
+
           for (int fj = 0; fj < num_face_nodes; ++fj)
           {
-            const int j = cell_mapping->MapFaceNode(f, fj);
+            const int j = cell_mapping.MapFaceNode(f, fj);
           
             const double* psi;
             if (is_local_face)
@@ -137,16 +141,15 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
                                        gs_gi,
                                        gs_ss_begin,
                                        IsSurfaceSourceActive());
-                                          
-
+                                       
             const double mu_Nij = -face_mu_values[f] * M_surf[f][i][j];
-            Amat_[i][j] += mu_Nij;
+            Amat[i][j] += mu_Nij;
 
             if (psi == nullptr)
               continue;
 
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-              b_[gsg][i] += psi[gsg] * mu_Nij;
+              b[gsg][i] += psi[gsg] * mu_Nij;
           } // for face node j
         }  // for face node i
       }  // for f
@@ -162,10 +165,10 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
           double temp_src = 0.0;
           for (int m = 0; m < num_moments_; ++m)
           {
-            const size_t ir = cell_transport_view->MapDOF(i, m, static_cast<int>(gs_gi + gsg));
+            const size_t ir = cell_transport_view.MapDOF(i, m, static_cast<int>(gs_gi + gsg));
             temp_src += m2d_op[m][direction_num] * q_moments_[ir];
           }
-          source_[i] = temp_src;
+          source[i] = temp_src;
         }
 
         // Mass matrix and source
@@ -177,14 +180,14 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
           for (int j = 0; j < cell_num_nodes; ++j)
           {
             const double Mij = M[i][j];
-            Atemp_[i][j] = Amat_[i][j] + Mij * sigma_tg;
-            temp += Mij * source_[j];
+            Atemp[i][j] = Amat[i][j] + Mij * sigma_tg;
+            temp += Mij * source[j];
           }
-          b_[gsg][i] += temp;
+          b[gsg][i] += temp;
         }
 
         // Solve system
-        GaussElimination(Atemp_, b_[gsg], static_cast<int>(cell_num_nodes));
+        GaussElimination(Atemp, b[gsg], static_cast<int>(cell_num_nodes));
       }
 
       // Flux updates      
@@ -194,9 +197,9 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         const double wn_d2m = d2m_op[m][direction_num];
         for (int i = 0; i < cell_num_nodes; ++i)
         {
-          const size_t ir = cell_transport_view->MapDOF(i, m, gs_gi);
+          const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi);
           for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-            output_phi[ir + gsg] += wn_d2m * b_[gsg][i];
+            output_phi[ir + gsg] += wn_d2m * b[gsg][i];
         }
       }
 
@@ -204,14 +207,14 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
       {
         auto& output_psi = GetDestinationPsi();
         double* cell_psi_data =
-          &output_psi[grid_fe_view_.MapDOFLocal(*cell_, 0, groupset_.psi_uk_man_, 0, 0)];
+          &output_psi[grid_fe_view_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           const size_t imap = i * groupset_angle_group_stride_ +
                               direction_num * groupset_group_stride_ + gs_ss_begin;
           for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-            cell_psi_data[imap + gsg] = b_[gsg][i];
+            cell_psi_data[imap + gsg] = b[gsg][i];
         }
       }
 
@@ -224,8 +227,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
 
         // Set flags and counters
         out_face_counter++;
-        const auto& face = cell_->faces_[f];
-        const bool is_local_face = cell_transport_view->IsFaceLocal(f);
+        const auto& face = cell.faces_[f];
+        const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor_;
        
         if (not is_boundary_face and not is_local_face)
@@ -236,10 +239,10 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
 
         const auto& IntF_shapeI = unit_cell_matrices_[cell_local_id].intS_shapeI[f];
       
-        const size_t num_face_nodes = cell_mapping->NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
         for (int fi = 0; fi < num_face_nodes; ++fi)
         {
-          const int i = cell_mapping->MapFaceNode(f, fi);
+          const int i = cell_mapping.MapFaceNode(f, fi);
 
           double* psi = nullptr;
           if (is_local_face)
@@ -254,19 +257,19 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
                                                        fi,
                                                        gs_ss_begin);
 
-          if (psi != nullptr)
+          if (psi)
           {
             if (not is_boundary_face or is_reflecting_boundary_face)
             {
               for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-                psi[gsg] = b_[gsg][i];
+                psi[gsg] = b[gsg][i];
             }
           }
 
           if (is_boundary_face and not is_reflecting_boundary_face)
           {
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-              cell_transport_view->AddOutflow(gs_gi + gsg, wt * face_mu_values[f] * b_[gsg][i] * IntF_shapeI[i]);
+              cell_transport_view.AddOutflow(gs_gi + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
           }
         } // for fi
       } // for face

@@ -10,7 +10,7 @@ namespace lbs
 class CBC_FLUDS;
 class CBC_ASynchronousCommunicator;
 
-struct CBC_SweepDependencyInterface : public SweepDependencyInterface
+struct CBC_SweepDependencyInterface
 {
   CBC_FLUDS* fluds_ = nullptr;
   const Cell* neighbor_cell_ptr_ = nullptr;
@@ -21,27 +21,54 @@ struct CBC_SweepDependencyInterface : public SweepDependencyInterface
   /**Downwind angular flux*/
   std::vector<double>* psi_dnwnd_data_ = nullptr;
 
+  size_t groupset_angle_group_stride_;
+  size_t groupset_group_stride_;
   size_t group_stride_;
   size_t group_angle_stride_;
+
+  AngleSet* angle_set_ = nullptr;
+  bool surface_source_active_ = false;
+
+  size_t gs_ss_begin_ = 0;
+  int gs_gi_ = 0;
+
+  const Cell* cell_ptr_ = nullptr;
+  uint64_t cell_local_id_ = 0;
+
+  size_t angle_set_index_ = 0;
+  size_t angle_num_ = 0;
+
+  int current_face_idx_ = 0;
+  size_t num_face_nodes_ = 0;
+  uint64_t neighbor_id_ = 0;
+  int face_locality_ = 0;
+
+  bool on_local_face_ = false;
+  bool on_boundary_ = false;
 
   const CellLBSView* cell_transport_view_;
 
   // Set using SetupIncomingFace
   const FaceNodalMapping* face_nodal_mapping_ = nullptr;
 
-  const double* GetUpwindPsi(int face_node_local_idx) const override;
-  double* GetDownwindPsi(int face_node_local_idx) const override;
+  bool is_reflecting_bndry_ = false;
+
+  const double* GetUpwindPsi(int face_node_local_idx) const;
+  
+  double* GetDownwindPsi(int face_node_local_idx) const;
+  
   void SetupIncomingFace(int face_id,
                          size_t num_face_nodes,
                          uint64_t neighbor_id,
                          bool on_local_face,
-                         bool on_boundary) override;
+                         bool on_boundary);
+  
   void SetupOutgoingFace(int face_id,
                          size_t num_face_nodes,
                          uint64_t neighbor_id,
                          bool on_local_face,
                          bool on_boundary,
-                         int locality) override;
+                         int locality);
 };
 
 class CBC_SweepChunk : public SweepChunk
@@ -68,10 +95,35 @@ public:
   void Sweep(AngleSet& angle_set) override;
 
 protected:
+  // Runtime params
+  size_t gs_ss_size_ = 0;
+  size_t gs_ss_begin_ = 0;
+  int gs_gi_ = 0;
+
+ 
+
+  // Cell items
+  uint64_t cell_local_id_ = 0;
+  const Cell* cell_ = nullptr;
+  const CellMapping* cell_mapping_ = nullptr;
+  CellLBSView* cell_transport_view_ = nullptr;
+  size_t cell_num_faces_ = 0;
+  size_t cell_num_nodes_ = 0;
+  const MatVec3* G_ = nullptr;
+  const MatDbl* M_ = nullptr;
+  const std::vector<MatDbl>* M_surf_ = nullptr;
+  const std::vector<VecDbl>* IntS_shapeI_ = nullptr;
+  std::vector<double> face_mu_values_;
+  size_t direction_num_ = 0;
+  Vector3 omega_;
+  double direction_qweight_ = 0.0;
+  size_t g_ = 0;
+  size_t gsg_ = 0;
+  double sigma_tg_ = 0.0;
+
   CBC_SweepDependencyInterface sweep_dependency_interface_;
   Cell const* cell_ptr_ = nullptr;
-  uint64_t cell_local_id_ = 0;
-
+ 
   std::vector<const Cell*> cell_ptrs_;
 };
 
