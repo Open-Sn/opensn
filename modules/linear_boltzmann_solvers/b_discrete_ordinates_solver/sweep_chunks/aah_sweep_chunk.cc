@@ -151,8 +151,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
               b[gsg][i] += psi[gsg] * mu_Nij;
           } // for face node j
-        }  // for face node i
-      }  // for f
+        } // for face node i
+      } // for f
 
       // Looping over groups, assembling mass terms
       for (int gsg = 0; gsg < gs_ss_size; ++gsg)
@@ -188,7 +188,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
 
         // Solve system
         GaussElimination(Atemp, b[gsg], static_cast<int>(cell_num_nodes));
-      }
+      } // for gsg
 
       // Update phi     
       auto& output_phi = GetDestinationPhi();
@@ -271,7 +271,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
           }
         } // for fi
       } // for face
-    } // for n
+    } // for angleset/subset
   } // for cell
 }
 

@@ -5,8 +5,6 @@
 
 namespace opensn
 {
-class CellMapping;
-
 namespace lbs
 {
 
