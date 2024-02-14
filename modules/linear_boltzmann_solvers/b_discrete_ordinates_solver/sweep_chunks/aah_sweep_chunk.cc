@@ -126,6 +126,9 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
           for (int fj = 0; fj < num_face_nodes; ++fj)
           {
             const int j = cell_mapping.MapFaceNode(f, fj);
+
+            const double mu_Nij = -face_mu_values[f] * M_surf[f][i][j];
+            Amat[i][j] += mu_Nij;
           
             const double* psi;
             if (is_local_face)
@@ -141,11 +144,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
                                        gs_gi,
                                        gs_ss_begin,
                                        IsSurfaceSourceActive());
-                                       
-            const double mu_Nij = -face_mu_values[f] * M_surf[f][i][j];
-            Amat[i][j] += mu_Nij;
 
-            if (psi == nullptr)
+            if(not psi)
               continue;
 
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
@@ -166,7 +166,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
           for (int m = 0; m < num_moments_; ++m)
           {
             const size_t ir = cell_transport_view.MapDOF(i, m, static_cast<int>(gs_gi + gsg));
-            temp_src += m2d_op[m][direction_num] * q_moments_[ir];
+            temp_src += m2d_op[m][direction_num] * source_moments_[ir];
           }
           source[i] = temp_src;
         }
@@ -190,7 +190,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         GaussElimination(Atemp, b[gsg], static_cast<int>(cell_num_nodes));
       }
 
-      // Flux updates      
+      // Update phi     
       auto& output_phi = GetDestinationPhi();
       for (int m = 0; m < num_moments_; ++m)
       {
@@ -202,7 +202,8 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
             output_phi[ir + gsg] += wn_d2m * b[gsg][i];
         }
       }
-
+      
+      // Save angular flux during sweep
       if (save_angular_flux_)
       {
         auto& output_psi = GetDestinationPsi();
@@ -218,31 +219,35 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
         }
       }
 
-      // Perform outgoing surface operations
+      // For outoing, non-boundary faces, copy angular flux to fluds and
+      // accumulate outflow
       int out_face_counter = -1;
       for (int f = 0; f < cell_num_faces; ++f)
       {
         if (face_orientations[f] != FaceOrientation::OUTGOING)
           continue;
 
-        // Set flags and counters
         out_face_counter++;
         const auto& face = cell.faces_[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor_;
+        const bool is_reflecting_boundary_face =
+          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id_]->IsReflecting());
+        const auto& IntF_shapeI = unit_cell_matrices_[cell_local_id].intS_shapeI[f];
        
         if (not is_boundary_face and not is_local_face)
           ++deploc_face_counter;
 
-        bool is_reflecting_boundary_face =
-          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id_]->IsReflecting());
-
-        const auto& IntF_shapeI = unit_cell_matrices_[cell_local_id].intS_shapeI[f];
-      
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
         for (int fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
+
+          if (is_boundary_face and not is_reflecting_boundary_face)
+          {
+            for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+              cell_transport_view.AddOutflow(gs_gi + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
+          }
 
           double* psi = nullptr;
           if (is_local_face)
@@ -256,26 +261,18 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
                                                        f,
                                                        fi,
                                                        gs_ss_begin);
+          else
+            continue;
 
-          if (psi)
-          {
-            if (not is_boundary_face or is_reflecting_boundary_face)
-            {
-              for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-                psi[gsg] = b[gsg][i];
-            }
-          }
-
-          if (is_boundary_face and not is_reflecting_boundary_face)
+          if (not is_boundary_face or is_reflecting_boundary_face)
           {
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-              cell_transport_view.AddOutflow(gs_gi + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
+              psi[gsg] = b[gsg][i];
           }
         } // for fi
       } // for face
-
     } // for n
-  }   // for cell
+  } // for cell
 }
 
 } // namespace lbs

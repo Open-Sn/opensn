@@ -107,12 +107,12 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
   const size_t as_num_angles = as_angle_indices.size();
   for (size_t as_ss_idx = 0; as_ss_idx < as_num_angles; ++as_ss_idx)
   {
-    direction_num_ = as_angle_indices[as_ss_idx];
-    omega_ = groupset_.quadrature_->omegas_[direction_num_];
-    direction_qweight_ = groupset_.quadrature_->weights_[direction_num_];
+    auto direction_num = as_angle_indices[as_ss_idx];
+    auto omega = groupset_.quadrature_->omegas_[direction_num];
+    auto wt = groupset_.quadrature_->weights_[direction_num];
 
     sweep_dependency_interface_.angle_set_index_ = as_ss_idx;
-    sweep_dependency_interface_.angle_num_ = direction_num_;
+    sweep_dependency_interface_.angle_num_ = direction_num;
 
     // Reset right-handside
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
@@ -121,12 +121,12 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
     const auto& G = *G_;
     for (int i = 0; i < cell_num_nodes_; ++i)
       for (int j = 0; j < cell_num_nodes_; ++j)
-        Amat[i][j] = omega_.Dot(G[i][j]);
+        Amat[i][j] = omega.Dot(G[i][j]);
 
     // Update face orientations
-    face_mu_values_.assign(cell_num_faces_, 0.0);
+    std::vector<double> face_mu_values(cell_num_faces_, 0.0);
     for (int f = 0; f < cell_num_faces_; ++f)
-      face_mu_values_[f] = omega_.Dot(cell_->faces_[f].normal_);
+      face_mu_values[f] = omega.Dot(cell_->faces_[f].normal_);
 
     // Surface integrals
     for (int f = 0; f < cell_num_faces_; ++f)
@@ -145,7 +145,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
       // IntSf_mu_psi_Mij_dA
       const size_t cf = sweep_dependency_interface_.current_face_idx_;
       const auto& M_surf_f = (*M_surf_)[cf];
-      const double mu = face_mu_values_[cf];
+      const double mu = face_mu_values[cf];
       const size_t num_face_nodes = sweep_dependency_interface_.num_face_nodes_;
       for (int fi = 0; fi < num_face_nodes; ++fi)
       {
@@ -171,7 +171,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
     {
       g_ = gs_gi_ + gsg;
       gsg_ = gsg;
-      sigma_tg_ = sigma_t[g_];
+      double sigma_tg = sigma_t[g_];
 
       const auto& M = *M_;
       const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
@@ -183,7 +183,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
         for (int m = 0; m < num_moments_; ++m)
         {
           const size_t ir = cell_transport_view_->MapDOF(i, m, static_cast<int>(g_));
-          temp_src += m2d_op[m][direction_num_] * q_moments_[ir];
+          temp_src += m2d_op[m][direction_num] * source_moments_[ir];
         } // for m
         source[i] = temp_src;
       } // for i
@@ -197,7 +197,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
         for (int j = 0; j < cell_num_nodes_; ++j)
         {
           const double Mij = M[i][j];
-          Atemp[i][j] = Amat[i][j] + Mij * sigma_tg_;
+          Atemp[i][j] = Amat[i][j] + Mij * sigma_tg;
           temp += Mij * source[j];
         } // for j
         b[gsg_][i] += temp;
@@ -212,7 +212,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
     auto& output_phi = GetDestinationPhi();
     for (int m = 0; m < num_moments_; ++m)
     {
-      const double wn_d2m = d2m_op[m][direction_num_];
+      const double wn_d2m = d2m_op[m][direction_num];
       for (int i = 0; i < cell_num_nodes_; ++i)
       {
         const size_t ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
@@ -230,7 +230,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
       for (size_t i = 0; i < cell_num_nodes_; ++i)
       {
         const size_t imap =
-          i * groupset_angle_group_stride_ + direction_num_ * groupset_group_stride_ + gs_ss_begin_;
+          i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_ + gs_ss_begin_;
         for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
           cell_psi_data[imap + gsg] = b[gsg][i];
       } // for i
@@ -252,9 +252,8 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
         f, cell_mapping_->NumFaceNodes(f), face.neighbor_id_, local, boundary, locality);
 
       const auto& IntF_shapeI = (*IntS_shapeI_)[f];
-      const double mu = face_mu_values_[f];
-      const double wt = direction_qweight_;
-
+      const double mu = face_mu_values[f];
+      
       const bool on_boundary = sweep_dependency_interface_.on_boundary_;
       const bool is_reflecting_boundary = sweep_dependency_interface_.is_reflecting_bndry_;
 

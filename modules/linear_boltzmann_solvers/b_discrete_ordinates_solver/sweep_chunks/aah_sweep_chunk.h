@@ -13,9 +13,9 @@ class AAH_SweepChunk : public SweepChunk
 {
 public:
   AAH_SweepChunk(const MeshContinuum& grid,
-                 const SpatialDiscretization& discretization,
+                 const SpatialDiscretization& grid_fe_view,
                  const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                 std::vector<lbs::CellLBSView>& cell_transport_views,
+                 std::vector<lbs::CellLBSView>& grid_transport_view,
                  std::vector<double>& destination_phi,
                  std::vector<double>& destination_psi,
                  const std::vector<double>& source_moments,
