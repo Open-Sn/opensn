@@ -12,13 +12,6 @@ using namespace opensn;
 
 RegisterLuaFunctionNamespace(MeshSetProperty, mesh, SetProperty);
 
-enum MeshProperty
-{
-  BNDRYID_FROM_LUA_FUNCTION = 14
-};
-
-RegisterLuaConstantAsIs(BNDRYID_FROM_LUA_FUNCTION, Varying(14));
-
 int
 MeshSetProperty(lua_State* L)
 {
@@ -34,15 +27,6 @@ MeshSetProperty(lua_State* L)
 
   int property_index = lua_tonumber(L, 1);
 
-  if (property_index == MeshProperty::BNDRYID_FROM_LUA_FUNCTION)
-  {
-    LuaCheckStringValue(fname, L, 2);
-
-    const std::string lua_fname = lua_tostring(L, 2);
-
-    SetBoundaryIDFromLuaFunction(lua_fname);
-  }
-  else
   {
     opensn::log.LogAllError() << "Invalid property specified " << property_index
                               << " in call to VolumeMesherSetProperty().";

@@ -60,6 +60,6 @@ function BndryIDFunction1(x,y,z,nx,ny,nz,cur_bid)
     return cur_bid
 end
 
-mesh.SetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
+mesh.SetBoundaryIDFromFunction("BndryIDFunction1")
 
 mesh.ExportToVTK("ZMeshPhase3")

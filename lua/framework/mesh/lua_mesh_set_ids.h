@@ -37,7 +37,7 @@ int MeshSetMaterialIDFromLogicalVolume(lua_State* L);
  * end
  * \endcode
  */
-void SetBoundaryIDFromLuaFunction(const std::string& lua_fname);
+int MeshSetBoundaryIDFromLuaFunction(lua_State* L);
 
 /**
  * Set specified boundary IDs using a LogicalVolume
