@@ -22,6 +22,8 @@ public:
   {
   }
 
+  virtual ~FieldFunctionInterpolationPoint() {}
+
   Vector3& GetPointOfInterest() { return point_of_interest_; }
 
   void Initialize() override;

@@ -43,7 +43,6 @@ LuaApp::~LuaApp()
 int
 LuaApp::InitPetSc(int argc, char** argv)
 {
-  PETSC_COMM_WORLD = mpi_comm;
   PetscOptionsInsertString(nullptr, "-error_output_stderr");
   if (not allow_petsc_error_handler_)
     PetscOptionsInsertString(nullptr, "-no_signal_handler");

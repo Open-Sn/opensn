@@ -28,7 +28,7 @@ struct PETScSolverSetup
  * This is a macro for:
  * \code
  * Vec x;
- * VecCreate(PETSC_COMM_WORLD,&x);
+ * VecCreate(opensn::mpi_comm,&x);
  * VecSetType(x,VECMPI);
  * VecSetSizes(x, local_size, global_size);
  * VecSetOption(x,VEC_IGNORE_NEGATIVE_INDICES,PETSC_TRUE);
@@ -43,7 +43,7 @@ Vec CreateVector(int64_t local_size, int64_t global_size);
  *
  * This is a function for:
  * \code
- * VecCreate(PETSC_COMM_WORLD,&x);
+ * VecCreate(opensn::mpi_comm,&x);
  * VecSetType(x,VECMPI);
  * VecSetSizes(x, local_size, global_size);
  * VecSetOption(x,VEC_IGNORE_NEGATIVE_INDICES,PETSC_TRUE);
@@ -57,7 +57,7 @@ void CreateVector(Vec& x, int64_t local_size, int64_t global_size);
  * This is a macro for:
  * \code
  * Vec x;
- * VecCreateGhost(PETSC_COMM_WORLD,
+ * VecCreateGhost(opensn::mpi_comm,
  *                local_size,
  *                global_size,
  *                nghosts,
@@ -80,7 +80,7 @@ Vec CreateVectorWithGhosts(int64_t local_size,
  * This is a function for:
  * \code
  * Mat A;
- * MatCreate(PETSC_COMM_WORLD,&A);
+ * MatCreate(opensn::mpi_comm,&A);
  * MatSetType(A,MATMPIAIJ);
  * MatSetSizes(A,local_size, local_size,
  *               global_size, global_size);
@@ -100,7 +100,7 @@ Mat CreateSquareMatrix(int64_t local_size, int64_t global_size);
  *
  * This is a function for:
  * \code
- * MatCreate(PETSC_COMM_WORLD,&A);
+ * MatCreate(opensn::mpi_comm,&A);
  * MatSetType(A,MATMPIAIJ);
  * MatSetSizes(A,local_size, local_size,
  *               global_size, global_size);
@@ -150,7 +150,7 @@ void InitMatrixSparsity(Mat& A, int64_t nodal_nnz_in_diag, int64_t nodal_nnz_off
  * \code
  * PETScSolverSetup setup;
  *
- * KSPCreate(PETSC_COMM_WORLD,&setup.ksp);
+ * KSPCreate(opensn::mpi_comm,&setup.ksp);
  * KSPSetOperators(setup.ksp,ref_matrix,ref_matrix);
  * KSPSetType(setup.ksp,in_solver_type.c_str());
  *

@@ -38,6 +38,9 @@ public:
     : FieldFunctionInterpolation(FieldFunctionInterpolationType::VOLUME)
   {
   }
+
+  virtual ~FieldFunctionInterpolationVolume() {}
+
   std::shared_ptr<LogicalVolume>& GetLogicalVolume() { return logical_volume_; }
 
   FieldFunctionInterpolationOperation& GetOperationType() { return op_type_; }
