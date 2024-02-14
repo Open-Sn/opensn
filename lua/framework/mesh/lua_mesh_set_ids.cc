@@ -10,6 +10,9 @@ RegisterLuaFunctionNamespace(MeshSetUniformMaterialID, mesh, SetUniformMaterialI
 RegisterLuaFunctionNamespace(MeshSetMaterialIDFromLogicalVolume,
                              mesh,
                              SetMaterialIDFromLogicalVolume);
+RegisterLuaFunctionNamespace(MeshSetBoundaryIDFromLogicalVolume,
+                             mesh,
+                             SetBoundaryIDFromLogicalVolume);
 
 using namespace opensn;
 
@@ -245,4 +248,39 @@ SetBoundaryIDFromLuaFunction(const std::string& lua_fname)
   opensn::log.Log0Verbose1() << program_timer.GetTimeString()
                              << " Done setting boundary id from lua function. "
                              << "Number of cells modified = " << globl_num_faces_modified << ".";
+}
+
+int
+MeshSetBoundaryIDFromLogicalVolume(lua_State* L)
+{
+  const std::string fname = "mesh.SetBoundaryIDFromLogicalVolume";
+
+  int num_args = lua_gettop(L);
+  if ((num_args == 2) or (num_args == 3))
+  {
+    LuaCheckNilValue(fname, L, 1);
+    LuaCheckStringValue(fname, L, 2);
+    int volume_handle = lua_tonumber(L, 1);
+    std::string boundary_name = lua_tostring(L, 2);
+    int sense = true;
+    if (num_args == 3)
+      sense = lua_toboolean(L, 3);
+
+    ChiLogicalErrorIf(boundary_name.empty(), "argument 2 must not be an empty string.");
+
+    const auto& log_vol =
+      opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_handle, fname);
+
+    opensn::log.Log() << program_timer.GetTimeString()
+                      << " Setting boundary id from logical volume.";
+    std::shared_ptr<MeshContinuum> mesh = GetCurrentMesh();
+    mesh->SetBoundaryIDFromLogical(log_vol, sense, boundary_name);
+  }
+  else
+  {
+    opensn::log.LogAllError()
+      << "Invalid number of arguments when calling 'mesh.SetBoundaryIDFromLogicalVolume'";
+    opensn::Exit(EXIT_FAILURE);
+  }
+  return 0;
 }

@@ -11,11 +11,6 @@
  * ##_
  *
  * ###PropertyIndex:
- *  BNDRYID_FROMLOGICAL = <B>LogicalVolumeHandle:[int],Bndry_name:[string],
- *                      Sense:[bool](Optional, default:true)</B> Sets the cell
- *                      boundary id to the specified value for cells
- *                      that meet the sense requirement for the given
- *                      logical volume.\n
  *  MATID_FROM_LUA_FUNCTION = <B>LuaFunctionName:[string]</B>. For each cell, will
  *                            call a lua function that can change the material id.
  *                            The lua function must have 4 parameters,

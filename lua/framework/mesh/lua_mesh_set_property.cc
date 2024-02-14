@@ -14,12 +14,10 @@ RegisterLuaFunctionNamespace(MeshSetProperty, mesh, SetProperty);
 
 enum MeshProperty
 {
-  BNDRYID_FROMLOGICAL = 12,
   MATID_FROM_LUA_FUNCTION = 13,
   BNDRYID_FROM_LUA_FUNCTION = 14
 };
 
-RegisterLuaConstantAsIs(BNDRYID_FROMLOGICAL, Varying(12));
 RegisterLuaConstantAsIs(MATID_FROM_LUA_FUNCTION, Varying(13));
 RegisterLuaConstantAsIs(BNDRYID_FROM_LUA_FUNCTION, Varying(14));
 
@@ -38,34 +36,7 @@ MeshSetProperty(lua_State* L)
 
   int property_index = lua_tonumber(L, 1);
 
-  if (property_index == MeshProperty::BNDRYID_FROMLOGICAL)
-  {
-    if (not((num_args == 3) or (num_args == 4)))
-    {
-      opensn::log.LogAllError() << "Invalid amount of arguments used for "
-                                   "VolumeMesherSetProperty("
-                                   "BNDRYID_FROMLOGICAL...";
-      opensn::Exit(EXIT_FAILURE);
-    }
-    LuaCheckNilValue(fname, L, 2);
-    LuaCheckStringValue(fname, L, 3);
-    int volume_hndl = lua_tonumber(L, 2);
-    std::string bndry_name = lua_tostring(L, 3);
-    int sense = true;
-    if (num_args == 4)
-      sense = lua_toboolean(L, 4);
-
-    ChiLogicalErrorIf(bndry_name.empty(), "argument 3 must not be an empty string.");
-
-    const auto& log_vol =
-      opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_hndl, fname);
-
-    opensn::log.Log() << program_timer.GetTimeString()
-                      << " Setting boundary id from logical volume.";
-    std::shared_ptr<MeshContinuum> vol_cont = GetCurrentMesh();
-    vol_cont->SetBoundaryIDFromLogical(log_vol, sense, bndry_name);
-  }
-  else if (property_index == MeshProperty::MATID_FROM_LUA_FUNCTION)
+  if (property_index == MeshProperty::MATID_FROM_LUA_FUNCTION)
   {
     LuaCheckStringValue(fname, L, 2);
 
