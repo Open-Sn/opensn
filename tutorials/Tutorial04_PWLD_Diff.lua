@@ -19,7 +19,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 material = PhysicsAddMaterial("Homogenous_Material");
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-mesh.SetProperty(MATID_FROMLOGICAL,vol0,material)
+mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 -- Setboundary IDs
 -- xmin,xmax,ymin,ymax,zmin,zmax
 e_vol = LogicalVolumeCreate(RPP,0.99999,1000,-1000,1000,-1000,1000)

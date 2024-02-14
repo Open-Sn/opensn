@@ -11,10 +11,6 @@
  * ##_
  *
  * ###PropertyIndex:
- *  MATID_FROMLOGICAL = <B>LogicalVolumeHandle:[int],Mat_id:[int],
- *                      Sense:[bool](Optional, default:true)</B> Sets the material
- *                      id of cells that meet the sense requirement for the given
- *                      logical volume.\n
  *  BNDRYID_FROMLOGICAL = <B>LogicalVolumeHandle:[int],Bndry_name:[string],
  *                      Sense:[bool](Optional, default:true)</B> Sets the cell
  *                      boundary id to the specified value for cells

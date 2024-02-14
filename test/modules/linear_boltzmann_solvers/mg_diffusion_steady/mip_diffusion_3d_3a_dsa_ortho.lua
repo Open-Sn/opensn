@@ -41,7 +41,7 @@ mesh.SetUniformMaterialID(0)
 
 vol1 = mesh.RPPLogicalVolume.Create
 ({ xmin=-10.0,xmax=10.0,ymin=-10.0,ymax=10.0, infz=true })
-mesh.SetProperty(MATID_FROMLOGICAL,vol1,1)
+mesh.SetMaterialIDFromLogicalVolume(vol1,1)
 
 --############################################### Add materials
 materials = {}

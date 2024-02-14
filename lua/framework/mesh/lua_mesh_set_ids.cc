@@ -4,9 +4,12 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/console/console.h"
-#include "framework/utils/timer.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
 
 RegisterLuaFunctionNamespace(MeshSetUniformMaterialID, mesh, SetUniformMaterialID);
+RegisterLuaFunctionNamespace(MeshSetMaterialIDFromLogicalVolume,
+                             mesh,
+                             SetMaterialIDFromLogicalVolume);
 
 using namespace opensn;
 
@@ -27,6 +30,37 @@ MeshSetUniformMaterialID(lua_State* L)
   opensn::log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
                     << " to all cells";
 
+  return 0;
+}
+
+int
+MeshSetMaterialIDFromLogicalVolume(lua_State* L)
+{
+  const std::string fname = "mesh.SetMaterialIDFromLogicalVolume";
+
+  int num_args = lua_gettop(L);
+  if ((num_args == 2) or (num_args == 3))
+  {
+    int volume_handle = lua_tonumber(L, 1);
+    int mat_id = lua_tonumber(L, 2);
+    int sense = true;
+    if (num_args == 3)
+      sense = lua_toboolean(L, 3);
+
+    const auto& lv =
+      opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_handle, fname);
+
+    opensn::log.Log0Verbose1() << program_timer.GetTimeString()
+                               << " Setting material id from logical volume.";
+    std::shared_ptr<MeshContinuum> mesh = GetCurrentMesh();
+    mesh->SetMaterialIDFromLogical(lv, sense, mat_id);
+  }
+  else
+  {
+    opensn::log.LogAllError()
+      << "Invalid number of arguments when calling 'mesh.SetMaterialIDFromLogicalVolume'";
+    opensn::Exit(EXIT_FAILURE);
+  }
   return 0;
 }
 

@@ -18,7 +18,7 @@ mesh.MeshGenerator.Execute(meshgen)
 
 -- assign mat ID 10 to whole domain
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-mesh.SetProperty(MATID_FROMLOGICAL,vol0,10)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 10)
 
 --Sets lua function describing a sphere (material 11)
 function MatIDFunction1(x,y,z,cur_id)
