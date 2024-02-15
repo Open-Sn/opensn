@@ -56,7 +56,7 @@ or
  SurfaceMesherExecute();
  VolumeMesherExecute();
 
- MeshHandlerExportMeshToVTK("export_mesh_without_IDs")
+ mesh.ExportToVTK("export_mesh_without_IDs")
  \endcode
 
   ## Completing the 3D mesh
@@ -78,7 +78,7 @@ cylinder),
 -- Logical Volumes
 my_LV = LogicalVolumeCreate(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
 VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
-MeshHandlerExportMeshToVTK("export_mesh_with_IDs")
+mesh.ExportToVTK("export_mesh_with_IDs")
  \endcode
 
   ### LV defined as read-in surfaces
@@ -88,13 +88,13 @@ SurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
 my_LV = LogicalVolumeCreate(SURFACE, surf_LV)
 
  VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
-MeshHandlerExportMeshToVTK("export_mesh_with_IDs")
+mesh.ExportToVTK("export_mesh_with_IDs")
  \endcode
 
   ### LV using a Lua function
  \code
 VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "my_LV_func.lua")
-MeshHandlerExportMeshToVTK("export_mesh_with_IDs")
+mesh.ExportToVTK("export_mesh_with_IDs")
  \endcode
 
  where the Lua function was previously defined, e.g.,

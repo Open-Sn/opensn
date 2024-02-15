@@ -3,7 +3,6 @@
 #include <iostream>
 #include <algorithm>
 #include "framework/mesh/surface_mesh/surface_mesh.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/runtime.h"
 
 #include "framework/logging/log.h"
@@ -21,8 +20,6 @@ SurfaceMeshCheckCycles(lua_State* L)
   int num_args = lua_gettop(L);
   if (num_args != 2)
     LuaPostArgAmountError("SurfaceMeshCheckCycles", 2, num_args);
-
-  auto& cur_hndlr = opensn::GetCurrentHandler();
 
   int surf_handle = lua_tonumber(L, 1);
   int num_angles = lua_tonumber(L, 2);

@@ -14,7 +14,7 @@ namespace opensn
 
 const std::string name = "OpenSn";
 
-class MeshHandler;
+class MeshContinuum;
 class SurfaceMesh;
 class FieldFunctionInterpolation;
 class UnpartitionedMesh;
@@ -36,7 +36,7 @@ extern Logger& log;
 extern Timer program_timer;
 
 /** Global stack of handlers */
-extern std::vector<std::shared_ptr<MeshHandler>> meshhandler_stack;
+extern std::vector<std::shared_ptr<MeshContinuum>> mesh_stack;
 extern int current_mesh_handler;
 
 extern std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;

@@ -1,7 +1,6 @@
 #include "framework/lua.h"
 
 #include "framework/mesh/surface_mesh/surface_mesh.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 
 #include "framework/runtime.h"
 

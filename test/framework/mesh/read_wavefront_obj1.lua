@@ -29,5 +29,5 @@ meshgen1 = mesh.MeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Exports
 if master_export == nil then
-    MeshHandlerExportMeshToVTK("ZObjMesh")
+    mesh.ExportToVTK("ZObjMesh")
 end

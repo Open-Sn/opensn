@@ -19,8 +19,6 @@ RegisterLuaConstantAsIs(POINT, Varying(4));
 int
 FFInterpolationCreate(lua_State* L)
 {
-  auto& cur_hndlr = GetCurrentHandler();
-
   // Process types
   int ffitype = lua_tonumber(L, 1);
   if (ffitype == static_cast<int>(FieldFunctionInterpolationType::POINT))

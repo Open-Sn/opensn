@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include "framework/mesh/surface_mesh/surface_mesh.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 
 #include "framework/runtime.h"
 
@@ -18,8 +17,6 @@ RegisterLuaFunctionAsIs(SurfaceMeshExportPolyFile);
 int
 SurfaceMeshExportToObj(lua_State* L)
 {
-  auto& cur_hndlr = opensn::GetCurrentHandler();
-
   // Get arguments
   int num_args = lua_gettop(L);
   if (num_args != 2)
@@ -41,8 +38,6 @@ SurfaceMeshExportToObj(lua_State* L)
 int
 SurfaceMeshExportPolyFile(lua_State* L)
 {
-  auto& cur_hndlr = opensn::GetCurrentHandler();
-
   // Get arguments
   int num_args = lua_gettop(L);
   if (num_args != 2)

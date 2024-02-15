@@ -3,7 +3,7 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
+#include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include "framework/object_factory.h"
@@ -52,7 +52,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(const InputParameters& params)
   : FieldFunction(params),
     sdm_(MakeSpatialDiscretization(params)),
     ghosted_field_vector_(MakeFieldVector(*sdm_, GetUnknownManager())),
-    local_grid_bounding_box_(GetCurrentHandler().GetGrid()->GetLocalBoundingBox())
+    local_grid_bounding_box_(GetCurrentMesh()->GetLocalBoundingBox())
 {
   ghosted_field_vector_->Set(params.GetParamValue<double>("initial_value"));
 }
@@ -117,7 +117,7 @@ std::shared_ptr<SpatialDiscretization>
 FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
-  const auto& grid_ptr = GetCurrentHandler().GetGrid();
+  const auto& grid_ptr = GetCurrentMesh();
   const auto sdm_type = params.GetParamValue<std::string>("sdm_type");
 
   typedef FiniteVolume FV;

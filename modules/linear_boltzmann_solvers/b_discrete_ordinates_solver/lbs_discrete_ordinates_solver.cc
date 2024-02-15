@@ -2,8 +2,6 @@
 #include "framework/object_factory.h"
 #include "framework/memory_usage.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
-#include "framework/mesh/volume_mesher/volume_mesher.h"
 #include "framework/mesh/sweep_utilities/spds/spds_adams_adams_hawkins.h"
 #include "framework/mesh/sweep_utilities/fluds/aah_fluds.h"
 #include "framework/mesh/sweep_utilities/angle_set/aah_angle_set.h"
@@ -891,25 +889,6 @@ void
 DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 {
   log.Log() << program_timer.GetTimeString() << " Initializing sweep datastructures.\n";
-
-  // Perform checks
-  {
-    auto& mesh_handler = GetCurrentHandler();
-    auto& mesher = mesh_handler.GetVolumeMesher();
-
-    for (const auto& groupset : groupsets_)
-    {
-      bool no_cycles_parmetis_partitioning =
-        ((mesher.options.partition_type == VolumeMesher::PartitionType::PARMETIS) and
-         (not groupset.allow_cycles_));
-
-      bool is_1D_geometry = options_.geometry_type == GeometryType::ONED_SLAB;
-
-      if (no_cycles_parmetis_partitioning and not is_1D_geometry and (opensn::mpi_comm.size() > 1))
-        throw std::logic_error("When using PARMETIS type partitioning then groupset iterative "
-                               "method must be NPT_CLASSICRICHARDSON_CYCLES or NPT_GMRES_CYCLES");
-    } // for groupset
-  }
 
   // Define sweep ordering groups
   quadrature_unq_so_grouping_map_.clear();

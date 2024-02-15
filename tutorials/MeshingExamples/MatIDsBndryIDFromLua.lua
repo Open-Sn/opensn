@@ -12,9 +12,9 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
-MeshHandlerExportMeshToVTK("ZMeshPhase1")
+mesh.ExportToVTK("ZMeshPhase1")
 
-VolumeMesherSetMatIDToAll(0)
+mesh.SetUniformMaterialID(0)
 
 --Sets a middle square to material 1
 function MatIDFunction1(x,y,z,cur_id)
@@ -26,9 +26,9 @@ function MatIDFunction1(x,y,z,cur_id)
     return cur_id
 end
 
-VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
+mesh.SetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
 
-MeshHandlerExportMeshToVTK("ZMeshPhase2")
+mesh.ExportToVTK("ZMeshPhase2")
 
 --Setting left, right, top and bottom boundaries
 -- left = 0
@@ -60,6 +60,6 @@ function BndryIDFunction1(x,y,z,nx,ny,nz,cur_bid)
     return cur_bid
 end
 
-VolumeMesherSetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
+mesh.SetProperty(BNDRYID_FROM_LUA_FUNCTION, "BndryIDFunction1")
 
-MeshHandlerExportMeshToVTK("ZMeshPhase3")
+mesh.ExportToVTK("ZMeshPhase3")

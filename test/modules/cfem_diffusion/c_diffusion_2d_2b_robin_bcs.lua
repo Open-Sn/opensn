@@ -8,17 +8,17 @@ for i=1,(N+1) do
     k=i-1
     nodes[i] = xmin + k*dx
 end
- 
+
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
- 
+
 --############################################### Set Material IDs
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+mesh.SetProperty(MATID_FROMLOGICAL,vol0,0)
 
 vol1 = mesh.RPPLogicalVolume.Create
 ({ xmin=-0.5,xmax=0.5,ymin=-0.5,ymax=0.5, infz=true })
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol1,1)
+mesh.SetProperty(MATID_FROMLOGICAL,vol1,1)
 
 D = {1.0,5.0}
 Q = {0.0,1.0}
@@ -45,10 +45,10 @@ w_bndry = 1
 n_bndry = 2
 s_bndry = 3
 
-VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
-VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
-VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
-VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
+mesh.SetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
+mesh.SetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
+mesh.SetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
+mesh.SetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### CFEM solver

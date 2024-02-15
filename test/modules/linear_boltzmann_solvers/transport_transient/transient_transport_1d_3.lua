@@ -30,10 +30,10 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-VolumeMesherSetMatIDToAll(0)
+mesh.SetUniformMaterialID(0)
 
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, zmin=-L/4, zmax=L/4})
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,1)
+mesh.SetProperty(MATID_FROMLOGICAL,vol0,1)
 
 --############################################### Add materials
 materials = {}

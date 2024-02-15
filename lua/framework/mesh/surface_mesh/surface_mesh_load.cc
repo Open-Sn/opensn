@@ -1,7 +1,6 @@
 #include "framework/lua.h"
 
 #include "framework/mesh/surface_mesh/surface_mesh.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -57,8 +56,6 @@ SurfaceMeshImportFromOBJFile(lua_State* L)
 int
 SurfaceMeshImportFromTriangleFiles(lua_State* L)
 {
-  auto& cur_hndlr = opensn::GetCurrentHandler();
-
   // Get arguments
   int num_args = lua_gettop(L);
   int handle = lua_tonumber(L, 1);
@@ -83,8 +80,6 @@ SurfaceMeshImportFromTriangleFiles(lua_State* L)
 int
 SurfaceMeshImportFromMshFiles(lua_State* L)
 {
-  auto& cur_hndlr = opensn::GetCurrentHandler();
-
   // Get arguments
   int num_args = lua_gettop(L);
   int handle = lua_tonumber(L, 1);

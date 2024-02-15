@@ -1,5 +1,4 @@
 #include "framework/mesh/mesh.h"
-#include "framework/mesh/mesh_handler/mesh_handler.h"
 #include "framework/runtime.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/logging/log.h"
@@ -7,33 +6,16 @@
 namespace opensn
 {
 
-MeshHandler&
-GetCurrentHandler()
+std::shared_ptr<MeshContinuum>
+GetCurrentMesh()
 {
-  if (meshhandler_stack.empty())
-    throw std::logic_error("chi_mesh::GetCurrentHandler: No handlers on stack");
-
-  return GetStackItem<MeshHandler>(meshhandler_stack, current_mesh_handler);
-}
-
-size_t
-PushNewHandlerAndGetIndex()
-{
-  meshhandler_stack.push_back(std::make_shared<MeshHandler>());
-
-  int index = (int)meshhandler_stack.size() - 1;
-  current_mesh_handler = index;
-
-  return index;
+  return mesh_stack.back();
 }
 
 size_t
 CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
 {
   ChiLogicalErrorIf(vertices.empty(), "Empty vertex list.");
-
-  // Get current mesh handler
-  auto& handler = GetCurrentHandler();
 
   // Reorient 1D verts along z
   std::vector<Vertex> zverts;
@@ -96,9 +78,6 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
                                std::vector<double>& vertices_1d_y)
 {
   ChiLogicalErrorIf(vertices_1d_x.empty() or vertices_1d_y.empty(), "Empty vertex list.");
-
-  // Get current mesh handler
-  auto& handler = GetCurrentHandler();
 
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
@@ -189,9 +168,6 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
 {
   ChiLogicalErrorIf(vertices_1d_x.empty() or vertices_1d_y.empty() or vertices_1d_z.empty(),
                     "Empty vertex list.");
-
-  // Get current mesh handler
-  auto& handler = GetCurrentHandler();
 
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();

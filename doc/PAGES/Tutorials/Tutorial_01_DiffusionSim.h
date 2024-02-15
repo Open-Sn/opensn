@@ -118,7 +118,7 @@ Actually setting the mesh's material id's is a utility facilitated by a
  with a property index MATID_FROMLOGICAL. Next we provided a handle to the
  logical volume (vol0) and the desired material id. Logical volumes are very
  diverse and their uses are discussed elsewhere. There is an additional utility,
- VolumeMesherSetMatIDToAll(), which will set all cell-material-ids without
+ mesh.SetUniformMaterialID(), which will set all cell-material-ids without
  requiring a logical volume, however, in this tutorial we opted to show the
  logical volume route.
 
@@ -127,13 +127,13 @@ By default all boundaries are unassigned (i.e., -1). There are two utilities
  that set the boundary id's the first of which is essentially identical to how
  material ids are set, VolumeMesherSetProperty(), but this time the property
  index is BNDRYID_FROMLOGICAL. The second way is to use
- VolumeMesherSetupOrthogonalBoundaries() which requires no arguments and will
- asssign standard indices to a boundary if it is aligned with the orthogonal
+ mesh.SetupOrthogonalBoundaries() which requires no arguments and will
+ assign standard indices to a boundary if it is aligned with the orthogonal
  cartesian directions.
 
 The culmination of this step is all done within a physics agnostic framework.
 The user can even export the mesh for visualization using the function
- MeshHandlerExportMeshToObj().
+ mesh.ExportToObj().
 
 ### Boundary IDs
 
@@ -232,7 +232,7 @@ material = PhysicsAddMaterial("Test Material");
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
 
-MeshHandlerExportMeshToVTK("Mesh")
+mesh.ExportToVTK("Mesh")
 --############################################### Add material properties
 
 

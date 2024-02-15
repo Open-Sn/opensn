@@ -1,10 +1,15 @@
 #include "framework/lua.h"
-
-#include "framework/mesh/mesh_handler/mesh_handler.h"
+#include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "lua/framework/mesh/export/lua_mesh_export.h"
+#include "lua/framework/console/console.h"
+
+RegisterLuaFunctionNamespace(MeshExportToObj, mesh, ExportToObj);
+RegisterLuaFunctionNamespace(MeshExportToVTK, mesh, ExportToVTK);
+RegisterLuaFunctionNamespace(MeshExportToExodus, mesh, ExportToExodus);
 
 int
-MeshHandlerExportMeshToObj(lua_State* L)
+MeshExportToObj(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;
@@ -18,17 +23,14 @@ MeshHandlerExportMeshToObj(lua_State* L)
   if (num_args == 2)
     per_material = lua_toboolean(L, 2);
 
-  // Get current handler
-  auto& cur_hndlr = opensn::GetCurrentHandler();
-
-  auto& grid = cur_hndlr.GetGrid();
+  auto grid = opensn::GetCurrentMesh();
   grid->ExportCellsToObj(file_name.c_str(), per_material);
 
   return 0;
 }
 
 int
-MeshHandlerExportMeshToVTK(lua_State* L)
+MeshExportToVTK(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;
@@ -38,17 +40,14 @@ MeshHandlerExportMeshToVTK(lua_State* L)
 
   const std::string file_name = lua_tostring(L, 1);
 
-  // Get current handler
-  auto& cur_hndlr = opensn::GetCurrentHandler();
-
-  auto& grid = cur_hndlr.GetGrid();
+  auto grid = opensn::GetCurrentMesh();
   grid->ExportCellsToVTK(file_name);
 
   return 0;
 }
 
 int
-MeshHandlerExportMeshToExodus(lua_State* L)
+MeshExportToExodus(lua_State* L)
 {
   // Check arguments
   const std::string fname = __FUNCTION__;
@@ -72,10 +71,7 @@ MeshHandlerExportMeshToExodus(lua_State* L)
     suppress_sidesets = lua_toboolean(L, 3);
   }
 
-  // Get current handler
-  auto& cur_hndlr = opensn::GetCurrentHandler();
-
-  auto& grid = cur_hndlr.GetGrid();
+  auto grid = opensn::GetCurrentMesh();
   grid->ExportCellsToExodus(file_name, suppress_nodesets, suppress_sidesets);
 
   return 0;

@@ -12,11 +12,11 @@ material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+mesh.SetProperty(MATID_FROMLOGICAL,vol0,material)
 
-VolumeMesherSetupOrthogonalBoundaries()
+mesh.SetupOrthogonalBoundaries()
 
-MeshHandlerExportMeshToVTK("Mesh")
+mesh.ExportToVTK("Mesh")
 --############################################### Add material properties
 
 

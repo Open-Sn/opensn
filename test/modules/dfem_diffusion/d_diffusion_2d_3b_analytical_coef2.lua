@@ -8,12 +8,12 @@ for i=1,(N+1) do
     k=i-1
     nodes[i] = xmin + k*dx
 end
- 
+
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
- 
+
 --############################################### Set Material IDs
-VolumeMesherSetMatIDToAll(0)
+mesh.SetUniformMaterialID(0)
 
 -- governing law: -(u_xx + u_yy) = q, on domain [0,1]x[0,1]
 -- when the exact solution is chosen u(x,y) = sin(pi.x) * sin(pi.y)
@@ -43,10 +43,10 @@ w_bndry = 1
 n_bndry = 2
 s_bndry = 3
 
-VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
-VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
-VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
-VolumeMesherSetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
+mesh.SetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
+mesh.SetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
+mesh.SetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
+mesh.SetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### DFEM solver

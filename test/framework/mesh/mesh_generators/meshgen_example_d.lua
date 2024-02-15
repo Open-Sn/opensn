@@ -13,5 +13,3 @@ meshgen1 = mesh.MeshGenerator.Create
   }
 })
 mesh.MeshGenerator.Execute(meshgen1)
-
---MeshHandlerExportMeshToVTK("ZMeshTest")

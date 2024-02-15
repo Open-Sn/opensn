@@ -45,14 +45,6 @@ class RCCLogicalVolume;
 class SurfaceMeshLogicalVolume;
 class BooleanLogicalVolume;
 
-// Mesh handler
-class MeshHandler;
-
-// Surface Meshers
-class SurfaceMesher;
-class SurfaceMesherPassthrough;
-class SurfaceMesherPredefined;
-
 // Volume meshers
 class VolumeMesher;
 class VolumeMesherExtruder;
@@ -76,17 +68,9 @@ operator|(const MeshAttributes f1, const MeshAttributes f2)
 }
 
 /**
- * Obtains a reference to the current mesh handler from the global stack.
- *
- * If the stack is empty this routine will through `std::logic_error`.
- * \author Jan
+ * Obtains the current mesh from the global stack.
  */
-MeshHandler& GetCurrentHandler();
-
-/**
- * Adds a new mesh handler to the stack, sets it as the current handler and returns a handle to it.
- */
-size_t PushNewHandlerAndGetIndex();
+std::shared_ptr<MeshContinuum> GetCurrentMesh();
 
 // Domain decompositions
 

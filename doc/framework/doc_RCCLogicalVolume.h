@@ -25,7 +25,7 @@ x0=-0.8, y0=-0.8, z0=-1.5,
 vx=1.0, vy=1.0, vz=3.0})
 VolumeMesherSetProperty(MATID_FROMLOGICAL, lv2, 2)
 
-MeshHandlerExportMeshToVTK("lv_rcc_test1")
+mesh.ExportToVTK("lv_rcc_test1")
 \endcode
 
 \image html framework/chi_mesh/LogicalVolume/lv_rcc_test1.png width=500px

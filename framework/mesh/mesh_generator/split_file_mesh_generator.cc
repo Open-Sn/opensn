@@ -3,8 +3,7 @@
 #include "framework/data_types/byte_array.h"
 #include "framework/utils/utils.h"
 
-#include "framework/mesh/mesh_handler/mesh_handler.h"
-#include "framework/mesh/volume_mesher/volume_mesher.h"
+#include "framework/runtime.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 #include "framework/logging/log.h"
@@ -101,15 +100,8 @@ SplitFileMeshGenerator::Execute()
     auto mesh_info = ReadSplitMesh();
 
     auto grid_ptr = SetupLocalMesh(mesh_info);
+    mesh_stack.push_back(grid_ptr);
 
-    auto new_mesher = std::make_shared<VolumeMesher>(VolumeMesherType::UNPARTITIONED);
-    new_mesher->SetContinuum(grid_ptr);
-
-    if (current_mesh_handler < 0)
-      PushNewHandlerAndGetIndex();
-
-    auto& cur_hndlr = GetCurrentHandler();
-    cur_hndlr.SetVolumeMesher(new_mesher);
     log.Log() << "Done reading split-mesh files";
   }
   else
