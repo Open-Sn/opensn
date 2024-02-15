@@ -9,23 +9,23 @@ namespace opensn
 namespace lbs
 {
 
-CBC_SweepChunk::CBC_SweepChunk(std::vector<double>& destination_phi,
-                               std::vector<double>& destination_psi,
-                               const MeshContinuum& grid,
-                               const SpatialDiscretization& discretization,
-                               const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                               std::vector<lbs::CellLBSView>& cell_transport_views,
-                               const std::vector<double>& source_moments,
-                               const LBSGroupset& groupset,
-                               const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
-                               int num_moments,
-                               int max_num_cell_dofs)
+CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
+                             std::vector<double>& destination_psi,
+                             const MeshContinuum& grid,
+                             const SpatialDiscretization& discretization,
+                             const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                             std::vector<lbs::CellLBSView>& grid_transport_view,
+                             const std::vector<double>& source_moments,
+                             const LBSGroupset& groupset,
+                             const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+                             int num_moments,
+                             int max_num_cell_dofs)
   : SweepChunk(destination_phi,
                destination_psi,
                grid,
                discretization,
                unit_cell_matrices,
-               cell_transport_views,
+               grid_transport_view,
                source_moments,
                groupset,
                xs,
@@ -48,7 +48,7 @@ CBC_SweepChunk::CBC_SweepChunk(std::vector<double>& destination_phi,
 }
 
 void
-CBC_SweepChunk::SetAngleSet(AngleSet& angle_set)
+CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
 {
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
@@ -64,11 +64,11 @@ CBC_SweepChunk::SetAngleSet(AngleSet& angle_set)
 }
 
 void
-CBC_SweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
+CbcSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
 {
   cell_ = cell_ptr;
   cell_local_id_ = cell_ptr->local_id_;
-  cell_mapping_ = &grid_fe_view_.GetCellMapping(*cell_);
+  cell_mapping_ = &discretization_.GetCellMapping(*cell_);
   cell_transport_view_ = &grid_transport_view_[cell_->local_id_];
   cell_num_faces_ = cell_->faces_.size();
   cell_num_nodes_ = cell_mapping_->NumNodes();
@@ -81,7 +81,7 @@ CBC_SweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
 }
 
 void
-CBC_SweepChunk::Sweep(AngleSet& angle_set)
+CbcSweepChunk::Sweep(AngleSet& angle_set)
 {
   const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset_.quadrature_->GetDiscreteToMomentOperator();
@@ -244,7 +244,7 @@ CBC_SweepChunk::Sweep(AngleSet& angle_set)
     {
       auto& output_psi = GetDestinationPsi();
       double* cell_psi_data =
-        &output_psi[grid_fe_view_.MapDOFLocal(*cell_, 0, groupset_.psi_uk_man_, 0, 0)];
+        &output_psi[discretization_.MapDOFLocal(*cell_, 0, groupset_.psi_uk_man_, 0, 0)];
 
       for (size_t i = 0; i < cell_num_nodes_; ++i)
       {

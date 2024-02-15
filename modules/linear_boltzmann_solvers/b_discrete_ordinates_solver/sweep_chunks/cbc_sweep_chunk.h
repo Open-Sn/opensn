@@ -10,20 +10,20 @@ class CellMapping;
 namespace lbs
 {
 
-class CBC_SweepChunk : public SweepChunk
+class CbcSweepChunk : public SweepChunk
 {
 public:
-  CBC_SweepChunk(std::vector<double>& destination_phi,
-                 std::vector<double>& destination_psi,
-                 const MeshContinuum& grid,
-                 const SpatialDiscretization& discretization,
-                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                 std::vector<lbs::CellLBSView>& cell_transport_views,
-                 const std::vector<double>& source_moments,
-                 const LBSGroupset& groupset,
-                 const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
-                 int num_moments,
-                 int max_num_cell_dofs);
+  CbcSweepChunk(std::vector<double>& destination_phi,
+                std::vector<double>& destination_psi,
+                const MeshContinuum& grid,
+                const SpatialDiscretization& discretization,
+                const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                std::vector<lbs::CellLBSView>& grid_transport_view,
+                const std::vector<double>& source_moments,
+                const LBSGroupset& groupset,
+                const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+                int num_moments,
+                int max_num_cell_dofs);
 
   void SetAngleSet(AngleSet& angle_set) override;
 

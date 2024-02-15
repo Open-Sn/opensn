@@ -9,20 +9,20 @@ namespace opensn
 namespace lbs
 {
 
-class AAH_SweepChunk : public SweepChunk
+class AahSweepChunk : public SweepChunk
 {
 public:
-  AAH_SweepChunk(const MeshContinuum& grid,
-                 const SpatialDiscretization& grid_fe_view,
-                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                 std::vector<lbs::CellLBSView>& grid_transport_view,
-                 std::vector<double>& destination_phi,
-                 std::vector<double>& destination_psi,
-                 const std::vector<double>& source_moments,
-                 const LBSGroupset& groupset,
-                 const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
-                 int num_moments,
-                 int max_num_cell_dofs);
+  AahSweepChunk(const MeshContinuum& grid,
+                const SpatialDiscretization& discretization,
+                const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                std::vector<lbs::CellLBSView>& grid_transport_view,
+                std::vector<double>& destination_phi,
+                std::vector<double>& destination_psi,
+                const std::vector<double>& source_moments,
+                const LBSGroupset& groupset,
+                const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+                int num_moments,
+                int max_num_cell_dofs);
 
   void Sweep(AngleSet& angle_set) override;
 };

@@ -15,7 +15,7 @@ public:
   SweepChunk(std::vector<double>& destination_phi,
              std::vector<double>& destination_psi,
              const MeshContinuum& grid,
-             const SpatialDiscretization& grid_fe_view,
+             const SpatialDiscretization& discretization,
              const std::vector<UnitCellMatrices>& unit_cell_matrices,
              std::vector<lbs::CellLBSView>& grid_transport_view,
              const std::vector<double>& source_moments,
@@ -26,7 +26,7 @@ public:
 
 protected:
   const MeshContinuum& grid_;
-  const SpatialDiscretization& grid_fe_view_;
+  const SpatialDiscretization& discretization_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
   std::vector<lbs::CellLBSView>& grid_transport_view_;
   const std::vector<double>& source_moments_;

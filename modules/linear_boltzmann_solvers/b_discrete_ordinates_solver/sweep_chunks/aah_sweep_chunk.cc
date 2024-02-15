@@ -7,23 +7,23 @@ namespace opensn
 namespace lbs
 {
 
-AAH_SweepChunk::AAH_SweepChunk(const MeshContinuum& grid,
-                               const SpatialDiscretization& discretization,
-                               const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                               std::vector<lbs::CellLBSView>& cell_transport_views,
-                               std::vector<double>& destination_phi,
-                               std::vector<double>& destination_psi,
-                               const std::vector<double>& source_moments,
-                               const LBSGroupset& groupset,
-                               const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
-                               int num_moments,
-                               int max_num_cell_dofs)
+AahSweepChunk::AahSweepChunk(const MeshContinuum& grid,
+                             const SpatialDiscretization& discretization,
+                             const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                             std::vector<lbs::CellLBSView>& grid_transport_view,
+                             std::vector<double>& destination_phi,
+                             std::vector<double>& destination_psi,
+                             const std::vector<double>& source_moments,
+                             const LBSGroupset& groupset,
+                             const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+                             int num_moments,
+                             int max_num_cell_dofs)
   : SweepChunk(destination_phi,
                destination_psi,
                grid,
                discretization,
                unit_cell_matrices,
-               cell_transport_views,
+               grid_transport_view,
                source_moments,
                groupset,
                xs,
@@ -33,7 +33,7 @@ AAH_SweepChunk::AAH_SweepChunk(const MeshContinuum& grid,
 }
 
 void
-AAH_SweepChunk::Sweep(AngleSet& angle_set)
+AahSweepChunk::Sweep(AngleSet& angle_set)
 {
   const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
 
@@ -64,7 +64,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
   {
     auto cell_local_id = spls[spls_index];
     auto& cell = grid_.local_cells[cell_local_id];
-    auto& cell_mapping = grid_fe_view_.GetCellMapping(cell);
+    auto& cell_mapping = discretization_.GetCellMapping(cell);
     auto& cell_transport_view = grid_transport_view_[cell_local_id];
     auto cell_num_faces = cell.faces_.size();
     auto cell_num_nodes = cell_mapping.NumNodes();
@@ -211,7 +211,7 @@ AAH_SweepChunk::Sweep(AngleSet& angle_set)
       {
         auto& output_psi = GetDestinationPsi();
         double* cell_psi_data =
-          &output_psi[grid_fe_view_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
+          &output_psi[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
