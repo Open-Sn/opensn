@@ -1,6 +1,7 @@
 #include "framework/lua.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
+#include "framework/mpi/mpi_lua.h"
 #include "framework/logging/log.h"
 #include "field_functions_lua.h"
 #include "framework/console/console.h"
@@ -29,6 +30,7 @@ ExportFieldFunctionToVTK(lua_State* L)
   //  ff->ExportToVTK(base_name);
   FieldFunctionGridBased::ExportMultipleToVTK(base_name, {ff});
 
+  opensn::mpi_comm.barrier();
   return 0;
 }
 
@@ -90,5 +92,6 @@ ExportMultiFieldFunctionToVTK(lua_State* L)
 
   FieldFunctionGridBased::ExportMultipleToVTK(base_name, ffs);
 
+  opensn::mpi_comm.barrier();
   return 0;
 }
