@@ -972,6 +972,7 @@ LBSSolver::InitializeMaterials()
       {
         const auto& src = std::static_pointer_cast<IsotropicMultiGrpSource>(property);
 
+        // Check for a valid source
         if (src->source_value_g_.size() < groups_.size())
         {
           log.LogAllWarning() << __FUNCTION__ << ": IsotropicMultiGrpSource specified in "
@@ -979,10 +980,11 @@ LBSSolver::InitializeMaterials()
                               << "energy groups than called for in the simulation. "
                               << "Source will be ignored.";
         }
-        else
-        {
+
+        // Set the source if in forward mode
+        // Material sources are currently unused in adjoint mode
+        if (not options_.adjoint)
           matid_to_src_map_[mat_id] = src;
-        }
       } // P0 source
     }   // for property
 
