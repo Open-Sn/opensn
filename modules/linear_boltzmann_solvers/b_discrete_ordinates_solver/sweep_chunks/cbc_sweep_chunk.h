@@ -1,78 +1,56 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweepers/cbc_fluds.h"
 
 namespace opensn
 {
+class CellMapping;
+
 namespace lbs
 {
 
-class CBC_FLUDS;
-class CBC_ASynchronousCommunicator;
-
-struct CBC_SweepDependencyInterface : public SweepDependencyInterface
-{
-  CBC_FLUDS* fluds_ = nullptr;
-  const Cell* neighbor_cell_ptr_ = nullptr;
-
-  /**Upwind angular flux*/
-  const std::vector<double>* psi_upwnd_data_block_ = nullptr;
-  const double* psi_local_face_upwnd_data_ = nullptr;
-  /**Downwind angular flux*/
-  std::vector<double>* psi_dnwnd_data_ = nullptr;
-
-  size_t group_stride_;
-  size_t group_angle_stride_;
-
-  const CellLBSView* cell_transport_view_;
-
-  // Set using SetupIncomingFace
-  const FaceNodalMapping* face_nodal_mapping_ = nullptr;
-
-  const double* GetUpwindPsi(int face_node_local_idx) const override;
-  double* GetDownwindPsi(int face_node_local_idx) const override;
-  void SetupIncomingFace(int face_id,
-                         size_t num_face_nodes,
-                         uint64_t neighbor_id,
-                         bool on_local_face,
-                         bool on_boundary) override;
-  void SetupOutgoingFace(int face_id,
-                         size_t num_face_nodes,
-                         uint64_t neighbor_id,
-                         bool on_local_face,
-                         bool on_boundary,
-                         int locality) override;
-};
-
-class CBC_SweepChunk : public SweepChunk
+class CbcSweepChunk : public SweepChunk
 {
 public:
-  CBC_SweepChunk(std::vector<double>& destination_phi,
-                 std::vector<double>& destination_psi,
-                 const MeshContinuum& grid,
-                 const SpatialDiscretization& discretization,
-                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                 std::vector<lbs::CellLBSView>& cell_transport_views,
-                 const std::vector<double>& source_moments,
-                 const LBSGroupset& groupset,
-                 const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
-                 int num_moments,
-                 int max_num_cell_dofs);
+  CbcSweepChunk(std::vector<double>& destination_phi,
+                std::vector<double>& destination_psi,
+                const MeshContinuum& grid,
+                const SpatialDiscretization& discretization,
+                const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                std::vector<lbs::CellLBSView>& grid_transport_view,
+                const std::vector<double>& source_moments,
+                const LBSGroupset& groupset,
+                const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+                int num_moments,
+                int max_num_cell_dofs);
 
   void SetAngleSet(AngleSet& angle_set) override;
 
   void SetCell(Cell const* cell_ptr, AngleSet& angle_set) override;
 
-  void SetCells(const std::vector<const Cell*>& cell_ptrs) override;
-
   void Sweep(AngleSet& angle_set) override;
 
-protected:
-  CBC_SweepDependencyInterface& cbc_sweep_depinterf_;
-  Cell const* cell_ptr_ = nullptr;
-  uint64_t cell_local_id_ = 0;
+private:
+  CBC_FLUDS* fluds_;
+  size_t gs_ss_size_;
+  size_t gs_ss_begin_;
+  int gs_gi_;
+  size_t group_stride_;
+  size_t group_angle_stride_;
+  bool surface_source_active_;
 
-  std::vector<const Cell*> cell_ptrs_;
+  const Cell* cell_;
+  uint64_t cell_local_id_;
+  const CellMapping* cell_mapping_;
+  CellLBSView* cell_transport_view_;
+  size_t cell_num_faces_;
+  size_t cell_num_nodes_;
+
+  MatVec3 G_;
+  MatDbl M_;
+  std::vector<MatDbl> M_surf_;
+  std::vector<VecDbl> IntS_shapeI_;
 };
 
 } // namespace lbs

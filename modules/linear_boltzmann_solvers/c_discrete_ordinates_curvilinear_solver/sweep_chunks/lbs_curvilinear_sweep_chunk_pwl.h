@@ -10,7 +10,7 @@ namespace lbs
 
 /** A sweep-chunk in point-symmetric and axial-symmetric
  *  curvilinear coordinates. */
-class SweepChunkPWLRZ : public lbs::AAH_SweepChunk
+class SweepChunkPWLRZ : public lbs::AahSweepChunk
 {
   //  Attributes
 private:
