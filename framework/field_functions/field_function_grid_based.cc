@@ -300,6 +300,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
   WritePVTUFiles(ugrid, file_base_name);
 
   log.Log() << "Done exporting field functions to VTK.";
+  opensn::mpi_comm.barrier();
 }
 
 std::vector<double>
