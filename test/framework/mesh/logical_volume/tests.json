@@ -35,5 +35,21 @@
     [
       {"type" : "StrCompare", "key" : "Number of cells modified = 8573"}
     ]
+  },
+  {
+    "file" : "lv_skinmesh.lua", "num_procs" : 1,
+    "args" : ["-v 1"],
+    "checks" :
+    [
+      {"type" : "StrCompare", "key" : "Number of cells modified = 1000"}
+    ]
+  },
+  {
+    "file" : "lv_lua_func.lua", "num_procs" : 1,
+    "args" : ["-v 1"],
+    "checks" :
+    [
+      {"type" : "StrCompare", "key" : "Number of cells modified = 4224"}
+    ]
   }
 ]
