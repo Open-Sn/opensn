@@ -1,3 +1,4 @@
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
 find_package(Doxygen QUIET)
 find_program(SPHINX_BUILD sphinx-build)
 mark_as_advanced(FORCE SPHINX_BUILD)
@@ -19,7 +20,7 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     macro(lua2md src dest)
         add_custom_command(
             OUTPUT ${dest}
-            COMMAND python ${CMAKE_SOURCE_DIR}/doc/scripts/lua2md.py ${src} ${dest}
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/scripts/lua2md.py ${src} ${dest}
             DEPENDS ${src} ${CMAKE_SOURCE_DIR}/doc/scripts/lua2md.py
         )
         list(APPEND RST_FILES ${dest})
