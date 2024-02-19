@@ -1,7 +1,5 @@
 #include "framework/lua.h"
 
-#include "framework/runtime.h"
-#include "framework/mpi/mpi_lua.h"
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "lua/framework/mesh/export/lua_mesh_export.h"
@@ -29,7 +27,6 @@ MeshExportToObj(lua_State* L)
   auto grid = opensn::GetCurrentMesh();
   grid->ExportCellsToObj(file_name.c_str(), per_material);
 
-  opensn::mpi_comm.barrier();
   return 0;
 }
 
@@ -47,7 +44,6 @@ MeshExportToVTK(lua_State* L)
   auto grid = opensn::GetCurrentMesh();
   grid->ExportCellsToVTK(file_name);
 
-  opensn::mpi_comm.barrier();
   return 0;
 }
 
@@ -79,6 +75,5 @@ MeshExportToExodus(lua_State* L)
   auto grid = opensn::GetCurrentMesh();
   grid->ExportCellsToExodus(file_name, suppress_nodesets, suppress_sidesets);
 
-  opensn::mpi_comm.barrier();
   return 0;
 }

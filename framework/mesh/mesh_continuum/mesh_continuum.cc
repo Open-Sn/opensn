@@ -602,6 +602,7 @@ MeshContinuum::ExportCellsToObj(const char* fileName, bool per_material, int opt
       log.Log() << "Exported Material Volume mesh to " << mat_file_name;
     } // for mat
   }   // if per material
+  opensn::mpi_comm.barrier();
 }
 
 void
@@ -616,6 +617,7 @@ MeshContinuum::ExportCellsToVTK(const std::string& file_base_name) const
   WritePVTUFiles(ugrid, file_base_name);
 
   log.Log() << "Done exporting mesh to VTK.";
+  opensn::mpi_comm.barrier();
 }
 
 std::vector<uint64_t>
