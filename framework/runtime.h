@@ -145,7 +145,7 @@ GetStackItemPtrAsType(std::vector<std::shared_ptr<P>>& stack,
 
   auto item_type_T = std::dynamic_pointer_cast<T>(item_type_P);
   if (not item_type_T)
-    throw std::logic_error(calling_function_name + "Failed to cast to requested type");
+    throw std::logic_error(calling_function_name + " Failed to cast to requested type");
 
   return item_type_T;
 }

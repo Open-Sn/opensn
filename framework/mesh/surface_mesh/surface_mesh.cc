@@ -10,6 +10,17 @@
 namespace opensn
 {
 
+InputParameters
+SurfaceMesh::GetInputParameters()
+{
+  InputParameters params = Object::GetInputParameters();
+  return params;
+}
+
+SurfaceMesh::SurfaceMesh(const InputParameters& params) : Object(params)
+{
+}
+
 SurfaceMesh::SurfaceMesh()
 {
 }

@@ -15,7 +15,7 @@ def extract_comment_content(str):
     """
     Extract content from a the in-code doco comment `--[[ @doc text --]]`
     """
-    m = re.search(r'(?sm)--\[\[\s+@doc(.+)--\]\]', str)
+    m = re.search(r'(?sm)--\[\[\s+@doc(.+)--\s*\]\]', str)
     if m:
         return m.group(1).strip()
     else:
@@ -28,7 +28,7 @@ tokens = [
     'CODE'
 ]
 
-t_DOCO = r'(?sm)--\[\[(.+?)--\]\]'
+t_DOCO = r'(?sm)--\[\[(.+?)--\s*\]\]'
 t_CODE = r'.*?\n'
 
 
