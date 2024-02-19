@@ -40,7 +40,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-mesh.SetProperty(MATID_FROMLOGICAL,vol0,0)
+mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --############################################### Add materials
 materials = {}

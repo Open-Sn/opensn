@@ -7,5 +7,25 @@
         "key" : "Global cell count             : 3242"
       }
     ]
+  },
+  {
+    "file" : "mat_ids_from_function.lua",
+    "num_procs" : 1,
+    "checks" : [
+      {
+        "type" : "StrCompare",
+        "key" : "Exporting mesh to VTK files with base new_mat_ids"
+      }
+    ]
+  },
+  {
+    "file" : "bnd_ids_from_function.lua",
+    "num_procs" : 1,
+    "checks" : [
+      {
+        "type" : "StrCompare",
+        "key" : "Exporting mesh to VTK files with base new_bnd_ids"
+      }
+    ]
   }
 ]

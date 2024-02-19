@@ -77,7 +77,7 @@ cylinder),
  \code
 -- Logical Volumes
 my_LV = LogicalVolumeCreate(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
-VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
+mesh.SetMaterialIDFromLogicalVolume(Air, 1)
 mesh.ExportToVTK("export_mesh_with_IDs")
  \endcode
 
@@ -87,13 +87,13 @@ surf_LV = SurfaceMeshCreate()
 SurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
 my_LV = LogicalVolumeCreate(SURFACE, surf_LV)
 
- VolumeMesherSetProperty(MATID_FROMLOGICAL, Air, 1)
+mesh.SetMaterialIDFromLogicalVolume(Air, 1)
 mesh.ExportToVTK("export_mesh_with_IDs")
  \endcode
 
   ### LV using a Lua function
  \code
-VolumeMesherSetProperty(MATID_FROM_LUA_FUNCTION, "my_LV_func.lua")
+mesh.SetMaterialIDFromFunction("my_LV_func.lua")
 mesh.ExportToVTK("export_mesh_with_IDs")
  \endcode
 

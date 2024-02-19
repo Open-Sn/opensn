@@ -99,7 +99,7 @@ material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 
 chiRegionExportMeshToVTK(region1,"Mesh")
 --############################################### Add material properties

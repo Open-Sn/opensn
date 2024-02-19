@@ -98,7 +98,7 @@ many options for logical volumes ranging from primitive parametric surfaces
 material = PhysicsAddMaterial("Test Material");
 
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 \endcode
 
 We first create a material using the PhysicsAddMaterial() function.
@@ -230,7 +230,7 @@ material = PhysicsAddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,material)
+mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 
 mesh.ExportToVTK("Mesh")
 --############################################### Add material properties

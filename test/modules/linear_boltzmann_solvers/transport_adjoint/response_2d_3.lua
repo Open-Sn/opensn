@@ -46,7 +46,7 @@ vol1a = mesh.RPPLogicalVolume.Create(
         }
 )
 
-mesh.SetProperty(MATID_FROMLOGICAL, vol1a, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1a, 1)
 
 vol0 = mesh.RPPLogicalVolume.Create(
         {
@@ -55,7 +55,7 @@ vol0 = mesh.RPPLogicalVolume.Create(
             infz = true
         }
 )
-mesh.SetProperty(MATID_FROMLOGICAL, vol0, 0)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
 
 vol1b = mesh.RPPLogicalVolume.Create(
         {
@@ -64,7 +64,7 @@ vol1b = mesh.RPPLogicalVolume.Create(
             infz = true
         }
 )
-mesh.SetProperty(MATID_FROMLOGICAL, vol1b, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1b, 1)
 
 -- Create materials
 materials = {}

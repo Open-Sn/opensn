@@ -14,11 +14,11 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-mesh.SetProperty(MATID_FROMLOGICAL,vol0,0)
+mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 vol1 = mesh.RPPLogicalVolume.Create
 ({ xmin=-0.5,xmax=0.5,ymin=-0.5,ymax=0.5, infz=true })
-mesh.SetProperty(MATID_FROMLOGICAL,vol1,1)
+mesh.SetMaterialIDFromLogicalVolume(vol1,1)
 
 D = {1.0,5.0}
 Q = {0.0,1.0}
@@ -45,10 +45,10 @@ w_bndry = 1
 n_bndry = 2
 s_bndry = 3
 
-mesh.SetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
-mesh.SetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
-mesh.SetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
-mesh.SetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(e_vol,e_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(w_vol,w_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(n_vol,n_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### CFEM solver
