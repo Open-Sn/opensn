@@ -305,7 +305,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
         }
       }
 
-      // For outoing, non-boundary faces, copy angular flux to fluds and
+      // For outgoing, non-boundary faces, copy angular flux to fluds and
       // accumulate outflow
       int out_face_counter = -1;
       for (int f = 0; f < cell_num_faces; ++f)
