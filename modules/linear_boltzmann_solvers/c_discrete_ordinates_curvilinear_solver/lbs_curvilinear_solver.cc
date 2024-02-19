@@ -231,7 +231,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
                                      "PerformInputChecks : "
                                   << "mesh contains boundary faces with outward-oriented unit "
                                   << "normal vector " << (-1 * unit_normal_vectors[d]).PrintS()
-                                  << "with vertices characterised by v(" << d << ") != 0.";
+                                  << " with vertices characterised by v(" << d << ") != 0.";
                 Exit(EXIT_FAILURE);
               }
             }
