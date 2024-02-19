@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 #include <vector>
-
 #include "framework/mesh/mesh.h"
+#include "framework/object.h"
 
 namespace opensn
 {
@@ -13,8 +13,14 @@ namespace opensn
  * This class facilitates many functions within the mesh environment including logically
  * determining volumes.
  */
-class SurfaceMesh
+class SurfaceMesh : public Object
 {
+public:
+  static InputParameters GetInputParameters();
+
+protected:
+  explicit SurfaceMesh(const InputParameters& params);
+
 protected:
   std::vector<Vertex> vertices_;
   std::vector<Vertex> tex_vertices_; ///< Texture vertices
