@@ -41,8 +41,9 @@ SplitFileMeshGenerator::GetInputParameters()
     "split_mesh",
     "Path of the directory to be created for containing the split meshes.");
 
-  params.AddOptionalParameter(
-    "split_file_prefix", opensn::input_path.stem().string(), "Prefix to use for all split mesh files");
+  params.AddOptionalParameter("split_file_prefix",
+                              opensn::input_path.stem().string(),
+                              "Prefix to use for all split mesh files");
 
   params.AddOptionalParameter(
     "read_only", false, "Controls whether the split mesh is recreated or just read.");
@@ -158,7 +159,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
         vertices_needed[cell_pid].insert(vid);
         for (uint64_t ghost_gid : vertex_subs[vid])
         {
-          if (ghost_gid == cell_global_id) continue;
+          if (ghost_gid == cell_global_id)
+            continue;
           cells_needed[cell_pid].insert(ghost_gid);
 
           const auto& ghost_raw_cell = *raw_cells[ghost_gid];

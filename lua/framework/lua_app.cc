@@ -247,10 +247,10 @@ LuaApp::RunBatch(int argc, char** argv)
     }
   }
   else
-  { 
+  {
     opensn::log.Log0Error() << "Could not open file " << opensn::input_path.string() << ".";
     Exit(EXIT_FAILURE);
-  } 
+  }
 
   if (not supress_beg_end_timelog_)
   {
