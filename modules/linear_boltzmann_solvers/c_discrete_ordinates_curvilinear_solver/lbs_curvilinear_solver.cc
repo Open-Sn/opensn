@@ -231,7 +231,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
                                      "PerformInputChecks : "
                                   << "mesh contains boundary faces with outward-oriented unit "
                                   << "normal vector " << (-1 * unit_normal_vectors[d]).PrintS()
-                                  << "with vertices characterised by v(" << d << ") != 0.";
+                                  << " with vertices characterised by v(" << d << ") != 0.";
                 Exit(EXIT_FAILURE);
               }
             }
@@ -384,7 +384,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
 std::shared_ptr<SweepChunk>
 DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(lbs::LBSGroupset& groupset)
 {
-  auto sweep_chunk = std::make_shared<SweepChunkPWLRZ>(*grid_ptr_,
+  auto sweep_chunk = std::make_shared<SweepChunkPwlrz>(*grid_ptr_,
                                                        *discretization_,
                                                        unit_cell_matrices_,
                                                        secondary_unit_cell_matrices_,
