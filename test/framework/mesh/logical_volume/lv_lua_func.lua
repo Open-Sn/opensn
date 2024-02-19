@@ -18,7 +18,7 @@ mesh.MeshGenerator.Execute(meshgen)
 
 -- assign mat ID 10 to whole domain
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-mesh.SetProperty(MATID_FROMLOGICAL,vol0,10)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 10)
 
 --Sets lua function describing a sphere (material 11)
 function MatIDFunction1(x,y,z,cur_id)
@@ -28,7 +28,7 @@ function MatIDFunction1(x,y,z,cur_id)
     return cur_id
 end
 -- assign mat ID 11 to lv using lua function
-mesh.SetProperty(MATID_FROM_LUA_FUNCTION, "MatIDFunction1")
+mesh.SetMaterialIDFromFunction("MatIDFunction1")
 
 -- export to vtk
 mesh.ExportToVTK("lv_lua_func_out")

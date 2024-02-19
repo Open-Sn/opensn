@@ -36,7 +36,7 @@ Next we set the material IDs:
 \code
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 \endcode
 
 ## Step 3 - Add a material with a transport cross-section
@@ -183,7 +183,7 @@ VolumeMesherExecute();
 
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
-VolumeMesherSetProperty(MATID_FROMLOGICAL,vol0,0)
+mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --############################################### Add material
 material0 = PhysicsAddMaterial("Test Material");

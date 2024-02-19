@@ -18,7 +18,12 @@ int MeshSetUniformMaterialID(lua_State* L);
  * end
  * \endcode
  */
-void SetMatIDFromLuaFunction(const std::string& lua_fname);
+int MeshSetMaterialIDFromLuaFunction(lua_State* L);
+
+/**
+ * Set specified material IDs using a LogicalVolume
+ */
+int MeshSetMaterialIDFromLogicalVolume(lua_State* L);
 
 /**
  * Sets boundary id's using a lua function. The lua function is called for each boundary face
@@ -32,4 +37,9 @@ void SetMatIDFromLuaFunction(const std::string& lua_fname);
  * end
  * \endcode
  */
-void SetBoundaryIDFromLuaFunction(const std::string& lua_fname);
+int MeshSetBoundaryIDFromLuaFunction(lua_State* L);
+
+/**
+ * Set specified boundary IDs using a LogicalVolume
+ */
+int MeshSetBoundaryIDFromLogicalVolume(lua_State* L);

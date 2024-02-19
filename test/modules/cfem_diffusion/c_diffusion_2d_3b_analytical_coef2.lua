@@ -44,10 +44,10 @@ w_bndry = 1
 n_bndry = 2
 s_bndry = 3
 
-mesh.SetProperty(BNDRYID_FROMLOGICAL,e_vol,e_bndry)
-mesh.SetProperty(BNDRYID_FROMLOGICAL,w_vol,w_bndry)
-mesh.SetProperty(BNDRYID_FROMLOGICAL,n_vol,n_bndry)
-mesh.SetProperty(BNDRYID_FROMLOGICAL,s_vol,s_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(e_vol,e_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(w_vol,w_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(n_vol,n_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### CFEM solver
