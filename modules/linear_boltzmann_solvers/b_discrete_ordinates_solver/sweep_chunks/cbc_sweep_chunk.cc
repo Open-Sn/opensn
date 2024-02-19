@@ -14,7 +14,7 @@ CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
                              const MeshContinuum& grid,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                             std::vector<lbs::CellLBSView>& cell_transport_views,
+                             std::vector<lbs::CellLBSView>& grid_transport_view,
                              const std::vector<double>& source_moments,
                              const LBSGroupset& groupset,
                              const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
@@ -25,7 +25,7 @@ CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
                grid,
                discretization,
                unit_cell_matrices,
-               cell_transport_views,
+               grid_transport_view,
                source_moments,
                groupset,
                xs,
@@ -69,7 +69,7 @@ CbcSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
   cell_ = cell_ptr;
   cell_local_id_ = cell_ptr->local_id_;
   cell_mapping_ = &discretization_.GetCellMapping(*cell_);
-  cell_transport_view_ = &cell_transport_views_[cell_->local_id_];
+  cell_transport_view_ = &grid_transport_view_[cell_->local_id_];
   cell_num_faces_ = cell_->faces_.size();
   cell_num_nodes_ = cell_mapping_->NumNodes();
 

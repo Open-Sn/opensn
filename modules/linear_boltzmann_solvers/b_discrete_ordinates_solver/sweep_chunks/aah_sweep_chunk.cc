@@ -10,7 +10,7 @@ namespace lbs
 AahSweepChunk::AahSweepChunk(const MeshContinuum& grid,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                             std::vector<lbs::CellLBSView>& cell_transport_views,
+                             std::vector<lbs::CellLBSView>& grid_transport_view,
                              std::vector<double>& destination_phi,
                              std::vector<double>& destination_psi,
                              const std::vector<double>& source_moments,
@@ -23,7 +23,7 @@ AahSweepChunk::AahSweepChunk(const MeshContinuum& grid,
                grid,
                discretization,
                unit_cell_matrices,
-               cell_transport_views,
+               grid_transport_view,
                source_moments,
                groupset,
                xs,
@@ -65,7 +65,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
     auto cell_local_id = spls[spls_index];
     auto& cell = grid_.local_cells[cell_local_id];
     auto& cell_mapping = discretization_.GetCellMapping(cell);
-    auto& cell_transport_view = cell_transport_views_[cell_local_id];
+    auto& cell_transport_view = grid_transport_view_[cell_local_id];
     auto cell_num_faces = cell.faces_.size();
     auto cell_num_nodes = cell_mapping.NumNodes();
 
