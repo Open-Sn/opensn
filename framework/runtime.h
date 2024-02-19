@@ -5,6 +5,7 @@
 #include <string>
 #include <stdexcept>
 #include <memory>
+#include <filesystem>
 #include "mpicpp-lite/mpicpp-lite.h"
 
 namespace mpi = mpicpp_lite;
@@ -57,6 +58,7 @@ extern std::vector<std::shared_ptr<Function>> function_stack;
 const size_t SIZE_T_INVALID = ((size_t)-1);
 
 extern bool suppress_color;
+extern std::filesystem::path input_path;
 
 /**Customized exceptions.*/
 class RecoverableException : public std::runtime_error

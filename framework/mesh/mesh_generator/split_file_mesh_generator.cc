@@ -41,7 +41,7 @@ SplitFileMeshGenerator::GetInputParameters()
     "Path of the directory to be created for containing the split meshes.");
 
   params.AddOptionalParameter(
-    "split_file_prefix", "split_mesh", "Prefix to use for all split mesh files");
+    "split_file_prefix", opensn::input_path.stem().string(), "Prefix to use for all split mesh files");
 
   params.AddOptionalParameter(
     "read_only", false, "Controls whether the split mesh is recreated or just read.");
@@ -138,10 +138,34 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
   const auto& raw_vertices = umesh.GetVertices();
 
   auto& t_write = log.CreateOrGetTimingBlock("FileMeshGenerator::WriteSplitMesh");
-  auto& t_sorting = log.CreateOrGetTimingBlock("Sorting data", "FileMeshGenerator::WriteSplitMesh");
   auto& t_cells = log.CreateOrGetTimingBlock("WriteCells", "FileMeshGenerator::WriteSplitMesh");
   auto& t_verts = log.CreateOrGetTimingBlock("WriteVerts", "FileMeshGenerator::WriteSplitMesh");
   auto& t_serialize = log.CreateOrGetTimingBlock("Serialize");
+
+  std::vector<std::set<uint64_t>> vertices_needed(num_parts);
+  std::vector<std::set<uint64_t>> cells_needed(num_parts);
+  {
+    uint64_t cell_global_id = 0;
+    for (auto cell_pid : cell_pids)
+    {
+      cells_needed[cell_pid].insert(cell_global_id);
+      const auto& raw_cell = *raw_cells[cell_global_id];
+      for (uint64_t vid : raw_cell.vertex_ids)
+      {
+        vertices_needed[cell_pid].insert(vid);
+        for (uint64_t ghost_gid : vertex_subs[vid])
+        {
+          if (ghost_gid == cell_global_id) continue;
+          cells_needed[cell_pid].insert(ghost_gid);
+
+          const auto& ghost_raw_cell = *raw_cells[ghost_gid];
+          for (uint64_t gvid : ghost_raw_cell.vertex_ids)
+            vertices_needed[cell_pid].insert(gvid);
+        }
+      }
+      ++cell_global_id;
+    }
+  }
 
   uint64_t aux_counter = 0;
   for (int pid = 0; pid < num_parts; ++pid)
@@ -153,51 +177,6 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     std::ofstream ofile(file_path.string(), std::ios_base::binary | std::ios_base::out);
 
     ChiLogicalErrorIf(not ofile.is_open(), "Failed to open " + file_path.string());
-
-    // Appropriate cells and vertices to the current part being writting
-    t_sorting.TimeSectionBegin();
-
-    std::vector<uint64_t> local_cells_needed;
-    std::set<uint64_t> cells_needed;
-    std::set<uint64_t> vertices_needed;
-    {
-      local_cells_needed.reserve(raw_cells.size() / num_parts);
-      {
-        uint64_t cell_global_id = 0;
-        for (auto cell_pid : cell_pids)
-        {
-          if (cell_pid == pid)
-            local_cells_needed.push_back(cell_global_id);
-          ++cell_global_id;
-        }
-      }
-
-      for (uint64_t cell_global_id : local_cells_needed)
-      {
-        cells_needed.insert(cell_global_id);
-
-        const auto& raw_cell = *raw_cells[cell_global_id];
-
-        for (uint64_t vid : raw_cell.vertex_ids)
-        {
-          vertices_needed.insert(vid);
-          for (uint64_t ghost_gid : vertex_subs[vid])
-          {
-            if (ghost_gid == cell_global_id)
-              continue;
-            cells_needed.insert(ghost_gid);
-
-            const auto& ghost_raw_cell = *raw_cells[ghost_gid];
-            for (uint64_t gvid : ghost_raw_cell.vertex_ids)
-              vertices_needed.insert(gvid);
-          }
-        }
-      }
-    }
-    t_sorting.TimeSectionEnd();
-
-    if (verbosity_level_ >= 2)
-      log.Log() << "Writing part " << pid << " num_local_cells=" << local_cells_needed.size();
 
     // Write mesh attributes and general info
     const auto& mesh_options = umesh.GetMeshOptions();
@@ -223,14 +202,14 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     }
 
     // Write how many cells and vertices in file
-    WriteBinaryValue(ofile, cells_needed.size());    // size_t
-    WriteBinaryValue(ofile, vertices_needed.size()); // size_t
+    WriteBinaryValue(ofile, cells_needed[pid].size());    // size_t
+    WriteBinaryValue(ofile, vertices_needed[pid].size()); // size_t
 
     // Write cells
     const size_t BUFFER_SIZE = 4096 * 2;
     ByteArray serial_data;
     serial_data.Data().reserve(BUFFER_SIZE * 2);
-    for (const auto& cell_global_id : cells_needed)
+    for (const auto& cell_global_id : cells_needed[pid])
     {
       t_cells.TimeSectionBegin();
       t_serialize.TimeSectionBegin();
@@ -256,7 +235,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
 
     // Write vertices
     t_verts.TimeSectionBegin();
-    for (const uint64_t vid : vertices_needed)
+    for (const uint64_t vid : vertices_needed[pid])
     {
       serial_data.Write(vid); // uint64_t
       serial_data.Write(raw_vertices[vid]);

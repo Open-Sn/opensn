@@ -142,7 +142,7 @@ LuaApp::ParseArguments(int argc, char** argv)
     } //-v
     else if ((argument.find('=') == std::string::npos) and (not input_file_found))
     {
-      input_file_name_ = argument;
+      opensn::input_path = argument;
       input_file_found = true;
       sim_option_interactive_ = false;
     } // no =
@@ -176,13 +176,11 @@ LuaApp::RunInteractive(int argc, char** argv)
 
   console.FlushConsole();
 
-  const auto& input_fname = input_file_name_;
-
-  if (not input_fname.empty())
+  if (std::filesystem::exists(input_path))
   {
     try
     {
-      console.ExecuteFile(input_fname, argc, argv);
+      console.ExecuteFile(opensn::input_path.string(), argc, argv);
     }
     catch (const std::exception& excp)
     {
@@ -190,6 +188,8 @@ LuaApp::RunInteractive(int argc, char** argv)
       // No quitting if file execution fails
     }
   }
+  else
+    opensn::log.Log0Error() << "Could not open file " << opensn::input_path.string() << ".";
 
   console.RunConsoleLoop();
 
@@ -232,14 +232,13 @@ LuaApp::RunBatch(int argc, char** argv)
   mpi_comm.barrier();
 #endif
 
-  const auto& input_fname = input_file_name_;
   int error_code = 0;
 
-  if ((not input_fname.empty()) and (not termination_posted_))
+  if (std::filesystem::exists(input_path) and (not termination_posted_))
   {
     try
     {
-      error_code = console.ExecuteFile(input_fname, argc, argv);
+      error_code = console.ExecuteFile(opensn::input_path.string(), argc, argv);
     }
     catch (const std::exception& excp)
     {
@@ -247,12 +246,17 @@ LuaApp::RunBatch(int argc, char** argv)
       Exit(EXIT_FAILURE);
     }
   }
+  else
+  { 
+    opensn::log.Log0Error() << "Could not open file " << opensn::input_path.string() << ".";
+    Exit(EXIT_FAILURE);
+  } 
 
   if (not supress_beg_end_timelog_)
   {
     opensn::log.Log() << "\nFinal program time " << program_timer.GetTimeString();
     opensn::log.Log() << Timer::GetLocalDateTimeString() << " " << opensn::name
-                      << " finished execution of " << input_file_name_;
+                      << " finished execution of " << opensn::input_path.string();
   }
 
   return error_code;

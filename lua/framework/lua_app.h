@@ -33,7 +33,6 @@ protected:
 private:
   // run_time quantities
   bool termination_posted_ = false;
-  std::string input_file_name_;
   bool sim_option_interactive_ = true;
   bool allow_petsc_error_handler_ = false;
   bool supress_beg_end_timelog_ = false;
