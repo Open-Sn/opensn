@@ -13,6 +13,7 @@ Meshing and Partitioning
    :maxdepth: 1
    :hidden:
 
+   introduction
    ortho_2D
    ortho_3D
    read_2D_obj
