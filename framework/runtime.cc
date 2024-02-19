@@ -45,6 +45,7 @@ std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
 std::vector<std::shared_ptr<Function>> function_stack;
 
 bool suppress_color = false;
+std::filesystem::path input_path;
 
 int
 Initialize()
