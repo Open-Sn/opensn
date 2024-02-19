@@ -12,6 +12,7 @@
 #include "framework/object_factory.h"
 
 #include <filesystem>
+#include <unordered_set>
 
 namespace opensn
 {
@@ -142,8 +143,10 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
   auto& t_verts = log.CreateOrGetTimingBlock("WriteVerts", "FileMeshGenerator::WriteSplitMesh");
   auto& t_serialize = log.CreateOrGetTimingBlock("Serialize");
 
-  std::vector<std::set<uint64_t>> vertices_needed(num_parts);
-  std::vector<std::set<uint64_t>> cells_needed(num_parts);
+  if (verbosity_level_ >= 1)
+    log.Log() << program_timer.GetTimeString() << " Starting cell sorting";
+  std::vector<std::unordered_set<uint64_t>> vertices_needed(num_parts);
+  std::vector<std::unordered_set<uint64_t>> cells_needed(num_parts);
   {
     uint64_t cell_global_id = 0;
     for (auto cell_pid : cell_pids)
@@ -166,6 +169,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       ++cell_global_id;
     }
   }
+  if (verbosity_level_ >= 1)
+    log.Log() << program_timer.GetTimeString() << " Finished cell sorting";
 
   uint64_t aux_counter = 0;
   for (int pid = 0; pid < num_parts; ++pid)
