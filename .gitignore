@@ -83,3 +83,5 @@ tests/BigTests/c5g7/Test1/solutions/
 doc/scripts/parser.out
 doc/scripts/parsetab.py
 
+doc/**/*.pvtu
+doc/**/*.vtu

@@ -14,9 +14,9 @@ Welcome to OpenSn documentation.
    install_macos_easy.md
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :hidden:
-   :caption: LBS Tutorials
+   :caption: Tutorials
 
    tutorials/lbs/index.rst
 
@@ -32,4 +32,4 @@ Welcome to OpenSn documentation.
    :hidden:
    :caption: Older Tutorials
 
-   tutorials/index.rst
+   tutorials/old/index.rst
