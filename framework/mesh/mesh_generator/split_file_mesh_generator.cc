@@ -40,8 +40,9 @@ SplitFileMeshGenerator::GetInputParameters()
     "split_mesh",
     "Path of the directory to be created for containing the split meshes.");
 
-  params.AddOptionalParameter(
-    "split_file_prefix", "split_mesh", "Prefix to use for all split mesh files");
+  params.AddOptionalParameter("split_file_prefix",
+                              opensn::input_path.stem().string(),
+                              "Prefix to use for all split mesh files");
 
   params.AddOptionalParameter(
     "read_only", false, "Controls whether the split mesh is recreated or just read.");
