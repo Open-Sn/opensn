@@ -9,7 +9,7 @@ num_procs = 2
 
 --############################################### Check num_procs
 if (check_num_procs==nil and number_of_processes ~= num_procs) then
-    Log(LOG_0ERROR,"Incorrect amount of processors. " ..
+    log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
             "Expected "..tostring(num_procs)..
             ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -126,7 +126,7 @@ initial_FR = LBSComputeFissionRate(phys1,"OLD")
 --    dt = LBTSGetProperty(phys1, "TIMESTEP")
 --    time = LBTSGetProperty(phys1, "TIME")
 --    period = dt/math.log(FRf/FRi)
---    Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
+--    log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
 --            phys1name,k,time,dt,period,FRf/initial_FR))
 --end
 
@@ -142,7 +142,7 @@ while (time < time_stop) do
     dt = LBTSGetProperty(phys1, "TIMESTEP")
     time = LBTSGetProperty(phys1, "TIME")
     period = dt/math.log(FRf/FRi)
-    Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
+    log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
             phys1name,k,time,dt,period,FRf/initial_FR))
     if (time >= 0.2 and not swapped) then
         SwapXS(phys1, xs_21cent)

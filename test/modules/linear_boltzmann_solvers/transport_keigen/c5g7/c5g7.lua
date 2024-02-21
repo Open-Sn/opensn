@@ -98,7 +98,7 @@ elseif (k_method == "jfnk") then
     SolverInitialize(k_solver)
     SolverExecute(k_solver)
 else
-    Log(LOG_0ERROR, "k_method must be specified. \"pi\", "..
+    log.Log(LOG_0ERROR, "k_method must be specified. \"pi\", "..
       "\"pi_scdsa\", \"pi_scdsa_pwlc\" or \"jfnk\"");
     os.exit(1)
 end

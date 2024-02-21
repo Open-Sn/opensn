@@ -4,7 +4,8 @@
 
 namespace opensnlua
 {
-/** Sets the verbosity level of the Logger.
+/**
+ * Sets the verbosity level of the Logger.
  * This lua command will overwrite the currently set value.
  *
  * \param int_level int Integer denoting verbosity level. Can be 0,1 or 2 [default:0]
@@ -14,7 +15,8 @@ namespace opensnlua
  */
 int LogSetVerbosity(lua_State* L);
 
-/**Logs a message depending on the log type specified.
+/**
+ * Logs a message depending on the log type specified.
  *
  * \param LogType int Can be any of the log types specified below.
  * \param LogMsg char Message or value to be output to the log.
@@ -50,8 +52,10 @@ int LogSetVerbosity(lua_State* L);
  * \ingroup LuaLogging
  * \author Jan
  */
-int Log(lua_State* L);
-/**Processes the sub-events of a repeating event and converts it to a
+int LogLog(lua_State* L);
+
+/**
+ * Processes the sub-events of a repeating event and converts it to a
  * meaningful value (floating-point).
  *
  * \param event_name string Required. Name of the event.
@@ -62,10 +66,13 @@ int Log(lua_State* L);
  * \return double The processed value.
  */
 int LogProcessEvent(lua_State* L);
-/**Prints the performance graph.
+
+/**
+ * Prints the performance graph.
  * \params rank int Optional argument to print the graph for a specific rank.
  *
  * \ingroup LuaLogging
  * */
 int LogPrintTimingGraph(lua_State* L);
+
 } // namespace opensnlua

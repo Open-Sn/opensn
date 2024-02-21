@@ -85,4 +85,4 @@ FFInterpolationInitialize(ffvol)
 FFInterpolationExecute(ffvol)
 maxval = FFInterpolationGetValue(ffvol)
 
-Log(LOG_0,string.format("Avg-value=%.6f", maxval))
+log.Log(LOG_0,string.format("Avg-value=%.6f", maxval))

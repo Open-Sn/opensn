@@ -17,7 +17,7 @@ PhysicsTransportXSSet(xs["6"],OPENSN_XSFILE,"materials/XS_fission_chamber.xs")
 water_xs = PhysicsTransportXSGet(xs["0"])
 
 num_groups = water_xs["num_groups"]
-Log(LOG_0,"Num groups: "..tostring(num_groups))
+log.Log(LOG_0,"Num groups: "..tostring(num_groups))
 
 --############################################### Create materials
 materials = {}

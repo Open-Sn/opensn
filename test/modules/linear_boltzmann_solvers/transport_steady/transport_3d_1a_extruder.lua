@@ -9,7 +9,7 @@ num_procs = 4
 
 --############################################### Check num_procs
 if (check_num_procs==nil and number_of_processes ~= num_procs) then
-  Log(LOG_0ERROR,"Incorrect amount of processors. " ..
+  log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
     "Expected "..tostring(num_procs)..
     ". Pass check_num_procs=false to override if possible.")
   os.exit(false)
@@ -137,7 +137,7 @@ FFInterpolationInitialize(curffi)
 FFInterpolationExecute(curffi)
 maxval = FFInterpolationGetValue(curffi)
 
-Log(LOG_0,string.format("Max-value1=%.5e", maxval))
+log.Log(LOG_0,string.format("Max-value1=%.5e", maxval))
 
 ffi1 = FFInterpolationCreate(VOLUME)
 curffi = ffi1
@@ -149,7 +149,7 @@ FFInterpolationInitialize(curffi)
 FFInterpolationExecute(curffi)
 maxval = FFInterpolationGetValue(curffi)
 
-Log(LOG_0,string.format("Max-value2=%.5e", maxval))
+log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if (master_export == nil) then

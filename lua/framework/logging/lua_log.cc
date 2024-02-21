@@ -3,17 +3,17 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#include "log_lua.h"
+#include "lua_log.h"
 #include "framework/console/console.h"
 
 using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionAsIs(LogSetVerbosity);
-RegisterLuaFunctionAsIs(Log);
-RegisterLuaFunctionAsIs(LogProcessEvent);
-RegisterLuaFunctionAsIs(LogPrintTimingGraph);
+RegisterLuaFunctionNamespace(LogSetVerbosity, log, SetVerbosity);
+RegisterLuaFunctionNamespace(LogLog, log, Log);
+RegisterLuaFunctionNamespace(LogProcessEvent, log, ProcessEvent);
+RegisterLuaFunctionNamespace(LogPrintTimingGraph, log, PrintTimingGraph);
 
 RegisterLuaConstantAsIs(LOG_0, Varying(1));
 RegisterLuaConstantAsIs(LOG_0WARNING, Varying(2));
@@ -49,7 +49,7 @@ LogSetVerbosity(lua_State* L)
 }
 
 int
-Log(lua_State* L)
+LogLog(lua_State* L)
 {
   int num_args = lua_gettop(L);
 

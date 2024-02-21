@@ -10,7 +10,7 @@ num_procs = 4
 
 --############################################### Check num_procs
 if (check_num_procs==nil and number_of_processes ~= num_procs) then
-    Log(LOG_0ERROR,"Incorrect amount of processors. " ..
+    log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
                       "Expected "..tostring(num_procs)..
                       ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -110,7 +110,7 @@ FFInterpolationInitialize(curffi)
 FFInterpolationExecute(curffi)
 maxval = FFInterpolationGetValue(curffi)
 
-Log(LOG_0,string.format("Max-valueG1=%.5f", maxval))
+log.Log(LOG_0,string.format("Max-valueG1=%.5f", maxval))
 
 --  volume integrations - energy group 2
 ffi1 = FFInterpolationCreate(VOLUME)
@@ -123,4 +123,4 @@ FFInterpolationInitialize(curffi)
 FFInterpolationExecute(curffi)
 maxval = FFInterpolationGetValue(curffi)
 
-Log(LOG_0,string.format("Max-valueG2=%.5f", maxval))
+log.Log(LOG_0,string.format("Max-valueG2=%.5f", maxval))

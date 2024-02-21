@@ -17,7 +17,7 @@ num_procs = 4
 
 -- Check num_procs
 if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    Log(LOG_0ERROR, "Incorrect amount of processors. " ..
+    log.Log(LOG_0ERROR, "Incorrect amount of processors. " ..
             "Expected " .. tostring(num_procs) ..
             ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -200,10 +200,10 @@ response = lbs.EvaluateResponse(evaluator, "buff")
 -- Print results
 for g = 1, num_groups do
     pref = "QoI Value[" .. tostring(g - 1) .. "]"
-    Log(LOG_0, string.format(pref .. "= %.5e", fwd_qois[g]))
+    log.Log(LOG_0, string.format(pref .. "= %.5e", fwd_qois[g]))
 end
-Log(LOG_0, string.format("sum(QoI Values)= %.5e", fwd_qoi_sum))
-Log(LOG_0, string.format("Inner Product=%.5e", response))
+log.Log(LOG_0, string.format("sum(QoI Values)= %.5e", fwd_qoi_sum))
+log.Log(LOG_0, string.format("Inner Product=%.5e", response))
 
 -- Cleanup
 MPIBarrier()
