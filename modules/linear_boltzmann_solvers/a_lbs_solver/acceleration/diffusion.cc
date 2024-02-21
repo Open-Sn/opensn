@@ -208,8 +208,6 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 
   if (options.verbose)
   {
-    KSPSetConvergenceTest(ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
-
     KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
 
     double rhs_norm;
@@ -282,8 +280,6 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 
   if (options.verbose)
   {
-    KSPSetConvergenceTest(ksp_, &RelativeResidualConvergenceTest, nullptr, nullptr);
-
     KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
 
     double rhs_norm;

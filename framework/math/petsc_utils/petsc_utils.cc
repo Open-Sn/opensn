@@ -116,37 +116,11 @@ CreateCommonKrylovSolverSetup(Mat ref_matrix,
     setup.ksp, 1.e-50, in_relative_residual_tolerance, 1.0e50, in_maximum_iterations);
   KSPSetInitialGuessNonzero(setup.ksp, PETSC_TRUE);
 
-  KSPSetConvergenceTest(setup.ksp, &RelativeResidualConvergenceTest, nullptr, nullptr);
   KSPSetFromOptions(setup.ksp);
 
   KSPMonitorSet(setup.ksp, &KSPMonitorRelativeToRHS, nullptr, nullptr);
 
   return setup;
-}
-
-PetscErrorCode
-RelativeResidualConvergenceTest(
-  KSP ksp, PetscInt, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
-{
-  // Compute rhs norm
-  Vec Rhs;
-  KSPGetRhs(ksp, &Rhs);
-  double rhs_norm;
-  VecNorm(Rhs, NORM_2, &rhs_norm);
-  if (rhs_norm < 1.0e-12)
-    rhs_norm = 1.0;
-
-  // Compute test criterion
-  double tol;
-  int64_t maxIts;
-  KSPGetTolerances(ksp, nullptr, &tol, nullptr, &maxIts);
-
-  double relative_residual = rnorm / rhs_norm;
-
-  if (relative_residual < tol)
-    *convergedReason = KSP_CONVERGED_RTOL;
-
-  return KSP_CONVERGED_ITERATING;
 }
 
 PetscErrorCode
