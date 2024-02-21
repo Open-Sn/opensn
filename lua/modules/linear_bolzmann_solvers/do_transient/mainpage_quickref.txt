@@ -1,6 +1,0 @@
-submodule: LBS Transient SteadyStateSolver
-function: chiLBSCreateTransientSolver
-function: chiLBTSSetProperty
-function: chiLBTSGetProperty
-function: chiLBTSAdvanceTimeData
-module_end
