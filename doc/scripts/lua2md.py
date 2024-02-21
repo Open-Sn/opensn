@@ -60,7 +60,7 @@ def parse(src):
             if len(code) > 0:
                 # open a code block
                 if not code_block:
-                    markdown += "```\n"
+                    markdown += "```lua\n"
                     code_block = True
 
                 markdown += code + "\n"
@@ -93,6 +93,6 @@ with open(args.md_filename, "w") as f:
     f.write(
         "You can copy/paste the text below or look in the file named ```{}```:\n".format(
             args.lua_filename))
-    f.write("```\n")
+    f.write("```lua\n")
     f.write(lua_src)
     f.write("```\n")
