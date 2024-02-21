@@ -48,7 +48,7 @@ error_end = TextColors.ENDC
 
 # Process commandline arguments
 arguments_help = textwrap.dedent('''\
-Run the dependency builder. 
+Run the dependency builder.
 ''')
 
 parser = argparse.ArgumentParser(
@@ -196,15 +196,6 @@ def ExtractPackage(pkg, ver):
 
     if not success:
         raise RuntimeError(err)
-
-    # Check if folder defaulted to upper
-    if os.path.exists(f"{pkg.upper()}-{ver}") and not os.path.exists(f"{pkg}-{ver}"):
-        success, err, outstr = ExecSub(f"mv {pkg.upper()}-{ver}/ {pkg}-{ver}/", log_file)
-
-        if not success:
-            raise RuntimeError(err)
-
-    os.chdir(f"{pkg}-{ver}")
 
 
 # Install command for ncurses and readline
