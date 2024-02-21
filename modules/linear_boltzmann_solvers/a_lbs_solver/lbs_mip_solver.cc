@@ -1,11 +1,11 @@
-#include "modules/linear_boltzmann_solvers/b_diffusion_dfem_solver/lbs_mip_solver.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_mip_solver.h"
 
 #include "framework/object_factory.h"
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/source_functions//source_function.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/b_diffusion_dfem_solver/iterative_methods/mip_wgs_context2.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/mip_wgs_context2.h"
 
 namespace opensn
 {

@@ -1,8 +1,8 @@
-#include "modules/linear_boltzmann_solvers/b_diffusion_dfem_solver/iterative_methods/mip_wgs_context2.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/mip_wgs_context2.h"
 
 #include <petscksp.h>
 
-#include "modules/linear_boltzmann_solvers/b_diffusion_dfem_solver/lbs_mip_solver.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/preconditioning/lbs_shell_operations.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion_mip_solver.h"
