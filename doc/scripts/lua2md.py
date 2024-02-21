@@ -1,6 +1,7 @@
 # Convert .lua file with in-code documentation into a .md file
 
 import argparse
+import os.path
 import re
 
 # Content of the generated markdown file
@@ -79,12 +80,17 @@ def parse(src):
 parser = argparse.ArgumentParser(prog='lua2md')
 parser.add_argument('lua_filename')
 parser.add_argument('md_filename')
+parser.add_argument('-d', '--root-directory', dest='root_directory', default=None, help='root directory')
 args = parser.parse_args()
 
 with open(args.lua_filename, "r") as f:
     src = ''.join(f.readlines())
     parse(src)
 
+if args.root_directory is not None:
+    display_file_name = os.path.relpath(args.lua_filename, args.root_directory)
+else:
+    display_file_name = args.lua_filename
 with open(args.md_filename, "w") as f:
     f.write(markdown)
     # append the complete input file
@@ -92,7 +98,7 @@ with open(args.md_filename, "w") as f:
     f.write("## The complete input is below:\n")
     f.write(
         "You can copy/paste the text below or look in the file named ```{}```:\n".format(
-            args.lua_filename))
+            display_file_name))
     f.write("```lua\n")
     f.write(lua_src)
     f.write("```\n")

@@ -20,7 +20,7 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     macro(lua2md src dest)
         add_custom_command(
             OUTPUT ${dest}
-            COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/scripts/lua2md.py ${src} ${dest}
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/scripts/lua2md.py ${src} ${dest} -d ${CMAKE_SOURCE_DIR}
             DEPENDS ${src} ${CMAKE_SOURCE_DIR}/doc/scripts/lua2md.py
         )
         list(APPEND RST_FILES ${dest})
