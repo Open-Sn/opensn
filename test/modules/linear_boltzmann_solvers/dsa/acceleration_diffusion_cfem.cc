@@ -149,7 +149,7 @@ acceleration_Diffusion_CFEM(const InputParameters&)
   // solver.options.ref_solution_lua_function = "MMS_phi";
   // solver.options.source_lua_function = "MMS_q";
   solver.options.verbose = true;
-  solver.options.residual_tolerance = 1.0e-10;
+  solver.options.residual_tolerance = 1.0e-12;
   solver.options.perform_symmetry_check = true;
 
   solver.Initialize();

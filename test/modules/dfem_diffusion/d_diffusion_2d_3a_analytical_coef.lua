@@ -52,6 +52,7 @@ DFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"dirichlet",0.0)
 DFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"dirichlet",0.0)
 DFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"dirichlet",0.0)
 
+SolverSetBasicOption(phys1, "residual_tolerance", 1e-8)
 SolverInitialize(phys1)
 SolverExecute(phys1)
 
