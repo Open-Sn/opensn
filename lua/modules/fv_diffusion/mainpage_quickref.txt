@@ -1,4 +1,0 @@
-submodule: Finite Volume Diffusion solver
-function: chiFVDiffusionSolverCreate
-function: chiFVDiffusionSetBCProperty
-module_end

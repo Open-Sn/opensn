@@ -1,9 +1,0 @@
-submodule: LBS Adjoint SteadyStateSolver
-function: chiAdjointSolverCreate
-function: chiAdjointSolverAddResponseFunction
-function: chiAdjointSolverMakeExpRepFromP1Moments
-function: chiAdjointSolverExportImportanceMapBinary
-function: chiAdjointSolverComputeInnerProduct
-function: chiAdjointSolverReadFluxMomentsToBuffer
-function: chiAdjointSolverApplyFluxMomentBuffer
-module_end
