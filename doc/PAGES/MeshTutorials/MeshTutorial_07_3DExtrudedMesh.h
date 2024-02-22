@@ -76,7 +76,7 @@ cylinder),
  ### LV of pre-defined type
  \code
 -- Logical Volumes
-my_LV = LogicalVolumeCreate(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
+my_LV = logvol.Create(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
 mesh.SetMaterialIDFromLogicalVolume(Air, 1)
 mesh.ExportToVTK("export_mesh_with_IDs")
  \endcode
@@ -85,7 +85,7 @@ mesh.ExportToVTK("export_mesh_with_IDs")
  \code
 surf_LV = SurfaceMeshCreate()
 SurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
-my_LV = LogicalVolumeCreate(SURFACE, surf_LV)
+my_LV = logvol.Create(SURFACE, surf_LV)
 
 mesh.SetMaterialIDFromLogicalVolume(Air, 1)
 mesh.ExportToVTK("export_mesh_with_IDs")

@@ -11,7 +11,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 material = mat.AddMaterial("Test Material");
 
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 
 mesh.SetupOrthogonalBoundaries()

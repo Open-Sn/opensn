@@ -35,7 +35,7 @@ Next we set the material IDs:
 
 \code
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 \endcode
 
@@ -182,7 +182,7 @@ surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 VolumeMesherExecute();
 
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --############################################### Add material

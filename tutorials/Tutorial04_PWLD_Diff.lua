@@ -18,14 +18,14 @@ mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Set Material IDs
 material = mat.AddMaterial("Homogenous_Material");
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 -- Setboundary IDs
 -- xmin,xmax,ymin,ymax,zmin,zmax
-e_vol = LogicalVolumeCreate(RPP,0.99999,1000,-1000,1000,-1000,1000)
-w_vol = LogicalVolumeCreate(RPP,-1000,0.00001,-1000,1000,-1000,1000)
-n_vol = LogicalVolumeCreate(RPP,-1000,1000,0.99999,1000,-1000,1000)
-s_vol = LogicalVolumeCreate(RPP,-1000,1000,-1000,0.00001,-1000,1000)
+e_vol = logvol.Create(RPP,0.99999,1000,-1000,1000,-1000,1000)
+w_vol = logvol.Create(RPP,-1000,0.00001,-1000,1000,-1000,1000)
+n_vol = logvol.Create(RPP,-1000,1000,0.99999,1000,-1000,1000)
+s_vol = logvol.Create(RPP,-1000,1000,-1000,0.00001,-1000,1000)
 
 e_bndry = 0
 w_bndry = 1

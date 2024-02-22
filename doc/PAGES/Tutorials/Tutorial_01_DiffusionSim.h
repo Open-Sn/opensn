@@ -91,13 +91,13 @@ VolumeMesherExecute();
 Materials ID's can conveniently be specified using logical volumes. There are
 many options for logical volumes ranging from primitive parametric surfaces
  to non-convex user generated surfaces using surface meshes
- (see LogicalVolumeCreate). For this tutorial
+ (see logvol.Create). For this tutorial
  we will use a rectangular paralellipiped (RPP or brick) as follows.
 
 \code
 material = mat.AddMaterial("Test Material");
 
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 \endcode
 
@@ -107,7 +107,7 @@ We first create a material using the mat.AddMaterial() function.
  operates on the integer supplied.
 This material is added to the physics environment and therefore has scope over
 all mesh handlers and all physics entities. We then create a logical volume
- using the function LogicalVolumeCreate() with arguments RPP,
+ using the function logvol.Create() with arguments RPP,
  specifying that we will be using a Rectangular Parallelipiped and then a
  series of dimensions specifying xmin-xmax-ymin-ymax-zmin-zmax. Every cell
  centroid within these dimensions will be flagged as being "within" the logical
@@ -229,7 +229,7 @@ VolumeMesherExecute();
 material = mat.AddMaterial("Test Material");
 
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 
 mesh.ExportToVTK("Mesh")
