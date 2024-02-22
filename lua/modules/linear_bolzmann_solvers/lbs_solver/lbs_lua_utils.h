@@ -11,9 +11,6 @@ class LBSSolver;
 namespace opensnlua::lbs
 {
 
-// void SetBoundaryOptions(LBSSolver& lbs_solver,
-//                         const objects::InputParameters& params);
-
 opensn::InputParameters GetSyntax_SetOptions();
 opensn::ParameterBlock SetOptions(const opensn::InputParameters& params);
 

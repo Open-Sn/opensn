@@ -24,7 +24,6 @@ namespace opensnlua::lbs
 void
 RegisterLuaEntities(lua_State* L)
 {
-  RegisterFunction(LBSSetProperty);
   RegisterNumber(DISCRETIZATION_METHOD, 1);
   RegisterNumber(PWLD, 3);
   RegisterNumber(PWLD1D, 4);
@@ -57,29 +56,15 @@ RegisterLuaEntities(lua_State* L)
   RegisterNumberValueToTable(INCIDENT_ANISTROPIC_HETEROGENEOUS, 4, LBSBoundaryTypes);
 
   RegisterTable(LBSGroupset);
-  RegisterFunction(LBSCreateGroupset);
-  RegisterFunction(LBSCreateGroup);
-  RegisterFunction(LBSGroupsetAddGroups);
-  RegisterFunction(LBSGroupsetSetQuadrature);
-  RegisterFunction(LBSGroupsetSetAngleAggregationType);
   RegisterNumberValueToTable(ANGLE_AGG_SINGLE, 1, LBSGroupset);
   RegisterNumberValueToTable(ANGLE_AGG_POLAR, 2, LBSGroupset);
   RegisterNumberValueToTable(ANGLE_AGG_AZIMUTHAL, 3, LBSGroupset);
-  RegisterFunction(LBSGroupsetSetAngleAggDiv);
-  RegisterFunction(LBSGroupsetSetGroupSubsets);
-  RegisterFunction(LBSGroupsetSetIterativeMethod);
   RegisterNumber(KRYLOV_RICHARDSON, 5);
   RegisterNumber(KRYLOV_RICHARDSON_CYCLES, 6);
   RegisterNumber(KRYLOV_GMRES, 7);
   RegisterNumber(KRYLOV_GMRES_CYCLES, 8);
   RegisterNumber(KRYLOV_BICGSTAB, 9);
   RegisterNumber(KRYLOV_BICGSTAB_CYCLES, 10);
-  RegisterFunction(LBSGroupsetSetResidualTolerance);
-  RegisterFunction(LBSGroupsetSetMaxIterations);
-  RegisterFunction(LBSGroupsetSetGMRESRestartIntvl);
-  RegisterFunction(LBSGroupsetSetEnableSweepLog);
-  RegisterFunction(LBSGroupsetSetWGDSA);
-  RegisterFunction(LBSGroupsetSetTGDSA);
 
   RegisterFunction(LBSGetScalarFieldFunctionList);
 
@@ -94,8 +79,5 @@ RegisterLuaEntities(lua_State* L)
 
   RegisterFunction(LBSComputeFissionRate);
   RegisterFunction(LBSInitializeMaterials);
-
-  RegisterFunction(LBSAddPointSource);
-  RegisterFunction(LBSClearPointSources);
 }
 } // namespace opensnlua::lbs

@@ -81,7 +81,16 @@ mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, 1, 0.27)
 
 
 
-
+--############################################### Add point source
+src={}
+for g=1,num_groups do
+    src[g] = 0.0
+end
+src[1] = 1.0
+pt_src = lbs.PointSource.Create({
+    location = { 0.0, 0.0, 0.0 },
+    strength = src
+})
 
 --############################################### Setup Physics
 solver_name = "LBS"
@@ -101,18 +110,14 @@ lbs_block =
             l_max_its = 0,
         }
     },
-    options = {scattering_order = 0, field_function_prefix = solver_name}
+    options = {
+        scattering_order = 0,
+        point_sources = { pt_src },
+        field_function_prefix = solver_name
+    }
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-
---############################################### Add point source
-src={}
-for g=1,num_groups do
-    src[g] = 0.0
-end
-src[1] = 1.0
-LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
