@@ -95,7 +95,7 @@ surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 VolumeMesherExecute();
 
-material = PhysicsAddMaterial("Test Material");
+material = mat.AddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
@@ -107,10 +107,10 @@ chiRegionExportMeshToVTK(region1,"Mesh")
 
 -- Set material properties
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+mat.SetProperty(material,"k",SINGLE_VALUE,1.0)
 
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+mat.SetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics

@@ -45,11 +45,11 @@ Similar to the diffusion tutorial we have to create a material, then add a
  property to it, and then to set the property.
 
 \code
-material0 = PhysicsAddMaterial("Test Material");
+material0 = mat.AddMaterial("Test Material");
 
 PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1
-PhysicsMaterialSetProperty(material0,
+mat.SetProperty(material0,
                               TRANSPORT_XSECTIONS,
                               SIMPLEXS1,
                               num_groups,     --Num grps
@@ -186,11 +186,11 @@ vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --############################################### Add material
-material0 = PhysicsAddMaterial("Test Material");
+material0 = mat.AddMaterial("Test Material");
 
 PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1
-PhysicsMaterialSetProperty(material0,
+mat.SetProperty(material0,
                               TRANSPORT_XSECTIONS,
                               SIMPLEXS1,
                               num_groups,     --Num grps

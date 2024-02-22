@@ -25,14 +25,12 @@ unit_tests.SimTest93_RayTracing()
 --###############################################
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
+materials[1] = mat.AddMaterial("Test Material");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
 num_groups = 1
-PhysicsMaterialSetProperty(materials[1],
-        TRANSPORT_XSECTIONS,
-        SIMPLEXS0,1,0.27)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, 1, 0.27)
 
 
 

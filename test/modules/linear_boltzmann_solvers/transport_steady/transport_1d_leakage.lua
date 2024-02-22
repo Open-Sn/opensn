@@ -30,11 +30,10 @@ num_groups = 1
 sigma_t = 1.0
 
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
-PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
+materials[1] = mat.AddMaterial("Test Material");
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
-PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-                           SIMPLEXS0, num_groups, sigma_t)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, num_groups, sigma_t)
 
 -- Setup Physics
 pquad = CreateProductQuadrature(GAUSS_LEGENDRE, 128)

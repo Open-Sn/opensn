@@ -67,23 +67,20 @@ mesh.SetMaterialIDFromLogicalVolume(vol1b, 1)
 
 -- Create materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material1");
-materials[2] = PhysicsAddMaterial("Test Material2");
-materials[3] = PhysicsAddMaterial("Test Material3");
+materials[1] = mat.AddMaterial("Test Material1");
+materials[2] = mat.AddMaterial("Test Material2");
+materials[3] = mat.AddMaterial("Test Material3");
 
 -- Add cross sections to materials
 num_groups = 1
-PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
-PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-        SIMPLEXS1, num_groups, 0.01, 0.01)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.01, 0.01)
 
-PhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
-PhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
-        SIMPLEXS1, num_groups, 0.1 * 20, 0.8)
+mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.1 * 20, 0.8)
 
-PhysicsMaterialAddProperty(materials[3], TRANSPORT_XSECTIONS)
-PhysicsMaterialSetProperty(materials[3], TRANSPORT_XSECTIONS,
-        SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
+mat.AddProperty(materials[3], TRANSPORT_XSECTIONS)
+mat.SetProperty(materials[3], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
 
 -- Create sources
 src = {}
@@ -94,8 +91,8 @@ for g = 1, num_groups do
         src[g] = 0.0
     end
 end
-PhysicsMaterialAddProperty(materials[3], ISOTROPIC_MG_SOURCE)
-PhysicsMaterialSetProperty(materials[3], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mat.AddProperty(materials[3], ISOTROPIC_MG_SOURCE)
+mat.SetProperty(materials[3], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 -- Setup physics
 pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)

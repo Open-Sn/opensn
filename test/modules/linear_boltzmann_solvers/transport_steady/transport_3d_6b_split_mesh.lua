@@ -69,22 +69,21 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
+materials[1] = mat.AddMaterial("Test Material");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 
 
 num_groups = 21
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,"xs_graphite_pure.xs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_graphite_pure.xs")
 
 src={}
 for g=1,num_groups do
   src[g] = 0.0
 end
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
 pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 4)

@@ -58,13 +58,12 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Fissile Material")
+materials[1] = mat.AddMaterial("Fissile Material")
 
-PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
 xs_file = "../transport_keigen/simple_fissile.xs"
-PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-                           OPENSN_XSFILE, xs_file)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, xs_file)
 
 --############################################### Setup Physics
 num_groups = 1

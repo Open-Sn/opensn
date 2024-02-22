@@ -40,32 +40,30 @@ mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
-materials[2] = PhysicsAddMaterial("Test Material2");
+materials[1] = mat.AddMaterial("Test Material");
+materials[2] = mat.AddMaterial("Test Material2");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
 
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
-PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
 
 
 num_groups = 168
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,"xs_3_170.xs")
-PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,"xs_3_170.xs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_3_170.xs")
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_3_170.xs")
 
---PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
---PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
+--mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, num_groups, 0.1)
+--mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLEXS0, num_groups, 0.1)
 
 src={}
 for g=1,num_groups do
   src[g] = 0.0
 end
 --src[1] = 1.0
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
-PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
 pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)

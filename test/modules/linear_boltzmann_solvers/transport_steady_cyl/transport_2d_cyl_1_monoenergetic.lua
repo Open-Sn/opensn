@@ -43,13 +43,11 @@ sigmat = 25.0
 ratioc = 0.1
 source = sigmat * (1 - ratioc)
 
-material0 = PhysicsAddMaterial("Material_0");
-PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(material0,ISOTROPIC_MG_SOURCE)
-PhysicsMaterialSetProperty(material0, TRANSPORT_XSECTIONS,
-                           SIMPLEXS1, ngrp, sigmat, ratioc)
-PhysicsMaterialSetProperty(material0, ISOTROPIC_MG_SOURCE,
-                           SINGLE_VALUE, source)
+material0 = mat.AddMaterial("Material_0");
+mat.AddProperty(material0, TRANSPORT_XSECTIONS)
+mat.AddProperty(material0, ISOTROPIC_MG_SOURCE)
+mat.SetProperty(material0, TRANSPORT_XSECTIONS, SIMPLEXS1, ngrp, sigmat, ratioc)
+mat.SetProperty(material0, ISOTROPIC_MG_SOURCE, SINGLE_VALUE, source)
 
 --############################################### Setup Physics
 pquad0 = CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)

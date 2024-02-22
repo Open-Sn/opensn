@@ -37,13 +37,13 @@ mesh.SetMaterialIDFromLogicalVolume(vol0,1)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Strong fuel");
-materials[2] = PhysicsAddMaterial("Weak fuel");
+materials[1] = mat.AddMaterial("Strong fuel");
+materials[2] = mat.AddMaterial("Weak fuel");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
-PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
 xs_strong_fuel_micro = PhysicsTransportXSCreate()
@@ -59,18 +59,15 @@ xs_weak_fuelA  = PhysicsTransportXSMakeCombined({{ xs_weak_fuelA_micro, atom_den
 xs_weak_fuelB  = PhysicsTransportXSMakeCombined({{xs_weak_fuelB_micro, atom_density}})   --critical
 
 num_groups = 1
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-        EXISTING,xs_strong_fuel)
-PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
-        EXISTING,xs_weak_fuelA)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_strong_fuel)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, xs_weak_fuelA)
 
 src={0.0}
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
-PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 function SwapXS(solver_handle, new_xs)
-    PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
-            EXISTING,new_xs)
+    mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, new_xs)
     LBSInitializeMaterials(solver_handle)
 end
 

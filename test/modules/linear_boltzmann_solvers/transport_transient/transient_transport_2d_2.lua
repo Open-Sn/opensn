@@ -34,10 +34,10 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
+materials[1] = mat.AddMaterial("Test Material");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
 xs_critical = PhysicsTransportXSCreate()
@@ -46,15 +46,13 @@ xs_21cent = PhysicsTransportXSCreate()
 PhysicsTransportXSSet(xs_21cent, OPENSN_XSFILE, "tests/transport_transient/xs_inf_21cent_1g.xs")
 
 num_groups = 1
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-        EXISTING,xs_critical)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_critical)
 
 src={0.0}
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 function SwapXS(solver_handle, new_xs)
-    PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-            EXISTING,new_xs)
+    mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, new_xs)
     LBSInitializeMaterials(solver_handle)
 end
 

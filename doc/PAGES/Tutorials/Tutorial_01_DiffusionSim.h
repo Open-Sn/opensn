@@ -95,13 +95,13 @@ many options for logical volumes ranging from primitive parametric surfaces
  we will use a rectangular paralellipiped (RPP or brick) as follows.
 
 \code
-material = PhysicsAddMaterial("Test Material");
+material = mat.AddMaterial("Test Material");
 
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 \endcode
 
-We first create a material using the PhysicsAddMaterial() function.
+We first create a material using the mat.AddMaterial() function.
  The handle of this material will essentially be zero but it is not technically
  required by the VolumeMesherSetProperty() function since this function
  operates on the integer supplied.
@@ -148,10 +148,10 @@ Now that the cells have been assigned a material id we need to add
 
 \code
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+mat.SetProperty(material,"k",SINGLE_VALUE,1.0)
 
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+mat.SetProperty(material,"q",SINGLE_VALUE,1.0)
 \endcode
 
 In this code we created the material properties using the function
@@ -161,7 +161,7 @@ In this code we created the material properties using the function
  to the specific property.
 
 Material property values are set using the function
- PhysicsMaterialSetProperty() which again expects a handle to the
+ mat.SetProperty() which again expects a handle to the
  reference material, then either a material property id or name (in this case
  name), then an operation index and value(s). For this case we used an operation
  index SINGLE_VALUE which is the only operation supported by SCALAR_VALUE. In
@@ -226,7 +226,7 @@ surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 VolumeMesherExecute();
 
-material = PhysicsAddMaterial("Test Material");
+material = mat.AddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
@@ -238,10 +238,10 @@ mesh.ExportToVTK("Mesh")
 
 -- Set material properties
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+mat.SetProperty(material,"k",SINGLE_VALUE,1.0)
 
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+mat.SetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics

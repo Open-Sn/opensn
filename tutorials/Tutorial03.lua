@@ -13,16 +13,13 @@ vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --############################################### Add material
-material0 = PhysicsAddMaterial("Test Material");
+material0 = mat.AddMaterial("Test Material");
 
-PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
+mat.AddProperty(material0, TRANSPORT_XSECTIONS)
 num_groups = 1
-PhysicsMaterialSetProperty(material0,
-                           TRANSPORT_XSECTIONS,
-                           SIMPLEXS1,
-                           num_groups,     --Num grps
-                           1.0,   --Sigma_t
-                           0.2)   --Scattering ratio
+Sigma_t = 1.0
+scattering_ratio = 0.2
+mat.SetProperty(material0, TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, Sigma_t, scattering_ratio)
 
 --############################################### Setup Physics
 phys1 = LBSCreateSolver()

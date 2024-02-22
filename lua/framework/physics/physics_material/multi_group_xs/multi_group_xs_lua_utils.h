@@ -10,7 +10,7 @@
  *                       OPENSN_XSFILE,
  *                       "test/xs_graphite_pure.xs")
  *
- * PhysicsMaterialSetProperty(materials[2],
+ * mat.SetProperty(materials[2],
  *                               TRANSPORT_XSECTIONS,
  *                               EXISTING,
  *                               xs_graphite_clean)
@@ -100,7 +100,7 @@ int PhysicsTransportXSSet(lua_State* L);
  *         {xs_3, 0.3e2}}
  * aerated_graphite = PhysicsTransportXSMakeCombined(combo)
  *
- * PhysicsMaterialSetProperty(materials[1],
+ * mat.SetProperty(materials[1],
  *                               TRANSPORT_XSECTIONS,
  *                               EXISTING,
  *                               aerated_graphite)

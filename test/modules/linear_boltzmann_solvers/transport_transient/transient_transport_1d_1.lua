@@ -34,14 +34,14 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
-materials[2] = PhysicsAddMaterial("Test Material2");
+materials[1] = mat.AddMaterial("Test Material");
+materials[2] = mat.AddMaterial("Test Material2");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
 
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
-PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
 xs = PhysicsTransportXSCreate()
@@ -53,18 +53,16 @@ PhysicsTransportXSSet(xs, OPENSN_XSFILE, xs_file)
 xs = PhysicsTransportXSMakeCombined({{xs, 0.0424459}}) -- just sub-critical
 
 num_groups = 1
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-        EXISTING,xs)
-PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
-        EXISTING,xs)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, xs)
 
 src={}
 for g=1,num_groups do
     src[g] = 0.0
 end
 --src[1] = 1.0
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
-PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
 phys1 = LBSCreateTransientSolver()

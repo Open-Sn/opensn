@@ -8,7 +8,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
-material = PhysicsAddMaterial("Test Material");
+material = mat.AddMaterial("Test Material");
 
 -- Set Material IDs
 vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
@@ -21,11 +21,11 @@ mesh.ExportToVTK("Mesh")
 
 
 -- Set material properties
-PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+mat.AddProperty(material, SCALAR_VALUE, "k")
+mat.SetProperty(material, "k", SINGLE_VALUE, 1.0)
 
-PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+mat.AddProperty(material, SCALAR_VALUE, "q")
+mat.SetProperty(material, "q", SINGLE_VALUE, 1.0)
 
 
 --############################################### Setup Physics
