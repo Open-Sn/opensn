@@ -57,27 +57,3 @@ int CreateSLDFESQAngularQuadrature(lua_State* L);
  * \author Jan
  */
 int LocallyRefineSLDFESQAngularQuadrature(lua_State* L);
-
-/** Outputs the quadrature information to python format.
- * \param handle int Handle to the reference quadrature.
- * \param file_name_prefix string Prefix to be used in front of file.
- *
- * ##_
- *
- * ###Example:
- * Example of printing a quadrature:
- * Example with refinement level 2 and a triple directional refinement:
- * \code
- * pquad = CreateSLDFESQAngularQuadrature(2)
- * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},45.0*math.pi/180,false)
- * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},23.0*math.pi/180,false)
- * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},12.0*math.pi/180,false)
- * PrintToPythonSLDFESQAngularQuadrature(pquad,"YQuad_");
- * \endcode
- *
- * \image html "SLDFESQr.png" width=500px
- *
- * \ingroup LuaSLDFESQ
- * \author Jan
- */
-int PrintToPythonSLDFESQAngularQuadrature(lua_State* L);
