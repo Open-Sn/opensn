@@ -50,7 +50,7 @@ mat.SetProperty(material0, TRANSPORT_XSECTIONS, SIMPLEXS1, ngrp, sigmat, ratioc)
 mat.SetProperty(material0, ISOTROPIC_MG_SOURCE, SINGLE_VALUE, source)
 
 --############################################### Setup Physics
-pquad0 = CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
+pquad0 = aquad.CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
 
 lbs_block =
 {
@@ -87,7 +87,7 @@ solver.Execute(ss_solver)
 --phys0 = LBSCurvilinearCreateSolver(LBSCurvilinear.CYLINDRICAL)
 --
 ----  angular quadrature
---pquad = CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
+--pquad = aquad.CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
 --
 ----  groups
 --groups = {}

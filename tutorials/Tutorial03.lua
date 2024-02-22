@@ -29,7 +29,7 @@ for k=1,num_groups do
     LBSCreateGroup(phys1)
 end
 
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 4)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)

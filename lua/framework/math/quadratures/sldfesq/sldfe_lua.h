@@ -10,7 +10,7 @@
  * ###Example:
  * Example with refinement level 2.
  * \code
- * pquad = CreateSLDFESQAngularQuadrature(2)
+ * pquad = aquad.CreateSLDFESQAngularQuadrature(2)
  * \endcode
  *
  * \image html "SLDFESQBasen2.png" width=500px
@@ -35,20 +35,20 @@ int CreateSLDFESQAngularQuadrature(lua_State* L);
  * ###Example:
  * Example with refinement level 2 and a triple directional refinement:
  * \code
- * pquad = CreateSLDFESQAngularQuadrature(2)
- * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},45.0*math.pi/180,false)
- * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},23.0*math.pi/180,false)
- * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},12.0*math.pi/180,false)
+ * pquad = aquad.CreateSLDFESQAngularQuadrature(2)
+ * aquad.LocallyRefineSLDFESQ(pquad,{1,0,0},45.0*math.pi/180,false)
+ * aquad.LocallyRefineSLDFESQ(pquad,{1,0,0},23.0*math.pi/180,false)
+ * aquad.LocallyRefineSLDFESQ(pquad,{1,0,0},12.0*math.pi/180,false)
  * \endcode
  *
  * \image html "SLDFESQr.png" width=500px
  *
  * Example with refinement level 2 and a triple planar refinement:
  * \code
- * pquad = CreateSLDFESQAngularQuadrature(2)
- * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},22.50*math.pi/180,true)
- * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},11.75*math.pi/180,true)
- * LocallyRefineSLDFESQAngularQuadrature(pquad,{1,0,0},5.000*math.pi/180,true)
+ * pquad = aquad.CreateSLDFESQAngularQuadrature(2)
+ * aquad.LocallyRefineSLDFESQ(pquad,{1,0,0},22.50*math.pi/180,true)
+ * aquad.LocallyRefineSLDFESQ(pquad,{1,0,0},11.75*math.pi/180,true)
+ * aquad.LocallyRefineSLDFESQ(pquad,{1,0,0},5.000*math.pi/180,true)
  * \endcode
  *
  * \image html "SLDFESQp.png" width=500px

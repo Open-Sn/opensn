@@ -135,8 +135,8 @@ int GetProductQuadrature(lua_State* L);
  *  ###Example:
  *  Example:
  * \code
- * pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)
- * OptimizeAngularQuadratureForPolarSymmetry(pqaud, 4.0*math.pi)
+ * pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)
+ * aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
  * \endcode
  *
  * \ingroup LuaQuadrature

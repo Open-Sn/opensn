@@ -10,7 +10,9 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(OptimizeAngularQuadratureForPolarSymmetry);
+RegisterLuaFunctionNamespace(OptimizeAngularQuadratureForPolarSymmetry,
+                             aquad,
+                             OptimizeForPolarSymmetry);
 
 int
 OptimizeAngularQuadratureForPolarSymmetry(lua_State* L)

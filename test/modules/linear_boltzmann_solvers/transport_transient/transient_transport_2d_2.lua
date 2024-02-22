@@ -67,8 +67,8 @@ end
 
 --========== ProdQuad
 fac=1
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4*fac, 3*fac)
-OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4*fac, 3*fac)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)

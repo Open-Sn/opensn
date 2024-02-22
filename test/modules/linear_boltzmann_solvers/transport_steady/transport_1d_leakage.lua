@@ -36,7 +36,7 @@ mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, num_groups, sigma_t)
 
 -- Setup Physics
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE, 128)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 128)
 lbs_block = {
     num_groups = num_groups,
     groupsets = {

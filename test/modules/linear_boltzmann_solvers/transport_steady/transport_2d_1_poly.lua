@@ -66,8 +66,8 @@ mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
-pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 1)
-OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 1)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
 
 lbs_block =
 {

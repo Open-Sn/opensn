@@ -33,12 +33,12 @@ PrintTable(qdata.qpoints, 2)
 print("weights:")
 PrintTable(qdata.weights, 2)
 
-print("Legendre(0, 0.25)", Legendre(0, 0.25))
-print("Legendre(1, 0.25)", Legendre(1, 0.25))
-print("LegendreDerivative(0, 0.25)", LegendreDerivative(0, 0.25))
-print("LegendreDerivative(1, 0.25)", LegendreDerivative(1, 0.25))
+print("Legendre(0, 0.25)", aquad.Legendre(0, 0.25))
+print("Legendre(1, 0.25)", aquad.Legendre(1, 0.25))
+print("LegendreDerivative(0, 0.25)", aquad.LegendreDerivative(0, 0.25))
+print("LegendreDerivative(1, 0.25)", aquad.LegendreDerivative(1, 0.25))
 
-print("Ylm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0)", Ylm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0))
-print("Ylm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0)", Ylm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0))
+print("Ylm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0)", aquad.Ylm(0, 0, 45*math.pi/180.0, 45*math.pi/180.0))
+print("Ylm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0)", aquad.Ylm(1, 0, 45*math.pi/180.0, 45*math.pi/180.0))
 
 print("GOLD_END")

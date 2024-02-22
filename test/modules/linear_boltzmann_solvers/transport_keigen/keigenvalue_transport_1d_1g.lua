@@ -74,8 +74,7 @@ lbs_block =
   {
     {
       groups_from_to = {0, num_groups-1},
-      angular_quadrature_handle =
-        CreateProductQuadrature(GAUSS_LEGENDRE,n_angles),
+      angular_quadrature_handle = aquad.CreateProductQuadrature(GAUSS_LEGENDRE,n_angles),
       inner_linear_method = "gmres",
       l_max_its = si_max_iterations,
       l_abs_tol = si_tolerance,

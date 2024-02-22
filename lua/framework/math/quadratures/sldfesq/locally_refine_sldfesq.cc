@@ -10,7 +10,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(LocallyRefineSLDFESQAngularQuadrature);
+RegisterLuaFunctionNamespace(LocallyRefineSLDFESQAngularQuadrature, aquad, LocallyRefineSLDFESQ);
 
 int
 LocallyRefineSLDFESQAngularQuadrature(lua_State* L)

@@ -10,7 +10,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(CreateLineQuadrature);
+RegisterLuaFunctionNamespace(CreateLineQuadrature, aquad, CreateLineQuadrature);
 
 int
 CreateLineQuadrature(lua_State* L)
