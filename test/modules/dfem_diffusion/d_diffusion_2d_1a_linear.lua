@@ -47,14 +47,14 @@ mesh.SetBoundaryIDFromLogicalVolume(s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### DFEM solver
-phys1 = DFEMDiffusionSolverCreate()
+phys1 = diffusion.DFEMSolverCreate()
 
 solver.SetBasicOption(phys1, "residual_tolerance", 1E-8)
 
-DFEMDiffusionSetBCProperty(phys1,"boundary_type",e_bndry,"robin", 0.25, 0.5, 0.0)
-DFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"reflecting")
-DFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"reflecting")
-DFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"robin", 0.25, 0.5, 1.0)
+diffusion.DFEMSetBCProperty(phys1, "boundary_type", e_bndry, "robin", 0.25, 0.5, 0.0)
+diffusion.DFEMSetBCProperty(phys1, "boundary_type", n_bndry, "reflecting")
+diffusion.DFEMSetBCProperty(phys1, "boundary_type", s_bndry, "reflecting")
+diffusion.DFEMSetBCProperty(phys1, "boundary_type", w_bndry, "robin", 0.25, 0.5, 1.0)
 
 solver.Initialize(phys1)
 solver.Execute(phys1)
