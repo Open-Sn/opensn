@@ -61,8 +61,8 @@ k_solver0 = lbs.XXPowerIterationKEigenSCDSA.Create
   accel_pi_verbose = false,
   k_tol = 1.0e-8
 })
-SolverInitialize(k_solver0)
-SolverExecute(k_solver0)
+solver.Initialize(k_solver0)
+solver.Execute(k_solver0)
 
 
 fflist,count = LBSGetScalarFieldFunctionList(phys1)

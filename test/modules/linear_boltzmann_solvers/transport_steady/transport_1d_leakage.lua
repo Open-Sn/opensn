@@ -77,8 +77,8 @@ lbs.SetOptions(phys, lbs_options)
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
 -- Solve the problem
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 -- Compute the leakage
 leakage = lbs.ComputeLeakage(phys)

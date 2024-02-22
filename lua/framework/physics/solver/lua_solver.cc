@@ -1,4 +1,4 @@
-#include "physics_solver_lua_utils.h"
+#include "lua_solver.h"
 #include "framework/physics/solver_base/solver.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/event_system/physics_event_publisher.h"
@@ -11,17 +11,17 @@ using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionAsIs(SolverCreate);
 
-RegisterLuaFunctionAsIs(SolverInitialize);
-RegisterLuaFunctionAsIs(SolverExecute);
-RegisterLuaFunctionAsIs(SolverStep);
-RegisterLuaFunctionAsIs(SolverAdvance);
-RegisterLuaFunctionAsIs(SolverSetBasicOption);
-RegisterLuaFunctionAsIs(SolverGetName);
-RegisterLuaFunctionAsIs(SolverGetFieldFunctionList);
-RegisterLuaFunctionAsIs(SolverGetInfo);
-RegisterLuaFunctionAsIs(SolverSetProperties);
+RegisterLuaFunctionNamespace(SolverCreate, solver, Create);
+RegisterLuaFunctionNamespace(SolverInitialize, solver, Initialize);
+RegisterLuaFunctionNamespace(SolverExecute, solver, Execute);
+RegisterLuaFunctionNamespace(SolverStep, solver, Step);
+RegisterLuaFunctionNamespace(SolverAdvance, solver, Advance);
+RegisterLuaFunctionNamespace(SolverSetBasicOption, solver, SetBasicOption);
+RegisterLuaFunctionNamespace(SolverGetName, solver, GetName);
+RegisterLuaFunctionNamespace(SolverGetFieldFunctionList, solver, GetFieldFunctionList);
+RegisterLuaFunctionNamespace(SolverGetInfo, solver, GetInfo);
+RegisterLuaFunctionNamespace(SolverSetProperties, solver, SetProperties);
 
 int
 SolverCreate(lua_State* L)

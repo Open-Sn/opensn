@@ -43,8 +43,8 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 
 k_solver0 = lbs.XXNonLinearKEigen.Create({ lbs_solver_handle = phys1, })
-SolverInitialize(k_solver0)
-SolverExecute(k_solver0)
+solver.Initialize(k_solver0)
+solver.Execute(k_solver0)
 
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 

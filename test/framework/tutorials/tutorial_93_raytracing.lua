@@ -75,8 +75,8 @@ mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, 1, 0.27)
 --LBSSetProperty(phys1,SCATTERING_ORDER,0)
 --
 ----############################################### Initialize and Execute Solver
---SolverInitialize(phys1)
---SolverExecute(phys1)
+--solver.Initialize(phys1)
+--solver.Execute(phys1)
 
 
 
@@ -117,8 +117,8 @@ LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 ff_m0 = LBSGetScalarFieldFunctionList(phys1)
 

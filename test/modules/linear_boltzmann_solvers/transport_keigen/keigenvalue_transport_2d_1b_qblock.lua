@@ -42,8 +42,8 @@ lbs.SetOptions(phys1, lbs_options)
 
 
 k_solver0 = lbs.XXNonLinearKEigen.Create({ lbs_solver_handle = phys1, })
-SolverInitialize(k_solver0)
-SolverExecute(k_solver0)
+solver.Initialize(k_solver0)
+solver.Execute(k_solver0)
 
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 

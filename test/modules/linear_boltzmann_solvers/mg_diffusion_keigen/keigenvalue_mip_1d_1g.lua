@@ -102,8 +102,8 @@ k_solver0 = lbs.XXNonLinearKEigen.Create
   nl_max_its = kes_max_iterations,
   nl_abs_tol = kes_tolerance
 })
-SolverInitialize(k_solver0)
-SolverExecute(k_solver0)
+solver.Initialize(k_solver0)
+solver.Execute(k_solver0)
 
 --############################################### Get field functions
 --############################################### Line plot

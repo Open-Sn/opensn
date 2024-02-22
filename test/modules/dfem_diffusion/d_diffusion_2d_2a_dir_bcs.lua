@@ -54,19 +54,19 @@ mesh.SetBoundaryIDFromLogicalVolume(s_vol,s_bndry)
 --#### DFEM solver
 phys1 = DFEMDiffusionSolverCreate()
 
-SolverSetBasicOption(phys1, "residual_tolerance", 1E-8)
+solver.SetBasicOption(phys1, "residual_tolerance", 1E-8)
 
 DFEMDiffusionSetBCProperty(phys1,"boundary_type",e_bndry,"dirichlet",0.0)
 DFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"dirichlet",0.0)
 DFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"dirichlet",0.0)
 DFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"dirichlet",0.0)
 
-SolverInitialize(phys1)
-SolverExecute(phys1)
+solver.Initialize(phys1)
+solver.Execute(phys1)
 
 
 --############################################### Get field functions
-fflist,count = SolverGetFieldFunctionList(phys1)
+fflist,count = solver.GetFieldFunctionList(phys1)
 
 --############################################### Export VTU
 if (master_export == nil) then

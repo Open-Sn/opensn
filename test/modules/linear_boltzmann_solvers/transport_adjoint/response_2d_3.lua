@@ -118,8 +118,8 @@ phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 -- Forward solve
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 -- Define QoI region
 qoi_vol = mesh.RPPLogicalVolume.Create(
@@ -177,7 +177,7 @@ adjoint_options = {
 lbs.SetOptions(phys, adjoint_options)
 
 -- Adjoint solve, write results
-SolverExecute(ss_solver)
+solver.Execute(ss_solver)
 LBSWriteFluxMoments(phys, "adjoint_2d_3")
 
 -- Create response evaluator

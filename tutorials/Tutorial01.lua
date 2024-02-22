@@ -30,8 +30,8 @@ mat.SetProperty(material, "q", SINGLE_VALUE, 1.0)
 
 --############################################### Setup Physics
 phys1 = DiffusionCreateSolver()
-SolverSetBasicOption(phys1,"discretization_method","PWLC");
-SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+solver.SetBasicOption(phys1,"discretization_method","PWLC");
+solver.SetBasicOption(phys1,"residual_tolerance",1.0e-6)
 DiffusionSetProperty(phys1,"boundary_type",4,"reflecting")
 DiffusionSetProperty(phys1,"boundary_type",5,"reflecting")
 

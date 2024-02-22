@@ -96,8 +96,8 @@ lbs.SetOptions(phys1, lbs_options)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 --############################################### Get field functions
 fflist,count = LBSGetScalarFieldFunctionList(phys1)

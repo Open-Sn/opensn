@@ -106,19 +106,19 @@ LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 
 
 --############################################### Initialize and Execute Solver
-SolverInitialize(phys1)
+solver.Initialize(phys1)
 
 LBTSSetProperty(phys1, "TIMESTEP", 1e-3)
 LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
-phys1name = SolverGetName(phys1);
+phys1name = solver.GetName(phys1);
 initial_FR = LBSComputeFissionRate(phys1,"OLD")
 
 --time = 0.0
 --for k=1,2 do
 --    --LBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
---    SolverStep(phys1)
+--    solver.Step(phys1)
 --    FRf = LBSComputeFissionRate(phys1,"NEW")
 --    FRi = LBSComputeFissionRate(phys1,"OLD")
 --    dt = LBTSGetProperty(phys1, "TIMESTEP")
@@ -134,7 +134,7 @@ k=0
 swapped = false
 while (time < time_stop) do
     k = k + 1
-    SolverStep(phys1)
+    solver.Step(phys1)
     FRf = LBSComputeFissionRate(phys1,"NEW")
     FRi = LBSComputeFissionRate(phys1,"OLD")
     dt = LBTSGetProperty(phys1, "TIMESTEP")

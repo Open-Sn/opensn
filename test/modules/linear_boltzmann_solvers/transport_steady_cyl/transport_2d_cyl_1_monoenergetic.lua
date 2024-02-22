@@ -80,8 +80,8 @@ lbs.SetOptions(phys1, lbs_options)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 
 --phys0 = LBSCurvilinearCreateSolver(LBSCurvilinear.CYLINDRICAL)
@@ -130,8 +130,8 @@ SolverExecute(ss_solver)
 ----------------------------------------------------------------------------------
 ----  solvers
 ----------------------------------------------------------------------------------
---SolverInitialize(phys0)
---SolverExecute(phys0)
+--solver.Initialize(phys0)
+--solver.Execute(phys0)
 
 --############################################### Exports
 fflist, count = LBSGetScalarFieldFunctionList(phys1)

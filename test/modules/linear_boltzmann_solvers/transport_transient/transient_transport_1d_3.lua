@@ -122,7 +122,7 @@ LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 
 
 --############################################### Initialize and Execute Solver
-SolverInitialize(phys1)
+solver.Initialize(phys1)
 
 LBTSSetProperty(phys1, "TIMESTEP", 1e-3*100)
 LBTSSetProperty(phys1, "TIMESTOP", 1.0*100)
@@ -130,14 +130,14 @@ LBTSSetProperty(phys1, "MAX_TIMESTEPS", -1)
 LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
-phys1name = SolverGetName(phys1);
+phys1name = solver.GetName(phys1);
 initial_FR = LBSComputeFissionRate(phys1,"OLD")
 
 
 --time = 0.0
 --psi_t = psi_0
 --for k=1,10 do
---    SolverStep(phys1)
+--    solver.Step(phys1)
 --
 --    FRf = LBSComputeFissionRate(phys1,"NEW") --time+dt
 --    FRi = LBSComputeFissionRate(phys1,"OLD") --time
@@ -163,7 +163,7 @@ initial_FR = LBSComputeFissionRate(phys1,"OLD")
 --
 --tolA = 10.0
 --while (time < time_stop) do
---    SolverStep(phys1)
+--    solver.Step(phys1)
 --    FRf = LBSComputeFissionRate(phys1,"NEW")
 --    FRi = LBSComputeFissionRate(phys1,"OLD")
 --    dt = LBTSGetProperty(phys1, "TIMESTEP")
@@ -200,4 +200,4 @@ function MyCallBack()
                 phys1name,time,dt,period,FRf/initial_FR))
 end
 LBTSSetProperty(phys1, "CALLBACK", "MyCallBack")
-SolverExecute(phys1)
+solver.Execute(phys1)
