@@ -1,10 +1,7 @@
 #pragma once
 
 #include "framework/lua.h"
-#include "modules/fv_diffusion/fv_diffusion_solver.h"
 
-namespace opensnlua::fv_diffusion
-{
 /** Creates a Finite Volume Diffusion solver.
  *
  *\param solver_name string Optional. Text name for the solver.
@@ -66,6 +63,3 @@ int FVDiffusionSolverCreate(lua_State* L);
  * \author Jan
  */
 int FVDiffusionSetBCProperty(lua_State* L);
-
-void RegisterLuaEntities(lua_State* L);
-} // namespace opensnlua::fv_diffusion

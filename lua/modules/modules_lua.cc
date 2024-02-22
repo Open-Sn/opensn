@@ -2,9 +2,9 @@
 #include "framework/object_factory.h"
 #include "lua/framework/console/console.h"
 #include "cfem_diffusion/lua_cfem_diff_solver.h"
-#include "fv_diffusion/ds_lua_utils.h"
 #include "mg_diffusion/mgds_lua_utils.h"
 #include "dfem_diffusion/lua_dfem_diff_solver.h"
+#include "fv_diffusion/lua_fv_diff_solver.h"
 #include "linear_bolzmann_solvers/lbs_solver/lbs_lua_utils.h"
 #include "config.h"
 
@@ -58,7 +58,6 @@ RegisterLuaEntities(lua_State* L)
   opensnlua::lbs::RegisterLuaEntities(L);
 
   opensnlua::mg_diffusion::RegisterLuaEntities(L);
-  opensnlua::fv_diffusion::RegisterLuaEntities(L);
 }
 
 } // namespace opensnlua
