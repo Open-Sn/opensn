@@ -11,25 +11,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(SurfaceMeshCheckCycles);
 RegisterLuaFunctionAsIs(ComputeLoadBalancing);
-
-int
-SurfaceMeshCheckCycles(lua_State* L)
-{
-  int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError("SurfaceMeshCheckCycles", 2, num_args);
-
-  int surf_handle = lua_tonumber(L, 1);
-  int num_angles = lua_tonumber(L, 2);
-
-  auto& surf_mesh =
-    opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, surf_handle, __FUNCTION__);
-
-  surf_mesh.CheckCyclicDependencies(num_angles);
-  return 0;
-}
 
 int
 ComputeLoadBalancing(lua_State* L)

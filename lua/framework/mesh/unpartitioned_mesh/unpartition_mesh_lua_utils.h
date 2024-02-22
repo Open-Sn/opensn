@@ -7,41 +7,6 @@
 namespace opensnlua
 {
 
-/**Creates an empty unpartitioned mesh. An empty unpartitioned mesh
- * is meant to be manipulated with calls to UnpartitionedMeshUploadVertex()
- * and UnpartitionedMeshUploadCell(). It essentially supports building a mesh
- * manually.
- *
- * ##_
- *
- * ###Example
- * Example usage
- * \code
- * umesh = CreateEmptyUnpartitionedMesh()
- * \endcode
- *
- * \ingroup LuaUnpartitionedMesh
- */
-int CreateEmptyUnpartitionedMesh(lua_State* L);
-
-/**Destroy an unpartitioned mesh. This routine should be called for
- * memory sensitive simulations because each process will have a full
- * copy of this data.
- *
- * \param handle int Handle to mesh.
- *
- * ##_
- *
- * ###Example
- * Example usage
- * \code
- * DestroyUnpartitionedMesh(umesh)
- * \endcode
- *
- * \ingroup LuaUnpartitionedMesh
- */
-int DestroyUnpartitionedMesh(lua_State* L);
-
 /**Creates an unpartitioned mesh from VTK Unstructured mesh files.
  *
  * \param file_name char Filename of the .vtu file.

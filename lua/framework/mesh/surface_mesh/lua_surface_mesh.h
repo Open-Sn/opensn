@@ -75,38 +75,6 @@ int SurfaceMeshImportFromOBJFile(lua_State* L);
  */
 int SurfaceMeshImportFromTriangleFiles(lua_State* L);
 
-/** Exports mesh as a .obj format.
- *
- * \param SurfaceHandle int Handle to the surface on which the operation is to be
- * performed. \param FileName char* Path to the file to be exported.
- *
- * \ingroup LuaSurfaceMesh
- * \author Jan
- */
-int SurfaceMeshExportToObj(lua_State* L);
-
-/** Exports mesh as a .poly format.
- *
- * \param SurfaceHandle int Handle to the surface on which the operation is to be
- * performed. \param FileName char* Path and basename to the file to be exported.
- *
- * \ingroup LuaSurfaceMesh
- * \author Jan
- */
-int SurfaceMeshExportPolyFile(lua_State* L);
-
-/** Builds sweep ordering for a number of angles and checks whether any
- * cyclic dependencies are encountered.
- *
- * \param SurfaceHandle int Handle to the surface on which the operation is to be
- * performed. \param NumAngles int Number of azimuthal angles to use for checking
- * cycles.
- *
- * \ingroup LuaSurfaceMesh
- * \author Jan
- */
-int SurfaceMeshCheckCycles(lua_State* L);
-
 /** Computes load balancing parameters for given predictive x and y cuts
  * without actually performing cuts.
  *

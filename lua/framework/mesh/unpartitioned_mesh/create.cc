@@ -11,8 +11,6 @@ using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionAsIs(CreateEmptyUnpartitionedMesh);
-RegisterLuaFunctionAsIs(DestroyUnpartitionedMesh);
 
 RegisterLuaFunctionAsIs(UnpartitionedMeshFromVTU);
 RegisterLuaFunctionAsIs(UnpartitionedMeshFromPVTU);
@@ -20,40 +18,6 @@ RegisterLuaFunctionAsIs(UnpartitionedMeshFromEnsightGold);
 RegisterLuaFunctionAsIs(UnpartitionedMeshFromWavefrontOBJ);
 RegisterLuaFunctionAsIs(UnpartitionedMeshFromMshFormat);
 RegisterLuaFunctionAsIs(UnpartitionedMeshFromExodusII);
-
-int
-CreateEmptyUnpartitionedMesh(lua_State* L)
-{
-  const std::string func_name = __FUNCTION__;
-
-  opensn::unpartitionedmesh_stack.emplace_back(new UnpartitionedMesh());
-
-  lua_pushnumber(L, static_cast<lua_Number>(opensn::unpartitionedmesh_stack.size() - 1));
-
-  return 1;
-}
-
-int
-DestroyUnpartitionedMesh(lua_State* L)
-{
-  const std::string func_name = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
-
-  LuaCheckNilValue(func_name, L, 1);
-
-  const int handle = lua_tointeger(L, 1);
-
-  auto mesh_ptr = opensn::GetStackItemPtr(opensn::unpartitionedmesh_stack, handle, func_name);
-
-  mesh_ptr->CleanUp();
-  opensn::unpartitionedmesh_stack[handle] = nullptr;
-
-  opensn::log.Log() << "Unpartitioned mesh destroyed. Memory in use = "
-                    << opensn::GetMemoryUsageInMB() << " MB";
-  return 0;
-}
 
 int
 UnpartitionedMeshFromVTU(lua_State* L)
