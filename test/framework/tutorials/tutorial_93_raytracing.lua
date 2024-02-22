@@ -125,7 +125,7 @@ ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
-ff_m0 = LBSGetScalarFieldFunctionList(phys1)
+ff_m0 = lbs.GetScalarFieldFunctionList(phys1)
 
 ExportMultiFieldFunctionToVTK({ff_m0[1]},"SimTest_93_LBS_"..solver_name)
 MPIBarrier()

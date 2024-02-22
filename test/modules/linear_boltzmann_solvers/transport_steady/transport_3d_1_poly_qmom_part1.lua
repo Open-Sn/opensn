@@ -103,10 +103,10 @@ ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
-LBSCreateAndWriteSourceMoments(phys1,"Qmoms")
+lbs.CreateAndWriteSourceMoments(phys1,"Qmoms")
 
 --############################################### Get field functions
-fflist,count = LBSGetScalarFieldFunctionList(phys1)
+fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
 --############################################### Slice plot
 --slices = {}

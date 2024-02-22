@@ -92,7 +92,7 @@ solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
 --############################################### Exports
-fflist, count = LBSGetScalarFieldFunctionList(phys1)
+fflist, count = lbs.GetScalarFieldFunctionList(phys1)
 if master_export == nil then
   ExportMultiFieldFunctionToVTK(fflist, "ZRZPhi")
 end

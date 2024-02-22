@@ -158,7 +158,7 @@ lbs.SetOptions(phys, adjoint_options)
 
 -- Adjoint solve, write results
 solver.Execute(ss_solver)
-LBSWriteFluxMoments(phys, "adjoint_2d_1")
+lbs.WriteFluxMoments(phys, "adjoint_2d_1")
 
 -- Create response evaluator
 buffers = { { name = "buff", file_prefixes = { flux_moments = "adjoint_2d_1" } } }

@@ -116,7 +116,7 @@ solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
 --############################################### Get field functions
-fflist,count = LBSGetScalarFieldFunctionList(phys1)
+fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
 --############################################### Exports
 if (master_export == nil) then

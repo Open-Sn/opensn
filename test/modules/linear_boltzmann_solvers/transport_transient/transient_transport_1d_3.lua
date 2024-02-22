@@ -68,7 +68,7 @@ mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 function SwapXS(solver_handle, new_xs)
     mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, new_xs)
-    LBSInitializeMaterials(solver_handle)
+    lbs.InitializeMaterials(solver_handle)
 end
 
 --############################################### Setup Physics
@@ -131,7 +131,7 @@ LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
 phys1name = solver.GetName(phys1);
-initial_FR = LBSComputeFissionRate(phys1,"OLD")
+initial_FR = lbs.ComputeFissionRate(phys1,"OLD")
 
 
 --time = 0.0
@@ -139,8 +139,8 @@ initial_FR = LBSComputeFissionRate(phys1,"OLD")
 --for k=1,10 do
 --    solver.Step(phys1)
 --
---    FRf = LBSComputeFissionRate(phys1,"NEW") --time+dt
---    FRi = LBSComputeFissionRate(phys1,"OLD") --time
+--    FRf = lbs.ComputeFissionRate(phys1,"NEW") --time+dt
+--    FRi = lbs.ComputeFissionRate(phys1,"OLD") --time
 --    dt = LBTSGetProperty(phys1, "TIMESTEP")
 --    time = LBTSGetProperty(phys1, "TIME")
 --    new_time = time+dt
@@ -164,8 +164,8 @@ initial_FR = LBSComputeFissionRate(phys1,"OLD")
 --tolA = 10.0
 --while (time < time_stop) do
 --    solver.Step(phys1)
---    FRf = LBSComputeFissionRate(phys1,"NEW")
---    FRi = LBSComputeFissionRate(phys1,"OLD")
+--    FRf = lbs.ComputeFissionRate(phys1,"NEW")
+--    FRi = lbs.ComputeFissionRate(phys1,"OLD")
 --    dt = LBTSGetProperty(phys1, "TIMESTEP")
 --    time = LBTSGetProperty(phys1, "TIME")
 --    period = dt/math.log(FRf/FRi)
@@ -186,8 +186,8 @@ initial_FR = LBSComputeFissionRate(phys1,"OLD")
 --end
 swapped=false
 function MyCallBack()
-    FRf = LBSComputeFissionRate(phys1,"NEW")
-    FRi = LBSComputeFissionRate(phys1,"OLD")
+    FRf = lbs.ComputeFissionRate(phys1,"NEW")
+    FRi = lbs.ComputeFissionRate(phys1,"OLD")
     dt = LBTSGetProperty(phys1, "TIMESTEP")
     time = LBTSGetProperty(phys1, "TIME")
     period = dt/math.log(FRf/FRi)

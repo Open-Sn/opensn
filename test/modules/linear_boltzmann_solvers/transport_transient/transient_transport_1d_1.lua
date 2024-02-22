@@ -124,8 +124,8 @@ phys1name = solver.GetName(phys1);
 --for k=1,2 do
 --    --LBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
 --    solver.Step(phys1)
---    FRf = LBSComputeFissionRate(phys1,"NEW")
---    FRi = LBSComputeFissionRate(phys1,"OLD")
+--    FRf = lbs.ComputeFissionRate(phys1,"NEW")
+--    FRi = lbs.ComputeFissionRate(phys1,"OLD")
 --    dt = LBTSGetProperty(phys1, "TIMESTEP")
 --    t = LBTSGetProperty(phys1, "TIME")
 --    period = dt/math.log(FRf/FRi)
@@ -138,8 +138,8 @@ k=0
 while (time < time_stop) do
     k = k + 1
     solver.Step(phys1)
-    FRf = LBSComputeFissionRate(phys1,"NEW")
-    FRi = LBSComputeFissionRate(phys1,"OLD")
+    FRf = lbs.ComputeFissionRate(phys1,"NEW")
+    FRi = lbs.ComputeFissionRate(phys1,"OLD")
     dt = LBTSGetProperty(phys1, "TIMESTEP")
     time = LBTSGetProperty(phys1, "TIME")
     period = dt/math.log(FRf/FRi)

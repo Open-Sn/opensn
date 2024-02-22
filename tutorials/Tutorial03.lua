@@ -55,7 +55,7 @@ LBSInitialize(phys1)
 LBSExecute(phys1)
 
 --############################################### Setup Output
-fflist,count = LBSGetScalarFieldFunctionList(phys1)
+fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
 cline = FFInterpolationCreate(LINE)
 FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)

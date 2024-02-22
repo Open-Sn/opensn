@@ -65,19 +65,6 @@ RegisterLuaEntities(lua_State* L)
   RegisterNumber(KRYLOV_GMRES_CYCLES, 8);
   RegisterNumber(KRYLOV_BICGSTAB, 9);
   RegisterNumber(KRYLOV_BICGSTAB_CYCLES, 10);
-
-  RegisterFunction(LBSGetScalarFieldFunctionList);
-
-  RegisterFunction(LBSWriteGroupsetAngularFlux);
-  RegisterFunction(LBSReadGroupsetAngularFlux);
-
-  RegisterFunction(LBSWriteFluxMoments);
-  RegisterFunction(LBSCreateAndWriteSourceMoments);
-  RegisterFunction(LBSReadFluxMomentsAndMakeSourceMoments);
-  RegisterFunction(LBSReadSourceMoments);
-  RegisterFunction(LBSReadFluxMoments);
-
-  RegisterFunction(LBSComputeFissionRate);
-  RegisterFunction(LBSInitializeMaterials);
 }
+
 } // namespace opensnlua::lbs

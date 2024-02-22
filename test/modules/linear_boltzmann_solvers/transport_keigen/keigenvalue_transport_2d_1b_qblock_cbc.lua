@@ -46,7 +46,7 @@ k_solver0 = lbs.XXNonLinearKEigen.Create({ lbs_solver_handle = phys1, })
 solver.Initialize(k_solver0)
 solver.Execute(k_solver0)
 
-fflist,count = LBSGetScalarFieldFunctionList(phys1)
+fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
 --ExportMultiFieldFunctionToVTK(fflist,"tests/BigTests/QBlock/solutions/Flux")
 
