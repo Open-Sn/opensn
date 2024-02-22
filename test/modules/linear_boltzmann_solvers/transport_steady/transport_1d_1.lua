@@ -122,47 +122,47 @@ fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
 --############################################### Line plot
 --Testing consolidated interpolation
-cline = FFInterpolationCreate(LINE)
-FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,0.0,0.0001+xmin)
-FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0,0.0, 29.999+xmin)
-FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+cline = fieldfunc.FFInterpolationCreate(LINE)
+fieldfunc.SetProperty(cline,LINE_FIRSTPOINT,0.0,0.0,0.0001+xmin)
+fieldfunc.SetProperty(cline,LINE_SECONDPOINT,0.0,0.0, 29.999+xmin)
+fieldfunc.SetProperty(cline,LINE_NUMBEROFPOINTS, 50)
 
 for k=165,165 do
-  FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[k])
+  fieldfunc.SetProperty(cline,ADD_FIELDFUNCTION,fflist[k])
 end
 
-FFInterpolationInitialize(cline)
-FFInterpolationExecute(cline)
+fieldfunc.Initialize(cline)
+fieldfunc.Execute(cline)
 
 --############################################### Volume integrations
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-ffi1 = FFInterpolationCreate(VOLUME)
+ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
-FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
+fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(curffi)
-FFInterpolationExecute(curffi)
-maxval = FFInterpolationGetValue(curffi)
+fieldfunc.Initialize(curffi)
+fieldfunc.Execute(curffi)
+maxval = fieldfunc.GetValue(curffi)
 
 log.Log(LOG_0,string.format("Max-value1=%.5f", maxval))
 
-ffi2 = FFInterpolationCreate(VOLUME)
+ffi2 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi2
-FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[160])
+fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[160])
 
-FFInterpolationInitialize(curffi)
-FFInterpolationExecute(curffi)
-maxval = FFInterpolationGetValue(curffi)
+fieldfunc.Initialize(curffi)
+fieldfunc.Execute(curffi)
+maxval = fieldfunc.GetValue(curffi)
 
 log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if (master_export == nil) then
-  FFInterpolationExportPython(cline)
+  fieldfunc.ExportPython(cline)
 end
 
 --############################################### Plots

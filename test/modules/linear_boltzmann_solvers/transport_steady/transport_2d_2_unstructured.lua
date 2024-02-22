@@ -127,42 +127,42 @@ solver.Execute(ss_solver)
 fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
 --############################################### Slice plot
-slice2 = FFInterpolationCreate(SLICE)
-FFInterpolationSetProperty(slice2,SLICE_POINT,0.0,0.0,0.025)
-FFInterpolationSetProperty(slice2,ADD_FIELDFUNCTION,fflist[1])
+slice2 = fieldfunc.FFInterpolationCreate(SLICE)
+fieldfunc.SetProperty(slice2,SLICE_POINT,0.0,0.0,0.025)
+fieldfunc.SetProperty(slice2,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(slice2)
-FFInterpolationExecute(slice2)
+fieldfunc.Initialize(slice2)
+fieldfunc.Execute(slice2)
 
 --############################################### Volume integrations
-ffi1 = FFInterpolationCreate(VOLUME)
+ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
-FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
+fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(curffi)
-FFInterpolationExecute(curffi)
-maxval = FFInterpolationGetValue(curffi)
+fieldfunc.Initialize(curffi)
+fieldfunc.Execute(curffi)
+maxval = fieldfunc.GetValue(curffi)
 
 log.Log(LOG_0,string.format("Max-value1=%.5f", maxval))
 
 --############################################### Volume integrations
-ffi1 = FFInterpolationCreate(VOLUME)
+ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
-FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[10])
+fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[10])
 
-FFInterpolationInitialize(curffi)
-FFInterpolationExecute(curffi)
-maxval = FFInterpolationGetValue(curffi)
+fieldfunc.Initialize(curffi)
+fieldfunc.Execute(curffi)
+maxval = fieldfunc.GetValue(curffi)
 
 log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if master_export == nil then
-    FFInterpolationExportPython(slice2)
+    fieldfunc.ExportPython(slice2)
 end
 
 --############################################### Plots

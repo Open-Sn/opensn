@@ -121,9 +121,9 @@ solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
 -- Get field functions
-ff_m0 = GetFieldFunctionHandleByName("phi_g000_m00")
-ff_m1 = GetFieldFunctionHandleByName("phi_g000_m01")
-ff_m2 = GetFieldFunctionHandleByName("phi_g000_m02")
+ff_m0 = fieldfunc.GetHandleByName("phi_g000_m00")
+ff_m1 = fieldfunc.GetHandleByName("phi_g000_m01")
+ff_m2 = fieldfunc.GetHandleByName("phi_g000_m02")
 
 -- Define QoI region
 qoi_vol = mesh.RPPLogicalVolume.Create(
@@ -135,14 +135,14 @@ qoi_vol = mesh.RPPLogicalVolume.Create(
 )
 
 -- Compute QoI
-ffi = FFInterpolationCreate(VOLUME)
-FFInterpolationSetProperty(ffi, OPERATION, OP_SUM)
-FFInterpolationSetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
-FFInterpolationSetProperty(ffi, ADD_FIELDFUNCTION, ff_m0)
+ffi = fieldfunc.FFInterpolationCreate(VOLUME)
+fieldfunc.SetProperty(ffi, OPERATION, OP_SUM)
+fieldfunc.SetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
+fieldfunc.SetProperty(ffi, ADD_FIELDFUNCTION, ff_m0)
 
-FFInterpolationInitialize(ffi)
-FFInterpolationExecute(ffi)
-fwd_qoi = FFInterpolationGetValue(ffi)
+fieldfunc.Initialize(ffi)
+fieldfunc.Execute(ffi)
+fwd_qoi = fieldfunc.GetValue(ffi)
 
 -- Create adjoint source
 adjoint_source = lbs.DistributedSource.Create(

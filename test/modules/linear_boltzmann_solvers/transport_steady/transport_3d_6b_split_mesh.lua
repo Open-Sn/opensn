@@ -149,5 +149,5 @@ pp2 = CellVolumeIntegralPostProcessor.Create
 ExecutePostProcessors({ pp1, pp2 })
 
 if (master_export == nil) then
-  ExportMultiFieldFunctionToVTK(fflist,"ZPhi")
+  fieldfunc.ExportToVTKMulti(fflist,"ZPhi")
 end

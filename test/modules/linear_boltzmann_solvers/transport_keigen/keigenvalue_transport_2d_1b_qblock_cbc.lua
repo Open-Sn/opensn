@@ -48,6 +48,6 @@ solver.Execute(k_solver0)
 
 fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
---ExportMultiFieldFunctionToVTK(fflist,"tests/BigTests/QBlock/solutions/Flux")
+--fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
 
 -- Reference value k_eff = 0.5969127

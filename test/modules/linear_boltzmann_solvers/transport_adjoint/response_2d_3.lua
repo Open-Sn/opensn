@@ -134,16 +134,16 @@ qoi_vol = mesh.RPPLogicalVolume.Create(
 fwd_qois = {}
 fwd_qoi_sum = 0.0
 for g = 0, num_groups - 1 do
-    ff = GetFieldFunctionHandleByName(
+    ff = fieldfunc.GetHandleByName(
             "phi_g" .. string.format("%03d", g) .. "_m" .. string.format("%02d", 0))
-    ffi = FFInterpolationCreate(VOLUME)
-    FFInterpolationSetProperty(ffi, OPERATION, OP_SUM)
-    FFInterpolationSetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
-    FFInterpolationSetProperty(ffi, ADD_FIELDFUNCTION, ff)
+    ffi = fieldfunc.FFInterpolationCreate(VOLUME)
+    fieldfunc.SetProperty(ffi, OPERATION, OP_SUM)
+    fieldfunc.SetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
+    fieldfunc.SetProperty(ffi, ADD_FIELDFUNCTION, ff)
 
-    FFInterpolationInitialize(ffi)
-    FFInterpolationExecute(ffi)
-    fwd_qois[g + 1] = FFInterpolationGetValue(ffi)
+    fieldfunc.Initialize(ffi)
+    fieldfunc.Execute(ffi)
+    fwd_qois[g + 1] = fieldfunc.GetValue(ffi)
 
     fwd_qoi_sum = fwd_qoi_sum + fwd_qois[g + 1]
 end

@@ -39,14 +39,14 @@ DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = GetFieldFunctionList(phys1)
-ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+fieldfunc.ExportToVTK(fflist[1],"Tutorial1Output","Temperature")
 
-slice1 = FFInterpolationCreate(SLICE)
-FFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
-FFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
+slice1 = fieldfunc.FFInterpolationCreate(SLICE)
+fieldfunc.SetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
+fieldfunc.SetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(slice1)
-FFInterpolationExecute(slice1)
-FFInterpolationExportPython(slice1)
+fieldfunc.Initialize(slice1)
+fieldfunc.Execute(slice1)
+fieldfunc.ExportPython(slice1)
 
 local handle = io.popen("python ZPFFI00.py")

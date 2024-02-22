@@ -42,4 +42,4 @@ DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = GetFieldFunctionList(phys1)
-ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+fieldfunc.ExportToVTK(fflist[1],"Tutorial1Output","Temperature")

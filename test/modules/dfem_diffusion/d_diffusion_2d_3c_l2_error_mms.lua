@@ -56,19 +56,19 @@ SimTest_IP_MMS_L2error() --simtest_IP_MMS_L2_handle becomes available here
 
 --############################################### Export VTU
 if (master_export == nil) then
-    ExportFieldFunctionToVTK(simtest_IP_MMS_L2_handle,"DFEMDiff2D_MMS","flux")
+    fieldfunc.ExportToVTK(simtest_IP_MMS_L2_handle,"DFEMDiff2D_MMS","flux")
 end
 
 ----############################################### Volume integrations
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 --
-ffvol = FFInterpolationCreate(VOLUME)
-FFInterpolationSetProperty(ffvol,OPERATION,OP_MAX)
-FFInterpolationSetProperty(ffvol,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(ffvol,ADD_FIELDFUNCTION,simtest_IP_MMS_L2_handle)
+ffvol = fieldfunc.FFInterpolationCreate(VOLUME)
+fieldfunc.SetProperty(ffvol,OPERATION,OP_MAX)
+fieldfunc.SetProperty(ffvol,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(ffvol,ADD_FIELDFUNCTION,simtest_IP_MMS_L2_handle)
 --
-FFInterpolationInitialize(ffvol)
-FFInterpolationExecute(ffvol)
-maxval = FFInterpolationGetValue(ffvol)
+fieldfunc.Initialize(ffvol)
+fieldfunc.Execute(ffvol)
+maxval = fieldfunc.GetValue(ffvol)
 
 log.Log(LOG_0,string.format("Max-value=%.6f", maxval))

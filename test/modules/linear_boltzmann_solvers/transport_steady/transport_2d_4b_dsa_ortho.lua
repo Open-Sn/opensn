@@ -128,7 +128,7 @@ fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
 --############################################### Exports
 if (master_export == nil) then
-  ExportMultiFieldFunctionToVTK(fflist,"ZPhi")
+  fieldfunc.ExportToVTKMulti(fflist,"ZPhi")
 end
 
 --############################################### Plots

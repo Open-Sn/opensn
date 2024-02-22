@@ -63,4 +63,4 @@ DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = GetFieldFunctionList(phys1)
-ExportFieldFunctionToVTK(fflist[1],"Tutorial4_Diff_PWLD_Output","Flux_Diff_IP")
+fieldfunc.ExportToVTK(fflist[1],"Tutorial4_Diff_PWLD_Output","Flux_Diff_IP")

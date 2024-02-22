@@ -65,33 +65,33 @@ fflist,count = solver.GetFieldFunctionList(phys1)
 
 --############################################### Export VTU
 if (master_export == nil) then
-    ExportFieldFunctionToVTK(fflist[1],"DFEMDiff2D_linear")
+    fieldfunc.ExportToVTK(fflist[1],"DFEMDiff2D_linear")
 end
 
 --############################################### Line plot
-cline = FFInterpolationCreate(LINE)
-FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,-L/2, 0.0, 0.0)
-FFInterpolationSetProperty(cline,LINE_SECONDPOINT,L/2, 0.0, 0.0)
-FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
-FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
+cline = fieldfunc.FFInterpolationCreate(LINE)
+fieldfunc.SetProperty(cline,LINE_FIRSTPOINT,-L/2, 0.0, 0.0)
+fieldfunc.SetProperty(cline,LINE_SECONDPOINT,L/2, 0.0, 0.0)
+fieldfunc.SetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+fieldfunc.SetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(cline)
-FFInterpolationExecute(cline)
+fieldfunc.Initialize(cline)
+fieldfunc.Execute(cline)
 
 if (master_export == nil) then
-    FFInterpolationExportPython(cline)
+    fieldfunc.ExportPython(cline)
 end
 
 --############################################### Volume integrations
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 
-ffvol = FFInterpolationCreate(VOLUME)
-FFInterpolationSetProperty(ffvol,OPERATION,OP_MAX)
-FFInterpolationSetProperty(ffvol,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(ffvol,ADD_FIELDFUNCTION,fflist[1])
+ffvol = fieldfunc.FFInterpolationCreate(VOLUME)
+fieldfunc.SetProperty(ffvol,OPERATION,OP_MAX)
+fieldfunc.SetProperty(ffvol,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(ffvol,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(ffvol)
-FFInterpolationExecute(ffvol)
-maxval = FFInterpolationGetValue(ffvol)
+fieldfunc.Initialize(ffvol)
+fieldfunc.Execute(ffvol)
+maxval = fieldfunc.GetValue(ffvol)
 
 log.Log(LOG_0,string.format("Max-value=%.6f", maxval))

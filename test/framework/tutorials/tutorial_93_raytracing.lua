@@ -127,7 +127,7 @@ solver.Execute(ss_solver)
 
 ff_m0 = lbs.GetScalarFieldFunctionList(phys1)
 
-ExportMultiFieldFunctionToVTK({ff_m0[1]},"SimTest_93_LBS_"..solver_name)
+fieldfunc.ExportToVTKMulti({ff_m0[1]},"SimTest_93_LBS_"..solver_name)
 MPIBarrier()
 if (location_id == 0) then
     os.execute("rm SimTest_93*")

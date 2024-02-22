@@ -5,7 +5,7 @@
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
 
-RegisterLuaFunctionAsIs(FFInterpolationExportPython);
+RegisterLuaFunctionNamespace(FFInterpolationExportPython, fieldfunc, ExportPython);
 
 int
 FFInterpolationExportPython(lua_State* L)

@@ -118,39 +118,39 @@ fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 --############################################### Slice plot
 --slices = {}
 --for k=1,count do
---    slices[k] = FFInterpolationCreate(SLICE)
---    FFInterpolationSetProperty(slices[k],SLICE_POINT,0.0,0.0,0.8001)
---    FFInterpolationSetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
---    --FFInterpolationSetProperty(slices[k],SLICE_TANGENT,0.393,1.0-0.393,0)
---    --FFInterpolationSetProperty(slices[k],SLICE_NORMAL,-(1.0-0.393),-0.393,0.0)
---    --FFInterpolationSetProperty(slices[k],SLICE_BINORM,0.0,0.0,1.0)
---    FFInterpolationInitialize(slices[k])
---    FFInterpolationExecute(slices[k])
---    FFInterpolationExportPython(slices[k])
+--    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
+--    fieldfunc.SetProperty(slices[k],SLICE_POINT,0.0,0.0,0.8001)
+--    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
+--    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,0.393,1.0-0.393,0)
+--    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,-(1.0-0.393),-0.393,0.0)
+--    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,0.0,0.0,1.0)
+--    fieldfunc.Initialize(slices[k])
+--    fieldfunc.Execute(slices[k])
+--    fieldfunc.ExportPython(slices[k])
 --end
 
 --############################################### Volume integrations
-ffi1 = FFInterpolationCreate(VOLUME)
+ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
-FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
+fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(curffi)
-FFInterpolationExecute(curffi)
-maxval = FFInterpolationGetValue(curffi)
+fieldfunc.Initialize(curffi)
+fieldfunc.Execute(curffi)
+maxval = fieldfunc.GetValue(curffi)
 
 log.Log(LOG_0,string.format("Max-value1=%.5e", maxval))
 
-ffi1 = FFInterpolationCreate(VOLUME)
+ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
-FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[20])
+fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[20])
 
-FFInterpolationInitialize(curffi)
-FFInterpolationExecute(curffi)
-maxval = FFInterpolationGetValue(curffi)
+fieldfunc.Initialize(curffi)
+fieldfunc.Execute(curffi)
+maxval = fieldfunc.GetValue(curffi)
 
 log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
 
@@ -158,16 +158,16 @@ log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
 if (master_export == nil) then
   ExportFieldFunctionToVTKG(fflist[1],"ZPhi3D","Phi")
 
-  line = FFInterpolationCreate(LINE)
-  FFInterpolationSetProperty(line,LINE_FIRSTPOINT,0.0,-1.0,0.5)
-  FFInterpolationSetProperty(line,LINE_SECONDPOINT,0.0, 1.0,0.5)
-  FFInterpolationSetProperty(line,LINE_NUMBEROFPOINTS,1000)
-  FFInterpolationSetProperty(line,ADD_FIELDFUNCTION,fflist[2])
+  line = fieldfunc.FFInterpolationCreate(LINE)
+  fieldfunc.SetProperty(line,LINE_FIRSTPOINT,0.0,-1.0,0.5)
+  fieldfunc.SetProperty(line,LINE_SECONDPOINT,0.0, 1.0,0.5)
+  fieldfunc.SetProperty(line,LINE_NUMBEROFPOINTS,1000)
+  fieldfunc.SetProperty(line,ADD_FIELDFUNCTION,fflist[2])
 
-  FFInterpolationInitialize(line)
-  FFInterpolationExecute(line)
+  fieldfunc.Initialize(line)
+  fieldfunc.Execute(line)
 
-  FFInterpolationExportPython(line,"Line")
+  fieldfunc.ExportPython(line,"Line")
 end
 
 --############################################### Plots

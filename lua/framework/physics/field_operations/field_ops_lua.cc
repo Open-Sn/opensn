@@ -7,7 +7,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionAsIs(FieldOperationExecute);
+RegisterLuaFunctionNamespace(FieldOperationExecute, fieldfunc, FieldOperationExecute);
 
 int
 FieldOperationExecute(lua_State* L)

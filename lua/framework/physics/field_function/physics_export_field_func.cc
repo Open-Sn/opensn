@@ -7,8 +7,8 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(ExportFieldFunctionToVTK);
-RegisterLuaFunctionAsIs(ExportMultiFieldFunctionToVTK);
+RegisterLuaFunctionNamespace(ExportFieldFunctionToVTK, fieldfunc, ExportToVTK);
+RegisterLuaFunctionNamespace(ExportMultiFieldFunctionToVTK, fieldfunc, ExportToVTKMulti);
 
 int
 ExportFieldFunctionToVTK(lua_State* L)

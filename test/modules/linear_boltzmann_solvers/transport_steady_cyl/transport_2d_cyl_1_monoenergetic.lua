@@ -136,18 +136,18 @@ solver.Execute(ss_solver)
 --############################################### Exports
 fflist, count = lbs.GetScalarFieldFunctionList(phys1)
 if master_export == nil then
-  ExportMultiFieldFunctionToVTK(fflist, "ZRZPhi")
+  fieldfunc.ExportToVTKMulti(fflist, "ZRZPhi")
 end
 
 --############################################### Volume integrations
-ffi1 = FFInterpolationCreate(VOLUME)
+ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
-FFInterpolationSetProperty(curffi, OPERATION, OP_MAX)
-FFInterpolationSetProperty(curffi, LOGICAL_VOLUME, vol0)
-FFInterpolationSetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
+fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
+fieldfunc.SetProperty(curffi, LOGICAL_VOLUME, vol0)
+fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
 
-FFInterpolationInitialize(curffi)
-FFInterpolationExecute(curffi)
-maxval = FFInterpolationGetValue(curffi)
+fieldfunc.Initialize(curffi)
+fieldfunc.Execute(curffi)
+maxval = fieldfunc.GetValue(curffi)
 
 log.Log(LOG_0, string.format("Max-value=%.5f", maxval))

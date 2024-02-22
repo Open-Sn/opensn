@@ -133,7 +133,7 @@ This should be intuitive.
 \code
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
-cline = FFInterpolationCreate(LINE)
+cline = fieldfunc.FFInterpolationCreate(LINE)
 FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
 FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
 FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
@@ -143,7 +143,7 @@ FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
 FFInterpolationInitialize(cline)
 FFInterpolationExecute(cline)
-FFInterpolationExportPython(cline)
+fieldfunc.ExportPython(cline)
 
 if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")
@@ -233,7 +233,7 @@ LBSExecute(phys1)
 --############################################### Setup Output
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
-cline = FFInterpolationCreate(LINE)
+cline = fieldfunc.FFInterpolationCreate(LINE)
 FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
 FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
 FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
@@ -243,9 +243,9 @@ FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
 FFInterpolationInitialize(cline)
 FFInterpolationExecute(cline)
-FFInterpolationExportPython(cline)
+fieldfunc.ExportPython(cline)
 
-ExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
+fieldfunc.ExportToVTK(fflist[1],"Tutorial3Output","Phi")
 
 if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")

@@ -57,19 +57,19 @@ LBSExecute(phys1)
 --############################################### Setup Output
 fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
-cline = FFInterpolationCreate(LINE)
-FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
-FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
-FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+cline = fieldfunc.FFInterpolationCreate(LINE)
+fieldfunc.SetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
+fieldfunc.SetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
+fieldfunc.SetProperty(cline,LINE_NUMBEROFPOINTS, 50)
 
-FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
+fieldfunc.SetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
 
-FFInterpolationInitialize(cline)
-FFInterpolationExecute(cline)
-FFInterpolationExportPython(cline)
+fieldfunc.Initialize(cline)
+fieldfunc.Execute(cline)
+fieldfunc.ExportPython(cline)
 
-ExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
+fieldfunc.ExportToVTK(fflist[1],"Tutorial3Output","Phi")
 
 if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")
