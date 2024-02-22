@@ -9,11 +9,13 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(SurfaceMeshImportFromOBJFile);
-RegisterLuaFunctionAsIs(SurfaceMeshImportFromTriangleFiles);
+RegisterLuaFunctionNamespace(MeshSurfaceMeshImportFromOBJFile, mesh, SurfaceMeshImportFromOBJFile);
+RegisterLuaFunctionNamespace(MeshSurfaceMeshImportFromTriangleFiles,
+                             mesh,
+                             SurfaceMeshImportFromTriangleFiles);
 
 int
-SurfaceMeshImportFromOBJFile(lua_State* L)
+MeshSurfaceMeshImportFromOBJFile(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
@@ -54,7 +56,7 @@ SurfaceMeshImportFromOBJFile(lua_State* L)
 }
 
 int
-SurfaceMeshImportFromTriangleFiles(lua_State* L)
+MeshSurfaceMeshImportFromTriangleFiles(lua_State* L)
 {
   // Get arguments
   int num_args = lua_gettop(L);

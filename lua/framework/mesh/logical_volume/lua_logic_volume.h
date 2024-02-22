@@ -45,8 +45,8 @@
  * R)
  *
  * -- Surface mesh
- * lv_surfmesh = SurfaceMeshCreate()
- * SurfaceMeshImportFromOBJFile(lv_surfmesh, "MeshFile3D.obj", false)
+ * lv_surfmesh = mesh.SurfaceMeshCreate()
+ * mesh.SurfaceMeshImportFromOBJFile(lv_surfmesh, "MeshFile3D.obj", false)
  *
  * lv5 = logvol.Create(SURFACE, lv_surfmesh)
  *

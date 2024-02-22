@@ -10,10 +10,10 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(SurfaceMeshCreate);
+RegisterLuaFunctionNamespace(MeshSurfaceMeshCreate, mesh, SurfaceMeshCreate);
 
 int
-SurfaceMeshCreate(lua_State* L)
+MeshSurfaceMeshCreate(lua_State* L)
 {
   auto new_mesh = new SurfaceMesh;
 
@@ -22,9 +22,8 @@ SurfaceMeshCreate(lua_State* L)
   size_t index = opensn::object_stack.size() - 1;
   lua_pushinteger(L, static_cast<lua_Integer>(index));
 
-  opensn::log.LogAllVerbose2() << "SurfaceMeshCreate: "
-                                  "Empty SurfaceMesh object, "
-                               << index << ", created" << std::endl;
+  opensn::log.LogAllVerbose2() << "mesh.SurfaceMeshCreate: Empty SurfaceMesh object, " << index
+                               << ", created" << std::endl;
 
   return 1;
 }

@@ -12,15 +12,23 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionAsIs(UnpartitionedMeshFromVTU);
-RegisterLuaFunctionAsIs(UnpartitionedMeshFromPVTU);
-RegisterLuaFunctionAsIs(UnpartitionedMeshFromEnsightGold);
-RegisterLuaFunctionAsIs(UnpartitionedMeshFromWavefrontOBJ);
-RegisterLuaFunctionAsIs(UnpartitionedMeshFromMshFormat);
-RegisterLuaFunctionAsIs(UnpartitionedMeshFromExodusII);
+RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromVTU, mesh, UnpartitionedMeshFromVTU);
+RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromPVTU, mesh, UnpartitionedMeshFromPVTU);
+RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromEnsightGold,
+                             mesh,
+                             UnpartitionedMeshFromEnsightGold);
+RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromWavefrontOBJ,
+                             mesh,
+                             UnpartitionedMeshFromWavefrontOBJ);
+RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromMshFormat,
+                             mesh,
+                             UnpartitionedMeshFromMshFormat);
+RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromExodusII,
+                             mesh,
+                             UnpartitionedMeshFromExodusII);
 
 int
-UnpartitionedMeshFromVTU(lua_State* L)
+MeshUnpartitionedMeshFromVTU(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -52,7 +60,7 @@ UnpartitionedMeshFromVTU(lua_State* L)
 }
 
 int
-UnpartitionedMeshFromPVTU(lua_State* L)
+MeshUnpartitionedMeshFromPVTU(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -84,7 +92,7 @@ UnpartitionedMeshFromPVTU(lua_State* L)
 }
 
 int
-UnpartitionedMeshFromEnsightGold(lua_State* L)
+MeshUnpartitionedMeshFromEnsightGold(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -115,7 +123,7 @@ UnpartitionedMeshFromEnsightGold(lua_State* L)
 }
 
 int
-UnpartitionedMeshFromWavefrontOBJ(lua_State* L)
+MeshUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -141,7 +149,7 @@ UnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 }
 
 int
-UnpartitionedMeshFromMshFormat(lua_State* L)
+MeshUnpartitionedMeshFromMshFormat(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);
@@ -167,7 +175,7 @@ UnpartitionedMeshFromMshFormat(lua_State* L)
 }
 
 int
-UnpartitionedMeshFromExodusII(lua_State* L)
+MeshUnpartitionedMeshFromExodusII(lua_State* L)
 {
   const std::string func_name = __FUNCTION__;
   int num_args = lua_gettop(L);

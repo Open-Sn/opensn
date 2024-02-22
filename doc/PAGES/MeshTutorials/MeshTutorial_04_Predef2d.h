@@ -18,8 +18,8 @@ We next import a surface mesh (chi_mesh::SurfaceMesh) that will define our
 on predefined meshes**.
 
 \code
-newSurfMesh = SurfaceMeshCreate();
-SurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
+newSurfMesh = mesh.SurfaceMeshCreate();
+mesh.SurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
 \endcode
 
 The next step is to break up the boundaries of this mesh into edges that we can
@@ -75,8 +75,8 @@ The *SURFACEMESHER_PREDEFINED* is just a pass-through mesher, in contrast to the
 \code
 MeshHandlerCreate()
 --
-newSurfMesh = SurfaceMeshCreate();
-SurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
+newSurfMesh = mesh.SurfaceMeshCreate();
+mesh.SurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
 loops,loop_count = SurfaceMeshGetEdgeLoops(newSurfMesh)
 --
 --

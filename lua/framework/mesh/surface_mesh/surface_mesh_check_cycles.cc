@@ -1,24 +1,21 @@
-#include "framework/lua.h"
-
-#include <iostream>
-#include <algorithm>
+#include "lua_surface_mesh.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/runtime.h"
-
 #include "framework/logging/log.h"
-#include "lua_surface_mesh.h"
 #include "framework/console/console.h"
+#include <iostream>
+#include <algorithm>
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(ComputeLoadBalancing);
+RegisterLuaFunctionNamespace(MeshComputeLoadBalancing, mesh, ComputeLoadBalancing);
 
 int
-ComputeLoadBalancing(lua_State* L)
+MeshComputeLoadBalancing(lua_State* L)
 {
   int num_args = lua_gettop(L);
   if (num_args != 3)
-    LuaPostArgAmountError("ComputeLoadBalancing", 3, num_args);
+    LuaPostArgAmountError("mesh.ComputeLoadBalancing", 3, num_args);
 
   // Get reference surface mesh
   int surf_handle = lua_tonumber(L, 1);
@@ -29,8 +26,8 @@ ComputeLoadBalancing(lua_State* L)
   // Extract x-cuts
   if (not lua_istable(L, 2))
   {
-    opensn::log.LogAllError() << "In call to ComputeLoadBalancing: "
-                              << " expected table for argument 2. Incompatible value supplied.";
+    opensn::log.LogAllError() << "In call to mesh.ComputeLoadBalancing: expected table for "
+                                 "argument 2. Incompatible value supplied.";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -48,8 +45,8 @@ ComputeLoadBalancing(lua_State* L)
   // Extract y-cuts
   if (not lua_istable(L, 3))
   {
-    opensn::log.LogAllError() << "In call to ComputeLoadBalancing: "
-                              << " expected table for argument 3. Incompatible value supplied.";
+    opensn::log.LogAllError() << "In call to mesh.ComputeLoadBalancing: expected table for "
+                                 "argument 3. Incompatible value supplied.";
     opensn::Exit(EXIT_FAILURE);
   }
 
