@@ -44,17 +44,17 @@ mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
-xs = PhysicsTransportXSCreate()
+xss = xs.Create()
 xs_file = "tests/transport_transient/subcritical_1g.xs"
-PhysicsTransportXSSet(xs, OPENSN_XSFILE, xs_file)
+xs.Set(xss, OPENSN_XSFILE, xs_file)
 
 -- Define macroscopic cross sections
---xs = PhysicsTransportXSMakeCombined({{xs, 0.00264086}}) -- just sub-critical
-xs = PhysicsTransportXSMakeCombined({{xs, 0.0424459}}) -- just sub-critical
+--xss = xs.MakeCombined({{xss, 0.00264086}}) -- just sub-critical
+xss = xs.MakeCombined({{xss, 0.0424459}}) -- just sub-critical
 
 num_groups = 1
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs)
-mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, xs)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xss)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, xss)
 
 src={}
 for g=1,num_groups do

@@ -40,10 +40,10 @@ mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
-xs_critical = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_critical, OPENSN_XSFILE, "tests/transport_transient/xs_inf_critical_1g.xs")
-xs_21cent = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_21cent, OPENSN_XSFILE, "tests/transport_transient/xs_inf_21cent_1g.xs")
+xs_critical = xs.Create()
+xs.Set(xs_critical, OPENSN_XSFILE, "tests/transport_transient/xs_inf_critical_1g.xs")
+xs_21cent = xs.Create()
+xs.Set(xs_21cent, OPENSN_XSFILE, "tests/transport_transient/xs_inf_21cent_1g.xs")
 
 num_groups = 1
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_critical)

@@ -1,22 +1,19 @@
-#include "framework/lua.h"
-#include <iostream>
-
+#include "multi_group_xs_lua_utils.h"
 #include "framework/physics/physics_namespace.h"
 #include "framework/physics/physics_material/multi_group_xs/single_state_mgxs.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "multi_group_xs_lua_utils.h"
 #include "framework/console/console.h"
+#include <iostream>
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(PhysicsTransportXSCreate);
-RegisterLuaFunctionAsIs(PhysicsTransportXSSet);
-RegisterLuaFunctionAsIs(PhysicsTransportXSMakeCombined);
-RegisterLuaFunctionAsIs(PhysicsTransportXSSetCombined);
-RegisterLuaFunctionAsIs(PhysicsTransportXSGet);
-RegisterLuaFunctionAsIs(PhysicsTransportXSExportToOpenSnFormat);
+RegisterLuaFunctionNamespace(PhysicsTransportXSCreate, xs, Create);
+RegisterLuaFunctionNamespace(PhysicsTransportXSSet, xs, Set);
+RegisterLuaFunctionNamespace(PhysicsTransportXSMakeCombined, xs, MakeCombined);
+RegisterLuaFunctionNamespace(PhysicsTransportXSSetCombined, xs, SetCombined);
+RegisterLuaFunctionNamespace(PhysicsTransportXSGet, xs, Get);
+RegisterLuaFunctionNamespace(PhysicsTransportXSExportToOpenSnFormat, xs, ExportToOpenSnFormat);
 
 RegisterLuaConstantAsIs(SINGLE_VALUE, Varying(0));
 RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));

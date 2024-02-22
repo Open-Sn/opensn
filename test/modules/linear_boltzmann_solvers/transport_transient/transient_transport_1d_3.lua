@@ -46,17 +46,17 @@ mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
-xs_strong_fuel_micro = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_strong_fuel_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_k1_6_1g.xs")
-xs_weak_fuelA_micro = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_weak_fuelA_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_critical_1g.xs")
-xs_weak_fuelB_micro = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_weak_fuelB_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_weak_1g.xs")
+xs_strong_fuel_micro = xs.Create()
+xs.Set(xs_strong_fuel_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_k1_6_1g.xs")
+xs_weak_fuelA_micro = xs.Create()
+xs.Set(xs_weak_fuelA_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_critical_1g.xs")
+xs_weak_fuelB_micro = xs.Create()
+xs.Set(xs_weak_fuelB_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_weak_1g.xs")
 
 atom_density = 0.056559
-xs_strong_fuel = PhysicsTransportXSMakeCombined({{xs_strong_fuel_micro, atom_density}}) --critical
-xs_weak_fuelA  = PhysicsTransportXSMakeCombined({{ xs_weak_fuelA_micro, atom_density}}) --critical
-xs_weak_fuelB  = PhysicsTransportXSMakeCombined({{xs_weak_fuelB_micro, atom_density}})   --critical
+xs_strong_fuel = xs.MakeCombined({{xs_strong_fuel_micro, atom_density}}) --critical
+xs_weak_fuelA  = xs.MakeCombined({{ xs_weak_fuelA_micro, atom_density}}) --critical
+xs_weak_fuelB  = xs.MakeCombined({{xs_weak_fuelB_micro, atom_density}})   --critical
 
 num_groups = 1
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_strong_fuel)
