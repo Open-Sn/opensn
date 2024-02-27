@@ -153,29 +153,6 @@ KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void*)
   return 0;
 }
 
-PetscErrorCode
-KSPMonitorStraight(KSP ksp, PetscInt n, PetscReal rnorm, void*)
-{
-  // Get solver name
-  const char* ksp_name;
-  KSPGetOptionsPrefix(ksp, &ksp_name);
-
-  // Default to this if ksp_name is NULL
-  const char NONAME_SOLVER[] = "NoName-Solver\0";
-
-  if (ksp_name == nullptr)
-    ksp_name = NONAME_SOLVER;
-
-  // Print message
-  std::stringstream buff;
-  buff << ksp_name << " iteration " << std::setw(4) << n << " - Residual " << std::scientific
-       << std::setprecision(7) << rnorm << std::endl;
-
-  log.Log() << buff.str();
-
-  return 0;
-}
-
 void
 CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL)
 {

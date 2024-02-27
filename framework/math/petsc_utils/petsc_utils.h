@@ -182,12 +182,6 @@ PETScSolverSetup CreateCommonKrylovSolverSetup(Mat ref_matrix,
 PetscErrorCode KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void*);
 
 /**
- * General monitor that print the residual norm relative to the
- * right-hand side norm.
- */
-PetscErrorCode KSPMonitorStraight(KSP ksp, PetscInt n, PetscReal rnorm, void*);
-
-/**
  * Copies a PETSc vector to a STL vector. Only the local portion is copied.
  */
 void CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL = true);
