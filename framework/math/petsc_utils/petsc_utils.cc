@@ -116,37 +116,11 @@ CreateCommonKrylovSolverSetup(Mat ref_matrix,
     setup.ksp, 1.e-50, in_relative_residual_tolerance, 1.0e50, in_maximum_iterations);
   KSPSetInitialGuessNonzero(setup.ksp, PETSC_TRUE);
 
-  KSPSetConvergenceTest(setup.ksp, &RelativeResidualConvergenceTest, nullptr, nullptr);
   KSPSetFromOptions(setup.ksp);
 
   KSPMonitorSet(setup.ksp, &KSPMonitorRelativeToRHS, nullptr, nullptr);
 
   return setup;
-}
-
-PetscErrorCode
-RelativeResidualConvergenceTest(
-  KSP ksp, PetscInt, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
-{
-  // Compute rhs norm
-  Vec Rhs;
-  KSPGetRhs(ksp, &Rhs);
-  double rhs_norm;
-  VecNorm(Rhs, NORM_2, &rhs_norm);
-  if (rhs_norm < 1.0e-12)
-    rhs_norm = 1.0;
-
-  // Compute test criterion
-  double tol;
-  int64_t maxIts;
-  KSPGetTolerances(ksp, nullptr, &tol, nullptr, &maxIts);
-
-  double relative_residual = rnorm / rhs_norm;
-
-  if (relative_residual < tol)
-    *convergedReason = KSP_CONVERGED_RTOL;
-
-  return KSP_CONVERGED_ITERATING;
 }
 
 PetscErrorCode
@@ -173,29 +147,6 @@ KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void*)
   std::stringstream buff;
   buff << ksp_name << " iteration " << std::setw(4) << n << " - Residual " << std::scientific
        << std::setprecision(7) << rnorm / rhs_norm << std::endl;
-
-  log.Log() << buff.str();
-
-  return 0;
-}
-
-PetscErrorCode
-KSPMonitorStraight(KSP ksp, PetscInt n, PetscReal rnorm, void*)
-{
-  // Get solver name
-  const char* ksp_name;
-  KSPGetOptionsPrefix(ksp, &ksp_name);
-
-  // Default to this if ksp_name is NULL
-  const char NONAME_SOLVER[] = "NoName-Solver\0";
-
-  if (ksp_name == nullptr)
-    ksp_name = NONAME_SOLVER;
-
-  // Print message
-  std::stringstream buff;
-  buff << ksp_name << " iteration " << std::setw(4) << n << " - Residual " << std::scientific
-       << std::setprecision(7) << rnorm << std::endl;
 
   log.Log() << buff.str();
 

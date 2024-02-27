@@ -111,7 +111,7 @@ SimTest01_FV(const InputParameters&)
 
   // Create Krylov Solver
   opensn::log.Log() << "Solving: ";
-  auto petsc_solver = CreateCommonKrylovSolverSetup(A, "FVDiffSolver", KSPCG, PCGAMG, 1.0e-6, 1000);
+  auto petsc_solver = CreateCommonKrylovSolverSetup(A, "FVDiffSolver", KSPCG, PCGAMG, 1.0e-9, 1000);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);

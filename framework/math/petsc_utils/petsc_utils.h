@@ -165,7 +165,6 @@ void InitMatrixSparsity(Mat& A, int64_t nodal_nnz_in_diag, int64_t nodal_nnz_off
  * KSPSetInitialGuessNonzero(setup.ksp,PETSC_TRUE);
  *
  * KSPMonitorSet(setup.ksp,&KSPMonitorRelativeToRHS,NULL,NULL);
- * KSPSetConvergenceTest(setup.ksp,&RelativeResidualConvergenceTest,NULL,NULL);
  *
  * return setup;
  * \endcode
@@ -178,27 +177,9 @@ PETScSolverSetup CreateCommonKrylovSolverSetup(Mat ref_matrix,
                                                int64_t in_maximum_iterations = 100);
 
 /**
- * Relative Residual Convergence test. The test uses the L2-norm of the residual
- * (\f$ ||b-Ax||_2 \f$), divided by the L2-norm of the right hand side (\f$ ||b||_2 \f$) compared
- * to a tolerance, \f$ \epsilon \f$.
- * \f[
- *  \frac{||b-Ax||_2}{||b||_2} < \epsilon
- * \f]
- *
- */
-PetscErrorCode RelativeResidualConvergenceTest(
-  KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void* monitordestroy);
-
-/**
  * General monitor that print the residual norm relative to the right-hand side norm.
  */
 PetscErrorCode KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void*);
-
-/**
- * General monitor that print the residual norm relative to the
- * right-hand side norm.
- */
-PetscErrorCode KSPMonitorStraight(KSP ksp, PetscInt n, PetscReal rnorm, void*);
 
 /**
  * Copies a PETSc vector to a STL vector. Only the local portion is copied.
