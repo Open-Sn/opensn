@@ -2,13 +2,15 @@
 
 import argparse
 import re
-import ply.lex as lex
-import ply.yacc as yacc
 
 # Content of the generated markdown file
 markdown = ""
 # Lua source that will be included at the end of the file
 lua_src = ""
+
+
+t_DOCO = r'(?sm)--\[\[(.+?)--\s*\]\]'
+t_CODE = r'.*?\n'
 
 
 def extract_comment_content(str):
@@ -22,65 +24,55 @@ def extract_comment_content(str):
         return ""
 
 
-# lexer
-tokens = [
-    'DOCO',
-    'CODE'
-]
-
-t_DOCO = r'(?sm)--\[\[(.+?)--\s*\]\]'
-t_CODE = r'.*?\n'
+def remove_token(s, token):
+    n = len(token)
+    return s[n:]
 
 
-def t_error(t):
-    t.lexer.skip(1)
-
-
-def p_file(p):
-    'file : blk'
-    pass
-
-
-def p_file_seq(p):
-    'file : file blk'
-    pass
-
-
-def p_doco(p):
-    'blk : DOCO'
-    global markdown
-
-    markdown += extract_comment_content(p[1]) + "\n"
-    markdown += "\n"
-
-
-def p_code(p):
-    'blk : code_block'
+def parse(src):
     global markdown
     global lua_src
 
-    code = p[1].strip()
-    if len(code) > 0:
-        markdown += "```\n"
-        markdown += code + "\n"
+    # state variable for indicating if we are inside a code block or not
+    code_block = False
+
+    s = src
+    while len(s) > 0:
+        if re.match(t_DOCO, s):
+            # close opened code block
+            if code_block:
+                markdown += "```\n"
+                markdown += "\n"
+                code_block = False
+
+            m = re.match(t_DOCO, s)
+            token = m.group(0)
+            s = remove_token(s, token)
+
+            markdown += extract_comment_content(token) + "\n"
+            markdown += "\n"
+        elif re.match(t_CODE, s):
+            m = re.match(t_CODE, s)
+            token = m.group(0)
+            s = remove_token(s, token)
+
+            code = token.rstrip()
+            if len(code) > 0:
+                # open a code block
+                if not code_block:
+                    markdown += "```\n"
+                    code_block = True
+
+                markdown += code + "\n"
+
+            lua_src += token
+        else:
+            raise SystemExit("Nothing matched")
+
+    # if last block was a code block, close it
+    if code_block:
         markdown += "```\n"
         markdown += "\n"
-
-    lua_src += p[1]
-
-
-def p_code_block_one(p):
-    'code_block : CODE'
-    p[0] = p[1]
-    if p[1] != '\n':
-        p[0] = p[1]
-    else:
-        p[0] = ""
-
-
-def p_code_block_seq(p):
-    'code_block : code_block CODE'
-    p[0] = p[1] + p[2]
 
 
 # main
@@ -91,9 +83,7 @@ args = parser.parse_args()
 
 with open(args.lua_filename, "r") as f:
     src = ''.join(f.readlines())
-    lexer = lex.lex()
-    parser = yacc.yacc()
-    result = parser.parse(src)
+    parse(src)
 
 with open(args.md_filename, "w") as f:
     f.write(markdown)
