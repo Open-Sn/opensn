@@ -1,6 +1,6 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/acceleration.h"
 
-#include "framework/mesh/sweep_utilities/sweep_boundary/sweep_boundary.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/sweep_boundary.h"
 #include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 
 #include "framework/runtime.h"

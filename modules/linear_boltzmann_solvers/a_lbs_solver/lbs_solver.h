@@ -6,8 +6,8 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/linear_solver/linear_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
-#include "framework/mesh/sweep_utilities/sweep_namespace.h"
-#include "framework/mesh/sweep_utilities/sweep_boundary/sweep_boundary.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/sweep_boundary.h"
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/distributed_source/distributed_source.h"

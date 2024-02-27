@@ -2,7 +2,7 @@
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
 
-#include "framework/mesh/sweep_utilities/sweep_scheduler/sweep_scheduler.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"

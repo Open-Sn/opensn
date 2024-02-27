@@ -9,7 +9,7 @@
 #include "framework/math/quadratures/angular_quadrature_base.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 
-#include "framework/mesh/sweep_utilities/angle_aggregation/angle_aggregation.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_aggregation/angle_aggregation.h"
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 

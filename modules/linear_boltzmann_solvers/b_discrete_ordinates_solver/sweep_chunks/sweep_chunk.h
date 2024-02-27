@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/mesh/sweep_utilities/sweep_chunk_base.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_chunk_base.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 
 namespace opensn
