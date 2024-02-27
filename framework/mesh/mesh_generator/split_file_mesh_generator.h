@@ -42,7 +42,7 @@ protected:
   // void
   const int num_parts_;
   const std::string split_mesh_dir_path_;
-  const std::string split_file_prefix_;
+  const std::string file_prefix_;
   const bool read_only_;
   const int verbosity_level_;
 };
