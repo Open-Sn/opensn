@@ -18,7 +18,8 @@ SourceFunction::SourceFunction(const LBSSolver& lbs_solver) : lbs_solver_(lbs_so
 void
 SourceFunction::operator()(const LBSGroupset& groupset,
                            std::vector<double>& q,
-                           const std::vector<double>& phi_local,
+                           const std::vector<double>& phi,
+                           const std::vector<double>& densities,
                            const SourceFlags source_flags)
 {
   if (source_flags.Empty())
@@ -46,17 +47,17 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
   const auto& matid_to_src_map = lbs_solver_.GetMatID2IsoSrcMap();
 
-  const size_t num_moments = lbs_solver_.NumMoments();
+  const auto num_moments = lbs_solver_.NumMoments();
   const auto& ext_src_moments_local = lbs_solver_.ExtSrcMomentsLocal();
 
   const auto& m_to_ell_em_map = groupset.quadrature_->GetMomentToHarmonicsIndexMap();
 
-  // Loop over local cells
-  const auto& grid = lbs_solver_.Grid();
   // Apply all nodal sources
+  const auto& grid = lbs_solver_.Grid();
   for (const auto& cell : grid.local_cells)
   {
-    auto& transport_view = cell_transport_views[cell.local_id_];
+    const auto& rho = densities[cell.local_id_];
+    const auto& transport_view = cell_transport_views[cell.local_id_];
     cell_volume_ = transport_view.Volume();
 
     // Obtain xs
@@ -72,17 +73,15 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     const auto& nu_delayed_sigma_f = xs.NuDelayedSigmaF();
 
     // Loop over nodes
-    const int num_nodes = transport_view.NumNodes();
+    const auto num_nodes = transport_view.NumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
       // Loop over moments
       for (int m = 0; m < static_cast<int>(num_moments); ++m)
       {
-        unsigned int ell = m_to_ell_em_map[m].ell;
-
-        size_t uk_map = transport_view.MapDOF(i, m, 0); // unknown map
-
-        const double* phi = &phi_local[uk_map];
+        const auto ell = m_to_ell_em_map[m].ell;
+        const auto uk_map = transport_view.MapDOF(i, m, 0);
+        const double* phi_im = &phi[uk_map];
 
         // Declare moment src
         if (P0_src and ell == 0)
@@ -112,7 +111,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
             if (apply_ags_scatter_src_)
               for (const auto& [_, gp, sigma_sm] : S_ell.Row(g))
                 if (gp < gs_i_ or gp > gs_f_)
-                  rhs += sigma_sm * phi[gp];
+                  rhs += rho * sigma_sm * phi_im[gp];
 
             // Add Within GroupSet Scattering (WGS)
             if (apply_wgs_scatter_src_)
@@ -121,7 +120,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                 {
                   if (suppress_wg_scatter_src_ and g_ == gp)
                     continue;
-                  rhs += sigma_sm * phi[gp];
+                  rhs += rho * sigma_sm * phi_im[gp];
                 }
           }
 
@@ -132,14 +131,14 @@ SourceFunction::operator()(const LBSGroupset& groupset,
             if (apply_ags_fission_src_)
               for (size_t gp = first_grp_; gp <= last_grp_; ++gp)
                 if (gp < gs_i_ or gp > gs_f_)
-                  rhs += F_g[gp] * phi[gp];
+                  rhs += rho * F_g[gp] * phi_im[gp];
 
             if (apply_wgs_fission_src_)
               for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
-                rhs += F_g[gp] * phi[gp];
+                rhs += rho * F_g[gp] * phi_im[gp];
 
             if (lbs_solver_.Options().use_precursors)
-              rhs += this->AddDelayedFission(precursors, nu_delayed_sigma_f, &phi_local[uk_map]);
+              rhs += this->AddDelayedFission(precursors, rho, nu_delayed_sigma_f, &phi[uk_map]);
           }
 
           // Add to destination vector
@@ -150,7 +149,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     }     // for dof i
   }       // for cell
 
-  AddAdditionalSources(groupset, q, phi_local, source_flags);
+  AddAdditionalSources(groupset, q, phi, source_flags);
 
   log.LogEvent(source_event_tag, Logger::EventType::EVENT_END);
 }
@@ -163,6 +162,7 @@ SourceFunction::AddSourceMoments() const
 
 double
 SourceFunction::AddDelayedFission(const PrecursorList& precursors,
+                                  const double& rho,
                                   const std::vector<double>& nu_delayed_sigma_f,
                                   const double* phi) const
 {
@@ -171,13 +171,13 @@ SourceFunction::AddDelayedFission(const PrecursorList& precursors,
     for (size_t gp = first_grp_; gp <= last_grp_; ++gp)
       if (gp < gs_i_ or gp > gs_f_)
         for (const auto& precursor : precursors)
-          value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
+          value += precursor.emission_spectrum[g_] * precursor.fractional_yield * rho *
                    nu_delayed_sigma_f[gp] * phi[gp];
 
   if (apply_wgs_fission_src_)
     for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
       for (const auto& precursor : precursors)
-        value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
+        value += precursor.emission_spectrum[g_] * precursor.fractional_yield * rho *
                  nu_delayed_sigma_f[gp] * phi[gp];
 
   return value;

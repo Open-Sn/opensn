@@ -41,6 +41,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
   auto& q_moments_local = lbs_solver.QMomentsLocal();
   auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto& phi_new_local = lbs_solver.PhiNewLocal();
+  const auto& densities_local = lbs_solver.DensitiesLocal();
   auto primary_ags_solver = lbs_solver.GetPrimaryAGSSolver();
   auto& groupsets = lbs_solver.Groupsets();
   auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
@@ -67,18 +68,22 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
   double k_eff_change = 1.0;
 
   /**Lambda for the creation of fission sources.*/
-  auto SetLBSFissionSource = [&active_set_source_function, &front_gs, &q_moments_local](
-                               const VecDbl& input, const bool additive)
+  auto SetLBSFissionSource =
+    [&active_set_source_function, &front_gs, &q_moments_local, &densities_local](
+      const VecDbl& input, const bool additive)
   {
     if (not additive)
       Set(q_moments_local, 0.0);
-    active_set_source_function(
-      front_gs, q_moments_local, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+    active_set_source_function(front_gs,
+                               q_moments_local,
+                               input,
+                               densities_local,
+                               APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
 
   /**Lambda for the creation of scattering sources*/
   auto SetLBSScatterSource =
-    [&active_set_source_function, &front_gs, &q_moments_local](
+    [&active_set_source_function, &front_gs, &q_moments_local, &densities_local](
       const VecDbl& input, const bool additive, const bool suppress_wgs = false)
   {
     if (not additive)
@@ -86,7 +91,7 @@ PowerIterationKEigen1(LBSSolver& lbs_solver, double tolerance, int max_iteration
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
     if (suppress_wgs)
       source_flags |= SUPPRESS_WG_SCATTER;
-    active_set_source_function(front_gs, q_moments_local, input, source_flags);
+    active_set_source_function(front_gs, q_moments_local, input, densities_local, source_flags);
   };
 
   auto phi_temp = phi_old_local;

@@ -18,6 +18,7 @@ public:
                   const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
                   const std::vector<lbs::UnitCellMatrices>& secondary_unit_cell_matrices,
                   std::vector<lbs::CellLBSView>& cell_transport_views,
+                  const std::vector<double>& densities,
                   std::vector<double>& destination_phi,
                   std::vector<double>& destination_psi,
                   const std::vector<double>& source_moments,

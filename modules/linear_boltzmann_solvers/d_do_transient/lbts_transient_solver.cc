@@ -59,7 +59,7 @@ DiscOrdTransientSolver::Initialize()
 
   using namespace std::placeholders;
   active_set_source_function_ =
-    std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4);
+    std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4, _5);
 }
 
 void

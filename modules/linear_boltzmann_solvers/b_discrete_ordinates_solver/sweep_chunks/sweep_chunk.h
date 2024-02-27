@@ -33,6 +33,7 @@ public:
              const SpatialDiscretization& discretization,
              const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
              std::vector<lbs::CellLBSView>& cell_transport_views,
+             const std::vector<double>& densities,
              const std::vector<double>& source_moments,
              const lbs::LBSGroupset& groupset,
              const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
@@ -42,6 +43,7 @@ public:
       discretization_(discretization),
       unit_cell_matrices_(unit_cell_matrices),
       cell_transport_views_(cell_transport_views),
+      densities_(densities),
       source_moments_(source_moments),
       groupset_(groupset),
       xs_(xs),
@@ -103,6 +105,7 @@ protected:
   const SpatialDiscretization& discretization_;
   const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices_;
   std::vector<lbs::CellLBSView>& cell_transport_views_;
+  const std::vector<double>& densities_;
   const std::vector<double>& source_moments_;
   const lbs::LBSGroupset& groupset_;
   const std::map<int, std::shared_ptr<MultiGroupXS>>& xs_;

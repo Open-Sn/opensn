@@ -355,6 +355,18 @@ LBSSolver::PsiNewLocal() const
   return psi_new_local_;
 }
 
+std::vector<double>&
+LBSSolver::DensitiesLocal()
+{
+  return densities_local_;
+}
+
+const std::vector<double>&
+LBSSolver::DensitiesLocal() const
+{
+  return densities_local_;
+}
+
 const std::map<uint64_t, std::shared_ptr<SweepBndry>>&
 LBSSolver::SweepBoundaries() const
 {
@@ -872,6 +884,9 @@ LBSSolver::PerformInputChecks()
     options_.geometry_type = GeometryType::THREED_CARTESIAN;
   else
     OpenSnLogicalError("Cannot deduce geometry type from mesh.");
+
+  // Assign placeholder unit densities
+  densities_local_.assign(grid_ptr_->local_cells.size(), 1.0);
 }
 
 void
@@ -2423,7 +2438,8 @@ LBSSolver::MakeSourceMomentsFromPhi()
   {
     active_set_source_function_(groupset,
                                 source_moments,
-                                PhiOldLocal(),
+                                phi_old_local_,
+                                densities_local_,
                                 APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
                                   APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   }

@@ -389,6 +389,7 @@ DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(lbs::LBSGroupset& groupset)
                                                        unit_cell_matrices_,
                                                        secondary_unit_cell_matrices_,
                                                        cell_transport_views_,
+                                                       densities_local_,
                                                        phi_new_local_,
                                                        psi_new_local_[groupset.id_],
                                                        q_moments_local_,

@@ -108,7 +108,7 @@ DiscreteOrdinatesSolver::Initialize()
   using namespace std::placeholders;
   auto src_function = std::make_shared<SourceFunction>(*this);
   active_set_source_function_ =
-    std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4);
+    std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4, _5);
 
   // Initialize groupsets for sweeping
   InitializeSweepDataStructures();
@@ -606,7 +606,8 @@ DiscreteOrdinatesSolver::ComputeBalance()
     q_moments_local_.assign(q_moments_local_.size(), 0.0);
     active_set_source_function_(groupset,
                                 q_moments_local_,
-                                PhiOldLocal(),
+                                phi_old_local_,
+                                densities_local_,
                                 APPLY_FIXED_SOURCES | APPLY_AGS_FISSION_SOURCES |
                                   APPLY_WGS_FISSION_SOURCES);
     LBSSolver::GSScopedCopyPrimarySTLvectors(groupset, q_moments_local_, mat_src);
@@ -1278,6 +1279,7 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
                                                        *discretization_,
                                                        unit_cell_matrices_,
                                                        cell_transport_views_,
+                                                       densities_local_,
                                                        phi_new_local_,
                                                        psi_new_local_[groupset.id_],
                                                        q_moments_local_,
@@ -1296,6 +1298,7 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
                                                        *discretization_,
                                                        unit_cell_matrices_,
                                                        cell_transport_views_,
+                                                       densities_local_,
                                                        q_moments_local_,
                                                        groupset,
                                                        matid_to_xs_map_,
