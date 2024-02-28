@@ -15,7 +15,9 @@
 #include <vtkExodusIIWriter.h>
 #include <vtkPointData.h>
 #include <vtkCellData.h>
+
 #include <algorithm>
+#include <set>
 
 namespace opensn
 {

@@ -9,6 +9,7 @@
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 
 #include <map>
+#include <set>
 
 namespace opensn
 {

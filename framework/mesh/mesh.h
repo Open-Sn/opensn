@@ -127,5 +127,3 @@ size_t CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
 #include "framework/mesh/mesh_matrix3x3.h"
 #include "framework/mesh/mesh_face.h"
 #include "framework/mesh/mesh_edge_loops.h"
-
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"

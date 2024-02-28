@@ -1,6 +1,6 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_set/aah_angle_set.h"
 
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_chunk_base.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

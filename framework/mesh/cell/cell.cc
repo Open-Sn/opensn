@@ -6,6 +6,8 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
+#include <set>
+
 namespace opensn
 {
 

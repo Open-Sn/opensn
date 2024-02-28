@@ -1,10 +1,12 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_aggregation/angle_aggregation.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_chunk_base.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks//sweep_chunk.h"
 
 namespace opensn
 {
+
+class SweepChunk;
 
 enum class SchedulingAlgorithm
 {

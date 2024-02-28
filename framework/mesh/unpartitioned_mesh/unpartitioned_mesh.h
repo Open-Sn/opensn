@@ -10,6 +10,7 @@ class vtkSmartPointer;
 
 #include <map>
 #include <array>
+#include <set>
 
 namespace opensn
 {
