@@ -381,6 +381,7 @@ def InstallPETSc(pkg: str, ver: str, gold_file: str):
 --download-fblaslapack=1  \\
 --download-metis=1  \\
 --download-parmetis=1  \\
+--download-ptscotch=1  \\
 --download-superlu_dist=1  \\
 CC=$CC CXX=$CXX FC=$FC  \\
 COPTFLAGS='-O3 -march=native -mtune=native'  \\
