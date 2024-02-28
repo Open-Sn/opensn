@@ -1,10 +1,11 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/math/math.h"
 
 namespace opensn
+{
+namespace lbs
 {
 
 AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data)
@@ -277,4 +278,5 @@ AAH_FLUDS::DelayedPrelocIOutgoingPsiOld()
   return delayed_prelocI_outgoing_psi_old_;
 }
 
+} // namespace lbs
 } // namespace opensn

@@ -1,11 +1,9 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_set/cbc_angle_set.h"
-
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/communicators/cbc_async_comm.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/cbc_spds.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/math_range.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

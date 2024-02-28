@@ -2,6 +2,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 double*
 BoundaryIsotropicHomogenous::HeterogeneousPsiIncoming(uint64_t cell_local_id,
@@ -14,4 +16,5 @@ BoundaryIsotropicHomogenous::HeterogeneousPsiIncoming(uint64_t cell_local_id,
   return &boundary_flux[group_num];
 }
 
+} // namespace lbs
 } // namespace opensn

@@ -1,16 +1,14 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds_adams_adams_hawkins.h"
-
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include "framework/graphs/directed_graph.h"
 #include "framework/utils/timer.h"
-
 #include <algorithm>
 
 namespace opensn
+{
+namespace lbs
 {
 
 SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
@@ -264,4 +262,5 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   }
 }
 
+} // namespace lbs
 } // namespace opensn

@@ -1,8 +1,9 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_set/angle_set.h"
-
 #include "framework/logging/log_exceptions.h"
 
 namespace opensn
+{
+namespace lbs
 {
 
 AngleSet::AngleSet(size_t id,
@@ -75,4 +76,5 @@ AngleSet::GetCommunicator()
   ChiLogicalError("Method not implemented");
 }
 
+} // namespace lbs
 } // namespace opensn

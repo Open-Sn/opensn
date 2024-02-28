@@ -7,9 +7,13 @@
 
 namespace opensn
 {
+
 class GridFaceHistogram;
 class Cell;
 class CellFace;
+
+namespace lbs
+{
 
 // face_slot index, vertex ids
 typedef std::pair<int, std::vector<uint64_t>> CompactFaceView;
@@ -170,4 +174,5 @@ private:
   void NonLocalIncidentMapping(const Cell& cell, const SPDS& spds);
 };
 
+} // namespace lbs
 } // namespace opensn

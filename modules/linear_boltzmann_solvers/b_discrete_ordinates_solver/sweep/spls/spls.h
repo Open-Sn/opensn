@@ -4,6 +4,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 /**Contains the sweep plane data.*/
 struct SPLS
@@ -18,4 +20,5 @@ struct STDG
   std::vector<int> item_id;
 };
 
+} // namespace lbs
 } // namespace opensn

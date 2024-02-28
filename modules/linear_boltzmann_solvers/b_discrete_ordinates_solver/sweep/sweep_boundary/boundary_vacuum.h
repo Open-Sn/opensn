@@ -8,6 +8,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 /**
  * Zero fluxes homogenous on a boundary and in angle.
@@ -20,7 +22,7 @@ private:
 public:
   explicit BoundaryVaccuum(size_t in_num_groups,
                            CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(BoundaryType::INCIDENT_VACCUUM, in_num_groups, coord_type),
+    : SweepBoundary(BoundaryType::VACUUM, in_num_groups, coord_type),
       boundary_flux_(in_num_groups, 0.0)
   {
   }
@@ -33,4 +35,5 @@ public:
                                    size_t gs_ss_begin) override;
 };
 
+} // namespace lbs
 } // namespace opensn

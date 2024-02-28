@@ -2,6 +2,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 double*
 BoundaryVaccuum::HeterogeneousPsiIncoming(uint64_t cell_local_id,
@@ -14,4 +16,5 @@ BoundaryVaccuum::HeterogeneousPsiIncoming(uint64_t cell_local_id,
   return &boundary_flux_[group_num];
 }
 
+} // namespace lbs
 } // namespace opensn

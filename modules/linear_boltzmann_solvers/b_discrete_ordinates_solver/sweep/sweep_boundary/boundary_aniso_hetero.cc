@@ -6,6 +6,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 double*
 BoundaryIncidentHeterogeneous::HeterogeneousPsiIncoming(uint64_t cell_local_id,
@@ -119,4 +121,5 @@ BoundaryIncidentHeterogeneous::Setup(const MeshContinuum& grid, const AngularQua
   } // for cell
 }
 
+} // namespace lbs
 } // namespace opensn

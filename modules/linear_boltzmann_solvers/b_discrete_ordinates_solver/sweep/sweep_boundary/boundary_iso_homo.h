@@ -8,6 +8,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 /**
  * Specified incident fluxes homogenous on a boundary.
@@ -22,7 +24,7 @@ public:
     size_t in_num_groups,
     std::vector<double> ref_boundary_flux,
     CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(BoundaryType::INCIDENT_ISOTROPIC_HOMOGENOUS, in_num_groups, coord_type),
+    : SweepBoundary(BoundaryType::ISOTROPIC, in_num_groups, coord_type),
       boundary_flux(std::move(ref_boundary_flux))
   {
   }
@@ -35,4 +37,5 @@ public:
                                    size_t gs_ss_begin) override;
 };
 
+} // namespace lbs
 } // namespace opensn

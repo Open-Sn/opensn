@@ -4,6 +4,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 /**Manages the workstages of a single angleset group.*/
 class AngleSetGroup
@@ -15,4 +17,5 @@ private:
   std::vector<std::shared_ptr<AngleSet>> angle_sets_;
 };
 
+} // namespace lbs
 } // namespace opensn

@@ -1,21 +1,13 @@
 #pragma once
 
-#include "framework/mesh/mesh.h"
-#include "framework/math/math.h"
-
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 #include <vector>
 #include <limits>
 
 namespace opensn
 {
-
-enum class BoundaryType
+namespace lbs
 {
-  INCIDENT_VACCUUM = 0,                  ///< Zero for all angles, space
-  INCIDENT_ISOTROPIC_HOMOGENOUS = 1,     ///< One value for all angles, homogenous in space
-  REFLECTING = 2,                        ///< Reflecting boundary condition about a normal
-  INCIDENT_ANISOTROPIC_HETEROGENEOUS = 3 ///< Complex different for each angle and face node
-};
 
 /**
  * Base class for sweep related boundaries.
@@ -103,4 +95,5 @@ public:
   virtual ~BoundaryFunction() = default;
 };
 
+} // namespace lbs
 } // namespace opensn

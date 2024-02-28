@@ -565,7 +565,7 @@ LBSSolver::BoundaryOptionsBlock()
 
   params.AddOptionalParameterArray<double>("group_strength",
                                            {},
-                                           "Required only if `type` is `\"incident_isotropic\"`. "
+                                           "Required only if `type` is `\"isotropic\"`. "
                                            "An array of isotropic strength per group");
 
   params.AddOptionalParameter(
@@ -578,9 +578,7 @@ LBSSolver::BoundaryOptionsBlock()
     "name", AllowableRangeList::New({"xmin", "xmax", "ymin", "ymax", "zmin", "zmax"}));
 
   params.ConstrainParameterRange(
-    "type",
-    AllowableRangeList::New(
-      {"vacuum", "incident_isotropic", "reflecting", "incident_anisotropic_heterogeneous"}));
+    "type", AllowableRangeList::New({"vacuum", "isotropic", "reflecting", "arbitrary"}));
 
   return params;
 }
@@ -759,9 +757,9 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
   const auto bid = supported_boundary_names.at(boundary_name);
   const std::map<std::string, lbs::BoundaryType> type_list = {
     {"vacuum", BoundaryType::VACUUM},
-    {"incident_isotropic", BoundaryType::INCIDENT_ISOTROPIC},
+    {"isotropic", BoundaryType::ISOTROPIC},
     {"reflecting", BoundaryType::REFLECTING},
-    {"incident_anisotropic_heterogeneous", BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS}};
+    {"arbitrary", BoundaryType::ARBITRARY}};
 
   const auto type = type_list.at(bndry_type);
   switch (type)
@@ -772,10 +770,10 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
       BoundaryPreferences()[bid] = {type};
       break;
     }
-    case BoundaryType::INCIDENT_ISOTROPIC:
+    case BoundaryType::ISOTROPIC:
     {
       ChiInvalidArgumentIf(not user_params.Has("group_strength"),
-                           "Boundary conditions with type=\"incident_isotropic\" "
+                           "Boundary conditions with type=\"isotropic\" "
                            "require parameter \"group_strength\"");
 
       user_params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
@@ -783,10 +781,10 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
       boundary_preferences_[bid] = {type, group_strength};
       break;
     }
-    case BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS:
+    case BoundaryType::ARBITRARY:
     {
       ChiInvalidArgumentIf(not user_params.Has("function_name"),
-                           "Boundary conditions with type=\"incident_anisotropic_heterogeneous\" "
+                           "Boundary conditions with type=\"arbitrary\" "
                            "require parameter \"function_name\".");
 
       const auto bndry_function_name = user_params.GetParamValue<std::string>("function_name");
@@ -1541,9 +1539,9 @@ LBSSolver::InitializeBoundaries()
 
       if (bndry_pref.type == lbs::BoundaryType::VACUUM)
         sweep_boundaries_[bid] = std::make_shared<BoundaryVaccuum>(G);
-      else if (bndry_pref.type == lbs::BoundaryType::INCIDENT_ISOTROPIC)
+      else if (bndry_pref.type == lbs::BoundaryType::ISOTROPIC)
         sweep_boundaries_[bid] = std::make_shared<BoundaryIsotropicHomogenous>(G, mg_q);
-      else if (bndry_pref.type == BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS)
+      else if (bndry_pref.type == BoundaryType::ARBITRARY)
       {
         // FIXME:
 #if 0

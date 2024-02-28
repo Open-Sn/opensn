@@ -1,5 +1,4 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/fluds/cbc_fluds_common_data.h"
-
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 

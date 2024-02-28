@@ -3,6 +3,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 double*
 BoundaryReflecting::HeterogeneousPsiIncoming(uint64_t cell_local_id,
@@ -69,4 +71,5 @@ BoundaryReflecting::ResetAnglesReadyStatus()
       flags[gs_ss] = false;
 }
 
+} // namespace lbs
 } // namespace opensn

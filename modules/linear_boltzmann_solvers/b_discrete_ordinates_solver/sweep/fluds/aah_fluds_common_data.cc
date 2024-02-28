@@ -8,6 +8,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 typedef std::vector<std::pair<int, short>> LockBox;
 
@@ -875,4 +877,5 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
   }     // for incindent f
 }
 
+} // namespace lbs
 } // namespace opensn

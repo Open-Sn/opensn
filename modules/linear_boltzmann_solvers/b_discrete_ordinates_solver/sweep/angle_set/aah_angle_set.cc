@@ -1,11 +1,11 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_set/aah_angle_set.h"
-
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
 namespace opensn
+{
+namespace lbs
 {
 
 AAH_AngleSet::AAH_AngleSet(size_t id,
@@ -148,4 +148,5 @@ AAH_AngleSet::ReflectingPsiOutBoundBndry(uint64_t bndry_map,
     cell_local_id, face_num, fi, angle_num, gs_ss_begin);
 }
 
+} // namespace lbs
 } // namespace opensn

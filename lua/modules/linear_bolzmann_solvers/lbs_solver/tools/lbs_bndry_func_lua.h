@@ -1,6 +1,6 @@
 #pragma once
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/sweep_boundary.h"
 
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/sweep_boundary.h"
 #include <string>
 #include <utility>
 
@@ -9,7 +9,7 @@ namespace opensnlua
 namespace lbs
 {
 
-class BoundaryFunctionToLua : public opensn::BoundaryFunction
+class BoundaryFunctionToLua : public opensn::lbs::BoundaryFunction
 {
 private:
   const std::string m_lua_function_name;

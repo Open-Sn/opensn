@@ -93,7 +93,7 @@ LBSSetProperty(lua_State* L)
       lbs_solver.BoundaryPreferences()[bid] = {opensn::lbs::BoundaryType::VACUUM};
       opensn::log.Log() << "Boundary " << bid << " set to Vacuum.";
     }
-    else if (btype == (int)opensn::lbs::BoundaryType::INCIDENT_ISOTROPIC)
+    else if (btype == (int)opensn::lbs::BoundaryType::ISOTROPIC)
     {
       if (numArgs != 5)
         LuaPostArgAmountError("LBSSetProperty", 5, numArgs);
@@ -137,7 +137,7 @@ LBSSetProperty(lua_State* L)
         opensn::Exit(EXIT_FAILURE);
       }
 
-      lbs_solver.BoundaryPreferences()[bid] = {opensn::lbs::BoundaryType::INCIDENT_ISOTROPIC,
+      lbs_solver.BoundaryPreferences()[bid] = {opensn::lbs::BoundaryType::ISOTROPIC,
                                                group_strength};
 
       opensn::log.Log() << "Isotropic boundary condition for boundary " << bid << " loaded with "
@@ -148,13 +148,13 @@ LBSSetProperty(lua_State* L)
       lbs_solver.BoundaryPreferences()[bid] = {opensn::lbs::BoundaryType::REFLECTING};
       opensn::log.Log() << "Boundary " << bid << " set to Reflecting.";
     }
-    else if (btype == (int)opensn::lbs::BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS)
+    else if (btype == (int)opensn::lbs::BoundaryType::ARBITRARY)
     {
       LuaCheckNilValue(fname, L, 5);
 
       const std::string lua_func_name = lua_tostring(L, 5);
       lbs_solver.BoundaryPreferences()[bid] = {
-        opensn::lbs::BoundaryType::INCIDENT_ANISTROPIC_HETEROGENEOUS, {}, lua_func_name};
+        opensn::lbs::BoundaryType::ARBITRARY, {}, lua_func_name};
       opensn::log.Log() << "Boundary " << bid
                         << " set to Incident anistoropic"
                            " heterogeneous.";

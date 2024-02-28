@@ -4,6 +4,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 double*
 SweepBoundary::HeterogeneousPsiIncoming(uint64_t cell_local_id,
@@ -32,4 +34,5 @@ SweepBoundary::HeterogeneousPsiOutgoing(uint64_t cell_local_id,
   return nullptr;
 }
 
+} // namespace lbs
 } // namespace opensn

@@ -1,8 +1,6 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/acceleration.h"
-
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/sweep_boundary.h"
 #include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log_exceptions.h"
 
@@ -15,16 +13,12 @@ std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
              bool vaccum_bcs_are_dirichlet)
 {
-  typedef BoundaryType SwpBndryType;
-  typedef BoundaryCondition BC;
-  typedef BCType BCType;
-
-  std::map<uint64_t, BC> bcs;
+  std::map<uint64_t, BoundaryCondition> bcs;
   for (auto& [bid, lbs_bndry] : sweep_boundaries)
   {
-    if (lbs_bndry->Type() == SwpBndryType::REFLECTING)
+    if (lbs_bndry->Type() == BoundaryType::REFLECTING)
       bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
-    else if (lbs_bndry->Type() == SwpBndryType::INCIDENT_VACCUUM)
+    else if (lbs_bndry->Type() == BoundaryType::VACUUM)
       if (vaccum_bcs_are_dirichlet)
         bcs[bid] = {BCType::DIRICHLET, {0.0, 0.0, 0.0}};
       else

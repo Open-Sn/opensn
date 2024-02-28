@@ -4,9 +4,7 @@
 #include <cstddef>
 #include <map>
 #include <vector>
-
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/communicators/async_comm.h"
-
 #include "framework/data_types/byte_array.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 
@@ -14,6 +12,7 @@ namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
+
 class MPICommunicatorSet;
 class ByteArray;
 

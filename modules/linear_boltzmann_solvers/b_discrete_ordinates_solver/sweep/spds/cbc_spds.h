@@ -1,7 +1,6 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds.h"
-
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"
 
 namespace opensn

@@ -4,6 +4,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 class SPDS_AdamsAdamsHawkins : public SPDS
 {
@@ -22,4 +24,5 @@ private:
   std::vector<STDG> global_sweep_planes_; ///< Processor sweep planes
 };
 
+} // namespace lbs
 } // namespace opensn

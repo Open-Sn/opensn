@@ -4,6 +4,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 /**Manages the workstages of a single angle set.*/
 class AAH_AngleSet : public AngleSet
@@ -52,4 +54,5 @@ protected:
   AAH_ASynchronousCommunicator async_comm_;
 };
 
+} // namespace lbs
 } // namespace opensn

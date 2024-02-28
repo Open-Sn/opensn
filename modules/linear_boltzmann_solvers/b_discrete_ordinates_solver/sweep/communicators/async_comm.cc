@@ -1,8 +1,9 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/communicators/async_comm.h"
-
 #include "framework/logging/log_exceptions.h"
 
 namespace opensn
+{
+namespace lbs
 {
 
 AsynchronousCommunicator::AsynchronousCommunicator(FLUDS& fluds, const MPICommunicatorSet& comm_set)
@@ -20,4 +21,5 @@ AsynchronousCommunicator::InitGetDownwindMessageData(int location_id,
   ChiLogicalError("Method not implemented");
 }
 
+} // namespace lbs
 } // namespace opensn

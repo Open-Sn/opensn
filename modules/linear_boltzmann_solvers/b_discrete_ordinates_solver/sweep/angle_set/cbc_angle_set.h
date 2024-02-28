@@ -5,10 +5,12 @@
 
 namespace opensn
 {
+
 struct Task;
 
 namespace lbs
 {
+
 class CBC_SPDS;
 
 class CBC_AngleSet : public AngleSet
@@ -28,7 +30,7 @@ public:
   int GetMaxBufferMessages() const override { return 0; }
   void SetMaxBufferMessages(int new_max) override {}
 
-  AngleSetStatus AngleSetAdvance(opensn::SweepChunk& sweep_chunk,
+  AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk,
                                  const std::vector<size_t>& timing_tags,
                                  ExecutionPermission permission) override;
 

@@ -2,10 +2,11 @@
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spls/spls.h"
-
 #include <memory>
 
 namespace opensn
+{
+namespace lbs
 {
 
 /**Contains multiple levels*/
@@ -69,4 +70,5 @@ protected:
   void PrintedGhostedGraph() const;
 };
 
+} // namespace lbs
 } // namespace opensn

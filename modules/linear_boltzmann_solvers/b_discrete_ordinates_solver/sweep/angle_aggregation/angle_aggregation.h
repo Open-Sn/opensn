@@ -3,12 +3,12 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_set/angle_set_group.h"
-
 #include "framework/math/quadratures/angular_quadrature_base.h"
-
 #include <memory>
 
 namespace opensn
+{
+namespace lbs
 {
 
 /**Angle aggregation has to cater for running the 8 corners of a 3D
@@ -93,4 +93,5 @@ public:
   void SetDelayedPsiNew2Old();
 };
 
+} // namespace lbs
 } // namespace opensn

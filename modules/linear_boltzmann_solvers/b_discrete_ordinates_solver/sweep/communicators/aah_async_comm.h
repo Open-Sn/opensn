@@ -10,7 +10,12 @@ namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
+
 class MPICommunicatorSet;
+
+namespace lbs
+{
+
 class FLUDS;
 
 /**
@@ -120,4 +125,5 @@ protected:
   void BuildMessageStructure();
 };
 
+} // namespace lbs
 } // namespace opensn

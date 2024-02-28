@@ -8,6 +8,8 @@
 
 namespace opensn
 {
+namespace lbs
+{
 
 /**
  * Specified incident fluxes homogenous on a boundary.
@@ -30,7 +32,7 @@ public:
     std::unique_ptr<BoundaryFunction> in_bndry_function,
     uint64_t in_ref_boundary_id,
     CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(BoundaryType::INCIDENT_ANISOTROPIC_HETEROGENEOUS, in_num_groups, coord_type),
+    : SweepBoundary(BoundaryType::ARBITRARY, in_num_groups, coord_type),
       boundary_function_(std::move(in_bndry_function)),
       ref_boundary_id_(in_ref_boundary_id)
   {
@@ -46,4 +48,5 @@ public:
   void Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature) override;
 };
 
+} // namespace lbs
 } // namespace opensn

@@ -3,10 +3,11 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_aggregation/angle_aggregation.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
-
 #include <functional>
 
 namespace opensn
+{
+namespace lbs
 {
 
 /**Sweep work function*/
@@ -29,17 +30,17 @@ public:
    */
   std::vector<MomentCallbackF> moment_callbacks;
 
-  SweepChunk(std::vector<double>& in_destination_phi, 
-              std::vector<double>& in_destination_psi,
-              const MeshContinuum& grid,
-              const SpatialDiscretization& discretization,
-              const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
-              std::vector<lbs::CellLBSView>& cell_transport_views,
-              const std::vector<double>& source_moments,
-              const lbs::LBSGroupset& groupset,
-              const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
-              int num_moments,
-              int max_num_cell_dofs)
+  SweepChunk(std::vector<double>& in_destination_phi,
+             std::vector<double>& in_destination_psi,
+             const MeshContinuum& grid,
+             const SpatialDiscretization& discretization,
+             const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
+             std::vector<lbs::CellLBSView>& cell_transport_views,
+             const std::vector<double>& source_moments,
+             const lbs::LBSGroupset& groupset,
+             const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+             int num_moments,
+             int max_num_cell_dofs)
     : grid_(grid),
       discretization_(discretization),
       unit_cell_matrices_(unit_cell_matrices),
@@ -55,7 +56,8 @@ public:
       groupset_group_stride_(groupset_.groups_.size()),
       destination_phi(&in_destination_phi),
       destination_psi(&in_destination_psi)
-  {}
+  {
+  }
 
   /**Sweep chunks should override this.*/
   virtual void Sweep(AngleSet& angle_set) {}
@@ -122,4 +124,5 @@ private:
   bool surface_source_active = false;
 };
 
+} // namespace lbs
 } // namespace opensn

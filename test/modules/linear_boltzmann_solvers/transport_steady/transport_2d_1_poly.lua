@@ -110,7 +110,7 @@ lbs_options =
   {
     {
       name = "xmin",
-      type = "incident_isotropic",
+      type = "isotropic",
       group_strength = bsrc
     }
   },

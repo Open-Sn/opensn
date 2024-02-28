@@ -2,14 +2,13 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"
 #include <fstream>
-
 #include "framework/mesh/cell/cell.h"
-
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds.h"
 
 namespace opensn
+{
+namespace lbs
 {
 
 void
@@ -110,4 +109,5 @@ PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continu
   //  }
 }
 
+} // namespace lbs
 } // namespace opensn

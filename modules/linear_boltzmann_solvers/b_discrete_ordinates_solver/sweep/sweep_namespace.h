@@ -2,12 +2,15 @@
 
 #include "framework/mesh/mesh.h"
 #include <set>
-
 #include <memory>
 
 namespace opensn
 {
+
 class DirectedGraph;
+
+namespace lbs
+{
 
 enum class FaceOrientation : short
 {
@@ -59,4 +62,5 @@ enum class AngleSetStatus
 };
 typedef AngleSetStatus ExecutionPermission;
 
+} // namespace lbs
 } // namespace opensn
