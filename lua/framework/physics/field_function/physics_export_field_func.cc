@@ -24,7 +24,7 @@ ExportFieldFunctionToVTK(lua_State* L)
   auto ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ff_handle, fname);
   auto ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base);
 
-  ChiLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
+  OpenSnLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
 
   //  ff->ExportToVTK(base_name);
   FieldFunctionGridBased::ExportMultipleToVTK(base_name, {ff});
@@ -74,16 +74,16 @@ ExportMultiFieldFunctionToVTK(lua_State* L)
           break;
         }
 
-      ChiInvalidArgumentIf(not ff_base,
-                           "Field function with name \"" + ff_name + "\" could not be found.");
+      OpenSnInvalidArgumentIf(not ff_base,
+                              "Field function with name \"" + ff_name + "\" could not be found.");
     }
     else
-      ChiInvalidArgument("The field function specification can only be "
-                         "string names or integer handles.");
+      OpenSnInvalidArgument("The field function specification can only be "
+                            "string names or integer handles.");
 
     auto ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base);
 
-    ChiLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
+    OpenSnLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
 
     ffs.push_back(ff);
   } // for i

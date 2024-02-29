@@ -23,7 +23,7 @@ math_Test02_ParallelVector(const InputParameters&)
 {
   using namespace opensn;
 
-  ChiLogicalErrorIf(opensn::mpi_comm.size() != 2, "Requires 2 processors");
+  OpenSnLogicalErrorIf(opensn::mpi_comm.size() != 2, "Requires 2 processors");
 
   opensn::log.Log() << "Testing ParallelSTLVector" << std::endl;
 

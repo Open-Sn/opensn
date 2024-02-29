@@ -41,9 +41,9 @@ FunctionDimAToDimBEvaluate(lua_State* L)
   if (lua_istable(L, 2))
   {
     auto table_block = TableParserAsParameterBlock::ParseTable(L, 2);
-    ChiInvalidArgumentIf(table_block.Type() != ParameterBlockType::ARRAY,
-                         fname + ": Only an array type is allowed. Table can "
-                                 "not have string keys.");
+    OpenSnInvalidArgumentIf(table_block.Type() != ParameterBlockType::ARRAY,
+                            fname + ": Only an array type is allowed. Table can "
+                                    "not have string keys.");
     params = table_block.GetVectorValue<double>();
   }
   else

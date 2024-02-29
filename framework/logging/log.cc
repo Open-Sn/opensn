@@ -190,7 +190,7 @@ Logger::GetExistingRepeatingEventTag(std::string event_name)
     if (repeating_events[k].Name() == event_name)
       return k;
 
-  ChiLogicalError("Tag could not be found for repeating event name \"" + event_name + "\"");
+  OpenSnLogicalError("Tag could not be found for repeating event name \"" + event_name + "\"");
 }
 
 void

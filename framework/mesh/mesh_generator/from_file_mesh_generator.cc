@@ -48,9 +48,9 @@ FromFileMeshGenerator::FromFileMeshGenerator(const InputParameters& params)
 std::unique_ptr<UnpartitionedMesh>
 FromFileMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
-  ChiInvalidArgumentIf(input_umesh != nullptr,
-                       "FromFileMeshGenerator can not be preceded by another"
-                       " mesh generator because it cannot process an input mesh");
+  OpenSnInvalidArgumentIf(input_umesh != nullptr,
+                          "FromFileMeshGenerator can not be preceded by another"
+                          " mesh generator because it cannot process an input mesh");
 
   UnpartitionedMesh::Options options;
   options.file_name = filename_;
@@ -78,9 +78,9 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   else if (extension == ".case")
     umesh->ReadFromEnsightGold(options);
   else
-    ChiInvalidArgument("Unsupported file type \"" + extension +
-                       "\". Supported types limited to"
-                       ".obj, .msh, .e, .vtu, .pvtu, .case.");
+    OpenSnInvalidArgument("Unsupported file type \"" + extension +
+                          "\". Supported types limited to"
+                          ".obj, .msh, .e, .vtu, .pvtu, .case.");
 
   log.Log() << "FromFileMeshGenerator: Done generating UnpartitionedMesh";
   return umesh;

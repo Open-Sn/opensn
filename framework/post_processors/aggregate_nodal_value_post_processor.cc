@@ -42,9 +42,9 @@ AggregateNodalValuePostProcessor::Initialize()
 {
   const auto* grid_field_function = GetGridBasedFieldFunction();
 
-  ChiLogicalErrorIf(not grid_field_function,
-                    "Attempted to access invalid field"
-                    "function");
+  OpenSnLogicalErrorIf(not grid_field_function,
+                       "Attempted to access invalid field"
+                       "function");
 
   const auto& grid = grid_field_function->GetSpatialDiscretization().Grid();
 
@@ -73,9 +73,9 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 
   const auto* grid_field_function = GetGridBasedFieldFunction();
 
-  ChiLogicalErrorIf(not grid_field_function,
-                    "Attempted to access invalid field"
-                    "function");
+  OpenSnLogicalErrorIf(not grid_field_function,
+                       "Attempted to access invalid field"
+                       "function");
 
   const auto& ref_ff = *grid_field_function;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
@@ -143,7 +143,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
     value_ = ParameterBlock("", globl_accumulation / double(num_globl_dofs));
   }
   else
-    ChiLogicalError("Unsupported operation type \"" + operation_ + "\".");
+    OpenSnLogicalError("Unsupported operation type \"" + operation_ + "\".");
 
   const int event_code = event_context.Code();
   if (event_code == Event::SolverInitialized or event_code == Event::SolverAdvanced)

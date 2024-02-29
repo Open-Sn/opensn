@@ -86,12 +86,12 @@ VectorGhostCommunicator::MakeCachedParallelData()
   for (const auto& [pid, gids] : send_map)
     for (const int64_t gid : gids)
     {
-      ChiLogicalErrorIf(gid < extents_[location_id_] or gid >= extents_[location_id_ + 1],
-                        std::string(__FUNCTION__) + ": " +
-                          "Problem determining communication pattern. Process " +
-                          std::to_string(pid) + " determined that process " +
-                          std::to_string(location_id_) + " needs to communicate global id " +
-                          std::to_string(gid) + " to it, but this id is not locally owned.");
+      OpenSnLogicalErrorIf(gid < extents_[location_id_] or gid >= extents_[location_id_ + 1],
+                           std::string(__FUNCTION__) + ": " +
+                             "Problem determining communication pattern. Process " +
+                             std::to_string(pid) + " determined that process " +
+                             std::to_string(location_id_) + " needs to communicate global id " +
+                             std::to_string(gid) + " to it, but this id is not locally owned.");
 
       local_ids_to_send.push_back(gid - static_cast<int64_t>(extents_[location_id_]));
     }
@@ -143,8 +143,8 @@ VectorGhostCommunicator::VectorGhostCommunicator(VectorGhostCommunicator&& other
 int64_t
 VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
 {
-  ChiInvalidArgumentIf(cached_parallel_data_.ghost_to_recv_map_.count(ghost_id) == 0,
-                       "The given ghost id does not belong to this communicator.");
+  OpenSnInvalidArgumentIf(cached_parallel_data_.ghost_to_recv_map_.count(ghost_id) == 0,
+                          "The given ghost id does not belong to this communicator.");
 
   // Get the position within the ghost id vector of the given ghost id
   const auto k = std::find(ghost_ids_.begin(), ghost_ids_.end(), ghost_id) - ghost_ids_.begin();
@@ -156,12 +156,12 @@ VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
 void
 VectorGhostCommunicator::CommunicateGhostEntries(std::vector<double>& ghosted_vector) const
 {
-  ChiInvalidArgumentIf(ghosted_vector.size() != local_size_ + ghost_ids_.size(),
-                       std::string(__FUNCTION__) +
-                         ": Vector size mismatch. "
-                         "input size = " +
-                         std::to_string(ghosted_vector.size()) + " requirement " +
-                         std::to_string(local_size_ + ghost_ids_.size()));
+  OpenSnInvalidArgumentIf(ghosted_vector.size() != local_size_ + ghost_ids_.size(),
+                          std::string(__FUNCTION__) +
+                            ": Vector size mismatch. "
+                            "input size = " +
+                            std::to_string(ghosted_vector.size()) + " requirement " +
+                            std::to_string(local_size_ + ghost_ids_.size()));
 
   // Serialize the data that needs to be sent
   const size_t send_size = cached_parallel_data_.local_ids_to_send_.size();
@@ -201,9 +201,9 @@ VectorGhostCommunicator::MakeGhostedVector() const
 std::vector<double>
 VectorGhostCommunicator::MakeGhostedVector(const std::vector<double>& local_vector) const
 {
-  ChiInvalidArgumentIf(local_vector.size() != local_size_,
-                       std::string(__FUNCTION__) + ": Incompatible unghosted vector." +
-                         "unghosted_vector.size() != local_size_");
+  OpenSnInvalidArgumentIf(local_vector.size() != local_size_,
+                          std::string(__FUNCTION__) + ": Incompatible unghosted vector." +
+                            "unghosted_vector.size() != local_size_");
 
   // Add ghost indices to the back of the unghosted vector
   std::vector<double> vec = local_vector;
@@ -215,10 +215,11 @@ VectorGhostCommunicator::MakeGhostedVector(const std::vector<double>& local_vect
 int
 VectorGhostCommunicator::FindOwnerPID(const int64_t global_id) const
 {
-  ChiInvalidArgumentIf(global_id < 0 or global_id >= global_size_,
-                       std::string(__FUNCTION__) + ": Invalid global id." +
-                         "Global ids must be in [0, global_size_). " + std::to_string(global_id) +
-                         " vs [0," + std::to_string(global_size_) + ")");
+  OpenSnInvalidArgumentIf(global_id < 0 or global_id >= global_size_,
+                          std::string(__FUNCTION__) + ": Invalid global id." +
+                            "Global ids must be in [0, global_size_). " +
+                            std::to_string(global_id) + " vs [0," + std::to_string(global_size_) +
+                            ")");
 
   for (int p = 0; p < process_count_; ++p)
     if (global_id >= extents_[p] and global_id < extents_[p + 1])

@@ -271,10 +271,10 @@ LogicalVolumeCreate(lua_State* L)
     // const size_t index = chi::object_stack.size() - 1;
     // lua_pushinteger(L, static_cast<lua_Integer>(index));
 
-    ChiInvalidArgumentIf(num_args % 2 != 0,
-                         "Incorrect amount of arguments provided for "
-                         "MeshCreateLogicalVolume(BOOLEAN..."
-                         " Expected pairs of (bool,volumeHandle)");
+    OpenSnInvalidArgumentIf(num_args % 2 != 0,
+                            "Incorrect amount of arguments provided for "
+                            "MeshCreateLogicalVolume(BOOLEAN..."
+                            " Expected pairs of (bool,volumeHandle)");
 
     ParameterBlock params;
 

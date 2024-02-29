@@ -73,8 +73,8 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
     const int h_and_z_config = int(layer_block.Has("h")) + int(layer_block.Has("z"));
 
     if (h_and_z_config != 1)
-      ChiInvalidArgument("For an ExtrusionLayer either \"h\" or \"z\" must"
-                         "be specified and also not both.");
+      OpenSnInvalidArgument("For an ExtrusionLayer either \"h\" or \"z\" must"
+                            "be specified and also not both.");
 
     auto n = valid_params.GetParamValue<uint32_t>("n");
     double h;
@@ -83,9 +83,9 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
     else
     {
       double z = valid_params.GetParamValue<double>("z");
-      ChiInvalidArgumentIf(z <= current_z_level,
-                           "For extrusion layers, the \"z\" coordinates must "
-                           "be monotonically increasing.");
+      OpenSnInvalidArgumentIf(z <= current_z_level,
+                              "For extrusion layers, the \"z\" coordinates must "
+                              "be monotonically increasing.");
       h = z - current_z_level;
     }
 
@@ -104,8 +104,8 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh";
   const Vector3 khat(0.0, 0.0, 1.0);
 
-  ChiInvalidArgumentIf(not(input_umesh->GetMeshAttributes() & DIMENSION_2),
-                       "Input mesh is not 2D. A 2D mesh is required for extrusion");
+  OpenSnInvalidArgumentIf(not(input_umesh->GetMeshAttributes() & DIMENSION_2),
+                          "Input mesh is not 2D. A 2D mesh is required for extrusion");
 
   const auto& template_vertices = input_umesh->GetVertices();
   const auto& template_cells = input_umesh->GetRawCells();
@@ -113,8 +113,8 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   const size_t num_template_vertices = template_vertices.size();
   const size_t num_template_cells = template_cells.size();
 
-  ChiLogicalErrorIf(template_vertices.empty(), "Input mesh has no vertices.");
-  ChiLogicalErrorIf(template_cells.empty(), "Input mesh has no cells.");
+  OpenSnLogicalErrorIf(template_vertices.empty(), "Input mesh has no vertices.");
+  OpenSnLogicalErrorIf(template_cells.empty(), "Input mesh has no cells.");
 
   // Check cells
   for (const auto& template_cell_ptr : template_cells)

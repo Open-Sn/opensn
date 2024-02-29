@@ -180,7 +180,7 @@ TransientSolver::Step()
     x_tp1_ = x_t_ + dt * A_ * x_t_ + dt * q_;
   }
   else
-    ChiLogicalError("Unsupported time integration scheme.");
+    OpenSnLogicalError("Unsupported time integration scheme.");
 
   period_tph_ = dt / std::log(x_tp1_[0] / x_t_[0]);
 
@@ -228,7 +228,7 @@ TransientSolver::GetInfo(const ParameterBlock& params) const
     return block;
   }
   else
-    ChiInvalidArgument("Unsupported info name \"" + param_name + "\".");
+    OpenSnInvalidArgument("Unsupported info name \"" + param_name + "\".");
 }
 
 double

@@ -15,7 +15,7 @@ GetCurrentMesh()
 size_t
 CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
 {
-  ChiLogicalErrorIf(vertices.empty(), "Empty vertex list.");
+  OpenSnLogicalErrorIf(vertices.empty(), "Empty vertex list.");
 
   // Reorient 1D verts along z
   std::vector<Vertex> zverts;
@@ -77,7 +77,7 @@ size_t
 CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
                                std::vector<double>& vertices_1d_y)
 {
-  ChiLogicalErrorIf(vertices_1d_x.empty() or vertices_1d_y.empty(), "Empty vertex list.");
+  OpenSnLogicalErrorIf(vertices_1d_x.empty() or vertices_1d_y.empty(), "Empty vertex list.");
 
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
@@ -166,8 +166,8 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
                                std::vector<double>& vertices_1d_y,
                                std::vector<double>& vertices_1d_z)
 {
-  ChiLogicalErrorIf(vertices_1d_x.empty() or vertices_1d_y.empty() or vertices_1d_z.empty(),
-                    "Empty vertex list.");
+  OpenSnLogicalErrorIf(vertices_1d_x.empty() or vertices_1d_y.empty() or vertices_1d_z.empty(),
+                       "Empty vertex list.");
 
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();

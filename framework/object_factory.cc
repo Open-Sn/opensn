@@ -59,9 +59,9 @@ ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
 
   auto object_entry = object_registry_.at(type);
 
-  ChiLogicalErrorIf(not object_entry.constructor_func,
-                    "Object is not constructable since it has no registered "
-                    "constructor");
+  OpenSnLogicalErrorIf(not object_entry.constructor_func,
+                       "Object is not constructable since it has no registered "
+                       "constructor");
 
   auto input_params = object_entry.get_in_params_func();
 
@@ -90,8 +90,8 @@ InputParameters
 ObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
 {
   auto iter = object_registry_.find(type);
-  ChiInvalidArgumentIf(iter == object_registry_.end(),
-                       "Object type \"" + type + "\" is not registered in ObjectFactory.");
+  OpenSnInvalidArgumentIf(iter == object_registry_.end(),
+                          "Object type \"" + type + "\" is not registered in ObjectFactory.");
 
   auto& reg_entry = iter->second;
 
@@ -128,8 +128,8 @@ ObjectFactory::AssertRegistryKeyAvailable(const std::string& key,
                                           const std::string& calling_function) const
 {
   if (RegistryHasKey(key))
-    ChiLogicalError(calling_function + ": Attempted to register Object \"" + key +
-                    "\" but an object with the same name is already registered.");
+    OpenSnLogicalError(calling_function + ": Attempted to register Object \"" + key +
+                       "\" but an object with the same name is already registered.");
 }
 
 } // namespace opensn

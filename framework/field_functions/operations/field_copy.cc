@@ -55,9 +55,9 @@ FieldCopyOperation::FieldCopyOperation(const InputParameters& params)
 
     to_ff_ = std::dynamic_pointer_cast<FieldFunctionGridBased>(to_base_ptr);
 
-    ChiLogicalErrorIf(not to_ff_,
-                      "\"to\" field function must be based on "
-                      "FieldFunctionGridBased");
+    OpenSnLogicalErrorIf(not to_ff_,
+                         "\"to\" field function must be based on "
+                         "FieldFunctionGridBased");
   }
 
   {
@@ -65,9 +65,9 @@ FieldCopyOperation::FieldCopyOperation(const InputParameters& params)
 
     from_ff_ = std::dynamic_pointer_cast<FieldFunctionGridBased>(from_base_ptr);
 
-    ChiLogicalErrorIf(not to_ff_,
-                      "\"to\" field function must be based on "
-                      "FieldFunctionGridBased");
+    OpenSnLogicalErrorIf(not to_ff_,
+                         "\"to\" field function must be based on "
+                         "FieldFunctionGridBased");
   }
 
   // Check number of components are compatible
@@ -75,29 +75,29 @@ FieldCopyOperation::FieldCopyOperation(const InputParameters& params)
 
   if (user_supplied_params.Has("to_components") and
       (not user_supplied_params.Has("from_components")))
-    ChiInvalidArgument("If \"to_components\" is specified then "
-                       "\"from_components\" must also be specified");
+    OpenSnInvalidArgument("If \"to_components\" is specified then "
+                          "\"from_components\" must also be specified");
 
   if (user_supplied_params.Has("from_components") and
       (not user_supplied_params.Has("to_components")))
-    ChiInvalidArgument("If \"from_components\" is specified then "
-                       "\"to_components\" must also be specified");
+    OpenSnInvalidArgument("If \"from_components\" is specified then "
+                          "\"to_components\" must also be specified");
 
   if (user_supplied_params.Has("to_components") and user_supplied_params.Has("from_components"))
   {
     to_components_ = user_supplied_params.GetParamVectorValue<size_t>("to_components");
     from_components_ = user_supplied_params.GetParamVectorValue<size_t>("from_components");
 
-    ChiInvalidArgumentIf(to_components_.size() != from_components_.size(),
-                         "\"to_components\" and \"from_components\" must have "
-                         "the same number of entries");
+    OpenSnInvalidArgumentIf(to_components_.size() != from_components_.size(),
+                            "\"to_components\" and \"from_components\" must have "
+                            "the same number of entries");
   }
   else
   {
-    ChiInvalidArgumentIf(to_ff_->GetUnknownManager().GetTotalUnknownStructureSize() !=
-                           from_ff_->GetUnknownManager().GetTotalUnknownStructureSize(),
-                         "The number of components of the unknowns in the field functions are"
-                         " not compatible");
+    OpenSnInvalidArgumentIf(to_ff_->GetUnknownManager().GetTotalUnknownStructureSize() !=
+                              from_ff_->GetUnknownManager().GetTotalUnknownStructureSize(),
+                            "The number of components of the unknowns in the field functions are"
+                            " not compatible");
 
     const size_t num_comps = to_ff_->GetUnknownManager().GetTotalUnknownStructureSize();
     to_components_.reserve(num_comps);
@@ -110,10 +110,10 @@ FieldCopyOperation::FieldCopyOperation(const InputParameters& params)
   }
 
   // Check grids are compatible
-  ChiInvalidArgumentIf(std::addressof(to_ff_->GetSpatialDiscretization().Grid()) !=
-                         std::addressof(from_ff_->GetSpatialDiscretization().Grid()),
-                       "Currently the two field functions must operate on the "
-                       "same grid");
+  OpenSnInvalidArgumentIf(std::addressof(to_ff_->GetSpatialDiscretization().Grid()) !=
+                            std::addressof(from_ff_->GetSpatialDiscretization().Grid()),
+                          "Currently the two field functions must operate on the "
+                          "same grid");
 }
 
 void

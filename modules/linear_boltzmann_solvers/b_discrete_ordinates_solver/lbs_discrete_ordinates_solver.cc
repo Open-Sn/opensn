@@ -527,9 +527,9 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
           }
         } // for angle n
 
-        ChiLogicalErrorIf(not found,
-                          "Opposing angle for " + omegas[idir].PrintStr() + " in groupset " +
-                            std::to_string(gs) + " not found.");
+        OpenSnLogicalErrorIf(not found,
+                             "Opposing angle for " + omegas[idir].PrintStr() + " in groupset " +
+                               std::to_string(gs) + " not found.");
 
       } // for angle m
     }   // if saving angular flux
@@ -726,10 +726,11 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
                                         const uint64_t boundary_id) const
 {
   // Perform checks
-  ChiInvalidArgumentIf(groupset_id < 0 or groupset_id >= groupsets_.size(), "Invalid groupset id.");
-  ChiLogicalErrorIf(not options_.save_angular_flux,
-                    "The option `save_angular_flux` must be set to `true` in order "
-                    "to compute outgoing currents.");
+  OpenSnInvalidArgumentIf(groupset_id < 0 or groupset_id >= groupsets_.size(),
+                          "Invalid groupset id.");
+  OpenSnLogicalErrorIf(not options_.save_angular_flux,
+                       "The option `save_angular_flux` must be set to `true` in order "
+                       "to compute outgoing currents.");
 
   const auto& sdm = *discretization_;
   const auto& groupset = groupsets_.at(groupset_id);
@@ -793,16 +794,16 @@ std::map<uint64_t, std::vector<double>>
 DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_ids) const
 {
   // Perform checks
-  ChiLogicalErrorIf(not options_.save_angular_flux,
-                    "The option `save_angular_flux` must be set to `true` in order "
-                    "to compute outgoing currents.");
+  OpenSnLogicalErrorIf(not options_.save_angular_flux,
+                       "The option `save_angular_flux` must be set to `true` in order "
+                       "to compute outgoing currents.");
 
   const auto unique_bids = grid_ptr_->GetDomainUniqueBoundaryIDs();
   for (const auto& bid : boundary_ids)
   {
     const auto it = std::find(unique_bids.begin(), unique_bids.end(), bid);
-    ChiInvalidArgumentIf(it == unique_bids.end(),
-                         "Boundary ID " + std::to_string(bid) + "not found on grid.");
+    OpenSnInvalidArgumentIf(it == unique_bids.end(),
+                            "Boundary ID " + std::to_string(bid) + "not found on grid.");
   }
 
   // Initialize local mapping
@@ -938,7 +939,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
       }
       else
-        ChiInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
+        OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     }
   } // quadrature info-pack
 
@@ -960,7 +961,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
           std::make_unique<CBC_FLUDSCommonData>(*spds, grid_nodal_mappings_));
       }
       else
-        ChiInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
+        OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     }
   } // for quadrature spds-list pair
 
@@ -1204,9 +1205,9 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
         }
         else if (sweep_type_ == "CBC")
         {
-          ChiLogicalErrorIf(not options_.save_angular_flux,
-                            "When using sweep_type \"CBC\" then "
-                            "\"save_angular_flux\" must be true.");
+          OpenSnLogicalErrorIf(not options_.save_angular_flux,
+                               "When using sweep_type \"CBC\" then "
+                               "\"save_angular_flux\" must be true.");
           std::shared_ptr<FLUDS> fluds =
             std::make_shared<CBC_FLUDS>(gs_ss_size,
                                         angle_indices.size(),
@@ -1227,7 +1228,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
           angle_set_group.AngleSets().push_back(angleSet);
         }
         else
-          ChiInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
+          OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
       } // for an_ss
     }   // for gs_ss
   }     // for so_grouping
@@ -1304,7 +1305,7 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
     return sweep_chunk;
   }
   else
-    ChiLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");
+    OpenSnLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");
 }
 
 } // namespace lbs

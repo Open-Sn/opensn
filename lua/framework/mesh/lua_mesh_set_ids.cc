@@ -91,8 +91,8 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
 
       // Error check lua function
       if (not lua_isfunction(L, -1))
-        ChiLogicalError("Attempted to access lua-function, " + lua_fname +
-                        ", but it seems the function could not be retrieved.");
+        OpenSnLogicalError("Attempted to access lua-function, " + lua_fname +
+                           ", but it seems the function could not be retrieved.");
 
       const auto& xyz = cell.centroid_;
 
@@ -111,7 +111,8 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
         lua_return = lua_tointeger(L, -1);
       }
       else
-        ChiLogicalError("Attempted to call lua-function, " + lua_fname + ", but the call failed.");
+        OpenSnLogicalError("Attempted to call lua-function, " + lua_fname +
+                           ", but the call failed.");
 
       lua_pop(L, 1); // pop the int, or error code
 
@@ -170,7 +171,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
   const int num_args = lua_gettop(L);
   if (num_args == 1)
   {
-    ChiLogicalErrorIf(opensn::mpi_comm.size() != 1, "Can for now only be used in serial.");
+    OpenSnLogicalErrorIf(opensn::mpi_comm.size() != 1, "Can for now only be used in serial.");
 
     LuaCheckStringValue(fname, L, 1);
 
@@ -185,9 +186,9 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
       lua_getglobal(L, lua_fname.c_str());
 
       // Error check lua function
-      ChiLogicalErrorIf(not lua_isfunction(L, -1),
-                        "Attempted to access lua-function, " + lua_fname +
-                          ", but it seems the function could not be retrieved.");
+      OpenSnLogicalErrorIf(not lua_isfunction(L, -1),
+                           "Attempted to access lua-function, " + lua_fname +
+                             ", but it seems the function could not be retrieved.");
 
       const auto& xyz = face.centroid_;
       const auto& n = face.normal_;
@@ -211,7 +212,8 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
         lua_return_bname = lua_tostring(L, -1);
       }
       else
-        ChiLogicalError("Attempted to call lua-function, " + lua_fname + ", but the call failed.");
+        OpenSnLogicalError("Attempted to call lua-function, " + lua_fname +
+                           ", but the call failed.");
 
       lua_pop(L, 1); // pop the string, or error code
 
@@ -294,7 +296,7 @@ MeshSetBoundaryIDFromLogicalVolume(lua_State* L)
     if (num_args == 3)
       sense = lua_toboolean(L, 3);
 
-    ChiLogicalErrorIf(boundary_name.empty(), "argument 2 must not be an empty string.");
+    OpenSnLogicalErrorIf(boundary_name.empty(), "argument 2 must not be an empty string.");
 
     const auto& log_vol =
       opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_handle, fname);

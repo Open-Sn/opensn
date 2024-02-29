@@ -329,9 +329,9 @@ PhysicsTransportXSMakeCombined(lua_State* L)
     lua_pushnumber(L, v + 1);
     lua_gettable(L, 1);
 
-    ChiInvalidArgumentIf(not lua_istable(L, -1),
-                         "The elements of the supplied Lua array must themselves also be "
-                         "Lua array containing a xs handle and scalar multiplier.");
+    OpenSnInvalidArgumentIf(not lua_istable(L, -1),
+                            "The elements of the supplied Lua array must themselves also be "
+                            "Lua array containing a xs handle and scalar multiplier.");
 
     // Process xs handle
     lua_pushinteger(L, 1);
@@ -401,9 +401,9 @@ PhysicsTransportXSSetCombined(lua_State* L)
     lua_pushnumber(L, v + 1);
     lua_gettable(L, 1);
 
-    ChiInvalidArgumentIf(not lua_istable(L, -1),
-                         "The elements of the supplied Lua array must themselves also be "
-                         "Lua array containing a xs handle and scalar multiplier.");
+    OpenSnInvalidArgumentIf(not lua_istable(L, -1),
+                            "The elements of the supplied Lua array must themselves also be "
+                            "Lua array containing a xs handle and scalar multiplier.");
 
     // Process xs handle
     lua_pushinteger(L, 1);

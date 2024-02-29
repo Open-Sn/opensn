@@ -18,7 +18,7 @@ AsynchronousCommunicator::InitGetDownwindMessageData(int location_id,
                                                      size_t angle_set_id,
                                                      size_t data_size)
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 
 } // namespace lbs

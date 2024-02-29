@@ -77,8 +77,8 @@ FieldFunctionGridBased::FieldFunctionGridBased(const std::string& text_name,
     ghosted_field_vector_(MakeFieldVector(*sdm_, GetUnknownManager())),
     local_grid_bounding_box_(sdm_->Grid().GetLocalBoundingBox())
 {
-  ChiInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->LocalSize(),
-                       "Constructor called with incompatible size field vector.");
+  OpenSnInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->LocalSize(),
+                          "Constructor called with incompatible size field vector.");
 
   ghosted_field_vector_->Set(field_vector);
 }
@@ -147,8 +147,8 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   {
     const uint32_t max_order = static_cast<uint32_t>(QuadratureOrder::FORTYTHIRD);
     const uint32_t q_order_int = params.GetParamValue<uint32_t>("quadrature_order");
-    ChiInvalidArgumentIf(q_order_int > max_order,
-                         "Invalid quadrature point order " + std::to_string(q_order_int));
+    OpenSnInvalidArgumentIf(q_order_int > max_order,
+                            "Invalid quadrature point order " + std::to_string(q_order_int));
     q_order = static_cast<QuadratureOrder>(q_order_int);
   }
   else // Defaulted
@@ -167,7 +167,7 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
     return PWLD::New(*grid_ptr, q_order, cs_type);
 
   // If not returned by now
-  ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
+  OpenSnInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
 }
 
 std::unique_ptr<GhostedParallelSTLVector>
@@ -185,8 +185,8 @@ FieldFunctionGridBased::MakeFieldVector(const SpatialDiscretization& discretizat
 void
 FieldFunctionGridBased::UpdateFieldVector(const std::vector<double>& field_vector)
 {
-  ChiInvalidArgumentIf(field_vector.size() < ghosted_field_vector_->LocalSize(),
-                       "Attempted update with a vector of insufficient size.");
+  OpenSnInvalidArgumentIf(field_vector.size() < ghosted_field_vector_->LocalSize(),
+                          "Attempted update with a vector of insufficient size.");
 
   ghosted_field_vector_->Set(field_vector);
 

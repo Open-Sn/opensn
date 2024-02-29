@@ -178,7 +178,7 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
       break;
     }
     default:
-      ChiLogicalError("Attempting to push unsupport ParameterBlockType to lua");
+      OpenSnLogicalError("Attempting to push unsupport ParameterBlockType to lua");
   }
 }
 //  NOLINTEND(misc-no-recursion)
@@ -210,7 +210,7 @@ StackItemToParameterBlock(lua_State* L, int index)
       return paramblock;
     }
     default:
-      ChiLogicalError("Unhandled Lua type.");
+      OpenSnLogicalError("Unhandled Lua type.");
   }
 }
 

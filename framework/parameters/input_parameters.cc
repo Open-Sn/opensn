@@ -45,7 +45,7 @@ InputParameters::operator+=(InputParameters other)
     auto& this_map = parameter_class_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
+      OpenSnLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -54,7 +54,7 @@ InputParameters::operator+=(InputParameters other)
     auto& this_map = parameter_doc_string_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
+      OpenSnLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -63,7 +63,7 @@ InputParameters::operator+=(InputParameters other)
     auto& this_map = deprecation_warning_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
+      OpenSnLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -72,7 +72,7 @@ InputParameters::operator+=(InputParameters other)
     auto& this_map = deprecation_error_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
+      OpenSnLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -81,7 +81,7 @@ InputParameters::operator+=(InputParameters other)
     auto& this_map = renamed_error_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
+      OpenSnLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -90,7 +90,7 @@ InputParameters::operator+=(InputParameters other)
     auto& this_map = type_mismatch_allowed_tags_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
+      OpenSnLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -99,7 +99,7 @@ InputParameters::operator+=(InputParameters other)
     auto& this_map = parameter_link_;
     for (const auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
+      OpenSnLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = tag;
     }
   }
@@ -108,7 +108,7 @@ InputParameters::operator+=(InputParameters other)
     auto& this_map = constraint_tags_;
     for (auto& [param_name, tag] : other_map)
     {
-      ChiLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
+      OpenSnLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
       this_map[param_name] = std::move(tag);
     }
   }
@@ -131,8 +131,8 @@ InputParameters::ObjectType() const
 void
 InputParameters::LinkParameterToBlock(const std::string& param_name, const std::string& block_name)
 {
-  ChiInvalidArgumentIf(not this->Has(param_name),
-                       "Parameter \"" + param_name + "\" not present in block");
+  OpenSnInvalidArgumentIf(not this->Has(param_name),
+                          "Parameter \"" + param_name + "\" not present in block");
   parameter_link_[param_name] = block_name;
 }
 
@@ -147,8 +147,8 @@ InputParameters::GetParameterDocumentationLink(const std::string& param_name) co
 std::string
 InputParameters::GetParameterDocString(const std::string& param_name)
 {
-  ChiInvalidArgumentIf(parameter_doc_string_.count(param_name) == 0,
-                       "Invalid parameter \"" + param_name + "\".");
+  OpenSnInvalidArgumentIf(parameter_doc_string_.count(param_name) == 0,
+                          "Invalid parameter \"" + param_name + "\".");
   return parameter_doc_string_.at(param_name);
 }
 
@@ -395,7 +395,7 @@ InputParameters::ConstrainParameterRange(const std::string& param_name,
   if (Has(param_name))
   {
     const auto& param_type = GetParam(param_name).Type();
-    ChiInvalidArgumentIf(
+    OpenSnInvalidArgumentIf(
       param_type == ParameterBlockType::BLOCK or param_type == ParameterBlockType::ARRAY,
       std::string("Parameter \"") + param_name + "\" is of type " +
         ParameterBlockTypeName(param_type) + " to which constraints cannot be applied");
@@ -408,7 +408,7 @@ InputParameters::ConstrainParameterRange(const std::string& param_name,
 void
 InputParameters::SetParameterTypeMismatchAllowed(const std::string& param_name)
 {
-  ChiInvalidArgumentIf(not Has(param_name), "Parameter \"" + param_name + "\" not present.");
+  OpenSnInvalidArgumentIf(not Has(param_name), "Parameter \"" + param_name + "\" not present.");
   type_mismatch_allowed_tags_[param_name] = true;
 }
 

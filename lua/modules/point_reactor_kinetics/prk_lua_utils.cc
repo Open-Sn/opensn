@@ -116,12 +116,12 @@ SetParam(const InputParameters& params)
 
   if (param_name == "rho")
   {
-    ChiInvalidArgumentIf(value_param.Type() != ParameterBlockType::FLOAT,
-                         "If arg1 is \"rho\" then arg2 must be of type FLOAT");
+    OpenSnInvalidArgumentIf(value_param.Type() != ParameterBlockType::FLOAT,
+                            "If arg1 is \"rho\" then arg2 must be of type FLOAT");
     solver.SetRho(value_param.GetValue<double>());
   }
   else
-    ChiInvalidArgument("Invalid property name \"" + param_name);
+    OpenSnInvalidArgument("Invalid property name \"" + param_name);
 
   return ParameterBlock(); // Return empty param block
 }
@@ -171,7 +171,7 @@ GetParam(const InputParameters& params)
   else if (param_name == "time_next")
     outputs.AddParameter("", solver.TimeNew());
   else
-    ChiInvalidArgument("Invalid property name \"" + param_name);
+    OpenSnInvalidArgument("Invalid property name \"" + param_name);
 
   return outputs;
 }

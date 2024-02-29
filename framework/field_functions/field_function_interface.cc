@@ -33,7 +33,7 @@ FieldFunctionInterface::GetFieldFunction() const
       if (ff_ptr->TextName() == name)
         ref_ff_ptr = ff_ptr;
 
-    ChiInvalidArgumentIf(ref_ff_ptr == nullptr, "Field function \"" + name + "\" not found.");
+    OpenSnInvalidArgumentIf(ref_ff_ptr == nullptr, "Field function \"" + name + "\" not found.");
   }
   else if (field_function_param_.Type() == ParameterBlockType::INTEGER)
   {
@@ -41,7 +41,7 @@ FieldFunctionInterface::GetFieldFunction() const
     ref_ff_ptr = GetStackItemPtrAsType<FieldFunction>(field_function_stack, handle, __FUNCTION__);
   }
   else
-    ChiInvalidArgument("Argument can only be STRING or INTEGER");
+    OpenSnInvalidArgument("Argument can only be STRING or INTEGER");
 
   return &(*ref_ff_ptr);
 }

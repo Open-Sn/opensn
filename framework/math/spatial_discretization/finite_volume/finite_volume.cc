@@ -30,7 +30,7 @@ FiniteVolume::New(const MeshContinuum& in_grid, CoordinateSystemType in_cs_type)
     {
       auto sdm_ptr = std::dynamic_pointer_cast<FiniteVolume>(sdm);
 
-      ChiLogicalErrorIf(not sdm_ptr, "Casting failure");
+      OpenSnLogicalErrorIf(not sdm_ptr, "Casting failure");
 
       return sdm_ptr;
     }

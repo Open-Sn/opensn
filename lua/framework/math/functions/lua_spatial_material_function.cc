@@ -59,8 +59,8 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
 
   // Error check lua function
   if (not lua_isfunction(L, -1))
-    ChiLogicalError("Attempted to access lua-function, " + lua_function_name_ +
-                    ", but it seems the function could not be retrieved.");
+    OpenSnLogicalError("Attempted to access lua-function, " + lua_function_name_ +
+                       ", but it seems the function could not be retrieved.");
 
   // Push arguments
   PushVector3AsTable(L, xyz);
@@ -83,16 +83,17 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
     }
   }
   else
-    ChiLogicalError("attempted to call lua-function, " + lua_function_name_ +
-                    ", but the call failed.");
+    OpenSnLogicalError("attempted to call lua-function, " + lua_function_name_ +
+                       ", but the call failed.");
 
   lua_pop(L, 1); // pop the table, or error code
 
   // Check return value
-  ChiLogicalErrorIf(lua_return.size() != num_components,
-                    "Call to lua function " + lua_function_name_ + " returned a vector of " +
-                      "size " + std::to_string(lua_return.size()) + ", which is not the same as " +
-                      "the number of groups " + std::to_string(num_components) + ".");
+  OpenSnLogicalErrorIf(lua_return.size() != num_components,
+                       "Call to lua function " + lua_function_name_ + " returned a vector of " +
+                         "size " + std::to_string(lua_return.size()) +
+                         ", which is not the same as " + "the number of groups " +
+                         std::to_string(num_components) + ".");
 
   return lua_return;
 }

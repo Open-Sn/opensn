@@ -128,14 +128,14 @@ Solver::GetFieldFunctions()
 TimeStepper&
 Solver::GetTimeStepper()
 {
-  ChiLogicalErrorIf(not timestepper_, "Bad trouble: Timestepper not assigned.");
+  OpenSnLogicalErrorIf(not timestepper_, "Bad trouble: Timestepper not assigned.");
   return *timestepper_;
 }
 
 const TimeStepper&
 Solver::GetTimeStepper() const
 {
-  ChiLogicalErrorIf(not timestepper_, "Bad trouble: Timestepper not assigned.");
+  OpenSnLogicalErrorIf(not timestepper_, "Bad trouble: Timestepper not assigned.");
   return *timestepper_;
 }
 

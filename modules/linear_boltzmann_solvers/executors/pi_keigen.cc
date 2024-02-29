@@ -69,7 +69,7 @@ XXPowerIterationKEigen::Initialize()
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
 
-    ChiLogicalErrorIf(not wgs_context, ": Cast failed");
+    OpenSnLogicalErrorIf(not wgs_context, ": Cast failed");
 
     wgs_context->lhs_src_scope_.Unset(APPLY_WGS_FISSION_SOURCES); // lhs_scope
     wgs_context->rhs_src_scope_.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
@@ -80,7 +80,7 @@ XXPowerIterationKEigen::Initialize()
   front_wgs_solver_ = lbs_solver_.GetWGSSolvers().at(front_gs_.id_);
   front_wgs_context_ = std::dynamic_pointer_cast<lbs::WGSContext>(front_wgs_solver_->GetContext());
 
-  ChiLogicalErrorIf(not front_wgs_context_, ": Casting failure");
+  OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failure");
 
   if (reinit_phi_1_)
     lbs_solver_.SetPhiVectorScalarValues(phi_old_local_, 1.0);

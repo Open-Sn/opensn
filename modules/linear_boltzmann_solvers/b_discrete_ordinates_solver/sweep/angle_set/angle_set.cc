@@ -73,7 +73,7 @@ AngleSet::GetNumAngles() const
 AsynchronousCommunicator*
 AngleSet::GetCommunicator()
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 
 } // namespace lbs

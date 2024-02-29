@@ -126,8 +126,8 @@ void
 ResponseEvaluator::SetBufferOptions(const InputParameters& params)
 {
   const auto name = params.GetParamValue<std::string>("name");
-  ChiInvalidArgumentIf(adjoint_buffers_.count(name) > 0,
-                       "An adjoint buffer with name " + name + " already exists.");
+  OpenSnInvalidArgumentIf(adjoint_buffers_.count(name) > 0,
+                          "An adjoint buffer with name " + name + " already exists.");
 
   const auto prefixes = params.GetParam("file_prefixes");
 
@@ -247,17 +247,17 @@ void
 ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
 {
   const auto matid = params.GetParamValue<int>("material_id");
-  ChiInvalidArgumentIf(material_sources_.count(matid) > 0,
-                       "A material source for material id " + std::to_string(matid) +
-                         " already exists.");
+  OpenSnInvalidArgumentIf(material_sources_.count(matid) > 0,
+                          "A material source for material id " + std::to_string(matid) +
+                            " already exists.");
 
   const auto values = params.GetParamVectorValue<double>("strength");
-  ChiInvalidArgumentIf(values.size() != lbs_solver_.NumGroups(),
-                       "The number of material source values and groups "
-                       "in the underlying solver do not match. "
-                       "Expected " +
-                         std::to_string(lbs_solver_.NumGroups()) + " but got " +
-                         std::to_string(values.size()) + ".");
+  OpenSnInvalidArgumentIf(values.size() != lbs_solver_.NumGroups(),
+                          "The number of material source values and groups "
+                          "in the underlying solver do not match. "
+                          "Expected " +
+                            std::to_string(lbs_solver_.NumGroups()) + " but got " +
+                            std::to_string(values.size()) + ".");
 
   material_sources_[matid] = values;
   log.Log0Verbose1() << "Material source for material id " << matid << " added to the stack.";
@@ -272,9 +272,9 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
   const auto bid = lbs_solver_.supported_boundary_names.at(bndry_name);
   if (bndry_type == "isotropic")
   {
-    ChiInvalidArgumentIf(not params.Has("group_strength"),
-                         "Parameter \"group_strength\" is required for "
-                         "boundaries of type \"isotropic\".");
+    OpenSnInvalidArgumentIf(not params.Has("group_strength"),
+                            "Parameter \"group_strength\" is required for "
+                            "boundaries of type \"isotropic\".");
     params.RequireParameterBlockTypeIs("values", ParameterBlockType::ARRAY);
 
     boundary_sources_[bid] = {BoundaryType::ISOTROPIC,
@@ -300,18 +300,18 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   const auto& phi_dagger = buffer_data.first;
   const auto& psi_dagger = buffer_data.second;
 
-  ChiLogicalErrorIf(not material_sources_.empty() and phi_dagger.empty(),
-                    "If material sources are present, adjoint flux moments "
-                    "must be available for response evaluation.");
-  ChiLogicalErrorIf(not point_sources_.empty() and phi_dagger.empty(),
-                    "If point sources are set, adjoint flux moments "
-                    "must be available for response evaluation.");
-  ChiLogicalErrorIf(not distributed_sources_.empty() and phi_dagger.empty(),
-                    "if distributed sources are set, adjoint flux moments "
-                    "must be available for response evaluation.");
-  ChiLogicalErrorIf(not boundary_sources_.empty() and psi_dagger.empty(),
-                    "If boundary sources are set, adjoint angular fluxes "
-                    "must be available for response evaluation.");
+  OpenSnLogicalErrorIf(not material_sources_.empty() and phi_dagger.empty(),
+                       "If material sources are present, adjoint flux moments "
+                       "must be available for response evaluation.");
+  OpenSnLogicalErrorIf(not point_sources_.empty() and phi_dagger.empty(),
+                       "If point sources are set, adjoint flux moments "
+                       "must be available for response evaluation.");
+  OpenSnLogicalErrorIf(not distributed_sources_.empty() and phi_dagger.empty(),
+                       "if distributed sources are set, adjoint flux moments "
+                       "must be available for response evaluation.");
+  OpenSnLogicalErrorIf(not boundary_sources_.empty() and psi_dagger.empty(),
+                       "If boundary sources are set, adjoint angular fluxes "
+                       "must be available for response evaluation.");
 
   const auto& grid = lbs_solver_.Grid();
   const auto& discretization = lbs_solver_.SpatialDiscretization();
@@ -464,7 +464,7 @@ ResponseEvaluator::EvaluateBoundaryCondition(const uint64_t boundary_id,
         psi.emplace_back(bc.isotropic_mg_source[first_group + gsg]);
     return psi;
   }
-  ChiLogicalError("Unexpected behavior. Unsupported boundary condition encountered.");
+  OpenSnLogicalError("Unexpected behavior. Unsupported boundary condition encountered.");
 }
 
 } // namespace lbs

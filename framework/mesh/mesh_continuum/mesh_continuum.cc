@@ -771,10 +771,10 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
 {
   const int associated_face = cur_face.GetNeighborAssociatedFace(*this);
   // Check face validity
-  ChiLogicalErrorIf(not cur_face.has_neighbor_,
-                    "Invalid cell index encountered in call to "
-                    "MeshContinuum::FindAssociatedVertices. Index "
-                    "points to a boundary");
+  OpenSnLogicalErrorIf(not cur_face.has_neighbor_,
+                       "Invalid cell index encountered in call to "
+                       "MeshContinuum::FindAssociatedVertices. Index "
+                       "points to a boundary");
 
   auto& adj_cell = cells[cur_face.neighbor_id_];
 
@@ -813,10 +813,10 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
                                           std::vector<short>& dof_mapping) const
 {
   // Check face validity
-  ChiLogicalErrorIf(not cur_face.has_neighbor_,
-                    "Invalid cell index encountered in call to "
-                    "MeshContinuum::FindAssociatedVertices. Index "
-                    "points to a boundary");
+  OpenSnLogicalErrorIf(not cur_face.has_neighbor_,
+                       "Invalid cell index encountered in call to "
+                       "MeshContinuum::FindAssociatedVertices. Index "
+                       "points to a boundary");
 
   auto& adj_cell = cells[cur_face.neighbor_id_];
 

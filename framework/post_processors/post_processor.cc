@@ -89,7 +89,7 @@ PostProcessor::ConstructNumericFormat(const std::string& format_string)
   else if (format_string == "general")
     return PPNumericFormat::GENERAL;
   else
-    ChiLogicalError("Invalid numeric format string \"" + format_string + "\"");
+    OpenSnLogicalError("Invalid numeric format string \"" + format_string + "\"");
 }
 
 const std::string&
@@ -120,14 +120,14 @@ PostProcessor::PushOntoStack(std::shared_ptr<Object>& new_object)
 {
 
   auto pp_ptr = std::dynamic_pointer_cast<PostProcessor>(new_object);
-  ChiLogicalErrorIf(not pp_ptr, "Failure to cast new object to PostProcessor");
+  OpenSnLogicalErrorIf(not pp_ptr, "Failure to cast new object to PostProcessor");
 
   postprocessor_stack.push_back(pp_ptr);
   new_object->SetStackID(postprocessor_stack.size() - 1);
 
   auto new_subscriber = std::dynamic_pointer_cast<EventSubscriber>(pp_ptr);
 
-  ChiLogicalErrorIf(not new_subscriber, "Failure to cast PostProcessor to EventSubscriber");
+  OpenSnLogicalErrorIf(not new_subscriber, "Failure to cast PostProcessor to EventSubscriber");
 
   auto& publisher = PhysicsEventPublisher::GetInstance();
   publisher.AddSubscriber(new_subscriber);
@@ -247,16 +247,16 @@ PostProcessor::ConvertValueToString(const ParameterBlock& value) const
     const auto& first_entry = value.GetParam(0);
     const auto first_entry_type = first_entry.Type();
 
-    ChiLogicalErrorIf(FigureTypeFromValue(first_entry) != PPType::SCALAR,
-                      "The entries of the vector value of post-processor \"" + Name() +
-                        "\" must all be SCALAR.");
+    OpenSnLogicalErrorIf(FigureTypeFromValue(first_entry) != PPType::SCALAR,
+                         "The entries of the vector value of post-processor \"" + Name() +
+                           "\" must all be SCALAR.");
 
     std::string output;
     for (const auto& entry : value)
     {
-      ChiLogicalErrorIf(entry.Type() != first_entry_type,
-                        "Mixed typed encountered in the vector values of post-processor \"" +
-                          Name() + "\"");
+      OpenSnLogicalErrorIf(entry.Type() != first_entry_type,
+                           "Mixed typed encountered in the vector values of post-processor \"" +
+                             Name() + "\"");
       output.append(ConvertScalarValueToString(entry) + " ");
     }
 
@@ -302,7 +302,7 @@ PostProcessor::FigureTypeFromValue(const ParameterBlock& value)
   else if (value.Type() == ParameterBlockType::BLOCK)
     return PPType::ARBITRARY;
   else
-    ChiLogicalError("Unsupported type");
+    OpenSnLogicalError("Unsupported type");
 }
 
 void

@@ -58,7 +58,7 @@ Plugin::Plugin(const InputParameters& params)
   AssertReadibleFile(plugin_path_);
   library_handle_ = dlopen(plugin_path_.c_str(), RTLD_LAZY);
 
-  ChiLogicalErrorIf(not library_handle_, "Failure loading \"" + plugin_path_ + "\"");
+  OpenSnLogicalErrorIf(not library_handle_, "Failure loading \"" + plugin_path_ + "\"");
 
   const auto& user_params = params.ParametersAtAssignment();
   if (user_params.Has("entry_function"))
@@ -68,7 +68,7 @@ Plugin::Plugin(const InputParameters& params)
 
     auto func = (some_func*)dlsym(library_handle_, entry_function.c_str());
 
-    ChiLogicalErrorIf(not func, "Failed to call entry function \"" + entry_function + "\"");
+    OpenSnLogicalErrorIf(not func, "Failed to call entry function \"" + entry_function + "\"");
 
     // Calling the function
     func();

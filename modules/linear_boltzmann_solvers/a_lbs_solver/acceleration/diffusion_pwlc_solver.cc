@@ -40,9 +40,10 @@ void
 DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 {
   const size_t num_local_dofs = sdm_.GetNumLocalAndGhostDOFs(uk_man_);
-  ChiInvalidArgumentIf(q_vector.size() != num_local_dofs,
-                       std::string("q_vector size mismatch. ") + std::to_string(q_vector.size()) +
-                         " vs " + std::to_string(num_local_dofs));
+  OpenSnInvalidArgumentIf(q_vector.size() != num_local_dofs,
+                          std::string("q_vector size mismatch. ") +
+                            std::to_string(q_vector.size()) + " vs " +
+                            std::to_string(num_local_dofs));
 
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
                             "AssembleAand_b";
@@ -239,9 +240,10 @@ void
 DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 {
   const size_t num_local_dofs = sdm_.GetNumLocalAndGhostDOFs(uk_man_);
-  ChiInvalidArgumentIf(q_vector.size() != num_local_dofs,
-                       std::string("q_vector size mismatch. ") + std::to_string(q_vector.size()) +
-                         " vs " + std::to_string(num_local_dofs));
+  OpenSnInvalidArgumentIf(q_vector.size() != num_local_dofs,
+                          std::string("q_vector size mismatch. ") +
+                            std::to_string(q_vector.size()) + " vs " +
+                            std::to_string(num_local_dofs));
   const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
                             "Assemble_b";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)

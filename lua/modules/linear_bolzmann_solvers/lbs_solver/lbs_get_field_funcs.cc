@@ -38,7 +38,7 @@ LBSGetScalarFieldFunctionList(lua_State* L)
       ++stack_ff_counter;
     }
 
-    ChiLogicalError("Scalar field function lookup error");
+    OpenSnLogicalError("Scalar field function lookup error");
   };
 
   // Building table of handles

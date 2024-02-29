@@ -80,8 +80,8 @@ DiffusionSolver::AddToRHS(const std::vector<double>& values)
   typedef const int64_t cint64_t;
   const size_t num_local_dofs = sdm_.GetNumLocalDOFs(uk_man_);
 
-  ChiInvalidArgumentIf(num_local_dofs != values.size(),
-                       "Vector size mismatched with spatial discretization");
+  OpenSnInvalidArgumentIf(num_local_dofs != values.size(),
+                          "Vector size mismatched with spatial discretization");
 
   const size_t num_unknowns = uk_man_.NumberOfUnknowns();
 

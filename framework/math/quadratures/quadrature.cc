@@ -38,9 +38,9 @@ Quadrature::SetRange(const std::pair<double, double>& in_range)
   const double h_new = new_range.second - new_range.first;
   const double h_old = old_range.second - old_range.first;
 
-  ChiInvalidArgumentIf(h_new <= 0.0 or h_old <= 0.0, "Called with negative or zero ranges.");
+  OpenSnInvalidArgumentIf(h_new <= 0.0 or h_old <= 0.0, "Called with negative or zero ranges.");
 
-  ChiInvalidArgumentIf(qpoints_.empty(), "Called with no abscissae initialized.");
+  OpenSnInvalidArgumentIf(qpoints_.empty(), "Called with no abscissae initialized.");
 
   const double scale_factor = h_new / h_old;
 

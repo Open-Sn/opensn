@@ -3,27 +3,28 @@
 #include <string>
 #include <stdexcept>
 
-#define ChiInvalidArgumentIf(condition, message)                                                   \
+#define OpenSnInvalidArgumentIf(condition, message)                                                \
   if (condition)                                                                                   \
   throw std::invalid_argument(std::string(__PRETTY_FUNCTION__) + ": " + message)
-#define ChiInvalidArgument(message)                                                                \
+
+#define OpenSnInvalidArgument(message)                                                             \
   throw std::invalid_argument(std::string(__PRETTY_FUNCTION__) + ": " + message)
 
-#define ChiLogicalErrorIf(condition, message)                                                      \
+#define OpenSnLogicalErrorIf(condition, message)                                                   \
   if (condition)                                                                                   \
   throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ": " + message)
 
-#define ChiLogicalError(message)                                                                   \
+#define OpenSnLogicalError(message)                                                                \
   throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ": " + message)
 
-#define ChiRecoverableInvalidArgument(condition, message)                                          \
+#define OpenSnRecoverableInvalidArgument(condition, message)                                       \
   {                                                                                                \
     if (condition)                                                                                 \
       throw std::RecoverableException(std::string("Recoverable Invalid Argument: "),               \
                                       std::string(__PRETTY_FUNCTION__) + ": " + #message);         \
   }
 
-#define ChiRecoverableLogicalError(condition, message)                                             \
+#define OpenSnRecoverableLogicalError(condition, message)                                          \
   {                                                                                                \
     if (condition)                                                                                 \
       throw std::RecoverableException(std::string("Recoverable Logic Error: ")                     \
