@@ -62,6 +62,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#boolean-operators">Boolean operators</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pointers">Pointers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#comments">Comments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#include-directives">Include directives</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-parameters">Command-line parameters</a></li>
@@ -215,6 +216,26 @@ shared pointers simply don’t exist.</p>
 <span class="cm"> * In-code doxygen-style documentation</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="n">SomeMemberFunction</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="include-directives">
+<h3>Include directives<a class="headerlink" href="#include-directives" title="Link to this heading"></a></h3>
+<p>Preprocessor <code class="docutils literal notranslate"><span class="pre">#include</span></code> directives should be ordered as follows:</p>
+<ol class="arabic simple">
+<li><p>Header for this compilation unit (.h file that corresponds to .cc/.cpp file)</p></li>
+<li><p>Other OpenSn headers</p></li>
+<li><p>Non-standard, non-system libraries</p></li>
+<li><p>C++ headers</p></li>
+<li><p>C headers</p></li>
+</ol>
+<p>There should <strong>not</strong> be empty lines separating the groups.</p>
+<p>Example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/cfem_diffusion/cfem_diffusion_solver.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/varying.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;petsc.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 </pre></div>
 </div>
 </section>
