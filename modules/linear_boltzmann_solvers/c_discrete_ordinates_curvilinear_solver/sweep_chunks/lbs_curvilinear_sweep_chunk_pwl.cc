@@ -1,9 +1,9 @@
 #include "modules/linear_boltzmann_solvers/c_discrete_ordinates_curvilinear_solver/sweep_chunks/lbs_curvilinear_sweep_chunk_pwl.h"
-#include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/quadratures/curvilinear_angular_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 
 namespace opensn
 {

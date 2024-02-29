@@ -1,6 +1,6 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/fluds/cbc_fluds.h"
-#include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace opensn

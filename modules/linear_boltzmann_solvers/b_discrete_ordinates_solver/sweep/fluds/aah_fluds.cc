@@ -1,7 +1,7 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/math/math.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {

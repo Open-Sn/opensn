@@ -1,8 +1,8 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_aniso_hetero.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/quadratures/angular_quadrature_base.h"
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {

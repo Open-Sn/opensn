@@ -1,10 +1,10 @@
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/fluds/fluds_common_data.h"
 #include <vector>
 #include <set>
 #include <cstddef>
 #include <cstdint>
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/fluds/fluds_common_data.h"
 
 namespace opensn
 {

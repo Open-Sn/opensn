@@ -1,8 +1,8 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_scheduler/sweep_scheduler.h"
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds_adams_adams_hawkins.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_reflecting.h"
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include <sstream>
 #include <algorithm>
 

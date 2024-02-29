@@ -1,8 +1,8 @@
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/sweep_boundary.h"
 #include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/sweep_boundary.h"
 #include <vector>
 #include <limits>
 

@@ -1,9 +1,9 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds_adams_adams_hawkins.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
 #include "framework/graphs/directed_graph.h"
+#include "framework/logging/log.h"
 #include "framework/utils/timer.h"
+#include "framework/runtime.h"
 #include <algorithm>
 
 namespace opensn

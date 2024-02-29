@@ -3,9 +3,9 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 #include "framework/mpi/mpi_comm_set.h"
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/memory_usage.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {

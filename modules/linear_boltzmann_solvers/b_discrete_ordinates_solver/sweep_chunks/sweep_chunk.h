@@ -1,8 +1,8 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_aggregation/angle_aggregation.h"
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 #include <functional>
 
 namespace opensn
@@ -16,9 +16,6 @@ class SweepChunk
 public:
   /**
    * Convenient typdef for the moment call back function. See moment_callbacks.
-   *  Arguments are:
-   *  SweepChunk *
-   *  AngleSet *
    */
   typedef std::function<void(SweepChunk* sweeper, AngleSet* angle_set)> MomentCallbackF;
 
@@ -97,10 +94,7 @@ protected:
   std::vector<double>& GetDestinationPsi() { return *destination_psi; }
 
   /**Activates or deactives the surface src flag.*/
-  void SetBoundarySourceActiveFlag(bool flag_value) // Done
-  {
-    surface_source_active = flag_value;
-  }
+  void SetBoundarySourceActiveFlag(bool flag_value) { surface_source_active = flag_value; }
 
   /**Returns the surface src-active flag.*/
   bool IsSurfaceSourceActive() const { return surface_source_active; }

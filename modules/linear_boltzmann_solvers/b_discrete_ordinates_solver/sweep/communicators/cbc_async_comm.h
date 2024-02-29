@@ -1,12 +1,12 @@
 #pragma once
 
-#include <cstdint>
-#include <cstddef>
-#include <map>
-#include <vector>
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/communicators/async_comm.h"
 #include "framework/data_types/byte_array.h"
 #include "mpicpp-lite/mpicpp-lite.h"
+#include <map>
+#include <vector>
+#include <cstdint>
+#include <cstddef>
 
 namespace mpi = mpicpp_lite;
 
