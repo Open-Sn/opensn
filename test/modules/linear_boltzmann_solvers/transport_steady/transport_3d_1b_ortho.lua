@@ -89,7 +89,7 @@ end
 bsrc[1] = 1.0/4.0/math.pi;
 lbs_options =
 {
-  boundary_conditions = { { name = "xmin", type = "incident_isotropic",
+  boundary_conditions = { { name = "xmin", type = "isotropic",
                             group_strength=bsrc}},
   scattering_order = 1,
 }

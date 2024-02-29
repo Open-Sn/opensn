@@ -1,11 +1,9 @@
 #include "modules/linear_boltzmann_solvers/b_diffusion_dfem_solver/lbs_mip_solver.h"
-
-#include "framework/object_factory.h"
-
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/source_functions//source_function.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/source_functions/source_function.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/b_diffusion_dfem_solver/iterative_methods/mip_wgs_context2.h"
+#include "framework/object_factory.h"
 
 namespace opensn
 {
@@ -73,16 +71,12 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
     uk_man.AddUnknown(UnknownType::VECTOR_N, gs_G);
 
     // Make boundary conditions
-    typedef opensn::BoundaryType SwpBndryType;
-    typedef BoundaryCondition BC;
-    typedef BCType BCType;
-
-    std::map<uint64_t, BC> bcs;
+    std::map<uint64_t, BoundaryCondition> bcs;
     for (auto& [bid, lbs_bndry] : sweep_boundaries_)
     {
-      if (lbs_bndry->Type() == SwpBndryType::REFLECTING)
+      if (lbs_bndry->Type() == BoundaryType::REFLECTING)
         bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
-      else if (lbs_bndry->Type() == SwpBndryType::INCIDENT_ISOTROPIC_HOMOGENOUS)
+      else if (lbs_bndry->Type() == BoundaryType::ISOTROPIC)
       {
         const bool has_bndry_preference = boundary_preferences_.count(bid) > 0;
         if (not has_bndry_preference)

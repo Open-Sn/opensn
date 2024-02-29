@@ -1,15 +1,15 @@
 #pragma once
 
-#include "framework/mesh/mesh.h"
 #include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh.h"
+#include <map>
+#include <array>
+#include <set>
 
 class vtkCell;
 class vtkUnstructuredGrid;
 template <class T>
 class vtkSmartPointer;
-
-#include <map>
-#include <array>
 
 namespace opensn
 {

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "framework/math/math.h"
 #include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
-
+#include "framework/math/math.h"
 #include <functional>
 #include <map>
 
@@ -68,10 +67,10 @@ enum class AngleAggregationType
 
 enum class BoundaryType
 {
-  VACUUM = 1,
-  INCIDENT_ISOTROPIC = 2,
-  REFLECTING = 3,
-  INCIDENT_ANISTROPIC_HETEROGENEOUS = 4
+  VACUUM = 1,     ///< Zero for all angles, space
+  ISOTROPIC = 2,  ///< One value for all angles, homogenous in space
+  REFLECTING = 3, ///< Reflecting boundary condition about a normal
+  ARBITRARY = 4   ///< Complex different for each angle and face node
 };
 
 struct BoundaryPreference

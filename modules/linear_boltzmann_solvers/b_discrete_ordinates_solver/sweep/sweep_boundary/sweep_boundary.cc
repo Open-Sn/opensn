@@ -1,0 +1,38 @@
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/sweep_boundary.h"
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
+
+namespace opensn
+{
+namespace lbs
+{
+
+double*
+SweepBoundary::HeterogeneousPsiIncoming(uint64_t cell_local_id,
+                                        unsigned int face_num,
+                                        unsigned int fi,
+                                        unsigned int angle_num,
+                                        int group_num,
+                                        size_t gs_ss_begin)
+{
+  log.LogAllError()
+    << "HeterogeneousPsiIncoming call made to boundary that has no such information.";
+  Exit(EXIT_FAILURE);
+  return nullptr;
+}
+
+double*
+SweepBoundary::HeterogeneousPsiOutgoing(uint64_t cell_local_id,
+                                        unsigned int face_num,
+                                        unsigned int fi,
+                                        unsigned int angle_num,
+                                        size_t gs_ss_begin)
+{
+  log.LogAllError()
+    << "HeterogeneousPsiOutgoing call made to boundary that has no such information.";
+  Exit(EXIT_FAILURE);
+  return nullptr;
+}
+
+} // namespace lbs
+} // namespace opensn

@@ -2,8 +2,8 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/distributed_source/distributed_source.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/object_factory.h"
 #include "framework/logging/log.h"
+#include "framework/object_factory.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 
 namespace mpi = mpicpp_lite;
@@ -270,14 +270,14 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
   const auto bid = lbs_solver_.supported_boundary_names.at(bndry_name);
-  if (bndry_type == "incident_isotropic")
+  if (bndry_type == "isotropic")
   {
     ChiInvalidArgumentIf(not params.Has("group_strength"),
                          "Parameter \"group_strength\" is required for "
-                         "boundaries of type \"incident_isotropic\".");
+                         "boundaries of type \"isotropic\".");
     params.RequireParameterBlockTypeIs("values", ParameterBlockType::ARRAY);
 
-    boundary_sources_[bid] = {BoundaryType::INCIDENT_ISOTROPIC,
+    boundary_sources_[bid] = {BoundaryType::ISOTROPIC,
                               params.GetParamVectorValue<double>("group_strength")};
   }
   else
@@ -457,7 +457,7 @@ ResponseEvaluator::EvaluateBoundaryCondition(const uint64_t boundary_id,
 
   std::vector<double> psi;
   const auto& bc = boundary_sources_.at(boundary_id);
-  if (bc.type == BoundaryType::INCIDENT_ISOTROPIC)
+  if (bc.type == BoundaryType::ISOTROPIC)
   {
     for (size_t n = 0; n < num_gs_angles; ++n)
       for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)

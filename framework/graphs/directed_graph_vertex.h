@@ -1,8 +1,8 @@
 #pragma once
 
 #include "framework/graphs/graph.h"
-
 #include <map>
+#include <set>
 
 namespace opensn
 {

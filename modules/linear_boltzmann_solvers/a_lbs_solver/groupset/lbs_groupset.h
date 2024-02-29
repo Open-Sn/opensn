@@ -1,28 +1,22 @@
 #pragma once
 
-#include "framework/object.h"
-
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_group.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_aggregation/angle_aggregation.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/lbs_iterative_methods.h"
-
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/acceleration.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_group.h"
+#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 #include "framework/math/quadratures/legendre_poly/legendrepoly.h"
 #include "framework/math/quadratures/angular_quadrature_base.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
-
-#include "framework/mesh/sweep_utilities/angle_aggregation/angle_aggregation.h"
-
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
-
 #include "framework/physics/physics_namespace.h"
-
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/acceleration.h"
-
 #include "framework/utils/utils.h"
+#include "framework/object.h"
 
 namespace opensn
 {
 namespace lbs
 {
+
 class DiffusionMIPSolver;
 class LBSSolver;
 

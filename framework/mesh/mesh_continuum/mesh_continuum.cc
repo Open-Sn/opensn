@@ -1,13 +1,13 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
-#include "framework/mpi/mpi_comm_set.h"
-#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
-#include "framework/mesh/cell/cell.h"
-#include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/mesh_continuum/grid_face_histogram.h"
+#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
+#include "framework/mesh/cell/cell.h"
 #include "framework/data_types/ndarray.h"
+#include "framework/mpi/mpi_comm_set.h"
 #include "framework/utils/timer.h"
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include <vtkUnstructuredGrid.h>
 #include <vtkMultiBlockDataSet.h>
 #include <vtkInformation.h>
@@ -16,6 +16,7 @@
 #include <vtkPointData.h>
 #include <vtkCellData.h>
 #include <algorithm>
+#include <set>
 
 namespace opensn
 {
