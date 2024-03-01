@@ -76,6 +76,10 @@ check_symbol_exists(PETSC_USE_64BIT_INDICES "${PETSC_INCLUDE_DIR}/petscconf.h" P
 if(NOT ${PETSC_USE_64BIT_INDICES} MATCHES 1)
     message(FATAL_ERROR "PETSc has not been configured with the flag --with-64-bit-indices\n")
 endif()
+check_symbol_exists(PETSC_HAVE_PTSCOTCH "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_HAVE_PTSCOTCH)
+if(NOT ${PETSC_HAVE_PTSCOTCH} MATCHES 1)
+    message(FATAL_ERROR "PETSc has not been configured with PTSCOTCH\n")
+endif()
 
 # compile options
 set(OPENSN_CXX_FLAGS)
