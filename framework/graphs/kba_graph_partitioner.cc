@@ -56,8 +56,8 @@ KBAGraphPartitioner::KBAGraphPartitioner(const InputParameters& params)
 
     // Check number of items
     if (cuts.size() != (n - 1))
-      ChiInvalidArgument("The number of cuts supplied for \"" + name + "cuts\" is not equal to n" +
-                         name + "-1.");
+      OpenSnInvalidArgument("The number of cuts supplied for \"" + name +
+                            "cuts\" is not equal to n" + name + "-1.");
     if (cuts.empty())
       continue;
 
@@ -66,8 +66,9 @@ KBAGraphPartitioner::KBAGraphPartitioner(const InputParameters& params)
       double prev_value = 0.0;
       for (const double cut_value : *cuts_ptr)
       {
-        ChiInvalidArgumentIf(cut_value != cuts.front() and cut_value <= prev_value,
-                             "Parameter \"" + name + "\" requires monotonically increasing values");
+        OpenSnInvalidArgumentIf(cut_value != cuts.front() and cut_value <= prev_value,
+                                "Parameter \"" + name +
+                                  "\" requires monotonically increasing values");
         prev_value = cut_value;
       }
     } // for cut value
@@ -81,8 +82,8 @@ KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
 {
   log.Log0Verbose1() << "Partitioning with KBAGraphPartitioner";
 
-  ChiLogicalErrorIf(centroids.size() != graph.size(),
-                    "Graph number of entries not equal to centroids' number of entries.");
+  OpenSnLogicalErrorIf(centroids.size() != graph.size(),
+                       "Graph number of entries not equal to centroids' number of entries.");
   const size_t num_cells = graph.size();
   std::vector<int64_t> pids(num_cells, 0);
   for (size_t c = 0; c < num_cells; ++c)

@@ -108,12 +108,12 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
 
   // Add groups
   const auto groups_from_to = params.GetParamVectorValue<size_t>("groups_from_to");
-  ChiInvalidArgumentIf(groups_from_to.size() != 2,
-                       "Parameter \"groups_from_to\" can only have 2 entries");
+  OpenSnInvalidArgumentIf(groups_from_to.size() != 2,
+                          "Parameter \"groups_from_to\" can only have 2 entries");
 
   const size_t from = groups_from_to[0];
   const size_t to = groups_from_to[1];
-  ChiInvalidArgumentIf(to < from, "\"to\" field is less than the \"from\" field.");
+  OpenSnInvalidArgumentIf(to < from, "\"to\" field is less than the \"from\" field.");
 
   try
   {

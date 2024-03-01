@@ -43,7 +43,7 @@ PostProcessorGetValue(const InputParameters& params)
         return pp_ptr->GetValue();
 
     // If we haven't returned here
-    ChiInvalidArgument("Post-processor with name \"" + pp_name + "\" not found.");
+    OpenSnInvalidArgument("Post-processor with name \"" + pp_name + "\" not found.");
   }
   else if (param.Type() == ParameterBlockType::INTEGER)
   {
@@ -54,7 +54,7 @@ PostProcessorGetValue(const InputParameters& params)
     return pp.GetValue();
   }
   else
-    ChiInvalidArgument("Accepts only STRING or INTEGER for arg0.");
+    OpenSnInvalidArgument("Accepts only STRING or INTEGER for arg0.");
 
   return ParameterBlock{};
 }

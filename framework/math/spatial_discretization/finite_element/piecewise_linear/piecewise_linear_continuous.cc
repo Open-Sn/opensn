@@ -34,14 +34,14 @@ PieceWiseLinearContinuous::New(const MeshContinuum& grid,
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
 
-      ChiLogicalErrorIf(not fe_ptr, "Casting failure to FE");
+      OpenSnLogicalErrorIf(not fe_ptr, "Casting failure to FE");
 
       if (fe_ptr->GetQuadratureOrder() != q_order)
         break;
 
       auto sdm_ptr = std::dynamic_pointer_cast<PieceWiseLinearContinuous>(fe_ptr);
 
-      ChiLogicalErrorIf(not sdm_ptr, "Casting failure");
+      OpenSnLogicalErrorIf(not sdm_ptr, "Casting failure");
 
       return sdm_ptr;
     }
@@ -469,8 +469,8 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 
-  ChiLogicalErrorIf(node_mapping_.count(vertex_id) == 0,
-                    std::string("Bad trouble mapping vertex ") + std::to_string(vertex_id));
+  OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0,
+                       std::string("Bad trouble mapping vertex ") + std::to_string(vertex_id));
   const int64_t global_id = node_mapping_.at(vertex_id);
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
@@ -507,7 +507,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
 {
   const uint64_t vertex_id = cell.vertex_ids_[node];
 
-  ChiLogicalErrorIf(node_mapping_.count(vertex_id) == 0, "Bad trouble");
+  OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0, "Bad trouble");
   const int64_t node_global_id = node_mapping_.at(vertex_id);
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();

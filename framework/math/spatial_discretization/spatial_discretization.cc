@@ -276,7 +276,7 @@ SpatialDiscretization::GetSpatialWeightingFunction() const
       return Spherical1DSpatialWeightFunction;
     case CoordinateSystemType::UNDEFINED:
     default:
-      ChiLogicalError("Coordinate system undefined.");
+      OpenSnLogicalError("Coordinate system undefined.");
   }
 }
 

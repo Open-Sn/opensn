@@ -44,9 +44,9 @@ CellVolumeIntegralPostProcessor::Initialize()
 {
   const auto* grid_field_function = GetGridBasedFieldFunction();
 
-  ChiLogicalErrorIf(not grid_field_function,
-                    "Attempted to access invalid field"
-                    "function");
+  OpenSnLogicalErrorIf(not grid_field_function,
+                       "Attempted to access invalid field"
+                       "function");
 
   const auto& grid = grid_field_function->GetSpatialDiscretization().Grid();
 
@@ -75,9 +75,9 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 
   const auto* grid_field_function = GetGridBasedFieldFunction();
 
-  ChiLogicalErrorIf(not grid_field_function,
-                    "Attempted to access invalid field"
-                    "function");
+  OpenSnLogicalErrorIf(not grid_field_function,
+                       "Attempted to access invalid field"
+                       "function");
 
   const auto& ref_ff = *grid_field_function;
   const auto& sdm = ref_ff.GetSpatialDiscretization();

@@ -57,7 +57,8 @@ PartitionerPredicate::Execute()
     auto ff_ptr = GetStackItemPtrAsType<FieldFunction>(field_function_stack, handle, __FUNCTION__);
     grid_ff_ptr = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_ptr);
 
-    ChiLogicalErrorIf(not grid_ff_ptr, "Could not cast field function to FieldFunctionGridBased");
+    OpenSnLogicalErrorIf(not grid_ff_ptr,
+                         "Could not cast field function to FieldFunctionGridBased");
   }
   else if (result_field_param_.Type() == ParameterBlockType::STRING)
   {
@@ -67,12 +68,13 @@ PartitionerPredicate::Execute()
       {
         grid_ff_ptr = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_ptr);
 
-        ChiLogicalErrorIf(not grid_ff_ptr,
-                          "Could not cast field function to FieldFunctionGridBased");
+        OpenSnLogicalErrorIf(not grid_ff_ptr,
+                             "Could not cast field function to FieldFunctionGridBased");
       }
   }
 
-  ChiInvalidArgumentIf(not grid_ff_ptr, "Could not find the associated resulting field function");
+  OpenSnInvalidArgumentIf(not grid_ff_ptr,
+                          "Could not find the associated resulting field function");
 
   // Build cell graph and centroids
   const auto& sdm = grid_ff_ptr->GetSpatialDiscretization();

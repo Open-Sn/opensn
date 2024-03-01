@@ -66,10 +66,10 @@ void
 AssertReadibleFile(const std::string& file_name)
 {
   std::ifstream file(file_name.c_str(), std::ifstream::in);
-  ChiLogicalErrorIf(file.fail(),
-                    "Failed to open file \"" + file_name +
-                      "\"."
-                      "Either the file does not exist or you do not have read permissions.");
+  OpenSnLogicalErrorIf(file.fail(),
+                       "Failed to open file \"" + file_name +
+                         "\"."
+                         "Either the file does not exist or you do not have read permissions.");
 
   file.close();
 }

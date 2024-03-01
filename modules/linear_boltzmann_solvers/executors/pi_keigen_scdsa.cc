@@ -468,7 +468,7 @@ XXPowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
                                        ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
                                        : diff_sdm.GetNumLocalDOFs(diff_uk_man);
 
-  ChiLogicalErrorIf(input.size() != diff_num_local_dofs, "Vector size mismatch");
+  OpenSnLogicalErrorIf(input.size() != diff_num_local_dofs, "Vector size mismatch");
 
   for (const auto& cell : lbs_solver_.Grid().local_cells)
   {

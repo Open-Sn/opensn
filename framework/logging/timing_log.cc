@@ -14,10 +14,10 @@ namespace opensn
 TimingBlock&
 TimingLog::CreateTimingBlock(const std::string& name, const std::string& parent_name)
 {
-  ChiInvalidArgumentIf(timing_blocks_.count(name) != 0,
-                       "TimingBlock with name \"" + name +
-                         "\" already exists"
-                         " in the logger");
+  OpenSnInvalidArgumentIf(timing_blocks_.count(name) != 0,
+                          "TimingBlock with name \"" + name +
+                            "\" already exists"
+                            " in the logger");
   auto block_ptr = std::make_unique<TimingBlock>(name);
   auto saved_pointer = &(*block_ptr);
   timing_blocks_[name] = std::move(block_ptr);
@@ -27,8 +27,8 @@ TimingLog::CreateTimingBlock(const std::string& name, const std::string& parent_
     if (name != opensn::name)
     {
       auto iter = timing_blocks_.find(opensn::name);
-      ChiLogicalErrorIf(iter == timing_blocks_.end(),
-                        "Bad error, could not fine the \"" + opensn::name + "\" timing block");
+      OpenSnLogicalErrorIf(iter == timing_blocks_.end(),
+                           "Bad error, could not fine the \"" + opensn::name + "\" timing block");
 
       iter->second->AddChild(*saved_pointer);
     }
@@ -38,8 +38,8 @@ TimingLog::CreateTimingBlock(const std::string& name, const std::string& parent_
 
   auto iter = timing_blocks_.find(parent_name);
 
-  ChiInvalidArgumentIf(iter == timing_blocks_.end(),
-                       "Parent name \"" + parent_name + "\" does not exist.");
+  OpenSnInvalidArgumentIf(iter == timing_blocks_.end(),
+                          "Parent name \"" + parent_name + "\" does not exist.");
 
   auto& parent = iter->second;
   parent->AddChild(*saved_pointer);
@@ -63,8 +63,8 @@ TimingLog::GetTimingBlock(const std::string& name)
 {
   auto iter = timing_blocks_.find(name);
 
-  ChiInvalidArgumentIf(iter == timing_blocks_.end(),
-                       "Timing block with name \"" + name + "\" does not exist.");
+  OpenSnInvalidArgumentIf(iter == timing_blocks_.end(),
+                          "Timing block with name \"" + name + "\" does not exist.");
 
   return *iter->second;
 }
@@ -223,22 +223,22 @@ TimingBlock::AppendGraphEntry(std::vector<std::vector<std::string>>& string_matr
 
   {
     char buffer[20];
-    ChiLogicalErrorIf(snprintf(buffer, 20, "%.5g", total_time_ / 1000.0) < 0,
-                      "Failed to convert total_time = " + std::to_string(total_time_));
+    OpenSnLogicalErrorIf(snprintf(buffer, 20, "%.5g", total_time_ / 1000.0) < 0,
+                         "Failed to convert total_time = " + std::to_string(total_time_));
     entry.push_back(buffer);
   }
 
   {
     char buffer[20];
-    ChiLogicalErrorIf(snprintf(buffer, 20, "%.5g", AverageTime() / 1000.0) < 0,
-                      "Failed to convert AverageTime = " + std::to_string(AverageTime()));
+    OpenSnLogicalErrorIf(snprintf(buffer, 20, "%.5g", AverageTime() / 1000.0) < 0,
+                         "Failed to convert AverageTime = " + std::to_string(AverageTime()));
     entry.push_back(buffer);
   }
 
   {
     char buffer[10];
-    ChiLogicalErrorIf(snprintf(buffer, 10, "%.2f%%", relative_time) < 0,
-                      "Failed to convert relative_time = " + std::to_string(relative_time));
+    OpenSnLogicalErrorIf(snprintf(buffer, 10, "%.2f%%", relative_time) < 0,
+                         "Failed to convert relative_time = " + std::to_string(relative_time));
     entry.push_back(parent ? buffer : "--");
   }
 

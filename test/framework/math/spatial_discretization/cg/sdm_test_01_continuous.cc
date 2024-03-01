@@ -52,7 +52,7 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
     if (sdm_type == "PWLC")
       sdm_ptr = PieceWiseLinearContinuous::New(grid);
     else
-      ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
+      OpenSnInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
   }
 
   auto& sdm = *sdm_ptr;

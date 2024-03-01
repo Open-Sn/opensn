@@ -273,7 +273,7 @@ FindHighestDimension(std::vector<vtkUGridPtrAndName>& ugrid_blocks)
     for (int64_t c = 0; c < num_cells; ++c)
     {
       auto cell = ugrid.first->GetCell(c);
-      ChiLogicalErrorIf(not cell, "Failed to obtain VTK-cell pointer");
+      OpenSnLogicalErrorIf(not cell, "Failed to obtain VTK-cell pointer");
       max_dim = std::max(max_dim, cell->GetCellDimension());
     }
   } // for ugrid in block
@@ -345,7 +345,7 @@ ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
   for (int64_t c = 0; c < num_cells; ++c)
   {
     auto cell = consolidated_ugrid->GetCell(c);
-    ChiLogicalErrorIf(not cell, "Failed to obtain VTK-cell pointer");
+    OpenSnLogicalErrorIf(not cell, "Failed to obtain VTK-cell pointer");
 
     auto cell_type_name = cell->GetClassName();
     cell_type_count_map[cell_type_name] += 1;

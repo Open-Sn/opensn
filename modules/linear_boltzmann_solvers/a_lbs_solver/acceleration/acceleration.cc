@@ -36,7 +36,7 @@ PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_m
                int last_group_index)
 {
   const int num_gs_groups = last_group_index - first_grp_index + 1;
-  ChiInvalidArgumentIf(num_gs_groups < 0, "last_grp_index must be >= first_grp_index");
+  OpenSnInvalidArgumentIf(num_gs_groups < 0, "last_grp_index must be >= first_grp_index");
 
   typedef Multigroup_D_and_sigR MGXS;
   typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;

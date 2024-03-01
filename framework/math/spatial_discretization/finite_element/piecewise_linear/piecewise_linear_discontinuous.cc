@@ -34,14 +34,14 @@ PieceWiseLinearDiscontinuous::New(const MeshContinuum& grid,
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
 
-      ChiLogicalErrorIf(not fe_ptr, "Casting failure to FE");
+      OpenSnLogicalErrorIf(not fe_ptr, "Casting failure to FE");
 
       if (fe_ptr->GetQuadratureOrder() != q_order)
         break;
 
       auto sdm_ptr = std::dynamic_pointer_cast<PieceWiseLinearDiscontinuous>(fe_ptr);
 
-      ChiLogicalErrorIf(not sdm_ptr, "Casting failure");
+      OpenSnLogicalErrorIf(not sdm_ptr, "Casting failure");
 
       return sdm_ptr;
     }

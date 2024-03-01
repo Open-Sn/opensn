@@ -48,9 +48,9 @@ LBSSetPhiFromFieldFunction(lua_State* L)
       else if (phi_str == "new")
         phi_option = opensn::lbs::PhiSTLOption::PHI_NEW;
       else
-        ChiInvalidArgument(std::string("Parameter \"which_phi\" can only be"
-                                       " \"old\" or \"new\". ") +
-                           "\"" + phi_str + "\" is not allowed.");
+        OpenSnInvalidArgument(std::string("Parameter \"which_phi\" can only be"
+                                          " \"old\" or \"new\". ") +
+                              "\"" + phi_str + "\" is not allowed.");
     }
     else if (spec.Name() == "m_ids")
     {
@@ -61,7 +61,7 @@ LBSSetPhiFromFieldFunction(lua_State* L)
       group_indices = spec.GetVectorValue<size_t>();
     }
     else
-      ChiInvalidArgument(std::string("Unsupported option ") + spec.Name());
+      OpenSnInvalidArgument(std::string("Unsupported option ") + spec.Name());
 
   } // for each specification
 

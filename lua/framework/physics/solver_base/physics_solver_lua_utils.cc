@@ -272,7 +272,7 @@ SolverGetInfo(lua_State* L)
   else if (lua_istable(L, 2))
     params = TableParserAsParameterBlock::ParseTable(L, 2);
   else
-    ChiInvalidArgument("Argument 2 can only take a string or a table");
+    OpenSnInvalidArgument("Argument 2 can only take a string or a table");
 
   const auto output_params = solver.GetInfo(params);
 

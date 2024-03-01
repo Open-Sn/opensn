@@ -26,7 +26,7 @@ DirectedGraph::VertexAccessor::AddVertex(void* context)
 void
 DirectedGraph::VertexAccessor::RemoveVertex(size_t v)
 {
-  ChiLogicalErrorIf(v >= vertices_.size(), "Error removing vertex.");
+  OpenSnLogicalErrorIf(v >= vertices_.size(), "Error removing vertex.");
 
   auto& vertex = vertices_[v];
 

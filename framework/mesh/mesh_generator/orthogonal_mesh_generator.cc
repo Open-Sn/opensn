@@ -35,28 +35,28 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
 
     for (const auto& node_list_block : node_sets_param)
     {
-      ChiInvalidArgumentIf(node_list_block.Type() != ParameterBlockType::ARRAY,
-                           "The entries of \"node_sets\" are required to be of type \"Array\".");
+      OpenSnInvalidArgumentIf(node_list_block.Type() != ParameterBlockType::ARRAY,
+                              "The entries of \"node_sets\" are required to be of type \"Array\".");
 
       node_sets_.push_back(node_list_block.GetVectorValue<double>());
     }
   }
 
   // Check they were not empty and <=3
-  ChiInvalidArgumentIf(node_sets_.empty(),
-                       "No nodes have been provided. At least one node set must be provided");
+  OpenSnInvalidArgumentIf(node_sets_.empty(),
+                          "No nodes have been provided. At least one node set must be provided");
 
-  ChiInvalidArgumentIf(node_sets_.size() > 3,
-                       "More than 3 node sets have been provided. The "
-                       "maximum allowed is 3.");
+  OpenSnInvalidArgumentIf(node_sets_.size() > 3,
+                          "More than 3 node sets have been provided. The "
+                          "maximum allowed is 3.");
 
   size_t ns = 0;
   for (const auto& node_set : node_sets_)
   {
-    ChiInvalidArgumentIf(node_set.size() < 2,
-                         "Node set " + std::to_string(ns) + " only has " +
-                           std::to_string(node_set.size()) +
-                           " nodes. A minimum of 2 is required to define a cell.");
+    OpenSnInvalidArgumentIf(node_set.size() < 2,
+                            "Node set " + std::to_string(ns) + " only has " +
+                              std::to_string(node_set.size()) +
+                              " nodes. A minimum of 2 is required to define a cell.");
     ++ns;
   }
 
@@ -64,9 +64,9 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
   size_t set_number = 0;
   for (const auto& node_set : node_sets_)
   {
-    ChiInvalidArgumentIf(node_set.empty(),
-                         "Node set " + std::to_string(set_number) +
-                           " in parameter \"node_sets\" may not be empty");
+    OpenSnInvalidArgumentIf(node_set.empty(),
+                            "Node set " + std::to_string(set_number) +
+                              " in parameter \"node_sets\" may not be empty");
 
     bool monotonic = true;
     double prev_value = node_set[0];
@@ -85,9 +85,9 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
       std::stringstream outstr;
       for (double value : node_set)
         outstr << value << " ";
-      ChiInvalidArgument("Node sets in parameter \"node_sets\" requires all "
-                         "values to be monotonically increasing. Node set: " +
-                         outstr.str());
+      OpenSnInvalidArgument("Node sets in parameter \"node_sets\" requires all "
+                            "values to be monotonically increasing. Node set: " +
+                            outstr.str());
     }
   } // for node_set in node_sets_
 }
@@ -95,9 +95,9 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
 std::unique_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
 {
-  ChiInvalidArgumentIf(input_umesh != nullptr,
-                       "OrthogonalMeshGenerator can not be preceded by another"
-                       " mesh generator because it cannot process an input mesh");
+  OpenSnInvalidArgumentIf(input_umesh != nullptr,
+                          "OrthogonalMeshGenerator can not be preceded by another"
+                          " mesh generator because it cannot process an input mesh");
 
   if (node_sets_.size() == 1)
     return CreateUnpartitioned1DOrthoMesh(node_sets_[0]);

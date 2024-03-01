@@ -37,7 +37,8 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(const InputParameters& params) 
   const auto& assigned_params = params.ParametersAtAssignment();
 
   const int param_count = int(assigned_params.Has("order")) + int(assigned_params.Has("N"));
-  ChiInvalidArgumentIf(param_count == 2, "Either \"order\" or \"N\" must be specified, not both");
+  OpenSnInvalidArgumentIf(param_count == 2,
+                          "Either \"order\" or \"N\" must be specified, not both");
 
   const auto max_iters = params.GetParamValue<unsigned int>("max_root_finding_iters");
   const double tol = params.GetParamValue<double>("root_finding_tol");

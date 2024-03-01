@@ -34,27 +34,27 @@ VaryingDataTypeStringName(VaryingDataType type)
 std::string
 Varying::VaryingType::StringValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 bool
 Varying::VaryingType::BoolValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 int64_t
 Varying::VaryingType::IntegerValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 double
 Varying::VaryingType::FloatValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 std::vector<std::byte>
 Varying::VaryingType::BytesValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 
 // VaryingByteArray
@@ -62,25 +62,25 @@ template <>
 std::string
 Varying::VaryingArbitraryType<std::vector<std::byte>>::StringValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 bool
 Varying::VaryingArbitraryType<std::vector<std::byte>>::BoolValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 int64_t
 Varying::VaryingArbitraryType<std::vector<std::byte>>::IntegerValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 double
 Varying::VaryingArbitraryType<std::vector<std::byte>>::FloatValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 
 // VaryingString
@@ -94,19 +94,19 @@ template <>
 bool
 Varying::VaryingArbitraryType<std::string>::BoolValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 int64_t
 Varying::VaryingArbitraryType<std::string>::IntegerValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 double
 Varying::VaryingArbitraryType<std::string>::FloatValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 
 // VaryingBool
@@ -114,7 +114,7 @@ template <>
 std::string
 Varying::VaryingArbitraryType<bool>::StringValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 bool
@@ -126,13 +126,13 @@ template <>
 int64_t
 Varying::VaryingArbitraryType<bool>::IntegerValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 double
 Varying::VaryingArbitraryType<bool>::FloatValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 
 // VaryingInteger
@@ -140,13 +140,13 @@ template <>
 std::string
 Varying::VaryingArbitraryType<int64_t>::StringValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 bool
 Varying::VaryingArbitraryType<int64_t>::BoolValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 int64_t
@@ -158,7 +158,7 @@ template <>
 double
 Varying::VaryingArbitraryType<int64_t>::FloatValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 
 // VaryingFloat
@@ -166,19 +166,19 @@ template <>
 std::string
 Varying::VaryingArbitraryType<double>::StringValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 bool
 Varying::VaryingArbitraryType<double>::BoolValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 int64_t
 Varying::VaryingArbitraryType<double>::IntegerValue() const
 {
-  ChiLogicalError("Method not implemented");
+  OpenSnLogicalError("Method not implemented");
 }
 template <>
 double

@@ -32,7 +32,8 @@ QuadratureGaussChebyshev::QuadratureGaussChebyshev(const InputParameters& params
   const auto& assigned_params = params.ParametersAtAssignment();
 
   const int param_count = int(assigned_params.Has("order")) + int(assigned_params.Has("N"));
-  ChiInvalidArgumentIf(param_count == 2, "Either \"order\" or \"N\" must be specified, not both");
+  OpenSnInvalidArgumentIf(param_count == 2,
+                          "Either \"order\" or \"N\" must be specified, not both");
 
   if (assigned_params.Has("order"))
   {

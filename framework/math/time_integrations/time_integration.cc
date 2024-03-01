@@ -27,7 +27,7 @@ TimeIntegration::TimeIntegration(const InputParameters& params) : Object(params)
   else if (method_option == static_cast<int>(SteppingMethod::THETA_SCHEME))
     method_ = SteppingMethod::THETA_SCHEME;
   else
-    ChiInvalidArgument("Unsupported Time Integration scheme");
+    OpenSnInvalidArgument("Unsupported Time Integration scheme");
 }
 
 SteppingMethod

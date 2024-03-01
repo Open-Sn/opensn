@@ -67,7 +67,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
     if (sdm_type == "PWLD")
       sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
     else
-      ChiInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
+      OpenSnInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
   }
 
   auto& sdm = *sdm_ptr;

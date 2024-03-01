@@ -138,8 +138,8 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
     // Define and check number of groups
     if (xsecs.size() == 1)
       n_grps = xs->NumGroups();
-    ChiLogicalErrorIf(xs->NumGroups() != n_grps,
-                      "All cross sections being combined must have the same group structure.");
+    OpenSnLogicalErrorIf(xs->NumGroups() != n_grps,
+                         "All cross sections being combined must have the same group structure.");
 
     // Increment number of precursors
     n_precs += xs->NumPrecursors();
@@ -155,9 +155,9 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
   // prompt/delayed fission data or total fission data
   if (n_precs > 0)
     for (const auto& xs : xsecs)
-      ChiLogicalErrorIf(xs->IsFissionable() and xs->NumPrecursors() == 0,
-                        "If precursors are specified, all fissionable cross sections must "
-                        "specify precursors.");
+      OpenSnLogicalErrorIf(xs->IsFissionable() and xs->NumPrecursors() == 0,
+                           "If precursors are specified, all fissionable cross sections must "
+                           "specify precursors.");
 
   // Initialize the data
   num_groups_ = n_grps;
@@ -257,7 +257,7 @@ SingleStateMGXS::MakeCombined(std::vector<std::pair<int, double>>& combinations)
     // Set inverse velocity data
     if (x == 0 and xsecs[x]->InverseVelocity().empty())
       inv_velocity_ = xsecs[x]->InverseVelocity();
-    ChiLogicalErrorIf(
+    OpenSnLogicalErrorIf(
       xsecs[x]->InverseVelocity() != inv_velocity_,
       "All cross sections being combined must have the same group-wise velocities.");
 
@@ -296,7 +296,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
   // Open Chi XS file
   std::ifstream file;
   file.open(file_name);
-  ChiLogicalErrorIf(not file.is_open(), "Failed to open cross section file " + file_name + ".");
+  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open cross section file " + file_name + ".");
   log.Log() << "Reading Chi cross section file \"" << file_name << "\"\n";
 
   // Lambda for reading group structure data.
@@ -324,10 +324,10 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       line_stream >> group >> high >> low;
       destination.at(group).at(0) = high;
       destination.at(group).at(1) = low;
-      ChiLogicalErrorIf(count++ >= n_grps,
-                        "Too many entries encountered when parsing group structure.\n"
-                        "The expected number of entries is " +
-                          std::to_string(n_grps) + ".");
+      OpenSnLogicalErrorIf(count++ >= n_grps,
+                           "Too many entries encountered when parsing group structure.\n"
+                           "The expected number of entries is " +
+                             std::to_string(n_grps) + ".");
 
       // Go to next line
       std::getline(file, line);
@@ -360,10 +360,10 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       // get data from current line
       line_stream >> i >> value;
       destination.at(i) = value;
-      ChiLogicalErrorIf(count++ >= n_entries,
-                        "Too many entries encountered when parsing 1D data.\n"
-                        "The expected number of entries is " +
-                          std::to_string(n_entries) + ".");
+      OpenSnLogicalErrorIf(count++ >= n_entries,
+                           "Too many entries encountered when parsing 1D data.\n"
+                           "The expected number of entries is " +
+                             std::to_string(n_entries) + ".");
 
       // Go to next line
       std::getline(file, line);
@@ -486,7 +486,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
     {
       int n_groups;
       line_stream >> n_groups;
-      ChiLogicalErrorIf(n_groups <= 0, "The number of energy groups must be positive.");
+      OpenSnLogicalErrorIf(n_groups <= 0, "The number of energy groups must be positive.");
       num_groups_ = n_groups;
     }
 
@@ -495,7 +495,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
     {
       int n_moments;
       line_stream >> n_moments;
-      ChiLogicalErrorIf(n_moments < 0, "The number of scattering moments must be non-negative.");
+      OpenSnLogicalErrorIf(n_moments < 0, "The number of scattering moments must be non-negative.");
       scattering_order_ = std::max(0, n_moments - 1);
     }
 
@@ -504,8 +504,8 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
     {
       int n_prec;
       line_stream >> n_prec;
-      ChiLogicalErrorIf(n_prec < 0,
-                        "The number of delayed neutron precursors must be non-negative.");
+      OpenSnLogicalErrorIf(n_prec < 0,
+                           "The number of delayed neutron precursors must be non-negative.");
       num_precursors_ = n_prec;
       precursors_.resize(num_precursors_);
     }
@@ -527,14 +527,14 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (fw == "INV_VELOCITY_BEGIN")
       {
         Read1DData("INV_VELOCITY", inv_velocity_, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(not IsPositive(inv_velocity_),
-                          "Only positive inverse velocity values are permitted.");
+        OpenSnLogicalErrorIf(not IsPositive(inv_velocity_),
+                             "Only positive inverse velocity values are permitted.");
       }
       if (fw == "VELOCITY_BEGIN" and inv_velocity_.empty())
       {
         Read1DData("VELOCITY", inv_velocity_, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(not IsPositive(inv_velocity_),
-                          "Only positive velocity values are permitted.");
+        OpenSnLogicalErrorIf(not IsPositive(inv_velocity_),
+                             "Only positive velocity values are permitted.");
 
         // Compute inverse velocity
         for (size_t g = 0; g < num_groups_; ++g)
@@ -548,22 +548,22 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (fw == "SIGMA_T_BEGIN")
       {
         Read1DData("SIGMA_T", sigma_t_, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(not IsNonNegative(sigma_t_),
-                          "Only non-negative total cross section values are permitted.");
+        OpenSnLogicalErrorIf(not IsNonNegative(sigma_t_),
+                             "Only non-negative total cross section values are permitted.");
       } // if sigma_t
 
       if (fw == "SIGMA_A_BEGIN")
       {
         Read1DData("SIGMA_A", sigma_a_, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(not IsNonNegative(sigma_a_),
-                          "Only non-negative absorption cross section values are permitted.");
+        OpenSnLogicalErrorIf(not IsNonNegative(sigma_a_),
+                             "Only non-negative absorption cross section values are permitted.");
       } // if sigma_a
 
       if (fw == "SIGMA_F_BEGIN")
       {
         Read1DData("SIGMA_F", sigma_f_, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(not IsNonNegative(sigma_f_),
-                          "Only non-negative fission cross section values are permitted.");
+        OpenSnLogicalErrorIf(not IsNonNegative(sigma_f_),
+                             "Only non-negative fission cross section values are permitted.");
         if (not HasNonZero(sigma_f_))
         {
           log.Log0Warning() << "The fission cross section specified in "
@@ -575,7 +575,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (fw == "NU_SIGMA_F_BEGIN")
       {
         Read1DData("NU_SIGMA_F", nu_sigma_f_, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(
+        OpenSnLogicalErrorIf(
           not IsNonNegative(nu_sigma_f_),
           "Only non-negative total fission multiplication cross section values are permitted.");
         if (not HasNonZero(nu_sigma_f_))
@@ -593,7 +593,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (fw == "NU_BEGIN")
       {
         Read1DData("NU", nu, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(
+        OpenSnLogicalErrorIf(
           not std::all_of(nu.begin(), nu.end(), [](double x) { return x == 0.0 or x > 1.0; }),
           "Total fission neutron yield values must be either zero, or greater than one.");
         if (not HasNonZero(nu))
@@ -620,11 +620,11 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (fw == "NU_PROMPT_BEGIN")
       {
         Read1DData("NU_PROMPT", nu_prompt, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(not std::all_of(nu_prompt.begin(),
-                                          nu_prompt.end(),
-                                          [](double x) { return x == 0.0 or x > 1.0; }),
-                          "Average prompt fission neutron yield values must be either zero, "
-                          "or greater than one.");
+        OpenSnLogicalErrorIf(not std::all_of(nu_prompt.begin(),
+                                             nu_prompt.end(),
+                                             [](double x) { return x == 0.0 or x > 1.0; }),
+                             "Average prompt fission neutron yield values must be either zero, "
+                             "or greater than one.");
         if (not HasNonZero(nu_prompt))
         {
           log.Log0Warning() << "The prompt fission neutron yield specified in "
@@ -636,9 +636,9 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (fw == "NU_DELAYED_BEGIN")
       {
         Read1DData("NU_DELAYED", nu_delayed, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(not IsNonNegative(nu_delayed),
-                          "Average delayed fission neutron yield values "
-                          "must be non-negative.");
+        OpenSnLogicalErrorIf(not IsNonNegative(nu_delayed),
+                             "Average delayed fission neutron yield values "
+                             "must be non-negative.");
         if (not HasNonZero(nu_delayed))
         {
           log.Log0Warning() << "The delayed fission neutron yield specified in "
@@ -650,7 +650,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (fw == "BETA_BEGIN")
       {
         Read1DData("BETA", beta, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(
+        OpenSnLogicalErrorIf(
           not std::all_of(beta.begin(), beta.end(), [](double x) { return x >= 0.0 and x <= 1.0; }),
           "Delayed neutron fraction values must be in the range [0.0, 1.0].");
         if (not HasNonZero(beta))
@@ -681,11 +681,11 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (fw == "CHI_BEGIN")
       {
         Read1DData("CHI", chi, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(
+        OpenSnLogicalErrorIf(
           not HasNonZero(chi),
           "The steady-state fission spectrum must have at least one non-zero value.");
-        ChiLogicalErrorIf(not IsNonNegative(chi),
-                          "The steady-state fission spectrum must be non-negative.");
+        OpenSnLogicalErrorIf(not IsNonNegative(chi),
+                             "The steady-state fission spectrum must be non-negative.");
 
         // Normalizing
         const auto sum = std::accumulate(chi.begin(), chi.end(), 0.0);
@@ -695,10 +695,10 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (fw == "CHI_PROMPT_BEGIN")
       {
         Read1DData("CHI_PROMPT", chi_prompt, num_groups_, f, ls, ln);
-        ChiLogicalErrorIf(not HasNonZero(chi_prompt),
-                          "The prompt fission spectrum must have at least one non-zero value.");
-        ChiLogicalErrorIf(not IsNonNegative(chi_prompt),
-                          "The prompt fission spectrum must be non-negative.");
+        OpenSnLogicalErrorIf(not HasNonZero(chi_prompt),
+                             "The prompt fission spectrum must have at least one non-zero value.");
+        OpenSnLogicalErrorIf(not IsNonNegative(chi_prompt),
+                             "The prompt fission spectrum must be non-negative.");
 
         // Normalizing
         const auto sum = std::accumulate(chi_prompt.begin(), chi_prompt.end(), 0.0);
@@ -723,12 +723,12 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
 
         for (size_t j = 0; j < num_precursors_; ++j)
         {
-          ChiLogicalErrorIf(not HasNonZero(emission_spectra[j]),
-                            "Delayed emission spectrum for precursor " + std::to_string(j) +
-                              " must have at least one non-zero value.");
-          ChiLogicalErrorIf(not IsNonNegative(emission_spectra[j]),
-                            "Delayed emission spectrum for precursor " + std::to_string(j) +
-                              " must be non-negative.");
+          OpenSnLogicalErrorIf(not HasNonZero(emission_spectra[j]),
+                               "Delayed emission spectrum for precursor " + std::to_string(j) +
+                                 " must have at least one non-zero value.");
+          OpenSnLogicalErrorIf(not IsNonNegative(emission_spectra[j]),
+                               "Delayed emission spectrum for precursor " + std::to_string(j) +
+                                 " must be non-negative.");
 
           // normalizing
           const auto sum =
@@ -749,17 +749,17 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
         if (fw == "PRECURSOR_DECAY_CONSTANTS_BEGIN")
         {
           Read1DData("PRECURSOR_DECAY_CONSTANTS", decay_constants, num_precursors_, f, ls, ln);
-          ChiLogicalErrorIf(not IsPositive(decay_constants),
-                            "Delayed neutron precursor decay constants must be positive.");
+          OpenSnLogicalErrorIf(not IsPositive(decay_constants),
+                               "Delayed neutron precursor decay constants must be positive.");
         } // if decay constants
 
         if (fw == "PRECURSOR_FRACTIONAL_YIELDS_BEGIN")
         {
           Read1DData("PRECURSOR_FRACTIONAL_YIELDS", fractional_yields, num_precursors_, f, ls, ln);
-          ChiLogicalErrorIf(
+          OpenSnLogicalErrorIf(
             not HasNonZero(fractional_yields),
             "Delayed neutron precursor fractional yields must contain at least one non-zero.");
-          ChiLogicalErrorIf(
+          OpenSnLogicalErrorIf(
             not std::all_of(fractional_yields.begin(),
                             fractional_yields.end(),
                             [](double x) { return x >= 0.0 and x <= 1.0; }),
@@ -837,28 +837,29 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
     if (production_matrix_.empty())
     {
       // Check for non-delayed fission neutron yield data
-      ChiLogicalErrorIf(nu.empty() and nu_prompt.empty(),
-                        "Either the total or prompt fission neutron yield must be specified "
-                        "for fissionable materials.");
-      ChiLogicalErrorIf(not nu.empty() and not nu_prompt.empty(),
-                        "Ambiguous fission neutron yield. Only one of the total and prompt "
-                        "fission neutron yield should be specified.");
+      OpenSnLogicalErrorIf(nu.empty() and nu_prompt.empty(),
+                           "Either the total or prompt fission neutron yield must be specified "
+                           "for fissionable materials.");
+      OpenSnLogicalErrorIf(not nu.empty() and not nu_prompt.empty(),
+                           "Ambiguous fission neutron yield. Only one of the total and prompt "
+                           "fission neutron yield should be specified.");
 
       // Check for fission spectrum data
-      ChiLogicalErrorIf(chi.empty() and chi_prompt.empty(),
-                        "Either the steady-state or prompt fission spectrum must be specified "
-                        "for fissionable materials.");
-      ChiLogicalErrorIf(not chi.empty() and not chi_prompt.empty(),
-                        "Ambiguous fission spectrum data. Only one of the steady-state and "
-                        "prompt fission spectrum should be specified.");
+      OpenSnLogicalErrorIf(chi.empty() and chi_prompt.empty(),
+                           "Either the steady-state or prompt fission spectrum must be specified "
+                           "for fissionable materials.");
+      OpenSnLogicalErrorIf(not chi.empty() and not chi_prompt.empty(),
+                           "Ambiguous fission spectrum data. Only one of the steady-state and "
+                           "prompt fission spectrum should be specified.");
 
       // Check for compatibility
       if ((not nu.empty() and chi.empty()) or (nu.empty() and not chi.empty()) or
           (not nu_prompt.empty() and chi_prompt.empty()) or
           (nu_prompt.empty() and not chi_prompt.empty()))
-        ChiLogicalError("Ambiguous fission data. Either the total fission neutron yield with the "
-                        "steady-state fission spectrum or the prompt fission neutron yield with "
-                        "the prompt fission spectrum should be specified.");
+        OpenSnLogicalError(
+          "Ambiguous fission data. Either the total fission neutron yield with the "
+          "steady-state fission spectrum or the prompt fission neutron yield with "
+          "the prompt fission spectrum should be specified.");
 
       // Initialize total fission neutron yield from prompt
       if (not nu_prompt.empty())
@@ -868,25 +869,26 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       if (num_precursors_ > 0)
       {
         // Check that decay data was specified
-        ChiLogicalErrorIf(decay_constants.empty(),
-                          "Precursor decay constants are required when precursors are specified.");
+        OpenSnLogicalErrorIf(
+          decay_constants.empty(),
+          "Precursor decay constants are required when precursors are specified.");
 
         // Check that yield data was specified
-        ChiLogicalErrorIf(fractional_yields.empty(),
-                          "Precursor yields are required when precursors are specified.");
+        OpenSnLogicalErrorIf(fractional_yields.empty(),
+                             "Precursor yields are required when precursors are specified.");
 
         // Check that prompt data was specified
-        ChiLogicalErrorIf(chi_prompt.empty() or nu_prompt.empty(),
-                          "Both the prompt fission spectrum and prompt fission neutron yield "
-                          "must be specified when delayed neutron precursors are specified.");
+        OpenSnLogicalErrorIf(chi_prompt.empty() or nu_prompt.empty(),
+                             "Both the prompt fission spectrum and prompt fission neutron yield "
+                             "must be specified when delayed neutron precursors are specified.");
 
         // Check that delayed neutron production and emission spectra were specified
-        ChiLogicalErrorIf(nu_delayed.empty() or
-                            std::any_of(emission_spectra.begin(),
-                                        emission_spectra.end(),
-                                        [](const std::vector<double>& x) { return x.empty(); }),
-                          "Both the delay emission spectra and delayed fission neutron yield "
-                          "must be specified when precursors are specified.");
+        OpenSnLogicalErrorIf(nu_delayed.empty() or
+                               std::any_of(emission_spectra.begin(),
+                                           emission_spectra.end(),
+                                           [](const std::vector<double>& x) { return x.empty(); }),
+                             "Both the delay emission spectra and delayed fission neutron yield "
+                             "must be specified when precursors are specified.");
 
         // Add delayed fission neutron yield to total
         for (size_t g = 0; g < num_groups_; ++g)
@@ -947,14 +949,14 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
       //       The primary challenge in this is that different precursor species exist for
       //       neutron-induced fission than for photo-fission.
 
-      ChiLogicalErrorIf(num_precursors_ > 0,
-                        "Currently, production matrix specification is not allowed when "
-                        "delayed neutrons are present.");
+      OpenSnLogicalErrorIf(num_precursors_ > 0,
+                           "Currently, production matrix specification is not allowed when "
+                           "delayed neutrons are present.");
 
       // Check for fission cross sections
-      ChiLogicalErrorIf(sigma_f_.empty(),
-                        "When a production matrix is specified, it must "
-                        "be accompanied with a fission cross section.");
+      OpenSnLogicalErrorIf(sigma_f_.empty(),
+                           "When a production matrix is specified, it must "
+                           "be accompanied with a fission cross section.");
 
       // Compute production cross section
       nu_sigma_f_.assign(num_groups_, 0.0);
@@ -968,10 +970,10 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
         if (sigma_f_[g] > 0.0)
           nu[g] /= sigma_f_[g];
 
-      ChiLogicalErrorIf(
+      OpenSnLogicalErrorIf(
         not IsNonNegative(nu),
         "The production matrix implies an invalid negative average fission neutron yield.");
-      ChiLogicalErrorIf(
+      OpenSnLogicalErrorIf(
         not std::all_of(nu.begin(), nu.end(), [](double x) { return x == 0.0 and x > 1.0; }),
         "Incompatible fission data encountered. The computed nu is not either zero or "
         "greater than one.");
@@ -980,7 +982,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
         log.Log0Warning() << "A computed nu of greater than 8.0 was encountered. ";
     }
 
-    ChiLogicalErrorIf(
+    OpenSnLogicalErrorIf(
       sigma_f_.empty(),
       "Fissionable materials are required to have a defined fission cross section.");
   } // if fissionable

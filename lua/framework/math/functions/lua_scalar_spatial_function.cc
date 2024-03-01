@@ -36,8 +36,8 @@ LuaScalarSpatialFunction::Evaluate(const opensn::Vector3& xyz) const
 
   // Error check lua function
   if (not lua_isfunction(L, -1))
-    ChiLogicalError("Attempted to access lua-function, " + lua_function_name_ +
-                    ", but it seems the function could not be retrieved.");
+    OpenSnLogicalError("Attempted to access lua-function, " + lua_function_name_ +
+                       ", but it seems the function could not be retrieved.");
 
   // Push arguments
   lua_pushnumber(L, xyz.x);
@@ -53,8 +53,8 @@ LuaScalarSpatialFunction::Evaluate(const opensn::Vector3& xyz) const
     lua_return = lua_tonumber(L, -1);
   }
   else
-    ChiLogicalError("Attempted to call lua-function, " + lua_function_name_ +
-                    ", but the call failed." + xyz.PrintStr());
+    OpenSnLogicalError("Attempted to call lua-function, " + lua_function_name_ +
+                       ", but the call failed." + xyz.PrintStr());
 
   lua_pop(L, 1); // pop the double, or error code
 

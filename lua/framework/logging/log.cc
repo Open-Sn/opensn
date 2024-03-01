@@ -93,7 +93,7 @@ LogProcessEvent(lua_State* L)
   else if (event_operation_name == "AVERAGE_VALUE")
     event_operation = opensn::Logger::EventOperation::AVERAGE_VALUE;
   else
-    ChiInvalidArgument("Unsupported event operation name \"" + event_operation_name + "\".");
+    OpenSnInvalidArgument("Unsupported event operation name \"" + event_operation_name + "\".");
 
   const double value = opensn::log.ProcessEvent(event_tag, event_operation);
 
@@ -115,9 +115,9 @@ LogPrintTimingGraph(lua_State* L)
     rank = lua_tointeger(L, 1);
   }
 
-  ChiInvalidArgumentIf(rank >= opensn::mpi_comm.size(),
-                       "rank >= process_count, i.e., " + std::to_string(rank) +
-                         " >= " + std::to_string(opensn::mpi_comm.size()));
+  OpenSnInvalidArgumentIf(rank >= opensn::mpi_comm.size(),
+                          "rank >= process_count, i.e., " + std::to_string(rank) +
+                            " >= " + std::to_string(opensn::mpi_comm.size()));
 
   if (opensn::mpi_comm.rank() == rank)
     opensn::log.LogAll() << "\nPerformance Graph:\n" << timing.MakeGraphString();

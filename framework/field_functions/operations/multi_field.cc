@@ -51,9 +51,10 @@ MultiFieldOperation::MultiFieldOperation(const InputParameters& params)
     dependent_field_ref_component_ =
       user_supplied_params.GetParamVectorValue<unsigned int>("dependent_component_references");
 
-    ChiInvalidArgumentIf(dependent_field_ref_component_.size() != dependent_field_handles_.size(),
-                         "Not each dependent field handle has an associated "
-                         "reference component");
+    OpenSnInvalidArgumentIf(dependent_field_ref_component_.size() !=
+                              dependent_field_handles_.size(),
+                            "Not each dependent field handle has an associated "
+                            "reference component");
   }
   else
     dependent_field_ref_component_.assign(dependent_field_handles_.size(), 0);
@@ -71,9 +72,9 @@ MultiFieldOperation::MultiFieldOperation(const InputParameters& params)
 
   primary_ff_ = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base_ptr);
 
-  ChiLogicalErrorIf(not primary_ff_,
-                    "Primary field function must be based on "
-                    "FieldFunctionGridBased");
+  OpenSnLogicalErrorIf(not primary_ff_,
+                       "Primary field function must be based on "
+                       "FieldFunctionGridBased");
 
   for (const size_t dep_handle : dependent_field_handles_)
   {
@@ -81,9 +82,9 @@ MultiFieldOperation::MultiFieldOperation(const InputParameters& params)
 
     auto dep_ff_ptr = std::dynamic_pointer_cast<FieldFunctionGridBased>(dep_ff_base_ptr);
 
-    ChiLogicalErrorIf(not dep_ff_ptr,
-                      "Dependent field function must be based on "
-                      "FieldFunctionGridBased");
+    OpenSnLogicalErrorIf(not dep_ff_ptr,
+                         "Dependent field function must be based on "
+                         "FieldFunctionGridBased");
 
     dependent_ffs_.push_back(dep_ff_ptr);
   }
@@ -92,25 +93,25 @@ MultiFieldOperation::MultiFieldOperation(const InputParameters& params)
 
   function_ptr_ = std::dynamic_pointer_cast<FunctionDimAToDimB>(function_base_obj);
 
-  ChiLogicalErrorIf(not function_ptr_, "Casting failure of function");
+  OpenSnLogicalErrorIf(not function_ptr_, "Casting failure of function");
 
   const size_t num_dependencies = dependent_ffs_.size() + 4;
-  ChiInvalidArgumentIf(function_ptr_->InputDimension() != num_dependencies,
-                       std::string("The function will be called with "
-                                   "x,y,z,material_id and then each of the "
-                                   "dependent field function values. ") +
-                         "This means the function needs to be callable"
-                         " with 4+" +
-                         std::to_string(dependent_ffs_.size()) +
-                         " values, "
-                         "however, it only supports " +
-                         std::to_string(function_ptr_->InputDimension()) + " values.");
+  OpenSnInvalidArgumentIf(function_ptr_->InputDimension() != num_dependencies,
+                          std::string("The function will be called with "
+                                      "x,y,z,material_id and then each of the "
+                                      "dependent field function values. ") +
+                            "This means the function needs to be callable"
+                            " with 4+" +
+                            std::to_string(dependent_ffs_.size()) +
+                            " values, "
+                            "however, it only supports " +
+                            std::to_string(function_ptr_->InputDimension()) + " values.");
 
-  ChiInvalidArgumentIf(function_ptr_->OutputDimension() != result_component_references_.size(),
-                       std::string("The function will return ") +
-                         std::to_string(function_ptr_->OutputDimension()) +
-                         " values however this operation only requires " +
-                         std::to_string(result_component_references_.size()) + " value(s).");
+  OpenSnInvalidArgumentIf(function_ptr_->OutputDimension() != result_component_references_.size(),
+                          std::string("The function will return ") +
+                            std::to_string(function_ptr_->OutputDimension()) +
+                            " values however this operation only requires " +
+                            std::to_string(result_component_references_.size()) + " value(s).");
 }
 
 void
@@ -148,8 +149,8 @@ MultiFieldOperation::Execute()
 
       std::vector<double> output_params = function_ptr_->Evaluate(input_params);
 
-      ChiLogicalErrorIf(output_params.size() != result_component_references_.size(),
-                        "Calling function number of output values not matching");
+      OpenSnLogicalErrorIf(output_params.size() != result_component_references_.size(),
+                           "Calling function number of output values not matching");
 
       size_t k = 0;
       for (uint c : result_component_references_)

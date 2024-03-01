@@ -130,10 +130,10 @@ UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
       {
         const auto& v0 = vertices_.at(face.vertex_ids[0]);
         const auto& v1 = vertices_.at(face.vertex_ids[1]);
-        ChiLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
-                          "Cell " + std::to_string(cell_id) +
-                            " (centroid=" + cell->centroid.PrintStr() + ") face " +
-                            std::to_string(f) + ": Face has length < 1.0e-12.");
+        OpenSnLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
+                             "Cell " + std::to_string(cell_id) +
+                               " (centroid=" + cell->centroid.PrintStr() + ") face " +
+                               std::to_string(f) + ": Face has length < 1.0e-12.");
         ++f;
       }
     } // if polygon
@@ -150,10 +150,10 @@ UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
           const auto& v0 = vertices_.at(face.vertex_ids[s]);
           const auto& v1 = vertices_.at(face.vertex_ids[fvp1]);
 
-          ChiLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
-                            "Cell " + std::to_string(cell_id) + " (centroid=" +
-                              cell->centroid.PrintStr() + ") face " + std::to_string(f) + " side " +
-                              std::to_string(s) + ": Side has length < 1.0e-12.");
+          OpenSnLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
+                               "Cell " + std::to_string(cell_id) + " (centroid=" +
+                                 cell->centroid.PrintStr() + ") face " + std::to_string(f) +
+                                 " side " + std::to_string(s) + ": Side has length < 1.0e-12.");
         }
 
         ++f;
@@ -632,7 +632,7 @@ UnpartitionedMesh::CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid,
   auto block_id_array =
     vtkIntArray::SafeDownCast(ugrid.GetCellData()->GetArray(block_id_array_name.c_str()));
 
-  ChiLogicalErrorIf(not block_id_array, "Failed to cast BlockID array to vtkInt");
+  OpenSnLogicalErrorIf(not block_id_array, "Failed to cast BlockID array to vtkInt");
 
   if (has_global_ids)
   {
@@ -1351,7 +1351,7 @@ UnpartitionedMesh::ReadFromWavefrontOBJ(const Options& options)
     for (const auto& cell : block.cells)
       for (const auto vid : cell->vertex_ids)
       {
-        ChiLogicalErrorIf(
+        OpenSnLogicalErrorIf(
           vid >= file_vertices.size(),
           "Cell vertex id " + std::to_string(vid) +
             " not in list of vertices read (size=" + std::to_string(file_vertices.size()) + ").");

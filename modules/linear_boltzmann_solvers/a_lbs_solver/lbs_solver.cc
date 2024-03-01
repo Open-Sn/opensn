@@ -388,7 +388,7 @@ LBSSolver::GetWGSContext(int groupset_id)
   typedef WGSContext LBSWGSContext;
   auto wgs_context_ptr = std::dynamic_pointer_cast<LBSWGSContext>(raw_context);
 
-  ChiLogicalErrorIf(not wgs_context_ptr, "Failed to cast WGSContext");
+  OpenSnLogicalErrorIf(not wgs_context_ptr, "Failed to cast WGSContext");
   return *wgs_context_ptr;
 }
 
@@ -411,9 +411,9 @@ LBSSolver::GetNumPhiIterativeUnknowns()
 size_t
 LBSSolver::MapPhiFieldFunction(size_t g, size_t m) const
 {
-  ChiLogicalErrorIf(phi_field_functions_local_map_.count({g, m}) == 0,
-                    std::string("Failure to map phi field function g") + std::to_string(g) + " m" +
-                      std::to_string(m));
+  OpenSnLogicalErrorIf(phi_field_functions_local_map_.count({g, m}) == 0,
+                       std::string("Failure to map phi field function g") + std::to_string(g) +
+                         " m" + std::to_string(m));
 
   return phi_field_functions_local_map_.at({g, m});
 }
@@ -421,8 +421,8 @@ LBSSolver::MapPhiFieldFunction(size_t g, size_t m) const
 size_t
 LBSSolver::GetHandleToPowerGenFieldFunc() const
 {
-  ChiLogicalErrorIf(not options_.power_field_function_on,
-                    "Called when options_.power_field_function_on == false");
+  OpenSnLogicalErrorIf(not options_.power_field_function_on,
+                       "Called when options_.power_field_function_on == false");
 
   return power_gen_fieldfunc_local_handle_;
 }
@@ -772,9 +772,9 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
     }
     case BoundaryType::ISOTROPIC:
     {
-      ChiInvalidArgumentIf(not user_params.Has("group_strength"),
-                           "Boundary conditions with type=\"isotropic\" "
-                           "require parameter \"group_strength\"");
+      OpenSnInvalidArgumentIf(not user_params.Has("group_strength"),
+                              "Boundary conditions with type=\"isotropic\" "
+                              "require parameter \"group_strength\"");
 
       user_params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
       const auto group_strength = user_params.GetParamVectorValue<double>("group_strength");
@@ -783,9 +783,9 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
     }
     case BoundaryType::ARBITRARY:
     {
-      ChiInvalidArgumentIf(not user_params.Has("function_name"),
-                           "Boundary conditions with type=\"arbitrary\" "
-                           "require parameter \"function_name\".");
+      OpenSnInvalidArgumentIf(not user_params.Has("function_name"),
+                              "Boundary conditions with type=\"arbitrary\" "
+                              "require parameter \"function_name\".");
 
       const auto bndry_function_name = user_params.GetParamValue<std::string>("function_name");
       boundary_preferences_[bid] = {type, {}, bndry_function_name};
@@ -871,7 +871,7 @@ LBSSolver::PerformInputChecks()
   else if (grid_attribs & DIMENSION_3)
     options_.geometry_type = GeometryType::THREED_CARTESIAN;
   else
-    ChiLogicalError("Cannot deduce geometry type from mesh.");
+    OpenSnLogicalError("Cannot deduce geometry type from mesh.");
 }
 
 void
@@ -936,9 +936,9 @@ LBSSolver::InitializeMaterials()
   }
 
   log.Log() << "Invalid cell materials " << invalid_mat_cell_count;
-  ChiLogicalErrorIf(invalid_mat_cell_count > 0,
-                    std::to_string(invalid_mat_cell_count) +
-                      " cells encountered with an invalid material id.");
+  OpenSnLogicalErrorIf(invalid_mat_cell_count > 0,
+                       std::to_string(invalid_mat_cell_count) +
+                         " cells encountered with an invalid material id.");
 
   // Get ready for processing
   std::stringstream materials_list;
@@ -987,16 +987,16 @@ LBSSolver::InitializeMaterials()
     }   // for property
 
     // Check valid property
-    ChiLogicalErrorIf(not found_transport_xs,
-                      "Material \"" + current_material->name_ + "\" does not contain " +
-                        "transport cross sections.");
+    OpenSnLogicalErrorIf(not found_transport_xs,
+                         "Material \"" + current_material->name_ + "\" does not contain " +
+                           "transport cross sections.");
 
     // Check number of groups legal
-    ChiLogicalErrorIf(matid_to_xs_map_[mat_id]->NumGroups() < groups_.size(),
-                      "Material \"" + current_material->name_ + "\" has fewer groups (" +
-                        std::to_string(matid_to_xs_map_[mat_id]->NumGroups()) + ") than " +
-                        "the simulation (" + std::to_string(groups_.size()) + "). " +
-                        "A material must have at least as many groups as the simulation.");
+    OpenSnLogicalErrorIf(matid_to_xs_map_[mat_id]->NumGroups() < groups_.size(),
+                         "Material \"" + current_material->name_ + "\" has fewer groups (" +
+                           std::to_string(matid_to_xs_map_[mat_id]->NumGroups()) + ") than " +
+                           "the simulation (" + std::to_string(groups_.size()) + "). " +
+                           "A material must have at least as many groups as the simulation.");
 
     // Check number of moments
     if (matid_to_xs_map_[mat_id]->ScatteringOrder() < options_.scattering_order)
@@ -1033,11 +1033,11 @@ LBSSolver::InitializeMaterials()
   {
     for (const auto& [mat_id, xs] : matid_to_xs_map_)
     {
-      ChiLogicalErrorIf(xs->IsFissionable() and num_precursors_ == 0,
-                        "Incompatible cross section data encountered for material ID " +
-                          std::to_string(mat_id) + ". When delayed neutron data is present " +
-                          "for one fissionable matrial, it must be present for all fissionable "
-                          "materials.");
+      OpenSnLogicalErrorIf(xs->IsFissionable() and num_precursors_ == 0,
+                           "Incompatible cross section data encountered for material ID " +
+                             std::to_string(mat_id) + ". When delayed neutron data is present " +
+                             "for one fissionable matrial, it must be present for all fissionable "
+                             "materials.");
     }
   }
 
@@ -2104,7 +2104,7 @@ LBSSolver::WriteAngularFluxes(const std::vector<std::vector<double>>& src,
                      std::ofstream::binary |  // binary file
                        std::ofstream::out |   // no accidental reading
                        std::ofstream::trunc); // clear contents first
-  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
   log.Log() << "Writing angular flux to " << file_base;
 
   // Write the header
@@ -2185,7 +2185,7 @@ LBSSolver::ReadAngularFluxes(const std::string& file_base,
   std::ifstream file(file_name,
                      std::ofstream::binary | // binary file
                        std::ofstream::in);   // no accidental writing
-  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
   log.Log() << "Reading angular flux file from" << file_base;
 
   // Read the header
@@ -2205,10 +2205,10 @@ LBSSolver::ReadAngularFluxes(const std::string& file_base,
   const uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
   const uint64_t num_groupsets = groupsets_.size();
 
-  ChiLogicalErrorIf(file_num_local_nodes != num_local_nodes,
-                    "Incompatible number of local nodes found in file " + file_name + ".");
-  ChiLogicalErrorIf(file_num_groupsets != num_groupsets,
-                    "Incompatible number of groupsets found in file " + file_name + ".");
+  OpenSnLogicalErrorIf(file_num_local_nodes != num_local_nodes,
+                       "Incompatible number of local nodes found in file " + file_name + ".");
+  OpenSnLogicalErrorIf(file_num_groupsets != num_groupsets,
+                       "Incompatible number of groupsets found in file " + file_name + ".");
 
   // Go through groupsets for reading
   dest.clear();
@@ -2231,15 +2231,15 @@ LBSSolver::ReadAngularFluxes(const std::string& file_base,
     const uint64_t num_gs_angles = quadrature->omegas_.size();
     const uint64_t num_gs_groups = groupset.groups_.size();
 
-    ChiLogicalErrorIf(file_groupset_id != dest.size(),
-                      "Incompatible groupset id found in file " + file_name +
-                        ". Groupsets must be specified in sequential order.");
-    ChiLogicalErrorIf(file_num_gs_angles != num_gs_angles,
-                      "Incompatible number of groupset angles found in file " + file_name +
-                        " for groupset " + std::to_string(file_groupset_id) + ".");
-    ChiLogicalErrorIf(file_num_gs_groups != num_gs_groups,
-                      "Incompatible number of groupset groups found in file " + file_name +
-                        " for groupset " + std::to_string(file_groupset_id) + ".");
+    OpenSnLogicalErrorIf(file_groupset_id != dest.size(),
+                         "Incompatible groupset id found in file " + file_name +
+                           ". Groupsets must be specified in sequential order.");
+    OpenSnLogicalErrorIf(file_num_gs_angles != num_gs_angles,
+                         "Incompatible number of groupset angles found in file " + file_name +
+                           " for groupset " + std::to_string(file_groupset_id) + ".");
+    OpenSnLogicalErrorIf(file_num_gs_groups != num_gs_groups,
+                         "Incompatible number of groupset groups found in file " + file_name +
+                           " for groupset " + std::to_string(file_groupset_id) + ".");
 
     // Size the groupset angular flux vector
     const auto num_local_gs_dofs = discretization_->GetNumLocalDOFs(uk_man);
@@ -2280,7 +2280,7 @@ LBSSolver::WriteGroupsetAngularFluxes(const LBSGroupset& groupset,
                      std::ofstream::binary |  // binary file
                        std::ofstream::out |   // no accidental reading
                        std::ofstream::trunc); // clear file contents when opened
-  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
   log.Log() << "Writing groupset " << groupset.id_ << " angular flux file to " << file_base;
 
   // Write header
@@ -2318,9 +2318,9 @@ LBSSolver::WriteGroupsetAngularFluxes(const LBSGroupset& groupset,
   const uint64_t num_gs_groups = groupset.groups_.size();
   const auto num_local_gs_dofs = discretization_->GetNumLocalDOFs(uk_man);
 
-  ChiLogicalErrorIf(src.size() != num_local_gs_dofs,
-                    "Incompatible angular flux vector provided for groupset " +
-                      std::to_string(groupset.id_) + ".");
+  OpenSnLogicalErrorIf(src.size() != num_local_gs_dofs,
+                       "Incompatible angular flux vector provided for groupset " +
+                         std::to_string(groupset.id_) + ".");
 
   file.write((char*)&num_local_nodes, sizeof(uint64_t));
   file.write((char*)&num_gs_angles, sizeof(uint64_t));
@@ -2354,7 +2354,7 @@ LBSSolver::ReadGroupsetAngularFluxes(const std::string& file_base,
   std::ifstream file(file_name,
                      std::ofstream::binary | // binary file
                        std::ofstream::in);   // no accidental writing
-  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
   log.Log() << "Reading groupset " << groupset.id_ << " angular flux file " << file_base;
 
   // Read the header
@@ -2381,14 +2381,14 @@ LBSSolver::ReadGroupsetAngularFluxes(const std::string& file_base,
   const uint64_t num_gs_groups = groupset.groups_.size();
   const auto num_local_gs_dofs = discretization_->GetNumLocalDOFs(uk_man);
 
-  ChiLogicalErrorIf(file_num_local_nodes != num_local_nodes,
-                    "Incompatible number of local nodes found in file " + file_name + ".");
-  ChiLogicalErrorIf(file_num_gs_angles != num_gs_angles,
-                    "Incompatible number of groupset angles found in file " + file_name +
-                      " for groupset " + std::to_string(groupset.id_) + ".");
-  ChiLogicalErrorIf(file_num_gs_groups != num_gs_groups,
-                    "Incompatible number of groupset groups found in file " + file_name +
-                      " for groupset " + std::to_string(groupset.id_) + ".");
+  OpenSnLogicalErrorIf(file_num_local_nodes != num_local_nodes,
+                       "Incompatible number of local nodes found in file " + file_name + ".");
+  OpenSnLogicalErrorIf(file_num_gs_angles != num_gs_angles,
+                       "Incompatible number of groupset angles found in file " + file_name +
+                         " for groupset " + std::to_string(groupset.id_) + ".");
+  OpenSnLogicalErrorIf(file_num_gs_groups != num_gs_groups,
+                       "Incompatible number of groupset groups found in file " + file_name +
+                         " for groupset " + std::to_string(groupset.id_) + ".");
 
   // Read the angular flux data
   dest.assign(num_local_gs_dofs, 0.0);
@@ -2440,7 +2440,7 @@ LBSSolver::WriteFluxMoments(const std::vector<double>& src, const std::string& f
                      std::ofstream::binary |  // binary file
                        std::ofstream::out |   // no accidental reading
                        std::ofstream::trunc); // clear file contents when opened
-  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
   log.Log() << "Writing flux moments to " << file_base;
 
   // Write the header
@@ -2487,7 +2487,7 @@ LBSSolver::WriteFluxMoments(const std::vector<double>& src, const std::string& f
   const uint64_t num_groups = num_groups_;
 
   const auto num_local_dofs = discretization_->GetNumLocalDOFs(uk_man);
-  ChiLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided..");
+  OpenSnLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided..");
 
   file.write((char*)&num_local_cells, sizeof(uint64_t));
   file.write((char*)&num_local_nodes, sizeof(uint64_t));
@@ -2542,7 +2542,7 @@ LBSSolver::ReadFluxMoments(const std::string& file_base,
   std::ifstream file(file_name,
                      std::ofstream::binary | // binary file
                        std::ofstream::in);   // no accidental writing
-  ChiLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
   log.Log() << "Reading flux moments from " << file_base;
 
   // Read the header
@@ -2570,14 +2570,14 @@ LBSSolver::ReadFluxMoments(const std::string& file_base,
   const uint64_t num_local_nodes = discretization_->GetNumLocalDOFs(NODES_ONLY);
   const auto num_local_dofs = discretization_->GetNumLocalDOFs(uk_man);
 
-  ChiLogicalErrorIf(file_num_local_cells != num_local_cells,
-                    "Incompatible number of cells found in " + file_name + ".");
-  ChiLogicalErrorIf(file_num_local_nodes != num_local_nodes,
-                    "Incompatible number of nodes found in file " + file_name + ".");
-  ChiLogicalErrorIf(file_num_moments != num_moments_,
-                    "Incompatible number of moments found in file " + file_name + ".");
-  ChiLogicalErrorIf(file_num_groups != num_groups_,
-                    "Incompatible number of groups found in file " + file_name + ".");
+  OpenSnLogicalErrorIf(file_num_local_cells != num_local_cells,
+                       "Incompatible number of cells found in " + file_name + ".");
+  OpenSnLogicalErrorIf(file_num_local_nodes != num_local_nodes,
+                       "Incompatible number of nodes found in file " + file_name + ".");
+  OpenSnLogicalErrorIf(file_num_moments != num_moments_,
+                       "Incompatible number of moments found in file " + file_name + ".");
+  OpenSnLogicalErrorIf(file_num_groups != num_groups_,
+                       "Incompatible number of groups found in file " + file_name + ".");
 
   // Read cell nodal locations
   std::map<uint64_t, std::map<uint64_t, uint64_t>> file_cell_nodal_mapping;
@@ -2611,9 +2611,9 @@ LBSSolver::ReadFluxMoments(const std::string& file_base,
     // Check for cell compatibility
     const auto nodes = discretization_->GetCellNodeLocations(cell);
 
-    ChiLogicalErrorIf(nodes.size() != file_num_cell_nodes,
-                      "Incompatible number of cell nodes encountered on cell " +
-                        std::to_string(file_cell_global_id) + ".");
+    OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes,
+                         "Incompatible number of cell nodes encountered on cell " +
+                           std::to_string(file_cell_global_id) + ".");
 
     // Map the system nodes to file nodes
     bool mapping_successful = true; // true until disproven
@@ -2628,9 +2628,9 @@ LBSSolver::ReadFluxMoments(const std::string& file_base,
           mapping_found = true;
         }
 
-      ChiLogicalErrorIf(not mapping_found,
-                        "Incompatible node locations for cell " +
-                          std::to_string(file_cell_global_id) + ".");
+      OpenSnLogicalErrorIf(not mapping_found,
+                           "Incompatible node locations for cell " +
+                             std::to_string(file_cell_global_id) + ".");
     } // for n
   }   // for c (cell in file)
 
@@ -2712,7 +2712,7 @@ LBSSolver::UpdateFieldFunctions()
   //       } // for node
   //     }   // for cell
   //
-  //     ChiLogicalErrorIf(phi_field_functions_local_map_.count({g, m}) == 0,
+  //     OpenSnLogicalErrorIf(phi_field_functions_local_map_.count({g, m}) == 0,
   //                       "Update error for phi based field functions");
   //
   //     const size_t ff_index = phi_field_functions_local_map_.at({g, m});

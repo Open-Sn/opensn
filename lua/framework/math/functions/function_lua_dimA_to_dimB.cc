@@ -41,17 +41,17 @@ LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
   lua_State* L = console.GetConsoleState();
   lua_getglobal(L, lua_function_name_.c_str());
 
-  ChiLogicalErrorIf(not lua_isfunction(L, -1),
-                    std::string("Attempted to access lua-function, ") + lua_function_name_ +
-                      ", but it seems the function could "
-                      "not be retrieved.");
+  OpenSnLogicalErrorIf(not lua_isfunction(L, -1),
+                       std::string("Attempted to access lua-function, ") + lua_function_name_ +
+                         ", but it seems the function could "
+                         "not be retrieved.");
 
   const size_t num_vals = vals.size();
 
-  ChiInvalidArgumentIf(num_vals != InputDimension(),
-                       std::string("Number of inputs do not match. ") +
-                         "Attempted to evaluate with " + std::to_string(num_vals) +
-                         " parameters but requires " + std::to_string(InputDimension()));
+  OpenSnInvalidArgumentIf(num_vals != InputDimension(),
+                          std::string("Number of inputs do not match. ") +
+                            "Attempted to evaluate with " + std::to_string(num_vals) +
+                            " parameters but requires " + std::to_string(InputDimension()));
 
   lua_newtable(L);
   lua_Integer k = 0;
@@ -81,11 +81,11 @@ LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
     throw std::logic_error(fname + " attempted to call lua-function, " + lua_function_name_ +
                            ", but the call failed. " + lua_tostring(L, -1));
 
-  ChiLogicalErrorIf(result.size() != OutputDimension(),
-                    std::string("Number of outputs after the function was ") +
-                      "called does not "
-                      "match the function specifications. A table is expected with " +
-                      std::to_string(OutputDimension()) + " entries.");
+  OpenSnLogicalErrorIf(result.size() != OutputDimension(),
+                       std::string("Number of outputs after the function was ") +
+                         "called does not "
+                         "match the function specifications. A table is expected with " +
+                         std::to_string(OutputDimension()) + " entries.");
 
   return result;
 }

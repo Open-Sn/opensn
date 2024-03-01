@@ -43,11 +43,11 @@ PointSource::PointSource(const InputParameters& params)
 void
 PointSource::Initialize(const LBSSolver& lbs_solver)
 {
-  ChiLogicalErrorIf(strength_.size() != lbs_solver.NumGroups(),
-                    "Incompatible point source strength vector at location " +
-                      location_.PrintStr() + ". " + "There are " +
-                      std::to_string(lbs_solver.NumGroups()) + " simulation groups, but " +
-                      std::to_string(strength_.size()) + " source strength values.");
+  OpenSnLogicalErrorIf(strength_.size() != lbs_solver.NumGroups(),
+                       "Incompatible point source strength vector at location " +
+                         location_.PrintStr() + ". " + "There are " +
+                         std::to_string(lbs_solver.NumGroups()) + " simulation groups, but " +
+                         std::to_string(strength_.size()) + " source strength values.");
 
   // Get info from solver
   const auto& grid = lbs_solver.Grid();

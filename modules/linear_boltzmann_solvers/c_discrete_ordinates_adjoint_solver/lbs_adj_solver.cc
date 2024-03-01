@@ -346,9 +346,10 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
     log.LogAll() << "  Location " << locationJ << " appending data.";
 
     std::ofstream file(file_name, is_home ? loc0_io_flags : locJ_io_flags);
-    ChiLogicalErrorIf(not file.is_open(),
-                      std::string(__FUNCTION__) + ": Location " + std::to_string(mpi_comm.rank()) +
-                        ", failed to open file " + file_name + ".");
+    OpenSnLogicalErrorIf(not file.is_open(),
+                         std::string(__FUNCTION__) + ": Location " +
+                           std::to_string(mpi_comm.rank()) + ", failed to open file " + file_name +
+                           ".");
 
     if (is_home)
     {

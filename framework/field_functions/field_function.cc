@@ -56,7 +56,7 @@ FieldFunction::PushOntoStack(std::shared_ptr<Object>& new_object)
 {
   auto ff_ptr = std::dynamic_pointer_cast<FieldFunction>(new_object);
 
-  ChiLogicalErrorIf(not ff_ptr, "Bad trouble when casting object to field function");
+  OpenSnLogicalErrorIf(not ff_ptr, "Bad trouble when casting object to field function");
 
   field_function_stack.push_back(ff_ptr);
   new_object->SetStackID(field_function_stack.size() - 1);

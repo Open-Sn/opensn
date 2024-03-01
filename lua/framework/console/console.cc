@@ -72,8 +72,8 @@ Console::LuaWrapperCall(lua_State* L)
 
   const std::string fname = lua_tostring(L, 1);
 
-  ChiLogicalErrorIf(registry.count(fname) == 0,
-                    std::string("Wrapper with name \"") + fname + "\" not in console registry.");
+  OpenSnLogicalErrorIf(registry.count(fname) == 0,
+                       std::string("Wrapper with name \"") + fname + "\" not in console registry.");
 
   const auto& reg_entry = registry.at(fname);
 
@@ -102,10 +102,10 @@ Console::LuaWrapperCall(lua_State* L)
       main_arguments_block.AddParameter(block);
     }
     else
-      ChiInvalidArgument("In call to \"" + fname +
-                         "\": Unsupported argument "
-                         "type \"" +
-                         lua_typename(L, lua_type(L, p)) + "\" encountered.");
+      OpenSnInvalidArgument("In call to \"" + fname +
+                            "\": Unsupported argument "
+                            "type \"" +
+                            lua_typename(L, lua_type(L, p)) + "\" encountered.");
   }
   // Set input parameters here
   input_params.SetErrorOriginScope(fname + "()");
@@ -306,15 +306,15 @@ Console::AddWrapperToRegistryInNamespaceWithName(const std::string& name_in_lua,
   auto& console = GetInstance();
   auto& registry = console.function_wrapper_registry_;
 
-  ChiLogicalErrorIf(registry.count(name_in_lua) > 0,
-                    std::string("Attempted to register lua-function wrapper \"") + name_in_lua +
-                      "\" but a wrapper with the same name already exists");
+  OpenSnLogicalErrorIf(registry.count(name_in_lua) > 0,
+                       std::string("Attempted to register lua-function wrapper \"") + name_in_lua +
+                         "\" but a wrapper with the same name already exists");
 
   if (not syntax_function)
     syntax_function = DefaultGetInParamsFunc;
 
   if (not ignore_null_call_func)
-    ChiLogicalErrorIf(not actual_function, "Problem with get_in_params_func");
+    OpenSnLogicalErrorIf(not actual_function, "Problem with get_in_params_func");
 
   LuaFuncWrapperRegEntry reg_entry;
   reg_entry.get_in_params_func = syntax_function;
@@ -470,8 +470,8 @@ Console::SetLuaConstant(const std::string& constant_name, const Varying& value)
     else if (var_value.Type() == VaryingDataType::FLOAT)
       lua_pushnumber(L, var_value.FloatValue());
     else
-      ChiInvalidArgument("Unsupported value type. Only bool, string, int and "
-                         "double is supported");
+      OpenSnInvalidArgument("Unsupported value type. Only bool, string, int and "
+                            "double is supported");
   };
 
   if (path_names.size() == 1)
