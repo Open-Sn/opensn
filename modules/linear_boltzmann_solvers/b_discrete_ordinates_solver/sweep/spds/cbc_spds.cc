@@ -1,5 +1,5 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/cbc_spds.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/graphs/directed_graph.h"
 #include "framework/logging/log.h"

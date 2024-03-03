@@ -1,4 +1,4 @@
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 

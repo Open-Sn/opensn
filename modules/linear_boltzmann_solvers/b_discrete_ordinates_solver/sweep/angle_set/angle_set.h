@@ -11,6 +11,7 @@ namespace opensn
 namespace lbs
 {
 
+class SweepChunk;
 typedef SweepBoundary SweepBndry;
 
 class AngleSet
