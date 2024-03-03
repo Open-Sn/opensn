@@ -134,8 +134,19 @@ class TestSlot:
         width = 120 - len(prefix + test_file_name) + pad
         message = message.rjust(width, ".")
 
-        time_taken_message = " {:.2f}s".format(self.time_end - self.time_start)
+        elapsed_sec = 0
+        if os.path.exists(output_filename):
+          infile = open(output_filename, 'r')
+          lines = infile.readlines()
+          import re
+          for line in lines:
+            if re.search("Elapsed execution time:", line):
+              values_slice = re.split(r'[,:]',line.strip())
+              elapsed_sec = int(values_slice[1])*3600 + int(values_slice[2])*60 + int(values_slice[3])
 
-        print(prefix + " " + test_file_name + message + time_taken_message)
+        time_taken_message = " {:.0f}s".format(elapsed_sec)
+
+        print(test_path + time_taken_message)
+
         if test.skip != "":
             print("Skip reason: " + test.skip)
