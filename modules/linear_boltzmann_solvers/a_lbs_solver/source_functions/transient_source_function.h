@@ -24,6 +24,7 @@ public:
   TransientSourceFunction(const LBSSolver& lbs_solver, double& ref_dt, SteppingMethod& method);
 
   double AddDelayedFission(const PrecursorList& precursors,
+                           const double& rho,
                            const std::vector<double>& nu_delayed_sigma_f,
                            const double* phi) const override;
 };

@@ -3,6 +3,7 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "framework/logging/log.h"
 
 namespace opensn
 {
@@ -15,6 +16,7 @@ CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
                              std::vector<lbs::CellLBSView>& cell_transport_views,
+                             const std::vector<double>& densities,
                              const std::vector<double>& source_moments,
                              const LBSGroupset& groupset,
                              const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
@@ -26,6 +28,7 @@ CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
                discretization,
                unit_cell_matrices,
                cell_transport_views,
+               densities,
                source_moments,
                groupset,
                xs,
@@ -97,6 +100,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
   const auto& face_orientations = angle_set.GetSPDS().CellFaceOrientations()[cell_local_id_];
   std::vector<double> face_mu_values(cell_num_faces_);
 
+  const auto& rho = densities_[cell_local_id_];
   const auto& sigma_t = xs_.at(cell_->material_id_)->SigmaTotal();
 
   // as = angle set
@@ -193,7 +197,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
     // Looping over groups, assembling mass terms
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
     {
-      double sigma_tg = sigma_t[gs_gi_ + gsg];
+      double sigma_tg = rho * sigma_t[gs_gi_ + gsg];
 
       // Contribute source moments q = M_n^T * q_moms
       for (int i = 0; i < cell_num_nodes_; ++i)

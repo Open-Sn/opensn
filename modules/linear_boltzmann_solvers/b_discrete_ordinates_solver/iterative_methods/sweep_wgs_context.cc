@@ -139,7 +139,11 @@ SweepWGSContext::PostSolveCallback()
 
     const auto scope = lhs_src_scope_ | rhs_src_scope_;
 
-    set_source_function_(groupset_, lbs_solver_.QMomentsLocal(), lbs_solver_.PhiOldLocal(), scope);
+    set_source_function_(groupset_,
+                         lbs_solver_.QMomentsLocal(),
+                         lbs_solver_.PhiOldLocal(),
+                         lbs_solver_.DensitiesLocal(),
+                         scope);
     sweep_scheduler_.SetDestinationPhi(lbs_solver_.PhiNewLocal());
 
     ApplyInverseTransportOperator(scope);

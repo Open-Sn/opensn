@@ -34,6 +34,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   auto& q_moments_local = lbs_solver.QMomentsLocal();
   auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto& phi_new_local = lbs_solver.PhiNewLocal();
+  const auto& densities_local = lbs_solver.DensitiesLocal();
   auto primary_ags_solver = lbs_solver.GetPrimaryAGSSolver();
   auto& groupsets = lbs_solver.Groupsets();
   auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
@@ -59,6 +60,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
       active_set_source_function(groupset,
                                  q_moments_local,
                                  phi_old_local,
+                                 densities_local,
                                  APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 
     Scale(q_moments_local, 1.0 / k_eff);

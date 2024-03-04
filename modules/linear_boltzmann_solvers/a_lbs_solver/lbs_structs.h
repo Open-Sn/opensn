@@ -196,10 +196,11 @@ enum class PhiSTLOption
 };
 
 class LBSGroupset;
-typedef std::function<void(LBSGroupset& groupset,
-                           std::vector<double>& destination_q,
+typedef std::function<void(const LBSGroupset& groupset,
+                           std::vector<double>& q,
                            const std::vector<double>& phi,
-                           SourceFlags source_flags)>
+                           const std::vector<double>& densities,
+                           const SourceFlags source_flags)>
   SetSourceFunction;
 
 class AGSSchemeEntry;

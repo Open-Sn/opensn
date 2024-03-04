@@ -43,6 +43,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
   auto& q_moments_local = lbs_solver.QMomentsLocal();
   auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto& phi_new_local = lbs_solver.PhiNewLocal();
+  const auto& densities_local = lbs_solver.DensitiesLocal();
   auto primary_ags_solver = lbs_solver.GetPrimaryAGSSolver();
   auto& groupsets = lbs_solver.Groupsets();
   auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
@@ -87,11 +88,14 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
 
   /**Lambda for the creation of fission sources.*/
   auto SetLBSFissionSource =
-    [&active_set_source_function, &front_gs](const VecDbl& input, VecDbl& output)
+    [&active_set_source_function, &front_gs, &densities_local](const VecDbl& input, VecDbl& output)
   {
     Set(output, 0.0);
-    active_set_source_function(
-      front_gs, output, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+    active_set_source_function(front_gs,
+                               output,
+                               input,
+                               densities_local,
+                               APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
 
   // Start power iterations
@@ -121,6 +125,7 @@ PowerIterationKEigen2(LBSSolver& lbs_solver, double tolerance, int max_iteration
     active_set_source_function(front_gs,
                                q_moments_local,
                                phi_new_local,
+                               densities_local,
                                APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES);
 
     frons_wgs_context->ApplyInverseTransportOperator(SourceFlags());

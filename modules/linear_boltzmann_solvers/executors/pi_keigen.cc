@@ -163,8 +163,11 @@ XXPowerIterationKEigen::SetLBSFissionSource(const VecDbl& input, const bool addi
 {
   if (not additive)
     Set(q_moments_local_, 0.0);
-  active_set_source_function_(
-    front_gs_, q_moments_local_, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+  active_set_source_function_(front_gs_,
+                              q_moments_local_,
+                              input,
+                              lbs_solver_.DensitiesLocal(),
+                              APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 }
 
 void
@@ -177,7 +180,8 @@ XXPowerIterationKEigen::SetLBSScatterSource(const VecDbl& input,
   SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
   if (suppress_wg_scat)
     source_flags |= SUPPRESS_WG_SCATTER;
-  active_set_source_function_(front_gs_, q_moments_local_, input, source_flags);
+  active_set_source_function_(
+    front_gs_, q_moments_local_, input, lbs_solver_.DensitiesLocal(), source_flags);
 }
 
 } // namespace lbs

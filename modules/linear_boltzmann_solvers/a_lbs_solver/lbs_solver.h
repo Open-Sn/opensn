@@ -253,6 +253,16 @@ public:
   const std::vector<VecDbl>& PsiNewLocal() const;
 
   /**
+   * Read/write access to the cell-wise densities.
+   */
+  std::vector<double>& DensitiesLocal();
+
+  /**
+   * Read access to the cell-wise densities.
+   */
+  const std::vector<double>& DensitiesLocal() const;
+
+  /**
    * Returns the sweep boundaries as a read only reference
    */
   const std::map<uint64_t, std::shared_ptr<SweepBndry>>& SweepBoundaries() const;
@@ -558,6 +568,7 @@ protected:
   std::vector<double> phi_new_local_, phi_old_local_;
   std::vector<std::vector<double>> psi_new_local_;
   std::vector<double> precursor_new_local_;
+  std::vector<double> densities_local_;
 
   SetSourceFunction active_set_source_function_;
 

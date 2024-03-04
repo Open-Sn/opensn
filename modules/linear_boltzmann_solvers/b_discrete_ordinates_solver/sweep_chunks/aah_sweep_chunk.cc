@@ -11,6 +11,7 @@ AahSweepChunk::AahSweepChunk(const MeshContinuum& grid,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
                              std::vector<lbs::CellLBSView>& cell_transport_views,
+                             const std::vector<double>& densities,
                              std::vector<double>& destination_phi,
                              std::vector<double>& destination_psi,
                              const std::vector<double>& source_moments,
@@ -24,6 +25,7 @@ AahSweepChunk::AahSweepChunk(const MeshContinuum& grid,
                discretization,
                unit_cell_matrices,
                cell_transport_views,
+               densities,
                source_moments,
                groupset,
                xs,
@@ -72,6 +74,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
     const auto& face_orientations = spds.CellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
 
+    const auto& rho = densities_[cell.local_id_];
     const auto& sigma_t = xs_.at(cell.material_id_)->SigmaTotal();
 
     // Get cell matrices
@@ -160,7 +163,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
       // Looping over groups, assembling mass terms
       for (int gsg = 0; gsg < gs_ss_size; ++gsg)
       {
-        double sigma_tg = sigma_t[gs_gi + gsg];
+        double sigma_tg = rho * sigma_t[gs_gi + gsg];
 
         // Contribute source moments q = M_n^T * q_moms
         for (int i = 0; i < cell_num_nodes; ++i)

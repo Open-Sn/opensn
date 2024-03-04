@@ -67,7 +67,7 @@ DiscreteOrdinatesAdjointSolver::Initialize()
   using namespace std::placeholders;
   auto src_function = std::make_shared<SourceFunction>(*this);
   active_set_source_function_ =
-    std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4);
+    std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4, _5);
 
   // Initialize groupsets for sweeping
   InitializeSweepDataStructures();
