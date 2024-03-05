@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+import re
 
 
 class TestSlot:
@@ -134,19 +135,18 @@ class TestSlot:
         width = 120 - len(prefix + test_file_name) + pad
         message = message.rjust(width, ".")
 
-        elapsed_sec = 0
+        opensn_elapsed_time_sec = 0
         if os.path.exists(output_filename):
-          infile = open(output_filename, 'r')
-          lines = infile.readlines()
-          import re
-          for line in lines:
-            if re.search("Elapsed execution time:", line):
+          for line in open(output_filename, 'r'):
+            found = re.search("Elapsed execution time:", line)
+            if found:
               values_slice = re.split(r'[,:]',line.strip())
-              elapsed_sec = int(values_slice[1])*3600 + int(values_slice[2])*60 + int(values_slice[3])
+              opensn_elapsed_time_sec = int(values_slice[1])*3600 + int(values_slice[2])*60 + int(values_slice[3])
+              break;
 
-        time_taken_message = " {:.0f}s".format(elapsed_sec)
+        time_taken_message = " {:.0f}s".format(opensn_elapsed_time_sec)
 
-        print(test_path + time_taken_message)
+        print(test_path + message + time_taken_message)
 
         if test.skip != "":
             print("Skip reason: " + test.skip)

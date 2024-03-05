@@ -57,6 +57,13 @@ LuaApp::Run(int argc, char** argv)
   opensn::Initialize();
   console.PostMPIInfo(opensn::mpi_comm.rank(), opensn::mpi_comm.size());
 
+  opensn::log.Log() << opensn::name << " version " << GetVersionStr();
+  opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name
+                    << " in interactive-mode with " << opensn::mpi_comm.size() << " processes.";
+  opensn::log.Log() << opensn::name << " number of arguments supplied: " << argc - 1;
+  opensn::log.LogAll();
+  console.FlushConsole();
+
   int error_code = 0;
   ParseArguments(argc, argv);
   if (not termination_posted_)
@@ -69,6 +76,10 @@ LuaApp::Run(int argc, char** argv)
 
   opensn::Finalize();
   PetscFinalize();
+
+  opensn::log.Log() << "Elapsed execution time: " << program_timer.GetTimeString();
+  opensn::log.Log() << Timer::GetLocalDateTimeString() << " " << opensn::name
+                    << " finished execution.";
 
   return error_code;
 }
@@ -87,10 +98,6 @@ LuaApp::ParseArguments(int argc, char** argv)
     {
       opensn::log.Log() << command_line_help_string_;
       termination_posted_ = true;
-    }
-    else if (argument.find("--suppress-beg-end-timelog") != std::string::npos)
-    {
-      supress_beg_end_timelog_ = true;
     }
     else if (argument.find("--allow-petsc-error-handler") != std::string::npos)
     {
@@ -160,13 +167,6 @@ LuaApp::ParseArguments(int argc, char** argv)
 int
 LuaApp::RunInteractive(int argc, char** argv)
 {
-  opensn::log.Log() << opensn::name << " version " << GetVersionStr();
-  opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name
-                    << " in interactive-mode with " << opensn::mpi_comm.size() << " processes.";
-  opensn::log.Log() << opensn::name << " number of arguments supplied: " << argc - 1;
-  opensn::log.LogAll();
-  console.FlushConsole();
-
   if (std::filesystem::exists(input_path))
   {
     try
@@ -184,21 +184,12 @@ LuaApp::RunInteractive(int argc, char** argv)
 
   console.RunConsoleLoop();
 
-  opensn::log.Log() << "Elapsed execution time: " << program_timer.GetTimeString();
-  opensn::log.Log() << Timer::GetLocalDateTimeString() << " " << opensn::name
-                    << " finished execution.";
-
   return 0;
 }
 
 int
 LuaApp::RunBatch(int argc, char** argv)
 {
-  opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name
-                    << " in batch-mode with " << opensn::mpi_comm.size() << " processes.";
-  opensn::log.Log() << opensn::name << " version " << GetVersionStr();
-  opensn::log.Log() << opensn::name << " number of arguments supplied: " << argc - 1;
-
   if (argc <= 1)
     opensn::log.Log() << command_line_help_string_;
   console.FlushConsole();
@@ -232,10 +223,6 @@ LuaApp::RunBatch(int argc, char** argv)
     opensn::log.Log0Error() << "Could not open file " << opensn::input_path.string() << ".";
     Exit(EXIT_FAILURE);
   }
-
-  opensn::log.Log() << "\nElapsed execution time: " << program_timer.GetTimeString();
-  opensn::log.Log() << Timer::GetLocalDateTimeString() << " " << opensn::name
-                    << " finished execution of " << opensn::input_path.string();
 
   return error_code;
 }
