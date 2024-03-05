@@ -10,22 +10,23 @@ namespace lbs
 {
 
 AngleAggregation::AngleAggregation(
-  const std::map<uint64_t, std::shared_ptr<SweepBndry>>& in_sim_boundaries,
-  size_t in_number_of_groups,
-  size_t in_number_of_group_subsets,
-  std::shared_ptr<AngularQuadrature>& in_quadrature,
-  std::shared_ptr<MeshContinuum>& in_grid)
+  const std::map<uint64_t, std::shared_ptr<SweepBndry>>& sim_boundaries,
+  size_t num_groups,
+  size_t num_group_subsets,
+  std::shared_ptr<AngularQuadrature>& quadrature,
+  std::shared_ptr<MeshContinuum>& grid)
+  : is_setup_(false),
+    num_groups_(num_groups),
+    num_group_subsets_(num_group_subsets),
+    num_ang_unknowns_avail_(false),
+    grid_(grid),
+    quadrature_(quadrature),
+    sim_boundaries_(sim_boundaries)
 {
-  sim_boundaries = in_sim_boundaries;
-  number_of_groups = in_number_of_groups;
-  number_of_group_subsets = in_number_of_group_subsets;
-  quadrature = in_quadrature;
-  grid = in_grid;
-
   for (auto& bndry_id_cond : sim_boundaries)
     bndry_id_cond.second->Setup(*grid, *quadrature);
 
-  is_setup = true;
+  is_setup_ = true;
 }
 
 void
@@ -45,7 +46,7 @@ void
 AngleAggregation::ZeroIncomingDelayedPsi()
 {
   // Opposing reflecting bndries
-  for (const auto& [bid, bndry] : sim_boundaries)
+  for (const auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -85,25 +86,25 @@ AngleAggregation::InitializeReflectingBCs()
   const Vector3 ihat(1.0, 0.0, 0.0);
   const Vector3 jhat(0.0, 1.0, 0.0);
 
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      size_t tot_num_angles = quadrature->abscissae_.size();
-      size_t num_local_cells = grid->local_cells.size();
+      size_t tot_num_angles = quadrature_->abscissae_.size();
+      size_t num_local_cells = grid_->local_cells.size();
       auto& rbndry = (BoundaryReflecting&)(*bndry);
 
       const auto& normal = rbndry.Normal();
 
       rbndry.GetReflectedAngleIndexMap().resize(tot_num_angles, -1);
       rbndry.GetAngleReadyFlags().resize(tot_num_angles,
-                                         std::vector<bool>(number_of_group_subsets, false));
+                                         std::vector<bool>(num_group_subsets_, false));
 
       // Determine reflected angle and check that it is within the quadrature
       typedef Vector3 Vec3;
       for (int n = 0; n < tot_num_angles; ++n)
       {
-        const Vec3& omega_n = quadrature->omegas_[n];
+        const Vec3& omega_n = quadrature_->omegas_[n];
         Vec3 omega_reflected;
 
         switch (rbndry.CoordType())
@@ -137,7 +138,7 @@ AngleAggregation::InitializeReflectingBCs()
 
         auto& index_map = rbndry.GetReflectedAngleIndexMap();
         for (int nstar = 0; nstar < tot_num_angles; ++nstar)
-          if (omega_reflected.Dot(quadrature->omegas_[nstar]) > (1.0 - epsilon))
+          if (omega_reflected.Dot(quadrature_->omegas_[nstar]) > (1.0 - epsilon))
           {
             index_map[n] = nstar;
             break;
@@ -146,7 +147,7 @@ AngleAggregation::InitializeReflectingBCs()
         if (index_map[n] < 0)
           throw std::logic_error(
             fname + ": Reflected angle not found for angle " + std::to_string(n) +
-            " with direction " + quadrature->omegas_[n].PrintStr() +
+            " with direction " + quadrature_->omegas_[n].PrintStr() +
             ". This can happen for two reasons: i) A quadrature is used that is not symmetric "
             "about the axis associated with the reflected boundary, or ii) the reflecting boundary "
             "is not aligned with any reflecting axis of the quadrature.");
@@ -161,13 +162,13 @@ AngleAggregation::InitializeReflectingBCs()
       for (int n = 0; n < tot_num_angles; ++n)
       {
         // Only continue if omega is outgoing
-        if (quadrature->omegas_[n].Dot(rbndry.Normal()) < 0.0)
+        if (quadrature_->omegas_[n].Dot(rbndry.Normal()) < 0.0)
           continue;
 
         // For cells
         auto& cell_vec = heteroflux_new[n];
         cell_vec.resize(num_local_cells);
-        for (const auto& cell : grid->local_cells)
+        for (const auto& cell : grid_->local_cells)
         {
           const uint64_t c = cell.local_id_;
 
@@ -192,8 +193,7 @@ AngleAggregation::InitializeReflectingBCs()
             if ((not face.has_neighbor_) and (face.normal_.Dot(rbndry.Normal()) > 0.999999))
             {
               cell_vec[c][f].clear();
-              cell_vec[c][f].resize(face.vertex_ids_.size(),
-                                    std::vector<double>(number_of_groups, 0.0));
+              cell_vec[c][f].resize(face.vertex_ids_.size(), std::vector<double>(num_groups_, 0.0));
             }
             ++f;
           }
@@ -205,7 +205,7 @@ AngleAggregation::InitializeReflectingBCs()
       // be marked as "opposing-reflecting" while
       // the other one will be just a regular
       // reflecting boundary
-      for (const auto& [otherbid, otherbndry] : sim_boundaries)
+      for (const auto& [otherbid, otherbndry] : sim_boundaries_)
       {
         if (bid == otherbid)
           continue;
@@ -234,14 +234,14 @@ std::pair<size_t, size_t>
 AngleAggregation::GetNumDelayedAngularDOFs()
 {
   // Check if this is already developed
-  if (num_ang_unknowns_avail)
-    return number_angular_unknowns;
+  if (num_ang_unknowns_avail_)
+    return number_angular_unknowns_;
 
   // If not developed
   size_t local_ang_unknowns = 0;
 
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -271,17 +271,17 @@ AngleAggregation::GetNumDelayedAngularDOFs()
   size_t global_ang_unknowns = 0;
   mpi_comm.all_reduce(local_ang_unknowns, global_ang_unknowns, mpi::op::sum<size_t>());
 
-  number_angular_unknowns = {local_ang_unknowns, global_ang_unknowns};
+  number_angular_unknowns_ = {local_ang_unknowns, global_ang_unknowns};
 
-  num_ang_unknowns_avail = true;
-  return number_angular_unknowns;
+  num_ang_unknowns_avail_ = true;
+  return number_angular_unknowns_;
 }
 
 void
 AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -325,7 +325,7 @@ void
 AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -369,7 +369,7 @@ void
 AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref)
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -413,7 +413,7 @@ void
 AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref)
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -462,7 +462,7 @@ AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
   psi_vector.reserve(psi_size.first);
 
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -508,7 +508,7 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
 
   size_t index = 0;
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -548,7 +548,7 @@ AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
   psi_vector.reserve(psi_size.first);
 
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -594,7 +594,7 @@ AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double
 
   size_t index = 0;
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -629,7 +629,7 @@ void
 AngleAggregation::SetDelayedPsiOld2New()
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {
@@ -657,7 +657,7 @@ void
 AngleAggregation::SetDelayedPsiNew2Old()
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries)
+  for (auto& [bid, bndry] : sim_boundaries_)
   {
     if (bndry->IsReflecting())
     {

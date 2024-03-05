@@ -38,14 +38,19 @@ struct Task
   bool completed_ = false;
 };
 
-/**Contains the sweep plane data.*/
+/**Sweep Plane Local Subgrid (“spills”), a contiguous collection of cells
+ * that defines the lowest level in the SPDS hierarchy. The intent is that
+ * the processing “locations” responsible for executing sweeps on this
+ * collection of cells can readily read to and write from a common data
+ * structure. A SPLS contains one or more entire cellsets — it cannot split
+ * a cellset.
+ */
 struct SPLS
 {
   std::vector<int> item_id;
 };
 
-/**Stage-wise Task Dependency Graph.
- * Contains the global sweep plane data.*/
+/**Stage Task Dependency Graphs*/
 struct STDG
 {
   std::vector<int> item_id;
@@ -56,9 +61,7 @@ void CommunicateLocationDependencies(const std::vector<int>& location_dependenci
                                      std::vector<std::vector<int>>& global_dependencies);
 
 /**Print a sweep ordering to file.*/
-void PrintSweepOrdering(SPDS* sweep_order,
-		        std::shared_ptr<MeshContinuum> vol_continuum);
-
+void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum);
 
 } // namespace lbs
 } // namespace opensn

@@ -25,39 +25,44 @@ namespace lbs
  *
  * The octant based separation is achieved via the notion of "AngleSetGroup"
  * which will group angle sets for each quadrant or octant
- * (depending on 2D or 3D).*/
+ * (depending on 2D or 3D).
+ */
 class AngleAggregation
 {
-public:
-  std::vector<AngleSetGroup> angle_set_groups;
-  std::map<uint64_t, std::shared_ptr<SweepBndry>> sim_boundaries;
-  size_t number_of_groups = 0;
-  size_t number_of_group_subsets = 0;
-  std::shared_ptr<AngularQuadrature> quadrature = nullptr;
-
 private:
-  bool is_setup = false;
-  std::pair<size_t, size_t> number_angular_unknowns;
-  bool num_ang_unknowns_avail = false;
+  bool is_setup_;
+  size_t num_groups_;
+  size_t num_group_subsets_;
+  bool num_ang_unknowns_avail_;
+  std::pair<size_t, size_t> number_angular_unknowns_;
+  std::shared_ptr<MeshContinuum> grid_;
+  std::shared_ptr<AngularQuadrature> quadrature_;
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>> sim_boundaries_;
 
 public:
-  std::shared_ptr<MeshContinuum> grid = nullptr;
+  AngleAggregation(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sim_boundaries,
+                   size_t num_groups,
+                   size_t num_group_subsets,
+                   std::shared_ptr<AngularQuadrature>& quadrature,
+                   std::shared_ptr<MeshContinuum>& grid);
 
-  /** Sets up the angle-aggregation object. */
-  AngleAggregation(const std::map<uint64_t, std::shared_ptr<SweepBndry>>& in_sim_boundaries,
-                   size_t in_number_of_groups,
-                   size_t in_number_of_group_subsets,
-                   std::shared_ptr<AngularQuadrature>& in_quadrature,
-                   std::shared_ptr<MeshContinuum>& in_grid);
+  std::vector<AngleSetGroup> angle_set_groups;
 
-  bool IsSetup() const { return is_setup; }
+  bool IsSetup() const { return is_setup_; }
 
-public:
-  /** Resets all the outgoing intra-location and inter-location
-   * cyclic interfaces.*/
+  size_t GetNumberGroups() const { return num_groups_; }
+
+  size_t GetNumberGroupSubsets() const { return num_group_subsets_; }
+
+  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSimBoundaries() const
+  {
+    return sim_boundaries_;
+  }
+
+  /** Resets all the outgoing intra-location and inter-location cyclic interfaces.*/
   void ZeroOutgoingDelayedPsi();
-  /** Resets all the incoming intra-location and inter-location
-   * cyclic interfaces.*/
+
+  /** Resets all the incoming intra-location and inter-location cyclic interfaces.*/
   void ZeroIncomingDelayedPsi();
 
   /** Initializes reflecting boundary conditions. */
@@ -69,26 +74,31 @@ public:
 
   /** Assembles angular unknowns into the reference vector. */
   void AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref);
+
   /** Assembles angular unknowns into the reference vector. */
   void AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_ref);
 
   /** Assembles angular unknowns into the reference vector. */
   void SetOldDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref);
+
   /** Assembles angular unknowns into the reference vector. */
   void SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref);
 
   /**Gets the current values of the angular unknowns as an STL vector.*/
   std::vector<double> GetNewDelayedAngularDOFsAsSTLVector();
+
   /**Gets the current values of the angular unknowns as an STL vector.*/
   void SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double>& stl_vector);
 
   /**Gets the current values of the angular unknowns as an STL vector.*/
   std::vector<double> GetOldDelayedAngularDOFsAsSTLVector();
+
   /**Gets the current values of the angular unknowns as an STL vector.*/
   void SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double>& stl_vector);
 
   /**Copies the old delayed angular fluxes to the new.*/
   void SetDelayedPsiOld2New();
+
   /**Copies the new delayed angular fluxes to the old.*/
   void SetDelayedPsiNew2Old();
 };
