@@ -26,12 +26,20 @@ GetPETScConvergedReasonstring(KSPConvergedReason reason)
     case KSP_CONVERGED_ITS:
       ostr << "KSP_CONVERGED_ITS";
       break;
+#if PETSC_VERSION_LT(3, 19, 0)
     case KSP_CONVERGED_CG_NEG_CURVE:
       ostr << "KSP_CONVERGED_CG_NEG_CURVE";
       break;
+#else
+    case KSP_CONVERGED_NEG_CURVE:
+      ostr << "KSP_CONVERGED_NEG_CURVE";
+      break;
+#endif
+#if PETSC_VERSION_LT(3, 19, 0)
     case KSP_CONVERGED_CG_CONSTRAINED:
       ostr << "KSP_CONVERGED_CG_CONSTRAINED";
       break;
+#endif
     case KSP_CONVERGED_STEP_LENGTH:
       ostr << "KSP_CONVERGED_STEP_LENGTH";
       break;
