@@ -1,7 +1,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/sweep_boundary.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/distributed_source/distributed_source.h"

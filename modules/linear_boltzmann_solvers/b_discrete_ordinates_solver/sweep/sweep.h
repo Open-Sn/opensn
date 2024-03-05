@@ -6,9 +6,6 @@
 
 namespace opensn
 {
-
-class DirectedGraph;
-
 namespace lbs
 {
 
@@ -18,36 +15,6 @@ enum class FaceOrientation : short
   INCOMING = 0,
   OUTGOING = 1
 };
-
-struct STDG;     ///< Global Sweep Plane Ordering
-struct SPLS;     ///< Sweep Plane Local Subgrid
-class AAH_FLUDS; ///< Auxiliary Flux Data Structure
-class SPDS;      ///< Sweep Plane Data Structure
-
-struct Task
-{
-  unsigned int num_dependencies_;
-  std::vector<uint64_t> successors_;
-  uint64_t reference_id_;
-  const Cell* cell_ptr_;
-  bool completed_ = false;
-};
-
-class AAH_ASynchronousCommunicator;
-class AngleSet;
-class AngleSetGroup;
-class AngleAggregation;
-
-class SweepChunk;
-
-class SweepScheduler;
-
-/**Communicates location by location dependencies.*/
-void CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
-                                     std::vector<std::vector<int>>& global_dependencies);
-
-/**Print a sweep ordering to file.*/
-void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum);
 
 enum class AngleSetStatus
 {
@@ -61,6 +28,40 @@ enum class AngleSetStatus
   MESSAGES_PENDING = 7
 };
 typedef AngleSetStatus ExecutionPermission;
+
+struct Task
+{
+  unsigned int num_dependencies_;
+  std::vector<uint64_t> successors_;
+  uint64_t reference_id_;
+  const Cell* cell_ptr_;
+  bool completed_ = false;
+};
+
+/**Sweep Plane Local Subgrid (“spills”), a contiguous collection of cells
+ * that defines the lowest level in the SPDS hierarchy. The intent is that
+ * the processing “locations” responsible for executing sweeps on this
+ * collection of cells can readily read to and write from a common data
+ * structure. A SPLS contains one or more entire cellsets — it cannot split
+ * a cellset.
+ */
+struct SPLS
+{
+  std::vector<int> item_id;
+};
+
+/**Stage Task Dependency Graphs*/
+struct STDG
+{
+  std::vector<int> item_id;
+};
+
+/**Communicates location by location dependencies.*/
+void CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
+                                     std::vector<std::vector<int>>& global_dependencies);
+
+/**Print a sweep ordering to file.*/
+void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum);
 
 } // namespace lbs
 } // namespace opensn

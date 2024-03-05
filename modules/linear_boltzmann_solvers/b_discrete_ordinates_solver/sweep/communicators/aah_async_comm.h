@@ -1,7 +1,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/communicators/async_comm.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_namespace.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 
 typedef unsigned long long int u_ll_int;
