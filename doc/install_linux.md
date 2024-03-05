@@ -106,6 +106,7 @@ and execute the following:
 --download-metis=1  \
 --download-parmetis=1  \
 --download-superlu_dist=1  \
+--download-ptscotch=1  \
 --with-cxx-dialect=C++11  \
 --with-64-bit-indices \
 CC=$CC CXX=$CXX FC=$FC \

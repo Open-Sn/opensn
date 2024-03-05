@@ -83,6 +83,7 @@ cd /path/to/petsc
 --download-metis=1  \
 --download-parmetis=1  \
 --download-superlu_dist=1  \
+--download-ptscotch=1  \
 CC=$CC CXX=$CXX FC=$FC \
 CFLAGS='-fPIC -fopenmp'  \
 CXXFLAGS='-fPIC -fopenmp'  \
