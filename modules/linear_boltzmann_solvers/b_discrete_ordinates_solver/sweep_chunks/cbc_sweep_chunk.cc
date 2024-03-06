@@ -308,7 +308,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
           psi = &(*psi_dnwnd_data)[addr_offset];
         }
         else if (is_reflecting_boundary_face)
-          psi = angle_set.ReflectingPsiOutboundBoundary(
+          psi = angle_set.PsiReflected(
             face.neighbor_id_, direction_num, cell_local_id_, f, fi, gs_ss_begin_);
         if (psi)
         {

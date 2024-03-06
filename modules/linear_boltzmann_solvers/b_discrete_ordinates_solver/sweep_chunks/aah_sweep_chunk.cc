@@ -262,7 +262,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
           else if (not is_boundary_face)
             psi = fluds.NLOutgoingPsi(deploc_face_counter, fi, as_ss_idx);
           else if (is_reflecting_boundary_face)
-            psi = angle_set.ReflectingPsiOutboundBoundary(
+            psi = angle_set.PsiReflected(
               face.neighbor_id_, direction_num, cell_local_id, f, fi, gs_ss_begin);
           else
             continue;

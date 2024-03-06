@@ -12,7 +12,7 @@ namespace lbs
 /**
  * Reflective boundary condition.
  */
-class BoundaryReflecting : public SweepBoundary
+class ReflectingBoundary : public SweepBoundary
 {
 protected:
   const opensn::Normal normal_;
@@ -29,43 +29,49 @@ protected:
 
   // angle,cell,face,dof,group
   // Populated by angle aggregation
-  std::vector<AngVec> hetero_boundary_flux_;
-  std::vector<AngVec> hetero_boundary_flux_old_;
+  std::vector<AngVec> boundary_flux_;
+  std::vector<AngVec> boundary_flux_old_;
 
   std::vector<int> reflected_anglenum_;
   std::vector<std::vector<bool>> angle_readyflags_;
 
 public:
-  BoundaryReflecting(size_t in_num_groups,
-                     const Normal& in_normal,
+  ReflectingBoundary(size_t num_groups,
+                     const Normal& normal,
                      CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(BoundaryType::REFLECTING, in_num_groups, coord_type), normal_(in_normal)
+    : SweepBoundary(BoundaryType::REFLECTING, num_groups, coord_type), normal_(normal)
   {
   }
 
   const Vector3& Normal() const { return normal_; }
+
   bool IsOpposingReflected() const { return opposing_reflected_; }
+
   void SetOpposingReflected(bool value) { opposing_reflected_ = value; }
 
-  std::vector<AngVec>& GetHeteroBoundaryFluxNew() { return hetero_boundary_flux_; }
-  std::vector<AngVec>& GetHeteroBoundaryFluxOld() { return hetero_boundary_flux_old_; }
+  std::vector<AngVec>& GetBoundaryFluxNew() { return boundary_flux_; }
+
+  std::vector<AngVec>& GetBoundaryFluxOld() { return boundary_flux_old_; }
 
   std::vector<int>& GetReflectedAngleIndexMap() { return reflected_anglenum_; }
+
   std::vector<std::vector<bool>>& GetAngleReadyFlags() { return angle_readyflags_; }
 
-  double* HeterogeneousPsiIncoming(uint64_t cell_local_id,
-                                   unsigned int face_num,
-                                   unsigned int fi,
-                                   unsigned int angle_num,
-                                   int group_num,
-                                   size_t gs_ss_begin) override;
-  double* HeterogeneousPsiOutgoing(uint64_t cell_local_id,
-                                   unsigned int face_num,
-                                   unsigned int fi,
-                                   unsigned int angle_num,
-                                   size_t gs_ss_begin) override;
+  double* PsiIncoming(uint64_t cell_local_id,
+                      unsigned int face_num,
+                      unsigned int fi,
+                      unsigned int angle_num,
+                      int group_num,
+                      size_t gs_ss_begin) override;
+
+  double* PsiOutgoing(uint64_t cell_local_id,
+                      unsigned int face_num,
+                      unsigned int fi,
+                      unsigned int angle_num,
+                      size_t gs_ss_begin) override;
 
   void UpdateAnglesReadyStatus(const std::vector<size_t>& angles, size_t gs_ss) override;
+
   bool CheckAnglesReadyStatus(const std::vector<size_t>& angles, size_t gs_ss) override;
 
   /**

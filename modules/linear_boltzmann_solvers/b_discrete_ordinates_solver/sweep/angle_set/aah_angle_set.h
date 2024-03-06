@@ -16,7 +16,7 @@ protected:
 
 public:
   AAH_AngleSet(size_t id,
-               size_t numgrps,
+               size_t num_groups,
                size_t group_subset,
                const SPDS& spds,
                std::shared_ptr<FLUDS>& fluds,
@@ -41,7 +41,7 @@ public:
 
   bool ReceiveDelayedData() override;
 
-  const double* PsiBoundary(uint64_t bndry_map,
+  const double* PsiBoundary(uint64_t boundary_id,
                             unsigned int angle_num,
                             uint64_t cell_local_id,
                             unsigned int face_num,
@@ -50,12 +50,12 @@ public:
                             size_t gs_ss_begin,
                             bool surface_source_active) override;
 
-  double* ReflectingPsiOutboundBoundary(uint64_t bndry_map,
-                                        unsigned int angle_num,
-                                        uint64_t cell_local_id,
-                                        unsigned int face_num,
-                                        unsigned int fi,
-                                        size_t gs_ss_begin) override;
+  double* PsiReflected(uint64_t boundary_id,
+                       unsigned int angle_num,
+                       uint64_t cell_local_id,
+                       unsigned int face_num,
+                       unsigned int fi,
+                       size_t gs_ss_begin) override;
 };
 
 } // namespace lbs

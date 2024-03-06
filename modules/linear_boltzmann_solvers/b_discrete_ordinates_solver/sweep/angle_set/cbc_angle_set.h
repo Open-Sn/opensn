@@ -50,7 +50,7 @@ public:
 
   bool ReceiveDelayedData() override { return true; }
 
-  const double* PsiBoundary(uint64_t bndry_map,
+  const double* PsiBoundary(uint64_t boundary_id,
                             unsigned int angle_num,
                             uint64_t cell_local_id,
                             unsigned int face_num,
@@ -59,12 +59,12 @@ public:
                             size_t gs_ss_begin,
                             bool surface_source_active) override;
 
-  double* ReflectingPsiOutboundBoundary(uint64_t bndry_map,
-                                        unsigned int angle_num,
-                                        uint64_t cell_local_id,
-                                        unsigned int face_num,
-                                        unsigned int fi,
-                                        size_t gs_ss_begin) override;
+  double* PsiReflected(uint64_t boundary_id,
+                       unsigned int angle_num,
+                       uint64_t cell_local_id,
+                       unsigned int face_num,
+                       unsigned int fi,
+                       size_t gs_ss_begin) override;
 };
 
 } // namespace lbs

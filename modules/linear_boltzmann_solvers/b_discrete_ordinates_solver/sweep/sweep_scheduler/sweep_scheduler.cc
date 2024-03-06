@@ -1,6 +1,6 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds_adams_adams_hawkins.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_reflecting.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/reflecting_boundary.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <sstream>
@@ -242,7 +242,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
   {
     if (bndry->Type() == BoundaryType::REFLECTING)
     {
-      auto rbndry = std::static_pointer_cast<BoundaryReflecting>(bndry);
+      auto rbndry = std::static_pointer_cast<ReflectingBoundary>(bndry);
       rbndry->ResetAnglesReadyStatus();
     }
   }
@@ -304,7 +304,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
   {
     if (bndry->Type() == BoundaryType::REFLECTING)
     {
-      auto rbndry = std::static_pointer_cast<BoundaryReflecting>(bndry);
+      auto rbndry = std::static_pointer_cast<ReflectingBoundary>(bndry);
       rbndry->ResetAnglesReadyStatus();
     }
   }

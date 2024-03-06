@@ -44,8 +44,8 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
   AngleSetStatus status = async_comm_.ReceiveUpstreamPsi(static_cast<int>(this->GetID()));
 
   // Also check boundaries
-  for (auto& [bid, bndry] : boundaries_)
-    if (not bndry->CheckAnglesReadyStatus(angles_, group_subset_))
+  for (auto& [bid, boundary] : boundaries_)
+    if (not boundary->CheckAnglesReadyStatus(angles_, group_subset_))
     {
       status = AngleSetStatus::RECEIVING;
       break;
@@ -66,8 +66,8 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
     async_comm_.ClearLocalAndReceiveBuffers();
 
     // Update boundary readiness
-    for (auto& [bid, bndry] : boundaries_)
-      bndry->UpdateAnglesReadyStatus(angles_, group_subset_);
+    for (auto& [bid, boundary] : boundaries_)
+      boundary->UpdateAnglesReadyStatus(angles_, group_subset_);
 
     executed_ = true;
     return AngleSetStatus::FINISHED;
@@ -114,7 +114,7 @@ AAH_AngleSet::ReceiveDelayedData()
 }
 
 const double*
-AAH_AngleSet::PsiBoundary(uint64_t bndry_map,
+AAH_AngleSet::PsiBoundary(uint64_t boundary_id,
                           unsigned int angle_num,
                           uint64_t cell_local_id,
                           unsigned int face_num,
@@ -123,27 +123,26 @@ AAH_AngleSet::PsiBoundary(uint64_t bndry_map,
                           size_t gs_ss_begin,
                           bool surface_source_active)
 {
-  if (boundaries_[bndry_map]->IsReflecting())
-    return boundaries_[bndry_map]->HeterogeneousPsiIncoming(
+  if (boundaries_[boundary_id]->IsReflecting())
+    return boundaries_[boundary_id]->PsiIncoming(
       cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
 
   if (not surface_source_active)
-    return boundaries_[bndry_map]->ZeroFlux(g);
+    return boundaries_[boundary_id]->ZeroFlux(g);
 
-  return boundaries_[bndry_map]->HeterogeneousPsiIncoming(
+  return boundaries_[boundary_id]->PsiIncoming(
     cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
 }
 
 double*
-AAH_AngleSet::ReflectingPsiOutboundBoundary(uint64_t bndry_map,
-                                            unsigned int angle_num,
-                                            uint64_t cell_local_id,
-                                            unsigned int face_num,
-                                            unsigned int fi,
-                                            size_t gs_ss_begin)
+AAH_AngleSet::PsiReflected(uint64_t boundary_id,
+                           unsigned int angle_num,
+                           uint64_t cell_local_id,
+                           unsigned int face_num,
+                           unsigned int fi,
+                           size_t gs_ss_begin)
 {
-  return boundaries_[bndry_map]->HeterogeneousPsiOutgoing(
-    cell_local_id, face_num, fi, angle_num, gs_ss_begin);
+  return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num, gs_ss_begin);
 }
 
 } // namespace lbs

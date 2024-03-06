@@ -96,7 +96,7 @@ public:
   virtual bool ReceiveDelayedData() = 0;
 
   /**Returns a pointer to a boundary flux data.*/
-  virtual const double* PsiBoundary(uint64_t bndry_map,
+  virtual const double* PsiBoundary(uint64_t boundary_id,
                                     unsigned int angle_num,
                                     uint64_t cell_local_id,
                                     unsigned int face_num,
@@ -105,13 +105,13 @@ public:
                                     size_t gs_ss_begin,
                                     bool surface_source_active) = 0;
 
-  /**Returns a pointer to outbound boundary flux data.*/
-  virtual double* ReflectingPsiOutboundBoundary(uint64_t bndry_map,
-                                                unsigned int angle_num,
-                                                uint64_t cell_local_id,
-                                                unsigned int face_num,
-                                                unsigned int fi,
-                                                size_t gs_ss_begin) = 0;
+  /**Returns a pointer to outbound reflected flux data.*/
+  virtual double* PsiReflected(uint64_t boundary_id,
+                               unsigned int angle_num,
+                               uint64_t cell_local_id,
+                               unsigned int face_num,
+                               unsigned int fi,
+                               size_t gs_ss_begin) = 0;
 
   virtual ~AngleSet() = default;
 };
