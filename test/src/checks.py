@@ -47,8 +47,14 @@ class KeyValuePairCheck(Check):
 
         self.key = params["key"]
         self.goldvalue = params["goldvalue"]
-        self.abs_tol = params["abs_tol"]
-        self.rel_tol = params["rel_tol"]
+        if "abs_tol" in params:
+            self.abs_tol = params["abs_tol"]
+        else:
+            self.abs_tol = 0.
+        if "rel_tol" in params:
+            self.rel_tol = params["rel_tol"]
+        else:
+            self.rel_tol = 0.
 
         if "skip_lines_until" in params:
             val = params["skip_lines_until"]
@@ -242,8 +248,14 @@ class FloatCompareCheck(Check):
         self.key = params["key"]
         self.wordnum = params["wordnum"]
         self.gold = params["gold"]
-        self.abs_tol = params["abs_tol"]
-        self.rel_tol = params["rel_tol"]
+        if "abs_tol" in params:
+            self.abs_tol = params["abs_tol"]
+        else:
+            self.abs_tol = 0.
+        if "rel_tol" in params:
+            self.rel_tol = params["rel_tol"]
+        else:
+            self.rel_tol = 0.
 
         if "skip_lines_until" in params:
             val = params["skip_lines_until"]

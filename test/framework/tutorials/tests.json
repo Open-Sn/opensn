@@ -4,7 +4,7 @@
     [
       {
         "type" : "FloatCompare", "key" : "iteration   10", "wordnum" : 6,
-        "gold" : 2.2349712e-07, "tol" : 1.0e-10
+        "gold" : 2.2349712e-07, "abs_tol" : 1.0e-10
       }
     ]
   },
@@ -13,7 +13,7 @@
     [
       {
         "type" : "FloatCompare", "key" : "iteration   10", "wordnum" : 6,
-        "gold" : 2.2349712e-07, "tol" : 1.0e-10
+        "gold" : 2.2349712e-07, "abs_tol" : 1.0e-10
       }
     ]
   },
@@ -22,7 +22,7 @@
     [
       {
         "type" : "FloatCompare", "key" : "iteration   10", "wordnum" : 6,
-        "gold" : 1.3725535e-07, "tol" : 1.0e-11
+        "gold" : 1.3725535e-07, "abs_tol" : 1.0e-11
       }
     ]
   },
@@ -31,11 +31,11 @@
     [
       {
         "type" : "FloatCompare", "key" : "iteration    6", "wordnum" : 6,
-        "gold" : 1.1613008e-07, "tol" : 1.0e-10
+        "gold" : 1.1613008e-07, "abs_tol" : 1.0e-10
       },
       {
         "type" : "FloatCompare", "key" : "Error:", "wordnum" : 2,
-        "gold" : 7.032369e-02, "tol" : 1.0e-7
+        "gold" : 7.032369e-02, "abs_tol" : 1.0e-7
       }
     ]
   },
@@ -44,7 +44,7 @@
     [
       {
         "type" : "FloatCompare", "key" : "Iteration     8", "wordnum" : 3,
-        "gold" : 5.483e-07, "tol" : 1.0e-10
+        "gold" : 5.483e-07, "abs_tol" : 1.0e-10
       }
     ]
   },
@@ -53,7 +53,7 @@
     [
       {
         "type" : "FloatCompare", "key" : "Iteration     8", "wordnum" : 3,
-        "gold" : 5.872e-07, "tol" : 1.0e-10
+        "gold" : 5.872e-07, "abs_tol" : 1.0e-10
       }
     ]
   },

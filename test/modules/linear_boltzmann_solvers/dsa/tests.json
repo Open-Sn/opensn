@@ -9,7 +9,7 @@
         "key": "SimTest92_DSA iteration    8",
         "wordnum": 6,
         "gold": 1.9731053e-11,
-        "tol": 1e-14
+        "abs_tol": 1e-14
       }
     ]
   },
@@ -23,7 +23,7 @@
         "key": "SimTest92b_DSA_PWLC iteration   10",
         "wordnum": 6,
         "gold": 5.3163347e-11,
-        "tol": 1e-14
+        "abs_tol": 1e-14
       }
     ]
   }

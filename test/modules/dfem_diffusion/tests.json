@@ -8,7 +8,7 @@
         "type": "KeyValuePair",
         "key": "[0]  Max-value=",
         "goldvalue": 2.666667,
-        "tol": 1e-10
+        "abs_tol": 1e-10
       }
     ]
   },
@@ -21,7 +21,7 @@
         "type": "KeyValuePair",
         "key": "[0]  Avg-value=",
         "goldvalue": 0.295892,
-        "tol": 1e-10
+        "abs_tol": 1e-10
       }
     ]
   },
@@ -34,7 +34,7 @@
         "type": "KeyValuePair",
         "key": "[0]  Avg-value=",
         "goldvalue": 0.241757,
-        "tol": 1e-10
+        "abs_tol": 1e-10
       }
     ]
   },
@@ -47,7 +47,7 @@
         "type": "KeyValuePair",
         "key": "[0]  Max-value=",
         "goldvalue": 0.021924,
-        "tol": 1e-10
+        "abs_tol": 1e-10
       }
     ]
   },
@@ -60,7 +60,7 @@
         "type": "KeyValuePair",
         "key": "[0]  Max-value=",
         "goldvalue": 1.000586,
-        "tol": 1e-10
+        "abs_tol": 1e-10
       }
     ]
   }

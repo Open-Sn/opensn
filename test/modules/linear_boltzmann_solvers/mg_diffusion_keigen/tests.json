@@ -9,7 +9,7 @@
         "key": "Final k-eigenvalue",
         "wordnum": 4,
         "gold": 0.9995301,
-        "tol": 1e-05
+        "abs_tol": 1e-05
       }
     ]
   },
@@ -29,7 +29,7 @@
         "key": "Final k-eigenvalue",
         "wordnum": 4,
         "gold": 0.5219942,
-        "tol": 1e-07
+        "abs_tol": 1e-07
       }
     ]
   },
@@ -43,14 +43,14 @@
         "key": "Iteration     4",
         "wordnum": 8,
         "gold": 0.5220271,
-        "tol": 1e-07
+        "abs_tol": 1e-07
       },
       {
         "type": "FloatCompare",
         "key": "Final k-eigenvalue",
         "wordnum": 4,
         "gold": 0.5220271,
-        "tol": 1e-07
+        "abs_tol": 1e-07
       }
     ]
   }

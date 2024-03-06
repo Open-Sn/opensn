@@ -12,7 +12,7 @@
         "key": "Final k-eigenvalue",
         "wordnum": 4,
         "gold": 1.1925596,
-        "tol": 1.0e-7,
+        "abs_tol": 1.0e-7,
         "skip_lines_until": "LBSDiscreteOrdinatesSolver_NonLinearK_Outer Iteration"
       }
     ]
@@ -30,7 +30,7 @@
         "key": "Final k-eigenvalue",
         "wordnum": 4,
         "gold": 1.192559,
-        "tol": 1.0e-6
+        "abs_tol": 1.0e-6
       }
     ]
   }

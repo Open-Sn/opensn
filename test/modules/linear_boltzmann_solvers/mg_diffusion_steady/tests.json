@@ -8,13 +8,13 @@
         "type": "KeyValuePair",
         "key": "Max-value1=",
         "goldvalue": 0.274873,
-        "tol": 0.0001
+        "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value2=",
         "goldvalue": 9.47508e-05,
-        "tol": 0.0001
+        "abs_tol": 0.0001
       }
     ]
   },
