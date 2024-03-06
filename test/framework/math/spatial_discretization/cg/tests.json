@@ -4,7 +4,7 @@
     [
       { "type" :  "ErrorCode", "error_code" :  0},
       {
-        "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.5, "tol": 1e-05
+        "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.5, "abs_tol": 1e-05
       }
     ]
   },
@@ -13,7 +13,7 @@
   [
     { "type" :  "ErrorCode", "error_code" :  0},
     {
-      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.294697, "tol": 1e-05
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.294697, "abs_tol": 1e-05
     }
   ]
   },
@@ -22,7 +22,7 @@
   [
     { "type" :  "ErrorCode", "error_code" :  0},
     {
-      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.225042, "tol": 1e-05
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.225042, "abs_tol": 1e-05
     }
   ]
   },
@@ -31,7 +31,7 @@
   [
     { "type" :  "ErrorCode", "error_code" :  0},
     {
-      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.303836, "tol": 1e-05
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.303836, "abs_tol": 1e-05
     }
   ]
   },
@@ -40,7 +40,7 @@
   [
     { "type" :  "ErrorCode", "error_code" :  0},
     {
-      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.189312, "tol": 1e-05
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.189312, "abs_tol": 1e-05
     }
   ]
   },
@@ -49,7 +49,7 @@
   [
     { "type" :  "ErrorCode", "error_code" :  0},
     {
-      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.221298, "tol": 1e-05
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.221298, "abs_tol": 1e-05
     }
   ]
   },
@@ -58,7 +58,7 @@
   [
     { "type" :  "ErrorCode", "error_code" :  0},
     {
-      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.226633, "tol": 1e-05
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.226633, "abs_tol": 1e-05
     }
   ]
   }

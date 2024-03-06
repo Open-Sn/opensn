@@ -8,7 +8,7 @@
         "type": "KeyValuePair",
         "key": "[0]  Max-value=",
         "goldvalue": 1.0,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       }
     ]
   },
@@ -21,13 +21,13 @@
         "type": "KeyValuePair",
         "key": "[0]  Max-valueG1=",
         "goldvalue": 1.0,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "[0]  Max-valueG2=",
         "goldvalue": 0.25,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       }
     ]
   }

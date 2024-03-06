@@ -31,7 +31,8 @@ class KeyValuePairCheck(Check):
         super().__init__()
         self.key: str = ""
         self.goldvalue: float = 0.0
-        self.tol: float = 1.0
+        self.rel_tol: float = 0.
+        self.abs_tol: float = 0.
         self.skip_lines_until: str = ""
 
         if "key" not in params:
@@ -40,13 +41,20 @@ class KeyValuePairCheck(Check):
         if "goldvalue" not in params:
             warnings.warn(message_prefix + 'Missing "goldvalue" field')
             raise ValueError
-        if "tol" not in params:
-            warnings.warn(message_prefix + 'Missing "tol" field')
+        if "rel_tol" not in params and "abs_tol" not in params:
+            warnings.warn(message_prefix + 'Must specify "rel_tol" and/or "abs_tol" field')
             raise ValueError
 
         self.key = params["key"]
         self.goldvalue = params["goldvalue"]
-        self.tol = params["tol"]
+        if "abs_tol" in params:
+            self.abs_tol = params["abs_tol"]
+        else:
+            self.abs_tol = 0.
+        if "rel_tol" in params:
+            self.rel_tol = params["rel_tol"]
+        else:
+            self.rel_tol = 0.
 
         if "skip_lines_until" in params:
             val = params["skip_lines_until"]
@@ -57,7 +65,7 @@ class KeyValuePairCheck(Check):
     def __str__(self):
         return 'type="KeyValuePair", ' + f'key="{self.key}", ' + \
             f'goldvalue={self.goldvalue}, ' + \
-            f'tol={self.tol}'
+            f'rel_tol={self.rel_tol}, ' + f'abs_tol={self.abs_tol}'
 
     def PerformCheck(self, filename, errorcode, verbose: bool):
         try:
@@ -97,7 +105,7 @@ class KeyValuePairCheck(Check):
 
                         return False
 
-                    if abs(value - self.goldvalue) <= self.tol:
+                    if abs(value - self.goldvalue) <= self.abs_tol + self.rel_tol * self.goldvalue:
                         file.close()
                         return True
                     elif verbose:
@@ -220,7 +228,8 @@ class FloatCompareCheck(Check):
         self.key: str = ""
         self.wordnum: int = 0
         self.gold: float = 0.0
-        self.tol: float = 1.0e-6
+        self.abs_tol: float = 0.
+        self.rel_tol: float = 0.
         self.skip_lines_until: str = ""
 
         if "key" not in params:
@@ -232,14 +241,21 @@ class FloatCompareCheck(Check):
         if "gold" not in params:
             warnings.warn(message_prefix + 'Missing "gold" field')
             raise ValueError
-        if "tol" not in params:
-            warnings.warn(message_prefix + 'Missing "tol" field')
+        if "rel_tol" not in params and "abs_tol" not in params:
+            warnings.warn(message_prefix + 'Must specify "rel_tol" and/or "abs_tol" field')
             raise ValueError
 
         self.key = params["key"]
         self.wordnum = params["wordnum"]
         self.gold = params["gold"]
-        self.tol = params["tol"]
+        if "abs_tol" in params:
+            self.abs_tol = params["abs_tol"]
+        else:
+            self.abs_tol = 0.
+        if "rel_tol" in params:
+            self.rel_tol = params["rel_tol"]
+        else:
+            self.rel_tol = 0.
 
         if "skip_lines_until" in params:
             val = params["skip_lines_until"]
@@ -250,7 +266,8 @@ class FloatCompareCheck(Check):
     def __str__(self):
         return 'type="FloatCompare", ' + f'key="{self.key}", ' + \
             f'wordnum={self.wordnum}, ' + \
-            f'gold={self.gold} '
+            f'gold={self.gold}, ' + \
+            f'rel_tol={self.rel_tol}, ' + f'abs_tol={self.abs_tol}'
 
     def PerformCheck(self, filename, errorcode, verbose: bool):
         try:
@@ -299,7 +316,7 @@ class FloatCompareCheck(Check):
                                       str(self.wordnum) + " to float.")
                         return False
 
-                    if abs(value - self.gold) <= self.tol:
+                    if abs(value - self.gold) <= self.abs_tol + self.rel_tol * self.gold:
                         file.close()
                         return True
                     elif verbose:

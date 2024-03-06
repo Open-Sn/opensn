@@ -8,13 +8,13 @@
         "type": "KeyValuePair",
         "key": "QoI Value=",
         "goldvalue": 1.38397e-05,
-        "tol": 1e-08
+        "abs_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "Inner Product=",
         "goldvalue": 1.38405e-05,
-        "tol": 1e-08
+        "abs_tol": 1e-08
       }
     ]
   },
@@ -27,13 +27,13 @@
         "type": "KeyValuePair",
         "key": "QoI Value=",
         "goldvalue": 2.90386e-05,
-        "tol": 1e-08
+        "abs_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "Inner Product=",
         "goldvalue": 2.90543e-05,
-        "tol": 1e-08
+        "abs_tol": 1e-08
       }
     ]
   },
@@ -46,67 +46,67 @@
         "type": "KeyValuePair",
         "key": "QoI Value[0]=",
         "goldvalue": 1.12687e-06,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[1]=",
         "goldvalue": 2.95934e-06,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[2]=",
         "goldvalue": 3.92975e-06,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[3]=",
         "goldvalue": 4.18474e-06,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[4]=",
         "goldvalue": 3.89649e-06,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[5]=",
         "goldvalue": 3.30482e-06,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[6]=",
         "goldvalue": 1.54506e-06,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[7]=",
         "goldvalue": 6.74868e-07,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[8]=",
         "goldvalue": 3.06178e-07,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[9]=",
         "goldvalue": 2.07284e-07,
-        "tol": 1.0e-9
+        "abs_tol": 1.0e-9
       },
       {
         "type": "KeyValuePair",
         "key": "Inner Product=",
         "goldvalue": 3.30607e-06,
-        "tol": 1e-09
+        "abs_tol": 1e-09
       }
     ]
   }
