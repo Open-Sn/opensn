@@ -346,7 +346,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
   // Create Krylov Solver
   opensn::log.Log() << "Solving: ";
   auto petsc_solver =
-    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCHYPRE, 0.0, 1.0e-9, 1000);
+    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCHYPRE, 0.0, 1.0e-9, 100);
 
   PC pc;
   KSPGetPC(petsc_solver.ksp, &pc);
@@ -372,10 +372,10 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);
-
-  const char* reason;
-  KSPGetConvergedReasonString(petsc_solver.ksp, &reason);
-  opensn::log.Log() << "Done solving " << reason;
+  KSPConvergedReason reason;
+  KSPGetConvergedReason(petsc_solver.ksp, &reason);
+  if (reason == KSP_CONVERGED_ATOL)
+    opensn::log.Log() << "Converged";
 
   // Extract PETSc vector
   std::vector<double> field;

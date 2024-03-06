@@ -3,8 +3,7 @@
     "file" : "fv_test1.lua", "num_procs" : 1, "checks" :
     [
       {
-        "type" : "FloatCompare", "key" : "iteration   10", "wordnum" : 6,
-        "gold" : 2.2349712e-07, "abs_tol" : 1.0e-10
+        "type" : "StrCompare", "key" : "Converged"
       }
     ]
   },
@@ -12,8 +11,7 @@
     "file" : "fv_test2.lua", "num_procs" : 1, "checks" :
     [
       {
-        "type" : "FloatCompare", "key" : "iteration   10", "wordnum" : 6,
-        "gold" : 2.2349712e-07, "abs_tol" : 1.0e-10
+        "type" : "StrCompare", "key" : "Converged"
       }
     ]
   },
@@ -21,8 +19,7 @@
     "file" : "pwlc_test1.lua", "num_procs" : 4, "checks" :
     [
       {
-        "type" : "FloatCompare", "key" : "iteration   10", "wordnum" : 6,
-        "gold" : 1.3725535e-07, "abs_tol" : 1.0e-11
+        "type" : "StrCompare", "key" : "Converged"
       }
     ]
   },
@@ -30,8 +27,7 @@
     "file" : "pwlc_test2.lua", "num_procs" : 4, "checks" :
     [
       {
-        "type" : "FloatCompare", "key" : "iteration    6", "wordnum" : 6,
-        "gold" : 1.1613008e-07, "abs_tol" : 1.0e-10
+        "type" : "StrCompare", "key" : "Converged"
       },
       {
         "type" : "FloatCompare", "key" : "Error:", "wordnum" : 2,

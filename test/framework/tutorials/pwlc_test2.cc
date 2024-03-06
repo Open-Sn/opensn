@@ -182,12 +182,14 @@ SimTest04_PWLC(const InputParameters& params)
   // Create Krylov Solver
   opensn::log.Log() << "Solving: ";
   auto petsc_solver =
-    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCGAMG, 0.0, 1.0e-9, 1000);
+    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCGAMG, 0.0, 1.0e-9, 15);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);
-
-  opensn::log.Log() << "Done solving";
+  KSPConvergedReason reason;
+  KSPGetConvergedReason(petsc_solver.ksp, &reason);
+  if (reason == KSP_CONVERGED_ATOL)
+    opensn::log.Log() << "Converged";
 
   // Extract PETSc vector
   std::vector<double> field;
