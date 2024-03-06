@@ -2,7 +2,7 @@
 
 #include "framework/object_factory.h"
 
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
 
 namespace opensn
 {

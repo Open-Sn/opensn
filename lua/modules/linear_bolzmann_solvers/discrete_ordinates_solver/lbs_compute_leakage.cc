@@ -5,7 +5,7 @@
 #include "framework/console/console.h"
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 
 namespace opensnlua::lbs
 {

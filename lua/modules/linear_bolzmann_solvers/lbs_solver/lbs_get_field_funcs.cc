@@ -1,4 +1,4 @@
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

@@ -3,7 +3,7 @@
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/power_iteration_keigen.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/power_iteration_keigen.h"
 
 namespace opensn
 {
