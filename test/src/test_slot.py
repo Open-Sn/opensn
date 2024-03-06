@@ -27,7 +27,7 @@ class TestSlot:
         if test.skip != "":
             return
 
-        cmd =  self.argv.mpi_cmd + " " + str(test.num_procs) + " "
+        cmd = self.argv.mpi_cmd + " " + str(test.num_procs) + " "
         cmd += self.argv.exe + " "
         cmd += test.filename + " "
         cmd += "--suppress-color "
@@ -108,7 +108,8 @@ class TestSlot:
         else:
             test.annotations.append("skipped")
 
-        test_path = os.path.relpath(test.file_dir + test.filename)
+        test_path = os.path.join(test.file_dir, test.filename)
+        test_file_name = os.path.relpath(test_path, self.argv.directory)
 
         if not os.path.isfile(test_path):
             test.annotations.append("lua file missing")
@@ -130,11 +131,11 @@ class TestSlot:
             message = f"\033[36m[{annotation}]\033[0m" + message
             pad += 5 + 4
 
-        width = 120 - len(prefix + test_path) + pad
+        width = 120 - len(prefix + test_file_name) + pad
         message = message.rjust(width, ".")
 
         time_taken_message = " {:.2f}s".format(self.time_end - self.time_start)
 
-        print(prefix + test_path + message + time_taken_message)
+        print(prefix + " " + test_file_name + message + time_taken_message)
         if test.skip != "":
             print("Skip reason: " + test.skip)
