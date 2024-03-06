@@ -1,5 +1,5 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/angle_aggregation/angle_aggregation.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_reflecting.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/reflecting_boundary.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -10,7 +10,7 @@ namespace lbs
 {
 
 AngleAggregation::AngleAggregation(
-  const std::map<uint64_t, std::shared_ptr<SweepBndry>>& sim_boundaries,
+  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
   size_t num_groups,
   size_t num_group_subsets,
   std::shared_ptr<AngularQuadrature>& quadrature,
@@ -21,9 +21,9 @@ AngleAggregation::AngleAggregation(
     num_ang_unknowns_avail_(false),
     grid_(grid),
     quadrature_(quadrature),
-    sim_boundaries_(sim_boundaries)
+    boundaries_(boundaries)
 {
-  for (auto& bndry_id_cond : sim_boundaries)
+  for (auto& bndry_id_cond : boundaries)
     bndry_id_cond.second->Setup(*grid, *quadrature);
 
   is_setup_ = true;
@@ -46,14 +46,14 @@ void
 AngleAggregation::ZeroIncomingDelayedPsi()
 {
   // Opposing reflecting bndries
-  for (const auto& [bid, bndry] : sim_boundaries_)
+  for (const auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxOld())
+        for (auto& angle : rbndry.GetBoundaryFluxOld())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -86,13 +86,13 @@ AngleAggregation::InitializeReflectingBCs()
   const Vector3 ihat(1.0, 0.0, 0.0);
   const Vector3 jhat(0.0, 1.0, 0.0);
 
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
       size_t tot_num_angles = quadrature_->abscissae_.size();
       size_t num_local_cells = grid_->local_cells.size();
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       const auto& normal = rbndry.Normal();
 
@@ -154,8 +154,8 @@ AngleAggregation::InitializeReflectingBCs()
       }
 
       // Initialize storage for all outbound directions
-      auto& heteroflux_new = rbndry.GetHeteroBoundaryFluxNew();
-      auto& heteroflux_old = rbndry.GetHeteroBoundaryFluxOld();
+      auto& heteroflux_new = rbndry.GetBoundaryFluxNew();
+      auto& heteroflux_old = rbndry.GetBoundaryFluxOld();
       heteroflux_new.clear();
       heteroflux_old.clear();
       heteroflux_new.resize(tot_num_angles);
@@ -205,14 +205,14 @@ AngleAggregation::InitializeReflectingBCs()
       // be marked as "opposing-reflecting" while
       // the other one will be just a regular
       // reflecting boundary
-      for (const auto& [otherbid, otherbndry] : sim_boundaries_)
+      for (const auto& [otherbid, otherbndry] : boundaries_)
       {
         if (bid == otherbid)
           continue;
         if (not otherbndry->IsReflecting())
           continue;
 
-        const auto& otherRbndry = dynamic_cast<const BoundaryReflecting&>(*otherbndry);
+        const auto& otherRbndry = dynamic_cast<const ReflectingBoundary&>(*otherbndry);
 
         if (rbndry.Normal().Dot(otherRbndry.Normal()) < (0.0 - epsilon))
           if (bid < otherbid)
@@ -220,7 +220,7 @@ AngleAggregation::InitializeReflectingBCs()
       }
 
       if (rbndry.IsOpposingReflected())
-        rbndry.GetHeteroBoundaryFluxOld() = rbndry.GetHeteroBoundaryFluxNew();
+        rbndry.GetBoundaryFluxOld() = rbndry.GetBoundaryFluxNew();
 
       reflecting_bcs_initialized = true;
     } // if reflecting
@@ -241,14 +241,14 @@ AngleAggregation::GetNumDelayedAngularDOFs()
   size_t local_ang_unknowns = 0;
 
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxNew())
+        for (auto& angle : rbndry.GetBoundaryFluxNew())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -281,14 +281,14 @@ void
 AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxNew())
+        for (auto& angle : rbndry.GetBoundaryFluxNew())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -325,14 +325,14 @@ void
 AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxOld())
+        for (auto& angle : rbndry.GetBoundaryFluxOld())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -369,14 +369,14 @@ void
 AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref)
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxOld())
+        for (auto& angle : rbndry.GetBoundaryFluxOld())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -413,14 +413,14 @@ void
 AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref)
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxNew())
+        for (auto& angle : rbndry.GetBoundaryFluxNew())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -462,14 +462,14 @@ AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
   psi_vector.reserve(psi_size.first);
 
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxNew())
+        for (auto& angle : rbndry.GetBoundaryFluxNew())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -508,14 +508,14 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
 
   size_t index = 0;
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxNew())
+        for (auto& angle : rbndry.GetBoundaryFluxNew())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -548,14 +548,14 @@ AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
   psi_vector.reserve(psi_size.first);
 
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxOld())
+        for (auto& angle : rbndry.GetBoundaryFluxOld())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -594,14 +594,14 @@ AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double
 
   size_t index = 0;
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        for (auto& angle : rbndry.GetHeteroBoundaryFluxOld())
+        for (auto& angle : rbndry.GetBoundaryFluxOld())
           for (auto& cellvec : angle)
             for (auto& facevec : cellvec)
               for (auto& dofvec : facevec)
@@ -629,14 +629,14 @@ void
 AngleAggregation::SetDelayedPsiOld2New()
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        rbndry.GetHeteroBoundaryFluxNew() = rbndry.GetHeteroBoundaryFluxOld();
+        rbndry.GetBoundaryFluxNew() = rbndry.GetBoundaryFluxOld();
 
     } // if reflecting
   }   // for bndry
@@ -657,14 +657,14 @@ void
 AngleAggregation::SetDelayedPsiNew2Old()
 {
   // Opposing reflecting bndries
-  for (auto& [bid, bndry] : sim_boundaries_)
+  for (auto& [bid, bndry] : boundaries_)
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (BoundaryReflecting&)(*bndry);
+      auto& rbndry = (ReflectingBoundary&)(*bndry);
 
       if (rbndry.IsOpposingReflected())
-        rbndry.GetHeteroBoundaryFluxOld() = rbndry.GetHeteroBoundaryFluxNew();
+        rbndry.GetBoundaryFluxOld() = rbndry.GetBoundaryFluxNew();
 
     } // if reflecting
   }   // for bndry

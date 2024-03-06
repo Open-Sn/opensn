@@ -1,6 +1,6 @@
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/spds/spds_adams_adams_hawkins.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_reflecting.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/reflecting_boundary.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <sstream>
@@ -154,7 +154,7 @@ SweepScheduler::InitializeAlgoDOG()
 void
 SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
-  typedef ExecutionPermission ExePerm;
+  typedef AngleSetStatus ExePerm;
   typedef AngleSetStatus Status;
 
   log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_BEGIN);
@@ -242,7 +242,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
   {
     if (bndry->Type() == BoundaryType::REFLECTING)
     {
-      auto rbndry = std::static_pointer_cast<BoundaryReflecting>(bndry);
+      auto rbndry = std::static_pointer_cast<ReflectingBoundary>(bndry);
       rbndry->ResetAnglesReadyStatus();
     }
   }
@@ -271,7 +271,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
       for (auto& angle_set : angle_set_group.AngleSets())
       {
         const auto angle_set_status = angle_set->AngleSetAdvance(
-          sweep_chunk, sweep_timing_events_tag_, ExecutionPermission::EXECUTE);
+          sweep_chunk, sweep_timing_events_tag_, AngleSetStatus::EXECUTE);
         if (angle_set_status == AngleSetStatus::NOT_FINISHED)
           completion_status = AngleSetStatus::NOT_FINISHED;
       } // for angleset
@@ -304,7 +304,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
   {
     if (bndry->Type() == BoundaryType::REFLECTING)
     {
-      auto rbndry = std::static_pointer_cast<BoundaryReflecting>(bndry);
+      auto rbndry = std::static_pointer_cast<ReflectingBoundary>(bndry);
       rbndry->ResetAnglesReadyStatus();
     }
   }

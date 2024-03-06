@@ -2,7 +2,6 @@
 
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_structs.h"
 #include <vector>
-#include <limits>
 
 namespace opensn
 {
@@ -18,45 +17,50 @@ private:
   const BoundaryType type_;
   const CoordinateSystemType coord_type_;
   double evaluation_time_ = 0.0; ///< Time value passed to boundary functions
+
 protected:
   std::vector<double> zero_boundary_flux_;
   size_t num_groups_;
 
 public:
   explicit SweepBoundary(BoundaryType bndry_type,
-                         size_t in_num_groups,
+                         size_t num_groups,
                          CoordinateSystemType coord_type)
-    : type_(bndry_type), coord_type_(coord_type), num_groups_(in_num_groups)
+    : type_(bndry_type), coord_type_(coord_type), num_groups_(num_groups)
   {
     zero_boundary_flux_.resize(num_groups_, 0.0);
   }
 
   virtual ~SweepBoundary() = default;
+
   BoundaryType Type() const { return type_; }
+
   CoordinateSystemType CoordType() const { return coord_type_; }
+
   bool IsReflecting() const { return type_ == BoundaryType::REFLECTING; }
 
   double GetEvaluationTime() const { return evaluation_time_; }
+
   void SetEvaluationTime(double time) { evaluation_time_ = time; }
 
   /**
-   * Returns a pointer to a heterogeneous flux storage location.
+   * Returns a pointer to the location of the incoming flux.
    */
-  virtual double* HeterogeneousPsiIncoming(uint64_t cell_local_id,
-                                           unsigned int face_num,
-                                           unsigned int fi,
-                                           unsigned int angle_num,
-                                           int group_num,
-                                           size_t gs_ss_begin);
+  virtual double* PsiIncoming(uint64_t cell_local_id,
+                              unsigned int face_num,
+                              unsigned int fi,
+                              unsigned int angle_num,
+                              int group_num,
+                              size_t gs_ss_begin);
 
   /**
-   * Returns a pointer to a heterogeneous flux storage location.
+   * Returns a pointer to the location of the outgoing flux.
    */
-  virtual double* HeterogeneousPsiOutgoing(uint64_t cell_local_id,
-                                           unsigned int face_num,
-                                           unsigned int fi,
-                                           unsigned int angle_num,
-                                           size_t gs_ss_begin);
+  virtual double* PsiOutgoing(uint64_t cell_local_id,
+                              unsigned int face_num,
+                              unsigned int fi,
+                              unsigned int angle_num,
+                              size_t gs_ss_begin);
 
   virtual void UpdateAnglesReadyStatus(const std::vector<size_t>& angles, size_t gs_ss) {}
 

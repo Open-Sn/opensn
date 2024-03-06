@@ -1,10 +1,9 @@
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_reflecting.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_vacuum.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_iso_homo.h"
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_aniso_hetero.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/reflecting_boundary.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/vacuum_boundary.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/isotropic_boundary.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/arbitrary_boundary.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/wgs_context.h"
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/ags_context.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/a_lbs_solver/groupset/lbs_groupset.h"
@@ -367,7 +366,7 @@ LBSSolver::DensitiesLocal() const
   return densities_local_;
 }
 
-const std::map<uint64_t, std::shared_ptr<SweepBndry>>&
+const std::map<uint64_t, std::shared_ptr<SweepBoundary>>&
 LBSSolver::SweepBoundaries() const
 {
   return sweep_boundaries_;
@@ -1545,7 +1544,7 @@ LBSSolver::InitializeBoundaries()
     const bool has_not_been_set = sweep_boundaries_.count(bid) == 0;
     if (has_no_preference and has_not_been_set)
     {
-      sweep_boundaries_[bid] = std::make_shared<BoundaryVaccuum>(G);
+      sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(G);
     } // defaulted
     else if (has_not_been_set)
     {
@@ -1553,14 +1552,14 @@ LBSSolver::InitializeBoundaries()
       const auto& mg_q = bndry_pref.isotropic_mg_source;
 
       if (bndry_pref.type == lbs::BoundaryType::VACUUM)
-        sweep_boundaries_[bid] = std::make_shared<BoundaryVaccuum>(G);
+        sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(G);
       else if (bndry_pref.type == lbs::BoundaryType::ISOTROPIC)
-        sweep_boundaries_[bid] = std::make_shared<BoundaryIsotropicHomogenous>(G, mg_q);
+        sweep_boundaries_[bid] = std::make_shared<IsotropicBoundary>(G, mg_q);
       else if (bndry_pref.type == BoundaryType::ARBITRARY)
       {
         // FIXME:
 #if 0
-        sweep_boundaries_[bid] = std::make_shared<BoundaryIncidentHeterogeneous>(
+        sweep_boundaries_[bid] = std::make_shared<ArbitraryBoundary>(
           G, std::make_unique<BoundaryFunctionToLua>(bndry_pref.source_function), bid);
 #endif
       }
@@ -1613,7 +1612,7 @@ LBSSolver::InitializeBoundaries()
           }
         }
 
-        sweep_boundaries_[bid] = std::make_shared<BoundaryReflecting>(
+        sweep_boundaries_[bid] = std::make_shared<ReflectingBoundary>(
           G, global_normal, MapGeometryTypeToCoordSys(options_.geometry_type));
       }
     } // non-defaulted

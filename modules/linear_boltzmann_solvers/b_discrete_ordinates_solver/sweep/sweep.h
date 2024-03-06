@@ -27,7 +27,6 @@ enum class AngleSetStatus
   MESSAGES_SENT = 6,
   MESSAGES_PENDING = 7
 };
-typedef AngleSetStatus ExecutionPermission;
 
 struct Task
 {

@@ -655,7 +655,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
               for (const auto& group : groupset.groups_)
               {
                 const int g = group.id_;
-                const double psi = *bndry->HeterogeneousPsiIncoming(cell.local_id_, f, fi, n, g, 0);
+                const double psi = *bndry->PsiIncoming(cell.local_id_, f, fi, n, g, 0);
                 local_in_flow -= mu * wt * psi * IntFi_shapeI;
               } // for g
             }   // for fi

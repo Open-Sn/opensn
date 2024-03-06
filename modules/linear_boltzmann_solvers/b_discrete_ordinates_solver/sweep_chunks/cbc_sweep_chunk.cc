@@ -55,7 +55,7 @@ CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
 {
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
-  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
+  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetGroupSubset()];
 
   gs_ss_size_ = grp_ss_info.ss_size;
   gs_ss_begin_ = grp_ss_info.ss_begin;
@@ -176,14 +176,14 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
             psi = fluds_->GetNonLocalUpwindPsi(*psi_upwnd_data_block, adj_face_node, as_ss_idx);
           }
           else
-            psi = angle_set.PsiBndry(face.neighbor_id_,
-                                     direction_num,
-                                     cell_local_id_,
-                                     f,
-                                     fj,
-                                     gs_gi_,
-                                     gs_ss_begin_,
-                                     surface_source_active_);
+            psi = angle_set.PsiBoundary(face.neighbor_id_,
+                                        direction_num,
+                                        cell_local_id_,
+                                        f,
+                                        fj,
+                                        gs_gi_,
+                                        gs_ss_begin_,
+                                        surface_source_active_);
 
           if (not psi)
             continue;
@@ -308,7 +308,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
           psi = &(*psi_dnwnd_data)[addr_offset];
         }
         else if (is_reflecting_boundary_face)
-          psi = angle_set.ReflectingPsiOutBoundBndry(
+          psi = angle_set.PsiReflected(
             face.neighbor_id_, direction_num, cell_local_id_, f, fi, gs_ss_begin_);
         if (psi)
         {

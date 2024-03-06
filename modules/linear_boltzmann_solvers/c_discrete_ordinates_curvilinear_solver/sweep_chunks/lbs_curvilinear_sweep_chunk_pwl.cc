@@ -71,7 +71,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(
 void
 SweepChunkPwlrz::Sweep(AngleSet& angle_set)
 {
-  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetRefGroupSubset()];
+  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetGroupSubset()];
 
   auto gs_ss_size = grp_ss_info.ss_size;
   auto gs_ss_begin = grp_ss_info.ss_begin;
@@ -219,14 +219,14 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
                   {
                     const int j = cell_mapping.MapFaceNode(f, fj);
 
-                    psi = angle_set.PsiBndry(cell_face.neighbor_id_,
-                                             direction_num,
-                                             cell_local_id,
-                                             f,
-                                             fj,
-                                             gs_gi,
-                                             gs_ss_begin,
-                                             IsSurfaceSourceActive());
+                    psi = angle_set.PsiBoundary(cell_face.neighbor_id_,
+                                                direction_num,
+                                                cell_local_id,
+                                                f,
+                                                fj,
+                                                gs_gi,
+                                                gs_ss_begin,
+                                                IsSurfaceSourceActive());
                   }
                 }
               }
@@ -345,7 +345,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
           else if (not is_boundary_face)
             psi = fluds.NLOutgoingPsi(deploc_face_counter, fi, as_ss_idx);
           else if (is_reflecting_boundary_face)
-            psi = angle_set.ReflectingPsiOutBoundBndry(
+            psi = angle_set.PsiReflected(
               face.neighbor_id_, direction_num, cell_local_id, f, fi, gs_ss_begin);
           else
             continue;

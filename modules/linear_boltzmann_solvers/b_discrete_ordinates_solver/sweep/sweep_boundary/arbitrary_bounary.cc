@@ -1,4 +1,4 @@
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/boundary_aniso_hetero.h"
+#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/sweep/sweep_boundary/arbitrary_boundary.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/quadratures/angular_quadrature_base.h"
 #include "framework/logging/log.h"
@@ -10,16 +10,16 @@ namespace lbs
 {
 
 double*
-BoundaryIncidentHeterogeneous::HeterogeneousPsiIncoming(uint64_t cell_local_id,
-                                                        unsigned int face_num,
-                                                        unsigned int fi,
-                                                        unsigned int angle_num,
-                                                        int group_num,
-                                                        size_t gs_ss_begin)
+ArbitraryBoundary::PsiIncoming(uint64_t cell_local_id,
+                               unsigned int face_num,
+                               unsigned int fi,
+                               unsigned int angle_num,
+                               int group_num,
+                               size_t gs_ss_begin)
 {
   if (local_cell_data_.empty())
   {
-    log.LogAllError() << "HeterogeneousPsiIncoming call made to a heterogeneous boundary "
+    log.LogAllError() << "PsiIncoming call made to an arbitrary boundary "
                          "with that information not yet set up.";
     exit(EXIT_FAILURE);
   }
@@ -30,7 +30,7 @@ BoundaryIncidentHeterogeneous::HeterogeneousPsiIncoming(uint64_t cell_local_id,
 }
 
 void
-BoundaryIncidentHeterogeneous::Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature)
+ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature)
 {
   const size_t num_local_cells = grid.local_cells.size();
   local_cell_data_.clear();
@@ -88,7 +88,7 @@ BoundaryIncidentHeterogeneous::Setup(const MeshContinuum& grid, const AngularQua
         size_t face_num_nodes = face.vertex_ids_.size();
         FaceData face_data;
 
-        if (not face.has_neighbor_ and face.neighbor_id_ == ref_boundary_id_)
+        if (not face.has_neighbor_ and face.neighbor_id_ == boundary_id_)
         {
           face_data.reserve(face_num_nodes);
           for (size_t i = 0; i < face_num_nodes; ++i)
