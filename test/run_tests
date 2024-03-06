@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This is the next version of ChiTech's Test system.
+OpenSn Test system
 
 The basic philosophy that we want to support, over and above what we had before,
 is a system to which we can easily add+remove+modify tests such that the burden
@@ -36,7 +36,7 @@ if sys.version_info.major < 3:
 #                                                           arguments
 arguments_help = textwrap.dedent('''\
 Run the test suite, or optionally, a series of individual
-tests or a range of tests. 
+tests or a range of tests.
 ''')
 
 parser = argparse.ArgumentParser(
@@ -126,13 +126,13 @@ if len(warning_manager1) > 0:
 # EchoTests(tests)
 
 print("""
-***************************** ChiTech Test system *****************************
+***************************** OpenSn Test system *****************************
 
 Use flag -h to print argument options.
 Test directories identified:""")
 
 for test_dir in test_hierarchy:
-    print("  " + os.path.relpath(test_dir))
+    print("  " + os.path.relpath(test_dir, argv.directory))
 print()
 print("Description of what you are looking at:")
 print("\033[33m[XX]\033[0m<test directory>/<lua filename>.lua.......", end="")
@@ -145,7 +145,7 @@ print("\033[36m[lua file missing]\033[0m = A test pointing to a .lua file was "
       "indicated in a .json file but the actual lua file is missing.")
 print("\033[36m[Gold file missing]\033[0m = Test with a GoldFile check has no "
       ".gold file in the gold/ directory. If the input is Input.lua \n"
-      # [Gold file missing] = 
+      # [Gold file missing] =
       "                      then there"
       " needs to be a Input.lua.gold file in the gold directory. If this was "
       "the first run \n"

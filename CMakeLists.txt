@@ -143,6 +143,15 @@ endif()
 if(OPENSN_WITH_LUA)
     add_subdirectory(lua)
     add_subdirectory(test)
+
+    add_custom_target(test
+      COMMAND
+          ${CMAKE_SOURCE_DIR}/test/run_tests
+              -d ${CMAKE_SOURCE_DIR}/test
+              --exe ${CMAKE_BINARY_DIR}/test/opensn-test
+              -w3
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
 endif()
 
 #
