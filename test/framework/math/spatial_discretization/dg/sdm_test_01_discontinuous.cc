@@ -346,7 +346,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
   // Create Krylov Solver
   opensn::log.Log() << "Solving: ";
   auto petsc_solver =
-    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCHYPRE, 1.0e-9, 1000);
+    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCHYPRE, 0.0, 1.0e-9, 1000);
 
   PC pc;
   KSPGetPC(petsc_solver.ksp, &pc);

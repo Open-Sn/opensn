@@ -173,7 +173,8 @@ PETScSolverSetup CreateCommonKrylovSolverSetup(Mat ref_matrix,
                                                const std::string& in_solver_name = "KSPSolver",
                                                const std::string& in_solver_type = KSPGMRES,
                                                const std::string& in_preconditioner_type = PCNONE,
-                                               double in_relative_residual_tolerance = 1.0e-6,
+                                               double in_rel_tol = PETSC_DEFAULT,
+                                               double in_abs_tol = PETSC_DEFAULT,
                                                int64_t in_maximum_iterations = 100);
 
 /**

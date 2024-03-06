@@ -491,6 +491,7 @@ Solver::Execute()
                                   TextName(),
                                   KSPCG,
                                   PCGAMG,
+                                  0.0,
                                   basic_options_("residual_tolerance").FloatValue(),
                                   basic_options_("max_iters").IntegerValue());
 
