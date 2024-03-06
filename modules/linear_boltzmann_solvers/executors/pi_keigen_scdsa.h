@@ -1,7 +1,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/acceleration/diffusion.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion.h"
 
 namespace opensn
 {

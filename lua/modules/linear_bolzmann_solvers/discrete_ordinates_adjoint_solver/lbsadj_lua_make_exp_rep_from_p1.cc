@@ -1,6 +1,6 @@
 #include "lbsadj_lua_utils.h"
 
-#include "modules/linear_boltzmann_solvers/c_discrete_ordinates_adjoint_solver/lbs_adjoint.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_adjoint_solver/lbs_adjoint.h"
 
 #include <stdexcept>
 

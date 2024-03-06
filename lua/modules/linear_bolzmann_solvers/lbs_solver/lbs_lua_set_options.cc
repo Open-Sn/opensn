@@ -1,6 +1,6 @@
 #include "lbs_lua_utils.h"
 
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 
 #include "framework/console/console.h"
 #include "framework/runtime.h"

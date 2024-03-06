@@ -1,6 +1,6 @@
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
 #include "framework/object_factory.h"
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/logging/log_exceptions.h"

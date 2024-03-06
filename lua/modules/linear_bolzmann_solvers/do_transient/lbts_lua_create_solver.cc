@@ -1,4 +1,4 @@
-#include "modules/linear_boltzmann_solvers/d_do_transient/lbts_transient_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_transient_solver/lbts_transient_solver.h"
 #include "lbts_lua_utils.h"
 #include "framework/runtime.h"
 

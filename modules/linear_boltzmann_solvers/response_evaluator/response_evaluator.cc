@@ -1,6 +1,6 @@
 #include "response_evaluator.h"
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/point_source/point_source.h"
-#include "modules/linear_boltzmann_solvers/a_lbs_solver/distributed_source/distributed_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/distributed_source/distributed_source.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"

@@ -1,6 +1,6 @@
 #include "lbs_do_lua_utils.h"
 
-#include "modules/linear_boltzmann_solvers/b_discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 
 #include "framework/console/console.h"
 
