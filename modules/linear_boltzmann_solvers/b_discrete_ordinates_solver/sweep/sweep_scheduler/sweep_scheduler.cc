@@ -154,7 +154,7 @@ SweepScheduler::InitializeAlgoDOG()
 void
 SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
-  typedef ExecutionPermission ExePerm;
+  typedef AngleSetStatus ExePerm;
   typedef AngleSetStatus Status;
 
   log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_BEGIN);
@@ -271,7 +271,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
       for (auto& angle_set : angle_set_group.AngleSets())
       {
         const auto angle_set_status = angle_set->AngleSetAdvance(
-          sweep_chunk, sweep_timing_events_tag_, ExecutionPermission::EXECUTE);
+          sweep_chunk, sweep_timing_events_tag_, AngleSetStatus::EXECUTE);
         if (angle_set_status == AngleSetStatus::NOT_FINISHED)
           completion_status = AngleSetStatus::NOT_FINISHED;
       } // for angleset

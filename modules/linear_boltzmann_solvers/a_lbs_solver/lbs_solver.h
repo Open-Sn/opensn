@@ -265,7 +265,7 @@ public:
   /**
    * Returns the sweep boundaries as a read only reference
    */
-  const std::map<uint64_t, std::shared_ptr<SweepBndry>>& SweepBoundaries() const;
+  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& SweepBoundaries() const;
 
   SetSourceFunction GetActiveSetSourceFunction() const;
 
@@ -556,7 +556,7 @@ protected:
   std::vector<lbs::CellLBSView> cell_transport_views_;
 
   std::map<uint64_t, BoundaryPreference> boundary_preferences_;
-  std::map<uint64_t, std::shared_ptr<SweepBndry>> sweep_boundaries_;
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
 
   opensn::UnknownManager flux_moments_uk_man_;
 

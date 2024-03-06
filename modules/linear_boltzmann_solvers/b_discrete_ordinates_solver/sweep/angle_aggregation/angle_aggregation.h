@@ -37,10 +37,10 @@ private:
   std::pair<size_t, size_t> number_angular_unknowns_;
   std::shared_ptr<MeshContinuum> grid_;
   std::shared_ptr<AngularQuadrature> quadrature_;
-  std::map<uint64_t, std::shared_ptr<SweepBoundary>> sim_boundaries_;
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>> boundaries_;
 
 public:
-  AngleAggregation(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sim_boundaries,
+  AngleAggregation(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                    size_t num_groups,
                    size_t num_group_subsets,
                    std::shared_ptr<AngularQuadrature>& quadrature,
@@ -56,7 +56,7 @@ public:
 
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSimBoundaries() const
   {
-    return sim_boundaries_;
+    return boundaries_;
   }
 
   /** Resets all the outgoing intra-location and inter-location cyclic interfaces.*/

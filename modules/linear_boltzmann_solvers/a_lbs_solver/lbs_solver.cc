@@ -367,7 +367,7 @@ LBSSolver::DensitiesLocal() const
   return densities_local_;
 }
 
-const std::map<uint64_t, std::shared_ptr<SweepBndry>>&
+const std::map<uint64_t, std::shared_ptr<SweepBoundary>>&
 LBSSolver::SweepBoundaries() const
 {
   return sweep_boundaries_;
