@@ -1,5 +1,5 @@
-Material Definition
-===================
+Material and Source Definitions
+===============================
 
 - :doc:`mg_xs`
 

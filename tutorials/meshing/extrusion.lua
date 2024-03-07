@@ -33,32 +33,4 @@ mesh.MeshGenerator.Execute(meshgen)
 
 mesh.ExportToVTK("Extruded_mesh_only")
 
---[[ @doc
-## The rest of the simulation
-The following line inserts the rest of the simulation data:
-+ materials and sources
-+ angular quadrature
-+ LBS solver options and execution
-+ VTK post-processing
-
-You can view its contents in [transport_simulation_part_3D.lua](transport_simulation_part_3D.md)
---]]
--- Rest of the simulation
-dofile("transport_simulation_part_3D.lua")
-
---[[ @doc
-## Post-Processing via Field Functions
-We extract the scalar flux (i.e., the first entry in the field function list; recall that lua indexing starts at 1)
-and export it to a VTK file whose name is supplied by the user.
---]]
--- Get field functions
-fflist,count = LBSGetScalarFieldFunctionList(phys)
-vtk_basename = "extrusion"
-ExportFieldFunctionToVTK(fflist[1],vtk_basename)
-
---[[ @doc
-The resulting scalar flux is shown below:
-
-![Scalar_flux](images/extruded_scalar_flux.png)
---]]
 

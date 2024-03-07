@@ -85,3 +85,6 @@ doc/scripts/parsetab.py
 
 doc/**/*.pvtu
 doc/**/*.vtu
+
+tutorials/**/*.pvtu
+tutorials/**/*.vtu

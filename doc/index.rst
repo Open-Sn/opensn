@@ -1,7 +1,7 @@
 OpenSn
 ======
 
-Welcome to OpenSn documentation.
+Welcome to the OpenSn documentation.
 
 .. toctree::
    :maxdepth: 1
@@ -18,7 +18,9 @@ Welcome to OpenSn documentation.
    :hidden:
    :caption: Tutorials
 
-   tutorials/lbs/index.rst
+   tutorials/meshing/index
+   tutorials/material/index
+   tutorials/lbs/index
 
 .. toctree::
    :maxdepth: 1
@@ -28,8 +30,8 @@ Welcome to OpenSn documentation.
    coding_standard.md
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :hidden:
    :caption: Older Tutorials
 
-   tutorials/old/index.rst
+   tutorials/old/index

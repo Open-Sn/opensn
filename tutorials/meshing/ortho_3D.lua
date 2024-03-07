@@ -3,7 +3,7 @@
 
 This is very similar to the previous `2D Orthogonal Grid` tutorial. We use the two partitioners again (KBA and Parmetis).
 
-## Mesh
+## Mesh and KBA partition
 A simple orthogonal 3D mesh with KBA partitioner. We will run with 8 processes, so we will
 partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=0.
 
@@ -44,7 +44,7 @@ The resulting mesh partition is shown below
 mesh.ExportToVTK("ortho_3D_KBA")
 
 --[[ @doc
-## Mesh (again)
+## Mesh (again) and Parmetis partition
 A simple orthogonal 3D mesh with Parmetis partitioner.
 --]]
 meshgen = mesh.OrthogonalMeshGenerator.Create

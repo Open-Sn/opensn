@@ -26,16 +26,37 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
         list(APPEND RST_FILES ${dest})
     endmacro()
 
+    macro(generate_tutorial srcDir)
+        message(STATUS "Generating tutorial ${srcDir}")
+        file(RELATIVE_PATH tutPath ${CMAKE_SOURCE_DIR}/tutorials ${srcDir})
+        set(destDir ${CMAKE_BINARY_DIR}/doc/src/tutorials)
+        # copy images
+        file(MAKE_DIRECTORY ${destDir}/${tutPath})
+        copy_files("png" ${srcDir} ${destDir}/${tutPath})
+        copy_files("jpg" ${srcDir} ${destDir}/${tutPath})
+        copy_files("gif" ${srcDir} ${destDir}/${tutPath})
+        # process lua files
+        file(GLOB_RECURSE luaFiles RELATIVE ${srcDir} "${srcDir}/*.lua")
+        foreach(luaFile ${luaFiles})
+            set(srcLuaPath ${srcDir}/${luaFile})
+            if(NOT IS_DIRECTORY ${srcLuaPath})
+                get_filename_component(baseName ${luaFile} NAME_WE)
+                lua2md(${srcLuaPath} ${destDir}/${tutPath}/${baseName}.md)
+            endif()
+        endforeach()
+    endmacro()
+
     configure_file(Doxyfile.in Doxyfile)
     configure_file(conf.py.in conf.py)
 
     add_custom_target(doc DEPENDS ${PROJECT_BINARY_DIR}/html/index.html)
 
     configure_file(index.rst src/index.rst)
-    configure_file(tutorials/old/index.rst src/tutorials/old/index.rst)
-    configure_file(tutorials/lbs/index.rst src/tutorials/lbs/index.rst)
-    configure_file(tutorials/lbs/meshing/index.rst src/tutorials/lbs/meshing/index.rst)
-    configure_file(tutorials/lbs/material/index.rst src/tutorials/lbs/material/index.rst)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/old/index.rst src/tutorials/old/index.rst)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lbs/index.rst src/tutorials/lbs/index.rst)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/meshing/index.rst src/tutorials/meshing/index.rst)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/material/index.rst src/tutorials/material/index.rst)
+
     copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("png" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("gif" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
@@ -49,26 +70,10 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
         ${PROJECT_SOURCE_DIR}/modules/*.h
     )
 
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/first/first_example.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/first/first_example.md)
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/material/mg_xs.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/material/mg_xs.md)
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/meshing/ortho_2D.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/meshing/ortho_2D.md)
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/meshing/ortho_3D.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/meshing/ortho_3D.md)
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/meshing/read_2D_obj.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/meshing/read_2D_obj.md)
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/meshing/transport_simulation_part_2D.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/meshing/transport_simulation_part_2D.md)
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/meshing/extrusion.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/meshing/extrusion.md)
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/meshing/transport_simulation_part_3D.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/meshing/transport_simulation_part_3D.md)
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/meshing/read_3D_vtu.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/meshing/read_3D_vtu.md)
-    lua2md(${CMAKE_SOURCE_DIR}/doc/tutorials/lbs/meshing/transport_simulation_part_3D_single_agg.lua
-            ${CMAKE_BINARY_DIR}/doc/src/tutorials/lbs/meshing/transport_simulation_part_3D_single_agg.md)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/meshing)
+    copy_files("md" ${CMAKE_SOURCE_DIR}/tutorials/meshing ${CMAKE_BINARY_DIR}/doc/src/tutorials/meshing)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/material)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lbs/first)
 
     add_custom_command(
         OUTPUT
