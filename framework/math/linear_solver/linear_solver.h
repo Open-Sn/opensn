@@ -76,10 +76,10 @@ protected:
   const std::string solver_name_;
   const std::string iterative_method_;
   std::shared_ptr<LinearSolverContext> context_ptr_ = nullptr;
-  Mat A_;
-  Vec b_;
-  Vec x_;
-  KSP ksp_;
+  Mat A_ = nullptr;
+  Vec b_ = nullptr;
+  Vec x_ = nullptr;
+  KSP ksp_ = nullptr;
   int64_t num_local_dofs_ = 0;
   int64_t num_global_dofs_ = 0;
 
