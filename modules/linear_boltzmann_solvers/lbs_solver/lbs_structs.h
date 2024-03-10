@@ -213,7 +213,7 @@ struct Options
   GeometryType geometry_type = GeometryType::NO_GEOMETRY_SET;
   SDMType sd_type = SDMType::PIECEWISE_LINEAR_DISCONTINUOUS;
   unsigned int scattering_order = 1;
-  int sweep_eager_limit = 32000; // see LBSSetProperty documentation
+  int max_mpi_message_size = 32768;
 
   bool read_restart_data = false;
   std::string read_restart_folder_name = std::string("YRestart");

@@ -20,7 +20,7 @@ enum class PropertyCode : int
   ZMAX = 35,
   ZMIN = 36,
   SCATTERING_ORDER = 4,
-  SWEEP_EAGER_LIMIT = 5,
+  MAX_MPI_MESSAGE_SIZE = 5,
   READ_RESTART_DATA = 6,
   WRITE_RESTART_DATA = 7,
   SAVE_ANGULAR_FLUX = 8,
@@ -183,15 +183,15 @@ LBSSetProperty(lua_State* L)
 
     lbs_solver.Options().scattering_order = scattering_order;
   }
-  else if (static_cast<PropertyCode>(property) == PropertyCode::SWEEP_EAGER_LIMIT)
+  else if (static_cast<PropertyCode>(property) == PropertyCode::MAX_MPI_MESSAGE_SIZE)
   {
     if (numArgs != 3)
-      LuaPostArgAmountError("LBSSetProperty:SWEEP_EAGER_LIMIT", 3, numArgs);
+      LuaPostArgAmountError("LBSSetProperty:MAX_MPI_MESSAGE_SIZE", 3, numArgs);
 
     LuaCheckNilValue(fname, L, 3);
 
     const int limit = lua_tonumber(L, 3);
-    lbs_solver.Options().sweep_eager_limit = limit;
+    lbs_solver.Options().max_mpi_message_size = limit;
   }
   else if (static_cast<PropertyCode>(property) == PropertyCode::READ_RESTART_DATA)
   {

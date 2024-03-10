@@ -1,6 +1,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/communicators/async_comm.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/cbc_fluds.h"
 #include "framework/data_types/byte_array.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 #include <map>
@@ -26,12 +27,12 @@ class CBC_ASynchronousCommunicator : public AsynchronousCommunicator
 public:
   explicit CBC_ASynchronousCommunicator(size_t angle_set_id,
                                         FLUDS& fluds,
-                                        const MPICommunicatorSet& comm_set);
-
-  // location_id
-  // cell_global_id
-  // face_id
-  typedef std::tuple<int, uint64_t, unsigned int> MessageKey;
+                                        const MPICommunicatorSet& comm_set)
+    : AsynchronousCommunicator(fluds, comm_set),
+      angle_set_id_(angle_set_id),
+      cbc_fluds_(dynamic_cast<CBC_FLUDS&>(fluds))
+  {
+  }
 
   std::vector<double>& InitGetDownwindMessageData(int location_id,
                                                   uint64_t cell_global_id,
@@ -40,6 +41,7 @@ public:
                                                   size_t data_size) override;
 
   bool SendData();
+
   std::vector<uint64_t> ReceiveData();
 
   void Reset()
@@ -51,6 +53,9 @@ public:
 protected:
   const size_t angle_set_id_;
   CBC_FLUDS& cbc_fluds_;
+
+  // location_id, cell_global_id, face_id
+  using MessageKey = std::tuple<int, uint64_t, unsigned int>;
   std::map<MessageKey, std::vector<double>> outgoing_message_queue_;
 
   struct BufferItem

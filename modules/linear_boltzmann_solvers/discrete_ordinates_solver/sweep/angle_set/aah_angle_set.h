@@ -22,8 +22,8 @@ public:
                std::shared_ptr<FLUDS>& fluds,
                std::vector<size_t>& angle_indices,
                std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-               int sweep_eager_limit,
-               const MPICommunicatorSet& comm_set);
+               int maximum_message_size,
+               const MPICommunicatorSet& in_comm_set);
 
   void InitializeDelayedUpstreamData() override;
 
