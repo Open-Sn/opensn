@@ -16,8 +16,8 @@ AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(FLUDS& fluds,
                                                            size_t num_groups,
                                                            size_t num_angles,
                                                            int sweep_eager_limit,
-                                                           const MPICommunicatorSet& in_comm_set)
-  : AsynchronousCommunicator(fluds, in_comm_set), num_groups_(num_groups), num_angles_(num_angles)
+                                                           const MPICommunicatorSet& comm_set)
+  : AsynchronousCommunicator(fluds, comm_set), num_groups_(num_groups), num_angles_(num_angles)
 {
   done_sending = false;
   data_initialized = false;
