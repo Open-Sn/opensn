@@ -33,11 +33,11 @@ private:
 
 public:
   explicit RayTracer(const MeshContinuum& grid,
-                     std::vector<double> in_cell_sizes,
-                     bool in_perform_concavity_checks = true)
+                     std::vector<double> cell_sizes,
+                     bool perform_concavity_checks = true)
     : reference_grid_(grid),
-      cell_sizes_(std::move(in_cell_sizes)),
-      perform_concavity_checks_(in_perform_concavity_checks)
+      cell_sizes_(std::move(cell_sizes)),
+      perform_concavity_checks_(perform_concavity_checks)
   {
   }
 
