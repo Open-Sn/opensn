@@ -21,8 +21,8 @@ class Solver : public Object
 public:
   /**Returns the input parameters.*/
   static InputParameters GetInputParameters();
-  explicit Solver(std::string in_text_name);
-  Solver(std::string in_text_name, std::initializer_list<BasicOption> in_options);
+  explicit Solver(std::string name);
+  Solver(std::string name, std::initializer_list<BasicOption> options);
   explicit Solver(const InputParameters& params);
   virtual ~Solver() = default;
 
