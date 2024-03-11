@@ -19,8 +19,8 @@ namespace opensn
 namespace mg_diffusion
 {
 
-Solver::Solver(const std::string& in_solver_name)
-  : opensn::Solver(in_solver_name,
+Solver::Solver(const std::string& name)
+  : opensn::Solver(name,
                    {{"max_inner_iters", int64_t(500)},
                     {"residual_tolerance", 1.0e-2},
                     {"verbose_level", int64_t(0)},
