@@ -28,7 +28,7 @@ public:
   /**Constructor with number of rows and columns constructor.*/
   SparseMatrix(size_t num_rows, size_t num_cols);
   /**Copy constructor.*/
-  SparseMatrix(const SparseMatrix& in_matrix);
+  SparseMatrix(const SparseMatrix& matrix);
 
   size_t NumRows() const { return row_size_; }
   size_t NumCols() const { return col_size_; }
@@ -64,8 +64,8 @@ public:
     const size_t& column_index;
     double& value;
 
-    EntryReference(const size_t& row_id, const size_t& column_id, double& in_value)
-      : row_index(row_id), column_index(column_id), value(in_value)
+    EntryReference(const size_t& row_id, const size_t& column_id, double& value)
+      : row_index(row_id), column_index(column_id), value(value)
     {
     }
   };
@@ -77,8 +77,8 @@ public:
     const size_t& column_index;
     const double& value;
 
-    ConstEntryReference(const size_t& row_id, const size_t& column_id, const double& in_value)
-      : row_index(row_id), column_index(column_id), value(in_value)
+    ConstEntryReference(const size_t& row_id, const size_t& column_id, const double& value)
+      : row_index(row_id), column_index(column_id), value(value)
     {
     }
   };

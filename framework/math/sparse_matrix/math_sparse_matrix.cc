@@ -16,16 +16,16 @@ SparseMatrix::SparseMatrix(size_t num_rows, size_t num_cols)
   rowI_indices_.resize(num_rows, std::vector<size_t>());
 }
 
-SparseMatrix::SparseMatrix(const SparseMatrix& in_matrix)
-  : row_size_(in_matrix.NumRows()), col_size_(in_matrix.NumCols())
+SparseMatrix::SparseMatrix(const SparseMatrix& matrix)
+  : row_size_(matrix.NumRows()), col_size_(matrix.NumCols())
 {
   rowI_values_.resize(row_size_, std::vector<double>());
   rowI_indices_.resize(row_size_, std::vector<size_t>());
 
-  for (size_t i = 0; i < in_matrix.rowI_values_.size(); i++)
+  for (size_t i = 0; i < matrix.rowI_values_.size(); i++)
   {
-    rowI_values_[i] = (in_matrix.rowI_values_[i]);
-    rowI_indices_[i] = (in_matrix.rowI_indices_[i]);
+    rowI_values_[i] = (matrix.rowI_values_[i]);
+    rowI_indices_[i] = (matrix.rowI_indices_[i]);
   }
 }
 
