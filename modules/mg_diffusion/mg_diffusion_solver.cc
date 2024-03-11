@@ -536,7 +536,7 @@ Solver::Assemble_A_bext()
     const auto& sigma_r = xs->SigmaRemoval();
 
     const auto& qext = matid_to_src_map.at(cell.material_id_);
-    double collapsed_D = 0., collapsed_sig_a = 0.;
+    double collapsed_D = 0.0, collapsed_sig_a = 0.0;
     if (do_two_grid_)
     {
       const auto& xstg = map_mat_id_2_tginfo.at(cell.material_id_);

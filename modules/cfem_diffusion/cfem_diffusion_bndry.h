@@ -23,7 +23,7 @@ class Boundary
 public:
   BoundaryType type_ = BoundaryType::Dirichlet;
 
-  std::array<double, 3> values_ = {0., 0., 0.};
+  std::array<double, 3> values_ = {0.0, 0.0, 0.0};
 };
 
 } // namespace cfem_diffusion

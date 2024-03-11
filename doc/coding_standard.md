@@ -105,6 +105,11 @@ private:
 };
 ```
 
+### Numbers
+
+- Decimal numbers are written with both whole and fraction part.
+  Examples: `1234.12`, `1.0`, `0.0`, `1.0e-15`.
+
 ### Boolean operators
 
 Boolean operators `or`, `and` and `not` should be used instead of `||`, `&&` and `!`.

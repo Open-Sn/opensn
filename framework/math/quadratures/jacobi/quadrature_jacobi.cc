@@ -19,7 +19,7 @@ QuadratureJacobi::Initialize(QuadratureOrder order)
         qpoints_.resize(1);
         weights_.resize(1);
 
-        qpoints_[0](0) = 1. / 3.;
+        qpoints_[0](0) = 1.0 / 3.0;
 
         weights_[0] = 0.5;
 
@@ -770,7 +770,7 @@ QuadratureJacobi::Initialize(QuadratureOrder order)
 
         qpoints_[0](0) = 0.25;
 
-        weights_[0] = 1. / 3.;
+        weights_[0] = 1.0 / 3.0;
 
         return;
       }

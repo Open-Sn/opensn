@@ -24,9 +24,9 @@ QuadratureConical::Initialize_Conical_Product_Tri()
   for (unsigned int i = 0; i < np; i++)
     for (unsigned int j = 0; j < np; j++)
     {
-      qpoints_[gp](0) = jacobiA.qpoints_[j](0);                                  // s[j];
-      qpoints_[gp](1) = legendre.qpoints_[i](0) * (1. - jacobiA.qpoints_[j](0)); // r[i]*(1.-s[j]);
-      weights_[gp] = legendre.weights_[i] * jacobiA.weights_[j];                 // A[i]*B[j];
+      qpoints_[gp](0) = jacobiA.qpoints_[j](0);                                   // s[j];
+      qpoints_[gp](1) = legendre.qpoints_[i](0) * (1.0 - jacobiA.qpoints_[j](0)); // r[i]*(1.-s[j]);
+      weights_[gp] = legendre.weights_[i] * jacobiA.weights_[j];                  // A[i]*B[j];
       gp++;
     }
 }
@@ -51,10 +51,11 @@ QuadratureConical::Initialize_Conical_Product_Tet()
     for (unsigned int j = 0; j < np; j++)
       for (unsigned int k = 0; k < np; k++)
       {
-        qpoints_[gp](0) = jacobiB.qpoints_[k](0);                                 // t[k];
-        qpoints_[gp](1) = jacobiA.qpoints_[j](0) * (1. - jacobiB.qpoints_[k](0)); // s[j]*(1.-t[k]);
-        qpoints_[gp](2) = legendre.qpoints_[i](0) * (1. - jacobiA.qpoints_[j](0)) *
-                          (1. - jacobiB.qpoints_[k](0)); // r[i]*(1.-s[j])*(1.-t[k]);
+        qpoints_[gp](0) = jacobiB.qpoints_[k](0); // t[k];
+        qpoints_[gp](1) =
+          jacobiA.qpoints_[j](0) * (1.0 - jacobiB.qpoints_[k](0)); // s[j]*(1.-t[k]);
+        qpoints_[gp](2) = legendre.qpoints_[i](0) * (1.0 - jacobiA.qpoints_[j](0)) *
+                          (1.0 - jacobiB.qpoints_[k](0)); // r[i]*(1.-s[j])*(1.-t[k]);
         weights_[gp] =
           legendre.weights_[i] * jacobiA.weights_[j] * jacobiB.weights_[k]; // A[i]*B[j]*C[k];
         weight_sum += weights_[gp];

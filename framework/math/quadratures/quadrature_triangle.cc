@@ -97,7 +97,7 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
       const double a[n_wts] = {double(4.4594849091596488631832925388305199e-01L),
                                double(9.1576213509770743459571463402201508e-02L)};
 
-      const double b[n_wts] = {0., 0.}; // not used
+      const double b[n_wts] = {0.0, 0.0}; // not used
       const unsigned int permutation_ids[n_wts] = {3, 3};
 
       dunavant_rule2(wts, a, b, permutation_ids, n_wts); // 6 total points
@@ -114,11 +114,11 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                                  double(31) / 480 + std::sqrt(double(15.0L)) / 2400,
                                  double(31) / 480 - std::sqrt(double(15.0L)) / 2400};
 
-      const double a[n_wts] = {0., // 'a' parameter not used for origin permutation
+      const double a[n_wts] = {0.0, // 'a' parameter not used for origin permutation
                                double(2) / 7 + std::sqrt(double(15.0L)) / 21,
                                double(2) / 7 - std::sqrt(double(15.0L)) / 21};
 
-      const double b[n_wts] = {0., 0., 0.}; // not used
+      const double b[n_wts] = {0.0, 0.0, 0.0}; // not used
       const unsigned int permutation_ids[n_wts] = {1, 3, 3};
 
       dunavant_rule2(wts, a, b, permutation_ids, n_wts); // 7 total points
@@ -153,7 +153,7 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                              Real(6.3089014491502228340331602870819157e-02L),
                              Real(3.1035245103378440541660773395655215e-01L)};
 
-      const Real b[n_wts] = {0., 0., Real(6.3650249912139864723014259441204970e-01L)};
+      const Real b[n_wts] = {0.0, 0.0, Real(6.3650249912139864723014259441204970e-01L)};
 
       const unsigned int permutation_ids[n_wts] = {3, 3, 6}; // 12 total points
 
@@ -216,10 +216,10 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
       for (unsigned int i = 0, offset = 0; i < nrows; ++i)
       {
         _points[offset + 0] = Point(rule_data[i][0], rule_data[i][1]); // (z1,z2)
-        _points[offset + 1] = Point(1. - rule_data[i][0] - rule_data[i][1],
+        _points[offset + 1] = Point(1.0 - rule_data[i][0] - rule_data[i][1],
                                     rule_data[i][0]); // (z3,z1)
         _points[offset + 2] =
-          Point(rule_data[i][1], 1. - rule_data[i][0] - rule_data[i][1]); // (z2,z3)
+          Point(rule_data[i][1], 1.0 - rule_data[i][0] - rule_data[i][1]); // (z2,z3)
 
         // All these points get the same weight
         _weights[offset + 0] = rule_data[i][2];
@@ -295,7 +295,7 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
         Real(2.6311282963463811342178578628464359e-01L),
       };
 
-      const Real b[n_wts] = {0., 0., 0., 0., Real(7.2849239295540428124100037917606196e-01L)};
+      const Real b[n_wts] = {0.0, 0.0, 0.0, 0.0, Real(7.2849239295540428124100037917606196e-01L)};
 
       const unsigned int permutation_ids[n_wts] = {1, 3, 3, 3, 6}; // 16 total points
 
@@ -330,7 +330,8 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                              Real(1.8820353561903273024096128046733557e-01L),
                              Real(2.2196298916076569567510252769319107e-01L)};
 
-      const Real b[n_wts] = {0., 0., 0., 0., 0., Real(7.4119859878449802069007987352342383e-01L)};
+      const Real b[n_wts] = {
+        0.0, 0.0, 0.0, 0.0, 0.0, Real(7.4119859878449802069007987352342383e-01L)};
 
       const unsigned int permutation_ids[n_wts] = {1, 3, 3, 3, 3, 6}; // 19 total points
 
@@ -365,9 +366,9 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                              Real(2.4667256063990269391727646541117681e-01L),
                              Real(6.6803251012200265773540212762024737e-02L)};
 
-      const Real b[n_wts] = {0.,
-                             0.,
-                             0.,
+      const Real b[n_wts] = {0.0,
+                             0.0,
+                             0.0,
                              Real(5.5035294182099909507816172659300821e-01L),
                              Real(7.2832390459741092000873505358107866e-01L),
                              Real(9.2365593358750027664630697761508843e-01L)};
@@ -412,8 +413,8 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                              Real(2.8536418538696461608233522814483715e-01L),
                              Real(1.3723536747817085036455583801851025e-01L)};
 
-      const Real b[n_wts] = {0.,
-                             0.,
+      const Real b[n_wts] = {0.0,
+                             0.0,
                              Real(5.6817155788572446538150614865768991e-02L),
                              Real(1.2539956353662088473247489775203396e-01L),
                              Real(1.2409970153698532116262152247041742e-02L),
@@ -458,11 +459,11 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                              Real(1.1625191590759714124135414784260182e-01L),
                              Real(2.7571326968551419397479634607976398e-01L)};
 
-      const Real b[n_wts] = {0.,
-                             0.,
-                             0.,
-                             0.,
-                             0.,
+      const Real b[n_wts] = {0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
                              Real(6.9583608678780342214163552323607254e-01L),
                              Real(8.5801403354407263059053661662617818e-01L),
                              Real(6.0894323577978780685619243776371007e-01L)};
@@ -497,7 +498,7 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                                Real(1.2089519905796909568722872786530380e-02L),
                                Real(4.7953405017716313612975450830554457e-03L)};
 
-      const Real a[n_wts] = {0., // 'a' parameter not used for origin permutation
+      const Real a[n_wts] = {0.0, // 'a' parameter not used for origin permutation
                              Real(4.2694141425980040602081253503137421e-01L),
                              Real(2.2137228629183290065481255470507908e-01L),
                              Real(2.1509681108843183869291313534052083e-02L),
@@ -507,11 +508,11 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                              Real(1.6359740106785048023388790171095725e-01L),
                              Real(2.7251581777342966618005046435408685e-01L)};
 
-      const Real b[n_wts] = {0.,
-                             0.,
-                             0.,
-                             0.,
-                             0.,
+      const Real b[n_wts] = {0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
                              Real(6.2354599555367557081585435318623659e-01L),
                              Real(8.6470777029544277530254595089569318e-01L),
                              Real(7.4850711589995219517301859578870965e-01L),
@@ -559,12 +560,12 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                              Real(2.9837288213625775297083151805961273e-01L),
                              Real(1.1897449769695684539818196192990548e-01L)};
 
-      const Real b[n_wts] = {0.,
-                             0.,
-                             0.,
-                             0.,
-                             0.,
-                             0.,
+      const Real b[n_wts] = {0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
                              Real(7.7060855477499648258903327416742796e-01L),
                              Real(5.7022229084668317349769621336235426e-01L),
                              Real(6.8698016780808783735862715402031306e-01L),
@@ -621,11 +622,11 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
                              Real(8.9514624528794883409864566727625002e-01L),
                              Real(3.2515745241110782862789881780746490e-01L)};
 
-      const Real b[n_wts] = {0.,
-                             0.,
-                             0.,
-                             0.,
-                             0.,
+      const Real b[n_wts] = {0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
                              Real(1.9412620368774630292701241080996842e-01L),
                              Real(9.8765911355712115933807754318089099e-02L),
                              Real(7.7663767064308164090246588765178087e-02L),
@@ -829,15 +830,15 @@ QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order
 
       // The raw data for the quadrature rule.
       const Real rule_data[17][4] = {
-        {1. / 3., 0., 0., 0.032906331388919e+00 / 2.0},                                  // 1-perm
-        {0.020780025853987e+00, 0.489609987073006e+00, 0., 0.010330731891272e+00 / 2.0}, // 3-perm
-        {0.090926214604215e+00, 0.454536892697893e+00, 0., 0.022387247263016e+00 / 2.0}, // 3-perm
-        {0.197166638701138e+00, 0.401416680649431e+00, 0., 0.030266125869468e+00 / 2.0}, // 3-perm
-        {0.488896691193805e+00, 0.255551654403098e+00, 0., 0.030490967802198e+00 / 2.0}, // 3-perm
-        {0.645844115695741e+00, 0.177077942152130e+00, 0., 0.024159212741641e+00 / 2.0}, // 3-perm
-        {0.779877893544096e+00, 0.110061053227952e+00, 0., 0.016050803586801e+00 / 2.0}, // 3-perm
-        {0.888942751496321e+00, 0.055528624251840e+00, 0., 0.008084580261784e+00 / 2.0}, // 3-perm
-        {0.974756272445543e+00, 0.012621863777229e+00, 0., 0.002079362027485e+00 / 2.0}, // 3-perm
+        {1.0 / 3.0, 0.0, 0.0, 0.032906331388919e+00 / 2.0},                               // 1-perm
+        {0.020780025853987e+00, 0.489609987073006e+00, 0.0, 0.010330731891272e+00 / 2.0}, // 3-perm
+        {0.090926214604215e+00, 0.454536892697893e+00, 0.0, 0.022387247263016e+00 / 2.0}, // 3-perm
+        {0.197166638701138e+00, 0.401416680649431e+00, 0.0, 0.030266125869468e+00 / 2.0}, // 3-perm
+        {0.488896691193805e+00, 0.255551654403098e+00, 0.0, 0.030490967802198e+00 / 2.0}, // 3-perm
+        {0.645844115695741e+00, 0.177077942152130e+00, 0.0, 0.024159212741641e+00 / 2.0}, // 3-perm
+        {0.779877893544096e+00, 0.110061053227952e+00, 0.0, 0.016050803586801e+00 / 2.0}, // 3-perm
+        {0.888942751496321e+00, 0.055528624251840e+00, 0.0, 0.008084580261784e+00 / 2.0}, // 3-perm
+        {0.974756272445543e+00, 0.012621863777229e+00, 0.0, 0.002079362027485e+00 / 2.0}, // 3-perm
         {0.003611417848412e+00,
          0.395754787356943e+00,
          0.600633794794645e+00,

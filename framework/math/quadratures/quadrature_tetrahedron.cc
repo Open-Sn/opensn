@@ -90,7 +90,7 @@ QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : Quadrature
         const unsigned int offset = 4 * i;
 
         // Stuff points and weights values into their arrays
-        const double b = 1. - 3. * a[i];
+        const double b = 1.0 - 3.0 * a[i];
 
         // Here are the permutations.  Order of these is not important,
         // all have the same weight
@@ -107,7 +107,7 @@ QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : Quadrature
       {
         // The third set contains 6 points and is formed a little differently
         const unsigned int offset = 8;
-        const double b = 0.5 * (1. - 2. * a[2]);
+        const double b = 0.5 * (1.0 - 2.0 * a[2]);
 
         // Here are the permutations.  Order of these is not important,
         // all have the same weight
@@ -143,9 +143,9 @@ QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : Quadrature
 
       // The raw data for the quadrature rule.
       const std::vector<std::vector<double>> rule_data = {
-        {0.356191386222544953e+00, 0.214602871259151684e+00, 0., 0.00665379170969464506e+00},  // 4
-        {0.877978124396165982e+00, 0.0406739585346113397e+00, 0., 0.00167953517588677620e+00}, // 4
-        {0.0329863295731730594e+00, 0.322337890142275646e+00, 0., 0.00922619692394239843e+00}, // 4
+        {0.356191386222544953e+00, 0.214602871259151684e+00, 0.0, 0.00665379170969464506e+00},  // 4
+        {0.877978124396165982e+00, 0.0406739585346113397e+00, 0.0, 0.00167953517588677620e+00}, // 4
+        {0.0329863295731730594e+00, 0.322337890142275646e+00, 0.0, 0.00922619692394239843e+00}, // 4
         {0.0636610018750175299e+00,
          0.269672331458315867e+00,
          0.603005664791649076e+00,
