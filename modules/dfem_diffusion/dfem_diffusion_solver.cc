@@ -79,7 +79,7 @@ Solver::Initialize()
         case BoundaryType::Reflecting:
         {
           boundaries_.insert(
-            std::make_pair(bndry_id, Boundary{BoundaryType::Reflecting, {0., 0., 0.}}));
+            std::make_pair(bndry_id, Boundary{BoundaryType::Reflecting, {0.0, 0.0, 0.0}}));
           log.Log() << "Boundary " << bndry_name << " set to reflecting.";
           break;
         }
@@ -88,7 +88,7 @@ Solver::Initialize()
           if (bndry_vals.empty())
             bndry_vals.resize(1, 0.0);
           boundaries_.insert(
-            std::make_pair(bndry_id, Boundary{BoundaryType::Dirichlet, {bndry_vals[0], 0., 0.}}));
+            std::make_pair(bndry_id, Boundary{BoundaryType::Dirichlet, {bndry_vals[0], 0.0, 0.0}}));
           log.Log() << "Boundary " << bndry_name << " set to dirichlet.";
           break;
         }
@@ -117,7 +117,7 @@ Solver::Initialize()
             throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
                                    " Neumann needs 3 values in bndry vals.");
           boundaries_.insert(std::make_pair(
-            bndry_id, Boundary{BoundaryType::Robin, {0., bndry_vals[0], bndry_vals[1]}}));
+            bndry_id, Boundary{BoundaryType::Robin, {0.0, bndry_vals[0], bndry_vals[1]}}));
           log.Log() << "Boundary " << bndry_name << " set to neumann." << bndry_vals[0];
           break;
         }
@@ -125,7 +125,8 @@ Solver::Initialize()
     }
     else
     {
-      boundaries_.insert(std::make_pair(bndry_id, Boundary{BoundaryType::Dirichlet, {0., 0., 0.}}));
+      boundaries_.insert(
+        std::make_pair(bndry_id, Boundary{BoundaryType::Dirichlet, {0.0, 0.0, 0.0}}));
       log.Log0Verbose1() << "No boundary preference found for boundary index " << bndry_name
                          << "Dirichlet boundary added with zero boundary value.";
     }
@@ -278,7 +279,7 @@ Solver::Execute()
                 Ckappa *
                 (d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) / hm +
                  d_coef_function_->Evaluate(imat_neigh, fe_srf_data.QPointXYZ(qp)) / hp_neigh) /
-                2. * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
+                2.0 * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                 fe_srf_data.JxW(qp);
 
             MatSetValue(A_, imap, jmmap, aij, ADD_VALUES);

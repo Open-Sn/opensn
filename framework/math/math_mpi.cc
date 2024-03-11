@@ -9,7 +9,7 @@ double
 Vec2NormMPI(const VecDbl& x, const mpi::Communicator& comm)
 {
   size_t n = x.size();
-  double sum = 0.;
+  double sum = 0.0;
 
   for (size_t i = 0; i != n; i++)
     sum += x[i] * x[i];

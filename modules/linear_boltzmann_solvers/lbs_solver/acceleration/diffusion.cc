@@ -151,7 +151,7 @@ DiffusionSolver::Initialize()
   KSPSetOptionsPrefix(ksp_, text_name_.c_str());
   KSPSetType(ksp_, KSPCG);
 
-  KSPSetTolerances(ksp_, 1.e-50, options.residual_tolerance, 1.0e50, options.max_iters);
+  KSPSetTolerances(ksp_, 1.0e-50, options.residual_tolerance, 1.0e50, options.max_iters);
 
   // Set Pre-conditioner
   PC pc;

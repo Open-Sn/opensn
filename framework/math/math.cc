@@ -154,7 +154,7 @@ MatMul(const MatDbl& A, const VecDbl& x)
   assert(R > 0);
   assert(C == A[0].size());
 
-  VecDbl b(R, 0.);
+  VecDbl b(R, 0.0);
 
   for (size_t i = 0; i < R; i++)
   {
@@ -277,7 +277,7 @@ Determinant(const MatDbl& A)
     for (size_t n = 0; n < R; n++)
     {
       std::vector<std::vector<double>> M = SubMatrix(0, n, A);
-      double pm = ((n + 1) % 2) * 2. - 1.;
+      double pm = ((n + 1) % 2) * 2.0 - 1.0;
       det += pm * A[0][n] * Determinant(M);
     }
     return det;
@@ -354,7 +354,7 @@ InverseGEPivoting(const MatDbl& A)
   std::vector<std::vector<double>> M(R, std::vector<double>(R, 0.));
 
   for (unsigned int i = 0; i < R; i++)
-    M[i][i] = 1.;
+    M[i][i] = 1.0;
 
   std::vector<std::vector<double>> B = A;
 
@@ -407,7 +407,7 @@ Inverse(const MatDbl& A)
 {
   size_t R = A.size();
   std::vector<std::vector<double>> M(R, std::vector<double>(R, 0.));
-  double f(0.);
+  double f(0.0);
 
   // Only calculate the determinant if matrix size is less than 5 since
   // the inverse is directly calculated for larger matrices. Otherwise,
@@ -416,8 +416,8 @@ Inverse(const MatDbl& A)
   if (R < 5)
   {
     f = Determinant(A);
-    assert(f != 0.);
-    f = 1. / f;
+    assert(f != 0.0);
+    f = 1.0 / f;
   }
 
   if (R == 1)
@@ -511,14 +511,14 @@ PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
   // Local Variables
   unsigned int n = A.size();
   int it_counter = 0;
-  VecDbl y(n, 1.);
-  double lambda0 = 0.;
+  VecDbl y(n, 1.0);
+  double lambda0 = 0.0;
 
   // Perform initial iteration outside of loop
   VecDbl Ay = MatMul(A, y);
   double lambda = Dot(y, Ay);
-  y = VecMul(Ay, 1. / Vec2Norm(Ay));
-  if (lambda < 0.)
+  y = VecMul(Ay, 1.0 / Vec2Norm(Ay));
+  if (lambda < 0.0)
     Scale(y, -1.0);
 
   // Perform convergence loop
@@ -530,7 +530,7 @@ PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
     // Calculate new eigenvalue/eigenvector
     Ay = MatMul(A, y);
     lambda = Dot(y, Ay);
-    y = VecMul(Ay, 1. / Vec2Norm(Ay));
+    y = VecMul(Ay, 1.0 / Vec2Norm(Ay));
 
     // Check if converged or not
     if (std::fabs(std::fabs(lambda) - lambda0) <= tol)
@@ -539,11 +539,11 @@ PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
     ++it_counter;
   }
 
-  if (lambda < 0.)
+  if (lambda < 0.0)
     Scale(y, -1.0);
 
   // Renormalize eigenvector for the last time
-  y = VecMul(Ay, 1. / lambda);
+  y = VecMul(Ay, 1.0 / lambda);
 
   // Set eigenvector, return the eigenvalue
   e_vec = std::move(y);
@@ -607,7 +607,7 @@ Vec1Norm(const VecDbl& x)
 {
   // Local Variables
   size_t n = x.size();
-  double val = 0.;
+  double val = 0.0;
 
   for (size_t i = 0; i != n; i++)
     val += std::fabs(x[i]);
@@ -620,7 +620,7 @@ Vec2Norm(const VecDbl& x)
 {
   // Local Variables
   size_t n = x.size();
-  double val = 0.;
+  double val = 0.0;
 
   for (size_t i = 0; i != n; i++)
     val += x[i] * x[i];
@@ -646,12 +646,12 @@ VecPNorm(const VecDbl& x, const double& p)
 {
   // Local Variables
   size_t n = x.size();
-  double val = 0.;
+  double val = 0.0;
 
   for (size_t i = 0; i != n; i++)
     val += std::pow(std::fabs(x[i]), p);
 
-  return std::pow(val, 1. / p);
+  return std::pow(val, 1.0 / p);
 }
 
 VecDbl
