@@ -18,7 +18,7 @@ namespace opensn
  * it because it has some over-head to it that gets executed in the constructor.
  *
  \code
- CDFSampler sampler(in_cdf);
+ CDFSampler sampler(cdf);
  \endcode
  *
  * */
@@ -37,7 +37,7 @@ private:
 
 public:
   /** constructor.*/
-  CDFSampler(std::vector<double>& in_cdf,
+  CDFSampler(std::vector<double>& cdf,
              int subdiv_factor = AUTO_SUBDIV,
              int final_res = AUTO_FINERES);
 
@@ -62,7 +62,7 @@ struct CDFSampler::SubIntvl
   SubIntvl(std::string offset,
            int ibin,
            int fbin,
-           std::vector<double>& in_cdf,
+           std::vector<double>& cdf,
            int subdiv_factor = 10,
            int final_res = 10,
            bool inhibit = false);

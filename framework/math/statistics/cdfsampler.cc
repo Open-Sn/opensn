@@ -13,11 +13,11 @@ namespace opensn
 CDFSampler::SubIntvl::SubIntvl(std::string offset,
                                int ibin,
                                int fbin,
-                               std::vector<double>& in_cdf,
+                               std::vector<double>& cdf,
                                int subdiv_factor,
                                int final_res,
                                bool inhibit)
-  : ref_cdf(in_cdf)
+  : ref_cdf(cdf)
 {
   inhibited = inhibit;
   cbin_i = ibin;
@@ -56,20 +56,19 @@ CDFSampler::SubIntvl::SubIntvl(std::string offset,
   }
 }
 
-CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor, int final_res)
-  : ref_cdf_(in_cdf)
+CDFSampler::CDFSampler(std::vector<double>& cdf, int subdiv_factor, int final_res) : ref_cdf_(cdf)
 {
   // Setting sub-division factor
   if (subdiv_factor >= 1)
     this->subdiv_factor_ = subdiv_factor;
   else
   {
-    if (in_cdf.size() <= 10)
+    if (cdf.size() <= 10)
       this->subdiv_factor_ = 1;
-    else if (in_cdf.size() <= 10000)
+    else if (cdf.size() <= 10000)
       this->subdiv_factor_ = 10;
     else
-      this->subdiv_factor_ = 10; // sqrt(in_cdf.size());
+      this->subdiv_factor_ = 10; // sqrt(cdf.size());
   }
 
   // Setting final resolution
@@ -85,7 +84,7 @@ CDFSampler::CDFSampler(std::vector<double>& in_cdf, int subdiv_factor, int final
   //    << " " << this->final_res;
 
   // Sub-dividing the interval
-  size_t cdf_size = in_cdf.size();
+  size_t cdf_size = cdf.size();
   size_t intvl_size = ceil(cdf_size / (double)this->subdiv_factor_);
 
   if (intvl_size < this->final_res_)
