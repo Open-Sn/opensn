@@ -131,7 +131,7 @@ UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int unknown_i
 }
 
 void
-UnknownManager::SetUnknownTextName(unsigned int unknown_id, const std::string& in_text_name)
+UnknownManager::SetUnknownTextName(unsigned int unknown_id, const std::string& text_name)
 {
   auto& log = Logger::GetInstance();
 
@@ -143,13 +143,13 @@ UnknownManager::SetUnknownTextName(unsigned int unknown_id, const std::string& i
     Exit(EXIT_FAILURE);
   }
 
-  unknowns_[unknown_id].text_name_ = in_text_name;
+  unknowns_[unknown_id].text_name_ = text_name;
 }
 
 void
 UnknownManager::SetUnknownComponentTextName(unsigned int unknown_id,
                                             unsigned int component,
-                                            const std::string& in_text_name)
+                                            const std::string& text_name)
 {
   auto& log = Logger::GetInstance();
 
@@ -169,7 +169,7 @@ UnknownManager::SetUnknownComponentTextName(unsigned int unknown_id,
     Exit(EXIT_FAILURE);
   }
 
-  unknowns_[unknown_id].component_text_names_[component] = in_text_name;
+  unknowns_[unknown_id].component_text_names_[component] = text_name;
 }
 
 } // namespace opensn
