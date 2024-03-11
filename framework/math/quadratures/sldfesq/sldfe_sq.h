@@ -202,19 +202,19 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   /// Legendre quadrature weights
   std::vector<double>& lqw;
 
-  FUNCTION_WEIGHT_FROM_RHO(SimplifiedLDFESQ::Quadrature& in_sldfesq,
-                           Vertex& in_centroid_xy_tilde,
-                           std::array<Vector3, 4>& in_radii_vectors_xy_tilde,
-                           SphericalQuadrilateral& in_sq,
-                           QuadratureGaussLegendre& in_legendre_quadrature)
-    : sldfesq(in_sldfesq),
-      centroid_xy_tilde(in_centroid_xy_tilde),
-      radii_vectors_xy_tilde(in_radii_vectors_xy_tilde),
-      sq(in_sq),
+  FUNCTION_WEIGHT_FROM_RHO(SimplifiedLDFESQ::Quadrature& sldfesq,
+                           Vertex& centroid_xy_tilde,
+                           std::array<Vector3, 4>& radii_vectors_xy_tilde,
+                           SphericalQuadrilateral& sq,
+                           QuadratureGaussLegendre& legendre_quadrature)
+    : sldfesq(sldfesq),
+      centroid_xy_tilde(centroid_xy_tilde),
+      radii_vectors_xy_tilde(radii_vectors_xy_tilde),
+      sq(sq),
       A(4, 4),
       A_inv(4, 4),
-      lqp(in_legendre_quadrature.qpoints_),
-      lqw(in_legendre_quadrature.weights_)
+      lqp(legendre_quadrature.qpoints_),
+      lqw(legendre_quadrature.weights_)
   {
     // Init RHS
     for (int i = 0; i < 4; ++i)
