@@ -22,7 +22,7 @@ private:
 public:
   std::string property_name;
 
-  explicit PhysicsMaterialProperty(PropertyType in_type) : type_(in_type) {}
+  explicit PhysicsMaterialProperty(PropertyType type) : type_(type) {}
 
   virtual ~PhysicsMaterialProperty() = default;
 
