@@ -37,10 +37,10 @@ public:
   int64_t IntegerValue() const { return value_.IntegerValue(); }
   double FloatValue() const { return value_.FloatValue(); }
 
-  void SetStringValue(const std::string& in_string_value) { value_ = in_string_value; }
-  void SetBoolValue(const bool& in_bool_value) { value_ = in_bool_value; }
-  void SetIntegerValue(const int64_t& in_integer_value) { value_ = in_integer_value; }
-  void SetFloatValue(const double& in_float_value) { value_ = in_float_value; }
+  void SetStringValue(const std::string& value) { value_ = value; }
+  void SetBoolValue(const bool& value) { value_ = value; }
+  void SetIntegerValue(const int64_t& value) { value_ = value; }
+  void SetFloatValue(const double& value) { value_ = value; }
 };
 
 /**Class for basic options*/
@@ -53,7 +53,7 @@ public:
   BasicOptions() = default;
 
   /**Constructor with initializer list.*/
-  BasicOptions(std::initializer_list<BasicOption> in_options) : options_(in_options) {}
+  BasicOptions(std::initializer_list<BasicOption> options) : options_(options) {}
 
   // Operators
   /**Returns a constant reference to an option that matches the
