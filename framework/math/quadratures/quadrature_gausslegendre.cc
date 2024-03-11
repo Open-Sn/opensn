@@ -56,11 +56,11 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(const InputParameters& params) 
   }
 }
 
-QuadratureGaussLegendre::QuadratureGaussLegendre(QuadratureOrder in_order,
+QuadratureGaussLegendre::QuadratureGaussLegendre(QuadratureOrder order,
                                                  bool verbose,
                                                  unsigned int max_iters,
                                                  double tol)
-  : Quadrature(in_order)
+  : Quadrature(order)
 {
   const unsigned int N = std::ceil(((int)order_ + 1) / 2.0);
   Initialize(N, verbose, max_iters, tol);
