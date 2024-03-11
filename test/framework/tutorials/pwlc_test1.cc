@@ -137,7 +137,7 @@ SimTest03_PWLC(const InputParameters&)
   // Create Krylov Solver
   opensn::log.Log() << "Solving: ";
   auto petsc_solver =
-    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCGAMG, 1.0e-9, 1000);
+    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCGAMG, 0.0, 1.0e-9, 1000);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);

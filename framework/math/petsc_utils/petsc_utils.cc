@@ -98,7 +98,8 @@ CreateCommonKrylovSolverSetup(Mat ref_matrix,
                               const std::string& in_solver_name,
                               const std::string& in_solver_type,
                               const std::string& in_preconditioner_type,
-                              double in_relative_residual_tolerance,
+                              double in_rel_tol,
+                              double in_abs_tol,
                               int64_t in_maximum_iterations)
 {
   PETScSolverSetup setup;
@@ -112,8 +113,7 @@ CreateCommonKrylovSolverSetup(Mat ref_matrix,
   KSPGetPC(setup.ksp, &setup.pc);
   PCSetType(setup.pc, in_preconditioner_type.c_str());
 
-  KSPSetTolerances(
-    setup.ksp, 1.e-50, in_relative_residual_tolerance, 1.0e50, in_maximum_iterations);
+  KSPSetTolerances(setup.ksp, in_rel_tol, in_abs_tol, 1.0e50, in_maximum_iterations);
   KSPSetInitialGuessNonzero(setup.ksp, PETSC_TRUE);
 
   KSPSetFromOptions(setup.ksp);
