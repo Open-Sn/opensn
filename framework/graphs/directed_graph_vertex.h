@@ -19,53 +19,53 @@ struct GraphVertex
   std::map<size_t, double> us_weights;
   std::map<size_t, double> ds_weights;
 
-  GraphVertex(size_t in_id, void* in_context) : id(in_id), context(in_context) {}
+  GraphVertex(size_t id, void* context) : id(id), context(context) {}
 
-  explicit GraphVertex(size_t in_id) : id(in_id), context(nullptr) {}
+  explicit GraphVertex(size_t id) : id(id), context(nullptr) {}
 
-  GraphVertex(const GraphVertex& in_v)
+  GraphVertex(const GraphVertex& vertex)
   {
-    this->id = in_v.id;
-    this->context = in_v.context;
+    this->id = vertex.id;
+    this->context = vertex.context;
 
-    us_edge = in_v.us_edge;
-    ds_edge = in_v.ds_edge;
+    us_edge = vertex.us_edge;
+    ds_edge = vertex.ds_edge;
   }
 
-  GraphVertex(GraphVertex&& in_v) noexcept
+  GraphVertex(GraphVertex&& vertex) noexcept
   {
-    this->id = in_v.id;
-    this->context = in_v.context;
+    this->id = vertex.id;
+    this->context = vertex.context;
 
-    us_edge = in_v.us_edge;
-    ds_edge = in_v.ds_edge;
+    us_edge = vertex.us_edge;
+    ds_edge = vertex.ds_edge;
 
-    in_v.context = nullptr;
+    vertex.context = nullptr;
   }
 
-  GraphVertex& operator=(const GraphVertex& in_v)
+  GraphVertex& operator=(const GraphVertex& vertex)
   {
-    if (this == &in_v)
+    if (this == &vertex)
       return *this;
 
-    this->id = in_v.id;
-    this->context = in_v.context;
+    this->id = vertex.id;
+    this->context = vertex.context;
 
-    us_edge = in_v.us_edge;
-    ds_edge = in_v.ds_edge;
+    us_edge = vertex.us_edge;
+    ds_edge = vertex.ds_edge;
 
     return *this;
   }
 
-  GraphVertex& operator=(GraphVertex&& in_v) noexcept
+  GraphVertex& operator=(GraphVertex&& vertex) noexcept
   {
-    this->id = in_v.id;
-    this->context = in_v.context;
+    this->id = vertex.id;
+    this->context = vertex.context;
 
-    us_edge = in_v.us_edge;
-    ds_edge = in_v.ds_edge;
+    us_edge = vertex.us_edge;
+    ds_edge = vertex.ds_edge;
 
-    in_v.context = nullptr;
+    vertex.context = nullptr;
 
     return *this;
   }
