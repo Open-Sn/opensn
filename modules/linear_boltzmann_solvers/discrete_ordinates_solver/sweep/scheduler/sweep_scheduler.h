@@ -53,9 +53,9 @@ private:
   const std::vector<size_t> sweep_timing_events_tag_;
 
 public:
-  SweepScheduler(SchedulingAlgorithm in_scheduler_type,
-                 AngleAggregation& in_angle_agg,
-                 SweepChunk& in_sweep_chunk);
+  SweepScheduler(SchedulingAlgorithm scheduler_type,
+                 AngleAggregation& angle_agg,
+                 SweepChunk& sweep_chunk);
 
   AngleAggregation& AngleAgg() { return angle_agg_; }
 
@@ -104,7 +104,7 @@ public:
   /**
    * Sets the location where flux moments are to be written.
    */
-  void SetDestinationPhi(std::vector<double>& in_destination_phi);
+  void SetDestinationPhi(std::vector<double>& destination_phi);
 
   /**
    * Sets all elements of the output vector to zero.
@@ -119,7 +119,7 @@ public:
   /**
    * Sets the location where angular fluxes are to be written.
    */
-  void SetDestinationPsi(std::vector<double>& in_destination_psi);
+  void SetDestinationPsi(std::vector<double>& destination_psi);
 
   /**
    * Sets all elements of the output angular flux vector to zero.
