@@ -199,10 +199,10 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
     DOFHandler(int64_t block_start,
                int64_t block_end,
-               const std::vector<uint64_t>& in_locJ_block_address)
+               const std::vector<uint64_t>& locJ_block_address)
       : local_block_start(block_start),
         local_block_end(block_end),
-        locI_block_addr(in_locJ_block_address)
+        locI_block_addr(locJ_block_address)
     {
     }
 
