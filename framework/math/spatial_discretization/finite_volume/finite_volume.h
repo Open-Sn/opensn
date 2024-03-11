@@ -27,8 +27,7 @@ public:
    * Publicly accessible construction handler.
    */
   static std::shared_ptr<FiniteVolume>
-  New(const MeshContinuum& in_grid,
-      CoordinateSystemType in_cs_type = CoordinateSystemType::CARTESIAN);
+  New(const MeshContinuum& grid, CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN);
 
   void CreateCellMappings();
 
