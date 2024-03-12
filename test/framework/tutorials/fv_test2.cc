@@ -113,12 +113,14 @@ SimTest02_FV(const InputParameters&)
   // Create Krylov Solver
   opensn::log.Log() << "Solving: ";
   auto petsc_solver =
-    CreateCommonKrylovSolverSetup(A, "FVDiffSolver", KSPCG, PCGAMG, 0.0, 1.0e-9, 1000);
+    CreateCommonKrylovSolverSetup(A, "FVDiffSolver", KSPCG, PCGAMG, 0.0, 1.0e-9, 18);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);
-
-  opensn::log.Log() << "Done solving";
+  KSPConvergedReason reason;
+  KSPGetConvergedReason(petsc_solver.ksp, &reason);
+  if (reason == KSP_CONVERGED_ATOL)
+    opensn::log.Log() << "Converged";
 
   // Extract PETSc vector
   std::vector<double> field(num_local_dofs, 0.0);
