@@ -69,6 +69,7 @@ doc/generated_files
 ChiTech/UnitTests/Output
 
 test/**/out/
+tutorials/**/out/
 
 #Scratch directory
 scratch/
@@ -83,3 +84,8 @@ tests/BigTests/c5g7/Test1/solutions/
 doc/scripts/parser.out
 doc/scripts/parsetab.py
 
+doc/**/*.pvtu
+doc/**/*.vtu
+
+tutorials/**/*.pvtu
+tutorials/**/*.vtu

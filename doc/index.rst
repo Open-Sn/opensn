@@ -1,7 +1,7 @@
 OpenSn
 ======
 
-Welcome to OpenSn documentation.
+Welcome to the OpenSn documentation.
 
 .. toctree::
    :maxdepth: 1
@@ -12,11 +12,26 @@ Welcome to OpenSn documentation.
    install_linux_easy.md
    install_macos.md
    install_macos_easy.md
-   coding_standard.md
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :hidden:
    :caption: Tutorials
 
-   tutorials/index.rst
+   tutorials/meshing/index
+   tutorials/material/index
+   tutorials/lbs/index
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Developer's Corner
+
+   coding_standard.md
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Older Tutorials
+
+   tutorials/old/index
