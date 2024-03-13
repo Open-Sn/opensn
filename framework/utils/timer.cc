@@ -39,7 +39,7 @@ Timer::GetTimeString() const
   double seconds = time_sec - 3600.0 * hours - 60.0 * minutes;
 
   char buff[100];
-  snprintf(buff, 100, "%02d:%02d:%02.1f", hours, minutes, seconds);
+  snprintf(buff, 100, "%02d:%02d:%04.1f", hours, minutes, seconds);
 
   return {buff};
 }
