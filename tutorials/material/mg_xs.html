@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multigroup Cross Sections &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Linear Boltzmann Solver" href="../lbs/index.html" />
+    <link rel="prev" title="Material and Source Definitions" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install_linux.html">Compiling on Personal Linux Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install_linux_easy.html">Easy install on Ubuntu Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install_macos.html">Compiling on MacOS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install_macos_easy.html">Easy Install on MacOS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../meshing/index.html">Meshing and Partitioning</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Material and Source Definitions</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Multigroup Cross Sections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#materials">Materials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cross-sections">Cross Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-complete-input-is-below">The complete input is below:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../lbs/index.html">Linear Boltzmann Solver</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer's Corner</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../coding_standard.html">Coding Standard</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Older Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../old/index.html">Basic Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Material and Source Definitions</a></li>
+      <li class="breadcrumb-item active">Multigroup Cross Sections</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="multigroup-cross-sections">
+<h1>Multigroup Cross Sections<a class="headerlink" href="#multigroup-cross-sections" title="Link to this heading"></a></h1>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading"></a></h2>
+<p>OpenSn is not provided with cross-section libraries. Users are expected to supply their own multigroup cross-section data.
+One may use other open-source software to generate this data (e.g., NJOY, Dragon, OpenMC).</p>
+<p>The cross sections are read from a plain text file. The <code class="docutils literal notranslate"><span class="pre">OPENSN_XSFILE</span></code> format  of that file is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add descriptive comments as appropriate</span>
+<span class="n">NUM_GROUPS</span> <span class="n">ng</span>
+<span class="n">NUM_MOMENTS</span> <span class="n">nmom</span>
+
+<span class="n">SIGMA_T_BEGIN</span>
+<span class="mi">0</span> <span class="n">value</span>
+<span class="o">.</span>
+<span class="o">.</span>
+<span class="n">ng</span><span class="o">-</span><span class="mi">1</span> <span class="n">value</span>
+<span class="n">SIGMA_T_END</span>
+
+<span class="n">SIGMA_A_BEGIN</span>
+<span class="mi">0</span> <span class="n">value</span>
+<span class="o">.</span>
+<span class="o">.</span>
+<span class="n">ng</span><span class="o">-</span><span class="mi">1</span> <span class="n">value</span>
+<span class="n">SIGMA_A_END</span>
+
+<span class="n">TRANSFER_MOMENTS_BEGIN</span>
+<span class="c1"># Add descriptive comments as appropriate</span>
+<span class="n">M_GPRIME_G_VAL</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="n">value</span>
+<span class="o">.</span>
+<span class="n">M_GPRIME_G_VAL</span> <span class="n">moment</span> <span class="n">gprime</span> <span class="n">g</span> <span class="n">value</span>
+<span class="o">.</span>
+<span class="n">M_GPRIME_G_VAL</span> <span class="n">nmom</span><span class="o">-</span><span class="mi">1</span> <span class="n">ng</span><span class="o">-</span><span class="mi">1</span> <span class="n">ng</span><span class="o">-</span><span class="mi">1</span> <span class="n">value</span>
+<span class="n">TRANSFER_MOMENTS_END</span>
+
+</pre></div>
+</div>
+</section>
+<section id="materials">
+<h2>Materials<a class="headerlink" href="#materials" title="Link to this heading"></a></h2>
+<p>We create a material and add a property to it:</p>
+<ul class="simple">
+<li><p>TRANSPORT_XSECTIONS for the transport cross sections</p></li>
+</ul>
+<p>Recall that lua indexing starts at 1.</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Add materials</span>
+<span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhysicsAddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
+<span class="n">PhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="cross-sections">
+<h2>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h2>
+<p>We assign the cross sections to the material by loading the file containing the cross sections.</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">PhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
+        <span class="n">OPENSN_XSFILE</span><span class="p">,</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="the-complete-input-is-below">
+<h2>The complete input is below:<a class="headerlink" href="#the-complete-input-is-below" title="Link to this heading"></a></h2>
+<p>You can copy/paste the text below or look in the file named <code class="docutils literal notranslate"><span class="pre">tutorials/material/mg_xs.lua</span></code>:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Add materials</span>
+<span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhysicsAddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
+
+<span class="n">PhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
+
+<span class="n">PhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
+        <span class="n">OPENSN_XSFILE</span><span class="p">,</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Material and Source Definitions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../lbs/index.html" class="btn btn-neutral float-right" title="Linear Boltzmann Solver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

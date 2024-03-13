@@ -1,9 +1,9 @@
 Basic Tutorials
 ===============
 
-- :doc:`/tutorials/basic_diffusion_simulation`
-- :doc:`/tutorials/output`
-- :doc:`/tutorials/basic_transport_simulation`
+- :doc:`/tutorials/old/basic_diffusion_simulation`
+- :doc:`/tutorials/old/output`
+- :doc:`/tutorials/old/basic_transport_simulation`
 
 .. toctree::
    :maxdepth: 1
