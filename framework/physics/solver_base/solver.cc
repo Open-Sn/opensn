@@ -37,15 +37,15 @@ Solver::GetInputParameters()
   return params;
 }
 
-Solver::Solver(std::string in_text_name)
-  : timestepper_(InitTimeStepper(GetInputParameters())), text_name_(std::move(in_text_name))
+Solver::Solver(std::string name)
+  : timestepper_(InitTimeStepper(GetInputParameters())), text_name_(std::move(name))
 {
 }
 
-Solver::Solver(std::string in_text_name, std::initializer_list<BasicOption> in_options)
-  : basic_options_(in_options),
+Solver::Solver(std::string name, std::initializer_list<BasicOption> options)
+  : basic_options_(options),
     timestepper_(InitTimeStepper(GetInputParameters())),
-    text_name_(std::move(in_text_name))
+    text_name_(std::move(name))
 {
 }
 

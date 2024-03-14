@@ -11,12 +11,12 @@ namespace opensn
 namespace lbs
 {
 
-SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
-                               AngleAggregation& in_angle_agg,
-                               SweepChunk& in_sweep_chunk)
-  : scheduler_type_(in_scheduler_type),
-    angle_agg_(in_angle_agg),
-    sweep_chunk_(in_sweep_chunk),
+SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
+                               AngleAggregation& angle_agg,
+                               SweepChunk& sweep_chunk)
+  : scheduler_type_(scheduler_type),
+    angle_agg_(angle_agg),
+    sweep_chunk_(sweep_chunk),
     sweep_event_tag_(log.GetRepeatingEventTag("Sweep Timing")),
     sweep_timing_events_tag_(
       {log.GetRepeatingEventTag("Sweep Chunk Only Timing"), sweep_event_tag_})
@@ -28,13 +28,13 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
     InitializeAlgoDOG();
 
   // Initialize delayed upstream data
-  for (auto& angsetgrp : in_angle_agg.angle_set_groups)
+  for (auto& angsetgrp : angle_agg.angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
       angset->InitializeDelayedUpstreamData();
 
   // Get local max num messages accross anglesets
   int local_max_num_messages = 0;
-  for (auto& angsetgrp : in_angle_agg.angle_set_groups)
+  for (auto& angsetgrp : angle_agg.angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
       local_max_num_messages = std::max(angset->GetMaxBufferMessages(), local_max_num_messages);
 
@@ -43,7 +43,7 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm in_scheduler_type,
   mpi_comm.all_reduce(local_max_num_messages, global_max_num_messages, mpi::op::max<int>());
 
   // Propogate items back to sweep buffers
-  for (auto& angsetgrp : in_angle_agg.angle_set_groups)
+  for (auto& angsetgrp : angle_agg.angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
       angset->SetMaxBufferMessages(global_max_num_messages);
 }
@@ -348,9 +348,9 @@ SweepScheduler::GetAngleSetTimings()
 }
 
 void
-SweepScheduler::SetDestinationPhi(std::vector<double>& in_destination_phi)
+SweepScheduler::SetDestinationPhi(std::vector<double>& destination_phi)
 {
-  sweep_chunk_.SetDestinationPhi(in_destination_phi);
+  sweep_chunk_.SetDestinationPhi(destination_phi);
 }
 
 void
@@ -366,9 +366,9 @@ SweepScheduler::GetDestinationPhi()
 }
 
 void
-SweepScheduler::SetDestinationPsi(std::vector<double>& in_destination_psi)
+SweepScheduler::SetDestinationPsi(std::vector<double>& destination_psi)
 {
-  sweep_chunk_.SetDestinationPsi(in_destination_psi);
+  sweep_chunk_.SetDestinationPsi(destination_psi);
 }
 
 void

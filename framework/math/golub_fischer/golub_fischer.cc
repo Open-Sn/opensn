@@ -62,11 +62,11 @@ GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
 }
 
 void
-GolubFischer::MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
+GolubFischer::MCA(Tvecdbl& mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
 {
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "MCA Start" << '\n';
 
-  int N = in_mell.size() - 1;
+  int N = mell.size() - 1;
   int n = (N + 1) / 2;
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "N " << N << " n " << n << '\n';
@@ -79,11 +79,11 @@ GolubFischer::MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
 
   for (int ell = 0; ell < 2 * n; ell++)
   {
-    sigma[0][ell] = in_mell[ell];
+    sigma[0][ell] = mell[ell];
   }
 
   alpha_[0] = a[0] + c[0] * sigma[0][1] / sigma[0][0];
-  beta_[0] = in_mell[0];
+  beta_[0] = mell[0];
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << 0 << " " << alpha_[0] << " " << beta_[0] << "\n";
 
@@ -116,7 +116,7 @@ GolubFischer::MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
 }
 
 void
-GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
+GolubFischer::RootsOrtho(int& N, Tvecdbl& alpha, Tvecdbl& beta)
 {
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "RootsOrtho Start" << '\n';
 
@@ -139,13 +139,13 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 
   Tvecdbl norm;
   norm.resize(N + 1, 0.0);
-  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Check 2 " << in_beta[0] << '\n';
-  norm[0] = in_beta[0];
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Check 2 " << beta[0] << '\n';
+  norm[0] = beta[0];
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Check 3a norms" << '\n';
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << norm[0] << '\n';
   for (int i = 1; i < (N + 1); i++)
   {
-    norm[i] = in_beta[i] * norm[i - 1];
+    norm[i] = beta[i] * norm[i - 1];
     log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << norm[i] << '\n';
   }
 
@@ -158,8 +158,8 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
     while (i < maxiters)
     {
       double xold = xn[k];
-      double a = Ortho(N, xold, in_alpha, in_beta);
-      double b = dOrtho(N, xold, in_alpha, in_beta);
+      double a = Ortho(N, xold, alpha, beta);
+      double b = dOrtho(N, xold, alpha, beta);
       double c = 0;
 
       for (int j = 0; j < k; j++)
@@ -213,7 +213,7 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 
     for (int k = 0; k < N; k++)
     {
-      wn[i] += Ortho(k, xn[i], in_alpha, in_beta) * Ortho(k, xn[i], in_alpha, in_beta) / norm[k];
+      wn[i] += Ortho(k, xn[i], alpha, beta) * Ortho(k, xn[i], alpha, beta) / norm[k];
     }
 
     wn[i] = 1.0 / wn[i];
@@ -228,7 +228,7 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 }
 
 double
-GolubFischer::Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta)
+GolubFischer::Ortho(int ell, double x, Tvecdbl& alpha, Tvecdbl& beta)
 {
   if (ell == 0)
   {
@@ -237,17 +237,17 @@ GolubFischer::Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 
   if (ell == 1)
   {
-    return (x - in_alpha[0]);
+    return (x - alpha[0]);
   }
 
   double Pnm1 = 1.0;
-  double Pn = (x - in_alpha[0]);
+  double Pn = (x - alpha[0]);
   double Pnp1 = 0.0;
 
   for (int n = 2; n < ell + 1; n++)
   {
     int ns = n - 1;
-    Pnp1 = (x - in_alpha[ns]) * Pn - in_beta[ns] * Pnm1;
+    Pnp1 = (x - alpha[ns]) * Pn - beta[ns] * Pnm1;
     Pnm1 = Pn;
     Pn = Pnp1;
   }
@@ -256,12 +256,12 @@ GolubFischer::Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta)
 }
 
 double
-GolubFischer::dOrtho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta)
+GolubFischer::dOrtho(int ell, double x, Tvecdbl& alpha, Tvecdbl& beta)
 {
 
   double eps = 0.000001;
-  double y2 = Ortho(ell, x + eps, in_alpha, in_beta);
-  double y1 = Ortho(ell, x - eps, in_alpha, in_beta);
+  double y2 = Ortho(ell, x + eps, alpha, beta);
+  double y1 = Ortho(ell, x - eps, alpha, beta);
 
   double m = (y2 - y1) / 2.0 / eps;
 

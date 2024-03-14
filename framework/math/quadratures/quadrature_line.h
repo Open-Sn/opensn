@@ -9,7 +9,7 @@ namespace opensn
 class QuadratureLine : public QuadratureGaussLegendre
 {
 public:
-  explicit QuadratureLine(QuadratureOrder in_order) : QuadratureGaussLegendre(in_order)
+  explicit QuadratureLine(QuadratureOrder order) : QuadratureGaussLegendre(order)
   {
     SetRange({0, 1});
   }

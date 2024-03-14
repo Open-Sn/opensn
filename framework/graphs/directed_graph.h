@@ -42,7 +42,7 @@ public:
       VertexAccessor& ref_block;
       size_t ref_element;
 
-      iterator(VertexAccessor& in_block, size_t i) : ref_block(in_block), ref_element(i) {}
+      iterator(VertexAccessor& block, size_t i) : ref_block(block), ref_element(i) {}
 
       iterator operator++()
       {

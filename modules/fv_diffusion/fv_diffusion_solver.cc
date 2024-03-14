@@ -14,8 +14,8 @@ namespace opensn
 namespace fv_diffusion
 {
 
-Solver::Solver(const std::string& in_solver_name)
-  : opensn::Solver(in_solver_name, {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
+Solver::Solver(const std::string& name)
+  : opensn::Solver(name, {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
 {
 }
 

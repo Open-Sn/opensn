@@ -17,7 +17,7 @@ public:
    * \f$ \rho(x) x^{p} \f$, with \f$ \rho(x) := 1 \f$,
    * on the interval \f$ [-1;+1] \f$.
    * The number of points generated will be ceil((O+1)/2).*/
-  explicit QuadratureGaussLegendre(QuadratureOrder in_order,
+  explicit QuadratureGaussLegendre(QuadratureOrder order,
                                    bool verbose = false,
                                    unsigned int max_iters = 1000,
                                    double tol = 1.0e-12);

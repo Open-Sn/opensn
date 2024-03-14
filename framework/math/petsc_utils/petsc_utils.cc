@@ -94,26 +94,26 @@ InitMatrixSparsity(Mat& A, int64_t nodal_nnz_in_diag, int64_t nodal_nnz_off_diag
 }
 
 PETScSolverSetup
-CreateCommonKrylovSolverSetup(Mat ref_matrix,
-                              const std::string& in_solver_name,
-                              const std::string& in_solver_type,
-                              const std::string& in_preconditioner_type,
-                              double in_rel_tol,
-                              double in_abs_tol,
-                              int64_t in_maximum_iterations)
+CreateCommonKrylovSolverSetup(Mat matrix,
+                              const std::string& solver_name,
+                              const std::string& solver_type,
+                              const std::string& preconditioner_type,
+                              double rel_tol,
+                              double abs_tol,
+                              int64_t maximum_iterations)
 {
   PETScSolverSetup setup;
 
   KSPCreate(opensn::mpi_comm, &setup.ksp);
-  KSPSetOperators(setup.ksp, ref_matrix, ref_matrix);
-  KSPSetType(setup.ksp, in_solver_type.c_str());
+  KSPSetOperators(setup.ksp, matrix, matrix);
+  KSPSetType(setup.ksp, solver_type.c_str());
 
-  KSPSetOptionsPrefix(setup.ksp, in_solver_name.c_str());
+  KSPSetOptionsPrefix(setup.ksp, solver_name.c_str());
 
   KSPGetPC(setup.ksp, &setup.pc);
-  PCSetType(setup.pc, in_preconditioner_type.c_str());
+  PCSetType(setup.pc, preconditioner_type.c_str());
 
-  KSPSetTolerances(setup.ksp, in_rel_tol, in_abs_tol, 1.0e50, in_maximum_iterations);
+  KSPSetTolerances(setup.ksp, rel_tol, abs_tol, 1.0e50, maximum_iterations);
   KSPSetInitialGuessNonzero(setup.ksp, PETSC_TRUE);
 
   KSPSetFromOptions(setup.ksp);

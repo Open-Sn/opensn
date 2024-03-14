@@ -57,7 +57,7 @@ public:
                                size_t num_groups,
                                size_t num_angles,
                                int sweep_eager_limit,
-                               const MPICommunicatorSet& in_comm_set);
+                               const MPICommunicatorSet& comm_set);
   /**
    * Returns the private flag done_sending.
    */

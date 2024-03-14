@@ -14,12 +14,12 @@ namespace opensn
 void
 ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
                                    const std::vector<double>& polar,
-                                   const std::vector<double>& in_weights,
+                                   const std::vector<double>& weights,
                                    bool verbose)
 {
   size_t Na = azimuthal.size();
   size_t Np = polar.size();
-  size_t Nw = in_weights.size();
+  size_t Nw = weights.size();
 
   if (Nw != Na * Np)
   {
@@ -62,7 +62,7 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
 
       abscissae_.emplace_back(abscissa);
 
-      const double weight = in_weights[i * Np + j];
+      const double weight = weights[i * Np + j];
       weights_.emplace_back(weight);
       weight_sum += weight;
 
@@ -215,12 +215,12 @@ AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, bool verbose)
 
 AngularQuadratureProdCustom::AngularQuadratureProdCustom(const std::vector<double>& azimuthal,
                                                          const std::vector<double>& polar,
-                                                         const std::vector<double>& in_weights,
+                                                         const std::vector<double>& weights,
                                                          bool verbose)
 {
   size_t Na = azimuthal.size();
   size_t Np = polar.size();
-  size_t Nw = in_weights.size();
+  size_t Nw = weights.size();
 
   if (Nw != Na * Np)
   {

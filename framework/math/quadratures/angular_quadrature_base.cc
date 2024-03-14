@@ -186,12 +186,12 @@ AngularQuadrature::GetMomentToHarmonicsIndexMap() const
 
 AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
                                                  std::vector<double>& polar,
-                                                 std::vector<double>& in_weights,
+                                                 std::vector<double>& weights,
                                                  bool verbose)
 {
   size_t Na = azimuthal.size();
   size_t Np = polar.size();
-  size_t Nw = in_weights.size();
+  size_t Nw = weights.size();
 
   if ((Na - Np != 0) or (Na - Nw != 0))
   {
@@ -210,7 +210,7 @@ AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
 
     abscissae_.push_back(abscissa);
 
-    const double weight = in_weights[i];
+    const double weight = weights[i];
     weights_.push_back(weight);
     weight_sum += weight;
 

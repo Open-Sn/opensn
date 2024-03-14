@@ -78,7 +78,7 @@ public:
   BoundaryPreferences boundary_preferences_;
   std::vector<Boundary> boundaries_;
 
-  explicit Solver(const std::string& in_solver_name);
+  explicit Solver(const std::string& name);
   ~Solver() override;
 
   void Initialize() override;

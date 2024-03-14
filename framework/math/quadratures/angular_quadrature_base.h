@@ -40,7 +40,7 @@ public:
     int m = 0;
 
     HarmonicIndices() = default;
-    HarmonicIndices(unsigned int in_ell, int in_m) : ell(in_ell), m(in_m) {}
+    HarmonicIndices(unsigned int ell, int m) : ell(ell), m(m) {}
 
     bool operator==(const HarmonicIndices& other) const
     {
@@ -58,7 +58,7 @@ protected:
 public:
   AngularQuadrature() : type_(AngularQuadratureType::Arbitrary) {}
 
-  explicit AngularQuadrature(AngularQuadratureType in_type) : type_(in_type) {}
+  explicit AngularQuadrature(AngularQuadratureType type) : type_(type) {}
 
   virtual ~AngularQuadrature() = default;
 
@@ -105,7 +105,7 @@ public:
   /**Constructor using custom directions.*/
   AngularQuadratureCustom(std::vector<double>& azimuthal,
                           std::vector<double>& polar,
-                          std::vector<double>& in_weights,
+                          std::vector<double>& weights,
                           bool verbose);
 };
 

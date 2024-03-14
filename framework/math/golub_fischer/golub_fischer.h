@@ -64,13 +64,13 @@ public:
 private:
   /**Applies the Modified Chebyshev Algorithm contained in [1] to find the
    * recursion coefficients for the orthogonal polynomials.*/
-  void MCA(Tvecdbl& in_mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c);
+  void MCA(Tvecdbl& mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c);
   /**Finds the roots of the orthogonal polynomial.*/
-  void RootsOrtho(int& N, Tvecdbl& in_alpha, Tvecdbl& in_beta);
+  void RootsOrtho(int& N, Tvecdbl& alpha, Tvecdbl& beta);
   /**Computes the derivative of the orthogonal polynomials.*/
-  double dOrtho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta);
+  double dOrtho(int ell, double x, Tvecdbl& alpha, Tvecdbl& beta);
   /**Computes the function evaluation of the orthogonal polynomials.*/
-  double Ortho(int ell, double x, Tvecdbl& in_alpha, Tvecdbl& in_beta);
+  double Ortho(int ell, double x, Tvecdbl& alpha, Tvecdbl& beta);
 };
 
 } // namespace opensn

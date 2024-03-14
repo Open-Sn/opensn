@@ -15,8 +15,8 @@ public:
 
 private:
   /**Constructor.*/
-  explicit LocalCellHandler(std::vector<std::unique_ptr<Cell>>& in_native_cells)
-    : native_cells(in_native_cells)
+  explicit LocalCellHandler(std::vector<std::unique_ptr<Cell>>& native_cells)
+    : native_cells(native_cells)
   {
   }
 
@@ -33,7 +33,7 @@ public:
     LocalCellHandler& ref_block;
     size_t ref_element;
 
-    iterator(LocalCellHandler& in_block, size_t i) : ref_block(in_block), ref_element(i) {}
+    iterator(LocalCellHandler& block, size_t i) : ref_block(block), ref_element(i) {}
 
     iterator operator++()
     {
@@ -59,9 +59,7 @@ public:
     const LocalCellHandler& ref_block;
     size_t ref_element;
 
-    const_iterator(const LocalCellHandler& in_block, size_t i) : ref_block(in_block), ref_element(i)
-    {
-    }
+    const_iterator(const LocalCellHandler& block, size_t i) : ref_block(block), ref_element(i) {}
 
     const_iterator operator++()
     {

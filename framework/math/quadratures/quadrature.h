@@ -78,7 +78,7 @@ protected:
 
 protected:
   explicit Quadrature(const InputParameters& params);
-  explicit Quadrature(QuadratureOrder in_order) : order_(in_order), range_({0, 0}) {}
+  explicit Quadrature(QuadratureOrder order) : order_(order), range_({0, 0}) {}
 
 public:
   /**Get the range on which the quadrature is defined
@@ -88,7 +88,7 @@ public:
    * (relevant for one-dimensional quadratures only).
    * Note that calling this method results in translation
    * of the abscissae and scaling of the weights.*/
-  void SetRange(const std::pair<double, double>& in_range);
+  void SetRange(const std::pair<double, double>& range);
 };
 
 } // namespace opensn

@@ -89,8 +89,8 @@ public:
   Cell(const Cell& other);
   /**Move constructor*/
   Cell(Cell&& other) noexcept;
-  explicit Cell(CellType in_cell_type, CellType in_cell_sub_type)
-    : cell_type_(in_cell_type), cell_sub_type_(in_cell_sub_type)
+  explicit Cell(CellType cell_type, CellType cell_sub_type)
+    : cell_type_(cell_type), cell_sub_type_(cell_sub_type)
   {
   }
 

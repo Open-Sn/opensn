@@ -28,8 +28,7 @@ public:
     uint64_t neighbor = 0;
 
     LightWeightFace() = default;
-    explicit LightWeightFace(std::vector<uint64_t> in_vertex_ids)
-      : vertex_ids(std::move(in_vertex_ids))
+    explicit LightWeightFace(std::vector<uint64_t> vertex_ids) : vertex_ids(std::move(vertex_ids))
     {
     }
   };
@@ -42,10 +41,7 @@ public:
     std::vector<uint64_t> vertex_ids;
     std::vector<LightWeightFace> faces;
 
-    explicit LightWeightCell(CellType in_type, CellType in_sub_type)
-      : type(in_type), sub_type(in_sub_type)
-    {
-    }
+    explicit LightWeightCell(CellType type, CellType sub_type) : type(type), sub_type(sub_type) {}
   };
 
   struct Options

@@ -15,15 +15,15 @@ struct CSTMemory
 
   CSTMemory() = default;
 
-  explicit CSTMemory(double in_mem)
+  explicit CSTMemory(double mem)
   {
-    memory_bytes = in_mem;
-    memory_kbytes = in_mem / 1024.0;
-    memory_mbytes = in_mem / 1024.0 / 1024.0;
-    memory_gbytes = in_mem / 1024.0 / 1024.0 / 1024.0;
+    memory_bytes = mem;
+    memory_kbytes = mem / 1024.0;
+    memory_mbytes = mem / 1024.0 / 1024.0;
+    memory_gbytes = mem / 1024.0 / 1024.0 / 1024.0;
   }
 
-  CSTMemory& operator=(const CSTMemory& in_struct) = default;
+  CSTMemory& operator=(const CSTMemory& cst_mem) = default;
 };
 
 /**

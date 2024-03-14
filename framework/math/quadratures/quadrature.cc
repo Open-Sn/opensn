@@ -30,10 +30,10 @@ Quadrature::Quadrature(const InputParameters& params)
 }
 
 void
-Quadrature::SetRange(const std::pair<double, double>& in_range)
+Quadrature::SetRange(const std::pair<double, double>& range)
 {
   const auto& old_range = range_;
-  const auto& new_range = in_range;
+  const auto& new_range = range;
 
   const double h_new = new_range.second - new_range.first;
   const double h_old = old_range.second - old_range.first;
@@ -51,7 +51,7 @@ Quadrature::SetRange(const std::pair<double, double>& in_range)
     weights_[i] *= scale_factor;
   }
 
-  range_ = in_range;
+  range_ = range;
 }
 
 } // namespace opensn

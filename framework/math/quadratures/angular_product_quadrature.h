@@ -38,7 +38,7 @@ public:
   /**Initializes the quadrature with custom angles and weights.*/
   void AssembleCosines(const std::vector<double>& azimuthal,
                        const std::vector<double>& polar,
-                       const std::vector<double>& in_weights,
+                       const std::vector<double>& weights,
                        bool verbose);
 
   /**Optimizes the angular quadrature for polar symmetry by removing
@@ -90,7 +90,7 @@ public:
   /**Constructor for Custom Angular Product Quadrature.*/
   AngularQuadratureProdCustom(const std::vector<double>& azimuthal,
                               const std::vector<double>& polar,
-                              const std::vector<double>& in_weights,
+                              const std::vector<double>& weights,
                               bool verbose);
 };
 

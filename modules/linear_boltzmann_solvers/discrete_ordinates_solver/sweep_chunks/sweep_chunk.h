@@ -27,8 +27,8 @@ public:
    */
   std::vector<MomentCallbackF> moment_callbacks;
 
-  SweepChunk(std::vector<double>& in_destination_phi,
-             std::vector<double>& in_destination_psi,
+  SweepChunk(std::vector<double>& destination_phi,
+             std::vector<double>& destination_psi,
              const MeshContinuum& grid,
              const SpatialDiscretization& discretization,
              const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
@@ -49,12 +49,12 @@ public:
       xs_(xs),
       num_moments_(num_moments),
       max_num_cell_dofs_(max_num_cell_dofs),
-      save_angular_flux_(not in_destination_psi.empty()),
+      save_angular_flux_(not destination_psi.empty()),
       groupset_angle_group_stride_(groupset_.psi_uk_man_.NumberOfUnknowns() *
                                    groupset_.groups_.size()),
       groupset_group_stride_(groupset_.groups_.size()),
-      destination_phi(&in_destination_phi),
-      destination_psi(&in_destination_psi)
+      destination_phi(&destination_phi),
+      destination_psi(&destination_psi)
   {
   }
 
@@ -72,10 +72,7 @@ public:
 protected:
   friend class SweepScheduler;
   /**Sets the location where flux moments are to be written.*/
-  void SetDestinationPhi(std::vector<double>& in_destination_phi)
-  {
-    destination_phi = (&in_destination_phi);
-  }
+  void SetDestinationPhi(std::vector<double>& phi) { destination_phi = (&phi); }
 
   /**Sets all elements of the output vector to zero.*/
   void ZeroDestinationPhi() { (*destination_phi).assign((*destination_phi).size(), 0.0); }
@@ -84,10 +81,7 @@ protected:
   std::vector<double>& GetDestinationPhi() { return *destination_phi; }
 
   /**Sets the location where angular fluxes are to be written.*/
-  void SetDestinationPsi(std::vector<double>& in_destination_psi)
-  {
-    destination_psi = (&in_destination_psi);
-  }
+  void SetDestinationPsi(std::vector<double>& psi) { destination_psi = (&psi); }
 
   /**Sets all elements of the output angular flux vector to zero.*/
   void ZeroDestinationPsi() { (*destination_psi).assign((*destination_psi).size(), 0.0); }

@@ -279,7 +279,7 @@ public:
     ParameterBlock& ref_block;
     size_t ref_id;
 
-    iterator(ParameterBlock& in_block, size_t i) : ref_block(in_block), ref_id(i) {}
+    iterator(ParameterBlock& block, size_t i) : ref_block(block), ref_id(i) {}
 
     iterator operator++()
     {
@@ -304,7 +304,7 @@ public:
     const ParameterBlock& ref_block;
     size_t ref_id;
 
-    const_iterator(const ParameterBlock& in_block, size_t i) : ref_block(in_block), ref_id(i) {}
+    const_iterator(const ParameterBlock& block, size_t i) : ref_block(block), ref_id(i) {}
 
     const_iterator operator++()
     {

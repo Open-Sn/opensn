@@ -44,7 +44,7 @@ public:
   BoundaryPreferences boundary_preferences_;
   std::map<uint64_t, Boundary> boundaries_;
 
-  explicit Solver(const std::string& in_solver_name);
+  explicit Solver(const std::string& name);
   ~Solver() override;
 
   void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);

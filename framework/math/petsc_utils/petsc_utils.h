@@ -13,7 +13,7 @@ struct PETScSolverSetup
   KSP ksp;
   PC pc;
 
-  std::string in_solver_name = "KSPSolver";
+  std::string solver_name = "KSPSolver";
 
   std::string solver_type = KSPGMRES;
   std::string preconditioner_type = PCNONE;
@@ -169,13 +169,13 @@ void InitMatrixSparsity(Mat& A, int64_t nodal_nnz_in_diag, int64_t nodal_nnz_off
  * return setup;
  * \endcode
  */
-PETScSolverSetup CreateCommonKrylovSolverSetup(Mat ref_matrix,
-                                               const std::string& in_solver_name = "KSPSolver",
-                                               const std::string& in_solver_type = KSPGMRES,
-                                               const std::string& in_preconditioner_type = PCNONE,
-                                               double in_rel_tol = PETSC_DEFAULT,
-                                               double in_abs_tol = PETSC_DEFAULT,
-                                               int64_t in_maximum_iterations = 100);
+PETScSolverSetup CreateCommonKrylovSolverSetup(Mat matrix,
+                                               const std::string& solver_name = "KSPSolver",
+                                               const std::string& solver_type = KSPGMRES,
+                                               const std::string& preconditioner_type = PCNONE,
+                                               double rel_tol = PETSC_DEFAULT,
+                                               double abs_tol = PETSC_DEFAULT,
+                                               int64_t maximum_iterations = 100);
 
 /**
  * General monitor that print the residual norm relative to the right-hand side norm.

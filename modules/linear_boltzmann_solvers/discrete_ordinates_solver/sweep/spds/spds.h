@@ -12,8 +12,8 @@ namespace lbs
 class SPDS
 {
 public:
-  SPDS(const Vector3& in_omega, const MeshContinuum& in_grid, bool verbose)
-    : omega_(in_omega), grid_(in_grid), verbose_(verbose)
+  SPDS(const Vector3& omega, const MeshContinuum& grid, bool verbose)
+    : omega_(omega), grid_(grid), verbose_(verbose)
   {
   }
 

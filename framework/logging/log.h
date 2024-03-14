@@ -295,10 +295,9 @@ struct Logger::EventInfo
   double arb_value = 0.0;
   EventInfo() : arb_info(std::string()) {}
 
-  explicit EventInfo(std::string in_string) : arb_info(std::move(in_string)) {}
-  explicit EventInfo(double in_value) : arb_value(in_value) {}
-  explicit EventInfo(std::string in_string, double in_value)
-    : arb_info(std::move(in_string)), arb_value(in_value)
+  explicit EventInfo(std::string text) : arb_info(std::move(text)) {}
+  explicit EventInfo(double value) : arb_value(value) {}
+  explicit EventInfo(std::string text, double value) : arb_info(std::move(text)), arb_value(value)
   {
   }
 
@@ -314,8 +313,8 @@ struct Logger::Event
   const EventType ev_type = EventType::SINGLE_OCCURRENCE;
   std::shared_ptr<EventInfo> ev_info;
 
-  Event(double in_time, EventType in_ev_type, std::shared_ptr<EventInfo> in_event_info)
-    : ev_time(in_time), ev_type(in_ev_type), ev_info(std::move(in_event_info))
+  Event(double time, EventType ev_type, std::shared_ptr<EventInfo> event_info)
+    : ev_time(time), ev_type(ev_type), ev_info(std::move(event_info))
   {
   }
 };
