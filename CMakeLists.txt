@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
+include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(CheckTypeSize)
 include(CheckSymbolExists)
@@ -101,7 +102,6 @@ else()
     message(WARNING "Untested compiler : ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
-
 # libopensn
 file(GLOB_RECURSE LIBOPENSN_SRCS CONFIGURE_DEPENDS
     framework/*.cc
@@ -139,6 +139,12 @@ if(NOT MSVC)
     set_target_properties(libopensn PROPERTIES OUTPUT_NAME opensn)
 endif()
 
+set_target_properties(
+    libopensn
+    PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR}
+)
 
 if(OPENSN_WITH_LUA)
     add_subdirectory(lua)
@@ -154,9 +160,80 @@ if(OPENSN_WITH_LUA)
     )
 endif()
 
-#
 configure_file(config.h.in config.h)
 
 if(OPENSN_WITH_DOCS)
     add_subdirectory(doc)
+endif()
+
+# install
+configure_package_config_file(
+    ${PROJECT_SOURCE_DIR}/cmake/OpenSnConfig.cmake.in
+    OpenSnConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/opensn
+    NO_SET_AND_CHECK_MACRO
+)
+
+write_basic_package_version_file(
+    OpenSnConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+install(
+    TARGETS libopensn
+    EXPORT openSnTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/framework
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
+    FILES_MATCHING PATTERN "*.h"
+)
+
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/modules
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
+    FILES_MATCHING PATTERN "*.h"
+)
+
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/external/mpicpp-lite
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
+    FILES_MATCHING PATTERN "*.h"
+)
+
+install(
+    EXPORT openSnTargets
+    FILE OpenSnTargets.cmake
+    NAMESPACE opensn::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/opensn
+)
+
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/OpenSnConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/OpenSnConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/opensn
+)
+
+if(OPENSN_WITH_LUA)
+    install(
+        TARGETS opensn libopensnlua
+        EXPORT openSnTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+    )
+
+    install(
+        DIRECTORY ${CMAKE_SOURCE_DIR}/lua
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
+        FILES_MATCHING PATTERN "*.h"
+    )
 endif()

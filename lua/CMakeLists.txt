@@ -28,6 +28,12 @@ if(NOT MSVC)
     set_target_properties(libopensnlua PROPERTIES OUTPUT_NAME opensnlua)
 endif()
 
+set_target_properties(
+    libopensnlua
+    PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR}
+)
 
 # opensn binary
 add_executable(opensn "main.cc")

@@ -1,0 +1,15 @@
+set(OPENSN_VERSION @PROJECT_VERSION@)
+
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/OpenSnTargets.cmake")
+include(FindPackageHandleStandardArgs)
+
+find_library(OPENSN_LIBRARY NAMES opensn HINTS ${PACKAGE_PREFIX_DIR}/lib NO_DEFAULT_PATH)
+find_path(OPENSN_INCLUDE_DIR framework/runtime.h HINTS ${PACKAGE_PREFIX_DIR}/include/opensn)
+
+find_package_handle_standard_args(
+    OpenSn
+    REQUIRED_VARS OPENSN_LIBRARY OPENSN_INCLUDE_DIR
+    VERSION_VAR OPENSN_VERSION
+)
