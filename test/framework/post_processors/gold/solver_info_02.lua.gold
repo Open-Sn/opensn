@@ -1,9 +1,10 @@
-mpiexec -np 1 /Users/vermjc/Repos/ChiTech/chi-tech/test/bin/ChiTech_test solver_info_02.lua --suppress_color --supress_beg_end_timelog master_export=false 
-[0]  Parsing argument 1 solver_info_02.lua
-[0m[0]  Parsing argument 2 --suppress_color
-[0m[0]  Parsing argument 3 --supress_beg_end_timelog
-[0]  Parsing argument 4 master_export=false
-[0]  ChiTech number of arguments supplied: 4
+srun -n 1 /usr/WS1/dhawkins/openSn/dhawkins/openSn/build/test/opensn-test solver_info_02.lua --suppress-color master_export=false 
+[0]  OpenSn version 0.0.1
+[0m[0]  2024-03-13 21:40:27 Running OpenSn in interactive-mode with 1 processes.
+[0m[0]  OpenSn number of arguments supplied: 3
+[0m[0]  Parsing argument 1 solver_info_02.lua
+[0m[0]  Parsing argument 2 --suppress-color
+[0m[0]  Parsing argument 3 master_export=false
 [0]  Created solver prk_TransientSolver
 [0]  lambdas = 0.0124 0.0304 0.111 0.301 1.14 3.01 
 [0]  betas = 0.00021 0.00142 0.00127 0.00257 0.00075 0.00027 
@@ -50,5 +51,5 @@ mpiexec -np 1 /Users/vermjc/Repos/ChiTech/chi-tech/test/bin/ChiTech_test solver_
 20	0.200 5.61151
 Manual neutron_population1=	5.61151
 Manual neutron_population1=	5.61151
-
-
+[0]  Elapsed execution time: 00:00:00.3
+[0]  2024-03-13 21:40:27 OpenSn finished execution.

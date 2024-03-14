@@ -58,8 +58,8 @@ LuaApp::Run(int argc, char** argv)
   console.PostMPIInfo(opensn::mpi_comm.rank(), opensn::mpi_comm.size());
 
   opensn::log.Log() << opensn::name << " version " << GetVersionStr();
-  opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name
-                    << " in interactive-mode with " << opensn::mpi_comm.size() << " processes.";
+  opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name << " with "
+                    << opensn::mpi_comm.size() << " processes.";
   opensn::log.Log() << opensn::name << " number of arguments supplied: " << argc - 1;
   opensn::log.LogAll();
   console.FlushConsole();
