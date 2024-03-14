@@ -33,12 +33,13 @@ std::string
 Timer::GetTimeString() const
 {
   double time_sec = this->GetTime() / 1000.0;
-  int hours = std::floor(time_sec / 60 / 60);
-  int minutes = std::floor((time_sec - 60 * 60 * hours) / 60);
-  int seconds = (int)time_sec - 3600 * hours - 60 * minutes;
+  int hours = std::floor(time_sec / 3600);
+  int minutes = std::floor((time_sec - 3600 * hours) / 60);
+  // Keep seconds as a double since we want fractional seconds
+  double seconds = time_sec - 3600.0 * hours - 60.0 * minutes;
 
   char buff[100];
-  snprintf(buff, 100, "%02d:%02d:%02d", hours, minutes, seconds);
+  snprintf(buff, 100, "%02d:%02d:%04.1f", hours, minutes, seconds);
 
   return {buff};
 }

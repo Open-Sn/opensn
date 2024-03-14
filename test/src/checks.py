@@ -485,6 +485,7 @@ class GoldFileCheck(Check):
         self.scope_keyword: str = ""
         self.candidate_filename: str = ""
         self.skiplines_top: int = 0
+        self.check_numlines: int = 0
 
         if "scope_keyword" in params:
             self.scope_keyword = params["scope_keyword"]
@@ -492,6 +493,8 @@ class GoldFileCheck(Check):
             self.candidate_filename = params["candidate_filename"]
         if "skiplines_top" in params:
             self.skiplines_top = params["skiplines_top"]
+        if "check_numlines" in params:
+            self.check_numlines = params["check_numlines"]
 
     def __str__(self):
         if self.scope_keyword != "":
@@ -533,12 +536,21 @@ class GoldFileCheck(Check):
                           f"Maybe {self.scope_keyword}_BEGIN/_END was not found?")
                 return False
 
-            diff = list(difflib.unified_diff(lines_a[self.skiplines_top:],
-                                             lines_b[self.skiplines_top:],
-                                             fromfile=filename,
-                                             tofile=golddir + goldfilename,
-                                             n=0  # Removes context
-                                             ))
+            if self.check_numlines == 0:
+                diff = list(difflib.unified_diff(lines_a[self.skiplines_top:],
+                                                 lines_b[self.skiplines_top:],
+                                                 fromfile=filename,
+                                                 tofile=golddir + goldfilename,
+                                                 n=0  # Removes context
+                                                ))
+            else:
+                diff = list(difflib.unified_diff(lines_a[self.skiplines_top:self.skiplines_top+self.check_numlines],
+                                                 lines_b[self.skiplines_top:self.skiplines_top+self.check_numlines],
+                                                 fromfile=filename,
+                                                 tofile=golddir + goldfilename,
+                                                 n=0  # Removes context
+                                                ))
+
             if len(diff) == 0:
                 return True
             elif verbose:
