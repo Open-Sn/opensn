@@ -170,19 +170,23 @@ SweepWGSContext::PostSolveCallback()
       groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
   }
 
-  double tot_sweep_time = 0.0;
-  for (auto time : sweep_times_)
-    tot_sweep_time += time;
-  double num_sweeps = static_cast<double>(sweep_times_.size());
-  double avg_sweep_time = tot_sweep_time / num_sweeps;
-  size_t num_angles = groupset_.quadrature_->abscissae_.size();
-  size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
+  if (log_info_)
+  {
+    double tot_sweep_time = 0.0;
+    auto num_sweeps = static_cast<double>(sweep_times_.size());
+    for (auto time : sweep_times_)
+      tot_sweep_time += time;
+    double avg_sweep_time = tot_sweep_time / num_sweeps;
+    size_t num_angles = groupset_.quadrature_->abscissae_.size();
+    size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
 
-  log.Log() << "\n       Average sweep time (s):        "
-            << tot_sweep_time / static_cast<double>(sweep_times_.size())
-            << "\n       Sweep Time/Unknown (ns):       "
-            << avg_sweep_time * 1.0e9 * opensn::mpi_comm.size() / static_cast<double>(num_unknowns)
-            << "\n       Number of unknowns per sweep:  " << num_unknowns << "\n\n";
+    log.Log() << "\n       Average sweep time (s):        "
+              << tot_sweep_time / static_cast<double>(sweep_times_.size())
+              << "\n       Sweep Time/Unknown (ns):       "
+              << avg_sweep_time * 1.0e9 * opensn::mpi_comm.size() /
+                   static_cast<double>(num_unknowns)
+              << "\n       Number of unknowns per sweep:  " << num_unknowns << "\n\n";
+  }
 }
 
 } // namespace lbs
