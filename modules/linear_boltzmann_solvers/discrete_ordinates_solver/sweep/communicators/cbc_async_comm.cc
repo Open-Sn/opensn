@@ -1,7 +1,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/communicators/cbc_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/fluds.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/cbc_fluds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mpi/mpi_comm_set.h"
 #include "framework/logging/log.h"
@@ -12,15 +11,6 @@ namespace opensn
 namespace lbs
 {
 
-CBC_ASynchronousCommunicator::CBC_ASynchronousCommunicator(size_t angle_set_id,
-                                                           FLUDS& fluds,
-                                                           const MPICommunicatorSet& comm_set)
-  : AsynchronousCommunicator(fluds, comm_set),
-    angle_set_id_(angle_set_id),
-    cbc_fluds_(dynamic_cast<CBC_FLUDS&>(fluds))
-{
-}
-
 std::vector<double>&
 CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
                                                          uint64_t cell_global_id,
@@ -29,11 +19,9 @@ CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
                                                          size_t data_size)
 {
   MessageKey key{location_id, cell_global_id, face_id};
-
   std::vector<double>& data = outgoing_message_queue_[key];
   if (data.empty())
     data.assign(data_size, 0.0);
-
   return data;
 }
 
@@ -57,17 +45,14 @@ CBC_ASynchronousCommunicator::SendData()
       const size_t data_size = data.size();
 
       BufferItem& buffer_item = locI_buffer_map[locI];
-
       buffer_item.destination_ = locI;
       auto& buffer_array = buffer_item.data_array_;
-
       buffer_array.Write(cell_global_id);
       buffer_array.Write(face_id);
       buffer_array.Write(data_size);
-
       for (const double value : data) // actual psi_data
         buffer_array.Write(value);
-    } // for item in queue
+    }
 
     for (auto& [locI, buffer] : locI_buffer_map)
       send_buffer_.push_back(std::move(buffer));
@@ -120,7 +105,6 @@ CBC_ASynchronousCommunicator::ReceiveData()
       int num_items = status.get_count<std::byte>();
       std::vector<std::byte> recv_buffer(num_items);
       comm.recv(source_rank, status.tag(), recv_buffer.data(), num_items);
-
       ByteArray data_array(recv_buffer);
 
       while (not data_array.EndOfBuffer())

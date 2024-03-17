@@ -1139,9 +1139,6 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
 void
 DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 {
-  typedef AngleSetGroup TAngleSetGroup;
-  typedef AAH_AngleSet TAAH_AngleSet;
-
   const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature_];
 
   const auto& unique_so_groupings = quadrature_sweep_info.first;
@@ -1156,7 +1153,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg_ = std::make_shared<AngleAgg>(
     sweep_boundaries_, gs_num_grps, gs_num_ss, groupset.quadrature_, grid_ptr_);
 
-  TAngleSetGroup angle_set_group;
+  AngleSetGroup angle_set_group;
   size_t angle_set_id = 0;
   for (const auto& so_grouping : unique_so_groupings)
   {
@@ -1192,17 +1189,17 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
             angle_indices.size(),
             dynamic_cast<const AAH_FLUDSCommonData&>(fluds_common_data));
 
-          auto angleSet = std::make_shared<TAAH_AngleSet>(angle_set_id++,
+          auto angle_set = std::make_shared<AAH_AngleSet>(angle_set_id++,
                                                           gs_ss_size,
                                                           gs_ss,
                                                           *sweep_ordering,
                                                           fluds,
                                                           angle_indices,
                                                           sweep_boundaries_,
-                                                          options_.sweep_eager_limit,
+                                                          options_.max_mpi_message_size,
                                                           *grid_local_comm_set_);
 
-          angle_set_group.AngleSets().push_back(angleSet);
+          angle_set_group.AngleSets().push_back(angle_set);
         }
         else if (sweep_type_ == "CBC")
         {
@@ -1217,16 +1214,16 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
                                         groupset.psi_uk_man_,
                                         *discretization_);
 
-          auto angleSet = std::make_shared<CBC_AngleSet>(angle_set_id++,
-                                                         gs_ss_size,
-                                                         *sweep_ordering,
-                                                         fluds,
-                                                         angle_indices,
-                                                         sweep_boundaries_,
-                                                         gs_ss,
-                                                         *grid_local_comm_set_);
+          auto angle_set = std::make_shared<CBC_AngleSet>(angle_set_id++,
+                                                          gs_ss_size,
+                                                          *sweep_ordering,
+                                                          fluds,
+                                                          angle_indices,
+                                                          sweep_boundaries_,
+                                                          gs_ss,
+                                                          *grid_local_comm_set_);
 
-          angle_set_group.AngleSets().push_back(angleSet);
+          angle_set_group.AngleSets().push_back(angle_set);
         }
         else
           OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");

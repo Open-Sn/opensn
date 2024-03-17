@@ -4,8 +4,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/sweep.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 
-typedef unsigned long long int u_ll_int;
-
 namespace mpi = mpicpp_lite;
 
 namespace opensn
@@ -24,43 +22,42 @@ class FLUDS;
 class AAH_ASynchronousCommunicator : public AsynchronousCommunicator
 {
 private:
-  const size_t num_groups_;
-  const size_t num_angles_;
+  int num_groups_;
+  int num_angles_;
+  int max_num_messages_;
+  int max_mpi_message_size_;
+  bool done_sending_;
+  bool data_initialized_;
+  bool upstream_data_initialized_;
 
-  bool done_sending;
-  bool data_initialized;
-  bool upstream_data_initialized;
+  std::vector<int> prelocI_message_count_;
+  std::vector<int> deplocI_message_count_;
+  std::vector<int> delayed_prelocI_message_count_;
 
-  u_ll_int EAGER_LIMIT = 32000;
+  std::vector<std::vector<size_t>> prelocI_message_size_;
+  std::vector<std::vector<size_t>> deplocI_message_size_;
+  std::vector<std::vector<size_t>> delayed_prelocI_message_size_;
 
-  std::vector<int> prelocI_message_count;
-  std::vector<int> deplocI_message_count;
-  std::vector<int> delayed_prelocI_message_count;
+  std::vector<std::vector<size_t>> prelocI_message_blockpos_;
+  std::vector<std::vector<size_t>> deplocI_message_blockpos_;
+  std::vector<std::vector<size_t>> delayed_prelocI_message_blockpos_;
 
-  std::vector<std::vector<u_ll_int>> prelocI_message_size;
-  std::vector<std::vector<u_ll_int>> deplocI_message_size;
-  std::vector<std::vector<u_ll_int>> delayed_prelocI_message_size;
+  std::vector<std::vector<bool>> prelocI_message_received_;
+  std::vector<std::vector<bool>> delayed_prelocI_message_received_;
 
-  std::vector<std::vector<u_ll_int>> prelocI_message_blockpos;
-  std::vector<std::vector<u_ll_int>> deplocI_message_blockpos;
-  std::vector<std::vector<u_ll_int>> delayed_prelocI_message_blockpos;
-
-  std::vector<std::vector<bool>> prelocI_message_received;
-  std::vector<std::vector<bool>> delayed_prelocI_message_received;
-
-  std::vector<std::vector<mpi::Request>> deplocI_message_request;
+  std::vector<std::vector<mpi::Request>> deplocI_message_request_;
 
 public:
-  int max_num_mess;
-
   AAH_ASynchronousCommunicator(FLUDS& fluds,
                                size_t num_groups,
                                size_t num_angles,
-                               int sweep_eager_limit,
-                               const MPICommunicatorSet& comm_set);
-  /**
-   * Returns the private flag done_sending.
-   */
+                               int max_mpi_message_size,
+                               const MPICommunicatorSet& in_comm_set);
+
+  int GetMaxNumMessages() const { return max_num_messages_; }
+
+  void SetMaxNumMessages(int count) { max_num_messages_ = count; }
+
   bool DoneSending() const;
 
   /**
@@ -116,7 +113,7 @@ protected:
    * Builds message structure.
    *
    * Outgoing and incoming data needs to be sub-divided into messages
-   * each of which is smaller than the MPI eager-limit. There are
+   * each of which is smaller than the maximum message size. There are
    * three parts to this: predecessors, delayed-predecessors and successors.
    *
    * This method gets called by an angleset that subscribes to this

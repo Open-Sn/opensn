@@ -41,7 +41,7 @@ RegisterLuaEntities(lua_State* L)
   RegisterNumber(ZMAX, 35);
   RegisterNumber(ZMIN, 36);
   RegisterNumber(SCATTERING_ORDER, 4);
-  RegisterNumber(SWEEP_EAGER_LIMIT, 5);
+  RegisterNumber(MAX_MPI_MESSAGE_SIZE, 5);
   RegisterNumber(READ_RESTART_DATA, 6);
   RegisterNumber(WRITE_RESTART_DATA, 7);
   RegisterNumber(SAVE_ANGULAR_FLUX, 8);

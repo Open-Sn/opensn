@@ -164,7 +164,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
           const double* psi = nullptr;
           if (is_local_face)
           {
-            assert(psi_local_face_upwind_data);
+            assert(psi_local_face_upwnd_data);
             const unsigned int adj_cell_node = face_nodal_mapping->cell_node_mapping_[fj];
             psi = &psi_local_face_upwnd_data[adj_cell_node * groupset_angle_group_stride_ +
                                              direction_num * groupset_group_stride_ + gs_ss_begin_];

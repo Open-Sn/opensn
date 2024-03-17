@@ -15,10 +15,10 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
                            std::shared_ptr<FLUDS>& fluds,
                            std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-                           int sweep_eager_limit,
+                           int maximum_message_size,
                            const MPICommunicatorSet& comm_set)
   : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, group_subset),
-    async_comm_(*fluds, num_groups_, angle_indices.size(), sweep_eager_limit, comm_set)
+    async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set)
 {
 }
 
@@ -91,13 +91,13 @@ AAH_AngleSet::FlushSendBuffers()
 int
 AAH_AngleSet::GetMaxBufferMessages() const
 {
-  return async_comm_.max_num_mess;
+  return async_comm_.GetMaxNumMessages();
 }
 
 void
-AAH_AngleSet::SetMaxBufferMessages(int new_max)
+AAH_AngleSet::SetMaxBufferMessages(int count)
 {
-  async_comm_.max_num_mess = new_max;
+  async_comm_.SetMaxNumMessages(count);
 }
 
 void

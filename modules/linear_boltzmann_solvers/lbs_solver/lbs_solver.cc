@@ -452,23 +452,9 @@ LBSSolver::OptionsBlock()
                               "is supported");
   params.AddOptionalParameter(
     "scattering_order", 1, "Defines the level of harmonic expansion for the scattering source.");
-  params.AddOptionalParameter(
-    "sweep_eager_limit",
-    32'000,
-    "The eager limit to be used in message size during sweep initialization.\n"
-    " This expects to be followed by a size in bytes (Max 64,0000)See note below."
-    "\\n\\n"
-    " ###Note on the Eager limit\n"
-    "The eager limit is the message size limit before which non-blocking MPI send"
-    "calls will execute without waiting for a matching receive call. The limit is"
-    "platform dependent but in general 64 kb. Some systems have 32 kb as a limit"
-    "and therefore we use that as a default limit in OpenSn. There is a fine"
-    "interplay between message size and the shear amount of messages that will be"
-    "sent. In general smaller messages tend to be more efficient, however, when"
-    "there are too many small messages being sent around the communication system"
-    "on the given platform will start to suffer. One can gain a small amount of"
-    "parallel efficiency by lowering this limit, however, there is a point where"
-    "the parallel efficiency will actually get worse so use with caution.");
+  params.AddOptionalParameter("max_mpi_message_size",
+                              32'768,
+                              "The maximum MPI message size used during sweep initialization.");
   params.AddOptionalParameter(
     "read_restart_data", false, "Flag indicating whether restart data is to be read.");
   params.AddOptionalParameter(
@@ -657,8 +643,8 @@ LBSSolver::SetOptions(const InputParameters& params)
     else if (spec.Name() == "scattering_order")
       options_.scattering_order = spec.GetValue<int>();
 
-    else if (spec.Name() == "sweep_eager_limit")
-      options_.sweep_eager_limit = spec.GetValue<int>();
+    else if (spec.Name() == "max_mpi_message_size")
+      options_.max_mpi_message_size = spec.GetValue<int>();
 
     else if (spec.Name() == "read_restart_data")
       options_.read_restart_data = spec.GetValue<bool>();

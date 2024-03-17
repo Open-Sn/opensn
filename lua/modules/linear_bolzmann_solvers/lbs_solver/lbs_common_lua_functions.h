@@ -22,10 +22,9 @@ namespace opensnlua::lbs
  *  Defines the level of harmonic expansion for the scattering source.Default 1.
  *  Expects to be followed by an integer.\n\n
  *
- * SWEEP_EAGER_LIMIT\n
- *  The eager limit to be used in message size during sweep initialization.
- *  This expects to be followed by a size in bytes (Max 64,0000).Default 32,000.
- *  See note below.\n\n
+ * MAX_MPI_MESSAGE_SIZE\n
+ *  The maximum message size to be used during sweep initialization.
+ *  This expects to be followed by a size in bytes (Max 65536). Default 32,768.\n\n
  *
  * READ_RESTART_DATA\n
  *  Indicates the reading of restart data from restart file.
