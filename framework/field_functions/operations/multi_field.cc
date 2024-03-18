@@ -6,8 +6,6 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(physics::field_operations, MultiFieldOperation);
-
 InputParameters
 MultiFieldOperation::GetInputParameters()
 {
