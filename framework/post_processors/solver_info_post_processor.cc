@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(SolverInfoPostProcessor);
+OpenSnRegisterObjectInNamespace(post, SolverInfoPostProcessor);
 
 InputParameters
 SolverInfoPostProcessor::GetInputParameters()

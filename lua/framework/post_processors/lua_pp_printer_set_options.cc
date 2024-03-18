@@ -18,9 +18,10 @@ ParameterBlock PostProcessorPrinterSetOptions(const InputParameters& params);
 
 OpenSnRegisterSyntaxBlock(PostProcessorPrinterOptions, PostProcessorPrinterOptions);
 
-RegisterWrapperFunction(PostProcessorPrinterSetOptions,
-                        GetSyntax_PPPrinterSetOptions,
-                        PostProcessorPrinterSetOptions);
+RegisterWrapperFunctionNamespace(post,
+                                 SetPrinterOptions,
+                                 GetSyntax_PPPrinterSetOptions,
+                                 PostProcessorPrinterSetOptions);
 
 InputParameters
 PostProcessorPrinterOptions()

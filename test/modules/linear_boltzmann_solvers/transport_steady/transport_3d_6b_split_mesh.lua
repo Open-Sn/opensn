@@ -132,21 +132,21 @@ solver.Execute(ss_solver)
 --############################################### Get field functions
 fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
-pp1 = CellVolumeIntegralPostProcessor.Create
+pp1 = post.CellVolumeIntegralPostProcessor.Create
 ({
   name="max-grp0",
   field_function = fflist[1],
   compute_volume_average = true,
   print_numeric_format = "scientific"
 })
-pp2 = CellVolumeIntegralPostProcessor.Create
+pp2 = post.CellVolumeIntegralPostProcessor.Create
 ({
   name="max-grp19",
   field_function = fflist[20],
   compute_volume_average = true,
   print_numeric_format = "scientific"
 })
-ExecutePostProcessors({ pp1, pp2 })
+post.Execute({ pp1, pp2 })
 
 if (master_export == nil) then
   fieldfunc.ExportToVTKMulti(fflist,"ZPhi")

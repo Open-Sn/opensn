@@ -67,10 +67,10 @@ end
 --############################################### Volume integrations
 
 --############################################### PostProcessors
-AggregateNodalValuePostProcessor.Create
+post.AggregateNodalValuePostProcessor.Create
 ({
     name = "maxval",
     field_function = math.floor(fflist[1]),
     operation = "max"
 })
-ExecutePostProcessors({"maxval"})
+post.Execute({"maxval"})
