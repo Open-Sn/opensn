@@ -35,10 +35,10 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
-vol1 = mesh.RPPLogicalVolume.Create
+vol1 = logvol.RPPLogicalVolume.Create
 ({ xmin=-0.5,xmax=0.5,ymin=-0.5,ymax=0.5, infz=true })
 mesh.SetMaterialIDFromLogicalVolume(vol1,1)
 

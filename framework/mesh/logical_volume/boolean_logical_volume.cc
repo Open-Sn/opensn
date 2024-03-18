@@ -7,8 +7,8 @@ namespace opensn
 
 InputParameters BooleanLogicalVolumeArgumentPair();
 
-OpenSnRegisterObjectInNamespace(mesh, BooleanLogicalVolume);
-OpenSnRegisterSyntaxBlockInNamespace(mesh,
+OpenSnRegisterObjectInNamespace(logvol, BooleanLogicalVolume);
+OpenSnRegisterSyntaxBlockInNamespace(logvol,
                                      BooleanLogicalVolumeArgumentPair,
                                      BooleanLogicalVolumeArgumentPair);
 

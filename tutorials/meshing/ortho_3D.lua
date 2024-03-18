@@ -32,7 +32,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen)
 
 -- Set Material IDs
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --[[ @doc
@@ -56,7 +56,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen)
 
 -- Set Material IDs
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --[[ @doc
@@ -66,4 +66,3 @@ Note that now, both partitioners are not giving the same result. The Parmetis pa
 --]]
 -- Exporting the mesh
 mesh.ExportToVTK("ortho_3D_Parmetis")
-

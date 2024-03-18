@@ -28,7 +28,7 @@ mesh.MeshGenerator.Execute(meshgen)
 -- Set material IDs
 mesh.SetUniformMaterialID(0)
 
-vol1a = mesh.RPPLogicalVolume.Create(
+vol1a = logvol.RPPLogicalVolume.Create(
         {
             infx = true,
             ymin = 0.0, ymax = 0.8 * L,
@@ -38,7 +38,7 @@ vol1a = mesh.RPPLogicalVolume.Create(
 
 mesh.SetMaterialIDFromLogicalVolume(vol1a, 1)
 
-vol0 = mesh.RPPLogicalVolume.Create(
+vol0 = logvol.RPPLogicalVolume.Create(
         {
             xmin = 2.5 - 0.166666, xmax = 2.5 + 0.166666,
             infy = true,
@@ -47,7 +47,7 @@ vol0 = mesh.RPPLogicalVolume.Create(
 )
 mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
 
-vol2 = mesh.RPPLogicalVolume.Create(
+vol2 = logvol.RPPLogicalVolume.Create(
         {
             xmin = 2.5 - 0.166666, xmax = 2.5 + 0.166666,
             ymin = 0.0, ymax = 2 * 0.166666,
@@ -56,7 +56,7 @@ vol2 = mesh.RPPLogicalVolume.Create(
 )
 mesh.SetMaterialIDFromLogicalVolume(vol2, 2)
 
-vol1b = mesh.RPPLogicalVolume.Create(
+vol1b = logvol.RPPLogicalVolume.Create(
         {
             xmin = -1 + 2.5, xmax = 1 + 2.5,
             ymin = 0.9 * L, ymax = L,
@@ -126,7 +126,7 @@ ff_m1 = fieldfunc.GetHandleByName("phi_g000_m01")
 ff_m2 = fieldfunc.GetHandleByName("phi_g000_m02")
 
 -- Define QoI region
-qoi_vol = mesh.RPPLogicalVolume.Create(
+qoi_vol = logvol.RPPLogicalVolume.Create(
         {
             xmin = 0.5, xmax = 0.8333,
             ymin = 4.16666, ymax = 4.33333,

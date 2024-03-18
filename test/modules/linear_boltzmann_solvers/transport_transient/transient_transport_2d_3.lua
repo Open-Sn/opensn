@@ -32,7 +32,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 --############################################### Set Material IDs
 mesh.SetUniformMaterialID(0)
 
-vol0 = mesh.RPPLogicalVolume.Create({xmin=-L/16, xmax=L/16,
+vol0 = logvol.RPPLogicalVolume.Create({xmin=-L/16, xmax=L/16,
                                          ymin=-L/16, ymax=L/16,
                                          zmin=-L/16, zmax=L/16})
 mesh.SetMaterialIDFromLogicalVolume(vol0,1)

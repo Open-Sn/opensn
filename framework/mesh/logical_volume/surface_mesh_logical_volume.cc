@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(mesh, SurfaceMeshLogicalVolume);
+OpenSnRegisterObjectInNamespace(logvol, SurfaceMeshLogicalVolume);
 
 InputParameters
 SurfaceMeshLogicalVolume::GetInputParameters()

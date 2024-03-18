@@ -17,7 +17,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen)
 
 -- assign mat ID 10 to whole domain
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0, 10)
 
 --Sets lua function describing a sphere (material 11)
@@ -32,4 +32,3 @@ mesh.SetMaterialIDFromFunction("MatIDFunction1")
 
 -- export to vtk
 mesh.ExportToVTK("lv_lua_func_out")
-

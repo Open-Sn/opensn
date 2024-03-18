@@ -22,19 +22,19 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen1)
 
 -- assign matID 10 to all cells
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0, 10)
 
 -- create logical volume lv1 as an analytical sphere
-lv1 = mesh.SphereLogicalVolume.Create({r = 1.3, x=1.0, y=-1.0, z=2.0})
+lv1 = logvol.SphereLogicalVolume.Create({r = 1.3, x=1.0, y=-1.0, z=2.0})
 
 -- create logical volume lv2 as an analytical rcc
-lv2 = mesh.RCCLogicalVolume.Create({r = 1.3,
+lv2 = logvol.RCCLogicalVolume.Create({r = 1.3,
                                         x0=-0.8, y0=-0.8, z0=-1.5,
                                         vx=1.0, vy=1.0, vz=3.0})
 
 -- create logical volume lv3 as boolean: true if cell is in lv2 and false if in lv1
-lv3 = mesh.BooleanLogicalVolume.Create
+lv3 = logvol.BooleanLogicalVolume.Create
 ({
   parts = { { op=true, lv=lv2 },
             { op=false, lv=lv1 } }
