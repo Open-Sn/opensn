@@ -139,7 +139,7 @@ class TestSlot:
 
         time_taken_message = " {:.1f}s".format(opensn_elapsed_time_sec)
 
-        print(test_path + message + time_taken_message)
+        print(prefix + " " + test_file_name + message + time_taken_message)
 
         if test.skip != "":
             print("Skip reason: " + test.skip)
