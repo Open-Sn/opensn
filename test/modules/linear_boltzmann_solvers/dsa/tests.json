@@ -6,10 +6,16 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "SimTest92_DSA iteration    8",
-        "wordnum": 6,
-        "gold": 1.9731053e-11,
+        "key": "Solution-norm",
+        "wordnum": 2,
+        "gold": 20.3757,
         "abs_tol": 1e-14
+      },
+      {
+        "type": "StrCompare",
+        "key": "Convergence Reason:",
+        "wordnum": 3,
+        "gold": "KSP_CONVERGED_RTOL"
       }
     ]
   },
@@ -20,10 +26,16 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "SimTest92b_DSA_PWLC iteration   10",
-        "wordnum": 6,
-        "gold": 5.3163347e-11,
+        "key": "Solution-norm",
+        "wordnum": 2,
+        "gold": 12.5145,
         "abs_tol": 1e-14
+      },
+      {
+        "type": "StrCompare",
+        "key": "Convergence Reason:",
+        "wordnum": 3,
+        "gold": "KSP_CONVERGED_RTOL"
       }
     ]
   }
