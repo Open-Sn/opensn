@@ -223,12 +223,10 @@ PhysicsTransportXSSet(lua_State* L)
     LuaPostArgAmountError(fname, 3, num_args);
 
   // Process xs handle
-  LuaCheckIntegerValue(fname, L, 1);
-  const int handle = lua_tointeger(L, 1);
+  const auto handle = LuaArg<int>(L, 1);
 
   // Process operation id
-  LuaCheckIntegerValue(fname, L, 2);
-  const int operation_index = lua_tointeger(L, 2);
+  const auto operation_index = LuaArg<int>(L, 2);
 
   std::shared_ptr<SingleStateMGXS> xs;
   try
@@ -249,8 +247,8 @@ PhysicsTransportXSSet(lua_State* L)
     if (num_args != 4)
       LuaPostArgAmountError(fname, 4, num_args);
 
-    const int n_grps = lua_tointeger(L, 3);
-    const double sigma_t = lua_tonumber(L, 4);
+    const auto n_grps = LuaArg<int>(L, 3);
+    const auto sigma_t = LuaArg<double>(L, 4);
 
     xs->MakeSimple0(n_grps, sigma_t);
   }
@@ -259,9 +257,9 @@ PhysicsTransportXSSet(lua_State* L)
     if (num_args != 5)
       LuaPostArgAmountError(fname, 5, num_args);
 
-    const int n_grps = lua_tointeger(L, 3);
-    const double sigma_t = lua_tonumber(L, 4);
-    const double c = lua_tonumber(L, 5);
+    const auto n_grps = LuaArg<int>(L, 3);
+    const auto sigma_t = LuaArg<double>(L, 4);
+    const auto c = LuaArg<double>(L, 5);
 
     xs->MakeSimple1(n_grps, sigma_t, c);
   }
@@ -270,9 +268,9 @@ PhysicsTransportXSSet(lua_State* L)
     if (num_args != 3)
       LuaPostArgAmountError(fname, 3, num_args);
 
-    const char* file_name_c = lua_tostring(L, 3);
+    auto file_name = LuaArg<std::string>(L, 3);
 
-    xs->MakeFromOpenSnXSFile(std::string(file_name_c));
+    xs->MakeFromOpenSnXSFile(file_name);
   }
   else
   {
@@ -292,8 +290,7 @@ PhysicsTransportXSGet(lua_State* L)
     LuaPostArgAmountError(fname, 1, num_args);
 
   // Process xs handle
-  LuaCheckNilValue(fname, L, 1);
-  const int handle = lua_tointeger(L, 1);
+  const auto handle = LuaArg<int>(L, 1);
 
   std::shared_ptr<SingleStateMGXS> xs;
   try
@@ -326,7 +323,7 @@ PhysicsTransportXSMakeCombined(lua_State* L)
   std::vector<std::pair<int, double>> combinations;
   for (int v = 0; v < lua_rawlen(L, 1); ++v)
   {
-    lua_pushnumber(L, v + 1);
+    lua_pushinteger(L, v + 1);
     lua_gettable(L, 1);
 
     OpenSnInvalidArgumentIf(not lua_istable(L, -1),
@@ -378,8 +375,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
     LuaPostArgAmountError(fname, 2, num_args);
 
   // Process xs handle
-  LuaCheckIntegerValue(fname, L, 1);
-  const int xs_handle = lua_tointeger(L, 1);
+  const auto xs_handle = LuaArg<int>(L, 1);
 
   std::shared_ptr<SingleStateMGXS> xs;
   try
@@ -398,7 +394,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
   std::vector<std::pair<int, double>> combinations;
   for (int v = 0; v < lua_rawlen(L, 2); ++v)
   {
-    lua_pushnumber(L, v + 1);
+    lua_pushinteger(L, v + 1);
     lua_gettable(L, 1);
 
     OpenSnInvalidArgumentIf(not lua_istable(L, -1),
@@ -443,8 +439,7 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
     LuaPostArgAmountError(fname, 2, num_args);
 
   // Process xs handle
-  LuaCheckIntegerValue(fname, L, 1);
-  const int handle = lua_tointeger(L, 1);
+  const auto handle = LuaArg<int>(L, 1);
 
   std::shared_ptr<MultiGroupXS> xs;
   try
@@ -458,8 +453,7 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
   }
 
   // Process file name
-  LuaCheckNilValue(fname, L, 2);
-  std::string file_name = lua_tostring(L, 2);
+  auto file_name = LuaArg<std::string>(L, 2);
 
   xs->ExportToOpenSnXSFile(file_name);
 

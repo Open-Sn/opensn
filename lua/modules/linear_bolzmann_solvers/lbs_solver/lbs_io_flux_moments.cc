@@ -27,11 +27,8 @@ LBSWriteFluxMoments(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
+  const auto solver_handle = LuaArg<int>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -51,11 +48,8 @@ LBSCreateAndWriteSourceMoments(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -76,18 +70,9 @@ LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
   if ((num_args != 2) and (num_args != 3))
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
-
-  bool single_file_flag = false;
-  if (num_args == 3)
-  {
-    LuaCheckBoolValue(fname, L, 3);
-    single_file_flag = lua_toboolean(L, 3);
-  }
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
+  bool single_file_flag = LuaArgOptional<bool>(L, 3, false);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -113,18 +98,9 @@ LBSReadSourceMoments(lua_State* L)
   if ((num_args != 2) and (num_args != 3))
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
-
-  bool single_file_flag = false;
-  if (num_args == 3)
-  {
-    LuaCheckBoolValue(fname, L, 3);
-    single_file_flag = lua_toboolean(L, 3);
-  }
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
+  auto single_file_flag = LuaArgOptional<bool>(L, 3, false);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -144,18 +120,9 @@ LBSReadFluxMoments(lua_State* L)
   if ((num_args != 2) and (num_args != 3))
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
-
-  bool single_file_flag = false;
-  if (num_args == 3)
-  {
-    LuaCheckBoolValue(fname, L, 3);
-    single_file_flag = lua_toboolean(L, 3);
-  }
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
+  auto single_file_flag = LuaArgOptional<bool>(L, 3, false);
 
   // Get pointer to solver
   auto& lbs_solver =

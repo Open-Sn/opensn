@@ -23,13 +23,9 @@ LBSWriteGroupsetAngularFlux(lua_State* L)
   if (num_args != 3)
     LuaPostArgAmountError(fname, 3, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-  LuaCheckNilValue(fname, L, 3);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const int grpset_index = lua_tonumber(L, 2);
-  const std::string file_base = lua_tostring(L, 3);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto grpset_index = LuaArg<int>(L, 2);
+  const auto file_base = LuaArg<std::string>(L, 3);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -63,13 +59,9 @@ LBSReadGroupsetAngularFlux(lua_State* L)
   if (num_args != 3)
     LuaPostArgAmountError(fname, 3, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-  LuaCheckNilValue(fname, L, 3);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const int grpset_index = lua_tonumber(L, 2);
-  const std::string file_base = lua_tostring(L, 3);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto grpset_index = LuaArg<int>(L, 2);
+  const auto file_base = LuaArg<std::string>(L, 3);
 
   // Get pointer to solver
   auto& lbs_solver =

@@ -50,10 +50,8 @@ SolverInitialize(lua_State* L)
 
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckIntegerValue(fname, L, 1);
 
-  const int solver_handle = lua_tonumber(L, 1);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
 
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
@@ -70,10 +68,8 @@ SolverExecute(lua_State* L)
 
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckIntegerValue(fname, L, 1);
 
-  const int solver_handle = lua_tonumber(L, 1);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
 
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
@@ -90,10 +86,8 @@ SolverStep(lua_State* L)
 
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckIntegerValue(fname, L, 1);
 
-  const int solver_handle = lua_tonumber(L, 1);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
 
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
@@ -110,10 +104,8 @@ SolverAdvance(lua_State* L)
 
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckIntegerValue(fname, L, 1);
 
-  const int solver_handle = lua_tonumber(L, 1);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
 
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
@@ -130,16 +122,8 @@ SolverSetBasicOption(lua_State* L)
   if (num_args != 3)
     LuaPostArgAmountError(fname, 3, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-  LuaCheckNilValue(fname, L, 3);
-
-  LuaCheckIntegerValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 2);
-
-  const int solver_handle = lua_tointeger(L, 1);
-  const std::string option_name = lua_tostring(L, 2);
-
+  const auto solver_handle = LuaArg<int>(L, 1);
+  const auto option_name = LuaArg<std::string>(L, 2);
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   try
@@ -154,26 +138,22 @@ SolverSetBasicOption(lua_State* L)
                                " is of invalid type."
                                " This indicates an implementation problem.");
       case VaryingDataType::STRING:
-        LuaCheckStringValue(fname, L, 3);
-        option.SetStringValue(lua_tostring(L, 3));
+        option.SetStringValue(LuaArg<std::string>(L, 3));
         opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
                           << " set to " << option.StringValue() << ".";
         break;
       case VaryingDataType::BOOL:
-        LuaCheckBoolValue(fname, L, 3);
-        option.SetBoolValue(lua_toboolean(L, 3));
+        option.SetBoolValue(LuaArg<bool>(L, 3));
         opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
                           << " set to " << ((option.BoolValue()) ? "true" : "false") << ".";
         break;
       case VaryingDataType::INTEGER:
-        LuaCheckIntegerValue(fname, L, 3);
-        option.SetIntegerValue(lua_tointeger(L, 3));
+        option.SetIntegerValue(LuaArg<int>(L, 3));
         opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
                           << " set to " << option.IntegerValue() << ".";
         break;
       case VaryingDataType::FLOAT:
-        LuaCheckNumberValue(fname, L, 3);
-        option.SetFloatValue(lua_tonumber(L, 3));
+        option.SetFloatValue(LuaArg<double>(L, 3));
         opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
                           << " set to " << option.FloatValue() << ".";
         break;
@@ -196,11 +176,8 @@ SolverGetName(lua_State* L)
 
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckIntegerValue(fname, L, 1);
 
-  const int solver_handle = lua_tonumber(L, 1);
-
+  const auto solver_handle = LuaArg<int>(L, 1);
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   lua_pushstring(L, solver.TextName().c_str());
@@ -217,8 +194,7 @@ SolverGetFieldFunctionList(lua_State* L)
     LuaPostArgAmountError("GetFieldFunctionList", 1, num_args);
 
   // Getting solver
-  const int solver_handle = lua_tonumber(L, 1);
-
+  const auto solver_handle = LuaArg<size_t>(L, 1);
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   // Push up new table
@@ -233,7 +209,7 @@ SolverGetFieldFunctionList(lua_State* L)
       ++pff_count;
       if (pff == solver.GetFieldFunctions()[ff])
       {
-        lua_pushnumber(L, pff_count);
+        lua_pushinteger(L, pff_count);
         found = true;
         break;
       }
@@ -259,16 +235,13 @@ SolverGetInfo(lua_State* L)
 
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckIntegerValue(fname, L, 1);
 
-  const size_t solver_handle = lua_tointeger(L, 1);
-
+  const auto solver_handle = LuaArg<size_t>(L, 1);
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   ParameterBlock params;
   if (lua_isstring(L, 2))
-    params.AddParameter("name", std::string(lua_tostring(L, 2)));
+    params.AddParameter("name", LuaArg<std::string>(L, 2));
   else if (lua_istable(L, 2))
     params = TableParserAsParameterBlock::ParseTable(L, 2);
   else
@@ -291,11 +264,7 @@ SolverSetProperties(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckIntegerValue(fname, L, 1);
-
-  const size_t solver_handle = lua_tointeger(L, 1);
-
+  const auto solver_handle = LuaArg<size_t>(L, 1);
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   LuaCheckTableValue(fname, L, 2);

@@ -17,7 +17,7 @@ ClearResponseSources(lua_State* L)
   LuaCheckIntegerValue(__FUNCTION__, L, 1);
 
   // Get the response evaluator
-  const int handle = lua_tonumber(L, 1);
+  const auto handle = LuaArg<size_t>(L, 1);
   auto& response_evaluator =
     GetStackItem<opensn::lbs::ResponseEvaluator>(object_stack, handle, __FUNCTION__);
 
@@ -110,16 +110,13 @@ EvaluateResponse(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(__FUNCTION__, 2, num_args);
 
-  LuaCheckIntegerValue(__FUNCTION__, L, 1);
-  LuaCheckStringValue(__FUNCTION__, L, 2);
-
   // Get the response evaluator
-  const auto handle = lua_tointeger(L, 1);
+  const auto handle = LuaArg<size_t>(L, 1);
   auto& response_evaluator =
     GetStackItem<opensn::lbs::ResponseEvaluator>(object_stack, handle, __FUNCTION__);
 
   // Get the buffer name
-  const auto buffer = lua_tostring(L, 2);
+  const auto buffer = LuaArg<std::string>(L, 2);
 
   // Compute the response
   double val = response_evaluator.EvaluateResponse(buffer);

@@ -21,14 +21,8 @@ AdjointSolverExportImportanceMapBinary(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  LuaCheckIntegerValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 2);
-
-  const int solver_handle = lua_tointeger(L, 1);
-  const std::string file_name = lua_tostring(L, 2);
+  const auto solver_handle = LuaArg<int>(L, 1);
+  const auto file_name = LuaArg<std::string>(L, 2);
 
   auto& solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesAdjointSolver>(
     opensn::object_stack, solver_handle, fname);

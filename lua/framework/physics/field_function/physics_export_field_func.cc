@@ -21,8 +21,8 @@ ExportFieldFunctionToVTK(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  int ff_handle = lua_tonumber(L, 1);
-  const char* base_name = lua_tostring(L, 2);
+  auto ff_handle = LuaArg<size_t>(L, 1);
+  auto base_name = LuaArg<std::string>(L, 2);
 
   auto ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ff_handle, fname);
   auto ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base);
@@ -43,7 +43,7 @@ ExportMultiFieldFunctionToVTK(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  const char* base_name = lua_tostring(L, 2);
+  auto base_name = LuaArg<std::string>(L, 2);
 
   LuaCheckTableValue(fname, L, 1);
 
@@ -54,13 +54,13 @@ ExportMultiFieldFunctionToVTK(lua_State* L)
   ffs.reserve(table_size);
   for (int i = 0; i < table_size; ++i)
   {
-    lua_pushnumber(L, i + 1);
+    lua_pushinteger(L, i + 1);
     lua_gettable(L, 1);
 
     std::shared_ptr<FieldFunction> ff_base = nullptr;
     if (lua_isinteger(L, -1))
     {
-      int ff_handle = lua_tonumber(L, -1);
+      int ff_handle = lua_tointeger(L, -1);
       lua_pop(L, 1);
 
       ff_base = opensn::GetStackItemPtr(ff_stack, ff_handle, fname);

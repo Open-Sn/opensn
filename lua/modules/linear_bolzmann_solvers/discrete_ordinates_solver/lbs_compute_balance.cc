@@ -20,10 +20,8 @@ LBSComputeBalance(lua_State* L)
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-
   // Get pointer to solver
-  const int solver_handle = lua_tonumber(L, 1);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
 
   auto& lbs_solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesSolver>(
     opensn::object_stack, solver_handle, fname);

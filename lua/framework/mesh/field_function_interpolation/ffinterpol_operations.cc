@@ -19,7 +19,7 @@ FFInterpolationInitialize(lua_State* L)
     LuaPostArgAmountError(fname, 1, num_args);
 
   // Get handle to field function
-  const size_t ffihandle = lua_tonumber(L, 1);
+  const auto ffihandle = LuaArg<size_t>(L, 1);
 
   auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 
@@ -36,7 +36,7 @@ FFInterpolationExecute(lua_State* L)
     LuaPostArgAmountError(fname, 1, num_args);
 
   // Get handle to field function
-  const size_t ffihandle = lua_tonumber(L, 1);
+  const auto ffihandle = LuaArg<size_t>(L, 1);
 
   auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 

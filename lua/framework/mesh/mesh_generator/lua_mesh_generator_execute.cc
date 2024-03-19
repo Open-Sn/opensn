@@ -23,11 +23,7 @@ MeshGeneratorExecute(lua_State* L)
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckIntegerValue(fname, L, 1);
-
-  const size_t handle = lua_tointeger(L, 1);
-
+  auto handle = LuaArg<size_t>(L, 1);
   auto& generator = opensn::GetStackItem<MeshGenerator>(opensn::object_stack, handle, fname);
   generator.Execute();
 

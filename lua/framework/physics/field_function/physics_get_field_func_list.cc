@@ -21,10 +21,7 @@ GetFieldFunctionHandleByName(lua_State* L)
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 1);
-
-  const std::string ff_name = lua_tostring(L, 1);
+  const auto ff_name = LuaArg<std::string>(L, 1);
 
   size_t ff_handle_counter = 0;
   std::vector<size_t> handles_that_matched;

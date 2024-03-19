@@ -28,13 +28,13 @@ CreateCylindricalProductQuadrature(lua_State* L)
   if (num_args < 3)
     LuaPostArgAmountError(fname, 3, num_args);
 
-  const int ident = lua_tonumber(L, 1);
-  const int Np = lua_tonumber(L, 2);
+  const auto ident = LuaArg<int>(L, 1);
+  const auto Np = LuaArg<int>(L, 2);
 
   std::vector<int> vNa;
   if (lua_isnumber(L, 3))
   {
-    const int Na = lua_tonumber(L, 3);
+    const auto Na = LuaArg<int>(L, 3);
     vNa.resize(Np, Na);
   }
   else if (lua_istable(L, 3))
@@ -49,7 +49,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
     vNa.resize(Np, 0);
     for (int n = 1; n <= lNa; ++n)
     {
-      lua_pushnumber(L, n);
+      lua_pushinteger(L, n);
       lua_gettable(L, 3);
       vNa[n - 1] = lua_tonumber(L, -1);
       lua_pop(L, 1);
@@ -62,9 +62,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  bool verbose = false;
-  if (num_args == 4)
-    verbose = lua_toboolean(L, 4);
+  auto verbose = LuaArgOptional<bool>(L, 4, false);
 
   const auto prod_quad_type = static_cast<ProductQuadratureType>(ident);
   switch (prod_quad_type)
@@ -149,11 +147,9 @@ CreateSphericalProductQuadrature(lua_State* L)
   if (num_args < 2)
     LuaPostArgAmountError("CreateSphericalProductQuadrature", 2, num_args);
 
-  const int ident = lua_tonumber(L, 1);
-  const int Np = lua_tonumber(L, 2);
-  bool verbose = false;
-  if (num_args == 3)
-    verbose = lua_toboolean(L, 3);
+  const auto ident = LuaArg<int>(L, 1);
+  const auto Np = LuaArg<int>(L, 2);
+  auto verbose = LuaArgOptional<bool>(L, 3, false);
 
   const auto prod_quad_type = static_cast<ProductQuadratureType>(ident);
   switch (prod_quad_type)
@@ -168,7 +164,7 @@ CreateSphericalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushnumber(L, static_cast<lua_Number>(index));
+      lua_pushinteger(L, static_cast<lua_Integer>(index));
 
       return 1;
     }
@@ -182,7 +178,7 @@ CreateSphericalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushnumber(L, static_cast<lua_Number>(index));
+      lua_pushinteger(L, static_cast<lua_Integer>(index));
 
       return 1;
     }

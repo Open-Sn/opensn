@@ -22,16 +22,13 @@ AddPointSource(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(__FUNCTION__, 2, num_args);
 
-  LuaCheckIntegerValue(__FUNCTION__, L, 1);
-  LuaCheckIntegerValue(__FUNCTION__, L, 2);
-
   // Process solver handle
-  const int solver_handle = lua_tointeger(L, 1);
+  const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
   // Process point source handle
-  int pt_src_handle = lua_tointeger(L, 2);
+  auto pt_src_handle = LuaArg<int>(L, 2);
   lbs_solver.AddPointSource(std::move(opensn::GetStackItem<opensn::lbs::PointSource>(
     opensn::object_stack, pt_src_handle, __FUNCTION__)));
   return 1;
@@ -48,7 +45,7 @@ ClearPointSources(lua_State* L)
   LuaCheckIntegerValue(__FUNCTION__, L, 1);
 
   // Process solver handle
-  const int solver_handle = lua_tointeger(L, 1);
+  const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
@@ -65,14 +62,11 @@ AddDistributedSource(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(__FUNCTION__, 2, num_args);
 
-  LuaCheckIntegerValue(__FUNCTION__, L, 1);
-  LuaCheckIntegerValue(__FUNCTION__, L, 2);
-
-  const int solver_handle = lua_tointeger(L, 1);
+  const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(object_stack, solver_handle, __FUNCTION__);
 
-  const int src_handle = lua_tointeger(L, 2);
+  const auto src_handle = LuaArg<int>(L, 2);
   lbs_solver.AddDistributedSource(std::move(
     opensn::GetStackItem<opensn::lbs::DistributedSource>(object_stack, src_handle, __FUNCTION__)));
 
@@ -88,10 +82,8 @@ ClearDistributedSources(lua_State* L)
   if (num_args != 1)
     LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
-  LuaCheckIntegerValue(__FUNCTION__, L, 1);
-
   // Process solver handle
-  const int solver_handle = lua_tointeger(L, 1);
+  const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 

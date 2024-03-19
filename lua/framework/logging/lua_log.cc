@@ -1,8 +1,6 @@
 #include "framework/lua.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include "lua_log.h"
 #include "framework/console/console.h"
 
@@ -39,7 +37,7 @@ LogSetVerbosity(lua_State* L)
   }
   else
   {
-    int level = lua_tonumber(L, 1);
+    auto level = LuaArg<int>(L, 1);
     if (level <= 2)
     {
       opensn::log.SetVerbosity(level);
@@ -56,8 +54,8 @@ LogLog(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError("Log", 2, num_args);
 
-  int mode = lua_tonumber(L, 1);
-  const char* message = lua_tostring(L, 2);
+  auto mode = LuaArg<int>(L, 1);
+  auto message = LuaArg<std::string>(L, 2);
 
   opensn::log.Log(static_cast<opensn::Logger::LOG_LVL>(mode)) << message << std::endl;
 
@@ -72,11 +70,8 @@ LogProcessEvent(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckStringValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 2);
-
-  const std::string event_name = lua_tostring(L, 1);
-  const std::string event_operation_name = lua_tostring(L, 2);
+  const auto event_name = LuaArg<std::string>(L, 1);
+  const auto event_operation_name = LuaArg<std::string>(L, 2);
 
   const size_t event_tag = opensn::log.GetExistingRepeatingEventTag(event_name);
 
@@ -105,16 +100,9 @@ int
 LogPrintTimingGraph(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
   auto& timing = opensn::log.GetTimingBlock(opensn::name);
 
-  int rank = 0;
-  if (num_args >= 1)
-  {
-    LuaCheckIntegerValue(fname, L, 1);
-    rank = lua_tointeger(L, 1);
-  }
-
+  auto rank = LuaArgOptional<int>(L, 1, 0);
   OpenSnInvalidArgumentIf(rank >= opensn::mpi_comm.size(),
                           "rank >= process_count, i.e., " + std::to_string(rank) +
                             " >= " + std::to_string(opensn::mpi_comm.size()));

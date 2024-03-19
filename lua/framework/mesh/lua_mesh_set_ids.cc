@@ -6,6 +6,9 @@
 #include "framework/console/console.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(MeshSetUniformMaterialID, mesh, SetUniformMaterialID);
 RegisterLuaFunctionNamespace(MeshSetMaterialIDFromLogicalVolume,
                              mesh,
@@ -25,9 +28,7 @@ MeshSetUniformMaterialID(lua_State* L)
   if (num_args != 1)
     LuaPostArgAmountError(__FUNCTION__, 1, num_args);
 
-  LuaCheckNilValue(__FUNCTION__, L, 1);
-
-  int mat_id = lua_tonumber(L, 1);
+  auto mat_id = LuaArg<int>(L, 1);
 
   auto vol_cont = GetCurrentMesh();
   vol_cont->SetUniformMaterialID(mat_id);
@@ -46,11 +47,9 @@ MeshSetMaterialIDFromLogicalVolume(lua_State* L)
   int num_args = lua_gettop(L);
   if ((num_args == 2) or (num_args == 3))
   {
-    int volume_handle = lua_tonumber(L, 1);
-    int mat_id = lua_tonumber(L, 2);
-    int sense = true;
-    if (num_args == 3)
-      sense = lua_toboolean(L, 3);
+    auto volume_handle = LuaArg<size_t>(L, 1);
+    auto mat_id = LuaArg<int>(L, 2);
+    auto sense = LuaArgOptional<bool>(L, 3, true);
 
     const auto& lv =
       opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_handle, fname);
@@ -80,10 +79,7 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
     opensn::log.Log0Verbose1() << program_timer.GetTimeString()
                                << " Setting material id from lua function.";
 
-    LuaCheckStringValue(fname, L, 1);
-
-    const std::string lua_fname = lua_tostring(L, 1);
-
+    const auto lua_fname = LuaArg<std::string>(L, 1);
     auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const Cell& cell)
     {
       // Load lua function
@@ -173,9 +169,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
   {
     OpenSnLogicalErrorIf(opensn::mpi_comm.size() != 1, "Can for now only be used in serial.");
 
-    LuaCheckStringValue(fname, L, 1);
-
-    const std::string lua_fname = lua_tostring(L, 1);
+    const auto lua_fname = LuaArg<std::string>(L, 1);
 
     opensn::log.Log0Verbose1() << program_timer.GetTimeString()
                                << " Setting boundary id from lua function.";
@@ -288,13 +282,9 @@ MeshSetBoundaryIDFromLogicalVolume(lua_State* L)
   int num_args = lua_gettop(L);
   if ((num_args == 2) or (num_args == 3))
   {
-    LuaCheckNilValue(fname, L, 1);
-    LuaCheckStringValue(fname, L, 2);
-    int volume_handle = lua_tonumber(L, 1);
-    std::string boundary_name = lua_tostring(L, 2);
-    int sense = true;
-    if (num_args == 3)
-      sense = lua_toboolean(L, 3);
+    auto volume_handle = LuaArg<size_t>(L, 1);
+    auto boundary_name = LuaArg<std::string>(L, 2);
+    auto sense = LuaArgOptional<bool>(L, 3, true);
 
     OpenSnLogicalErrorIf(boundary_name.empty(), "argument 2 must not be an empty string.");
 
@@ -314,3 +304,5 @@ MeshSetBoundaryIDFromLogicalVolume(lua_State* L)
   }
   return 0;
 }
+
+} // namespace opensnlua

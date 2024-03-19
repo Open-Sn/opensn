@@ -19,7 +19,7 @@ GetProductQuadrature(lua_State* L)
   if (num_args != 1)
     LuaPostArgAmountError("GetProductQuadrature", 1, num_args);
 
-  int handle = lua_tonumber(L, 1);
+  auto handle = LuaArg<size_t>(L, 1);
 
   std::shared_ptr<ProductQuadrature> quad;
   try
@@ -43,7 +43,7 @@ GetProductQuadrature(lua_State* L)
   lua_newtable(L);
   for (size_t n = 0; n < quad->weights_.size(); ++n)
   {
-    lua_pushnumber(L, n + 1);
+    lua_pushinteger(L, n + 1);
     lua_newtable(L);
 
     lua_pushstring(L, "weight");

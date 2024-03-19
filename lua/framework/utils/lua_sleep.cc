@@ -22,8 +22,7 @@ Sleep(lua_State* L)
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
 
-  LuaCheckIntegerValue(fname, L, 1);
-  const int64_t time_to_sleep = lua_tointeger(L, 1);
+  const auto time_to_sleep = LuaArg<int64_t>(L, 1);
 
   opensn::Sleep(std::chrono::milliseconds(time_to_sleep));
 

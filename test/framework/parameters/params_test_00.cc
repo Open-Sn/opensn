@@ -8,6 +8,7 @@
 #include "lua/framework/console/console.h"
 
 using namespace opensn;
+using namespace opensnlua;
 
 namespace unit_tests
 {
@@ -20,9 +21,7 @@ ParameterBlock_Test00(lua_State* L)
 {
   opensn::log.Log() << "GOLD_BEGIN";
   const int num_args = lua_gettop(L);
-  bool verbose = false;
-  if (num_args >= 1)
-    verbose = lua_toboolean(L, 1);
+  auto verbose = LuaArgOptional<bool>(L, 1, false);
 
   if (verbose)
     opensn::log.Log() << "Hello world";

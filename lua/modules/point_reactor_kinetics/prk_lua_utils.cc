@@ -23,16 +23,11 @@ PRKGetParam(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 2);
-
-  const int handle = lua_tointeger(L, 1);
-
+  const auto handle = LuaArg<int>(L, 1);
   auto solver =
     opensn::GetStackItem<opensn::prk::TransientSolver>(opensn::object_stack, handle, fname);
 
-  const std::string param_name = lua_tostring(L, 2);
-
+  const auto param_name = LuaArg<std::string>(L, 2);
   if (param_name == "population_prev")
     lua_pushnumber(L, solver.PopulationPrev());
   else if (param_name == "population_next")
@@ -57,21 +52,15 @@ PRKSetParam(lua_State* L)
   if (num_args != 3)
     LuaPostArgAmountError(fname, 3, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 2);
-  LuaCheckNilValue(fname, L, 3);
-
-  const int handle = lua_tointeger(L, 1);
-
+  const auto handle = LuaArg<size_t>(L, 1);
   auto& solver =
     opensn::GetStackItem<opensn::prk::TransientSolver>(opensn::object_stack, handle, fname);
 
-  const std::string param_name = lua_tostring(L, 2);
-
+  const auto param_name = LuaArg<std::string>(L, 2);
   if (param_name == "rho")
   {
     LuaCheckNumberValue(fname + "(handle,\"rho\", : Expects a number value.", L, 3);
-    const double val = lua_tonumber(L, 3);
+    const auto val = LuaArg<double>(L, 3);
     solver.SetRho(val);
   }
   else

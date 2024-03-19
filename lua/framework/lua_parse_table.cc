@@ -191,19 +191,16 @@ StackItemToParameterBlock(lua_State* L, int index)
     case LUA_TNIL:
       return opensn::ParameterBlock{};
     case LUA_TBOOLEAN:
-      return opensn::ParameterBlock("", lua_toboolean(L, index));
+      return opensn::ParameterBlock("", LuaArg<bool>(L, index));
     case LUA_TNUMBER:
     {
       if (lua_isinteger(L, index))
-        return opensn::ParameterBlock("", lua_tointeger(L, index));
+        return opensn::ParameterBlock("", LuaArg<int>(L, index));
       else
-        return opensn::ParameterBlock("", lua_tonumber(L, index));
+        return opensn::ParameterBlock("", LuaArg<double>(L, index));
     }
     case LUA_TSTRING:
-    {
-      const std::string value = lua_tostring(L, index);
-      return opensn::ParameterBlock("", value);
-    }
+      return opensn::ParameterBlock("", LuaArg<std::string>(L, index));
     case LUA_TTABLE:
     {
       auto paramblock = TableParserAsParameterBlock::ParseTable(L, index);

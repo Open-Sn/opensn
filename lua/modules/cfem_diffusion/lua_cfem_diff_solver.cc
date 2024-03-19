@@ -38,13 +38,7 @@ CFEMDiffusionSolverCreate(lua_State* L)
   const std::string fname = __FUNCTION__;
   int num_args = lua_gettop(L);
 
-  std::string solver_name = "CFEMDiffusionSolver";
-
-  if (num_args == 1)
-  {
-    LuaCheckStringValue(fname, L, 1);
-    solver_name = lua_tostring(L, 1);
-  }
+  auto solver_name = LuaArgOptional<std::string>(L, 1, "CFEMDiffusionSolver");
 
   auto d_coef_function = CreateFunction("D_coef");
   opensn::function_stack.push_back(d_coef_function);
@@ -77,19 +71,14 @@ CFEMDiffusionSetBCProperty(lua_State* L)
   if (num_args < 2)
     LuaPostArgAmountError(fname, num_args, 2);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
   // Get solver
-  LuaCheckNumberValue(fname, L, 1);
-  const int solver_index = lua_tonumber(L, 1);
+  const auto solver_index = LuaArg<size_t>(L, 1);
 
   auto& solver =
     opensn::GetStackItem<opensn::cfem_diffusion::Solver>(opensn::object_stack, solver_index, fname);
 
   // Get property index
-  LuaCheckStringValue(fname, L, 2);
-  const std::string property_name = lua_tostring(L, 2);
+  const auto property_name = LuaArg<std::string>(L, 2);
 
   // Handle properties
   if (property_name == "boundary_type")
@@ -101,12 +90,9 @@ CFEMDiffusionSetBCProperty(lua_State* L)
                               << " At least 4 arguments are expected.";
       opensn::Exit(EXIT_FAILURE);
     }
-    LuaCheckStringValue(fname, L, 3);
-    const std::string bound_name = lua_tostring(L, 3);
 
-    LuaCheckStringValue(fname, L, 4);
-    const std::string type_name = lua_tostring(L, 4);
-
+    const auto bound_name = LuaArg<std::string>(L, 3);
+    const auto type_name = LuaArg<std::string>(L, 4);
     if (type_name == "reflecting")
     {
       if (num_args != 4)
@@ -136,8 +122,7 @@ CFEMDiffusionSetBCProperty(lua_State* L)
                                 << " 5 arguments are expected.";
         opensn::Exit(EXIT_FAILURE);
       }
-      LuaCheckNumberValue(fname, L, 5);
-      double boundary_value = lua_tonumber(L, 5);
+      auto boundary_value = LuaArg<double>(L, 5);
 
       opensn::cfem_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::cfem_diffusion::BoundaryType::Dirichlet;
@@ -157,8 +142,7 @@ CFEMDiffusionSetBCProperty(lua_State* L)
                                 << " 5 arguments are expected.";
         opensn::Exit(EXIT_FAILURE);
       }
-      LuaCheckNumberValue(fname, L, 5);
-      double f_value = lua_tonumber(L, 5);
+      auto f_value = LuaArg<double>(L, 5);
 
       opensn::cfem_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::cfem_diffusion::BoundaryType::Robin;
@@ -197,13 +181,10 @@ CFEMDiffusionSetBCProperty(lua_State* L)
                                 << " 7 arguments are expected.";
         opensn::Exit(EXIT_FAILURE);
       }
-      LuaCheckNumberValue(fname, L, 5);
-      LuaCheckNumberValue(fname, L, 6);
-      LuaCheckNumberValue(fname, L, 7);
 
-      double a_value = lua_tonumber(L, 5);
-      double b_value = lua_tonumber(L, 6);
-      double f_value = lua_tonumber(L, 7);
+      auto a_value = LuaArg<double>(L, 5);
+      auto b_value = LuaArg<double>(L, 6);
+      auto f_value = LuaArg<double>(L, 7);
 
       opensn::cfem_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::cfem_diffusion::BoundaryType::Robin;

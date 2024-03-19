@@ -26,20 +26,13 @@ AdjointSolverMakeExpRepFromP1Moments(lua_State* L)
   LuaCheckTableValue(fname, L, 1);
 
   std::vector<double> P1;
-  bool verbose = false;
   LuaPopulateVectorFrom1DArray(fname, L, 1, P1);
 
   if (P1.size() != 4)
     throw std::invalid_argument(fname + ": Supplied table argument must"
                                         " have 4 entries.");
 
-  if (num_args == 2)
-  {
-    LuaCheckNilValue(fname, L, 2);
-    LuaCheckBoolValue(fname, L, 2);
-
-    verbose = lua_toboolean(L, 2);
-  }
+  auto verbose = LuaArgOptional<bool>(L, 2, false);
 
   auto solution = opensn::lbs::MakeExpRepFromP1({P1[0], P1[1], P1[2], P1[3]}, verbose);
 

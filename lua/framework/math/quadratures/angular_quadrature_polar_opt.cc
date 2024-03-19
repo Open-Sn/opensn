@@ -23,10 +23,8 @@ OptimizeAngularQuadratureForPolarSymmetry(lua_State* L)
   if (num_args < 1)
     LuaPostArgAmountError(fname, 1, num_args);
 
-  const int handle = lua_tointeger(L, 1);
-  double normalization = -1.0;
-  if (num_args == 2)
-    normalization = lua_tonumber(L, 2);
+  const auto handle = LuaArg<int>(L, 1);
+  auto normalization = LuaArgOptional<double>(L, 2, -1.0);
 
   auto& quadrature =
     opensn::GetStackItem<AngularQuadrature>(opensn::angular_quadrature_stack, handle, fname);

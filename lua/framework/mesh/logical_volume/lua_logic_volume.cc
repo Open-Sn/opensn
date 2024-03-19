@@ -18,13 +18,11 @@ LogVolPointSense(lua_State* L)
   if (num_args != 4)
     LuaPostArgAmountError(fname, 4, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-
-  const int lv_handle = lua_tointeger(L, 1);
+  const auto lv_handle = LuaArg<int>(L, 1);
 
   const auto& lv = opensn::GetStackItem<LogicalVolume>(opensn::object_stack, lv_handle, fname);
 
-  const Vector3 point(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
+  const Vector3 point(LuaArg<double>(L, 2), LuaArg<double>(L, 3), LuaArg<double>(L, 4));
 
   if (lv.Inside(point))
     lua_pushboolean(L, true);

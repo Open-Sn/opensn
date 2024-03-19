@@ -44,7 +44,7 @@ CreateCustomAngularQuadrature(lua_State* L)
 
   for (int n = 1; n <= Na; ++n)
   {
-    lua_pushnumber(L, n);
+    lua_pushinteger(L, n);
     lua_gettable(L, 1);
     azi_angles[n - 1] = lua_tonumber(L, -1);
     lua_pop(L, 1);
@@ -52,7 +52,7 @@ CreateCustomAngularQuadrature(lua_State* L)
 
   for (int n = 1; n <= Na; ++n)
   {
-    lua_pushnumber(L, n);
+    lua_pushinteger(L, n);
     lua_gettable(L, 2);
     pol_angles[n - 1] = lua_tonumber(L, -1);
     lua_pop(L, 1);
@@ -60,7 +60,7 @@ CreateCustomAngularQuadrature(lua_State* L)
 
   for (int n = 1; n <= Na; ++n)
   {
-    lua_pushnumber(L, n);
+    lua_pushinteger(L, n);
     lua_gettable(L, 3);
     weights[n - 1] = lua_tonumber(L, -1);
     lua_pop(L, 1);

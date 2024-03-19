@@ -16,8 +16,7 @@ ComputeLeakage(lua_State* L)
   const auto num_args = lua_gettop(L);
 
   // Get the solver
-  LuaCheckNilValue(fname, L, 1);
-  const auto solver_handle = lua_tointeger(L, 1);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
   const auto& solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesSolver>(
     opensn::object_stack, solver_handle, fname);
 

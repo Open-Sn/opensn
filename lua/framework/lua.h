@@ -107,4 +107,122 @@ void PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int l
 
 opensn::ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
 
+template <typename T>
+inline T
+LuaArgAsType(lua_State* L, int index)
+{
+  throw std::invalid_argument("Unsupported type: " + std::string(typeid(T).name()));
+}
+
+template <>
+inline bool
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_isboolean(L, index))
+    return lua_toboolean(L, index) == 1;
+  else
+    throw std::invalid_argument("Expected boolean value as " + std::to_string(index) +
+                                ". argument");
+}
+
+template <>
+inline int
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_isinteger(L, index))
+    return lua_tointeger(L, index);
+  else
+    throw std::invalid_argument("Expected int value as " + std::to_string(index) + ". argument");
+}
+
+template <>
+inline int64_t
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_isinteger(L, index))
+    return lua_tointeger(L, index);
+  else
+    throw std::invalid_argument("Expected int value as " + std::to_string(index) + ". argument");
+}
+
+template <>
+inline double
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_isnumber(L, index))
+    return lua_tonumber(L, index);
+  else
+    throw std::invalid_argument("Expected number value as " + std::to_string(index) + ". argument");
+}
+
+template <>
+inline std::size_t
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_isinteger(L, index))
+    return lua_tointeger(L, index);
+  else
+    throw std::invalid_argument("Expected std::size_t value as " + std::to_string(index) +
+                                ". argument");
+}
+
+template <>
+inline const char*
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_isstring(L, index))
+    return lua_tostring(L, index);
+  else
+    throw std::invalid_argument("Expected string value as " + std::to_string(index) + ". argument");
+}
+
+template <>
+inline std::string
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_isstring(L, index))
+    return std::string(lua_tostring(L, index));
+  else
+    throw std::invalid_argument("Expected string value as " + std::to_string(index) + ". argument");
+}
+
+/**
+ * Get argument with specified index from Lua stack
+ *
+ * \param L Lua stack
+ * \param index Argument index from the lua stack (1-based)
+ */
+template <typename T>
+inline T
+LuaArg(lua_State* L, int index)
+{
+  auto num_args = lua_gettop(L);
+  if (index > num_args)
+    throw std::invalid_argument("Invalid argument index " + std::to_string(index) +
+                                ". Supplied only " + std::to_string(num_args) + " arguments.");
+  if (lua_isnil(L, index))
+    throw std::invalid_argument("Unexpected value supplied as " + std::to_string(index) +
+                                ". argument.");
+
+  return LuaArgAsType<T>(L, index);
+}
+
+/**
+ * Get optional argument with specified index from Lua stack
+ *
+ * \param L Lua stack
+ * \param index Argument index from the lua stack (1-based)
+ * \param default_value Default value to use if argument was not specified
+ */
+template <typename T>
+inline T
+LuaArgOptional(lua_State* L, int index, T default_value)
+{
+  const int num_args = lua_gettop(L);
+  if (index <= num_args)
+    return LuaArg<T>(L, index);
+  else
+    return default_value;
+}
+
 } // namespace opensnlua

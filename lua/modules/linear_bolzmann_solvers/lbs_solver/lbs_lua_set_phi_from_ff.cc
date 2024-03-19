@@ -23,10 +23,9 @@ LBSSetPhiFromFieldFunction(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
   LuaCheckTableValue(fname, L, 2);
 
-  const size_t handle = lua_tointeger(L, 1);
+  const auto handle = LuaArg<size_t>(L, 1);
 
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, handle, fname);

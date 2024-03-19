@@ -24,17 +24,15 @@ CreateProductQuadrature(lua_State* L)
 {
   int num_args = lua_gettop(L);
   // Parse argument
-  int ident = lua_tonumber(L, 1);
-  bool verbose = false;
+  auto ident = LuaArg<int>(L, 1);
 
   if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE)
   {
     if (num_args < 2)
       LuaPostArgAmountError("CreateProductQuadrature", 2, num_args);
 
-    int Np = lua_tonumber(L, 2);
-    if (num_args == 3)
-      verbose = lua_toboolean(L, 3);
+    auto Np = LuaArg<int>(L, 2);
+    auto verbose = LuaArgOptional<bool>(L, 3, false);
 
     opensn::log.Log() << "Creating Gauss-Legendre Quadrature\n";
 
@@ -58,10 +56,9 @@ CreateProductQuadrature(lua_State* L)
     if (num_args < 3)
       LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
 
-    int Na = lua_tonumber(L, 2);
-    int Np = lua_tonumber(L, 3);
-    if (num_args == 4)
-      verbose = lua_toboolean(L, 4);
+    auto Na = LuaArg<int>(L, 2);
+    auto Np = LuaArg<int>(L, 3);
+    auto verbose = LuaArgOptional<bool>(L, 4, false);
 
     opensn::log.Log() << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
@@ -85,10 +82,9 @@ CreateProductQuadrature(lua_State* L)
     if (num_args < 3)
       LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
 
-    int Na = lua_tonumber(L, 2);
-    int Np = lua_tonumber(L, 3);
-    if (num_args == 4)
-      verbose = lua_toboolean(L, 4);
+    auto Na = LuaArg<int>(L, 2);
+    auto Np = LuaArg<int>(L, 3);
+    auto verbose = LuaArgOptional<bool>(L, 4, false);
 
     opensn::log.Log() << "Creating Gauss-Legendre-ChebyShev Quadrature\n";
 
@@ -132,8 +128,7 @@ CreateProductQuadrature(lua_State* L)
         << "be a lua table.";
       opensn::Exit(EXIT_FAILURE);
     }
-    if (num_args == 5)
-      verbose = lua_toboolean(L, 4);
+    auto verbose = LuaArgOptional<bool>(L, 5, false);
 
     size_t Na = lua_rawlen(L, 2);
     size_t Np = lua_rawlen(L, 3);
@@ -145,21 +140,21 @@ CreateProductQuadrature(lua_State* L)
 
     for (int n = 1; n <= Na; ++n)
     {
-      lua_pushnumber(L, n);
+      lua_pushinteger(L, n);
       lua_gettable(L, 2);
       azimuthal[n - 1] = lua_tonumber(L, -1);
       lua_pop(L, 1);
     }
     for (int n = 1; n <= Np; ++n)
     {
-      lua_pushnumber(L, n);
+      lua_pushinteger(L, n);
       lua_gettable(L, 3);
       polar[n - 1] = lua_tonumber(L, -1);
       lua_pop(L, 1);
     }
     for (int n = 1; n <= Nw; ++n)
     {
-      lua_pushnumber(L, n);
+      lua_pushinteger(L, n);
       lua_gettable(L, 4);
       weights[n - 1] = lua_tonumber(L, -1);
       lua_pop(L, 1);

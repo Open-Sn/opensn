@@ -30,9 +30,7 @@ FunctionDimAToDimBEvaluate(lua_State* L)
     LuaPostArgAmountError(fname, 2, num_args);
 
   // Getting function object
-  LuaCheckNilValue(fname, L, 1);
-  const size_t handle = lua_tointeger(L, 1);
-
+  const auto handle = LuaArg<size_t>(L, 1);
   const auto& function =
     opensn::GetStackItem<FunctionDimAToDimB>(opensn::object_stack, handle, fname);
 
@@ -49,10 +47,7 @@ FunctionDimAToDimBEvaluate(lua_State* L)
   else
   {
     for (int p = 2; p <= num_args; ++p)
-    {
-      LuaCheckNumberValue(fname, L, p);
-      params.push_back(lua_tonumber(L, p));
-    }
+      params.push_back(LuaArg<double>(L, p));
   }
 
   // Calling function

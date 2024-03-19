@@ -70,7 +70,7 @@ Console::LuaWrapperCall(lua_State* L)
 
   const auto& registry = console.function_wrapper_registry_;
 
-  const std::string fname = lua_tostring(L, 1);
+  const auto fname = LuaArg<std::string>(L, 1);
 
   OpenSnLogicalErrorIf(registry.count(fname) == 0,
                        std::string("Wrapper with name \"") + fname + "\" not in console registry.");
@@ -85,13 +85,13 @@ Console::LuaWrapperCall(lua_State* L)
     const std::string arg_name = "arg" + std::to_string(p - 2);
 
     if (lua_isboolean(L, p))
-      main_arguments_block.AddParameter(arg_name, lua_toboolean(L, p));
+      main_arguments_block.AddParameter(arg_name, LuaArg<bool>(L, p));
     else if (lua_isinteger(L, p))
-      main_arguments_block.AddParameter(arg_name, lua_tointeger(L, p));
+      main_arguments_block.AddParameter(arg_name, LuaArg<int>(L, p));
     else if (lua_isnumber(L, p))
-      main_arguments_block.AddParameter(arg_name, lua_tonumber(L, p));
+      main_arguments_block.AddParameter(arg_name, LuaArg<double>(L, p));
     else if (lua_isstring(L, p))
-      main_arguments_block.AddParameter(arg_name, lua_tostring(L, p));
+      main_arguments_block.AddParameter(arg_name, LuaArg<std::string>(L, p));
     else if (lua_istable(L, p))
     {
       auto block = TableParserAsParameterBlock::ParseTable(L, p);
@@ -180,7 +180,7 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
       lua_newtable(L);
       for (int i = 1; i <= argc; i++)
       {
-        lua_pushnumber(L, i);
+        lua_pushinteger(L, i);
         lua_pushstring(L, argv[i - 1]);
         lua_settable(L, -3);
       }

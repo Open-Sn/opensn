@@ -24,7 +24,7 @@ FFInterpolationGetValue(lua_State* L)
     LuaPostArgAmountError("FFInterpolationGetValue", 1, num_args);
 
   // Get handle to field function
-  const size_t ffihandle = lua_tonumber(L, 1);
+  const auto ffihandle = LuaArg<size_t>(L, 1);
 
   auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 
@@ -44,14 +44,14 @@ FFInterpolationGetValue(lua_State* L)
 
     for (int ff = 0; ff < cur_ffi_line.GetFieldFunctions().size(); ff++)
     {
-      lua_pushnumber(L, ff + 1);
+      lua_pushinteger(L, ff + 1);
 
       lua_newtable(L);
       const auto& ff_ctx = cur_ffi_line.GetFFContexts()[ff];
 
       for (int p = 0; p < cur_ffi_line.GetInterpolationPoints().size(); p++)
       {
-        lua_pushnumber(L, p + 1);
+        lua_pushinteger(L, p + 1);
         lua_pushnumber(L, ff_ctx.interpolation_points_values[p]);
         lua_settable(L, -3);
       }

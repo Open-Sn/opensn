@@ -50,10 +50,9 @@ MakeObjectType(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckStringValue(fname, L, 1);
   LuaCheckTableValue(fname, L, 2);
 
-  const std::string type = lua_tostring(L, 1);
+  const auto type = LuaArg<std::string>(L, 1);
   const auto params = TableParserAsParameterBlock::ParseTable(L, 2);
 
   const auto& object_maker = opensn::ObjectFactory::GetInstance();

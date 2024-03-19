@@ -24,15 +24,10 @@ CreateLineQuadrature(lua_State* L)
   if (not((num_args == 2) or (num_args == 3)))
     LuaPostArgAmountError(fname, 2, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
   // Parse argument
-  int ident = lua_tonumber(L, 1);
-  int N = lua_tonumber(L, 2);
-  bool verbose = false;
-  if (num_args == 3)
-    verbose = lua_toboolean(L, 3);
+  auto ident = LuaArg<int>(L, 1);
+  auto N = LuaArg<int>(L, 2);
+  auto verbose = LuaArgOptional<bool>(L, 3, false);
 
   ParameterBlock params;
   params.AddParameter("verbose", verbose);

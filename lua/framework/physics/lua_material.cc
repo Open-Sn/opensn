@@ -57,7 +57,7 @@ IsotropicMGSourcePropertyPushTable(lua_State* L, std::shared_ptr<IsotropicMultiG
   for (auto val : property->source_value_g_)
   {
     ++g;
-    lua_pushnumber(L, g);
+    lua_pushinteger(L, g);
     lua_pushnumber(L, val);
     lua_settable(L, -3);
   }
@@ -93,16 +93,12 @@ MatAddMaterial(lua_State* L)
   int numArgs = lua_gettop(L);
 
   auto new_material = std::make_shared<Material>();
-  if (numArgs == 1)
-  {
-    const char* temp = lua_tostring(L, 1);
-    new_material->name_ = std::string(temp);
-  }
+  new_material->name_ = LuaArgOptional<std::string>(L, 1, "");
 
   opensn::material_stack.push_back(new_material);
 
   const size_t index = opensn::material_stack.size() - 1;
-  lua_pushnumber(L, static_cast<lua_Number>(index));
+  lua_pushinteger(L, static_cast<lua_Integer>(index));
 
   opensn::log.Log0Verbose1() << "New material added at index " << index << " with name \""
                              << new_material->name_ << "\"";
@@ -122,14 +118,9 @@ MatAddProperty(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  int material_index = lua_tonumber(L, 1);
-  int property_index = lua_tonumber(L, 2);
-
-  const char* provided_name = "";
-  if (num_args == 3)
-  {
-    provided_name = lua_tostring(L, 3);
-  }
+  auto material_index = LuaArg<int>(L, 1);
+  auto property_index = LuaArg<int>(L, 2);
+  auto provided_name = LuaArgOptional<std::string>(L, 3, "");
 
   // Get reference to material
   auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
@@ -184,7 +175,7 @@ MatAddProperty(lua_State* L)
 
     const size_t index = opensn::multigroup_xs_stack.size() - 1;
 
-    lua_pushnumber(L, static_cast<lua_Number>(index));
+    lua_pushinteger(L, static_cast<lua_Integer>(index));
     return 1;
   }
   else if (property_index == static_cast<int>(MatProperty::ISOTROPIC_MG_SOURCE))
@@ -235,18 +226,15 @@ MatSetProperty(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  int material_index = lua_tonumber(L, 1);
+  auto material_index = LuaArg<int>(L, 1);
   int property_index = -1;
   std::string property_index_name;
   if (lua_isnumber(L, 2))
-    property_index = lua_tonumber(L, 2);
+    property_index = LuaArg<int>(L, 2);
   else
-  {
-    const char* temp_name = lua_tostring(L, 2);
-    property_index_name = std::string(temp_name);
-  }
+    property_index_name = LuaArg<std::string>(L, 2);
 
-  int operation_index = lua_tonumber(L, 3);
+  auto operation_index = LuaArg<int>(L, 3);
 
   // Get reference to material
   auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
@@ -289,7 +277,7 @@ MatSetProperty(lua_State* L)
       // Process operation
       if (operation_index == static_cast<int>(OpType::SINGLE_VALUE))
       {
-        double value = lua_tonumber(L, 4);
+        auto value = LuaArg<double>(L, 4);
         prop->value_ = value;
         opensn::log.Log0Verbose1()
           << "Scalar value for material at index " << material_index << " set to " << value;
@@ -344,8 +332,8 @@ MatSetProperty(lua_State* L)
         if (num_args != 5)
           LuaPostArgAmountError("MatSetProperty", 5, num_args);
 
-        int G = lua_tonumber(L, 4);
-        double sigma_t = lua_tonumber(L, 5);
+        auto G = LuaArg<int>(L, 4);
+        auto sigma_t = LuaArg<double>(L, 5);
 
         prop->MakeSimple0(G, sigma_t);
       }
@@ -354,9 +342,9 @@ MatSetProperty(lua_State* L)
         if (num_args != 6)
           LuaPostArgAmountError("MatSetProperty", 6, num_args);
 
-        int G = lua_tonumber(L, 4);
-        double sigma_t = lua_tonumber(L, 5);
-        double c = lua_tonumber(L, 6);
+        auto G = LuaArg<int>(L, 4);
+        auto sigma_t = LuaArg<double>(L, 5);
+        auto c = LuaArg<double>(L, 6);
 
         prop->MakeSimple1(G, sigma_t, c);
       }
@@ -365,17 +353,16 @@ MatSetProperty(lua_State* L)
         if (num_args != 4)
           LuaPostArgAmountError("MatSetProperty", 4, num_args);
 
-        const char* file_name_c = lua_tostring(L, 4);
+        const auto file_name = LuaArg<std::string>(L, 4);
 
-        prop->MakeFromOpenSnXSFile(std::string(file_name_c));
+        prop->MakeFromOpenSnXSFile(file_name);
       }
       else if (operation_index == static_cast<int>(OpType::EXISTING))
       {
         if (num_args != 4)
           LuaPostArgAmountError("MatSetProperty", 4, num_args);
 
-        LuaCheckNilValue("MatSetProperty", L, 4);
-        int handle = lua_tonumber(L, 4);
+        auto handle = LuaArg<int>(L, 4);
 
         std::shared_ptr<SingleStateMGXS> xs;
         try
@@ -445,7 +432,7 @@ MatSetProperty(lua_State* L)
         if (num_args != 4)
           LuaPostArgAmountError("MatSetProperty", 4, num_args);
 
-        double value = lua_tonumber(L, 4);
+        auto value = LuaArg<double>(L, 4);
 
         prop->source_value_g_.resize(1, value);
         opensn::log.Log0Verbose1() << "Isotropic Multigroup Source value for material at index "
@@ -470,7 +457,7 @@ MatSetProperty(lua_State* L)
         std::vector<double> values(table_len, 0.0);
         for (int g = 0; g < table_len; g++)
         {
-          lua_pushnumber(L, g + 1);
+          lua_pushinteger(L, g + 1);
           lua_gettable(L, 4);
           values[g] = lua_tonumber(L, -1);
           lua_pop(L, 1);
@@ -513,16 +500,13 @@ MatGetProperty(lua_State* L)
   if (num_args != 2)
     LuaPostArgAmountError("MatGetProperty", 2, num_args);
 
-  int material_index = lua_tonumber(L, 1);
+  auto material_index = LuaArg<int>(L, 1);
   int property_index = -1;
   std::string property_index_name;
   if (lua_isnumber(L, 2))
-    property_index = lua_tonumber(L, 2);
+    property_index = LuaArg<int>(L, 2);
   else
-  {
-    const char* temp_name = lua_tostring(L, 2);
-    property_index_name = std::string(temp_name);
-  }
+    property_index_name = LuaArg<std::string>(L, 2);
 
   // Get reference to material
   auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
