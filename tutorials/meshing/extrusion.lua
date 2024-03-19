@@ -27,10 +27,8 @@ meshgen = mesh.ExtruderMeshGenerator.Create
     }),
   },
   layers = {{z=1.1, n=2}, {z=2.1, n=3}},
-  partitioner = PETScGraphPartitioner.Create({type="parmetis"})
+  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
 })
 mesh.MeshGenerator.Execute(meshgen)
 
 mesh.ExportToVTK("Extruded_mesh_only")
-
-

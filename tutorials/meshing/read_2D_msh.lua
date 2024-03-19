@@ -30,7 +30,7 @@ meshgen = mesh.MeshGenerator.Create
       filename="../../test/modules/linear_boltzmann_solvers/transport_keigen/c5g7/mesh/2D_c5g7_coarse.msh"
     }),
   },
-  partitioner = PETScGraphPartitioner.Create({type="parmetis"})
+  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
 })
 mesh.MeshGenerator.Execute(meshgen)
 

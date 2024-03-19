@@ -70,7 +70,7 @@ The resulting mesh and partition is shown below:
 meshgen = mesh.OrthogonalMeshGenerator.Create
 ({
   node_sets = {nodes,nodes},
-  partitioner = KBAGraphPartitioner.Create
+  partitioner = mesh.KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2,
     xcuts = {0.0}, ycuts = {0.0},

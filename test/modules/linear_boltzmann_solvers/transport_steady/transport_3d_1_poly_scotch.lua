@@ -37,7 +37,7 @@ meshgen = mesh.MeshGenerator.Create
       node_sets = {nodesxy, nodesxy, nodesz}
     }),
   },
-  partitioner = PETScGraphPartitioner.Create({type="ptscotch"})
+  partitioner = mesh.PETScGraphPartitioner.Create({type="ptscotch"})
 })
 mesh.MeshGenerator.Execute(meshgen)
 

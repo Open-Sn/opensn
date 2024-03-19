@@ -17,7 +17,7 @@ meshgen = mesh.MeshGenerator.Create
       filename="../../resources/TestMeshes/GMSH_AllTets.vtu"
     }),
   },
-  partitioner = PETScGraphPartitioner.Create({type="parmetis"})
+  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
 })
 mesh.MeshGenerator.Execute(meshgen)
 

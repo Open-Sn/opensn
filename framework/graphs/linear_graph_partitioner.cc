@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(LinearGraphPartitioner);
+OpenSnRegisterObjectInNamespace(mesh, LinearGraphPartitioner);
 
 InputParameters
 LinearGraphPartitioner::GetInputParameters()

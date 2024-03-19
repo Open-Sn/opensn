@@ -23,7 +23,7 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create
 ({
   node_sets = {nodes,nodes,nodes},
-  partitioner = KBAGraphPartitioner.Create
+  partitioner = mesh.KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2, nz=2,
     xcuts = {0.}, ycuts = {0.}, zcuts = {0.}
@@ -50,7 +50,7 @@ A simple orthogonal 3D mesh with Parmetis partitioner.
 meshgen = mesh.OrthogonalMeshGenerator.Create
 ({
   node_sets = {nodes,nodes,nodes},
-  partitioner = PETScGraphPartitioner.Create({type="parmetis"})
+  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
 
 })
 mesh.MeshGenerator.Execute(meshgen)

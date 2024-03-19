@@ -40,9 +40,8 @@ meshgen = mesh.MeshGenerator.Create
         filename="./tri_2mat_bc_1542.obj"
     }),
   },
-  partitioner = PETScGraphPartitioner.Create({type="parmetis"})
+  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
 })
 mesh.MeshGenerator.Execute(meshgen)
 
 mesh.ExportToVTK("Triangle_1542_mesh_only")
-
