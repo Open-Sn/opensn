@@ -2,6 +2,9 @@
 
 #include "framework/lua.h"
 
+namespace opensnlua
+{
+
 /** Creates a new field function interpolation.
  *
  * \param FFITypeIndex int Type of field function interpolation.
@@ -151,3 +154,5 @@ int FFInterpolationExportPython(lua_State* L);
  * \author Jan
  */
 int FFInterpolationGetValue(lua_State* L);
+
+} // namespace opensnlua

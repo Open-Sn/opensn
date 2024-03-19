@@ -13,6 +13,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(CreateProductQuadrature, aquad, CreateProductQuadrature);
 
 RegisterLuaConstantAsIs(GAUSS_LEGENDRE, Varying(1));
@@ -196,3 +199,5 @@ CreateProductQuadrature(lua_State* L)
   }
   return 0;
 }
+
+} // namespace opensnlua

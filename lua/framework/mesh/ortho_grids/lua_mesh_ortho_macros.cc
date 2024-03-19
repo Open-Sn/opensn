@@ -9,6 +9,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaConstant(OrthoBoundaryID, XMAX, Varying(0));
 RegisterLuaConstant(OrthoBoundaryID, XMIN, Varying(1));
 RegisterLuaConstant(OrthoBoundaryID, YMAX, Varying(2));
@@ -61,3 +64,5 @@ MeshSetupOrthogonalBoundaries(lua_State* L)
 
   return 0;
 }
+
+} // namespace opensnlua

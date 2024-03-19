@@ -4,6 +4,9 @@
 #include "lua/framework/mesh/export/lua_mesh_export.h"
 #include "lua/framework/console/console.h"
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(MeshExportToObj, mesh, ExportToObj);
 RegisterLuaFunctionNamespace(MeshExportToVTK, mesh, ExportToVTK);
 RegisterLuaFunctionNamespace(MeshExportToExodus, mesh, ExportToExodus);
@@ -76,3 +79,5 @@ MeshExportToExodus(lua_State* L)
 
   return 0;
 }
+
+} // namespace opensnlua

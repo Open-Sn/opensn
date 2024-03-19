@@ -11,7 +11,9 @@
 #include "framework/console/console.h"
 
 using namespace opensn;
-using namespace opensnlua;
+
+namespace opensnlua
+{
 
 RegisterLuaFunctionNamespace(FFInterpolationSetProperty, fieldfunc, SetProperty);
 RegisterLuaConstantAsIs(PROBEPOINT, Varying(0));
@@ -289,3 +291,5 @@ FFInterpolationSetProperty(lua_State* L)
 
   return 0;
 }
+
+} // namespace opensnlua

@@ -2,6 +2,9 @@
 
 #include "framework/lua.h"
 
+namespace opensnlua
+{
+
 /**
  * Exports the mesh to a wavefront OBJ format.
  */
@@ -16,3 +19,5 @@ int MeshExportToVTK(lua_State* L);
  * Exports the mesh to exodus format.
  */
 int MeshExportToExodus(lua_State* L);
+
+} // namespace opensnlua

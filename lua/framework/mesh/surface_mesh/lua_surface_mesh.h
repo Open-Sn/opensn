@@ -2,6 +2,9 @@
 
 #include "framework/lua.h"
 
+namespace opensnlua
+{
+
 /**
  * Creates a new empty surface mesh.
  *
@@ -88,3 +91,5 @@ int MeshSurfaceMeshImportFromTriangleFiles(lua_State* L);
  * \author Jan
  */
 int MeshComputeLoadBalancing(lua_State* L);
+
+} // namespace opensnlua

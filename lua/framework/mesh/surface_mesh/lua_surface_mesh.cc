@@ -7,6 +7,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(MeshSurfaceMeshCreate, mesh, SurfaceMeshCreate);
 RegisterLuaFunctionNamespace(MeshComputeLoadBalancing, mesh, ComputeLoadBalancing);
 RegisterLuaFunctionNamespace(MeshSurfaceMeshImportFromOBJFile, mesh, SurfaceMeshImportFromOBJFile);
@@ -208,3 +211,5 @@ SurfaceMeshImportFromMshFiles(lua_State* L)
 
   return 1;
 }
+
+} // namespace opensnlua

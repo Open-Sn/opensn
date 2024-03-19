@@ -2,6 +2,9 @@
 
 #include "framework/lua.h"
 
+namespace opensnlua
+{
+
 /**
  * Creates a stand-alone transport cross section.
  *
@@ -175,3 +178,5 @@ int PhysicsTransportXSGet(lua_State* L);
  * \ingroup LuaTransportXSs
  */
 int PhysicsTransportXSExportToOpenSnFormat(lua_State* L);
+
+} // namespace opensnlua

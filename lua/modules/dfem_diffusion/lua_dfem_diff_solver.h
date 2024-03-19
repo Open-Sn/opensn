@@ -2,6 +2,9 @@
 
 #include "framework/lua.h"
 
+namespace opensnlua
+{
+
 /** Creates a DFEM Diffusion solver based on the interior penalty method.
  *
  *\return Handle int Handle to the created solver.
@@ -60,3 +63,5 @@ int DFEMDiffusionSolverCreate(lua_State* L);
  * \author Jan
  */
 int DFEMDiffusionSetBCProperty(lua_State* L);
+
+} // namespace opensnlua

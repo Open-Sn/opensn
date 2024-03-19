@@ -2,6 +2,9 @@
 
 #include "framework/lua.h"
 
+namespace opensnlua
+{
+
 /**Gets a field-function handle by name.
  * \param FFname string Name of the field function.
  *
@@ -33,3 +36,5 @@ int ExportFieldFunctionToVTK(lua_State* L);
  * \author Jan
  */
 int ExportMultiFieldFunctionToVTK(lua_State* L);
+
+} // namespace opensnlua

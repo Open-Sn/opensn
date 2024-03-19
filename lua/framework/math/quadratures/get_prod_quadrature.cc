@@ -11,6 +11,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(GetProductQuadrature, aquad, GetProductQuadrature);
 
 int
@@ -64,3 +67,5 @@ GetProductQuadrature(lua_State* L)
 
   return 1;
 }
+
+} // namespace opensnlua

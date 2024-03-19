@@ -4,6 +4,9 @@
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(FFInterpolationInitialize, fieldfunc, Initialize);
 RegisterLuaFunctionNamespace(FFInterpolationExecute, fieldfunc, Execute);
 
@@ -40,3 +43,5 @@ FFInterpolationExecute(lua_State* L)
   p_ffi->Execute();
   return 0;
 }
+
+} // namespace opensnlua

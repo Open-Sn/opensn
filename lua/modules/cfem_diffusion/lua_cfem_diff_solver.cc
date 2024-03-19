@@ -7,7 +7,9 @@
 #include "lua/framework/math/functions/lua_scalar_spatial_material_function.h"
 
 using namespace opensn;
-using namespace opensnlua;
+
+namespace opensnlua
+{
 
 RegisterLuaConstantAsIs(MAX_ITERATIONS, Varying(1));
 RegisterLuaConstantAsIs(TOLERANCE, Varying(2));
@@ -227,3 +229,5 @@ CFEMDiffusionSetBCProperty(lua_State* L)
   }
   return 0;
 }
+
+} // namespace opensnlua

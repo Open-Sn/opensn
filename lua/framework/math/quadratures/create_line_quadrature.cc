@@ -10,6 +10,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(CreateLineQuadrature, squad, CreateLineQuadrature);
 
 int
@@ -59,3 +62,5 @@ CreateLineQuadrature(lua_State* L)
   }
   return 0;
 }
+
+} // namespace opensnlua

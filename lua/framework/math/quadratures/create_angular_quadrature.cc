@@ -5,6 +5,9 @@
 #include "quadratures_lua.h"
 #include "framework/console/console.h"
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(CreateCustomAngularQuadrature, aquad, CreateCustomAngularQuadrature);
 
 int
@@ -74,3 +77,5 @@ CreateCustomAngularQuadrature(lua_State* L)
 
   return 1;
 }
+
+} // namespace opensnlua

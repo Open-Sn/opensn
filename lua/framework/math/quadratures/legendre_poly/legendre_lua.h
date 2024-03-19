@@ -1,5 +1,8 @@
 #pragma once
 
+namespace opensnlua
+{
+
 /**Provides the function evaluation of Pn at value x.
  *
  * \param N int The Legendre polynomial.
@@ -31,3 +34,5 @@ int LegendreDerivative(lua_State* L);
  * \ingroup LuaMath
  */
 int Ylm(lua_State* L);
+
+} // namespace opensnlua
