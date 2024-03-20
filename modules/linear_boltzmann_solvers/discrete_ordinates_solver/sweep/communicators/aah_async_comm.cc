@@ -89,16 +89,16 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   preloc_msg_data_.resize(num_dependencies);
   preloc_msg_received_.resize(num_dependencies);
 
-  for (int i = 0; i < num_dependencies; ++i)
+  for (auto i = 0; i < num_dependencies; ++i)
   {
     size_t num_unknowns = fluds.GetPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
-    const int locJ = spds.GetLocationDependencies()[i];
-    const auto source = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
+    const auto source =
+      comm_set_.MapIonJ(spds.GetLocationDependencies()[i], opensn::mpi_comm.rank());
 
     size_t pre_block_pos = 0;
     preloc_msg_data_[i].reserve(message_count);
-    for (int m = 0; m < message_count - 1; ++m)
+    for (auto m = 0; m < message_count - 1; ++m)
     {
       preloc_msg_data_[i].emplace_back(std::make_tuple(source, message_size, pre_block_pos));
       num_unknowns -= message_size;
@@ -118,16 +118,16 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   delayed_preloc_msg_data_.resize(num_delayed_dependencies);
   delayed_preloc_msg_received_.resize(num_delayed_dependencies);
 
-  for (int i = 0; i < num_delayed_dependencies; ++i)
+  for (auto i = 0; i < num_delayed_dependencies; ++i)
   {
     size_t num_unknowns = fluds.GetDelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
-    const int locJ = spds.GetDelayedLocationDependencies()[i];
-    const auto source = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
+    const auto source =
+      comm_set_.MapIonJ(spds.GetDelayedLocationDependencies()[i], opensn::mpi_comm.rank());
 
     size_t pre_block_pos = 0;
     delayed_preloc_msg_data_[i].reserve(message_count);
-    for (int m = 0; m < message_count - 1; ++m)
+    for (auto m = 0; m < message_count - 1; ++m)
     {
       delayed_preloc_msg_data_[i].emplace_back(
         std::make_tuple(source, message_size, pre_block_pos));
@@ -150,16 +150,16 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   size_t total_deploc_messages = 0;
   deploc_msg_data_.resize(num_successors);
 
-  for (int i = 0; i < num_successors; ++i)
+  for (auto i = 0; i < num_successors; ++i)
   {
     size_t num_unknowns = fluds.GetDeplocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
-    const int locJ = location_successors[i];
-    const auto dest = comm_set_.MapIonJ(locJ, locJ);
+    const auto deploc = location_successors[i];
+    const auto dest = comm_set_.MapIonJ(deploc, deploc);
 
     size_t dep_block_pos = 0;
     deploc_msg_data_[i].reserve(message_count);
-    for (int m = 0; m < message_count - 1; ++m)
+    for (auto m = 0; m < message_count - 1; ++m)
     {
       deploc_msg_data_[i].emplace_back(std::make_tuple(dest, message_size, dep_block_pos));
       num_unknowns -= message_size;
@@ -200,7 +200,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
     for (size_t m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
-      int tag = max_num_messages_ * angle_set_num + m;
+      const int tag = max_num_messages_ * angle_set_num + m;
       if (not delayed_preloc_msg_received_[i][m])
       {
         if (not comm.iprobe(source, tag))
@@ -208,8 +208,8 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
           all_messages_received = false;
           continue;
         }
-        comm.recv<double>(source, tag, &upstream_psi[block_pos], size);
-        delayed_preloc_msg_received_[i][m] = true;
+        if (not comm.recv<double>(source, tag, &upstream_psi[block_pos], size).error())
+          delayed_preloc_msg_received_[i][m] = true;
       }
     }
   }
@@ -239,10 +239,10 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
   {
     auto& upstream_psi = fluds_.PrelocIOutgoingPsi()[i];
 
-    for (int m = 0; m < preloc_msg_data_[i].size(); ++m)
+    for (auto m = 0; m < preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
-      int tag = max_num_messages_ * angle_set_num + m;
+      const int tag = max_num_messages_ * angle_set_num + m;
       if (not preloc_msg_received_[i][m])
       {
         if (not comm.iprobe(source, tag))
@@ -274,7 +274,7 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
     const auto& comm = comm_set_.LocICommunicator(location_successors[i]);
     const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[i];
 
-    for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
+    for (auto m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
       deploc_msg_request_[req] =

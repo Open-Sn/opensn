@@ -31,13 +31,13 @@ private:
   bool upstream_data_initialized_;
 
   std::vector<std::vector<bool>> preloc_msg_received_;
-  std::vector<std::vector<std::tuple<int, int, int>>> preloc_msg_data_;
+  std::vector<std::vector<std::tuple<int, size_t, size_t>>> preloc_msg_data_;
 
   std::vector<std::vector<bool>> delayed_preloc_msg_received_;
-  std::vector<std::vector<std::tuple<int, int, int>>> delayed_preloc_msg_data_;
+  std::vector<std::vector<std::tuple<int, size_t, size_t>>> delayed_preloc_msg_data_;
 
   std::vector<mpi::Request> deploc_msg_request_;
-  std::vector<std::vector<std::tuple<int, int, int>>> deploc_msg_data_;
+  std::vector<std::vector<std::tuple<int, size_t, size_t>>> deploc_msg_data_;
 
 protected:
   /**
@@ -59,9 +59,9 @@ public:
                                size_t max_mpi_message_size,
                                const MPICommunicatorSet& comm_set);
 
-  int GetMaxNumMessages() const { return max_num_messages_; }
+  size_t GetMaxNumMessages() const { return max_num_messages_; }
 
-  void SetMaxNumMessages(int count) { max_num_messages_ = count; }
+  void SetMaxNumMessages(size_t count) { max_num_messages_ = count; }
 
   bool DoneSending() const;
 
