@@ -225,4 +225,34 @@ LuaArgOptional(lua_State* L, int index, T default_value)
     return default_value;
 }
 
+// Set global values
+
+inline void
+LuaSetGlobal(lua_State* L, const std::string& name, const std::string& value)
+{
+  lua_pushstring(L, value.c_str());
+  lua_setglobal(L, name.c_str());
+}
+
+inline void
+LuaSetGlobal(lua_State* L, const std::string& name, const char* value)
+{
+  lua_pushstring(L, value);
+  lua_setglobal(L, name.c_str());
+}
+
+inline void
+LuaSetGlobal(lua_State* L, const std::string& name, int value)
+{
+  lua_pushinteger(L, value);
+  lua_setglobal(L, name.c_str());
+}
+
+inline void
+LuaSetGlobal(lua_State* L, const std::string& name, double value)
+{
+  lua_pushnumber(L, value);
+  lua_setglobal(L, name.c_str());
+}
+
 } // namespace opensnlua

@@ -202,11 +202,8 @@ Console::PostMPIInfo(int location_id, int number_of_processes) const
 {
   lua_State* L = this->console_state_;
 
-  lua_pushinteger(L, location_id);
-  lua_setglobal(L, "location_id");
-
-  lua_pushinteger(L, number_of_processes);
-  lua_setglobal(L, "number_of_processes");
+  LuaSetGlobal(L, "location_id", location_id);
+  LuaSetGlobal(L, "number_of_processes", number_of_processes);
 }
 
 void
