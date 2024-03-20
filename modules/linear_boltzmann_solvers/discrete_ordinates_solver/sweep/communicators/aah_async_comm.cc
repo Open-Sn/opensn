@@ -15,7 +15,7 @@ namespace lbs
 AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(FLUDS& fluds,
                                                            size_t num_groups,
                                                            size_t num_angles,
-                                                           int max_mpi_message_size,
+                                                           size_t max_mpi_message_size,
                                                            const MPICommunicatorSet& comm_set)
   : AsynchronousCommunicator(fluds, comm_set),
     num_groups_(num_groups),
@@ -47,18 +47,10 @@ AAH_ASynchronousCommunicator::ClearDownstreamBuffers()
   if (done_sending_)
     return;
 
+  if (not mpi::test_all(deploc_msg_request_))
+    return;
+
   done_sending_ = true;
-  for (auto& locI_requests : deplocI_message_request_)
-  {
-    for (auto& request : locI_requests)
-    {
-      if (not mpi::test(request))
-      {
-        done_sending_ = false;
-        return;
-      }
-    }
-  }
 
   fluds_.ClearSendPsi();
 }
@@ -70,152 +62,126 @@ AAH_ASynchronousCommunicator::Reset()
   data_initialized_ = false;
   upstream_data_initialized_ = false;
 
-  for (auto& message_flags : prelocI_message_received_)
-    message_flags.assign(message_flags.size(), false);
+  for (auto& rcv_flags : preloc_msg_received_)
+    rcv_flags.assign(rcv_flags.size(), false);
 
-  for (auto& message_flags : delayed_prelocI_message_received_)
-    message_flags.assign(message_flags.size(), false);
+  for (auto& rcv_flags : delayed_preloc_msg_received_)
+    rcv_flags.assign(rcv_flags.size(), false);
 }
 
 void
 AAH_ASynchronousCommunicator::BuildMessageStructure()
 {
   const auto& spds = fluds_.GetSPDS();
-  auto& fluds = dynamic_cast<AAH_FLUDS&>(fluds_);
+  const auto& fluds = dynamic_cast<AAH_FLUDS&>(fluds_);
+
+  auto message_count_and_size = [this](const auto num_unknowns)
+  {
+    size_t message_count = num_angles_;
+    if (num_unknowns * 8 > max_mpi_message_size_)
+      message_count = ((num_unknowns * 8) + (max_mpi_message_size_ - 1)) / max_mpi_message_size_;
+    size_t message_size = (num_unknowns + (message_count - 1)) / message_count;
+    return std::make_pair(message_count, message_size);
+  };
 
   // Predecessor locations
-  size_t num_dependencies = spds.GetLocationDependencies().size();
+  const size_t num_dependencies = spds.GetLocationDependencies().size();
+  preloc_msg_data_.resize(num_dependencies);
+  preloc_msg_received_.resize(num_dependencies);
 
-  prelocI_message_count_.resize(num_dependencies, 0);
-  prelocI_message_size_.resize(num_dependencies);
-  prelocI_message_blockpos_.resize(num_dependencies);
-  prelocI_message_received_.clear();
-
-  for (int prelocI = 0; prelocI < num_dependencies; ++prelocI)
+  for (int i = 0; i < num_dependencies; ++i)
   {
-    size_t num_unknowns = fluds.GetPrelocIFaceDOFCount(prelocI) * num_groups_ * num_angles_;
-    size_t message_count = num_angles_;
-    if (num_unknowns * 8 > max_mpi_message_size_)
-      message_count = ((num_unknowns * 8) + (max_mpi_message_size_ - 1)) / max_mpi_message_size_;
-    size_t message_size = (num_unknowns + (message_count - 1)) / message_count;
-
-    prelocI_message_count_[prelocI] = message_count;
-    prelocI_message_size_[prelocI].reserve(message_count);
-    prelocI_message_blockpos_[prelocI].reserve(message_count);
+    size_t num_unknowns = fluds.GetPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
+    auto [message_count, message_size] = message_count_and_size(num_unknowns);
+    const int locJ = spds.GetLocationDependencies()[i];
+    const auto source = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
 
     size_t pre_block_pos = 0;
+    preloc_msg_data_[i].reserve(message_count);
     for (int m = 0; m < message_count - 1; ++m)
     {
-      prelocI_message_size_[prelocI].push_back(message_size);
-      prelocI_message_blockpos_[prelocI].push_back(pre_block_pos);
+      preloc_msg_data_[i].emplace_back(std::make_tuple(source, message_size, pre_block_pos));
       num_unknowns -= message_size;
       pre_block_pos += message_size;
     }
     if (num_unknowns > 0)
-    {
-      prelocI_message_blockpos_[prelocI].push_back(pre_block_pos);
-      prelocI_message_size_[prelocI].push_back(num_unknowns);
-    }
+      preloc_msg_data_[i].emplace_back(std::make_tuple(source, num_unknowns, pre_block_pos));
+    else
+      --message_count;
 
-    prelocI_message_received_.emplace_back(message_count, false);
+    preloc_msg_received_[i].resize(message_count, false);
+    max_num_messages_ = std::max(message_count, max_num_messages_);
   }
 
-  // Delayed Predecessor locations
-  size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
+  // Delayed predecessor locations
+  const size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
+  delayed_preloc_msg_data_.resize(num_delayed_dependencies);
+  delayed_preloc_msg_received_.resize(num_delayed_dependencies);
 
-  delayed_prelocI_message_count_.resize(num_delayed_dependencies, 0);
-  delayed_prelocI_message_size_.resize(num_delayed_dependencies);
-  delayed_prelocI_message_blockpos_.resize(num_delayed_dependencies);
-  delayed_prelocI_message_received_.clear();
-
-  for (int prelocI = 0; prelocI < num_delayed_dependencies; ++prelocI)
+  for (int i = 0; i < num_delayed_dependencies; ++i)
   {
-    size_t num_unknowns = fluds.GetDelayedPrelocIFaceDOFCount(prelocI) * num_groups_ * num_angles_;
-    size_t message_count = num_angles_;
-    if (num_unknowns * 8 > max_mpi_message_size_)
-      message_count = ((num_unknowns * 8) + (max_mpi_message_size_ - 1)) / max_mpi_message_size_;
-    size_t message_size = (num_unknowns + (message_count - 1)) / message_count;
-
-    delayed_prelocI_message_count_[prelocI] = message_count;
-    delayed_prelocI_message_size_[prelocI].reserve(message_count);
-    delayed_prelocI_message_blockpos_[prelocI].reserve(message_count);
+    size_t num_unknowns = fluds.GetDelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
+    auto [message_count, message_size] = message_count_and_size(num_unknowns);
+    const int locJ = spds.GetDelayedLocationDependencies()[i];
+    const auto source = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
 
     size_t pre_block_pos = 0;
+    delayed_preloc_msg_data_[i].reserve(message_count);
     for (int m = 0; m < message_count - 1; ++m)
     {
-      delayed_prelocI_message_size_[prelocI].push_back(message_size);
-      delayed_prelocI_message_blockpos_[prelocI].push_back(pre_block_pos);
+      delayed_preloc_msg_data_[i].emplace_back(
+        std::make_tuple(source, message_size, pre_block_pos));
       num_unknowns -= message_size;
       pre_block_pos += message_size;
     }
     if (num_unknowns > 0)
-    {
-      delayed_prelocI_message_blockpos_[prelocI].push_back(pre_block_pos);
-      delayed_prelocI_message_size_[prelocI].push_back(num_unknowns);
-    }
+      delayed_preloc_msg_data_[i].emplace_back(
+        std::make_tuple(source, num_unknowns, pre_block_pos));
+    else
+      --message_count;
 
-    delayed_prelocI_message_received_.emplace_back(message_count, false);
+    delayed_preloc_msg_received_[i].resize(message_count, false);
+    max_num_messages_ = std::max(message_count, max_num_messages_);
   }
 
   // Successor locations
-  size_t num_successors = spds.GetLocationSuccessors().size();
+  const auto& location_successors = spds.GetLocationSuccessors();
+  const size_t num_successors = location_successors.size();
+  size_t total_deploc_messages = 0;
+  deploc_msg_data_.resize(num_successors);
 
-  deplocI_message_count_.resize(num_successors, 0);
-  deplocI_message_size_.resize(num_successors);
-  deplocI_message_blockpos_.resize(num_successors);
-  deplocI_message_request_.clear();
-
-  for (int deplocI = 0; deplocI < num_successors; ++deplocI)
+  for (int i = 0; i < num_successors; ++i)
   {
-    size_t num_unknowns = fluds.GetDeplocIFaceDOFCount(deplocI) * num_groups_ * num_angles_;
-    size_t message_count = num_angles_;
-    if (num_unknowns * 8 > max_mpi_message_size_)
-      message_count = ((num_unknowns * 8) + (max_mpi_message_size_ - 1)) / max_mpi_message_size_;
-    size_t message_size = (num_unknowns + (message_count - 1)) / message_count;
-
-    deplocI_message_count_[deplocI] = message_count;
-    deplocI_message_size_[deplocI].reserve(message_count);
-    deplocI_message_blockpos_[deplocI].reserve(message_count);
+    size_t num_unknowns = fluds.GetDeplocIFaceDOFCount(i) * num_groups_ * num_angles_;
+    auto [message_count, message_size] = message_count_and_size(num_unknowns);
+    const int locJ = location_successors[i];
+    const auto dest = comm_set_.MapIonJ(locJ, locJ);
 
     size_t dep_block_pos = 0;
+    deploc_msg_data_[i].reserve(message_count);
     for (int m = 0; m < message_count - 1; ++m)
     {
-      deplocI_message_size_[deplocI].push_back(message_size);
-      deplocI_message_blockpos_[deplocI].push_back(dep_block_pos);
+      deploc_msg_data_[i].emplace_back(std::make_tuple(dest, message_size, dep_block_pos));
       num_unknowns -= message_size;
       dep_block_pos += message_size;
     }
     if (num_unknowns > 0)
-    {
-      deplocI_message_blockpos_[deplocI].push_back(dep_block_pos);
-      deplocI_message_size_[deplocI].push_back(num_unknowns);
-    }
+      deploc_msg_data_[i].emplace_back(std::make_tuple(dest, num_unknowns, dep_block_pos));
+    else
+      --message_count;
 
-    deplocI_message_request_.emplace_back(message_count, mpi::Request());
+    total_deploc_messages += message_count;
+    max_num_messages_ = std::max(message_count, max_num_messages_);
   }
-
-  // All reduce to get maximum message count
-  int angset_max_message_count = 0;
-  for (size_t prelocI = 0; prelocI < num_dependencies; ++prelocI)
-    angset_max_message_count = std::max(prelocI_message_count_[prelocI], angset_max_message_count);
-
-  for (size_t prelocI = 0; prelocI < num_delayed_dependencies; ++prelocI)
-    angset_max_message_count =
-      std::max(delayed_prelocI_message_count_[prelocI], angset_max_message_count);
-
-  for (size_t deplocI = 0; deplocI < num_successors; ++deplocI)
-    angset_max_message_count = std::max(deplocI_message_count_[deplocI], angset_max_message_count);
-
-  // Temporarily assign max_num_messages_ to the local maximum
-  max_num_messages_ = angset_max_message_count;
+  deploc_msg_request_.resize(total_deploc_messages);
 }
 
 void
 AAH_ASynchronousCommunicator::InitializeDelayedUpstreamData()
 {
   const auto& spds = fluds_.GetSPDS();
-  const auto num_loc_deps = spds.GetDelayedLocationDependencies().size();
-  fluds_.AllocateDelayedPrelocIOutgoingPsi(num_groups_, num_angles_, num_loc_deps);
+  const auto num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
+  fluds_.AllocateDelayedPrelocIOutgoingPsi(num_groups_, num_angles_, num_delayed_dependencies);
   fluds_.AllocateDelayedLocalPsi(num_groups_, num_angles_);
 }
 
@@ -223,39 +189,30 @@ bool
 AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 {
   const auto& spds = fluds_.GetSPDS();
-  auto& delayed_location_dependencies = spds.GetDelayedLocationDependencies();
-  const size_t num_delayed_loc_deps = delayed_location_dependencies.size();
+  const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+  const size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
 
-  // Receive delayed data
   bool all_messages_received = true;
-  for (size_t prelocI = 0; prelocI < num_delayed_loc_deps; ++prelocI)
+  for (size_t i = 0; i < num_delayed_dependencies; ++i)
   {
-    int locJ = delayed_location_dependencies[prelocI];
+    auto& upstream_psi = fluds_.DelayedPrelocIOutgoingPsi()[i];
 
-    for (int m = 0; m < delayed_prelocI_message_count_[prelocI]; ++m)
+    for (size_t m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
     {
-      if (not delayed_prelocI_message_received_[prelocI][m])
+      const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
+      int tag = max_num_messages_ * angle_set_num + m;
+      if (not delayed_preloc_msg_received_[i][m])
       {
-        auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
-        auto source_rank = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
-        auto tag = max_num_messages_ * angle_set_num + m;
-        auto message_available = comm.iprobe(source_rank, tag);
-        if (not message_available)
+        if (not comm.iprobe(source, tag))
         {
           all_messages_received = false;
           continue;
         }
-
-        // Receive upstream data
-        auto& upstream_psi = fluds_.DelayedPrelocIOutgoingPsi()[prelocI];
-        size_t block_addr = delayed_prelocI_message_blockpos_[prelocI][m];
-        size_t message_size = delayed_prelocI_message_size_[prelocI][m];
-        comm.recv(source_rank, tag, &upstream_psi[block_addr], message_size);
-
-        delayed_prelocI_message_received_[prelocI][m] = true;
-      } // if not message already received
-    }   // for message
-  }     // for delayed predecessor
+        comm.recv<double>(source, tag, &upstream_psi[block_pos], size);
+        delayed_preloc_msg_received_[i][m] = true;
+      }
+    }
+  }
 
   if (not all_messages_received)
     return false;
@@ -267,47 +224,40 @@ AngleSetStatus
 AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 {
   const auto& spds = fluds_.GetSPDS();
+  const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+  const size_t num_dependencies = spds.GetLocationDependencies().size();
 
-  // Resize FLUDS non-local incoming Data
-  const size_t num_loc_deps = spds.GetLocationDependencies().size();
+  // Resize FLUDS non-local incoming data
   if (not upstream_data_initialized_)
   {
-    fluds_.AllocatePrelocIOutgoingPsi(num_groups_, num_angles_, num_loc_deps);
+    fluds_.AllocatePrelocIOutgoingPsi(num_groups_, num_angles_, num_dependencies);
     upstream_data_initialized_ = true;
   }
 
-  // Assume all data is available and now try to receive all of it
-  bool ready_to_execute = true;
-  for (size_t prelocI = 0; prelocI < num_loc_deps; ++prelocI)
+  bool all_messages_received = true;
+  for (size_t i = 0; i < num_dependencies; ++i)
   {
-    int locJ = spds.GetLocationDependencies()[prelocI];
+    auto& upstream_psi = fluds_.PrelocIOutgoingPsi()[i];
 
-    for (int m = 0; m < prelocI_message_count_[prelocI]; ++m)
+    for (int m = 0; m < preloc_msg_data_[i].size(); ++m)
     {
-      if (not prelocI_message_received_[prelocI][m])
+      const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
+      int tag = max_num_messages_ * angle_set_num + m;
+      if (not preloc_msg_received_[i][m])
       {
-        auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
-        auto source = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
-        auto tag = max_num_messages_ * angle_set_num + m;
         if (not comm.iprobe(source, tag))
         {
-          ready_to_execute = false;
+          all_messages_received = false;
           continue;
-        } // if message is not available
+        }
+        if (not comm.recv(source, tag, &upstream_psi[block_pos], size).error())
+          preloc_msg_received_[i][m] = true;
+      }
+    }
 
-        // Receive upstream data
-        auto& upstream_psi = fluds_.PrelocIOutgoingPsi()[prelocI];
-        size_t block_addr = prelocI_message_blockpos_[prelocI][m];
-        size_t message_size = prelocI_message_size_[prelocI][m];
-        comm.recv(source, tag, &upstream_psi[block_addr], message_size);
-
-        prelocI_message_received_[prelocI][m] = true;
-      } // if not message already received
-    }   // for message
-
-    if (not ready_to_execute)
+    if (not all_messages_received)
       return AngleSetStatus::RECEIVING;
-  } // for predecessor
+  }
 
   return AngleSetStatus::READY_TO_EXECUTE;
 }
@@ -319,22 +269,18 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
   const auto& location_successors = spds.GetLocationSuccessors();
   const size_t num_successors = location_successors.size();
 
-  for (size_t deplocI = 0; deplocI < num_successors; ++deplocI)
+  for (size_t i = 0, req = 0; i < num_successors; ++i)
   {
-    int locJ = location_successors[deplocI];
+    const auto& comm = comm_set_.LocICommunicator(location_successors[i]);
+    const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[i];
 
-    for (int m = 0; m < deplocI_message_count_[deplocI]; ++m)
+    for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
     {
-      size_t block_addr = deplocI_message_blockpos_[deplocI][m];
-      size_t message_size = deplocI_message_size_[deplocI][m];
-      const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[deplocI];
-      auto& comm = comm_set_.LocICommunicator(locJ);
-      auto dest = comm_set_.MapIonJ(locJ, locJ);
-      auto tag = max_num_messages_ * angle_set_num + m;
-      deplocI_message_request_[deplocI][m] =
-        comm.isend(dest, tag, &outgoing_psi[block_addr], message_size);
-    } // for message
-  }   // for deplocI
+      const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
+      deploc_msg_request_[req] =
+        comm.isend(dest, max_num_messages_ * angle_set_num + m, &outgoing_psi[block_pos], size);
+    }
+  }
 }
 
 void
@@ -344,18 +290,16 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
   {
     const auto& spds = fluds_.GetSPDS();
 
-    // Resize FLUDS local outgoing Data
+    // Resize FLUDS local outgoing data
     fluds_.AllocateInternalLocalPsi(num_groups_, num_angles_);
 
-    // Resize FLUDS non-local outgoing Data
+    // Resize FLUDS non-local outgoing data
     fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, spds.GetLocationSuccessors().size());
 
     // Make a memory query
     double memory_mb = GetMemoryUsageInMB();
-
     std::shared_ptr<Logger::EventInfo> memory_event_info =
       std::make_shared<Logger::EventInfo>(memory_mb);
-
     log.LogEvent(
       Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventType::SINGLE_OCCURRENCE, memory_event_info);
 
