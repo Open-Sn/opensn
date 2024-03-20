@@ -39,10 +39,8 @@ LuaScalarSpatialMaterialFunction::Evaluate(int mat_id, const opensn::Vector3& xy
                        ", but it seems the function could not be retrieved.");
 
   // Push arguments
-  lua_pushinteger(L, mat_id);
-  lua_pushnumber(L, xyz.x);
-  lua_pushnumber(L, xyz.y);
-  lua_pushnumber(L, xyz.z);
+  LuaPush(L, mat_id);
+  LuaPush(L, xyz);
 
   // Call lua function
   // 4 arguments, 1 result (double), 0=original error object

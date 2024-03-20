@@ -30,12 +30,12 @@ void
 ScalarPropertyPushTable(lua_State* L, std::shared_ptr<PhysicsMaterialProperty> property)
 {
   lua_newtable(L);
-  lua_pushstring(L, "is_empty");
-  lua_pushboolean(L, false);
+  LuaPush(L, "is_empty");
+  LuaPush(L, false);
   lua_settable(L, -3);
 
-  lua_pushstring(L, "value");
-  lua_pushnumber(L, property->GetScalarValue());
+  LuaPush(L, "value");
+  LuaPush(L, property->GetScalarValue());
   lua_settable(L, -3);
 }
 
@@ -43,22 +43,22 @@ void
 IsotropicMGSourcePropertyPushTable(lua_State* L, std::shared_ptr<IsotropicMultiGrpSource> property)
 {
   lua_newtable(L);
-  lua_pushstring(L, "is_empty");
-  lua_pushboolean(L, false);
+  LuaPush(L, "is_empty");
+  LuaPush(L, false);
   lua_settable(L, -3);
 
-  lua_pushstring(L, "G");
-  lua_pushnumber(L, property->source_value_g_.size());
+  LuaPush(L, "G");
+  LuaPush(L, property->source_value_g_.size());
   lua_settable(L, -3);
 
-  lua_pushstring(L, "source_value_g");
+  LuaPush(L, "source_value_g");
   lua_newtable(L);
   int g = 0;
   for (auto val : property->source_value_g_)
   {
     ++g;
-    lua_pushinteger(L, g);
-    lua_pushnumber(L, val);
+    LuaPush(L, g);
+    LuaPush(L, val);
     lua_settable(L, -3);
   }
   lua_settable(L, -3);
@@ -68,8 +68,8 @@ void
 MaterialPropertyPushLuaTable(lua_State* L)
 {
   lua_newtable(L);
-  lua_pushstring(L, "is_empty");
-  lua_pushboolean(L, true);
+  LuaPush(L, "is_empty");
+  LuaPush(L, true);
   lua_settable(L, -3);
 }
 
@@ -98,7 +98,7 @@ MatAddMaterial(lua_State* L)
   opensn::material_stack.push_back(new_material);
 
   const size_t index = opensn::material_stack.size() - 1;
-  lua_pushinteger(L, static_cast<lua_Integer>(index));
+  LuaPush(L, static_cast<lua_Integer>(index));
 
   opensn::log.Log0Verbose1() << "New material added at index " << index << " with name \""
                              << new_material->name_ << "\"";
@@ -175,7 +175,7 @@ MatAddProperty(lua_State* L)
 
     const size_t index = opensn::multigroup_xs_stack.size() - 1;
 
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
+    LuaPush(L, index);
     return 1;
   }
   else if (property_index == static_cast<int>(MatProperty::ISOTROPIC_MG_SOURCE))
@@ -457,7 +457,7 @@ MatSetProperty(lua_State* L)
         std::vector<double> values(table_len, 0.0);
         for (int g = 0; g < table_len; g++)
         {
-          lua_pushinteger(L, g + 1);
+          LuaPush(L, g + 1);
           lua_gettable(L, 4);
           values[g] = lua_tonumber(L, -1);
           lua_pop(L, 1);

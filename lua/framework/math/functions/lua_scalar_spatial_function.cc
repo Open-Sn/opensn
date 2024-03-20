@@ -40,9 +40,7 @@ LuaScalarSpatialFunction::Evaluate(const opensn::Vector3& xyz) const
                        ", but it seems the function could not be retrieved.");
 
   // Push arguments
-  lua_pushnumber(L, xyz.x);
-  lua_pushnumber(L, xyz.y);
-  lua_pushnumber(L, xyz.z);
+  LuaPush(L, xyz);
 
   // Call lua function
   // 3 arguments, 1 result (double), 0=original error object

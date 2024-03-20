@@ -54,7 +54,7 @@ ExportMultiFieldFunctionToVTK(lua_State* L)
   ffs.reserve(table_size);
   for (int i = 0; i < table_size; ++i)
   {
-    lua_pushinteger(L, i + 1);
+    LuaPush(L, i + 1);
     lua_gettable(L, 1);
 
     std::shared_ptr<FieldFunction> ff_base = nullptr;

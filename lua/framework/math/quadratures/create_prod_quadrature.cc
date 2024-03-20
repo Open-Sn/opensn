@@ -40,7 +40,7 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
+    LuaPush(L, index);
 
     if (verbose)
     {
@@ -66,7 +66,7 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
+    LuaPush(L, index);
 
     if (verbose)
     {
@@ -92,7 +92,7 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
+    LuaPush(L, index);
 
     if (verbose)
     {
@@ -140,21 +140,21 @@ CreateProductQuadrature(lua_State* L)
 
     for (int n = 1; n <= Na; ++n)
     {
-      lua_pushinteger(L, n);
+      LuaPush(L, n);
       lua_gettable(L, 2);
       azimuthal[n - 1] = lua_tonumber(L, -1);
       lua_pop(L, 1);
     }
     for (int n = 1; n <= Np; ++n)
     {
-      lua_pushinteger(L, n);
+      LuaPush(L, n);
       lua_gettable(L, 3);
       polar[n - 1] = lua_tonumber(L, -1);
       lua_pop(L, 1);
     }
     for (int n = 1; n <= Nw; ++n)
     {
-      lua_pushinteger(L, n);
+      LuaPush(L, n);
       lua_gettable(L, 4);
       weights[n - 1] = lua_tonumber(L, -1);
       lua_pop(L, 1);
@@ -169,7 +169,7 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
+    LuaPush(L, index);
 
     if (verbose)
     {

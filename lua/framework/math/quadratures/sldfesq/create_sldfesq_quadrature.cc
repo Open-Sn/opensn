@@ -28,7 +28,7 @@ CreateSLDFESQAngularQuadrature(lua_State* L)
 
   opensn::angular_quadrature_stack.push_back(new_ang_quad);
   const size_t index = opensn::angular_quadrature_stack.size() - 1;
-  lua_pushinteger(L, static_cast<lua_Integer>(index));
+  LuaPush(L, index);
 
   return 1;
 }

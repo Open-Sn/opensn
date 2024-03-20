@@ -56,7 +56,7 @@ FunctionDimAToDimBEvaluate(lua_State* L)
   // Parse outputs
   if (values.size() == 1)
   {
-    lua_pushnumber(L, values.front());
+    LuaPush(L, values.front());
     return 1;
   }
   // else
@@ -64,8 +64,8 @@ FunctionDimAToDimBEvaluate(lua_State* L)
   lua_newtable(L);
   for (size_t k = 0; k < values.size(); ++k)
   {
-    lua_pushinteger(L, static_cast<lua_Integer>(k) + 1);
-    lua_pushnumber(L, values[k]);
+    LuaPush(L, k + 1);
+    LuaPush(L, values[k]);
     lua_settable(L, -3);
   }
   return 1;

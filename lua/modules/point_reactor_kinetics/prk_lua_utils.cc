@@ -29,15 +29,15 @@ PRKGetParam(lua_State* L)
 
   const auto param_name = LuaArg<std::string>(L, 2);
   if (param_name == "population_prev")
-    lua_pushnumber(L, solver.PopulationPrev());
+    LuaPush(L, solver.PopulationPrev());
   else if (param_name == "population_next")
-    lua_pushnumber(L, solver.PopulationNew());
+    LuaPush(L, solver.PopulationNew());
   else if (param_name == "period")
-    lua_pushnumber(L, solver.Period());
+    LuaPush(L, solver.Period());
   else if (param_name == "time_prev")
-    lua_pushnumber(L, solver.TimePrev());
+    LuaPush(L, solver.TimePrev());
   else if (param_name == "time_next")
-    lua_pushnumber(L, solver.TimeNew());
+    LuaPush(L, solver.TimeNew());
   else
     throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name + "\".");
 

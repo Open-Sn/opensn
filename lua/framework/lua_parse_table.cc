@@ -135,16 +135,16 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
   switch (block.Type())
   {
     case opensn::ParameterBlockType::BOOLEAN:
-      lua_pushboolean(L, block.GetValue<bool>());
+      LuaPush(L, block.GetValue<bool>());
       break;
     case opensn::ParameterBlockType::FLOAT:
-      lua_pushnumber(L, block.GetValue<double>());
+      LuaPush(L, block.GetValue<double>());
       break;
     case opensn::ParameterBlockType::STRING:
-      lua_pushstring(L, block.GetValue<std::string>().c_str());
+      LuaPush(L, block.GetValue<std::string>());
       break;
     case opensn::ParameterBlockType::INTEGER:
-      lua_pushinteger(L, block.GetValue<lua_Integer>());
+      LuaPush(L, block.GetValue<lua_Integer>());
       break;
     case opensn::ParameterBlockType::ARRAY:
     {
@@ -154,7 +154,7 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
       for (size_t k = 0; k < num_params; ++k)
       {
         if (level > 0)
-          lua_pushinteger(L, static_cast<lua_Integer>(k) + 1);
+          LuaPush(L, k + 1);
         PushParameterBlock(L, block.GetParam(k), level + 1);
         if (level > 0)
           lua_settable(L, -3);
@@ -170,7 +170,7 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
       {
         const auto& param = block.GetParam(k);
         if (level > 0)
-          lua_pushstring(L, param.Name().c_str());
+          LuaPush(L, param.Name());
         PushParameterBlock(L, block.GetParam(k), level + 1);
         if (level > 0)
           lua_settable(L, -3);

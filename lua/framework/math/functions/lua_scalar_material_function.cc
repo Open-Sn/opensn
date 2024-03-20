@@ -32,8 +32,8 @@ LuaScalarMaterialFunction::Evaluate(double val, int mat_id) const
   double ret_val = 0.0;
 
   lua_getglobal(L, lua_function_name_.c_str());
-  lua_pushnumber(L, val);
-  lua_pushinteger(L, mat_id);
+  LuaPush(L, val);
+  LuaPush(L, mat_id);
 
   // 2 arguments, 1 result, 0=original error object
   if (lua_pcall(L, 2, 1, 0) == 0)

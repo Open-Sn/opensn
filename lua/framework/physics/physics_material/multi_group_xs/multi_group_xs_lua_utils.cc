@@ -33,37 +33,37 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
 {
   // General data
   lua_newtable(L);
-  lua_pushstring(L, "is_empty");
-  lua_pushboolean(L, false);
+  LuaPush(L, "is_empty");
+  LuaPush(L, false);
   lua_settable(L, -3);
 
-  lua_pushstring(L, "num_groups");
-  lua_pushinteger(L, static_cast<lua_Integer>(xs->NumGroups()));
+  LuaPush(L, "num_groups");
+  LuaPush(L, xs->NumGroups());
   lua_settable(L, -3);
 
-  lua_pushstring(L, "scattering_order");
-  lua_pushinteger(L, static_cast<lua_Integer>(xs->ScatteringOrder()));
+  LuaPush(L, "scattering_order");
+  LuaPush(L, xs->ScatteringOrder());
   lua_settable(L, -3);
 
-  lua_pushstring(L, "num_precursors");
-  lua_pushinteger(L, static_cast<lua_Integer>(xs->NumPrecursors()));
+  LuaPush(L, "num_precursors");
+  LuaPush(L, xs->NumPrecursors());
   lua_settable(L, -3);
 
-  lua_pushstring(L, "is_fissionable");
-  lua_pushboolean(L, xs->IsFissionable());
+  LuaPush(L, "is_fissionable");
+  LuaPush(L, xs->IsFissionable());
   lua_settable(L, -3);
 
   // 1D cross sections
   auto Push1DXS = [L](const std::vector<double>& xs, const std::string& name)
   {
-    lua_pushstring(L, name.c_str());
+    LuaPush(L, name.c_str());
     lua_newtable(L);
     {
       unsigned int g = 0;
       for (const auto& val : xs)
       {
-        lua_pushinteger(L, ++g);
-        lua_pushnumber(L, val);
+        LuaPush(L, ++g);
+        LuaPush(L, val);
         lua_settable(L, -3);
       }
     }
@@ -88,20 +88,20 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
     chi_delayed.push_back(vals);
   }
 
-  lua_pushstring(L, "chi_delayed");
+  LuaPush(L, "chi_delayed");
   lua_newtable(L);
   {
     unsigned int g = 0;
     for (const auto& emission_g : chi_delayed)
     {
-      lua_pushinteger(L, ++g);
+      LuaPush(L, ++g);
       lua_newtable(L);
       {
         unsigned int j = 0;
         for (const auto& val : emission_g)
         {
-          lua_pushinteger(L, ++j);
-          lua_pushnumber(L, val);
+          LuaPush(L, ++j);
+          LuaPush(L, val);
           lua_settable(L, -3);
         }
       }
@@ -111,40 +111,40 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
   lua_settable(L, -3);
 
   // Precursor data
-  lua_pushstring(L, "precursor_decay_constants");
+  LuaPush(L, "precursor_decay_constants");
   lua_newtable(L);
   {
     unsigned int j = 0;
     for (const auto& precursor : xs->Precursors())
     {
-      lua_pushinteger(L, ++j);
-      lua_pushnumber(L, precursor.decay_constant);
+      LuaPush(L, ++j);
+      LuaPush(L, precursor.decay_constant);
       lua_settable(L, -3);
     }
   }
   lua_settable(L, -3);
 
-  lua_pushstring(L, "precursor_fractional_yields");
+  LuaPush(L, "precursor_fractional_yields");
   lua_newtable(L);
   {
     unsigned int j = 0;
     for (const auto& precursor : xs->Precursors())
     {
-      lua_pushinteger(L, ++j);
-      lua_pushnumber(L, precursor.fractional_yield);
+      LuaPush(L, ++j);
+      LuaPush(L, precursor.fractional_yield);
       lua_settable(L, -3);
     }
   }
   lua_settable(L, -3);
 
   // Transfer matrices
-  lua_pushstring(L, "transfer_matrix");
+  LuaPush(L, "transfer_matrix");
   lua_newtable(L);
   {
     unsigned int ell = 0;
     for (const auto& matrix : xs->TransferMatrices())
     {
-      lua_pushinteger(L, ++ell);
+      LuaPush(L, ++ell);
       lua_newtable(L);
       {
         for (unsigned int g = 0; g < matrix.NumRows(); ++g)
@@ -153,13 +153,13 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
           const auto& col_values = matrix.rowI_values_[g];
           size_t num_vals = col_values.size();
 
-          lua_pushinteger(L, g + 1);
+          LuaPush(L, g + 1);
           lua_newtable(L);
           {
             for (unsigned int gg = 0; gg < num_vals; ++gg)
             {
-              lua_pushinteger(L, static_cast<long long>(col_indices[gg]) + 1);
-              lua_pushnumber(L, col_values[gg]);
+              LuaPush(L, col_indices[gg] + 1);
+              LuaPush(L, col_values[gg]);
               lua_settable(L, -3);
             }
             lua_settable(L, -3);
@@ -172,20 +172,20 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
   lua_settable(L, -3);
 
   // Production matrix
-  lua_pushstring(L, "production_matrix");
+  LuaPush(L, "production_matrix");
   lua_newtable(L);
   {
     unsigned int g = 0;
     for (const auto& prod : xs->ProductionMatrix())
     {
-      lua_pushinteger(L, ++g);
+      LuaPush(L, ++g);
       lua_newtable(L);
       {
         unsigned int gp = 0;
         for (const auto& val : prod)
         {
-          lua_pushinteger(L, ++gp);
-          lua_pushnumber(L, val);
+          LuaPush(L, ++gp);
+          LuaPush(L, val);
           lua_settable(L, -3);
         }
         lua_settable(L, -3);
@@ -209,7 +209,7 @@ PhysicsTransportXSCreate(lua_State* L)
   opensn::multigroup_xs_stack.push_back(xs);
 
   const size_t index = opensn::multigroup_xs_stack.size() - 1;
-  lua_pushinteger(L, static_cast<lua_Integer>(index));
+  LuaPush(L, index);
   return 1;
 }
 
@@ -323,7 +323,7 @@ PhysicsTransportXSMakeCombined(lua_State* L)
   std::vector<std::pair<int, double>> combinations;
   for (int v = 0; v < lua_rawlen(L, 1); ++v)
   {
-    lua_pushinteger(L, v + 1);
+    LuaPush(L, v + 1);
     lua_gettable(L, 1);
 
     OpenSnInvalidArgumentIf(not lua_istable(L, -1),
@@ -331,14 +331,14 @@ PhysicsTransportXSMakeCombined(lua_State* L)
                             "Lua array containing a xs handle and scalar multiplier.");
 
     // Process xs handle
-    lua_pushinteger(L, 1);
+    LuaPush(L, 1);
     lua_gettable(L, -2);
     LuaCheckIntegerValue(fname + "A1:E1", L, -1);
     const int handle = lua_tointeger(L, -1);
     lua_pop(L, 1);
 
     // Process scalar multiplier
-    lua_pushinteger(L, 2);
+    LuaPush(L, 2);
     lua_gettable(L, -2);
     LuaCheckNumberValue(fname + ":A1:E2", L, -1);
     const double scalar = lua_tonumber(L, -1);
@@ -360,7 +360,7 @@ PhysicsTransportXSMakeCombined(lua_State* L)
 
   opensn::multigroup_xs_stack.push_back(new_xs);
   const lua_Integer num_xs = opensn::multigroup_xs_stack.size();
-  lua_pushinteger(L, num_xs - 1);
+  LuaPush(L, num_xs - 1);
 
   return 1;
 }
@@ -394,7 +394,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
   std::vector<std::pair<int, double>> combinations;
   for (int v = 0; v < lua_rawlen(L, 2); ++v)
   {
-    lua_pushinteger(L, v + 1);
+    LuaPush(L, v + 1);
     lua_gettable(L, 1);
 
     OpenSnInvalidArgumentIf(not lua_istable(L, -1),
@@ -402,14 +402,14 @@ PhysicsTransportXSSetCombined(lua_State* L)
                             "Lua array containing a xs handle and scalar multiplier.");
 
     // Process xs handle
-    lua_pushinteger(L, 1);
+    LuaPush(L, 1);
     lua_gettable(L, -2);
     LuaCheckIntegerValue(fname + ":A1:E1", L, -1);
     const int handle = lua_tonumber(L, -1);
     lua_pop(L, 1);
 
     // Process scalar multiplier
-    lua_pushinteger(L, 2);
+    LuaPush(L, 2);
     lua_gettable(L, -2);
     LuaCheckNumberValue(fname + ":A1:E2", L, -1);
     const double scalar = lua_tonumber(L, -1);

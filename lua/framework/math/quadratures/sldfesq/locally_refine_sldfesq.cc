@@ -24,17 +24,17 @@ LocallyRefineSLDFESQAngularQuadrature(lua_State* L)
   Vector3 ref_dir;
   if (lua_istable(L, 2))
   {
-    lua_pushinteger(L, 1);
+    LuaPush(L, 1);
     lua_gettable(L, 2);
     ref_dir.x = lua_tonumber(L, -1);
     lua_pop(L, 1);
 
-    lua_pushinteger(L, 2);
+    LuaPush(L, 2);
     lua_gettable(L, 2);
     ref_dir.y = lua_tonumber(L, -1);
     lua_pop(L, 1);
 
-    lua_pushinteger(L, 3);
+    LuaPush(L, 3);
     lua_gettable(L, 2);
     ref_dir.z = lua_tonumber(L, -1);
     lua_pop(L, 1);

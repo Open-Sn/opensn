@@ -35,7 +35,7 @@ ComputeLeakage(lua_State* L)
     const auto n_bndrys = lua_rawlen(L, 2);
     for (int b = 0; b < n_bndrys; ++b)
     {
-      lua_pushinteger(L, b + 1);
+      LuaPush(L, b + 1);
       lua_gettable(L, 2);
       bndry_ids.push_back(supported_boundary_names.at(lua_tostring(L, -1)));
       lua_pop(L, 1);
@@ -51,13 +51,13 @@ ComputeLeakage(lua_State* L)
   lua_newtable(L);
   for (const auto& [bid, vals] : leakage)
   {
-    lua_pushstring(L, supported_boundary_ids.at(bid).c_str());
+    LuaPush(L, supported_boundary_ids.at(bid));
 
     lua_newtable(L);
     for (int g = 0; g < solver.NumGroups(); ++g)
     {
-      lua_pushinteger(L, g + 1);
-      lua_pushnumber(L, vals[g]);
+      LuaPush(L, g + 1);
+      LuaPush(L, vals[g]);
       lua_settable(L, -3);
     }
     lua_settable(L, -3);

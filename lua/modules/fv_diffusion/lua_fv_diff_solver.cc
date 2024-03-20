@@ -52,7 +52,7 @@ FVDiffusionSolverCreate(lua_State* L)
 
   opensn::object_stack.push_back(new_solver);
 
-  lua_pushinteger(L, static_cast<lua_Integer>(opensn::object_stack.size() - 1));
+  LuaPush(L, opensn::object_stack.size() - 1);
 
   opensn::log.LogAllVerbose1() << "\nFVDiffusionSolverCreate: FV Diffusion solver created"
                                << std::endl;

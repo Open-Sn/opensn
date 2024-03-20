@@ -31,16 +31,16 @@ BoundaryFunctionToLua::Evaluate(
   {
     lua_newtable(L);
 
-    lua_pushstring(L, "x");
-    lua_pushnumber(L, vec.x);
+    LuaPush(L, "x");
+    LuaPush(L, vec.x);
     lua_settable(L, -3);
 
-    lua_pushstring(L, "y");
-    lua_pushnumber(L, vec.y);
+    LuaPush(L, "y");
+    LuaPush(L, vec.y);
     lua_settable(L, -3);
 
-    lua_pushstring(L, "z");
-    lua_pushnumber(L, vec.z);
+    LuaPush(L, "z");
+    LuaPush(L, vec.z);
     lua_settable(L, -3);
   };
 
@@ -50,8 +50,8 @@ BoundaryFunctionToLua::Evaluate(
 
     for (int i = 0; i < static_cast<int>(vec.size()); ++i)
     {
-      lua_pushinteger(L, i + 1);
-      lua_pushinteger(L, static_cast<lua_Integer>(vec[i]));
+      LuaPush(L, i + 1);
+      LuaPush(L, vec[i]);
       lua_settable(L, -3);
     }
   };
@@ -60,12 +60,12 @@ BoundaryFunctionToLua::Evaluate(
   {
     lua_newtable(L);
 
-    lua_pushstring(L, "phi");
-    lua_pushnumber(L, phi_theta.first);
+    LuaPush(L, "phi");
+    LuaPush(L, phi_theta.first);
     lua_settable(L, -3);
 
-    lua_pushstring(L, "theta");
-    lua_pushnumber(L, phi_theta.second);
+    LuaPush(L, "theta");
+    LuaPush(L, phi_theta.second);
     lua_settable(L, -3);
   };
 
@@ -80,8 +80,8 @@ BoundaryFunctionToLua::Evaluate(
                            " could not be retrieved.");
 
   // Push arguments
-  lua_pushinteger(L, static_cast<lua_Integer>(cell_global_id));
-  lua_pushinteger(L, static_cast<lua_Integer>(cell_material_id));
+  LuaPush(L, cell_global_id);
+  LuaPush(L, cell_material_id);
 
   PushVector3AsTable(L, face_node_location);
   PushVector3AsTable(L, face_node_normal);
@@ -93,7 +93,7 @@ BoundaryFunctionToLua::Evaluate(
     int n = 0;
     for (auto& omega : quadrature_angle_vectors)
     {
-      lua_pushinteger(L, n + 1);
+      LuaPush(L, n + 1);
       PushVector3AsTable(L, omega);
       lua_settable(L, -3);
       ++n;
@@ -105,7 +105,7 @@ BoundaryFunctionToLua::Evaluate(
     int n = 0;
     for (auto& phi_theta : quadrature_phi_theta_angles)
     {
-      lua_pushinteger(L, n + 1);
+      LuaPush(L, n + 1);
       PushPhiThetaPairTable(L, phi_theta);
       lua_settable(L, -3);
       ++n;
@@ -114,7 +114,7 @@ BoundaryFunctionToLua::Evaluate(
 
   PushVecIntAsTable(L, group_indices);
 
-  lua_pushnumber(L, time);
+  LuaPush(L, time);
 
   std::vector<double> psi;
   // 9 arguments, 1 result (table), 0=original error object
@@ -125,7 +125,7 @@ BoundaryFunctionToLua::Evaluate(
     psi.reserve(table_length);
     for (size_t i = 0; i < table_length; ++i)
     {
-      lua_pushinteger(L, static_cast<lua_Integer>(i) + 1);
+      LuaPush(L, static_cast<lua_Integer>(i) + 1);
       lua_gettable(L, -2);
       psi.push_back(lua_tonumber(L, -1));
       lua_pop(L, 1);

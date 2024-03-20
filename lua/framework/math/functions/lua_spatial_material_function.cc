@@ -35,16 +35,16 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
   {
     lua_newtable(L);
 
-    lua_pushstring(L, "x");
-    lua_pushnumber(L, vec.x);
+    LuaPush(L, "x");
+    LuaPush(L, vec.x);
     lua_settable(L, -3);
 
-    lua_pushstring(L, "y");
-    lua_pushnumber(L, vec.y);
+    LuaPush(L, "y");
+    LuaPush(L, vec.y);
     lua_settable(L, -3);
 
-    lua_pushstring(L, "z");
-    lua_pushnumber(L, vec.z);
+    LuaPush(L, "z");
+    LuaPush(L, vec.z);
     lua_settable(L, -3);
   };
 
@@ -64,7 +64,7 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
 
   // Push arguments
   PushVector3AsTable(L, xyz);
-  lua_pushinteger(L, mat_id); // 4 arguments on stack
+  LuaPush(L, mat_id); // 4 arguments on stack
 
   // Call lua function
   // 2 arguments, 1 result (table), 0=original error object
@@ -76,7 +76,7 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
     lua_return.reserve(table_length);
     for (size_t i = 0; i < table_length; ++i)
     {
-      lua_pushinteger(L, static_cast<lua_Integer>(i) + 1);
+      LuaPush(L, i + 1);
       lua_gettable(L, -2);
       lua_return.push_back(lua_tonumber(L, -1));
       lua_pop(L, 1);

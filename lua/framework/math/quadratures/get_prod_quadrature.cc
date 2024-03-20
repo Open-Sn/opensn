@@ -43,19 +43,19 @@ GetProductQuadrature(lua_State* L)
   lua_newtable(L);
   for (size_t n = 0; n < quad->weights_.size(); ++n)
   {
-    lua_pushinteger(L, n + 1);
+    LuaPush(L, n + 1);
     lua_newtable(L);
 
-    lua_pushstring(L, "weight");
-    lua_pushnumber(L, quad->weights_[n]);
+    LuaPush(L, "weight");
+    LuaPush(L, quad->weights_[n]);
     lua_settable(L, -3);
 
-    lua_pushstring(L, "polar");
-    lua_pushnumber(L, quad->abscissae_[n].theta);
+    LuaPush(L, "polar");
+    LuaPush(L, quad->abscissae_[n].theta);
     lua_settable(L, -3);
 
-    lua_pushstring(L, "azimuthal");
-    lua_pushnumber(L, quad->abscissae_[n].phi);
+    LuaPush(L, "azimuthal");
+    LuaPush(L, quad->abscissae_[n].phi);
     lua_settable(L, -3);
 
     lua_settable(L, -3);

@@ -90,13 +90,9 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
         OpenSnLogicalError("Attempted to access lua-function, " + lua_fname +
                            ", but it seems the function could not be retrieved.");
 
-      const auto& xyz = cell.centroid_;
-
       // Push arguments
-      lua_pushnumber(L, xyz.x);
-      lua_pushnumber(L, xyz.y);
-      lua_pushnumber(L, xyz.z);
-      lua_pushinteger(L, cell.material_id_);
+      LuaPush(L, cell.centroid_);
+      LuaPush(L, cell.material_id_);
 
       // Call lua function
       // 4 arguments, 1 result (double), 0=original error object
@@ -188,13 +184,9 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
       const auto& n = face.normal_;
 
       // Push arguments
-      lua_pushnumber(L, xyz.x);
-      lua_pushnumber(L, xyz.y);
-      lua_pushnumber(L, xyz.z);
-      lua_pushnumber(L, n.x);
-      lua_pushnumber(L, n.y);
-      lua_pushnumber(L, n.z);
-      lua_pushinteger(L, static_cast<lua_Integer>(face.neighbor_id_));
+      LuaPush(L, xyz);
+      LuaPush(L, n);
+      LuaPush(L, face.neighbor_id_);
 
       // Call lua function
       // 7 arguments, 1 result (string), 0=original error object

@@ -31,7 +31,7 @@ FFInterpolationCreate(lua_State* L)
     opensn::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::field_func_interpolation_stack.size() - 1;
     opensn::log.LogAllVerbose2() << "Created point Field Function Interpolation";
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
+    LuaPush(L, index);
     return 1;
   }
   else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::SLICE))
@@ -41,7 +41,7 @@ FFInterpolationCreate(lua_State* L)
     opensn::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::field_func_interpolation_stack.size() - 1;
     opensn::log.LogAllVerbose2() << "Created slice Field Function Interpolation";
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
+    LuaPush(L, index);
     return 1;
   }
   else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::LINE))
@@ -51,7 +51,7 @@ FFInterpolationCreate(lua_State* L)
     opensn::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::field_func_interpolation_stack.size() - 1;
     opensn::log.LogAllVerbose2() << "Created line Field Function Interpolation";
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
+    LuaPush(L, index);
     return 1;
   }
   else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::VOLUME))
@@ -61,7 +61,7 @@ FFInterpolationCreate(lua_State* L)
     opensn::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::field_func_interpolation_stack.size() - 1;
     opensn::log.LogAllVerbose2() << "Created Volume Field Function Interpolation";
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
+    LuaPush(L, index);
     return 1;
   }
   else // Fall back

@@ -25,9 +25,9 @@ LogVolPointSense(lua_State* L)
   const Vector3 point(LuaArg<double>(L, 2), LuaArg<double>(L, 3), LuaArg<double>(L, 4));
 
   if (lv.Inside(point))
-    lua_pushboolean(L, true);
+    LuaPush(L, true);
   else
-    lua_pushboolean(L, false);
+    LuaPush(L, false);
 
   return 1;
 }

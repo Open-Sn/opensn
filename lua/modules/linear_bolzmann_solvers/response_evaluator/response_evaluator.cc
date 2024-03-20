@@ -120,7 +120,7 @@ EvaluateResponse(lua_State* L)
 
   // Compute the response
   double val = response_evaluator.EvaluateResponse(buffer);
-  lua_pushnumber(L, static_cast<lua_Number>(val));
+  LuaPush(L, val);
   return 1;
 }
 

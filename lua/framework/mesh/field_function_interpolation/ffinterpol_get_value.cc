@@ -33,7 +33,7 @@ FFInterpolationGetValue(lua_State* L)
     auto& cur_ffi_point = dynamic_cast<opensn::FieldFunctionInterpolationPoint&>(*p_ffi);
     double value = cur_ffi_point.GetPointValue();
 
-    lua_pushnumber(L, value);
+    LuaPush(L, value);
     return 1;
   }
   else if (p_ffi->Type() == FieldFunctionInterpolationType::LINE)
@@ -44,15 +44,15 @@ FFInterpolationGetValue(lua_State* L)
 
     for (int ff = 0; ff < cur_ffi_line.GetFieldFunctions().size(); ff++)
     {
-      lua_pushinteger(L, ff + 1);
+      LuaPush(L, ff + 1);
 
       lua_newtable(L);
       const auto& ff_ctx = cur_ffi_line.GetFFContexts()[ff];
 
       for (int p = 0; p < cur_ffi_line.GetInterpolationPoints().size(); p++)
       {
-        lua_pushinteger(L, p + 1);
-        lua_pushnumber(L, ff_ctx.interpolation_points_values[p]);
+        LuaPush(L, p + 1);
+        LuaPush(L, ff_ctx.interpolation_points_values[p]);
         lua_settable(L, -3);
       }
 
@@ -66,7 +66,7 @@ FFInterpolationGetValue(lua_State* L)
     auto& cur_ffi_volume = dynamic_cast<opensn::FieldFunctionInterpolationVolume&>(*p_ffi);
     double value = cur_ffi_volume.GetOpValue();
 
-    lua_pushnumber(L, value);
+    LuaPush(L, value);
     return 1;
   }
   else

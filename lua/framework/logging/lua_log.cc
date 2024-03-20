@@ -90,9 +90,8 @@ LogProcessEvent(lua_State* L)
   else
     OpenSnInvalidArgument("Unsupported event operation name \"" + event_operation_name + "\".");
 
-  const double value = opensn::log.ProcessEvent(event_tag, event_operation);
+  LuaPush(L, opensn::log.ProcessEvent(event_tag, event_operation));
 
-  lua_pushnumber(L, static_cast<lua_Number>(value));
   return 1;
 }
 

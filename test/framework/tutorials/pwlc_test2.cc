@@ -8,6 +8,7 @@
 #include "lua/framework/lua.h"
 
 using namespace opensn;
+using namespace opensnlua;
 
 namespace unit_sim_tests
 {
@@ -72,9 +73,7 @@ SimTest04_PWLC(const InputParameters& params)
                              " could not be retrieved.");
 
     // Push arguments
-    lua_pushnumber(L, xyz.x);
-    lua_pushnumber(L, xyz.y);
-    lua_pushnumber(L, xyz.z);
+    LuaPush(L, xyz);
 
     // Call lua function
     // 3 arguments, 1 result (double), 0=original error object

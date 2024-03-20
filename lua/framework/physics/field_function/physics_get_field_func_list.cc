@@ -50,7 +50,7 @@ GetFieldFunctionHandleByName(lua_State* L)
                               << " requested name. Only the first match will be "
                               << " returned.";
 
-  lua_pushinteger(L, static_cast<lua_Integer>(handles_that_matched.front()));
+  LuaPush(L, handles_that_matched.front());
   return 1;
 }
 

@@ -25,7 +25,7 @@ MeshSurfaceMeshCreate(lua_State* L)
   opensn::object_stack.emplace_back(new_mesh);
 
   size_t index = opensn::object_stack.size() - 1;
-  lua_pushinteger(L, static_cast<lua_Integer>(index));
+  LuaPush(L, index);
 
   opensn::log.LogAllVerbose2() << "mesh.SurfaceMeshCreate: Empty SurfaceMesh object, " << index
                                << ", created" << std::endl;
@@ -59,7 +59,7 @@ MeshComputeLoadBalancing(lua_State* L)
   std::vector<double> x_cuts(x_table_len, 0.0);
   for (int g = 0; g < x_table_len; g++)
   {
-    lua_pushinteger(L, g + 1);
+    LuaPush(L, g + 1);
     lua_gettable(L, 2);
     x_cuts[g] = lua_tonumber(L, -1);
     lua_pop(L, 1);
@@ -78,7 +78,7 @@ MeshComputeLoadBalancing(lua_State* L)
   std::vector<double> y_cuts(y_table_len, 0.0);
   for (int g = 0; g < y_table_len; g++)
   {
-    lua_pushinteger(L, g + 1);
+    LuaPush(L, g + 1);
     lua_gettable(L, 3);
     y_cuts[g] = lua_tonumber(L, -1);
     lua_pop(L, 1);

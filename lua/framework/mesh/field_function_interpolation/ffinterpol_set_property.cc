@@ -218,7 +218,7 @@ FFInterpolationSetProperty(lua_State* L)
     std::vector<double> new_array(table_len, 0.0);
     for (int k = 0; k < table_len; ++k)
     {
-      lua_pushinteger(L, k + 1);
+      LuaPush(L, k + 1);
       lua_gettable(L, 3);
       new_array[k] = lua_tonumber(L, -1);
       lua_pop(L, 1);

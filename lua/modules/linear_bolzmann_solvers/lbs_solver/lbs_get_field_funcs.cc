@@ -57,8 +57,8 @@ LBSGetScalarFieldFunctionList(lua_State* L)
       if (m != 0)
         continue;
 
-      lua_pushinteger(L, 1 + count++);
-      lua_pushinteger(L, static_cast<lua_Integer>(GetStackFFHandle(local_ff)));
+      LuaPush(L, 1 + count++);
+      LuaPush(L, GetStackFFHandle(local_ff));
 
       lua_settable(L, -3);
     }
@@ -76,7 +76,7 @@ LBSGetScalarFieldFunctionList(lua_State* L)
   //   lua_settable(L, -3);
   // }
 
-  lua_pushinteger(L, count);
+  LuaPush(L, count);
   return 2;
 }
 

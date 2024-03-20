@@ -12,6 +12,7 @@ extern "C"
 #include <vector>
 #include <memory>
 #include "framework/parameters/parameter_block.h"
+#include "framework/math/math.h"
 
 /**Posts a generalized error message indicating that the
  * expected amount of arguments don't match the given amount.*/
@@ -106,6 +107,135 @@ public:
 void PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level = 0);
 
 opensn::ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
+
+// Push values on stack
+
+template <typename T>
+inline void
+LuaPush(lua_State* L, T value)
+{
+  throw std::invalid_argument("Unsupported type: " + std::string(typeid(T).name()));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, char* value)
+{
+  lua_pushstring(L, value);
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, const char* value)
+{
+  lua_pushstring(L, value);
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, char value)
+{
+  lua_pushinteger(L, static_cast<lua_Integer>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, int value)
+{
+  lua_pushinteger(L, static_cast<lua_Integer>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, long value)
+{
+  lua_pushinteger(L, static_cast<lua_Integer>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, long long value)
+{
+  lua_pushinteger(L, static_cast<lua_Integer>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, unsigned char value)
+{
+  lua_pushinteger(L, static_cast<lua_Integer>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, unsigned int value)
+{
+  lua_pushinteger(L, static_cast<lua_Integer>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, unsigned long value)
+{
+  lua_pushinteger(L, static_cast<lua_Integer>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, unsigned long long value)
+{
+  lua_pushinteger(L, static_cast<lua_Integer>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, float value)
+{
+  lua_pushnumber(L, static_cast<lua_Number>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, double value)
+{
+  lua_pushnumber(L, static_cast<lua_Number>(value));
+}
+
+template <>
+inline void
+LuaPush(lua_State* L, bool value)
+{
+  lua_pushboolean(L, static_cast<lua_Integer>(value));
+}
+
+inline void
+LuaPush(lua_State* L, const std::string& value)
+{
+  lua_pushstring(L, value.c_str());
+}
+
+inline void
+LuaPush(lua_State* L, const opensn::Vector3& value)
+{
+  LuaPush(L, value.x);
+  LuaPush(L, value.y);
+  LuaPush(L, value.z);
+}
+
+template <typename T1, typename T2>
+inline void
+LuaPush(lua_State* L, const std::pair<T1, T2>& value)
+{
+  lua_newtable(L);
+
+  LuaPush(L, "first");
+  LuaPush(L, value.first);
+  lua_settable(L, -3);
+
+  LuaPush(L, "second");
+  LuaPush(L, value.second);
+  lua_settable(L, -3);
+}
 
 template <typename T>
 inline T

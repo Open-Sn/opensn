@@ -31,7 +31,7 @@ LBSComputeFissionRate(lua_State* L)
 
   const double fission_rate = lbs_solver.ComputeFissionRate(phi);
 
-  lua_pushnumber(L, fission_rate);
+  LuaPush(L, fission_rate);
 
   return 1;
 }

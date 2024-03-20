@@ -38,7 +38,7 @@ MakeObject(lua_State* L)
 
   const std::string type = params.GetParamValue<std::string>("obj_type");
 
-  lua_pushinteger(L, static_cast<lua_Integer>(handle));
+  LuaPush(L, handle);
   return 1;
 }
 
@@ -58,7 +58,7 @@ MakeObjectType(lua_State* L)
   const auto& object_maker = opensn::ObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObjectOfType(type, params);
 
-  lua_pushinteger(L, static_cast<lua_Integer>(handle));
+  LuaPush(L, handle);
   return 1;
 }
 

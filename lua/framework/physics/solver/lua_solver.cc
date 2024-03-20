@@ -38,7 +38,7 @@ SolverCreate(lua_State* L)
   const auto& object_maker = ObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObject(params);
 
-  lua_pushinteger(L, static_cast<lua_Integer>(handle));
+  LuaPush(L, handle);
   return 1;
 }
 
@@ -180,7 +180,7 @@ SolverGetName(lua_State* L)
   const auto solver_handle = LuaArg<int>(L, 1);
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
-  lua_pushstring(L, solver.TextName().c_str());
+  LuaPush(L, solver.TextName());
 
   return 1;
 }
@@ -201,7 +201,7 @@ SolverGetFieldFunctionList(lua_State* L)
   lua_newtable(L);
   for (size_t ff = 0; ff < solver.GetFieldFunctions().size(); ff++)
   {
-    lua_pushinteger(L, static_cast<lua_Integer>(ff) + 1);
+    LuaPush(L, ff + 1);
     int pff_count = -1;
     bool found = false;
     for (auto& pff : opensn::field_function_stack) // pff pointer to field func
@@ -209,7 +209,7 @@ SolverGetFieldFunctionList(lua_State* L)
       ++pff_count;
       if (pff == solver.GetFieldFunctions()[ff])
       {
-        lua_pushinteger(L, pff_count);
+        LuaPush(L, pff_count);
         found = true;
         break;
       }
@@ -222,7 +222,7 @@ SolverGetFieldFunctionList(lua_State* L)
     lua_settable(L, -3);
   }
 
-  lua_pushinteger(L, static_cast<lua_Integer>(solver.GetFieldFunctions().size()));
+  LuaPush(L, solver.GetFieldFunctions().size());
 
   return 2;
 }

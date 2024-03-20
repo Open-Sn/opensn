@@ -57,8 +57,8 @@ LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
   lua_Integer k = 0;
   for (double val : vals)
   {
-    lua_pushinteger(L, ++k);
-    lua_pushnumber(L, val);
+    LuaPush(L, ++k);
+    LuaPush(L, val);
     lua_settable(L, -3);
   }
 
@@ -71,7 +71,7 @@ LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
     result.reserve(table_length);
     for (size_t i = 0; i < table_length; ++i)
     {
-      lua_pushinteger(L, static_cast<lua_Integer>(i) + 1);
+      LuaPush(L, i + 1);
       lua_gettable(L, -2);
       result.push_back(lua_tonumber(L, -1));
       lua_pop(L, 1);

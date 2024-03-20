@@ -42,7 +42,7 @@ CreateLineQuadrature(lua_State* L)
     const size_t handle =
       obj_factory.MakeRegisteredObjectOfType("squad::QuadratureGaussLegendre", params);
 
-    lua_pushinteger(L, static_cast<lua_Integer>(handle));
+    LuaPush(L, handle);
     return 1;
   }
   else if (ident == 2) // GAUSS_CHEBYSHEV
@@ -52,7 +52,7 @@ CreateLineQuadrature(lua_State* L)
     const size_t handle =
       obj_factory.MakeRegisteredObjectOfType("squad::QuadratureGaussChebyshev", params);
 
-    lua_pushinteger(L, static_cast<lua_Integer>(handle));
+    LuaPush(L, handle);
     return 1;
   }
   return 0;

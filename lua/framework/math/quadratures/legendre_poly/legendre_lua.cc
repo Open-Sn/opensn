@@ -21,7 +21,7 @@ Legendre(lua_State* L)
 
   double retval = opensn::Legendre(N, x);
 
-  lua_pushnumber(L, retval);
+  LuaPush(L, retval);
   return 1;
 }
 
@@ -34,7 +34,7 @@ LegendreDerivative(lua_State* L)
 
   double retval = dLegendredx(N, x);
 
-  lua_pushnumber(L, retval);
+  LuaPush(L, retval);
   return 1;
 }
 
@@ -52,7 +52,7 @@ Ylm(lua_State* L)
 
   double retval = opensn::Ylm(ell, m, varphi, theta);
 
-  lua_pushnumber(L, retval);
+  LuaPush(L, retval);
   return 1;
 }
 

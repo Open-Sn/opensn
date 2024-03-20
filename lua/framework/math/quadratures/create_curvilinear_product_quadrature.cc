@@ -49,7 +49,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
     vNa.resize(Np, 0);
     for (int n = 1; n <= lNa; ++n)
     {
-      lua_pushinteger(L, n);
+      LuaPush(L, n);
       lua_gettable(L, 3);
       vNa[n - 1] = lua_tonumber(L, -1);
       lua_pop(L, 1);
@@ -80,7 +80,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushinteger(L, static_cast<lua_Integer>(index));
+      LuaPush(L, index);
 
       return 1;
     }
@@ -97,7 +97,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushinteger(L, static_cast<lua_Integer>(index));
+      LuaPush(L, index);
 
       return 1;
     }
@@ -164,7 +164,7 @@ CreateSphericalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushinteger(L, static_cast<lua_Integer>(index));
+      LuaPush(L, index);
 
       return 1;
     }
@@ -178,7 +178,7 @@ CreateSphericalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushinteger(L, static_cast<lua_Integer>(index));
+      LuaPush(L, index);
 
       return 1;
     }
