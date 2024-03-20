@@ -6,7 +6,7 @@ num_procs = 4
 
 -- Check num_procs
 if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    Log(LOG_0ERROR, "Incorrect amount of processors. " ..
+    log.Log(LOG_0ERROR, "Incorrect amount of processors. " ..
             "Expected " .. tostring(num_procs) ..
             ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -59,17 +59,15 @@ mesh.SetMaterialIDFromLogicalVolume(vol1b, 1)
 num_groups = 1
 
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material1");
-materials[2] = PhysicsAddMaterial("Test Material2");
+materials[1] = mat.AddMaterial("Test Material1");
+materials[2] = mat.AddMaterial("Test Material2");
 
 -- Add cross sections
-PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
-PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-        SIMPLEXS1, num_groups, 0.01, 0.01)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.01, 0.01)
 
-PhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
-PhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
-        SIMPLEXS1, num_groups, 0.1 * 20, 0.8)
+mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.1 * 20, 0.8)
 
 -- Add sources
 src = {}
@@ -85,8 +83,8 @@ loc = { 1.25 - 0.5 * ds, 1.5 * ds, 0.0 }
 pt_src = lbs.PointSource.Create({ location = loc, strength = src })
 
 -- Setup physics
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)
-OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0 * math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
     num_groups = num_groups,
@@ -110,13 +108,13 @@ phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 -- Forward solve
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 -- Get field functions
-ff_m0 = GetFieldFunctionHandleByName("phi_g000_m00")
-ff_m1 = GetFieldFunctionHandleByName("phi_g000_m01")
-ff_m2 = GetFieldFunctionHandleByName("phi_g000_m02")
+ff_m0 = fieldfunc.GetHandleByName("phi_g000_m00")
+ff_m1 = fieldfunc.GetHandleByName("phi_g000_m01")
+ff_m2 = fieldfunc.GetHandleByName("phi_g000_m02")
 
 -- Define QoI region
 qoi_vol = mesh.RPPLogicalVolume.Create(
@@ -128,14 +126,14 @@ qoi_vol = mesh.RPPLogicalVolume.Create(
 )
 
 -- Compute QoI
-ffi = FFInterpolationCreate(VOLUME)
-FFInterpolationSetProperty(ffi, OPERATION, OP_SUM)
-FFInterpolationSetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
-FFInterpolationSetProperty(ffi, ADD_FIELDFUNCTION, ff_m0)
+ffi = fieldfunc.FFInterpolationCreate(VOLUME)
+fieldfunc.SetProperty(ffi, OPERATION, OP_SUM)
+fieldfunc.SetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
+fieldfunc.SetProperty(ffi, ADD_FIELDFUNCTION, ff_m0)
 
-FFInterpolationInitialize(ffi)
-FFInterpolationExecute(ffi)
-fwd_qoi = FFInterpolationGetValue(ffi)
+fieldfunc.Initialize(ffi)
+fieldfunc.Execute(ffi)
+fwd_qoi = fieldfunc.GetValue(ffi)
 
 -- Create adjoint source
 adjoint_source = lbs.DistributedSource.Create(
@@ -150,8 +148,8 @@ adjoint_options = {
 lbs.SetOptions(phys, adjoint_options)
 
 -- Adjoint solve, write results
-SolverExecute(ss_solver)
-LBSWriteFluxMoments(phys, "adjoint_2d_2")
+solver.Execute(ss_solver)
+lbs.WriteFluxMoments(phys, "adjoint_2d_2")
 
 -- Create response evaluator
 buffers = { { name = "buff", file_prefixes = { flux_moments = "adjoint_2d_2" } } }
@@ -169,8 +167,8 @@ evaluator = lbs.ResponseEvaluator.Create(response_options)
 adj_qoi = lbs.EvaluateResponse(evaluator, "buff")
 
 -- Print results
-Log(LOG_0, string.format("QoI Value=%.5e", fwd_qoi))
-Log(LOG_0, string.format("Inner Product=%.5e", adj_qoi))
+log.Log(LOG_0, string.format("QoI Value=%.5e", fwd_qoi))
+log.Log(LOG_0, string.format("Inner Product=%.5e", adj_qoi))
 
 -- Cleanup
 MPIBarrier()

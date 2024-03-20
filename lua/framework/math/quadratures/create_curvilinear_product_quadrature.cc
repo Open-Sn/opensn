@@ -14,8 +14,12 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(CreateCylindricalProductQuadrature);
-RegisterLuaFunctionAsIs(CreateSphericalProductQuadrature);
+RegisterLuaFunctionNamespace(CreateCylindricalProductQuadrature,
+                             aquad,
+                             CreateCylindricalProductQuadrature);
+RegisterLuaFunctionNamespace(CreateSphericalProductQuadrature,
+                             aquad,
+                             CreateSphericalProductQuadrature);
 
 int
 CreateCylindricalProductQuadrature(lua_State* L)

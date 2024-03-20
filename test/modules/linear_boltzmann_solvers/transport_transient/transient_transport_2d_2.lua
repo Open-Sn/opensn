@@ -9,7 +9,7 @@ num_procs = 2
 
 --############################################### Check num_procs
 if (check_num_procs==nil and number_of_processes ~= num_procs) then
-    Log(LOG_0ERROR,"Incorrect amount of processors. " ..
+    log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
             "Expected "..tostring(num_procs)..
             ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -34,28 +34,26 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
+materials[1] = mat.AddMaterial("Test Material");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
-xs_critical = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_critical, OPENSN_XSFILE, "tests/transport_transient/xs_inf_critical_1g.xs")
-xs_21cent = PhysicsTransportXSCreate()
-PhysicsTransportXSSet(xs_21cent, OPENSN_XSFILE, "tests/transport_transient/xs_inf_21cent_1g.xs")
+xs_critical = xs.Create()
+xs.Set(xs_critical, OPENSN_XSFILE, "tests/transport_transient/xs_inf_critical_1g.xs")
+xs_21cent = xs.Create()
+xs.Set(xs_21cent, OPENSN_XSFILE, "tests/transport_transient/xs_inf_21cent_1g.xs")
 
 num_groups = 1
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-        EXISTING,xs_critical)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_critical)
 
 src={0.0}
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 function SwapXS(solver_handle, new_xs)
-    PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-            EXISTING,new_xs)
-    LBSInitializeMaterials(solver_handle)
+    mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, new_xs)
+    lbs.InitializeMaterials(solver_handle)
 end
 
 --############################################### Setup Physics
@@ -69,8 +67,8 @@ end
 
 --========== ProdQuad
 fac=1
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4*fac, 3*fac)
-OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4*fac, 3*fac)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)
@@ -112,25 +110,25 @@ LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 
 
 --############################################### Initialize and Execute Solver
-SolverInitialize(phys1)
+solver.Initialize(phys1)
 
 LBTSSetProperty(phys1, "TIMESTEP", 1e-3)
 LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
-phys1name = SolverGetName(phys1);
-initial_FR = LBSComputeFissionRate(phys1,"OLD")
+phys1name = solver.GetName(phys1);
+initial_FR = lbs.ComputeFissionRate(phys1,"OLD")
 
 --time = 0.0
 --for k=1,2 do
 --    --LBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
---    SolverStep(phys1)
---    FRf = LBSComputeFissionRate(phys1,"NEW")
---    FRi = LBSComputeFissionRate(phys1,"OLD")
+--    solver.Step(phys1)
+--    FRf = lbs.ComputeFissionRate(phys1,"NEW")
+--    FRi = lbs.ComputeFissionRate(phys1,"OLD")
 --    dt = LBTSGetProperty(phys1, "TIMESTEP")
 --    time = LBTSGetProperty(phys1, "TIME")
 --    period = dt/math.log(FRf/FRi)
---    Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
+--    log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
 --            phys1name,k,time,dt,period,FRf/initial_FR))
 --end
 
@@ -140,13 +138,13 @@ k=0
 swapped = false
 while (time < time_stop) do
     k = k + 1
-    SolverStep(phys1)
-    FRf = LBSComputeFissionRate(phys1,"NEW")
-    FRi = LBSComputeFissionRate(phys1,"OLD")
+    solver.Step(phys1)
+    FRf = lbs.ComputeFissionRate(phys1,"NEW")
+    FRi = lbs.ComputeFissionRate(phys1,"OLD")
     dt = LBTSGetProperty(phys1, "TIMESTEP")
     time = LBTSGetProperty(phys1, "TIME")
     period = dt/math.log(FRf/FRi)
-    Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
+    log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
             phys1name,k,time,dt,period,FRf/initial_FR))
     if (time >= 0.2 and not swapped) then
         SwapXS(phys1, xs_21cent)

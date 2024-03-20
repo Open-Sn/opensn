@@ -17,20 +17,6 @@ namespace opensnlua::lbs
 int LBSComputeBalance(lua_State* L);
 
 /**
- * Computes the leakage for the specified groupset and boundary id.
- *
- * \param SolverIndex int Handle to the solver.
- * \param GroupSetHandle int Handle to the groupset.
- * \param BoundaryID int Id of the boundary for which leakage is to be computed.
- *
- * \return The leakage on a per group basis.
- *
- * \ingroup LBSLuaFunctions
- * \author Jan
- */
-int LBSComputeLeakage(lua_State* L);
-
-/**
  * Computes the group-wise leakage on all boundaries.
  *
  * \param SolverIndex int Handle to the solver.

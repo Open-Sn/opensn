@@ -13,7 +13,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(CreateProductQuadrature);
+RegisterLuaFunctionNamespace(CreateProductQuadrature, aquad, CreateProductQuadrature);
 
 RegisterLuaConstantAsIs(GAUSS_LEGENDRE, Varying(1));
 RegisterLuaConstantAsIs(GAUSS_CHEBYSHEV, Varying(2));

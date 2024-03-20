@@ -35,7 +35,7 @@ Next we set the material IDs:
 
 \code
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 \endcode
 
@@ -45,11 +45,11 @@ Similar to the diffusion tutorial we have to create a material, then add a
  property to it, and then to set the property.
 
 \code
-material0 = PhysicsAddMaterial("Test Material");
+material0 = mat.AddMaterial("Test Material");
 
 PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1
-PhysicsMaterialSetProperty(material0,
+mat.SetProperty(material0,
                               TRANSPORT_XSECTIONS,
                               SIMPLEXS1,
                               num_groups,     --Num grps
@@ -133,7 +133,7 @@ This should be intuitive.
 \code
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
-cline = FFInterpolationCreate(LINE)
+cline = fieldfunc.FFInterpolationCreate(LINE)
 FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
 FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
 FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
@@ -143,7 +143,7 @@ FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
 FFInterpolationInitialize(cline)
 FFInterpolationExecute(cline)
-FFInterpolationExportPython(cline)
+fieldfunc.ExportPython(cline)
 
 if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")
@@ -182,15 +182,15 @@ surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 VolumeMesherExecute();
 
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --############################################### Add material
-material0 = PhysicsAddMaterial("Test Material");
+material0 = mat.AddMaterial("Test Material");
 
 PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
 num_groups = 1
-PhysicsMaterialSetProperty(material0,
+mat.SetProperty(material0,
                               TRANSPORT_XSECTIONS,
                               SIMPLEXS1,
                               num_groups,     --Num grps
@@ -233,7 +233,7 @@ LBSExecute(phys1)
 --############################################### Setup Output
 fflist,count = LBSGetScalarFieldFunctionList(phys1)
 
-cline = FFInterpolationCreate(LINE)
+cline = fieldfunc.FFInterpolationCreate(LINE)
 FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
 FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
 FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
@@ -243,9 +243,9 @@ FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
 FFInterpolationInitialize(cline)
 FFInterpolationExecute(cline)
-FFInterpolationExportPython(cline)
+fieldfunc.ExportPython(cline)
 
-ExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
+fieldfunc.ExportToVTK(fflist[1],"Tutorial3Output","Phi")
 
 if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")

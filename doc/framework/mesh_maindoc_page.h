@@ -16,8 +16,8 @@
 \code
 MeshHandlerCreate()
 --
-newSurfMesh = SurfaceMeshCreate();
-SurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
+newSurfMesh = mesh.SurfaceMeshCreate();
+mesh.SurfaceMeshImportFromOBJFile(newSurfMesh,"CHI_RESOURCES/TestObjects/SquareMesh2x2.obj")
 loops,loop_count = SurfaceMeshGetEdgeLoops(newSurfMesh)
 --
 --

@@ -1,24 +1,24 @@
-#include "framework/lua.h"
+#include "lua_logic_volume.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "logic_volume_lua.h"
 #include "framework/console/console.h"
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(LogicalVolumeCreate);
+RegisterLuaFunctionNamespace(LogVolCreate, logvol, Create);
+RegisterLuaFunctionNamespace(LogVolPointSense, logvol, PointSense);
+
 RegisterLuaConstantAsIs(SPHERE, Varying(1));
 RegisterLuaConstantAsIs(SPHERE_ORIGIN, Varying(2));
 RegisterLuaConstantAsIs(RPP, Varying(3));
 RegisterLuaConstantAsIs(RCC, Varying(4));
 RegisterLuaConstantAsIs(SURFACE, Varying(9));
 RegisterLuaConstantAsIs(BOOLEAN, Varying(10));
-RegisterLuaFunctionAsIs(LogicalVolumePointSense);
 
 int
-LogicalVolumeCreate(lua_State* L)
+LogVolCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
 
@@ -49,8 +49,7 @@ LogicalVolumeCreate(lua_State* L)
   {
     if (num_args != 2)
     {
-      opensn::log.Log0Error() << "Incorrect amount of arguments provided "
-                                 "for MeshCreateLogicalVolume(SO...";
+      opensn::log.Log0Error() << "Invalid number of arguments when calling logvol.Create(SO...";
       opensn::Exit(EXIT_FAILURE);
     }
     double r = lua_tonumber(L, 2);
@@ -75,8 +74,7 @@ LogicalVolumeCreate(lua_State* L)
   {
     if (num_args != 5)
     {
-      opensn::log.Log0Error() << "Incorrect amount of arguments provided "
-                                 "for MeshCreateLogicalVolume(S...";
+      opensn::log.Log0Error() << "Invalid number of arguments when calling for logvol.Create(S...";
       opensn::Exit(EXIT_FAILURE);
     }
     double x = lua_tonumber(L, 2);
@@ -108,8 +106,7 @@ LogicalVolumeCreate(lua_State* L)
   {
     if (num_args != 7)
     {
-      opensn::log.Log0Error() << "Incorrect amount of arguments provided "
-                                 "for MeshCreateLogicalVolume(RPP...";
+      opensn::log.Log0Error() << "Invalid number of arguments when calling logvol.Create(RPP...";
       opensn::Exit(EXIT_FAILURE);
     }
     double xmin = lua_tonumber(L, 2);
@@ -144,8 +141,7 @@ LogicalVolumeCreate(lua_State* L)
   {
     if (num_args != 8)
     {
-      opensn::log.Log0Error() << "Incorrect amount of arguments provided "
-                                 "for MeshCreateLogicalVolume(RCC...";
+      opensn::log.Log0Error() << "Invalid number of arguments when calling logvol.Create(RCC...";
       opensn::Exit(EXIT_FAILURE);
     }
     double x0 = lua_tonumber(L, 2);
@@ -272,8 +268,7 @@ LogicalVolumeCreate(lua_State* L)
     // lua_pushinteger(L, static_cast<lua_Integer>(index));
 
     OpenSnInvalidArgumentIf(num_args % 2 != 0,
-                            "Incorrect amount of arguments provided for "
-                            "MeshCreateLogicalVolume(BOOLEAN..."
+                            "Invalid number of arguments when calling logvol.Create(BOOLEAN..."
                             " Expected pairs of (bool,volumeHandle)");
 
     ParameterBlock params;
@@ -284,28 +279,21 @@ LogicalVolumeCreate(lua_State* L)
       // Checking first part of pair
       if (not lua_isboolean(L, 2 * p))
       {
-        opensn::log.Log0Error() << "MeshCreateLogicalVolume(BOOLEAN..."
-                                   " argument "
-                                << 2 * p
-                                << " expected to be "
-                                   "Boolean. Found not to be";
+        opensn::log.Log0Error() << "logvol.Create(BOOLEAN... argument " << 2 * p
+                                << " expected to be Boolean. Found not to be";
         opensn::Exit(EXIT_FAILURE);
       }
       // Checking second part of pair
       if (not lua_isnumber(L, 2 * p + 1))
       {
-        opensn::log.Log0Error() << "MeshCreateLogicalVolume(BOOLEAN..."
-                                   " argument "
-                                << 2 * p + 1
-                                << " expected to be "
-                                   "number. Found not to be";
+        opensn::log.Log0Error() << "logvol.Create(BOOLEAN... argument " << 2 * p + 1
+                                << " expected to be number. Found not to be";
         opensn::Exit(EXIT_FAILURE);
       }
       if (lua_tointeger(L, 2 * p + 1) >= static_cast<lua_Number>(opensn::object_stack.size()))
       {
-        opensn::log.Log0Error() << "MeshCreateLogicalVolume(BOOLEAN..."
-                                   " argument "
-                                << 2 * p + 1 << " points to non-existent volume.";
+        opensn::log.Log0Error() << "logvol.Create(BOOLEAN... argument " << 2 * p + 1
+                                << " points to non-existent volume.";
         opensn::Exit(EXIT_FAILURE);
       }
 
@@ -330,8 +318,7 @@ LogicalVolumeCreate(lua_State* L)
   // Unrecognized option
   else
   {
-    opensn::log.Log0Error() << "Unrecognized volume type used in "
-                               "LogicalVolumeCreate.";
+    opensn::log.Log0Error() << "Unrecognized volume type used in logvol.Create";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -339,9 +326,9 @@ LogicalVolumeCreate(lua_State* L)
 }
 
 int
-LogicalVolumePointSense(lua_State* L)
+LogVolPointSense(lua_State* L)
 {
-  const std::string fname = "LogicalVolumePointSense";
+  const std::string fname = "LogVolPointSense";
   const int num_args = lua_gettop(L);
   if (num_args != 4)
     LuaPostArgAmountError(fname, 4, num_args);

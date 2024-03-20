@@ -13,7 +13,7 @@
 using namespace opensn;
 using namespace opensnlua;
 
-RegisterLuaFunctionAsIs(FFInterpolationSetProperty);
+RegisterLuaFunctionNamespace(FFInterpolationSetProperty, fieldfunc, SetProperty);
 RegisterLuaConstantAsIs(PROBEPOINT, Varying(0));
 RegisterLuaConstantAsIs(SLICE_POINT, Varying(1));
 RegisterLuaConstantAsIs(SLICE_NORMAL, Varying(2));

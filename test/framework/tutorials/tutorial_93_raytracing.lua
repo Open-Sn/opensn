@@ -25,14 +25,12 @@ unit_tests.SimTest93_RayTracing()
 --###############################################
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
+materials[1] = mat.AddMaterial("Test Material");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
 num_groups = 1
-PhysicsMaterialSetProperty(materials[1],
-        TRANSPORT_XSECTIONS,
-        SIMPLEXS0,1,0.27)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, 1, 0.27)
 
 
 
@@ -47,8 +45,8 @@ PhysicsMaterialSetProperty(materials[1],
 --end
 --
 ----========== ProdQuad
---pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12*2*4, 12*4)
---OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+--pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12*2*4, 12*4)
+--aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
 --
 ----========== Groupset def
 --gs0 = LBSCreateGroupset(phys1)
@@ -77,18 +75,27 @@ PhysicsMaterialSetProperty(materials[1],
 --LBSSetProperty(phys1,SCATTERING_ORDER,0)
 --
 ----############################################### Initialize and Execute Solver
---SolverInitialize(phys1)
---SolverExecute(phys1)
+--solver.Initialize(phys1)
+--solver.Execute(phys1)
 
 
 
 
-
+--############################################### Add point source
+src={}
+for g=1,num_groups do
+    src[g] = 0.0
+end
+src[1] = 1.0
+pt_src = lbs.PointSource.Create({
+    location = { 0.0, 0.0, 0.0 },
+    strength = src
+})
 
 --############################################### Setup Physics
 solver_name = "LBS"
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12*2*4, 12*4)
-OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12*2*4, 12*4)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
 lbs_block =
 {
     name = solver_name,
@@ -103,28 +110,24 @@ lbs_block =
             l_max_its = 0,
         }
     },
-    options = {scattering_order = 0, field_function_prefix = solver_name}
+    options = {
+        scattering_order = 0,
+        point_sources = { pt_src },
+        field_function_prefix = solver_name
+    }
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
---############################################### Add point source
-src={}
-for g=1,num_groups do
-    src[g] = 0.0
-end
-src[1] = 1.0
-LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
-
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
-ff_m0 = LBSGetScalarFieldFunctionList(phys1)
+ff_m0 = lbs.GetScalarFieldFunctionList(phys1)
 
-ExportMultiFieldFunctionToVTK({ff_m0[1]},"SimTest_93_LBS_"..solver_name)
+fieldfunc.ExportToVTKMulti({ff_m0[1]},"SimTest_93_LBS_"..solver_name)
 MPIBarrier()
 if (location_id == 0) then
     os.execute("rm SimTest_93*")

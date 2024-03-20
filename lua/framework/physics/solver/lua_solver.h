@@ -9,7 +9,9 @@ class InputParameters;
 
 namespace opensnlua
 {
-/**Generic lua routine for the creation of solvers.
+
+/**
+ * Generic lua routine for the creation of solvers.
  * \param params ParameterBlock. A single block with at least one field
  *                   \"type\", which contains a registered solver type.
  * ## _
@@ -24,7 +26,8 @@ namespace opensnlua
  */
 int SolverCreate(lua_State* L);
 
-/** Initializes the solver at the given handle.
+/**
+ * Initializes the solver at the given handle.
  *
  * \param solver_handle int Handle to the solver.
  *
@@ -33,7 +36,8 @@ int SolverCreate(lua_State* L);
  */
 int SolverInitialize(lua_State* L);
 
-/** Executes the solver at the given handle.
+/**
+ * Executes the solver at the given handle.
  *
  * \param solver_handle int Handle to the solver.
  *
@@ -42,7 +46,8 @@ int SolverInitialize(lua_State* L);
  */
 int SolverExecute(lua_State* L);
 
-/** Performs a single timestep for the solver at the given handle.
+/**
+ * Performs a single timestep for the solver at the given handle.
  *
  * \param solver_handle int Handle to the solver.
  *
@@ -51,7 +56,8 @@ int SolverExecute(lua_State* L);
  */
 int SolverStep(lua_State* L);
 
-/** Advances the time values of the solver at the given handle.
+/**
+ * Advances the time values of the solver at the given handle.
  *
  * \param solver_handle int Handle to the solver.
  *
@@ -60,7 +66,8 @@ int SolverStep(lua_State* L);
  */
 int SolverAdvance(lua_State* L);
 
-/** Sets a basic option of a solver.
+/**
+ * Sets a basic option of a solver.
  *
  * \param solver_handle int Handle to the reference solver.
  * \param option_name   string String-name of the option.
@@ -72,7 +79,8 @@ int SolverAdvance(lua_State* L);
  */
 int SolverSetBasicOption(lua_State* L);
 
-/** Returns the text name of the solver.
+/**
+ * Returns the text name of the solver.
  *
  * \param solver_handle int Handle to the solver.
  *
@@ -81,7 +89,8 @@ int SolverSetBasicOption(lua_State* L);
  */
 int SolverGetName(lua_State* L);
 
-/**Obtains a named list of the field functions associated with a solver.
+/**
+ * Obtains a named list of the field functions associated with a solver.
  *
  * \param SolverHandle int A handle to the reference solver.
  *
@@ -89,7 +98,8 @@ int SolverGetName(lua_State* L);
  */
 int SolverGetFieldFunctionList(lua_State* L);
 
-/** Returns arbitrary info specific for each solver.
+/**
+ * Returns arbitrary info specific for each solver.
  *
  * \param solver_handle int Handle to the solver.
  * \param info varying A single string or a table of values to call the solver
@@ -100,7 +110,8 @@ int SolverGetFieldFunctionList(lua_State* L);
  */
 int SolverGetInfo(lua_State* L);
 
-/**Sets a property of a solver.
+/**
+ * Sets a property of a solver.
  * \param handle int Solver handle.
  * \param property_table Table Table of properties to set. See solver specific
  * documentation.
@@ -108,4 +119,5 @@ int SolverGetInfo(lua_State* L);
  * \ingroup doc_PhysicsSolver
  */
 int SolverSetProperties(lua_State* L);
+
 } // namespace opensnlua

@@ -25,7 +25,7 @@ We will be adding some items to this input file.
 ## Step 3 - Create a slice interpolator
 
 \code
-slice1 = FFInterpolationCreate(SLICE)
+slice1 = fieldfunc.FFInterpolationCreate(SLICE)
 FFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
 FFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
 \endcode
@@ -48,7 +48,7 @@ For very complex meshes it might be prudent to perform initialization before
 \code
 FFInterpolationInitialize(slice1)
 FFInterpolationExecute(slice1)
-FFInterpolationExportPython(slice1)
+fieldfunc.ExportPython(slice1)
 \endcode
 
 The FFInterpolationInitialize() and FFInterpolationExecute() should be
@@ -95,10 +95,10 @@ surf_mesh,region1 = MeshCreateUnpartitioned3DOrthoMesh(nodes,nodes,nodes)
 
 VolumeMesherExecute();
 
-material = PhysicsAddMaterial("Test Material");
+material = mat.AddMaterial("Test Material");
 
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 
 chiRegionExportMeshToVTK(region1,"Mesh")
@@ -107,10 +107,10 @@ chiRegionExportMeshToVTK(region1,"Mesh")
 
 -- Set material properties
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+mat.SetProperty(material,"k",SINGLE_VALUE,1.0)
 
 PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+mat.SetProperty(material,"q",SINGLE_VALUE,1.0)
 
 
 --############################################### Setup Physics
@@ -126,15 +126,15 @@ DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = GetFieldFunctionList(phys1)
-ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+fieldfunc.ExportToVTK(fflist[1],"Tutorial1Output","Temperature")
 
-slice1 = FFInterpolationCreate(SLICE)
+slice1 = fieldfunc.FFInterpolationCreate(SLICE)
 FFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
 FFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
 
 FFInterpolationInitialize(slice1)
 FFInterpolationExecute(slice1)
-FFInterpolationExportPython(slice1)
+fieldfunc.ExportPython(slice1)
 
 local handle = io.popen("python ZPFFI00.py")
 \endcode

@@ -11,7 +11,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(GetProductQuadrature);
+RegisterLuaFunctionNamespace(GetProductQuadrature, aquad, GetProductQuadrature);
 
 int
 GetProductQuadrature(lua_State* L)

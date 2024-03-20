@@ -1,6 +1,9 @@
 #pragma once
 
-/** Creates a logical volume.
+#include "framework/lua.h"
+
+/**
+ * Creates a logical volume.
  *
  * \param TypeIndex int Volume type.
  * \param Values varying Parameters.
@@ -23,32 +26,32 @@
  * Example usage:
  * \code
  * -- Sphere at origin radius 1.0
- * lv1 = LogicalVolumeCreate(SPHERE_ORIGIN, 1.0)
+ * lv1 = logvol.Create(SPHERE_ORIGIN, 1.0)
  *
  * -- Sphere centered at (0.1,0.2,0.3) with radius 1.0
- * lv2 = LogicalVolumeCreate(SPHERE, 0.1, 0.2, 0.3, 1.0)
+ * lv2 = logvol.Create(SPHERE, 0.1, 0.2, 0.3, 1.0)
  *
  * -- Rectangular parallelepiped
  * xmin = -1.0; xmax = 1.0
  * ymin = -2.0; ymax = 1.0
  * zmin = -1000.0, zmax = 1000.0
- * lv3 = LogicalVolumeCreate(RPP, xmin, xmax, ymin, ymax, zmin, zmax)
+ * lv3 = logvol.Create(RPP, xmin, xmax, ymin, ymax, zmin, zmax)
  *
  * -- Right Circular Cylinder
  * basex = 1.0; basey = 0.0; basez = 0.5
  * upvecx = 0.0; upvecy = 0.0; upvecz = 1.0
  * R = 1.0
- * lv4 = LogicalVolumeCreate(RPP, basex, basey, basez, upvecx, upvecy, upvecz,
+ * lv4 = logvol.Create(RPP, basex, basey, basez, upvecx, upvecy, upvecz,
  * R)
  *
  * -- Surface mesh
- * lv_surfmesh = SurfaceMeshCreate()
- * SurfaceMeshImportFromOBJFile(lv_surfmesh, "MeshFile3D.obj", false)
+ * lv_surfmesh = mesh.SurfaceMeshCreate()
+ * mesh.SurfaceMeshImportFromOBJFile(lv_surfmesh, "MeshFile3D.obj", false)
  *
- * lv5 = LogicalVolumeCreate(SURFACE, lv_surfmesh)
+ * lv5 = logvol.Create(SURFACE, lv_surfmesh)
  *
  * -- Boolean combination
- * lv6 = LogicalVolumeCreate(BOOLEAN, {{true , lv5},  -- inside logical volume 5
+ * lv6 = logvol.Create(BOOLEAN, {{true , lv5},  -- inside logical volume 5
  *                                        {false, lv1},  -- outside logical volume
  * 1 {false, lv2}}) -- outside logical volume 2 \endcode
  *
@@ -56,9 +59,11 @@
  * \ingroup LuaLogicVolumes
  * \author Jan
  */
-int LogicalVolumeCreate(lua_State* L);
+int LogVolCreate(lua_State* L);
 
-/**Evaluates whether a point is within the logical volume.
+/**
+ * Evaluates whether a point is within the logical volume.
+ *
  * \param LVHandle int Handle to the logical volume.
  * \param Point_x double X-coordinate of the point.
  * \param Point_y double Y-coordinate of the point.
@@ -67,4 +72,4 @@ int LogicalVolumeCreate(lua_State* L);
  * \return Sense true if inside the logical volume and false if outside.
  * \ingroup LuaLogicVolumes
  */
-int LogicalVolumePointSense(lua_State* L);
+int LogVolPointSense(lua_State* L);

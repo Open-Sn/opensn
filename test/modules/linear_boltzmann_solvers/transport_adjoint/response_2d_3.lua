@@ -17,7 +17,7 @@ num_procs = 4
 
 -- Check num_procs
 if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    Log(LOG_0ERROR, "Incorrect amount of processors. " ..
+    log.Log(LOG_0ERROR, "Incorrect amount of processors. " ..
             "Expected " .. tostring(num_procs) ..
             ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -68,18 +68,16 @@ mesh.SetMaterialIDFromLogicalVolume(vol1b, 1)
 
 -- Create materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material1");
-materials[2] = PhysicsAddMaterial("Test Material2");
+materials[1] = mat.AddMaterial("Test Material1");
+materials[2] = mat.AddMaterial("Test Material2");
 
 -- Add cross sections to materials
 num_groups = 10
-PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
-PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-        SIMPLEXS1, num_groups, 0.01, 0.01)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.01, 0.01)
 
-PhysicsMaterialAddProperty(materials[2], TRANSPORT_XSECTIONS)
-PhysicsMaterialSetProperty(materials[2], TRANSPORT_XSECTIONS,
-        SIMPLEXS1, num_groups, 0.1 * 20, 0.8)
+mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.1 * 20, 0.8)
 
 -- Create sources
 src = {}
@@ -95,8 +93,8 @@ loc = { 1.25 - 0.5 * ds, 1.5 * ds, 0.0 }
 pt_src = lbs.PointSource.Create({ location = loc, strength = src })
 
 -- Setup physics
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
-OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0 * math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
     num_groups = num_groups,
@@ -120,8 +118,8 @@ phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 -- Forward solve
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 -- Define QoI region
 qoi_vol = mesh.RPPLogicalVolume.Create(
@@ -136,16 +134,16 @@ qoi_vol = mesh.RPPLogicalVolume.Create(
 fwd_qois = {}
 fwd_qoi_sum = 0.0
 for g = 0, num_groups - 1 do
-    ff = GetFieldFunctionHandleByName(
+    ff = fieldfunc.GetHandleByName(
             "phi_g" .. string.format("%03d", g) .. "_m" .. string.format("%02d", 0))
-    ffi = FFInterpolationCreate(VOLUME)
-    FFInterpolationSetProperty(ffi, OPERATION, OP_SUM)
-    FFInterpolationSetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
-    FFInterpolationSetProperty(ffi, ADD_FIELDFUNCTION, ff)
+    ffi = fieldfunc.FFInterpolationCreate(VOLUME)
+    fieldfunc.SetProperty(ffi, OPERATION, OP_SUM)
+    fieldfunc.SetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
+    fieldfunc.SetProperty(ffi, ADD_FIELDFUNCTION, ff)
 
-    FFInterpolationInitialize(ffi)
-    FFInterpolationExecute(ffi)
-    fwd_qois[g + 1] = FFInterpolationGetValue(ffi)
+    fieldfunc.Initialize(ffi)
+    fieldfunc.Execute(ffi)
+    fwd_qois[g + 1] = fieldfunc.GetValue(ffi)
 
     fwd_qoi_sum = fwd_qoi_sum + fwd_qois[g + 1]
 end
@@ -179,8 +177,8 @@ adjoint_options = {
 lbs.SetOptions(phys, adjoint_options)
 
 -- Adjoint solve, write results
-SolverExecute(ss_solver)
-LBSWriteFluxMoments(phys, "adjoint_2d_3")
+solver.Execute(ss_solver)
+lbs.WriteFluxMoments(phys, "adjoint_2d_3")
 
 -- Create response evaluator
 buffers = { { name = "buff", file_prefixes = { flux_moments = "adjoint_2d_3" } } }
@@ -200,10 +198,10 @@ response = lbs.EvaluateResponse(evaluator, "buff")
 -- Print results
 for g = 1, num_groups do
     pref = "QoI Value[" .. tostring(g - 1) .. "]"
-    Log(LOG_0, string.format(pref .. "= %.5e", fwd_qois[g]))
+    log.Log(LOG_0, string.format(pref .. "= %.5e", fwd_qois[g]))
 end
-Log(LOG_0, string.format("sum(QoI Values)= %.5e", fwd_qoi_sum))
-Log(LOG_0, string.format("Inner Product=%.5e", response))
+log.Log(LOG_0, string.format("sum(QoI Values)= %.5e", fwd_qoi_sum))
+log.Log(LOG_0, string.format("Inner Product=%.5e", response))
 
 -- Cleanup
 MPIBarrier()

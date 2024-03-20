@@ -1,12 +1,15 @@
+#include "lbs_common_lua_functions.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-
 #include "framework/runtime.h"
 #include "framework/lua.h"
+#include "lua/framework/console/console.h"
 
 using namespace opensn;
 
 namespace opensnlua::lbs
 {
+
+RegisterLuaFunctionNamespace(LBSComputeFissionRate, lbs, ComputeFissionRate);
 
 int
 LBSComputeFissionRate(lua_State* L)

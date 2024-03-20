@@ -24,14 +24,14 @@ PostProcessorPrinterSetOptions({
   time_history_limit = 5,
 })
 
-SolverInitialize(phys0)
+solver.Initialize(phys0)
 
 for t = 1, 20 do
-  SolverStep(phys0)
-  time = SolverGetInfo(phys0, "time_next")
-  print(t, string.format("%.3f %.5f",time, SolverGetInfo(phys0, "population_next")))
+  solver.Step(phys0)
+  time = solver.GetInfo(phys0, "time_next")
+  print(t, string.format("%.3f %.5f",time, solver.GetInfo(phys0, "population_next")))
 
-  SolverAdvance(phys0)
+  solver.Advance(phys0)
   if (time > 0.1) then
     prk.SetParam(phys0, "rho", 0.8)
   end

@@ -12,8 +12,8 @@ using namespace opensn;
 namespace opensnlua::prk
 {
 
-RegisterLuaFunctionAsIs(PRKGetParam);
-RegisterLuaFunctionAsIs(PRKSetParam);
+RegisterLuaFunctionNamespace(PRKGetParam, prk, GetParam);
+RegisterLuaFunctionNamespace(PRKSetParam, prk, SetParam);
 
 int
 PRKGetParam(lua_State* L)

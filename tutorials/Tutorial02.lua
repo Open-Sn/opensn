@@ -8,10 +8,10 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
-material = PhysicsAddMaterial("Test Material");
+material = mat.AddMaterial("Test Material");
 
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,material)
 
 RegionExportMeshToVTK(region1,"Mesh")
@@ -19,18 +19,18 @@ RegionExportMeshToVTK(region1,"Mesh")
 
 
 -- Set material properties
-PhysicsMaterialAddProperty(material,SCALAR_VALUE,"k")
-PhysicsMaterialSetProperty(material,"k",SINGLE_VALUE,1.0)
+mat.AddProperty(material, SCALAR_VALUE, "k")
+mat.SetProperty(material, "k", SINGLE_VALUE, 1.0)
 
-PhysicsMaterialAddProperty(material,SCALAR_VALUE,"q")
-PhysicsMaterialSetProperty(material,"q",SINGLE_VALUE,1.0)
+mat.AddProperty(material, SCALAR_VALUE, "q")
+mat.SetProperty(material, "q", SINGLE_VALUE, 1.0)
 
 
 --############################################### Setup Physics
 phys1 = DiffusionCreateSolver();
 SolverAddRegion(phys1,region1)
-SolverSetBasicOption(phys1,"discretization_method","PWLC");
-SolverSetBasicOption(phys1,"residual_tolerance",1.0e-6)
+solver.SetBasicOption(phys1,"discretization_method","PWLC");
+solver.SetBasicOption(phys1,"residual_tolerance",1.0e-6)
 
 --############################################### Initialize and
 --                                                Execute Solver
@@ -39,14 +39,14 @@ DiffusionExecute(phys1)
 
 ----############################################### Visualize the field function
 fflist,count = GetFieldFunctionList(phys1)
-ExportFieldFunctionToVTK(fflist[1],"Tutorial1Output","Temperature")
+fieldfunc.ExportToVTK(fflist[1],"Tutorial1Output","Temperature")
 
-slice1 = FFInterpolationCreate(SLICE)
-FFInterpolationSetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
-FFInterpolationSetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
+slice1 = fieldfunc.FFInterpolationCreate(SLICE)
+fieldfunc.SetProperty(slice1,SLICE_POINT,0.0,0.0,0.0)
+fieldfunc.SetProperty(slice1,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(slice1)
-FFInterpolationExecute(slice1)
-FFInterpolationExportPython(slice1)
+fieldfunc.Initialize(slice1)
+fieldfunc.Execute(slice1)
+fieldfunc.ExportPython(slice1)
 
 local handle = io.popen("python ZPFFI00.py")

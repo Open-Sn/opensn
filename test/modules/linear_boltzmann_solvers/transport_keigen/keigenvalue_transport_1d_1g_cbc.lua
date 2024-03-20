@@ -7,9 +7,9 @@ num_procs = 4
 
 --############################################### Check num_procs
 if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    Log(LOG_0ERROR,"Incorrect amount of processors. " ..
-                      "Expected "..tostring(num_procs)..
-                      ". Pass check_num_procs=false to override if possible.")
+    log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
+                       "Expected "..tostring(num_procs)..
+                       ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
 end
 
@@ -58,13 +58,12 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Fissile Material")
+materials[1] = mat.AddMaterial("Fissile Material")
 
-PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
 xs_file = "simple_fissile.xs"
-PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-                           OPENSN_XSFILE, xs_file)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, xs_file)
 
 --############################################### Setup Physics
 num_groups = 1
@@ -75,8 +74,7 @@ lbs_block =
   {
     {
       groups_from_to = {0, num_groups-1},
-      angular_quadrature_handle =
-        CreateProductQuadrature(GAUSS_LEGENDRE,n_angles),
+      angular_quadrature_handle = aquad.CreateProductQuadrature(GAUSS_LEGENDRE,n_angles),
       inner_linear_method = "gmres",
       l_max_its = si_max_iterations,
       l_abs_tol = si_tolerance,
@@ -105,8 +103,8 @@ k_solver0 = lbs.XXNonLinearKEigen.Create
   nl_max_its = kes_max_iterations,
   nl_abs_tol = kes_tolerance
 })
-SolverInitialize(k_solver0)
-SolverExecute(k_solver0)
+solver.Initialize(k_solver0)
+solver.Execute(k_solver0)
 
 --############################################### Get field functions
 --############################################### Line plot

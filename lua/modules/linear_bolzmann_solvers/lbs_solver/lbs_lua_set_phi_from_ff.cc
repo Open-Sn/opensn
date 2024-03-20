@@ -13,7 +13,7 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionAsIs(LBSSetPhiFromFieldFunction);
+RegisterLuaFunctionNamespace(LBSSetPhiFromFieldFunction, lbs, SetPhiFromFieldFunction);
 
 int
 LBSSetPhiFromFieldFunction(lua_State* L)

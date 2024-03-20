@@ -52,37 +52,37 @@ mesh.SetBoundaryIDFromLogicalVolume(s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### DFEM solver
-phys1 = DFEMDiffusionSolverCreate()
+phys1 = diffusion.DFEMSolverCreate()
 
-SolverSetBasicOption(phys1, "residual_tolerance", 1E-8)
+solver.SetBasicOption(phys1, "residual_tolerance", 1E-8)
 
-DFEMDiffusionSetBCProperty(phys1,"boundary_type",e_bndry,"dirichlet",0.0)
-DFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"dirichlet",0.0)
-DFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"dirichlet",0.0)
-DFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"dirichlet",0.0)
+diffusion.DFEMSetBCProperty(phys1, "boundary_type", e_bndry, "dirichlet", 0.0)
+diffusion.DFEMSetBCProperty(phys1, "boundary_type", w_bndry, "dirichlet", 0.0)
+diffusion.DFEMSetBCProperty(phys1, "boundary_type", n_bndry, "dirichlet", 0.0)
+diffusion.DFEMSetBCProperty(phys1, "boundary_type", s_bndry, "dirichlet", 0.0)
 
-SolverInitialize(phys1)
-SolverExecute(phys1)
+solver.Initialize(phys1)
+solver.Execute(phys1)
 
 
 --############################################### Get field functions
-fflist,count = SolverGetFieldFunctionList(phys1)
+fflist,count = solver.GetFieldFunctionList(phys1)
 
 --############################################### Export VTU
 if (master_export == nil) then
-    ExportFieldFunctionToVTK(fflist[1],"DFEMDiff2D_Dirichlet","flux")
+    fieldfunc.ExportToVTK(fflist[1],"DFEMDiff2D_Dirichlet","flux")
 end
 
 --############################################### Volume integrations
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 
-ffvol = FFInterpolationCreate(VOLUME)
-FFInterpolationSetProperty(ffvol,OPERATION,OP_AVG)
-FFInterpolationSetProperty(ffvol,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(ffvol,ADD_FIELDFUNCTION,fflist[1])
+ffvol = fieldfunc.FFInterpolationCreate(VOLUME)
+fieldfunc.SetProperty(ffvol,OPERATION,OP_AVG)
+fieldfunc.SetProperty(ffvol,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(ffvol,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(ffvol)
-FFInterpolationExecute(ffvol)
-maxval = FFInterpolationGetValue(ffvol)
+fieldfunc.Initialize(ffvol)
+fieldfunc.Execute(ffvol)
+maxval = fieldfunc.GetValue(ffvol)
 
-Log(LOG_0,string.format("Avg-value=%.6f", maxval))
+log.Log(LOG_0,string.format("Avg-value=%.6f", maxval))

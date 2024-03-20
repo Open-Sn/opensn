@@ -4,8 +4,8 @@
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
 
-RegisterLuaFunctionAsIs(FFInterpolationInitialize);
-RegisterLuaFunctionAsIs(FFInterpolationExecute);
+RegisterLuaFunctionNamespace(FFInterpolationInitialize, fieldfunc, Initialize);
+RegisterLuaFunctionNamespace(FFInterpolationExecute, fieldfunc, Execute);
 
 int
 FFInterpolationInitialize(lua_State* L)

@@ -27,13 +27,12 @@ vol1 = mesh.RPPLogicalVolume.Create
 mesh.SetMaterialIDFromLogicalVolume(vol1, 11)
 
 -- create a logical volume as the interior of a skin mesh
-surfmesh = SurfaceMeshCreate()
+surfmesh = mesh.SurfaceMeshCreate()
 skin_mesh_file = "./cube_with_normals.obj"
-SurfaceMeshImportFromOBJFile(surfmesh, skin_mesh_file)
+mesh.SurfaceMeshImportFromOBJFile(surfmesh, skin_mesh_file)
 lv_skinmesh = mesh.SurfaceMeshLogicalVolume.Create({surface_mesh_handle=surfmesh})
 -- assign mat ID 15 to lv of skin mesh
 mesh.SetMaterialIDFromLogicalVolume(lv_skinmesh, 15)
 
 -- export to vtk
 mesh.ExportToVTK("lv_skinmesh_out")
-

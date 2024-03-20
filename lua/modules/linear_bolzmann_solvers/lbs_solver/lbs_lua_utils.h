@@ -11,9 +11,6 @@ class LBSSolver;
 namespace opensnlua::lbs
 {
 
-// void SetBoundaryOptions(LBSSolver& lbs_solver,
-//                         const objects::InputParameters& params);
-
 opensn::InputParameters GetSyntax_SetOptions();
 opensn::ParameterBlock SetOptions(const opensn::InputParameters& params);
 
@@ -29,7 +26,7 @@ int LBSSetOptions(lua_State* L);
  * ### Example usage
  * Example:
  * \code
- * LBSSetPhiFromFieldFunction(phys1,
+ * lbs.SetPhiFromFieldFunction(phys1,
  * {
  *   which_phi = "old",  --Optional
  *   m_ids = {0,1,2,3},  --Optional Empty means all of them

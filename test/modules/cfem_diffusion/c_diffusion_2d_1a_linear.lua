@@ -47,39 +47,39 @@ mesh.SetBoundaryIDFromLogicalVolume(s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### CFEM solver
-phys1 = CFEMDiffusionSolverCreate()
+phys1 = diffusion.CFEMSolverCreate()
 
-SolverSetBasicOption(phys1, "residual_tolerance", 1E-8)
+solver.SetBasicOption(phys1, "residual_tolerance", 1E-8)
 
-CFEMDiffusionSetBCProperty(phys1,"boundary_type",e_bndry,"robin", 0.25, 0.5, 0.0)
-CFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"reflecting")
-CFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"reflecting")
-CFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"robin", 0.25, 0.5, 1.0)
+diffusion.CFEMSetBCProperty(phys1, "boundary_type", e_bndry, "robin", 0.25, 0.5, 0.0)
+diffusion.CFEMSetBCProperty(phys1, "boundary_type", n_bndry, "reflecting")
+diffusion.CFEMSetBCProperty(phys1, "boundary_type", s_bndry, "reflecting")
+diffusion.CFEMSetBCProperty(phys1, "boundary_type", w_bndry, "robin", 0.25, 0.5, 1.0)
 
 
-SolverInitialize(phys1)
-SolverExecute(phys1)
+solver.Initialize(phys1)
+solver.Execute(phys1)
 
 --############################################### Get field functions
-fflist,count = SolverGetFieldFunctionList(phys1)
+fflist,count = solver.GetFieldFunctionList(phys1)
 
 --############################################### Export VTU
 if (master_export == nil) then
-    ExportFieldFunctionToVTK(fflist[1],"CFEMDiff2D_linear")
+    fieldfunc.ExportToVTK(fflist[1],"CFEMDiff2D_linear")
 end
 
 --############################################### Line plot
-cline = FFInterpolationCreate(LINE)
-FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,-L/2, 0.0, 0.0)
-FFInterpolationSetProperty(cline,LINE_SECONDPOINT,L/2, 0.0, 0.0)
-FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
-FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
+cline = fieldfunc.FFInterpolationCreate(LINE)
+fieldfunc.SetProperty(cline,LINE_FIRSTPOINT,-L/2, 0.0, 0.0)
+fieldfunc.SetProperty(cline,LINE_SECONDPOINT,L/2, 0.0, 0.0)
+fieldfunc.SetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+fieldfunc.SetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(cline)
-FFInterpolationExecute(cline)
+fieldfunc.Initialize(cline)
+fieldfunc.Execute(cline)
 
 if (master_export == nil) then
-    FFInterpolationExportPython(cline)
+    fieldfunc.ExportPython(cline)
 end
 
 --############################################### Volume integrations

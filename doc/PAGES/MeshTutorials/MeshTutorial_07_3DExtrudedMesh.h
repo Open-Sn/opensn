@@ -24,14 +24,14 @@ Thus, in order to obtain a 3D extruded mesh, you need
  MeshHandlerCreate()
 
  mesh2d_file = "your_mesh.obj"
- umesh = UnpartitionedMeshFromWavefrontOBJ(mesh2d_file)
+ umesh = mesh.UnpartitionedMeshFromWavefrontOBJ(mesh2d_file)
 \endcode
 or
 \code
  MeshHandlerCreate()
 
  mesh2d_file = "your_mesh.vtu"
- umesh = UnpartitionedMeshFromVTU(mesh2d_file, "attribute")
+ umesh = mesh.UnpartitionedMeshFromVTU(mesh2d_file, "attribute")
 \endcode
 
  ## The extrusion process
@@ -76,16 +76,16 @@ cylinder),
  ### LV of pre-defined type
  \code
 -- Logical Volumes
-my_LV = LogicalVolumeCreate(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
+my_LV = logvol.Create(RCC, 0, 0, 0.1, 0, 0, 0.2, 0.4)
 mesh.SetMaterialIDFromLogicalVolume(Air, 1)
 mesh.ExportToVTK("export_mesh_with_IDs")
  \endcode
 
   ### LV defined as read-in surfaces
  \code
-surf_LV = SurfaceMeshCreate()
-SurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
-my_LV = LogicalVolumeCreate(SURFACE, surf_LV)
+surf_LV = mesh.SurfaceMeshCreate()
+mesh.SurfaceMeshImportFromOBJFile(surf_LV, "LV_file.obj", false)
+my_LV = logvol.Create(SURFACE, surf_LV)
 
 mesh.SetMaterialIDFromLogicalVolume(Air, 1)
 mesh.ExportToVTK("export_mesh_with_IDs")

@@ -9,7 +9,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(CreateSLDFESQAngularQuadrature);
+RegisterLuaFunctionNamespace(CreateSLDFESQAngularQuadrature, aquad, CreateSLDFESQAngularQuadrature);
 
 int
 CreateSLDFESQAngularQuadrature(lua_State* L)

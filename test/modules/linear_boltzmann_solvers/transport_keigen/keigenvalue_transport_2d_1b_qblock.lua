@@ -5,8 +5,8 @@ dofile("utils/qblock_mesh.lua")
 dofile("utils/qblock_materials.lua") --num_groups assigned here
 
 --############################################### Setup Physics
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4, 4)
-OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 4)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
 
 lbs_block =
 {
@@ -42,11 +42,11 @@ lbs.SetOptions(phys1, lbs_options)
 
 
 k_solver0 = lbs.XXNonLinearKEigen.Create({ lbs_solver_handle = phys1, })
-SolverInitialize(k_solver0)
-SolverExecute(k_solver0)
+solver.Initialize(k_solver0)
+solver.Execute(k_solver0)
 
-fflist,count = LBSGetScalarFieldFunctionList(phys1)
+fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
---ExportMultiFieldFunctionToVTK(fflist,"tests/BigTests/QBlock/solutions/Flux")
+--fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
 
 -- Reference value k_eff = 0.5969127

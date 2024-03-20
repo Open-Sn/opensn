@@ -9,7 +9,7 @@ num_procs = 3
 
 --############################################### Check num_procs
 if (check_num_procs==nil and number_of_processes ~= num_procs) then
-  Log(LOG_0ERROR,"Incorrect amount of processors. " ..
+  log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
     "Expected "..tostring(num_procs)..
     ". Pass check_num_procs=false to override if possible.")
   os.exit(false)
@@ -34,35 +34,33 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
-materials[2] = PhysicsAddMaterial("Test Material2");
+materials[1] = mat.AddMaterial("Test Material");
+materials[2] = mat.AddMaterial("Test Material2");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
 
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
-PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
 
 
 num_groups = 168
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,"xs_3_170.xs")
-PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,"xs_3_170.xs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_3_170.xs")
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_3_170.xs")
 
---PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
---PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,SIMPLEXS0,num_groups,0.1)
+--mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, num_groups, 0.1)
+--mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLEXS0, num_groups, 0.1)
 
 src={}
 for g=1,num_groups do
   src[g] = 0.0
 end
 --src[1] = 1.0
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
-PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
-pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE,40)
+pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 40)
 lbs_block =
 {
   num_groups = num_groups,
@@ -116,55 +114,55 @@ lbs.SetOptions(phys1, lbs_options)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 --############################################### Get field functions
-fflist,count = LBSGetScalarFieldFunctionList(phys1)
+fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
 --############################################### Line plot
 --Testing consolidated interpolation
-cline = FFInterpolationCreate(LINE)
-FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,0.0,0.0001+xmin)
-FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0,0.0, 29.999+xmin)
-FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+cline = fieldfunc.FFInterpolationCreate(LINE)
+fieldfunc.SetProperty(cline,LINE_FIRSTPOINT,0.0,0.0,0.0001+xmin)
+fieldfunc.SetProperty(cline,LINE_SECONDPOINT,0.0,0.0, 29.999+xmin)
+fieldfunc.SetProperty(cline,LINE_NUMBEROFPOINTS, 50)
 
 for k=165,165 do
-  FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[k])
+  fieldfunc.SetProperty(cline,ADD_FIELDFUNCTION,fflist[k])
 end
 
-FFInterpolationInitialize(cline)
-FFInterpolationExecute(cline)
+fieldfunc.Initialize(cline)
+fieldfunc.Execute(cline)
 
 --############################################### Volume integrations
 vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-ffi1 = FFInterpolationCreate(VOLUME)
+ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
-FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
+fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
 
-FFInterpolationInitialize(curffi)
-FFInterpolationExecute(curffi)
-maxval = FFInterpolationGetValue(curffi)
+fieldfunc.Initialize(curffi)
+fieldfunc.Execute(curffi)
+maxval = fieldfunc.GetValue(curffi)
 
-Log(LOG_0,string.format("Max-value1=%.5f", maxval))
+log.Log(LOG_0,string.format("Max-value1=%.5f", maxval))
 
-ffi2 = FFInterpolationCreate(VOLUME)
+ffi2 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi2
-FFInterpolationSetProperty(curffi,OPERATION,OP_MAX)
-FFInterpolationSetProperty(curffi,LOGICAL_VOLUME,vol0)
-FFInterpolationSetProperty(curffi,ADD_FIELDFUNCTION,fflist[160])
+fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
+fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[160])
 
-FFInterpolationInitialize(curffi)
-FFInterpolationExecute(curffi)
-maxval = FFInterpolationGetValue(curffi)
+fieldfunc.Initialize(curffi)
+fieldfunc.Execute(curffi)
+maxval = fieldfunc.GetValue(curffi)
 
-Log(LOG_0,string.format("Max-value2=%.5e", maxval))
+log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if (master_export == nil) then
-  FFInterpolationExportPython(cline)
+  fieldfunc.ExportPython(cline)
 end
 
 --############################################### Plots

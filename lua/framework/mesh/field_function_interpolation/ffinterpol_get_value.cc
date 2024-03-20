@@ -9,7 +9,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(FFInterpolationGetValue);
+RegisterLuaFunctionNamespace(FFInterpolationGetValue, fieldfunc, GetValue);
 
 int
 FFInterpolationGetValue(lua_State* L)

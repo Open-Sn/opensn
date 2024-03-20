@@ -1,16 +1,16 @@
 #pragma once
 
 #include "framework/lua.h"
-#include "modules/cfem_diffusion/cfem_diffusion_solver.h"
 
-namespace opensnlua::cfem_diffusion
-{
-/** Creates a CFEM Diffusion solver.
+/** Creates a Finite Volume Diffusion solver.
  *
- * \return Handle int Handle to the created solver.
- * \ingroup LuaDiffusion
+ *\param solver_name string Optional. Text name for the solver.
+ *                          [Default:"FVDiffusionSolver"]
+ *
+ *\return Handle int Handle to the created solver.
+ *\ingroup LuaDiffusion
  */
-int CFEMDiffusionSolverCreate(lua_State* L);
+int FVDiffusionSolverCreate(lua_State* L);
 
 /** Sets a property of a Diffusion solver. Please also consult the whitepaper
  * for the Diffusion solver (<a
@@ -62,7 +62,4 @@ int CFEMDiffusionSolverCreate(lua_State* L);
  * \ingroup LuaDiffusion
  * \author Jan
  */
-int CFEMDiffusionSetBCProperty(lua_State* L);
-
-void RegisterLuaEntities(lua_State* L);
-} // namespace opensnlua::cfem_diffusion
+int FVDiffusionSetBCProperty(lua_State* L);

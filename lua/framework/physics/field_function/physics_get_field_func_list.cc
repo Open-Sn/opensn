@@ -8,7 +8,7 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(GetFieldFunctionHandleByName);
+RegisterLuaFunctionNamespace(GetFieldFunctionHandleByName, fieldfunc, GetHandleByName);
 
 int
 GetFieldFunctionHandleByName(lua_State* L)

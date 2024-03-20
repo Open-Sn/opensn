@@ -6,9 +6,9 @@
 
 using namespace opensn;
 
-RegisterLuaFunctionAsIs(Legendre);
-RegisterLuaFunctionAsIs(LegendreDerivative);
-RegisterLuaFunctionAsIs(Ylm);
+RegisterLuaFunctionNamespace(Legendre, aquad, Legendre);
+RegisterLuaFunctionNamespace(LegendreDerivative, aquad, LegendreDerivative);
+RegisterLuaFunctionNamespace(Ylm, aquad, Ylm);
 
 int
 Legendre(lua_State* L)

@@ -9,20 +9,17 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes}
 mesh.MeshGenerator.Execute(meshgen1)
 
 -- Set Material IDs
-vol0 = LogicalVolumeCreate(RPP,-1000,1000,-1000,1000,-1000,1000)
+vol0 = logvol.Create(RPP,-1000,1000,-1000,1000,-1000,1000)
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --############################################### Add material
-material0 = PhysicsAddMaterial("Test Material");
+material0 = mat.AddMaterial("Test Material");
 
-PhysicsMaterialAddProperty(material0,TRANSPORT_XSECTIONS)
+mat.AddProperty(material0, TRANSPORT_XSECTIONS)
 num_groups = 1
-PhysicsMaterialSetProperty(material0,
-                           TRANSPORT_XSECTIONS,
-                           SIMPLEXS1,
-                           num_groups,     --Num grps
-                           1.0,   --Sigma_t
-                           0.2)   --Scattering ratio
+Sigma_t = 1.0
+scattering_ratio = 0.2
+mat.SetProperty(material0, TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, Sigma_t, scattering_ratio)
 
 --############################################### Setup Physics
 phys1 = LBSCreateSolver()
@@ -32,7 +29,7 @@ for k=1,num_groups do
     LBSCreateGroup(phys1)
 end
 
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,4,4)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 4)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)
@@ -58,21 +55,21 @@ LBSInitialize(phys1)
 LBSExecute(phys1)
 
 --############################################### Setup Output
-fflist,count = LBSGetScalarFieldFunctionList(phys1)
+fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
-cline = FFInterpolationCreate(LINE)
-FFInterpolationSetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
-FFInterpolationSetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
-FFInterpolationSetProperty(cline,LINE_NUMBEROFPOINTS, 50)
+cline = fieldfunc.FFInterpolationCreate(LINE)
+fieldfunc.SetProperty(cline,LINE_FIRSTPOINT,0.0,-1.0,-1.0)
+fieldfunc.SetProperty(cline,LINE_SECONDPOINT,0.0, 1.0,1.0)
+fieldfunc.SetProperty(cline,LINE_NUMBEROFPOINTS, 50)
 
-FFInterpolationSetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
+fieldfunc.SetProperty(cline,ADD_FIELDFUNCTION,fflist[1])
 
 
-FFInterpolationInitialize(cline)
-FFInterpolationExecute(cline)
-FFInterpolationExportPython(cline)
+fieldfunc.Initialize(cline)
+fieldfunc.Execute(cline)
+fieldfunc.ExportPython(cline)
 
-ExportFieldFunctionToVTK(fflist[1],"Tutorial3Output","Phi")
+fieldfunc.ExportToVTK(fflist[1],"Tutorial3Output","Phi")
 
 if (location_id == 0) then
     local handle = io.popen("python ZLFFI00.py")

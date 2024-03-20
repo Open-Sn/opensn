@@ -11,7 +11,7 @@ num_procs = 4
 
 --############################################### Check num_procs
 if (check_num_procs==nil and number_of_processes ~= num_procs) then
-  Log(LOG_0ERROR,"Incorrect amount of processors. " ..
+  log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
     "Expected "..tostring(num_procs)..
     ". Pass check_num_procs=false to override if possible.")
   os.exit(false)
@@ -69,25 +69,24 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
+materials[1] = mat.AddMaterial("Test Material");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 
 
 num_groups = 21
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,"xs_graphite_pure.xs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_graphite_pure.xs")
 
 src={}
 for g=1,num_groups do
   src[g] = 0.0
 end
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
-pquad0 = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 4)
+pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 4)
 
 lbs_block =
 {
@@ -127,11 +126,11 @@ lbs.SetOptions(phys1, lbs_options)
 --############################################### Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 --############################################### Get field functions
-fflist,count = LBSGetScalarFieldFunctionList(phys1)
+fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
 pp1 = CellVolumeIntegralPostProcessor.Create
 ({
@@ -150,5 +149,5 @@ pp2 = CellVolumeIntegralPostProcessor.Create
 ExecutePostProcessors({ pp1, pp2 })
 
 if (master_export == nil) then
-  ExportMultiFieldFunctionToVTK(fflist,"ZPhi")
+  fieldfunc.ExportToVTKMulti(fflist,"ZPhi")
 end

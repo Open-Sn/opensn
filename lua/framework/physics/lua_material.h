@@ -2,7 +2,8 @@
 
 #include "framework/lua.h"
 
-/** Adds a material to the problem. Materials are added to the global
+/**
+ * Adds a material to the problem. Materials are added to the global
  * physics handler and is therefore accessible across all meshes and solvers.
  *
  * \param Name char (Optional) Material name.
@@ -16,16 +17,17 @@
  * Example lua code:
  * \code
  * materials = {}
- * materials[1] = PhysicsAddMaterial("Test Material");
+ * materials[1] = mat.AddMaterial("Test Material");
  * \endcode
  *
  *
  * \ingroup LuaPhysicsMaterials
  * \author Jan
  */
-int PhysicsAddMaterial(lua_State* L);
+int MatAddMaterial(lua_State* L);
 
-/** Adds a material property to a material.
+/**
+ * Adds a material property to a material.
  *
  * \param MaterialHandle int Index to the reference material.
  * \param PropertyIndex int Property index.
@@ -64,15 +66,16 @@ int PhysicsAddMaterial(lua_State* L);
  * ### Example\n
  * Example lua code:
  * \code
- * PhysicsMaterialAddProperty(materials[i],TRANSPORT_XSECTIONS)
+ * mat.AddProperty(materials[i],TRANSPORT_XSECTIONS)
  * \endcode
  *
  * \ingroup LuaPhysicsMaterials
  * \author Jan
  */
-int PhysicsMaterialAddProperty(lua_State* L);
+int MatAddProperty(lua_State* L);
 
-/** Sets a material property for a given material.
+/**
+ * Sets a material property for a given material.
  *
  * \param MaterialHandle int Index to the reference material.
  * \param PropertyIndex int Property index. Or name of property.
@@ -83,7 +86,7 @@ int PhysicsMaterialAddProperty(lua_State* L);
  *
  * ###PropertyIndex\n
  * SCALAR_VALUE         =  Basic Scalar value property.\n
- * TRANSPORT_XSECTIONS   =  Multi-group transport cross-section supporting numerous
+ * TRANSPORT_XSECTIONS  =  Multi-group transport cross-section supporting numerous
  *                         features.\n
  * ISOTROPIC_MG_SOURCE = Isotropic Multigroup Source.\n
  *
@@ -126,11 +129,11 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * Supply handle to an existing cross-section and simply swap them out.
  *
  * \code
- * PhysicsMaterialSetProperty(materials[1],
- *                               TRANSPORT_XSECTIONS,
- *                               OPENSN_XSFILE,
- *                               "xs_3_170.xs",
- *                               "2518")
+ * mat.SetProperty(materials[1],
+ *                 TRANSPORT_XSECTIONS,
+ *                 OPENSN_XSFILE,
+ *                 "xs_3_170.xs",
+ *                 "2518")
  * \endcode
  *
  * ##_
@@ -139,9 +142,9 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * Simple temperature independent thermal conductivity:
  * \code
  * materials = {}
- * materials[1] = PhysicsAddMaterial("Test Material");
- * PhysicsMaterialAddProperty(materials[0],THERMAL_CONDUCTIVITY)
- * PhysicsMaterialSetProperty(materials[0],THERMAL_CONDUCTIVITY,SINGLE_VALUE,13.7)
+ * materials[1] = mat.AddMaterial("Test Material");
+ * mat.AddProperty(materials[0],THERMAL_CONDUCTIVITY)
+ * mat.SetProperty(materials[0],THERMAL_CONDUCTIVITY,SINGLE_VALUE,13.7)
  * \endcode
  *
  * where the thermal conductivity has been set to 13.7.\n
@@ -150,22 +153,22 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * Isotropic Multigroup source set from a lua table/array (12 groups):
  * \code
  * materials = {}
- * materials[1] = PhysicsAddMaterial("Test Material");
+ * materials[1] = mat.AddMaterial("Test Material");
  *
- * PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+ * mat.AddProperty(materials[1],ISOTROPIC_MG_SOURCE)
  *
  * num_groups = 12
  * src={}
  * for g=1,num_groups do
  *     src[g] = 0.0
  * end
- * PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+ * mat.SetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
  * \endcode
  *
  * ### Developer Info
  * Checklist for adding a new material property:
  *  - Make sure you followed the steps depicted in the developer info section for
- *    the ChiLua::PhysicsMaterialAddProperty function.
+ *    the MatAddProperty function.
  *  - Now under the "If user supplied name then find property index"-section
  *    add the appropriate code for setting the property index.
  *  - Add an else-if block for your property similar to the others. It should be
@@ -176,9 +179,10 @@ int PhysicsMaterialAddProperty(lua_State* L);
  * \ingroup LuaPhysicsMaterials
  * \author Jan
  */
-int PhysicsMaterialSetProperty(lua_State* L);
+int MatSetProperty(lua_State* L);
 
-/** Returns a rich lua data-structure of the required property.
+/**
+ * Returns a rich lua data-structure of the required property.
  *
  * \param MaterialHandle int Index to the reference material.
  * \param PropertyIndex int Property index. Or name of property.
@@ -187,4 +191,4 @@ int PhysicsMaterialSetProperty(lua_State* L);
  * \ingroup LuaPhysicsMaterials
  * \return Lua table of the desired property.
  */
-int PhysicsMaterialGetProperty(lua_State* L);
+int MatGetProperty(lua_State* L);

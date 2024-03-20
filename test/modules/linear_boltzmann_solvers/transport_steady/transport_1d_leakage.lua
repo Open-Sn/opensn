@@ -6,7 +6,7 @@
 -- Check num_procs
 num_procs = 3
 if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    Log(LOG_0ERROR, "Incorrect amount of processors. " ..
+    log.Log(LOG_0ERROR, "Incorrect amount of processors. " ..
         "Expected " .. tostring(num_procs) ..
         ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
@@ -30,14 +30,13 @@ num_groups = 1
 sigma_t = 1.0
 
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
-PhysicsMaterialAddProperty(materials[1], TRANSPORT_XSECTIONS)
+materials[1] = mat.AddMaterial("Test Material");
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
-PhysicsMaterialSetProperty(materials[1], TRANSPORT_XSECTIONS,
-                           SIMPLEXS0, num_groups, sigma_t)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, num_groups, sigma_t)
 
 -- Setup Physics
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE, 128)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 128)
 lbs_block = {
     num_groups = num_groups,
     groupsets = {
@@ -78,11 +77,11 @@ lbs.SetOptions(phys, lbs_options)
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
 -- Solve the problem
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 -- Compute the leakage
 leakage = lbs.ComputeLeakage(phys)
 for k, v in pairs(leakage) do
-    Log(LOG_0, string.format("%s=%.5e", k, v[1]))
+    log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
 end

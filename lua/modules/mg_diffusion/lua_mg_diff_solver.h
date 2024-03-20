@@ -1,18 +1,17 @@
 #pragma once
 
 #include "framework/lua.h"
-#include "modules/mg_diffusion/mg_diffusion_solver.h"
 
-namespace opensnlua::mg_diffusion
-{
-/** Creates a Multigroup CFEM Diffusion solver.
+/**
+ * Creates a Multigroup CFEM Diffusion solver.
  *
  * \return Handle int Handle to the created solver.
  * \ingroup LuaDiffusion
  */
 int CFEMMGDiffusionSolverCreate(lua_State* L);
 
-/** Sets a property of a Diffusion solver. Please also consult the whitepaper
+/**
+ * Sets a property of a Diffusion solver. Please also consult the whitepaper
  * for the Diffusion solver (<a
  * href="../../whitepages/DiffusionSolver/DiffusionSolver.pdf">
  * Diffusion Whitepaper</a>)
@@ -58,7 +57,3 @@ int CFEMMGDiffusionSolverCreate(lua_State* L);
  * \author Jean
  */
 int CFEMMGDiffusionSetBCProperty(lua_State* L);
-
-void RegisterLuaEntities(lua_State* L);
-
-} // namespace opensnlua::mg_diffusion

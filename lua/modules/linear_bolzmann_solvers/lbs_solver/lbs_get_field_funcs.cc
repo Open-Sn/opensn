@@ -1,13 +1,17 @@
+#include "lbs_common_lua_functions.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/lua.h"
+#include "lua/framework/console/console.h"
 
 using namespace opensn;
 
 namespace opensnlua::lbs
 {
+
+RegisterLuaFunctionNamespace(LBSGetScalarFieldFunctionList, lbs, GetScalarFieldFunctionList);
 
 int
 LBSGetScalarFieldFunctionList(lua_State* L)

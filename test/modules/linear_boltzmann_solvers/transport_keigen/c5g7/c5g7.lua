@@ -7,9 +7,9 @@ dofile("materials/materials.lua")
 
 --############################################### Setup Physics
 --========== ProdQuad
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
---pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,1, 1)
-OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
+--pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,1, 1)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
 
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create
@@ -53,8 +53,8 @@ if (k_method == "pi") then
         lbs_solver_handle = phys1,
         k_tol = 1.0e-8
     })
-    SolverInitialize(k_solver)
-    SolverExecute(k_solver)
+    solver.Initialize(k_solver)
+    solver.Execute(k_solver)
 elseif (k_method == "pi_scdsa") then
     k_solver = lbs.XXPowerIterationKEigenSCDSA.Create
     ({
@@ -68,8 +68,8 @@ elseif (k_method == "pi_scdsa") then
     LBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
     LBSGroupsetSetMaxIterations(phys1, 0, 1)
 
-    SolverInitialize(k_solver)
-    SolverExecute(k_solver)
+    solver.Initialize(k_solver)
+    solver.Execute(k_solver)
 elseif (k_method == "pi_scdsa_pwlc") then
     k_solver = lbs.XXPowerIterationKEigenSCDSA.Create
     ({
@@ -83,8 +83,8 @@ elseif (k_method == "pi_scdsa_pwlc") then
     LBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
     LBSGroupsetSetMaxIterations(phys1, 0, 1)
 
-    SolverInitialize(k_solver)
-    SolverExecute(k_solver)
+    solver.Initialize(k_solver)
+    solver.Execute(k_solver)
 elseif (k_method == "jfnk") then
     k_solver = lbs.XXNonLinearKEigen.Create
     ({
@@ -95,15 +95,15 @@ elseif (k_method == "jfnk") then
         l_max_its = 20,
         num_free_power_iterations = 2,
     })
-    SolverInitialize(k_solver)
-    SolverExecute(k_solver)
+    solver.Initialize(k_solver)
+    solver.Execute(k_solver)
 else
-    Log(LOG_0ERROR, "k_method must be specified. \"pi\", "..
+    log.Log(LOG_0ERROR, "k_method must be specified. \"pi\", "..
       "\"pi_scdsa\", \"pi_scdsa_pwlc\" or \"jfnk\"");
     os.exit(1)
 end
 
 if (master_export == nil) then
-    fflist,count = LBSGetScalarFieldFunctionList(phys1)
-    ExportMultiFieldFunctionToVTK(fflist,"solutions/ZPhi")
+    fflist,count = lbs.GetScalarFieldFunctionList(phys1)
+    fieldfunc.ExportToVTKMulti(fflist,"solutions/ZPhi")
 end

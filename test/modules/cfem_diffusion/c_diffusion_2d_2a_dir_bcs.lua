@@ -53,24 +53,24 @@ mesh.SetBoundaryIDFromLogicalVolume(s_vol,s_bndry)
 
 --############################################### Add material properties
 --#### CFEM solver
-phys1 = CFEMDiffusionSolverCreate()
+phys1 = diffusion.CFEMSolverCreate()
 
-SolverSetBasicOption(phys1, "residual_tolerance", 1E-8)
+solver.SetBasicOption(phys1, "residual_tolerance", 1E-8)
 
-CFEMDiffusionSetBCProperty(phys1,"boundary_type",e_bndry,"dirichlet",0.0)
-CFEMDiffusionSetBCProperty(phys1,"boundary_type",w_bndry,"dirichlet",0.0)
-CFEMDiffusionSetBCProperty(phys1,"boundary_type",n_bndry,"dirichlet",0.0)
-CFEMDiffusionSetBCProperty(phys1,"boundary_type",s_bndry,"dirichlet",0.0)
+diffusion.CFEMSetBCProperty(phys1,"boundary_type",e_bndry,"dirichlet",0.0)
+diffusion.CFEMSetBCProperty(phys1,"boundary_type",w_bndry,"dirichlet",0.0)
+diffusion.CFEMSetBCProperty(phys1,"boundary_type",n_bndry,"dirichlet",0.0)
+diffusion.CFEMSetBCProperty(phys1,"boundary_type",s_bndry,"dirichlet",0.0)
 
-SolverInitialize(phys1)
-SolverExecute(phys1)
+solver.Initialize(phys1)
+solver.Execute(phys1)
 
 --############################################### Get field functions
-fflist,count = SolverGetFieldFunctionList(phys1)
+fflist,count = solver.GetFieldFunctionList(phys1)
 
 --############################################### Export VTU
 if (master_export == nil) then
-    ExportFieldFunctionToVTK(fflist[1],"CFEMDiff2D_Dirichlet")
+    fieldfunc.ExportToVTK(fflist[1],"CFEMDiff2D_Dirichlet")
 end
 
 --############################################### Volume integrations

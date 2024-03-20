@@ -1,21 +1,21 @@
 --############################################### Create cross sections
-xs = {}
+xss = {}
 
 for m=0,1 do
-    xs[tostring(m)] = PhysicsTransportXSCreate()
+    xss[tostring(m)] = xs.Create()
 end
 
-PhysicsTransportXSSet(xs["0"],OPENSN_XSFILE,"../transport_keigen/xs_water_g2.xs")
-PhysicsTransportXSSet(xs["1"],OPENSN_XSFILE,"../transport_keigen/xs_fuel_g2.xs")
+xs.Set(xss["0"], OPENSN_XSFILE, "../transport_keigen/xs_water_g2.xs")
+xs.Set(xss["1"], OPENSN_XSFILE, "../transport_keigen/xs_fuel_g2.xs")
 
-water_xs = PhysicsTransportXSGet(xs["0"])
+water_xs = xs.Get(xss["0"])
 num_groups = water_xs["num_groups"]
 
 --############################################### Create materials
 materials = {}
 for m=0,1 do
     key = tostring(m)
-    materials[key] = PhysicsAddMaterial("Material_"..key)
-    PhysicsMaterialAddProperty(key,TRANSPORT_XSECTIONS)
-    PhysicsMaterialSetProperty(key,TRANSPORT_XSECTIONS, EXISTING,xs[key])
+    materials[key] = mat.AddMaterial("Material_"..key)
+    mat.AddProperty(key, TRANSPORT_XSECTIONS)
+    mat.SetProperty(key, TRANSPORT_XSECTIONS, EXISTING, xss[key])
 end

@@ -9,9 +9,9 @@ num_procs = 2
 
 --############################################### Check num_procs
 if (check_num_procs==nil and number_of_processes ~= num_procs) then
-    Log(LOG_0ERROR,"Incorrect amount of processors. " ..
-                      "Expected "..tostring(num_procs)..
-                      ". Pass check_num_procs=false to override if possible.")
+    log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
+                       "Expected "..tostring(num_procs)..
+                       ". Pass check_num_procs=false to override if possible.")
     os.exit(false)
 end
 
@@ -34,37 +34,35 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Test Material");
-materials[2] = PhysicsAddMaterial("Test Material2");
+materials[1] = mat.AddMaterial("Test Material");
+materials[2] = mat.AddMaterial("Test Material2");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(materials[2],TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
 
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
-PhysicsMaterialAddProperty(materials[2],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
 
 -- Define microscopic cross sections
-xs = PhysicsTransportXSCreate()
+xss = xs.Create()
 xs_file = "tests/transport_transient/subcritical_1g.xs"
-PhysicsTransportXSSet(xs, OPENSN_XSFILE, xs_file)
+xs.Set(xss, OPENSN_XSFILE, xs_file)
 
 -- Define macroscopic cross sections
---xs = PhysicsTransportXSMakeCombined({{xs, 0.00264086}}) -- just sub-critical
-xs = PhysicsTransportXSMakeCombined({{xs, 0.0424459}}) -- just sub-critical
+--xss = xs.MakeCombined({{xss, 0.00264086}}) -- just sub-critical
+xss = xs.MakeCombined({{xss, 0.0424459}}) -- just sub-critical
 
 num_groups = 1
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
-        EXISTING,xs)
-PhysicsMaterialSetProperty(materials[2],TRANSPORT_XSECTIONS,
-        EXISTING,xs)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xss)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, xss)
 
 src={}
 for g=1,num_groups do
     src[g] = 0.0
 end
 --src[1] = 1.0
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
-PhysicsMaterialSetProperty(materials[2],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
 phys1 = LBSCreateTransientSolver()
@@ -76,7 +74,7 @@ for g=1,num_groups do
 end
 
 --========== ProdQuad
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE,16)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 16)
 
 --========== Groupset def
 gs0 = LBSCreateGroupset(phys1)
@@ -115,23 +113,23 @@ LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 
 
 --############################################### Initialize and Execute Solver
-SolverInitialize(phys1)
+solver.Initialize(phys1)
 
 LBTSSetProperty(phys1, "TIMESTEP", 1e-1)
 LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
-phys1name = SolverGetName(phys1);
+phys1name = solver.GetName(phys1);
 
 --for k=1,2 do
 --    --LBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
---    SolverStep(phys1)
---    FRf = LBSComputeFissionRate(phys1,"NEW")
---    FRi = LBSComputeFissionRate(phys1,"OLD")
+--    solver.Step(phys1)
+--    FRf = lbs.ComputeFissionRate(phys1,"NEW")
+--    FRi = lbs.ComputeFissionRate(phys1,"OLD")
 --    dt = LBTSGetProperty(phys1, "TIMESTEP")
 --    t = LBTSGetProperty(phys1, "TIME")
 --    period = dt/math.log(FRf/FRi)
---    Log(LOG_0, string.format("%s time=%10.3g dt=%10.3g period=%10.3g", phys1name,t,dt,period))
+--    log.Log(LOG_0, string.format("%s time=%10.3g dt=%10.3g period=%10.3g", phys1name,t,dt,period))
 --end
 
 time = 0.0
@@ -139,12 +137,12 @@ time_stop = 20.0
 k=0
 while (time < time_stop) do
     k = k + 1
-    SolverStep(phys1)
-    FRf = LBSComputeFissionRate(phys1,"NEW")
-    FRi = LBSComputeFissionRate(phys1,"OLD")
+    solver.Step(phys1)
+    FRf = lbs.ComputeFissionRate(phys1,"NEW")
+    FRi = lbs.ComputeFissionRate(phys1,"OLD")
     dt = LBTSGetProperty(phys1, "TIMESTEP")
     time = LBTSGetProperty(phys1, "TIME")
     period = dt/math.log(FRf/FRi)
-    Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
+    log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
             phys1name,k,time,dt,period,FRf))
 end

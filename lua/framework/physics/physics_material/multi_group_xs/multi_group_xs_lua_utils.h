@@ -2,15 +2,14 @@
 
 #include "framework/lua.h"
 
-/**Creates a stand-alone transport cross section.
+/**
+ * Creates a stand-alone transport cross section.
  *
  * \code
- * xs_graphite_clean = PhysicsTransportXSCreate()
- * PhysicsTransportXSSet(xs_grph_clean,
- *                       OPENSN_XSFILE,
- *                       "test/xs_graphite_pure.xs")
+ * xs_graphite_clean = xs.Create()
+ * xs.Set(xs_grph_clean, OPENSN_XSFILE, "test/xs_graphite_pure.xs")
  *
- * PhysicsMaterialSetProperty(materials[2],
+ * mat.SetProperty(materials[2],
  *                               TRANSPORT_XSECTIONS,
  *                               EXISTING,
  *                               xs_graphite_clean)
@@ -21,7 +20,8 @@
  */
 int PhysicsTransportXSCreate(lua_State* L);
 
-/**Sets the properties of a transport cross section.
+/**
+ * Sets the properties of a transport cross section.
  *
  *  \param XS_handle int Handle to the cross section to be modified.
  *  \param OperationIndex int Method used for setting the xs property.
@@ -67,8 +67,8 @@ int PhysicsTransportXSCreate(lua_State* L);
  * ### Example
  * Example lua code:
  * \code
- * graphite = PhysicsTransportXSCreate()
- * PhysicsTransportXSSet(graphite,"xs_3_170.data","2518")
+ * graphite = xs.Create()
+ * xs.Set(graphite, "xs_3_170.data", "2518")
  * \endcode
  *
  *
@@ -76,7 +76,8 @@ int PhysicsTransportXSCreate(lua_State* L);
  */
 int PhysicsTransportXSSet(lua_State* L);
 
-/**Makes a combined cross section from multiple other cross sections.
+/**
+ * Makes a combined cross section from multiple other cross sections.
  *
  *  \param Combinations table A lua-table with each element another table
  *                            containing a handle to an existing xs and a
@@ -87,20 +88,20 @@ int PhysicsTransportXSSet(lua_State* L);
  * ###Example:
  * Example lua code:
  * \code
- * xs_1 = PhysicsTransportXSCreate()
- * xs_2 = PhysicsTransportXSCreate()
- * xs_3 = PhysicsTransportXSCreate()
+ * xs_1 = xs.Create()
+ * xs_2 = xs.Create()
+ * xs_3 = xs.Create()
  *
- * PhysicsTransportXSSet(xs_1,OPENSN_XSFILE,"test/xs_graphite_pure.xs")
- * PhysicsTransportXSSet(xs_2,OPENSN_XSFILE,"test/xs_3_170.xs")
- * PhysicsTransportXSSet(xs_3,OPENSN_XSFILE,"test/xs_air50RH.xs")
+ * xs.Set(xs_1, OPENSN_XSFILE, "test/xs_graphite_pure.xs")
+ * xs.Set(xs_2, OPENSN_XSFILE, "test/xs_3_170.xs")
+ * xs.Set(xs_3, OPENSN_XSFILE, "test/xs_air50RH.xs")
  *
  * combo ={{xs_1, 0.5e5},
  *         {xs_2, 0.4e3},
  *         {xs_3, 0.3e2}}
- * aerated_graphite = PhysicsTransportXSMakeCombined(combo)
+ * aerated_graphite = xs.MakeCombined(combo)
  *
- * PhysicsMaterialSetProperty(materials[1],
+ * mat.SetProperty(materials[1],
  *                               TRANSPORT_XSECTIONS,
  *                               EXISTING,
  *                               aerated_graphite)
@@ -113,8 +114,9 @@ int PhysicsTransportXSSet(lua_State* L);
  */
 int PhysicsTransportXSMakeCombined(lua_State* L);
 
-/**Sets a combined cross section from multiple other cross sections. This
- *  function can be called multiple times on the same cross section handle.
+/**
+ * Sets a combined cross section from multiple other cross sections. This  function can be called
+ * multiple times on the same cross section handle.
  *
  *  \param XS_handle int Handle to the cross section to be modified.
  *  \param Combinations table A lua-table with each element another table
@@ -126,27 +128,28 @@ int PhysicsTransportXSMakeCombined(lua_State* L);
  * ###Example:
  * Example lua code:
  * \code
- * xs_1 = PhysicsTransportXSCreate()
- * xs_2 = PhysicsTransportXSCreate()
- * xs_3 = PhysicsTransportXSCreate()
+ * xs_1 = xs.Create()
+ * xs_2 = xs.Create()
+ * xs_3 = xs.Create()
  *
- * PhysicsTransportXSSet(xs_1,OPENSN_XSFILE,"test/xs_graphite_pure.xs")
- * PhysicsTransportXSSet(xs_2,OPENSN_XSFILE,"test/xs_3_170.xs")
- * PhysicsTransportXSSet(xs_3,OPENSN_XSFILE,"test/xs_air50RH.xs")
+ * xs.Set(xs_1, OPENSN_XSFILE, "test/xs_graphite_pure.xs")
+ * xs.Set(xs_2, OPENSN_XSFILE, "test/xs_3_170.xs")
+ * xs.Set(xs_3, OPENSN_XSFILE, "test/xs_air50RH.xs")
  *
  * combo ={{xs_1, 0.5e5},
  *         {xs_2, 0.4e3},
  *         {xs_3, 0.3e2}}
- * aerated_graphite = PhysicsTransportXSMakeCombined(combo)
+ * aerated_graphite = xs.MakeCombined(combo)
  *
- * PhysicsTransportXSSetCombined(aerated_graphite,combo)
+ * xs.SetCombined(aerated_graphite,combo)
  * \endcode
  *
  * \ingroup LuaTransportXSs
  */
 int PhysicsTransportXSSetCombined(lua_State* L);
 
-/**Obtains a lua table of all the cross section values.
+/**
+ * Obtains a lua table of all the cross section values.
  *
  * \param XS_handle int Handle to the cross section to be modified.
  *
@@ -154,7 +157,7 @@ int PhysicsTransportXSSetCombined(lua_State* L);
  *
  * To print the contents of the table, execute the following:
  * \code
- * xs = PhysicsTransportXSGet(xs_handle)
+ * xs = xs.Get(xs_handle)
  * for i,v in pairs(xs) do
  *     print(i,v)
  * end
@@ -163,7 +166,8 @@ int PhysicsTransportXSSetCombined(lua_State* L);
  */
 int PhysicsTransportXSGet(lua_State* L);
 
-/** Exports a cross section to OpenSn format.
+/**
+ * Exports a cross section to OpenSn format.
  *
  * \param XS_handle int Handle to the cross section to be exported.
  * \param file_name string The name of the file to which the XS is to be exported.

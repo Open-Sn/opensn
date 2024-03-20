@@ -97,17 +97,17 @@ We create a material and add two properties to it:
 --]]
 -- Add materials
 materials = {}
-materials[1] = PhysicsAddMaterial("Material_A");
+materials[1] = mat.AddMaterial("Material_A");
 
-PhysicsMaterialAddProperty(materials[1],TRANSPORT_XSECTIONS)
-PhysicsMaterialAddProperty(materials[1],ISOTROPIC_MG_SOURCE)
+mat.AddProperty(materials[1],TRANSPORT_XSECTIONS)
+mat.AddProperty(materials[1],ISOTROPIC_MG_SOURCE)
 
 --[[ @doc
 ## Cross Sections
 We assign the cross sections to the material by loading the file containing the cross sections. See the tutorials'
 section on materials for more details on cross sections.
 --]]
-PhysicsMaterialSetProperty(materials[1],TRANSPORT_XSECTIONS,
+mat.SetProperty(materials[1],TRANSPORT_XSECTIONS,
   OPENSN_XSFILE,"xs_1g_MatA.xs")
 
 --[[ @doc
@@ -119,7 +119,7 @@ src={}
 for g=1,num_groups do
   src[g] = 1.0
 end
-PhysicsMaterialSetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
 
 --[[ @doc
 ## Angular Quadrature
@@ -132,8 +132,8 @@ We finish by optimizing the quadrature to only use the positive hemisphere for 2
 -- Setup the Angular Quadrature
 nazimu = 1
 npolar = 2
-pquad = CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,nazimu,npolar)
-OptimizeAngularQuadratureForPolarSymmetry(pquad, 4.0*math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,nazimu,npolar)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
 
 --[[ @doc
 ## Linear Boltzmann Solver
@@ -169,8 +169,8 @@ phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 -- Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys})
 
-SolverInitialize(ss_solver)
-SolverExecute(ss_solver)
+solver.Initialize(ss_solver)
+solver.Execute(ss_solver)
 
 --[[ @doc
 ## Post-Processing via Field Functions
@@ -183,9 +183,9 @@ The resulting scalar flux is shown below:
 ![Scalar_flux](images/first_example_scalar_flux.png)
 --]]
 -- Retrieve field functions and export them
-fflist,count = LBSGetScalarFieldFunctionList(phys)
+fflist,count = lbs.GetScalarFieldFunctionList(phys)
 vtk_basename = "first_example"
-ExportFieldFunctionToVTK(fflist[1],vtk_basename)
+fieldfunc.ExportToVTK(fflist[1],vtk_basename)
 
 --[[ @doc
 ## Possible Extensions
