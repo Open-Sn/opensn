@@ -13,7 +13,7 @@ function PrintTable(t, indent)
 end
 
 print("GOLD_BEGIN")
-q = math.QuadratureGaussLegendre.Create({N = 4, verbose = true})
+q = squad.QuadratureGaussLegendre.Create({N = 4, verbose = true})
 
 qdata = math.Get1DQuadratureData(q)
 
@@ -24,7 +24,7 @@ PrintTable(qdata.weights, 2)
 print()
 
 --################################################
-q = math.QuadratureGaussChebyshev.Create({N = 4, verbose = true})
+q = squad.QuadratureGaussChebyshev.Create({N = 4, verbose = true})
 
 qdata = math.Get1DQuadratureData(q)
 

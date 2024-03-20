@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(math, QuadratureGaussChebyshev);
+OpenSnRegisterObjectInNamespace(squad, QuadratureGaussChebyshev);
 
 InputParameters
 QuadratureGaussChebyshev::GetInputParameters()
