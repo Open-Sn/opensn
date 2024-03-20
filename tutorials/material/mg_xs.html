@@ -145,15 +145,15 @@ One may use other open-source software to generate this data (e.g., NJOY, Dragon
 <p>Recall that lua indexing starts at 1.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Add materials</span>
 <span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhysicsAddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
-<span class="n">PhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
+<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="cross-sections">
 <h2>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h2>
 <p>We assign the cross sections to the material by loading the file containing the cross sections.</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">PhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
         <span class="n">OPENSN_XSFILE</span><span class="p">,</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -164,11 +164,11 @@ One may use other open-source software to generate this data (e.g., NJOY, Dragon
 <p>You can copy/paste the text below or look in the file named <code class="docutils literal notranslate"><span class="pre">tutorials/material/mg_xs.lua</span></code>:</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Add materials</span>
 <span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhysicsAddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
+<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
 
-<span class="n">PhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
 
-<span class="n">PhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
         <span class="n">OPENSN_XSFILE</span><span class="p">,</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
 </pre></div>
 </div>

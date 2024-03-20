@@ -214,9 +214,9 @@ post-processing.</p>
 </ul>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Add materials</span>
 <span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhysicsAddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
-<span class="n">PhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
-<span class="n">PhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">)</span>
+<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -224,7 +224,7 @@ post-processing.</p>
 <h2>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h2>
 <p>We assign the cross sections to the material by loading the file containing the cross sections. See the tutorials’
 section on materials for more details on cross sections.</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">PhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
   <span class="n">OPENSN_XSFILE</span><span class="p">,</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -237,7 +237,7 @@ section on materials for more details on cross sections.</p>
 <span class="kr">for</span> <span class="n">g</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">num_groups</span> <span class="kr">do</span>
   <span class="n">src</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="kr">end</span>
-<span class="n">PhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">,</span><span class="n">FROM_ARRAY</span><span class="p">,</span><span class="n">src</span><span class="p">)</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">,</span><span class="n">FROM_ARRAY</span><span class="p">,</span><span class="n">src</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -250,8 +250,8 @@ This creates a 3D angular quadrature.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the Angular Quadrature</span>
 <span class="n">nazimu</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">npolar</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">pquad</span> <span class="o">=</span> <span class="n">CreateProductQuadrature</span><span class="p">(</span><span class="n">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span><span class="n">nazimu</span><span class="p">,</span><span class="n">npolar</span><span class="p">)</span>
-<span class="n">OptimizeAngularQuadratureForPolarSymmetry</span><span class="p">(</span><span class="n">pquad</span><span class="p">,</span> <span class="mf">4.0</span><span class="o">*</span><span class="nb">math.pi</span><span class="p">)</span>
+<span class="n">pquad</span> <span class="o">=</span> <span class="n">aquad</span><span class="p">.</span><span class="n">CreateProductQuadrature</span><span class="p">(</span><span class="n">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span><span class="n">nazimu</span><span class="p">,</span><span class="n">npolar</span><span class="p">)</span>
+<span class="n">aquad</span><span class="p">.</span><span class="n">OptimizeForPolarSymmetry</span><span class="p">(</span><span class="n">pquad</span><span class="p">,</span> <span class="mf">4.0</span><span class="o">*</span><span class="nb">math.pi</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -291,8 +291,8 @@ tolerances, and other solver options.</p></li>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">DiscreteOrdinatesSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">lbs_block</span><span class="p">)</span>
 <span class="c1">-- Initialize and Execute Solver</span>
 <span class="n">ss_solver</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">SteadyStateSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">lbs_solver_handle</span> <span class="o">=</span> <span class="n">phys</span><span class="p">})</span>
-<span class="n">SolverInitialize</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
-<span class="n">SolverExecute</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
+<span class="n">solver</span><span class="p">.</span><span class="n">Initialize</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
+<span class="n">solver</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -305,9 +305,9 @@ on post-processing for more details on field functions.</p>
 <p>The resulting scalar flux is shown below:</p>
 <p><img alt="Scalar_flux" src="../../../_images/first_example_scalar_flux.png" /></p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Retrieve field functions and export them</span>
-<span class="n">fflist</span><span class="p">,</span><span class="n">count</span> <span class="o">=</span> <span class="n">LBSGetScalarFieldFunctionList</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">fflist</span><span class="p">,</span><span class="n">count</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
 <span class="n">vtk_basename</span> <span class="o">=</span> <span class="s2">&quot;first_example&quot;</span>
-<span class="n">ExportFieldFunctionToVTK</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">vtk_basename</span><span class="p">)</span>
+<span class="n">fieldfunc</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">vtk_basename</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -364,13 +364,13 @@ on post-processing for more details on field functions.</p>
 
 <span class="c1">-- Add materials</span>
 <span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">PhysicsAddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
+<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
 
-<span class="n">PhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
-<span class="n">PhysicsMaterialAddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">)</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">)</span>
 
 
-<span class="n">PhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
   <span class="n">OPENSN_XSFILE</span><span class="p">,</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
 
 
@@ -379,14 +379,14 @@ on post-processing for more details on field functions.</p>
 <span class="kr">for</span> <span class="n">g</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">num_groups</span> <span class="kr">do</span>
   <span class="n">src</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="kr">end</span>
-<span class="n">PhysicsMaterialSetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">,</span><span class="n">FROM_ARRAY</span><span class="p">,</span><span class="n">src</span><span class="p">)</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">,</span><span class="n">FROM_ARRAY</span><span class="p">,</span><span class="n">src</span><span class="p">)</span>
 
 
 <span class="c1">-- Setup the Angular Quadrature</span>
 <span class="n">nazimu</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">npolar</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">pquad</span> <span class="o">=</span> <span class="n">CreateProductQuadrature</span><span class="p">(</span><span class="n">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span><span class="n">nazimu</span><span class="p">,</span><span class="n">npolar</span><span class="p">)</span>
-<span class="n">OptimizeAngularQuadratureForPolarSymmetry</span><span class="p">(</span><span class="n">pquad</span><span class="p">,</span> <span class="mf">4.0</span><span class="o">*</span><span class="nb">math.pi</span><span class="p">)</span>
+<span class="n">pquad</span> <span class="o">=</span> <span class="n">aquad</span><span class="p">.</span><span class="n">CreateProductQuadrature</span><span class="p">(</span><span class="n">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span><span class="n">nazimu</span><span class="p">,</span><span class="n">npolar</span><span class="p">)</span>
+<span class="n">aquad</span><span class="p">.</span><span class="n">OptimizeForPolarSymmetry</span><span class="p">(</span><span class="n">pquad</span><span class="p">,</span> <span class="mf">4.0</span><span class="o">*</span><span class="nb">math.pi</span><span class="p">)</span>
 
 
 <span class="c1">-- Setup LBS parameters</span>
@@ -412,14 +412,14 @@ on post-processing for more details on field functions.</p>
 <span class="c1">-- Initialize and Execute Solver</span>
 <span class="n">ss_solver</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">SteadyStateSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">lbs_solver_handle</span> <span class="o">=</span> <span class="n">phys</span><span class="p">})</span>
 
-<span class="n">SolverInitialize</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
-<span class="n">SolverExecute</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
+<span class="n">solver</span><span class="p">.</span><span class="n">Initialize</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
+<span class="n">solver</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
 
 
 <span class="c1">-- Retrieve field functions and export them</span>
-<span class="n">fflist</span><span class="p">,</span><span class="n">count</span> <span class="o">=</span> <span class="n">LBSGetScalarFieldFunctionList</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">fflist</span><span class="p">,</span><span class="n">count</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
 <span class="n">vtk_basename</span> <span class="o">=</span> <span class="s2">&quot;first_example&quot;</span>
-<span class="n">ExportFieldFunctionToVTK</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">vtk_basename</span><span class="p">)</span>
+<span class="n">fieldfunc</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">vtk_basename</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
