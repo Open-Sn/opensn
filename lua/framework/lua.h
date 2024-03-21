@@ -237,6 +237,19 @@ LuaPush(lua_State* L, const std::pair<T1, T2>& value)
   lua_settable(L, -3);
 }
 
+template <typename T, typename A>
+inline void
+LuaPush(lua_State* L, const std::vector<T, A>& value)
+{
+  lua_newtable(L);
+  for (size_t i = 0; i < value.size(); ++i)
+  {
+    LuaPush(L, i + 1);
+    LuaPush(L, value[i]);
+    lua_settable(L, -3);
+  }
+}
+
 template <typename T>
 inline T
 LuaArgAsType(lua_State* L, int index)

@@ -61,13 +61,7 @@ FunctionDimAToDimBEvaluate(lua_State* L)
   }
   // else
 
-  lua_newtable(L);
-  for (size_t k = 0; k < values.size(); ++k)
-  {
-    LuaPush(L, k + 1);
-    LuaPush(L, values[k]);
-    lua_settable(L, -3);
-  }
+  LuaPush(L, values);
   return 1;
 }
 

@@ -52,15 +52,7 @@ IsotropicMGSourcePropertyPushTable(lua_State* L, std::shared_ptr<IsotropicMultiG
   lua_settable(L, -3);
 
   LuaPush(L, "source_value_g");
-  lua_newtable(L);
-  int g = 0;
-  for (auto val : property->source_value_g_)
-  {
-    ++g;
-    LuaPush(L, g);
-    LuaPush(L, val);
-    lua_settable(L, -3);
-  }
+  LuaPush(L, property->source_value_g_);
   lua_settable(L, -3);
 }
 

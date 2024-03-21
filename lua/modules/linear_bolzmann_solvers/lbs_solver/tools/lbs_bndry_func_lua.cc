@@ -44,18 +44,6 @@ BoundaryFunctionToLua::Evaluate(
     lua_settable(L, -3);
   };
 
-  auto PushVecIntAsTable = [](lua_State* L, const std::vector<int>& vec)
-  {
-    lua_newtable(L);
-
-    for (int i = 0; i < static_cast<int>(vec.size()); ++i)
-    {
-      LuaPush(L, i + 1);
-      LuaPush(L, vec[i]);
-      lua_settable(L, -3);
-    }
-  };
-
   auto PushPhiThetaPairTable = [](lua_State* L, const std::pair<double, double>& phi_theta)
   {
     lua_newtable(L);
@@ -86,7 +74,7 @@ BoundaryFunctionToLua::Evaluate(
   PushVector3AsTable(L, face_node_location);
   PushVector3AsTable(L, face_node_normal);
 
-  PushVecIntAsTable(L, quadrature_angle_indices);
+  LuaPush(L, quadrature_angle_indices);
 
   {
     lua_newtable(L);
@@ -112,7 +100,7 @@ BoundaryFunctionToLua::Evaluate(
     }
   } // push phi_theta_pairs
 
-  PushVecIntAsTable(L, group_indices);
+  LuaPush(L, group_indices);
 
   LuaPush(L, time);
 

@@ -57,16 +57,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
   auto Push1DXS = [L](const std::vector<double>& xs, const std::string& name)
   {
     LuaPush(L, name.c_str());
-    lua_newtable(L);
-    {
-      unsigned int g = 0;
-      for (const auto& val : xs)
-      {
-        LuaPush(L, ++g);
-        LuaPush(L, val);
-        lua_settable(L, -3);
-      }
-    }
+    LuaPush(L, xs);
     lua_settable(L, -3);
   };
 
@@ -89,25 +80,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
   }
 
   LuaPush(L, "chi_delayed");
-  lua_newtable(L);
-  {
-    unsigned int g = 0;
-    for (const auto& emission_g : chi_delayed)
-    {
-      LuaPush(L, ++g);
-      lua_newtable(L);
-      {
-        unsigned int j = 0;
-        for (const auto& val : emission_g)
-        {
-          LuaPush(L, ++j);
-          LuaPush(L, val);
-          lua_settable(L, -3);
-        }
-      }
-      lua_settable(L, -3);
-    }
-  }
+  LuaPush(L, chi_delayed);
   lua_settable(L, -3);
 
   // Precursor data
@@ -173,25 +146,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
 
   // Production matrix
   LuaPush(L, "production_matrix");
-  lua_newtable(L);
-  {
-    unsigned int g = 0;
-    for (const auto& prod : xs->ProductionMatrix())
-    {
-      LuaPush(L, ++g);
-      lua_newtable(L);
-      {
-        unsigned int gp = 0;
-        for (const auto& val : prod)
-        {
-          LuaPush(L, ++gp);
-          LuaPush(L, val);
-          lua_settable(L, -3);
-        }
-        lua_settable(L, -3);
-      }
-    } // for g
-  }
+  LuaPush(L, xs->ProductionMatrix());
   lua_settable(L, -3);
 
   // Push diffusion quantities

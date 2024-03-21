@@ -53,14 +53,7 @@ LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
                             "Attempted to evaluate with " + std::to_string(num_vals) +
                             " parameters but requires " + std::to_string(InputDimension()));
 
-  lua_newtable(L);
-  lua_Integer k = 0;
-  for (double val : vals)
-  {
-    LuaPush(L, ++k);
-    LuaPush(L, val);
-    lua_settable(L, -3);
-  }
+  LuaPush(L, vals);
 
   std::vector<double> result;
   // 1 arguments, 1 result (table), 0=original error object
