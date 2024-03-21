@@ -217,9 +217,16 @@ LuaPush(lua_State* L, const std::string& value)
 inline void
 LuaPush(lua_State* L, const opensn::Vector3& value)
 {
+  lua_newtable(L);
+  LuaPush(L, "x");
   LuaPush(L, value.x);
+  lua_settable(L, -3);
+  LuaPush(L, "y");
   LuaPush(L, value.y);
+  lua_settable(L, -3);
+  LuaPush(L, "z");
   LuaPush(L, value.z);
+  lua_settable(L, -3);
 }
 
 template <typename T1, typename T2>
@@ -336,6 +343,37 @@ LuaArgAsType(lua_State* L, int index)
     return std::string(lua_tostring(L, index));
   else
     throw std::invalid_argument("Expected string value as " + std::to_string(index) + ". argument");
+}
+
+template <>
+inline opensn::Vector3
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_istable(L, index))
+  {
+    opensn::Vector3 vec;
+
+    LuaPush(L, "x");
+    lua_gettable(L, index);
+    vec.x = LuaArgAsType<double>(L, -1);
+    lua_pop(L, 1);
+
+    LuaPush(L, "y");
+    lua_gettable(L, index);
+    if (not lua_isnil(L, -1))
+      vec.y = LuaArgAsType<double>(L, -1);
+    lua_pop(L, 1);
+
+    LuaPush(L, "z");
+    lua_gettable(L, index);
+    if (not lua_isnil(L, -1))
+      vec.z = LuaArgAsType<double>(L, -1);
+    lua_pop(L, 1);
+
+    return vec;
+  }
+  else
+    throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
 }
 
 template <typename T, typename A>

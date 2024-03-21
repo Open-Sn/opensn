@@ -23,13 +23,13 @@ mesh.SetMaterialIDFromLogicalVolume(vol1,1)
 D = {1.0,5.0}
 Q = {0.0,1.0}
 XSa = {1.0,1.0}
-function D_coef(i,x,y,z)
+function D_coef(i,pt)
     return D[i+1] -- + x
 end
-function Q_ext(i,x,y,z)
+function Q_ext(i,pt)
     return Q[i+1] -- x*x
 end
-function Sigma_a(i,x,y,z)
+function Sigma_a(i,pt)
     return XSa[i+1]
 end
 

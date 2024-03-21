@@ -43,9 +43,9 @@ LuaScalarSpatialMaterialFunction::Evaluate(int mat_id, const opensn::Vector3& xy
   LuaPush(L, xyz);
 
   // Call lua function
-  // 4 arguments, 1 result (double), 0=original error object
+  // 2 arguments, 1 result (double), 0=original error object
   double lua_return;
-  if (lua_pcall(L, 4, 1, 0) == 0)
+  if (lua_pcall(L, 2, 1, 0) == 0)
   {
     LuaCheckNumberValue(fname, L, -1);
     lua_return = lua_tonumber(L, -1);

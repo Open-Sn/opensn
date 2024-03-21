@@ -95,9 +95,9 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
       LuaPush(L, cell.material_id_);
 
       // Call lua function
-      // 4 arguments, 1 result (double), 0=original error object
+      // 2 arguments, 1 result (double), 0=original error object
       int lua_return;
-      if (lua_pcall(L, 4, 1, 0) == 0)
+      if (lua_pcall(L, 2, 1, 0) == 0)
       {
         LuaCheckNumberValue(fname, L, -1);
         lua_return = lua_tointeger(L, -1);
@@ -189,9 +189,9 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
       LuaPush(L, face.neighbor_id_);
 
       // Call lua function
-      // 7 arguments, 1 result (string), 0=original error object
+      // 3 arguments, 1 result (string), 0=original error object
       std::string lua_return_bname;
-      if (lua_pcall(L, 7, 1, 0) == 0)
+      if (lua_pcall(L, 3, 1, 0) == 0)
       {
         LuaCheckNumberValue(fname, L, -1);
         LuaCheckStringValue(fname, L, -2);

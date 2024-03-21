@@ -96,25 +96,14 @@ MeshSurfaceMeshImportFromOBJFile(lua_State* L)
   auto handle = LuaArg<size_t>(L, 1);
   const auto file_name = LuaArg<std::string>(L, 2);
   auto as_poly = LuaArgOptional<bool>(L, 3, true);
+  auto translation_vec = LuaArgOptional<Vector3>(L, 4, Vector3(0, 0, 0));
 
   auto& surface_mesh =
     opensn::GetStackItem<SurfaceMesh>(opensn::object_stack, handle, __FUNCTION__);
 
   opensn::log.Log0Verbose2() << fname << ": Loading Wavefront .obj file: " << std::endl;
 
-  // Transform if necessary
-  Vector3 Tvec(0.0, 0.0, 0.0);
-  if (num_args == 4)
-  {
-    std::vector<double> T;
-    LuaPopulateVectorFrom1DArray(fname, L, 4, T);
-    if (T.size() != 3)
-      throw std::invalid_argument(fname + ": Argument 4. Table length not 3.");
-    Tvec = Vector3(T[0], T[1], T[2]);
-    opensn::log.Log0Verbose2() << "Transform vector: " << Tvec.PrintStr();
-  }
-
-  surface_mesh.ImportFromOBJFile(file_name, as_poly, Tvec);
+  surface_mesh.ImportFromOBJFile(file_name, as_poly, translation_vec);
 
   return 1;
 }

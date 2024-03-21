@@ -43,9 +43,9 @@ LuaScalarSpatialFunction::Evaluate(const opensn::Vector3& xyz) const
   LuaPush(L, xyz);
 
   // Call lua function
-  // 3 arguments, 1 result (double), 0=original error object
+  // 1 argument, 1 result (double), 0=original error object
   double lua_return;
-  if (lua_pcall(L, 3, 1, 0) == 0)
+  if (lua_pcall(L, 1, 1, 0) == 0)
   {
     LuaCheckNumberValue(fname, L, -1);
     lua_return = lua_tonumber(L, -1);

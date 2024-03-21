@@ -26,23 +26,6 @@ BoundaryFunctionToLua::Evaluate(
   double time)
 {
   const std::string fname = "LinearBoltzmann::BoundaryFunctionToLua";
-  // Utility lambdas
-  auto PushVector3AsTable = [](lua_State* L, const Vector3& vec)
-  {
-    lua_newtable(L);
-
-    LuaPush(L, "x");
-    LuaPush(L, vec.x);
-    lua_settable(L, -3);
-
-    LuaPush(L, "y");
-    LuaPush(L, vec.y);
-    lua_settable(L, -3);
-
-    LuaPush(L, "z");
-    LuaPush(L, vec.z);
-    lua_settable(L, -3);
-  };
 
   auto PushPhiThetaPairTable = [](lua_State* L, const std::pair<double, double>& phi_theta)
   {
@@ -65,8 +48,8 @@ BoundaryFunctionToLua::Evaluate(
   LuaPush(L, cell_global_id);
   LuaPush(L, cell_material_id);
 
-  PushVector3AsTable(L, face_node_location);
-  PushVector3AsTable(L, face_node_normal);
+  LuaPush(L, face_node_location);
+  LuaPush(L, face_node_normal);
 
   LuaPush(L, quadrature_angle_indices);
 
@@ -76,7 +59,7 @@ BoundaryFunctionToLua::Evaluate(
     for (auto& omega : quadrature_angle_vectors)
     {
       LuaPush(L, n + 1);
-      PushVector3AsTable(L, omega);
+      LuaPush(L, omega);
       lua_settable(L, -3);
       ++n;
     }

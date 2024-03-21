@@ -30,24 +30,6 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
                                      int mat_id,
                                      int num_components) const
 {
-  // Utility lambdas
-  auto PushVector3AsTable = [](lua_State* L, const Vector3& vec)
-  {
-    lua_newtable(L);
-
-    LuaPush(L, "x");
-    LuaPush(L, vec.x);
-    lua_settable(L, -3);
-
-    LuaPush(L, "y");
-    LuaPush(L, vec.y);
-    lua_settable(L, -3);
-
-    LuaPush(L, "z");
-    LuaPush(L, vec.z);
-    lua_settable(L, -3);
-  };
-
   // Check response function given
   // Return default if none provided
   if (lua_function_name_.empty())
@@ -63,8 +45,8 @@ LuaSpatialMaterialFunction::Evaluate(const opensn::Vector3& xyz,
                        ", but it seems the function could not be retrieved.");
 
   // Push arguments
-  PushVector3AsTable(L, xyz);
-  LuaPush(L, mat_id); // 4 arguments on stack
+  LuaPush(L, xyz);
+  LuaPush(L, mat_id);
 
   // Call lua function
   // 2 arguments, 1 result (table), 0=original error object

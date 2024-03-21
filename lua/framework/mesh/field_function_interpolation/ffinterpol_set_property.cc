@@ -113,72 +113,43 @@ FFInterpolationSetProperty(lua_State* L)
   else if (property == FieldFunctionInterpolationProperty::PROBEPOINT)
   {
     auto& cur_ffi = dynamic_cast<FieldFunctionInterpolationPoint&>(*p_ffi);
-
-    auto x = LuaArg<double>(L, 3);
-    auto y = LuaArg<double>(L, 4);
-    auto z = LuaArg<double>(L, 5);
-
-    cur_ffi.GetPointOfInterest() = Vector3(x, y, z);
+    cur_ffi.GetPointOfInterest() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::SLICEPOINT)
   {
     auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-
-    auto x = LuaArg<double>(L, 3);
-    auto y = LuaArg<double>(L, 4);
-    auto z = LuaArg<double>(L, 5);
-
-    cur_ffi_slice.GetPlanePoint() = Vector3(x, y, z);
+    cur_ffi_slice.GetPlanePoint() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::SLICENORMAL)
   {
     auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-
-    auto x = LuaArg<double>(L, 3);
-    auto y = LuaArg<double>(L, 4);
-    auto z = LuaArg<double>(L, 5);
-
-    cur_ffi_slice.GetNormal() = Vector3(x, y, z).Normalized();
+    cur_ffi_slice.GetNormal() = LuaArg<Vector3>(L, 3).Normalized();
   }
   else if (property == FieldFunctionInterpolationProperty::SLICETANGENT)
   {
     auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-
-    auto x = LuaArg<double>(L, 3);
-    auto y = LuaArg<double>(L, 4);
-    auto z = LuaArg<double>(L, 5);
-
-    cur_ffi_slice.GetTangent() = Vector3(x, y, z).Normalized();
+    cur_ffi_slice.GetTangent() = LuaArg<Vector3>(L, 3).Normalized();
   }
   else if (property == FieldFunctionInterpolationProperty::SLICEBINORM)
   {
     auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-
-    auto x = LuaArg<double>(L, 3);
-    auto y = LuaArg<double>(L, 4);
-    auto z = LuaArg<double>(L, 5);
-
-    cur_ffi_slice.GetBiNorm() = Vector3(x, y, z).Normalized();
+    cur_ffi_slice.GetBiNorm() = LuaArg<Vector3>(L, 3).Normalized();
   }
   else if (property == FieldFunctionInterpolationProperty::FIRSTPOINT)
   {
-    if (numArgs != 5)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
+    if (numArgs != 3)
+      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-
-    Vector3 point(LuaArg<double>(L, 3), LuaArg<double>(L, 4), LuaArg<double>(L, 5));
-    cur_ffi_line.GetInitialPoint() = point;
+    cur_ffi_line.GetInitialPoint() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::SECONDPOINT)
   {
-    if (numArgs != 5)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
+    if (numArgs != 3)
+      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-
-    Vector3 point(LuaArg<double>(L, 3), LuaArg<double>(L, 4), LuaArg<double>(L, 5));
-    cur_ffi_line.GetFinalPoint() = point;
+    cur_ffi_line.GetFinalPoint() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::NUMBEROFPOINTS)
   {

@@ -20,34 +20,8 @@ LocallyRefineSLDFESQAngularQuadrature(lua_State* L)
     LuaPostArgAmountError("LocallyRefineSLDFESQAngularQuadrature", 3, num_args);
 
   auto handle = LuaArg<size_t>(L, 1);
-
-  Vector3 ref_dir;
-  if (lua_istable(L, 2))
-  {
-    LuaPush(L, 1);
-    lua_gettable(L, 2);
-    ref_dir.x = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    LuaPush(L, 2);
-    lua_gettable(L, 2);
-    ref_dir.y = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    LuaPush(L, 3);
-    lua_gettable(L, 2);
-    ref_dir.z = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-  }
-  else
-  {
-    opensn::log.LogAllError() << "LocallyRefineSLDFESQAngularQuadrature: "
-                                 "Second argument expected to be table {a,b,c}.";
-    opensn::Exit(EXIT_FAILURE);
-  }
-
+  auto ref_dir = LuaArg<Vector3>(L, 2);
   auto cone_size = LuaArg<double>(L, 3);
-
   bool ref_dir_as_plane_normal = LuaArgOptional<bool>(L, 4, false);
 
   try

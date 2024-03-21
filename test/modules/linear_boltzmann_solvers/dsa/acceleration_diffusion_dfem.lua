@@ -20,11 +20,11 @@ mesh.SetUniformMaterialID(0)
 
 mesh.SetupOrthogonalBoundaries()
 
-function MMS_phi(x,y,z)
-    return math.cos(math.pi*x) + math.cos(math.pi*y)
+function MMS_phi(pt)
+    return math.cos(math.pi*pt.x) + math.cos(math.pi*pt.y)
 end
-function MMS_q(x,y,z)
-    return math.pi*math.pi * (math.cos(math.pi*x)+math.cos(math.pi*y))
+function MMS_q(pt)
+    return math.pi*math.pi * (math.cos(math.pi*pt.x)+math.cos(math.pi*pt.y))
 end
 
 unit_tests.acceleration_Diffusion_DFEM();

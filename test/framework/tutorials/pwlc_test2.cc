@@ -76,9 +76,9 @@ SimTest04_PWLC(const InputParameters& params)
     LuaPush(L, xyz);
 
     // Call lua function
-    // 3 arguments, 1 result (double), 0=original error object
+    // 1 argument, 1 result (double), 0=original error object
     double lua_return = 0.0;
-    if (lua_pcall(L, 3, 1, 0) == 0)
+    if (lua_pcall(L, 1, 1, 0) == 0)
     {
       LuaCheckNumberValue("CallLuaXYZFunction", L, -1);
       lua_return = lua_tonumber(L, -1);
