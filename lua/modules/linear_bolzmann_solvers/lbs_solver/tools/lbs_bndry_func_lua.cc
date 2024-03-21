@@ -47,14 +47,8 @@ BoundaryFunctionToLua::Evaluate(
   auto PushPhiThetaPairTable = [](lua_State* L, const std::pair<double, double>& phi_theta)
   {
     lua_newtable(L);
-
-    LuaPush(L, "phi");
-    LuaPush(L, phi_theta.first);
-    lua_settable(L, -3);
-
-    LuaPush(L, "theta");
-    LuaPush(L, phi_theta.second);
-    lua_settable(L, -3);
+    LuaPushTableKey(L, "phi", phi_theta.first);
+    LuaPushTableKey(L, "theta", phi_theta.second);
   };
 
   // Get lua function

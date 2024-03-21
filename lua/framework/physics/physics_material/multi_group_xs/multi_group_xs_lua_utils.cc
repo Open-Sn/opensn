@@ -33,41 +33,18 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
 {
   // General data
   lua_newtable(L);
-  LuaPush(L, "is_empty");
-  LuaPush(L, false);
-  lua_settable(L, -3);
-
-  LuaPush(L, "num_groups");
-  LuaPush(L, xs->NumGroups());
-  lua_settable(L, -3);
-
-  LuaPush(L, "scattering_order");
-  LuaPush(L, xs->ScatteringOrder());
-  lua_settable(L, -3);
-
-  LuaPush(L, "num_precursors");
-  LuaPush(L, xs->NumPrecursors());
-  lua_settable(L, -3);
-
-  LuaPush(L, "is_fissionable");
-  LuaPush(L, xs->IsFissionable());
-  lua_settable(L, -3);
-
-  // 1D cross sections
-  auto Push1DXS = [L](const std::vector<double>& xs, const std::string& name)
-  {
-    LuaPush(L, name.c_str());
-    LuaPush(L, xs);
-    lua_settable(L, -3);
-  };
-
-  Push1DXS(xs->SigmaTotal(), "sigma_t");
-  Push1DXS(xs->SigmaAbsorption(), "sigma_a");
-  Push1DXS(xs->SigmaFission(), "sigma_f");
-  Push1DXS(xs->NuSigmaF(), "nu_sigma_f");
-  Push1DXS(xs->NuPromptSigmaF(), "nu_prompt_sigma_f");
-  Push1DXS(xs->NuDelayedSigmaF(), "nu_delayed_sigma_f");
-  Push1DXS(xs->InverseVelocity(), "inv_velocity");
+  LuaPushTableKey(L, "is_empty", false);
+  LuaPushTableKey(L, "num_groups", xs->NumGroups());
+  LuaPushTableKey(L, "scattering_order", xs->ScatteringOrder());
+  LuaPushTableKey(L, "num_precursors", xs->NumPrecursors());
+  LuaPushTableKey(L, "is_fissionable", xs->IsFissionable());
+  LuaPushTableKey(L, "sigma_t", xs->SigmaTotal());
+  LuaPushTableKey(L, "sigma_a", xs->SigmaAbsorption());
+  LuaPushTableKey(L, "sigma_f", xs->SigmaFission());
+  LuaPushTableKey(L, "nu_sigma_f", xs->NuSigmaF());
+  LuaPushTableKey(L, "nu_prompt_sigma_f", xs->NuPromptSigmaF());
+  LuaPushTableKey(L, "nu_delayed_sigma_f", xs->NuDelayedSigmaF());
+  LuaPushTableKey(L, "inv_velocity", xs->InverseVelocity());
 
   // Emission spectra
   std::vector<std::vector<double>> chi_delayed;
@@ -79,9 +56,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
     chi_delayed.push_back(vals);
   }
 
-  LuaPush(L, "chi_delayed");
-  LuaPush(L, chi_delayed);
-  lua_settable(L, -3);
+  LuaPushTableKey(L, "chi_delayed", chi_delayed);
 
   // Precursor data
   LuaPush(L, "precursor_decay_constants");
@@ -89,11 +64,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
   {
     unsigned int j = 0;
     for (const auto& precursor : xs->Precursors())
-    {
-      LuaPush(L, ++j);
-      LuaPush(L, precursor.decay_constant);
-      lua_settable(L, -3);
-    }
+      LuaPushTableKey(L, ++j, precursor.decay_constant);
   }
   lua_settable(L, -3);
 
@@ -102,11 +73,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
   {
     unsigned int j = 0;
     for (const auto& precursor : xs->Precursors())
-    {
-      LuaPush(L, ++j);
-      LuaPush(L, precursor.fractional_yield);
-      lua_settable(L, -3);
-    }
+      LuaPushTableKey(L, ++j, precursor.fractional_yield);
   }
   lua_settable(L, -3);
 
@@ -130,13 +97,9 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
           lua_newtable(L);
           {
             for (unsigned int gg = 0; gg < num_vals; ++gg)
-            {
-              LuaPush(L, col_indices[gg] + 1);
-              LuaPush(L, col_values[gg]);
-              lua_settable(L, -3);
-            }
-            lua_settable(L, -3);
+              LuaPushTableKey(L, col_indices[gg] + 1, col_values[gg]);
           }
+          lua_settable(L, -3);
         }
       }
       lua_settable(L, -3);
@@ -145,14 +108,12 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
   lua_settable(L, -3);
 
   // Production matrix
-  LuaPush(L, "production_matrix");
-  LuaPush(L, xs->ProductionMatrix());
-  lua_settable(L, -3);
+  LuaPushTableKey(L, "production_matrix", xs->ProductionMatrix());
 
   // Push diffusion quantities
-  Push1DXS(xs->DiffusionCoefficient(), "diffusion_coeff");
-  Push1DXS(xs->SigmaRemoval(), "sigma_removal");
-  Push1DXS(xs->SigmaSGtoG(), "sigma_s_gtog");
+  LuaPushTableKey(L, "diffusion_coeff", xs->DiffusionCoefficient());
+  LuaPushTableKey(L, "sigma_removal", xs->SigmaRemoval());
+  LuaPushTableKey(L, "sigma_s_gtog", xs->SigmaSGtoG());
 }
 
 } // namespace

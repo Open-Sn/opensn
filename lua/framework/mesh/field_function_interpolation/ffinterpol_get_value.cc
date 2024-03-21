@@ -48,14 +48,8 @@ FFInterpolationGetValue(lua_State* L)
 
       lua_newtable(L);
       const auto& ff_ctx = cur_ffi_line.GetFFContexts()[ff];
-
       for (int p = 0; p < cur_ffi_line.GetInterpolationPoints().size(); p++)
-      {
-        LuaPush(L, p + 1);
-        LuaPush(L, ff_ctx.interpolation_points_values[p]);
-        lua_settable(L, -3);
-      }
-
+        LuaPushTableKey(L, p + 1, ff_ctx.interpolation_points_values[p]);
       lua_settable(L, -3);
     }
 

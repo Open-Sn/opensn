@@ -250,6 +250,15 @@ LuaPush(lua_State* L, const std::vector<T, A>& value)
   }
 }
 
+template <typename KEY, typename VAL>
+inline void
+LuaPushTableKey(lua_State* L, const KEY& key, const VAL& value)
+{
+  LuaPush(L, key);
+  LuaPush(L, value);
+  lua_settable(L, -3);
+}
+
 template <typename T>
 inline T
 LuaArgAsType(lua_State* L, int index)

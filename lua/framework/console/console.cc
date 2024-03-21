@@ -179,11 +179,7 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
     {
       lua_newtable(L);
       for (int i = 1; i <= argc; i++)
-      {
-        lua_pushinteger(L, i);
-        lua_pushstring(L, argv[i - 1]);
-        lua_settable(L, -3);
-      }
+        LuaPushTableKey(L, i, argv[i - 1]);
       lua_setglobal(L, "Args");
     }
     int error = luaL_dofile(this->console_state_, fileName.c_str());

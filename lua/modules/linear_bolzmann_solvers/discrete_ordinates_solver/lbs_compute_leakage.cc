@@ -47,11 +47,7 @@ ComputeLeakage(lua_State* L)
 
     lua_newtable(L);
     for (int g = 0; g < solver.NumGroups(); ++g)
-    {
-      LuaPush(L, g + 1);
-      LuaPush(L, vals[g]);
-      lua_settable(L, -3);
-    }
+      LuaPushTableKey(L, g + 1, vals[g]);
     lua_settable(L, -3);
   }
   return 1;

@@ -30,39 +30,24 @@ void
 ScalarPropertyPushTable(lua_State* L, std::shared_ptr<PhysicsMaterialProperty> property)
 {
   lua_newtable(L);
-  LuaPush(L, "is_empty");
-  LuaPush(L, false);
-  lua_settable(L, -3);
-
-  LuaPush(L, "value");
-  LuaPush(L, property->GetScalarValue());
-  lua_settable(L, -3);
+  LuaPushTableKey(L, "is_empty", false);
+  LuaPushTableKey(L, "value", property->GetScalarValue());
 }
 
 void
 IsotropicMGSourcePropertyPushTable(lua_State* L, std::shared_ptr<IsotropicMultiGrpSource> property)
 {
   lua_newtable(L);
-  LuaPush(L, "is_empty");
-  LuaPush(L, false);
-  lua_settable(L, -3);
-
-  LuaPush(L, "G");
-  LuaPush(L, property->source_value_g_.size());
-  lua_settable(L, -3);
-
-  LuaPush(L, "source_value_g");
-  LuaPush(L, property->source_value_g_);
-  lua_settable(L, -3);
+  LuaPushTableKey(L, "is_empty", false);
+  LuaPushTableKey(L, "G", property->source_value_g_.size());
+  LuaPushTableKey(L, "source_value_g", property->source_value_g_);
 }
 
 void
 MaterialPropertyPushLuaTable(lua_State* L)
 {
   lua_newtable(L);
-  LuaPush(L, "is_empty");
-  LuaPush(L, true);
-  lua_settable(L, -3);
+  LuaPushTableKey(L, "is_empty", true);
 }
 
 void

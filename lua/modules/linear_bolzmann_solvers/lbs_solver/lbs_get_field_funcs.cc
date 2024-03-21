@@ -57,10 +57,7 @@ LBSGetScalarFieldFunctionList(lua_State* L)
       if (m != 0)
         continue;
 
-      LuaPush(L, 1 + count++);
-      LuaPush(L, GetStackFFHandle(local_ff));
-
-      lua_settable(L, -3);
+      LuaPushTableKey(L, 1 + count++, GetStackFFHandle(local_ff));
     }
   }
 
