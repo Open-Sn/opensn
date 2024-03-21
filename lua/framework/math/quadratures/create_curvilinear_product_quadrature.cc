@@ -39,20 +39,12 @@ CreateCylindricalProductQuadrature(lua_State* L)
   }
   else if (lua_istable(L, 3))
   {
-    const size_t lNa = lua_rawlen(L, 3);
-    if (lNa != Np)
+    vNa = LuaArgVector<int>(L, 3);
+    if (vNa.size() != Np)
     {
       opensn::log.LogAllError() << "CreateCylindricalProductQuadrature : third argument, "
                                 << ", if a lua table, must be of length equal to second argument.";
       opensn::Exit(EXIT_FAILURE);
-    }
-    vNa.resize(Np, 0);
-    for (int n = 1; n <= lNa; ++n)
-    {
-      LuaPush(L, n);
-      lua_gettable(L, 3);
-      vNa[n - 1] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
     }
   }
   else

@@ -442,31 +442,9 @@ MatSetProperty(lua_State* L)
       {
         if (num_args != 4)
           LuaPostArgAmountError("MatSetProperty", 4, num_args);
-
-        if (not lua_istable(L, 4))
-        {
-          opensn::log.LogAllError() << "In call to MatSetProperty: "
-                                    << "Material \"" << cur_material->name_ << "\", when setting "
-                                    << "ISOTROPIC_MG_SOURCE using operation FROM_ARRAY, the fourth "
-                                       "argument was detected not to be a lua table.";
-          opensn::Exit(EXIT_FAILURE);
-        }
-
-        const size_t table_len = lua_rawlen(L, 4);
-
-        std::vector<double> values(table_len, 0.0);
-        for (int g = 0; g < table_len; g++)
-        {
-          LuaPush(L, g + 1);
-          lua_gettable(L, 4);
-          values[g] = lua_tonumber(L, -1);
-          lua_pop(L, 1);
-        }
-
-        prop->source_value_g_.resize(table_len, 0.0);
-        std::copy(values.begin(), values.end(), prop->source_value_g_.begin());
-        opensn::log.Log0Verbose1()
-          << "Isotropic Multigroup Source populated  with " << table_len << " values";
+        prop->source_value_g_ = LuaArgVector<double>(L, 4);
+        opensn::log.Log0Verbose1() << "Isotropic Multigroup Source populated with "
+                                   << prop->source_value_g_.size() << " values";
       }
       else
       {

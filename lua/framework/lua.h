@@ -316,6 +316,28 @@ LuaArgAsType(lua_State* L, int index)
     throw std::invalid_argument("Expected string value as " + std::to_string(index) + ". argument");
 }
 
+template <typename T, typename A>
+inline std::vector<T, A>
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_istable(L, index))
+  {
+    std::vector<T, A> values;
+    const size_t sz = lua_rawlen(L, index);
+    values.resize(sz);
+    for (size_t i = 0; i < sz; i++)
+    {
+      LuaPush(L, i + 1);
+      lua_gettable(L, index);
+      values[i] = LuaArgAsType<T>(L, -1);
+      lua_pop(L, 1);
+    }
+    return values;
+  }
+  else
+    throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
+}
+
 /**
  * Get argument with specified index from Lua stack
  *
@@ -337,6 +359,21 @@ LuaArg(lua_State* L, int index)
   return LuaArgAsType<T>(L, index);
 }
 
+template <typename T>
+inline std::vector<T>
+LuaArgVector(lua_State* L, int index)
+{
+  auto num_args = lua_gettop(L);
+  if (index > num_args)
+    throw std::invalid_argument("Invalid argument index " + std::to_string(index) +
+                                ". Supplied only " + std::to_string(num_args) + " arguments.");
+  if (lua_isnil(L, index))
+    throw std::invalid_argument("Unexpected value supplied as " + std::to_string(index) +
+                                ". argument.");
+
+  return LuaArgAsType<T, std::allocator<T>>(L, index);
+}
+
 /**
  * Get optional argument with specified index from Lua stack
  *
@@ -351,6 +388,17 @@ LuaArgOptional(lua_State* L, int index, T default_value)
   const int num_args = lua_gettop(L);
   if (index <= num_args)
     return LuaArg<T>(L, index);
+  else
+    return default_value;
+}
+
+template <typename T>
+inline std::vector<T>
+LuaArgOptionalVector(lua_State* L, int index, const std::vector<T>& default_value)
+{
+  const int num_args = lua_gettop(L);
+  if (index <= num_args)
+    return LuaArgVector<T>(L, index);
   else
     return default_value;
 }

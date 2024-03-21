@@ -46,43 +46,8 @@ MeshComputeLoadBalancing(lua_State* L)
   auto& cur_surf =
     opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, surf_handle, __FUNCTION__);
 
-  // Extract x-cuts
-  if (not lua_istable(L, 2))
-  {
-    opensn::log.LogAllError() << "In call to mesh.ComputeLoadBalancing: expected table for "
-                                 "argument 2. Incompatible value supplied.";
-    opensn::Exit(EXIT_FAILURE);
-  }
-
-  int x_table_len = lua_rawlen(L, 2);
-
-  std::vector<double> x_cuts(x_table_len, 0.0);
-  for (int g = 0; g < x_table_len; g++)
-  {
-    LuaPush(L, g + 1);
-    lua_gettable(L, 2);
-    x_cuts[g] = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-  }
-
-  // Extract y-cuts
-  if (not lua_istable(L, 3))
-  {
-    opensn::log.LogAllError() << "In call to mesh.ComputeLoadBalancing: expected table for "
-                                 "argument 3. Incompatible value supplied.";
-    opensn::Exit(EXIT_FAILURE);
-  }
-
-  int y_table_len = lua_rawlen(L, 3);
-
-  std::vector<double> y_cuts(y_table_len, 0.0);
-  for (int g = 0; g < y_table_len; g++)
-  {
-    LuaPush(L, g + 1);
-    lua_gettable(L, 3);
-    y_cuts[g] = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-  }
+  std::vector<double> x_cuts = LuaArgVector<double>(L, 2);
+  std::vector<double> y_cuts = LuaArgVector<double>(L, 3);
 
   // Call compute balance
   std::stable_sort(x_cuts.begin(), x_cuts.end());

@@ -108,61 +108,14 @@ CreateProductQuadrature(lua_State* L)
     if (num_args < 4)
       LuaPostArgAmountError("CreateProductQuadrature:CUSTOM_QUADRATURE", 3, num_args);
 
-    if (not lua_istable(L, 2))
-    {
-      opensn::log.LogAllError()
-        << "CreateProductQuadrature:CUSTOM_QUADRATURE, second argument must "
-        << "be a lua table.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-    if (not lua_istable(L, 3))
-    {
-      opensn::log.LogAllError() << "CreateProductQuadrature:CUSTOM_QUADRATURE, third argument must "
-                                << "be a lua table.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-    if (not lua_istable(L, 4))
-    {
-      opensn::log.LogAllError()
-        << "CreateProductQuadrature:CUSTOM_QUADRATURE, fourth argument must "
-        << "be a lua table.";
-      opensn::Exit(EXIT_FAILURE);
-    }
+    std::vector<double> azimuthal = LuaArgVector<double>(L, 2);
+    std::vector<double> polar = LuaArgVector<double>(L, 3);
+    std::vector<double> weights = LuaArgVector<double>(L, 4);
     auto verbose = LuaArgOptional<bool>(L, 5, false);
-
-    size_t Na = lua_rawlen(L, 2);
-    size_t Np = lua_rawlen(L, 3);
-    size_t Nw = lua_rawlen(L, 4);
-
-    std::vector<double> azimuthal(Na, 0.0);
-    std::vector<double> polar(Np, 0.0);
-    std::vector<double> weights(Nw, 0.0);
-
-    for (int n = 1; n <= Na; ++n)
-    {
-      LuaPush(L, n);
-      lua_gettable(L, 2);
-      azimuthal[n - 1] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
-    }
-    for (int n = 1; n <= Np; ++n)
-    {
-      LuaPush(L, n);
-      lua_gettable(L, 3);
-      polar[n - 1] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
-    }
-    for (int n = 1; n <= Nw; ++n)
-    {
-      LuaPush(L, n);
-      lua_gettable(L, 4);
-      weights[n - 1] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
-    }
 
     opensn::log.Log() << "Creating custom product quadrature Quadrature\n";
 
-    opensn::log.Log() << Na << " " << Np << " " << Nw;
+    opensn::log.Log() << azimuthal.size() << " " << polar.size() << " " << weights.size();
 
     auto new_quad =
       std::make_shared<AngularQuadratureProdCustom>(azimuthal, polar, weights, verbose);

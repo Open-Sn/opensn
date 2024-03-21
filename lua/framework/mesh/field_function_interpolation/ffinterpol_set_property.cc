@@ -204,26 +204,7 @@ FFInterpolationSetProperty(lua_State* L)
       LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-
-    if (not lua_istable(L, 3))
-    {
-      opensn::log.LogAllError() << "Line property FFI_LINE_CUSTOM_ARRAY"
-                                << " used in FFInterpolationSetProperty. Argument 3 is expected "
-                                   "to be an array.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-
-    const size_t table_len = lua_rawlen(L, 3);
-
-    std::vector<double> new_array(table_len, 0.0);
-    for (int k = 0; k < table_len; ++k)
-    {
-      LuaPush(L, k + 1);
-      lua_gettable(L, 3);
-      new_array[k] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
-    }
-
+    std::vector<double> new_array = LuaArgVector<double>(L, 3);
     cur_ffi_line.GetCustomArrays().push_back(new_array);
   }
   else if (property == FieldFunctionInterpolationProperty::OPERATION)

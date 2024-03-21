@@ -19,51 +19,15 @@ CreateCustomAngularQuadrature(lua_State* L)
   if (num_args != 3)
     LuaPostArgAmountError(fname, 3, num_args);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-  LuaCheckNilValue(fname, L, 3);
+  std::vector<double> azi_angles = LuaArgVector<double>(L, 1);
+  std::vector<double> pol_angles = LuaArgVector<double>(L, 2);
+  std::vector<double> weights = LuaArgVector<double>(L, 3);
 
-  LuaCheckTableValue(fname, L, 1);
-  LuaCheckTableValue(fname, L, 2);
-  LuaCheckTableValue(fname, L, 3);
-
-  size_t Na = lua_rawlen(L, 1);
-  size_t Np = lua_rawlen(L, 2);
-  size_t Nw = lua_rawlen(L, 3);
-
-  if ((Na - Np != 0) or (Na - Nw != 0))
+  if ((azi_angles.size() != pol_angles.size()) or (azi_angles.size() != weights.size()))
   {
     opensn::log.LogAllError() << fname + ": Tables lengths supplied "
                                          "are not of equal lengths.";
     opensn::Exit(EXIT_FAILURE);
-  }
-
-  std::vector<double> azi_angles(Na, 0.0);
-  std::vector<double> pol_angles(Na, 0.0);
-  std::vector<double> weights(Na, 0.0);
-
-  for (int n = 1; n <= Na; ++n)
-  {
-    LuaPush(L, n);
-    lua_gettable(L, 1);
-    azi_angles[n - 1] = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-  }
-
-  for (int n = 1; n <= Na; ++n)
-  {
-    LuaPush(L, n);
-    lua_gettable(L, 2);
-    pol_angles[n - 1] = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-  }
-
-  for (int n = 1; n <= Na; ++n)
-  {
-    LuaPush(L, n);
-    lua_gettable(L, 3);
-    weights[n - 1] = lua_tonumber(L, -1);
-    lua_pop(L, 1);
   }
 
   opensn::log.Log() << "Creating Custom Angular Quadrature\n";

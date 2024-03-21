@@ -29,17 +29,9 @@ ComputeLeakage(lua_State* L)
   std::vector<uint64_t> bndry_ids;
   if (num_args > 1)
   {
-    LuaCheckTableValue(fname, L, 2);
-
-    // Get the boundaries
-    const auto n_bndrys = lua_rawlen(L, 2);
-    for (int b = 0; b < n_bndrys; ++b)
-    {
-      LuaPush(L, b + 1);
-      lua_gettable(L, 2);
-      bndry_ids.push_back(supported_boundary_names.at(lua_tostring(L, -1)));
-      lua_pop(L, 1);
-    }
+    std::vector<std::string> bnd_names = LuaArgVector<std::string>(L, 2);
+    for (auto& name : bnd_names)
+      bndry_ids.push_back(supported_boundary_names.at(name));
   }
   else
     bndry_ids = solver.Grid().GetDomainUniqueBoundaryIDs();
