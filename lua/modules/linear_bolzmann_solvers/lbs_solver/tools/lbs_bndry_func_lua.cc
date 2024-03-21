@@ -53,17 +53,7 @@ BoundaryFunctionToLua::Evaluate(
 
   LuaPush(L, quadrature_angle_indices);
 
-  {
-    lua_newtable(L);
-    int n = 0;
-    for (auto& omega : quadrature_angle_vectors)
-    {
-      LuaPush(L, n + 1);
-      LuaPush(L, omega);
-      lua_settable(L, -3);
-      ++n;
-    }
-  } // push omegas
+  LuaPush(L, quadrature_angle_vectors);
 
   {
     lua_newtable(L);
