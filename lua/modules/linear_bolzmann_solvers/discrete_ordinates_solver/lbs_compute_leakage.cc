@@ -29,7 +29,7 @@ ComputeLeakage(lua_State* L)
   std::vector<uint64_t> bndry_ids;
   if (num_args > 1)
   {
-    std::vector<std::string> bnd_names = LuaArgVector<std::string>(L, 2);
+    auto bnd_names = LuaArg<std::vector<std::string>>(L, 2);
     for (auto& name : bnd_names)
       bndry_ids.push_back(supported_boundary_names.at(name));
   }

@@ -19,9 +19,9 @@ CreateCustomAngularQuadrature(lua_State* L)
   if (num_args != 3)
     LuaPostArgAmountError(fname, 3, num_args);
 
-  std::vector<double> azi_angles = LuaArgVector<double>(L, 1);
-  std::vector<double> pol_angles = LuaArgVector<double>(L, 2);
-  std::vector<double> weights = LuaArgVector<double>(L, 3);
+  auto azi_angles = LuaArg<std::vector<double>>(L, 1);
+  auto pol_angles = LuaArg<std::vector<double>>(L, 2);
+  auto weights = LuaArg<std::vector<double>>(L, 3);
 
   if ((azi_angles.size() != pol_angles.size()) or (azi_angles.size() != weights.size()))
   {

@@ -419,7 +419,7 @@ MatSetProperty(lua_State* L)
       {
         if (num_args != 4)
           LuaPostArgAmountError("MatSetProperty", 4, num_args);
-        prop->source_value_g_ = LuaArgVector<double>(L, 4);
+        prop->source_value_g_ = LuaArg<std::vector<double>>(L, 4);
         opensn::log.Log0Verbose1() << "Isotropic Multigroup Source populated with "
                                    << prop->source_value_g_.size() << " values";
       }

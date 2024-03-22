@@ -175,7 +175,7 @@ FFInterpolationSetProperty(lua_State* L)
       LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-    std::vector<double> new_array = LuaArgVector<double>(L, 3);
+    auto new_array = LuaArg<std::vector<double>>(L, 3);
     cur_ffi_line.GetCustomArrays().push_back(new_array);
   }
   else if (property == FieldFunctionInterpolationProperty::OPERATION)

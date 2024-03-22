@@ -46,8 +46,8 @@ MeshComputeLoadBalancing(lua_State* L)
   auto& cur_surf =
     opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, surf_handle, __FUNCTION__);
 
-  std::vector<double> x_cuts = LuaArgVector<double>(L, 2);
-  std::vector<double> y_cuts = LuaArgVector<double>(L, 3);
+  auto x_cuts = LuaArg<std::vector<double>>(L, 2);
+  auto y_cuts = LuaArg<std::vector<double>>(L, 3);
 
   // Call compute balance
   std::stable_sort(x_cuts.begin(), x_cuts.end());

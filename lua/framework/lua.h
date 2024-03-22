@@ -279,6 +279,9 @@ LuaPushTableKey(lua_State* L, const KEY& key, const VAL& value)
   lua_settable(L, -3);
 }
 
+namespace
+{
+
 template <typename T>
 inline T
 LuaArgAsType(lua_State* L, int index)
@@ -411,15 +414,9 @@ LuaArgAsType(lua_State* L, int index)
     throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
 }
 
-/**
- * Get argument with specified index from Lua stack
- *
- * \param L Lua stack
- * \param index Argument index from the lua stack (1-based)
- */
 template <typename T>
 inline T
-LuaArg(lua_State* L, int index)
+LuaArgImpl(lua_State* L, int index)
 {
   auto num_args = lua_gettop(L);
   if (index > num_args)
@@ -432,9 +429,9 @@ LuaArg(lua_State* L, int index)
   return LuaArgAsType<T>(L, index);
 }
 
-template <typename T>
-inline std::vector<T>
-LuaArgVector(lua_State* L, int index)
+template <typename T, typename A>
+inline std::vector<T, A>
+LuaArgStdVectorImpl(lua_State* L, int index)
 {
   auto num_args = lua_gettop(L);
   if (index > num_args)
@@ -444,8 +441,56 @@ LuaArgVector(lua_State* L, int index)
     throw std::invalid_argument("Unexpected value supplied as " + std::to_string(index) +
                                 ". argument.");
 
-  return LuaArgAsType<T, std::allocator<T>>(L, index);
+  return LuaArgAsType<T, A>(L, index);
 }
+
+} // namespace
+
+/**
+ * Get argument with specified index from Lua stack
+ *
+ * \param L Lua stack
+ * \param index Argument index from the lua stack (1-based)
+ */
+template <typename TRET>
+inline TRET
+LuaArg(lua_State* L, int index)
+{
+  if constexpr (is_std_vector<TRET>::value)
+  {
+    using T = typename TRET::value_type;
+    return LuaArgStdVectorImpl<T, std::allocator<T>>(L, index);
+  }
+  else
+    return LuaArgImpl<TRET>(L, index);
+}
+
+namespace
+{
+
+template <typename T>
+inline T
+LuaArgOptionalImpl(lua_State* L, int index, T default_value)
+{
+  const int num_args = lua_gettop(L);
+  if (index <= num_args)
+    return LuaArgImpl<T>(L, index);
+  else
+    return default_value;
+}
+
+template <typename T, typename A>
+inline std::vector<T, A>
+LuaArgOptionalStdVectorImpl(lua_State* L, int index, const std::vector<T>& default_value)
+{
+  const int num_args = lua_gettop(L);
+  if (index <= num_args)
+    return LuaArgStdVectorImpl<T, A>(L, index);
+  else
+    return default_value;
+}
+
+} // namespace
 
 /**
  * Get optional argument with specified index from Lua stack
@@ -454,26 +499,17 @@ LuaArgVector(lua_State* L, int index)
  * \param index Argument index from the lua stack (1-based)
  * \param default_value Default value to use if argument was not specified
  */
-template <typename T>
-inline T
-LuaArgOptional(lua_State* L, int index, T default_value)
+template <typename TRET>
+inline TRET
+LuaArgOptional(lua_State* L, int index, TRET default_value)
 {
-  const int num_args = lua_gettop(L);
-  if (index <= num_args)
-    return LuaArg<T>(L, index);
+  if constexpr (is_std_vector<TRET>::value)
+  {
+    using T = typename TRET::value_type;
+    return LuaArgOptionalStdVectorImpl<T, std::allocator<T>>(L, index, default_value);
+  }
   else
-    return default_value;
-}
-
-template <typename T>
-inline std::vector<T>
-LuaArgOptionalVector(lua_State* L, int index, const std::vector<T>& default_value)
-{
-  const int num_args = lua_gettop(L);
-  if (index <= num_args)
-    return LuaArgVector<T>(L, index);
-  else
-    return default_value;
+    return LuaArgOptionalImpl<TRET>(L, index, default_value);
 }
 
 // Set global values
@@ -507,6 +543,9 @@ LuaSetGlobal(lua_State* L, const std::string& name, double value)
 }
 
 // Support methods for pushing arguments on a Lua stack
+
+namespace
+{
 
 inline void
 LuaPushArgs(lua_State* L)
@@ -573,6 +612,8 @@ LuaCallStdVectorImpl(lua_State* L, const std::string& fn_name, ARGS... args)
   else
     throw std::logic_error("Call to lua function '" + fn_name + "' failed. ");
 }
+
+} // namespace
 
 template <typename TRET, typename... ARGS>
 inline TRET

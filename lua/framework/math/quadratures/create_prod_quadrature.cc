@@ -108,9 +108,9 @@ CreateProductQuadrature(lua_State* L)
     if (num_args < 4)
       LuaPostArgAmountError("CreateProductQuadrature:CUSTOM_QUADRATURE", 3, num_args);
 
-    std::vector<double> azimuthal = LuaArgVector<double>(L, 2);
-    std::vector<double> polar = LuaArgVector<double>(L, 3);
-    std::vector<double> weights = LuaArgVector<double>(L, 4);
+    auto azimuthal = LuaArg<std::vector<double>>(L, 2);
+    auto polar = LuaArg<std::vector<double>>(L, 3);
+    auto weights = LuaArg<std::vector<double>>(L, 4);
     auto verbose = LuaArgOptional<bool>(L, 5, false);
 
     opensn::log.Log() << "Creating custom product quadrature Quadrature\n";

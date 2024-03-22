@@ -39,7 +39,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
   }
   else if (lua_istable(L, 3))
   {
-    vNa = LuaArgVector<int>(L, 3);
+    vNa = LuaArg<std::vector<int>>(L, 3);
     if (vNa.size() != Np)
     {
       opensn::log.LogAllError() << "CreateCylindricalProductQuadrature : third argument, "
