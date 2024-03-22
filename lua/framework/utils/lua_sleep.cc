@@ -17,10 +17,8 @@ RegisterLuaFunctionAsIs(Sleep);
 int
 Sleep(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  const std::string fname = "Sleep";
+  LuaCheckArgs<int64_t>(L, fname);
 
   const auto time_to_sleep = LuaArg<int64_t>(L, 1);
 

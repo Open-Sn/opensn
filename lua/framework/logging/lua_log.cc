@@ -37,6 +37,7 @@ LogSetVerbosity(lua_State* L)
   }
   else
   {
+    LuaCheckArgs<int>(L, "log.SetVerbosity");
     auto level = LuaArg<int>(L, 1);
     if (level <= 2)
     {
@@ -49,11 +50,7 @@ LogSetVerbosity(lua_State* L)
 int
 LogLog(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-
-  if (num_args != 2)
-    LuaPostArgAmountError("Log", 2, num_args);
-
+  LuaCheckArgs<int, std::string>(L, "log.Log");
   auto mode = LuaArg<int>(L, 1);
   auto message = LuaArg<std::string>(L, 2);
 
@@ -65,10 +62,7 @@ LogLog(lua_State* L)
 int
 LogProcessEvent(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  LuaCheckArgs<std::string, std::string>(L, "log.ProcessEvent");
 
   const auto event_name = LuaArg<std::string>(L, 1);
   const auto event_operation_name = LuaArg<std::string>(L, 2);

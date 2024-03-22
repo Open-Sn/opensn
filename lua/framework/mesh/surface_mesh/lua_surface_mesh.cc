@@ -36,9 +36,8 @@ MeshSurfaceMeshCreate(lua_State* L)
 int
 MeshComputeLoadBalancing(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  if (num_args != 3)
-    LuaPostArgAmountError("mesh.ComputeLoadBalancing", 3, num_args);
+  const std::string fname = "mesh.ComputeLoadBalancing";
+  LuaCheckArgs<size_t, std::vector<double>, std::vector<double>>(L, fname);
 
   // Get reference surface mesh
   auto surf_handle = LuaArg<size_t>(L, 1);
@@ -86,12 +85,8 @@ SurfaceMeshExtractOpenEdgesToObj(lua_State* L)
 int
 MeshSurfaceMeshImportFromOBJFile(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "mesh.SurfaceMeshImportFromOBJFile";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
   auto handle = LuaArg<size_t>(L, 1);
   const auto file_name = LuaArg<std::string>(L, 2);
@@ -111,14 +106,13 @@ MeshSurfaceMeshImportFromOBJFile(lua_State* L)
 int
 MeshSurfaceMeshImportFromTriangleFiles(lua_State* L)
 {
-  // Get arguments
-  int num_args = lua_gettop(L);
+  const std::string fname = "mesh.SurfaceMeshImportFromTriangleFiles";
+  LuaCheckArgs<size_t, std::string>(L, fname);
   auto handle = LuaArg<size_t>(L, 1);
   const std::string file_name = LuaArg<std::string>(L, 2);
   auto as_poly = LuaArgOptional<bool>(L, 3, true);
 
-  auto& surface_mesh =
-    opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);
+  auto& surface_mesh = opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, fname);
 
   surface_mesh.ImportFromTriangleFiles(file_name.c_str(), as_poly);
 
@@ -128,8 +122,7 @@ MeshSurfaceMeshImportFromTriangleFiles(lua_State* L)
 int
 SurfaceMeshImportFromMshFiles(lua_State* L)
 {
-  // Get arguments
-  int num_args = lua_gettop(L);
+  LuaCheckArgs<int, std::string>(L, "SurfaceMeshImportFromMshFiles");
   auto handle = LuaArg<int>(L, 1);
   const auto file_name = LuaArg<std::string>(L, 2);
   auto as_poly = LuaArgOptional<bool>(L, 3, true);
@@ -138,9 +131,7 @@ SurfaceMeshImportFromMshFiles(lua_State* L)
     opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, handle, __FUNCTION__);
 
   std::stringstream outtext;
-  outtext << "SurfaceMeshImportFromMshFiles: "
-             "Loading a gmsh ascii file: ";
-  outtext << file_name << std::endl;
+  outtext << "SurfaceMeshImportFromMshFiles: Loading a gmsh ascii file: " << file_name << std::endl;
   opensn::log.LogAllVerbose2() << outtext.str();
   surface_mesh.ImportFromMshFiles(file_name.c_str(), as_poly);
 

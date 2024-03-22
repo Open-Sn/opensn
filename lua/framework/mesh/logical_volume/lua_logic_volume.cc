@@ -13,10 +13,8 @@ RegisterLuaFunctionNamespace(LogVolPointSense, logvol, PointSense);
 int
 LogVolPointSense(lua_State* L)
 {
-  const std::string fname = "LogVolPointSense";
-  const int num_args = lua_gettop(L);
-  if (num_args != 4)
-    LuaPostArgAmountError(fname, 4, num_args);
+  const std::string fname = "logvol.PointSense";
+  LuaCheckArgs<int, Vector3>(L, fname);
 
   const auto lv_handle = LuaArg<int>(L, 1);
   auto point = LuaArg<Vector3>(L, 2);

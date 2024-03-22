@@ -18,11 +18,8 @@ RegisterLuaFunctionNamespace(CreateLineQuadrature, squad, CreateLineQuadrature);
 int
 CreateLineQuadrature(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-
-  if (not((num_args == 2) or (num_args == 3)))
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "squad.CreateLineQuadrature";
+  LuaCheckArgs<int, int>(L, fname);
 
   // Parse argument
   auto ident = LuaArg<int>(L, 1);

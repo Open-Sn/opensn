@@ -16,10 +16,8 @@ RegisterLuaFunctionNamespace(ExportMultiFieldFunctionToVTK, fieldfunc, ExportToV
 int
 ExportFieldFunctionToVTK(lua_State* L)
 {
-  const std::string fname = "ExportFieldFunctionToVTK";
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "fieldfunc.ExportToVTK";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
   auto ff_handle = LuaArg<size_t>(L, 1);
   auto base_name = LuaArg<std::string>(L, 2);

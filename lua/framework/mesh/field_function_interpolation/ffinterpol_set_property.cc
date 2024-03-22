@@ -56,8 +56,8 @@ CreateFunction(const std::string& function_name)
 int
 FFInterpolationSetProperty(lua_State* L)
 {
-  const std::string fname = "FFInterpolationSetProperty";
-  int numArgs = lua_gettop(L);
+  const std::string fname = "fieldfunc.SetProperty";
+  LuaCheckArgs<size_t, int>(L, fname);
 
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
@@ -137,24 +137,21 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::FIRSTPOINT)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, Vector3>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
     cur_ffi_line.GetInitialPoint() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::SECONDPOINT)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, Vector3>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
     cur_ffi_line.GetFinalPoint() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::NUMBEROFPOINTS)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, int>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
@@ -171,8 +168,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::CUSTOM_ARRAY)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, std::vector<double>>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
     auto new_array = LuaArg<std::vector<double>>(L, 3);
@@ -180,8 +176,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::OPERATION)
   {
-    if (numArgs != 3 and numArgs != 4)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, int>(L, fname);
 
     if (p_ffi->Type() != FieldFunctionInterpolationType::VOLUME)
       throw std::logic_error("Volume property FFI_PROP_OPERATION"
@@ -206,8 +201,7 @@ FFInterpolationSetProperty(lua_State* L)
 
     if ((op_type >= OP_SUM_FUNC) and (op_type <= OP_MAX_FUNC))
     {
-      if (numArgs != 4)
-        LuaPostArgAmountError("FFInterpolationSetProperty", 4, numArgs);
+      LuaCheckArgs<size_t, int, int, std::string>(L, fname);
       const auto func_name = LuaArg<std::string>(L, 4);
       auto operation_function = CreateFunction(func_name);
       opensn::function_stack.push_back(operation_function);
@@ -218,8 +212,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::LOGICAL_VOLUME)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, int>(L, fname);
 
     auto logvol_hndle = LuaArg<int>(L, 3);
 

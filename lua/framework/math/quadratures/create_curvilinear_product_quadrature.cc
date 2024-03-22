@@ -23,10 +23,8 @@ RegisterLuaFunctionNamespace(CreateSphericalProductQuadrature,
 int
 CreateCylindricalProductQuadrature(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args < 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "aquad.CreateCylindricalProductQuadrature";
+  LuaCheckArgs<int, int>(L, fname);
 
   const auto ident = LuaArg<int>(L, 1);
   const auto Np = LuaArg<int>(L, 2);
@@ -135,9 +133,8 @@ CreateCylindricalProductQuadrature(lua_State* L)
 int
 CreateSphericalProductQuadrature(lua_State* L)
 {
-  const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError("CreateSphericalProductQuadrature", 2, num_args);
+  const std::string fname = "aquad.CreateSphericalProductQuadrature";
+  LuaCheckArgs<int, int>(L, fname);
 
   const auto ident = LuaArg<int>(L, 1);
   const auto Np = LuaArg<int>(L, 2);
@@ -148,8 +145,7 @@ CreateSphericalProductQuadrature(lua_State* L)
   {
     case ProductQuadratureType::GAUSS_CHEBYSHEV:
     {
-      opensn::log.Log() << "CreateSphericalProductQuadrature : "
-                        << "Creating Gauss-Chebyshev Quadrature\n";
+      opensn::log.Log() << fname + ": Creating Gauss-Chebyshev Quadrature\n";
 
       const auto quad_pol = GaussChebyshevQuadrature(Np, verbose);
       const auto new_quad = std::make_shared<SphericalQuadrature>(quad_pol, verbose);
@@ -162,8 +158,7 @@ CreateSphericalProductQuadrature(lua_State* L)
     }
     case ProductQuadratureType::GAUSS_LEGENDRE:
     {
-      opensn::log.Log() << "CreateSphericalProductQuadrature : "
-                        << "Creating Gauss-Legendre Quadrature\n";
+      opensn::log.Log() << fname + ": Creating Gauss-Legendre Quadrature\n";
 
       const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
       const auto new_quad = std::make_shared<SphericalQuadrature>(quad_pol, verbose);
@@ -176,8 +171,7 @@ CreateSphericalProductQuadrature(lua_State* L)
     }
     default:
     {
-      opensn::log.LogAllError() << "CreateSphericalProductQuadrature : "
-                                << "Unsupported quadrature type supplied, type=" << ident;
+      opensn::log.LogAllError() << fname + ": Unsupported quadrature type supplied, type=" << ident;
       opensn::Exit(EXIT_FAILURE);
     }
   }

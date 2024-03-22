@@ -17,11 +17,8 @@ RegisterLuaFunctionNamespace(OptimizeAngularQuadratureForPolarSymmetry,
 int
 OptimizeAngularQuadratureForPolarSymmetry(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-
-  if (num_args < 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  const std::string fname = "aquad.OptimizeForPolarSymmetry";
+  LuaCheckArgs<int>(L, fname);
 
   const auto handle = LuaArg<int>(L, 1);
   auto normalization = LuaArgOptional<double>(L, 2, -1.0);

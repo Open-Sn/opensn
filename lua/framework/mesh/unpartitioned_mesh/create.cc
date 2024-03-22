@@ -30,10 +30,8 @@ RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromExodusII,
 int
 MeshUnpartitionedMeshFromVTU(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string fname = "mesh.UnpartitionedMeshFromVTU";
+  LuaCheckArgs<std::string>(L, fname);
 
   auto file_name = LuaArg<std::string>(L, 1);
   auto field = LuaArgOptional<std::string>(L, 2, std::string(""));

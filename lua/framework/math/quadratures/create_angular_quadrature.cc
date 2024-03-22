@@ -13,11 +13,8 @@ RegisterLuaFunctionNamespace(CreateCustomAngularQuadrature, aquad, CreateCustomA
 int
 CreateCustomAngularQuadrature(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-
-  if (num_args != 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "aquad.CreateCustomAngularQuadrature";
+  LuaCheckArgs<std::vector<double>, std::vector<double>, std::vector<double>>(L, fname);
 
   auto azi_angles = LuaArg<std::vector<double>>(L, 1);
   auto pol_angles = LuaArg<std::vector<double>>(L, 2);

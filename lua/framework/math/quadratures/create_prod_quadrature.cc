@@ -22,14 +22,12 @@ RegisterLuaConstantAsIs(CUSTOM_QUADRATURE, Varying(5));
 int
 CreateProductQuadrature(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  // Parse argument
-  auto ident = LuaArg<int>(L, 1);
+  const std::string fname = "aquad.CreateProductQuadrature";
 
+  auto ident = LuaArg<int>(L, 1);
   if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE)
   {
-    if (num_args < 2)
-      LuaPostArgAmountError("CreateProductQuadrature", 2, num_args);
+    LuaCheckArgs<int, int>(L, fname);
 
     auto Np = LuaArg<int>(L, 2);
     auto verbose = LuaArgOptional<bool>(L, 3, false);
@@ -53,8 +51,7 @@ CreateProductQuadrature(lua_State* L)
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE)
   {
-    if (num_args < 3)
-      LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
+    LuaCheckArgs<int, int, int>(L, fname);
 
     auto Na = LuaArg<int>(L, 2);
     auto Np = LuaArg<int>(L, 3);
@@ -79,8 +76,7 @@ CreateProductQuadrature(lua_State* L)
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV)
   {
-    if (num_args < 3)
-      LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
+    LuaCheckArgs<int, int, int>(L, fname);
 
     auto Na = LuaArg<int>(L, 2);
     auto Np = LuaArg<int>(L, 3);
@@ -105,8 +101,7 @@ CreateProductQuadrature(lua_State* L)
   }
   else if (ident == (int)ProductQuadratureType::CUSTOM_QUADRATURE)
   {
-    if (num_args < 4)
-      LuaPostArgAmountError("CreateProductQuadrature:CUSTOM_QUADRATURE", 3, num_args);
+    LuaCheckArgs<int, std::vector<double>, std::vector<double>, std::vector<double>>(L, fname);
 
     auto azimuthal = LuaArg<std::vector<double>>(L, 2);
     auto polar = LuaArg<std::vector<double>>(L, 3);

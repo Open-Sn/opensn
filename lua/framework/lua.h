@@ -628,4 +628,210 @@ LuaCall(lua_State* L, const std::string& fn_name, ARGS... args)
     return LuaCallImpl<TRET>(L, fn_name, args...);
 }
 
+//
+
+template <typename T>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, T val)
+{
+  throw std::invalid_argument(fn_name + ": Unsupported type: " + std::string(typeid(T).name()));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, char* val)
+{
+  if (not lua_isstring(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting string value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, const char* val)
+{
+  if (not lua_isstring(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting string value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, char val)
+{
+  if (not lua_isinteger(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, int val)
+{
+  if (not lua_isinteger(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, long val)
+{
+  if (not lua_isinteger(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, long long val)
+{
+  if (not lua_isinteger(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, unsigned char val)
+{
+  if (not lua_isinteger(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, unsigned int val)
+{
+  if (not lua_isinteger(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, unsigned long val)
+{
+  if (not lua_isinteger(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, unsigned long long val)
+{
+  if (not lua_isinteger(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, float val)
+{
+  if (not lua_isnumber(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting number value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, double val)
+{
+  if (not lua_isnumber(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting number value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, bool val)
+{
+  if (not lua_isboolean(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting boolean value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, std::string val)
+{
+  if (not lua_isstring(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting string value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, opensn::Vector3 val)
+{
+  if (not lua_istable(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting table value for argument " +
+                                std::to_string(index));
+}
+
+template <typename T, typename A>
+inline void
+LuaArgCheckStdVectorType(const std::string& fn_name, lua_State* L, int index, std::vector<T, A> val)
+{
+  if (not lua_istable(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting table value for argument " +
+                                std::to_string(index));
+}
+
+/**
+ * Check that the lua function argument is of a required type
+ *
+ * \tparam T C++ type being checked
+ * \tparam F Type of the lambda function providing the argument index
+ * \param fn_name Lua function name
+ * \param L Lua stack
+ * \param index Lambda function that provides the index of the argument
+ */
+template <typename T, typename F>
+void
+LuaCheckArgWithIndex(const std::string& fn_name, lua_State* L, F&& index)
+{
+  auto idx = index();
+  if constexpr (is_std_vector<T>::value)
+  {
+    using U = typename T::value_type;
+    std::vector<U, std::allocator<U>> val;
+    LuaArgCheckStdVectorType<U, std::allocator<U>>(fn_name, L, idx, val);
+  }
+  else
+  {
+    T val;
+    if constexpr (std::is_arithmetic<T>::value)
+      val = 0;
+    LuaArgCheckType<T>(fn_name, L, idx, val);
+  }
+}
+
+/**
+ * Check Lua function arguments
+ *
+ * Use like so:
+ * ```
+ * LuaCheckArgs<ARG1_TYPE, ARG2_TYPE, ...>(L, "module.LuaFunc");
+ * ```
+ *
+ * \param L Lua stack
+ * \param fn_name Name of the Lua function (not the C/C++ function calling this API)
+ */
+template <typename... ARGS>
+inline void
+LuaCheckArgs(lua_State* L, const std::string& fn_name)
+{
+  size_t num_args = lua_gettop(L);
+  if (num_args < sizeof...(ARGS))
+    throw std::logic_error("Function '" + fn_name + "' expects " + std::to_string(sizeof...(ARGS)) +
+                           " arguments.");
+  size_t i = 0;
+  auto f = [&i]() { return ++i; };
+  (LuaCheckArgWithIndex<ARGS>(fn_name, L, f), ...);
+}
+
 } // namespace opensnlua

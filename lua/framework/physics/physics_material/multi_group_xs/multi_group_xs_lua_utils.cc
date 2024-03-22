@@ -132,15 +132,11 @@ PhysicsTransportXSCreate(lua_State* L)
 int
 PhysicsTransportXSSet(lua_State* L)
 {
-  const auto fname = std::string(__FUNCTION__);
-  const int num_args = lua_gettop(L);
-
-  if (num_args < 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "xs.Set";
+  LuaCheckArgs<int, int>(L, fname);
 
   // Process xs handle
   const auto handle = LuaArg<int>(L, 1);
-
   // Process operation id
   const auto operation_index = LuaArg<int>(L, 2);
 
@@ -160,8 +156,7 @@ PhysicsTransportXSSet(lua_State* L)
   using OpType = OperationType;
   if (operation_index == static_cast<int>(OpType::SIMPLEXS0))
   {
-    if (num_args != 4)
-      LuaPostArgAmountError(fname, 4, num_args);
+    LuaCheckArgs<int, int, int, double>(L, fname);
 
     const auto n_grps = LuaArg<int>(L, 3);
     const auto sigma_t = LuaArg<double>(L, 4);
@@ -170,8 +165,7 @@ PhysicsTransportXSSet(lua_State* L)
   }
   else if (operation_index == static_cast<int>(OpType::SIMPLEXS1))
   {
-    if (num_args != 5)
-      LuaPostArgAmountError(fname, 5, num_args);
+    LuaCheckArgs<int, int, int, double, double>(L, fname);
 
     const auto n_grps = LuaArg<int>(L, 3);
     const auto sigma_t = LuaArg<double>(L, 4);
@@ -181,8 +175,7 @@ PhysicsTransportXSSet(lua_State* L)
   }
   else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
   {
-    if (num_args != 3)
-      LuaPostArgAmountError(fname, 3, num_args);
+    LuaCheckArgs<int, int, std::string>(L, fname);
 
     auto file_name = LuaArg<std::string>(L, 3);
 
@@ -199,11 +192,8 @@ PhysicsTransportXSSet(lua_State* L)
 int
 PhysicsTransportXSGet(lua_State* L)
 {
-  const auto fname = std::string(__FUNCTION__);
-  const int num_args = lua_gettop(L);
-
-  if (num_args < 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  const std::string fname = "xs.Get";
+  LuaCheckArgs<int>(L, fname);
 
   // Process xs handle
   const auto handle = LuaArg<int>(L, 1);
@@ -228,9 +218,9 @@ PhysicsTransportXSGet(lua_State* L)
 int
 PhysicsTransportXSMakeCombined(lua_State* L)
 {
-  const auto fname = std::string(__FUNCTION__);
-  const int num_args = lua_gettop(L);
+  const std::string fname = "xs.MakeCombined";
 
+  const int num_args = lua_gettop(L);
   if (num_args != 1)
     LuaPostArgAmountError(fname, 1, num_args);
 
@@ -284,9 +274,9 @@ PhysicsTransportXSMakeCombined(lua_State* L)
 int
 PhysicsTransportXSSetCombined(lua_State* L)
 {
-  const auto fname = std::string(__FUNCTION__);
-  int num_args = lua_gettop(L);
+  const std::string fname = "xs.SetCombined";
 
+  int num_args = lua_gettop(L);
   if (num_args < 2)
     LuaPostArgAmountError(fname, 2, num_args);
 
@@ -348,14 +338,11 @@ PhysicsTransportXSSetCombined(lua_State* L)
 int
 PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
 {
-  const auto fname = std::string(__FUNCTION__);
-  const int num_args = lua_gettop(L);
-
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
-
-  // Process xs handle
+  const std::string fname = "xs.ExportToOpenSnFormat";
+  LuaCheckArgs<int, std::string>(L, fname);
+  
   const auto handle = LuaArg<int>(L, 1);
+  auto file_name = LuaArg<std::string>(L, 2);
 
   std::shared_ptr<MultiGroupXS> xs;
   try
@@ -367,10 +354,6 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
     opensn::log.LogAllError() << "ERROR: Invalid cross section handle in call to " << fname << ".";
     opensn::Exit(EXIT_FAILURE);
   }
-
-  // Process file name
-  auto file_name = LuaArg<std::string>(L, 2);
-
   xs->ExportToOpenSnXSFile(file_name);
 
   return 0;

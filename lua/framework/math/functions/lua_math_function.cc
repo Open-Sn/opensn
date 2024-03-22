@@ -25,9 +25,7 @@ int
 FunctionDimAToDimBEvaluate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  LuaCheckArgs<size_t, std::vector<double>>(L, "FunctionDimAToDimBEvaluate");
 
   // Getting function object
   const auto handle = LuaArg<size_t>(L, 1);
@@ -46,6 +44,7 @@ FunctionDimAToDimBEvaluate(lua_State* L)
   }
   else
   {
+    const int num_args = lua_gettop(L);
     for (int p = 2; p <= num_args; ++p)
       params.push_back(LuaArg<double>(L, p));
   }

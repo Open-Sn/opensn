@@ -16,10 +16,8 @@ RegisterLuaFunctionNamespace(GetFieldFunctionHandleByName, fieldfunc, GetHandleB
 int
 GetFieldFunctionHandleByName(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  const std::string fname = "fieldfunc.GetHandleByName";
+  LuaCheckArgs<std::string>(L, fname);
 
   const auto ff_name = LuaArg<std::string>(L, 1);
 

@@ -15,9 +15,7 @@ RegisterLuaFunctionNamespace(LocallyRefineSLDFESQAngularQuadrature, aquad, Local
 int
 LocallyRefineSLDFESQAngularQuadrature(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  if ((num_args != 3) and (num_args != 4))
-    LuaPostArgAmountError("LocallyRefineSLDFESQAngularQuadrature", 3, num_args);
+  LuaCheckArgs<size_t, Vector3, double>(L, "aquad.LocallyRefineSLDFESQ");
 
   auto handle = LuaArg<size_t>(L, 1);
   auto ref_dir = LuaArg<Vector3>(L, 2);

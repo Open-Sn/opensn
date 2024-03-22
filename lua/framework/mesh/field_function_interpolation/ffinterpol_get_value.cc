@@ -17,11 +17,8 @@ RegisterLuaFunctionNamespace(FFInterpolationGetValue, fieldfunc, GetValue);
 int
 FFInterpolationGetValue(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-
-  int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError("FFInterpolationGetValue", 1, num_args);
+  const std::string fname = "fieldfunc.GetValue";
+  LuaCheckArgs<size_t>(L, fname);
 
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
@@ -65,8 +62,8 @@ FFInterpolationGetValue(lua_State* L)
   }
   else
   {
-    opensn::log.Log0Warning() << "FFInterpolationGetValue is currently only supported for "
-                              << " POINT, LINE and VOLUME interpolator types.";
+    opensn::log.Log0Warning()
+      << fname + " is currently only supported for POINT, LINE and VOLUME interpolator types.";
   }
 
   return 0;

@@ -13,10 +13,8 @@ RegisterLuaFunctionNamespace(FFInterpolationExecute, fieldfunc, Execute);
 int
 FFInterpolationInitialize(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  const std::string fname = "fieldfunc.Initialize";
+  LuaCheckArgs<size_t>(L, fname);
 
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
@@ -30,10 +28,8 @@ FFInterpolationInitialize(lua_State* L)
 int
 FFInterpolationExecute(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  const std::string fname = "fieldfunc.Execute";
+  LuaCheckArgs<size_t>(L, fname);
 
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);

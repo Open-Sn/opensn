@@ -15,9 +15,8 @@ RegisterLuaFunctionNamespace(GetProductQuadrature, aquad, GetProductQuadrature);
 int
 GetProductQuadrature(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError("GetProductQuadrature", 1, num_args);
+  const std::string fname = "aquad.GetProductQuadrature";
+  LuaCheckArgs<int>(L, fname);
 
   auto handle = LuaArg<size_t>(L, 1);
 
@@ -29,14 +28,14 @@ GetProductQuadrature(lua_State* L)
       quad = std::static_pointer_cast<ProductQuadrature>(ang_quad);
     else
     {
-      opensn::log.LogAllError() << "GetProductQuadrature: Provided quadrature handle points to "
-                                   "a quadrature that is not a product quadrature.";
+      opensn::log.LogAllError() << fname + ": Provided quadrature handle points to a quadrature "
+                                           "that is not a product quadrature.";
       opensn::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "GetProductQuadrature: Invalid quadrature handle.";
+    opensn::log.LogAllError() << fname + ": Invalid quadrature handle.";
     opensn::Exit(EXIT_FAILURE);
   }
 

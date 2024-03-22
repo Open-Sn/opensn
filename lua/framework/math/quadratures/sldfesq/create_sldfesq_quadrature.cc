@@ -14,9 +14,7 @@ RegisterLuaFunctionNamespace(CreateSLDFESQAngularQuadrature, aquad, CreateSLDFES
 int
 CreateSLDFESQAngularQuadrature(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError("CreateSLDFESQAngularQuadrature", 1, num_args);
+  LuaCheckArgs<int>(L, "aquad.CreateSLDFESQAngularQuadrature");
 
   auto init_refinement_level = LuaArg<int>(L, 1);
 
