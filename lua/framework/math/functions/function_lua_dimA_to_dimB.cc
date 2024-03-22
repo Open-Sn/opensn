@@ -38,48 +38,19 @@ std::vector<double>
 LuaDimAToDimB::Evaluate(const std::vector<double>& vals) const
 {
   const std::string fname = __PRETTY_FUNCTION__;
-  lua_State* L = console.GetConsoleState();
-  lua_getglobal(L, lua_function_name_.c_str());
-
-  OpenSnLogicalErrorIf(not lua_isfunction(L, -1),
-                       std::string("Attempted to access lua-function, ") + lua_function_name_ +
-                         ", but it seems the function could "
-                         "not be retrieved.");
 
   const size_t num_vals = vals.size();
-
   OpenSnInvalidArgumentIf(num_vals != InputDimension(),
                           std::string("Number of inputs do not match. ") +
                             "Attempted to evaluate with " + std::to_string(num_vals) +
                             " parameters but requires " + std::to_string(InputDimension()));
 
-  LuaPush(L, vals);
-
-  std::vector<double> result;
-  // 1 arguments, 1 result (table), 0=original error object
-  if (lua_pcall(L, 1, 1, 0) == 0)
-  {
-    LuaCheckTableValue(fname, L, -1);
-    size_t table_length = lua_rawlen(L, -1);
-    result.reserve(table_length);
-    for (size_t i = 0; i < table_length; ++i)
-    {
-      LuaPush(L, i + 1);
-      lua_gettable(L, -2);
-      result.push_back(lua_tonumber(L, -1));
-      lua_pop(L, 1);
-    }
-  }
-  else
-    throw std::logic_error(fname + " attempted to call lua-function, " + lua_function_name_ +
-                           ", but the call failed. " + lua_tostring(L, -1));
-
+  lua_State* L = console.GetConsoleState();
+  auto result = LuaCall<std::vector<double>>(L, lua_function_name_, vals);
   OpenSnLogicalErrorIf(result.size() != OutputDimension(),
-                       std::string("Number of outputs after the function was ") +
-                         "called does not "
-                         "match the function specifications. A table is expected with " +
+                       "Number of outputs after the function was called does not match the "
+                       "function specifications. A table is expected with " +
                          std::to_string(OutputDimension()) + " entries.");
-
   return result;
 }
 

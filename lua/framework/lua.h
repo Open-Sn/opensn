@@ -11,6 +11,7 @@ extern "C"
 #include <string>
 #include <vector>
 #include <memory>
+#include <type_traits>
 #include "framework/parameters/parameter_block.h"
 #include "framework/math/math.h"
 
@@ -107,6 +108,18 @@ public:
 void PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level = 0);
 
 opensn::ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
+
+//
+
+template <typename>
+struct is_std_vector : std::false_type
+{
+};
+
+template <typename T, typename A>
+struct is_std_vector<std::vector<T, A>> : std::true_type
+{
+};
 
 // Push values on stack
 
@@ -491,6 +504,87 @@ LuaSetGlobal(lua_State* L, const std::string& name, double value)
 {
   lua_pushnumber(L, value);
   lua_setglobal(L, name.c_str());
+}
+
+// Support methods for pushing arguments on a Lua stack
+
+inline void
+LuaPushArgs(lua_State* L)
+{
+}
+
+template <typename T, typename... ARGS>
+inline void
+LuaPushArgs(lua_State* L, T&& val, ARGS&&... args)
+{
+  LuaPush(L, val);
+  LuaPushArgs(L, std::forward<ARGS>(args)...);
+}
+
+template <typename TRET, typename... ARGS>
+inline TRET
+LuaCallImpl(lua_State* L, const std::string& fn_name, ARGS... args)
+{
+  TRET ret_val;
+  lua_getglobal(L, fn_name.c_str());
+  if (not lua_isfunction(L, -1))
+    throw std::logic_error("Lua function '" + fn_name + "' does not exist.");
+
+  LuaPushArgs(L, std::forward<ARGS>(args)...);
+  if (lua_pcall(L, sizeof...(ARGS), 1, 0) == 0)
+  {
+    if (lua_isnil(L, -1))
+      throw std::logic_error("Lua function '" + fn_name + "' did not return anything.");
+    ret_val = LuaArgAsType<TRET>(L, -1);
+    lua_pop(L, 1);
+    return ret_val;
+  }
+  else
+    throw std::logic_error("Call to lua function '" + fn_name + "' failed. ");
+}
+
+template <typename T, typename A, typename... ARGS>
+inline std::vector<T, A>
+LuaCallStdVectorImpl(lua_State* L, const std::string& fn_name, ARGS... args)
+{
+  std::vector<T, A> ret_val;
+  lua_getglobal(L, fn_name.c_str());
+  if (not lua_isfunction(L, -1))
+    throw std::logic_error("Lua function '" + fn_name + "' does not exist.");
+
+  LuaPushArgs(L, std::forward<ARGS>(args)...);
+  if (lua_pcall(L, sizeof...(ARGS), 1, 0) == 0)
+  {
+    if (lua_isnil(L, -1))
+      throw std::logic_error("Lua function '" + fn_name + "' did not return anything.");
+
+    const size_t num = lua_rawlen(L, -1);
+    ret_val.reserve(num);
+    for (size_t i = 0; i < num; ++i)
+    {
+      LuaPush(L, i + 1);
+      lua_gettable(L, -2);
+      ret_val.push_back(LuaArgAsType<T>(L, -1));
+      lua_pop(L, 1);
+    }
+    lua_pop(L, 1);
+    return ret_val;
+  }
+  else
+    throw std::logic_error("Call to lua function '" + fn_name + "' failed. ");
+}
+
+template <typename TRET, typename... ARGS>
+inline TRET
+LuaCall(lua_State* L, const std::string& fn_name, ARGS... args)
+{
+  if constexpr (is_std_vector<TRET>::value)
+  {
+    using T = typename TRET::value_type;
+    return LuaCallStdVectorImpl<T, std::allocator<T>>(L, fn_name, args...);
+  }
+  else
+    return LuaCallImpl<TRET>(L, fn_name, args...);
 }
 
 } // namespace opensnlua

@@ -28,35 +28,8 @@ LuaScalarSpatialMaterialFunction::LuaScalarSpatialMaterialFunction(const InputPa
 double
 LuaScalarSpatialMaterialFunction::Evaluate(int mat_id, const opensn::Vector3& xyz) const
 {
-  std::string fname = "LuaScalarSpatialMaterialFunction::Evaluate";
   lua_State* L = console.GetConsoleState();
-  // Load lua function
-  lua_getglobal(L, lua_function_name_.c_str());
-
-  // Error check lua function
-  if (not lua_isfunction(L, -1))
-    OpenSnLogicalError("Attempted to access lua-function, " + lua_function_name_ +
-                       ", but it seems the function could not be retrieved.");
-
-  // Push arguments
-  LuaPush(L, mat_id);
-  LuaPush(L, xyz);
-
-  // Call lua function
-  // 2 arguments, 1 result (double), 0=original error object
-  double lua_return;
-  if (lua_pcall(L, 2, 1, 0) == 0)
-  {
-    LuaCheckNumberValue(fname, L, -1);
-    lua_return = lua_tonumber(L, -1);
-  }
-  else
-    OpenSnLogicalError("Attempted to call lua-function, " + lua_function_name_ +
-                       ", but the call failed." + xyz.PrintStr());
-
-  lua_pop(L, 1); // pop the double, or error code
-
-  return lua_return;
+  return LuaCall<double>(L, lua_function_name_, mat_id, xyz);
 }
 
 } // namespace opensnlua

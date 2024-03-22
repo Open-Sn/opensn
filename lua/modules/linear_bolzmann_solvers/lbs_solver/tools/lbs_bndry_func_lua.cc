@@ -27,70 +27,19 @@ BoundaryFunctionToLua::Evaluate(
 {
   const std::string fname = "LinearBoltzmann::BoundaryFunctionToLua";
 
-  auto PushPhiThetaPairTable = [](lua_State* L, const std::pair<double, double>& phi_theta)
-  {
-    lua_newtable(L);
-    LuaPushTableKey(L, "phi", phi_theta.first);
-    LuaPushTableKey(L, "theta", phi_theta.second);
-  };
-
   // Get lua function
   lua_State* L = console.GetConsoleState();
-  lua_getglobal(L, m_lua_function_name.c_str());
-
-  // Error check lua function
-  if (not lua_isfunction(L, -1))
-    throw std::logic_error(fname + " attempted to access lua-function, " + m_lua_function_name +
-                           ", but it seems the function"
-                           " could not be retrieved.");
-
-  // Push arguments
-  LuaPush(L, cell_global_id);
-  LuaPush(L, cell_material_id);
-
-  LuaPush(L, face_node_location);
-  LuaPush(L, face_node_normal);
-
-  LuaPush(L, quadrature_angle_indices);
-
-  LuaPush(L, quadrature_angle_vectors);
-
-  {
-    lua_newtable(L);
-    int n = 0;
-    for (auto& phi_theta : quadrature_phi_theta_angles)
-    {
-      LuaPush(L, n + 1);
-      PushPhiThetaPairTable(L, phi_theta);
-      lua_settable(L, -3);
-      ++n;
-    }
-  } // push phi_theta_pairs
-
-  LuaPush(L, group_indices);
-
-  LuaPush(L, time);
-
-  std::vector<double> psi;
-  // 9 arguments, 1 result (table), 0=original error object
-  if (lua_pcall(L, 9, 1, 0) == 0)
-  {
-    LuaCheckTableValue(fname, L, -1);
-    size_t table_length = lua_rawlen(L, -1);
-    psi.reserve(table_length);
-    for (size_t i = 0; i < table_length; ++i)
-    {
-      LuaPush(L, static_cast<lua_Integer>(i) + 1);
-      lua_gettable(L, -2);
-      psi.push_back(lua_tonumber(L, -1));
-      lua_pop(L, 1);
-    }
-  }
-  else
-    throw std::logic_error(fname + " attempted to call lua-function, " + m_lua_function_name +
-                           ", but the call failed.");
-
-  lua_pop(L, 1); // pop the table, or error code
+  auto psi = LuaCall<std::vector<double>>(L,
+                                          m_lua_function_name,
+                                          cell_global_id,
+                                          cell_material_id,
+                                          face_node_location,
+                                          face_node_normal,
+                                          quadrature_angle_indices,
+                                          quadrature_angle_vectors,
+                                          quadrature_phi_theta_angles,
+                                          group_indices,
+                                          time);
 
   // Error check psi vector
   size_t num_angles = quadrature_angle_indices.size();

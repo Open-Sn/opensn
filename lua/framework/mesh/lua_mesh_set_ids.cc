@@ -80,36 +80,6 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
                                << " Setting material id from lua function.";
 
     const auto lua_fname = LuaArg<std::string>(L, 1);
-    auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const Cell& cell)
-    {
-      // Load lua function
-      lua_getglobal(L, lua_fname.c_str());
-
-      // Error check lua function
-      if (not lua_isfunction(L, -1))
-        OpenSnLogicalError("Attempted to access lua-function, " + lua_fname +
-                           ", but it seems the function could not be retrieved.");
-
-      // Push arguments
-      LuaPush(L, cell.centroid_);
-      LuaPush(L, cell.material_id_);
-
-      // Call lua function
-      // 2 arguments, 1 result (double), 0=original error object
-      int lua_return;
-      if (lua_pcall(L, 2, 1, 0) == 0)
-      {
-        LuaCheckNumberValue(fname, L, -1);
-        lua_return = lua_tointeger(L, -1);
-      }
-      else
-        OpenSnLogicalError("Attempted to call lua-function, " + lua_fname +
-                           ", but the call failed.");
-
-      lua_pop(L, 1); // pop the int, or error code
-
-      return lua_return;
-    };
 
     // Get back mesh
     MeshContinuum& grid = *GetCurrentMesh();
@@ -117,8 +87,7 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
     int local_num_cells_modified = 0;
     for (auto& cell : grid.local_cells)
     {
-      int new_matid = CallLuaXYZFunction(cell);
-
+      int new_matid = LuaCall<int>(L, lua_fname, cell.centroid_, cell.material_id_);
       if (cell.material_id_ != new_matid)
       {
         cell.material_id_ = new_matid;
@@ -130,7 +99,7 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
     for (uint64_t ghost_id : ghost_ids)
     {
       auto& cell = grid.cells[ghost_id];
-      int new_matid = CallLuaXYZFunction(cell);
+      int new_matid = LuaCall<int>(L, lua_fname, cell.centroid_, cell.material_id_);
 
       if (cell.material_id_ != new_matid)
       {
@@ -170,42 +139,6 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
     opensn::log.Log0Verbose1() << program_timer.GetTimeString()
                                << " Setting boundary id from lua function.";
 
-    auto CallLuaXYZFunction = [&L, &lua_fname, &fname](const CellFace& face)
-    {
-      // Load lua function
-      lua_getglobal(L, lua_fname.c_str());
-
-      // Error check lua function
-      OpenSnLogicalErrorIf(not lua_isfunction(L, -1),
-                           "Attempted to access lua-function, " + lua_fname +
-                             ", but it seems the function could not be retrieved.");
-
-      const auto& xyz = face.centroid_;
-      const auto& n = face.normal_;
-
-      // Push arguments
-      LuaPush(L, xyz);
-      LuaPush(L, n);
-      LuaPush(L, face.neighbor_id_);
-
-      // Call lua function
-      // 3 arguments, 1 result (string), 0=original error object
-      std::string lua_return_bname;
-      if (lua_pcall(L, 3, 1, 0) == 0)
-      {
-        LuaCheckNumberValue(fname, L, -1);
-        LuaCheckStringValue(fname, L, -2);
-        lua_return_bname = lua_tostring(L, -1);
-      }
-      else
-        OpenSnLogicalError("Attempted to call lua-function, " + lua_fname +
-                           ", but the call failed.");
-
-      lua_pop(L, 1); // pop the string, or error code
-
-      return lua_return_bname;
-    };
-
     MeshContinuum& grid = *GetCurrentMesh();
 
     // Check if name already has id
@@ -216,7 +149,9 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
       for (auto& face : cell.faces_)
         if (not face.has_neighbor_)
         {
-          const std::string boundary_name = CallLuaXYZFunction(face);
+          auto boundary_name =
+            LuaCall<std::string>(L, lua_fname, face.centroid_, face.normal_, face.neighbor_id_);
+
           const uint64_t boundary_id = grid.MakeBoundaryID(boundary_name);
 
           if (face.neighbor_id_ != boundary_id)
@@ -236,7 +171,8 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
       for (auto& face : cell.faces_)
         if (not face.has_neighbor_)
         {
-          const std::string boundary_name = CallLuaXYZFunction(face);
+          auto boundary_name =
+            LuaCall<std::string>(L, lua_fname, face.centroid_, face.normal_, face.neighbor_id_);
           const uint64_t boundary_id = grid.MakeBoundaryID(boundary_name);
 
           if (face.neighbor_id_ != boundary_id)
