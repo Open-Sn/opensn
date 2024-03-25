@@ -1,5 +1,4 @@
-#include "framework/math/quadratures/quadrature.h"
-
+#include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "framework/logging/log_exceptions.h"
 
 namespace opensn

@@ -1,4 +1,4 @@
-#include "framework/math/quadratures/point_quadrature.h"
+#include "framework/math/quadratures/spatial/point_quadrature.h"
 
 namespace opensn
 {

@@ -1,15 +1,10 @@
 #include "framework/lua.h"
-
-#include "framework/runtime.h"
-
-#include "framework/math/quadratures/angular_product_quadrature.h"
-
-#include "framework/logging/log.h"
-
-#include <memory>
-
 #include "quadratures_lua.h"
+#include "framework/math/quadratures/angular/angular_product_quadrature.h"
+#include "framework/logging/log.h"
 #include "framework/console/console.h"
+#include "framework/runtime.h"
+#include <memory>
 
 using namespace opensn;
 

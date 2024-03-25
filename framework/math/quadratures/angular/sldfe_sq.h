@@ -1,13 +1,11 @@
 #pragma once
 
-#include "framework/mesh/mesh.h"
-
-#include "framework/math/math.h"
-#include "framework/math/quadratures/angular_quadrature_base.h"
-#include "framework/math/dynamic_vector.h"
+#include "framework/math/quadratures/angular/angular_quadrature_base.h"
 #include "framework/math/quadratures/quadrature_gausslegendre.h"
+#include "framework/math/dynamic_vector.h"
 #include "framework/math/dynamic_matrix.h"
-
+#include "framework/mesh/mesh.h"
+#include "framework/math/math.h"
 #include <vector>
 #include <array>
 

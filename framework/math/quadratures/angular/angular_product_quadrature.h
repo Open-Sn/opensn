@@ -1,9 +1,8 @@
 #pragma once
 
+#include "framework/math/quadratures/angular/angular_quadrature_base.h"
 #include <map>
 #include <vector>
-
-#include "framework/math/quadratures/angular_quadrature_base.h"
 
 namespace opensn
 {

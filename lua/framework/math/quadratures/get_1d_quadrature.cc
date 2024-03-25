@@ -1,7 +1,7 @@
 #include "framework/parameters/parameter_block.h"
-#include "framework/runtime.h"
-#include "framework/math/quadratures/quadrature.h"
+#include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "lua/framework/console/console.h"
+#include "framework/runtime.h"
 
 using namespace opensn;
 

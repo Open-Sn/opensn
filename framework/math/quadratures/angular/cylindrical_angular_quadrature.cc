@@ -1,11 +1,9 @@
-#include "framework/math/quadratures/cylindrical_angular_quadrature.h"
-
+#include "framework/math/quadratures/angular/cylindrical_angular_quadrature.h"
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include <algorithm>
 #include <limits>
 #include <numeric>
-
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
 
 namespace opensn
 {

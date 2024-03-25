@@ -1,16 +1,12 @@
 #include "framework/lua.h"
-
-#include "framework/runtime.h"
-
+#include "quadratures_lua.h"
 #include "framework/math/quadratures/quadrature_gausschebyshev.h"
 #include "framework/math/quadratures/quadrature_gausslegendre.h"
-#include "framework/math/quadratures/cylindrical_angular_quadrature.h"
-#include "framework/math/quadratures/spherical_angular_quadrature.h"
-
+#include "framework/math/quadratures/angular/cylindrical_angular_quadrature.h"
+#include "framework/math/quadratures/angular/spherical_angular_quadrature.h"
 #include "framework/logging/log.h"
-
-#include "quadratures_lua.h"
 #include "framework/console/console.h"
+#include "framework/runtime.h"
 
 using namespace opensn;
 

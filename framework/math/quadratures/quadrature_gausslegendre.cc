@@ -1,5 +1,5 @@
 #include "framework/math/quadratures/quadrature_gausslegendre.h"
-#include "framework/math/quadratures/legendre_poly/legendrepoly.h"
+#include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include <cmath>
 
 #include "framework/object_factory.h"

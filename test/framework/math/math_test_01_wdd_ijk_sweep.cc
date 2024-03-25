@@ -1,15 +1,12 @@
+#include "framework/math/quadratures/angular/angular_product_quadrature.h"
+#include "lua/framework/console/console.h"
+#include "framework/data_types/ndarray.h"
+#include "framework/math/math_range.h"
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include <array>
 #include <cstddef>
 #include <cmath>
-
-#include "framework/data_types/ndarray.h"
-#include "framework/math/quadratures/angular_product_quadrature.h"
-#include "framework/math/math_range.h"
-
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
-
-#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

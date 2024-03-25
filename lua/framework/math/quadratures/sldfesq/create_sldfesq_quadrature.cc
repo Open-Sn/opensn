@@ -1,10 +1,7 @@
 #include "framework/lua.h"
-
-#include "framework/runtime.h"
-
-#include "framework/math/quadratures/sldfesq/sldfe_sq.h"
-
+#include "framework/math/quadratures/angular/sldfe_sq.h"
 #include "framework/console/console.h"
+#include "framework/runtime.h"
 #include "sldfe_lua.h"
 
 using namespace opensn;

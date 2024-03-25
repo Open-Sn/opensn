@@ -1,10 +1,7 @@
-#include "framework/math/quadratures/angular_quadrature_base.h"
-
-#include "framework/math/quadratures/legendre_poly/legendrepoly.h"
-
-#include "framework/runtime.h"
+#include "framework/math/quadratures/angular/angular_quadrature_base.h"
+#include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/logging/log.h"
-
+#include "framework/runtime.h"
 #include <iomanip>
 #include <numeric>
 

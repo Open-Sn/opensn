@@ -1,6 +1,5 @@
 #include "framework/lua.h"
-#include "framework/math/quadratures/legendre_poly/legendrepoly.h"
-
+#include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/console/console.h"
 #include "legendre_lua.h"
 

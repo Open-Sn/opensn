@@ -1,12 +1,11 @@
-#include "framework/math/quadratures/angular_product_quadrature.h"
+#include "framework/math/quadratures/angular/angular_product_quadrature.h"
 #include "framework/math/quadratures/quadrature_gausslegendre.h"
 #include "framework/math/quadratures/quadrature_gausschebyshev.h"
-
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include <cmath>
 #include <sstream>
 
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
 
 namespace opensn
 {

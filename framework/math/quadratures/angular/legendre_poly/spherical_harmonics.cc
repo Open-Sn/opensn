@@ -1,5 +1,4 @@
-#include "framework/math/quadratures/legendre_poly/legendrepoly.h"
-
+#include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/math/math.h"
 #include <cmath>
 

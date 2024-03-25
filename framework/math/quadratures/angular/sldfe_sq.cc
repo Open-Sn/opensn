@@ -1,9 +1,9 @@
-#include "framework/math/quadratures/sldfesq/sldfe_sq.h"
-#include "framework/runtime.h"
+#include "framework/math/quadratures/angular/sldfe_sq.h"
+#include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/math/quadratures/legendre_poly/legendrepoly.h"
 #include "framework/mesh/mesh_vector.h"
+#include "framework/runtime.h"
 #include <algorithm>
 #include <map>
 

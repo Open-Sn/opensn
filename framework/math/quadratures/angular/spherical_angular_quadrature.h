@@ -1,8 +1,7 @@
 #pragma once
 
-#include "framework/math/quadratures/curvilinear_angular_quadrature.h"
-
-#include "framework/math/quadratures/quadrature.h"
+#include "framework/math/quadratures/angular/curvilinear_angular_quadrature.h"
+#include "framework/math/quadratures/spatial/spatial_quadrature.h"
 
 namespace opensn
 {

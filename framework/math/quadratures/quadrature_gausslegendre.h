@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/quadratures/quadrature.h"
+#include "framework/math/quadratures/spatial/spatial_quadrature.h"
 
 namespace opensn
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
-#include "framework/math/quadratures/quadrature_tetrahedron.h"
-#include "framework/math/quadratures/quadrature_triangle.h"
+#include "framework/math/quadratures/spatial/quadrature_tetrahedron.h"
+#include "framework/math/quadratures/spatial/quadrature_triangle.h"
 #include "framework/mesh/cell/cell.h"
 
 namespace opensn

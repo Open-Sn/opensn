@@ -1,13 +1,13 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/lbs_curvilinear_solver.h"
-#include "framework/object_factory.h"
-#include "framework/math/quadratures/cylindrical_angular_quadrature.h"
-#include "framework/math/quadratures/spherical_angular_quadrature.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/sweep_chunks/lbs_curvilinear_sweep_chunk_pwl.h"
-#include "framework/runtime.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
+#include "framework/math/quadratures/angular/cylindrical_angular_quadrature.h"
+#include "framework/math/quadratures/angular/spherical_angular_quadrature.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/memory_usage.h"
+#include "framework/object_factory.h"
+#include "framework/runtime.h"
 #include <iomanip>
 
 namespace opensn

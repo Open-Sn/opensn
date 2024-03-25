@@ -1,10 +1,8 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_base.h"
-
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_slab_mapping.h"
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polygon_mapping.h"
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polyhedron_mapping.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace opensn
 {
@@ -16,7 +14,6 @@ PieceWiseLinearBase::PieceWiseLinearBase(const MeshContinuum& grid,
   : FiniteElementBase(grid, cs_type, sdm_type, q_order),
     line_quad_order_arbitrary_(q_order),
     tri_quad_order_arbitrary_(q_order),
-    quad_quad_order_arbitrary_(q_order),
     tet_quad_order_arbitrary_(q_order)
 {
 }
