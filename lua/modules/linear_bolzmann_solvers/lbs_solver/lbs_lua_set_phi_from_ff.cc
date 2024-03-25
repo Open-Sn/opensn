@@ -67,7 +67,7 @@ LBSSetPhiFromFieldFunction(lua_State* L)
   // Now call the function
   lbs_solver.SetPhiFromFieldFunctions(phi_option, moment_indices, group_indices);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

@@ -39,7 +39,7 @@ GetFieldFunctionHandleByName(lua_State* L)
                               << "\". A null handle will "
                               << "be returned." << std::endl;
 
-    return 0;
+    return LuaReturn(L);
   }
 
   if (num_handles > 1)
@@ -48,8 +48,8 @@ GetFieldFunctionHandleByName(lua_State* L)
                               << " requested name. Only the first match will be "
                               << " returned.";
 
-  LuaPush(L, handles_that_matched.front());
-  return 1;
+  auto handle = handles_that_matched.front();
+  return LuaReturn(L, handle);
 }
 
 } // namespace opensnlua

@@ -26,7 +26,7 @@ FFInterpolationExportPython(lua_State* L)
 
   p_ffi->ExportPython(base_name);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

@@ -31,7 +31,7 @@ AddPointSource(lua_State* L)
   auto pt_src_handle = LuaArg<int>(L, 2);
   lbs_solver.AddPointSource(std::move(opensn::GetStackItem<opensn::lbs::PointSource>(
     opensn::object_stack, pt_src_handle, __FUNCTION__)));
-  return 1;
+  return LuaReturn(L);
 }
 
 RegisterLuaFunctionNamespace(ClearPointSources, lbs, ClearPointSources);
@@ -51,7 +51,7 @@ ClearPointSources(lua_State* L)
 
   lbs_solver.ClearPointSources();
   opensn::log.Log() << "Cleared all point sources.";
-  return 0;
+  return LuaReturn(L);
 }
 
 RegisterLuaFunctionNamespace(AddDistributedSource, lbs, AddDistributedSource);
@@ -71,7 +71,7 @@ AddDistributedSource(lua_State* L)
     opensn::GetStackItem<opensn::lbs::DistributedSource>(object_stack, src_handle, __FUNCTION__)));
 
   opensn::log.Log() << lbs_solver.TextName() << ": Added distributed source.";
-  return 0;
+  return LuaReturn(L);
 }
 
 RegisterLuaFunctionNamespace(ClearDistributedSources, lbs, ClearDistributedSources);
@@ -89,7 +89,7 @@ ClearDistributedSources(lua_State* L)
 
   lbs_solver.ClearDistributedSources();
   opensn::log.Log() << "Cleared all distributed sources.";
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

@@ -34,12 +34,8 @@ MakeObject(lua_State* L)
   const auto params = TableParserAsParameterBlock::ParseTable(L, 1);
 
   const auto& object_maker = opensn::ObjectFactory::GetInstance();
-  const size_t handle = object_maker.MakeRegisteredObject(params);
-
-  const std::string type = params.GetParamValue<std::string>("obj_type");
-
-  LuaPush(L, handle);
-  return 1;
+  const auto handle = object_maker.MakeRegisteredObject(params);
+  return LuaReturn(L, handle);
 }
 
 int
@@ -56,10 +52,8 @@ MakeObjectType(lua_State* L)
   const auto params = TableParserAsParameterBlock::ParseTable(L, 2);
 
   const auto& object_maker = opensn::ObjectFactory::GetInstance();
-  const size_t handle = object_maker.MakeRegisteredObjectOfType(type, params);
-
-  LuaPush(L, handle);
-  return 1;
+  const auto handle = object_maker.MakeRegisteredObjectOfType(type, params);
+  return LuaReturn(L, handle);
 }
 
 } // namespace opensnlua

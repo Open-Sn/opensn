@@ -25,8 +25,7 @@ ProgramTime(lua_State* L)
 
   opensn::mpi_comm.broadcast(time, 0);
 
-  LuaPush(L, time);
-  return 1;
+  return LuaReturn(L, time);
 }
 
 } // namespace opensnlua

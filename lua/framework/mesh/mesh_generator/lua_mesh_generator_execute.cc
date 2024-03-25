@@ -25,7 +25,7 @@ MeshGeneratorExecute(lua_State* L)
   auto& generator = opensn::GetStackItem<MeshGenerator>(opensn::object_stack, handle, fname);
   generator.Execute();
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

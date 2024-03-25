@@ -23,7 +23,7 @@ ClearResponseSources(lua_State* L)
 
   // Clear the sources
   response_evaluator.ClearForwardSources();
-  return 0;
+  return LuaReturn(L);
 }
 
 RegisterWrapperFunctionNamespace(lbs,
@@ -120,8 +120,7 @@ EvaluateResponse(lua_State* L)
 
   // Compute the response
   double val = response_evaluator.EvaluateResponse(buffer);
-  LuaPush(L, val);
-  return 1;
+  return LuaReturn(L, val);
 }
 
 } // namespace opensnlua::lbs

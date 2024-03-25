@@ -33,7 +33,7 @@ LogSetVerbosity(lua_State* L)
 
   if (num_args == 0)
   {
-    return 0;
+    return LuaReturn(L);
   }
   else
   {
@@ -44,7 +44,7 @@ LogSetVerbosity(lua_State* L)
       opensn::log.SetVerbosity(level);
     }
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -56,7 +56,7 @@ LogLog(lua_State* L)
 
   opensn::log.Log(static_cast<opensn::Logger::LOG_LVL>(mode)) << message << std::endl;
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -84,9 +84,7 @@ LogProcessEvent(lua_State* L)
   else
     OpenSnInvalidArgument("Unsupported event operation name \"" + event_operation_name + "\".");
 
-  LuaPush(L, opensn::log.ProcessEvent(event_tag, event_operation));
-
-  return 1;
+  return LuaReturn(L, opensn::log.ProcessEvent(event_tag, event_operation));
 }
 
 int
@@ -103,7 +101,7 @@ LogPrintTimingGraph(lua_State* L)
   if (opensn::mpi_comm.rank() == rank)
     opensn::log.LogAll() << "\nPerformance Graph:\n" << timing.MakeGraphString();
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

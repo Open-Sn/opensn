@@ -28,7 +28,7 @@ LBSInitializeMaterials(lua_State* L)
 
   lbs_solver.InitializeMaterials();
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

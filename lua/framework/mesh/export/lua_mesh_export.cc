@@ -23,7 +23,7 @@ MeshExportToObj(lua_State* L)
   auto grid = opensn::GetCurrentMesh();
   grid->ExportCellsToObj(file_name.c_str(), per_material);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -37,7 +37,7 @@ MeshExportToVTK(lua_State* L)
   auto grid = opensn::GetCurrentMesh();
   grid->ExportCellsToVTK(file_name);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -53,7 +53,7 @@ MeshExportToExodus(lua_State* L)
   auto grid = opensn::GetCurrentMesh();
   grid->ExportCellsToExodus(file_name, suppress_nodesets, suppress_sidesets);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

@@ -21,12 +21,8 @@ LogVolPointSense(lua_State* L)
 
   const auto& lv = opensn::GetStackItem<LogicalVolume>(opensn::object_stack, lv_handle, fname);
 
-  if (lv.Inside(point))
-    LuaPush(L, true);
-  else
-    LuaPush(L, false);
-
-  return 1;
+  auto ret_val = lv.Inside(point);
+  return LuaReturn(L, ret_val);
 }
 
 } // namespace opensnlua

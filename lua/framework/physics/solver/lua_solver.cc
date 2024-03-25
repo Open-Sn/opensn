@@ -35,9 +35,7 @@ SolverCreate(lua_State* L)
 
   const auto& object_maker = ObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObject(params);
-
-  LuaPush(L, handle);
-  return 1;
+  return LuaReturn(L, handle);
 }
 
 int
@@ -52,7 +50,7 @@ SolverInitialize(lua_State* L)
 
   PhysicsEventPublisher::GetInstance().SolverInitialize(solver);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -67,7 +65,7 @@ SolverExecute(lua_State* L)
 
   PhysicsEventPublisher::GetInstance().SolverExecute(solver);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -82,7 +80,7 @@ SolverStep(lua_State* L)
 
   PhysicsEventPublisher::GetInstance().SolverStep(solver);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -97,7 +95,7 @@ SolverAdvance(lua_State* L)
 
   PhysicsEventPublisher::GetInstance().SolverAdvance(solver);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -153,7 +151,7 @@ SolverSetBasicOption(lua_State* L)
     throw oor;
   }
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -164,10 +162,8 @@ SolverGetName(lua_State* L)
 
   const auto solver_handle = LuaArg<int>(L, 1);
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
-
-  LuaPush(L, solver.TextName());
-
-  return 1;
+  auto name = solver.TextName();
+  return LuaReturn(L, name);
 }
 
 int
@@ -253,7 +249,7 @@ SolverSetProperties(lua_State* L)
 
   solver.SetProperties(property_block);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

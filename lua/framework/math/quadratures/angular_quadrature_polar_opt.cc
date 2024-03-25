@@ -32,7 +32,7 @@ OptimizeAngularQuadratureForPolarSymmetry(lua_State* L)
 
   quadrature.OptimizeForPolarSymmetry(normalization);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

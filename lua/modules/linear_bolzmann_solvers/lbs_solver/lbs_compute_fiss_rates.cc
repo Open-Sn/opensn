@@ -30,10 +30,7 @@ LBSComputeFissionRate(lua_State* L)
   const auto& phi = nature == "OLD" ? lbs_solver.PhiOldLocal() : lbs_solver.PhiNewLocal();
 
   const double fission_rate = lbs_solver.ComputeFissionRate(phi);
-
-  LuaPush(L, fission_rate);
-
-  return 1;
+  return LuaReturn(L, fission_rate);
 }
 
 } // namespace opensnlua::lbs

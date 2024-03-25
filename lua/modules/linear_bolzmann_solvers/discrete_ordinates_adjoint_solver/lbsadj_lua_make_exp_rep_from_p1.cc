@@ -36,8 +36,6 @@ AdjointSolverMakeExpRepFromP1Moments(lua_State* L)
 
   auto solution = opensn::lbs::MakeExpRepFromP1({P1[0], P1[1], P1[2], P1[3]}, verbose);
 
-  LuaPush(L, solution[0]);
-  LuaPush(L, solution[1]);
-  return 2;
+  return LuaReturn(L, solution[0], solution[1]);
 }
 } // namespace opensnlua::lbs

@@ -125,8 +125,7 @@ PhysicsTransportXSCreate(lua_State* L)
   opensn::multigroup_xs_stack.push_back(xs);
 
   const size_t index = opensn::multigroup_xs_stack.size() - 1;
-  LuaPush(L, index);
-  return 1;
+  return LuaReturn(L, index);
 }
 
 int
@@ -186,7 +185,7 @@ PhysicsTransportXSSet(lua_State* L)
     opensn::log.LogAllError() << "Unsupported operation in " << fname << ". " << operation_index;
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -265,10 +264,8 @@ PhysicsTransportXSMakeCombined(lua_State* L)
   new_xs->MakeCombined(combinations);
 
   opensn::multigroup_xs_stack.push_back(new_xs);
-  const lua_Integer num_xs = opensn::multigroup_xs_stack.size();
-  LuaPush(L, num_xs - 1);
-
-  return 1;
+  auto num_xs = opensn::multigroup_xs_stack.size();
+  return LuaReturn(L, num_xs - 1);
 }
 
 int
@@ -332,7 +329,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
 
   xs->MakeCombined(combinations);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -340,7 +337,7 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
 {
   const std::string fname = "xs.ExportToOpenSnFormat";
   LuaCheckArgs<int, std::string>(L, fname);
-  
+
   const auto handle = LuaArg<int>(L, 1);
   auto file_name = LuaArg<std::string>(L, 2);
 
@@ -356,7 +353,7 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
   }
   xs->ExportToOpenSnXSFile(file_name);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

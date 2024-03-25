@@ -25,12 +25,11 @@ MeshSurfaceMeshCreate(lua_State* L)
   opensn::object_stack.emplace_back(new_mesh);
 
   size_t index = opensn::object_stack.size() - 1;
-  LuaPush(L, index);
 
   opensn::log.LogAllVerbose2() << "mesh.SurfaceMeshCreate: Empty SurfaceMesh object, " << index
                                << ", created" << std::endl;
 
-  return 1;
+  return LuaReturn(L, index);
 }
 
 int
@@ -53,7 +52,7 @@ MeshComputeLoadBalancing(lua_State* L)
   std::stable_sort(y_cuts.begin(), y_cuts.end());
   cur_surf.ComputeLoadBalancing(x_cuts, y_cuts);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 /** Exports all open edges of a surface mesh to file. This is used mostly
@@ -79,7 +78,8 @@ SurfaceMeshExtractOpenEdgesToObj(lua_State* L)
     opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, surf_handle, __FUNCTION__);
 
   surface_mesh.ExtractOpenEdgesToObj(file_name.c_str());
-  return 0;
+
+  return LuaReturn(L);
 }
 
 int
@@ -100,7 +100,7 @@ MeshSurfaceMeshImportFromOBJFile(lua_State* L)
 
   surface_mesh.ImportFromOBJFile(file_name, as_poly, translation_vec);
 
-  return 1;
+  return LuaReturn(L);
 }
 
 int
@@ -116,7 +116,7 @@ MeshSurfaceMeshImportFromTriangleFiles(lua_State* L)
 
   surface_mesh.ImportFromTriangleFiles(file_name.c_str(), as_poly);
 
-  return 1;
+  return LuaReturn(L);
 }
 
 int
@@ -135,7 +135,7 @@ SurfaceMeshImportFromMshFiles(lua_State* L)
   opensn::log.LogAllVerbose2() << outtext.str();
   surface_mesh.ImportFromMshFiles(file_name.c_str(), as_poly);
 
-  return 1;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

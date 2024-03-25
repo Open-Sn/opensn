@@ -47,7 +47,7 @@ LBSWriteGroupsetAngularFlux(lua_State* L)
   const auto& psi = lbs_solver.PsiNewLocal().at(groupset->id_);
   lbs_solver.WriteGroupsetAngularFluxes(*groupset, psi, file_base);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -83,7 +83,7 @@ LBSReadGroupsetAngularFlux(lua_State* L)
   auto& psi = lbs_solver.PsiNewLocal().at(groupset->id_);
   lbs_solver.ReadGroupsetAngularFluxes(file_base, *groupset, psi);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

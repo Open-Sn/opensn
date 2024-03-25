@@ -21,7 +21,7 @@ FieldOperationExecute(lua_State* L)
 
   operation.Execute();
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

@@ -20,7 +20,7 @@ Exit(lua_State* L)
 {
   auto return_code = LuaArgOptional<int>(L, 1, EXIT_SUCCESS);
   opensn::Exit(return_code);
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

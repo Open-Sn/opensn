@@ -19,8 +19,7 @@ Legendre(lua_State* L)
   auto N = LuaArg<int>(L, 1);
   auto x = LuaArg<double>(L, 2);
   double retval = opensn::Legendre(N, x);
-  LuaPush(L, retval);
-  return 1;
+  return LuaReturn(L, retval);
 }
 
 int
@@ -30,8 +29,7 @@ LegendreDerivative(lua_State* L)
   auto N = LuaArg<int>(L, 1);
   auto x = LuaArg<double>(L, 2);
   double retval = dLegendredx(N, x);
-  LuaPush(L, retval);
-  return 1;
+  return LuaReturn(L, retval);
 }
 
 int
@@ -43,8 +41,7 @@ Ylm(lua_State* L)
   auto theta = LuaArg<double>(L, 3);
   auto varphi = LuaArg<double>(L, 4);
   double retval = opensn::Ylm(ell, m, varphi, theta);
-  LuaPush(L, retval);
-  return 1;
+  return LuaReturn(L, retval);
 }
 
 } // namespace opensnlua

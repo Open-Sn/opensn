@@ -51,7 +51,7 @@ LocallyRefineSLDFESQAngularQuadrature(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

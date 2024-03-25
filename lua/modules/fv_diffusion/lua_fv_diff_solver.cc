@@ -52,11 +52,10 @@ FVDiffusionSolverCreate(lua_State* L)
 
   opensn::object_stack.push_back(new_solver);
 
-  LuaPush(L, opensn::object_stack.size() - 1);
-
   opensn::log.LogAllVerbose1() << "\nFVDiffusionSolverCreate: FV Diffusion solver created"
                                << std::endl;
-  return 1;
+
+  return LuaReturn(L, opensn::object_stack.size() - 1);
 }
 
 int
@@ -205,7 +204,8 @@ FVDiffusionSetBCProperty(lua_State* L)
     opensn::log.Log0Error() << "Invalid property in DiffusionsetBCproperty.";
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

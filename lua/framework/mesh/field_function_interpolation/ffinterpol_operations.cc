@@ -22,7 +22,7 @@ FFInterpolationInitialize(lua_State* L)
   auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 
   p_ffi->Initialize();
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -37,7 +37,7 @@ FFInterpolationExecute(lua_State* L)
   auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 
   p_ffi->Execute();
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

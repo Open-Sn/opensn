@@ -28,7 +28,7 @@ LBSComputeBalance(lua_State* L)
 
   lbs_solver.ComputeBalance();
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

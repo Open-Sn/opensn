@@ -24,12 +24,11 @@ CFEMMGDiffusionSolverCreate(lua_State* L)
 
   opensn::object_stack.push_back(new_solver);
 
-  LuaPush(L, opensn::object_stack.size() - 1);
-
   opensn::log.LogAllVerbose1() << "\nCFEMMGDiffusionSolverCreate: CFEM "
                                   "Multigroup Diffusion solver created"
                                << std::endl;
-  return 1;
+
+  return LuaReturn(L, opensn::object_stack.size() - 1);
 }
 
 int
@@ -177,7 +176,7 @@ CFEMMGDiffusionSetBCProperty(lua_State* L)
     opensn::log.Log0Error() << "Invalid property in CFEMMGDiffusionSetBCProperty.";
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

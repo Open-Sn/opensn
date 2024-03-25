@@ -34,9 +34,7 @@ CreateCustomAngularQuadrature(lua_State* L)
 
   opensn::angular_quadrature_stack.push_back(new_quad);
   size_t index = opensn::angular_quadrature_stack.size() - 1;
-  LuaPush(L, index);
-
-  return 1;
+  return LuaReturn(L, index);
 }
 
 } // namespace opensnlua

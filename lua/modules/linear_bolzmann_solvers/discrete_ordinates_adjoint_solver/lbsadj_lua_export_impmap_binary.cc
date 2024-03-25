@@ -29,7 +29,7 @@ AdjointSolverExportImportanceMapBinary(lua_State* L)
 
   solver.ExportImportanceMap(file_name);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

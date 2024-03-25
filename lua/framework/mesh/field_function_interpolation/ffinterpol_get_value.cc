@@ -29,9 +29,7 @@ FFInterpolationGetValue(lua_State* L)
   {
     auto& cur_ffi_point = dynamic_cast<opensn::FieldFunctionInterpolationPoint&>(*p_ffi);
     double value = cur_ffi_point.GetPointValue();
-
-    LuaPush(L, value);
-    return 1;
+    return LuaReturn(L, value);
   }
   else if (p_ffi->Type() == FieldFunctionInterpolationType::LINE)
   {
@@ -56,9 +54,7 @@ FFInterpolationGetValue(lua_State* L)
   {
     auto& cur_ffi_volume = dynamic_cast<opensn::FieldFunctionInterpolationVolume&>(*p_ffi);
     double value = cur_ffi_volume.GetOpValue();
-
-    LuaPush(L, value);
-    return 1;
+    return LuaReturn(L, value);
   }
   else
   {
@@ -66,7 +62,7 @@ FFInterpolationGetValue(lua_State* L)
       << fname + " is currently only supported for POINT, LINE and VOLUME interpolator types.";
   }
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

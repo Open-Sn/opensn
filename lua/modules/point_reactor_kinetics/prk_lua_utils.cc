@@ -29,19 +29,17 @@ PRKGetParam(lua_State* L)
 
   const auto param_name = LuaArg<std::string>(L, 2);
   if (param_name == "population_prev")
-    LuaPush(L, solver.PopulationPrev());
+    return LuaReturn(L, solver.PopulationPrev());
   else if (param_name == "population_next")
-    LuaPush(L, solver.PopulationNew());
+    return LuaReturn(L, solver.PopulationNew());
   else if (param_name == "period")
-    LuaPush(L, solver.Period());
+    return LuaReturn(L, solver.Period());
   else if (param_name == "time_prev")
-    LuaPush(L, solver.TimePrev());
+    return LuaReturn(L, solver.TimePrev());
   else if (param_name == "time_next")
-    LuaPush(L, solver.TimeNew());
+    return LuaReturn(L, solver.TimeNew());
   else
     throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name + "\".");
-
-  return 1;
 }
 
 int
@@ -66,7 +64,7 @@ PRKSetParam(lua_State* L)
   else
     throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name + "\".");
 
-  return 0;
+  return LuaReturn(L);
 }
 
 RegisterWrapperFunctionNamespace(prk, SetParam, GetSyntax_SetParam, SetParam);

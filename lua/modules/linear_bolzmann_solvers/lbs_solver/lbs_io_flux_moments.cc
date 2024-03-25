@@ -36,7 +36,7 @@ LBSWriteFluxMoments(lua_State* L)
 
   lbs_solver.WriteFluxMoments(lbs_solver.PhiOldLocal(), file_base);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -58,7 +58,7 @@ LBSCreateAndWriteSourceMoments(lua_State* L)
   auto source_moments = lbs_solver.MakeSourceMomentsFromPhi();
   lbs_solver.WriteFluxMoments(source_moments, file_base);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -86,7 +86,7 @@ LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
   lbs_solver.ExtSrcMomentsLocal() = lbs_solver.MakeSourceMomentsFromPhi();
   lbs_solver.PhiOldLocal() = temp_phi;
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -108,7 +108,7 @@ LBSReadSourceMoments(lua_State* L)
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.ExtSrcMomentsLocal(), single_file_flag);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -130,7 +130,7 @@ LBSReadFluxMoments(lua_State* L)
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.PhiOldLocal(), single_file_flag);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

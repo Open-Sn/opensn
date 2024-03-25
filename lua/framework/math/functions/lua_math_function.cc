@@ -55,13 +55,11 @@ FunctionDimAToDimBEvaluate(lua_State* L)
   // Parse outputs
   if (values.size() == 1)
   {
-    LuaPush(L, values.front());
-    return 1;
+    return LuaReturn(L, values.front());
   }
   // else
 
-  LuaPush(L, values);
-  return 1;
+  return LuaReturn(L, values);
 }
 
 } // namespace opensnlua

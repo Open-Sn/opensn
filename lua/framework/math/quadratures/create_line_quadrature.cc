@@ -38,9 +38,7 @@ CreateLineQuadrature(lua_State* L)
 
     const size_t handle =
       obj_factory.MakeRegisteredObjectOfType("squad::QuadratureGaussLegendre", params);
-
-    LuaPush(L, handle);
-    return 1;
+    return LuaReturn(L, handle);
   }
   else if (ident == 2) // GAUSS_CHEBYSHEV
   {
@@ -48,11 +46,9 @@ CreateLineQuadrature(lua_State* L)
 
     const size_t handle =
       obj_factory.MakeRegisteredObjectOfType("squad::QuadratureGaussChebyshev", params);
-
-    LuaPush(L, handle);
-    return 1;
+    return LuaReturn(L, handle);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

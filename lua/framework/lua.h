@@ -834,4 +834,42 @@ LuaCheckArgs(lua_State* L, const std::string& fn_name)
   (LuaCheckArgWithIndex<ARGS>(fn_name, L, f), ...);
 }
 
+// API for function return values
+
+/**
+ * For functions that return something. This puts all `args` on the Lua stack and returns the
+ * number of arguments.
+ *
+ * Use like this:
+ * ```
+ * int CFun(lua_State* L) {
+ *   return LuaReturn(L, result1, result2, ...);
+ * }
+ * ```
+ *
+ * \tparam ARGS Arguments
+ * \param L Lua stack
+ * \param args Individual arguments that will be put on the Lua stack
+ * \return Number of arguments put on Lua stack
+ */
+template <typename... ARGS>
+inline int
+LuaReturn(lua_State* L, ARGS&&... args)
+{
+  LuaPushArgs(L, std::forward<ARGS>(args)...);
+  return sizeof...(ARGS);
+}
+
+/**
+ * For functions that don't have a return value
+ *
+ * \param L Lua Stack
+ * \return Zero since no arguments are put on the Lua stack
+ */
+inline int
+LuaReturn(lua_State* L)
+{
+  return 0;
+}
+
 } // namespace opensnlua

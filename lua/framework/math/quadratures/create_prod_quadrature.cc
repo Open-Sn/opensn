@@ -38,7 +38,6 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    LuaPush(L, index);
 
     if (verbose)
     {
@@ -47,7 +46,7 @@ CreateProductQuadrature(lua_State* L)
                         << " polar angles.";
     }
 
-    return 1;
+    return LuaReturn(L, index);
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE)
   {
@@ -63,7 +62,6 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    LuaPush(L, index);
 
     if (verbose)
     {
@@ -72,7 +70,7 @@ CreateProductQuadrature(lua_State* L)
                         << new_quad->polar_ang_.size() << " polar angles.";
     }
 
-    return 1;
+    return LuaReturn(L, index);
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV)
   {
@@ -88,7 +86,6 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    LuaPush(L, index);
 
     if (verbose)
     {
@@ -97,7 +94,7 @@ CreateProductQuadrature(lua_State* L)
                         << new_quad->polar_ang_.size() << " polar angles.";
     }
 
-    return 1;
+    return LuaReturn(L, index);
   }
   else if (ident == (int)ProductQuadratureType::CUSTOM_QUADRATURE)
   {
@@ -117,7 +114,6 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    LuaPush(L, index);
 
     if (verbose)
     {
@@ -126,7 +122,7 @@ CreateProductQuadrature(lua_State* L)
                         << " polar angles.";
     }
 
-    return 1;
+    return LuaReturn(L, index);
   }
   else
   {
@@ -135,7 +131,7 @@ CreateProductQuadrature(lua_State* L)
                               << ident;
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

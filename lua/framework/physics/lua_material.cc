@@ -73,12 +73,11 @@ MatAddMaterial(lua_State* L)
   opensn::material_stack.push_back(new_material);
 
   const size_t index = opensn::material_stack.size() - 1;
-  LuaPush(L, static_cast<lua_Integer>(index));
 
   opensn::log.Log0Verbose1() << "New material added at index " << index << " with name \""
                              << new_material->name_ << "\"";
 
-  return 1;
+  return LuaReturn(L, index);
 }
 
 int
@@ -137,9 +136,7 @@ MatAddProperty(lua_State* L)
     opensn::multigroup_xs_stack.push_back(prop);
 
     const size_t index = opensn::multigroup_xs_stack.size() - 1;
-
-    LuaPush(L, index);
-    return 1;
+    return LuaReturn(L, index);
   }
   else if (property_index == static_cast<int>(MatProperty::ISOTROPIC_MG_SOURCE))
   {
@@ -170,7 +167,7 @@ MatAddProperty(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -426,7 +423,7 @@ MatSetProperty(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int

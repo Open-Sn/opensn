@@ -46,9 +46,8 @@ MeshUnpartitionedMeshFromVTU(lua_State* L)
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  LuaPush(L, opensn::unpartitionedmesh_stack.size() - 1);
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
@@ -72,9 +71,8 @@ MeshUnpartitionedMeshFromPVTU(lua_State* L)
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  LuaPush(L, opensn::unpartitionedmesh_stack.size() - 1);
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
@@ -97,9 +95,8 @@ MeshUnpartitionedMeshFromEnsightGold(lua_State* L)
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  LuaPush(L, opensn::unpartitionedmesh_stack.size() - 1);
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
@@ -121,9 +118,8 @@ MeshUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  LuaPush(L, opensn::unpartitionedmesh_stack.size() - 1);
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
@@ -145,9 +141,8 @@ MeshUnpartitionedMeshFromMshFormat(lua_State* L)
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  LuaPush(L, opensn::unpartitionedmesh_stack.size() - 1);
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
@@ -170,9 +165,8 @@ MeshUnpartitionedMeshFromExodusII(lua_State* L)
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  LuaPush(L, opensn::unpartitionedmesh_stack.size() - 1);
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 } // namespace opensnlua

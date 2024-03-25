@@ -70,9 +70,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      LuaPush(L, index);
-
-      return 1;
+      return LuaReturn(L, index);
     }
     case ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE:
     {
@@ -87,9 +85,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      LuaPush(L, index);
-
-      return 1;
+      return LuaReturn(L, index);
     }
     default:
     {
@@ -99,7 +95,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
     }
   }
 
-  return 0;
+  return LuaReturn(L);
 }
 
 /** Creates a curvilinear product quadrature suitable for spherical geometries.
@@ -152,9 +148,8 @@ CreateSphericalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      LuaPush(L, index);
 
-      return 1;
+      return LuaReturn(L, index);
     }
     case ProductQuadratureType::GAUSS_LEGENDRE:
     {

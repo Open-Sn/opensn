@@ -24,7 +24,7 @@ Sleep(lua_State* L)
 
   opensn::Sleep(std::chrono::milliseconds(time_to_sleep));
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

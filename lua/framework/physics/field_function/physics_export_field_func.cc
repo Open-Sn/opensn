@@ -30,7 +30,7 @@ ExportFieldFunctionToVTK(lua_State* L)
   //  ff->ExportToVTK(base_name);
   FieldFunctionGridBased::ExportMultipleToVTK(base_name, {ff});
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -91,7 +91,7 @@ ExportMultiFieldFunctionToVTK(lua_State* L)
 
   FieldFunctionGridBased::ExportMultipleToVTK(base_name, ffs);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

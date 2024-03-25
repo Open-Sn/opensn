@@ -36,7 +36,7 @@ MeshSetUniformMaterialID(lua_State* L)
   opensn::log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
                     << " to all cells";
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -65,7 +65,7 @@ MeshSetMaterialIDFromLogicalVolume(lua_State* L)
       << "Invalid number of arguments when calling 'mesh.SetMaterialIDFromLogicalVolume'";
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -121,7 +121,7 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
       << "Invalid number of arguments when calling 'mesh.SetMaterialIDFromLuaFunction'";
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -199,7 +199,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
       << "Invalid number of arguments when calling 'mesh.SetBoundaryIDFromFunction'";
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 int
@@ -230,7 +230,7 @@ MeshSetBoundaryIDFromLogicalVolume(lua_State* L)
       << "Invalid number of arguments when calling 'mesh.SetBoundaryIDFromLogicalVolume'";
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua
