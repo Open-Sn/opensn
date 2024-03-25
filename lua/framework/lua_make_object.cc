@@ -25,14 +25,9 @@ int
 MakeObject(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 2, num_args);
+  LuaCheckArgs<opensn::ParameterBlock>(L, fname);
 
-  LuaCheckTableValue(fname, L, 1);
-
-  const auto params = TableParserAsParameterBlock::ParseTable(L, 1);
-
+  const auto params = LuaArg<opensn::ParameterBlock>(L, 1);
   const auto& object_maker = opensn::ObjectFactory::GetInstance();
   const auto handle = object_maker.MakeRegisteredObject(params);
   return LuaReturn(L, handle);
@@ -42,15 +37,10 @@ int
 MakeObjectType(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
-
-  LuaCheckTableValue(fname, L, 2);
+  LuaCheckArgs<std::string, opensn::ParameterBlock>(L, fname);
 
   const auto type = LuaArg<std::string>(L, 1);
-  const auto params = TableParserAsParameterBlock::ParseTable(L, 2);
-
+  const auto params = LuaArg<opensn::ParameterBlock>(L, 2);
   const auto& object_maker = opensn::ObjectFactory::GetInstance();
   const auto handle = object_maker.MakeRegisteredObjectOfType(type, params);
   return LuaReturn(L, handle);

@@ -42,65 +42,21 @@ std::string LuaSourceInfo(lua_State* L, const char* func_name);
 namespace opensnlua
 {
 
-/**This static object is used to parse lua tables into parameter blocks.*/
-class TableParserAsParameterBlock
-{
-private:
-  /**This function recursively processes table values. If the value is
-   * a primitive type the recursion stops and the parameter block, which is
-   * currently active, will be extended with a parameter of this primitive
-   * type. If the value is another table, a new `Block`-type will be instantiated
-   * and the table recursion will then operate on this new block.*/
-  static void RecursivelyParseTableValues(lua_State* L,
-                                          opensn::ParameterBlock& block,
-                                          const std::string& key_str_name);
+/**
+ * This function operates on table keys recursively. It has a specific
+ * behavior if it detects an array.
+ */
 
-  /**This function operates on table keys recursively. It has a specific
-   * behavior if it detects an array.*/
-  static void RecursivelyParseTableKeys(lua_State* L, int t, opensn::ParameterBlock& block);
+void RecursivelyParseTableKeys(lua_State* L, int t, opensn::ParameterBlock& block);
 
-public:
-  /**\brief Parses a lua table into a hierarchical parameter block.
-   *
-   * This is the root command for parsing a table as a parameter block.
-   * * Example table:
-   * \code
-   * block =
-   * {
-   *   enabled = true,
-   *   it_method = "gmres",
-   *   nl_abs_tol = 1.0e-12,
-   *   nl_max_its = 33,
-   *   sub1 =
-   *   {
-   *     ax_method = 2,
-   *     l_abs_tol = 1.0e-2
-   *   },
-   *   sub2 =
-   *   {
-   *     ax_method = 3,
-   *     l_abs_tol = 1.0e-3,
-   *     blocks = {99, 98, 97},
-   *     cblocks = {{1,2,3},{4,5,6},{7,8,9}}
-   *   }
-   * }
-   *
-   * chiUnitTests_Test_paramblock(--[[verbose=]]true, block)
-   * \endcode
-   */
-  static opensn::ParameterBlock ParseTable(lua_State* L, int table_stack_index);
-};
-
-/**\brief This recursive routine operates on a parameter block and passes
- * the parameters to the lua stack.
+/**
+ * This recursive routine operates on a parameter block and passes the parameters to the lua stack.
  *
  * If the `level` parameter is left as default then the zeroth level of
  * the parameter block will have its individual parameters exported as single
  * values, otherwise the block is exported as a table.
  */
 void PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level = 0);
-
-opensn::ParameterBlock StackItemToParameterBlock(lua_State* L, int index);
 
 //
 
@@ -233,6 +189,12 @@ LuaPush(lua_State* L, const opensn::Vector3& value)
   LuaPush(L, "z");
   LuaPush(L, value.z);
   lua_settable(L, -3);
+}
+
+inline void
+LuaPush(lua_State* L, const opensn::ParameterBlock& value)
+{
+  PushParameterBlock(L, value);
 }
 
 template <typename T1, typename T2>
@@ -380,6 +342,20 @@ LuaArgAsType(lua_State* L, int index)
     lua_pop(L, 1);
 
     return vec;
+  }
+  else
+    throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
+}
+
+template <>
+inline opensn::ParameterBlock
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_istable(L, index))
+  {
+    opensn::ParameterBlock param_block;
+    RecursivelyParseTableKeys(L, index, param_block);
+    return param_block;
   }
   else
     throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
@@ -759,6 +735,15 @@ LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, std::string
 template <>
 inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, opensn::Vector3 val)
+{
+  if (not lua_istable(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting table value for argument " +
+                                std::to_string(index));
+}
+
+template <>
+inline void
+LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, opensn::ParameterBlock val)
 {
   if (not lua_istable(L, index))
     throw std::invalid_argument(fn_name + ": Expecting table value for argument " +

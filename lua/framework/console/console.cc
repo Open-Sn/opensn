@@ -94,7 +94,7 @@ Console::LuaWrapperCall(lua_State* L)
       main_arguments_block.AddParameter(arg_name, LuaArg<std::string>(L, p));
     else if (lua_istable(L, p))
     {
-      auto block = TableParserAsParameterBlock::ParseTable(L, p);
+      auto block = LuaArg<ParameterBlock>(L, p);
       block.SetBlockName(arg_name);
       std::string scope = fname + ":";
       scope.append(arg_name + " ");

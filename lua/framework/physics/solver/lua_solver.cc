@@ -27,12 +27,9 @@ int
 SolverCreate(lua_State* L)
 {
   const std::string fname = "solver.Create";
-  LuaCheckArgs<int>(L, fname);
+  LuaCheckArgs<ParameterBlock>(L, fname);
 
-  LuaCheckTableValue(fname, L, 1);
-
-  const auto params = TableParserAsParameterBlock::ParseTable(L, 1);
-
+  const auto params = LuaArg<ParameterBlock>(L, 1);
   const auto& object_maker = ObjectFactory::GetInstance();
   const size_t handle = object_maker.MakeRegisteredObject(params);
   return LuaReturn(L, handle);
@@ -222,13 +219,13 @@ SolverGetInfo(lua_State* L)
     params.AddParameter("name", LuaArg<std::string>(L, 2));
   }
   else if (lua_istable(L, 2))
-    params = TableParserAsParameterBlock::ParseTable(L, 2);
+    params = LuaArg<ParameterBlock>(L, 2);
   else
     OpenSnInvalidArgument("Argument 2 can only take a string or a table");
 
   const auto output_params = solver.GetInfo(params);
 
-  PushParameterBlock(L, output_params);
+  LuaPush(L, output_params);
 
   const int num_sub_params = static_cast<int>(output_params.NumParameters());
 
@@ -239,13 +236,11 @@ int
 SolverSetProperties(lua_State* L)
 {
   const std::string fname = "solver.SetProperties";
-  LuaCheckArgs<size_t>(L, fname);
+  LuaCheckArgs<size_t, ParameterBlock>(L, fname);
 
   const auto solver_handle = LuaArg<size_t>(L, 1);
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
-
-  LuaCheckTableValue(fname, L, 2);
-  auto property_block = TableParserAsParameterBlock::ParseTable(L, 2);
+  auto property_block = LuaArg<ParameterBlock>(L, 2);
 
   solver.SetProperties(property_block);
 

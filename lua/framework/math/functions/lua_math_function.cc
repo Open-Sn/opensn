@@ -25,7 +25,7 @@ int
 FunctionDimAToDimBEvaluate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
-  LuaCheckArgs<size_t, std::vector<double>>(L, "FunctionDimAToDimBEvaluate");
+  LuaCheckArgs<size_t>(L, "FunctionDimAToDimBEvaluate");
 
   // Getting function object
   const auto handle = LuaArg<size_t>(L, 1);
@@ -36,7 +36,7 @@ FunctionDimAToDimBEvaluate(lua_State* L)
   std::vector<double> params;
   if (lua_istable(L, 2))
   {
-    auto table_block = TableParserAsParameterBlock::ParseTable(L, 2);
+    auto table_block = LuaArg<ParameterBlock>(L, 2);
     OpenSnInvalidArgumentIf(table_block.Type() != ParameterBlockType::ARRAY,
                             fname + ": Only an array type is allowed. Table can "
                                     "not have string keys.");
