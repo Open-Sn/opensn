@@ -144,7 +144,7 @@ ProductQuadrature::OptimizeForPolarSymmetry(const double normalization)
 
 AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose) : ProductQuadrature()
 {
-  QuadratureGaussLegendre gl_polar(Nphemi * 2);
+  GaussLegendreQuadrature gl_polar(Nphemi * 2);
 
   // Create azimuthal angles
   azimu_ang_.clear();
@@ -164,8 +164,8 @@ AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose) : Pro
 
 AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, bool verbose)
 {
-  QuadratureGaussLegendre gl_polar(Np * 2);
-  QuadratureGaussLegendre gl_azimu(Na * 4);
+  GaussLegendreQuadrature gl_polar(Np * 2);
+  GaussLegendreQuadrature gl_azimu(Na * 4);
 
   // Create azimuthal angles
   azimu_ang_.clear();
@@ -189,8 +189,8 @@ AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, bool verbose)
 
 AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, bool verbose)
 {
-  QuadratureGaussLegendre gl_polar(Np * 2);
-  QuadratureGaussChebyshev gc_azimu(Na * 4);
+  GaussLegendreQuadrature gl_polar(Np * 2);
+  GaussChebyshevQuadrature gc_azimu(Na * 4);
 
   // Create azimuthal angles
   azimu_ang_.clear();

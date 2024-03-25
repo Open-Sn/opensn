@@ -21,8 +21,8 @@ public:
    */
   PieceWiseLinearPolyhedronMapping(const Cell& polyh_cell,
                                    const MeshContinuum& ref_grid,
-                                   const QuadratureTetrahedron& volume_quadrature,
-                                   const QuadratureTriangle& surface_quadrature);
+                                   const TetrahedraQuadrature& volume_quadrature,
+                                   const TriangleQuadrature& surface_quadrature);
 
   VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;
 
@@ -136,8 +136,8 @@ private:
   std::vector<FEface_data> face_data_;    ///< Holds determinants and data tet-by-tet.
   std::vector<FEnodeMap> node_side_maps_; ///< Maps nodes to side tets.
 
-  const QuadratureTetrahedron& volume_quadrature_;
-  const QuadratureTriangle& surface_quadrature_;
+  const TetrahedraQuadrature& volume_quadrature_;
+  const TriangleQuadrature& surface_quadrature_;
 };
 
 } // namespace opensn

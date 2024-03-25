@@ -6,10 +6,11 @@ namespace opensn
 {
 
 /**Quadrature for use on reference lines.*/
-class QuadratureLine : public QuadratureGaussLegendre
+class LineQuadrature : public GaussLegendreQuadrature
 {
 public:
-  explicit QuadratureLine(QuadratureOrder order) : QuadratureGaussLegendre(order)
+  explicit LineQuadrature(QuadratureOrder order)
+    : GaussLegendreQuadrature(order)
   {
     SetRange({0, 1});
   }

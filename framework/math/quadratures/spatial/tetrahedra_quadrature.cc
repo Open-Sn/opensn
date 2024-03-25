@@ -4,7 +4,8 @@
 namespace opensn
 {
 
-QuadratureTetrahedron::QuadratureTetrahedron(QuadratureOrder order) : SpatialQuadrature(order)
+TetrahedraQuadrature::TetrahedraQuadrature(QuadratureOrder order)
+  : SpatialQuadrature(order)
 {
   switch (order)
   {

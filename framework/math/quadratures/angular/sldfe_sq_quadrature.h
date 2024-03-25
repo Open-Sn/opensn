@@ -98,19 +98,19 @@ private:
   /**
    * Develops LDFE quantities.
    */
-  void DevelopSQLDFEValues(SphericalQuadrilateral& sq, QuadratureGaussLegendre& legendre);
+  void DevelopSQLDFEValues(SphericalQuadrilateral& sq, GaussLegendreQuadrature& legendre);
 
   /**
    * Applies empirical quadrature point optimization.
    */
   void EmpiricalQPOptimization(SphericalQuadrilateral& sq,
-                               QuadratureGaussLegendre& legendre,
+                               GaussLegendreQuadrature& legendre,
                                Vertex& sq_xy_tilde_centroid,
                                std::array<Vector3, 4>& radii_vectors_xy_tilde,
                                std::array<double, 4>& sub_sub_sqr_areas);
 
   void IsolatedQPOptimization(SphericalQuadrilateral& sq,
-                              QuadratureGaussLegendre& legendre,
+                              GaussLegendreQuadrature& legendre,
                               Vertex& sq_xy_tilde_centroid,
                               std::array<Vector3, 4>& radii_vectors_xy_tilde,
                               std::array<double, 4>& sub_sub_sqr_areas);
@@ -177,7 +177,7 @@ private:
    * Split a SQ.
    */
   std::array<SphericalQuadrilateral, 4> SplitSQ(SphericalQuadrilateral& sq,
-                                                QuadratureGaussLegendre& legendre);
+                                                GaussLegendreQuadrature& legendre);
 };
 
 /**This is a utility function that encapsulates
@@ -204,7 +204,7 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
                            Vertex& centroid_xy_tilde,
                            std::array<Vector3, 4>& radii_vectors_xy_tilde,
                            SphericalQuadrilateral& sq,
-                           QuadratureGaussLegendre& legendre_quadrature)
+                           GaussLegendreQuadrature& legendre_quadrature)
     : sldfesq(sldfesq),
       centroid_xy_tilde(centroid_xy_tilde),
       radii_vectors_xy_tilde(radii_vectors_xy_tilde),

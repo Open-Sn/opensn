@@ -19,9 +19,9 @@ protected:
                                SDMType sdm_type,
                                CoordinateSystemType cs_type);
 
-  QuadratureLine line_quad_order_arbitrary_;
-  QuadratureTriangle tri_quad_order_arbitrary_;
-  QuadratureTetrahedron tet_quad_order_arbitrary_;
+  LineQuadrature line_quad_order_arbitrary_;
+  TriangleQuadrature tri_quad_order_arbitrary_;
+  TetrahedraQuadrature tet_quad_order_arbitrary_;
 
   void CreateCellMappings();
 };

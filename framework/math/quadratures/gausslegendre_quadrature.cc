@@ -9,10 +9,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(squad, QuadratureGaussLegendre);
+OpenSnRegisterObjectInNamespace(squad, GaussLegendreQuadrature);
 
 InputParameters
-QuadratureGaussLegendre::GetInputParameters()
+GaussLegendreQuadrature::GetInputParameters()
 {
   InputParameters params = SpatialQuadrature::GetInputParameters();
 
@@ -29,7 +29,8 @@ QuadratureGaussLegendre::GetInputParameters()
   return params;
 }
 
-QuadratureGaussLegendre::QuadratureGaussLegendre(const InputParameters& params) : SpatialQuadrature(params)
+GaussLegendreQuadrature::GaussLegendreQuadrature(const InputParameters& params)
+  : SpatialQuadrature(params)
 {
   const auto& assigned_params = params.ParametersAtAssignment();
 
@@ -53,7 +54,7 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(const InputParameters& params) 
   }
 }
 
-QuadratureGaussLegendre::QuadratureGaussLegendre(QuadratureOrder order,
+GaussLegendreQuadrature::GaussLegendreQuadrature(QuadratureOrder order,
                                                  bool verbose,
                                                  unsigned int max_iters,
                                                  double tol)
@@ -63,7 +64,7 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(QuadratureOrder order,
   Initialize(N, verbose, max_iters, tol);
 }
 
-QuadratureGaussLegendre::QuadratureGaussLegendre(unsigned int N,
+GaussLegendreQuadrature::GaussLegendreQuadrature(unsigned int N,
                                                  bool verbose,
                                                  unsigned int max_iters,
                                                  double tol)
@@ -73,7 +74,7 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(unsigned int N,
 }
 
 void
-QuadratureGaussLegendre::Initialize(unsigned int N,
+GaussLegendreQuadrature::Initialize(unsigned int N,
                                     bool verbose,
                                     unsigned int max_iters,
                                     double tol)
@@ -112,7 +113,7 @@ QuadratureGaussLegendre::Initialize(unsigned int N,
 }
 
 std::vector<double>
-QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, double tol)
+GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, double tol)
 {
   // Populate init guess
   // This initial guess proved to be quite important
@@ -129,7 +130,7 @@ QuadratureGaussLegendre::FindRoots(unsigned int N, unsigned int max_iters, doubl
   if (N > 2056)
   {
     num_search_intvls *= 10;
-    log.Log0Warning() << "QuadratureGaussLegendre::FindRoots: "
+    log.Log0Warning() << "GaussLegendreQuadrature::FindRoots: "
                       << "The order of the polynomial for which to find the roots is "
                       << "greater than 2056. Accuracy of the root finder will be diminished "
                       << "along with a reduction in stability.";

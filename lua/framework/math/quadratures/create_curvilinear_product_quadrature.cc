@@ -74,10 +74,10 @@ CreateCylindricalProductQuadrature(lua_State* L)
       opensn::log.Log() << "CreateCylindricalProductQuadrature : "
                         << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
-      const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
+      const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
       std::vector<SpatialQuadrature> quad_azi;
       for (const auto& Na : vNa)
-        quad_azi.emplace_back(QuadratureGaussChebyshev(Na, verbose));
+        quad_azi.emplace_back(GaussChebyshevQuadrature(Na, verbose));
       const auto new_quad =
         std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
 
@@ -92,10 +92,10 @@ CreateCylindricalProductQuadrature(lua_State* L)
       opensn::log.Log() << "CreateCylindricalProductQuadrature : "
                         << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
-      const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
+      const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
       std::vector<SpatialQuadrature> quad_azi;
       for (const auto& Na : vNa)
-        quad_azi.emplace_back(QuadratureGaussLegendre(Na, verbose));
+        quad_azi.emplace_back(GaussLegendreQuadrature(Na, verbose));
       const auto new_quad =
         std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
 
@@ -165,7 +165,7 @@ CreateSphericalProductQuadrature(lua_State* L)
       opensn::log.Log() << "CreateSphericalProductQuadrature : "
                         << "Creating Gauss-Chebyshev Quadrature\n";
 
-      const auto quad_pol = QuadratureGaussChebyshev(Np, verbose);
+      const auto quad_pol = GaussChebyshevQuadrature(Np, verbose);
       const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
@@ -179,7 +179,7 @@ CreateSphericalProductQuadrature(lua_State* L)
       opensn::log.Log() << "CreateSphericalProductQuadrature : "
                         << "Creating Gauss-Legendre Quadrature\n";
 
-      const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
+      const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
       const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);

@@ -7,10 +7,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(squad, QuadratureGaussChebyshev);
+OpenSnRegisterObjectInNamespace(squad, GaussChebyshevQuadrature);
 
 InputParameters
-QuadratureGaussChebyshev::GetInputParameters()
+GaussChebyshevQuadrature::GetInputParameters()
 {
   InputParameters params = SpatialQuadrature::GetInputParameters();
 
@@ -24,7 +24,7 @@ QuadratureGaussChebyshev::GetInputParameters()
   return params;
 }
 
-QuadratureGaussChebyshev::QuadratureGaussChebyshev(const InputParameters& params)
+GaussChebyshevQuadrature::GaussChebyshevQuadrature(const InputParameters& params)
   : SpatialQuadrature(params)
 {
   const auto& assigned_params = params.ParametersAtAssignment();
@@ -46,14 +46,14 @@ QuadratureGaussChebyshev::QuadratureGaussChebyshev(const InputParameters& params
   }
 }
 
-QuadratureGaussChebyshev::QuadratureGaussChebyshev(unsigned int N, bool verbose)
+GaussChebyshevQuadrature::GaussChebyshevQuadrature(unsigned int N, bool verbose)
   : SpatialQuadrature((QuadratureOrder)(2 * N - 1))
 {
   Initialize(N);
 }
 
 void
-QuadratureGaussChebyshev::Initialize(unsigned int N)
+GaussChebyshevQuadrature::Initialize(unsigned int N)
 {
   if (verbose_)
     log.Log() << "Initializing Gauss-Chebyshev Quadrature "

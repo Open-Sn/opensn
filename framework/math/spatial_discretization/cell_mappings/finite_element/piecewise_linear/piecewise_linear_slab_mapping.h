@@ -16,7 +16,7 @@ public:
   /**Constructor for a slab view.*/
   PieceWiseLinearSlabMapping(const Cell& slab_cell,
                              const MeshContinuum& ref_grid,
-                             const QuadratureLine& volume_quadrature);
+                             const LineQuadrature& volume_quadrature);
 
   VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;
 
@@ -48,7 +48,7 @@ private:
   uint64_t v0i_;
   uint64_t v1i_;
   std::array<Normal, 2> normals_;
-  const QuadratureLine& volume_quadrature_;
+  const LineQuadrature& volume_quadrature_;
   double h_;
 };
 

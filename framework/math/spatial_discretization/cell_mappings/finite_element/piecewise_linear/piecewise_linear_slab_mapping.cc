@@ -7,7 +7,7 @@ namespace opensn
 
 PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(const Cell& slab_cell,
                                                        const MeshContinuum& ref_grid,
-                                                       const QuadratureLine& volume_quadrature)
+                                                       const LineQuadrature& volume_quadrature)
   : PieceWiseLinearBaseMapping(ref_grid, slab_cell, 2, MakeFaceNodeMapping(slab_cell)),
     volume_quadrature_(volume_quadrature)
 {

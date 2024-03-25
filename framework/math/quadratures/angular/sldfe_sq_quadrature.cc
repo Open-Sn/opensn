@@ -144,7 +144,7 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(const Matrix3x3& rot
   int Ns = (level + 1); // Number of subdivisions
   int Np = Ns + 1;      // Number of diagonal points
 
-  QuadratureGaussLegendre legendre(QuadratureOrder::THIRTYSECOND);
+  GaussLegendreQuadrature legendre(QuadratureOrder::THIRTYSECOND);
 
   // Generate xy_tilde values
   std::vector<VertList> vertices_xy_tilde_ij;
@@ -213,7 +213,7 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(const Matrix3x3& rot
 void
 SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
   SphericalQuadrilateral& sq,
-  QuadratureGaussLegendre& legendre,
+  GaussLegendreQuadrature& legendre,
   Vertex& sq_xy_tilde_centroid,
   std::array<Vector3, 4>& radii_vectors_xy_tilde,
   std::array<double, 4>& sub_sub_sqr_areas)
@@ -237,7 +237,7 @@ SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
 
 void
 SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
-                                                     QuadratureGaussLegendre& legendre,
+                                                     GaussLegendreQuadrature& legendre,
                                                      Vertex& sq_xy_tilde_centroid,
                                                      std::array<Vector3, 4>& radii_vectors_xy_tilde,
                                                      std::array<double, 4>& sub_sub_sqr_areas)
@@ -325,7 +325,7 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
 
 void
 SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
-                                                  QuadratureGaussLegendre& legendre)
+                                                  GaussLegendreQuadrature& legendre)
 {
   // Determine sq tilde center
   Vertex sq_tilde_center;
@@ -963,7 +963,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
 }
 
 std::array<SimplifiedLDFESQ::SphericalQuadrilateral, 4>
-SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, QuadratureGaussLegendre& legendre)
+SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, GaussLegendreQuadrature& legendre)
 {
   std::array<SphericalQuadrilateral, 4> new_sqs;
 
@@ -1040,7 +1040,7 @@ SimplifiedLDFESQ::Quadrature::LocallyRefine(const Vector3& ref_dir,
   std::vector<SphericalQuadrilateral> new_deployment;
   new_deployment.reserve(deployed_SQs_.size());
 
-  QuadratureGaussLegendre legendre(QuadratureOrder::THIRTYSECOND);
+  GaussLegendreQuadrature legendre(QuadratureOrder::THIRTYSECOND);
 
   int num_refined = 0;
   for (auto& sq : deployed_SQs_)

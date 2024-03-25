@@ -8,8 +8,8 @@ namespace opensn
 PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   const Cell& poly_cell,
   const MeshContinuum& ref_grid,
-  const QuadratureTriangle& volume_quadrature,
-  const QuadratureLine& surface_quadrature)
+  const TriangleQuadrature& volume_quadrature,
+  const LineQuadrature& surface_quadrature)
   : PieceWiseLinearBaseMapping(
       ref_grid, poly_cell, poly_cell.vertex_ids_.size(), MakeFaceNodeMapping(poly_cell)),
     volume_quadrature_(volume_quadrature),
