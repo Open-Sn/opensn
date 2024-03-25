@@ -1,9 +1,9 @@
 #pragma once
 
 #include "framework/math/spatial_discretization/finite_element/finite_element_base.h"
-#include "framework/math/quadratures/spatial/quadrature_line.h"
-#include "framework/math/quadratures/spatial/quadrature_triangle.h"
-#include "framework/math/quadratures/spatial/quadrature_tetrahedron.h"
+#include "framework/math/quadratures/spatial/line_quadrature.h"
+#include "framework/math/quadratures/spatial/triangle_quadrature.h"
+#include "framework/math/quadratures/spatial/tetrahedra_quadrature.h"
 
 namespace opensn
 {

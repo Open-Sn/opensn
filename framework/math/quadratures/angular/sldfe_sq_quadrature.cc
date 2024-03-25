@@ -1,4 +1,4 @@
-#include "framework/math/quadratures/angular/sldfe_sq.h"
+#include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"

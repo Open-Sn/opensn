@@ -1,4 +1,4 @@
-#include "framework/math/quadratures/spatial/quadrature_triangle.h"
+#include "framework/math/quadratures/spatial/triangle_quadrature.h"
 #include <stdexcept>
 
 namespace opensn

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "framework/math/quadratures/angular/angular_quadrature_base.h"
-#include "framework/math/quadratures/quadrature_gausslegendre.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
+#include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/dynamic_vector.h"
 #include "framework/math/dynamic_matrix.h"
 #include "framework/mesh/mesh.h"

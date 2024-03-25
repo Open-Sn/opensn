@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/quadratures/angular/angular_quadrature_base.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include <map>
 #include <vector>
 

@@ -2,7 +2,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/math/quadratures/angular/curvilinear_angular_quadrature.h"
+#include "framework/math/quadratures/angular/curvilinear_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace opensn

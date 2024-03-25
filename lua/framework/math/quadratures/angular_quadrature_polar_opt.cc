@@ -1,5 +1,5 @@
 #include "framework/lua.h"
-#include "framework/math/quadratures/angular/angular_quadrature_base.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/console/console.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"

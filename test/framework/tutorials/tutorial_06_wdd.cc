@@ -1,7 +1,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_volume/finite_volume.h"
-#include "framework/math/quadratures/angular/angular_quadrature_base.h"
-#include "framework/math/quadratures/angular/angular_product_quadrature.h"
+#include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/math_range.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/physics_material/multi_group_xs/single_state_mgxs.h"

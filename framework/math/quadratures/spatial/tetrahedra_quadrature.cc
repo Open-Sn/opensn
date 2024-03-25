@@ -1,4 +1,4 @@
-#include "framework/math/quadratures/spatial/quadrature_tetrahedron.h"
+#include "framework/math/quadratures/spatial/tetrahedra_quadrature.h"
 #include <stdexcept>
 
 namespace opensn

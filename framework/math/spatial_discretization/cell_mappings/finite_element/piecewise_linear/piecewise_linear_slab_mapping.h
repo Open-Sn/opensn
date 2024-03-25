@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
-#include "framework/math/quadratures/spatial/quadrature_line.h"
+#include "framework/math/quadratures/spatial/line_quadrature.h"
 #include "framework/mesh/cell/cell.h"
 #include <array>
 

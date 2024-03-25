@@ -1,4 +1,4 @@
-#include "framework/math/quadratures/angular/cylindrical_angular_quadrature.h"
+#include "framework/math/quadratures/angular/cylindrical_quadrature.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <algorithm>

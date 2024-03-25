@@ -2,7 +2,7 @@
 
 #include "framework/math/math_incdef.h"
 #include "framework/math/quadratures/spatial/spatial_quadrature.h"
-#include "framework/math/quadratures/angular/angular_quadrature_base.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include <memory>
 

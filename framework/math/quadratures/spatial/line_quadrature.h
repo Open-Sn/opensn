@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/quadratures/quadrature_gausslegendre.h"
+#include "framework/math/quadratures/gausslegendre_quadrature.h"
 
 namespace opensn
 {

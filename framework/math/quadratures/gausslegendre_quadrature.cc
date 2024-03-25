@@ -1,12 +1,9 @@
-#include "framework/math/quadratures/quadrature_gausslegendre.h"
+#include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
-#include <cmath>
-
-#include "framework/object_factory.h"
-
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
-
+#include "framework/object_factory.h"
+#include "framework/runtime.h"
+#include <cmath>
 #include <algorithm>
 
 namespace opensn

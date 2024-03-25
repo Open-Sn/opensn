@@ -1,4 +1,4 @@
-#include "framework/math/quadratures/angular/angular_product_quadrature.h"
+#include "framework/math/quadratures/angular/product_quadrature.h"
 #include "lua/framework/console/console.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/math/math_range.h"

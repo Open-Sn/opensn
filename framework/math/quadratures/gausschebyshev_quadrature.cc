@@ -1,10 +1,8 @@
-#include "framework/math/quadratures/quadrature_gausschebyshev.h"
-
-#include "framework/object_factory.h"
-#include <cmath>
-
-#include "framework/runtime.h"
+#include "framework/math/quadratures/gausschebyshev_quadrature.h"
 #include "framework/logging/log.h"
+#include "framework/object_factory.h"
+#include "framework/runtime.h"
+#include <cmath>
 
 namespace opensn
 {

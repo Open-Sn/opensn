@@ -3,7 +3,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/angle_set/angle_set_group.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/sweep.h"
-#include "framework/math/quadratures/angular/angular_quadrature_base.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include <memory>
 
 namespace opensn

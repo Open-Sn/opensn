@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/math/quadratures/angular/angular_product_quadrature.h"
+#include "framework/math/quadratures/angular/product_quadrature.h"
 
 namespace opensn
 {
