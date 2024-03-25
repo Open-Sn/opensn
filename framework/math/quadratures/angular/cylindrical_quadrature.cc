@@ -8,27 +8,27 @@
 namespace opensn
 {
 
-CylindricalAngularQuadrature::CylindricalAngularQuadrature(const SpatialQuadrature& quad_polar,
-                                                           const SpatialQuadrature& quad_azimu,
-                                                           const bool verbose)
-  : CurvilinearAngularQuadrature()
+CylindricalQuadrature::CylindricalQuadrature(const SpatialQuadrature& quad_polar,
+                                             const SpatialQuadrature& quad_azimu,
+                                             const bool verbose)
+  : CurvilinearQuadrature()
 {
   const auto np = quad_polar.weights_.size();
   std::vector<SpatialQuadrature> quad_azimu_vec(np, quad_azimu);
   Initialize(quad_polar, quad_azimu_vec, verbose);
 }
 
-CylindricalAngularQuadrature::CylindricalAngularQuadrature(
+CylindricalQuadrature::CylindricalQuadrature(
   const SpatialQuadrature& quad_polar, const std::vector<SpatialQuadrature>& quad_azimu_vec, const bool verbose)
-  : CurvilinearAngularQuadrature()
+  : CurvilinearQuadrature()
 {
   Initialize(quad_polar, quad_azimu_vec, verbose);
 }
 
 void
-CylindricalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar,
-                                         const std::vector<SpatialQuadrature>& quad_azimu_vec,
-                                         const bool verbose)
+CylindricalQuadrature::Initialize(const SpatialQuadrature& quad_polar,
+                                  const std::vector<SpatialQuadrature>& quad_azimu_vec,
+                                  const bool verbose)
 {
   //  copies of input quadratures
   auto polar_quad(quad_polar);
@@ -41,19 +41,19 @@ CylindricalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar,
 
   //  consistency among polar quadrature and azimuthal quadratures
   if (polar_quad.weights_.size() != azimu_quad_vec.size())
-    throw std::invalid_argument("CylindricalAngularQuadrature::Initialize : "
+    throw std::invalid_argument("CylindricalQuadrature::Initialize : "
                                 "number of azimuthal quadratures does not correspond "
                                 "to number of polar points of the polar quadrature.");
 
   //  at present, this class does not handle correctly reduced geometries
   if (polar_quad.weights_.size() == 0)
-    throw std::invalid_argument("CylindricalAngularQuadrature::Initialize : "
+    throw std::invalid_argument("CylindricalQuadrature::Initialize : "
                                 "invalid polar quadrature size = " +
                                 std::to_string(polar_quad.weights_.size()));
 
   for (const auto& azimu_quad : azimu_quad_vec)
     if (azimu_quad.weights_.size() == 0)
-      throw std::invalid_argument("CylindricalAngularQuadrature::Initialize : "
+      throw std::invalid_argument("CylindricalQuadrature::Initialize : "
                                   "invalid azimuthal quadrature size = " +
                                   std::to_string(azimu_quad.weights_.size()));
 
@@ -74,7 +74,7 @@ CylindricalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar,
         w *= fac;
   }
   else
-    throw std::invalid_argument("CylindricalAngularQuadrature::Initialize : "
+    throw std::invalid_argument("CylindricalQuadrature::Initialize : "
                                 "polar quadrature weights sum to zero.");
 
   //  defined on range [-1;+1]
@@ -101,7 +101,7 @@ CylindricalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar,
           w *= fac;
     }
     else
-      throw std::invalid_argument("CylindricalAngularQuadrature::Initialize : "
+      throw std::invalid_argument("CylindricalQuadrature::Initialize : "
                                   "azimuthal quadrature weights sum to zero.");
 
     //  defined on range [-1;+1]
@@ -113,7 +113,7 @@ CylindricalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar,
     auto lt_qp = [](const Vector3& qp0, const Vector3& qp1)
     { return qp0[0] < qp1[0]; };
     if (!std::is_sorted(azimu_quad.qpoints_.begin(), azimu_quad.qpoints_.end(), lt_qp))
-      throw std::invalid_argument("CylindricalAngularQuadrature::Initialize : "
+      throw std::invalid_argument("CylindricalQuadrature::Initialize : "
                                   "azimuthal quadrature abscissae not in ascending order.");
 
     //  existence of zero-weight abscissae at the start and at the end of the
@@ -211,7 +211,7 @@ CylindricalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar,
 }
 
 void
-CylindricalAngularQuadrature::InitializeParameters()
+CylindricalQuadrature::InitializeParameters()
 {
   fac_diamond_difference_.resize(weights_.size(), 1);
   fac_streaming_operator_.resize(weights_.size(), 0);
@@ -251,7 +251,7 @@ CylindricalAngularQuadrature::InitializeParameters()
 }
 
 void
-CylindricalAngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimension)
+CylindricalQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimension)
 {
   if (m_to_ell_em_map_.empty())
   {
@@ -267,7 +267,7 @@ CylindricalAngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order,
         for (int m = 0; m <= l; ++m)
           m_to_ell_em_map_.emplace_back(l, m);
     else
-      throw std::invalid_argument("CylindricalAngularQuadrature::MakeHarmonicIndices : "
+      throw std::invalid_argument("CylindricalQuadrature::MakeHarmonicIndices : "
                                   "invalid dimension.");
   }
 }

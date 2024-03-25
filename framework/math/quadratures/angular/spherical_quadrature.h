@@ -7,16 +7,16 @@ namespace opensn
 {
 
 /** Spherical product angular quadrature. */
-class SphericalAngularQuadrature : public CurvilinearAngularQuadrature
+class SphericalQuadrature : public CurvilinearQuadrature
 {
   //  Methods
 public:
   /** Effective constructor. Initialize with one-dimensional quadrature.
    *  If not already present in the quadrature, the method inserts
    *  the starting directions. */
-  SphericalAngularQuadrature(const SpatialQuadrature& quad_polar, const bool verbose = false);
+  SphericalQuadrature(const SpatialQuadrature& quad_polar, const bool verbose = false);
   /** Default destructor. */
-  virtual ~SphericalAngularQuadrature() = default;
+  virtual ~SphericalQuadrature() = default;
 
   void MakeHarmonicIndices(unsigned int scattering_order, int dimension) override;
 

@@ -7,7 +7,7 @@ namespace opensn
 {
 
 /** Cylindrical product angular quadrature. */
-class CylindricalAngularQuadrature : public CurvilinearAngularQuadrature
+class CylindricalQuadrature : public CurvilinearQuadrature
 {
   //  Methods
 public:
@@ -15,18 +15,18 @@ public:
    *  the azimuthal quadrature is applied at each polar level.
    *  If not already present in the azimuthal quadrature, the method inserts
    *  the azimuthal starting directions. */
-  CylindricalAngularQuadrature(const SpatialQuadrature& quad_polar,
-                               const SpatialQuadrature& quad_azimu,
-                               const bool verbose = false);
+  CylindricalQuadrature(const SpatialQuadrature& quad_polar,
+                        const SpatialQuadrature& quad_azimu,
+                        const bool verbose = false);
   /** Effective constructor. Initialize with one-dimensional quadratures:
    *  a possibly diverse azimuthal quadrature is applied at each polar level.
    *  If not already present in the azimuthal quadrature, the method inserts
    *  the azimuthal starting directions. */
-  CylindricalAngularQuadrature(const SpatialQuadrature& quad_polar,
-                               const std::vector<SpatialQuadrature>& quad_azimu_vec,
-                               const bool verbose = false);
+  CylindricalQuadrature(const SpatialQuadrature& quad_polar,
+                        const std::vector<SpatialQuadrature>& quad_azimu_vec,
+                        const bool verbose = false);
   /** Default destructor. */
-  virtual ~CylindricalAngularQuadrature() = default;
+  virtual ~CylindricalQuadrature() = default;
 
   void MakeHarmonicIndices(unsigned int scattering_order, int dimension) override;
 

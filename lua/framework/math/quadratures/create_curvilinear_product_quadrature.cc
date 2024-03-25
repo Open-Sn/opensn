@@ -79,7 +79,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
       for (const auto& Na : vNa)
         quad_azi.emplace_back(GaussChebyshevQuadrature(Na, verbose));
       const auto new_quad =
-        std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
+        std::make_shared<CylindricalQuadrature>(quad_pol, quad_azi, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
@@ -97,7 +97,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
       for (const auto& Na : vNa)
         quad_azi.emplace_back(GaussLegendreQuadrature(Na, verbose));
       const auto new_quad =
-        std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
+        std::make_shared<CylindricalQuadrature>(quad_pol, quad_azi, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
@@ -166,7 +166,7 @@ CreateSphericalProductQuadrature(lua_State* L)
                         << "Creating Gauss-Chebyshev Quadrature\n";
 
       const auto quad_pol = GaussChebyshevQuadrature(Np, verbose);
-      const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
+      const auto new_quad = std::make_shared<SphericalQuadrature>(quad_pol, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
@@ -180,7 +180,7 @@ CreateSphericalProductQuadrature(lua_State* L)
                         << "Creating Gauss-Legendre Quadrature\n";
 
       const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
-      const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
+      const auto new_quad = std::make_shared<SphericalQuadrature>(quad_pol, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;

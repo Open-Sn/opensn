@@ -8,7 +8,7 @@ namespace opensn
 /** Base class for curvilinear angular quadratures (product angular
  *  quadratures with additional direction-dependent parameters).
  */
-class CurvilinearAngularQuadrature : public ProductQuadrature
+class CurvilinearQuadrature : public ProductQuadrature
 {
   //  Attributes
 protected:
@@ -27,9 +27,9 @@ public:
 
 protected:
   /** Default constructor. */
-  CurvilinearAngularQuadrature() = default;
+  CurvilinearQuadrature() = default;
   /** Default destructor. */
-  virtual ~CurvilinearAngularQuadrature() = default;
+  virtual ~CurvilinearQuadrature() = default;
 };
 
 } // namespace opensn

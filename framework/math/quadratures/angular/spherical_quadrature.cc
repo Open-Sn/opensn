@@ -8,15 +8,15 @@
 namespace opensn
 {
 
-SphericalAngularQuadrature::SphericalAngularQuadrature(const SpatialQuadrature& quad_polar,
-                                                       const bool verbose)
-  : CurvilinearAngularQuadrature()
+SphericalQuadrature::SphericalQuadrature(const SpatialQuadrature& quad_polar,
+                                         const bool verbose)
+  : CurvilinearQuadrature()
 {
   Initialize(quad_polar, verbose);
 }
 
 void
-SphericalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool verbose)
+SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool verbose)
 {
   //  copies of input quadratures
   auto polar_quad(quad_polar);
@@ -27,7 +27,7 @@ SphericalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar, cons
   const auto eps = std::numeric_limits<double>::epsilon();
 
   if (polar_quad.weights_.size() == 0)
-    throw std::invalid_argument("SphericalAngularQuadrature::Initialize : "
+    throw std::invalid_argument("SphericalQuadrature::Initialize : "
                                 "invalid polar quadrature size = " +
                                 std::to_string(polar_quad.weights_.size()));
 
@@ -48,7 +48,7 @@ SphericalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar, cons
         w *= fac;
   }
   else
-    throw std::invalid_argument("SphericalAngularQuadrature::Initialize : "
+    throw std::invalid_argument("Sphericaluadrature::Initialize : "
                                 "polar quadrature weights sum to zero.");
 
   //  defined on range [-1;+1]
@@ -60,7 +60,7 @@ SphericalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar, cons
   auto lt_qp = [](const Vector3& qp0, const Vector3& qp1)
   { return qp0[0] < qp1[0]; };
   if (not std::is_sorted(polar_quad.qpoints_.begin(), polar_quad.qpoints_.end(), lt_qp))
-    throw std::invalid_argument("SphericalAngularQuadrature::Initialize : "
+    throw std::invalid_argument("SphericalQuadrature::Initialize : "
                                 "polar quadrature abscissae not in ascending order.");
 
   //  existence of zero-weight abscissae at the start and at the end of the
@@ -145,7 +145,7 @@ SphericalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar, cons
 }
 
 void
-SphericalAngularQuadrature::InitializeParameters()
+SphericalQuadrature::InitializeParameters()
 {
   fac_diamond_difference_.resize(weights_.size(), 1);
   fac_streaming_operator_.resize(weights_.size(), 0);
@@ -175,7 +175,7 @@ SphericalAngularQuadrature::InitializeParameters()
 }
 
 void
-SphericalAngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimension)
+SphericalQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimension)
 {
   if (m_to_ell_em_map_.empty())
   {
@@ -183,7 +183,7 @@ SphericalAngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order, i
       for (unsigned int l = 0; l <= scattering_order; ++l)
         m_to_ell_em_map_.emplace_back(l, 0);
     else
-      throw std::invalid_argument("SphericalAngularQuadrature::MakeHarmonicIndices : "
+      throw std::invalid_argument("SphericalQuadrature::MakeHarmonicIndices : "
                                   "invalid dimension.");
   }
 }

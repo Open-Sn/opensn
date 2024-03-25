@@ -126,7 +126,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
     {
       case CoordinateSystemType::CYLINDRICAL:
       {
-        typedef CylindricalAngularQuadrature CylAngQuad;
+        typedef CylindricalQuadrature CylAngQuad;
         const auto curvilinear_angular_quad_ptr =
           std::dynamic_pointer_cast<CylAngQuad>(angular_quad_ptr);
         if (curvilinear_angular_quad_ptr == nullptr)
@@ -141,7 +141,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
       }
       case CoordinateSystemType::SPHERICAL:
       {
-        typedef SphericalAngularQuadrature SphAngQuad;
+        typedef SphericalQuadrature SphAngQuad;
         const auto curvilinear_angular_quad_ptr =
           std::dynamic_pointer_cast<SphAngQuad>(angular_quad_ptr);
         if (curvilinear_angular_quad_ptr == nullptr)

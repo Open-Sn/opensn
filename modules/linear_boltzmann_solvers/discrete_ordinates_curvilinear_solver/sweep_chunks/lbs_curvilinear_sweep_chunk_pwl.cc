@@ -42,7 +42,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(
     normal_vector_boundary_()
 {
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<CurvilinearAngularQuadrature>(groupset_.quadrature_);
+    std::dynamic_pointer_cast<CurvilinearQuadrature>(groupset_.quadrature_);
 
   if (curvilinear_product_quadrature == nullptr)
     throw std::invalid_argument("D_DO_RZ_SteadyState::SweepChunkPWL::SweepChunkPWL : "
@@ -93,7 +93,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
   std::vector<double> source(max_num_cell_dofs_);
 
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<opensn::CurvilinearAngularQuadrature>(groupset_.quadrature_);
+    std::dynamic_pointer_cast<opensn::CurvilinearQuadrature>(groupset_.quadrature_);
 
   // Loop over each cell
   const auto& spds = angle_set.GetSPDS();
