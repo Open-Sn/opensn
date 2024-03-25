@@ -5,7 +5,7 @@ namespace opensn
 {
 
 InputParameters
-Quadrature::GetInputParameters()
+SpatialQuadrature::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
@@ -14,6 +14,7 @@ Quadrature::GetInputParameters()
                                "Base class for 1D quadratures");
 
   params.AddRequiredParameter<int>("order", "Quadrature order.");
+
   params.AddOptionalParameter("verbose", false, "Enables verbose operations");
 
   params.ConstrainParameterRange("order", AllowableRangeLowHighLimit::New(0, 43));
@@ -21,7 +22,7 @@ Quadrature::GetInputParameters()
   return params;
 }
 
-Quadrature::Quadrature(const InputParameters& params)
+SpatialQuadrature::SpatialQuadrature(const InputParameters& params)
   : Object(params),
     order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order"))),
     verbose_(params.GetParamValue<bool>("verbose"))
@@ -29,7 +30,7 @@ Quadrature::Quadrature(const InputParameters& params)
 }
 
 void
-Quadrature::SetRange(const std::pair<double, double>& range)
+SpatialQuadrature::SetRange(const std::pair<double, double>& range)
 {
   const auto& old_range = range_;
   const auto& new_range = range;

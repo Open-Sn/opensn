@@ -8,26 +8,26 @@
 namespace opensn
 {
 
-CylindricalAngularQuadrature::CylindricalAngularQuadrature(const Quadrature& quad_polar,
-                                                           const Quadrature& quad_azimu,
+CylindricalAngularQuadrature::CylindricalAngularQuadrature(const SpatialQuadrature& quad_polar,
+                                                           const SpatialQuadrature& quad_azimu,
                                                            const bool verbose)
   : CurvilinearAngularQuadrature()
 {
   const auto np = quad_polar.weights_.size();
-  std::vector<Quadrature> quad_azimu_vec(np, quad_azimu);
+  std::vector<SpatialQuadrature> quad_azimu_vec(np, quad_azimu);
   Initialize(quad_polar, quad_azimu_vec, verbose);
 }
 
 CylindricalAngularQuadrature::CylindricalAngularQuadrature(
-  const Quadrature& quad_polar, const std::vector<Quadrature>& quad_azimu_vec, const bool verbose)
+  const SpatialQuadrature& quad_polar, const std::vector<SpatialQuadrature>& quad_azimu_vec, const bool verbose)
   : CurvilinearAngularQuadrature()
 {
   Initialize(quad_polar, quad_azimu_vec, verbose);
 }
 
 void
-CylindricalAngularQuadrature::Initialize(const Quadrature& quad_polar,
-                                         const std::vector<Quadrature>& quad_azimu_vec,
+CylindricalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar,
+                                         const std::vector<SpatialQuadrature>& quad_azimu_vec,
                                          const bool verbose)
 {
   //  copies of input quadratures
@@ -110,7 +110,7 @@ CylindricalAngularQuadrature::Initialize(const Quadrature& quad_polar,
       azimu_quad.SetRange(azimu_quad_span);
 
     //  abscissae sorted in ascending order
-    auto lt_qp = [](const QuadraturePointXYZ& qp0, const QuadraturePointXYZ& qp1)
+    auto lt_qp = [](const Vector3& qp0, const Vector3& qp1)
     { return qp0[0] < qp1[0]; };
     if (!std::is_sorted(azimu_quad.qpoints_.begin(), azimu_quad.qpoints_.end(), lt_qp))
       throw std::invalid_argument("CylindricalAngularQuadrature::Initialize : "

@@ -57,15 +57,11 @@ enum class QuadratureOrder : int
   INVALID_ORDER
 };
 
-typedef Vector3 QuadraturePointXYZ;
-class Quadrature;
-
-/**Parent class for quadratures.*/
-class Quadrature : public Object
+class SpatialQuadrature : public Object
 {
 public:
   QuadratureOrder order_;
-  std::vector<QuadraturePointXYZ> qpoints_;
+  std::vector<Vector3> qpoints_;
   std::vector<double> weights_;
 
   static InputParameters GetInputParameters();
@@ -77,13 +73,15 @@ protected:
   bool verbose_ = false;
 
 protected:
-  explicit Quadrature(const InputParameters& params);
-  explicit Quadrature(QuadratureOrder order) : order_(order), range_({0, 0}) {}
+  explicit SpatialQuadrature(const InputParameters& params);
+
+  explicit SpatialQuadrature(QuadratureOrder order) : order_(order), range_({0, 0}) {}
 
 public:
   /**Get the range on which the quadrature is defined
    * (relevant for one-dimensional quadratures only).*/
   const std::pair<double, double>& GetRange() const { return range_; }
+
   /**Set the range on which the quadrature is defined.
    * (relevant for one-dimensional quadratures only).
    * Note that calling this method results in translation

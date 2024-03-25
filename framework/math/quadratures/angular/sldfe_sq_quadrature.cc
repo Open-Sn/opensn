@@ -441,7 +441,7 @@ std::array<double, 4>
 SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
   const SphericalQuadrilateral& sq,
   std::array<DynamicVector<double>, 4>& shape_coeffs,
-  const std::vector<QuadraturePointXYZ>& legendre_qpoints,
+  const std::vector<Vector3>& legendre_qpoints,
   const std::vector<double>& legendre_qweights)
 {
   // Lambda to evaluate LDFE shape func

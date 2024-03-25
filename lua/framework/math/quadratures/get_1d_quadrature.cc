@@ -36,7 +36,7 @@ Get1DQuadratureData(const InputParameters& params)
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& quad = opensn::GetStackItem<Quadrature>(opensn::object_stack, handle, __FUNCTION__);
+  auto& quad = opensn::GetStackItem<SpatialQuadrature>(opensn::object_stack, handle, __FUNCTION__);
 
   ParameterBlock qpoints_block("qpoints");
   ParameterBlock weights_block("weights");

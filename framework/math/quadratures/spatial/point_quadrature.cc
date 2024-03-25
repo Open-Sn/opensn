@@ -3,7 +3,7 @@
 namespace opensn
 {
 
-PointQuadrature::PointQuadrature() : Quadrature(QuadratureOrder::CONSTANT)
+PointQuadrature::PointQuadrature() : SpatialQuadrature(QuadratureOrder::CONSTANT)
 {
   qpoints_ = {{0.0, 0.0, 0.0}};
   weights_ = {1.0};

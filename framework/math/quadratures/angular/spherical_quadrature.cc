@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-SphericalAngularQuadrature::SphericalAngularQuadrature(const Quadrature& quad_polar,
+SphericalAngularQuadrature::SphericalAngularQuadrature(const SpatialQuadrature& quad_polar,
                                                        const bool verbose)
   : CurvilinearAngularQuadrature()
 {
@@ -16,7 +16,7 @@ SphericalAngularQuadrature::SphericalAngularQuadrature(const Quadrature& quad_po
 }
 
 void
-SphericalAngularQuadrature::Initialize(const Quadrature& quad_polar, const bool verbose)
+SphericalAngularQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool verbose)
 {
   //  copies of input quadratures
   auto polar_quad(quad_polar);
@@ -57,7 +57,7 @@ SphericalAngularQuadrature::Initialize(const Quadrature& quad_polar, const bool 
     polar_quad.SetRange(polar_quad_span);
 
   //  abscissae sorted in ascending order
-  auto lt_qp = [](const QuadraturePointXYZ& qp0, const QuadraturePointXYZ& qp1)
+  auto lt_qp = [](const Vector3& qp0, const Vector3& qp1)
   { return qp0[0] < qp1[0]; };
   if (not std::is_sorted(polar_quad.qpoints_.begin(), polar_quad.qpoints_.end(), lt_qp))
     throw std::invalid_argument("SphericalAngularQuadrature::Initialize : "

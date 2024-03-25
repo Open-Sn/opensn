@@ -5,7 +5,7 @@
 namespace opensn
 {
 
-class QuadratureTriangle : public Quadrature
+class QuadratureTriangle : public SpatialQuadrature
 {
 public:
   /**Initializes quadratures for use on triangles.*/

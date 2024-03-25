@@ -6,7 +6,7 @@ namespace opensn
 {
 
 /**Gauss-Legendre quadrature.*/
-class QuadratureGaussLegendre : public Quadrature
+class QuadratureGaussLegendre : public SpatialQuadrature
 {
 public:
   static InputParameters GetInputParameters();

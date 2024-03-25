@@ -127,7 +127,7 @@ private:
   static std::array<double, 4>
   IntegrateLDFEShapeFunctions(const SphericalQuadrilateral& sq,
                               std::array<DynamicVector<double>, 4>& shape_coeffs,
-                              const std::vector<QuadraturePointXYZ>& legendre_qpoints,
+                              const std::vector<Vector3>& legendre_qpoints,
                               const std::vector<double>& legendre_qweights);
 
   /**
@@ -196,7 +196,7 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   DynamicMatrix<double> A_inv;
   std::array<DynamicVector<double>, 4> c_coeffs;
   /// Legendre quadrature points
-  std::vector<QuadraturePointXYZ>& lqp;
+  std::vector<Vector3>& lqp;
   /// Legendre quadrature weights
   std::vector<double>& lqw;
 

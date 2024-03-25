@@ -4,7 +4,7 @@
 namespace opensn
 {
 
-QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : Quadrature(order)
+QuadratureTriangle::QuadratureTriangle(QuadratureOrder order) : SpatialQuadrature(order)
 {
   switch (order)
   {

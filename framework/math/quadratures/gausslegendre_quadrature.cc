@@ -14,7 +14,7 @@ OpenSnRegisterObjectInNamespace(squad, QuadratureGaussLegendre);
 InputParameters
 QuadratureGaussLegendre::GetInputParameters()
 {
-  InputParameters params = Quadrature::GetInputParameters();
+  InputParameters params = SpatialQuadrature::GetInputParameters();
 
   params.SetGeneralDescription("General Gauss-Legendre quadrature");
   params.SetDocGroup("LuaQuadrature");
@@ -29,7 +29,7 @@ QuadratureGaussLegendre::GetInputParameters()
   return params;
 }
 
-QuadratureGaussLegendre::QuadratureGaussLegendre(const InputParameters& params) : Quadrature(params)
+QuadratureGaussLegendre::QuadratureGaussLegendre(const InputParameters& params) : SpatialQuadrature(params)
 {
   const auto& assigned_params = params.ParametersAtAssignment();
 
@@ -57,7 +57,7 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(QuadratureOrder order,
                                                  bool verbose,
                                                  unsigned int max_iters,
                                                  double tol)
-  : Quadrature(order)
+  : SpatialQuadrature(order)
 {
   const unsigned int N = std::ceil(((int)order_ + 1) / 2.0);
   Initialize(N, verbose, max_iters, tol);
@@ -67,7 +67,7 @@ QuadratureGaussLegendre::QuadratureGaussLegendre(unsigned int N,
                                                  bool verbose,
                                                  unsigned int max_iters,
                                                  double tol)
-  : Quadrature((QuadratureOrder)(2 * N - 1))
+  : SpatialQuadrature((QuadratureOrder)(2 * N - 1))
 {
   Initialize(N, verbose, max_iters, tol);
 }

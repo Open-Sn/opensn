@@ -75,7 +75,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
                         << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
       const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
-      std::vector<Quadrature> quad_azi;
+      std::vector<SpatialQuadrature> quad_azi;
       for (const auto& Na : vNa)
         quad_azi.emplace_back(QuadratureGaussChebyshev(Na, verbose));
       const auto new_quad =
@@ -93,7 +93,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
                         << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
       const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
-      std::vector<Quadrature> quad_azi;
+      std::vector<SpatialQuadrature> quad_azi;
       for (const auto& Na : vNa)
         quad_azi.emplace_back(QuadratureGaussLegendre(Na, verbose));
       const auto new_quad =

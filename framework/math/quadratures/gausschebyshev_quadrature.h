@@ -6,7 +6,7 @@ namespace opensn
 {
 
 /**Gauss-Chebyshev quadrature.*/
-class QuadratureGaussChebyshev : public Quadrature
+class QuadratureGaussChebyshev : public SpatialQuadrature
 {
 public:
   static InputParameters GetInputParameters();

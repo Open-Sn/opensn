@@ -12,7 +12,7 @@ OpenSnRegisterObjectInNamespace(squad, QuadratureGaussChebyshev);
 InputParameters
 QuadratureGaussChebyshev::GetInputParameters()
 {
-  InputParameters params = Quadrature::GetInputParameters();
+  InputParameters params = SpatialQuadrature::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a Gauss-Chebyshev quadrature");
   params.SetDocGroup("LuaQuadrature");
@@ -25,7 +25,7 @@ QuadratureGaussChebyshev::GetInputParameters()
 }
 
 QuadratureGaussChebyshev::QuadratureGaussChebyshev(const InputParameters& params)
-  : Quadrature(params)
+  : SpatialQuadrature(params)
 {
   const auto& assigned_params = params.ParametersAtAssignment();
 
@@ -47,7 +47,7 @@ QuadratureGaussChebyshev::QuadratureGaussChebyshev(const InputParameters& params
 }
 
 QuadratureGaussChebyshev::QuadratureGaussChebyshev(unsigned int N, bool verbose)
-  : Quadrature((QuadratureOrder)(2 * N - 1))
+  : SpatialQuadrature((QuadratureOrder)(2 * N - 1))
 {
   Initialize(N);
 }
