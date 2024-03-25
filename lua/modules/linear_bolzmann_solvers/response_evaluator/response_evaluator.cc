@@ -10,11 +10,8 @@ RegisterLuaFunctionNamespace(ClearResponseSources, lbs, ClearResponseSources);
 int
 ClearResponseSources(lua_State* L)
 {
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
-
-  LuaCheckIntegerValue(__FUNCTION__, L, 1);
+  const std::string fname = "lbs.ClearResponseSources";
+  LuaCheckArgs<size_t>(L, fname);
 
   // Get the response evaluator
   const auto handle = LuaArg<size_t>(L, 1);
@@ -106,9 +103,8 @@ RegisterLuaFunctionNamespace(EvaluateResponse, lbs, EvaluateResponse);
 int
 EvaluateResponse(lua_State* L)
 {
-  const auto num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(__FUNCTION__, 2, num_args);
+  const std::string fname = "lbs.EvaluateResponse";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
   // Get the response evaluator
   const auto handle = LuaArg<size_t>(L, 1);

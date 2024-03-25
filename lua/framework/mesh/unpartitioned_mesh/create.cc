@@ -53,10 +53,8 @@ MeshUnpartitionedMeshFromVTU(lua_State* L)
 int
 MeshUnpartitionedMeshFromPVTU(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromPVTU";
+  LuaCheckArgs<std::string>(L, func_name);
 
   auto file_name = LuaArg<std::string>(L, 1);
   auto field = LuaArgOptional<std::string>(L, 2, std::string(""));
@@ -78,10 +76,8 @@ MeshUnpartitionedMeshFromPVTU(lua_State* L)
 int
 MeshUnpartitionedMeshFromEnsightGold(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromEnsightGold";
+  LuaCheckArgs<std::string>(L, func_name);
 
   auto file_name = LuaArg<std::string>(L, 1);
   auto scale = LuaArgOptional<double>(L, 2, 1.0);
@@ -102,10 +98,8 @@ MeshUnpartitionedMeshFromEnsightGold(lua_State* L)
 int
 MeshUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromWavefrontOBJ";
+  LuaCheckArgs<std::string>(L, func_name);
 
   auto file_name = LuaArg<std::string>(L, 1);
 
@@ -125,10 +119,8 @@ MeshUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 int
 MeshUnpartitionedMeshFromMshFormat(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromMshFormat";
+  LuaCheckArgs<std::string>(L, func_name);
 
   auto file_name = LuaArg<std::string>(L, 1);
 
@@ -148,10 +140,8 @@ MeshUnpartitionedMeshFromMshFormat(lua_State* L)
 int
 MeshUnpartitionedMeshFromExodusII(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromExodusII";
+  LuaCheckArgs<std::string>(L, func_name);
 
   auto file_name = LuaArg<std::string>(L, 1);
   auto scale = LuaArgOptional<double>(L, 2, 1.0);

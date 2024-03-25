@@ -20,7 +20,7 @@ int
 ParameterBlock_Test00(lua_State* L)
 {
   opensn::log.Log() << "GOLD_BEGIN";
-  const int num_args = lua_gettop(L);
+  const int num_args = LuaNumArgs(L);
   auto verbose = LuaArgOptional<bool>(L, 1, false);
 
   if (verbose)

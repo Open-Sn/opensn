@@ -14,15 +14,11 @@ RegisterLuaFunctionNamespace(LBSComputeFissionRate, lbs, ComputeFissionRate);
 int
 LBSComputeFissionRate(lua_State* L)
 {
-  const std::string fname = "LBSComputeFissionRate";
-  const int num_args = lua_gettop(L);
-
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "lbs.ComputeFissionRate";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
   // Get pointer to solver
   const auto solver_handle = LuaArg<size_t>(L, 1);
-
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 

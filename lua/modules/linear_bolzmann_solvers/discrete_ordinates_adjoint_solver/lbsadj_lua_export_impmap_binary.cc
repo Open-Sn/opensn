@@ -16,10 +16,8 @@ RegisterLuaFunctionAsIs(AdjointSolverExportImportanceMapBinary);
 int
 AdjointSolverExportImportanceMapBinary(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "AdjointSolverExportImportanceMapBinary";
+  LuaCheckArgs<int, std::string>(L, fname);
 
   const auto solver_handle = LuaArg<int>(L, 1);
   const auto file_name = LuaArg<std::string>(L, 2);

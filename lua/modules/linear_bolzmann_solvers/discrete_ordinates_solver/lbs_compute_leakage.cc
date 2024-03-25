@@ -13,7 +13,7 @@ int
 ComputeLeakage(lua_State* L)
 {
   const auto fname = "lbs.ComputeLeakage";
-  const auto num_args = lua_gettop(L);
+  LuaCheckArgs<size_t>(L, fname);
 
   // Get the solver
   const auto solver_handle = LuaArg<size_t>(L, 1);
@@ -27,7 +27,7 @@ ComputeLeakage(lua_State* L)
 
   // Get the boundaries to parse
   std::vector<uint64_t> bndry_ids;
-  if (num_args > 1)
+  if (LuaNumArgs(L) > 1)
   {
     auto bnd_names = LuaArg<std::vector<std::string>>(L, 2);
     for (auto& name : bnd_names)

@@ -18,9 +18,8 @@ RegisterLuaFunctionNamespace(AddPointSource, lbs, AddPointSource);
 int
 AddPointSource(lua_State* L)
 {
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(__FUNCTION__, 2, num_args);
+  const std::string fname = "lbs.AddPointSource";
+  LuaCheckArgs<int, int>(L, fname);
 
   // Process solver handle
   const auto solver_handle = LuaArg<int>(L, 1);
@@ -38,13 +37,9 @@ RegisterLuaFunctionNamespace(ClearPointSources, lbs, ClearPointSources);
 int
 ClearPointSources(lua_State* L)
 {
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
+  const std::string fname = "lbs.ClearPointSources";
+  LuaCheckArgs<int>(L, fname);
 
-  LuaCheckIntegerValue(__FUNCTION__, L, 1);
-
-  // Process solver handle
   const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
@@ -58,9 +53,8 @@ RegisterLuaFunctionNamespace(AddDistributedSource, lbs, AddDistributedSource);
 int
 AddDistributedSource(lua_State* L)
 {
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(__FUNCTION__, 2, num_args);
+  const std::string fname = "lbs.AddDistributedSource";
+  LuaCheckArgs<int, int>(L, fname);
 
   const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
@@ -78,9 +72,8 @@ RegisterLuaFunctionNamespace(ClearDistributedSources, lbs, ClearDistributedSourc
 int
 ClearDistributedSources(lua_State* L)
 {
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(__FUNCTION__, 1, num_args);
+  const std::string fname = "lbs.ClearDistributedSources";
+  LuaCheckArgs<int>(L, fname);
 
   // Process solver handle
   const auto solver_handle = LuaArg<int>(L, 1);

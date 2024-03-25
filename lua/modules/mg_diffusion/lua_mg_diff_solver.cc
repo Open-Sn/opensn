@@ -15,8 +15,7 @@ RegisterLuaFunctionNamespace(CFEMMGDiffusionSetBCProperty, diffusion, CFEMMGSetB
 int
 CFEMMGDiffusionSolverCreate(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  int num_args = lua_gettop(L);
+  const std::string fname = "diffusion.CFEMMGSolverCreate";
 
   auto solver_name = LuaArgOptional<std::string>(L, 1, "MGDiffusionSolver");
 
@@ -24,9 +23,7 @@ CFEMMGDiffusionSolverCreate(lua_State* L)
 
   opensn::object_stack.push_back(new_solver);
 
-  opensn::log.LogAllVerbose1() << "\nCFEMMGDiffusionSolverCreate: CFEM "
-                                  "Multigroup Diffusion solver created"
-                               << std::endl;
+  opensn::log.LogAllVerbose1() << fname << ": CFEM Multigroup Diffusion solver created.";
 
   return LuaReturn(L, opensn::object_stack.size() - 1);
 }
@@ -34,14 +31,11 @@ CFEMMGDiffusionSolverCreate(lua_State* L)
 int
 CFEMMGDiffusionSetBCProperty(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError(fname, num_args, 2);
+  const std::string fname = "diffusion.CFEMMGSetBCProperty";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
   // Get solver
   const auto solver_index = LuaArg<size_t>(L, 1);
-
   auto& solver =
     opensn::GetStackItem<opensn::mg_diffusion::Solver>(opensn::object_stack, solver_index, fname);
 
@@ -51,28 +45,11 @@ CFEMMGDiffusionSetBCProperty(lua_State* L)
   // Handle properties
   if (property_name == "boundary_type")
   {
-    if (num_args < 4)
-    {
-      opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                              << " CFEMMGDiffusionsetBCproperty(...,\"boundary_type\".... "
-                              << " At least 4 arguments are expected.";
-      opensn::Exit(EXIT_FAILURE);
-    }
     const auto bound_index = LuaArg<int>(L, 3);
-
     const auto type_name = LuaArg<std::string>(L, 4);
 
     if (type_name == "reflecting") // ------------- REFLECTING
     {
-      if (num_args != 4)
-      {
-        opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " CFEMMGDiffusionsetBCproperty(...,\"boundary_type\","
-                                << bound_index << ",\"reflecting\". "
-                                << " 4 arguments are expected.";
-        opensn::Exit(EXIT_FAILURE);
-      }
-
       opensn::mg_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::mg_diffusion::BoundaryType::Reflecting;
 
@@ -83,20 +60,12 @@ CFEMMGDiffusionSetBCProperty(lua_State* L)
     }
     else if (type_name == "dirichlet") // ------------- DIRICHLET
     {
-      opensn::log.Log0Error() << "Dirichlet BC is not supported in multigroup diffusion "
-                              << "(CFEMMGDiffusionSetBCProperty).";
+      opensn::log.Log0Error() << fname
+                              << ": Dirichlet BC is not supported in multigroup diffusion.";
       opensn::Exit(EXIT_FAILURE);
     }
     else if (type_name == "neumann") // ------------- NEUMANN
     {
-      if (num_args != 5)
-      {
-        opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " CFEMMGDiffusionsetBCproperty(...,\"boundary_type\","
-                                << bound_index << ",\"neumann\". "
-                                << " 5 arguments are expected.";
-        opensn::Exit(EXIT_FAILURE);
-      }
       auto f_values = LuaArg<std::vector<double>>(L, 5);
       // add the other multigroup vectors to finish the BC
       unsigned int ng = f_values.size();
@@ -113,14 +82,6 @@ CFEMMGDiffusionSetBCProperty(lua_State* L)
     }
     else if (type_name == "vacuum") // ------------- VACUUM
     {
-      if (num_args != 4)
-      {
-        opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " CFEMMGDiffusionsetBCproperty(...,\"boundary_type\","
-                                << bound_index << ",\"vacuum\". "
-                                << " 4 arguments are expected.";
-        opensn::Exit(EXIT_FAILURE);
-      }
       // dummy-sized values until we now num_group later, after solver init
       std::vector<double> a_values(1, 0.25);
       std::vector<double> b_values(1, 0.5);
@@ -136,14 +97,6 @@ CFEMMGDiffusionSetBCProperty(lua_State* L)
     }
     else if (type_name == "robin") // ------------- ROBIN
     {
-      if (num_args != 7)
-      {
-        opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " CFEMMGDiffusionSetBCProperty(...,\"boundary_type\","
-                                << bound_index << ",\"robin\". "
-                                << " 7 arguments are expected.";
-        opensn::Exit(EXIT_FAILURE);
-      }
       // check lua tables
       auto a_values = LuaArg<std::vector<double>>(L, 5);
       auto b_values = LuaArg<std::vector<double>>(L, 6);
@@ -158,15 +111,13 @@ CFEMMGDiffusionSetBCProperty(lua_State* L)
     }
     else
     {
-      opensn::log.LogAllError() << "Unsupported boundary type encountered in call to "
-                                << "CFEMMGDiffusionSetBCProperty(..,\"boundary_type\",.. :"
-                                << type_name;
+      opensn::log.LogAllError() << fname << ": Unsupported boundary type '" << type_name << "'.";
       opensn::Exit(EXIT_FAILURE);
     }
   }
   else // wrong property_name
   {
-    opensn::log.Log0Error() << "Invalid property in CFEMMGDiffusionSetBCProperty.";
+    opensn::log.Log0Error() << fname + ": Invalid property '" + property_name + "'.";
     opensn::Exit(EXIT_FAILURE);
   }
   return LuaReturn(L);

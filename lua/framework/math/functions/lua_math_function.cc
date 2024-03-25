@@ -44,7 +44,7 @@ FunctionDimAToDimBEvaluate(lua_State* L)
   }
   else
   {
-    const int num_args = lua_gettop(L);
+    const int num_args = LuaNumArgs(L);
     for (int p = 2; p <= num_args; ++p)
       params.push_back(LuaArg<double>(L, p));
   }

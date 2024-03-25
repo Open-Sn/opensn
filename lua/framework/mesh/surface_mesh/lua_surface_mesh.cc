@@ -67,9 +67,8 @@ MeshComputeLoadBalancing(lua_State* L)
 int
 SurfaceMeshExtractOpenEdgesToObj(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError("SurfaceMeshExtractOpenEdgesToObj", 2, num_args);
+  const std::string fname = "SurfaceMeshExtractOpenEdgesToObj";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
   auto surf_handle = LuaArg<size_t>(L, 1);
   auto file_name = LuaArg<std::string>(L, 2);

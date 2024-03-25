@@ -17,11 +17,8 @@ RegisterLuaFunctionNamespace(LBSReadGroupsetAngularFlux, lbs, ReadGroupsetAngula
 int
 LBSWriteGroupsetAngularFlux(lua_State* L)
 {
-  const std::string fname = "LBSWriteGroupsetAngularFlux";
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if (num_args != 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "lbs.WriteGroupsetAngularFlux";
+  LuaCheckArgs<size_t, int, std::string>(L, fname);
 
   const auto solver_handle = LuaArg<size_t>(L, 1);
   const auto grpset_index = LuaArg<int>(L, 2);
@@ -53,11 +50,8 @@ LBSWriteGroupsetAngularFlux(lua_State* L)
 int
 LBSReadGroupsetAngularFlux(lua_State* L)
 {
-  const std::string fname = "LBSReadGroupsetAngularFlux";
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if (num_args != 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "lbs.ReadGroupsetAngularFlux";
+  LuaCheckArgs<size_t, int, std::string>(L, fname);
 
   const auto solver_handle = LuaArg<size_t>(L, 1);
   const auto grpset_index = LuaArg<int>(L, 2);

@@ -18,10 +18,8 @@ RegisterLuaFunctionNamespace(PRKSetParam, prk, SetParam);
 int
 PRKGetParam(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "prk.GetParam";
+  LuaCheckArgs<int, std::string>(L, fname);
 
   const auto handle = LuaArg<int>(L, 1);
   auto solver =
@@ -39,16 +37,14 @@ PRKGetParam(lua_State* L)
   else if (param_name == "time_next")
     return LuaReturn(L, solver.TimeNew());
   else
-    throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name + "\".");
+    throw std::invalid_argument(fname + ": Invalid parameter '" + param_name + "'.");
 }
 
 int
 PRKSetParam(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "prk.SetParam";
+  LuaCheckArgs<size_t, std::string, double>(L, fname);
 
   const auto handle = LuaArg<size_t>(L, 1);
   auto& solver =
@@ -57,12 +53,11 @@ PRKSetParam(lua_State* L)
   const auto param_name = LuaArg<std::string>(L, 2);
   if (param_name == "rho")
   {
-    LuaCheckNumberValue(fname + "(handle,\"rho\", : Expects a number value.", L, 3);
     const auto val = LuaArg<double>(L, 3);
     solver.SetRho(val);
   }
   else
-    throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name + "\".");
+    throw std::invalid_argument(fname + ": Invalid parameter '" + param_name + "'\"'.");
 
   return LuaReturn(L);
 }

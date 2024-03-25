@@ -16,10 +16,8 @@ RegisterLuaFunctionNamespace(LBSGetScalarFieldFunctionList, lbs, GetScalarFieldF
 int
 LBSGetScalarFieldFunctionList(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  const std::string fname = "lbs.GetScalarFieldFunctionList";
+  LuaCheckArgs<size_t>(L, fname);
 
   // Get pointer to solver
   const auto solver_handle = LuaArg<size_t>(L, 1);

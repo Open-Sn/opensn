@@ -865,4 +865,12 @@ LuaReturn(lua_State* L)
   return 0;
 }
 
+//
+
+inline int
+LuaNumArgs(lua_State* L)
+{
+  return lua_gettop(L);
+}
+
 } // namespace opensnlua
