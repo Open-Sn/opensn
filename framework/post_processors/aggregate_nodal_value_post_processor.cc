@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObject(AggregateNodalValuePostProcessor);
+OpenSnRegisterObjectInNamespace(post, AggregateNodalValuePostProcessor);
 
 InputParameters
 AggregateNodalValuePostProcessor::GetInputParameters()

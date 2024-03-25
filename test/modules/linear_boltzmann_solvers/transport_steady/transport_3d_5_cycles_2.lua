@@ -27,7 +27,7 @@ meshgen1 = mesh.MeshGenerator.Create
       filename = "../../../../resources/TestMeshes/Sphere.case"
     }),
   },
-  partitioner = KBAGraphPartitioner.Create
+  partitioner = mesh.KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2, nz=1,
     xcuts = {0.0}, ycuts = {0.0}
@@ -113,7 +113,7 @@ fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 --end
 
 --############################################### Volume integrations
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
 fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)

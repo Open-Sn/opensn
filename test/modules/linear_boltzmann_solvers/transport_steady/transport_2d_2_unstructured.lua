@@ -25,7 +25,7 @@ meshgen1 = mesh.MeshGenerator.Create
       filename="../../../../resources/TestMeshes/TriangleMesh2x2Cuts.obj"
     }),
   },
-  partitioner = KBAGraphPartitioner.Create
+  partitioner = mesh.KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2, nz=1,
     xcuts = {0.0}, ycuts = {0.0},
@@ -34,7 +34,7 @@ meshgen1 = mesh.MeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials

@@ -38,7 +38,7 @@ to avoid issues).
 meshgen = mesh.OrthogonalMeshGenerator.Create
 ({
   node_sets = {nodes,nodes},
-  partitioner = KBAGraphPartitioner.Create
+  partitioner = mesh.KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2,
     xcuts = {0.}, ycuts = {0.}
@@ -53,7 +53,7 @@ to all cells found inside the logical volume. Logical volumes are quite powerful
 post-processing.
 --]]
 -- Set Material IDs
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --[[ @doc
@@ -71,7 +71,7 @@ Now, we use the Parmetis partitioner.
 meshgen = mesh.OrthogonalMeshGenerator.Create
 ({
   node_sets = {nodes,nodes},
-  partitioner = PETScGraphPartitioner.Create({type="parmetis"})
+  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
 
 })
 mesh.MeshGenerator.Execute(meshgen)
@@ -83,4 +83,3 @@ On such a simple regular mesh, both partitioners are giving the same result. The
 --]]
 -- Exporting the mesh
 mesh.ExportToVTK("ortho_2D_Parmetis")
-

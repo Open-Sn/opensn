@@ -37,15 +37,15 @@ meshgen = mesh.MeshGenerator.Create
       node_sets = {nodesxy, nodesxy, nodesz}
     }),
   },
-  partitioner = PETScGraphPartitioner.Create({type="ptscotch"})
+  partitioner = mesh.PETScGraphPartitioner.Create({type="ptscotch"})
 })
 mesh.MeshGenerator.Execute(meshgen)
 
 --############################################### Set Material IDs
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
-vol1 = mesh.RPPLogicalVolume.Create
+vol1 = logvol.RPPLogicalVolume.Create
 ({ xmin=-0.5,xmax=0.5,ymin=-0.5,ymax=0.5, infz=true })
 mesh.SetMaterialIDFromLogicalVolume(vol1,1)
 

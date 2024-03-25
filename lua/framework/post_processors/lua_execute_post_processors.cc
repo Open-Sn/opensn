@@ -10,9 +10,10 @@ namespace opensn
 InputParameters GetSyntax_ExecutePostProcessors();
 ParameterBlock ExecutePostProcessors(const InputParameters& params);
 
-RegisterWrapperFunction(ExecutePostProcessors,
-                        GetSyntax_ExecutePostProcessors,
-                        ExecutePostProcessors);
+RegisterWrapperFunctionNamespace(post,
+                                 Execute,
+                                 GetSyntax_ExecutePostProcessors,
+                                 ExecutePostProcessors);
 
 InputParameters
 GetSyntax_ExecutePostProcessors()

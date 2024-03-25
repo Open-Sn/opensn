@@ -26,7 +26,7 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create
     }),
   },
   layers = {{z=0.4,n=2},{z=0.8,n=2},{z=1.2,n=2},{z=1.6,n=2}}, -- layers
-  partitioner = KBAGraphPartitioner.Create
+  partitioner = mesh.KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2,
     xcuts = {0.0}, ycuts = {0.0}
@@ -35,10 +35,10 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
-vol1 = mesh.RPPLogicalVolume.Create
+vol1 = logvol.RPPLogicalVolume.Create
 ({ xmin=-0.5/8,xmax=0.5/8,ymin=-0.5/8,ymax=0.5/8, infz=true })
 mesh.SetMaterialIDFromLogicalVolume(vol1,1)
 

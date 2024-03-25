@@ -5,8 +5,6 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(math, ImplicitEulerTimeIntegration);
-
 InputParameters
 ImplicitEulerTimeIntegration::GetInputParameters()
 {

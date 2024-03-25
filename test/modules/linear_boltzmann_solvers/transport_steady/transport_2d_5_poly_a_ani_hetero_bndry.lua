@@ -151,7 +151,7 @@ fieldfunc.Initialize(slice2)
 fieldfunc.Execute(slice2)
 
 ----############################################### Volume integrations
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
 fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)

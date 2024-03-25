@@ -6,21 +6,21 @@
 phys0 = prk.TransientSolver.Create({ initial_source = 0.0 })
 
 for k = 1, 20 do
-  SolverInfoPostProcessor.Create({
+  post.SolverInfoPostProcessor.Create({
     name = "neutron_population" .. tostring(k),
     solver = phys0,
     info = { name = "neutron_population" },
     print_on = { "" }
   })
 end
-pp21 = SolverInfoPostProcessor.Create({
+pp21 = post.SolverInfoPostProcessor.Create({
   name = "neutron_population" .. tostring(21),
   solver = phys0,
   info = { name = "neutron_population" },
   print_on = { "" }
 })
 
-PostProcessorPrinterSetOptions({
+post.SetPrinterOptions({
   time_history_limit = 5,
 })
 
@@ -38,6 +38,6 @@ for t = 1, 20 do
 end
 
 print("Manual neutron_population1=",
-  string.format("%.5f", PostProcessorGetValue("neutron_population1")))
+  string.format("%.5f", post.GetValue("neutron_population1")))
 print("Manual neutron_population1=",
-  string.format("%.5f", PostProcessorGetValue(pp21)))
+  string.format("%.5f", post.GetValue(pp21)))

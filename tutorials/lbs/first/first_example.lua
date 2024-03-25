@@ -70,7 +70,7 @@ The resulting mesh and partition is shown below:
 meshgen = mesh.OrthogonalMeshGenerator.Create
 ({
   node_sets = {nodes,nodes},
-  partitioner = KBAGraphPartitioner.Create
+  partitioner = mesh.KBAGraphPartitioner.Create
   ({
     nx = 2, ny=2,
     xcuts = {0.0}, ycuts = {0.0},
@@ -86,7 +86,7 @@ to all cells found inside the logical volume. Logical volumes are quite powerful
 post-processing.
 --]]
 -- Set Material IDs
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 --[[ @doc

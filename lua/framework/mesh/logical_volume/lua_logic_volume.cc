@@ -198,7 +198,7 @@ LogVolCreate(lua_State* L)
     params.AddParameter("surface_mesh_handle", surf_mesh_hndle);
 
     const size_t handle =
-      object_maker.MakeRegisteredObjectOfType("mesh::SurfaceMeshLogicalVolume", params);
+      object_maker.MakeRegisteredObjectOfType("logvol::SurfaceMeshLogicalVolume", params);
 
     lua_pushinteger(L, static_cast<lua_Integer>(handle));
     return 1;

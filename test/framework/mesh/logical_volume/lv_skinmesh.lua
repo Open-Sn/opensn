@@ -17,11 +17,11 @@ meshgen = mesh.OrthogonalMeshGenerator.Create
 mesh.MeshGenerator.Execute(meshgen)
 
 -- assign mat ID 10 to whole domain
-vol0 = mesh.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
+vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0, 10)
 
 -- create a logical volume as an analytical RPP
-vol1 = mesh.RPPLogicalVolume.Create
+vol1 = logvol.RPPLogicalVolume.Create
 ({ xmin=-0.5,xmax=0.5,ymin=0.8,ymax=1.5, zmin=-1.5,zmax=0.5,  })
 -- assign mat ID 11 to lv of RPP
 mesh.SetMaterialIDFromLogicalVolume(vol1, 11)
@@ -30,7 +30,7 @@ mesh.SetMaterialIDFromLogicalVolume(vol1, 11)
 surfmesh = mesh.SurfaceMeshCreate()
 skin_mesh_file = "./cube_with_normals.obj"
 mesh.SurfaceMeshImportFromOBJFile(surfmesh, skin_mesh_file)
-lv_skinmesh = mesh.SurfaceMeshLogicalVolume.Create({surface_mesh_handle=surfmesh})
+lv_skinmesh = logvol.SurfaceMeshLogicalVolume.Create({surface_mesh_handle=surfmesh})
 -- assign mat ID 15 to lv of skin mesh
 mesh.SetMaterialIDFromLogicalVolume(lv_skinmesh, 15)
 
