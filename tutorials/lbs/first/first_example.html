@@ -183,7 +183,7 @@ cell center is located with respect to the various xcuts, ycuts, and zcuts (a fu
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
 <span class="p">({</span>
   <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span>
   <span class="p">({</span>
     <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">},</span> <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">},</span>
@@ -199,7 +199,7 @@ cell center is located with respect to the various xcuts, ycuts, and zcuts (a fu
 to all cells found inside the logical volume. Logical volumes are quite powerful, see subsequent tutorials on
 post-processing.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Set Material IDs</span>
-<span class="n">vol0</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">RPPLogicalVolume</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">infx</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">true</span><span class="p">})</span>
+<span class="n">vol0</span> <span class="o">=</span> <span class="n">logvol</span><span class="p">.</span><span class="n">RPPLogicalVolume</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">infx</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">true</span><span class="p">})</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">SetMaterialIDFromLogicalVolume</span><span class="p">(</span><span class="n">vol0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -347,7 +347,7 @@ on post-processing for more details on field functions.</p>
 <span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
 <span class="p">({</span>
   <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span>
   <span class="p">({</span>
     <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">},</span> <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">},</span>
@@ -358,7 +358,7 @@ on post-processing for more details on field functions.</p>
 
 
 <span class="c1">-- Set Material IDs</span>
-<span class="n">vol0</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">RPPLogicalVolume</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">infx</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">true</span><span class="p">})</span>
+<span class="n">vol0</span> <span class="o">=</span> <span class="n">logvol</span><span class="p">.</span><span class="n">RPPLogicalVolume</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">infx</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">true</span><span class="p">})</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">SetMaterialIDFromLogicalVolume</span><span class="p">(</span><span class="n">vol0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 
 
