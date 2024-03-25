@@ -16,21 +16,12 @@ RegisterLuaFunctionAsIs(AdjointSolverMakeExpRepFromP1Moments);
 int
 AdjointSolverMakeExpRepFromP1Moments(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
+  const std::string fname = "AdjointSolverMakeExpRepFromP1Moments";
+  LuaCheckArgs<std::vector<double>>(L, fname);
 
-  if (num_args < 1)
-    LuaPostArgAmountError(fname, 1, num_args);
-
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckTableValue(fname, L, 1);
-
-  std::vector<double> P1;
-  LuaPopulateVectorFrom1DArray(fname, L, 1, P1);
-
+  auto P1 = LuaArg<std::vector<double>>(L, 1);
   if (P1.size() != 4)
-    throw std::invalid_argument(fname + ": Supplied table argument must"
-                                        " have 4 entries.");
+    throw std::invalid_argument(fname + ": Supplied table argument must have 4 entries.");
 
   auto verbose = LuaArgOptional<bool>(L, 2, false);
 

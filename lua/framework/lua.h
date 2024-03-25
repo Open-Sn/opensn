@@ -38,13 +38,6 @@ void LuaCheckIntegerValue(const std::string& func_name, lua_State* L, int arg);
 void LuaCheckTableValue(const std::string& func_name, lua_State* L, int arg);
 /**Gets information about an error state.*/
 std::string LuaSourceInfo(lua_State* L, const char* func_name);
-/**Performs the necessary checks and converts a lua-table, formatted
- * as a 1D array (i.e. numerical keys) to a std::vector. If the table
- * is not convertable, an error message is posted.*/
-void LuaPopulateVectorFrom1DArray(const std::string& func_name,
-                                  lua_State* L,
-                                  int table_arg_index,
-                                  std::vector<double>& vec);
 
 namespace opensnlua
 {

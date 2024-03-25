@@ -97,10 +97,7 @@ CFEMMGDiffusionSetBCProperty(lua_State* L)
                                 << " 5 arguments are expected.";
         opensn::Exit(EXIT_FAILURE);
       }
-      // check lua tables
-      LuaCheckTableValue(fname, L, 5);
-      std::vector<double> f_values;
-      LuaPopulateVectorFrom1DArray(fname, L, 5, f_values);
+      auto f_values = LuaArg<std::vector<double>>(L, 5);
       // add the other multigroup vectors to finish the BC
       unsigned int ng = f_values.size();
       std::vector<double> a_values(ng, 0.0);
@@ -148,13 +145,9 @@ CFEMMGDiffusionSetBCProperty(lua_State* L)
         opensn::Exit(EXIT_FAILURE);
       }
       // check lua tables
-      LuaCheckTableValue(fname, L, 5);
-      LuaCheckTableValue(fname, L, 6);
-      LuaCheckTableValue(fname, L, 7);
-      std::vector<double> a_values, b_values, f_values;
-      LuaPopulateVectorFrom1DArray(fname, L, 5, a_values);
-      LuaPopulateVectorFrom1DArray(fname, L, 6, b_values);
-      LuaPopulateVectorFrom1DArray(fname, L, 7, f_values);
+      auto a_values = LuaArg<std::vector<double>>(L, 5);
+      auto b_values = LuaArg<std::vector<double>>(L, 6);
+      auto f_values = LuaArg<std::vector<double>>(L, 7);
 
       opensn::mg_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::mg_diffusion::BoundaryType::Robin;

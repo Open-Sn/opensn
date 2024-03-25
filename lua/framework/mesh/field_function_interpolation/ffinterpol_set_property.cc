@@ -97,10 +97,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::SET_FIELD_FUNCTIONS)
   {
-    LuaCheckTableValue(fname, L, 3);
-    std::vector<double> handle_array;
-    LuaPopulateVectorFrom1DArray(fname, L, 3, handle_array);
-
+    auto handle_array = LuaArg<std::vector<double>>(L, 3);
     for (double handle_d : handle_array)
     {
       const auto ffhandle = static_cast<int>(handle_d);
