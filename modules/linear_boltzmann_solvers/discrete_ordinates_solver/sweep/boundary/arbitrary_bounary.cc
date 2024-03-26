@@ -1,6 +1,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/arbitrary_boundary.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 

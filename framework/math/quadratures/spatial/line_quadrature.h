@@ -9,8 +9,7 @@ namespace opensn
 class LineQuadrature : public GaussLegendreQuadrature
 {
 public:
-  explicit LineQuadrature(QuadratureOrder order)
-    : GaussLegendreQuadrature(order)
+  explicit LineQuadrature(QuadratureOrder order) : GaussLegendreQuadrature(order)
   {
     SetRange({0, 1});
   }

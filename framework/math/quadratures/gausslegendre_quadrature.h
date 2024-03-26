@@ -54,7 +54,6 @@ public:
                                    bool verbose = false,
                                    unsigned int max_iters = 1000,
                                    double tol = 1.0e-12);
-
 };
 
 } // namespace opensn

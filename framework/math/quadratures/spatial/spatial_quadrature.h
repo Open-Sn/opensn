@@ -69,13 +69,12 @@ protected:
       range_({0, 0}),
       verbose_(params.GetParamValue<bool>("verbose")),
       order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order")))
-  {}
+  {
+  }
 
-  explicit SpatialQuadrature(QuadratureOrder order)
-    : range_({0, 0}),
-      verbose_(false),
-      order_(order)
-  {}
+  explicit SpatialQuadrature(QuadratureOrder order) : range_({0, 0}), verbose_(false), order_(order)
+  {
+  }
 
 public:
   QuadratureOrder order_;

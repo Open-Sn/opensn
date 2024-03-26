@@ -104,8 +104,7 @@ CylindricalQuadrature::Initialize(const SpatialQuadrature& quad_polar,
       azimu_quad.SetRange(azimu_quad_span);
 
     // Abscissae sorted in ascending order
-    auto lt_qp = [](const Vector3& qp0, const Vector3& qp1)
-    { return qp0[0] < qp1[0]; };
+    auto lt_qp = [](const Vector3& qp0, const Vector3& qp1) { return qp0[0] < qp1[0]; };
     if (!std::is_sorted(azimu_quad.qpoints_.begin(), azimu_quad.qpoints_.end(), lt_qp))
       throw std::invalid_argument("CylindricalQuadrature::Initialize : "
                                   "azimuthal quadrature abscissae not in ascending order.");

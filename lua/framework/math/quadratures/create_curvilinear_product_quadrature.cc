@@ -78,8 +78,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
       std::vector<SpatialQuadrature> quad_azi;
       for (const auto& Na : vNa)
         quad_azi.emplace_back(GaussChebyshevQuadrature(Na, verbose));
-      const auto new_quad =
-        std::make_shared<CylindricalQuadrature>(quad_pol, quad_azi, verbose);
+      const auto new_quad = std::make_shared<CylindricalQuadrature>(quad_pol, quad_azi, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
@@ -96,8 +95,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
       std::vector<SpatialQuadrature> quad_azi;
       for (const auto& Na : vNa)
         quad_azi.emplace_back(GaussLegendreQuadrature(Na, verbose));
-      const auto new_quad =
-        std::make_shared<CylindricalQuadrature>(quad_pol, quad_azi, verbose);
+      const auto new_quad = std::make_shared<CylindricalQuadrature>(quad_pol, quad_azi, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;

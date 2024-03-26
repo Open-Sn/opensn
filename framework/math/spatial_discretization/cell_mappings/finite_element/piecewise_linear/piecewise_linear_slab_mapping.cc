@@ -1,6 +1,6 @@
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_slab_mapping.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace opensn
 {

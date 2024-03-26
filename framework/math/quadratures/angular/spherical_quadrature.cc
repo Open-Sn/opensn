@@ -8,8 +8,7 @@
 namespace opensn
 {
 
-SphericalQuadrature::SphericalQuadrature(const SpatialQuadrature& quad_polar,
-                                         const bool verbose)
+SphericalQuadrature::SphericalQuadrature(const SpatialQuadrature& quad_polar, const bool verbose)
   : CurvilinearQuadrature()
 {
   Initialize(quad_polar, verbose);
@@ -52,8 +51,7 @@ SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool 
     polar_quad.SetRange(polar_quad_span);
 
   // Abscissae sorted in ascending order
-  auto lt_qp = [](const Vector3& qp0, const Vector3& qp1)
-  { return qp0[0] < qp1[0]; };
+  auto lt_qp = [](const Vector3& qp0, const Vector3& qp1) { return qp0[0] < qp1[0]; };
   if (not std::is_sorted(polar_quad.qpoints_.begin(), polar_quad.qpoints_.end(), lt_qp))
     throw std::invalid_argument("SphericalQuadrature::Initialize : "
                                 "polar quadrature abscissae not in ascending order.");
@@ -105,7 +103,7 @@ SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool 
     map_directions_.emplace(p, vec_directions_p);
   }
 
-  // Curvilinear product quadrature 
+  // Curvilinear product quadrature
   // Compute additional parametrising factors
   InitializeParameters();
 

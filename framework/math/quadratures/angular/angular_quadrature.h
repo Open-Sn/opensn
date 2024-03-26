@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework/mesh/mesh.h"
+#include "framework/mesh/mesh_vector.h"
 #include <vector>
 
 namespace opensn
@@ -19,10 +19,7 @@ struct QuadraturePointPhiTheta
   double phi = 0.0;
   double theta = 0.0;
 
-  QuadraturePointPhiTheta(const double phi, const double theta)
-    : phi(phi),
-      theta(theta)
-  {}
+  QuadraturePointPhiTheta(const double phi, const double theta) : phi(phi), theta(theta) {}
 };
 
 class AngularQuadrature
@@ -59,13 +56,9 @@ public:
   std::vector<double> weights_;
   std::vector<Vector3> omegas_;
 
-  AngularQuadrature()
-    : type_(AngularQuadratureType::Arbitrary)
-  {}
+  AngularQuadrature() : type_(AngularQuadratureType::Arbitrary) {}
 
-  explicit AngularQuadrature(AngularQuadratureType type)
-    : type_(type)
-  {}
+  explicit AngularQuadrature(AngularQuadratureType type) : type_(type) {}
 
   virtual ~AngularQuadrature() = default;
 

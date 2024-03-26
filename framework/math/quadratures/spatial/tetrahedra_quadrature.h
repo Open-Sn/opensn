@@ -6,7 +6,7 @@ namespace opensn
 {
 
 /**Initialzes a set of points for a quadrature integration over
-  * the volume of a tetrahedron.*/
+ * the volume of a tetrahedron.*/
 class TetrahedraQuadrature : public SpatialQuadrature
 {
 public:
