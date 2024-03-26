@@ -1,8 +1,7 @@
 #pragma once
 
-#include "framework/object.h"
 #include "framework/mesh/mesh.h"
-
+#include "framework/object.h"
 #include <vector>
 
 namespace opensn

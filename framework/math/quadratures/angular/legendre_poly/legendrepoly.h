@@ -1,7 +1,6 @@
 #pragma once
 
-// ###################################################################
-/**Container object for functions relating to Legendre polynomials.*/
+/**Functions related to Legendre polynomials.*/
 namespace opensn
 {
 /**

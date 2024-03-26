@@ -1,5 +1,4 @@
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
-
 #include <algorithm>
 
 namespace opensn

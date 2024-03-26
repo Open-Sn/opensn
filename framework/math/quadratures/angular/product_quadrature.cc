@@ -6,7 +6,6 @@
 #include <cmath>
 #include <sstream>
 
-
 namespace opensn
 {
 

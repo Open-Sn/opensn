@@ -14,25 +14,20 @@ enum class AngularQuadratureType
   SLDFESQ = 3
 };
 
-/**Simple structure to add names to the angle components.*/
 struct QuadraturePointPhiTheta
 {
   double phi = 0.0;
   double theta = 0.0;
-  QuadraturePointPhiTheta(const double phi, const double theta) : phi(phi), theta(theta) {}
+
+  QuadraturePointPhiTheta(const double phi, const double theta)
+    : phi(phi),
+      theta(theta)
+  {}
 };
 
-/**Base class for angular quadratures.*/
 class AngularQuadrature
 {
 public:
-  const AngularQuadratureType type_;
-
-public:
-  std::vector<QuadraturePointPhiTheta> abscissae_;
-  std::vector<double> weights_;
-  std::vector<Vector3> omegas_;
-
   struct HarmonicIndices
   {
     unsigned int ell = 0;
@@ -54,10 +49,23 @@ protected:
   bool d2m_op_built_ = false;
   bool m2d_op_built_ = false;
 
-public:
-  AngularQuadrature() : type_(AngularQuadratureType::Arbitrary) {}
+  /**Populates a map of moment m to the Spherical Harmonic indices
+   * required.*/
+  virtual void MakeHarmonicIndices(unsigned int scattering_order, int dimension);
 
-  explicit AngularQuadrature(AngularQuadratureType type) : type_(type) {}
+public:
+  const AngularQuadratureType type_;
+  std::vector<QuadraturePointPhiTheta> abscissae_;
+  std::vector<double> weights_;
+  std::vector<Vector3> omegas_;
+
+  AngularQuadrature()
+    : type_(AngularQuadratureType::Arbitrary)
+  {}
+
+  explicit AngularQuadrature(AngularQuadratureType type)
+    : type_(type)
+  {}
 
   virtual ~AngularQuadrature() = default;
 
@@ -70,14 +78,9 @@ public:
    *                             normalized to sum to this number.*/
   virtual void OptimizeForPolarSymmetry(double normalization);
 
-protected:
-  /**Populates a map of moment m to the Spherical Harmonic indices
-   * required.*/
-  virtual void MakeHarmonicIndices(unsigned int scattering_order, int dimension);
-
-public:
   /**Computes the discrete to moment operator.*/
   virtual void BuildDiscreteToMomentOperator(unsigned int scattering_order, int dimension);
+
   /**Computes the moment to discrete operator.*/
   virtual void BuildMomentToDiscreteOperator(unsigned int scattering_order, int dimension);
 

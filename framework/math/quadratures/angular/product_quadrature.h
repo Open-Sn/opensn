@@ -20,18 +20,16 @@ enum class ProductQuadratureType
 /** Class for product quadratures*/
 class ProductQuadrature : public AngularQuadrature
 {
-public:
-  std::vector<double> polar_ang_;
-  std::vector<double> azimu_ang_;
-
 protected:
   /** Linear indices of ordered directions mapped to polar level. */
   std::map<unsigned int, std::vector<unsigned int>> map_directions_;
 
-protected:
   ProductQuadrature() : AngularQuadrature(AngularQuadratureType::ProductQuadrature) {}
 
 public:
+  std::vector<double> polar_ang_;
+  std::vector<double> azimu_ang_;
+
   ~ProductQuadrature() override = default;
 
   /**Initializes the quadrature with custom angles and weights.*/
@@ -48,6 +46,7 @@ public:
    *                             positive number is provided, the weights will be
    *                             normalized to sum to this number.*/
   void OptimizeForPolarSymmetry(double normalization) override;
+
   /**Obtains the abscissae index given the indices of the
    * polar angle index and the azimuthal angle index.*/
   unsigned int GetAngleNum(const unsigned int polar_angle_index,
@@ -55,6 +54,7 @@ public:
   {
     return map_directions_.at(polar_angle_index)[azimu_angle_index];
   }
+
   /** Return constant reference to map_directions. */
   const std::map<unsigned int, std::vector<unsigned int>>& GetDirectionMap() const
   {

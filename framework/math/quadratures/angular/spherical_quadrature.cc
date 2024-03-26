@@ -18,12 +18,9 @@ SphericalQuadrature::SphericalQuadrature(const SpatialQuadrature& quad_polar,
 void
 SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool verbose)
 {
-  //  copies of input quadratures
   auto polar_quad(quad_polar);
 
-  //  --------------------------------------------------------------------------
-  //  verifications and corrections (if possible)
-  //  --------------------------------------------------------------------------
+  // Verifications and corrections (if possible)
   const auto eps = std::numeric_limits<double>::epsilon();
 
   if (polar_quad.weights_.size() == 0)
@@ -31,9 +28,7 @@ SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool 
                                 "invalid polar quadrature size = " +
                                 std::to_string(polar_quad.weights_.size()));
 
-  //  --------------------------------------------------------------------------
-  //  verifications on polar quadrature
-  //  --------------------------------------------------------------------------
+  // Verifications on polar quadrature
   const double polar_quad_sum_weights = 2;
   const auto polar_quad_span = std::pair<double, double>(-1, +1);
 
@@ -51,20 +46,19 @@ SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool 
     throw std::invalid_argument("Sphericaluadrature::Initialize : "
                                 "polar quadrature weights sum to zero.");
 
-  //  defined on range [-1;+1]
+  // Defined on range [-1;+1]
   if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps or
       std::abs(polar_quad.GetRange().second - polar_quad_span.second) > eps)
     polar_quad.SetRange(polar_quad_span);
 
-  //  abscissae sorted in ascending order
+  // Abscissae sorted in ascending order
   auto lt_qp = [](const Vector3& qp0, const Vector3& qp1)
   { return qp0[0] < qp1[0]; };
   if (not std::is_sorted(polar_quad.qpoints_.begin(), polar_quad.qpoints_.end(), lt_qp))
     throw std::invalid_argument("SphericalQuadrature::Initialize : "
                                 "polar quadrature abscissae not in ascending order.");
 
-  //  existence of zero-weight abscissae at the start and at the end of the
-  //  interval
+  // Existence of zero-weight abscissae at the start and at the end of the interval
   if (std::abs(polar_quad.weights_.front()) > eps and
       std::abs(polar_quad.qpoints_.front()[0] - polar_quad_span.first) > eps)
   {
@@ -78,12 +72,9 @@ SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool 
     polar_quad.qpoints_.emplace(polar_quad.qpoints_.end(), polar_quad_span.second);
   }
 
-  //  --------------------------------------------------------------------------
-  //  product quadrature : initialisation
-  //  --------------------------------------------------------------------------
-
-  //  compute weights, abscissae $(0, \vartheta_{p})$ and direction vectors
-  //  $\omega_{p} := ((1-\mu_{p}^{2})^{1/2}, 0, \mu_{p})$
+  // Product quadrature initialization
+  // Compute weights, abscissae $(0, \vartheta_{p})$ and direction vectors
+  // $\omega_{p} := ((1-\mu_{p}^{2})^{1/2}, 0, \mu_{p})$
   weights_.clear();
   abscissae_.clear();
   omegas_.clear();
@@ -105,7 +96,7 @@ SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool 
   abscissae_.shrink_to_fit();
   omegas_.shrink_to_fit();
 
-  //  map of direction indices
+  // Map of direction indices
   map_directions_.clear();
   for (size_t p = 0; p < polar_quad.weights_.size(); ++p)
   {
@@ -114,14 +105,11 @@ SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool 
     map_directions_.emplace(p, vec_directions_p);
   }
 
-  //  --------------------------------------------------------------------------
-  //  curvilinear product quadrature : compute additional parametrising factors
-  //  --------------------------------------------------------------------------
+  // Curvilinear product quadrature 
+  // Compute additional parametrising factors
   InitializeParameters();
 
-  //  --------------------------------------------------------------------------
-  //  print
-  //  --------------------------------------------------------------------------
+  // Print
   if (verbose)
   {
     log.Log() << "map_directions" << std::endl;
@@ -150,11 +138,11 @@ SphericalQuadrature::InitializeParameters()
   fac_diamond_difference_.resize(weights_.size(), 1);
   fac_streaming_operator_.resize(weights_.size(), 0);
 
-  //  interface quantities initialised to starting direction values
+  // Interface quantities initialised to starting direction values
   double alpha_interface = 0;
   std::vector<double> mu_interface(2, omegas_[map_directions_[0].front()].z);
 
-  //  initialisation permits to forego start direction and final direction
+  // Initialization permits to forego start direction and final direction
   for (size_t p = 1; p < map_directions_.size() - 1; ++p)
   {
     const auto k = map_directions_[p][0];
