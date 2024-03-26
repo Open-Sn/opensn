@@ -5,10 +5,10 @@
 namespace opensn
 {
 
+/**Initializes quadratures for use on triangles.*/
 class TriangleQuadrature : public SpatialQuadrature
 {
 public:
-  /**Initializes quadratures for use on triangles.*/
   explicit TriangleQuadrature(QuadratureOrder order);
 };
 

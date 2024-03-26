@@ -11,22 +11,13 @@ SpatialQuadrature::GetInputParameters()
 
   params.SetGeneralDescription("\\defgroup math__Quadrature\n"
                                "\\ingroup LuaQuadrature\n"
-                               "Base class for 1D quadratures");
+                               "Base class for spatial quadratures");
 
   params.AddRequiredParameter<int>("order", "Quadrature order.");
 
   params.AddOptionalParameter("verbose", false, "Enables verbose operations");
 
-  params.ConstrainParameterRange("order", AllowableRangeLowHighLimit::New(0, 43));
-
   return params;
-}
-
-SpatialQuadrature::SpatialQuadrature(const InputParameters& params)
-  : Object(params),
-    order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order"))),
-    verbose_(params.GetParamValue<bool>("verbose"))
-{
 }
 
 void

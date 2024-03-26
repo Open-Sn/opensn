@@ -5,12 +5,11 @@
 namespace opensn
 {
 
-/**Quadrature set for tetrahedrons.*/
+/**Initialzes a set of points for a quadrature integration over
+  * the volume of a tetrahedron.*/
 class TetrahedraQuadrature : public SpatialQuadrature
 {
 public:
-  /**Initialzes a set of points for a quadrature integration over
-   * the volume of a tetrahedron.*/
   explicit TetrahedraQuadrature(QuadratureOrder order);
 };
 

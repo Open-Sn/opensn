@@ -59,6 +59,25 @@ enum class QuadratureOrder : int
 
 class SpatialQuadrature : public Object
 {
+protected:
+  /**Interval on which the quadrature is defined
+   * (relevant for one-dimensional quadratures only).*/
+  std::pair<double, double> range_;
+  bool verbose_;
+
+  explicit SpatialQuadrature(const InputParameters& params)
+    : Object(params),
+      range_({0, 0}),
+      verbose_(params.GetParamValue<bool>("verbose")),
+      order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order")))
+  {}
+
+  explicit SpatialQuadrature(QuadratureOrder order)
+    : range_({0, 0}),
+      verbose_(false),
+      order_(order)
+  {}
+
 public:
   QuadratureOrder order_;
   std::vector<Vector3> qpoints_;
@@ -66,18 +85,6 @@ public:
 
   static InputParameters GetInputParameters();
 
-protected:
-  /**Interval on which the quadrature is defined
-   * (relevant for one-dimensional quadratures only).*/
-  std::pair<double, double> range_;
-  bool verbose_ = false;
-
-protected:
-  explicit SpatialQuadrature(const InputParameters& params);
-
-  explicit SpatialQuadrature(QuadratureOrder order) : order_(order), range_({0, 0}) {}
-
-public:
   /**Get the range on which the quadrature is defined
    * (relevant for one-dimensional quadratures only).*/
   const std::pair<double, double>& GetRange() const { return range_; }

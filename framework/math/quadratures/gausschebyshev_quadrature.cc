@@ -15,9 +15,11 @@ GaussChebyshevQuadrature::GetInputParameters()
   InputParameters params = SpatialQuadrature::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a Gauss-Chebyshev quadrature");
+
   params.SetDocGroup("LuaQuadrature");
 
   params.ChangeExistingParamToOptional("order", 0);
+  params.ConstrainParameterRange("order", AllowableRangeLowHighLimit::New(0, 43));
 
   params.AddOptionalParameter("N", 1, "Number of quadrature points.");
 
@@ -56,9 +58,7 @@ void
 GaussChebyshevQuadrature::Initialize(unsigned int N)
 {
   if (verbose_)
-    log.Log() << "Initializing Gauss-Chebyshev Quadrature "
-                 "with "
-              << N << " q-points";
+    log.Log() << "Initializing Gauss-Chebyshev Quadrature with " << N << " q-points";
 
   const double pi_N = M_PI / N;
   for (unsigned int n = 0; n < N; ++n)
@@ -72,7 +72,6 @@ GaussChebyshevQuadrature::Initialize(unsigned int N)
     if (verbose_)
       log.Log() << "root[" << n << "]=" << qpoints_[n][0] << ", weight=" << weights_[n];
   }
-
   range_ = {-1, +1};
 }
 

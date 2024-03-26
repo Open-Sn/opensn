@@ -17,9 +17,12 @@ GaussLegendreQuadrature::GetInputParameters()
   InputParameters params = SpatialQuadrature::GetInputParameters();
 
   params.SetGeneralDescription("General Gauss-Legendre quadrature");
+
   params.SetDocGroup("LuaQuadrature");
 
   params.ChangeExistingParamToOptional("order", 0);
+  params.ConstrainParameterRange("order", AllowableRangeLowHighLimit::New(0, 43));
+
   params.AddOptionalParameter(
     "max_root_finding_iters", 1000, "Maximum number of iterations used during root finding");
   params.AddOptionalParameter("root_finding_tol", 1.0e-12, "Root finding iterative tolerance");
@@ -39,6 +42,7 @@ GaussLegendreQuadrature::GaussLegendreQuadrature(const InputParameters& params)
                           "Either \"order\" or \"N\" must be specified, not both");
 
   const auto max_iters = params.GetParamValue<unsigned int>("max_root_finding_iters");
+
   const double tol = params.GetParamValue<double>("root_finding_tol");
 
   if (assigned_params.Has("order"))
@@ -115,9 +119,8 @@ GaussLegendreQuadrature::Initialize(unsigned int N,
 std::vector<double>
 GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, double tol)
 {
-  // Populate init guess
-  // This initial guess proved to be quite important
-  // at higher N since the roots start to get
+  // Populate initial guess
+  // This initial guess proved to be quite important at higher N since the roots start to get
   // squeezed to -1 and 1.
   int num_search_intvls = 1000;
   if (N > 64)
