@@ -10,6 +10,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(LocallyRefineSLDFESQAngularQuadrature, aquad, LocallyRefineSLDFESQ);
 
 int
@@ -83,3 +86,5 @@ LocallyRefineSLDFESQAngularQuadrature(lua_State* L)
 
   return 0;
 }
+
+} // namespace opensnlua

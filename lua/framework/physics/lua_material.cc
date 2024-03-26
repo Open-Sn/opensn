@@ -11,6 +11,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(MatAddMaterial, mat, AddMaterial);
 RegisterLuaFunctionNamespace(MatAddProperty, mat, AddProperty);
 RegisterLuaFunctionNamespace(MatSetProperty, mat, SetProperty);
@@ -552,3 +555,5 @@ MatGetProperty(lua_State* L)
 
   return 1;
 }
+
+} // namespace opensnlua

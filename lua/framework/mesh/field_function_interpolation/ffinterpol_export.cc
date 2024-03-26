@@ -5,6 +5,9 @@
 #include "ffinterpol_lua.h"
 #include "framework/console/console.h"
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(FFInterpolationExportPython, fieldfunc, ExportPython);
 
 int
@@ -29,3 +32,5 @@ FFInterpolationExportPython(lua_State* L)
 
   return 0;
 }
+
+} // namespace opensnlua

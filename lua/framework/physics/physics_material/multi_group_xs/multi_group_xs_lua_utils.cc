@@ -8,6 +8,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(PhysicsTransportXSCreate, xs, Create);
 RegisterLuaFunctionNamespace(PhysicsTransportXSSet, xs, Set);
 RegisterLuaFunctionNamespace(PhysicsTransportXSMakeCombined, xs, MakeCombined);
@@ -462,3 +465,5 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
 
   return 0;
 }
+
+} // namespace opensnlua

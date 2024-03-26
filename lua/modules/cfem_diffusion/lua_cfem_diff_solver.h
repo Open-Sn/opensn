@@ -2,6 +2,9 @@
 
 #include "framework/lua.h"
 
+namespace opensnlua
+{
+
 /**
  * Creates a CFEM Diffusion solver.
  *
@@ -62,3 +65,5 @@ int CFEMDiffusionSolverCreate(lua_State* L);
  * \author Jan
  */
 int CFEMDiffusionSetBCProperty(lua_State* L);
+
+} // namespace opensnlua

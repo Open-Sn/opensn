@@ -1,5 +1,8 @@
 #pragma once
 
+namespace opensnlua
+{
+
 /** Creates an angular quadrature.
  *
  * \param azimuthal_angles array A lua table with N entries each being an azimuthal
@@ -143,3 +146,5 @@ int GetProductQuadrature(lua_State* L);
  * \author Jan
  */
 int OptimizeAngularQuadratureForPolarSymmetry(lua_State* L);
+
+} // namespace opensnlua

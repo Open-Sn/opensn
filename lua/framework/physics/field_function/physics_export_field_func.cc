@@ -7,6 +7,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(ExportFieldFunctionToVTK, fieldfunc, ExportToVTK);
 RegisterLuaFunctionNamespace(ExportMultiFieldFunctionToVTK, fieldfunc, ExportToVTKMulti);
 
@@ -92,3 +95,5 @@ ExportMultiFieldFunctionToVTK(lua_State* L)
 
   return 0;
 }
+
+} // namespace opensnlua

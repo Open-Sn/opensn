@@ -2,6 +2,9 @@
 
 #include "framework/lua.h"
 
+namespace opensnlua
+{
+
 /**
  * Adds a material to the problem. Materials are added to the global
  * physics handler and is therefore accessible across all meshes and solvers.
@@ -192,3 +195,5 @@ int MatSetProperty(lua_State* L);
  * \return Lua table of the desired property.
  */
 int MatGetProperty(lua_State* L);
+
+} // namespace opensnlua

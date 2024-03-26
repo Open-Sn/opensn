@@ -5,7 +5,9 @@
 #include "framework/logging/log.h"
 
 using namespace opensn;
-using namespace opensnlua;
+
+namespace opensnlua
+{
 
 RegisterLuaFunctionNamespace(CFEMMGDiffusionSolverCreate, diffusion, CFEMMGSolverCreate);
 RegisterLuaFunctionNamespace(CFEMMGDiffusionSetBCProperty, diffusion, CFEMMGSetBCProperty);
@@ -190,3 +192,5 @@ CFEMMGDiffusionSetBCProperty(lua_State* L)
   }
   return 0;
 }
+
+} // namespace opensnlua

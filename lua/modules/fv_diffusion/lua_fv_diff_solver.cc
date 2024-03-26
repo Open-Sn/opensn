@@ -6,7 +6,9 @@
 #include "lua/framework/math/functions/lua_scalar_spatial_material_function.h"
 
 using namespace opensn;
-using namespace opensnlua;
+
+namespace opensnlua
+{
 
 RegisterLuaFunctionNamespace(FVDiffusionSolverCreate, diffusion, FVSolverCreate);
 RegisterLuaFunctionNamespace(FVDiffusionSetBCProperty, diffusion, FVSetBCProperty);
@@ -223,3 +225,5 @@ FVDiffusionSetBCProperty(lua_State* L)
   }
   return 0;
 }
+
+} // namespace opensnlua

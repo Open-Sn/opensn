@@ -2,6 +2,9 @@
 
 #include "framework/lua.h"
 
+namespace opensnlua
+{
+
 /**
  * Creates a Multigroup CFEM Diffusion solver.
  *
@@ -57,3 +60,5 @@ int CFEMMGDiffusionSolverCreate(lua_State* L);
  * \author Jean
  */
 int CFEMMGDiffusionSetBCProperty(lua_State* L);
+
+} // namespace opensnlua

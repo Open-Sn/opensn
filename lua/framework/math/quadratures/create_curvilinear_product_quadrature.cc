@@ -14,6 +14,9 @@
 
 using namespace opensn;
 
+namespace opensnlua
+{
+
 RegisterLuaFunctionNamespace(CreateCylindricalProductQuadrature,
                              aquad,
                              CreateCylindricalProductQuadrature);
@@ -199,3 +202,5 @@ CreateSphericalProductQuadrature(lua_State* L)
 
   return 0;
 }
+
+} // namespace opensnlua
