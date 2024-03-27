@@ -29,20 +29,12 @@ RegisterLuaConstantAsIs(LOG_ALLVERBOSE_2, Varying(12));
 int
 LogSetVerbosity(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-
-  if (num_args == 0)
+  const std::string fname = "log.SetVerbosity";
+  LuaCheckArgs<int>(L, fname);
+  auto level = LuaArg<int>(L, 1);
+  if (level <= 2)
   {
-    return LuaReturn(L);
-  }
-  else
-  {
-    LuaCheckArgs<int>(L, "log.SetVerbosity");
-    auto level = LuaArg<int>(L, 1);
-    if (level <= 2)
-    {
-      opensn::log.SetVerbosity(level);
-    }
+    opensn::log.SetVerbosity(level);
   }
   return LuaReturn(L);
 }
