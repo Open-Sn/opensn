@@ -16,6 +16,6 @@ materials = {}
 for m=0,1 do
     key = tostring(m)
     materials[key] = mat.AddMaterial("Material_"..key)
-    mat.AddProperty(key, TRANSPORT_XSECTIONS)
-    mat.SetProperty(key, TRANSPORT_XSECTIONS, EXISTING, xss[key])
+    mat.AddProperty(materials[key], TRANSPORT_XSECTIONS)
+    mat.SetProperty(materials[key], TRANSPORT_XSECTIONS, EXISTING, xss[key])
 end
