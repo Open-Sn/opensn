@@ -12,6 +12,22 @@ namespace opensnlua
 
 RegisterLuaFunctionNamespace(GetProductQuadrature, aquad, GetProductQuadrature);
 
+struct LuaQuadData
+{
+  double weight;
+  double phi;
+  double theta;
+};
+
+void
+LuaPush(lua_State* L, const LuaQuadData& data)
+{
+  lua_newtable(L);
+  LuaPushTableKey(L, "weight", data.weight);
+  LuaPushTableKey(L, "polar", data.theta);
+  LuaPushTableKey(L, "azimuthal", data.phi);
+}
+
 int
 GetProductQuadrature(lua_State* L)
 {
@@ -39,18 +55,11 @@ GetProductQuadrature(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  lua_newtable(L);
+  std::vector<LuaQuadData> quad_data;
+  quad_data.resize(quad->weights_.size());
   for (size_t n = 0; n < quad->weights_.size(); ++n)
-  {
-    LuaPush(L, n + 1);
-    lua_newtable(L);
-    LuaPushTableKey(L, "weight", quad->weights_[n]);
-    LuaPushTableKey(L, "polar", quad->abscissae_[n].theta);
-    LuaPushTableKey(L, "azimuthal", quad->abscissae_[n].phi);
-    lua_settable(L, -3);
-  }
-
-  return 1;
+    quad_data[n] = {quad->weights_[n], quad->abscissae_[n].theta, quad->abscissae_[n].phi};
+  return LuaReturn(L, quad_data);
 }
 
 } // namespace opensnlua
