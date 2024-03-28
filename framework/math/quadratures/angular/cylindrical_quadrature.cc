@@ -8,18 +8,18 @@
 namespace opensn
 {
 
-CylindricalQuadrature::CylindricalQuadrature(const SpatialQuadrature& quad_polar,
-                                             const SpatialQuadrature& quad_azimu,
+CylindricalQuadrature::CylindricalQuadrature(const GaussQuadrature& quad_polar,
+                                             const GaussQuadrature& quad_azimu,
                                              const bool verbose)
   : CurvilinearQuadrature()
 {
   const auto np = quad_polar.weights_.size();
-  std::vector<SpatialQuadrature> quad_azimu_vec(np, quad_azimu);
+  std::vector<GaussQuadrature> quad_azimu_vec(np, quad_azimu);
   Initialize(quad_polar, quad_azimu_vec, verbose);
 }
 
-CylindricalQuadrature::CylindricalQuadrature(const SpatialQuadrature& quad_polar,
-                                             const std::vector<SpatialQuadrature>& quad_azimu_vec,
+CylindricalQuadrature::CylindricalQuadrature(const GaussQuadrature& quad_polar,
+                                             const std::vector<GaussQuadrature>& quad_azimu_vec,
                                              const bool verbose)
   : CurvilinearQuadrature()
 {
@@ -27,8 +27,8 @@ CylindricalQuadrature::CylindricalQuadrature(const SpatialQuadrature& quad_polar
 }
 
 void
-CylindricalQuadrature::Initialize(const SpatialQuadrature& quad_polar,
-                                  const std::vector<SpatialQuadrature>& quad_azimu_vec,
+CylindricalQuadrature::Initialize(const GaussQuadrature& quad_polar,
+                                  const std::vector<GaussQuadrature>& quad_azimu_vec,
                                   const bool verbose)
 {
   auto polar_quad(quad_polar);

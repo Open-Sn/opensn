@@ -1,11 +1,11 @@
 #pragma once
 
-#include "framework/math/quadratures/spatial/spatial_quadrature.h"
+#include "framework/math/quadratures/gauss_quadrature.h"
 
 namespace opensn
 {
 
-class GaussLegendreQuadrature : public SpatialQuadrature
+class GaussLegendreQuadrature : public GaussQuadrature
 {
 private:
   /**Populates the abscissae and weights for a Gauss-Legendre

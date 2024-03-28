@@ -1,4 +1,4 @@
-#include "framework/math/quadratures/spatial/spatial_quadrature.h"
+#include "framework/math/quadratures/gauss_quadrature.h"
 #include "framework/parameters/parameter_block.h"
 #include "lua/framework/console/console.h"
 #include "framework/runtime.h"
@@ -36,7 +36,7 @@ Get1DQuadratureData(const InputParameters& params)
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& quad = opensn::GetStackItem<SpatialQuadrature>(opensn::object_stack, handle, __FUNCTION__);
+  auto& quad = opensn::GetStackItem<GaussQuadrature>(opensn::object_stack, handle, __FUNCTION__);
 
   ParameterBlock qpoints_block("qpoints");
   ParameterBlock weights_block("weights");

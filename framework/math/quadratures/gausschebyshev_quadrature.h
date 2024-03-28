@@ -1,11 +1,11 @@
 #pragma once
 
-#include "framework/math/quadratures/spatial/spatial_quadrature.h"
+#include "framework/math/quadratures/gauss_quadrature.h"
 
 namespace opensn
 {
 
-class GaussChebyshevQuadrature : public SpatialQuadrature
+class GaussChebyshevQuadrature : public GaussQuadrature
 {
 private:
   /**Populates the abscissae and weights for a Gauss-Chebyshev

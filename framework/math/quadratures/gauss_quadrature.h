@@ -1,22 +1,20 @@
 #pragma once
 
 #include "framework/math/quadratures/quadrature_order.h"
-#include "framework/mesh/mesh.h"
+#include "framework/mesh/mesh_vector.h"
 #include "framework/object.h"
 #include <vector>
 
 namespace opensn
 {
 
-class SpatialQuadrature : public Object
+class GaussQuadrature : public Object
 {
 protected:
-  /**Interval on which the quadrature is defined
-   * (relevant for one-dimensional quadratures only).*/
   std::pair<double, double> range_;
   bool verbose_;
 
-  explicit SpatialQuadrature(const InputParameters& params)
+  explicit GaussQuadrature(const InputParameters& params)
     : Object(params),
       range_({0, 0}),
       verbose_(params.GetParamValue<bool>("verbose")),
@@ -24,7 +22,7 @@ protected:
   {
   }
 
-  explicit SpatialQuadrature(QuadratureOrder order) : range_({0, 0}), verbose_(false), order_(order)
+  explicit GaussQuadrature(QuadratureOrder order) : range_({0, 0}), verbose_(false), order_(order)
   {
   }
 
@@ -35,14 +33,8 @@ public:
 
   static InputParameters GetInputParameters();
 
-  /**Get the range on which the quadrature is defined
-   * (relevant for one-dimensional quadratures only).*/
   const std::pair<double, double>& GetRange() const { return range_; }
 
-  /**Set the range on which the quadrature is defined.
-   * (relevant for one-dimensional quadratures only).
-   * Note that calling this method results in translation
-   * of the abscissae and scaling of the weights.*/
   void SetRange(const std::pair<double, double>& range);
 };
 

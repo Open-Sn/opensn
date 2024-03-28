@@ -8,14 +8,14 @@
 namespace opensn
 {
 
-SphericalQuadrature::SphericalQuadrature(const SpatialQuadrature& quad_polar, const bool verbose)
+SphericalQuadrature::SphericalQuadrature(const GaussQuadrature& quad_polar, const bool verbose)
   : CurvilinearQuadrature()
 {
   Initialize(quad_polar, verbose);
 }
 
 void
-SphericalQuadrature::Initialize(const SpatialQuadrature& quad_polar, const bool verbose)
+SphericalQuadrature::Initialize(const GaussQuadrature& quad_polar, const bool verbose)
 {
   auto polar_quad(quad_polar);
 

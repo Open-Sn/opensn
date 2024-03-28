@@ -1,17 +1,17 @@
-#include "framework/math/quadratures/spatial/spatial_quadrature.h"
+#include "framework/math/quadratures/gauss_quadrature.h"
 #include "framework/logging/log_exceptions.h"
 
 namespace opensn
 {
 
 InputParameters
-SpatialQuadrature::GetInputParameters()
+GaussQuadrature::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("\\defgroup math__Quadrature\n"
                                "\\ingroup LuaQuadrature\n"
-                               "Base class for spatial quadratures");
+                               "Base class for Gauss quadratures");
 
   params.AddRequiredParameter<int>("order", "Quadrature order.");
 
@@ -21,7 +21,7 @@ SpatialQuadrature::GetInputParameters()
 }
 
 void
-SpatialQuadrature::SetRange(const std::pair<double, double>& range)
+GaussQuadrature::SetRange(const std::pair<double, double>& range)
 {
   const auto& old_range = range_;
   const auto& new_range = range;
