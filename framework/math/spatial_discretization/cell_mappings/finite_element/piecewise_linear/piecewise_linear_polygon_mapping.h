@@ -1,10 +1,9 @@
 #pragma once
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
-#include "framework/math/quadratures/quadrature_line.h"
-#include "framework/math/quadratures/quadrature_triangle.h"
+#include "framework/math/quadratures/spatial/line_quadrature.h"
+#include "framework/math/quadratures/spatial/triangle_quadrature.h"
 #include "framework/mesh/cell/cell.h"
-
 #include <array>
 
 namespace opensn
@@ -19,8 +18,8 @@ class PieceWiseLinearPolygonMapping : public PieceWiseLinearBaseMapping
 public:
   PieceWiseLinearPolygonMapping(const Cell& poly_cell,
                                 const MeshContinuum& ref_grid,
-                                const QuadratureTriangle& volume_quadrature,
-                                const QuadratureLine& surface_quadrature);
+                                const TriangleQuadrature& volume_quadrature,
+                                const LineQuadrature& surface_quadrature);
 
   VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;
 
@@ -70,8 +69,8 @@ private:
   };
 
   std::vector<FEside_data2d> sides_;
-  const QuadratureTriangle& volume_quadrature_;
-  const QuadratureLine& surface_quadrature_;
+  const TriangleQuadrature& volume_quadrature_;
+  const LineQuadrature& surface_quadrature_;
 
   int num_of_subtris_;
   double beta_;

@@ -1,13 +1,13 @@
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_slab_mapping.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace opensn
 {
 
 PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(const Cell& slab_cell,
                                                        const MeshContinuum& ref_grid,
-                                                       const QuadratureLine& volume_quadrature)
+                                                       const LineQuadrature& volume_quadrature)
   : PieceWiseLinearBaseMapping(ref_grid, slab_cell, 2, MakeFaceNodeMapping(slab_cell)),
     volume_quadrature_(volume_quadrature)
 {
@@ -127,7 +127,7 @@ VolumetricFiniteElementData
 PieceWiseLinearSlabMapping::MakeVolumetricFiniteElementData() const
 {
   // Determine number of internal qpoints
-  size_t ttl_num_vol_qpoints = volume_quadrature_.qpoints_.size();
+  size_t ttl_num_vol_qpoints = volume_quadrature_.qpoints.size();
 
   // Declare necessary vars
   std::vector<unsigned int> V_quadrature_point_indices;
@@ -152,7 +152,7 @@ PieceWiseLinearSlabMapping::MakeVolumetricFiniteElementData() const
     node_shape_value.reserve(ttl_num_vol_qpoints);
     node_shape_grad.reserve(ttl_num_vol_qpoints);
 
-    for (const auto& qpoint : volume_quadrature_.qpoints_)
+    for (const auto& qpoint : volume_quadrature_.qpoints)
     {
       node_shape_value.push_back(SlabShape(i, qpoint));
       node_shape_grad.emplace_back(0.0, 0.0, SlabGradShape(i));
@@ -167,10 +167,10 @@ PieceWiseLinearSlabMapping::MakeVolumetricFiniteElementData() const
   const double J = h_;
   for (size_t qp = 0; qp < ttl_num_vol_qpoints; ++qp)
   {
-    const double w = volume_quadrature_.weights_[qp];
+    const double w = volume_quadrature_.weights[qp];
     V_JxW.push_back(J * w);
 
-    const double qp_xyz_tilde = volume_quadrature_.qpoints_[qp][0];
+    const double qp_xyz_tilde = volume_quadrature_.qpoints[qp][0];
     V_qpoints_xyz.push_back(v0_ + J * Vector3(0.0, 0.0, qp_xyz_tilde));
   } // for qp
 

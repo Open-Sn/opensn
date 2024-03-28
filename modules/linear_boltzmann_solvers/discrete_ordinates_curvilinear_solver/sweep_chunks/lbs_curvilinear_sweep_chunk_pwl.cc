@@ -2,7 +2,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/math/quadratures/curvilinear_angular_quadrature.h"
+#include "framework/math/quadratures/angular/curvilinear_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace opensn
@@ -42,7 +42,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(
     normal_vector_boundary_()
 {
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<CurvilinearAngularQuadrature>(groupset_.quadrature_);
+    std::dynamic_pointer_cast<CurvilinearQuadrature>(groupset_.quadrature_);
 
   if (curvilinear_product_quadrature == nullptr)
     throw std::invalid_argument("D_DO_RZ_SteadyState::SweepChunkPWL::SweepChunkPWL : "
@@ -93,7 +93,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
   std::vector<double> source(max_num_cell_dofs_);
 
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<opensn::CurvilinearAngularQuadrature>(groupset_.quadrature_);
+    std::dynamic_pointer_cast<opensn::CurvilinearQuadrature>(groupset_.quadrature_);
 
   // Loop over each cell
   const auto& spds = angle_set.GetSPDS();

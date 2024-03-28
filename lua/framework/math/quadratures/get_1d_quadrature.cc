@@ -1,7 +1,7 @@
+#include "framework/math/quadratures/gauss_quadrature.h"
 #include "framework/parameters/parameter_block.h"
-#include "framework/runtime.h"
-#include "framework/math/quadratures/quadrature.h"
 #include "lua/framework/console/console.h"
+#include "framework/runtime.h"
 
 using namespace opensn;
 
@@ -36,19 +36,19 @@ Get1DQuadratureData(const InputParameters& params)
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
 
-  auto& quad = opensn::GetStackItem<Quadrature>(opensn::object_stack, handle, __FUNCTION__);
+  auto& quad = opensn::GetStackItem<GaussQuadrature>(opensn::object_stack, handle, __FUNCTION__);
 
   ParameterBlock qpoints_block("qpoints");
   ParameterBlock weights_block("weights");
   {
     size_t k = 0;
-    for (const auto& qpointXYZ : quad.qpoints_)
+    for (const auto& qpointXYZ : quad.qpoints)
     {
       qpoints_block.AddParameter(std::to_string(k++),
                                  std::vector<double>{qpointXYZ.x, qpointXYZ.y, qpointXYZ.z});
     }
     k = 0;
-    for (const double w : quad.weights_)
+    for (const double w : quad.weights)
       weights_block.AddParameter(std::to_string(k++), w);
   }
   qpoints_block.ChangeToArray();

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
-#include "framework/math/quadratures/quadrature_tetrahedron.h"
-#include "framework/math/quadratures/quadrature_triangle.h"
+#include "framework/math/quadratures/spatial/tetrahedra_quadrature.h"
+#include "framework/math/quadratures/spatial/triangle_quadrature.h"
 #include "framework/mesh/cell/cell.h"
 
 namespace opensn
@@ -21,8 +21,8 @@ public:
    */
   PieceWiseLinearPolyhedronMapping(const Cell& polyh_cell,
                                    const MeshContinuum& ref_grid,
-                                   const QuadratureTetrahedron& volume_quadrature,
-                                   const QuadratureTriangle& surface_quadrature);
+                                   const TetrahedraQuadrature& volume_quadrature,
+                                   const TriangleQuadrature& surface_quadrature);
 
   VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;
 
@@ -136,8 +136,8 @@ private:
   std::vector<FEface_data> face_data_;    ///< Holds determinants and data tet-by-tet.
   std::vector<FEnodeMap> node_side_maps_; ///< Maps nodes to side tets.
 
-  const QuadratureTetrahedron& volume_quadrature_;
-  const QuadratureTriangle& surface_quadrature_;
+  const TetrahedraQuadrature& volume_quadrature_;
+  const TriangleQuadrature& surface_quadrature_;
 };
 
 } // namespace opensn
