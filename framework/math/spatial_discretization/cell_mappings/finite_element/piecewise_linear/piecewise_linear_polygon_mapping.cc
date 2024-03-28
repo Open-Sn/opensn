@@ -1,6 +1,6 @@
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polygon_mapping.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace opensn
 {
@@ -8,8 +8,8 @@ namespace opensn
 PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   const Cell& poly_cell,
   const MeshContinuum& ref_grid,
-  const QuadratureTriangle& volume_quadrature,
-  const QuadratureLine& surface_quadrature)
+  const TriangleQuadrature& volume_quadrature,
+  const LineQuadrature& surface_quadrature)
   : PieceWiseLinearBaseMapping(
       ref_grid, poly_cell, poly_cell.vertex_ids_.size(), MakeFaceNodeMapping(poly_cell)),
     volume_quadrature_(volume_quadrature),
@@ -311,7 +311,7 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
 {
   // Determine number of internal qpoints
   size_t num_tris = sides_.size();
-  size_t num_vol_qpoints = volume_quadrature_.qpoints_.size();
+  size_t num_vol_qpoints = volume_quadrature_.qpoints.size();
   size_t ttl_num_vol_qpoints = num_tris * num_vol_qpoints;
 
   // Declare necessary vars
@@ -339,7 +339,7 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
 
     for (size_t s = 0; s < sides_.size(); s++)
     {
-      for (const auto& qpoint : volume_quadrature_.qpoints_)
+      for (const auto& qpoint : volume_quadrature_.qpoints)
       {
         node_shape_value.push_back(SideShape(s, i, qpoint));
         node_shape_grad.emplace_back(SideGradShape_x(s, i), SideGradShape_y(s, i), 0.0);
@@ -356,10 +356,10 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
   {
     for (size_t qp = 0; qp < num_vol_qpoints; ++qp)
     {
-      const auto w = volume_quadrature_.weights_[qp];
+      const auto w = volume_quadrature_.weights[qp];
       V_JxW.push_back(side.detJ * w);
 
-      const auto& qp_xyz_tilde = volume_quadrature_.qpoints_[qp];
+      const auto& qp_xyz_tilde = volume_quadrature_.qpoints[qp];
       V_qpoints_xyz.push_back(side.v0 + side.J * qp_xyz_tilde);
     } // for qp
   }   // for side
@@ -381,7 +381,7 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
   const bool ON_SURFACE = true;
 
   // Init surface quadrature
-  size_t num_srf_qpoints = surface_quadrature_.qpoints_.size();
+  size_t num_srf_qpoints = surface_quadrature_.qpoints.size();
 
   unsigned int s = face_index;
   // Declare necessary vars
@@ -413,7 +413,7 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
     node_shape_value.reserve(ttl_num_face_qpoints);
     node_shape_grad.reserve(ttl_num_face_qpoints);
 
-    for (const auto& qpoint : surface_quadrature_.qpoints_)
+    for (const auto& qpoint : surface_quadrature_.qpoints)
     {
       node_shape_value.push_back(SideShape(s, i, qpoint, ON_SURFACE));
       node_shape_grad.emplace_back(SideGradShape_x(s, i), SideGradShape_y(s, i), 0.0);
@@ -426,10 +426,10 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
   F_qpoints_xyz.reserve(ttl_num_face_qpoints);
   for (size_t qp = 0; qp < num_srf_qpoints; ++qp)
   {
-    const auto w = surface_quadrature_.weights_[qp];
+    const auto w = surface_quadrature_.weights[qp];
     F_JxW.push_back(sides_[s].detJ_surf * w);
 
-    const auto& qp_xyz_tilde = surface_quadrature_.qpoints_[qp];
+    const auto& qp_xyz_tilde = surface_quadrature_.qpoints[qp];
     F_qpoints_xyz.push_back(sides_[s].v0 + sides_[s].J * qp_xyz_tilde);
   }
 

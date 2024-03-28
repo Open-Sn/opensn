@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
-#include "framework/math/quadratures/quadrature_line.h"
+#include "framework/math/quadratures/spatial/line_quadrature.h"
 #include "framework/mesh/cell/cell.h"
 #include <array>
 
@@ -16,7 +16,7 @@ public:
   /**Constructor for a slab view.*/
   PieceWiseLinearSlabMapping(const Cell& slab_cell,
                              const MeshContinuum& ref_grid,
-                             const QuadratureLine& volume_quadrature);
+                             const LineQuadrature& volume_quadrature);
 
   VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;
 
@@ -48,7 +48,7 @@ private:
   uint64_t v0i_;
   uint64_t v1i_;
   std::array<Normal, 2> normals_;
-  const QuadratureLine& volume_quadrature_;
+  const LineQuadrature& volume_quadrature_;
   double h_;
 };
 

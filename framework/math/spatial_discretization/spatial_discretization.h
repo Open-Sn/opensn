@@ -1,8 +1,8 @@
 #pragma once
 
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
+#include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
-#include "framework/math/quadratures/quadrature.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/mesh/mesh.h"
 #include "framework/math/math.h"

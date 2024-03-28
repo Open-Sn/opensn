@@ -1,16 +1,12 @@
 #include "framework/lua.h"
-
-#include "framework/runtime.h"
-
-#include "framework/math/quadratures/quadrature_gausschebyshev.h"
-#include "framework/math/quadratures/quadrature_gausslegendre.h"
-#include "framework/math/quadratures/cylindrical_angular_quadrature.h"
-#include "framework/math/quadratures/spherical_angular_quadrature.h"
-
-#include "framework/logging/log.h"
-
 #include "quadratures_lua.h"
+#include "framework/math/quadratures/gausschebyshev_quadrature.h"
+#include "framework/math/quadratures/gausslegendre_quadrature.h"
+#include "framework/math/quadratures/angular/cylindrical_quadrature.h"
+#include "framework/math/quadratures/angular/spherical_quadrature.h"
+#include "framework/logging/log.h"
 #include "framework/console/console.h"
+#include "framework/runtime.h"
 
 using namespace opensn;
 
@@ -78,12 +74,11 @@ CreateCylindricalProductQuadrature(lua_State* L)
       opensn::log.Log() << "CreateCylindricalProductQuadrature : "
                         << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
-      const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
-      std::vector<Quadrature> quad_azi;
+      const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
+      std::vector<GaussQuadrature> quad_azi;
       for (const auto& Na : vNa)
-        quad_azi.emplace_back(QuadratureGaussChebyshev(Na, verbose));
-      const auto new_quad =
-        std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
+        quad_azi.emplace_back(GaussChebyshevQuadrature(Na, verbose));
+      const auto new_quad = std::make_shared<CylindricalQuadrature>(quad_pol, quad_azi, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
@@ -96,12 +91,11 @@ CreateCylindricalProductQuadrature(lua_State* L)
       opensn::log.Log() << "CreateCylindricalProductQuadrature : "
                         << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
-      const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
-      std::vector<Quadrature> quad_azi;
+      const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
+      std::vector<GaussQuadrature> quad_azi;
       for (const auto& Na : vNa)
-        quad_azi.emplace_back(QuadratureGaussLegendre(Na, verbose));
-      const auto new_quad =
-        std::make_shared<CylindricalAngularQuadrature>(quad_pol, quad_azi, verbose);
+        quad_azi.emplace_back(GaussLegendreQuadrature(Na, verbose));
+      const auto new_quad = std::make_shared<CylindricalQuadrature>(quad_pol, quad_azi, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
@@ -169,8 +163,8 @@ CreateSphericalProductQuadrature(lua_State* L)
       opensn::log.Log() << "CreateSphericalProductQuadrature : "
                         << "Creating Gauss-Chebyshev Quadrature\n";
 
-      const auto quad_pol = QuadratureGaussChebyshev(Np, verbose);
-      const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
+      const auto quad_pol = GaussChebyshevQuadrature(Np, verbose);
+      const auto new_quad = std::make_shared<SphericalQuadrature>(quad_pol, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
@@ -183,8 +177,8 @@ CreateSphericalProductQuadrature(lua_State* L)
       opensn::log.Log() << "CreateSphericalProductQuadrature : "
                         << "Creating Gauss-Legendre Quadrature\n";
 
-      const auto quad_pol = QuadratureGaussLegendre(Np, verbose);
-      const auto new_quad = std::make_shared<SphericalAngularQuadrature>(quad_pol, verbose);
+      const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
+      const auto new_quad = std::make_shared<SphericalQuadrature>(quad_pol, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
