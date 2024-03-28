@@ -52,4 +52,4 @@ enum class QuadratureOrder : int
   INVALID_ORDER
 };
 
-} //namespae opensn
+} // namespace opensn

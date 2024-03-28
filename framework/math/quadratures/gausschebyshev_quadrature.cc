@@ -66,11 +66,11 @@ GaussChebyshevQuadrature::Initialize(unsigned int N)
     const double xn = -std::cos((2 * n + 1) * pi_N / 2.0);
     const double wn = pi_N;
 
-    qpoints_.emplace_back(xn);
-    weights_.emplace_back(wn);
+    qpoints.emplace_back(xn);
+    weights.emplace_back(wn);
 
     if (verbose_)
-      log.Log() << "root[" << n << "]=" << qpoints_[n][0] << ", weight=" << weights_[n];
+      log.Log() << "root[" << n << "]=" << qpoints[n][0] << ", weight=" << weights[n];
   }
   range_ = {-1, +1};
 }

@@ -575,7 +575,7 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
   for (auto& face : face_data_)
     num_tets += face.sides.size();
 
-  size_t num_vol_qpoints = volume_quadrature_.qpoints_.size();
+  size_t num_vol_qpoints = volume_quadrature_.qpoints.size();
   size_t ttl_num_vol_qpoints = num_tets * num_vol_qpoints;
 
   // Declare necessary vars
@@ -605,7 +605,7 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
     {
       for (size_t s = 0; s < face_data_[f].sides.size(); s++)
       {
-        for (const auto& qpoint : volume_quadrature_.qpoints_)
+        for (const auto& qpoint : volume_quadrature_.qpoints)
         {
           node_shape_value.push_back(FaceSideShape(f, s, i, qpoint));
           node_shape_grad.emplace_back(FaceSideGradShape_x(f, s, i),
@@ -627,10 +627,10 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
     {
       for (size_t qp = 0; qp < num_vol_qpoints; ++qp)
       {
-        const auto w = volume_quadrature_.weights_[qp];
+        const auto w = volume_quadrature_.weights[qp];
         V_JxW.push_back(side.detJ * w);
 
-        const auto& qp_xyz_tilde = volume_quadrature_.qpoints_[qp];
+        const auto& qp_xyz_tilde = volume_quadrature_.qpoints[qp];
         V_qpoints_xyz.push_back(side.v0 + side.J * qp_xyz_tilde);
       } // for qp
     }   // for side
@@ -653,7 +653,7 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceFiniteElementData(size_t face_index
   const bool ON_SURFACE = true;
 
   // Init surface quadrature
-  size_t num_srf_qpoints = surface_quadrature_.qpoints_.size();
+  size_t num_srf_qpoints = surface_quadrature_.qpoints.size();
 
   unsigned int f = face_index;
   // Declare necessary vars
@@ -688,7 +688,7 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceFiniteElementData(size_t face_index
 
     for (size_t s = 0; s < face_data_[f].sides.size(); s++)
     {
-      for (const auto& qpoint : surface_quadrature_.qpoints_)
+      for (const auto& qpoint : surface_quadrature_.qpoints)
       {
         node_shape_value.push_back(FaceSideShape(f, s, i, qpoint, ON_SURFACE));
         node_shape_grad.emplace_back(
@@ -704,10 +704,10 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceFiniteElementData(size_t face_index
   for (const auto& side : face_data_[f].sides)
     for (size_t qp = 0; qp < num_srf_qpoints; ++qp)
     {
-      const auto w = surface_quadrature_.weights_[qp];
+      const auto w = surface_quadrature_.weights[qp];
       F_JxW.push_back(side.detJ_surf * w);
 
-      const auto& qp_xyz_tilde = surface_quadrature_.qpoints_[qp];
+      const auto& qp_xyz_tilde = surface_quadrature_.qpoints[qp];
       F_qpoints_xyz.push_back(side.v0 + side.J * qp_xyz_tilde);
     }
 

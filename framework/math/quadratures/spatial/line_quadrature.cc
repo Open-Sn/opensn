@@ -1,27 +1,20 @@
-#include "framework/math/quadratures/gauss_quadrature.h"
+#include "framework/math/quadratures/spatial/line_quadrature.h"
 #include "framework/logging/log_exceptions.h"
 
 namespace opensn
 {
 
-InputParameters
-GaussQuadrature::GetInputParameters()
+LineQuadrature::LineQuadrature(QuadratureOrder order) : SpatialQuadrature(order), range_({0, 0})
 {
-  InputParameters params = Object::GetInputParameters();
-
-  params.SetGeneralDescription("\\defgroup math__Quadrature\n"
-                               "\\ingroup LuaQuadrature\n"
-                               "Base class for Gauss quadratures");
-
-  params.AddRequiredParameter<int>("order", "Quadrature order.");
-
-  params.AddOptionalParameter("verbose", false, "Enables verbose operations");
-
-  return params;
+  auto glq = GaussLegendreQuadrature(order);
+  qpoints = glq.qpoints;
+  weights = glq.weights;
+  range_ = glq.GetRange();
+  SetRange({0, 1});
 }
 
 void
-GaussQuadrature::SetRange(const std::pair<double, double>& range)
+LineQuadrature::SetRange(const std::pair<double, double>& range)
 {
   const auto& old_range = range_;
   const auto& new_range = range;

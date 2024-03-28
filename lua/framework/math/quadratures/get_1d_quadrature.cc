@@ -42,13 +42,13 @@ Get1DQuadratureData(const InputParameters& params)
   ParameterBlock weights_block("weights");
   {
     size_t k = 0;
-    for (const auto& qpointXYZ : quad.qpoints_)
+    for (const auto& qpointXYZ : quad.qpoints)
     {
       qpoints_block.AddParameter(std::to_string(k++),
                                  std::vector<double>{qpointXYZ.x, qpointXYZ.y, qpointXYZ.z});
     }
     k = 0;
-    for (const double w : quad.weights_)
+    for (const double w : quad.weights)
       weights_block.AddParameter(std::to_string(k++), w);
   }
   qpoints_block.ChangeToArray();

@@ -13,6 +13,7 @@ class GaussQuadrature : public Object
 protected:
   std::pair<double, double> range_;
   bool verbose_;
+  QuadratureOrder order_;
 
   explicit GaussQuadrature(const InputParameters& params)
     : Object(params),
@@ -27,11 +28,12 @@ protected:
   }
 
 public:
-  QuadratureOrder order_;
-  std::vector<Vector3> qpoints_;
-  std::vector<double> weights_;
+  std::vector<Vector3> qpoints;
+  std::vector<double> weights;
 
   static InputParameters GetInputParameters();
+
+  QuadratureOrder GetOrder() { return order_; }
 
   const std::pair<double, double>& GetRange() const { return range_; }
 

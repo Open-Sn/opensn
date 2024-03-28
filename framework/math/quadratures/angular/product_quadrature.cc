@@ -152,10 +152,10 @@ AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose) : Pro
   // Create polar angles
   polar_ang_.clear();
   for (unsigned int j = 0; j < (Nphemi * 2); ++j)
-    polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints_[j][0]));
+    polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints[j][0]));
 
   // Create combined weights
-  auto& weights = gl_polar.weights_;
+  auto& weights = gl_polar.weights;
 
   // Initialize
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
@@ -169,18 +169,18 @@ AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, bool verbose)
   // Create azimuthal angles
   azimu_ang_.clear();
   for (unsigned int i = 0; i < (Na * 4); ++i)
-    azimu_ang_.emplace_back(M_PI * gl_azimu.qpoints_[i][0] + M_PI);
+    azimu_ang_.emplace_back(M_PI * gl_azimu.qpoints[i][0] + M_PI);
 
   // Create polar angles
   polar_ang_.clear();
   for (unsigned int j = 0; j < (Np * 2); ++j)
-    polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints_[j][0]));
+    polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints[j][0]));
 
   // Create combined weights
   std::vector<double> weights;
   for (unsigned int i = 0; i < azimu_ang_.size(); ++i)
     for (unsigned int j = 0; j < polar_ang_.size(); ++j)
-      weights.emplace_back(M_PI * gl_azimu.weights_[i] * gl_polar.weights_[j]);
+      weights.emplace_back(M_PI * gl_azimu.weights[i] * gl_polar.weights[j]);
 
   // Initialize
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
@@ -199,13 +199,13 @@ AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, bool verbose)
   // Create polar angles
   polar_ang_.clear();
   for (unsigned int j = 0; j < (Np * 2); ++j)
-    polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints_[j][0]));
+    polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints[j][0]));
 
   // Create combined weights
   std::vector<double> weights;
   for (unsigned int i = 0; i < azimu_ang_.size(); ++i)
     for (unsigned int j = 0; j < polar_ang_.size(); ++j)
-      weights.emplace_back(2 * gc_azimu.weights_[i] * gl_polar.weights_[j]);
+      weights.emplace_back(2 * gc_azimu.weights[i] * gl_polar.weights[j]);
 
   // Initialize
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
@@ -228,7 +228,7 @@ AngularQuadratureProdCustom::AngularQuadratureProdCustom(const std::vector<doubl
     Exit(EXIT_FAILURE);
   }
 
-  AssembleCosines(azimuthal, polar, weights_, verbose);
+  AssembleCosines(azimuthal, polar, weights, verbose);
 }
 
 } // namespace opensn

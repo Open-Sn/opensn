@@ -211,8 +211,8 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
       sq(sq),
       A(4, 4),
       A_inv(4, 4),
-      lqp(legendre_quadrature.qpoints_),
-      lqw(legendre_quadrature.weights_)
+      lqp(legendre_quadrature.qpoints),
+      lqw(legendre_quadrature.weights)
   {
     // Init RHS
     for (int i = 0; i < 4; ++i)
