@@ -79,8 +79,6 @@ DiscreteOrdinatesAdjointSolver::Initialize()
     InitTGDSA(groupset);
   }
   InitializeSolverSchemes();
-
-  source_event_tag_ = log.GetRepeatingEventTag("Set Source");
 }
 
 void

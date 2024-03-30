@@ -151,33 +151,6 @@ SweepWGSContext::PostSolveCallback()
     lbs_solver_.GSScopedCopyPrimarySTLvectors(
       groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
   }
-
-  // Print solution info
-  {
-    double sweep_time = sweep_scheduler_.GetAverageSweepTime();
-    double chunk_overhead_ratio = 1.0 - sweep_scheduler_.GetAngleSetTimings()[2];
-    double source_time =
-      log.ProcessEvent(lbs_solver_.GetSourceEventTag(), Logger::EventOperation::AVERAGE_DURATION);
-    size_t num_angles = groupset_.quadrature_->abscissae_.size();
-    size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
-
-    if (log_info_)
-    {
-      log.Log() << "\n\n";
-      log.Log() << "        Set Src Time/sweep (s):        " << source_time;
-      log.Log() << "        Average sweep time (s):        " << sweep_time;
-      log.Log() << "        Chunk-Overhead-Ratio  :        " << chunk_overhead_ratio;
-      log.Log() << "        Sweep Time/Unknown (ns):       "
-                << sweep_time * 1.0e9 * opensn::mpi_comm.size() / static_cast<double>(num_unknowns);
-      log.Log() << "        Number of unknowns per sweep:  " << num_unknowns;
-      log.Log() << "\n\n";
-
-      std::string sweep_log_file_name =
-        std::string("GS_") + std::to_string(groupset_.id_) + std::string("_SweepLog_") +
-        std::to_string(opensn::mpi_comm.rank()) + std::string(".log");
-      groupset_.PrintSweepInfoFile(sweep_scheduler_.SweepEventTag(), sweep_log_file_name);
-    }
-  }
 }
 
 } // namespace lbs

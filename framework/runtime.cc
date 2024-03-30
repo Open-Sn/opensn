@@ -50,26 +50,19 @@ std::filesystem::path input_path;
 int
 Initialize()
 {
-  auto& t_main = log.CreateTimingBlock(opensn::name);
-  t_main.TimeSectionBegin();
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
-
   return 0;
 }
 
 void
 Finalize()
 {
-  auto& t_main = log.GetTimingBlock(opensn::name);
-  t_main.TimeSectionEnd();
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
   mesh_stack.clear();
-
   surface_mesh_stack.clear();
   object_stack.clear();
   field_func_interpolation_stack.clear();
   unpartitionedmesh_stack.clear();
-
   object_stack.clear();
   material_stack.clear();
   multigroup_xs_stack.clear();

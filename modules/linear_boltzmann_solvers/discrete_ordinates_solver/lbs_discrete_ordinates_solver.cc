@@ -19,7 +19,6 @@
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
 #include "framework/object_factory.h"
-#include "framework/memory_usage.h"
 #include "framework/runtime.h"
 #include <iomanip>
 
@@ -119,8 +118,6 @@ DiscreteOrdinatesSolver::Initialize()
     InitTGDSA(groupset);
   }
   InitializeSolverSchemes();
-
-  source_event_tag_ = log.GetRepeatingEventTag("Set Source");
 }
 
 void
@@ -1233,9 +1230,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg_->angle_set_groups.push_back(std::move(angle_set_group));
 
   if (options_.verbose_inner_iterations)
-    log.Log() << program_timer.GetTimeString() << " Initialized Angle Aggregation.   "
-              << "         Process memory = " << std::setprecision(3) << GetMemoryUsageInMB()
-              << " MB.";
+    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation."; 
 
   opensn::mpi_comm.barrier();
 }
@@ -1249,21 +1244,7 @@ DiscreteOrdinatesSolver::ResetSweepOrderings(LBSGroupset& groupset)
 
   opensn::mpi_comm.barrier();
 
-  log.Log() << "SPDS and FLUDS reset complete.            Process memory = " << std::setprecision(3)
-            << GetMemoryUsageInMB() << " MB";
-
-  double local_app_memory =
-    log.ProcessEvent(Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventOperation::MAX_VALUE);
-  double total_app_memory = 0.0;
-  mpi_comm.all_reduce(local_app_memory, total_app_memory, mpi::op::sum<double>());
-  double max_proc_memory = 0.0;
-  mpi_comm.all_reduce(local_app_memory, max_proc_memory, mpi::op::sum<double>());
-
-  log.Log() << "\n"
-            << std::setprecision(3)
-            << "           Total application memory (max): " << total_app_memory / 1024.0 << " GB\n"
-            << "           Maximum process memory        : " << max_proc_memory / 1024.0
-            << " GB\n\n";
+  log.Log() << "SPDS and FLUDS reset complete.";
 }
 
 std::shared_ptr<SweepChunk>

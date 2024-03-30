@@ -4,7 +4,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 #include "framework/mpi/mpi_comm_set.h"
 #include "framework/logging/log.h"
-#include "framework/memory_usage.h"
 #include "framework/runtime.h"
 
 namespace opensn
@@ -295,13 +294,6 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
 
     // Resize FLUDS non-local outgoing data
     fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, spds.GetLocationSuccessors().size());
-
-    // Make a memory query
-    double memory_mb = GetMemoryUsageInMB();
-    std::shared_ptr<Logger::EventInfo> memory_event_info =
-      std::make_shared<Logger::EventInfo>(memory_mb);
-    log.LogEvent(
-      Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventType::SINGLE_OCCURRENCE, memory_event_info);
 
     data_initialized_ = true;
   }

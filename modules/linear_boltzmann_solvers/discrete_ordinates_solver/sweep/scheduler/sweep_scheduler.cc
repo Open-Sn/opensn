@@ -16,11 +16,7 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
                                SweepChunk& sweep_chunk)
   : scheduler_type_(scheduler_type),
     angle_agg_(angle_agg),
-    sweep_chunk_(sweep_chunk),
-    sweep_event_tag_(log.GetRepeatingEventTag("Sweep Timing")),
-    sweep_timing_events_tag_(
-      {log.GetRepeatingEventTag("Sweep Chunk Only Timing"), sweep_event_tag_})
-
+    sweep_chunk_(sweep_chunk)
 {
   angle_agg_.InitializeReflectingBCs();
 
@@ -157,12 +153,6 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
   typedef AngleSetStatus ExePerm;
   typedef AngleSetStatus Status;
 
-  log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_BEGIN);
-
-  auto ev_info = std::make_shared<Logger::EventInfo>(std::string("Sweep initiated"));
-
-  log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info);
-
   // Loop till done
   bool finished = false;
   size_t scheduled_angleset = 0;
@@ -182,7 +172,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       //  - FINISHED.
       //      Meaning the angleset has executed its sweep chunk
       Status status =
-        angleset->AngleSetAdvance(sweep_chunk, sweep_timing_events_tag_, ExePerm::NO_EXEC_IF_READY);
+        angleset->AngleSetAdvance(sweep_chunk, ExePerm::NO_EXEC_IF_READY);
 
       // Execute if ready and allowed
       // If this angleset is the one scheduled to run
@@ -193,19 +183,11 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
         message_i << "Angleset " << angleset->GetID() << " executed on location "
                   << opensn::mpi_comm.rank();
 
-        auto ev_info_i = std::make_shared<Logger::EventInfo>(message_i.str());
-
-        log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info_i);
-
-        status = angleset->AngleSetAdvance(sweep_chunk, sweep_timing_events_tag_, ExePerm::EXECUTE);
+        status = angleset->AngleSetAdvance(sweep_chunk, ExePerm::EXECUTE);
 
         std::stringstream message_f;
         message_f << "Angleset " << angleset->GetID() << " finished on location "
                   << opensn::mpi_comm.rank();
-
-        auto ev_info_f = std::make_shared<Logger::EventInfo>(message_f.str());
-
-        log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info_f);
 
         scheduled_angleset++; // Schedule the next angleset
       }
@@ -246,20 +228,12 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       rbndry->ResetAnglesReadyStatus();
     }
   }
-
-  log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_END);
 }
 
 void
 SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 {
   typedef AngleSetStatus Status;
-
-  log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_BEGIN);
-
-  auto ev_info_i = std::make_shared<Logger::EventInfo>(std::string("Sweep initiated"));
-
-  log.LogEvent(sweep_event_tag_, Logger::EventType::SINGLE_OCCURRENCE, ev_info_i);
 
   // Loop over AngleSetGroups
   AngleSetStatus completion_status = AngleSetStatus::NOT_FINISHED;
@@ -271,7 +245,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
       for (auto& angle_set : angle_set_group.AngleSets())
       {
         const auto angle_set_status = angle_set->AngleSetAdvance(
-          sweep_chunk, sweep_timing_events_tag_, AngleSetStatus::EXECUTE);
+          sweep_chunk, AngleSetStatus::EXECUTE);
         if (angle_set_status == AngleSetStatus::NOT_FINISHED)
           completion_status = AngleSetStatus::NOT_FINISHED;
       } // for angleset
@@ -308,8 +282,6 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
       rbndry->ResetAnglesReadyStatus();
     }
   }
-
-  log.LogEvent(sweep_event_tag_, Logger::EventType::EVENT_END);
 }
 
 void
@@ -319,32 +291,6 @@ SweepScheduler::Sweep()
     ScheduleAlgoFIFO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     ScheduleAlgoDOG(sweep_chunk_);
-}
-
-double
-SweepScheduler::GetAverageSweepTime() const
-{
-  return log.ProcessEvent(sweep_event_tag_, Logger::EventOperation::AVERAGE_DURATION);
-}
-
-std::vector<double>
-SweepScheduler::GetAngleSetTimings()
-{
-  std::vector<double> info;
-
-  double total_sweep_time =
-    log.ProcessEvent(sweep_event_tag_, Logger::EventOperation::TOTAL_DURATION);
-
-  double total_chunk_time =
-    log.ProcessEvent(sweep_timing_events_tag_[0], Logger::EventOperation::TOTAL_DURATION);
-
-  double ratio_sweep_to_chunk = total_chunk_time / total_sweep_time;
-
-  info.push_back(total_sweep_time);
-  info.push_back(total_chunk_time);
-  info.push_back(ratio_sweep_to_chunk);
-
-  return info;
 }
 
 void

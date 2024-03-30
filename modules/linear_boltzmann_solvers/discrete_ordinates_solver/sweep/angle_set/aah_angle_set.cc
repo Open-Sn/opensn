@@ -30,7 +30,6 @@ AAH_AngleSet::InitializeDelayedUpstreamData()
 
 AngleSetStatus
 AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
-                              const std::vector<size_t>& timing_tags,
                               AngleSetStatus permission)
 {
   if (executed_)
@@ -57,9 +56,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
   {
     async_comm_.InitializeLocalAndDownstreamBuffers();
 
-    log.LogEvent(timing_tags[0], Logger::EventType::EVENT_BEGIN);
     sweep_chunk.Sweep(*this); // Execute chunk
-    log.LogEvent(timing_tags[0], Logger::EventType::EVENT_END);
 
     // Send outgoing psi and clear local and receive buffers
     async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));

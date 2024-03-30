@@ -235,46 +235,5 @@ lbs::LBSGroupset::BuildSubsets()
   }
 }
 
-void
-lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name)
-{
-  if (not log_sweep_events_)
-    return;
-
-  std::ofstream ofile;
-  ofile.open(file_name, std::ofstream::out);
-
-  ofile << "Groupset Sweep information "
-        << "location " << opensn::mpi_comm.rank() << "\n";
-
-  // Print all anglesets
-  for (int q = 0; q < angle_agg_->angle_set_groups.size(); ++q)
-  {
-    ofile << "Angle-set group " << q << ":\n";
-    auto& ang_set_grp = angle_agg_->angle_set_groups[q];
-    int num_ang_sets_per_grp = (int)ang_set_grp.AngleSets().size();
-    for (int as = 0; as < num_ang_sets_per_grp; ++as)
-    {
-      auto ang_set = ang_set_grp.AngleSets()[as];
-
-      int ang_set_num = as + q * num_ang_sets_per_grp;
-
-      ofile << "  Angle-set " << ang_set_num << " angles [# varphi theta]:\n";
-
-      for (auto& ang_num : ang_set->GetAngleIndices())
-      {
-        const auto& angle = quadrature_->abscissae_[ang_num];
-
-        ofile << "    " << ang_num << " " << angle.phi << " " << angle.theta << "\n";
-      }
-    }
-  }
-
-  // Print event history
-  ofile << log.PrintEventHistory(ev_tag);
-
-  ofile.close();
-}
-
 } // namespace lbs
 } // namespace opensn

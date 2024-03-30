@@ -26,7 +26,6 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     return;
 
   const size_t source_event_tag = lbs_solver_.GetSourceEventTag();
-  log.LogEvent(source_event_tag, Logger::EventType::EVENT_BEGIN);
 
   apply_fixed_src_ = (source_flags & APPLY_FIXED_SOURCES);
   apply_wgs_scatter_src_ = (source_flags & APPLY_WGS_SCATTER_SOURCES);
@@ -150,8 +149,6 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   }       // for cell
 
   AddAdditionalSources(groupset, q, phi, source_flags);
-
-  log.LogEvent(source_event_tag, Logger::EventType::EVENT_END);
 }
 
 double

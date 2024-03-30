@@ -49,8 +49,6 @@ private:
   std::vector<RULE_VALUES> rule_values_;
 
   SweepChunk& sweep_chunk_;
-  const size_t sweep_event_tag_;
-  const std::vector<size_t> sweep_timing_events_tag_;
 
 public:
   SweepScheduler(SchedulingAlgorithm scheduler_type,
@@ -59,25 +57,10 @@ public:
 
   AngleAggregation& AngleAgg() { return angle_agg_; }
 
-  size_t SweepEventTag() const { return sweep_event_tag_; }
-
   /**
    * This is the entry point for sweeping.
    */
   void Sweep();
-
-  /**
-   * Get average sweep time from logging system.
-   */
-  double GetAverageSweepTime() const;
-
-  /**Get relevant sweep timing information.
-   *
-   * [0] Total sweep time
-   * [1] Total chunk time
-   * [2] Total chunk time / total sweep time
-   */
-  std::vector<double> GetAngleSetTimings();
 
   /**
    * Returns the referenced sweep chunk.

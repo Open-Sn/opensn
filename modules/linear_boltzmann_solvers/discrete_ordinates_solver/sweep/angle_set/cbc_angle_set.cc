@@ -34,7 +34,6 @@ CBC_AngleSet::GetCommunicator()
 
 AngleSetStatus
 CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
-                              const std::vector<size_t>& timing_tags,
                               AngleSetStatus permission)
 {
   typedef AngleSetStatus Status;
@@ -70,13 +69,11 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
         all_tasks_completed = false;
       if (cell_task.num_dependencies_ == 0 and not cell_task.completed_)
       {
-        log.LogEvent(timing_tags[0], Logger::EventType::EVENT_BEGIN);
         sweep_chunk.SetCell(cell_task.cell_ptr_, *this);
         sweep_chunk.Sweep(*this);
 
         for (uint64_t local_task_num : cell_task.successors_)
           --current_task_list_[local_task_num].num_dependencies_;
-        log.LogEvent(timing_tags[0], Logger::EventType::EVENT_END);
 
         cell_task.completed_ = true;
         a_task_executed = true;

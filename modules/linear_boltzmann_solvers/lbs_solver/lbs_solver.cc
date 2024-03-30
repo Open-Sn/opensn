@@ -16,7 +16,6 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "framework/memory_usage.h"
 #include "framework/object_factory.h"
 #include <algorithm>
 #include <iomanip>
@@ -813,8 +812,6 @@ LBSSolver::Initialize()
   // Initialize distributed sources
   for (auto& distributed_source : distributed_sources_)
     distributed_source.Initialize(*this);
-
-  source_event_tag_ = log.GetRepeatingEventTag("Set Source");
 }
 
 void
@@ -1201,8 +1198,7 @@ LBSSolver::ComputeUnitIntegrals()
   opensn::mpi_comm.barrier();
   log.Log() << "Ghost cell unit cell-matrix ratio: "
             << (double)num_globl_ucms[1] * 100 / (double)num_globl_ucms[0] << "%";
-  log.Log() << "Cell matrices computed.                   Process memory = " << std::setprecision(3)
-            << GetMemoryUsageInMB() << " MB";
+  log.Log() << "Cell matrices computed.";
 }
 
 void
@@ -1430,8 +1426,7 @@ LBSSolver::InitializeParrays()
   InitializeFieldFunctions();
 
   opensn::mpi_comm.barrier();
-  log.Log() << "Done with parallel arrays.                Process memory = " << std::setprecision(3)
-            << GetMemoryUsageInMB() << " MB" << std::endl;
+  log.Log() << "Done with parallel arrays." << std::endl;
 }
 
 void
