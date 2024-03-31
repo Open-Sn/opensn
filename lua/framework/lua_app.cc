@@ -57,20 +57,17 @@ LuaApp::InitPetSc(int argc, char** argv)
 int
 LuaApp::Run(int argc, char** argv)
 {
-  InitPetSc(argc, argv);
-
-  ParseArguments(argc, argv);
-
-  opensn::Initialize();
-
-  console.PostMPIInfo(opensn::mpi_comm.rank(), opensn::mpi_comm.size());
-
-  opensn::log.Log() << opensn::name << " version " << GetVersionStr();
-  opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name << " with "
-                    << opensn::mpi_comm.size() << " processes.";
-  opensn::log.Log() << opensn::name << " number of arguments supplied: " << argc - 1;
+  opensn::log.Log() << opensn::name << " version " << GetVersionStr()
+                    << Timer::GetLocalDateTimeString() << "\n"
+                    << "Running " << opensn::name << " with "
+                    << opensn::mpi_comm.size() << " processes.\n\n"
+                    << opensn::name << " number of arguments supplied: " << argc - 1;
   opensn::log.LogAll();
 
+  InitPetSc(argc, argv);
+  ParseArguments(argc, argv);
+  opensn::Initialize();
+  console.PostMPIInfo(opensn::mpi_comm.rank(), opensn::mpi_comm.size());
   console.FlushConsole();
 
   int error_code = 0;
@@ -82,12 +79,16 @@ LuaApp::Run(int argc, char** argv)
       error_code = RunBatch(argc, argv);
   }
 
-  opensn::log.Log() << "Elapsed execution time: " << program_timer.GetTimeString();
-  opensn::log.Log() << Timer::GetLocalDateTimeString() << " " << opensn::name
-                    << " finished execution.";
-
   opensn::Finalize();
   PetscFinalize();
+
+  opensn::log.Log() << "Elapsed execution time: " << program_timer.GetTimeString()
+                    << Timer::GetLocalDateTimeString() << " " << opensn::name
+                    << " finished execution.";
+
+  if(opensn::mpi_comm.rank() == 0)
+    std::cout << std::endl;
+  cali_mgr.flush();
 
   return error_code;
 }
@@ -122,16 +123,27 @@ LuaApp::ParseArguments(int argc, char** argv)
     }
     else if (argument.find("--caliper") != std::string::npos)
     {
-      opensn::use_caliper = true;
       std::string caliper_arg(argv[i]);
       if (caliper_arg.length() > 9)
       {  
         if (caliper_arg[9] == '=')
         {
           std::string config = caliper_arg.substr(10, caliper_arg.length()); 
-          opensn::cali_config = config;
+          std::string error = cali_mgr.check(config.c_str());
+          if (!error.empty())
+          {
+            std::cerr << "Caliper - " << error << std::endl;
+            Exit(EXIT_FAILURE);
+          }
+          else
+          {
+            opensn::use_caliper = true;
+            opensn::cali_config = config;
+          }
         }
       }
+      else
+        opensn::use_caliper = true;
     }
     // No-graphics option
     else if (argument.find("-b") != std::string::npos)

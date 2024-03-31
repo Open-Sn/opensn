@@ -38,16 +38,18 @@ std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
 std::vector<std::shared_ptr<Function>> function_stack;
 
-
 int
 Initialize()
 {
   if (use_caliper)
   {
     cali_mgr.add(cali_config.c_str());
+    cali_set_global_string_byname("opensn.version", GetVersionStr().c_str());
+    cali_set_global_string_byname("opesn.input", input_path.c_str());
     cali_mgr.start();
-    CALI_MARK_BEGIN("Simulation");
   }
+
+  CALI_MARK_BEGIN("Simulation");
 
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
@@ -68,22 +70,12 @@ Finalize()
   multigroup_xs_stack.clear();
   function_stack.clear();
  
-  if (use_caliper) 
-  {
-    CALI_MARK_END("Simulation");
-    cali_mgr.flush();
-  }
+  CALI_MARK_END("Simulation");
 }
 
 void
 Exit(int error_code)
 {
-  if (use_caliper)
-  {
-    CALI_MARK_END("Simulation");
-    cali_mgr.flush();
-  }
-
   mpi_comm.abort(error_code);
 }
 

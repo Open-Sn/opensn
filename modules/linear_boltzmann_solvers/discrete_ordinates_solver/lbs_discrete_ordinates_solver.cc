@@ -72,9 +72,12 @@ DiscreteOrdinatesSolver::~DiscreteOrdinatesSolver()
   {
     CleanUpWGDSA(groupset);
     CleanUpTGDSA(groupset);
-
-    ResetSweepOrderings(groupset);
+  
+    // Reset sweep orderings
+    groupset.angle_agg_->angle_set_groups.clear();
   }
+
+  opensn::mpi_comm.barrier();
 }
 
 std::pair<size_t, size_t>
@@ -103,7 +106,7 @@ DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
 void
 DiscreteOrdinatesSolver::Initialize()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::Initialize");
 
   LBSSolver::Initialize();
 
@@ -1268,20 +1271,6 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
     log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation."; 
 
   opensn::mpi_comm.barrier();
-}
-
-void
-DiscreteOrdinatesSolver::ResetSweepOrderings(LBSGroupset& groupset)
-{
-  CALI_CXX_MARK_FUNCTION;
-
-  log.Log0Verbose1() << "Resetting SPDS and FLUDS";
-
-  groupset.angle_agg_->angle_set_groups.clear();
-
-  opensn::mpi_comm.barrier();
-
-  log.Log() << "SPDS and FLUDS reset complete.";
 }
 
 std::shared_ptr<SweepChunk>

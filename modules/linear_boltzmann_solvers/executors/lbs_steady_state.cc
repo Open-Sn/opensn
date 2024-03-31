@@ -37,7 +37,7 @@ SteadyStateSolver::SteadyStateSolver(const InputParameters& params)
 void
 SteadyStateSolver::Initialize()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SteadyStateSolver::Initialize");
 
   lbs_solver_.Initialize();
 }
