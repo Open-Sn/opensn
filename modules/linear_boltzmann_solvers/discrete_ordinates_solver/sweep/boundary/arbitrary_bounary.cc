@@ -3,6 +3,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -32,6 +33,8 @@ ArbitraryBoundary::PsiIncoming(uint64_t cell_local_id,
 void
 ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const size_t num_local_cells = grid.local_cells.size();
   local_cell_data_.clear();
   local_cell_data_.reserve(num_local_cells);

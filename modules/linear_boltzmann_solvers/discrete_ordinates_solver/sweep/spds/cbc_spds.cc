@@ -4,6 +4,7 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -16,6 +17,8 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
                    bool verbose)
   : SPDS(omega, grid, verbose)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   log.Log0Verbose1() << program_timer.GetTimeString()
                      << " Building sweep ordering for Omega = " << omega.PrintS();
 

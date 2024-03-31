@@ -5,6 +5,7 @@
 #include "framework/mpi/mpi_comm_set.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -71,6 +72,8 @@ AAH_ASynchronousCommunicator::Reset()
 void
 AAH_ASynchronousCommunicator::BuildMessageStructure()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const auto& spds = fluds_.GetSPDS();
   const auto& fluds = dynamic_cast<AAH_FLUDS&>(fluds_);
 
@@ -187,6 +190,8 @@ AAH_ASynchronousCommunicator::InitializeDelayedUpstreamData()
 bool
 AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
   const size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
@@ -222,6 +227,8 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 AngleSetStatus
 AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
   const size_t num_dependencies = spds.GetLocationDependencies().size();
@@ -264,6 +271,8 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 void
 AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const auto& spds = fluds_.GetSPDS();
   const auto& location_successors = spds.GetLocationSuccessors();
   const size_t num_successors = location_successors.size();

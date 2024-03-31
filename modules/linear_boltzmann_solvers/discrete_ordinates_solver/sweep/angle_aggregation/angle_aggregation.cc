@@ -3,6 +3,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -32,6 +33,8 @@ AngleAggregation::AngleAggregation(
 void
 AngleAggregation::ZeroOutgoingDelayedPsi()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   for (auto& angsetgrp : angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
       for (auto& delayed_data : angset->GetFLUDS().DelayedPrelocIOutgoingPsi())
@@ -45,6 +48,8 @@ AngleAggregation::ZeroOutgoingDelayedPsi()
 void
 AngleAggregation::ZeroIncomingDelayedPsi()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Opposing reflecting bndries
   for (const auto& [bid, bndry] : boundaries_)
   {
@@ -78,6 +83,8 @@ AngleAggregation::ZeroIncomingDelayedPsi()
 void
 AngleAggregation::InitializeReflectingBCs()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const std::string fname = "AngleAggregation";
   const double epsilon = 1.0e-8;
 
@@ -233,6 +240,8 @@ AngleAggregation::InitializeReflectingBCs()
 std::pair<size_t, size_t>
 AngleAggregation::GetNumDelayedAngularDOFs()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Check if this is already developed
   if (num_ang_unknowns_avail_)
     return number_angular_unknowns_;
@@ -280,6 +289,8 @@ AngleAggregation::GetNumDelayedAngularDOFs()
 void
 AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Opposing reflecting bndries
   for (auto& [bid, bndry] : boundaries_)
   {
@@ -324,6 +335,8 @@ AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_r
 void
 AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Opposing reflecting bndries
   for (auto& [bid, bndry] : boundaries_)
   {
@@ -368,6 +381,8 @@ AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_r
 void
 AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Opposing reflecting bndries
   for (auto& [bid, bndry] : boundaries_)
   {
@@ -412,6 +427,8 @@ AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index, const double
 void
 AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Opposing reflecting bndries
   for (auto& [bid, bndry] : boundaries_)
   {
@@ -456,6 +473,8 @@ AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double
 std::vector<double>
 AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   std::vector<double> psi_vector;
 
   auto psi_size = GetNumDelayedAngularDOFs();
@@ -498,6 +517,8 @@ AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
 void
 AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double>& stl_vector)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   auto psi_size = GetNumDelayedAngularDOFs();
   size_t stl_size = stl_vector.size();
   if (stl_size != psi_size.first)
@@ -542,6 +563,8 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
 std::vector<double>
 AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   std::vector<double> psi_vector;
 
   auto psi_size = GetNumDelayedAngularDOFs();
@@ -584,6 +607,8 @@ AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
 void
 AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double>& stl_vector)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   auto psi_size = GetNumDelayedAngularDOFs();
   size_t stl_size = stl_vector.size();
   if (stl_size != psi_size.first)
@@ -628,6 +653,8 @@ AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double
 void
 AngleAggregation::SetDelayedPsiOld2New()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Opposing reflecting bndries
   for (auto& [bid, bndry] : boundaries_)
   {
@@ -656,6 +683,8 @@ AngleAggregation::SetDelayedPsiOld2New()
 void
 AngleAggregation::SetDelayedPsiNew2Old()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Opposing reflecting bndries
   for (auto& [bid, bndry] : boundaries_)
   {

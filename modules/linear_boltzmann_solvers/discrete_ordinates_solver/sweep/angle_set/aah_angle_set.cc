@@ -2,6 +2,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -32,6 +33,8 @@ AngleSetStatus
 AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
                               AngleSetStatus permission)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   if (executed_)
   {
     if (not async_comm_.DoneSending())

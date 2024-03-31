@@ -1,13 +1,10 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_convergence_test.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
-
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include "framework/utils/timer.h"
-
+#include "framework/runtime.h"
+#include "caliper/cali.h"
 #include <iomanip>
 
 namespace opensn
@@ -19,6 +16,8 @@ namespace lbs
 PetscErrorCode
 GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Get data context
   WGSContext* context;
   KSPGetApplicationContext(ksp, &context);

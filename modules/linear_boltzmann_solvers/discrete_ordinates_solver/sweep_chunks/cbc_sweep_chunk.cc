@@ -4,6 +4,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/logging/log.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -53,6 +54,8 @@ CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
 void
 CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
   const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetGroupSubset()];

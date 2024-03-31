@@ -1,13 +1,10 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/iterative_methods/sweep_wgs_context.h"
-
-#include <petscksp.h>
-
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
+#include <petscksp.h>
+#include "caliper/cali.h"
 #include <iomanip>
 
 namespace opensn
@@ -37,6 +34,8 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
 void
 SweepWGSContext::PreSetupCallback()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   if (log_info_)
   {
     std::string method_name;
@@ -66,6 +65,8 @@ SweepWGSContext::PreSetupCallback()
 void
 SweepWGSContext::SetPreconditioner(KSP& solver)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   auto& ksp = solver;
 
   PC pc;
@@ -85,6 +86,8 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
 std::pair<int64_t, int64_t>
 SweepWGSContext::SystemSize()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
   const size_t num_moments = lbs_solver_.NumMoments();
@@ -115,6 +118,8 @@ SweepWGSContext::SystemSize()
 void
 SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   ++counter_applications_of_inv_op_;
   const bool use_bndry_source_flag =
     (scope & APPLY_FIXED_SOURCES) and (not lbs_solver_.Options().use_src_moments);
@@ -132,6 +137,8 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 void
 SweepWGSContext::PostSolveCallback()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Perform final sweep with converged phi and delayed psi dofs
   if (groupset_.iterative_method_ != IterativeMethod::KRYLOV_RICHARDSON)
   {

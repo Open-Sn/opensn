@@ -1,15 +1,11 @@
 #include "ags_linear_solver.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/math/linear_solver/linear_matrix_action_Ax.h"
-
-#include <petscksp.h>
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
+#include "caliper/cali.h"
+#include <petscksp.h>
 #include <iomanip>
 
 namespace opensn
@@ -20,6 +16,8 @@ namespace lbs
 void
 AGSLinearSolver::SetSystemSize()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
 
   const auto sizes = ags_context_ptr->SystemSize();
@@ -31,6 +29,8 @@ AGSLinearSolver::SetSystemSize()
 void
 AGSLinearSolver::SetSystem()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   x_ = CreateVector(static_cast<int64_t>(num_local_dofs_), static_cast<int64_t>(num_global_dofs_));
 
   VecSet(x_, 0.0);
@@ -56,6 +56,8 @@ AGSLinearSolver::SetSystem()
 void
 AGSLinearSolver::SetPreconditioner()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
 
   ags_context_ptr->SetPreconditioner(ksp_);
@@ -74,6 +76,8 @@ AGSLinearSolver::SetInitialGuess()
 void
 AGSLinearSolver::Solve()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
   auto& lbs_solver = ags_context_ptr->lbs_solver_;
 

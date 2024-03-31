@@ -7,6 +7,7 @@
 #include <memory>
 #include <filesystem>
 #include "mpicpp-lite/mpicpp-lite.h"
+#include "caliper/cali-manager.h"
 
 namespace mpi = mpicpp_lite;
 
@@ -35,6 +36,9 @@ class Object;
 extern mpi::Communicator mpi_comm;
 extern Logger& log;
 extern Timer program_timer;
+extern bool use_caliper;
+extern std::string cali_config;
+extern cali::ConfigManager cali_mgr;
 
 /** Global stack of handlers */
 extern std::vector<std::shared_ptr<MeshContinuum>> mesh_stack;

@@ -5,6 +5,7 @@
 #include "framework/mpi/mpi_comm_set.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -28,6 +29,8 @@ CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
 bool
 CBC_ASynchronousCommunicator::SendData()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   typedef int MPIRank;
 
   // First we convert any new outgoing messages from the queue into
@@ -89,6 +92,8 @@ CBC_ASynchronousCommunicator::SendData()
 std::vector<uint64_t>
 CBC_ASynchronousCommunicator::ReceiveData()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   typedef std::pair<uint64_t, unsigned int> CellFaceKey; // cell_gid + face_id
 
   std::map<CellFaceKey, std::vector<double>> received_messages;

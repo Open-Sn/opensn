@@ -6,6 +6,7 @@
 #include "framework/math/math_range.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -36,6 +37,8 @@ AngleSetStatus
 CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
                               AngleSetStatus permission)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   typedef AngleSetStatus Status;
 
   if (executed_)

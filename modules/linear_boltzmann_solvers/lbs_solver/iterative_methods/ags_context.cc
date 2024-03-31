@@ -1,6 +1,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -10,6 +11,8 @@ namespace lbs
 std::pair<int64_t, int64_t>
 AGSContext::SystemSize()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
 

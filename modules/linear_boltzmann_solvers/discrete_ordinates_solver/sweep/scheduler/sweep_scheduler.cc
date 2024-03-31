@@ -3,6 +3,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/reflecting_boundary.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 #include <sstream>
 #include <algorithm>
 
@@ -18,6 +19,8 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
     angle_agg_(angle_agg),
     sweep_chunk_(sweep_chunk)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   angle_agg_.InitializeReflectingBCs();
 
   if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
@@ -53,6 +56,8 @@ SweepScheduler::GetSweepChunk()
 void
 SweepScheduler::InitializeAlgoDOG()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Load all anglesets in preperation for sorting
   // Loop over angleset groups
   for (size_t q = 0; q < angle_agg_.angle_set_groups.size(); q++)
@@ -150,6 +155,8 @@ SweepScheduler::InitializeAlgoDOG()
 void
 SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   typedef AngleSetStatus ExePerm;
   typedef AngleSetStatus Status;
 
@@ -233,6 +240,8 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 void
 SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   typedef AngleSetStatus Status;
 
   // Loop over AngleSetGroups
@@ -287,6 +296,8 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 void
 SweepScheduler::Sweep()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
     ScheduleAlgoFIFO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
@@ -344,6 +355,8 @@ SweepScheduler::ZeroOutgoingDelayedPsi()
 void
 SweepScheduler::ZeroOutputFluxDataStructures()
 {
+  CALI_CXX_MARK_FUNCTION;
+
   ZeroDestinationPsi();
   ZeroDestinationPhi();
   ZeroOutgoingDelayedPsi();

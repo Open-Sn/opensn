@@ -1,6 +1,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -37,6 +38,8 @@ AahSweepChunk::AahSweepChunk(const MeshContinuum& grid,
 void
 AahSweepChunk::Sweep(AngleSet& angle_set)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetGroupSubset()];
 
   auto gs_ss_size = grp_ss_info.ss_size;

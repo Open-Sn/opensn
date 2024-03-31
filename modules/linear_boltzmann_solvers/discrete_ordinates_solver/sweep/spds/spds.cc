@@ -3,6 +3,7 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 #include <algorithm>
 
 namespace opensn
@@ -13,6 +14,8 @@ namespace lbs
 int
 SPDS::MapLocJToPrelocI(int locJ) const
 {
+  CALI_CXX_MARK_FUNCTION;
+
   for (int i = 0; i < location_dependencies_.size(); i++)
   {
     if (location_dependencies_[i] == locJ)
@@ -37,6 +40,8 @@ SPDS::MapLocJToPrelocI(int locJ) const
 int
 SPDS::MapLocJToDeplocI(int locJ) const
 {
+  CALI_CXX_MARK_FUNCTION;
+
   for (int i = 0; i < location_successors_.size(); i++)
   {
     if (location_successors_[i] == locJ)
@@ -56,6 +61,8 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
                                 std::set<int>& location_successors,
                                 std::vector<std::set<std::pair<int, double>>>& cell_successors)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   constexpr double tolerance = 1.0e-16;
 
   constexpr auto FOPARALLEL = FaceOrientation::PARALLEL;
@@ -179,6 +186,8 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
 void
 SPDS::PrintedGhostedGraph() const
 {
+  CALI_CXX_MARK_FUNCTION;
+
   constexpr double tolerance = 1.0e-16;
 
   for (int p = 0; p < opensn::mpi_comm.size(); ++p)

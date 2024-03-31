@@ -4,6 +4,7 @@
 #include "framework/mesh/mesh_continuum/grid_face_histogram.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 #include <algorithm>
 
 namespace opensn
@@ -27,6 +28,8 @@ void
 AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
                                              const GridFaceHistogram& grid_face_histogram)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const MeshContinuum& grid = spds.Grid();
   const SPLS& spls = spds.GetSPLS();
 
@@ -128,6 +131,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
                                   std::vector<std::pair<int, short>>& delayed_lock_box,
                                   std::set<int>& location_boundary_dependency_set)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const MeshContinuum& grid = spds.Grid();
 
   Vector3 ihat(1.0, 0.0, 0.0);
@@ -348,6 +353,8 @@ AAH_FLUDSCommonData::AddFaceViewToDepLocI(int deplocI,
                                           int face_slot,
                                           const CellFace& face)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   // Check if cell is already there
   bool cell_already_there = false;
   for (auto& cell_view : deplocI_cell_views[deplocI])
@@ -376,6 +383,8 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
                                           const SPDS& spds,
                                           std::vector<int>& local_so_cell_mapping)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const MeshContinuum& grid = spds.Grid();
   auto& cell_nodal_mapping = grid_nodal_mappings_[cell.local_id_];
   std::vector<std::pair<int, std::vector<short>>> inco_face_dof_mapping;
@@ -440,6 +449,8 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
 void
 AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0*/)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const MeshContinuum& grid = spds.Grid();
   const SPLS& spls = spds.GetSPLS();
 
@@ -581,6 +592,8 @@ AAH_FLUDSCommonData::SerializeCellInfo(std::vector<CompactCellView>& cell_views,
                                        std::vector<int>& face_indices,
                                        int num_face_dofs)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const size_t num_cells = cell_views.size();
 
   // First entry is number of face dofs
@@ -623,6 +636,8 @@ AAH_FLUDSCommonData::DeSerializeCellInfo(std::vector<CompactCellView>& cell_view
                                          std::vector<int>* face_indices,
                                          int& num_face_dofs)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   num_face_dofs = (*face_indices)[0];
   int num_cells = (*face_indices)[1];
 
@@ -677,6 +692,8 @@ AAH_FLUDSCommonData::DeSerializeCellInfo(std::vector<CompactCellView>& cell_view
 void
 AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 {
+  CALI_CXX_MARK_FUNCTION;
+
   const MeshContinuum& grid = spds.Grid();
 
   // Loop over faces but process only incident faces
