@@ -90,34 +90,39 @@ private:
   DummyStream dummy_stream_;
   int verbosity_;
 
-public:
-  /**Access to the singleton*/
-  static Logger& GetInstance() noexcept;
-
-private:
-  /** Default constructor*/
   Logger() noexcept;
 
 public:
-  /** Makes a log entry.*/
+  static Logger& GetInstance() noexcept;
+
   LogStream Log(LOG_LVL level = LOG_0);
-  /** Sets the verbosity level.*/
+
   void SetVerbosity(int int_level);
-  /** Gets the current verbosity level.*/
+
   int GetVerbosity() const;
 
   LogStream Log0() { return Log(LOG_0); }
+
   LogStream Log0Warning() { return Log(LOG_0WARNING); }
+
   LogStream Log0Error() { return Log(LOG_0ERROR); }
+
   LogStream Log0Verbose0() { return Log(LOG_0VERBOSE_0); }
+
   LogStream Log0Verbose1() { return Log(LOG_0VERBOSE_1); }
+
   LogStream Log0Verbose2() { return Log(LOG_0VERBOSE_2); }
 
   LogStream LogAll() { return Log(LOG_ALL); }
+
   LogStream LogAllWarning() { return Log(LOG_ALLWARNING); }
+
   LogStream LogAllError() { return Log(LOG_ALLERROR); }
+
   LogStream LogAllVerbose0() { return Log(LOG_ALLVERBOSE_0); }
+
   LogStream LogAllVerbose1() { return Log(LOG_ALLVERBOSE_1); }
+
   LogStream LogAllVerbose2() { return Log(LOG_ALLVERBOSE_2); }
 };
 

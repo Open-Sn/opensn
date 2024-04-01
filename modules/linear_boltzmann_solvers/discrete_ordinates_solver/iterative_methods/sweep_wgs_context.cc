@@ -131,10 +131,14 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 
   // Sweep
   sweep_scheduler_.ZeroOutputFluxDataStructures();
-  std::chrono::high_resolution_clock::time_point sweep_start = std::chrono::high_resolution_clock::now(); 
+  std::chrono::high_resolution_clock::time_point sweep_start =
+    std::chrono::high_resolution_clock::now();
   sweep_scheduler_.Sweep();
-  std::chrono::high_resolution_clock::time_point sweep_end = std::chrono::high_resolution_clock::now(); 
-  double sweep_time = (std::chrono::duration_cast<std::chrono::nanoseconds>(sweep_end - sweep_start).count()) / 1.0e+9;
+  std::chrono::high_resolution_clock::time_point sweep_end =
+    std::chrono::high_resolution_clock::now();
+  double sweep_time =
+    (std::chrono::duration_cast<std::chrono::nanoseconds>(sweep_end - sweep_start).count()) /
+    1.0e+9;
   sweep_times_.push_back(sweep_time);
 }
 
@@ -164,10 +168,10 @@ SweepWGSContext::PostSolveCallback()
   }
 
   double tot_sweep_time = 0.0;
-  for(auto time : sweep_times_)
+  for (auto time : sweep_times_)
     tot_sweep_time += time;
   double num_sweeps = static_cast<double>(sweep_times_.size());
-  double avg_sweep_time = tot_sweep_time/num_sweeps;
+  double avg_sweep_time = tot_sweep_time / num_sweeps;
   size_t num_angles = groupset_.quadrature_->abscissae_.size();
   size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
 
@@ -175,9 +179,7 @@ SweepWGSContext::PostSolveCallback()
             << tot_sweep_time / static_cast<double>(sweep_times_.size())
             << "\n       Sweep Time/Unknown (ns):       "
             << avg_sweep_time * 1.0e9 * opensn::mpi_comm.size() / static_cast<double>(num_unknowns)
-            << "\n       Number of unknowns per sweep:  " << num_unknowns
-            << "\n\n";
-  //log.Log() << "        Set Src Time/sweep (s):        " << source_time;
+            << "\n       Number of unknowns per sweep:  " << num_unknowns << "\n\n";
 }
 
 } // namespace lbs

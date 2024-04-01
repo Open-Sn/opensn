@@ -22,7 +22,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                            const SourceFlags source_flags)
 {
   CALI_CXX_MARK_SCOPE("SourceFunction::operator");
- 
+
   if (source_flags.Empty())
     return;
 

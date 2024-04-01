@@ -57,10 +57,9 @@ LuaApp::InitPetSc(int argc, char** argv)
 int
 LuaApp::Run(int argc, char** argv)
 {
-  opensn::log.Log() << opensn::name << " version " << GetVersionStr()
-                    << Timer::GetLocalDateTimeString() << "\n"
-                    << "Running " << opensn::name << " with "
-                    << opensn::mpi_comm.size() << " processes.\n\n"
+  opensn::log.Log() << opensn::name << " version " << GetVersionStr() << "\n"
+                    << Timer::GetLocalDateTimeString() << " Running " << opensn::name << " with "
+                    << opensn::mpi_comm.size() << " processes.\n"
                     << opensn::name << " number of arguments supplied: " << argc - 1;
   opensn::log.LogAll();
 
@@ -82,11 +81,11 @@ LuaApp::Run(int argc, char** argv)
   opensn::Finalize();
   PetscFinalize();
 
-  opensn::log.Log() << "Elapsed execution time: " << program_timer.GetTimeString()
+  opensn::log.Log() << "Elapsed execution time: " << program_timer.GetTimeString() << "\n"
                     << Timer::GetLocalDateTimeString() << " " << opensn::name
                     << " finished execution.";
 
-  if(opensn::mpi_comm.rank() == 0)
+  if (opensn::mpi_comm.rank() == 0)
     std::cout << std::endl;
   cali_mgr.flush();
 
@@ -125,10 +124,10 @@ LuaApp::ParseArguments(int argc, char** argv)
     {
       std::string caliper_arg(argv[i]);
       if (caliper_arg.length() > 9)
-      {  
+      {
         if (caliper_arg[9] == '=')
         {
-          std::string config = caliper_arg.substr(10, caliper_arg.length()); 
+          std::string config = caliper_arg.substr(10, caliper_arg.length());
           std::string error = cali_mgr.check(config.c_str());
           if (!error.empty())
           {

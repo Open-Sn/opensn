@@ -18,7 +18,7 @@ namespace opensn
 Logger& log = Logger::GetInstance();
 mpi::Communicator mpi_comm;
 bool use_caliper = false;
-std::string cali_config("runtime-report(calc.inclusive=true),mem.pages,,max_column_width=80");
+std::string cali_config("runtime-report(calc.inclusive=true),max_column_width=80");
 cali::ConfigManager cali_mgr;
 Timer program_timer;
 int current_mesh_handler = -1;
@@ -45,11 +45,11 @@ Initialize()
   {
     cali_mgr.add(cali_config.c_str());
     cali_set_global_string_byname("opensn.version", GetVersionStr().c_str());
-    cali_set_global_string_byname("opesn.input", input_path.c_str());
+    cali_set_global_string_byname("opensn.input", input_path.c_str());
     cali_mgr.start();
   }
 
-  CALI_MARK_BEGIN("Simulation");
+  CALI_MARK_BEGIN(opensn::name.c_str());
 
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
@@ -69,8 +69,8 @@ Finalize()
   material_stack.clear();
   multigroup_xs_stack.clear();
   function_stack.clear();
- 
-  CALI_MARK_END("Simulation");
+
+  CALI_MARK_END(opensn::name.c_str());
 }
 
 void

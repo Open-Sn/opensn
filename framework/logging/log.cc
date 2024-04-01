@@ -1,9 +1,7 @@
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/utils/timer.h"
-
 #include "framework/logging/stringstream_color.h"
-
+#include "framework/utils/timer.h"
+#include "framework/runtime.h"
 #include <sstream>
 
 namespace opensn

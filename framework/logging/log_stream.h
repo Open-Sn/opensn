@@ -21,7 +21,7 @@ public:
   {
   }
 
-  /** Flushes the broken-up/headered stream to the output.*/
+  /** Flushes stream.*/
   virtual ~LogStream();
 
   LogStream(const LogStream& other)

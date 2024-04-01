@@ -1,13 +1,9 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
-
-#include <fstream>
-
 #include "framework/object_factory.h"
+#include "framework/runtime.h"
+#include <fstream>
 
 namespace opensn
 {

@@ -30,8 +30,7 @@ AAH_AngleSet::InitializeDelayedUpstreamData()
 }
 
 AngleSetStatus
-AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
-                              AngleSetStatus permission)
+AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission)
 {
   CALI_CXX_MARK_SCOPE("AAH_AngleSet::AngleSetAdvance");
 

@@ -788,7 +788,7 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
 void
 LBSSolver::Initialize()
 {
-  CALI_CXX_MARK_SCOPE("LBSSolver::Initialize");;
+  CALI_CXX_MARK_SCOPE("LBSSolver::Initialize");
 
   PerformInputChecks(); // a assigns num_groups and grid
   PrintSimHeader();     // b

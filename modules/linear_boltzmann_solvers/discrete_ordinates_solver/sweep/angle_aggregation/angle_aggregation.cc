@@ -240,7 +240,7 @@ AngleAggregation::InitializeReflectingBCs()
 std::pair<size_t, size_t>
 AngleAggregation::GetNumDelayedAngularDOFs()
 {
-  CALI_CXX_MARK_SCOPE("AngleAggregation::GetNumDelayedAngularDOFs");;
+  CALI_CXX_MARK_SCOPE("AngleAggregation::GetNumDelayedAngularDOFs");
 
   // Check if this is already developed
   if (num_ang_unknowns_avail_)
@@ -289,7 +289,7 @@ AngleAggregation::GetNumDelayedAngularDOFs()
 void
 AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
 {
-  CALI_CXX_MARK_SCOPE("AngleAggregation::AppendNewDelayedAngularDOFsToArray");;
+  CALI_CXX_MARK_SCOPE("AngleAggregation::AppendNewDelayedAngularDOFsToArray");
 
   // Opposing reflecting bndries
   for (auto& [bid, bndry] : boundaries_)

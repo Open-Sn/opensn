@@ -1,10 +1,8 @@
-#include "framework/lua.h"
-
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
-
 #include "lua_log.h"
+#include "framework/logging/log.h"
 #include "framework/console/console.h"
+#include "framework/lua.h"
+#include "framework/runtime.h"
 
 using namespace opensn;
 

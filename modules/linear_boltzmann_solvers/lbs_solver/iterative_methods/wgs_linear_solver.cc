@@ -153,7 +153,7 @@ WGSLinearSolver::SetInitialGuess()
 void
 WGSLinearSolver::SetRHS()
 {
-  CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetRHS");;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetRHS");
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 

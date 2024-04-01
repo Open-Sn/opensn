@@ -66,13 +66,13 @@ DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const InputParameters& params)
 }
 
 DiscreteOrdinatesSolver::~DiscreteOrdinatesSolver()
-{	
+{
   CALI_CXX_MARK_FUNCTION;
   for (auto& groupset : groupsets_)
   {
     CleanUpWGDSA(groupset);
     CleanUpTGDSA(groupset);
-  
+
     // Reset sweep orderings
     groupset.angle_agg_->angle_set_groups.clear();
   }
@@ -1268,7 +1268,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg_->angle_set_groups.push_back(std::move(angle_set_group));
 
   if (options_.verbose_inner_iterations)
-    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation."; 
+    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
 
   opensn::mpi_comm.barrier();
 }

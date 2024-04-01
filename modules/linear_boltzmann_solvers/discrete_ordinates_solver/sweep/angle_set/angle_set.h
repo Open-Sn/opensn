@@ -83,8 +83,7 @@ public:
   virtual void SetMaxBufferMessages(int new_max) = 0;
 
   /**This function advances the work stages of an angleset.*/
-  virtual AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk,
-                                         AngleSetStatus permission) = 0;
+  virtual AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission) = 0;
 
   virtual AngleSetStatus FlushSendBuffers() = 0;
 
