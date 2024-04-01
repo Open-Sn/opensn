@@ -14,6 +14,7 @@ struct SweepWGSContext : public WGSContext
 {
   std::shared_ptr<SweepChunk> sweep_chunk_;
   SweepScheduler sweep_scheduler_;
+  std::vector<double> sweep_times_;
 
   DiscreteOrdinatesSolver& lbs_ss_solver_;
 

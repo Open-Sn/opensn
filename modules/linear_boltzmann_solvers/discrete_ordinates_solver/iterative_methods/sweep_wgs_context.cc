@@ -34,7 +34,7 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
 void
 SweepWGSContext::PreSetupCallback()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::PreSetupCallback");
 
   if (log_info_)
   {
@@ -65,7 +65,7 @@ SweepWGSContext::PreSetupCallback()
 void
 SweepWGSContext::SetPreconditioner(KSP& solver)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::SetPreconditioner");
 
   auto& ksp = solver;
 
@@ -86,7 +86,7 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
 std::pair<int64_t, int64_t>
 SweepWGSContext::SystemSize()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::SystemSize");
 
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
@@ -118,7 +118,7 @@ SweepWGSContext::SystemSize()
 void
 SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::ApplyInverseTransportOperator");
 
   ++counter_applications_of_inv_op_;
   const bool use_bndry_source_flag =
@@ -131,13 +131,17 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 
   // Sweep
   sweep_scheduler_.ZeroOutputFluxDataStructures();
+  std::chrono::high_resolution_clock::time_point sweep_start = std::chrono::high_resolution_clock::now(); 
   sweep_scheduler_.Sweep();
+  std::chrono::high_resolution_clock::time_point sweep_end = std::chrono::high_resolution_clock::now(); 
+  double sweep_time = (std::chrono::duration_cast<std::chrono::nanoseconds>(sweep_end - sweep_start).count()) / 1.0e+9;
+  sweep_times_.push_back(sweep_time);
 }
 
 void
 SweepWGSContext::PostSolveCallback()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::PostSolveCallback");
 
   // Perform final sweep with converged phi and delayed psi dofs
   if (groupset_.iterative_method_ != IterativeMethod::KRYLOV_RICHARDSON)
@@ -158,6 +162,22 @@ SweepWGSContext::PostSolveCallback()
     lbs_solver_.GSScopedCopyPrimarySTLvectors(
       groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
   }
+
+  double tot_sweep_time = 0.0;
+  for(auto time : sweep_times_)
+    tot_sweep_time += time;
+  double num_sweeps = static_cast<double>(sweep_times_.size());
+  double avg_sweep_time = tot_sweep_time/num_sweeps;
+  size_t num_angles = groupset_.quadrature_->abscissae_.size();
+  size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
+
+  log.Log() << "\n       Average sweep time (s):        "
+            << tot_sweep_time / static_cast<double>(sweep_times_.size())
+            << "\n       Sweep Time/Unknown (ns):       "
+            << avg_sweep_time * 1.0e9 * opensn::mpi_comm.size() / static_cast<double>(num_unknowns)
+            << "\n       Number of unknowns per sweep:  " << num_unknowns
+            << "\n\n";
+  //log.Log() << "        Set Src Time/sweep (s):        " << source_time;
 }
 
 } // namespace lbs

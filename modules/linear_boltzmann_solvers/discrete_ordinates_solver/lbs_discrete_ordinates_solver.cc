@@ -83,7 +83,7 @@ DiscreteOrdinatesSolver::~DiscreteOrdinatesSolver()
 std::pair<size_t, size_t>
 DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns");
   const auto& sdm = *discretization_;
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
   const size_t num_globl_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
@@ -131,7 +131,7 @@ DiscreteOrdinatesSolver::Initialize()
 void
 DiscreteOrdinatesSolver::InitializeWGSSolvers()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::InitializeWGSSolvers");
 
   wgs_solvers_.clear(); // this is required
   for (auto& groupset : groupsets_)
@@ -156,7 +156,7 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
 void
 DiscreteOrdinatesSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ScalePhiVector");
 
   std::vector<double>* y_ptr;
   switch (which_phi)
@@ -200,7 +200,7 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& gr
                                                            Vec x,
                                                            PhiSTLOption which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector");
 
   const std::vector<double>* y_ptr;
   switch (which_phi)
@@ -259,7 +259,7 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& gr
                                                            Vec x,
                                                            PhiSTLOption which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec");
 
   std::vector<double>* y_ptr;
   switch (which_phi)
@@ -317,7 +317,7 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groups
                                                        PhiSTLOption from_which_phi,
                                                        PhiSTLOption to_which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors");
 
   std::vector<double>* y_ptr;
   switch (to_which_phi)
@@ -375,7 +375,7 @@ void
 DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
   const std::vector<int>& groupset_ids, Vec x, PhiSTLOption which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector");
 
   const std::vector<double>* y_ptr;
   switch (which_phi)
@@ -438,7 +438,7 @@ void
 DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
   const std::vector<int>& groupset_ids, Vec x, PhiSTLOption which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom");
 
   std::vector<double>* y_ptr;
   switch (which_phi)
@@ -499,7 +499,7 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
 void
 DiscreteOrdinatesSolver::ReorientAdjointSolution()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ReorientAdjointSolution");
 
   for (const auto& groupset : groupsets_)
   {
@@ -605,7 +605,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
 void
 DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ZeroOutflowBalanceVars");
 
   for (auto& cell_transport_view : cell_transport_views_)
     for (auto& group : groupset.groups_)
@@ -615,7 +615,7 @@ DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 void
 DiscreteOrdinatesSolver::ComputeBalance()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ComputeBalance");
 
   opensn::mpi_comm.barrier();
   log.Log() << "\n********** Computing balance\n";
@@ -750,7 +750,7 @@ std::vector<double>
 DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
                                         const uint64_t boundary_id) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ComputeLeakage");
 
   // Perform checks
   OpenSnInvalidArgumentIf(groupset_id < 0 or groupset_id >= groupsets_.size(),
@@ -820,7 +820,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
 std::map<uint64_t, std::vector<double>>
 DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_ids) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ComputeLeakage");
 
   // Perform checks
   OpenSnLogicalErrorIf(not options_.save_angular_flux,
@@ -917,7 +917,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
 void
 DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::InitializeSweepDataStructures");
 
   log.Log() << program_timer.GetTimeString() << " Initializing sweep datastructures.\n";
 
@@ -1005,7 +1005,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
                                                    const AngleAggregationType agg_type,
                                                    const lbs::GeometryType lbs_geo_type)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::AssociateSOsAndDirections");
 
   const std::string fname = __FUNCTION__;
 
@@ -1171,7 +1171,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
 void
 DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::InitFluxDataStructures");
 
   const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature_];
 
@@ -1276,7 +1276,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 std::shared_ptr<SweepChunk>
 DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetSweepChunk");
 
   if (sweep_type_ == "AAH")
   {

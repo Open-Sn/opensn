@@ -27,7 +27,7 @@ WGSContext::WGSContext(LBSSolver& lbs_solver,
 int
 WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSContext::MatrixAction");
 
   WGSContext* gs_context_ptr;
   MatShellGetContext(matrix, &gs_context_ptr);

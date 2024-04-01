@@ -18,7 +18,7 @@ namespace opensn
 Logger& log = Logger::GetInstance();
 mpi::Communicator mpi_comm;
 bool use_caliper = false;
-std::string cali_config("runtime-report(calc.inclusive=true),mem.pages");
+std::string cali_config("runtime-report(calc.inclusive=true),mem.pages,,max_column_width=80");
 cali::ConfigManager cali_mgr;
 Timer program_timer;
 int current_mesh_handler = -1;

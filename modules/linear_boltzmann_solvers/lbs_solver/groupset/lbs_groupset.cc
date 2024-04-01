@@ -58,8 +58,6 @@ lbs::LBSGroupset::GetInputParameters()
   params.AddOptionalParameter(
     "allow_cycles", true, "Flag indicating whether cycles are to be allowed or not");
 
-  params.AddOptionalParameter("log_sweep_events", false, "Turns on a log of sweep events");
-
   // WG DSA options
   params.AddOptionalParameter("apply_wgdsa",
                               false,
@@ -157,9 +155,6 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
   allow_cycles_ = params.GetParamValue<bool>("allow_cycles");
   residual_tolerance_ = params.GetParamValue<double>("l_abs_tol");
   max_iterations_ = params.GetParamValue<int>("l_max_its");
-
-  // Misc.
-  log_sweep_events_ = params.GetParamValue<bool>("log_sweep_events");
 
   // DSA
   apply_wgdsa_ = params.GetParamValue<bool>("apply_wgdsa");

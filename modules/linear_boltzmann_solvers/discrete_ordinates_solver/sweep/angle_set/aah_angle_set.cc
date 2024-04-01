@@ -33,7 +33,7 @@ AngleSetStatus
 AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
                               AngleSetStatus permission)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("AAH_AngleSet::AngleSetAdvance");
 
   if (executed_)
   {

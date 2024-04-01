@@ -69,8 +69,6 @@ LBSSolver::GetInputParameters()
 
 LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
 {
-  CALI_CXX_MARK_FUNCTION;
-
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");
   for (size_t g = 0; g < num_groups; ++g)
@@ -99,12 +97,6 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
 
     this->SetOptions(options_params);
   }
-}
-
-size_t
-LBSSolver::GetSourceEventTag() const
-{
-  return source_event_tag_;
 }
 
 double
@@ -443,8 +435,6 @@ LBSSolver::GetHandleToPowerGenFieldFunc() const
 InputParameters
 LBSSolver::OptionsBlock()
 {
-  CALI_CXX_MARK_FUNCTION;
-
   InputParameters params;
 
   params.SetGeneralDescription("Set options from a large list of parameters");
@@ -555,8 +545,6 @@ LBSSolver::OptionsBlock()
 InputParameters
 LBSSolver::BoundaryOptionsBlock()
 {
-  CALI_CXX_MARK_FUNCTION;
-
   InputParameters params;
 
   params.SetGeneralDescription("Set options for boundary conditions. See \\ref LBSBCs");
@@ -589,8 +577,6 @@ LBSSolver::BoundaryOptionsBlock()
 void
 LBSSolver::SetOptions(const InputParameters& params)
 {
-  CALI_CXX_MARK_FUNCTION;
-
   const auto& user_params = params.ParametersAtAssignment();
 
   // Handle order sensitive options
@@ -754,8 +740,6 @@ LBSSolver::SetOptions(const InputParameters& params)
 void
 LBSSolver::SetBoundaryOptions(const InputParameters& params)
 {
-  CALI_CXX_MARK_FUNCTION;
-
   const std::string fname = __FUNCTION__;
   const auto& user_params = params.ParametersAtAssignment();
   const auto boundary_name = user_params.GetParamValue<std::string>("name");
@@ -923,7 +907,7 @@ LBSSolver::PrintSimHeader()
 void
 LBSSolver::InitializeMaterials()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::InitializeMaterials");
 
   log.Log0Verbose1() << "Initializing Materials";
 
@@ -1071,7 +1055,7 @@ LBSSolver::InitializeMaterials()
 void
 LBSSolver::InitializeSpatialDiscretization()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::InitializeSpatialDiscretization");
 
   log.Log() << "Initializing spatial discretization.\n";
   discretization_ = PieceWiseLinearDiscontinuous::New(*grid_ptr_);
@@ -1082,7 +1066,7 @@ LBSSolver::InitializeSpatialDiscretization()
 void
 LBSSolver::ComputeUnitIntegrals()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ComputeUnitIntegrals");
 
   log.Log() << "Computing unit integrals.\n";
   const auto& sdm = *discretization_;
@@ -1223,7 +1207,7 @@ LBSSolver::ComputeUnitIntegrals()
 void
 LBSSolver::InitializeGroupsets()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::InitializeGroupsets");
 
   for (auto& groupset : groupsets_)
   {
@@ -1246,7 +1230,7 @@ LBSSolver::InitializeGroupsets()
 void
 LBSSolver::ComputeNumberOfMoments()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ComputeNumberOfMoments");
 
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
     if (groupsets_[gs].quadrature_->GetMomentToHarmonicsIndexMap() !=
@@ -1266,7 +1250,7 @@ LBSSolver::ComputeNumberOfMoments()
 void
 LBSSolver::InitializeParrays()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::InitializeParrays");
 
   log.Log() << "Initializing parallel arrays."
             << " G=" << num_groups_ << " M=" << num_moments_ << std::endl;
@@ -1457,7 +1441,7 @@ LBSSolver::InitializeParrays()
 void
 LBSSolver::InitializeFieldFunctions()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::InitializeFieldFunctions");
 
   if (not field_functions_.empty())
     return;
@@ -1521,7 +1505,7 @@ LBSSolver::InitializeFieldFunctions()
 void
 LBSSolver::InitializeBoundaries()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::InitializeBoundaries");
 
   const std::string fname = "lbs::LBSSolver::InitializeBoundaries";
   // Determine boundary-ids involved in the problem
@@ -1632,7 +1616,7 @@ LBSSolver::InitializeBoundaries()
 void
 LBSSolver::InitializeSolverSchemes()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::InitializeSolverSchemes");
 
   log.Log() << "Initializing Solver schemes";
 
@@ -1660,7 +1644,7 @@ LBSSolver::InitializeSolverSchemes()
 void
 lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::InitWGDSA");
 
   if (groupset.apply_wgdsa_)
   {
@@ -1706,7 +1690,7 @@ lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 void
 lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::CleanUpWGDSA");
 
   if (groupset.apply_wgdsa_)
     groupset.wgdsa_solver_ = nullptr;
@@ -1715,7 +1699,7 @@ lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
 std::vector<double>
 lbs::LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double>& phi_in)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::WGSCopyOnlyPhi0");
 
   const auto& sdm = *discretization_;
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
@@ -1754,7 +1738,7 @@ lbs::LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
                                   const std::vector<double>& input,
                                   std::vector<double>& output)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::GSProjectBackPhi0");
 
   const auto& sdm = *discretization_;
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
@@ -1787,7 +1771,7 @@ lbs::LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
                                             const std::vector<double>& phi_in,
                                             std::vector<double>& delta_phi_local)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::AssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
@@ -1826,7 +1810,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
                                           const std::vector<double>& delta_phi_local,
                                           std::vector<double>& ref_phi_new)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::DisAssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
@@ -1857,7 +1841,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
 void
 lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::InitTGDSA");
 
   if (groupset.apply_tgdsa_)
   {
@@ -1922,7 +1906,7 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
 void
 lbs::LBSSolver::CleanUpTGDSA(LBSGroupset& groupset)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::CleanUpTGDSA");
 
   if (groupset.apply_tgdsa_)
     groupset.tgdsa_solver_ = nullptr;
@@ -1933,7 +1917,7 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
                                        const std::vector<double>& phi_in,
                                        std::vector<double>& delta_phi_local)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::AssembleTGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
@@ -1976,7 +1960,7 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
                                           const std::vector<double>& delta_phi_local,
                                           std::vector<double>& ref_phi_new)
 {
-  CALI_CXX_MARK_FUNCTION; 
+  CALI_CXX_MARK_SCOPE("LBSSolver::DisAssembleTGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
@@ -2010,7 +1994,7 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
 void
 LBSSolver::WriteRestartData(const std::string& folder_name, const std::string& file_base) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::WriteRestartData");
 
   typedef struct stat Stat;
   Stat st;
@@ -2075,7 +2059,7 @@ LBSSolver::WriteRestartData(const std::string& folder_name, const std::string& f
 void
 LBSSolver::ReadRestartData(const std::string& folder_name, const std::string& file_base)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ReadRestartData");
 
   opensn::mpi_comm.barrier();
 
@@ -2148,7 +2132,7 @@ void
 LBSSolver::WriteAngularFluxes(const std::vector<std::vector<double>>& src,
                               const std::string& file_base) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::WriteAngularFluxes");
 
   // Open the file
   std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".data";
@@ -2232,7 +2216,7 @@ void
 LBSSolver::ReadAngularFluxes(const std::string& file_base,
                              std::vector<std::vector<double>>& dest) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ReadAngularFluxes");
 
   // Open file
   const auto file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".data";
@@ -2328,7 +2312,7 @@ LBSSolver::WriteGroupsetAngularFluxes(const LBSGroupset& groupset,
                                       const std::vector<double>& src,
                                       const std::string& file_base) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::WriteGroupsetAngularFluxes");
 
   // Open file
   const auto file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".data";
@@ -2405,7 +2389,7 @@ LBSSolver::ReadGroupsetAngularFluxes(const std::string& file_base,
                                      const LBSGroupset& groupset,
                                      std::vector<double>& dest) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ReadGroupsetAngularFluxes");
 
   // Open file
   const auto file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".data";
@@ -2474,7 +2458,7 @@ LBSSolver::ReadGroupsetAngularFluxes(const std::string& file_base,
 std::vector<double>
 LBSSolver::MakeSourceMomentsFromPhi()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::MakeSourceMomentsFromPhi");
 
   size_t num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
 
@@ -2495,7 +2479,7 @@ LBSSolver::MakeSourceMomentsFromPhi()
 void
 LBSSolver::WriteFluxMoments(const std::vector<double>& src, const std::string& file_base) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::WriteFluxMoments");
 
   // Open file
   std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".data";
@@ -2599,7 +2583,7 @@ LBSSolver::ReadFluxMoments(const std::string& file_base,
                            std::vector<double>& dest,
                            bool single_file) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ReadFluxMoments");
 
   // Open file
   const auto file_name =
@@ -2729,7 +2713,7 @@ LBSSolver::ReadFluxMoments(const std::string& file_base,
 void
 LBSSolver::UpdateFieldFunctions()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::UpdateFieldFunctions");
 
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
@@ -2849,7 +2833,7 @@ LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
                                     const std::vector<size_t>& m_indices,
                                     const std::vector<size_t>& g_indices)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::SetPhiFromFieldFunctions");
 
   std::vector<size_t> m_ids_to_copy = m_indices;
   std::vector<size_t> g_ids_to_copy = g_indices;
@@ -2894,7 +2878,7 @@ LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
 double
 LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ComputeFissionProduction");
 
   const int first_grp = groups_.front().id_;
   const int last_grp = groups_.back().id_;
@@ -2945,7 +2929,7 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
 double
 LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ComputeFissionRate");
 
   const int first_grp = groups_.front().id_;
   const int last_grp = groups_.back().id_;
@@ -2988,7 +2972,7 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
 void
 LBSSolver::ComputePrecursors()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ComputePrecursors");
 
   const size_t J = max_precursors_per_material_;
 
@@ -3032,7 +3016,7 @@ LBSSolver::ComputePrecursors()
 void
 LBSSolver::SetPhiVectorScalarValues(std::vector<double>& phi_vector, double value)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::SetPhiVectorScalarValues");
 
   const size_t first_grp = groups_.front().id_;
   const size_t final_grp = groups_.back().id_;
@@ -3060,7 +3044,7 @@ LBSSolver::SetPhiVectorScalarValues(std::vector<double>& phi_vector, double valu
 void
 LBSSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::ScalePhiVector");
 
   std::vector<double>* y_ptr;
   switch (which_phi)
@@ -3083,7 +3067,7 @@ LBSSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
                                              Vec x,
                                              PhiSTLOption which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::SetGSPETScVecFromPrimarySTLvector");
 
   const std::vector<double>* y_ptr;
   switch (which_phi)
@@ -3132,7 +3116,7 @@ LBSSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
                                              Vec x,
                                              PhiSTLOption which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::SetPrimarySTLvectorFromGSPETScVec");
 
   std::vector<double>* y_ptr;
   switch (which_phi)
@@ -3181,7 +3165,7 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
                                          const std::vector<double>& x,
                                          std::vector<double>& y)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::GSScopedCopyPrimarySTLvectors");
 
   int gsi = groupset.groups_.front().id_;
   size_t gss = groupset.groups_.size();
@@ -3209,7 +3193,7 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
                                          PhiSTLOption from_which_phi,
                                          PhiSTLOption to_which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::GSScopedCopyPrimarySTLvectors");
 
   std::vector<double>* y_ptr;
   switch (to_which_phi)
@@ -3264,7 +3248,7 @@ LBSSolver::SetGroupScopedPETScVecFromPrimarySTLvector(int first_group_id,
                                                       Vec x,
                                                       const std::vector<double>& y)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::SetGroupScopedPETScVecFromPrimarySTLvector");
 
   double* x_ref;
   VecGetArray(x, &x_ref);
@@ -3301,7 +3285,7 @@ LBSSolver::SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
                                                       Vec x,
                                                       std::vector<double>& y)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::SetPrimarySTLvectorFromGroupScopedPETScVec");
 
   const double* x_ref;
   VecGetArrayRead(x, &x_ref);
@@ -3337,7 +3321,7 @@ LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groups
                                                   Vec x,
                                                   PhiSTLOption which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector");
 
   const std::vector<double>* y_ptr;
   switch (which_phi)
@@ -3391,7 +3375,7 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gr
                                                       Vec x,
                                                       PhiSTLOption which_phi)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom");
 
   std::vector<double>* y_ptr;
   switch (which_phi)

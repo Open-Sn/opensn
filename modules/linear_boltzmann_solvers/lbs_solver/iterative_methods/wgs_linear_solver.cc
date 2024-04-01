@@ -35,7 +35,7 @@ WGSLinearSolver::~WGSLinearSolver()
 void
 WGSLinearSolver::PreSetupCallback()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::PreSetupCallback");
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
@@ -45,7 +45,7 @@ WGSLinearSolver::PreSetupCallback()
 void
 WGSLinearSolver::SetConvergenceTest()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetConvergenceTest");
 
   KSPSetConvergenceTest(ksp_, &GSConvergenceTest, nullptr, nullptr);
 }
@@ -53,7 +53,7 @@ WGSLinearSolver::SetConvergenceTest()
 void
 WGSLinearSolver::SetSystemSize()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetSystemSize");
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   const auto sizes = gs_context_ptr->SystemSize();
@@ -65,7 +65,7 @@ WGSLinearSolver::SetSystemSize()
 void
 WGSLinearSolver::SetSystem()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetSystem");
 
   if (IsSystemSet())
     return;
@@ -95,7 +95,7 @@ WGSLinearSolver::SetSystem()
 void
 WGSLinearSolver::SetPreconditioner()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetPreconditioner");
 
   if (IsSystemSet())
     return;
@@ -107,7 +107,7 @@ WGSLinearSolver::SetPreconditioner()
 void
 WGSLinearSolver::PostSetupCallback()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::PostSetupCallback");
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
@@ -117,7 +117,7 @@ WGSLinearSolver::PostSetupCallback()
 void
 WGSLinearSolver::PreSolveCallback()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::PreSolveCallback");
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
@@ -127,7 +127,7 @@ WGSLinearSolver::PreSolveCallback()
 void
 WGSLinearSolver::SetInitialGuess()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetInitialGuess");
 
   // If the norm of the initial guess is large enough, the initial guess will be used, otherwise it
   // is assumed to be zero.
@@ -153,7 +153,7 @@ WGSLinearSolver::SetInitialGuess()
 void
 WGSLinearSolver::SetRHS()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetRHS");;
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
@@ -234,7 +234,7 @@ WGSLinearSolver::SetRHS()
 void
 WGSLinearSolver::PostSolveCallback()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("WGSLinearSolver::PostSolveCallback");
 
   // We simply restore the q_moments_local vector.
 

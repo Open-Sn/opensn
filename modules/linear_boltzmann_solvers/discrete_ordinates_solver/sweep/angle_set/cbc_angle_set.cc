@@ -37,7 +37,7 @@ AngleSetStatus
 CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
                               AngleSetStatus permission)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("CBC_AngleSet::AngleSetAdvance");
 
   typedef AngleSetStatus Status;
 

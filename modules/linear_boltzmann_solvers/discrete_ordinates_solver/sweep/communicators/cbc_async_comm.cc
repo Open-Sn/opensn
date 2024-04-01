@@ -29,7 +29,7 @@ CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
 bool
 CBC_ASynchronousCommunicator::SendData()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("CBC_ASynchronousCommunicator::SendData");
 
   typedef int MPIRank;
 
@@ -92,7 +92,7 @@ CBC_ASynchronousCommunicator::SendData()
 std::vector<uint64_t>
 CBC_ASynchronousCommunicator::ReceiveData()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("CBC_ASynchronousCommunicator::ReceiveData");
 
   typedef std::pair<uint64_t, unsigned int> CellFaceKey; // cell_gid + face_id
 

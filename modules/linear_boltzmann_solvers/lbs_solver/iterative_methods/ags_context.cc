@@ -11,7 +11,7 @@ namespace lbs
 std::pair<int64_t, int64_t>
 AGSContext::SystemSize()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("AGSContext::SystemSize");
 
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();

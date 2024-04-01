@@ -14,7 +14,7 @@ namespace lbs
 int
 SPDS::MapLocJToPrelocI(int locJ) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SPDS::MapLocJToPrelocI");
 
   for (int i = 0; i < location_dependencies_.size(); i++)
   {
@@ -40,7 +40,7 @@ SPDS::MapLocJToPrelocI(int locJ) const
 int
 SPDS::MapLocJToDeplocI(int locJ) const
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SPDS::MapLocJToDeploc");
 
   for (int i = 0; i < location_successors_.size(); i++)
   {
@@ -61,7 +61,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
                                 std::set<int>& location_successors,
                                 std::vector<std::set<std::pair<int, double>>>& cell_successors)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SPDS::PopulateCellRelationships");
 
   constexpr double tolerance = 1.0e-16;
 
@@ -186,8 +186,6 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
 void
 SPDS::PrintedGhostedGraph() const
 {
-  CALI_CXX_MARK_FUNCTION;
-
   constexpr double tolerance = 1.0e-16;
 
   for (int p = 0; p < opensn::mpi_comm.size(); ++p)

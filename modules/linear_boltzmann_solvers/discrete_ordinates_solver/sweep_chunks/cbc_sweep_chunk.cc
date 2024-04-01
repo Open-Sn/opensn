@@ -54,7 +54,7 @@ CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
 void
 CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("CbcSweepChunk::SetAngleSet");
 
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 

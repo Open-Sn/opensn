@@ -19,7 +19,7 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
     angle_agg_(angle_agg),
     sweep_chunk_(sweep_chunk)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepScheduler::SweepScheduler");
 
   angle_agg_.InitializeReflectingBCs();
 
@@ -56,7 +56,7 @@ SweepScheduler::GetSweepChunk()
 void
 SweepScheduler::InitializeAlgoDOG()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepScheduler::InitializeAlgoDOG");
 
   // Load all anglesets in preperation for sorting
   // Loop over angleset groups
@@ -155,7 +155,7 @@ SweepScheduler::InitializeAlgoDOG()
 void
 SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoDOG");
 
   typedef AngleSetStatus ExePerm;
   typedef AngleSetStatus Status;
@@ -240,7 +240,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 void
 SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoFIFO");
 
   typedef AngleSetStatus Status;
 
@@ -296,7 +296,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 void
 SweepScheduler::Sweep()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepScheduler::Sweep");
 
   if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
     ScheduleAlgoFIFO(sweep_chunk_);
@@ -355,7 +355,7 @@ SweepScheduler::ZeroOutgoingDelayedPsi()
 void
 SweepScheduler::ZeroOutputFluxDataStructures()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("SweepScheduler::ZeroOutputFluxDataStructures");;
 
   ZeroDestinationPsi();
   ZeroDestinationPhi();

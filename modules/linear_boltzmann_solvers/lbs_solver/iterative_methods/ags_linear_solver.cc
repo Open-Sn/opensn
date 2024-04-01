@@ -16,7 +16,7 @@ namespace lbs
 void
 AGSLinearSolver::SetSystemSize()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("AGSLinearSolver::SetSystemSize");
 
   auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
 
@@ -29,7 +29,7 @@ AGSLinearSolver::SetSystemSize()
 void
 AGSLinearSolver::SetSystem()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("AGSLinearSolver::SetSystem");
 
   x_ = CreateVector(static_cast<int64_t>(num_local_dofs_), static_cast<int64_t>(num_global_dofs_));
 
@@ -56,7 +56,7 @@ AGSLinearSolver::SetSystem()
 void
 AGSLinearSolver::SetPreconditioner()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("AGSLinearSolver::SetPreconditioner");
 
   auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
 
@@ -76,7 +76,7 @@ AGSLinearSolver::SetInitialGuess()
 void
 AGSLinearSolver::Solve()
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("AGSLinearSolver::Solve");
 
   auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
   auto& lbs_solver = ags_context_ptr->lbs_solver_;

@@ -33,7 +33,7 @@ ArbitraryBoundary::PsiIncoming(uint64_t cell_local_id,
 void
 ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("ArbitraryBoundary::Setup");
 
   const size_t num_local_cells = grid.local_cells.size();
   local_cell_data_.clear();

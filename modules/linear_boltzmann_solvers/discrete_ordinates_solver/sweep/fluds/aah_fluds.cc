@@ -12,7 +12,7 @@ namespace lbs
 AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data)
   : FLUDS(num_groups, num_angles, common_data.GetSPDS()), common_data_(common_data)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("AAH_FLUDS::AAH_FLUDS");
 
   // Adjusting for different group aggregate
   for (auto& val : common_data_.local_psi_n_block_stride)

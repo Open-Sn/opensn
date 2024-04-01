@@ -38,7 +38,7 @@ AahSweepChunk::AahSweepChunk(const MeshContinuum& grid,
 void
 AahSweepChunk::Sweep(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_FUNCTION;
+  CALI_CXX_MARK_SCOPE("AahSweepChunk::Sweep");
 
   const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetGroupSubset()];
 
