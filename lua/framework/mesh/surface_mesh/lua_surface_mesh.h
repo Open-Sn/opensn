@@ -45,7 +45,7 @@ int MeshSurfaceMeshCreate(lua_State* L);
  * lv_surfmesh1 = mesh.SurfaceMeshCreate()
  * mesh.SurfaceMeshImportFromOBJFile(lv_surfmesh1, "MeshFile3D.obj", false)
  *
- * lv1 = logvol.Create(SURFACE, lv_surfmesh1)
+ * lv1 = logvol.SurfaceMeshLogicalVolume.Create({surface_mesh_handle=lv_surfmesh1})
  *
  * -- Surface mesh with transform
  * dx = 1.5
@@ -54,7 +54,8 @@ int MeshSurfaceMeshCreate(lua_State* L);
  * mesh.SurfaceMeshImportFromOBJFile(lv_surfmesh2, "MeshFile3D.obj", false,
  * {dx,dy,0.0})
  *
- * lv2 = logvol.Create(SURFACE, lv_surfmesh2)
+ * lv2 = logvol.SurfaceMeshLogicalVolume.Create({surface_mesh_handle=lv_surfmesh2})
+
  * \endcode
  *
  * \return success bool Return true if file was successfully loaded and false
