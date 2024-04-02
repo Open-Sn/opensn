@@ -38,7 +38,7 @@ option(OPENSN_WITH_LUA "Build with lua support" ON)
 find_package(MPI REQUIRED)
 
 if(OPENSN_WITH_LUA)
-    find_package(Lua 5.4 REQUIRED)
+    find_package(Lua 5.3 REQUIRED)
 endif()
 
 find_package(VTK QUIET)
