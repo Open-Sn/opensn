@@ -122,7 +122,6 @@ inline void
 Group::free()
 {
     MPI_CHECK(MPI_Group_free(&this->group));
-    this->group = UNDEFINED;
 }
 
 inline int
