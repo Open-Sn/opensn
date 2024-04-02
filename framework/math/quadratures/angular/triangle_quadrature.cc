@@ -77,7 +77,7 @@ TriangleQuadrature::TriangleInit()
       double phi = deltaVPhi / 2.0 + (double)v * deltaVPhi;
       double theta = acos(new_z_value);
       double sinTheta = sqrt(1 - new_z_value * new_z_value);
-      double weightCurrent = old_omega.weights[weightPos] / (num_div);
+//      double weightCurrent = old_omega.weights[weightPos] / (num_div);
 
       new_omega.x = sinTheta * cos(phi);
       new_omega.y = sinTheta * sin(phi);
@@ -96,7 +96,7 @@ TriangleQuadrature::TriangleInit()
   for (int octant = 1; octant <= 3; ++octant)
   {
     // This is how much should be added to each phi
-    // to get the orientation right of the first index
+    // to get the orientation right off the first index
     double offset = M_PI_2 * octant;
     for (size_t point = 0; point < octSize; ++point)
     {
@@ -114,12 +114,44 @@ TriangleQuadrature::TriangleInit()
     }
   }
 
-  AngularQuadrature::OptimizeForPolarSymmetry(4.0 * M_PI);
+    //This builds the negative zi values
+  size_t hemisize = weights_.size();
+  for(size_t point=0;point<hemisize;++point)
+  {
+    new_omega.x = omegas_[point].x;//omegas[l].x*xsign;
+    new_omega.y = omegas_[point].y; //omegas[l].y*ysign;
+    new_omega.z = -omegas_[point].z;
+    double new_z_value = -omegas_[point].z;
+    double phi = abscissae_[point].phi;
+    double theta = acos(new_z_value);
+    weights_.push_back(weights_[point]);
+    omegas_.emplace_back(new_omega);
+    abscissae_.emplace_back(phi,theta);
+  }
+
+  //We need to fix the normalization to be 4*pi over the full sphere
+  double normal = 4.0*M_PI;
+
+  const size_t num_dirs = omegas_.size();
+  double weight_sum = 0.0;
+  for (size_t point=0; point<num_dirs; ++point)
+      weight_sum += weights_[point];
+
+  if (normal > 0.0)
+    for (double& w : weights_)
+      w *= normal/weight_sum;
+
+//  AngularQuadrature::OptimizeForPolarSymmetry(4.0 * M_PI);
 }
 
-void
+
+
+  void
 TriangleQuadrature::FilterMoments(unsigned int scattering_order)
 {
+// This is only needed for the methods, GQ1 & GQ2, that need to build the full
+// matrix first. Otherwise we are building up to the required degree and don't
+// need to cut after the formation.
   if (m2d_op_built_ and d2m_op_built_ and moments_ >= 0)
   {
     int s_order = static_cast<int>(scattering_order);
@@ -152,6 +184,7 @@ TriangleQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimen
   }
 
   // Standard harmonics
+  // For methods requiring the full set
   if (m_to_ell_em_map_.empty() and method_ != 3)
   {
     for (int ell = 0; ell <= L; ++ell)
@@ -165,6 +198,7 @@ TriangleQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimen
       }
     }
   }
+  // Method 3 is built to extent, and thus can be limited in harmonics
   else if (m_to_ell_em_map_.empty())
   {
     for (int ell = 0; ell <= L_max; ++ell)
@@ -232,7 +266,7 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
       weights_.push_back(wt);
     d2m_op_built_ = true;
   }
-  if (method_ == 2)
+  else if (method_ == 2)
   {
     d2m_op_.clear();
 
@@ -272,7 +306,7 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
     }
     d2m_op_built_ = true;
   }
-  if (method_ == 3) // Using Gram-Schmidt orthogonalization
+  else if (method_ == 3) // Using Gram-Schmidt orthogonalization
   {
     d2m_op_.clear();
 
