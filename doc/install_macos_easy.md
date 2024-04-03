@@ -8,7 +8,7 @@ The following packages should be installed via Homebrew
 - make
 - cmake
 - gcc
-- wget
+- curl
 
 To install any missing packages use
 ```shell
