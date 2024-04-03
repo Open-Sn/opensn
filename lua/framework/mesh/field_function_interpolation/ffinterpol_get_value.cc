@@ -35,20 +35,14 @@ FFInterpolationGetValue(lua_State* L)
   {
     auto& cur_ffi_line = dynamic_cast<opensn::FieldFunctionInterpolationLine&>(*p_ffi);
 
-    lua_newtable(L);
-
+    std::vector<std::vector<double>> vals;
+    vals.resize(cur_ffi_line.GetFieldFunctions().size());
     for (int ff = 0; ff < cur_ffi_line.GetFieldFunctions().size(); ff++)
     {
-      LuaPush(L, ff + 1);
-
-      lua_newtable(L);
       const auto& ff_ctx = cur_ffi_line.GetFFContexts()[ff];
-      for (int p = 0; p < cur_ffi_line.GetInterpolationPoints().size(); p++)
-        LuaPushTableKey(L, p + 1, ff_ctx.interpolation_points_values[p]);
-      lua_settable(L, -3);
+      vals[ff] = ff_ctx.interpolation_points_values;
     }
-
-    return 1;
+    return LuaReturn(L, vals);
   }
   else if (p_ffi->Type() == FieldFunctionInterpolationType::VOLUME)
   {
