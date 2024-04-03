@@ -39,18 +39,13 @@ ComputeLeakage(lua_State* L)
   // Compute the leakage
   const auto leakage = solver.ComputeLeakage(bndry_ids);
 
-  // Push to lua table
-  lua_newtable(L);
+  std::map<std::string, std::vector<double>> ret_val;
   for (const auto& [bid, vals] : leakage)
   {
-    LuaPush(L, supported_boundary_ids.at(bid));
-
-    lua_newtable(L);
-    for (int g = 0; g < solver.NumGroups(); ++g)
-      LuaPushTableKey(L, g + 1, vals[g]);
-    lua_settable(L, -3);
+    auto bnd_name = supported_boundary_ids.at(bid);
+    ret_val.insert(std::pair<std::string, std::vector<double>>(bnd_name, vals));
   }
-  return 1;
+  return LuaReturn(L, ret_val);
 }
 
 } // namespace opensnlua::lbs
