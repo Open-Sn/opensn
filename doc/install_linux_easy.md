@@ -1,176 +1,135 @@
-# Easy install on Ubuntu Machines
+# Easy Install on Linux Machines
 
-The following instructions were tested on Ubuntu 18.04 LTS and newer LTS (22.04 currently); other Linux
-distributions might require some minor tweaking.
+The following instructions were tested on Ubuntu 22.04.4 LTS. Other Linux distributions might
+require some minor tweaking.
 
-Some portions of this document indicate the use of `sudo`. If you do not have
-administrative privileges then have your system administrator assist you in
-these steps.
+Some portions of this document indicate the use of `sudo`. If you do not have administrative
+privileges, have your system administrator assist you with these steps.
 
-## Step 1 - Installing GCC, GFortran and the basic environment
+## Step 1 - Install Development Tools
 
-- GCC is required.
-- GFortran and Python are used during the installation of PETSc
-(which OpenSn uses as a linear algebra backend)
-- OpenGL has become optional and VTK can be used, through ViSiT and Paraview, for visualization.
+The following packages are required for OpenSn installation and development:
 
-The above packages will therefore need to be installed.
+1. A recent version of clang++/g++ that supports C++17
+2. gfotran (required by the BLAS component of PETSc)
+3. flex and bison (required by the PTSCOTCH component of PETSc)
+4. Python 3 v3.9+ (required by PETSc and OpenSn)
+5. ncurses v5 (required by Lua)
+6. Git version control system
+7. CMake v3.12+
+8. MPI (OpenMPI, MPICH, and MVAPICH have been tested)
+9. Python 3 pip  (required for generating the OpenSn documentation)
+10. Doxygen and Sphinx (required for generating the OpenSn documentation)
+11. curl (required to download and install the OpenSn third-party dependencies)
 
-Check to see if gcc is installed
-
-```bash
-gcc --version
-```
-
-This should display something like this:
-
-    $ gcc --version
-    gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0
-    Copyright (C) 2021 Free Software Foundation, Inc.
-    This is free software; see the source for copying conditions.  There is NO
-    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-If this is not displayed then install gcc using the following command:
+Most of these packages can be installed using the package manager available with your Linux
+distribution (e.g., `apt`, `yum`, etc.). For example, on Ubuntu, you can use the following
+command to install all of these packages:
 
 ```bash
-sudo apt-get install build-essential gfortran
+$ sudo apt install build-essential gfortran python3 \
+git cmake libopenmpi-dev flex bison \
+libncurses5-dev python3-pip doxygen sphinx curl
 ```
 
-If you still do not get the appropriate version when running either ``gcc --version``
-or ``gfortran --version`` then there are many online resources which may be able to
-assist you. One issue commonly seen is that the repositories on your system are not
-updated in which case just run ```sudo apt update```, possibly followed by
-```sudo apt upgrade```.
+## Step 2 - Clone OpenSn
 
-Now, install the remaining packages needed to build OpenSn and its dependencies:
+**Important:**  If you want to contribute to **OpenSn**, it is strongly recommended that you
+first fork the **OpenSn** repository then clone your fork.
 
-```bash
-sudo apt-get install cmake python3 git zlib1g-dev libx11-dev unzip
-```
-(note the use of python3)
+To clone the **OpenSn** repository:
 
-## Step 2 - An MPI flavor
-
-Install either OpenMPI or MPICH. If you have MOOSE or deal.ii installed then you
-are probably already set to go. **MPICH** is recommended for better performance.
-
-```bash
-sudo apt-get install mpich
-```
-
-To check if this is working properly, simply do the mpi version of checking for
-a C++ compiler:
-
-```bash
-mpicc --version
-```
-
-Which should display the same message the gcc call did, i.e.,
-
-    $ mpicc --version
-    gcc (Ubuntu 7.3.0-30ubuntu1~18.04.york0) 7.3.0
-    Copyright (C) 2017 Free Software Foundation, Inc.
-    This is free software; see the source for copying conditions.  There is NO
-    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-## Step 3 - Clone OpenSn
-
-**Important:**  If you want to contribute to **OpenSn**, it is strongly recommended to first fork the **OpenSn** repository into your own Git account and then to clone your fork.
-
-Clone the **OpenSn** repository.  Go the folder where you want to keep OpenSn relevant stuff:
 ```bash
     $ git clone https://github.com/Open-Sn/opensn.git
 ```
-or
+
+To clone your fork of **OpenSn**:
+
 ```bash
     $ git clone https://github.com/<username>/opensn.git
 ```
 
-**Important:** We recommend building all the dependencies into a separate folder. For instance_,
-```bash
-    $ mkdir dependencies
-```
+Before building OpenSn's third-party dependencies, you need to export the following variables for
+the PETSc install:
 
-Before building the dependencies, you need to export a few variables for the PETSc install:
 ```bash
     $ export CC=mpicc
     $ export CXX=mpicxx
     $ export FC=mpifort
 ```
 
-Go to the opensn folder you have just cloned and type:
+**Important:** We recommend creating a separate directory for building the OpenSn dependencies.
+Assuming you created a directory named `dependencies` in the same location as your clone of
+OpenSn, you can run the following command to download, configure, and build all of the third-party
+dependencies for OpenSn. Note that this command may take several minutes to complete depending on
+the speed of your machine.
+
 ```bash
     $ cd opensn
     $ python3 resources/configure_dependencies.py -d ../dependencies
 ```
-The configure script will attempt to download and install all the necessary
-dependencies **and may take a long time**
 
-## Step 4 - Configure environment
+## Step 3 - Configure Environment
 
-The next step in this process is to setup the environment variables for compiling
-OpenSn.
-
-```bash
-    $source ../dependencies/configure_deproots.sh
-```
-**Note:** You can replace ```$source ``` in the above with ```$. ```
-
-## Step 5 - Build OpenSn
-
-To compile OpenSn now just execute:
-```bash
-    $ ./configure.sh
-```
-The configure script will generate the CMake build scripts.
-
-In the main build directory (e.g., `opensn/build/`), execute:
-```bash
-    $ make -j4
-```
-
-You can also use -j8 even if you don't have 8 processors, the make command
-will use threading where possible.
-
-Whenever recompilation is needed or the configuration has changed,
-you can run
-```bash
-    $ ./configure.sh clean
-    $ ./configure.sh
-    $ make -j4
-```
-
-## Step 6 - Run regression tests
-
-To check if the code compiled correctly execute the test scripts:
+Before compiling OpenSn, you must add the location of the third-party libraries to your
+`CMAKE_PREFIX` environment variable. We have provided a script to do this for you. You can update
+your environment variables by running the command:
 
 ```bash
-    $ test/run_tests -d test/ -j8
+    $ source ../dependencies/configure_deproots.sh
 ```
+**Note:** You can replace ```$ source ``` in the above command with ```$ . ```
 
-## Step 8 - OpenSn Documentation
+## Step 4 - Build OpenSn
 
-You can either access the documentation online [here](https://xxx.io), or generate it locally.
-
-To generate the documentation from your local working copy, first make sure
-Doxygen and LaTeX are installed:
+To build OpenSn, create a build directory in the top-level OpenSn directory and run `cmake` to
+generate the build files and `make` to compile OpenSn:
 
 ```bash
-sudo apt-get install doxygen texlive
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make -j
 ```
 
-The documentation is contained in the `doc/` folder and can be generated
-using a script provided in that folder:
+To configure OpenSn for building the documentation, in addition to the OpenSn application, add the
+`-DOPENSN_WITH_DOCS` option to `cmake`:
 
 ```bash
-cd doc/
-./YReGenerateDocumentation.sh
+    $ mkdir build
+    $ cd bukld
+    $ cmake -DOPENSN_WITH_DOCS=ON ..
+    $ make -j
 ```
 
-Once finished, you can view the generated documentation by opening
+For more information on building the documentation, see **Step 6** below.
+
+## Step 5 - Run Regression Tests
+
+To run the regression tests, simply run `make test` from the build directory. This will run all of
+the regression tests in the `opensn/test` directory.
+
+## Step 6 - Build the OpenSn Documentation
+
+If you configured the OpenSn build environment with support for building the documentation
+(see **Step 4**), these instructions will help you install the necessary tools and build the
+documentation.
+
+To generate the documentation from your local working copy of OpenSn, you need to use `pip` to
+install the required Python packages:
 
 ```bash
-doc/HTMLdocs/html/index.html
+pip install breathe myst-parser sphinx_rtd_theme
 ```
 
-in your favorite browser.
+Then, from your `build` directory, you can run the command `make doc` to generate the
+documentation:
+
+
+```bash
+cd build
+make doc
+```
+
+Once the build process has completed, you can view the generated documentation by opening
+`opensn/build/doc/index.html` in your favorite web browser.
