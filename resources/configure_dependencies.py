@@ -7,10 +7,6 @@ NOTES:
   supplied ones are known to work (so you would just remove the option --download-fblaslapack=1)
 - If you have set CC, CXX and FC in your environment, make sure they are CC=mpicc, CXX=mpicxx and FC=mpifort.
 
-NOTES for clang compiler:
-- clang compiler does not support `-march=native`, so you will want to remove that from COPTFLAGS, CXXOPTFLAGS and
-  FOPTFLAGS.
-
 NOTES for building on MacOS:
 - you may need to `export MACOSX_DEPLOYMENT_TARGET=10.15` in your environment
 """
@@ -304,9 +300,9 @@ def InstallPETSc(pkg: str, ver: str, gold_file: str):
 --download-ptscotch=1  \\
 --download-superlu_dist=1  \\
 CC=$CC CXX=$CXX FC=$FC  \\
-COPTFLAGS='-O3 -march=native -mtune=native'  \\
-CXXOPTFLAGS='-O3 -march=native -mtune=native'  \\
-FOPTFLAGS='-O3 -march=native -mtune=native'  \\
+COPTFLAGS='-O3'  \\
+CXXOPTFLAGS='-O3'  \\
+FOPTFLAGS='-O3'  \\
 PETSC_DIR={install_dir}/src/{pkg}-{ver}"""
 
         success, err, outstr = ExecSub(
