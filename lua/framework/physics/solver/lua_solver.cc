@@ -173,11 +173,9 @@ SolverGetFieldFunctionList(lua_State* L)
   const auto solver_handle = LuaArg<size_t>(L, 1);
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
-  // Push up new table
-  lua_newtable(L);
+  std::vector<size_t> ff_handles;
   for (size_t ff = 0; ff < solver.GetFieldFunctions().size(); ff++)
   {
-    LuaPush(L, ff + 1);
     int pff_count = -1;
     bool found = false;
     for (auto& pff : opensn::field_function_stack) // pff pointer to field func
@@ -185,22 +183,17 @@ SolverGetFieldFunctionList(lua_State* L)
       ++pff_count;
       if (pff == solver.GetFieldFunctions()[ff])
       {
-        LuaPush(L, pff_count);
+        ff_handles.push_back(pff_count);
         found = true;
         break;
       }
     }
-
     if (not found)
       throw std::logic_error(fname + ": The solver specified has no "
                                      "field functions that match the global"
                                      " stack.");
-    lua_settable(L, -3);
   }
-
-  LuaPush(L, solver.GetFieldFunctions().size());
-
-  return 2;
+  return LuaReturn(L, ff_handles, ff_handles.size());
 }
 
 int
