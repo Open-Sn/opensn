@@ -1,98 +1,66 @@
-# Compiling on Personal Linux Machines
+# Easy Install on Linux Machines
 
-The following instructions were tested on Ubuntu 18.04 LTS; other Linux
-distributions might require some minor tweaking.
+The following instructions were tested on Ubuntu 22.04.4 LTS. Other Linux distributions might
+require some minor tweaking.
 
-Some portions of this document indicate the use of `sudo`. If you do not have
-administrative privileges then have you system administrator assist you in
-these steps.
+Some portions of these instructions require the use of `sudo`. If you do not have administrative
+privileges, have your system administrator assist you with these steps.
 
-## Step 1 - Installing GCC, GFortran and the Basic Environment
+Note that these instructions assume you are using the `bash` shell and may differ slightly for
+other shells.
 
-GCC is used to build and install OpenSn.
-GFortran and Python is used during the installation of PETSc
-(which OpenSn uses as a linear algebra backend) and
-OpenGL is required by VTK (used by OpenSn for visualization).
-These packages will therefore also need to be installed.
+## Step 1 - Install Development Tools
 
-Check to see if gcc is installed
+The following packages are required for OpenSn installation and development:
 
-```bash
-gcc --version
-```
+1. A recent version of clang++/g++ that supports C++17
+2. gfotran (required by the BLAS component of PETSc)
+3. flex and bison (required by the PTSCOTCH component of PETSc)
+4. Python 3 v3.9+ and pip (required by PETSc and OpenSn)
+5. ncurses v5 (required by Lua)
+6. Git version control system
+7. CMake v3.12+
+8. MPI (OpenMPI, MPICH, and MVAPICH have been tested)
+9. Doxygen and Sphinx (required for generating the OpenSn documentation)
 
-This should display something like this:
-
-    $ gcc --version
-    gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0
-    Copyright (C) 2021 Free Software Foundation, Inc.
-    This is free software; see the source for copying conditions.  There is NO
-    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-If this is not displayed then install gcc using the following command:
+Most of these packages can be installed using the package manager available with your Linux
+distribution (e.g., `apt`, `yum`, etc.). For example, on Ubuntu, you can use the following
+command to install all of these packages:
 
 ```bash
-sudo apt-get install build-essential gfortran
+$ sudo apt install build-essential gfortran python3 \
+git cmake libopenmpi-dev flex bison \
+libncurses5-dev python3-pip doxygen sphinx
 ```
 
-If you still do not get the appropriate version when running either ``gcc --version``
-or ``gfortran --version`` then there are many online resources which may be able to
-assist you.
-
-Now, install the remaining packages needed to build OpenSn and its dependencies:
+To ensure that all installations downstream of this install with the required mpi wrappers, the
+following environment variables must be set:
 
 ```bash
-sudo apt-get install cmake python git zlib1g-dev libx11-dev unzip
-```
-
-## Step 2 - An MPI Flavor
-
-Install either OpenMPI or MPICH. If you have MOOSE or deal.ii installed then you
-are probably already set to go. **MPICH** is recommended for better performance.
-
-```bash
-sudo apt-get install mpich
-```
-
-To check if this is working properly, simply do the mpi version of checking for
-a C++ compiler:
-
-```bash
-mpicc --version
-```
-
-Which should display the same message the gcc call did, i.e.
-
-    $ mpicc --version
-    gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0
-    Copyright (C) 2021 Free Software Foundation, Inc.
-    This is free software; see the source for copying conditions.  There is NO
-    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-In order to ensure that all installations downstream of this install with the
-required mpi wrappers, do the following:
-```shell
 export CC=mpicc
 export CXX=mpicxx
 export FC=mpifort
 ```
 
-## Step 3 - PETSc
+We recommend creating a separate directory for building the OpenSn dependencies. The following 
+steps assume that you have created a directory named `dependencies` to be used for compiling
+and installing the required third-party libraries.
+
+## Step 2 - Install PETSc
 
 The current supported version is
-[petsc version 3.17.0](https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz).
+[**PETSc** version 3.17.0+](https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz).
 
-Return to your *projects* folder (or whatever you chose to place stuff). Do
-the following. Download and extract the archive file to a folder of your choice
-then navigate into the directory containing the "configure" script.
+The following command will download and extract **PETSc** into the `dependencies` directory:
 
 ```bash
+cd dependencies
 wget https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz
 tar -zxf petsc-3.17.0.tar.gz
 cd petsc-3.17.0
 ```
 
-and execute the following:
+To configure **PETSc** with the required build options, run:
 
 ```bash
 ./configure  \
@@ -116,45 +84,31 @@ FFLAGS='-fPIC -fopenmp'  \
 FCFLAGS='-fPIC -fopenmp'  \
 F90FLAGS='-fPIC -fopenmp'  \
 F77FLAGS='-fPIC -fopenmp'  \
-COPTFLAGS='-O3 -march=native -mtune=native'  \
-CXXOPTFLAGS='-O3 -march=native -mtune=native'  \
-FOPTFLAGS='-O3 -march=native -mtune=native'  \
+COPTFLAGS='-O3'  \
+CXXOPTFLAGS='-O3'  \
+FOPTFLAGS='-O3'  \
 PETSC_DIR=$PWD
 ```
 
-If the configuration fails then consult PETSc's user documentation.
+If the configuration fails, consult **PETSc**'s user documentation. 
 
-Upon completion of the configure step, PETSc will provide the make command
-that you should use. Execute this command.
+Follow the **PETSc** build
+prompts to complete the **PETSc** installation.
 
-After a successful make PETSc should indicate the command used to install
-the header files and libraries. Execute the associated command as well.
+Add **PETSc** to your `CMAKE_PREFIX_PATH` environment variable, e.g.:
 
-To test whether the system has been installed correctly execute:
+`export CMAKE_PREFIX_PATH=/path/to/dependencies/petsc-3.17.0-install:$CMAKE_PREFIX_PATH`
 
-```bash
-make test
-```
+## Step 3 - Install the Visualization Tool Kit (VTK)
 
-The final step is to generate the environment variable for the install
-directory of PETSc:
-
-```bash
-export PETSC_ROOT=$PWD/install
-```
-
-Again, this is also something you'd like to add to your bash profile.
-
-## Step 4 - Install the Visualization Tool Kit
-
-In your projects folder install VTK using the following commands:
+In your `dependencies` directory, install **VTK** using the following commands:
 
 ```bash
 mkdir VTK
 cd VTK
-wget https://www.vtk.org/files/release/9.1/VTK-9.1.0.tar.gz
-tar -zxf VTK-9.1.0.tar.gz
-cd VTK-9.1.0
+wget https://www.vtk.org/files/release/9.3/VTK-9.3.0.tar.gz
+tar -zxf VTK-9.3.0.tar.gz
+cd VTK-9.3.0
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=$PWD/../install  + \
@@ -171,134 +125,111 @@ cmake -DCMAKE_INSTALL_PREFIX=$PWD/../install  + \
  ../
 ```
 
-This will take a while after which you need to execute:
+After `cmake` has completed configuring the build, run:
 
 ```bash
-make -j4 && make install
+make -j && make install
 ```
 
-This will also take a while. Finally, export the *VTK_DIR* variable:
+to install **VTK**.
+
+Add **VTK** to your `CMAKE_PREFIX_PATH` environment variable, e.g.:
+
+`export CMAKE_PREFIX_PATH=/path/to/dependencies/VTK/VTK-9.3.0/install:$CMAKE_PREFIX_PATH`
+
+## Step 4 - Install Lua
+
+Download and extract **Lua** version 5.3.6+ from https://www.lua.org. Before installing **Lua**,
+you need to edit `src/Makefile` and add `-fPIC` to `MYCFLAGS`, e.g.:
+
+`MYCFLAGS = -fPIC`
+
+Install **Lua** as follows:
 
 ```bash
-export VTK_DIR=$PWD/install
-```
-
-Again, this is also something you'd like to add to your bash profile.
-
-## Step 5 - Install Lua
-
-### Step 5a - Install ncurses
-Navigate to a folder to install `ncurses`
-```shell
-wget https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz
-tar -zxf ncurses-6.1.tar.gz
-cd ncurses-6.1
-./configure --prefix=$PWD/build
-```
-
-After the configure completes then
-```shell
-make -j4
-```
-and then
-```shell
-make install
-```
-
-### Step 5b - Install readline
-Navigate to a folder to install `readline`
-```shell
-wget ftp://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz
-tar -zxf readline-8.0.tar.gz
-cd readline-8.0
-./configure --prefix=$PWD/build
-```
-
-After the configure completes then
-```shell
-make -j4
-```
-and then
-```shell
-make install
-```
-
-### Step 5c - The actual lua installation
-
-Download and extract **Lua** version 5.3.5 from https://www.lua.org.
-Before installing **Lua** edit the Makefile and set INSTALL_TOP to your desired
-install location.  Install **Lua** as follows:
-```bash
-$ export CPATH=<path-to-readline-include>:$CPATH
-$ export LIBRARY_PATH=<path-to-readline-lib>:<path-to-ncurses-lib>:$LIBRARY_PATH
 $ make linux
 $ make local
 ```
-If the install complains about missing **readline** includes or libraries, it may
-be necessary to install **readline** first, that would probably require
-**ncurses** in turn.
 
-Set the LUA_ROOT environment variable to the **Lua** install location:
+If the install complains about missing **readline** includes or libraries, it may be necessary to
+install **readline** and **ncurses**.
+
+Add **Lua** to your `CMAKE_PREFIX_PATH` environment variable, e.g.:
+
+`export CMAKE_PREFIX_PATH=/path/to/dependencies/lua-5.4.6/install:$CMAKE_PREFIX_PATH`
+
+## Step 5 - Clone OpenSn
+
+**Important:**  If you want to contribute to **OpenSn**, it is strongly recommended that you
+first fork the **OpenSn** repository then clone your fork.
+
+To clone the **OpenSn** repository:
+
 ```bash
-    $export LUA_ROOT=/Path/to/Lua
+    $ git clone https://github.com/Open-Sn/opensn.git
 ```
 
-Add the export command to your bash profile.
+To clone your fork of **OpenSn**:
+
+```bash
+    $ git clone https://github.com/<username>/opensn.git
+```
 
 ## Step 6 - Build OpenSn
 
-Clone the **OpenSn** repository.  Go the folder where you want to keep OpenSn relevant stuff:
+**Important:** Now that we have finished buildindg all of the required third-party libraries and
+their locations have been added to the `CMAKE_PREFIX_PATH` environment variable, it may be a good 
+idea to add this variable to your `.bashrc` file so that you don't need to specify the path every
+time you need to re-run `cmake`.
+
+To build OpenSn, create a build directory in the top-level OpenSn directory and run `cmake` to
+generate the build files and `make` to compile OpenSn:
+
 ```bash
-    $ git clone https://github.com/Open-Sn/opensn.git /path/to/opensn
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make -j
 ```
 
-Go to the opensn folder and type:
-```bash
-    $ cd opensn
-    $ ./configure.sh
-```
-The configure script will generate the CMake build scripts.
+To configure OpenSn for building the documentation, in addition to the OpenSn application, add the
+`-DOPENSN_WITH_DOCS` option to `cmake`:
 
-In the main build directory (e.g., `opensn/build/`), execute:
 ```bash
-    $ make -j4
+    $ mkdir build
+    $ cd bukld
+    $ cmake -DOPENSN_WITH_DOCS=ON ..
+    $ make -j
 ```
 
-You can also use -j8 even if you don't have 8 processors, the make command
-will use threading where possible.
+For more information on building the documentation, see **Step 8** below.
 
 ## Step 7 - Run Regression Tests
 
-To check if the code compiled correctly, execute the test scripts:
+To run the regression tests, simply run `make test` from the build directory. This will run all of
+the regression tests in the `opensn/test` directory.
+
+## Step 8 - Build the OpenSn Documentation
+
+If you configured the OpenSn build environment with support for building the documentation
+(see **Step 6**), these instructions will help you install the necessary tools and build the
+documentation.
+
+To generate the documentation from your local working copy of OpenSn, you need to use `pip` to
+install the required Python packages:
 
 ```bash
-    $ test/run_tests -d test/ -j8
+pip install breathe myst-parser sphinx_rtd_theme
 ```
 
+Then, from your `build` directory, you can run the command `make doc` to generate the
+documentation:
 
-## Step 8 - OpenSn Documentation
-
-You can either access the documentation online [here](https://xxx.io), or generate it locally.
-
-To generate the documentation from your local working copy, first make sure
-Doxygen and LaTeX are installed:
 
 ```bash
-sudo apt-get install doxygen texlive
+cd build
+make doc
 ```
 
-The documentation is contained in the *doc* folder and can be generated
-using a script provided in that folder:
-
-```bash
-cd doc/
-./YReGenerateDocumentation.sh
-```
-
-Once finished, you can view the generated documentation by opening
-
-```bash
-doc/HTMLdocs/html/index.html
-```
-
-in your favorite browser.
+Once the build process has completed, you can view the generated documentation by opening
+`opensn/build/doc/index.html` in your favorite web browser.

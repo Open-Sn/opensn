@@ -3,8 +3,11 @@
 The following instructions were tested on Ubuntu 22.04.4 LTS. Other Linux distributions might
 require some minor tweaking.
 
-Some portions of this document indicate the use of `sudo`. If you do not have administrative
+Some portions of these instructions require the use of `sudo`. If you do not have administrative
 privileges, have your system administrator assist you with these steps.
+
+Note that these instructions assume you are using the `bash` shell and may differ slightly for
+other shells.
 
 ## Step 1 - Install Development Tools
 
@@ -13,14 +16,13 @@ The following packages are required for OpenSn installation and development:
 1. A recent version of clang++/g++ that supports C++17
 2. gfotran (required by the BLAS component of PETSc)
 3. flex and bison (required by the PTSCOTCH component of PETSc)
-4. Python 3 v3.9+ (required by PETSc and OpenSn)
+4. Python 3 v3.9+ and pip (required by PETSc and OpenSn)
 5. ncurses v5 (required by Lua)
 6. Git version control system
 7. CMake v3.12+
 8. MPI (OpenMPI, MPICH, and MVAPICH have been tested)
-9. Python 3 pip  (required for generating the OpenSn documentation)
-10. Doxygen and Sphinx (required for generating the OpenSn documentation)
-11. curl (required to download and install the OpenSn third-party dependencies)
+9. Doxygen and Sphinx (required for generating the OpenSn documentation)
+10. curl (required to download and install the OpenSn third-party dependencies)
 
 Most of these packages can be installed using the package manager available with your Linux
 distribution (e.g., `apt`, `yum`, etc.). For example, on Ubuntu, you can use the following
@@ -72,8 +74,8 @@ the speed of your machine.
 ## Step 3 - Configure Environment
 
 Before compiling OpenSn, you must add the location of the third-party libraries to your
-`CMAKE_PREFIX` environment variable. We have provided a script to do this for you. You can update
-your environment variables by running the command:
+`CMAKE_PREFIX_PATH` environment variable. We have provided a script to do this for you. You can
+update your environment variables by running the command:
 
 ```bash
     $ source ../dependencies/configure_deproots.sh
