@@ -70,6 +70,16 @@ struct is_std_vector<std::vector<T, A>> : std::true_type
 {
 };
 
+template <typename>
+struct is_std_map : std::false_type
+{
+};
+
+template <class KEY, class T, class C, class A>
+struct is_std_map<std::map<KEY, T, C, A>> : std::true_type
+{
+};
+
 // Push values on stack
 
 template <typename T>
@@ -221,6 +231,19 @@ LuaPush(lua_State* L, const std::vector<T, A>& value)
   {
     LuaPush(L, i + 1);
     LuaPush(L, value[i]);
+    lua_settable(L, -3);
+  }
+}
+
+template <class KEY, class T, class C, class A>
+inline void
+LuaPush(lua_State* L, const std::map<KEY, T, C, A>& value)
+{
+  lua_newtable(L);
+  for (auto& [k, v] : value)
+  {
+    LuaPush(L, k);
+    LuaPush(L, v);
     lua_settable(L, -3);
   }
 }
@@ -383,6 +406,27 @@ LuaArgAsType(lua_State* L, int index)
     throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
 }
 
+template <class KEY, class T, class C, class A>
+inline std::map<KEY, T, C, A>
+LuaArgAsType(lua_State* L, int index)
+{
+  if (lua_istable(L, index))
+  {
+    std::map<KEY, T, C, A> values;
+    lua_pushnil(L);
+    while (lua_next(L, index) != 0)
+    {
+      auto k = LuaArgAsType<KEY>(L, -2);
+      auto val = LuaArgAsType<T>(L, -1);
+      values.insert(std::pair<KEY, T>(k, val));
+      lua_pop(L, 1);
+    }
+    return values;
+  }
+  else
+    throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
+}
+
 template <typename T>
 inline T
 LuaArgImpl(lua_State* L, int index)
@@ -413,6 +457,21 @@ LuaArgStdVectorImpl(lua_State* L, int index)
   return LuaArgAsType<T, A>(L, index);
 }
 
+template <class KEY, class T, class C, class A>
+inline std::map<KEY, T, C, A>
+LuaArgStdMapImpl(lua_State* L, int index)
+{
+  auto num_args = lua_gettop(L);
+  if (index > num_args)
+    throw std::invalid_argument("Invalid argument index " + std::to_string(index) +
+                                ". Supplied only " + std::to_string(num_args) + " arguments.");
+  if (lua_isnil(L, index))
+    throw std::invalid_argument("Unexpected value supplied as " + std::to_string(index) +
+                                ". argument.");
+
+  return LuaArgAsType<KEY, T, C, A>(L, index);
+}
+
 } // namespace
 
 /**
@@ -429,6 +488,13 @@ LuaArg(lua_State* L, int index)
   {
     using T = typename TRET::value_type;
     return LuaArgStdVectorImpl<T, std::allocator<T>>(L, index);
+  }
+  else if constexpr (is_std_map<TRET>::value)
+  {
+    using KEY = typename TRET::key_type;
+    using T = typename TRET::mapped_type;
+    return LuaArgStdMapImpl<KEY, T, std::less<KEY>, std::allocator<std::pair<const KEY, T>>>(L,
+                                                                                             index);
   }
   else
     return LuaArgImpl<TRET>(L, index);
@@ -759,6 +825,18 @@ LuaArgCheckStdVectorType(const std::string& fn_name, lua_State* L, int index, st
                                 std::to_string(index));
 }
 
+template <class KEY, class VAL, class C, class A>
+inline void
+LuaArgCheckStdMapType(const std::string& fn_name,
+                      lua_State* L,
+                      int index,
+                      std::map<KEY, VAL, C, A> val)
+{
+  if (not lua_istable(L, index))
+    throw std::invalid_argument(fn_name + ": Expecting table value for argument " +
+                                std::to_string(index));
+}
+
 /**
  * Check that the lua function argument is of a required type
  *
@@ -778,6 +856,14 @@ LuaCheckArgWithIndex(const std::string& fn_name, lua_State* L, F&& index)
     using U = typename T::value_type;
     std::vector<U, std::allocator<U>> val;
     LuaArgCheckStdVectorType<U, std::allocator<U>>(fn_name, L, idx, val);
+  }
+  else if constexpr (is_std_map<T>::value)
+  {
+    using KEY = typename T::key_type;
+    using VAL = typename T::mapped_type;
+    std::map<KEY, VAL> val;
+    LuaArgCheckStdMapType<KEY, VAL, std::less<KEY>, std::allocator<std::pair<const KEY, VAL>>>(
+      fn_name, L, idx, val);
   }
   else
   {
