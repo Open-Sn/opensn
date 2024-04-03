@@ -577,6 +577,14 @@ LuaSetGlobal(lua_State* L, const std::string& name, double value)
   lua_setglobal(L, name.c_str());
 }
 
+template <typename T, typename A>
+inline void
+LuaSetGlobal(lua_State* L, const std::string& name, std::vector<T, A>& value)
+{
+  LuaPush(L, value);
+  lua_setglobal(L, name.c_str());
+}
+
 // Support methods for pushing arguments on a Lua stack
 
 namespace
