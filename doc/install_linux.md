@@ -33,7 +33,7 @@ git cmake libopenmpi-dev flex bison \
 libncurses5-dev python3-pip doxygen sphinx
 ```
 
-To ensure that all installations downstream of this install with the required mpi wrappers, the
+To ensure that all downstream installations use the required MPI compiler wrappers, the
 following environment variables must be set:
 
 ```bash
@@ -64,7 +64,7 @@ To configure **PETSc** with the required build options, run:
 
 ```bash
 ./configure  \
---prefix=$PWD/../petsc-3.17.0-install  \
+--prefix=/path/to/dependencies/directory  \
 --download-hypre=1  \
 --with-ssl=0  \
 --with-debugging=0  \
@@ -92,12 +92,7 @@ PETSC_DIR=$PWD
 
 If the configuration fails, consult **PETSc**'s user documentation. 
 
-Follow the **PETSc** build
-prompts to complete the **PETSc** installation.
-
-Add **PETSc** to your `CMAKE_PREFIX_PATH` environment variable, e.g.:
-
-`export CMAKE_PREFIX_PATH=/path/to/dependencies/petsc-3.17.0-install:$CMAKE_PREFIX_PATH`
+Follow the **PETSc** build prompts to complete the **PETSc** installation.
 
 ## Step 3 - Install the Visualization Tool Kit (VTK)
 
@@ -111,7 +106,7 @@ tar -zxf VTK-9.3.0.tar.gz
 cd VTK-9.3.0
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=$PWD/../install  + \
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/dependencies/directory  + \
 -DBUILD_SHARED_LIBS:BOOL=ON  + \
 -DVTK_Group_MPI:BOOL=ON  + \
 -DVTK_GROUP_ENABLE_Qt=NO  + \
@@ -133,30 +128,30 @@ make -j && make install
 
 to install **VTK**.
 
-Add **VTK** to your `CMAKE_PREFIX_PATH` environment variable, e.g.:
-
-`export CMAKE_PREFIX_PATH=/path/to/dependencies/VTK/VTK-9.3.0/install:$CMAKE_PREFIX_PATH`
-
 ## Step 4 - Install Lua
 
-Download and extract **Lua** version 5.3.6+ from https://www.lua.org. Before installing **Lua**,
-you need to edit `src/Makefile` and add `-fPIC` to `MYCFLAGS`, e.g.:
-
-`MYCFLAGS = -fPIC`
-
+Download and extract **Lua** version 5.3.6+ from https://www.lua.org to `dependencies`.
 Install **Lua** as follows:
 
 ```bash
-$ make linux
-$ make local
+$ make linux MYCLFAGS=-fPIC -j
+$ make install INSTALL_TOP=/path/to/dependencies/directory
 ```
 
 If the install complains about missing **readline** includes or libraries, it may be necessary to
 install **readline** and **ncurses**.
 
-Add **Lua** to your `CMAKE_PREFIX_PATH` environment variable, e.g.:
+## Step 6 - Configure Environment
 
-`export CMAKE_PREFIX_PATH=/path/to/dependencies/lua-5.4.6/install:$CMAKE_PREFIX_PATH`
+Before compiling OpenSn, you must add the location of the third-party libraries to your
+`CMAKE_PREFIX_PATH` environment variable. This can be accomplished with the following command:
+
+```bash
+    $ export CMAKE_PREFIX_PATH=/path/to/dependencies/directory:$CMAKE_PREFIX_PATH`
+```
+
+**Important:** It may be a good idea to add the `CMAKE_PREFIX_PATH` variable to your `.bashrc`
+file so that you don't need to specify the path every time you need to re-run `cmake`.
 
 ## Step 5 - Clone OpenSn
 
@@ -176,11 +171,6 @@ To clone your fork of **OpenSn**:
 ```
 
 ## Step 6 - Build OpenSn
-
-**Important:** Now that we have finished buildindg all of the required third-party libraries and
-their locations have been added to the `CMAKE_PREFIX_PATH` environment variable, it may be a good 
-idea to add this variable to your `.bashrc` file so that you don't need to specify the path every
-time you need to re-run `cmake`.
 
 To build OpenSn, create a build directory in the top-level OpenSn directory and run `cmake` to
 generate the build files and `make` to compile OpenSn:
