@@ -93,6 +93,7 @@ LuaApp::ProcessArguments(int argc, char** argv)
 
     /* clang-format off */
     options.add_options("User")
+<<<<<<< HEAD
     ("h,help",                      "Help message")
     ("b,batch",                     "Batch mode")
     ("c,suppress-color",            "Suppress color output")
@@ -101,6 +102,14 @@ LuaApp::ProcessArguments(int argc, char** argv)
     ("f,filename",                  "Input filename", cxxopts::value<std::string>())
     {"caliper",                     "Enable Caliper reporting", cxxopts::value<std::string>());
     ("positional",                  "Positional arugments", cxxopts::value<std::vector<std::string>>());
+=======
+      ("h,help",           "Help message")
+      ("b,batch",          "Batch mode")
+      ("c,suppress-color", "Suppress color output")
+      ("v,verbose",        "Verbosity level (0 to 3). Default is 0.",
+                            cxxopts::value<int>())
+      ("positional",       "Positional arugments", cxxopts::value<std::vector<std::string>>());
+>>>>>>> dbac30b0 (Remving unneeded lua option.)
 
     options.add_options("Dev")
       ("help-dev",                  "Developer options help")
@@ -108,7 +117,7 @@ LuaApp::ProcessArguments(int argc, char** argv)
       ("dump-object-registry",      "Dump object registry");
     /* clang-format on */
 
-    options.positional_help("[FILE]");
+    options.positional_help("[FILE] [LUA ASSIGNMENT]");
     options.parse_positional("positional");
 
     bool found_filename = false;
@@ -147,9 +156,6 @@ LuaApp::ProcessArguments(int argc, char** argv)
       int verbosity = result["verbose"].as<int>();
       opensn::log.SetVerbosity(verbosity);
     }
-
-    if (result.count("lua"))
-      console.GetCommandBuffer().push_back(result["lua"].as<std::string>());
 
     if (result.count("positional"))
     {
