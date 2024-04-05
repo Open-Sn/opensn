@@ -12,30 +12,24 @@ class LuaApp
 {
 public:
   LuaApp(const mpi::Communicator& comm);
-  ~LuaApp();
+
+  ~LuaApp()
+  {}
 
   int Run(int argc, char** argv);
 
 protected:
-  /**Initializes PetSc for use by all entities.*/
   int InitPetSc(int argc, char** argv);
 
-  /**
-   * Parses input arguments.
-   * \param argc int    Number of arguments supplied.
-   * \param argv char** Array of strings representing each argument.
-   */
-  void ParseArguments(int argc, char** argv);
+  int ParseArguments(int argc, char** argv);
 
   int RunInteractive(int argc, char** argv);
+
   int RunBatch(int argc, char** argv);
 
 private:
-  // run_time quantities
-  bool termination_posted_ = false;
-  bool sim_option_interactive_ = true;
-  bool allow_petsc_error_handler_ = false;
-  bool dump_registry_ = false;
+  bool sim_option_interactive_;
+  bool allow_petsc_error_handler_;
 };
 
 } // namespace opensnlua
