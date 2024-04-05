@@ -2,6 +2,7 @@
 #include "lua/framework/console/console.h"
 #include "framework/event_system/event.h"
 #include "framework/event_system/system_wide_event_publisher.h"
+#include "framework/utils/utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
@@ -88,7 +89,7 @@ LuaApp::ProcessArguments(int argc, char** argv)
 {
   try
   {
-    cxxopts::Options options("opensn", "");
+    cxxopts::Options options(LowerCase(opensn::name), "");
 
     /* clang-format off */
     options.add_options("User")

@@ -55,7 +55,7 @@ Plugin::Plugin(const InputParameters& params)
   opensn::log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
   RegistryStatuses registry_statuses = GetStatusOfRegistries();
 
-  AssertReadibleFile(plugin_path_);
+  AssertReadableFile(plugin_path_);
   library_handle_ = dlopen(plugin_path_.c_str(), RTLD_LAZY);
 
   OpenSnLogicalErrorIf(not library_handle_, "Failure loading \"" + plugin_path_ + "\"");
