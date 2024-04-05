@@ -3,13 +3,9 @@ This is a utility script for the download and installation of OpenSn
 dependencies.
 
 NOTES:
-- If you see errors in building fblaslapack, try to use different BLAS/LAPACK. For example, on MacOSX, the Apple
+- If you see errors in building fblaslapack, try using a  different BLAS/LAPACK. For example, on MacOSX, the Apple
   supplied ones are known to work (so you would just remove the option --download-fblaslapack=1)
 - If you have set CC, CXX and FC in your environment, make sure they are CC=mpicc, CXX=mpicxx and FC=mpifort.
-
-NOTES for clang compiler:
-- clang compiler does not support `-march=native`, so you will want to remove that from COPTFLAGS, CXXOPTFLAGS and
-  FOPTFLAGS.
 
 NOTES for building on MacOS:
 - you may need to `export MACOSX_DEPLOYMENT_TARGET=10.15` in your environment
@@ -85,14 +81,6 @@ parser.add_argument(
 VERSION = 0
 URL = 1
 package_info = {
-    "readline": [
-        "8.0",
-        "ftp://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz"
-    ],
-    "ncurses": [
-        "6.1",
-        "https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz"
-    ],
     "lua": [
         "5.4.6",
         "https://www.lua.org/ftp/lua-5.4.6.tar.gz"
@@ -147,13 +135,13 @@ def CheckExecutableExists(thingname: str, thing: str):
         log_file.write(f"{thingname} found\n\n")
 
 
-# Downloads a package using either wget or curl
-def DownloadPackage(downloader, url, pkg, ver):
+# Downloads a package using curl
+def DownloadPackage(url, pkg, ver):
     pkgdir = f"{install_dir}/downloads"
     log_file.write(f"Downloading {pkg.upper()} {ver} to \"{pkgdir}\" " +
-                   f"with command: {downloader} {url}")
-    download_cmd = f"{downloader}" if downloader == "wget" else f"{downloader}"
-    output_cmd = "" if downloader == "wget" else f"-L --output {pkg}-{ver}.tar.gz"
+                   f"with command: curl {url}")
+    download_cmd = f"curl"
+    output_cmd = f"-L --output {pkg}-{ver}.tar.gz"
 
     pkgdir_relative = os.path.relpath(pkgdir)
 
@@ -198,77 +186,10 @@ def ExtractPackage(pkg, ver):
         raise RuntimeError(err)
 
 
-# Install command for ncurses and readline
-def InstallPackage(pkg: str, ver: str, gold_file: str):
-    package_log_filename = f"{install_dir}/logs/{pkg}_log.txt"
-    pkg_install_dir = f"{install_dir}"
-
-    shutil.copy(f"{install_dir}/downloads/{pkg}-{ver}.tar.gz",
-                f"{install_dir}/src/{pkg}-{ver}.tar.gz")
-
-    os.chdir(f"{install_dir}/src")
-
-    # Check if it is installed already
-    if not os.path.exists(f"{pkg_install_dir}/{gold_file}"):
-        ExtractPackage(pkg, ver)
-
-        package_log_file = open(package_log_filename, "w")
-
-        print(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"", flush=True)
-        log_file.write(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"")
-        log_file.write(f" See {package_log_filename}\n")
-        log_file.flush()
-
-        env_vars = os.environ.copy()
-        if len(os.getenv("CC")) == 0:
-            env_vars["CC"] = shutil.which("mpicc")
-        if len(os.getenv("CXX")) == 0:
-            env_vars["CXX"] = shutil.which("mpicxx")
-        if len(os.getenv("FC")) == 0:
-            env_vars["FC"] = shutil.which("mpifort")
-
-        command = f"./configure --prefix={pkg_install_dir}"
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
-        if not success:
-            print(command, err)
-            log_file.write(f"{command}\n{err}\n")
-            package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to configure {pkg}");
-
-        command = f"make -j{argv.jobs}"
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
-        if not success:
-            print(command, err)
-            log_file.write(f"{command}\n{err}\n")
-            package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to build {pkg}");
-
-        command = "make install"
-        success, err, outstr = ExecSub(command, out_log=package_log_file, env_vars=env_vars)
-        if not success:
-            print(command, err)
-            log_file.write(f"{command}\n{err}\n")
-            package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to install {pkg}");
-
-        package_log_file.close()
-    else:
-        print(f"{pkg} already installed")
-
-    os.chdir(install_dir)
-
-    if os.path.exists(f"{pkg_install_dir}/{gold_file}"):
-        return True
-    else:
-        return False
-
-
-# Install command for lua
+# Install Lua
 def InstallLuaPackage(pkg: str,
                       ver: str,
-                      gold_file: str,
-                      readline_install: str,
-                      ncurses_install: str):
+                      gold_file: str):
     package_log_filename = f"{install_dir}/logs/{pkg}_log.txt"
     pkg_install_dir = f"{install_dir}"
 
@@ -283,7 +204,7 @@ def InstallLuaPackage(pkg: str,
 
         package_log_file = open(package_log_filename, "w")
 
-        print(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"", flush=True)
+        print(f"Configuring {pkg.upper()} {ver} in \"{os.getcwd()}\"", flush=True)
         log_file.write(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"")
         log_file.write(f" See {package_log_filename}\n")
         log_file.flush()
@@ -295,19 +216,12 @@ def InstallLuaPackage(pkg: str,
             env_vars["CXX"] = shutil.which("mpicxx")
         if len(os.getenv("FC")) == 0:
             env_vars["FC"] = shutil.which("mpifort")
-
-        lib_path = env_vars.get("LIBRARY_PATH", "")
-        lib_path = f"{lib_path}:{readline_install}/lib:" \
-                   f"{ncurses_install}/lib"
-        env_vars["LIBRARY_PATH"] = lib_path
-
-        c_path = env_vars.get('CPATH', "")
-        c_path = f"{c_path}:{readline_install}/include"
-        env_vars["CPATH"] = c_path
 
         os_tag = "linux"
         if "Darwin" in os.uname():
             os_tag = "macosx"
+
+        os.chdir(f"{pkg}-{ver}")
 
         command = f"make {os_tag} MYCFLAGS=-fPIC MYLIBS=-lncurses -j{argv.jobs}"
         success, err, outstr = ExecSub(
@@ -341,7 +255,7 @@ def InstallLuaPackage(pkg: str,
         return False
 
 
-# Install command for PETSc
+# Install PETSc
 def InstallPETSc(pkg: str, ver: str, gold_file: str):
     package_log_filename = f"{install_dir}/logs/{pkg}_log.txt"
     pkg_install_dir = f"{install_dir}"
@@ -370,6 +284,8 @@ def InstallPETSc(pkg: str, ver: str, gold_file: str):
         if len(os.getenv("FC")) == 0:
             env_vars["FC"] = shutil.which("mpifort")
 
+        os.chdir(f"{pkg}-{ver}")
+
         command = f"""./configure --prefix={pkg_install_dir} \\
 --with-shared-libraries=1  \\
 --with-ssl=0  \\
@@ -384,9 +300,9 @@ def InstallPETSc(pkg: str, ver: str, gold_file: str):
 --download-ptscotch=1  \\
 --download-superlu_dist=1  \\
 CC=$CC CXX=$CXX FC=$FC  \\
-COPTFLAGS='-O3 -march=native -mtune=native'  \\
-CXXOPTFLAGS='-O3 -march=native -mtune=native'  \\
-FOPTFLAGS='-O3 -march=native -mtune=native'  \\
+COPTFLAGS='-O3'  \\
+CXXOPTFLAGS='-O3'  \\
+FOPTFLAGS='-O3'  \\
 PETSC_DIR={install_dir}/src/{pkg}-{ver}"""
 
         success, err, outstr = ExecSub(
@@ -551,22 +467,13 @@ try:
     # Check system environment
 
     # Check for download utils
-    log_file.write("Checking for wget/curl: ")
-    downloader = ""
-    if shutil.which("wget") is None:
-        log_file.write("wget not found. ")
-        if shutil.which("curl") is None:
-            log_file.write("curl not found. ")
-            raise Exception("Neither wget nor curl found on this system. " +
-                            "The script then has no means to download the " +
-                            "dependencies.")
-        else:
-            log_file.write("curl found\n")
-            downloader = "curl"
+    log_file.write("Checking for curl: ")
+    if shutil.which("curl") is None:
+        log_file.write("curl not found. ")
+        raise Exception("Missing Curl utility. " +
+                        "Unable to download dependencies.")
     else:
-        log_file.write("wget found\n")
-        downloader = "wget"
-    # downloader = "curl"
+        log_file.write("curl found\n")
 
     # Check mpicc, mpicxx, mpifort
     mpicc = os.getenv("CC") if len(os.getenv("CC")) > 0 else "mpicc"
@@ -586,7 +493,7 @@ try:
     os.chdir(f"{install_dir}/downloads")
     dl_errors = []
     for pkg in package_info:
-        if not DownloadPackage(downloader, package_info[pkg][URL], pkg,
+        if not DownloadPackage(package_info[pkg][URL], pkg,
                                package_info[pkg][VERSION]):
             dl_errors.append(pkg)
     os.chdir(f"{install_dir}")
@@ -624,16 +531,8 @@ try:
         log_file.flush()
         ver = package_info[pkg][VERSION]
         success = False
-        if pkg == 'readline':
-            success = InstallPackage(pkg, ver, gold_file="lib/libreadline.a")
-        elif pkg == 'ncurses':
-            success = InstallPackage(pkg, ver, gold_file="lib/libncurses.a")
-        elif pkg == 'lua':
-            readline_install = f"{install_dir}"
-            ncurses_install = f"{install_dir}"
-            success = InstallLuaPackage(pkg, ver, gold_file="lib/liblua.a",
-                                        readline_install=readline_install,
-                                        ncurses_install=ncurses_install)
+        if pkg == 'lua':
+            success = InstallLuaPackage(pkg, ver, gold_file="lib/liblua.a")
         elif pkg == 'petsc':
             success = InstallPETSc(pkg, ver, gold_file="include/petsc")
         elif pkg == 'vtk':
@@ -662,53 +561,19 @@ try:
     # Create envvars file
     module_file = open(module_file_name, "w")
 
-    lua_version = package_info["lua"][VERSION]
-    petsc_version = package_info["petsc"][VERSION]
-    vtk_version = package_info["vtk"][VERSION]
-
-    petsc_dir = f"{install_dir}"
-    vtk_dir = f"{install_dir}"
-
     module_file.write(f'export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"\n')
-    module_file.write(f'export PETSC_DIR={petsc_dir}\n')
-
-    if os.path.exists(f"{vtk_dir}/lib64"):
-        module_file.write(f'export LD_LIBRARY_PATH="{vtk_dir}/lib64":$LD_LIBRARY_PATH\n')
-    else:
-        module_file.write(f'export LD_LIBRARY_PATH="{vtk_dir}/lib":$LD_LIBRARY_PATH\n')
-    module_file.write('echo "Environment set for compiling. ' +
-                      'If recompiling changed sources execute"\n')
-    module_file.write('echo "     ./configure clean"\n')
-    module_file.write('echo " "\n')
-    module_file.write('echo "Otherwise just execute:"\n')
-    module_file.write('echo "     ./configure"\n')
-
     module_file.close()
 
     ExecSub(f"chmod u+x {module_file_name}", log_file)
     log_file.close()
 
     print("\n########## OpenSn Dependency install complete ##########")
-    print("\nWhen opening OpenSn in an IDE, the following environment variables" +
-          " need to be set:\n")
-
+    print("\nWhen compiling OpenSn the following environment variable" +
+          " may need to be set:\n")
     print(f'CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"')
-    print(f'PETSC_DIR={petsc_dir}')
     print()
-    print(TextColors.WARNING +
-          "When compiling OpenSn, in a terminal, the following environment "
-          "variables need to be set:\n" + TextColors.ENDC)
-
-    print(f'export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"')
-    print(f'export PETSC_DIR="{petsc_dir}"')
-    if os.path.exists(f"{vtk_dir}/lib64"):
-        print(f'export LD_LIBRARY_PATH="{vtk_dir}/lib":$LD_LIBRARY_PATH')
-    else:
-        print(f'export LD_LIBRARY_PATH="{vtk_dir}/lib64":$LD_LIBRARY_PATH')
-
-    print()
-    print(f"To set these terminal environment variables automatically, execute:")
-    print(f"    $ {module_file_name}\n")
+    print(f"To set this environment variable automatically in a `bash` shell, execute:")
+    print(f"    $ source {module_file_name}\n")
 
 except RuntimeError as e:
     print(f"{TextColors.RED}{e}{TextColors.ENDC}")
