@@ -20,8 +20,7 @@ namespace opensnlua
 {
 
 LuaApp::LuaApp(const mpi::Communicator& comm)
-  : sim_option_interactive_(true),
-    allow_petsc_error_handler_(false)
+  : sim_option_interactive_(true), allow_petsc_error_handler_(false)
 {
   opensn::mpi_comm = comm;
 }
@@ -47,10 +46,11 @@ LuaApp::Run(int argc, char** argv)
     std::cout << opensn::name << " version " << GetVersionStr() << "\n"
               << Timer::GetLocalDateTimeString() << " Running " << opensn::name << " with "
               << opensn::mpi_comm.size() << " processes.\n"
-              << opensn::name << " number of arguments supplied: " << argc - 1 << "\n" << std::endl;
+              << opensn::name << " number of arguments supplied: " << argc - 1 << "\n"
+              << std::endl;
   }
 
-  int error_code = ParseArguments(argc, argv);
+  int error_code = ProcessArguments(argc, argv);
 
   if (!error_code)
   {
@@ -70,9 +70,9 @@ LuaApp::Run(int argc, char** argv)
     if (opensn::mpi_comm.rank() == 0)
     {
       std::cout << "\n"
-                << Elapsed execution time: " << program_timer.GetTimeString() << "\n"
-                << Timer::GetLocalDateTimeString() << " " << opensn::name
-                << " finished execution." << std::endl;
+                << "Elapsed execution time: " << program_timer.GetTimeString() << "\n"
+                << Timer::GetLocalDateTimeString() << " " << opensn::name << " finished execution."
+                << std::endl;
     }
   }
 
@@ -84,12 +84,13 @@ LuaApp::Run(int argc, char** argv)
 }
 
 int
-LuaApp::ParseArguments(int argc, char** argv)
+LuaApp::ProcessArguments(int argc, char** argv)
 {
   try
   {
     cxxopts::Options options("opensn", "");
 
+    /* clang-format off */
     options.add_options("User")
     ("h,help",                      "Help message")
     ("b,batch",                     "Batch mode")
@@ -98,24 +99,27 @@ LuaApp::ParseArguments(int argc, char** argv)
     ("v,verbose",                   "Verbosity", cxxopts::value<int>())
     ("f,filename",                  "Input filename", cxxopts::value<std::string>())
     {"caliper",                     "Enable Caliper reporting", cxxopts::value<std::string>());
+    ("positional",                  "Positional arugments", cxxopts::value<std::vector<std::string>>());
 
     options.add_options("Dev")
-    ("help-dev",                    "Developer options help") 
-    ("allow-petsc-error-handler",   "Allow PETSc error handler")
-    ("dump-object-registry",        "Dump object registry");
+      ("help-dev",                  "Developer options help")
+      ("allow-petsc-error-handler", "Allow PETSc error handler")
+      ("dump-object-registry",      "Dump object registry");
+    /* clang-format on */
 
     options.positional_help("[FILE]");
-    options.parse_positional("filename");
+    options.parse_positional("positional");
 
+    bool found_filename = false;
     auto result = options.parse(argc, argv);
 
     if (result.count("help"))
     {
       std::cout << options.help({"User"}) << std::endl;
       return 1;
-    } 
+    }
 
-    if(result.count("help-dev"))
+    if (result.count("help-dev"))
     {
       std::cout << options.help({"Dev"}) << std::endl;
       return 1;
@@ -146,15 +150,36 @@ LuaApp::ParseArguments(int argc, char** argv)
     if (result.count("lua"))
       console.GetCommandBuffer().push_back(result["lua"].as<std::string>());
 
-    if (result.count("filename"))
+    if (result.count("positional"))
     {
-      opensn::input_path = result["filename"].as<std::string>();
-      sim_option_interactive_ = false;
+      auto args = result["positional"].as<std::vector<std::string>>();
+      for (const auto& arg : args)
+      {
+        if (arg.find('=') != std::string::npos)
+          console.GetCommandBuffer().push_back(arg);
+        else
+        {
+          if (not found_filename)
+          {
+            opensn::input_path = arg;
+            sim_option_interactive_ = false;
+            found_filename = true;
+          }
+          else
+          {
+            if (opensn::mpi_comm.rank() == 0)
+              std::cerr << "Error: "
+                        << "Invalid option " << arg << std::endl;
+            return 1;
+          }
+        }
+      }
     }
   }
   catch (const cxxopts::exceptions::exception& e)
   {
-    std::cout << "Error: " << e.what() << std::endl;
+    if (opensn::mpi_comm.rank() == 0)
+      std::cerr << "Error: " << e.what() << std::endl;
     return 1;
   }
 

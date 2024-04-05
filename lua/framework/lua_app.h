@@ -13,15 +13,12 @@ class LuaApp
 public:
   LuaApp(const mpi::Communicator& comm);
 
-  ~LuaApp()
-  {}
-
   int Run(int argc, char** argv);
 
 protected:
   int InitPetSc(int argc, char** argv);
 
-  int ParseArguments(int argc, char** argv);
+  int ProcessArguments(int argc, char** argv);
 
   int RunInteractive(int argc, char** argv);
 
