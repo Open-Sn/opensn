@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Easy install on Ubuntu Machines &mdash; OpenSn  documentation</title>
+  <title>Easy Install on Linux Machines &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Compiling on MacOS" href="install_macos.html" />
-    <link rel="prev" title="Compiling on Personal Linux Machines" href="install_linux.html" /> 
+    <link rel="prev" title="Installing on Linux Machines" href="install_linux.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,15 +46,15 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="install_linux.html">Compiling on Personal Linux Machines</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Easy install on Ubuntu Machines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#step-1-installing-gcc-gfortran-and-the-basic-environment">Step 1 - Installing GCC, GFortran and the basic environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-2-an-mpi-flavor">Step 2 - An MPI flavor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-3-clone-opensn">Step 3 - Clone OpenSn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-4-configure-environment">Step 4 - Configure environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_linux.html">Installing on Linux Machines</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Easy Install on Linux Machines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-install-development-tools">Step 1 - Install Development Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-clone-opensn">Step 2 - Clone OpenSn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-install-third-party-libraries">Step 3 - Install Third-Party Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-4-configure-environment">Step 4 - Configure Environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-5-build-opensn">Step 5 - Build OpenSn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-6-run-regression-tests">Step 6 - Run regression tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-8-opensn-documentation">Step 8 - OpenSn Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-6-run-regression-tests">Step 6 - Run Regression Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-7-build-the-opensn-documentation">Step 7 - Build the OpenSn Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install_macos.html">Compiling on MacOS</a></li>
@@ -89,7 +89,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Easy install on Ubuntu Machines</li>
+      <li class="breadcrumb-item active">Easy Install on Linux Machines</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -98,155 +98,128 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="easy-install-on-ubuntu-machines">
-<h1>Easy install on Ubuntu Machines<a class="headerlink" href="#easy-install-on-ubuntu-machines" title="Link to this heading"></a></h1>
-<p>The following instructions were tested on Ubuntu 18.04 LTS and newer LTS (22.04 currently); other Linux
+  <section class="tex2jax_ignore mathjax_ignore" id="easy-install-on-linux-machines">
+<h1>Easy Install on Linux Machines<a class="headerlink" href="#easy-install-on-linux-machines" title="Link to this heading"></a></h1>
+<p>The following instructions were tested on Ubuntu 22.04.4 LTS. Other Linux
 distributions might require some minor tweaking.</p>
-<p>Some portions of this document indicate the use of <code class="docutils literal notranslate"><span class="pre">sudo</span></code>. If you do not have
-administrative privileges then have your system administrator assist you in
-these steps.</p>
-<section id="step-1-installing-gcc-gfortran-and-the-basic-environment">
-<h2>Step 1 - Installing GCC, GFortran and the basic environment<a class="headerlink" href="#step-1-installing-gcc-gfortran-and-the-basic-environment" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>GCC is required.</p></li>
-<li><p>GFortran and Python are used during the installation of PETSc
-(which OpenSn uses as a linear algebra backend)</p></li>
-<li><p>OpenGL has become optional and VTK can be used, through ViSiT and Paraview, for visualization.</p></li>
-</ul>
-<p>The above packages will therefore need to be installed.</p>
-<p>Check to see if gcc is installed</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gcc<span class="w"> </span>--version
+<p>Some portions of these instructions require the use of <code class="docutils literal notranslate"><span class="pre">sudo</span></code>. If you do not have
+administrative privileges, have your system administrator assist you with these
+steps.</p>
+<p>Note that these instructions assume you are using the <code class="docutils literal notranslate"><span class="pre">bash</span></code> shell and may differ
+slightly for other shells.</p>
+<section id="step-1-install-development-tools">
+<h2>Step 1 - Install Development Tools<a class="headerlink" href="#step-1-install-development-tools" title="Link to this heading"></a></h2>
+<p>The following packages are required for OpenSn installation and development:</p>
+<ol class="arabic simple">
+<li><p>A recent version of clang++/g++ that supports C++17</p></li>
+<li><p>gfortran (required by the BLAS component of PETSc)</p></li>
+<li><p>flex and bison (required by the PTSCOTCH component of PETSc)</p></li>
+<li><p>Python 3 v3.9+ and pip (required by PETSc and OpenSn)</p></li>
+<li><p>ncurses v5 (required by Lua)</p></li>
+<li><p>Git version control system</p></li>
+<li><p>CMake v3.12+</p></li>
+<li><p>MPI (OpenMPI, MPICH, and MVAPICH have been tested)</p></li>
+<li><p>Doxygen and Sphinx (required for generating the OpenSn documentation)</p></li>
+<li><p>curl (required to download and install the OpenSn third-party dependencies)</p></li>
+</ol>
+<p>Most of these packages can be installed using the package manager available with
+your Linux distribution (e.g., <code class="docutils literal notranslate"><span class="pre">apt</span></code>, <code class="docutils literal notranslate"><span class="pre">yum</span></code>, etc.). For example, on Ubuntu, you
+can use the following command to install all of these packages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>gfortran<span class="w"> </span>python3<span class="w"> </span><span class="se">\</span>
+git<span class="w"> </span>cmake<span class="w"> </span>libopenmpi-dev<span class="w"> </span>flex<span class="w"> </span>bison<span class="w"> </span><span class="se">\</span>
+libncurses5-dev<span class="w"> </span>python3-pip<span class="w"> </span>doxygen<span class="w"> </span>sphinx<span class="w"> </span>curl
 </pre></div>
 </div>
-<p>This should display something like this:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ gcc --version
-gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0
-Copyright (C) 2021 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-</pre></div>
-</div>
-<p>If this is not displayed then install gcc using the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>gfortran
-</pre></div>
-</div>
-<p>If you still do not get the appropriate version when running either <code class="docutils literal notranslate"><span class="pre">gcc</span> <span class="pre">--version</span></code>
-or <code class="docutils literal notranslate"><span class="pre">gfortran</span> <span class="pre">--version</span></code> then there are many online resources which may be able to
-assist you. One issue commonly seen is that the repositories on your system are not
-updated in which case just run <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">update</span></code>, possibly followed by
-<code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">upgrade</span></code>.</p>
-<p>Now, install the remaining packages needed to build OpenSn and its dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>cmake<span class="w"> </span>python3<span class="w"> </span>git<span class="w"> </span>zlib1g-dev<span class="w"> </span>libx11-dev<span class="w"> </span>unzip
-</pre></div>
-</div>
-<p>(note the use of python3)</p>
-</section>
-<section id="step-2-an-mpi-flavor">
-<h2>Step 2 - An MPI flavor<a class="headerlink" href="#step-2-an-mpi-flavor" title="Link to this heading"></a></h2>
-<p>Install either OpenMPI or MPICH. If you have MOOSE or deal.ii installed then you
-are probably already set to go. <strong>MPICH</strong> is recommended for better performance.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>mpich
-</pre></div>
-</div>
-<p>To check if this is working properly, simply do the mpi version of checking for
-a C++ compiler:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpicc<span class="w"> </span>--version
-</pre></div>
-</div>
-<p>Which should display the same message the gcc call did, i.e.,</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ mpicc --version
-gcc (Ubuntu 7.3.0-30ubuntu1~18.04.york0) 7.3.0
-Copyright (C) 2017 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-</pre></div>
-</div>
-</section>
-<section id="step-3-clone-opensn">
-<h2>Step 3 - Clone OpenSn<a class="headerlink" href="#step-3-clone-opensn" title="Link to this heading"></a></h2>
-<p><strong>Important:</strong>  If you want to contribute to <strong>OpenSn</strong>, it is strongly recommended to first fork the <strong>OpenSn</strong> repository into your own Git account and then to clone your fork.</p>
-<p>Clone the <strong>OpenSn</strong> repository.  Go the folder where you want to keep OpenSn relevant stuff:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Open-Sn/opensn.git
-</pre></div>
-</div>
-<p>or</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;username&gt;/opensn.git
-</pre></div>
-</div>
-<p><strong>Important:</strong> We recommend building all the dependencies into a separate folder. For instance_,</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>mkdir<span class="w"> </span>dependencies
-</pre></div>
-</div>
-<p>Before building the dependencies, you need to export a few variables for the PETSc install:</p>
+<p>To ensure that all third-party packages use the required MPI compiler wrappers,
+the following environment variables must be set:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">CC</span><span class="o">=</span>mpicc
 <span class="w">    </span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>mpicxx
 <span class="w">    </span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">FC</span><span class="o">=</span>mpifort
 </pre></div>
 </div>
-<p>Go to the opensn folder you have just cloned and type:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>opensn
-<span class="w">    </span>$<span class="w"> </span>python3<span class="w"> </span>resources/configure_dependencies.py<span class="w"> </span>-d<span class="w"> </span>../dependencies
+</section>
+<section id="step-2-clone-opensn">
+<h2>Step 2 - Clone OpenSn<a class="headerlink" href="#step-2-clone-opensn" title="Link to this heading"></a></h2>
+<p><strong>Important:</strong>  If you want to contribute to <strong>OpenSn</strong>, it is strongly
+recommended that you first fork the <strong>OpenSn</strong> repository then clone your fork.</p>
+<p>To clone the <strong>OpenSn</strong> repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Open-Sn/opensn.git
 </pre></div>
 </div>
-<p>The configure script will attempt to download and install all the necessary
-dependencies <strong>and may take a long time</strong></p>
+<p>To clone your fork of <strong>OpenSn</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;username&gt;/opensn.git
+</pre></div>
+</div>
+</section>
+<section id="step-3-install-third-party-libraries">
+<h2>Step 3 - Install Third-Party Libraries<a class="headerlink" href="#step-3-install-third-party-libraries" title="Link to this heading"></a></h2>
+<p><strong>Important:</strong> We recommend creating a separate directory for building the
+<strong>OpenSn</strong> dependencies.</p>
+<p>Assuming you created a directory named <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> to be used for building the
+required third-party packages, the following command automates the install and
+build process:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>opensn
+<span class="w">    </span>$<span class="w"> </span>python3<span class="w"> </span>resources/configure_dependencies.py<span class="w"> </span>-d<span class="w"> </span>../path/to/dependencies/directory
+</pre></div>
+</div>
 </section>
 <section id="step-4-configure-environment">
-<h2>Step 4 - Configure environment<a class="headerlink" href="#step-4-configure-environment" title="Link to this heading"></a></h2>
-<p>The next step in this process is to setup the environment variables for compiling
-OpenSn.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nv">$source</span><span class="w"> </span>../dependencies/configure_deproots.sh
+<h2>Step 4 - Configure Environment<a class="headerlink" href="#step-4-configure-environment" title="Link to this heading"></a></h2>
+<p>Before compiling <strong>OpenSn</strong>, you must add the location of the third-party
+libraries to your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> environment variable. We have provided a
+script to do this for you. You can update your environment variables by running
+the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>../dependencies/configure_deproots.sh
 </pre></div>
 </div>
-<p><strong>Note:</strong> You can replace <code class="docutils literal notranslate"><span class="pre">$source</span> </code> in the above with <code class="docutils literal notranslate"><span class="pre">$.</span> </code></p>
+<p><strong>Important:</strong> It may be a good idea to source this script int your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code>
+file so that you don’t need to specify the path every time you need to re-run
+<code class="docutils literal notranslate"><span class="pre">cmake</span></code>.</p>
 </section>
 <section id="step-5-build-opensn">
 <h2>Step 5 - Build OpenSn<a class="headerlink" href="#step-5-build-opensn" title="Link to this heading"></a></h2>
-<p>To compile OpenSn now just execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>./configure.sh
+<p>To build <strong>OpenSn</strong>, create a build directory in the top-level <strong>OpenSn</strong>
+directory and run <code class="docutils literal notranslate"><span class="pre">cmake</span></code> to generate the build files and <code class="docutils literal notranslate"><span class="pre">make</span></code> to compile
+<strong>OpenSn</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>mkdir<span class="w"> </span>build
+<span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
+<span class="w">    </span>$<span class="w"> </span>cmake<span class="w"> </span>..
+<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j
 </pre></div>
 </div>
-<p>The configure script will generate the CMake build scripts.</p>
-<p>In the main build directory (e.g., <code class="docutils literal notranslate"><span class="pre">opensn/build/</span></code>), execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j4
+<p>To configure <strong>OpenSn</strong> for building the documentation, in addition to the
+<strong>OpenSn</strong> application, add the <code class="docutils literal notranslate"><span class="pre">-DOPENSN_WITH_DOCS</span></code> option to <code class="docutils literal notranslate"><span class="pre">cmake</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>mkdir<span class="w"> </span>build
+<span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
+<span class="w">    </span>$<span class="w"> </span>cmake<span class="w"> </span>-DOPENSN_WITH_DOCS<span class="o">=</span>ON<span class="w"> </span>..
+<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j
 </pre></div>
 </div>
-<p>You can also use -j8 even if you don’t have 8 processors, the make command
-will use threading where possible.</p>
-<p>Whenever recompilation is needed or the configuration has changed,
-you can run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>./configure.sh<span class="w"> </span>clean
-<span class="w">    </span>$<span class="w"> </span>./configure.sh
-<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j4
-</pre></div>
-</div>
+<p>For more information on building the documentation, see <strong>Step 7</strong> below.</p>
 </section>
 <section id="step-6-run-regression-tests">
-<h2>Step 6 - Run regression tests<a class="headerlink" href="#step-6-run-regression-tests" title="Link to this heading"></a></h2>
-<p>To check if the code compiled correctly execute the test scripts:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>test/run_tests<span class="w"> </span>-d<span class="w"> </span>test/<span class="w"> </span>-j8
-</pre></div>
-</div>
+<h2>Step 6 - Run Regression Tests<a class="headerlink" href="#step-6-run-regression-tests" title="Link to this heading"></a></h2>
+<p>To run the regression tests, simply run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code> from the build directory.
+This will run all of the regression tests in the <code class="docutils literal notranslate"><span class="pre">opensn/test</span></code> directory.</p>
 </section>
-<section id="step-8-opensn-documentation">
-<h2>Step 8 - OpenSn Documentation<a class="headerlink" href="#step-8-opensn-documentation" title="Link to this heading"></a></h2>
-<p>You can either access the documentation online <a class="reference external" href="https://xxx.io">here</a>, or generate it locally.</p>
-<p>To generate the documentation from your local working copy, first make sure
-Doxygen and LaTeX are installed:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>doxygen<span class="w"> </span>texlive
+<section id="step-7-build-the-opensn-documentation">
+<h2>Step 7 - Build the OpenSn Documentation<a class="headerlink" href="#step-7-build-the-opensn-documentation" title="Link to this heading"></a></h2>
+<p>If you configured the <strong>OpenSn</strong> build environment with support for building the
+documentation (see <strong>Step 5</strong>), these instructions will help you install the
+necessary tools and build the documentation.</p>
+<p>To generate the documentation from your local working copy of <strong>OpenSn</strong>, you
+need to use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install the required <strong>Python</strong> packages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>breathe<span class="w"> </span>myst-parser<span class="w"> </span>sphinx_rtd_theme
 </pre></div>
 </div>
-<p>The documentation is contained in the <code class="docutils literal notranslate"><span class="pre">doc/</span></code> folder and can be generated
-using a script provided in that folder:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>doc/
-./YReGenerateDocumentation.sh
+<p>Then, from your <code class="docutils literal notranslate"><span class="pre">build</span></code> directory, you can run the command <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">doc</span></code> to generate
+the documentation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>build
+make<span class="w"> </span>doc
 </pre></div>
 </div>
-<p>Once finished, you can view the generated documentation by opening</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>doc/HTMLdocs/html/index.html
-</pre></div>
-</div>
-<p>in your favorite browser.</p>
+<p>Once the build process has completed, you can view the generated documentation by
+opening <code class="docutils literal notranslate"><span class="pre">opensn/build/doc/index.html</span></code> in your favorite web browser.</p>
 </section>
 </section>
 
@@ -254,7 +227,7 @@ using a script provided in that folder:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="install_linux.html" class="btn btn-neutral float-left" title="Compiling on Personal Linux Machines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="install_linux.html" class="btn btn-neutral float-left" title="Installing on Linux Machines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="install_macos.html" class="btn btn-neutral float-right" title="Compiling on MacOS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

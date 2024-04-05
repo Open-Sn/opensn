@@ -2,20 +2,31 @@
 
 The following instructions were tested on MacOS Sonoma (= version 14).
 
-## Prerequisites
+## Step 1 - Install Development Tools
 
-The following packages should be installed via Homebrew
+The following packages should be installed via [Homebrew](https://brew.sh):
+
 - make
 - cmake
 - gcc
-- wget
+- curl
+- bison
+- m4
+- doxygen
+- sphinx
 
 To install any missing packages use
 ```shell
 brew install <package name>
 ```
+Pay close attention to the output of `brew`. It may be necessary to add
+locations to your `PATH` environment variable to use the newly installed
+utilities.
 
-## Step 1 - MPICH
+**Important:** The `sphinx` package may not be available via `Homebrew`. It
+is only needed to build the OpenSn documentation.
+
+## Step 2 - Install MPICH
 
 Download a suitable version of [MPICH 4+](https://www.mpich.org/static/downloads).
 Versions above 4.0 are recommended.
@@ -61,7 +72,7 @@ export FC="${MPI_DIR}/mpifort"
 export F77="${MPI_DIR}/mpif77"
 ```
 
-## Step 2 - Clone OpenSn
+## Step 3 - Clone OpenSn
 
 Note:  If you want to contribute to OpenSn, it is strongly recommended
 to first fork the OpenSn repository into your own Git account and then to
@@ -76,7 +87,13 @@ or
 git clone https://github.com/<username>/opensn.git /path/to/opensn
 ```
 
-## Step 3 - Set Up the Environment
+## Step 4 - Set Up the Environment
+
+**Important:** XCode 15's linker breaks a number of things in the name of
+progress. It may be necssary to modify `configure_dependencies.py`
+to use PETSc 3.20.x. It may also require that you add the line
+`link_libraries("-ld_classic")` to the OpenSn `CMakeLists.txt`
+file.
 
 Next, run the script to compile the necessary dependencies with
 ```shell
@@ -91,7 +108,7 @@ generated script:
 source /path/to/dependencies/configure_deproots.sh
 ```
 
-## Step 4 - Configure and Build OpenSn
+## Step 5 - Configure and Build OpenSn
 
 OpenSn is configured within a build directory with
 ```shell
@@ -100,9 +117,16 @@ mkdir build
 cd build
 cmake ..
 ```
-This will configure the project for building it.
+To configure with support for building the documentation use
+```shell
+cd /path/to/opensn
+mkdir build
+cd build
+cmake -DOPENSN_WITH_DOCS=ON ..
+```
 In general, the build directory will be within the source tree.
-OpenSn can then be built within the build directory via
+Once configuration is complete, OpenSn can then be built within
+the build directory via
 ```shell
 make -j<N>
 ```
@@ -111,7 +135,7 @@ Note: OpenSn may need to be reconfigured with dependency changes, the addition
 of new files, etc. When this occurs, clear the `build` directory and repeat
 the configuration process above.
 
-## Step 5 - Run Regression Tests
+## Step 6 - Run Regression Tests
 
 To check if the code compiled correctly execute the test scripts:
 ```shell
@@ -119,23 +143,25 @@ cd /path/to/opensn
 test/run_tests -j<N>
 ```
 
-## Step 6 - OpenSn Documentation
+## Step 7 - OpenSn Documentation
 
-The documentation can be found [online](https://xxx.io), or
-generated locally. To generate the documentation locally, first make sure
-doxygen and LaTeX are installed:
-```shell
-sudo apt-get install doxygen texlive
+If you configured the OpenSn build environment with support for building the
+documentation (see **Step 5**), these instructions will help you install the
+necessary tools and build the documentation.
+
+To generate the documentation from your local working copy of OpenSn, you need
+to use `pip3` to install the required Python packages:
+```bash
+pip3 install breathe myst-parser sphinx_rtd_theme
 ```
 
-The documentation is contained in the `doc` directory of the OpenSn source
-tree and can be generated with
-```shell
-./YReGenerateDocumentation.sh
+Then, from your `build` directory, you can run the command `make doc` to generate
+the documentation:
+```bash
+cd build
+make doc
 ```
-from within the `doc` directory. Once finished, the generated documentation
-can be viewed with
-```shell
-doc/HTMLdocs/html/index.html
-```
-in a web browser.
+
+Once the build process has completed, you can view the generated documentation by
+opening
+`opensn/build/doc/index.html` in your favorite web browser.

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compiling on Personal Linux Machines &mdash; OpenSn  documentation</title>
+  <title>Installing on Linux Machines &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Easy install on Ubuntu Machines" href="install_linux_easy.html" />
+    <link rel="next" title="Easy Install on Linux Machines" href="install_linux_easy.html" />
     <link rel="prev" title="OpenSn" href="index.html" /> 
 </head>
 
@@ -46,23 +46,19 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Compiling on Personal Linux Machines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#step-1-installing-gcc-gfortran-and-the-basic-environment">Step 1 - Installing GCC, GFortran and the Basic Environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-2-an-mpi-flavor">Step 2 - An MPI Flavor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-3-petsc">Step 3 - PETSc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-4-install-the-visualization-tool-kit">Step 4 - Install the Visualization Tool Kit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-5-install-lua">Step 5 - Install Lua</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#step-5a-install-ncurses">Step 5a - Install ncurses</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-5b-install-readline">Step 5b - Install readline</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-5c-the-actual-lua-installation">Step 5c - The actual lua installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installing on Linux Machines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-install-development-tools">Step 1 - Install Development Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-install-petsc">Step 2 - Install PETSc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-install-the-visualization-tool-kit-vtk">Step 3 - Install the Visualization Tool Kit (VTK)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-4-install-lua">Step 4 - Install Lua</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-5-configure-environment">Step 5 - Configure Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-6-clone-opensn">Step 6 - Clone OpenSn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-7-build-opensn">Step 7 - Build OpenSn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-8-run-regression-tests">Step 8 - Run Regression Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-9-build-the-opensn-documentation">Step 9 - Build the OpenSn Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#step-6-build-opensn">Step 6 - Build OpenSn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-7-run-regression-tests">Step 7 - Run Regression Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-8-opensn-documentation">Step 8 - OpenSn Documentation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="install_linux_easy.html">Easy install on Ubuntu Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_linux_easy.html">Easy Install on Linux Machines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_macos.html">Compiling on MacOS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_macos_easy.html">Easy Install on MacOS</a></li>
 </ul>
@@ -95,7 +91,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Compiling on Personal Linux Machines</li>
+      <li class="breadcrumb-item active">Installing on Linux Machines</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -104,87 +100,62 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="compiling-on-personal-linux-machines">
-<h1>Compiling on Personal Linux Machines<a class="headerlink" href="#compiling-on-personal-linux-machines" title="Link to this heading"></a></h1>
-<p>The following instructions were tested on Ubuntu 18.04 LTS; other Linux
+  <section class="tex2jax_ignore mathjax_ignore" id="installing-on-linux-machines">
+<h1>Installing on Linux Machines<a class="headerlink" href="#installing-on-linux-machines" title="Link to this heading"></a></h1>
+<p>The following instructions were tested on Ubuntu 22.04.4 LTS. Other Linux
 distributions might require some minor tweaking.</p>
-<p>Some portions of this document indicate the use of <code class="docutils literal notranslate"><span class="pre">sudo</span></code>. If you do not have
-administrative privileges then have you system administrator assist you in
+<p>Some portions of these instructions require the use of <code class="docutils literal notranslate"><span class="pre">sudo</span></code>. If you do not
+have administrative privileges, have your system administrator assist you with
 these steps.</p>
-<section id="step-1-installing-gcc-gfortran-and-the-basic-environment">
-<h2>Step 1 - Installing GCC, GFortran and the Basic Environment<a class="headerlink" href="#step-1-installing-gcc-gfortran-and-the-basic-environment" title="Link to this heading"></a></h2>
-<p>GCC is used to build and install OpenSn.
-GFortran and Python is used during the installation of PETSc
-(which OpenSn uses as a linear algebra backend) and
-OpenGL is required by VTK (used by OpenSn for visualization).
-These packages will therefore also need to be installed.</p>
-<p>Check to see if gcc is installed</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gcc<span class="w"> </span>--version
+<p>Note that these instructions assume you are using the <code class="docutils literal notranslate"><span class="pre">bash</span></code> shell and may
+differ slightly for other shells.</p>
+<section id="step-1-install-development-tools">
+<h2>Step 1 - Install Development Tools<a class="headerlink" href="#step-1-install-development-tools" title="Link to this heading"></a></h2>
+<p>The following packages are required for <strong>OpenSn</strong> installation and development:</p>
+<ol class="arabic simple">
+<li><p>A recent version of clang++/g++ that supports C++17</p></li>
+<li><p>gfortran (required by the BLAS component of PETSc)</p></li>
+<li><p>flex and bison (required by the PTSCOTCH component of PETSc)</p></li>
+<li><p>Python 3 v3.9+ and pip (required by PETSc and OpenSn)</p></li>
+<li><p>ncurses v5 (required by Lua)</p></li>
+<li><p>Git version control system</p></li>
+<li><p>CMake v3.12+</p></li>
+<li><p>MPI (OpenMPI, MPICH, and MVAPICH have been tested)</p></li>
+<li><p>Doxygen and Sphinx (required for generating the OpenSn documentation)</p></li>
+</ol>
+<p>Most of these packages can be installed using the package manager available with
+your Linux distribution (e.g., <code class="docutils literal notranslate"><span class="pre">apt</span></code>, <code class="docutils literal notranslate"><span class="pre">yum</span></code>, etc.). For example, on Ubuntu, you
+can use the following command to install all of these packages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>gfortran<span class="w"> </span>python3<span class="w"> </span><span class="se">\</span>
+git<span class="w"> </span>cmake<span class="w"> </span>libopenmpi-dev<span class="w"> </span>flex<span class="w"> </span>bison<span class="w"> </span><span class="se">\</span>
+libncurses5-dev<span class="w"> </span>python3-pip<span class="w"> </span>doxygen<span class="w"> </span>sphinx
 </pre></div>
 </div>
-<p>This should display something like this:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ gcc --version
-gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0
-Copyright (C) 2021 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+<p>To ensure that all third-party packages use the required MPI compiler wrappers,
+the following environment variables must be set:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">CC</span><span class="o">=</span>mpicc
+<span class="w">    </span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>mpicxx
+<span class="w">    </span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">FC</span><span class="o">=</span>mpifort
 </pre></div>
 </div>
-<p>If this is not displayed then install gcc using the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>gfortran
-</pre></div>
-</div>
-<p>If you still do not get the appropriate version when running either <code class="docutils literal notranslate"><span class="pre">gcc</span> <span class="pre">--version</span></code>
-or <code class="docutils literal notranslate"><span class="pre">gfortran</span> <span class="pre">--version</span></code> then there are many online resources which may be able to
-assist you.</p>
-<p>Now, install the remaining packages needed to build OpenSn and its dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>cmake<span class="w"> </span>python<span class="w"> </span>git<span class="w"> </span>zlib1g-dev<span class="w"> </span>libx11-dev<span class="w"> </span>unzip
-</pre></div>
-</div>
+<p><strong>Important:</strong> We recommend creating a separate directory for building the
+<strong>OpenSn</strong> dependencies.</p>
+<p>The following steps assume that you have created a directory named <code class="docutils literal notranslate"><span class="pre">dependencies</span></code>
+to be used for compiling and installing the required third-party libraries.</p>
 </section>
-<section id="step-2-an-mpi-flavor">
-<h2>Step 2 - An MPI Flavor<a class="headerlink" href="#step-2-an-mpi-flavor" title="Link to this heading"></a></h2>
-<p>Install either OpenMPI or MPICH. If you have MOOSE or deal.ii installed then you
-are probably already set to go. <strong>MPICH</strong> is recommended for better performance.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>mpich
-</pre></div>
-</div>
-<p>To check if this is working properly, simply do the mpi version of checking for
-a C++ compiler:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpicc<span class="w"> </span>--version
-</pre></div>
-</div>
-<p>Which should display the same message the gcc call did, i.e.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ mpicc --version
-gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0
-Copyright (C) 2021 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-</pre></div>
-</div>
-<p>In order to ensure that all installations downstream of this install with the
-required mpi wrappers, do the following:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CC</span><span class="o">=</span>mpicc
-<span class="nb">export</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>mpicxx
-<span class="nb">export</span><span class="w"> </span><span class="nv">FC</span><span class="o">=</span>mpifort
-</pre></div>
-</div>
-</section>
-<section id="step-3-petsc">
-<h2>Step 3 - PETSc<a class="headerlink" href="#step-3-petsc" title="Link to this heading"></a></h2>
+<section id="step-2-install-petsc">
+<h2>Step 2 - Install PETSc<a class="headerlink" href="#step-2-install-petsc" title="Link to this heading"></a></h2>
 <p>The current supported version is
-<a class="reference external" href="https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz">petsc version 3.17.0</a>.</p>
-<p>Return to your <em>projects</em> folder (or whatever you chose to place stuff). Do
-the following. Download and extract the archive file to a folder of your choice
-then navigate into the directory containing the “configure” script.</p>
+<a class="reference external" href="https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz"><strong>PETSc</strong> version 3.17.0+</a>.</p>
+<p>In your <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> directory, install <strong>PETSc</strong> using the following commands:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz
 tar<span class="w"> </span>-zxf<span class="w"> </span>petsc-3.17.0.tar.gz
 <span class="nb">cd</span><span class="w"> </span>petsc-3.17.0
 </pre></div>
 </div>
-<p>and execute the following:</p>
+<p>To configure <strong>PETSc</strong> with the required build options, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./configure<span class="w">  </span><span class="se">\</span>
---prefix<span class="o">=</span><span class="nv">$PWD</span>/../petsc-3.17.0-install<span class="w">  </span><span class="se">\</span>
+--prefix<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span><span class="se">\</span>
 --download-hypre<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
 --with-ssl<span class="o">=</span><span class="m">0</span><span class="w">  </span><span class="se">\</span>
 --with-debugging<span class="o">=</span><span class="m">0</span><span class="w">  </span><span class="se">\</span>
@@ -204,39 +175,26 @@ tar<span class="w"> </span>-zxf<span class="w"> </span>petsc-3.17.0.tar.gz
 <span class="nv">FCFLAGS</span><span class="o">=</span><span class="s1">&#39;-fPIC -fopenmp&#39;</span><span class="w">  </span><span class="se">\</span>
 <span class="nv">F90FLAGS</span><span class="o">=</span><span class="s1">&#39;-fPIC -fopenmp&#39;</span><span class="w">  </span><span class="se">\</span>
 <span class="nv">F77FLAGS</span><span class="o">=</span><span class="s1">&#39;-fPIC -fopenmp&#39;</span><span class="w">  </span><span class="se">\</span>
-<span class="nv">COPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3 -march=native -mtune=native&#39;</span><span class="w">  </span><span class="se">\</span>
-<span class="nv">CXXOPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3 -march=native -mtune=native&#39;</span><span class="w">  </span><span class="se">\</span>
-<span class="nv">FOPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3 -march=native -mtune=native&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">COPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">CXXOPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">FOPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3&#39;</span><span class="w">  </span><span class="se">\</span>
 <span class="nv">PETSC_DIR</span><span class="o">=</span><span class="nv">$PWD</span>
 </pre></div>
 </div>
-<p>If the configuration fails then consult PETSc’s user documentation.</p>
-<p>Upon completion of the configure step, PETSc will provide the make command
-that you should use. Execute this command.</p>
-<p>After a successful make PETSc should indicate the command used to install
-the header files and libraries. Execute the associated command as well.</p>
-<p>To test whether the system has been installed correctly execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nb">test</span>
-</pre></div>
-</div>
-<p>The final step is to generate the environment variable for the install
-directory of PETSc:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PETSC_ROOT</span><span class="o">=</span><span class="nv">$PWD</span>/install
-</pre></div>
-</div>
-<p>Again, this is also something you’d like to add to your bash profile.</p>
+<p>If the configuration fails, consult <strong>PETSc</strong>’s user documentation.</p>
+<p>Follow the <strong>PETSc</strong> build prompts to complete the <strong>PETSc</strong> installation.</p>
 </section>
-<section id="step-4-install-the-visualization-tool-kit">
-<h2>Step 4 - Install the Visualization Tool Kit<a class="headerlink" href="#step-4-install-the-visualization-tool-kit" title="Link to this heading"></a></h2>
-<p>In your projects folder install VTK using the following commands:</p>
+<section id="step-3-install-the-visualization-tool-kit-vtk">
+<h2>Step 3 - Install the Visualization Tool Kit (VTK)<a class="headerlink" href="#step-3-install-the-visualization-tool-kit-vtk" title="Link to this heading"></a></h2>
+<p>In your <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> directory, install <strong>VTK</strong> using the following commands:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>VTK
 <span class="nb">cd</span><span class="w"> </span>VTK
-wget<span class="w"> </span>https://www.vtk.org/files/release/9.1/VTK-9.1.0.tar.gz
-tar<span class="w"> </span>-zxf<span class="w"> </span>VTK-9.1.0.tar.gz
-<span class="nb">cd</span><span class="w"> </span>VTK-9.1.0
+wget<span class="w"> </span>https://www.vtk.org/files/release/9.3/VTK-9.3.0.tar.gz
+tar<span class="w"> </span>-zxf<span class="w"> </span>VTK-9.3.0.tar.gz
+<span class="nb">cd</span><span class="w"> </span>VTK-9.3.0
 mkdir<span class="w"> </span>build
 <span class="nb">cd</span><span class="w"> </span>build
-cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$PWD</span>/../install<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
+cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
 -DBUILD_SHARED_LIBS:BOOL<span class="o">=</span>ON<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
 -DVTK_Group_MPI:BOOL<span class="o">=</span>ON<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
 -DVTK_GROUP_ENABLE_Qt<span class="o">=</span>NO<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
@@ -250,120 +208,92 @@ cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span
 <span class="w"> </span>../
 </pre></div>
 </div>
-<p>This will take a while after which you need to execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j4<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install
+<p>After <code class="docutils literal notranslate"><span class="pre">cmake</span></code> has completed configuring the build, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install
 </pre></div>
 </div>
-<p>This will also take a while. Finally, export the <em>VTK_DIR</em> variable:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">VTK_DIR</span><span class="o">=</span><span class="nv">$PWD</span>/install
-</pre></div>
-</div>
-<p>Again, this is also something you’d like to add to your bash profile.</p>
+<p>to install <strong>VTK</strong>.</p>
 </section>
-<section id="step-5-install-lua">
-<h2>Step 5 - Install Lua<a class="headerlink" href="#step-5-install-lua" title="Link to this heading"></a></h2>
-<section id="step-5a-install-ncurses">
-<h3>Step 5a - Install ncurses<a class="headerlink" href="#step-5a-install-ncurses" title="Link to this heading"></a></h3>
-<p>Navigate to a folder to install <code class="docutils literal notranslate"><span class="pre">ncurses</span></code></p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://invisible-mirror.net/archives/ncurses/ncurses-6.1.tar.gz
-tar<span class="w"> </span>-zxf<span class="w"> </span>ncurses-6.1.tar.gz
-<span class="nb">cd</span><span class="w"> </span>ncurses-6.1
-./configure<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$PWD</span>/build
+<section id="step-4-install-lua">
+<h2>Step 4 - Install Lua<a class="headerlink" href="#step-4-install-lua" title="Link to this heading"></a></h2>
+<p>Download and extract <strong>Lua</strong> version 5.3.6+ from https://www.lua.org to
+<code class="docutils literal notranslate"><span class="pre">dependencies</span></code>. Install <strong>Lua</strong> as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make<span class="w"> </span>linux<span class="w"> </span><span class="nv">MYCLFAGS</span><span class="o">=</span>-fPIC<span class="w"> </span>-j
+$<span class="w"> </span>make<span class="w"> </span>install<span class="w"> </span><span class="nv">INSTALL_TOP</span><span class="o">=</span>/path/to/dependencies/directory
 </pre></div>
 </div>
-<p>After the configure completes then</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j4
-</pre></div>
-</div>
-<p>and then</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>install
-</pre></div>
-</div>
+<p>If the install complains about missing <strong>readline</strong> includes or libraries, it
+may be necessary to install <strong>readline</strong> and <strong>ncurses</strong>.</p>
 </section>
-<section id="step-5b-install-readline">
-<h3>Step 5b - Install readline<a class="headerlink" href="#step-5b-install-readline" title="Link to this heading"></a></h3>
-<p>Navigate to a folder to install <code class="docutils literal notranslate"><span class="pre">readline</span></code></p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>ftp://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz
-tar<span class="w"> </span>-zxf<span class="w"> </span>readline-8.0.tar.gz
-<span class="nb">cd</span><span class="w"> </span>readline-8.0
-./configure<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$PWD</span>/build
+<section id="step-5-configure-environment">
+<h2>Step 5 - Configure Environment<a class="headerlink" href="#step-5-configure-environment" title="Link to this heading"></a></h2>
+<p>Before compiling <strong>OpenSn</strong>, you must add the location of the third-party
+libraries to your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> environment variable. This can be
+accomplished with the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/dependencies/directory:<span class="nv">$CMAKE_PREFIX_PATH</span><span class="sb">`</span>
 </pre></div>
 </div>
-<p>After the configure completes then</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j4
+<p><strong>Important:</strong> It may be a good idea to add the <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> variable to
+your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> file so that you don’t need to specify the path every time you
+need to re-run <code class="docutils literal notranslate"><span class="pre">cmake</span></code>.</p>
+</section>
+<section id="step-6-clone-opensn">
+<h2>Step 6 - Clone OpenSn<a class="headerlink" href="#step-6-clone-opensn" title="Link to this heading"></a></h2>
+<p><strong>Important:</strong>  If you want to contribute to <strong>OpenSn</strong>, it is strongly
+recommended that you first fork the <strong>OpenSn</strong> repository then clone your fork.</p>
+<p>To clone the <strong>OpenSn</strong> repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Open-Sn/opensn.git
 </pre></div>
 </div>
-<p>and then</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>install
+<p>To clone your fork of <strong>OpenSn</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;username&gt;/opensn.git
 </pre></div>
 </div>
 </section>
-<section id="step-5c-the-actual-lua-installation">
-<h3>Step 5c - The actual lua installation<a class="headerlink" href="#step-5c-the-actual-lua-installation" title="Link to this heading"></a></h3>
-<p>Download and extract <strong>Lua</strong> version 5.3.5 from https://www.lua.org.
-Before installing <strong>Lua</strong> edit the Makefile and set INSTALL_TOP to your desired
-install location.  Install <strong>Lua</strong> as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">CPATH</span><span class="o">=</span>&lt;path-to-readline-include&gt;:<span class="nv">$CPATH</span>
-$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">LIBRARY_PATH</span><span class="o">=</span>&lt;path-to-readline-lib&gt;:&lt;path-to-ncurses-lib&gt;:<span class="nv">$LIBRARY_PATH</span>
-$<span class="w"> </span>make<span class="w"> </span>linux
-$<span class="w"> </span>make<span class="w"> </span><span class="nb">local</span>
+<section id="step-7-build-opensn">
+<h2>Step 7 - Build OpenSn<a class="headerlink" href="#step-7-build-opensn" title="Link to this heading"></a></h2>
+<p>To build <strong>OpenSn</strong>, create a build directory in the top-level <strong>OpenSn</strong>
+directory and run <code class="docutils literal notranslate"><span class="pre">cmake</span></code> to generate the build files and <code class="docutils literal notranslate"><span class="pre">make</span></code> to compile
+<strong>OpenSn</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>mkdir<span class="w"> </span>build
+<span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
+<span class="w">    </span>$<span class="w"> </span>cmake<span class="w"> </span>..
+<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j
 </pre></div>
 </div>
-<p>If the install complains about missing <strong>readline</strong> includes or libraries, it may
-be necessary to install <strong>readline</strong> first, that would probably require
-<strong>ncurses</strong> in turn.</p>
-<p>Set the LUA_ROOT environment variable to the <strong>Lua</strong> install location:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nv">$export</span><span class="w"> </span><span class="nv">LUA_ROOT</span><span class="o">=</span>/Path/to/Lua
+<p>To configure <strong>OpenSn</strong> for building the documentation, in addition to the
+<strong>OpenSn</strong> application, add the <code class="docutils literal notranslate"><span class="pre">-DOPENSN_WITH_DOCS</span></code> option to <code class="docutils literal notranslate"><span class="pre">cmake</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>mkdir<span class="w"> </span>build
+<span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
+<span class="w">    </span>$<span class="w"> </span>cmake<span class="w"> </span>-DOPENSN_WITH_DOCS<span class="o">=</span>ON<span class="w"> </span>..
+<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j
 </pre></div>
 </div>
-<p>Add the export command to your bash profile.</p>
+<p>For more information on building the documentation, see <strong>Step 9</strong> below.</p>
 </section>
+<section id="step-8-run-regression-tests">
+<h2>Step 8 - Run Regression Tests<a class="headerlink" href="#step-8-run-regression-tests" title="Link to this heading"></a></h2>
+<p>To run the regression tests, simply run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code> from the build directory.
+This will run all of the regression tests in the <code class="docutils literal notranslate"><span class="pre">opensn/test</span></code> directory.</p>
 </section>
-<section id="step-6-build-opensn">
-<h2>Step 6 - Build OpenSn<a class="headerlink" href="#step-6-build-opensn" title="Link to this heading"></a></h2>
-<p>Clone the <strong>OpenSn</strong> repository.  Go the folder where you want to keep OpenSn relevant stuff:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Open-Sn/opensn.git<span class="w"> </span>/path/to/opensn
+<section id="step-9-build-the-opensn-documentation">
+<h2>Step 9 - Build the OpenSn Documentation<a class="headerlink" href="#step-9-build-the-opensn-documentation" title="Link to this heading"></a></h2>
+<p>If you configured the <strong>OpenSn</strong> build environment with support for building the
+documentation (see <strong>Step 7</strong>), these instructions will help you install the
+necessary tools and build the documentation.</p>
+<p>To generate the documentation from your local working copy of <strong>OpenSn</strong>, you
+need to use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install the required <strong>Python</strong> packages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>breathe<span class="w"> </span>myst-parser<span class="w"> </span>sphinx_rtd_theme
 </pre></div>
 </div>
-<p>Go to the opensn folder and type:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>opensn
-<span class="w">    </span>$<span class="w"> </span>./configure.sh
+<p>Then, from your <code class="docutils literal notranslate"><span class="pre">build</span></code> directory, you can run the command <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">doc</span></code> to generate
+the documentation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>build
+make<span class="w"> </span>doc
 </pre></div>
 </div>
-<p>The configure script will generate the CMake build scripts.</p>
-<p>In the main build directory (e.g., <code class="docutils literal notranslate"><span class="pre">opensn/build/</span></code>), execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j4
-</pre></div>
-</div>
-<p>You can also use -j8 even if you don’t have 8 processors, the make command
-will use threading where possible.</p>
-</section>
-<section id="step-7-run-regression-tests">
-<h2>Step 7 - Run Regression Tests<a class="headerlink" href="#step-7-run-regression-tests" title="Link to this heading"></a></h2>
-<p>To check if the code compiled correctly, execute the test scripts:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>test/run_tests<span class="w"> </span>-d<span class="w"> </span>test/<span class="w"> </span>-j8
-</pre></div>
-</div>
-</section>
-<section id="step-8-opensn-documentation">
-<h2>Step 8 - OpenSn Documentation<a class="headerlink" href="#step-8-opensn-documentation" title="Link to this heading"></a></h2>
-<p>You can either access the documentation online <a class="reference external" href="https://xxx.io">here</a>, or generate it locally.</p>
-<p>To generate the documentation from your local working copy, first make sure
-Doxygen and LaTeX are installed:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>doxygen<span class="w"> </span>texlive
-</pre></div>
-</div>
-<p>The documentation is contained in the <em>doc</em> folder and can be generated
-using a script provided in that folder:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>doc/
-./YReGenerateDocumentation.sh
-</pre></div>
-</div>
-<p>Once finished, you can view the generated documentation by opening</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>doc/HTMLdocs/html/index.html
-</pre></div>
-</div>
-<p>in your favorite browser.</p>
+<p>Once the build process has completed, you can view the generated documentation by
+opening <code class="docutils literal notranslate"><span class="pre">opensn/build/doc/index.html</span></code> in your favorite web browser.</p>
 </section>
 </section>
 
@@ -372,7 +302,7 @@ using a script provided in that folder:</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="OpenSn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="install_linux_easy.html" class="btn btn-neutral float-right" title="Easy install on Ubuntu Machines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="install_linux_easy.html" class="btn btn-neutral float-right" title="Easy Install on Linux Machines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
