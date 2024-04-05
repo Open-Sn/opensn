@@ -561,11 +561,6 @@ try:
     # Create envvars file
     module_file = open(module_file_name, "w")
 
-    #lua_version = package_info["lua"][VERSION]
-    #petsc_version = package_info["petsc"][VERSION]
-    #vtk_version = package_info["vtk"][VERSION]
-    #caliper_version = package_info["caliper"][VERSION]
-
     module_file.write(f'export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"\n')
     module_file.close()
 
