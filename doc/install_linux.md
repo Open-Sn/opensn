@@ -143,7 +143,34 @@ $ make install INSTALL_TOP=/path/to/dependencies/directory
 If the install complains about missing **readline** includes or libraries, it
 may be necessary to install **readline** and **ncurses**.
 
-## Step 5 - Configure Environment
+## Step 5 - Install Caliper
+
+In your `dependencies` directory, install **Caliper** using the following commands:
+
+```bash
+mkdir caliper
+cd caliper
+wget https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz
+tar -zxf v2.10.0.tar.gz
+cd Caliper-2.10.0
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/dependencies/directory  + \
+-DWITH_MPI=ON \
+-DWITH_KOKKOS=OFF \
+ ../
+```
+
+After `cmake` has completed configuring the build, run:
+
+```bash
+make -j && make install
+```
+
+to install **Caliper**.
+
+
+## Step 6 - Configure Environment
 
 Before compiling **OpenSn**, you must add the location of the third-party
 libraries to your `CMAKE_PREFIX_PATH` environment variable. This can be
@@ -157,7 +184,7 @@ accomplished with the following command:
 your `.bashrc` file so that you don't need to specify the path every time you
 need to re-run `cmake`.
 
-## Step 6 - Clone OpenSn
+## Step 7 - Clone OpenSn
 
 **Important:**  If you want to contribute to **OpenSn**, it is strongly
 recommended that you first fork the **OpenSn** repository then clone your fork.
@@ -174,7 +201,7 @@ To clone your fork of **OpenSn**:
     $ git clone https://github.com/<username>/opensn.git
 ```
 
-## Step 7 - Build OpenSn
+## Step 8 - Build OpenSn
 
 To build **OpenSn**, create a build directory in the top-level **OpenSn**
 directory and run `cmake` to generate the build files and `make` to compile
@@ -197,17 +224,17 @@ To configure **OpenSn** for building the documentation, in addition to the
     $ make -j
 ```
 
-For more information on building the documentation, see **Step 9** below.
+For more information on building the documentation, see **Step 10** below.
 
-## Step 8 - Run Regression Tests
+## Step 9 - Run Regression Tests
 
 To run the regression tests, simply run `make test` from the build directory.
 This will run all of the regression tests in the `opensn/test` directory.
 
-## Step 9 - Build the OpenSn Documentation
+## Step 10 - Build the OpenSn Documentation
 
 If you configured the **OpenSn** build environment with support for building the
-documentation (see **Step 7**), these instructions will help you install the
+documentation (see **Step 8**), these instructions will help you install the
 necessary tools and build the documentation.
 
 To generate the documentation from your local working copy of **OpenSn**, you

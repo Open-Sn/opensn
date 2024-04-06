@@ -183,7 +183,33 @@ export LUA_ROOT="/path/to/lua/install"
 export CMAKE_PREFIX_PATH="${LUA_ROOT}:${CMAKE_PREFIX_PATH}"
 ```
 
-## Step 6 - Configure and Build OpenSn
+## Step 6 - Install Caliper 
+
+Download [Caliper 2.10.0](https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz) or
+into a suitable location and upack it into `/path/to/caliper`. Assuming Caliper will
+be built in `/path/to/caliper/build` and installed in `/path/to/caliper/install`, execute
+the following to configure, build, and install Caliper:
+```shell
+mkdir -p /path/to/caliper/build
+cd /path/to/caliper/build
+
+cmake \
+-DCMAKE_INSTALL_PREFIX=/path/to/caliper/install \
+-DWITH_MPI=ON \
+-DWITH_KOKKOS=OFF \
+/path/to/caliper
+
+make -j<N>
+make install
+
+After a successful install, set the following environment variables in the
+`~/.bashrc` or `~/.bash_profile` script:
+```shell
+export CALIPER_DIR="/path/to/caliper/install"
+export CMAKE_PREFIX_PATH="${CALIPER_DIR}:${CMAKE_PREFIX_PATH}"
+```
+
+## Step 7 - Configure and Build OpenSn
 
 Note:  If you want to contribute to OpenSn, it is strongly recommended
 to first fork the OpenSn repository into your own Git account and then to
@@ -215,7 +241,7 @@ Note: OpenSn may need to be reconfigured with dependency changes, the addition
 of new files, etc. When this occurs, clear the `build` directory and repeat
 the configuration process above.
 
-## Step 6 - Run Regression Tests
+## Step 8 - Run Regression Tests
 
 To check if the code compiled correctly execute the test scripts:
 ```shell
@@ -223,7 +249,7 @@ cd /path/to/opensn
 test/run_tests -j<N>
 ```
 
-## Step 8 - OpenSn Documentation
+## Step 9 - OpenSn Documentation
 
 The documentation can be found [online](https://xxx.io), or
 generated locally. To generate the documentation locally, first make sure
