@@ -1,5 +1,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/reflecting_boundary.h"
 #include "framework/logging/log.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {

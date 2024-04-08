@@ -43,7 +43,6 @@ public:
   int gmres_restart_intvl_ = 30;
 
   bool allow_cycles_ = false;
-  bool log_sweep_events_ = false;
 
   bool apply_wgdsa_ = false;
   bool apply_tgdsa_ = false;

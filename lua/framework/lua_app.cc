@@ -6,10 +6,12 @@
 #include "framework/utils/timer.h"
 #include "framework/event_system/event.h"
 #include "framework/event_system/system_wide_event_publisher.h"
+#include "petsc.h"
+#include "caliper/cali.h"
+#include <string>
 #ifndef NDEBUG
 #include <unistd.h>
 #endif
-#include "petsc.h"
 
 using namespace opensn;
 
@@ -25,8 +27,10 @@ const std::string command_line_help_string_ =
   "i.e. x=2 or y=[[\"string\"]]\n"
   "     --allow-petsc-error-handler Allows petsc error handler.\n"
   "     --suppress-color            Suppresses the printing of color.\n"
-  "                                 useful for unit tests requiring a diff.\n"
+  "                                 Useful for unit tests requiring a diff.\n"
   "     --dump-object-registry      Dumps the object registry.\n"
+  "     --caliper                   Enable Caliper timing/memory report.\n"
+  "     --caliper=string            Provide a user-defined Caliper configuration.\n"
   "\n\n\n";
 
 LuaApp::LuaApp(const mpi::Communicator& comm)
@@ -53,19 +57,19 @@ LuaApp::InitPetSc(int argc, char** argv)
 int
 LuaApp::Run(int argc, char** argv)
 {
+  opensn::log.Log() << opensn::name << " version " << GetVersionStr() << "\n"
+                    << Timer::GetLocalDateTimeString() << " Running " << opensn::name << " with "
+                    << opensn::mpi_comm.size() << " processes.\n"
+                    << opensn::name << " number of arguments supplied: " << argc - 1;
+  opensn::log.LogAll();
+
   InitPetSc(argc, argv);
+  ParseArguments(argc, argv);
   opensn::Initialize();
   console.PostMPIInfo(opensn::mpi_comm.rank(), opensn::mpi_comm.size());
-
-  opensn::log.Log() << opensn::name << " version " << GetVersionStr();
-  opensn::log.Log() << Timer::GetLocalDateTimeString() << " Running " << opensn::name << " with "
-                    << opensn::mpi_comm.size() << " processes.";
-  opensn::log.Log() << opensn::name << " number of arguments supplied: " << argc - 1;
-  opensn::log.LogAll();
   console.FlushConsole();
 
   int error_code = 0;
-  ParseArguments(argc, argv);
   if (not termination_posted_)
   {
     if (sim_option_interactive_)
@@ -77,9 +81,13 @@ LuaApp::Run(int argc, char** argv)
   opensn::Finalize();
   PetscFinalize();
 
-  opensn::log.Log() << "Elapsed execution time: " << program_timer.GetTimeString();
-  opensn::log.Log() << Timer::GetLocalDateTimeString() << " " << opensn::name
+  opensn::log.Log() << "Elapsed execution time: " << program_timer.GetTimeString() << "\n"
+                    << Timer::GetLocalDateTimeString() << " " << opensn::name
                     << " finished execution.";
+
+  if (opensn::mpi_comm.rank() == 0)
+    std::cout << std::endl;
+  cali_mgr.flush();
 
   return error_code;
 }
@@ -112,11 +120,35 @@ LuaApp::ParseArguments(int argc, char** argv)
       dump_registry_ = true;
       termination_posted_ = true;
     }
+    else if (argument.find("--caliper") != std::string::npos)
+    {
+      std::string caliper_arg(argv[i]);
+      if (caliper_arg.length() > 9)
+      {
+        if (caliper_arg[9] == '=')
+        {
+          std::string config = caliper_arg.substr(10, caliper_arg.length());
+          std::string error = cali_mgr.check(config.c_str());
+          if (!error.empty())
+          {
+            std::cerr << "Caliper - " << error << std::endl;
+            Exit(EXIT_FAILURE);
+          }
+          else
+          {
+            opensn::use_caliper = true;
+            opensn::cali_config = config;
+          }
+        }
+      }
+      else
+        opensn::use_caliper = true;
+    }
     // No-graphics option
     else if (argument.find("-b") != std::string::npos)
     {
       sim_option_interactive_ = false;
-    } //-b
+    }
     // Verbosity
     else if (argument.find("-v") != std::string::npos)
     {
@@ -143,14 +175,13 @@ LuaApp::ParseArguments(int argc, char** argv)
           Exit(EXIT_FAILURE);
         }
       }
-
-    } //-v
+    }
     else if ((argument.find('=') == std::string::npos) and (not input_file_found))
     {
       opensn::input_path = argument;
       input_file_found = true;
       sim_option_interactive_ = false;
-    } // no =
+    }
     else if (argument.find('=') != std::string::npos)
     {
       console.GetCommandBuffer().push_back(argument);

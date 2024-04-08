@@ -2,6 +2,7 @@
 #include "framework/logging/log.h"
 #include "framework/math/math.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -11,6 +12,8 @@ namespace lbs
 AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data)
   : FLUDS(num_groups, num_angles, common_data.GetSPDS()), common_data_(common_data)
 {
+  CALI_CXX_MARK_SCOPE("AAH_FLUDS::AAH_FLUDS");
+
   // Adjusting for different group aggregate
   for (auto& val : common_data_.local_psi_n_block_stride)
     local_psi_Gn_block_strideG.push_back(val * num_groups_);
@@ -146,11 +149,13 @@ AAH_FLUDS::GetPrelocIFaceDOFCount(int prelocI) const
 {
   return common_data_.prelocI_face_dof_count[prelocI];
 }
+
 size_t
 AAH_FLUDS::GetDelayedPrelocIFaceDOFCount(int prelocI) const
 {
   return common_data_.delayed_prelocI_face_dof_count[prelocI];
 }
+
 size_t
 AAH_FLUDS::GetDeplocIFaceDOFCount(int deplocI) const
 {

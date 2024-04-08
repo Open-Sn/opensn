@@ -1,9 +1,7 @@
 #include "framework/lua.h"
-#include "framework/memory_usage.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include "unpartition_mesh_lua_utils.h"
 #include "framework/console/console.h"
 

@@ -1,14 +1,14 @@
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
-#include "framework/object_factory.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/timer.h"
+#include "framework/logging/log.h"
+#include "framework/object_factory.h"
+#include "framework/runtime.h"
 #include <iomanip>
 
 namespace opensn
@@ -245,9 +245,6 @@ XXPowerIterationKEigenSCDSA::Execute()
     SetLBSScatterSource(phi_temp, additive, suppress_wg_scat);
   };
 
-  const size_t tag_SCDSA_solve_time = log.GetRepeatingEventTag("SCDSA_solve_time");
-  const size_t tag_sweep_timing = log.GetRepeatingEventTag("Sweep Timing");
-
   k_eff_ = 1.0;
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
@@ -311,10 +308,8 @@ XXPowerIterationKEigenSCDSA::Execute()
         auto Ss = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
         // Solve the diffusion system
-        log.LogEvent(tag_SCDSA_solve_time, Logger::EventType::EVENT_BEGIN);
         diffusion_solver_->Assemble_b(Ss + Sfaux + Ss_res - Sf0_ell);
         diffusion_solver_->Solve(epsilon_kp1, true);
-        log.LogEvent(tag_SCDSA_solve_time, Logger::EventType::EVENT_END);
 
         epsilon_k = epsilon_kp1;
       }
@@ -379,14 +374,7 @@ XXPowerIterationKEigenSCDSA::Execute()
   log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
   log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
             << " (num_TrOps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
-            << "\n"
-            << "        Diffusion solve time  :        "
-            << log.ProcessEvent(tag_SCDSA_solve_time, Logger::EventOperation::TOTAL_DURATION) *
-                 1.0e-6
-            << "s\n"
-            << "        Total sweep time      :        "
-            << log.ProcessEvent(tag_sweep_timing, Logger::EventOperation::TOTAL_DURATION);
-  log.Log() << "\n";
+            << "\n";
 
   if (lbs_solver_.Options().use_precursors)
   {

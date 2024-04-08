@@ -1,10 +1,9 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/source_functions/source_function.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -22,11 +21,10 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                            const std::vector<double>& densities,
                            const SourceFlags source_flags)
 {
+  CALI_CXX_MARK_SCOPE("SourceFunction::operator");
+
   if (source_flags.Empty())
     return;
-
-  const size_t source_event_tag = lbs_solver_.GetSourceEventTag();
-  log.LogEvent(source_event_tag, Logger::EventType::EVENT_BEGIN);
 
   apply_fixed_src_ = (source_flags & APPLY_FIXED_SOURCES);
   apply_wgs_scatter_src_ = (source_flags & APPLY_WGS_SCATTER_SOURCES);
@@ -150,8 +148,6 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   }       // for cell
 
   AddAdditionalSources(groupset, q, phi, source_flags);
-
-  log.LogEvent(source_event_tag, Logger::EventType::EVENT_END);
 }
 
 double

@@ -18,6 +18,7 @@ target_link_libraries(libopensnlua
     ${PETSC_LIBRARY}
     MPI::MPI_CXX
     libopensn
+    caliper
 )
 
 target_compile_definitions(libopensnlua PRIVATE OPENSN_WITH_LUA)

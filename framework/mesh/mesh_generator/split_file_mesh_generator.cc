@@ -1,16 +1,11 @@
 #include "framework/mesh/mesh_generator/split_file_mesh_generator.h"
-
-#include "framework/data_types/byte_array.h"
-#include "framework/utils/utils.h"
-
-#include "framework/runtime.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-
+#include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-
+#include "framework/utils/utils.h"
 #include "framework/object_factory.h"
-
+#include "framework/runtime.h"
 #include <filesystem>
 
 namespace opensn
@@ -108,8 +103,7 @@ SplitFileMeshGenerator::Execute()
   {
     log.Log0Warning() << "After creating a split-mesh with mpi-processes < "
                          "num_parts the program will now auto terminate. This is not an error "
-                         "and is the default behavior for the SplitFileMeshGenerator.\n"
-                      << log.GetTimingBlock(opensn::name).MakeGraphString();
+                         "and is the default behavior for the SplitFileMeshGenerator.\n";
     Exit(EXIT_SUCCESS);
   }
 
@@ -137,16 +131,9 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
   const auto& raw_cells = umesh.GetRawCells();
   const auto& raw_vertices = umesh.GetVertices();
 
-  auto& t_write = log.CreateOrGetTimingBlock("FileMeshGenerator::WriteSplitMesh");
-  auto& t_sorting = log.CreateOrGetTimingBlock("Sorting data", "FileMeshGenerator::WriteSplitMesh");
-  auto& t_cells = log.CreateOrGetTimingBlock("WriteCells", "FileMeshGenerator::WriteSplitMesh");
-  auto& t_verts = log.CreateOrGetTimingBlock("WriteVerts", "FileMeshGenerator::WriteSplitMesh");
-  auto& t_serialize = log.CreateOrGetTimingBlock("Serialize");
-
   uint64_t aux_counter = 0;
   for (int pid = 0; pid < num_parts; ++pid)
   {
-    t_write.TimeSectionBegin();
     const std::filesystem::path file_path =
       dir_path.string() + "/" + file_prefix_ + "_" + std::to_string(pid) + ".cmesh";
 
@@ -155,8 +142,6 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     OpenSnLogicalErrorIf(not ofile.is_open(), "Failed to open " + file_path.string());
 
     // Appropriate cells and vertices to the current part being writting
-    t_sorting.TimeSectionBegin();
-
     std::vector<uint64_t> local_cells_needed;
     std::set<uint64_t> cells_needed;
     std::set<uint64_t> vertices_needed;
@@ -194,7 +179,6 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
         }
       }
     }
-    t_sorting.TimeSectionEnd();
 
     if (verbosity_level_ >= 2)
       log.Log() << "Writing part " << pid << " num_local_cells=" << local_cells_needed.size();
@@ -232,13 +216,10 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     serial_data.Data().reserve(BUFFER_SIZE * 2);
     for (const auto& cell_global_id : cells_needed)
     {
-      t_cells.TimeSectionBegin();
-      t_serialize.TimeSectionBegin();
       const auto& cell = *raw_cells[cell_global_id];
       serial_data.Write(static_cast<int>(cell_pids[cell_global_id])); // int
       serial_data.Write(cell_global_id);                              // uint64_t
       SerializeCell(cell, serial_data);
-      t_serialize.TimeSectionEnd();
       if (serial_data.Size() > BUFFER_SIZE)
       {
         ofile.write((char*)serial_data.Data().data(), static_cast<int>(serial_data.Size()));
@@ -246,7 +227,6 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
         serial_data.Clear();
         serial_data.Data().reserve(cap);
       }
-      t_cells.TimeSectionEnd();
     }
     if (serial_data.Size() > 0)
     {
@@ -255,7 +235,6 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     }
 
     // Write vertices
-    t_verts.TimeSectionBegin();
     for (const uint64_t vid : vertices_needed)
     {
       serial_data.Write(vid); // uint64_t
@@ -271,10 +250,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       ofile.write((char*)serial_data.Data().data(), static_cast<int>(serial_data.Size()));
       serial_data.Clear();
     }
-    t_verts.TimeSectionEnd();
 
     ofile.close();
-    t_write.TimeSectionEnd();
 
     const double fraction_complete = static_cast<double>(pid) / static_cast<double>(num_parts);
     if (fraction_complete >= static_cast<double>(aux_counter + 1) * 0.1)

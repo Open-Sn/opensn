@@ -4,8 +4,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 #include "framework/mpi/mpi_comm_set.h"
 #include "framework/logging/log.h"
-#include "framework/memory_usage.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -72,6 +72,8 @@ AAH_ASynchronousCommunicator::Reset()
 void
 AAH_ASynchronousCommunicator::BuildMessageStructure()
 {
+  CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::BuildMessageStructure");
+
   const auto& spds = fluds_.GetSPDS();
   const auto& fluds = dynamic_cast<AAH_FLUDS&>(fluds_);
 
@@ -188,6 +190,8 @@ AAH_ASynchronousCommunicator::InitializeDelayedUpstreamData()
 bool
 AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 {
+  CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::ReceiveDelayedData");
+
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
   const size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
@@ -223,6 +227,8 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 AngleSetStatus
 AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 {
+  CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::ReceiveUpstreamPsi");
+
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
   const size_t num_dependencies = spds.GetLocationDependencies().size();
@@ -265,6 +271,8 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 void
 AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
 {
+  CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::SendDownstreamPsi");
+
   const auto& spds = fluds_.GetSPDS();
   const auto& location_successors = spds.GetLocationSuccessors();
   const size_t num_successors = location_successors.size();
@@ -295,13 +303,6 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
 
     // Resize FLUDS non-local outgoing data
     fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, spds.GetLocationSuccessors().size());
-
-    // Make a memory query
-    double memory_mb = GetMemoryUsageInMB();
-    std::shared_ptr<Logger::EventInfo> memory_event_info =
-      std::make_shared<Logger::EventInfo>(memory_mb);
-    log.LogEvent(
-      Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventType::SINGLE_OCCURRENCE, memory_event_info);
 
     data_initialized_ = true;
   }

@@ -1,5 +1,6 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -26,6 +27,8 @@ WGSContext::WGSContext(LBSSolver& lbs_solver,
 int
 WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
 {
+  CALI_CXX_MARK_SCOPE("WGSContext::MatrixAction");
+
   WGSContext* gs_context_ptr;
   MatShellGetContext(matrix, &gs_context_ptr);
 

@@ -92,6 +92,11 @@ if(NOT ${PETSC_HAVE_PTSCOTCH} MATCHES 1)
     message(FATAL_ERROR "PETSc has not been configured with PTSCOTCH\n")
 endif()
 
+find_package(caliper REQUIRED)
+if(caliper_FOUND)
+    message(STATUS "Found Caliper: ${caliper_DIR}")
+endif() 
+
 # compile options
 set(OPENSN_CXX_FLAGS)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -130,12 +135,14 @@ target_include_directories(libopensn
     PUBLIC
     ${LUA_INCLUDE_DIR}
     ${PETSC_INCLUDE_DIR}
+    ${caliper_INCLUDE_DIR}
 )
 
 target_link_libraries(libopensn
     PRIVATE
     ${PETSC_LIBRARY}
     ${VTK_LIBRARIES}
+    caliper
     MPI::MPI_CXX
 )
 if(OPENSN_WITH_LUA)

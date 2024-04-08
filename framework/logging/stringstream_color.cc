@@ -1,5 +1,4 @@
 #include "framework/logging/stringstream_color.h"
-
 #include "framework/runtime.h"
 
 namespace opensn

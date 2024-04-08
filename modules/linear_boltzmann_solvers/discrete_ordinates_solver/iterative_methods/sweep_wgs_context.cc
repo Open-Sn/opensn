@@ -1,13 +1,10 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/iterative_methods/sweep_wgs_context.h"
-
-#include <petscksp.h>
-
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
+#include <petscksp.h>
+#include "caliper/cali.h"
 #include <iomanip>
 
 namespace opensn
@@ -37,6 +34,8 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
 void
 SweepWGSContext::PreSetupCallback()
 {
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::PreSetupCallback");
+
   if (log_info_)
   {
     std::string method_name;
@@ -66,6 +65,8 @@ SweepWGSContext::PreSetupCallback()
 void
 SweepWGSContext::SetPreconditioner(KSP& solver)
 {
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::SetPreconditioner");
+
   auto& ksp = solver;
 
   PC pc;
@@ -85,6 +86,8 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
 std::pair<int64_t, int64_t>
 SweepWGSContext::SystemSize()
 {
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::SystemSize");
+
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
   const size_t num_moments = lbs_solver_.NumMoments();
@@ -115,6 +118,8 @@ SweepWGSContext::SystemSize()
 void
 SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 {
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::ApplyInverseTransportOperator");
+
   ++counter_applications_of_inv_op_;
   const bool use_bndry_source_flag =
     (scope & APPLY_FIXED_SOURCES) and (not lbs_solver_.Options().use_src_moments);
@@ -126,12 +131,22 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 
   // Sweep
   sweep_scheduler_.ZeroOutputFluxDataStructures();
+  std::chrono::high_resolution_clock::time_point sweep_start =
+    std::chrono::high_resolution_clock::now();
   sweep_scheduler_.Sweep();
+  std::chrono::high_resolution_clock::time_point sweep_end =
+    std::chrono::high_resolution_clock::now();
+  double sweep_time =
+    (std::chrono::duration_cast<std::chrono::nanoseconds>(sweep_end - sweep_start).count()) /
+    1.0e+9;
+  sweep_times_.push_back(sweep_time);
 }
 
 void
 SweepWGSContext::PostSolveCallback()
 {
+  CALI_CXX_MARK_SCOPE("SweepWGSContext::PostSolveCallback");
+
   // Perform final sweep with converged phi and delayed psi dofs
   if (groupset_.iterative_method_ != IterativeMethod::KRYLOV_RICHARDSON)
   {
@@ -152,32 +167,19 @@ SweepWGSContext::PostSolveCallback()
       groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
   }
 
-  // Print solution info
-  {
-    double sweep_time = sweep_scheduler_.GetAverageSweepTime();
-    double chunk_overhead_ratio = 1.0 - sweep_scheduler_.GetAngleSetTimings()[2];
-    double source_time =
-      log.ProcessEvent(lbs_solver_.GetSourceEventTag(), Logger::EventOperation::AVERAGE_DURATION);
-    size_t num_angles = groupset_.quadrature_->abscissae_.size();
-    size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
+  double tot_sweep_time = 0.0;
+  for (auto time : sweep_times_)
+    tot_sweep_time += time;
+  double num_sweeps = static_cast<double>(sweep_times_.size());
+  double avg_sweep_time = tot_sweep_time / num_sweeps;
+  size_t num_angles = groupset_.quadrature_->abscissae_.size();
+  size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
 
-    if (log_info_)
-    {
-      log.Log() << "\n\n";
-      log.Log() << "        Set Src Time/sweep (s):        " << source_time;
-      log.Log() << "        Average sweep time (s):        " << sweep_time;
-      log.Log() << "        Chunk-Overhead-Ratio  :        " << chunk_overhead_ratio;
-      log.Log() << "        Sweep Time/Unknown (ns):       "
-                << sweep_time * 1.0e9 * opensn::mpi_comm.size() / static_cast<double>(num_unknowns);
-      log.Log() << "        Number of unknowns per sweep:  " << num_unknowns;
-      log.Log() << "\n\n";
-
-      std::string sweep_log_file_name =
-        std::string("GS_") + std::to_string(groupset_.id_) + std::string("_SweepLog_") +
-        std::to_string(opensn::mpi_comm.rank()) + std::string(".log");
-      groupset_.PrintSweepInfoFile(sweep_scheduler_.SweepEventTag(), sweep_log_file_name);
-    }
-  }
+  log.Log() << "\n       Average sweep time (s):        "
+            << tot_sweep_time / static_cast<double>(sweep_times_.size())
+            << "\n       Sweep Time/Unknown (ns):       "
+            << avg_sweep_time * 1.0e9 * opensn::mpi_comm.size() / static_cast<double>(num_unknowns)
+            << "\n       Number of unknowns per sweep:  " << num_unknowns << "\n\n";
 }
 
 } // namespace lbs

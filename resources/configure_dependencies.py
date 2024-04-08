@@ -92,7 +92,11 @@ package_info = {
     "vtk": [
         "9.3.0",
         "https://www.vtk.org/files/release/9.3/VTK-9.3.0.tar.gz"
-    ]
+    ],
+    "caliper": [
+        "2.10.0",
+        "https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz"
+     ]
 }
 
 
@@ -431,6 +435,85 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
         return False
 
 
+# Install Caliper 
+def InstallCaliper(pkg: str, ver: str, gold_file: str):
+    package_log_filename = f"{install_dir}/logs/{pkg}_log.txt"
+    pkg_install_dir = f"{install_dir}"
+
+    shutil.copy(f"{install_dir}/downloads/{pkg}-{ver}.tar.gz",
+                f"{install_dir}/src/caliper-{ver}.tar.gz")
+
+    os.chdir(f"{install_dir}/src")
+
+    # Check if it is installed already
+    if not os.path.exists(f"{pkg_install_dir}/{gold_file}"):
+        ExtractPackage(pkg, ver)
+
+        package_log_file = open(package_log_filename, "w")
+
+        print(f"Configuring {pkg.upper()} {ver} in \"{os.getcwd()}\"", flush=True)
+        log_file.write(f"Configuring {pkg.upper()} {ver} in \"{os.getcwd()}\"")
+        log_file.write(f" See {package_log_filename}\n")
+        log_file.flush()
+
+        env_vars = os.environ.copy()
+        if len(os.getenv("CC")) == 0:
+            env_vars["CC"] = shutil.which("mpicc")
+        if len(os.getenv("CXX")) == 0:
+            env_vars["CXX"] = shutil.which("mpicxx")
+        if len(os.getenv("FC")) == 0:
+            env_vars["FC"] = shutil.which("mpifort")
+
+        build_dir = f"{install_dir}/src/Caliper-{ver}/build"
+        MakeDirectory(build_dir)
+        os.chdir(build_dir)
+
+        command = f""" cmake -DCMAKE_INSTALL_PREFIX={pkg_install_dir} \\
+-DWITH_MPI=ON \
+-DWITH_KOKKOS=OFF \
+../
+"""
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
+        if not success:
+            print(command, err)
+            log_file.write(f"{command}\n{err}\n")
+            package_log_file.write(f"{command}\n{err}\n")
+            raise RuntimeError(f"Failed to configure {pkg}");
+
+        command = f"{make_command} -j{argv.jobs}"
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
+        if not success:
+            print(command, err)
+            log_file.write(f"{command}\n{err}\n")
+            package_log_file.write(f"{command}\n{err}\n")
+            raise RuntimeError(f"Failed to build {pkg}");
+
+        command = f"{make_command} install"
+        success, err, outstr = ExecSub(
+            command, out_log=package_log_file, env_vars=env_vars
+        )
+        if not success:
+            print(command, err)
+            log_file.write(f"{command}\n{err}\n")
+            package_log_file.write(f"{command}\n{err}\n")
+            raise RuntimeError(f"Failed to install {pkg}");
+
+        package_log_file.close()
+    else:
+        print(f"{pkg} already installed")
+
+    os.chdir(install_dir)
+
+    if os.path.exists(f"{pkg_install_dir}/{gold_file}"):
+        return True
+    else:
+        return False
+
+
 try:
     argv = parser.parse_args()  # argv = argument values
 
@@ -538,6 +621,9 @@ try:
         elif pkg == 'vtk':
             major, minor, patch = ver.split('.')
             success = InstallVTK(pkg, ver, gold_file=f"include/vtk-{major}.{minor}")
+        elif pkg == 'caliper':
+            major, minor, patch = ver.split('.')
+            success = InstallCaliper(pkg, ver, gold_file=f"include/caliper/cali.h")
         else:
             print(f"No build rules for {pkg}")
 

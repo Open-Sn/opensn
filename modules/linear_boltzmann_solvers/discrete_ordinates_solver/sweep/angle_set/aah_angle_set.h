@@ -31,9 +31,7 @@ public:
 
   void SetMaxBufferMessages(int new_max) override;
 
-  AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk,
-                                 const std::vector<size_t>& timing_tags,
-                                 AngleSetStatus permission) override;
+  AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission) override;
 
   AngleSetStatus FlushSendBuffers() override;
 

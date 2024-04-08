@@ -2,6 +2,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -29,10 +30,10 @@ AAH_AngleSet::InitializeDelayedUpstreamData()
 }
 
 AngleSetStatus
-AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
-                              const std::vector<size_t>& timing_tags,
-                              AngleSetStatus permission)
+AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission)
 {
+  CALI_CXX_MARK_SCOPE("AAH_AngleSet::AngleSetAdvance");
+
   if (executed_)
   {
     if (not async_comm_.DoneSending())
@@ -57,9 +58,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk,
   {
     async_comm_.InitializeLocalAndDownstreamBuffers();
 
-    log.LogEvent(timing_tags[0], Logger::EventType::EVENT_BEGIN);
     sweep_chunk.Sweep(*this); // Execute chunk
-    log.LogEvent(timing_tags[0], Logger::EventType::EVENT_END);
 
     // Send outgoing psi and clear local and receive buffers
     async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));

@@ -1,13 +1,9 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
-
-#include <fstream>
-
 #include "framework/object_factory.h"
+#include "framework/runtime.h"
+#include <fstream>
 
 namespace opensn
 {
@@ -57,8 +53,6 @@ lbs::LBSGroupset::GetInputParameters()
 
   params.AddOptionalParameter(
     "allow_cycles", true, "Flag indicating whether cycles are to be allowed or not");
-
-  params.AddOptionalParameter("log_sweep_events", false, "Turns on a log of sweep events");
 
   // WG DSA options
   params.AddOptionalParameter("apply_wgdsa",
@@ -158,9 +152,6 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
   residual_tolerance_ = params.GetParamValue<double>("l_abs_tol");
   max_iterations_ = params.GetParamValue<int>("l_max_its");
 
-  // Misc.
-  log_sweep_events_ = params.GetParamValue<bool>("log_sweep_events");
-
   // DSA
   apply_wgdsa_ = params.GetParamValue<bool>("apply_wgdsa");
   apply_tgdsa_ = params.GetParamValue<bool>("apply_tgdsa");
@@ -233,47 +224,6 @@ lbs::LBSGroupset::BuildSubsets()
       ++ss;
     }
   }
-}
-
-void
-lbs::LBSGroupset::PrintSweepInfoFile(size_t ev_tag, const std::string& file_name)
-{
-  if (not log_sweep_events_)
-    return;
-
-  std::ofstream ofile;
-  ofile.open(file_name, std::ofstream::out);
-
-  ofile << "Groupset Sweep information "
-        << "location " << opensn::mpi_comm.rank() << "\n";
-
-  // Print all anglesets
-  for (int q = 0; q < angle_agg_->angle_set_groups.size(); ++q)
-  {
-    ofile << "Angle-set group " << q << ":\n";
-    auto& ang_set_grp = angle_agg_->angle_set_groups[q];
-    int num_ang_sets_per_grp = (int)ang_set_grp.AngleSets().size();
-    for (int as = 0; as < num_ang_sets_per_grp; ++as)
-    {
-      auto ang_set = ang_set_grp.AngleSets()[as];
-
-      int ang_set_num = as + q * num_ang_sets_per_grp;
-
-      ofile << "  Angle-set " << ang_set_num << " angles [# varphi theta]:\n";
-
-      for (auto& ang_num : ang_set->GetAngleIndices())
-      {
-        const auto& angle = quadrature_->abscissae_[ang_num];
-
-        ofile << "    " << ang_num << " " << angle.phi << " " << angle.theta << "\n";
-      }
-    }
-  }
-
-  // Print event history
-  ofile << log.PrintEventHistory(ev_tag);
-
-  ofile.close();
 }
 
 } // namespace lbs

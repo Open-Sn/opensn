@@ -19,8 +19,8 @@
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
 #include "framework/object_factory.h"
-#include "framework/memory_usage.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 #include <iomanip>
 
 namespace opensn
@@ -67,18 +67,23 @@ DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const InputParameters& params)
 
 DiscreteOrdinatesSolver::~DiscreteOrdinatesSolver()
 {
+  CALI_CXX_MARK_FUNCTION;
   for (auto& groupset : groupsets_)
   {
     CleanUpWGDSA(groupset);
     CleanUpTGDSA(groupset);
 
-    ResetSweepOrderings(groupset);
+    // Reset sweep orderings
+    groupset.angle_agg_->angle_set_groups.clear();
   }
+
+  opensn::mpi_comm.barrier();
 }
 
 std::pair<size_t, size_t>
 DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns");
   const auto& sdm = *discretization_;
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
   const size_t num_globl_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
@@ -101,6 +106,8 @@ DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
 void
 DiscreteOrdinatesSolver::Initialize()
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::Initialize");
+
   LBSSolver::Initialize();
 
   // Initialize source func
@@ -119,13 +126,13 @@ DiscreteOrdinatesSolver::Initialize()
     InitTGDSA(groupset);
   }
   InitializeSolverSchemes();
-
-  source_event_tag_ = log.GetRepeatingEventTag("Set Source");
 }
 
 void
 DiscreteOrdinatesSolver::InitializeWGSSolvers()
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::InitializeWGSSolvers");
+
   wgs_solvers_.clear(); // this is required
   for (auto& groupset : groupsets_)
   {
@@ -149,6 +156,8 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
 void
 DiscreteOrdinatesSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ScalePhiVector");
+
   std::vector<double>* y_ptr;
   switch (which_phi)
   {
@@ -191,6 +200,8 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& gr
                                                            Vec x,
                                                            PhiSTLOption which_phi)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector");
+
   const std::vector<double>* y_ptr;
   switch (which_phi)
   {
@@ -248,6 +259,8 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& gr
                                                            Vec x,
                                                            PhiSTLOption which_phi)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec");
+
   std::vector<double>* y_ptr;
   switch (which_phi)
   {
@@ -304,6 +317,8 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groups
                                                        PhiSTLOption from_which_phi,
                                                        PhiSTLOption to_which_phi)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors");
+
   std::vector<double>* y_ptr;
   switch (to_which_phi)
   {
@@ -360,6 +375,8 @@ void
 DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
   const std::vector<int>& groupset_ids, Vec x, PhiSTLOption which_phi)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector");
+
   const std::vector<double>* y_ptr;
   switch (which_phi)
   {
@@ -421,6 +438,8 @@ void
 DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
   const std::vector<int>& groupset_ids, Vec x, PhiSTLOption which_phi)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom");
+
   std::vector<double>* y_ptr;
   switch (which_phi)
   {
@@ -480,6 +499,8 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
 void
 DiscreteOrdinatesSolver::ReorientAdjointSolution()
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ReorientAdjointSolution");
+
   for (const auto& groupset : groupsets_)
   {
     int gs = groupset.id_;
@@ -584,6 +605,8 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
 void
 DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ZeroOutflowBalanceVars");
+
   for (auto& cell_transport_view : cell_transport_views_)
     for (auto& group : groupset.groups_)
       cell_transport_view.ZeroOutflow(group.id_);
@@ -592,6 +615,8 @@ DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 void
 DiscreteOrdinatesSolver::ComputeBalance()
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ComputeBalance");
+
   opensn::mpi_comm.barrier();
   log.Log() << "\n********** Computing balance\n";
 
@@ -725,6 +750,8 @@ std::vector<double>
 DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
                                         const uint64_t boundary_id) const
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ComputeLeakage");
+
   // Perform checks
   OpenSnInvalidArgumentIf(groupset_id < 0 or groupset_id >= groupsets_.size(),
                           "Invalid groupset id.");
@@ -793,6 +820,8 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
 std::map<uint64_t, std::vector<double>>
 DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_ids) const
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ComputeLeakage");
+
   // Perform checks
   OpenSnLogicalErrorIf(not options_.save_angular_flux,
                        "The option `save_angular_flux` must be set to `true` in order "
@@ -888,6 +917,8 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
 void
 DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::InitializeSweepDataStructures");
+
   log.Log() << program_timer.GetTimeString() << " Initializing sweep datastructures.\n";
 
   // Define sweep ordering groups
@@ -974,6 +1005,8 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
                                                    const AngleAggregationType agg_type,
                                                    const lbs::GeometryType lbs_geo_type)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::AssociateSOsAndDirections");
+
   const std::string fname = __FUNCTION__;
 
   // Checks
@@ -1138,6 +1171,8 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
 void
 DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::InitFluxDataStructures");
+
   const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature_];
 
   const auto& unique_so_groupings = quadrature_sweep_info.first;
@@ -1233,42 +1268,16 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg_->angle_set_groups.push_back(std::move(angle_set_group));
 
   if (options_.verbose_inner_iterations)
-    log.Log() << program_timer.GetTimeString() << " Initialized Angle Aggregation.   "
-              << "         Process memory = " << std::setprecision(3) << GetMemoryUsageInMB()
-              << " MB.";
+    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
 
   opensn::mpi_comm.barrier();
-}
-
-void
-DiscreteOrdinatesSolver::ResetSweepOrderings(LBSGroupset& groupset)
-{
-  log.Log0Verbose1() << "Resetting SPDS and FLUDS";
-
-  groupset.angle_agg_->angle_set_groups.clear();
-
-  opensn::mpi_comm.barrier();
-
-  log.Log() << "SPDS and FLUDS reset complete.            Process memory = " << std::setprecision(3)
-            << GetMemoryUsageInMB() << " MB";
-
-  double local_app_memory =
-    log.ProcessEvent(Logger::StdTags::MAX_MEMORY_USAGE, Logger::EventOperation::MAX_VALUE);
-  double total_app_memory = 0.0;
-  mpi_comm.all_reduce(local_app_memory, total_app_memory, mpi::op::sum<double>());
-  double max_proc_memory = 0.0;
-  mpi_comm.all_reduce(local_app_memory, max_proc_memory, mpi::op::sum<double>());
-
-  log.Log() << "\n"
-            << std::setprecision(3)
-            << "           Total application memory (max): " << total_app_memory / 1024.0 << " GB\n"
-            << "           Maximum process memory        : " << max_proc_memory / 1024.0
-            << " GB\n\n";
 }
 
 std::shared_ptr<SweepChunk>
 DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::SetSweepChunk");
+
   if (sweep_type_ == "AAH")
   {
     auto sweep_chunk = std::make_shared<AahSweepChunk>(*grid_ptr_,
