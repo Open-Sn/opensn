@@ -2,14 +2,14 @@
 #include "lua/framework/console/console.h"
 #include "framework/event_system/event.h"
 #include "framework/event_system/system_wide_event_publisher.h"
-#include "framework/utils/utils.h"
 #include "framework/logging/log.h"
+#include "framework/utils/timer.h"
+#include "framework/utils/utils.h"
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
-#include "framework/utils/timer.h"
-#include "petsc.h"
 #include "caliper/cali.h"
 #include "cxxopts/cxxopts.h"
+#include "petsc.h"
 #include <string>
 #ifndef NDEBUG
 #include <unistd.h>
@@ -93,23 +93,13 @@ LuaApp::ProcessArguments(int argc, char** argv)
 
     /* clang-format off */
     options.add_options("User")
-<<<<<<< HEAD
     ("h,help",                      "Help message")
-    ("b,batch",                     "Batch mode")
     ("c,suppress-color",            "Suppress color output")
-    ("l,lua",                       "Lua string", cxxopts::value<std::string>())
-    ("v,verbose",                   "Verbosity", cxxopts::value<int>())
-    ("f,filename",                  "Input filename", cxxopts::value<std::string>())
-    {"caliper",                     "Enable Caliper reporting", cxxopts::value<std::string>());
+    ("v,verbose",                   "Verbosity level (0 to 3). Default is 0.",
+      cxxopts::value<int>()->implicit_value("0"))
+    ("caliper",                     "Enable Caliper reporting",
+      cxxopts::value<std::string>()->implicit_value("runtime-report(calc.inclusive=true),max_column_width=80"))
     ("positional",                  "Positional arugments", cxxopts::value<std::vector<std::string>>());
-=======
-      ("h,help",           "Help message")
-      ("b,batch",          "Batch mode")
-      ("c,suppress-color", "Suppress color output")
-      ("v,verbose",        "Verbosity level (0 to 3). Default is 0.",
-                            cxxopts::value<int>())
-      ("positional",       "Positional arugments", cxxopts::value<std::vector<std::string>>());
->>>>>>> dbac30b0 (Remving unneeded lua option.)
 
     options.add_options("Dev")
       ("help-dev",                  "Developer options help")
@@ -125,13 +115,15 @@ LuaApp::ProcessArguments(int argc, char** argv)
 
     if (result.count("help"))
     {
-      std::cout << options.help({"User"}) << std::endl;
+      if (opensn::mpi_comm.rank() == 0)
+        std::cout << options.help({"User"}) << std::endl;
       return 1;
     }
 
     if (result.count("help-dev"))
     {
-      std::cout << options.help({"Dev"}) << std::endl;
+      if (opensn::mpi_comm.rank() == 0)
+        std::cout << options.help({"Dev"}) << std::endl;
       return 1;
     }
 
@@ -148,13 +140,23 @@ LuaApp::ProcessArguments(int argc, char** argv)
       return 1;
     }
 
-    if (result.count("batch"))
-      sim_option_interactive_ = false;
-
     if (result.count("verbose"))
     {
       int verbosity = result["verbose"].as<int>();
       opensn::log.SetVerbosity(verbosity);
+    }
+
+    if (result.count("caliper"))
+    {
+      opensn::use_caliper = true;
+      auto config = result["caliper"].as<std::string>();
+      if (!config.empty())
+      {
+        std::string error = cali_mgr.check(config.c_str());
+        if (!error.empty())
+          throw std::runtime_error("Invalid Caliper config: " + config);
+        opensn::cali_config = config;
+      }
     }
 
     if (result.count("positional"))
@@ -173,12 +175,7 @@ LuaApp::ProcessArguments(int argc, char** argv)
             found_filename = true;
           }
           else
-          {
-            if (opensn::mpi_comm.rank() == 0)
-              std::cerr << "Error: "
-                        << "Invalid option " << arg << std::endl;
-            return 1;
-          }
+            throw std::runtime_error("Invalid option " + arg);
         }
       }
     }
@@ -186,7 +183,13 @@ LuaApp::ProcessArguments(int argc, char** argv)
   catch (const cxxopts::exceptions::exception& e)
   {
     if (opensn::mpi_comm.rank() == 0)
-      std::cerr << "Error: " << e.what() << std::endl;
+      std::cerr << e.what() << std::endl;
+    return 1;
+  }
+  catch (const std::exception& e)
+  {
+    if (opensn::mpi_comm.rank() == 0)
+      std::cerr << e.what() << std::endl;
     return 1;
   }
 
