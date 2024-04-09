@@ -18,66 +18,48 @@ RegisterLuaFunctionNamespace(PRKSetParam, prk, SetParam);
 int
 PRKGetParam(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "prk.GetParam";
+  LuaCheckArgs<int, std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 2);
-
-  const int handle = lua_tointeger(L, 1);
-
+  const auto handle = LuaArg<int>(L, 1);
   auto solver =
     opensn::GetStackItem<opensn::prk::TransientSolver>(opensn::object_stack, handle, fname);
 
-  const std::string param_name = lua_tostring(L, 2);
-
+  const auto param_name = LuaArg<std::string>(L, 2);
   if (param_name == "population_prev")
-    lua_pushnumber(L, solver.PopulationPrev());
+    return LuaReturn(L, solver.PopulationPrev());
   else if (param_name == "population_next")
-    lua_pushnumber(L, solver.PopulationNew());
+    return LuaReturn(L, solver.PopulationNew());
   else if (param_name == "period")
-    lua_pushnumber(L, solver.Period());
+    return LuaReturn(L, solver.Period());
   else if (param_name == "time_prev")
-    lua_pushnumber(L, solver.TimePrev());
+    return LuaReturn(L, solver.TimePrev());
   else if (param_name == "time_next")
-    lua_pushnumber(L, solver.TimeNew());
+    return LuaReturn(L, solver.TimeNew());
   else
-    throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name + "\".");
-
-  return 1;
+    throw std::invalid_argument(fname + ": Invalid parameter '" + param_name + "'.");
 }
 
 int
 PRKSetParam(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "prk.SetParam";
+  LuaCheckArgs<size_t, std::string, double>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 2);
-  LuaCheckNilValue(fname, L, 3);
-
-  const int handle = lua_tointeger(L, 1);
-
+  const auto handle = LuaArg<size_t>(L, 1);
   auto& solver =
     opensn::GetStackItem<opensn::prk::TransientSolver>(opensn::object_stack, handle, fname);
 
-  const std::string param_name = lua_tostring(L, 2);
-
+  const auto param_name = LuaArg<std::string>(L, 2);
   if (param_name == "rho")
   {
-    LuaCheckNumberValue(fname + "(handle,\"rho\", : Expects a number value.", L, 3);
-    const double val = lua_tonumber(L, 3);
+    const auto val = LuaArg<double>(L, 3);
     solver.SetRho(val);
   }
   else
-    throw std::invalid_argument(fname + ": Invalid parameter \"" + param_name + "\".");
+    throw std::invalid_argument(fname + ": Invalid parameter '" + param_name + "'\"'.");
 
-  return 0;
+  return LuaReturn(L);
 }
 
 RegisterWrapperFunctionNamespace(prk, SetParam, GetSyntax_SetParam, SetParam);

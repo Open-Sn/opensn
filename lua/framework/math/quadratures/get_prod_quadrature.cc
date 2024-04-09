@@ -12,14 +12,29 @@ namespace opensnlua
 
 RegisterLuaFunctionNamespace(GetProductQuadrature, aquad, GetProductQuadrature);
 
+struct LuaQuadData
+{
+  double weight;
+  double phi;
+  double theta;
+};
+
+void
+LuaPush(lua_State* L, const LuaQuadData& data)
+{
+  lua_newtable(L);
+  LuaPushTableKey(L, "weight", data.weight);
+  LuaPushTableKey(L, "polar", data.theta);
+  LuaPushTableKey(L, "azimuthal", data.phi);
+}
+
 int
 GetProductQuadrature(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError("GetProductQuadrature", 1, num_args);
+  const std::string fname = "aquad.GetProductQuadrature";
+  LuaCheckArgs<int>(L, fname);
 
-  int handle = lua_tonumber(L, 1);
+  auto handle = LuaArg<size_t>(L, 1);
 
   std::shared_ptr<ProductQuadrature> quad;
   try
@@ -29,39 +44,22 @@ GetProductQuadrature(lua_State* L)
       quad = std::static_pointer_cast<ProductQuadrature>(ang_quad);
     else
     {
-      opensn::log.LogAllError() << "GetProductQuadrature: Provided quadrature handle points to "
-                                   "a quadrature that is not a product quadrature.";
+      opensn::log.LogAllError() << fname + ": Provided quadrature handle points to a quadrature "
+                                           "that is not a product quadrature.";
       opensn::Exit(EXIT_FAILURE);
     }
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "GetProductQuadrature: Invalid quadrature handle.";
+    opensn::log.LogAllError() << fname + ": Invalid quadrature handle.";
     opensn::Exit(EXIT_FAILURE);
   }
 
-  lua_newtable(L);
+  std::vector<LuaQuadData> quad_data;
+  quad_data.resize(quad->weights_.size());
   for (size_t n = 0; n < quad->weights_.size(); ++n)
-  {
-    lua_pushnumber(L, n + 1);
-    lua_newtable(L);
-
-    lua_pushstring(L, "weight");
-    lua_pushnumber(L, quad->weights_[n]);
-    lua_settable(L, -3);
-
-    lua_pushstring(L, "polar");
-    lua_pushnumber(L, quad->abscissae_[n].theta);
-    lua_settable(L, -3);
-
-    lua_pushstring(L, "azimuthal");
-    lua_pushnumber(L, quad->abscissae_[n].phi);
-    lua_settable(L, -3);
-
-    lua_settable(L, -3);
-  }
-
-  return 1;
+    quad_data[n] = {quad->weights_[n], quad->abscissae_[n].theta, quad->abscissae_[n].phi};
+  return LuaReturn(L, quad_data);
 }
 
 } // namespace opensnlua

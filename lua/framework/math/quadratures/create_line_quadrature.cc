@@ -18,21 +18,13 @@ RegisterLuaFunctionNamespace(CreateLineQuadrature, squad, CreateLineQuadrature);
 int
 CreateLineQuadrature(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-
-  if (not((num_args == 2) or (num_args == 3)))
-    LuaPostArgAmountError(fname, 2, num_args);
-
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
+  const std::string fname = "squad.CreateLineQuadrature";
+  LuaCheckArgs<int, int>(L, fname);
 
   // Parse argument
-  int ident = lua_tonumber(L, 1);
-  int N = lua_tonumber(L, 2);
-  bool verbose = false;
-  if (num_args == 3)
-    verbose = lua_toboolean(L, 3);
+  auto ident = LuaArg<int>(L, 1);
+  auto N = LuaArg<int>(L, 2);
+  auto verbose = LuaArgOptional<bool>(L, 3, false);
 
   ParameterBlock params;
   params.AddParameter("verbose", verbose);
@@ -46,9 +38,7 @@ CreateLineQuadrature(lua_State* L)
 
     const size_t handle =
       obj_factory.MakeRegisteredObjectOfType("squad::QuadratureGaussLegendre", params);
-
-    lua_pushinteger(L, static_cast<lua_Integer>(handle));
-    return 1;
+    return LuaReturn(L, handle);
   }
   else if (ident == 2) // GAUSS_CHEBYSHEV
   {
@@ -56,11 +46,9 @@ CreateLineQuadrature(lua_State* L)
 
     const size_t handle =
       obj_factory.MakeRegisteredObjectOfType("squad::QuadratureGaussChebyshev", params);
-
-    lua_pushinteger(L, static_cast<lua_Integer>(handle));
-    return 1;
+    return LuaReturn(L, handle);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

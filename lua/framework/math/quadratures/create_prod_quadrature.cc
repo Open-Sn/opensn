@@ -22,19 +22,15 @@ RegisterLuaConstantAsIs(CUSTOM_QUADRATURE, Varying(5));
 int
 CreateProductQuadrature(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  // Parse argument
-  int ident = lua_tonumber(L, 1);
-  bool verbose = false;
+  const std::string fname = "aquad.CreateProductQuadrature";
 
+  auto ident = LuaArg<int>(L, 1);
   if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE)
   {
-    if (num_args < 2)
-      LuaPostArgAmountError("CreateProductQuadrature", 2, num_args);
+    LuaCheckArgs<int, int>(L, fname);
 
-    int Np = lua_tonumber(L, 2);
-    if (num_args == 3)
-      verbose = lua_toboolean(L, 3);
+    auto Np = LuaArg<int>(L, 2);
+    auto verbose = LuaArgOptional<bool>(L, 3, false);
 
     opensn::log.Log() << "Creating Gauss-Legendre Quadrature\n";
 
@@ -42,7 +38,6 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
 
     if (verbose)
     {
@@ -51,17 +46,15 @@ CreateProductQuadrature(lua_State* L)
                         << " polar angles.";
     }
 
-    return 1;
+    return LuaReturn(L, index);
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE)
   {
-    if (num_args < 3)
-      LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
+    LuaCheckArgs<int, int, int>(L, fname);
 
-    int Na = lua_tonumber(L, 2);
-    int Np = lua_tonumber(L, 3);
-    if (num_args == 4)
-      verbose = lua_toboolean(L, 4);
+    auto Na = LuaArg<int>(L, 2);
+    auto Np = LuaArg<int>(L, 3);
+    auto verbose = LuaArgOptional<bool>(L, 4, false);
 
     opensn::log.Log() << "Creating Gauss-Legendre-Legendre Quadrature\n";
 
@@ -69,7 +62,6 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
 
     if (verbose)
     {
@@ -78,17 +70,15 @@ CreateProductQuadrature(lua_State* L)
                         << new_quad->polar_ang_.size() << " polar angles.";
     }
 
-    return 1;
+    return LuaReturn(L, index);
   }
   else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV)
   {
-    if (num_args < 3)
-      LuaPostArgAmountError("CreateProductQuadrature", 3, num_args);
+    LuaCheckArgs<int, int, int>(L, fname);
 
-    int Na = lua_tonumber(L, 2);
-    int Np = lua_tonumber(L, 3);
-    if (num_args == 4)
-      verbose = lua_toboolean(L, 4);
+    auto Na = LuaArg<int>(L, 2);
+    auto Np = LuaArg<int>(L, 3);
+    auto verbose = LuaArgOptional<bool>(L, 4, false);
 
     opensn::log.Log() << "Creating Gauss-Legendre-ChebyShev Quadrature\n";
 
@@ -96,7 +86,6 @@ CreateProductQuadrature(lua_State* L)
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
 
     if (verbose)
     {
@@ -105,76 +94,26 @@ CreateProductQuadrature(lua_State* L)
                         << new_quad->polar_ang_.size() << " polar angles.";
     }
 
-    return 1;
+    return LuaReturn(L, index);
   }
   else if (ident == (int)ProductQuadratureType::CUSTOM_QUADRATURE)
   {
-    if (num_args < 4)
-      LuaPostArgAmountError("CreateProductQuadrature:CUSTOM_QUADRATURE", 3, num_args);
+    LuaCheckArgs<int, std::vector<double>, std::vector<double>, std::vector<double>>(L, fname);
 
-    if (not lua_istable(L, 2))
-    {
-      opensn::log.LogAllError()
-        << "CreateProductQuadrature:CUSTOM_QUADRATURE, second argument must "
-        << "be a lua table.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-    if (not lua_istable(L, 3))
-    {
-      opensn::log.LogAllError() << "CreateProductQuadrature:CUSTOM_QUADRATURE, third argument must "
-                                << "be a lua table.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-    if (not lua_istable(L, 4))
-    {
-      opensn::log.LogAllError()
-        << "CreateProductQuadrature:CUSTOM_QUADRATURE, fourth argument must "
-        << "be a lua table.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-    if (num_args == 5)
-      verbose = lua_toboolean(L, 4);
-
-    size_t Na = lua_rawlen(L, 2);
-    size_t Np = lua_rawlen(L, 3);
-    size_t Nw = lua_rawlen(L, 4);
-
-    std::vector<double> azimuthal(Na, 0.0);
-    std::vector<double> polar(Np, 0.0);
-    std::vector<double> weights(Nw, 0.0);
-
-    for (int n = 1; n <= Na; ++n)
-    {
-      lua_pushnumber(L, n);
-      lua_gettable(L, 2);
-      azimuthal[n - 1] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
-    }
-    for (int n = 1; n <= Np; ++n)
-    {
-      lua_pushnumber(L, n);
-      lua_gettable(L, 3);
-      polar[n - 1] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
-    }
-    for (int n = 1; n <= Nw; ++n)
-    {
-      lua_pushnumber(L, n);
-      lua_gettable(L, 4);
-      weights[n - 1] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
-    }
+    auto azimuthal = LuaArg<std::vector<double>>(L, 2);
+    auto polar = LuaArg<std::vector<double>>(L, 3);
+    auto weights = LuaArg<std::vector<double>>(L, 4);
+    auto verbose = LuaArgOptional<bool>(L, 5, false);
 
     opensn::log.Log() << "Creating custom product quadrature Quadrature\n";
 
-    opensn::log.Log() << Na << " " << Np << " " << Nw;
+    opensn::log.Log() << azimuthal.size() << " " << polar.size() << " " << weights.size();
 
     auto new_quad =
       std::make_shared<AngularQuadratureProdCustom>(azimuthal, polar, weights, verbose);
 
     opensn::angular_quadrature_stack.push_back(new_quad);
     const size_t index = opensn::angular_quadrature_stack.size() - 1;
-    lua_pushinteger(L, static_cast<lua_Integer>(index));
 
     if (verbose)
     {
@@ -183,7 +122,7 @@ CreateProductQuadrature(lua_State* L)
                         << " polar angles.";
     }
 
-    return 1;
+    return LuaReturn(L, index);
   }
   else
   {
@@ -192,7 +131,7 @@ CreateProductQuadrature(lua_State* L)
                               << ident;
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

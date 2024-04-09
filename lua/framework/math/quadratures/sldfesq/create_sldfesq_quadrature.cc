@@ -14,11 +14,9 @@ RegisterLuaFunctionNamespace(CreateSLDFESQAngularQuadrature, aquad, CreateSLDFES
 int
 CreateSLDFESQAngularQuadrature(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError("CreateSLDFESQAngularQuadrature", 1, num_args);
+  LuaCheckArgs<int>(L, "aquad.CreateSLDFESQAngularQuadrature");
 
-  int init_refinement_level = lua_tonumber(L, 1);
+  auto init_refinement_level = LuaArg<int>(L, 1);
 
   auto sldfesq = new SimplifiedLDFESQ::Quadrature;
   sldfesq->GenerateInitialRefinement(init_refinement_level);
@@ -28,9 +26,7 @@ CreateSLDFESQAngularQuadrature(lua_State* L)
 
   opensn::angular_quadrature_stack.push_back(new_ang_quad);
   const size_t index = opensn::angular_quadrature_stack.size() - 1;
-  lua_pushnumber(L, static_cast<lua_Number>(index));
-
-  return 1;
+  return LuaReturn(L, index);
 }
 
 } // namespace opensnlua

@@ -8,6 +8,7 @@
 #include "lua/framework/lua.h"
 
 using namespace opensn;
+using namespace opensnlua;
 
 namespace unit_sim_tests
 {
@@ -57,41 +58,7 @@ SimTest04_PWLC(const InputParameters& params)
 
   InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
-  // Source lambda
   lua_State* L = opensnlua::Console::GetInstance().GetConsoleState();
-  auto CallLuaXYZFunction = [&L](const std::string& lua_func_name, const Vector3& xyz)
-  {
-    // Load lua function
-    lua_getglobal(L, lua_func_name.c_str());
-
-    // Error check lua function
-    if (not lua_isfunction(L, -1))
-      throw std::logic_error("CallLuaXYZFunction attempted to access lua-function, " +
-                             lua_func_name +
-                             ", but it seems the function"
-                             " could not be retrieved.");
-
-    // Push arguments
-    lua_pushnumber(L, xyz.x);
-    lua_pushnumber(L, xyz.y);
-    lua_pushnumber(L, xyz.z);
-
-    // Call lua function
-    // 3 arguments, 1 result (double), 0=original error object
-    double lua_return = 0.0;
-    if (lua_pcall(L, 3, 1, 0) == 0)
-    {
-      LuaCheckNumberValue("CallLuaXYZFunction", L, -1);
-      lua_return = lua_tonumber(L, -1);
-    }
-    else
-      throw std::logic_error("CallLuaXYZFunction attempted to call lua-function, " + lua_func_name +
-                             ", but the call failed." + xyz.PrintStr());
-
-    lua_pop(L, 1); // pop the double, or error code
-
-    return lua_return;
-  };
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
@@ -118,7 +85,7 @@ SimTest04_PWLC(const InputParameters& params)
         Acell[i][j] = entry_aij;
       } // for j
       for (size_t qp : fe_vol_data.QuadraturePointIndices())
-        cell_rhs[i] += CallLuaXYZFunction("MMS_q", fe_vol_data.QPointXYZ(qp)) *
+        cell_rhs[i] += LuaCall<double>(L, "MMS_q", fe_vol_data.QPointXYZ(qp)) *
                        fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
     } // for i
 
@@ -150,7 +117,7 @@ SimTest04_PWLC(const InputParameters& params)
       if (node_boundary_flag[i]) // if dirichlet node
       {
         MatSetValue(A, imap[i], imap[i], 1.0, ADD_VALUES);
-        double bval = CallLuaXYZFunction("MMS_phi", cell_node_xyzs[i]);
+        auto bval = LuaCall<double>(L, "MMS_phi", cell_node_xyzs[i]);
         VecSetValue(b, imap[i], bval, ADD_VALUES);
       }
       else
@@ -161,7 +128,7 @@ SimTest04_PWLC(const InputParameters& params)
             MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
           else
           {
-            double bval = CallLuaXYZFunction("MMS_phi", cell_node_xyzs[j]);
+            auto bval = LuaCall<double>(L, "MMS_phi", cell_node_xyzs[j]);
             VecSetValue(b, imap[i], -Acell[i][j] * bval, ADD_VALUES);
           }
         } // for j
@@ -237,7 +204,7 @@ SimTest04_PWLC(const InputParameters& params)
       for (size_t j = 0; j < num_nodes; ++j)
         phi_fem += nodal_phi[j] * fe_vol_data.ShapeValue(j, qp);
 
-      double phi_true = CallLuaXYZFunction("MMS_phi", fe_vol_data.QPointXYZ(qp));
+      auto phi_true = LuaCall<double>(L, "MMS_phi", fe_vol_data.QPointXYZ(qp));
 
       local_error += std::pow(phi_true - phi_fem, 2.0) * fe_vol_data.JxW(qp);
     }

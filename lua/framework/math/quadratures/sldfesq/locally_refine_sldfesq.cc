@@ -15,42 +15,12 @@ RegisterLuaFunctionNamespace(LocallyRefineSLDFESQAngularQuadrature, aquad, Local
 int
 LocallyRefineSLDFESQAngularQuadrature(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-  if ((num_args != 3) and (num_args != 4))
-    LuaPostArgAmountError("LocallyRefineSLDFESQAngularQuadrature", 3, num_args);
+  LuaCheckArgs<size_t, Vector3, double>(L, "aquad.LocallyRefineSLDFESQ");
 
-  int handle = lua_tonumber(L, 1);
-
-  Vector3 ref_dir;
-  if (lua_istable(L, 2))
-  {
-    lua_pushnumber(L, 1);
-    lua_gettable(L, 2);
-    ref_dir.x = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    lua_pushnumber(L, 2);
-    lua_gettable(L, 2);
-    ref_dir.y = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-
-    lua_pushnumber(L, 3);
-    lua_gettable(L, 2);
-    ref_dir.z = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-  }
-  else
-  {
-    opensn::log.LogAllError() << "LocallyRefineSLDFESQAngularQuadrature: "
-                                 "Second argument expected to be table {a,b,c}.";
-    opensn::Exit(EXIT_FAILURE);
-  }
-
-  double cone_size = lua_tonumber(L, 3);
-
-  bool ref_dir_as_plane_normal = false;
-  if (num_args == 4)
-    ref_dir_as_plane_normal = lua_toboolean(L, 4);
+  auto handle = LuaArg<size_t>(L, 1);
+  auto ref_dir = LuaArg<Vector3>(L, 2);
+  auto cone_size = LuaArg<double>(L, 3);
+  bool ref_dir_as_plane_normal = LuaArgOptional<bool>(L, 4, false);
 
   try
   {
@@ -81,7 +51,7 @@ LocallyRefineSLDFESQAngularQuadrature(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

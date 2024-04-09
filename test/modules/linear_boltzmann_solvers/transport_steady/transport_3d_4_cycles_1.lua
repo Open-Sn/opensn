@@ -119,11 +119,11 @@ fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 --slices = {}
 --for k=1,count do
 --    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
---    fieldfunc.SetProperty(slices[k],SLICE_POINT,0.0,0.0,0.8001)
+--    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
 --    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
---    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,0.393,1.0-0.393,0)
---    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,-(1.0-0.393),-0.393,0.0)
---    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,0.0,0.0,1.0)
+--    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,{x = 0.393, y = 1.0-0.393, z = 0})
+--    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,{x = -(1.0-0.393), y = -0.393, z = 0.0})
+--    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, y = 1.0})
 --    fieldfunc.Initialize(slices[k])
 --    fieldfunc.Execute(slices[k])
 --    fieldfunc.ExportPython(slices[k])
@@ -159,8 +159,8 @@ if (master_export == nil) then
   ExportFieldFunctionToVTKG(fflist[1],"ZPhi3D","Phi")
 
   line = fieldfunc.FFInterpolationCreate(LINE)
-  fieldfunc.SetProperty(line,LINE_FIRSTPOINT,0.0,-1.0,0.5)
-  fieldfunc.SetProperty(line,LINE_SECONDPOINT,0.0, 1.0,0.5)
+  fieldfunc.SetProperty(line,LINE_FIRSTPOINT,{0.0,-1.0,0.5})
+  fieldfunc.SetProperty(line,LINE_SECONDPOINT,{0.0, 1.0,0.5})
   fieldfunc.SetProperty(line,LINE_NUMBEROFPOINTS,1000)
   fieldfunc.SetProperty(line,ADD_FIELDFUNCTION,fflist[2])
 

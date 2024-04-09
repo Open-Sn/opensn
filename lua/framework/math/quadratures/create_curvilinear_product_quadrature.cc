@@ -23,36 +23,26 @@ RegisterLuaFunctionNamespace(CreateSphericalProductQuadrature,
 int
 CreateCylindricalProductQuadrature(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args < 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "aquad.CreateCylindricalProductQuadrature";
+  LuaCheckArgs<int, int>(L, fname);
 
-  const int ident = lua_tonumber(L, 1);
-  const int Np = lua_tonumber(L, 2);
+  const auto ident = LuaArg<int>(L, 1);
+  const auto Np = LuaArg<int>(L, 2);
 
   std::vector<int> vNa;
   if (lua_isnumber(L, 3))
   {
-    const int Na = lua_tonumber(L, 3);
+    const auto Na = LuaArg<int>(L, 3);
     vNa.resize(Np, Na);
   }
   else if (lua_istable(L, 3))
   {
-    const size_t lNa = lua_rawlen(L, 3);
-    if (lNa != Np)
+    vNa = LuaArg<std::vector<int>>(L, 3);
+    if (vNa.size() != Np)
     {
       opensn::log.LogAllError() << "CreateCylindricalProductQuadrature : third argument, "
                                 << ", if a lua table, must be of length equal to second argument.";
       opensn::Exit(EXIT_FAILURE);
-    }
-    vNa.resize(Np, 0);
-    for (int n = 1; n <= lNa; ++n)
-    {
-      lua_pushnumber(L, n);
-      lua_gettable(L, 3);
-      vNa[n - 1] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
     }
   }
   else
@@ -62,9 +52,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  bool verbose = false;
-  if (num_args == 4)
-    verbose = lua_toboolean(L, 4);
+  auto verbose = LuaArgOptional<bool>(L, 4, false);
 
   const auto prod_quad_type = static_cast<ProductQuadratureType>(ident);
   switch (prod_quad_type)
@@ -82,9 +70,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushinteger(L, static_cast<lua_Integer>(index));
-
-      return 1;
+      return LuaReturn(L, index);
     }
     case ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE:
     {
@@ -99,9 +85,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushinteger(L, static_cast<lua_Integer>(index));
-
-      return 1;
+      return LuaReturn(L, index);
     }
     default:
     {
@@ -111,7 +95,7 @@ CreateCylindricalProductQuadrature(lua_State* L)
     }
   }
 
-  return 0;
+  return LuaReturn(L);
 }
 
 /** Creates a curvilinear product quadrature suitable for spherical geometries.
@@ -145,51 +129,44 @@ CreateCylindricalProductQuadrature(lua_State* L)
 int
 CreateSphericalProductQuadrature(lua_State* L)
 {
-  const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError("CreateSphericalProductQuadrature", 2, num_args);
+  const std::string fname = "aquad.CreateSphericalProductQuadrature";
+  LuaCheckArgs<int, int>(L, fname);
 
-  const int ident = lua_tonumber(L, 1);
-  const int Np = lua_tonumber(L, 2);
-  bool verbose = false;
-  if (num_args == 3)
-    verbose = lua_toboolean(L, 3);
+  const auto ident = LuaArg<int>(L, 1);
+  const auto Np = LuaArg<int>(L, 2);
+  auto verbose = LuaArgOptional<bool>(L, 3, false);
 
   const auto prod_quad_type = static_cast<ProductQuadratureType>(ident);
   switch (prod_quad_type)
   {
     case ProductQuadratureType::GAUSS_CHEBYSHEV:
     {
-      opensn::log.Log() << "CreateSphericalProductQuadrature : "
-                        << "Creating Gauss-Chebyshev Quadrature\n";
+      opensn::log.Log() << fname + ": Creating Gauss-Chebyshev Quadrature\n";
 
       const auto quad_pol = GaussChebyshevQuadrature(Np, verbose);
       const auto new_quad = std::make_shared<SphericalQuadrature>(quad_pol, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushnumber(L, static_cast<lua_Number>(index));
 
-      return 1;
+      return LuaReturn(L, index);
     }
     case ProductQuadratureType::GAUSS_LEGENDRE:
     {
-      opensn::log.Log() << "CreateSphericalProductQuadrature : "
-                        << "Creating Gauss-Legendre Quadrature\n";
+      opensn::log.Log() << fname + ": Creating Gauss-Legendre Quadrature\n";
 
       const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
       const auto new_quad = std::make_shared<SphericalQuadrature>(quad_pol, verbose);
 
       opensn::angular_quadrature_stack.push_back(new_quad);
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      lua_pushnumber(L, static_cast<lua_Number>(index));
+      LuaPush(L, index);
 
       return 1;
     }
     default:
     {
-      opensn::log.LogAllError() << "CreateSphericalProductQuadrature : "
-                                << "Unsupported quadrature type supplied, type=" << ident;
+      opensn::log.LogAllError() << fname + ": Unsupported quadrature type supplied, type=" << ident;
       opensn::Exit(EXIT_FAILURE);
     }
   }

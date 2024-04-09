@@ -12,9 +12,8 @@ RegisterLuaFunctionAsIs(MPIBarrier);
 int
 MPIBarrier(lua_State* L)
 {
-
   opensn::mpi_comm.barrier();
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

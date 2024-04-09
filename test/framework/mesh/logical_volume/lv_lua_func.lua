@@ -21,8 +21,8 @@ vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 mesh.SetMaterialIDFromLogicalVolume(vol0, 10)
 
 --Sets lua function describing a sphere (material 11)
-function MatIDFunction1(x,y,z,cur_id)
-    if (x*x + y*y + z*z < 1.0) then
+function MatIDFunction1(pt,cur_id)
+    if (pt.x*pt.x + pt.y*pt.y + pt.z*pt.z < 1.0) then
         return 11
     end
     return cur_id

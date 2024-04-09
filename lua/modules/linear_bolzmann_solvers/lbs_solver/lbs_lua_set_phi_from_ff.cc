@@ -18,20 +18,14 @@ RegisterLuaFunctionNamespace(LBSSetPhiFromFieldFunction, lbs, SetPhiFromFieldFun
 int
 LBSSetPhiFromFieldFunction(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "lbs.SetPhiFromFieldFunction";
+  LuaCheckArgs<size_t, ParameterBlock>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckTableValue(fname, L, 2);
-
-  const size_t handle = lua_tointeger(L, 1);
-
+  const auto handle = LuaArg<size_t>(L, 1);
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, handle, fname);
 
-  auto specs = TableParserAsParameterBlock::ParseTable(L, 2);
+  auto specs = LuaArg<ParameterBlock>(L, 2);
 
   opensn::lbs::PhiSTLOption phi_option = opensn::lbs::PhiSTLOption::PHI_OLD;
   std::vector<size_t> moment_indices;
@@ -68,7 +62,7 @@ LBSSetPhiFromFieldFunction(lua_State* L)
   // Now call the function
   lbs_solver.SetPhiFromFieldFunctions(phi_option, moment_indices, group_indices);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

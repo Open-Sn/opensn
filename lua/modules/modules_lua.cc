@@ -1,5 +1,6 @@
 #include "modules_lua.h"
 #include "framework/object_factory.h"
+#include "lua/framework/lua.h"
 #include "lua/framework/console/console.h"
 #include "cfem_diffusion/lua_cfem_diff_solver.h"
 #include "dfem_diffusion/lua_dfem_diff_solver.h"
@@ -21,14 +22,10 @@ LoadRegisteredLuaItems()
   luaL_openlibs(L);
 
   // Register version
-  lua_pushstring(L, PROJECT_VERSION);
-  lua_setglobal(L, "version");
-  lua_pushinteger(L, PROJECT_MAJOR_VERSION);
-  lua_setglobal(L, "major_version");
-  lua_pushinteger(L, PROJECT_MINOR_VERSION);
-  lua_setglobal(L, "minor_version");
-  lua_pushinteger(L, PROJECT_PATCH_VERSION);
-  lua_setglobal(L, "patch_version");
+  LuaSetGlobal(L, "version", PROJECT_VERSION);
+  LuaSetGlobal(L, "major_version", PROJECT_MAJOR_VERSION);
+  LuaSetGlobal(L, "minor_version", PROJECT_MINOR_VERSION);
+  LuaSetGlobal(L, "patch_version", PROJECT_PATCH_VERSION);
 
   // Registering functions
   RegisterLuaEntities(L);

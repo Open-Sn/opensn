@@ -123,8 +123,8 @@ fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 --############################################### Line plot
 --Testing consolidated interpolation
 cline = fieldfunc.FFInterpolationCreate(LINE)
-fieldfunc.SetProperty(cline,LINE_FIRSTPOINT,0.0,0.0,0.0001+xmin)
-fieldfunc.SetProperty(cline,LINE_SECONDPOINT,0.0,0.0, 29.999+xmin)
+fieldfunc.SetProperty(cline,LINE_FIRSTPOINT,{x = 0.0, y = 0.0, z = 0.0001+xmin})
+fieldfunc.SetProperty(cline,LINE_SECONDPOINT,{x = 0.0, y = 0.0, z = 29.999+xmin})
 fieldfunc.SetProperty(cline,LINE_NUMBEROFPOINTS, 50)
 
 for k=165,165 do

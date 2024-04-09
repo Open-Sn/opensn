@@ -16,26 +16,18 @@ RegisterLuaFunctionAsIs(AdjointSolverExportImportanceMapBinary);
 int
 AdjointSolverExportImportanceMapBinary(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "AdjointSolverExportImportanceMapBinary";
+  LuaCheckArgs<int, std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  LuaCheckIntegerValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 2);
-
-  const int solver_handle = lua_tointeger(L, 1);
-  const std::string file_name = lua_tostring(L, 2);
+  const auto solver_handle = LuaArg<int>(L, 1);
+  const auto file_name = LuaArg<std::string>(L, 2);
 
   auto& solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesAdjointSolver>(
     opensn::object_stack, solver_handle, fname);
 
   solver.ExportImportanceMap(file_name);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

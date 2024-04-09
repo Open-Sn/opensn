@@ -24,9 +24,9 @@ function dot_product(v1,v2)
     return result
 end
 
-function bnd_id(x,y,z,nx,ny,nz,cur_bid)
+function bnd_id(pt,normal,cur_bid)
     epsilon = 1.0e-6
-    n = {nx,ny,nz}
+    n = {normal.x,normal.y,normal.z}
     if (dot_product(n,{-1.0,0.0,0.0}) > (1.0-epsilon)) then
         return 0
     end

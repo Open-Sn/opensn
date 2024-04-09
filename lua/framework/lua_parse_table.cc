@@ -1,37 +1,32 @@
 #include "lua/framework/lua.h"
-
-#include "framework/runtime.h"
 #include "framework/logging/log_exceptions.h"
-
-#include "framework/data_types/data_types.h"
 #include "framework/parameters/parameter_block.h"
-
-#define ExceptionLuaNilValue                                                                       \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                                        \
-                         ": Encountered nil value assigned to key " + key_str_name)
-
-#define ExceptionLuaUnsupportedValue                                                               \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                                        \
-                         ": Encountered unsupported value type " +                                 \
-                         lua_typename(L, lua_type(L, -2)) + " for key " + key_str_name)
-
-#define ExceptionMixStringNumberKeys                                                               \
-  throw std::logic_error(std::string(__PRETTY_FUNCTION__) +                                        \
-                         ": Encountered mixed key types (string and number)")
 
 namespace opensnlua
 {
 
+namespace
+{
+
 //  NOLINTBEGIN(misc-no-recursion)
+
+/**
+ * This function recursively processes table values. If the value is
+ * a primitive type the recursion stops and the parameter block, which is
+ * currently active, will be extended with a parameter of this primitive
+ * type. If the value is another table, a new `Block`-type will be instantiated
+ * and the table recursion will then operate on this new block.
+ */
 void
-TableParserAsParameterBlock::RecursivelyParseTableValues(lua_State* L,
-                                                         opensn::ParameterBlock& block,
-                                                         const std::string& key_str_name)
+RecursivelyParseTableValues(lua_State* L,
+                            opensn::ParameterBlock& block,
+                            const std::string& key_str_name)
 {
   switch (lua_type(L, -1))
   {
     case LUA_TNIL:
-      ExceptionLuaNilValue;
+      throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
+                             ": Encountered nil value assigned to key " + key_str_name);
     case LUA_TBOOLEAN:
     {
       const bool bool_value = lua_toboolean(L, -1);
@@ -67,16 +62,18 @@ TableParserAsParameterBlock::RecursivelyParseTableValues(lua_State* L,
       break;
     }
     default:
-      ExceptionLuaUnsupportedValue;
-  } // switch on value types
+      throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
+                             ": Encountered unsupported value type " +
+                             lua_typename(L, lua_type(L, -2)) + " for key " + key_str_name);
+  }
 }
 // NOLINTEND(misc-no-recursion)
 
-//  NOLINTBEGIN(misc-no-recursion)
+} // namespace
+
+// NOLINTBEGIN(misc-no-recursion)
 void
-TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
-                                                       int t,
-                                                       opensn::ParameterBlock& block)
+RecursivelyParseTableKeys(lua_State* L, int t, opensn::ParameterBlock& block)
 {
   bool number_key_encountered = false;
   bool string_key_encountered = false;
@@ -89,7 +86,8 @@ TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
     if (lua_type(L, -2) == LUA_TSTRING)
     {
       if (number_key_encountered)
-        ExceptionMixStringNumberKeys;
+        throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
+                               ": Encountered mixed key types (string and number)");
 
       string_key_encountered = true;
       const std::string key_str_name = lua_tostring(L, -2);
@@ -102,7 +100,8 @@ TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
     if (lua_type(L, -2) == LUA_TNUMBER)
     {
       if (string_key_encountered)
-        ExceptionMixStringNumberKeys;
+        throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
+                               ": Encountered mixed key types (string and number)");
 
       if (block.Type() != opensn::ParameterBlockType::ARRAY)
         block.ChangeToArray();
@@ -118,16 +117,6 @@ TableParserAsParameterBlock::RecursivelyParseTableKeys(lua_State* L,
 }
 // NOLINTEND(misc-no-recursion)
 
-opensn::ParameterBlock
-TableParserAsParameterBlock::ParseTable(lua_State* L, int table_stack_index)
-{
-  opensn::ParameterBlock param_block;
-
-  RecursivelyParseTableKeys(L, table_stack_index, param_block);
-
-  return param_block;
-}
-
 //  NOLINTBEGIN(misc-no-recursion)
 void
 PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
@@ -135,16 +124,16 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
   switch (block.Type())
   {
     case opensn::ParameterBlockType::BOOLEAN:
-      lua_pushboolean(L, block.GetValue<bool>());
+      LuaPush(L, block.GetValue<bool>());
       break;
     case opensn::ParameterBlockType::FLOAT:
-      lua_pushnumber(L, block.GetValue<double>());
+      LuaPush(L, block.GetValue<double>());
       break;
     case opensn::ParameterBlockType::STRING:
-      lua_pushstring(L, block.GetValue<std::string>().c_str());
+      LuaPush(L, block.GetValue<std::string>());
       break;
     case opensn::ParameterBlockType::INTEGER:
-      lua_pushinteger(L, block.GetValue<lua_Integer>());
+      LuaPush(L, block.GetValue<lua_Integer>());
       break;
     case opensn::ParameterBlockType::ARRAY:
     {
@@ -154,7 +143,7 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
       for (size_t k = 0; k < num_params; ++k)
       {
         if (level > 0)
-          lua_pushinteger(L, static_cast<lua_Integer>(k) + 1);
+          LuaPush(L, k + 1);
         PushParameterBlock(L, block.GetParam(k), level + 1);
         if (level > 0)
           lua_settable(L, -3);
@@ -170,7 +159,7 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
       {
         const auto& param = block.GetParam(k);
         if (level > 0)
-          lua_pushstring(L, param.Name().c_str());
+          LuaPush(L, param.Name());
         PushParameterBlock(L, block.GetParam(k), level + 1);
         if (level > 0)
           lua_settable(L, -3);
@@ -178,40 +167,9 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
       break;
     }
     default:
-      OpenSnLogicalError("Attempting to push unsupport ParameterBlockType to lua");
+      OpenSnLogicalError("Attempting to push unsupported ParameterBlockType to lua");
   }
 }
 //  NOLINTEND(misc-no-recursion)
-
-opensn::ParameterBlock
-StackItemToParameterBlock(lua_State* L, int index)
-{
-  switch (lua_type(L, index))
-  {
-    case LUA_TNIL:
-      return opensn::ParameterBlock{};
-    case LUA_TBOOLEAN:
-      return opensn::ParameterBlock("", lua_toboolean(L, index));
-    case LUA_TNUMBER:
-    {
-      if (lua_isinteger(L, index))
-        return opensn::ParameterBlock("", lua_tointeger(L, index));
-      else
-        return opensn::ParameterBlock("", lua_tonumber(L, index));
-    }
-    case LUA_TSTRING:
-    {
-      const std::string value = lua_tostring(L, index);
-      return opensn::ParameterBlock("", value);
-    }
-    case LUA_TTABLE:
-    {
-      auto paramblock = TableParserAsParameterBlock::ParseTable(L, index);
-      return paramblock;
-    }
-    default:
-      OpenSnLogicalError("Unhandled Lua type.");
-  }
-}
 
 } // namespace opensnlua

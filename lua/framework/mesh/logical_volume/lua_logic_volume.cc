@@ -13,25 +13,16 @@ RegisterLuaFunctionNamespace(LogVolPointSense, logvol, PointSense);
 int
 LogVolPointSense(lua_State* L)
 {
-  const std::string fname = "LogVolPointSense";
-  const int num_args = lua_gettop(L);
-  if (num_args != 4)
-    LuaPostArgAmountError(fname, 4, num_args);
+  const std::string fname = "logvol.PointSense";
+  LuaCheckArgs<int, Vector3>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-
-  const int lv_handle = lua_tointeger(L, 1);
+  const auto lv_handle = LuaArg<int>(L, 1);
+  auto point = LuaArg<Vector3>(L, 2);
 
   const auto& lv = opensn::GetStackItem<LogicalVolume>(opensn::object_stack, lv_handle, fname);
 
-  const Vector3 point(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
-
-  if (lv.Inside(point))
-    lua_pushboolean(L, true);
-  else
-    lua_pushboolean(L, false);
-
-  return 1;
+  auto ret_val = lv.Inside(point);
+  return LuaReturn(L, ret_val);
 }
 
 } // namespace opensnlua

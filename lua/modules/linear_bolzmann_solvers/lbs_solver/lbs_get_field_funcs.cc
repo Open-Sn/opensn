@@ -16,16 +16,11 @@ RegisterLuaFunctionNamespace(LBSGetScalarFieldFunctionList, lbs, GetScalarFieldF
 int
 LBSGetScalarFieldFunctionList(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
-
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNumberValue(fname, L, 1);
+  const std::string fname = "lbs.GetScalarFieldFunctionList";
+  LuaCheckArgs<size_t>(L, fname);
 
   // Get pointer to solver
-  const int solver_handle = lua_tonumber(L, 1);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
   const auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
@@ -46,9 +41,7 @@ LBSGetScalarFieldFunctionList(lua_State* L)
   };
 
   // Building table of handles
-  lua_newtable(L);
-  lua_Integer count = 0;
-
+  std::vector<size_t> ff_handles;
   // Flux moments first
   for (int g = 0; g < lbs_solver.NumGroups(); g++)
   {
@@ -60,10 +53,7 @@ LBSGetScalarFieldFunctionList(lua_State* L)
       if (m != 0)
         continue;
 
-      lua_pushinteger(L, 1 + count++);
-      lua_pushinteger(L, static_cast<lua_Integer>(GetStackFFHandle(local_ff)));
-
-      lua_settable(L, -3);
+      ff_handles.push_back(GetStackFFHandle(local_ff));
     }
   }
 
@@ -79,8 +69,7 @@ LBSGetScalarFieldFunctionList(lua_State* L)
   //   lua_settable(L, -3);
   // }
 
-  lua_pushinteger(L, count);
-  return 2;
+  return LuaReturn(L, ff_handles, ff_handles.size());
 }
 
 } // namespace opensnlua::lbs

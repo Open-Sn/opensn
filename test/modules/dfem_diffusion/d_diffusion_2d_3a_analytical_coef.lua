@@ -16,14 +16,14 @@ mesh.MeshGenerator.Execute(meshgen1)
 mesh.SetUniformMaterialID(0)
 
 
-function D_coef(i,x,y,z)
-    return 3.0 + x + y
+function D_coef(i,pt)
+    return 3.0 + pt.x + pt.y
 end
-function Q_ext(i,x,y,z)
-    return x*x
+function Q_ext(i,pt)
+    return pt.x*pt.x
 end
-function Sigma_a(i,x,y,z)
-    return x*y*y
+function Sigma_a(i,pt)
+    return pt.x*pt.y*pt.y
 end
 
 -- Setboundary IDs

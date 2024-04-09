@@ -21,17 +21,11 @@ RegisterLuaFunctionNamespace(LBSReadFluxMoments, lbs, ReadFluxMoments);
 int
 LBSWriteFluxMoments(lua_State* L)
 {
-  const std::string fname = "LBSWriteFluxMoments";
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "lbs.WriteFluxMoments";
+  LuaCheckArgs<int, std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
+  const auto solver_handle = LuaArg<int>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -39,23 +33,17 @@ LBSWriteFluxMoments(lua_State* L)
 
   lbs_solver.WriteFluxMoments(lbs_solver.PhiOldLocal(), file_base);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
 LBSCreateAndWriteSourceMoments(lua_State* L)
 {
-  const std::string fname = "LBSCreateAndWriteSourceMoments";
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if (num_args != 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "lbs.CreateAndWriteSourceMoments";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -64,30 +52,18 @@ LBSCreateAndWriteSourceMoments(lua_State* L)
   auto source_moments = lbs_solver.MakeSourceMomentsFromPhi();
   lbs_solver.WriteFluxMoments(source_moments, file_base);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
 LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
 {
-  const std::string fname = "LBSReadFluxMomentsAndMakeSourceMoments";
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if ((num_args != 2) and (num_args != 3))
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "lbs.ReadFluxMomentsAndMakeSourceMoments";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
-
-  bool single_file_flag = false;
-  if (num_args == 3)
-  {
-    LuaCheckBoolValue(fname, L, 3);
-    single_file_flag = lua_toboolean(L, 3);
-  }
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
+  bool single_file_flag = LuaArgOptional<bool>(L, 3, false);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -101,30 +77,18 @@ LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
   lbs_solver.ExtSrcMomentsLocal() = lbs_solver.MakeSourceMomentsFromPhi();
   lbs_solver.PhiOldLocal() = temp_phi;
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
 LBSReadSourceMoments(lua_State* L)
 {
-  const std::string fname = "LBSReadSourceMoments";
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if ((num_args != 2) and (num_args != 3))
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "lbs.ReadSourceMoments";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
-
-  bool single_file_flag = false;
-  if (num_args == 3)
-  {
-    LuaCheckBoolValue(fname, L, 3);
-    single_file_flag = lua_toboolean(L, 3);
-  }
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
+  auto single_file_flag = LuaArgOptional<bool>(L, 3, false);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -132,30 +96,18 @@ LBSReadSourceMoments(lua_State* L)
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.ExtSrcMomentsLocal(), single_file_flag);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
 LBSReadFluxMoments(lua_State* L)
 {
-  const std::string fname = "LBSReadFluxMoments";
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if ((num_args != 2) and (num_args != 3))
-    LuaPostArgAmountError(fname, 2, num_args);
+  const std::string fname = "lbs.ReadFluxMoments";
+  LuaCheckArgs<size_t, std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const std::string file_base = lua_tostring(L, 2);
-
-  bool single_file_flag = false;
-  if (num_args == 3)
-  {
-    LuaCheckBoolValue(fname, L, 3);
-    single_file_flag = lua_toboolean(L, 3);
-  }
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto file_base = LuaArg<std::string>(L, 2);
+  auto single_file_flag = LuaArgOptional<bool>(L, 3, false);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -163,7 +115,7 @@ LBSReadFluxMoments(lua_State* L)
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.PhiOldLocal(), single_file_flag);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs

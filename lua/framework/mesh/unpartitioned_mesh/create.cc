@@ -28,23 +28,15 @@ RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromExodusII,
 int
 MeshUnpartitionedMeshFromVTU(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string fname = "mesh.UnpartitionedMeshFromVTU";
+  LuaCheckArgs<std::string>(L, fname);
 
-  LuaCheckNilValue(func_name, L, 1);
-  if (num_args >= 2)
-    LuaCheckNilValue(func_name, L, 2);
-
-  const char* temp = lua_tostring(L, 1);
-  const char* field = "";
-  if (num_args >= 2)
-    field = lua_tostring(L, 2);
+  auto file_name = LuaArg<std::string>(L, 1);
+  auto field = LuaArgOptional<std::string>(L, 2, std::string(""));
   auto new_object = new UnpartitionedMesh;
 
   UnpartitionedMesh::Options options;
-  options.file_name = std::string(temp);
+  options.file_name = file_name;
   options.material_id_fieldname = field;
   options.boundary_id_fieldname = field;
 
@@ -52,31 +44,22 @@ MeshUnpartitionedMeshFromVTU(lua_State* L)
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  lua_pushnumber(L, static_cast<lua_Number>(opensn::unpartitionedmesh_stack.size() - 1));
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
 MeshUnpartitionedMeshFromPVTU(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromPVTU";
+  LuaCheckArgs<std::string>(L, func_name);
 
-  LuaCheckNilValue(func_name, L, 1);
-  if (num_args >= 2)
-    LuaCheckNilValue(func_name, L, 2);
-
-  const char* temp = lua_tostring(L, 1);
-  const char* field = "";
-  if (num_args >= 2)
-    field = lua_tostring(L, 2);
+  auto file_name = LuaArg<std::string>(L, 1);
+  auto field = LuaArgOptional<std::string>(L, 2, std::string(""));
   auto new_object = new opensn::UnpartitionedMesh;
 
   opensn::UnpartitionedMesh::Options options;
-  options.file_name = std::string(temp);
+  options.file_name = file_name;
   options.material_id_fieldname = field;
   options.boundary_id_fieldname = field;
 
@@ -84,123 +67,94 @@ MeshUnpartitionedMeshFromPVTU(lua_State* L)
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  lua_pushnumber(L, static_cast<lua_Number>(opensn::unpartitionedmesh_stack.size() - 1));
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
 MeshUnpartitionedMeshFromEnsightGold(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromEnsightGold";
+  LuaCheckArgs<std::string>(L, func_name);
 
-  LuaCheckNilValue(func_name, L, 1);
-  if (num_args >= 2)
-    LuaCheckNilValue(func_name, L, 2);
-
-  const char* temp = lua_tostring(L, 1);
-  double scale = 1.0;
-  if (num_args >= 2)
-    scale = lua_tonumber(L, 2);
+  auto file_name = LuaArg<std::string>(L, 1);
+  auto scale = LuaArgOptional<double>(L, 2, 1.0);
   auto new_object = new opensn::UnpartitionedMesh;
 
   opensn::UnpartitionedMesh::Options options;
-  options.file_name = std::string(temp);
+  options.file_name = file_name;
   options.scale = scale;
 
   new_object->ReadFromEnsightGold(options);
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  lua_pushnumber(L, static_cast<lua_Number>(opensn::unpartitionedmesh_stack.size() - 1));
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
 MeshUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromWavefrontOBJ";
+  LuaCheckArgs<std::string>(L, func_name);
 
-  LuaCheckNilValue(func_name, L, 1);
-
-  const char* temp = lua_tostring(L, 1);
+  auto file_name = LuaArg<std::string>(L, 1);
 
   auto new_object = new opensn::UnpartitionedMesh;
 
   opensn::UnpartitionedMesh::Options options;
-  options.file_name = std::string(temp);
+  options.file_name = file_name;
 
   new_object->ReadFromWavefrontOBJ(options);
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  lua_pushnumber(L, static_cast<lua_Number>(opensn::unpartitionedmesh_stack.size() - 1));
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
 MeshUnpartitionedMeshFromMshFormat(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromMshFormat";
+  LuaCheckArgs<std::string>(L, func_name);
 
-  LuaCheckNilValue(func_name, L, 1);
-
-  const char* temp = lua_tostring(L, 1);
+  auto file_name = LuaArg<std::string>(L, 1);
 
   auto new_object = new opensn::UnpartitionedMesh;
 
   opensn::UnpartitionedMesh::Options options;
-  options.file_name = std::string(temp);
+  options.file_name = file_name;
 
   new_object->ReadFromMsh(options);
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  lua_pushnumber(L, static_cast<lua_Number>(opensn::unpartitionedmesh_stack.size() - 1));
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 int
 MeshUnpartitionedMeshFromExodusII(lua_State* L)
 {
-  const std::string func_name = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args < 1)
-    LuaPostArgAmountError(func_name, 1, num_args);
+  const std::string func_name = "mesh.UnpartitionedMeshFromExodusII";
+  LuaCheckArgs<std::string>(L, func_name);
 
-  LuaCheckNilValue(func_name, L, 1);
-  if (num_args >= 2)
-    LuaCheckNilValue(func_name, L, 2);
-
-  const char* temp = lua_tostring(L, 1);
-  double scale = 1.0;
-  if (num_args >= 2)
-    scale = lua_tonumber(L, 2);
+  auto file_name = LuaArg<std::string>(L, 1);
+  auto scale = LuaArgOptional<double>(L, 2, 1.0);
   auto new_object = new opensn::UnpartitionedMesh;
 
   opensn::UnpartitionedMesh::Options options;
-  options.file_name = std::string(temp);
+  options.file_name = file_name;
   options.scale = scale;
 
   new_object->ReadFromExodus(options);
 
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
-  lua_pushnumber(L, static_cast<lua_Number>(opensn::unpartitionedmesh_stack.size() - 1));
-
-  return 1;
+  auto index = opensn::unpartitionedmesh_stack.size() - 1;
+  return LuaReturn(L, index);
 }
 
 } // namespace opensnlua

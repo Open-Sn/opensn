@@ -21,17 +21,17 @@ mesh.SetUniformMaterialID(0)
 --    boundary = zero-Dirichlet on all 4 sides
 --    volumetric source term: q(,x) = 2*pi*pi * sin(pi.x) * sin(pi.y)
 -- the factor 2 is the dim of the problem
-function D_coef(i,x,y,z)
+function D_coef(i,pt)
     return 1.0
 end
-function Q_ext(i,x,y,z)
-    return 2.*math.pi*math.pi * math.sin(math.pi*x) * math.sin(math.pi*y)
+function Q_ext(i,pt)
+    return 2.*math.pi*math.pi * math.sin(math.pi*pt.x) * math.sin(math.pi*pt.y)
 end
-function Sigma_a(i,x,y,z)
+function Sigma_a(i,pt)
     return 0.0
 end
-function MMS_phi(i,x,y,z)
-    return math.sin(math.pi*x) * math.sin(math.pi*y)
+function MMS_phi(i,pt)
+    return math.sin(math.pi*pt.x) * math.sin(math.pi*pt.y)
 end
 
 -- Set boundary IDs

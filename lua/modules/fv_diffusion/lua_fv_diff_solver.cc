@@ -32,15 +32,8 @@ int
 FVDiffusionSolverCreate(lua_State* L)
 {
   const std::string fname = __FUNCTION__;
-  int num_args = lua_gettop(L);
 
-  std::string solver_name = "FVDiffusionSolver";
-
-  if (num_args == 1)
-  {
-    LuaCheckStringValue(fname, L, 1);
-    solver_name = lua_tostring(L, 1);
-  }
+  auto solver_name = LuaArgOptional<std::string>(L, 1, "FVDiffusionSolver");
 
   auto d_coef_function = CreateFunction("D_coef");
   opensn::function_stack.push_back(d_coef_function);
@@ -58,62 +51,34 @@ FVDiffusionSolverCreate(lua_State* L)
 
   opensn::object_stack.push_back(new_solver);
 
-  lua_pushinteger(L, static_cast<lua_Integer>(opensn::object_stack.size() - 1));
-
   opensn::log.LogAllVerbose1() << "\nFVDiffusionSolverCreate: FV Diffusion solver created"
                                << std::endl;
-  return 1;
+
+  return LuaReturn(L, opensn::object_stack.size() - 1);
 }
 
 int
 FVDiffusionSetBCProperty(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args < 2)
-    LuaPostArgAmountError(fname, num_args, 2);
-
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
+  const std::string fname = "diffusion.FVSetBCProperty";
+  LuaCheckArgs<size_t>(L, fname);
 
   // Get solver
-  LuaCheckNumberValue(fname, L, 1);
-  const int solver_index = lua_tonumber(L, 1);
-
+  const auto solver_index = LuaArg<size_t>(L, 1);
   auto& solver =
     opensn::GetStackItem<opensn::fv_diffusion::Solver>(opensn::object_stack, solver_index, fname);
 
   // Get property index
-  LuaCheckStringValue(fname, L, 2);
-  const std::string property_name = lua_tostring(L, 2);
+  const auto property_name = LuaArg<std::string>(L, 2);
 
   // Handle properties
   if (property_name == "boundary_type")
   {
-    if (num_args < 4)
-    {
-      opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                              << " FVDiffusionsetBCproperty(...,\"boundary_type\".... "
-                              << " At least 4 arguments are expected.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-    LuaCheckStringValue(fname, L, 3);
-    const std::string bound_name = lua_tostring(L, 3);
-
-    LuaCheckStringValue(fname, L, 4);
-    const std::string type_name = lua_tostring(L, 4);
+    const auto bound_name = LuaArg<std::string>(L, 3);
+    const auto type_name = LuaArg<std::string>(L, 4);
 
     if (type_name == "reflecting")
     {
-      if (num_args != 4)
-      {
-        opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " FVDiffusionsetBCproperty(...,\"boundary_type\"," << bound_name
-                                << ",\"reflecting\". "
-                                << " 4 arguments are expected.";
-        opensn::Exit(EXIT_FAILURE);
-      }
-
       opensn::fv_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::fv_diffusion::BoundaryType::Reflecting;
 
@@ -124,16 +89,7 @@ FVDiffusionSetBCProperty(lua_State* L)
     }
     else if (type_name == "dirichlet")
     {
-      if (num_args != 5)
-      {
-        opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " FVDiffusionsetBCproperty(...,\"boundary_type\"," << bound_name
-                                << ",\"dirichlet\". "
-                                << " 5 arguments are expected.";
-        opensn::Exit(EXIT_FAILURE);
-      }
-      LuaCheckNumberValue(fname, L, 5);
-      double boundary_value = lua_tonumber(L, 5);
+      auto boundary_value = LuaArg<double>(L, 5);
 
       opensn::fv_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::fv_diffusion::BoundaryType::Dirichlet;
@@ -145,16 +101,7 @@ FVDiffusionSetBCProperty(lua_State* L)
     }
     else if (type_name == "neumann")
     {
-      if (num_args != 5)
-      {
-        opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " FVDiffusionsetBCproperty(...,\"boundary_type\"," << bound_name
-                                << ",\"neumann\". "
-                                << " 5 arguments are expected.";
-        opensn::Exit(EXIT_FAILURE);
-      }
-      LuaCheckNumberValue(fname, L, 5);
-      double f_value = lua_tonumber(L, 5);
+      auto f_value = LuaArg<double>(L, 5);
 
       opensn::fv_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::fv_diffusion::BoundaryType::Robin;
@@ -166,15 +113,6 @@ FVDiffusionSetBCProperty(lua_State* L)
     }
     else if (type_name == "vacuum")
     {
-      if (num_args != 4)
-      {
-        opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " FVDiffusionsetBCproperty(...,\"boundary_type\"," << bound_name
-                                << ",\"vacuum\". "
-                                << " 4 arguments are expected.";
-        opensn::Exit(EXIT_FAILURE);
-      }
-
       opensn::fv_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::fv_diffusion::BoundaryType::Robin;
       bndry_info.second = {0.25, 0.5, 0.0};
@@ -185,21 +123,9 @@ FVDiffusionSetBCProperty(lua_State* L)
     }
     else if (type_name == "robin")
     {
-      if (num_args != 7)
-      {
-        opensn::log.Log0Error() << "Invalid amount of arguments used in"
-                                << " FVDiffusionsetBCproperty(...,\"boundary_type\"," << bound_name
-                                << ",\"robin\". "
-                                << " 7 arguments are expected.";
-        opensn::Exit(EXIT_FAILURE);
-      }
-      LuaCheckNumberValue(fname, L, 5);
-      LuaCheckNumberValue(fname, L, 6);
-      LuaCheckNumberValue(fname, L, 7);
-
-      double a_value = lua_tonumber(L, 5);
-      double b_value = lua_tonumber(L, 6);
-      double f_value = lua_tonumber(L, 7);
+      auto a_value = LuaArg<double>(L, 5);
+      auto b_value = LuaArg<double>(L, 6);
+      auto f_value = LuaArg<double>(L, 7);
 
       opensn::fv_diffusion::Solver::BoundaryInfo bndry_info;
       bndry_info.first = opensn::fv_diffusion::BoundaryType::Robin;
@@ -212,18 +138,17 @@ FVDiffusionSetBCProperty(lua_State* L)
     }
     else
     {
-      opensn::log.LogAllError() << "Unsupported boundary type encountered in call to "
-                                << "FVDiffusionsetBCproperty(..,\"boundary_type\",.. :"
-                                << type_name;
+      opensn::log.LogAllError() << fname << ": Unsupported boundary type '" << type_name << "'.";
       opensn::Exit(EXIT_FAILURE);
     }
   }
   else
   {
-    opensn::log.Log0Error() << "Invalid property in DiffusionsetBCproperty.";
+    opensn::log.Log0Error() << fname + ": Invalid property '" + property_name + "'.";
     opensn::Exit(EXIT_FAILURE);
   }
-  return 0;
+
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

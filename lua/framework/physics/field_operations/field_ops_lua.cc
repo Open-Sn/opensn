@@ -12,20 +12,16 @@ RegisterLuaFunctionNamespace(FieldOperationExecute, fieldfunc, FieldOperationExe
 int
 FieldOperationExecute(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  const int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  const std::string fname = "fieldfunc.FieldOperationExecute";
+  LuaCheckArgs<size_t>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-
-  const size_t handle = lua_tointeger(L, 1);
+  const auto handle = LuaArg<size_t>(L, 1);
 
   auto& operation = opensn::GetStackItem<FieldOperation>(opensn::object_stack, handle, fname);
 
   operation.Execute();
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

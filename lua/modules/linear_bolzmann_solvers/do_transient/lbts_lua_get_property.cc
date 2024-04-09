@@ -43,7 +43,6 @@ LBTSGetProperty(lua_State* L)
   if (num_args < 2) LuaPostArgAmountError(fname, 2, num_args);
 
   // Get the solver
-  LuaCheckNilValue(fname, L, 1);
   const int solver_handle = lua_tointeger(L, 1);
 
   auto& solver =

@@ -13,8 +13,8 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes}
 mesh.MeshGenerator.Execute(meshgen1)
 
 --Sets a middle square to material 1
-function mat_id(x,y,z,cur_id)
-    if (math.abs(x)<L/10 and math.abs(y)<L/10) then
+function mat_id(pt,cur_id)
+    if (math.abs(pt.x)<L/10 and math.abs(pt.y)<L/10) then
         return 1
     end
     return cur_id

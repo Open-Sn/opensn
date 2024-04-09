@@ -27,37 +27,26 @@ RegisterLuaConstantAsIs(LOG_ALLVERBOSE_2, Varying(12));
 int
 LogSetVerbosity(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-
-  if (num_args == 0)
+  const std::string fname = "log.SetVerbosity";
+  LuaCheckArgs<int>(L, fname);
+  auto level = LuaArg<int>(L, 1);
+  if (level <= 2)
   {
-    return 0;
+    opensn::log.SetVerbosity(level);
   }
-  else
-  {
-    int level = lua_tonumber(L, 1);
-    if (level <= 2)
-    {
-      opensn::log.SetVerbosity(level);
-    }
-  }
-  return 0;
+  return LuaReturn(L);
 }
 
 int
 LogLog(lua_State* L)
 {
-  int num_args = lua_gettop(L);
-
-  if (num_args != 2)
-    LuaPostArgAmountError("Log", 2, num_args);
-
-  int mode = lua_tonumber(L, 1);
-  const char* message = lua_tostring(L, 2);
+  LuaCheckArgs<int, std::string>(L, "log.Log");
+  auto mode = LuaArg<int>(L, 1);
+  auto message = LuaArg<std::string>(L, 2);
 
   opensn::log.Log(static_cast<opensn::Logger::LOG_LVL>(mode)) << message << std::endl;
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

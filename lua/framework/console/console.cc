@@ -70,7 +70,7 @@ Console::LuaWrapperCall(lua_State* L)
 
   const auto& registry = console.function_wrapper_registry_;
 
-  const std::string fname = lua_tostring(L, 1);
+  const auto fname = LuaArg<std::string>(L, 1);
 
   OpenSnLogicalErrorIf(registry.count(fname) == 0,
                        std::string("Wrapper with name \"") + fname + "\" not in console registry.");
@@ -85,16 +85,16 @@ Console::LuaWrapperCall(lua_State* L)
     const std::string arg_name = "arg" + std::to_string(p - 2);
 
     if (lua_isboolean(L, p))
-      main_arguments_block.AddParameter(arg_name, lua_toboolean(L, p));
+      main_arguments_block.AddParameter(arg_name, LuaArg<bool>(L, p));
     else if (lua_isinteger(L, p))
-      main_arguments_block.AddParameter(arg_name, lua_tointeger(L, p));
+      main_arguments_block.AddParameter(arg_name, LuaArg<int>(L, p));
     else if (lua_isnumber(L, p))
-      main_arguments_block.AddParameter(arg_name, lua_tonumber(L, p));
+      main_arguments_block.AddParameter(arg_name, LuaArg<double>(L, p));
     else if (lua_isstring(L, p))
-      main_arguments_block.AddParameter(arg_name, lua_tostring(L, p));
+      main_arguments_block.AddParameter(arg_name, LuaArg<std::string>(L, p));
     else if (lua_istable(L, p))
     {
-      auto block = TableParserAsParameterBlock::ParseTable(L, p);
+      auto block = LuaArg<ParameterBlock>(L, p);
       block.SetBlockName(arg_name);
       std::string scope = fname + ":";
       scope.append(arg_name + " ");
@@ -177,14 +177,11 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
   {
     if (argc > 0)
     {
-      lua_newtable(L);
-      for (int i = 1; i <= argc; i++)
-      {
-        lua_pushnumber(L, i);
-        lua_pushstring(L, argv[i - 1]);
-        lua_settable(L, -3);
-      }
-      lua_setglobal(L, "Args");
+      std::vector<std::string> args;
+      args.resize(argc);
+      for (int i = 0; i < argc; i++)
+        args[i] = std::string(argv[i]);
+      LuaSetGlobal(L, "Args", args);
     }
     int error = luaL_dofile(this->console_state_, fileName.c_str());
 
@@ -202,11 +199,8 @@ Console::PostMPIInfo(int location_id, int number_of_processes) const
 {
   lua_State* L = this->console_state_;
 
-  lua_pushinteger(L, location_id);
-  lua_setglobal(L, "location_id");
-
-  lua_pushinteger(L, number_of_processes);
-  lua_setglobal(L, "number_of_processes");
+  LuaSetGlobal(L, "location_id", location_id);
+  LuaSetGlobal(L, "number_of_processes", number_of_processes);
 }
 
 void

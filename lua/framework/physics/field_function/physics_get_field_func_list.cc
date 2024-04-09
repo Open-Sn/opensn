@@ -16,15 +16,10 @@ RegisterLuaFunctionNamespace(GetFieldFunctionHandleByName, fieldfunc, GetHandleB
 int
 GetFieldFunctionHandleByName(lua_State* L)
 {
-  const std::string fname = __FUNCTION__;
-  int num_args = lua_gettop(L);
-  if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+  const std::string fname = "fieldfunc.GetHandleByName";
+  LuaCheckArgs<std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckStringValue(fname, L, 1);
-
-  const std::string ff_name = lua_tostring(L, 1);
+  const auto ff_name = LuaArg<std::string>(L, 1);
 
   size_t ff_handle_counter = 0;
   std::vector<size_t> handles_that_matched;
@@ -44,7 +39,7 @@ GetFieldFunctionHandleByName(lua_State* L)
                               << "\". A null handle will "
                               << "be returned." << std::endl;
 
-    return 0;
+    return LuaReturn(L);
   }
 
   if (num_handles > 1)
@@ -53,8 +48,8 @@ GetFieldFunctionHandleByName(lua_State* L)
                               << " requested name. Only the first match will be "
                               << " returned.";
 
-  lua_pushinteger(L, static_cast<lua_Integer>(handles_that_matched.front()));
-  return 1;
+  auto handle = handles_that_matched.front();
+  return LuaReturn(L, handle);
 }
 
 } // namespace opensnlua

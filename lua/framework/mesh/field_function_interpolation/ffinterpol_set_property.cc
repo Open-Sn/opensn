@@ -56,16 +56,16 @@ CreateFunction(const std::string& function_name)
 int
 FFInterpolationSetProperty(lua_State* L)
 {
-  const std::string fname = "FFInterpolationSetProperty";
-  int numArgs = lua_gettop(L);
+  const std::string fname = "fieldfunc.SetProperty";
+  LuaCheckArgs<size_t, int>(L, fname);
 
   // Get handle to field function
-  const size_t ffihandle = lua_tonumber(L, 1);
+  const auto ffihandle = LuaArg<size_t>(L, 1);
 
   auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 
   // Process properties
-  auto property = static_cast<FieldFunctionInterpolationProperty>(lua_tonumber(L, 2));
+  auto property = static_cast<FieldFunctionInterpolationProperty>(LuaArg<int>(L, 2));
   // Check point properties
   if (property == FieldFunctionInterpolationProperty::PROBEPOINT)
     if (p_ffi->Type() != FieldFunctionInterpolationType::POINT)
@@ -89,7 +89,7 @@ FFInterpolationSetProperty(lua_State* L)
   // Generic
   if (property == FieldFunctionInterpolationProperty::ADD_FIELD_FUNCTION)
   {
-    int ffhandle = lua_tonumber(L, 3);
+    auto ffhandle = LuaArg<size_t>(L, 3);
     auto cur_ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ffhandle, fname);
     auto cur_ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(cur_ff_base);
 
@@ -97,10 +97,7 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::SET_FIELD_FUNCTIONS)
   {
-    LuaCheckTableValue(fname, L, 3);
-    std::vector<double> handle_array;
-    LuaPopulateVectorFrom1DArray(fname, L, 3, handle_array);
-
+    auto handle_array = LuaArg<std::vector<double>>(L, 3);
     for (double handle_d : handle_array)
     {
       const auto ffhandle = static_cast<int>(handle_d);
@@ -113,81 +110,49 @@ FFInterpolationSetProperty(lua_State* L)
   else if (property == FieldFunctionInterpolationProperty::PROBEPOINT)
   {
     auto& cur_ffi = dynamic_cast<FieldFunctionInterpolationPoint&>(*p_ffi);
-
-    double x = lua_tonumber(L, 3);
-    double y = lua_tonumber(L, 4);
-    double z = lua_tonumber(L, 5);
-
-    cur_ffi.GetPointOfInterest() = Vector3(x, y, z);
+    cur_ffi.GetPointOfInterest() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::SLICEPOINT)
   {
     auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-
-    double x = lua_tonumber(L, 3);
-    double y = lua_tonumber(L, 4);
-    double z = lua_tonumber(L, 5);
-
-    cur_ffi_slice.GetPlanePoint() = Vector3(x, y, z);
+    cur_ffi_slice.GetPlanePoint() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::SLICENORMAL)
   {
     auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-
-    double x = lua_tonumber(L, 3);
-    double y = lua_tonumber(L, 4);
-    double z = lua_tonumber(L, 5);
-
-    cur_ffi_slice.GetNormal() = Vector3(x, y, z).Normalized();
+    cur_ffi_slice.GetNormal() = LuaArg<Vector3>(L, 3).Normalized();
   }
   else if (property == FieldFunctionInterpolationProperty::SLICETANGENT)
   {
     auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-
-    double x = lua_tonumber(L, 3);
-    double y = lua_tonumber(L, 4);
-    double z = lua_tonumber(L, 5);
-
-    cur_ffi_slice.GetTangent() = Vector3(x, y, z).Normalized();
+    cur_ffi_slice.GetTangent() = LuaArg<Vector3>(L, 3).Normalized();
   }
   else if (property == FieldFunctionInterpolationProperty::SLICEBINORM)
   {
     auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-
-    double x = lua_tonumber(L, 3);
-    double y = lua_tonumber(L, 4);
-    double z = lua_tonumber(L, 5);
-
-    cur_ffi_slice.GetBiNorm() = Vector3(x, y, z).Normalized();
+    cur_ffi_slice.GetBiNorm() = LuaArg<Vector3>(L, 3).Normalized();
   }
   else if (property == FieldFunctionInterpolationProperty::FIRSTPOINT)
   {
-    if (numArgs != 5)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
+    LuaCheckArgs<size_t, int, Vector3>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-
-    Vector3 point(lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
-    cur_ffi_line.GetInitialPoint() = point;
+    cur_ffi_line.GetInitialPoint() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::SECONDPOINT)
   {
-    if (numArgs != 5)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 5, numArgs);
+    LuaCheckArgs<size_t, int, Vector3>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-
-    Vector3 point(lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
-    cur_ffi_line.GetFinalPoint() = point;
+    cur_ffi_line.GetFinalPoint() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::NUMBEROFPOINTS)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, int>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
 
-    int num_points = lua_tonumber(L, 3);
+    auto num_points = LuaArg<int>(L, 3);
 
     if (num_points < 2)
     {
@@ -200,36 +165,15 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::CUSTOM_ARRAY)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, std::vector<double>>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-
-    if (not lua_istable(L, 3))
-    {
-      opensn::log.LogAllError() << "Line property FFI_LINE_CUSTOM_ARRAY"
-                                << " used in FFInterpolationSetProperty. Argument 3 is expected "
-                                   "to be an array.";
-      opensn::Exit(EXIT_FAILURE);
-    }
-
-    const size_t table_len = lua_rawlen(L, 3);
-
-    std::vector<double> new_array(table_len, 0.0);
-    for (int k = 0; k < table_len; ++k)
-    {
-      lua_pushnumber(L, k + 1);
-      lua_gettable(L, 3);
-      new_array[k] = lua_tonumber(L, -1);
-      lua_pop(L, 1);
-    }
-
+    auto new_array = LuaArg<std::vector<double>>(L, 3);
     cur_ffi_line.GetCustomArrays().push_back(new_array);
   }
   else if (property == FieldFunctionInterpolationProperty::OPERATION)
   {
-    if (numArgs != 3 and numArgs != 4)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, int>(L, fname);
 
     if (p_ffi->Type() != FieldFunctionInterpolationType::VOLUME)
       throw std::logic_error("Volume property FFI_PROP_OPERATION"
@@ -238,7 +182,7 @@ FFInterpolationSetProperty(lua_State* L)
 
     auto& cur_ffi_volume = dynamic_cast<FieldFunctionInterpolationVolume&>(*p_ffi);
 
-    int op_type = lua_tonumber(L, 3);
+    auto op_type = LuaArg<int>(L, 3);
 
     int OP_SUM = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM);
     int OP_MAX_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX_FUNC);
@@ -254,9 +198,8 @@ FFInterpolationSetProperty(lua_State* L)
 
     if ((op_type >= OP_SUM_FUNC) and (op_type <= OP_MAX_FUNC))
     {
-      if (numArgs != 4)
-        LuaPostArgAmountError("FFInterpolationSetProperty", 4, numArgs);
-      const char* func_name = lua_tostring(L, 4);
+      LuaCheckArgs<size_t, int, int, std::string>(L, fname);
+      const auto func_name = LuaArg<std::string>(L, 4);
       auto operation_function = CreateFunction(func_name);
       opensn::function_stack.push_back(operation_function);
       cur_ffi_volume.SetOperationFunction(operation_function);
@@ -266,10 +209,9 @@ FFInterpolationSetProperty(lua_State* L)
   }
   else if (property == FieldFunctionInterpolationProperty::LOGICAL_VOLUME)
   {
-    if (numArgs != 3)
-      LuaPostArgAmountError("FFInterpolationSetProperty", 3, numArgs);
+    LuaCheckArgs<size_t, int, int>(L, fname);
 
-    int logvol_hndle = lua_tonumber(L, 3);
+    auto logvol_hndle = LuaArg<int>(L, 3);
 
     auto p_logical_volume = std::dynamic_pointer_cast<LogicalVolume>(
       opensn::GetStackItemPtr(opensn::object_stack, logvol_hndle, fname));
@@ -289,7 +231,7 @@ FFInterpolationSetProperty(lua_State* L)
     opensn::Exit(EXIT_FAILURE);
   }
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua

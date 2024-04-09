@@ -17,19 +17,12 @@ RegisterLuaFunctionNamespace(LBSReadGroupsetAngularFlux, lbs, ReadGroupsetAngula
 int
 LBSWriteGroupsetAngularFlux(lua_State* L)
 {
-  const std::string fname = "LBSWriteGroupsetAngularFlux";
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if (num_args != 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "lbs.WriteGroupsetAngularFlux";
+  LuaCheckArgs<size_t, int, std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-  LuaCheckNilValue(fname, L, 3);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const int grpset_index = lua_tonumber(L, 2);
-  const std::string file_base = lua_tostring(L, 3);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto grpset_index = LuaArg<int>(L, 2);
+  const auto file_base = LuaArg<std::string>(L, 3);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -51,25 +44,18 @@ LBSWriteGroupsetAngularFlux(lua_State* L)
   const auto& psi = lbs_solver.PsiNewLocal().at(groupset->id_);
   lbs_solver.WriteGroupsetAngularFluxes(*groupset, psi, file_base);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 int
 LBSReadGroupsetAngularFlux(lua_State* L)
 {
-  const std::string fname = "LBSReadGroupsetAngularFlux";
-  // Get arguments
-  const int num_args = lua_gettop(L);
-  if (num_args != 3)
-    LuaPostArgAmountError(fname, 3, num_args);
+  const std::string fname = "lbs.ReadGroupsetAngularFlux";
+  LuaCheckArgs<size_t, int, std::string>(L, fname);
 
-  LuaCheckNilValue(fname, L, 1);
-  LuaCheckNilValue(fname, L, 2);
-  LuaCheckNilValue(fname, L, 3);
-
-  const int solver_handle = lua_tonumber(L, 1);
-  const int grpset_index = lua_tonumber(L, 2);
-  const std::string file_base = lua_tostring(L, 3);
+  const auto solver_handle = LuaArg<size_t>(L, 1);
+  const auto grpset_index = LuaArg<int>(L, 2);
+  const auto file_base = LuaArg<std::string>(L, 3);
 
   // Get pointer to solver
   auto& lbs_solver =
@@ -91,7 +77,7 @@ LBSReadGroupsetAngularFlux(lua_State* L)
   auto& psi = lbs_solver.PsiNewLocal().at(groupset->id_);
   lbs_solver.ReadGroupsetAngularFluxes(file_base, *groupset, psi);
 
-  return 0;
+  return LuaReturn(L);
 }
 
 } // namespace opensnlua::lbs
