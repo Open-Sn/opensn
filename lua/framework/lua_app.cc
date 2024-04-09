@@ -95,8 +95,7 @@ LuaApp::ProcessArguments(int argc, char** argv)
     options.add_options("User")
     ("h,help",                      "Help message")
     ("c,suppress-color",            "Suppress color output")
-    ("v,verbose",                   "Verbosity level (0 to 3). Default is 0.",
-      cxxopts::value<int>()->implicit_value("0"))
+    ("v,verbose",                   "Verbosity level (0 to 3). Default is 0.", cxxopts::value<int>())
     ("caliper",                     "Enable Caliper reporting",
       cxxopts::value<std::string>()->implicit_value("runtime-report(calc.inclusive=true),max_column_width=80"))
     ("positional",                  "Positional arugments", cxxopts::value<std::vector<std::string>>());
