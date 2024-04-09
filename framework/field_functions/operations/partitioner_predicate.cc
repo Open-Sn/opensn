@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/field_functions/operations/partitioner_predicate.h"
 #include "framework/graphs/graph_partitioner.h"
 #include "framework/field_functions/field_function_grid_based.h"

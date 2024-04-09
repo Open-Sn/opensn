@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/post_processors/cell_volume_integral_post_processor.h"
 #include "framework/event_system/event.h"
 #include "framework/field_functions/field_function_grid_based.h"

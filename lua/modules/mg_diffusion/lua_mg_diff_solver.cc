@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "lua_mg_diff_solver.h"
 #include "lua/framework/console/console.h"
 #include "modules/mg_diffusion/mg_diffusion_solver.h"

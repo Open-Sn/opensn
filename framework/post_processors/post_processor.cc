@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/post_processors/post_processor.h"
 #include "framework/event_system/physics_event_publisher.h"
 #include "framework/event_system/event_subscriber.h"

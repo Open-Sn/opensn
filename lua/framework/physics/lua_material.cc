@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "lua_material.h"
 #include "framework/lua.h"
 #include "framework/physics/physics_material/physics_material.h"

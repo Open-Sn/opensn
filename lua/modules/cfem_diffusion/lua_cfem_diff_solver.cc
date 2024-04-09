@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "lua_cfem_diff_solver.h"
 #include "modules/cfem_diffusion/cfem_diffusion_solver.h"
 #include "framework/lua.h"

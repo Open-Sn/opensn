@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/sweep.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/spds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"

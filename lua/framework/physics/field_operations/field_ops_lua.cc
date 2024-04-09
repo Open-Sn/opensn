@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "field_ops_lua.h"
 #include "framework/field_functions/operations/field_operation.h"
 #include "framework/console/console.h"

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "mpicpp-lite/mpicpp-lite.h"
 #include "modules/modules_lua.h"
 #include "lua/framework/lua_app.h"

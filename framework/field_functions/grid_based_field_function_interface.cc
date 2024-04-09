@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/field_functions/grid_based_field_function_interface.h"
 #include "framework/field_functions/field_function_grid_based.h"
 
