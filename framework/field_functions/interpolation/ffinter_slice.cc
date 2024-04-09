@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/field_functions/interpolation/ffinter_slice.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/mesh/raytrace/raytracer.h"

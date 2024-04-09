@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "modules/point_reactor_kinetics/point_reactor_kinetics.h"
 #include "framework/physics/time_steppers/time_stepper.h"
 #include "framework/event_system/physics_event_publisher.h"

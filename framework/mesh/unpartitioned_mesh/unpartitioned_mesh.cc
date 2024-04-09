@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"

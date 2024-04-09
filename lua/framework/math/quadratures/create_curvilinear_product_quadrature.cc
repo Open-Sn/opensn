@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/lua.h"
 #include "quadratures_lua.h"
 #include "framework/math/quadratures/gausschebyshev_quadrature.h"

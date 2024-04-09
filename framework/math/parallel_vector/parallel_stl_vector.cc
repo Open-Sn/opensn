@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/math/parallel_vector/parallel_stl_vector.h"
 
 #include "framework/mpi/mpi_utils.h"

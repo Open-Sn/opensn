@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"

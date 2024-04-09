@@ -17,3 +17,13 @@ jobs:
           clang-format-version: '14'
           check-path: .
           exclude-regex: '(.\/doc\/|.\/resources\/|.\/tutorials\/|.\/external\/)'
+
+  check-spdx-tags:
+    name: check spdx tags
+    defaults:
+      run:
+        shell: bash -el {0}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: kt3k/license_checker@v1.0.6

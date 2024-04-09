@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "modules/mg_diffusion/tools.h"
 #include "framework/logging/log.h"
 #include "modules/mg_diffusion/mg_diffusion_solver.h"

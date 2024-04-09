@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_transient_solver/lbts_transient_solver.h"
 #if 0
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_transient_solver/sweep_chunks/lbts_sweepchunk_pwl.h"

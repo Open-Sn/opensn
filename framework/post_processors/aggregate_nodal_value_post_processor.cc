@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/post_processors/aggregate_nodal_value_post_processor.h"
 #include "framework/object_factory.h"
 #include "framework/field_functions/field_function_grid_based.h"

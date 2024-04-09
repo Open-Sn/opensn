@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/physics/physics_material/multi_group_xs/adjoint_mgxs.h"
 
 namespace opensn

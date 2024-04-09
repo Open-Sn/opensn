@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/math/nonlinear_solver/nonlinear_solver.h"
 #include "framework/logging/log.h"
 #include "framework/logging/stringstream_color.h"

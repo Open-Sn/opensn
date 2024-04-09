@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
 #include "framework/object_factory.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"

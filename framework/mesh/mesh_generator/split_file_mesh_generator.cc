@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/mesh/mesh_generator/split_file_mesh_generator.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/data_types/byte_array.h"

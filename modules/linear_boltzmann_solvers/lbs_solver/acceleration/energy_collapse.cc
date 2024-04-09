@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/acceleration.h"
 
 #include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
