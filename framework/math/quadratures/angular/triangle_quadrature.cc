@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "framework/math/quadratures/angular/triangle_quadrature.h"
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
@@ -77,7 +80,7 @@ TriangleQuadrature::TriangleInit()
       double phi = deltaVPhi / 2.0 + (double)v * deltaVPhi;
       double theta = acos(new_z_value);
       double sinTheta = sqrt(1 - new_z_value * new_z_value);
-//      double weightCurrent = old_omega.weights[weightPos] / (num_div);
+      //      double weightCurrent = old_omega.weights[weightPos] / (num_div);
 
       new_omega.x = sinTheta * cos(phi);
       new_omega.y = sinTheta * sin(phi);
@@ -114,44 +117,42 @@ TriangleQuadrature::TriangleInit()
     }
   }
 
-    //This builds the negative zi values
+  // This builds the negative zi values
   size_t hemisize = weights_.size();
-  for(size_t point=0;point<hemisize;++point)
+  for (size_t point = 0; point < hemisize; ++point)
   {
-    new_omega.x = omegas_[point].x;//omegas[l].x*xsign;
-    new_omega.y = omegas_[point].y; //omegas[l].y*ysign;
+    new_omega.x = omegas_[point].x; // omegas[l].x*xsign;
+    new_omega.y = omegas_[point].y; // omegas[l].y*ysign;
     new_omega.z = -omegas_[point].z;
     double new_z_value = -omegas_[point].z;
     double phi = abscissae_[point].phi;
     double theta = acos(new_z_value);
     weights_.push_back(weights_[point]);
     omegas_.emplace_back(new_omega);
-    abscissae_.emplace_back(phi,theta);
+    abscissae_.emplace_back(phi, theta);
   }
 
-  //We need to fix the normalization to be 4*pi over the full sphere
-  double normal = 4.0*M_PI;
+  // We need to fix the normalization to be 4*pi over the full sphere
+  double normal = 4.0 * M_PI;
 
   const size_t num_dirs = omegas_.size();
   double weight_sum = 0.0;
-  for (size_t point=0; point<num_dirs; ++point)
-      weight_sum += weights_[point];
+  for (size_t point = 0; point < num_dirs; ++point)
+    weight_sum += weights_[point];
 
   if (normal > 0.0)
     for (double& w : weights_)
-      w *= normal/weight_sum;
+      w *= normal / weight_sum;
 
-//  AngularQuadrature::OptimizeForPolarSymmetry(4.0 * M_PI);
+  //  AngularQuadrature::OptimizeForPolarSymmetry(4.0 * M_PI);
 }
 
-
-
-  void
+void
 TriangleQuadrature::FilterMoments(unsigned int scattering_order)
 {
-// This is only needed for the methods, GQ1 & GQ2, that need to build the full
-// matrix first. Otherwise we are building up to the required degree and don't
-// need to cut after the formation.
+  // This is only needed for the methods, GQ1 & GQ2, that need to build the full
+  // matrix first. Otherwise we are building up to the required degree and don't
+  // need to cut after the formation.
   if (m2d_op_built_ and d2m_op_built_ and moments_ >= 0)
   {
     int s_order = static_cast<int>(scattering_order);
@@ -199,10 +200,9 @@ TriangleQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimen
   // Standard harmonics
   // For methods requiring the full set
 
-
   if (m_to_ell_em_map_.empty())
   {
-    if (dimension==2)
+    if (dimension == 2)
     {
       for (int ell = 0; ell <= N; ++ell)
       {
@@ -214,15 +214,16 @@ TriangleQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimen
             m_to_ell_em_map_.emplace_back(ell, m);
         }
       }
-    } else
+    }
+    else
     {
-      for (int ell = 0; ell <= N+1; ++ell)
+      for (int ell = 0; ell <= N + 1; ++ell)
       {
         for (int m = -ell; m <= ell; m += 1)
         {
-          if (ell == N and m >= 0 and m%2==0)
+          if (ell == N and m >= 0 and m % 2 == 0)
             continue;
-          else if (ell == N+1 and (m%2!=0 or m>=0))
+          else if (ell == N + 1 and (m % 2 != 0 or m >= 0))
             continue;
           else
             m_to_ell_em_map_.emplace_back(ell, m);
@@ -386,12 +387,12 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
       d2m_op_.push_back(temp_d2m);
       holder_m2d.push_back(temp_m2d);
     }
-    m2d_op_ = holder_m2d; //the m2d matrix is actually transposed in opensn
+    m2d_op_ = holder_m2d; // the m2d matrix is actually transposed in opensn
     // if that ever changes to be correctly aligned, the following must be used
     // m2d_op_ = Transpose(holder_m2d);
     d2m_op_built_ = true;
   }
-  //cut down after the fact, for the methods that require the full matrix
+  // cut down after the fact, for the methods that require the full matrix
   if (scattering_order < sn_ and method_ != 3 and method_ != 0)
   {
     log.Log0() << "Filtering moements for scattering order " << scattering_order;
