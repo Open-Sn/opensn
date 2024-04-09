@@ -1,10 +1,8 @@
 srun -n 1 /usr/WS1/dhawkins/openSn/dhawkins/openSn/build/test/opensn-test solver_info_01.lua --suppress-color master_export=false 
-[0]  OpenSn version 0.0.1
-[0m[0]  2024-03-13 21:40:26 Running OpenSn in interactive-mode with 1 processes.
-[0m[0]  OpenSn number of arguments supplied: 3
-[0m[0]  Parsing argument 1 solver_info_01.lua
-[0m[0]  Parsing argument 2 --suppress-color
-[0m[0]  Parsing argument 3 master_export=false
+OpenSn version 0.0.1
+2024-04-05 08:40:59 Running OpenSn with 1 processes.
+OpenSn number of arguments supplied: 3
+
 [0]  Created solver prk_TransientSolver
 [0]  lambdas = 0.0124 0.0304 0.111 0.301 1.14 3.01 
 [0]  betas = 0.00021 0.00142 0.00127 0.00257 0.00075 0.00027 
@@ -85,5 +83,6 @@ Manually printing Post-Processor:
 [0]  | neutron_population(latest) |        5.611508 |
 [0]  *----------------------------*-----------------*
 [0]  
-[0]  Elapsed execution time: 00:00:00.3
-[0]  2024-03-13 21:40:26 OpenSn finished execution.
+
+Elapsed execution time: 00:00:00.3
+2024-04-05 08:40:59 OpenSn finished execution.

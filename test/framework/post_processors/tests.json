@@ -4,7 +4,7 @@
     "num_procs": 1,
     "checks": [
       {
-        "type" : "GoldFile", "skiplines_top" : 7, "check_numlines" : 80
+        "type" : "GoldFile", "skiplines_top" : 5, "check_numlines" : 80
       },
       {
         "type" : "GoldFile", "candidate_filename" : "solver_info_01.csv"
@@ -16,7 +16,7 @@
     "num_procs": 1,
     "checks": [
       {
-        "type" : "GoldFile", "skiplines_top" : 6, "check_numlines" : 46
+        "type" : "GoldFile", "skiplines_top" : 5, "check_numlines" : 46
       }
     ]
   }

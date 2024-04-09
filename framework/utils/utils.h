@@ -24,9 +24,6 @@ std::string PrintIterationProgress(size_t current_iteration,
                                    size_t total_num_iterations,
                                    unsigned int num_intvls = 10);
 
-// #include <iostream>
-// #include <string>
-
 const std::string WHITESPACE = " \n\r\t\f\v";
 
 /**Trims whitespace from the front of a string.*/
@@ -46,7 +43,11 @@ std::vector<std::string> StringSplit(const std::string& input, const std::string
  * encountering the search_string.*/
 std::string StringUpToFirstReverse(const std::string& input, const std::string& search_string);
 
-void AssertReadibleFile(const std::string& file_name);
+std::string LowerCase(const std::string& name);
+
+std::string UpperCase(const std::string& name);
+
+void AssertReadableFile(const std::string& file_name);
 
 template <typename T, typename B>
 bool
@@ -99,4 +100,5 @@ ReadBinaryValue(std::ifstream& input_file)
 
   return value;
 }
+
 } // namespace opensn

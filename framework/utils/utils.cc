@@ -65,8 +65,24 @@ StringUpToFirstReverse(const std::string& input, const std::string& search_strin
   return output;
 }
 
+std::string
+LowerCase(const std::string& name)
+{
+  std::string lower(name);
+  std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+  return lower;
+}
+
+std::string
+UpperCase(const std::string& name)
+{
+  std::string upper(name);
+  std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
+  return upper;
+}
+
 void
-AssertReadibleFile(const std::string& file_name)
+AssertReadableFile(const std::string& file_name)
 {
   std::ifstream file(file_name.c_str(), std::ifstream::in);
   OpenSnLogicalErrorIf(file.fail(),

@@ -2,15 +2,17 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/lua_app.h"
-#include "framework/logging/log.h"
 #include "lua/framework/console/console.h"
-#include "framework/runtime.h"
-#include "framework/object_factory.h"
-#include "framework/utils/timer.h"
 #include "framework/event_system/event.h"
 #include "framework/event_system/system_wide_event_publisher.h"
-#include "petsc.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
+#include "framework/utils/utils.h"
+#include "framework/runtime.h"
+#include "framework/object_factory.h"
 #include "caliper/cali.h"
+#include "cxxopts/cxxopts.h"
+#include "petsc.h"
 #include <string>
 #ifndef NDEBUG
 #include <unistd.h>
@@ -21,34 +23,17 @@ using namespace opensn;
 namespace opensnlua
 {
 
-const std::string command_line_help_string_ =
-  "\nUsage: exe inputfile [options values]\n"
-  "\n"
-  "     -v                          Level of verbosity. Default 0.\n"
-  "                                 Can be either 0, 1 or 2.\n"
-  "     a=b                         Executes argument as a lua string. "
-  "i.e. x=2 or y=[[\"string\"]]\n"
-  "     --allow-petsc-error-handler Allows petsc error handler.\n"
-  "     --suppress-color            Suppresses the printing of color.\n"
-  "                                 Useful for unit tests requiring a diff.\n"
-  "     --dump-object-registry      Dumps the object registry.\n"
-  "     --caliper                   Enable Caliper timing/memory report.\n"
-  "     --caliper=string            Provide a user-defined Caliper configuration.\n"
-  "\n\n\n";
-
 LuaApp::LuaApp(const mpi::Communicator& comm)
+  : sim_option_interactive_(true), allow_petsc_error_handler_(false)
 {
   opensn::mpi_comm = comm;
-}
-
-LuaApp::~LuaApp()
-{
 }
 
 int
 LuaApp::InitPetSc(int argc, char** argv)
 {
   PetscOptionsInsertString(nullptr, "-error_output_stderr");
+
   if (not allow_petsc_error_handler_)
     PetscOptionsInsertString(nullptr, "-no_signal_handler");
 
@@ -60,33 +45,40 @@ LuaApp::InitPetSc(int argc, char** argv)
 int
 LuaApp::Run(int argc, char** argv)
 {
-  opensn::log.Log() << opensn::name << " version " << GetVersionStr() << "\n"
-                    << Timer::GetLocalDateTimeString() << " Running " << opensn::name << " with "
-                    << opensn::mpi_comm.size() << " processes.\n"
-                    << opensn::name << " number of arguments supplied: " << argc - 1;
-  opensn::log.LogAll();
-
-  InitPetSc(argc, argv);
-  ParseArguments(argc, argv);
-  opensn::Initialize();
-  console.PostMPIInfo(opensn::mpi_comm.rank(), opensn::mpi_comm.size());
-  console.FlushConsole();
-
-  int error_code = 0;
-  if (not termination_posted_)
+  if (opensn::mpi_comm.rank() == 0)
   {
+    std::cout << opensn::name << " version " << GetVersionStr() << "\n"
+              << Timer::GetLocalDateTimeString() << " Running " << opensn::name << " with "
+              << opensn::mpi_comm.size() << " processes.\n"
+              << opensn::name << " number of arguments supplied: " << argc - 1 << "\n"
+              << std::endl;
+  }
+
+  int error_code = ProcessArguments(argc, argv);
+
+  if (!error_code)
+  {
+    InitPetSc(argc, argv);
+    opensn::Initialize();
+    console.PostMPIInfo(opensn::mpi_comm.rank(), opensn::mpi_comm.size());
+    console.FlushConsole();
+
     if (sim_option_interactive_)
       error_code = RunInteractive(argc, argv);
     else
       error_code = RunBatch(argc, argv);
+
+    opensn::Finalize();
+    PetscFinalize();
+
+    if (opensn::mpi_comm.rank() == 0)
+    {
+      std::cout << "\n"
+                << "Elapsed execution time: " << program_timer.GetTimeString() << "\n"
+                << Timer::GetLocalDateTimeString() << " " << opensn::name << " finished execution."
+                << std::endl;
+    }
   }
-
-  opensn::Finalize();
-  PetscFinalize();
-
-  opensn::log.Log() << "Elapsed execution time: " << program_timer.GetTimeString() << "\n"
-                    << Timer::GetLocalDateTimeString() << " " << opensn::name
-                    << " finished execution.";
 
   if (opensn::mpi_comm.rank() == 0)
     std::cout << std::endl;
@@ -95,107 +87,115 @@ LuaApp::Run(int argc, char** argv)
   return error_code;
 }
 
-void
-LuaApp::ParseArguments(int argc, char** argv)
+int
+LuaApp::ProcessArguments(int argc, char** argv)
 {
-  bool input_file_found = false;
-  for (int i = 1; i < argc; i++)
+  try
   {
-    std::string argument(argv[i]);
+    cxxopts::Options options(LowerCase(opensn::name), "");
 
-    opensn::log.Log() << "Parsing argument " << i << " " << argument;
+    /* clang-format off */
+    options.add_options("User")
+    ("h,help",                      "Help message")
+    ("c,suppress-color",            "Suppress color output")
+    ("v,verbose",                   "Verbosity level (0 to 3). Default is 0.", cxxopts::value<int>())
+    ("caliper",                     "Enable Caliper reporting",
+      cxxopts::value<std::string>()->implicit_value("runtime-report(calc.inclusive=true),max_column_width=80"))
+    ("positional",                  "Positional arugments", cxxopts::value<std::vector<std::string>>());
 
-    if (argument.find("-h") != std::string::npos or argument.find("--help") != std::string::npos)
+    options.add_options("Dev")
+      ("help-dev",                  "Developer options help")
+      ("allow-petsc-error-handler", "Allow PETSc error handler")
+      ("dump-object-registry",      "Dump object registry");
+    /* clang-format on */
+
+    options.positional_help("[FILE] [LUA ASSIGNMENT]");
+    options.parse_positional("positional");
+
+    bool found_filename = false;
+    auto result = options.parse(argc, argv);
+
+    if (result.count("help"))
     {
-      opensn::log.Log() << command_line_help_string_;
-      termination_posted_ = true;
+      if (opensn::mpi_comm.rank() == 0)
+        std::cout << options.help({"User"}) << std::endl;
+      return 1;
     }
-    else if (argument.find("--allow-petsc-error-handler") != std::string::npos)
+
+    if (result.count("help-dev"))
     {
+      if (opensn::mpi_comm.rank() == 0)
+        std::cout << options.help({"Dev"}) << std::endl;
+      return 1;
+    }
+
+    if (result.count("allow-petsc-error-handler"))
       allow_petsc_error_handler_ = true;
-    }
-    else if (argument.find("--suppress-color") != std::string::npos)
-    {
+
+    if (result.count("suppress-color"))
       opensn::suppress_color = true;
-    }
-    else if (argument.find("--dump-object-registry") != std::string::npos)
+
+    if (result.count("dump-object-registry"))
     {
-      dump_registry_ = true;
-      termination_posted_ = true;
+      ObjectFactory::GetInstance().DumpRegister();
+      console.DumpRegister();
+      return 1;
     }
-    else if (argument.find("--caliper") != std::string::npos)
+
+    if (result.count("verbose"))
     {
-      std::string caliper_arg(argv[i]);
-      if (caliper_arg.length() > 9)
+      int verbosity = result["verbose"].as<int>();
+      opensn::log.SetVerbosity(verbosity);
+    }
+
+    if (result.count("caliper"))
+    {
+      opensn::use_caliper = true;
+      auto config = result["caliper"].as<std::string>();
+      if (!config.empty())
       {
-        if (caliper_arg[9] == '=')
+        std::string error = cali_mgr.check(config.c_str());
+        if (!error.empty())
+          throw std::runtime_error("Invalid Caliper config: " + config);
+        opensn::cali_config = config;
+      }
+    }
+
+    if (result.count("positional"))
+    {
+      auto args = result["positional"].as<std::vector<std::string>>();
+      for (const auto& arg : args)
+      {
+        if (arg.find('=') != std::string::npos)
+          console.GetCommandBuffer().push_back(arg);
+        else
         {
-          std::string config = caliper_arg.substr(10, caliper_arg.length());
-          std::string error = cali_mgr.check(config.c_str());
-          if (!error.empty())
+          if (not found_filename)
           {
-            std::cerr << "Caliper - " << error << std::endl;
-            Exit(EXIT_FAILURE);
+            opensn::input_path = arg;
+            sim_option_interactive_ = false;
+            found_filename = true;
           }
           else
-          {
-            opensn::use_caliper = true;
-            opensn::cali_config = config;
-          }
-        }
-      }
-      else
-        opensn::use_caliper = true;
-    }
-    // No-graphics option
-    else if (argument.find("-b") != std::string::npos)
-    {
-      sim_option_interactive_ = false;
-    }
-    // Verbosity
-    else if (argument.find("-v") != std::string::npos)
-    {
-      if ((i + 1) >= argc)
-      {
-        std::cerr << "Invalid option used with command line argument "
-                     "-v. Options are 0,1 or 2."
-                  << std::endl;
-        Exit(EXIT_FAILURE);
-      }
-      else
-      {
-        std::string v_option(argv[i + 1]);
-        try
-        {
-          int level = std::stoi(v_option);
-          opensn::log.SetVerbosity(level);
-        }
-        catch (const std::invalid_argument& e)
-        {
-          std::cerr << "Invalid option used with command line argument "
-                       "-v. Options are 0,1 or 2."
-                    << std::endl;
-          Exit(EXIT_FAILURE);
+            throw std::runtime_error("Invalid option " + arg);
         }
       }
     }
-    else if ((argument.find('=') == std::string::npos) and (not input_file_found))
-    {
-      opensn::input_path = argument;
-      input_file_found = true;
-      sim_option_interactive_ = false;
-    }
-    else if (argument.find('=') != std::string::npos)
-    {
-      console.GetCommandBuffer().push_back(argument);
-    }
+  }
+  catch (const cxxopts::exceptions::exception& e)
+  {
+    if (opensn::mpi_comm.rank() == 0)
+      std::cerr << e.what() << std::endl;
+    return 1;
+  }
+  catch (const std::exception& e)
+  {
+    if (opensn::mpi_comm.rank() == 0)
+      std::cerr << e.what() << std::endl;
+    return 1;
   }
 
-  if (dump_registry_)
-  {
-    ObjectFactory::GetInstance().DumpRegister();
-    console.DumpRegister();
-  }
+  return 0;
 }
 
 int
@@ -213,8 +213,6 @@ LuaApp::RunInteractive(int argc, char** argv)
       // No quitting if file execution fails
     }
   }
-  else
-    opensn::log.Log0Error() << "Could not open file " << opensn::input_path.string() << ".";
 
   console.RunConsoleLoop();
 
@@ -224,10 +222,6 @@ LuaApp::RunInteractive(int argc, char** argv)
 int
 LuaApp::RunBatch(int argc, char** argv)
 {
-  if (argc <= 1)
-    opensn::log.Log() << command_line_help_string_;
-  console.FlushConsole();
-
 #ifndef NDEBUG
   opensn::log.Log() << "Waiting...";
   if (opensn::mpi_comm.rank() == 0)
@@ -240,7 +234,7 @@ LuaApp::RunBatch(int argc, char** argv)
 #endif
 
   int error_code = 0;
-  if (std::filesystem::exists(input_path) and (not termination_posted_))
+  if (std::filesystem::exists(input_path))
   {
     try
     {
@@ -249,13 +243,13 @@ LuaApp::RunBatch(int argc, char** argv)
     catch (const std::exception& excp)
     {
       opensn::log.LogAllError() << excp.what();
-      Exit(EXIT_FAILURE);
+      error_code = EXIT_FAILURE;
     }
   }
   else
   {
     opensn::log.Log0Error() << "Could not open file " << opensn::input_path.string() << ".";
-    Exit(EXIT_FAILURE);
+    error_code = EXIT_FAILURE;
   }
 
   return error_code;
