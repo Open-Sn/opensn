@@ -51,11 +51,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#step-2-install-petsc">Step 2 - Install PETSc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-3-install-the-visualization-tool-kit-vtk">Step 3 - Install the Visualization Tool Kit (VTK)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-4-install-lua">Step 4 - Install Lua</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-5-configure-environment">Step 5 - Configure Environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-6-clone-opensn">Step 6 - Clone OpenSn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-7-build-opensn">Step 7 - Build OpenSn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-8-run-regression-tests">Step 8 - Run Regression Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-9-build-the-opensn-documentation">Step 9 - Build the OpenSn Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-5-install-caliper">Step 5 - Install Caliper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-6-configure-environment">Step 6 - Configure Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-7-clone-opensn">Step 7 - Clone OpenSn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-8-build-opensn">Step 8 - Build OpenSn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-9-run-regression-tests">Step 9 - Run Regression Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-10-build-the-opensn-documentation">Step 10 - Build the OpenSn Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install_linux_easy.html">Easy Install on Linux Machines</a></li>
@@ -225,8 +226,30 @@ $<span class="w"> </span>make<span class="w"> </span>install<span class="w"> </s
 <p>If the install complains about missing <strong>readline</strong> includes or libraries, it
 may be necessary to install <strong>readline</strong> and <strong>ncurses</strong>.</p>
 </section>
-<section id="step-5-configure-environment">
-<h2>Step 5 - Configure Environment<a class="headerlink" href="#step-5-configure-environment" title="Link to this heading"></a></h2>
+<section id="step-5-install-caliper">
+<h2>Step 5 - Install Caliper<a class="headerlink" href="#step-5-install-caliper" title="Link to this heading"></a></h2>
+<p>In your <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> directory, install <strong>Caliper</strong> using the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>caliper
+<span class="nb">cd</span><span class="w"> </span>caliper
+wget<span class="w"> </span>https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz
+tar<span class="w"> </span>-zxf<span class="w"> </span>v2.10.0.tar.gz
+<span class="nb">cd</span><span class="w"> </span>Caliper-2.10.0
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
+-DWITH_MPI<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+-DWITH_KOKKOS<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>../
+</pre></div>
+</div>
+<p>After <code class="docutils literal notranslate"><span class="pre">cmake</span></code> has completed configuring the build, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>to install <strong>Caliper</strong>.</p>
+</section>
+<section id="step-6-configure-environment">
+<h2>Step 6 - Configure Environment<a class="headerlink" href="#step-6-configure-environment" title="Link to this heading"></a></h2>
 <p>Before compiling <strong>OpenSn</strong>, you must add the location of the third-party
 libraries to your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> environment variable. This can be
 accomplished with the following command:</p>
@@ -237,8 +260,8 @@ accomplished with the following command:</p>
 your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> file so that you don’t need to specify the path every time you
 need to re-run <code class="docutils literal notranslate"><span class="pre">cmake</span></code>.</p>
 </section>
-<section id="step-6-clone-opensn">
-<h2>Step 6 - Clone OpenSn<a class="headerlink" href="#step-6-clone-opensn" title="Link to this heading"></a></h2>
+<section id="step-7-clone-opensn">
+<h2>Step 7 - Clone OpenSn<a class="headerlink" href="#step-7-clone-opensn" title="Link to this heading"></a></h2>
 <p><strong>Important:</strong>  If you want to contribute to <strong>OpenSn</strong>, it is strongly
 recommended that you first fork the <strong>OpenSn</strong> repository then clone your fork.</p>
 <p>To clone the <strong>OpenSn</strong> repository:</p>
@@ -250,8 +273,8 @@ recommended that you first fork the <strong>OpenSn</strong> repository then clon
 </pre></div>
 </div>
 </section>
-<section id="step-7-build-opensn">
-<h2>Step 7 - Build OpenSn<a class="headerlink" href="#step-7-build-opensn" title="Link to this heading"></a></h2>
+<section id="step-8-build-opensn">
+<h2>Step 8 - Build OpenSn<a class="headerlink" href="#step-8-build-opensn" title="Link to this heading"></a></h2>
 <p>To build <strong>OpenSn</strong>, create a build directory in the top-level <strong>OpenSn</strong>
 directory and run <code class="docutils literal notranslate"><span class="pre">cmake</span></code> to generate the build files and <code class="docutils literal notranslate"><span class="pre">make</span></code> to compile
 <strong>OpenSn</strong>:</p>
@@ -269,17 +292,17 @@ directory and run <code class="docutils literal notranslate"><span class="pre">c
 <span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j
 </pre></div>
 </div>
-<p>For more information on building the documentation, see <strong>Step 9</strong> below.</p>
+<p>For more information on building the documentation, see <strong>Step 10</strong> below.</p>
 </section>
-<section id="step-8-run-regression-tests">
-<h2>Step 8 - Run Regression Tests<a class="headerlink" href="#step-8-run-regression-tests" title="Link to this heading"></a></h2>
+<section id="step-9-run-regression-tests">
+<h2>Step 9 - Run Regression Tests<a class="headerlink" href="#step-9-run-regression-tests" title="Link to this heading"></a></h2>
 <p>To run the regression tests, simply run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code> from the build directory.
 This will run all of the regression tests in the <code class="docutils literal notranslate"><span class="pre">opensn/test</span></code> directory.</p>
 </section>
-<section id="step-9-build-the-opensn-documentation">
-<h2>Step 9 - Build the OpenSn Documentation<a class="headerlink" href="#step-9-build-the-opensn-documentation" title="Link to this heading"></a></h2>
+<section id="step-10-build-the-opensn-documentation">
+<h2>Step 10 - Build the OpenSn Documentation<a class="headerlink" href="#step-10-build-the-opensn-documentation" title="Link to this heading"></a></h2>
 <p>If you configured the <strong>OpenSn</strong> build environment with support for building the
-documentation (see <strong>Step 7</strong>), these instructions will help you install the
+documentation (see <strong>Step 8</strong>), these instructions will help you install the
 necessary tools and build the documentation.</p>
 <p>To generate the documentation from your local working copy of <strong>OpenSn</strong>, you
 need to use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install the required <strong>Python</strong> packages:</p>

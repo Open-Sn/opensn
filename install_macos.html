@@ -54,9 +54,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#step-3-install-petsc">Step 3 - Install PETSc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-4-install-the-visualization-tool-kit">Step 4 - Install the Visualization Tool Kit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-5-install-lua">Step 5 - Install Lua</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-6-configure-and-build-opensn">Step 6 - Configure and Build OpenSn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-6-run-regression-tests">Step 6 - Run Regression Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-8-opensn-documentation">Step 8 - OpenSn Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-6-install-caliper">Step 6 - Install Caliper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-7-configure-and-build-opensn">Step 7 - Configure and Build OpenSn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-8-run-regression-tests">Step 8 - Run Regression Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-9-opensn-documentation">Step 9 - OpenSn Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install_macos_easy.html">Easy Install on MacOS</a></li>
@@ -275,8 +276,34 @@ the <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span
 </pre></div>
 </div>
 </section>
-<section id="step-6-configure-and-build-opensn">
-<h2>Step 6 - Configure and Build OpenSn<a class="headerlink" href="#step-6-configure-and-build-opensn" title="Link to this heading"></a></h2>
+<section id="step-6-install-caliper">
+<h2>Step 6 - Install Caliper<a class="headerlink" href="#step-6-install-caliper" title="Link to this heading"></a></h2>
+<p>Download <a class="reference external" href="https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz">Caliper 2.10.0</a> or
+into a suitable location and upack it into <code class="docutils literal notranslate"><span class="pre">/path/to/caliper</span></code>. Assuming Caliper will
+be built in <code class="docutils literal notranslate"><span class="pre">/path/to/caliper/build</span></code> and installed in <code class="docutils literal notranslate"><span class="pre">/path/to/caliper/install</span></code>, execute
+the following to configure, build, and install Caliper:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>/path/to/caliper/build
+<span class="nb">cd</span><span class="w"> </span>/path/to/caliper/build
+
+cmake<span class="w"> </span><span class="se">\</span>
+-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/caliper/install<span class="w"> </span><span class="se">\</span>
+-DWITH_MPI<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+-DWITH_KOKKOS<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
+/path/to/caliper
+
+make<span class="w"> </span>-j&lt;N&gt;
+make<span class="w"> </span>install
+
+After<span class="w"> </span>a<span class="w"> </span>successful<span class="w"> </span>install,<span class="w"> </span><span class="nb">set</span><span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>environment<span class="w"> </span>variables<span class="w"> </span><span class="k">in</span><span class="w"> </span>the
+<span class="sb">`</span>~/.bashrc<span class="sb">`</span><span class="w"> </span>or<span class="w"> </span><span class="sb">`</span>~/.bash_profile<span class="sb">`</span><span class="w"> </span>script:
+<span class="sb">```</span>shell
+<span class="nb">export</span><span class="w"> </span><span class="nv">CALIPER_DIR</span><span class="o">=</span><span class="s2">&quot;/path/to/caliper/install&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">CALIPER_DIR</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="step-7-configure-and-build-opensn">
+<h2>Step 7 - Configure and Build OpenSn<a class="headerlink" href="#step-7-configure-and-build-opensn" title="Link to this heading"></a></h2>
 <p>Note:  If you want to contribute to OpenSn, it is strongly recommended
 to first fork the OpenSn repository into your own Git account and then to
 clone your fork.</p>
@@ -305,16 +332,16 @@ OpenSn can then be built within the build directory via</p>
 of new files, etc. When this occurs, clear the <code class="docutils literal notranslate"><span class="pre">build</span></code> directory and repeat
 the configuration process above.</p>
 </section>
-<section id="step-6-run-regression-tests">
-<h2>Step 6 - Run Regression Tests<a class="headerlink" href="#step-6-run-regression-tests" title="Link to this heading"></a></h2>
+<section id="step-8-run-regression-tests">
+<h2>Step 8 - Run Regression Tests<a class="headerlink" href="#step-8-run-regression-tests" title="Link to this heading"></a></h2>
 <p>To check if the code compiled correctly execute the test scripts:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/opensn
 test/run_tests<span class="w"> </span>-j&lt;N&gt;
 </pre></div>
 </div>
 </section>
-<section id="step-8-opensn-documentation">
-<h2>Step 8 - OpenSn Documentation<a class="headerlink" href="#step-8-opensn-documentation" title="Link to this heading"></a></h2>
+<section id="step-9-opensn-documentation">
+<h2>Step 9 - OpenSn Documentation<a class="headerlink" href="#step-9-opensn-documentation" title="Link to this heading"></a></h2>
 <p>The documentation can be found <a class="reference external" href="https://xxx.io">online</a>, or
 generated locally. To generate the documentation locally, first make sure
 doxygen and LaTeX are installed:</p>
