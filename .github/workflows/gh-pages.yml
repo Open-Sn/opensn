@@ -34,7 +34,8 @@ jobs:
             doxygen \
             petsc==3.17.5 \
             vtk \
-            lua
+            lua \
+            caliper
           sudo pip install -r doc/requirements.txt
 
       - name: Build doco
