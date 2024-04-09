@@ -176,39 +176,57 @@ TriangleQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimen
 {
   int L = static_cast<int>(sn_);
   int L_max = static_cast<int>(scattering_order);
+  int N = 0;
+  // keep the change simple
+  if (method_ == 2 or method_ == 1)
+    N = L;
+  else if (method_ == 0 or method_ == 3)
+    N = L_max;
+
+  // Standard sn is just grabbing everything
   if (method_ == 0 and m_to_ell_em_map_.empty())
   {
-    for (int ell = 0; ell <= L_max; ++ell)
-      for (int m = -ell; m <= ell; m += 2)
-        m_to_ell_em_map_.emplace_back(ell, m);
+    if (dimension == 2)
+      for (int ell = 0; ell <= N; ++ell)
+        for (int m = -ell; m <= ell; m += 2)
+          m_to_ell_em_map_.emplace_back(ell, m);
+    else
+      for (int ell = 0; ell <= N; ++ell)
+        for (int m = -ell; m <= ell; m += 1)
+          m_to_ell_em_map_.emplace_back(ell, m);
   }
 
   // Standard harmonics
   // For methods requiring the full set
-  if (m_to_ell_em_map_.empty() and method_ != 3)
+
+
+  if (m_to_ell_em_map_.empty())
   {
-    for (int ell = 0; ell <= L; ++ell)
+    if (dimension==2)
     {
-      for (int m = -ell; m <= ell; m += 2)
+      for (int ell = 0; ell <= N; ++ell)
       {
-        if (ell == L and m >= 0 and ell != 0)
-          break;
-        else
-          m_to_ell_em_map_.emplace_back(ell, m);
+        for (int m = -ell; m <= ell; m += 2)
+        {
+          if (ell == N and m >= 0 and ell != 0)
+            break;
+          else
+            m_to_ell_em_map_.emplace_back(ell, m);
+        }
       }
-    }
-  }
-  // Method 3 is built to extent, and thus can be limited in harmonics
-  else if (m_to_ell_em_map_.empty())
-  {
-    for (int ell = 0; ell <= L_max; ++ell)
+    } else
     {
-      for (int m = -ell; m <= ell; m += 2)
+      for (int ell = 0; ell <= N+1; ++ell)
       {
-        if (ell == L and m >= 0 and ell != 0)
-          break;
-        else
-          m_to_ell_em_map_.emplace_back(ell, m);
+        for (int m = -ell; m <= ell; m += 1)
+        {
+          if (ell == N and m >= 0 and m%2==0)
+            continue;
+          else if (ell == N+1 and (m%2!=0 or m>=0))
+            continue;
+          else
+            m_to_ell_em_map_.emplace_back(ell, m);
+        }
       }
     }
   }
@@ -368,10 +386,12 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
       d2m_op_.push_back(temp_d2m);
       holder_m2d.push_back(temp_m2d);
     }
-    m2d_op_ = holder_m2d;
+    m2d_op_ = holder_m2d; //the m2d matrix is actually transposed in opensn
+    // if that ever changes to be correctly aligned, the following must be used
+    // m2d_op_ = Transpose(holder_m2d);
     d2m_op_built_ = true;
   }
-
+  //cut down after the fact, for the methods that require the full matrix
   if (scattering_order < sn_ and method_ != 3 and method_ != 0)
   {
     log.Log0() << "Filtering moements for scattering order " << scattering_order;
