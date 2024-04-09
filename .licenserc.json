@@ -1,0 +1,14 @@
+{
+    "framework/**/*.{h,cpp}": [
+        "// SPDX-FileCopyrightText:",
+        "// SPDX-License-Identifier:"
+    ],
+    "modules/**/*.{h,cpp}": [
+        "// SPDX-FileCopyrightText:",
+        "// SPDX-License-Identifier:"
+    ],
+    "lua/**/*.{h,cpp}": [
+        "// SPDX-FileCopyrightText:",
+        "// SPDX-License-Identifier:"
+    ]
+}
