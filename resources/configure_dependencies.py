@@ -303,12 +303,12 @@ def InstallPETSc(pkg: str, ver: str, gold_file: str):
 --with-cxx-dialect=C++11 \\
 --with-64-bit-indices \\
 CC=$CC CXX=$CXX FC=$FC \\
-CFLAGS="-fPIC -fopenmp" \\
-CXXFLAGS="-fPIC -fopenmp" \\
-FFLAGS="-fPIC -fopenmp -fallow-argument-mismatch" \\
-FCFLAGS="-fPIC -fopenmp -fallow-argument-mismatch" \\
-F90FLAGS="-fPIC -fopenmp -fallow-argument-mismatch" \\
-F77FLAGS="-fPIC -fopenmp -fallow-argument-mismatch" \\
+CFLAGS="-fopenmp" \\
+CXXFLAGS="-fopenmp" \\
+FFLAGS="-fopenmp -fallow-argument-mismatch" \\
+FCFLAGS="-fopenmp -fallow-argument-mismatch" \\
+F90FLAGS="-fopenmp -fallow-argument-mismatch" \\
+F77FLAGS="-fopenmp -fallow-argument-mismatch" \\
 COPTFLAGS="-O3" \\
 CXXOPTFLAGS="-O3" \\
 FOPTFLAGS="-O3 -fallow-argument-mismatch" \\
