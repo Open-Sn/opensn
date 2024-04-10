@@ -289,26 +289,30 @@ def InstallPETSc(pkg: str, ver: str, gold_file: str):
             env_vars["FC"] = shutil.which("mpifort")
 
         os.chdir(f"{pkg}-{ver}")
-
         command = f"""./configure --prefix={pkg_install_dir} \\
---with-shared-libraries=1  \\
---with-ssl=0  \\
---with-debugging=0  \\
---with-pic=1  \\
---with-openmp=1 \\
---with-64-bit-indices=1  \\
---download-hypre=1  \\
---download-fblaslapack=1  \\
---download-metis=1  \\
---download-parmetis=1  \\
---download-ptscotch=1  \\
---download-superlu_dist=1  \\
-CC=$CC CXX=$CXX FC=$FC  \\
-COPTFLAGS='-O3'  \\
-CXXOPTFLAGS='-O3'  \\
-FOPTFLAGS='-O3'  \\
+--download-hypre=1 \\
+--with-ssl=0 \\
+--with-debugging=0 \\
+--with-pic=1 \\
+--with-shared-libraries=1 \\
+--download-fblaslapack=1 \\
+--download-metis=1 \\
+--download-parmetis=1 \\
+--download-superlu_dist=1 \\
+--download-ptscotch=1 \\
+--with-cxx-dialect=C++11 \\
+--with-64-bit-indices \\
+CC=$CC CXX=$CXX FC=$FC \\
+CFLAGS="-fopenmp" \\
+CXXFLAGS="-fopenmp" \\
+FFLAGS="-fopenmp -fallow-argument-mismatch" \\
+FCFLAGS="-fopenmp -fallow-argument-mismatch" \\
+F90FLAGS="-fopenmp -fallow-argument-mismatch" \\
+F77FLAGS="-fopenmp -fallow-argument-mismatch" \\
+COPTFLAGS="-O3" \\
+CXXOPTFLAGS="-O3" \\
+FOPTFLAGS="-O3 -fallow-argument-mismatch" \\
 PETSC_DIR={install_dir}/src/{pkg}-{ver}"""
-
         success, err, outstr = ExecSub(
             command, out_log=package_log_file, env_vars=env_vars
         )
@@ -607,7 +611,7 @@ try:
     log_file.flush()
     install_errors = []
 
-    module_file_name = f"{install_dir}/bin/set_opensn_env.sh"
+    env_script_name = f"{install_dir}/bin/set_opensn_env.sh"
 
     for pkg in package_info:
         log_file.write(f"{pkg}\n")
@@ -645,21 +649,45 @@ try:
         exit(1)
 
     # Create envvars file
-    module_file = open(module_file_name, "w")
+    env_script_file = open(env_script_name, "w")
 
-    module_file.write(f'export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"\n')
-    module_file.close()
+    petsc_dir = f"{install_dir}"
+    vtk_dir = f"{install_dir}"
 
-    ExecSub(f"chmod u+x {module_file_name}", log_file)
+    env_script_file.write(f'export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"\n')
+    env_script_file.write(f'export PETSC_DIR={petsc_dir}\n')
+
+    if os.path.exists(f"{vtk_dir}/lib64"):
+        env_script_file.write(f'export LD_LIBRARY_PATH="{vtk_dir}/lib64":$LD_LIBRARY_PATH\n')
+    else:
+        env_script_file.write(f'export LD_LIBRARY_PATH="{vtk_dir}/lib":$LD_LIBRARY_PATH\n')
+
+    env_script_file.close()
+
+    ExecSub(f"chmod u+x {env_script_name}", log_file)
     log_file.close()
 
-    print("\n########## OpenSn Dependency install complete ##########")
-    print("\nWhen compiling OpenSn the following environment variable" +
-          " may need to be set:\n")
+    print("\n########## OpenSn dependency install complete ##########")
+    print("\nWhen opening OpenSn in an IDE, the following environment variables" +
+          " need to be set:\n")
+
     print(f'CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"')
+    print(f'PETSC_DIR={petsc_dir}')
     print()
-    print(f"To set this environment variable automatically in a `bash` shell, execute:")
-    print(f"    $ source {module_file_name}\n")
+    print(TextColors.WARNING +
+          "When compiling OpenSn, in a terminal, the following environment "
+          "variables need to be set:\n" + TextColors.ENDC)
+
+    print(f'export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"')
+    print(f'export PETSC_DIR="{petsc_dir}"')
+    if os.path.exists(f"{vtk_dir}/lib64"):
+        print(f'export LD_LIBRARY_PATH="{vtk_dir}/lib":$LD_LIBRARY_PATH')
+    else:
+        print(f'export LD_LIBRARY_PATH="{vtk_dir}/lib64":$LD_LIBRARY_PATH')
+
+    print()
+    print(f"To set these terminal environment variables automatically, execute:")
+    print(f"    $ source {env_script_name}\n")
 
 except RuntimeError as e:
     print(f"{TextColors.RED}{e}{TextColors.ENDC}")
