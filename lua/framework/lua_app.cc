@@ -222,17 +222,6 @@ LuaApp::RunInteractive(int argc, char** argv)
 int
 LuaApp::RunBatch(int argc, char** argv)
 {
-#ifndef NDEBUG
-  opensn::log.Log() << "Waiting...";
-  if (opensn::mpi_comm.rank() == 0)
-    for (int k = 0; k < 2; ++k)
-    {
-      usleep(1000000);
-      opensn::log.Log() << k;
-    }
-  mpi_comm.barrier();
-#endif
-
   int error_code = 0;
   if (std::filesystem::exists(input_path))
   {
