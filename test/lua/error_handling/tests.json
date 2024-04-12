@@ -1,0 +1,92 @@
+[
+  {
+    "comment": "Check that passing a wrong type into a LuaCheck function causes an error",
+    "file": "unexpected_arg_value_1.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "unexpected_arg_value_1.lua:1: FunctionWithCheck: Expecting string value as argument 1"
+      },
+      {
+        "type": "ErrorCode",
+        "error_code": 1
+      }
+    ]
+  },
+  {
+    "comment": "Check that passing a wrong type into a LuaArg function causes an error",
+    "file": "unexpected_arg_value_2.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "unexpected_arg_value_2.lua:1: Expected string value as argument 1"
+      },
+      {
+        "type": "ErrorCode",
+        "error_code": 1
+      }
+    ]
+  },
+  {
+    "comment": "Check that passing a nil value causes an error",
+    "file": "unexpected_arg_value_3.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "unexpected_arg_value_3.lua:1: Expected string value as argument 1"
+      },
+      {
+        "type": "ErrorCode",
+        "error_code": 1
+      }
+    ]
+  },
+  {
+    "comment": "Check that correct file name is reported when a lua function is called incorrectly",
+    "file": "unexpected_arg_value_4.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "unexpected_arg_value_3.lua:1: Expected string value as argument 1"
+      },
+      {
+        "type": "ErrorCode",
+        "error_code": 1
+      }
+    ]
+  },
+  {
+    "comment": "Check that error occurs if not enough arguments is passed into ",
+    "file": "not_enough_args_1.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "not_enough_args_1.lua:1: Function 'FunctionWithCheck' expects 2 arguments."
+      },
+      {
+        "type": "ErrorCode",
+        "error_code": 1
+      }
+    ]
+  },
+  {
+    "comment": "Check that error occurs if not enough arguments is passed into ",
+    "file": "not_enough_args_2.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "not_enough_args_2.lua:1: Invalid argument index 2. Supplied only 1 arguments."
+      },
+      {
+        "type": "ErrorCode",
+        "error_code": 1
+      }
+    ]
+  }
+]
