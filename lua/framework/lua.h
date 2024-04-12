@@ -17,6 +17,7 @@ extern "C"
 #include <type_traits>
 #include "framework/parameters/parameter_block.h"
 #include "framework/math/math.h"
+#include "lua/framework/exceptions/invalid_lua_argument.h"
 
 /**Posts a generalized error message indicating that the
  * expected amount of arguments don't match the given amount.*/
@@ -83,13 +84,22 @@ struct is_std_map<std::map<KEY, T, C, A>> : std::true_type
 {
 };
 
+inline lua_Debug
+LuaDebug(lua_State* L, const char* what = "nSl")
+{
+  lua_Debug dbg;
+  lua_getstack(L, 1, &dbg);
+  lua_getinfo(L, what, &dbg);
+  return dbg;
+}
+
 // Push values on stack
 
 template <typename T>
 inline void
 LuaPush(lua_State* L, T value)
 {
-  throw std::invalid_argument("Unsupported type: " + std::string(typeid(T).name()));
+  throw InvalidLuaArgument(L, "Unsupported type: " + std::string(typeid(T).name()));
 }
 
 template <>
@@ -267,7 +277,7 @@ template <typename T>
 inline T
 LuaArgAsType(lua_State* L, int index)
 {
-  throw std::invalid_argument("Unsupported type: " + std::string(typeid(T).name()));
+  throw InvalidLuaArgument(L, "Unsupported type: " + std::string(typeid(T).name()));
 }
 
 template <>
@@ -277,8 +287,7 @@ LuaArgAsType(lua_State* L, int index)
   if (lua_isboolean(L, index))
     return lua_toboolean(L, index) == 1;
   else
-    throw std::invalid_argument("Expected boolean value as " + std::to_string(index) +
-                                ". argument");
+    throw InvalidLuaArgument(L, "Expected boolean value as " + std::to_string(index));
 }
 
 template <>
@@ -288,7 +297,7 @@ LuaArgAsType(lua_State* L, int index)
   if (lua_isinteger(L, index))
     return lua_tointeger(L, index);
   else
-    throw std::invalid_argument("Expected int value as " + std::to_string(index) + ". argument");
+    throw InvalidLuaArgument(L, "Expected int value as argument " + std::to_string(index));
 }
 
 template <>
@@ -298,7 +307,7 @@ LuaArgAsType(lua_State* L, int index)
   if (lua_isinteger(L, index))
     return lua_tointeger(L, index);
   else
-    throw std::invalid_argument("Expected int value as " + std::to_string(index) + ". argument");
+    throw InvalidLuaArgument(L, "Expected int value as argument " + std::to_string(index));
 }
 
 template <>
@@ -308,7 +317,7 @@ LuaArgAsType(lua_State* L, int index)
   if (lua_isnumber(L, index))
     return lua_tonumber(L, index);
   else
-    throw std::invalid_argument("Expected number value as " + std::to_string(index) + ". argument");
+    throw InvalidLuaArgument(L, "Expected number value as argument " + std::to_string(index));
 }
 
 template <>
@@ -318,8 +327,7 @@ LuaArgAsType(lua_State* L, int index)
   if (lua_isinteger(L, index))
     return lua_tointeger(L, index);
   else
-    throw std::invalid_argument("Expected std::size_t value as " + std::to_string(index) +
-                                ". argument");
+    throw InvalidLuaArgument(L, "Expected std::size_t value as " + std::to_string(index));
 }
 
 template <>
@@ -329,7 +337,7 @@ LuaArgAsType(lua_State* L, int index)
   if (lua_isstring(L, index))
     return lua_tostring(L, index);
   else
-    throw std::invalid_argument("Expected string value as " + std::to_string(index) + ". argument");
+    throw InvalidLuaArgument(L, "Expected string value as " + std::to_string(index));
 }
 
 template <>
@@ -339,7 +347,7 @@ LuaArgAsType(lua_State* L, int index)
   if (lua_isstring(L, index))
     return std::string(lua_tostring(L, index));
   else
-    throw std::invalid_argument("Expected string value as " + std::to_string(index) + ". argument");
+    throw InvalidLuaArgument(L, "Expected string value as argument " + std::to_string(index));
 }
 
 template <>
@@ -370,7 +378,7 @@ LuaArgAsType(lua_State* L, int index)
     return vec;
   }
   else
-    throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
+    throw InvalidLuaArgument(L, "Expected table value as argument " + std::to_string(index));
 }
 
 template <>
@@ -384,7 +392,7 @@ LuaArgAsType(lua_State* L, int index)
     return param_block;
   }
   else
-    throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
+    throw InvalidLuaArgument(L, "Expected table value as argument " + std::to_string(index));
 }
 
 template <typename T, typename A>
@@ -406,7 +414,7 @@ LuaArgAsType(lua_State* L, int index)
     return values;
   }
   else
-    throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
+    throw InvalidLuaArgument(L, "Expected table value as argument " + std::to_string(index));
 }
 
 template <class KEY, class T, class C, class A>
@@ -427,7 +435,7 @@ LuaArgAsType(lua_State* L, int index)
     return values;
   }
   else
-    throw std::invalid_argument("Expected table value as " + std::to_string(index) + ". argument");
+    throw InvalidLuaArgument(L, "Expected table value as argument " + std::to_string(index));
 }
 
 template <typename T>
@@ -436,12 +444,9 @@ LuaArgImpl(lua_State* L, int index)
 {
   auto num_args = lua_gettop(L);
   if (index > num_args)
-    throw std::invalid_argument("Invalid argument index " + std::to_string(index) +
-                                ". Supplied only " + std::to_string(num_args) + " arguments.");
-  if (lua_isnil(L, index))
-    throw std::invalid_argument("Unexpected value supplied as " + std::to_string(index) +
-                                ". argument.");
-
+    throw InvalidLuaArgument(L,
+                             "Invalid argument index " + std::to_string(index) +
+                               ". Supplied only " + std::to_string(num_args) + " arguments.");
   return LuaArgAsType<T>(L, index);
 }
 
@@ -451,12 +456,9 @@ LuaArgStdVectorImpl(lua_State* L, int index)
 {
   auto num_args = lua_gettop(L);
   if (index > num_args)
-    throw std::invalid_argument("Invalid argument index " + std::to_string(index) +
-                                ". Supplied only " + std::to_string(num_args) + " arguments.");
-  if (lua_isnil(L, index))
-    throw std::invalid_argument("Unexpected value supplied as " + std::to_string(index) +
-                                ". argument.");
-
+    throw InvalidLuaArgument(L,
+                             "Invalid argument index " + std::to_string(index) +
+                               ". Supplied only " + std::to_string(num_args) + " arguments.");
   return LuaArgAsType<T, A>(L, index);
 }
 
@@ -466,12 +468,9 @@ LuaArgStdMapImpl(lua_State* L, int index)
 {
   auto num_args = lua_gettop(L);
   if (index > num_args)
-    throw std::invalid_argument("Invalid argument index " + std::to_string(index) +
-                                ". Supplied only " + std::to_string(num_args) + " arguments.");
-  if (lua_isnil(L, index))
-    throw std::invalid_argument("Unexpected value supplied as " + std::to_string(index) +
-                                ". argument.");
-
+    throw InvalidLuaArgument(L,
+                             "Invalid argument index " + std::to_string(index) +
+                               ". Supplied only " + std::to_string(num_args) + " arguments.");
   return LuaArgAsType<KEY, T, C, A>(L, index);
 }
 
@@ -680,7 +679,7 @@ template <typename T>
 inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, T val)
 {
-  throw std::invalid_argument(fn_name + ": Unsupported type: " + std::string(typeid(T).name()));
+  throw InvalidLuaArgument(L, fn_name + ": Unsupported type: " + std::string(typeid(T).name()));
 }
 
 template <>
@@ -688,8 +687,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, char* val)
 {
   if (not lua_isstring(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting string value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting string value as argument " + std::to_string(index));
 }
 
 template <>
@@ -697,8 +696,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, const char* val)
 {
   if (not lua_isstring(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting string value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting string value as argument " + std::to_string(index));
 }
 
 template <>
@@ -706,8 +705,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, char val)
 {
   if (not lua_isinteger(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting integer value as argument " + std::to_string(index));
 }
 
 template <>
@@ -715,8 +714,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, int val)
 {
   if (not lua_isinteger(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting integer value as argument " + std::to_string(index));
 }
 
 template <>
@@ -724,8 +723,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, long val)
 {
   if (not lua_isinteger(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting integer value as argument " + std::to_string(index));
 }
 
 template <>
@@ -733,8 +732,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, long long val)
 {
   if (not lua_isinteger(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting integer value as argument " + std::to_string(index));
 }
 
 template <>
@@ -742,8 +741,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, unsigned char val)
 {
   if (not lua_isinteger(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting integer value as argument " + std::to_string(index));
 }
 
 template <>
@@ -751,8 +750,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, unsigned int val)
 {
   if (not lua_isinteger(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting integer value as argument " + std::to_string(index));
 }
 
 template <>
@@ -760,8 +759,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, unsigned long val)
 {
   if (not lua_isinteger(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting integer value as argument " + std::to_string(index));
 }
 
 template <>
@@ -769,8 +768,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, unsigned long long val)
 {
   if (not lua_isinteger(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting integer value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting integer value as argument " + std::to_string(index));
 }
 
 template <>
@@ -778,8 +777,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, float val)
 {
   if (not lua_isnumber(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting number value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting number value as argument " + std::to_string(index));
 }
 
 template <>
@@ -787,8 +786,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, double val)
 {
   if (not lua_isnumber(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting number value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting number value as argument " + std::to_string(index));
 }
 
 template <>
@@ -796,8 +795,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, bool val)
 {
   if (not lua_isboolean(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting boolean value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting boolean value as argument " + std::to_string(index));
 }
 
 template <>
@@ -805,8 +804,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, std::string val)
 {
   if (not lua_isstring(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting string value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting string value as argument " + std::to_string(index));
 }
 
 template <>
@@ -814,8 +813,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, opensn::Vector3 val)
 {
   if (not lua_istable(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting table value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting table value as argument " + std::to_string(index));
 }
 
 template <>
@@ -823,8 +822,8 @@ inline void
 LuaArgCheckType(const std::string& fn_name, lua_State* L, int index, opensn::ParameterBlock val)
 {
   if (not lua_istable(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting table value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting table value as argument " + std::to_string(index));
 }
 
 template <typename T, typename A>
@@ -832,8 +831,8 @@ inline void
 LuaArgCheckStdVectorType(const std::string& fn_name, lua_State* L, int index, std::vector<T, A> val)
 {
   if (not lua_istable(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting table value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting table value as argument " + std::to_string(index));
 }
 
 template <class KEY, class VAL, class C, class A>
@@ -844,8 +843,8 @@ LuaArgCheckStdMapType(const std::string& fn_name,
                       std::map<KEY, VAL, C, A> val)
 {
   if (not lua_istable(L, index))
-    throw std::invalid_argument(fn_name + ": Expecting table value for argument " +
-                                std::to_string(index));
+    throw InvalidLuaArgument(
+      L, fn_name + ": Expecting table value as argument " + std::to_string(index));
 }
 
 /**
@@ -902,8 +901,8 @@ LuaCheckArgs(lua_State* L, const std::string& fn_name)
 {
   size_t num_args = lua_gettop(L);
   if (num_args < sizeof...(ARGS))
-    throw std::logic_error("Function '" + fn_name + "' expects " + std::to_string(sizeof...(ARGS)) +
-                           " arguments.");
+    throw InvalidLuaArgument(
+      L, "Function '" + fn_name + "' expects " + std::to_string(sizeof...(ARGS)) + " arguments.");
   size_t i = 0;
   auto f = [&i]() { return ++i; };
   (LuaCheckArgWithIndex<ARGS>(fn_name, L, f), ...);
