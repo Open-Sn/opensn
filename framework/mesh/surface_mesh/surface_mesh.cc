@@ -567,14 +567,12 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
           int* side_indices = new int[4];
 
           side_indices[0] = newFace->v_indices[v];
-          side_indices[1] = newFace->v_indices[v + 1];
+          if ((v + 1) >= newFace->v_indices.size())
+            side_indices[1] = newFace->v_indices[0];
+          else
+            side_indices[1] = newFace->v_indices[v + 1];
           side_indices[2] = -1;
           side_indices[3] = -1;
-
-          if ((v + 1) >= newFace->v_indices.size())
-          {
-            side_indices[1] = newFace->v_indices[0];
-          }
 
           newFace->edges.push_back(side_indices);
         }

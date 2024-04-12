@@ -259,9 +259,9 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
           face.vertex_ids = std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[0]};
 
         face.neighbor = true;
-        if (v == 1 and i != max_j)
+        if (v == 1 and j != max_j)
           face.neighbor = cmap[i][j + 1]; /*XMAX*/
-        if (v == 3 and i != 0)
+        if (v == 3 and j != 0)
           face.neighbor = cmap[i][j - 1]; /*XMIN*/
         if (v == 2 and i != max_i)
           face.neighbor = cmap[i + 1][j]; /*YMAX*/
