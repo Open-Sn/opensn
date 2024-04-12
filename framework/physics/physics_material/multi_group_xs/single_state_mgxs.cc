@@ -296,11 +296,11 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
 {
   Clear();
 
-  // Open Chi XS file
+  // Open OpenSn XS file
   std::ifstream file;
   file.open(file_name);
   OpenSnLogicalErrorIf(not file.is_open(), "Failed to open cross section file " + file_name + ".");
-  log.Log() << "Reading Chi cross section file \"" << file_name << "\"\n";
+  log.Log() << "Reading OpenSn cross section file \"" << file_name << "\"\n";
 
   // Lambda for reading group structure data.
   auto ReadGroupStructure = [](const std::string& keyword,
@@ -465,7 +465,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
   auto HasNonZero = [](const std::vector<double>& vec)
   { return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; }); };
 
-  // Read the Chi XS file
+  // Read the OpenSn XS file
   // TODO: Determine whether or not to allow specification of a
   //       data block without any data. Currently, if a data block
   //       is specified and no values are present, the std::any_of
@@ -798,7 +798,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
 
     catch (const std::runtime_error& err)
     {
-      throw std::runtime_error("Error reading Chi cross section file "
+      throw std::runtime_error("Error reading OpenSn cross section file "
                                "\"" +
                                file_name + "\".\n" + "Line number " + std::to_string(line_number) +
                                "\n" + err.what());
@@ -806,7 +806,7 @@ SingleStateMGXS::MakeFromOpenSnXSFile(const std::string& file_name)
 
     catch (const std::logic_error& err)
     {
-      throw std::logic_error("Error reading Chi cross section file "
+      throw std::logic_error("Error reading OpenSn cross section file "
                              "\"" +
                              file_name + "\".\n" + "Line number " + std::to_string(line_number) +
                              "\n" + err.what());
