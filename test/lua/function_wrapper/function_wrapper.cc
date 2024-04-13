@@ -8,15 +8,14 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock ExampleTest(const InputParameters&);
+ParameterBlock TestCFunction(const InputParameters&);
 
-RegisterWrapperFunctionNamespace(unit_tests, ExampleTest, nullptr, ExampleTest);
+RegisterWrapperFunctionNamespace(unit_tests, TestCFunction, nullptr, TestCFunction);
 
 ParameterBlock
-ExampleTest(const InputParameters&)
+TestCFunction(const InputParameters&)
 {
-  opensn::log.Log() << "This is an example test";
-
+  opensn::log.Log() << "Hello from a C function";
   return ParameterBlock();
 }
 
