@@ -5,7 +5,7 @@
 #include "framework/lua.h"
 #include "framework/physics/physics_material/physics_material.h"
 #include "framework/physics/physics_material/material_property_scalar_value.h"
-#include "framework/physics/physics_material/multi_group_xs/single_state_mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -128,7 +128,7 @@ MatAddProperty(lua_State* L)
       }
     }
 
-    auto prop = std::make_shared<SingleStateMGXS>();
+    auto prop = std::make_shared<MGXS>();
 
     prop->property_name = provided_name;
 
@@ -283,7 +283,7 @@ MatSetProperty(lua_State* L)
     if (location_of_prop >= 0)
     {
       auto prop =
-        std::static_pointer_cast<SingleStateMGXS>(cur_material->properties_[location_of_prop]);
+        std::static_pointer_cast<MGXS>(cur_material->properties_[location_of_prop]);
 
       // Process operation
       if (operation_index == static_cast<int>(OpType::SIMPLEXS0))
@@ -294,7 +294,7 @@ MatSetProperty(lua_State* L)
         auto G = LuaArg<int>(L, 4);
         auto sigma_t = LuaArg<double>(L, 5);
 
-        prop->MakeSimple0(G, sigma_t);
+        prop->Initialize(G, sigma_t);
       }
       else if (operation_index == static_cast<int>(OpType::SIMPLEXS1))
       {
@@ -305,7 +305,7 @@ MatSetProperty(lua_State* L)
         auto sigma_t = LuaArg<double>(L, 5);
         auto c = LuaArg<double>(L, 6);
 
-        prop->MakeSimple1(G, sigma_t, c);
+        prop->Initialize(G, sigma_t, c);
       }
       else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
       {
@@ -314,7 +314,7 @@ MatSetProperty(lua_State* L)
 
         const auto file_name = LuaArg<std::string>(L, 4);
 
-        prop->MakeFromOpenSnXSFile(file_name);
+        prop->Initialize(file_name);
       }
       else if (operation_index == static_cast<int>(OpType::EXISTING))
       {
@@ -323,10 +323,10 @@ MatSetProperty(lua_State* L)
 
         auto handle = LuaArg<int>(L, 4);
 
-        std::shared_ptr<SingleStateMGXS> xs;
+        std::shared_ptr<MGXS> xs;
         try
         {
-          xs = std::dynamic_pointer_cast<SingleStateMGXS>(
+          xs = std::dynamic_pointer_cast<MGXS>(
             opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle, fname));
         }
         catch (const std::out_of_range& o)

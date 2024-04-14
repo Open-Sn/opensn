@@ -3,7 +3,7 @@
 
 #include "multi_group_xs_lua_utils.h"
 #include "framework/physics/physics_namespace.h"
-#include "framework/physics/physics_material/multi_group_xs/single_state_mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
@@ -32,7 +32,7 @@ namespace
 {
 
 void
-MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
+MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MGXS> xs)
 {
   // General data
   lua_newtable(L);
@@ -124,7 +124,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
 int
 PhysicsTransportXSCreate(lua_State* L)
 {
-  auto xs = std::make_shared<SingleStateMGXS>();
+  auto xs = std::make_shared<MGXS>();
   opensn::multigroup_xs_stack.push_back(xs);
 
   const size_t index = opensn::multigroup_xs_stack.size() - 1;
@@ -142,10 +142,10 @@ PhysicsTransportXSSet(lua_State* L)
   // Process operation id
   const auto operation_index = LuaArg<int>(L, 2);
 
-  std::shared_ptr<SingleStateMGXS> xs;
+  std::shared_ptr<MGXS> xs;
   try
   {
-    xs = std::dynamic_pointer_cast<SingleStateMGXS>(
+    xs = std::dynamic_pointer_cast<MGXS>(
       opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
   }
   catch (const std::out_of_range& o)
@@ -163,7 +163,7 @@ PhysicsTransportXSSet(lua_State* L)
     const auto n_grps = LuaArg<int>(L, 3);
     const auto sigma_t = LuaArg<double>(L, 4);
 
-    xs->MakeSimple0(n_grps, sigma_t);
+    xs->Initialize(n_grps, sigma_t);
   }
   else if (operation_index == static_cast<int>(OpType::SIMPLEXS1))
   {
@@ -173,7 +173,7 @@ PhysicsTransportXSSet(lua_State* L)
     const auto sigma_t = LuaArg<double>(L, 4);
     const auto c = LuaArg<double>(L, 5);
 
-    xs->MakeSimple1(n_grps, sigma_t, c);
+    xs->Initialize(n_grps, sigma_t, c);
   }
   else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
   {
@@ -181,7 +181,7 @@ PhysicsTransportXSSet(lua_State* L)
 
     auto file_name = LuaArg<std::string>(L, 3);
 
-    xs->MakeFromOpenSnXSFile(file_name);
+    xs->Initialize(file_name);
   }
   else
   {
@@ -200,10 +200,10 @@ PhysicsTransportXSGet(lua_State* L)
   // Process xs handle
   const auto handle = LuaArg<int>(L, 1);
 
-  std::shared_ptr<SingleStateMGXS> xs;
+  std::shared_ptr<MGXS> xs;
   try
   {
-    xs = std::dynamic_pointer_cast<SingleStateMGXS>(
+    xs = std::dynamic_pointer_cast<MGXS>(
       opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
   }
   catch (const std::out_of_range& o)
@@ -262,9 +262,9 @@ PhysicsTransportXSMakeCombined(lua_State* L)
     opensn::log.Log() << " Element handle: " << elem.first << " scalar value: " << elem.second;
 
   // Make the new cross section
-  auto new_xs = std::make_shared<SingleStateMGXS>();
+  auto new_xs = std::make_shared<MGXS>();
 
-  new_xs->MakeCombined(combinations);
+  new_xs->Initialize(combinations);
 
   opensn::multigroup_xs_stack.push_back(new_xs);
   auto num_xs = opensn::multigroup_xs_stack.size();
@@ -283,10 +283,10 @@ PhysicsTransportXSSetCombined(lua_State* L)
   // Process xs handle
   const auto xs_handle = LuaArg<int>(L, 1);
 
-  std::shared_ptr<SingleStateMGXS> xs;
+  std::shared_ptr<MGXS> xs;
   try
   {
-    xs = std::dynamic_pointer_cast<SingleStateMGXS>(
+    xs = std::dynamic_pointer_cast<MGXS>(
       opensn::GetStackItemPtr(opensn::multigroup_xs_stack, xs_handle));
   }
   catch (const std::out_of_range& o)
@@ -330,7 +330,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
   for (auto& elem : combinations)
     opensn::log.Log() << "  Element handle: " << elem.first << " scalar value: " << elem.second;
 
-  xs->MakeCombined(combinations);
+  xs->Initialize(combinations);
 
   return LuaReturn(L);
 }
@@ -344,7 +344,7 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
   const auto handle = LuaArg<int>(L, 1);
   auto file_name = LuaArg<std::string>(L, 2);
 
-  std::shared_ptr<MultiGroupXS> xs;
+  std::shared_ptr<MGXS> xs;
   try
   {
     xs = opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle);

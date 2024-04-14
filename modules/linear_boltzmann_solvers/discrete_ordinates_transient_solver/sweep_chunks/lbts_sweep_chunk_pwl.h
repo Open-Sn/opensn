@@ -26,7 +26,7 @@ protected:
   std::vector<lbs::CellLBSView>& grid_transport_view_;
   const std::vector<double>& q_moments_;
   LBSGroupset& groupset_;
-  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs_;
+  const std::map<int, std::shared_ptr<MGXS>>& xs_;
   const int num_moments_;
   const size_t num_groups_;
   const int max_num_cell_dofs_;
@@ -56,7 +56,7 @@ public:
                               double time_step,
                               const std::vector<double>& source_moments,
                               LBSGroupset& groupset,
-                              const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+                              const std::map<int, std::shared_ptr<MGXS>>& xs,
                               int num_moments,
                               int max_num_cell_dofs);
 

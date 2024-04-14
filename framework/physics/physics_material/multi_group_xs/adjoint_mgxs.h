@@ -21,10 +21,10 @@ namespace opensn
  * for transfer and production matrices access the respective transposed data
  * stored in this class.
  */
-class AdjointMGXS : public MultiGroupXS
+class AdjointMGXS : public MGXS
 {
 private:
-  const MultiGroupXS& xs_;
+  const MGXS& xs_;
   std::vector<SparseMatrix> transposed_transfer_matrices_;
   std::vector<std::vector<double>> transposed_production_matrices_;
 
@@ -33,7 +33,7 @@ public:
   AdjointMGXS(const AdjointMGXS&) = delete;
   AdjointMGXS(AdjointMGXS&&) = delete;
 
-  explicit AdjointMGXS(const MultiGroupXS& xs);
+  explicit AdjointMGXS(const MGXS& xs);
 
   // Accessors
   size_t NumGroups() const override { return xs_.NumGroups(); }

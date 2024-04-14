@@ -231,7 +231,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     {
       if (property->Type() == MatProperty::TRANSPORT_XSECTIONS)
       {
-        auto transp_xs = std::static_pointer_cast<MultiGroupXS>(property);
+        auto transp_xs = std::static_pointer_cast<MGXS>(property);
         matid_to_xs_map[mat_id] = transp_xs;
         found_transport_xs = true;
         if (first_material_read)

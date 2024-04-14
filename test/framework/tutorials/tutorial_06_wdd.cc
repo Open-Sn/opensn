@@ -1,5 +1,5 @@
 #include "framework/math/spatial_discretization/finite_volume/finite_volume.h"
-#include "framework/physics/physics_material/multi_group_xs/single_state_mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -26,7 +26,7 @@ std::vector<double> SetSource(const MeshContinuum& grid,
                               const UnknownManager& phi_uk_man,
                               const std::vector<double>& q_source,
                               const std::vector<double>& phi_old,
-                              const SingleStateMGXS& xs,
+                              const MGXS& xs,
                               const std::vector<YlmIndices>& m_ell_em_map);
 
 /**WDD Sweep. */
@@ -132,8 +132,8 @@ SimTest06_WDD(const InputParameters&)
   opensn::log.Log() << "End ukmanagers." << std::endl;
 
   // Make XSs
-  SingleStateMGXS xs;
-  xs.MakeFromOpenSnXSFile("xs_graphite_pure.xs");
+  MGXS xs;
+  xs.Initialize("xs_graphite_pure.xs");
 
   // Initializes vectors
   std::vector<double> phi_old(num_local_phi_dofs, 0.0);
@@ -187,7 +187,7 @@ SimTest06_WDD(const InputParameters&)
                      &psi_ds_z](const std::array<int64_t, 3>& ijk,
                                 const Vec3& omega,
                                 const size_t d,
-                                const SingleStateMGXS& cell_xs)
+                                const MGXS& cell_xs)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
     const auto& cell = grid.cells[cell_global_id];
@@ -402,7 +402,7 @@ SetSource(const MeshContinuum& grid,
           const UnknownManager& phi_uk_man,
           const std::vector<double>& q_source,
           const std::vector<double>& phi_old,
-          const SingleStateMGXS& xs,
+          const MGXS& xs,
           const std::vector<YlmIndices>& m_ell_em_map)
 {
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);

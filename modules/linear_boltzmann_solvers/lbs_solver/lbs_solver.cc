@@ -219,7 +219,7 @@ LBSSolver::DistributedSources() const
   return distributed_sources_;
 }
 
-const std::map<int, std::shared_ptr<MultiGroupXS>>&
+const std::map<int, std::shared_ptr<MGXS>>&
 LBSSolver::GetMatID2XSMap() const
 {
   return matid_to_xs_map_;
@@ -960,7 +960,7 @@ LBSSolver::InitializeMaterials()
       {
         // If forward mode, use the existing xs on stack.
         // If adjoint mode, create adjoint xs.
-        auto xs = std::static_pointer_cast<MultiGroupXS>(property);
+        auto xs = std::static_pointer_cast<MGXS>(property);
         matid_to_xs_map_[mat_id] = not options_.adjoint ? xs : std::make_shared<AdjointMGXS>(*xs);
         found_transport_xs = true;
       } // transport xs

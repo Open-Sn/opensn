@@ -14,7 +14,7 @@ namespace lbs
 {
 
 TwoGridCollapsedInfo
-MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
+MakeTwoGridCollapsedInfo(const MGXS& xs, EnergyCollapseScheme scheme)
 {
   const std::string fname = "lbs::acceleration::MakeTwoGridCollapsedInfo";
 

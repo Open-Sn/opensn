@@ -105,7 +105,7 @@ public:
   void UpdateFieldFunctions();
 
 protected:
-  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map;
+  std::map<int, std::shared_ptr<MGXS>> matid_to_xs_map;
 
   std::map<int, std::shared_ptr<IsotropicMultiGrpSource>> matid_to_src_map;
 

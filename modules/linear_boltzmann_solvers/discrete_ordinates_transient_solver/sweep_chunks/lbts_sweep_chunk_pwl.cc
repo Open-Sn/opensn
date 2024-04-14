@@ -22,7 +22,7 @@ lbs::SweepChunkPWLTransientTheta::SweepChunkPWLTransientTheta(
   const double time_step,
   const std::vector<double>& source_moments,
   LBSGroupset& groupset,
-  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+  const std::map<int, std::shared_ptr<MGXS>>& xs,
   const int num_moments,
   const int max_num_cell_dofs)
   : SweepChunk(destination_phi, destination_psi),

@@ -25,7 +25,7 @@ class FieldFunctionInterpolation;
 class UnpartitionedMesh;
 class Solver;
 class Material;
-class MultiGroupXS;
+class MGXS;
 class FieldFunction;
 class Function;
 class AngularQuadrature;
@@ -52,7 +52,7 @@ extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_inter
 extern std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
 
 extern std::vector<std::shared_ptr<Material>> material_stack;
-extern std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
+extern std::vector<std::shared_ptr<MGXS>> multigroup_xs_stack;
 extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 
 extern std::vector<std::shared_ptr<AngularQuadrature>> angular_quadrature_stack;

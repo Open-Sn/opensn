@@ -6,7 +6,7 @@
 namespace opensn
 {
 
-AdjointMGXS::AdjointMGXS(const MultiGroupXS& xs) : xs_(xs)
+AdjointMGXS::AdjointMGXS(const MGXS& xs) : xs_(xs)
 {
   // Transpose transfer matrices
   for (unsigned int ell = 0; ell <= xs_.ScatteringOrder(); ++ell)

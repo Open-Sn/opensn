@@ -56,10 +56,10 @@ DiscreteOrdinatesAdjointSolver::Initialize()
   LBSSolver::Initialize();
 
   // Create adjoint cross sections
-  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_adj_xs_map;
+  std::map<int, std::shared_ptr<MGXS>> matid_to_adj_xs_map;
   for (const auto& [matid, xs] : matid_to_xs_map_)
     matid_to_adj_xs_map[matid] =
-      std::make_shared<AdjointMGXS>(*std::dynamic_pointer_cast<MultiGroupXS>(xs));
+      std::make_shared<AdjointMGXS>(*std::dynamic_pointer_cast<MGXS>(xs));
   matid_to_xs_map_ = std::move(matid_to_adj_xs_map);
 
   for (const auto& cell : grid_ptr_->local_cells)
