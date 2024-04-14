@@ -10,6 +10,8 @@ namespace opensn
 void
 MGXS::Initialize(std::vector<std::pair<int, double>>& combinations)
 {
+  Reset();
+
   // Pickup all xs and make sure they are valid
   std::vector<std::shared_ptr<MGXS>> xsecs;
   xsecs.reserve(combinations.size());

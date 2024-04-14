@@ -12,6 +12,8 @@ namespace opensn
 void
 MGXS::Initialize(const std::string& file_name)
 {
+  Reset();
+
   // Open OpenSn XS file
   std::ifstream file;
   file.open(file_name);

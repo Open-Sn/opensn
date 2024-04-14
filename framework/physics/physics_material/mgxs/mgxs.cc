@@ -8,6 +8,39 @@ namespace opensn
 {
 
 void
+MGXS::Reset()
+{
+  num_groups_ = 0;
+  scattering_order_ = 0;
+  num_precursors_ = 0;
+  is_fissionable_ = false;
+
+  sigma_t_.clear();
+  sigma_a_.clear();
+  transfer_matrices_.clear();
+
+  sigma_f_.clear();
+  nu_sigma_f_.clear();
+  nu_prompt_sigma_f_.clear();
+  nu_delayed_sigma_f_.clear();
+  production_matrix_.clear();
+  precursors_.clear();
+
+  inv_velocity_.clear();
+
+  // Diffusion quantities
+  diffusion_initialized_ = false;
+  sigma_tr_.clear();
+  diffusion_coeff_.clear();
+  sigma_r_.clear();
+  sigma_s_gtog_.clear();
+
+  // Monte-Carlo quantities
+  cdf_gprime_g_.clear();
+  scat_angles_gprime_g_.clear();
+}
+
+void
 MGXS::ComputeAbsorption()
 {
   sigma_a_.assign(num_groups_, 0.0);

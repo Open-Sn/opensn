@@ -9,6 +9,8 @@ namespace opensn
 void
 MGXS::Initialize(unsigned int num_groups, double sigma_t)
 {
+  Reset();
+
   num_groups_ = num_groups;
   sigma_t_.resize(num_groups, sigma_t);
   sigma_a_.resize(num_groups, sigma_t);
@@ -18,6 +20,8 @@ MGXS::Initialize(unsigned int num_groups, double sigma_t)
 void
 MGXS::Initialize(unsigned int num_groups, double sigma_t, double c)
 {
+  Reset();
+
   num_groups_ = num_groups;
   sigma_t_.resize(num_groups, sigma_t);
   transfer_matrices_.emplace_back(num_groups, num_groups);
