@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/acceleration.h"
 
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
+#include "framework/physics/physics_material/mgxs/mgxs.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

@@ -5,7 +5,7 @@
 #include "framework/lua.h"
 #include "framework/physics/physics_material/physics_material.h"
 #include "framework/physics/physics_material/material_property_scalar_value.h"
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
+#include "framework/physics/physics_material/mgxs/mgxs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -282,8 +282,7 @@ MatSetProperty(lua_State* L)
     // If the property is valid
     if (location_of_prop >= 0)
     {
-      auto prop =
-        std::static_pointer_cast<MGXS>(cur_material->properties_[location_of_prop]);
+      auto prop = std::static_pointer_cast<MGXS>(cur_material->properties_[location_of_prop]);
 
       // Process operation
       if (operation_index == static_cast<int>(OpType::SIMPLEXS0))

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "multi_group_xs_lua_utils.h"
+#include "mgxs_lua_utils.h"
+#include "framework/physics/physics_material/mgxs/mgxs.h"
 #include "framework/physics/physics_namespace.h"
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
+#include "framework/runtime.h"
 #include <iostream>
 
 using namespace opensn;
@@ -145,8 +145,8 @@ PhysicsTransportXSSet(lua_State* L)
   std::shared_ptr<MGXS> xs;
   try
   {
-    xs = std::dynamic_pointer_cast<MGXS>(
-      opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
+    xs =
+      std::dynamic_pointer_cast<MGXS>(opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
   }
   catch (const std::out_of_range& o)
   {
@@ -203,8 +203,8 @@ PhysicsTransportXSGet(lua_State* L)
   std::shared_ptr<MGXS> xs;
   try
   {
-    xs = std::dynamic_pointer_cast<MGXS>(
-      opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
+    xs =
+      std::dynamic_pointer_cast<MGXS>(opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
   }
   catch (const std::out_of_range& o)
   {

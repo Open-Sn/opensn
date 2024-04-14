@@ -12,7 +12,7 @@ namespace opensn
 class MGXS : public PhysicsMaterialProperty
 {
 public:
-  MGXS() 
+  MGXS()
     : PhysicsMaterialProperty(PropertyType::TRANSPORT_XSECTIONS),
       num_groups_(0),
       scattering_order_(0),
@@ -21,8 +21,9 @@ public:
       adjoint_(false),
       scaling_factor_(1.0),
       diffusion_initialized_(false)
-  {}
-   
+  {
+  }
+
   /**
    * Makes a simple material with no transfer matrix just sigma_t.
    */
@@ -53,7 +54,7 @@ public:
     double fractional_yield = 0.0;
     std::vector<double> emission_spectrum;
   };
-  
+
   /**
    * Scale the cross sections by the specified factor.
    *
@@ -61,7 +62,7 @@ public:
    *       are scaled by the ratio of the argument and the existing scaling factor.
    */
   void SetScalingFactor(const double factor);
-  
+
   /**
    * Exports the cross section information to OpenSn format.
    *
@@ -74,13 +75,13 @@ public:
   void ExportToOpenSnXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
 
   size_t NumGroups() const { return num_groups_; }
-  
+
   size_t ScatteringOrder() const { return scattering_order_; }
-  
+
   size_t NumPrecursors() const { return num_precursors_; }
-  
-  bool IsFissionable() const  { return is_fissionable_; }
-  
+
+  bool IsFissionable() const { return is_fissionable_; }
+
   void SetAdjointMode(bool val)
   {
     adjoint_ = val;
@@ -93,17 +94,17 @@ public:
   double ScalingFactor() const { return scaling_factor_; }
 
   const std::vector<double>& SigmaTotal() const { return sigma_t_; }
-  
+
   const std::vector<double>& SigmaAbsorption() const { return sigma_a_; }
-  
+
   const std::vector<SparseMatrix>& TransferMatrices() const
-  { 
+  {
     if (adjoint_)
       return transposed_transfer_matrices_;
     return transfer_matrices_;
   }
-  
-  const SparseMatrix& TransferMatrix(unsigned int ell) const 
+
+  const SparseMatrix& TransferMatrix(unsigned int ell) const
   {
     if (adjoint_)
       return transposed_transfer_matrices_.at(ell);
@@ -111,13 +112,13 @@ public:
   }
 
   const std::vector<double>& SigmaFission() const { return sigma_f_; }
- 
+
   const std::vector<double>& NuSigmaF() const { return nu_sigma_f_; }
- 
+
   const std::vector<double>& NuPromptSigmaF() const { return nu_prompt_sigma_f_; }
- 
+
   const std::vector<double>& NuDelayedSigmaF() const { return nu_delayed_sigma_f_; }
- 
+
   const std::vector<std::vector<double>>& ProductionMatrix() const
   {
     if (adjoint_)
@@ -140,32 +141,32 @@ public:
   const std::vector<double>& SigmaSGtoG() const { return sigma_s_gtog_; }
 
 private:
-  size_t num_groups_;                                  ///< Total number of groups
-  size_t scattering_order_;                            ///< Legendre scattering order
-  size_t num_precursors_;                              ///< Number of precursors
-  bool is_fissionable_;                                ///< Is fissionable?
-  bool adjoint_;                                       ///< Can be used for adjoint calculations
-  double scaling_factor_ = 1.0;                        ///< An arbitrary scaling factor
-  std::vector<std::vector<double>> e_bounds_;          ///< Energy bin boundaries in MeV         
-  std::vector<double> sigma_t_;                        ///< Total cross section
-  std::vector<double> sigma_a_;                        ///< Absorption cross section
-  std::vector<double> sigma_f_;                        ///< Fission cross section
-  std::vector<double> nu_sigma_f_;                     ///< Neutron production due to fission
-  std::vector<double> nu_prompt_sigma_f_;              ///< Prompt neutron production due to fission
-  std::vector<double> nu_delayed_sigma_f_;             ///< Delayed neutron production due to fission
-  std::vector<double> inv_velocity_;                   ///< Inverse velocity
+  size_t num_groups_;                         ///< Total number of groups
+  size_t scattering_order_;                   ///< Legendre scattering order
+  size_t num_precursors_;                     ///< Number of precursors
+  bool is_fissionable_;                       ///< Is fissionable?
+  bool adjoint_;                              ///< Can be used for adjoint calculations
+  double scaling_factor_ = 1.0;               ///< An arbitrary scaling factor
+  std::vector<std::vector<double>> e_bounds_; ///< Energy bin boundaries in MeV
+  std::vector<double> sigma_t_;               ///< Total cross section
+  std::vector<double> sigma_a_;               ///< Absorption cross section
+  std::vector<double> sigma_f_;               ///< Fission cross section
+  std::vector<double> nu_sigma_f_;            ///< Neutron production due to fission
+  std::vector<double> nu_prompt_sigma_f_;     ///< Prompt neutron production due to fission
+  std::vector<double> nu_delayed_sigma_f_;    ///< Delayed neutron production due to fission
+  std::vector<double> inv_velocity_;          ///< Inverse velocity
   std::vector<Precursor> precursors_;
-  std::vector<SparseMatrix> transfer_matrices_;        ///< Sparse scattering matrix
+  std::vector<SparseMatrix> transfer_matrices_; ///< Sparse scattering matrix
   std::vector<SparseMatrix> transposed_transfer_matrices_;
   std::vector<std::vector<double>> production_matrix_; ///< Total neutron production matrix
   std::vector<std::vector<double>> transposed_production_matrix_;
 
   // Diffusion quantities
   bool diffusion_initialized_;
-  std::vector<double> sigma_tr_;                       ///< Transport cross section
-  std::vector<double> diffusion_coeff_;                ///< Transport corrected diffusion coefficient
-  std::vector<double> sigma_r_;                        ///< Removal cross section
-  std::vector<double> sigma_s_gtog_;                   ///< Within-group scattering cross section
+  std::vector<double> sigma_tr_;        ///< Transport cross section
+  std::vector<double> diffusion_coeff_; ///< Transport corrected diffusion coefficient
+  std::vector<double> sigma_r_;         ///< Removal cross section
+  std::vector<double> sigma_s_gtog_;    ///< Within-group scattering cross section
 
   // Monte-Carlo quantities
   std::vector<std::vector<double>> cdf_gprime_g_;
@@ -174,7 +175,7 @@ private:
   void ComputeAbsorption();
 
   void ComputeDiffusionParameters();
- 
+
   void TransposeTransferAndProduction();
 };
 

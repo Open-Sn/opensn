@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
+#include "framework/physics/physics_material/mgxs/mgxs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 #include "framework/math/math.h"
 #include <functional>
