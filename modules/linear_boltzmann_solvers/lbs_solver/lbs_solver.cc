@@ -12,7 +12,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/physics/physics_material/multi_group_xs/adjoint_mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/physics_material.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/time_integrations/time_integration.h"
@@ -958,12 +958,11 @@ LBSSolver::InitializeMaterials()
     {
       if (property->Type() == PropertyType::TRANSPORT_XSECTIONS)
       {
-        // If forward mode, use the existing xs on stack.
-        // If adjoint mode, create adjoint xs.
         auto xs = std::static_pointer_cast<MGXS>(property);
-        matid_to_xs_map_[mat_id] = not options_.adjoint ? xs : std::make_shared<AdjointMGXS>(*xs);
+        xs->SetAdjointMode(options_.adjoint);
+        matid_to_xs_map_[mat_id] = xs;
         found_transport_xs = true;
-      } // transport xs
+      }
 
       if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
       {

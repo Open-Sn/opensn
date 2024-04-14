@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_adjoint_solver/lbs_adjoint.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/source_functions/source_function.h"
-#include "framework/physics/physics_material/multi_group_xs/adjoint_mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/math/math_vector_nx.h"
@@ -54,16 +54,6 @@ void
 DiscreteOrdinatesAdjointSolver::Initialize()
 {
   LBSSolver::Initialize();
-
-  // Create adjoint cross sections
-  std::map<int, std::shared_ptr<MGXS>> matid_to_adj_xs_map;
-  for (const auto& [matid, xs] : matid_to_xs_map_)
-    matid_to_adj_xs_map[matid] =
-      std::make_shared<AdjointMGXS>(*std::dynamic_pointer_cast<MGXS>(xs));
-  matid_to_xs_map_ = std::move(matid_to_adj_xs_map);
-
-  for (const auto& cell : grid_ptr_->local_cells)
-    cell_transport_views_[cell.local_id_].ReassignXS(*matid_to_xs_map_[cell.material_id_]);
 
   // Initialize source func
   using namespace std::placeholders;

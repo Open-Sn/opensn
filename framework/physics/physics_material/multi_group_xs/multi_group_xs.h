@@ -18,9 +18,9 @@ public:
       scattering_order_(0),
       num_precursors_(0),
       is_fissionable_(false),
+      adjoint_(false),
       scaling_factor_(1.0),
-      diffusion_initialized_(false),
-      scattering_initialized_(false)
+      diffusion_initialized_(false)
   {}
    
   /**
@@ -73,59 +73,78 @@ public:
    */
   void ExportToOpenSnXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
 
-  virtual size_t NumGroups() const { return num_groups_; }
+  size_t NumGroups() const { return num_groups_; }
   
-  virtual size_t ScatteringOrder() const { return scattering_order_; }
+  size_t ScatteringOrder() const { return scattering_order_; }
   
-  virtual size_t NumPrecursors() const { return num_precursors_; }
+  size_t NumPrecursors() const { return num_precursors_; }
   
-  virtual bool IsFissionable() const  { return is_fissionable_; }
+  bool IsFissionable() const  { return is_fissionable_; }
   
-  virtual double ScalingFactor() const { return scaling_factor_; }
-
-  virtual const std::vector<double>& SigmaTotal() const { return sigma_t_; }
-  
-  virtual const std::vector<double>& SigmaAbsorption() const { return sigma_a_; }
-  
-  virtual const std::vector<SparseMatrix>& TransferMatrices() const { return transfer_matrices_; }
-  
-  virtual const SparseMatrix& TransferMatrix(unsigned int ell) const 
+  void SetAdjointMode(bool val)
   {
+    adjoint_ = val;
+    if (adjoint_ and transposed_transfer_matrices_.empty())
+      TransposeTransferAndProduction();
+  }
+
+  bool GetAdjointMode() const { return adjoint_; }
+
+  double ScalingFactor() const { return scaling_factor_; }
+
+  const std::vector<double>& SigmaTotal() const { return sigma_t_; }
+  
+  const std::vector<double>& SigmaAbsorption() const { return sigma_a_; }
+  
+  const std::vector<SparseMatrix>& TransferMatrices() const
+  { 
+    if (adjoint_)
+      return transposed_transfer_matrices_;
+    return transfer_matrices_;
+  }
+  
+  const SparseMatrix& TransferMatrix(unsigned int ell) const 
+  {
+    if (adjoint_)
+      return transposed_transfer_matrices_.at(ell);
     return transfer_matrices_.at(ell);
   }
 
-  virtual const std::vector<double>& SigmaFission() const { return sigma_f_; }
+  const std::vector<double>& SigmaFission() const { return sigma_f_; }
  
-  virtual const std::vector<double>& NuSigmaF() const { return nu_sigma_f_; }
+  const std::vector<double>& NuSigmaF() const { return nu_sigma_f_; }
  
-  virtual const std::vector<double>& NuPromptSigmaF() const { return nu_prompt_sigma_f_; }
+  const std::vector<double>& NuPromptSigmaF() const { return nu_prompt_sigma_f_; }
  
-  virtual const std::vector<double>& NuDelayedSigmaF() const { return nu_delayed_sigma_f_; }
+  const std::vector<double>& NuDelayedSigmaF() const { return nu_delayed_sigma_f_; }
  
-  virtual const std::vector<std::vector<double>>& ProductionMatrix() const
+  const std::vector<std::vector<double>>& ProductionMatrix() const
   {
+    if (adjoint_)
+      return transposed_production_matrix_;
     return production_matrix_;
   }
 
-  virtual const std::vector<Precursor>& Precursors() const { return precursors_; }
+  const std::vector<Precursor>& Precursors() const { return precursors_; }
 
-  virtual const std::vector<double>& InverseVelocity() const { return inv_velocity_; }
+  const std::vector<double>& InverseVelocity() const { return inv_velocity_; }
 
-  virtual bool DiffusionInitialized() const { return diffusion_initialized_; }
+  bool DiffusionInitialized() const { return diffusion_initialized_; }
 
-  virtual const std::vector<double>& SigmaTransport() const { return sigma_tr_; }
+  const std::vector<double>& SigmaTransport() const { return sigma_tr_; }
 
-  virtual const std::vector<double>& DiffusionCoefficient() const { return diffusion_coeff_; }
+  const std::vector<double>& DiffusionCoefficient() const { return diffusion_coeff_; }
 
-  virtual const std::vector<double>& SigmaRemoval() const { return sigma_r_; }
+  const std::vector<double>& SigmaRemoval() const { return sigma_r_; }
 
-  virtual const std::vector<double>& SigmaSGtoG() const { return sigma_s_gtog_; }
+  const std::vector<double>& SigmaSGtoG() const { return sigma_s_gtog_; }
 
-protected:
-  size_t num_groups_ = 0;                              ///< Total number of groups
-  size_t scattering_order_ = 0;                        ///< Legendre scattering order
-  size_t num_precursors_ = 0;                          ///< Number of precursors
-  bool is_fissionable_ = false;                        ///< Is fissionable?
+private:
+  size_t num_groups_;                                  ///< Total number of groups
+  size_t scattering_order_;                            ///< Legendre scattering order
+  size_t num_precursors_;                              ///< Number of precursors
+  bool is_fissionable_;                                ///< Is fissionable?
+  bool adjoint_;                                       ///< Can be used for adjoint calculations
   double scaling_factor_ = 1.0;                        ///< An arbitrary scaling factor
   std::vector<std::vector<double>> e_bounds_;          ///< Energy bin boundaries in MeV         
   std::vector<double> sigma_t_;                        ///< Total cross section
@@ -137,7 +156,9 @@ protected:
   std::vector<double> inv_velocity_;                   ///< Inverse velocity
   std::vector<Precursor> precursors_;
   std::vector<SparseMatrix> transfer_matrices_;        ///< Sparse scattering matrix
+  std::vector<SparseMatrix> transposed_transfer_matrices_;
   std::vector<std::vector<double>> production_matrix_; ///< Total neutron production matrix
+  std::vector<std::vector<double>> transposed_production_matrix_;
 
   // Diffusion quantities
   bool diffusion_initialized_;
@@ -147,13 +168,14 @@ protected:
   std::vector<double> sigma_s_gtog_;                   ///< Within-group scattering cross section
 
   // Monte-Carlo quantities
-  bool scattering_initialized_;
   std::vector<std::vector<double>> cdf_gprime_g_;
   std::vector<std::vector<std::vector<std::pair<double, double>>>> scat_angles_gprime_g_;
 
   void ComputeAbsorption();
 
   void ComputeDiffusionParameters();
+ 
+  void TransposeTransferAndProduction();
 };
 
 } // namespace opensn

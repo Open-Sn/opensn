@@ -1258,4 +1258,35 @@ void MGXS::ExportToOpenSnXSFile(const std::string& file_name,
   log.Log0Verbose1() << "Done exporting transport cross section to file: " << file_name;
 }
 
+void MGXS::TransposeTransferAndProduction()
+{
+  // Transpose transfer matrices
+  for (unsigned int ell = 0; ell <= scattering_order_; ++ell)
+  {
+    const auto& S_ell = transfer_matrices_[ell];
+    SparseMatrix S_ell_transpose(num_groups_, num_groups_);
+    for (size_t g = 0; g < num_groups_; ++g)
+    {
+      const size_t row_len = S_ell.rowI_indices_[g].size();
+      const size_t* col_ptr = S_ell.rowI_indices_[g].data();
+      const double* val_ptr = S_ell.rowI_values_[g].data();
+
+      for (size_t j = 0; j < row_len; ++j)
+        S_ell_transpose.Insert(*col_ptr++, g, *val_ptr++);
+    }
+    transposed_transfer_matrices_.push_back(S_ell_transpose);
+  } // for ell
+
+  // Transpose production matrices
+  if (is_fissionable_)
+  {
+    transposed_production_matrix_.clear();
+    transposed_production_matrix_.resize(num_groups_);
+    const auto& F = production_matrix_;
+    for (size_t g = 0; g < num_groups_; ++g)
+      for (size_t gp = 0; gp < num_groups_; ++gp)
+        transposed_production_matrix_[g].push_back(F[gp][g]);
+  }
+}
+
 } // namespace opensn
