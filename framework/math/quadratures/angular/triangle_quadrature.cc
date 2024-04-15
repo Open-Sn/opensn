@@ -59,7 +59,7 @@ TriangleQuadrature::TriangleInit()
 
   int num_div = 1;
   int weightPos = 0;
-  for (auto u : old_omega.qpoints)
+  for (const auto& u : old_omega.qpoints)
   {
     double deltaVPhi = M_PI / (2.0 * static_cast<double>(num_div));
     // When the GaussLegendre quadrature gives us the x points we will
@@ -224,7 +224,7 @@ TriangleQuadrature::MakeHarmonicIndices(unsigned int scattering_order, int dimen
       {
         for (int m = -ell; m <= ell; m += 1)
         {
-          if (ell == N and m >= 0 and m % 2 == 0)
+          if (ell == N and m >= 0 and m % 2 == 0 and ell > 0)
             continue;
           else if (ell == N + 1 and (m % 2 != 0 or m >= 0))
             continue;
