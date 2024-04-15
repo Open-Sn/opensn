@@ -42,24 +42,24 @@ TriangleQuadrature::TriangleInit()
   // Get the gauss points for the z axis. The number of points for GL is twice
   // that of the quadrature.
   Vector3 new_omega;
-  const auto old_omega = GaussLegendreQuadrature(sn_);
+  const auto GAUSS_LEG_QUAD = GaussLegendreQuadrature(sn_);
 
   // Formulate the triangular quadrature
   VecDbl newZi, newWeights;
-  newZi.reserve(old_omega.qpoints.size());
-  newWeights.reserve(old_omega.qpoints.size());
+  newZi.reserve(GAUSS_LEG_QUAD.qpoints.size());
+  newWeights.reserve(GAUSS_LEG_QUAD.qpoints.size());
 
-  for (size_t pos = 0; pos < old_omega.qpoints.size(); ++pos)
+  for (size_t pos = 0; pos < GAUSS_LEG_QUAD.qpoints.size(); ++pos)
   {
-    if (old_omega.qpoints[pos].x < 0)
+    if (GAUSS_LEG_QUAD.qpoints[pos].x < 0)
       continue;
-    newZi.push_back(old_omega.qpoints[pos].x);
-    newWeights.push_back(old_omega.weights[pos]);
+    newZi.push_back(GAUSS_LEG_QUAD.qpoints[pos].x);
+    newWeights.push_back(GAUSS_LEG_QUAD.weights[pos]);
   }
 
   int num_div = 1;
   int weightPos = 0;
-  for (const auto& u : old_omega.qpoints)
+  for (const auto& QUAD_POINT : GAUSS_LEG_QUAD.qpoints)
   {
     double deltaVPhi = M_PI / (2.0 * static_cast<double>(num_div));
     // When the GaussLegendre quadrature gives us the x points we will
@@ -71,21 +71,21 @@ TriangleQuadrature::TriangleInit()
     // This will ignore the positive x values, and just use the descending
     // order given by the quadrature and use the absolute value of the x values.
 
-    if (u.x >= 0.0)
+    if (QUAD_POINT.x >= 0.0)
       break;
 
     for (int v = 0; v < num_div; ++v)
     {
-      double new_z_value = abs(u.x);
+      double new_z_value = abs(QUAD_POINT.x);
       double phi = deltaVPhi / 2.0 + (double)v * deltaVPhi;
       double theta = acos(new_z_value);
       double sinTheta = sqrt(1 - new_z_value * new_z_value);
-      //      double weightCurrent = old_omega.weights[weightPos] / (num_div);
+      //      double weightCurrent = GAUSS_LEG_QUAD.weights[weightPos] / (num_div);
 
       new_omega.x = sinTheta * cos(phi);
       new_omega.y = sinTheta * sin(phi);
       new_omega.z = new_z_value;
-      weights_.push_back(old_omega.weights[weightPos] * (M_PI / (2.0 * num_div)));
+      weights_.push_back(GAUSS_LEG_QUAD.weights[weightPos] * (M_PI / (2.0 * num_div)));
       omegas_.emplace_back(new_omega);
       abscissae_.emplace_back(phi, theta);
     }
@@ -135,9 +135,9 @@ TriangleQuadrature::TriangleInit()
   // We need to fix the normalization to be 4*pi over the full sphere
   double normal = 4.0 * M_PI;
 
-  const size_t num_dirs = omegas_.size();
+  const size_t NUM_DIRS = omegas_.size();
   double weight_sum = 0.0;
-  for (size_t point = 0; point < num_dirs; ++point)
+  for (size_t point = 0; point < NUM_DIRS; ++point)
     weight_sum += weights_[point];
 
   if (normal > 0.0)
@@ -242,11 +242,11 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
   if (d2m_op_built_)
     return;
 
-  auto inner_product = [](const VecDbl& f, const VecDbl& g, const VecDbl& wt)
+  auto inner_product = [](const VecDbl& F, const VecDbl& G, const VecDbl& WT)
   {
     double sum_val = 0.0;
-    for (size_t i = 0; i < f.size(); ++i)
-      sum_val += f[i] * g[i] * wt[i];
+    for (size_t i = 0; i < F.size(); ++i)
+      sum_val += F[i] * G[i] * WT[i];
     return sum_val;
   };
 
@@ -257,17 +257,16 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
   {
     d2m_op_.clear();
 
-    const size_t num_angles = abscissae_.size();
-    const size_t num_moms = m_to_ell_em_map_.size();
-    for (const auto& ell_em : m_to_ell_em_map_)
+    const size_t NUM_ANGLES = abscissae_.size();
+    for (const auto& ELL_EM : m_to_ell_em_map_)
     {
       std::vector<double> cur_mom;
-      cur_mom.reserve(num_angles);
+      cur_mom.reserve(NUM_ANGLES);
 
-      for (int n = 0; n < num_angles; ++n)
+      for (int n = 0; n < NUM_ANGLES; ++n)
       {
-        const auto& cur_angle = abscissae_[n];
-        double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+        const auto& CUR_ANGLE = abscissae_[n];
+        double value = Ylm(ELL_EM.ell, ELL_EM.m, CUR_ANGLE.phi, CUR_ANGLE.theta);
         cur_mom.push_back(value * weights_[n]);
       }
       d2m_op_.push_back(cur_mom);
@@ -281,11 +280,10 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
     if (not m2d_op_built_)
       BuildMomentToDiscreteOperator(scattering_order, dimension);
 
-    const size_t num_angles = abscissae_.size();
     d2m_op_ = Transpose(Inverse(m2d_op_));
     weights_.clear();
-    for (const auto& wt : d2m_op_[0])
-      weights_.push_back(wt);
+    for (const auto& WT : d2m_op_[0])
+      weights_.push_back(WT);
     d2m_op_built_ = true;
   }
   else if (method_ == 2)
@@ -295,14 +293,14 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
     std::vector<std::vector<double>> cmt;
     unsigned int num_angles = abscissae_.size();
     unsigned int num_moms = m_to_ell_em_map_.size();
-    for (const auto& ell_em : m_to_ell_em_map_)
+    for (const auto& ELL_EM : m_to_ell_em_map_)
     {
       std::vector<double> cur_mom;
       cur_mom.reserve(num_angles);
       for (int n = 0; n < num_angles; ++n)
       {
-        const auto& cur_angle = abscissae_[n];
-        double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+        const auto& CUR_ANGLE = abscissae_[n];
+        double value = Ylm(ELL_EM.ell, ELL_EM.m, CUR_ANGLE.phi, CUR_ANGLE.theta);
         cur_mom.push_back(value);
       }
       cmt.push_back(cur_mom);
@@ -314,14 +312,14 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
       wt.emplace_back(0.0);
     weights_ = MatMul(Inverse(cmt), wt);
 
-    for (const auto& ell_em : m_to_ell_em_map_)
+    for (const auto& ELL_EM : m_to_ell_em_map_)
     {
       std::vector<double> cur_mom;
       cur_mom.reserve(num_angles);
       for (int n = 0; n < num_angles; ++n)
       {
-        const auto& cur_angle = abscissae_[n];
-        double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+        const auto& CUR_ANGLE = abscissae_[n];
+        double value = Ylm(ELL_EM.ell, ELL_EM.m, CUR_ANGLE.phi, CUR_ANGLE.theta);
         cur_mom.push_back(value * weights_[n]);
       }
       d2m_op_.push_back(cur_mom);
@@ -337,14 +335,14 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
     unsigned int num_moms = m_to_ell_em_map_.size();
     MatDbl cmt;
 
-    for (const auto& ell_em : m_to_ell_em_map_)
+    for (const auto& ELL_EM : m_to_ell_em_map_)
     {
       std::vector<double> cur_mom;
       cur_mom.reserve(num_angles);
       for (int n = 0; n < num_angles; ++n)
       {
-        const auto& cur_angle = abscissae_[n];
-        double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+        const auto& CUR_ANGLE = abscissae_[n];
+        double value = Ylm(ELL_EM.ell, ELL_EM.m, CUR_ANGLE.phi, CUR_ANGLE.theta);
         cur_mom.push_back(value);
       }
       cmt.push_back(cur_mom);
@@ -415,20 +413,19 @@ TriangleQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order,
 
   if (method_ == 0)
   {
-    const size_t num_angles = abscissae_.size();
-    const size_t num_moms = m_to_ell_em_map_.size();
+    const size_t NUM_ANGLES = abscissae_.size();
 
-    const auto normalization = std::accumulate(weights_.begin(), weights_.end(), 0.0);
+    const auto NORMAL = std::accumulate(weights_.begin(), weights_.end(), 0.0);
 
-    for (const auto& ell_em : m_to_ell_em_map_)
+    for (const auto& ELL_EM : m_to_ell_em_map_)
     {
       std::vector<double> cur_mom;
-      cur_mom.reserve(num_angles);
-      for (int n = 0; n < num_angles; ++n)
+      cur_mom.reserve(NUM_ANGLES);
+      for (int n = 0; n < NUM_ANGLES; ++n)
       {
-        const auto& cur_angle = abscissae_[n];
-        double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
-                       Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+        const auto& CUR_ANGLE = abscissae_[n];
+        double value = ((2.0 * ELL_EM.ell + 1.0) / NORMAL) *
+                       Ylm(ELL_EM.ell, ELL_EM.m, CUR_ANGLE.phi, CUR_ANGLE.theta);
         cur_mom.push_back(value);
       }
       m2d_op_.push_back(cur_mom);
@@ -437,19 +434,18 @@ TriangleQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order,
   }
   else if (method_ == 1)
   {
-    const auto normalization = 4.0 * M_PI;
-    const size_t num_angles = abscissae_.size();
-    const size_t num_moms = m_to_ell_em_map_.size();
-    for (const auto& ell_em : m_to_ell_em_map_)
+    const auto NORMAL = 4.0 * M_PI;
+    const size_t NUM_ANGLE = abscissae_.size();
+    for (const auto& ELL_EM : m_to_ell_em_map_)
     {
       double integral = 0.0;
       std::vector<double> cur_mom;
-      cur_mom.reserve(num_angles);
-      for (int n = 0; n < num_angles; ++n)
+      cur_mom.reserve(NUM_ANGLE);
+      for (int n = 0; n < NUM_ANGLE; ++n)
       {
-        const auto& cur_angle = abscissae_[n];
-        double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
-                       Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+        const auto& CUR_ANGLE = abscissae_[n];
+        double value = ((2.0 * ELL_EM.ell + 1.0) / NORMAL) *
+                       Ylm(ELL_EM.ell, ELL_EM.m, CUR_ANGLE.phi, CUR_ANGLE.theta);
         cur_mom.push_back(value);
       }
       m2d_op_.push_back(cur_mom);
