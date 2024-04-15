@@ -153,10 +153,13 @@ TriangleQuadrature::FilterMoments(unsigned int scattering_order)
   // This is only needed for the methods, GQ1 & GQ2, that need to build the full
   // matrix first. Otherwise we are building up to the required degree and don't
   // need to cut after the formation.
-  if (m2d_op_built_ and d2m_op_built_ and moments_ >= 0)
+  if (m2d_op_built_ and d2m_op_built_ and moments_ >= 0 and !m_to_ell_em_map_.empty())
   {
     int s_order = static_cast<int>(scattering_order);
-    int moments_to_keep = 1 + (s_order * 3 + s_order * s_order) / 2;
+    int moments_to_keep = 0;
+    for (auto i : m_to_ell_em_map_)
+      if (i.ell <= s_order)
+        moments_to_keep+=1;
 
     auto m2d_transposed = m2d_op_;
     m_to_ell_em_map_.resize(moments_to_keep);
@@ -393,7 +396,9 @@ TriangleQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order,
     d2m_op_built_ = true;
   }
   // cut down after the fact, for the methods that require the full matrix
-  if (scattering_order < sn_ and method_ != 3 and method_ != 0)
+  if (((scattering_order < sn_  and dimension==2) or
+         (scattering_order <= sn_ and dimension == 3))
+        and method_ != 3 and method_ != 0)
   {
     log.Log0() << "Filtering moements for scattering order " << scattering_order;
     FilterMoments(scattering_order);
@@ -465,7 +470,9 @@ TriangleQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order,
     m2d_op_built_ = true;
   }
 
-  if (scattering_order < sn_ and method_ != 3 and method_ != 0)
+  if (((scattering_order < sn_  and dimension==2) or
+      (scattering_order <=sn_ and dimension == 3))
+        and method_ != 3 and method_ != 0)
   {
     log.Log0() << "Filtering moements for scattering order " << scattering_order;
     FilterMoments(scattering_order);
