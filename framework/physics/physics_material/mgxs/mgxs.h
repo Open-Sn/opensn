@@ -168,10 +168,6 @@ private:
   std::vector<double> sigma_r_;         ///< Removal cross section
   std::vector<double> sigma_s_gtog_;    ///< Within-group scattering cross section
 
-  // Monte-Carlo quantities
-  std::vector<std::vector<double>> cdf_gprime_g_;
-  std::vector<std::vector<std::vector<std::pair<double, double>>>> scat_angles_gprime_g_;
-
   void Reset();
 
   void ComputeAbsorption();

@@ -34,10 +34,6 @@ MGXS::Reset()
   diffusion_coeff_.clear();
   sigma_r_.clear();
   sigma_s_gtog_.clear();
-
-  // Monte-Carlo quantities
-  cdf_gprime_g_.clear();
-  scat_angles_gprime_g_.clear();
 }
 
 void
