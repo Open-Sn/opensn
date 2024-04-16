@@ -101,7 +101,9 @@ LuaApp::ProcessArguments(int argc, char** argv)
     ("v,verbose",                   "Verbosity level (0 to 3). Default is 0.", cxxopts::value<int>())
     ("caliper",                     "Enable Caliper reporting",
       cxxopts::value<std::string>()->implicit_value("runtime-report(calc.inclusive=true),max_column_width=80"))
-    ("positional",                  "Positional arugments", cxxopts::value<std::vector<std::string>>());
+    ("i,input",                     "Input file", cxxopts::value<std::string>())
+    ("l,lua",                       "Lua expression",
+      cxxopts::value<std::vector<std::string>>());
 
     options.add_options("Dev")
       ("help-dev",                  "Developer options help")
@@ -109,10 +111,6 @@ LuaApp::ProcessArguments(int argc, char** argv)
       ("dump-object-registry",      "Dump object registry");
     /* clang-format on */
 
-    options.positional_help("[FILE] [LUA ASSIGNMENT]");
-    options.parse_positional("positional");
-
-    bool found_filename = false;
     auto result = options.parse(argc, argv);
 
     if (result.count("help"))
@@ -161,25 +159,16 @@ LuaApp::ProcessArguments(int argc, char** argv)
       }
     }
 
-    if (result.count("positional"))
+    if (result.count("input"))
     {
-      auto args = result["positional"].as<std::vector<std::string>>();
-      for (const auto& arg : args)
-      {
-        if (arg.find('=') != std::string::npos)
-          console.GetCommandBuffer().push_back(arg);
-        else
-        {
-          if (not found_filename)
-          {
-            opensn::input_path = arg;
-            sim_option_interactive_ = false;
-            found_filename = true;
-          }
-          else
-            throw std::runtime_error("Invalid option " + arg);
-        }
-      }
+      opensn::input_path = result["input"].as<std::string>();
+      sim_option_interactive_ = false;
+    }
+
+    if (result.count("lua"))
+    {
+      for (auto larg : result["lua"].as<std::vector<std::string>>())
+        console.GetCommandBuffer().push_back(larg);
     }
   }
   catch (const cxxopts::exceptions::exception& e)
