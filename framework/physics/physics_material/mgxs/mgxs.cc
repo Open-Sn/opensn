@@ -121,7 +121,7 @@ MGXS::ComputeDiffusionParameters()
     // Compute transport cross section
     if (sigma_1 >= sigma_t_[g])
     {
-      log.Log0Warning() << "Transport cross section found to be less than zero for "
+      log.Log0Warning() << "Negative transport cross section found for "
                         << "group " << g << " in call to " << __FUNCTION__ << ". "
                         << "sigma_t=" << sigma_t_[g] << " sigma_1=" << sigma_1 << ". "
                         << "Setting sigma_1=0, sigma_tr=sigma_t for this group.";

@@ -285,7 +285,7 @@ MatSetProperty(lua_State* L)
       auto prop = std::static_pointer_cast<MGXS>(cur_material->properties_[location_of_prop]);
 
       // Process operation
-      if (operation_index == static_cast<int>(OpType::SIMPLEXS0))
+      if (operation_index == static_cast<int>(OpType::PURE_ABSORBER))
       {
         if (num_args != 5)
           LuaPostArgAmountError("MatSetProperty", 5, num_args);
