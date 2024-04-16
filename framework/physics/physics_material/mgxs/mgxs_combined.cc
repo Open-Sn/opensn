@@ -21,7 +21,7 @@ MGXS::Initialize(std::vector<std::pair<int, double>>& combinations)
   double Nf_total = 0.0; // Total density of fissile materials
 
   // Loop over cross sections
-  for (auto combo : combinations)
+  for (auto& combo : combinations)
   {
     // Get the cross section from the stack
     std::shared_ptr<MGXS> xs;

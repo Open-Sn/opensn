@@ -22,7 +22,7 @@ MGXS::ExportToOpenSnXSFile(const std::string& file_name, const double fission_sc
     bool proceed = false;
     if (min_value >= 0.0)
     {
-      for (auto val : xs)
+      for (auto& val : xs)
       {
         if (val > min_value)
         {
