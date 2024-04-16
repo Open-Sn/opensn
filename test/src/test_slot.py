@@ -26,9 +26,9 @@ class TestSlot:
 
         cmd = self.argv.mpi_cmd + " " + str(test.num_procs) + " "
         cmd += self.argv.exe + " "
-        cmd += test.filename + " "
+        cmd += "-i " + test.filename + " "
         cmd += "--suppress-color "
-        cmd += "master_export=false "
+        cmd += "--lua master_export=false "
         for arg in test.args:
             if arg.find("\"") >= 0:
                 cmd += "'" + arg + "' "
