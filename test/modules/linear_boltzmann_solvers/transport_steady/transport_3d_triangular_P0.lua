@@ -1,6 +1,6 @@
 -- 3D LinearBSolver Vacuum with isotropic incident, triangular set
 -- SDM: PWLD
--- Test: Max value
+-- Test: 
 num_procs = 8
 
 --############################################### Check num_procs
@@ -87,11 +87,6 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 lbs.SetOptions(phys1, lbs_options)
 
 --========== Solvers
-ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
-
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
-
 --############################################### Setup Output
 ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
 
@@ -101,26 +96,6 @@ solver.Execute(ss_solver)
 --############################################### Get field functions
 fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
---############################################### Slice plot
-slice2 = fieldfunc.FFInterpolationCreate(SLICE)
-fieldfunc.SetProperty(slice2,SLICE_POINT,0.0,0.0,0.025)
-fieldfunc.SetProperty(slice2,ADD_FIELDFUNCTION,fflist[1])
-
-fieldfunc.Initialize(slice2)
-fieldfunc.Execute(slice2)
-
---############################################### Volume integrations
-ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
-curffi = ffi1
-fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
-fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
-fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[1])
-
-fieldfunc.Initialize(curffi)
-fieldfunc.Execute(curffi)
-maxval = fieldfunc.GetValue(curffi)
-
-log.Log(LOG_0,string.format("Max-value1=%.5f", maxval))
 
 --############################################### Exports
 

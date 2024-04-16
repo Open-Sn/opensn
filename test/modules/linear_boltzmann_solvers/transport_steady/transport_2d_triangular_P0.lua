@@ -1,6 +1,6 @@
 -- 2D LinearBSolver Vacuum with isotropic incident, triangular set
 -- SDM: PWLD
--- Test: Max value 12.26958
+-- Test: 
 num_procs = 1
 
 --############################################### Check num_procs
@@ -95,34 +95,32 @@ ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys1 })
 solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
-log.Log("We have the ss solver execute")
 --############################################### Get field functions
 fflist, count = lbs.GetScalarFieldFunctionList(phys1)
 
 --############################################### Slice plot
-slice2 = fieldfunc.FFInterpolationCreate(SLICE)
-fieldfunc.SetProperty(slice2, SLICE_POINT, 0.0, 0.0, 0.025)
-fieldfunc.SetProperty(slice2, ADD_FIELDFUNCTION, fflist[1])
+--slice2 = fieldfunc.FFInterpolationCreate(SLICE)
+--fieldfunc.SetProperty(slice2, SLICE_POINT, 0.0, 0.0, 0.025)
+--fieldfunc.SetProperty(slice2, ADD_FIELDFUNCTION, fflist[1])
 
-fieldfunc.Initialize(slice2)
-fieldfunc.Execute(slice2)
+--fieldfunc.Initialize(slice2)
+--fieldfunc.Execute(slice2)
 
-log.Log("We have the slicer execute")
 --############################################### Volume integrations
-ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
-curffi = ffi1
-fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
-fieldfunc.SetProperty(curffi, LOGICAL_VOLUME, vol0)
-fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
+--ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
+--curffi = ffi1
+--fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
+--fieldfunc.SetProperty(curffi, LOGICAL_VOLUME, vol0)
+--fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
 
-fieldfunc.Initialize(curffi)
-fieldfunc.Execute(curffi)
-maxval = fieldfunc.GetValue(curffi)
+--fieldfunc.Initialize(curffi)
+--fieldfunc.Execute(curffi)
+--maxval = fieldfunc.GetValue(curffi)
 
-log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
+--log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
 
 --############################################### Exports
 if master_export == nil then
-    fieldfunc.ExportPython(slice2)
+    fieldfunc.ExportToVTKMulti(fflist,"ZPhi")
 end
 
