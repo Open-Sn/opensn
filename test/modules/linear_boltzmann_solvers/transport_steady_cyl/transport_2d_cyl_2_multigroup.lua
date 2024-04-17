@@ -50,7 +50,7 @@ end
 material0 = mat.AddMaterial("Material_0");
 mat.AddProperty(material0, TRANSPORT_XSECTIONS)
 mat.AddProperty(material0, ISOTROPIC_MG_SOURCE)
-mat.SetProperty(material0, TRANSPORT_XSECTIONS, SIMPLEXS1, ngrp, sigmat, ratioc)
+mat.SetProperty(material0, TRANSPORT_XSECTIONS, OPENSN_XSFILE, "transport_2d_cyl_2_multigroup.xs")
 mat.SetProperty(material0, ISOTROPIC_MG_SOURCE, FROM_ARRAY, source)
 
 --############################################### Setup Physics

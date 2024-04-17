@@ -47,13 +47,9 @@ mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
 mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
 
-
 num_groups = 168
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_3_170.xs")
 mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_3_170.xs")
-
---mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS0, num_groups, 0.1)
---mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLEXS0, num_groups, 0.1)
 
 src={}
 for g=1,num_groups do

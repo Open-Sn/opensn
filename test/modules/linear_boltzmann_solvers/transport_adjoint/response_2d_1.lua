@@ -74,13 +74,13 @@ materials[3] = mat.AddMaterial("Test Material3");
 -- Add cross sections to materials
 num_groups = 1
 mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.01, 0.01)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, MODEL1G, 0.01, 0.01)
 
 mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
-mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.1 * 20, 0.8)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, MODEL1G, 0.1 * 20, 0.8)
 
 mat.AddProperty(materials[3], TRANSPORT_XSECTIONS)
-mat.SetProperty(materials[3], TRANSPORT_XSECTIONS, SIMPLEXS1, num_groups, 0.3 * 20, 0.0)
+mat.SetProperty(materials[3], TRANSPORT_XSECTIONS, MODEL1G, 0.3 * 20, 0.0)
 
 -- Create sources
 src = {}

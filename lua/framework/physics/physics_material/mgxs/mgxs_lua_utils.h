@@ -45,20 +45,9 @@ int PhysicsTransportXSCreate(lua_State* L);
  * will be converted to 0 to N-1. This method can be used to set mutli-group
  * cross sections or sources.
  * \n
- * PURE_ABSORBER\n
- * Makes a simple material with no transfer matrix and \f$\sigma_t = \sigma_a \f$.
+ * MODEL1G\n
+ * Makes a simple, 1-group material with a user-selectable amount of scattering.
  *  Expects two values: \n
- *  - int number of groups \f$G \f$,
- *  - float \f$\sigma_t \f$.
- *
- * ####_
- *
- * SIMPLEXS1\n
- * Makes a simple material with isotropic transfer matrix (L=0)
- * and mostly down scattering but with a few of the last groups
- * subject to up-scattering. Expects three values
- * values: \n
- *  - int number of groups (\f$G \f$),
  *  - float \f$\sigma_t \f$,
  *  - float scattering to total ratio (\f$c \f$)
  *

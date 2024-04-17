@@ -286,26 +286,15 @@ MatSetProperty(lua_State* L)
         std::static_pointer_cast<MultiGroupXS>(cur_material->properties_[location_of_prop]);
 
       // Process operation
-      if (operation_index == static_cast<int>(OpType::PURE_ABSORBER))
+      if (operation_index == static_cast<int>(OpType::MODEL1G))
       {
         if (num_args != 5)
           LuaPostArgAmountError("MatSetProperty", 5, num_args);
 
-        auto G = LuaArg<int>(L, 4);
-        auto sigma_t = LuaArg<double>(L, 5);
+        auto sigma_t = LuaArg<double>(L, 4);
+        auto c = LuaArg<double>(L, 5);
 
-        prop->Initialize(G, sigma_t);
-      }
-      else if (operation_index == static_cast<int>(OpType::SIMPLEXS1))
-      {
-        if (num_args != 6)
-          LuaPostArgAmountError("MatSetProperty", 6, num_args);
-
-        auto G = LuaArg<int>(L, 4);
-        auto sigma_t = LuaArg<double>(L, 5);
-        auto c = LuaArg<double>(L, 6);
-
-        prop->Initialize(G, sigma_t, c);
+        prop->Initialize(sigma_t, c);
       }
       else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
       {

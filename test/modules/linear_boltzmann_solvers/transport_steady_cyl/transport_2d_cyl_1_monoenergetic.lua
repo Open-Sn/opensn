@@ -46,7 +46,7 @@ source = sigmat * (1 - ratioc)
 material0 = mat.AddMaterial("Material_0");
 mat.AddProperty(material0, TRANSPORT_XSECTIONS)
 mat.AddProperty(material0, ISOTROPIC_MG_SOURCE)
-mat.SetProperty(material0, TRANSPORT_XSECTIONS, SIMPLEXS1, ngrp, sigmat, ratioc)
+mat.SetProperty(material0, TRANSPORT_XSECTIONS, MODEL1G, sigmat, ratioc)
 mat.SetProperty(material0, ISOTROPIC_MG_SOURCE, SINGLE_VALUE, source)
 
 --############################################### Setup Physics

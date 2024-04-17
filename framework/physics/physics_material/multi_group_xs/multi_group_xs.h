@@ -25,15 +25,9 @@ public:
   }
 
   /**
-   * Makes a simple material with no transfer matrix just sigma_t.
+   * Makes a simple material with a 1-group cross section set.
    */
-  void Initialize(unsigned int num_groups, double sigma_t);
-
-  /**
-   * Makes a simple material with isotropic transfer matrix (L=0) and mostly down scattering but
-   * with a few of the last groups subject to up-scattering.
-   */
-  void Initialize(unsigned int num_groups, double sigma_t, double c);
+  void Initialize(double sigma_t, double c);
 
   /**
    * Populates the cross section from a combination of others.

@@ -23,8 +23,7 @@ RegisterLuaFunctionNamespace(PhysicsTransportXSExportToOpenSnFormat, xs, ExportT
 
 RegisterLuaConstantAsIs(SINGLE_VALUE, Varying(0));
 RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));
-RegisterLuaConstantAsIs(PURE_ABSORBER, Varying(20));
-RegisterLuaConstantAsIs(SIMPLEXS1, Varying(21));
+RegisterLuaConstantAsIs(MODEL1G, Varying(20));
 RegisterLuaConstantAsIs(EXISTING, Varying(22));
 RegisterLuaConstantAsIs(OPENSN_XSFILE, Varying(23));
 
@@ -156,24 +155,14 @@ PhysicsTransportXSSet(lua_State* L)
 
   // Process operation
   using OpType = OperationType;
-  if (operation_index == static_cast<int>(OpType::PURE_ABSORBER))
-  {
-    LuaCheckArgs<int, int, int, double>(L, fname);
-
-    const auto n_grps = LuaArg<int>(L, 3);
-    const auto sigma_t = LuaArg<double>(L, 4);
-
-    xs->Initialize(n_grps, sigma_t);
-  }
-  else if (operation_index == static_cast<int>(OpType::SIMPLEXS1))
+  if (operation_index == static_cast<int>(OpType::MODEL1G))
   {
     LuaCheckArgs<int, int, int, double, double>(L, fname);
 
-    const auto n_grps = LuaArg<int>(L, 3);
-    const auto sigma_t = LuaArg<double>(L, 4);
-    const auto c = LuaArg<double>(L, 5);
+    const auto sigma_t = LuaArg<double>(L, 3);
+    const auto c = LuaArg<double>(L, 4);
 
-    xs->Initialize(n_grps, sigma_t, c);
+    xs->Initialize(sigma_t, c);
   }
   else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
   {
