@@ -272,7 +272,7 @@ can be executed by typing the executable name followed by the input file path
 (relative or absolute).
 
 ```
-opensn Tutorial01.lua
+opensn -i Tutorial01.lua
 ```
 
 The output produced will look as follows:
