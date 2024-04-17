@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/sweep_boundary.h"
-#include "framework/physics/physics_material/mgxs/mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/runtime.h"
 
@@ -34,14 +34,14 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
 }
 
 std::map<int, Multigroup_D_and_sigR>
-PackGroupsetXS(const std::map<int, std::shared_ptr<MGXS>>& matid_to_xs_map,
+PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_map,
                int first_grp_index,
                int last_group_index)
 {
   const int num_gs_groups = last_group_index - first_grp_index + 1;
   OpenSnInvalidArgumentIf(num_gs_groups < 0, "last_grp_index must be >= first_grp_index");
 
-  typedef Multigroup_D_and_sigR MGXS;
+  typedef Multigroup_D_and_sigR MultiGroupXS;
   typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
   MatID2XSMap matid_2_mgxs_map;
   for (const auto& matid_xs_pair : matid_to_xs_map)
@@ -62,7 +62,7 @@ PackGroupsetXS(const std::map<int, std::shared_ptr<MGXS>>& matid_to_xs_map,
       ++g;
     } // for g
 
-    matid_2_mgxs_map.insert(std::make_pair(mat_id, MGXS{D, sigma_r}));
+    matid_2_mgxs_map.insert(std::make_pair(mat_id, MultiGroupXS{D, sigma_r}));
   }
 
   return matid_2_mgxs_map;

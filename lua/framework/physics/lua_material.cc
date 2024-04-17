@@ -5,7 +5,7 @@
 #include "framework/lua.h"
 #include "framework/physics/physics_material/physics_material.h"
 #include "framework/physics/physics_material/material_property_scalar_value.h"
-#include "framework/physics/physics_material/mgxs/mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -128,7 +128,7 @@ MatAddProperty(lua_State* L)
       }
     }
 
-    auto prop = std::make_shared<MGXS>();
+    auto prop = std::make_shared<MultiGroupXS>();
 
     prop->property_name = provided_name;
 
@@ -282,7 +282,8 @@ MatSetProperty(lua_State* L)
     // If the property is valid
     if (location_of_prop >= 0)
     {
-      auto prop = std::static_pointer_cast<MGXS>(cur_material->properties_[location_of_prop]);
+      auto prop =
+        std::static_pointer_cast<MultiGroupXS>(cur_material->properties_[location_of_prop]);
 
       // Process operation
       if (operation_index == static_cast<int>(OpType::PURE_ABSORBER))
@@ -322,10 +323,10 @@ MatSetProperty(lua_State* L)
 
         auto handle = LuaArg<int>(L, 4);
 
-        std::shared_ptr<MGXS> xs;
+        std::shared_ptr<MultiGroupXS> xs;
         try
         {
-          xs = std::dynamic_pointer_cast<MGXS>(
+          xs = std::dynamic_pointer_cast<MultiGroupXS>(
             opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle, fname));
         }
         catch (const std::out_of_range& o)

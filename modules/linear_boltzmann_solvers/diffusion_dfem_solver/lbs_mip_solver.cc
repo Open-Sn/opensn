@@ -96,7 +96,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
     } // for sweep-boundary
 
     // Make xs map
-    typedef Multigroup_D_and_sigR MGXS;
+    typedef Multigroup_D_and_sigR MultiGroupXS;
     typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
     MatID2XSMap matid_2_mgxs_map;
     for (const auto& matid_xs_pair : matid_to_xs_map_)
@@ -119,7 +119,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
         ++g;
       } // for g
 
-      matid_2_mgxs_map.insert(std::make_pair(mat_id, MGXS{Dg, sigR}));
+      matid_2_mgxs_map.insert(std::make_pair(mat_id, MultiGroupXS{Dg, sigR}));
     }
 
     // Create solver

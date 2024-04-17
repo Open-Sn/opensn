@@ -39,7 +39,7 @@ public:
              const std::vector<double>& densities,
              const std::vector<double>& source_moments,
              const lbs::LBSGroupset& groupset,
-             const std::map<int, std::shared_ptr<MGXS>>& xs,
+             const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
              int num_moments,
              int max_num_cell_dofs)
     : grid_(grid),
@@ -105,7 +105,7 @@ protected:
   const std::vector<double>& densities_;
   const std::vector<double>& source_moments_;
   const lbs::LBSGroupset& groupset_;
-  const std::map<int, std::shared_ptr<MGXS>>& xs_;
+  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs_;
   const int num_moments_;
   const int max_num_cell_dofs_;
   const bool save_angular_flux_;

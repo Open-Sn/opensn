@@ -11,7 +11,7 @@
 namespace opensn
 {
 class SweepBoundary;
-class MGXS;
+class MultiGroupXS;
 
 namespace lbs
 {
@@ -65,7 +65,7 @@ struct TwoGridCollapsedInfo
   std::vector<double> spectrum;
 };
 
-TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MGXS& xs, EnergyCollapseScheme scheme);
+TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme);
 
 /**Translates sweep boundary conditions to that used in diffusion acceleration
  * methods.*/
@@ -76,7 +76,7 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
 /**Makes a packaged set of XSs, suitable for diffusion, for a particular
  * set of groups.*/
 std::map<int, Multigroup_D_and_sigR>
-PackGroupsetXS(const std::map<int, std::shared_ptr<MGXS>>& matid_to_xs_map,
+PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_map,
                int first_grp_index,
                int last_group_index);
 

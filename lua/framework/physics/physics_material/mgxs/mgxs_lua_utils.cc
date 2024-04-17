@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "mgxs_lua_utils.h"
-#include "framework/physics/physics_material/mgxs/mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_namespace.h"
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
@@ -32,7 +32,7 @@ namespace
 {
 
 void
-MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MGXS> xs)
+MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
 {
   // General data
   lua_newtable(L);
@@ -124,7 +124,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MGXS> xs)
 int
 PhysicsTransportXSCreate(lua_State* L)
 {
-  auto xs = std::make_shared<MGXS>();
+  auto xs = std::make_shared<MultiGroupXS>();
   opensn::multigroup_xs_stack.push_back(xs);
 
   const size_t index = opensn::multigroup_xs_stack.size() - 1;
@@ -142,11 +142,11 @@ PhysicsTransportXSSet(lua_State* L)
   // Process operation id
   const auto operation_index = LuaArg<int>(L, 2);
 
-  std::shared_ptr<MGXS> xs;
+  std::shared_ptr<MultiGroupXS> xs;
   try
   {
-    xs =
-      std::dynamic_pointer_cast<MGXS>(opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
+    xs = std::dynamic_pointer_cast<MultiGroupXS>(
+      opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
   }
   catch (const std::out_of_range& o)
   {
@@ -200,11 +200,11 @@ PhysicsTransportXSGet(lua_State* L)
   // Process xs handle
   const auto handle = LuaArg<int>(L, 1);
 
-  std::shared_ptr<MGXS> xs;
+  std::shared_ptr<MultiGroupXS> xs;
   try
   {
-    xs =
-      std::dynamic_pointer_cast<MGXS>(opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
+    xs = std::dynamic_pointer_cast<MultiGroupXS>(
+      opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
   }
   catch (const std::out_of_range& o)
   {
@@ -262,7 +262,7 @@ PhysicsTransportXSMakeCombined(lua_State* L)
     opensn::log.Log() << " Element handle: " << elem.first << " scalar value: " << elem.second;
 
   // Make the new cross section
-  auto new_xs = std::make_shared<MGXS>();
+  auto new_xs = std::make_shared<MultiGroupXS>();
 
   new_xs->Initialize(combinations);
 
@@ -283,10 +283,10 @@ PhysicsTransportXSSetCombined(lua_State* L)
   // Process xs handle
   const auto xs_handle = LuaArg<int>(L, 1);
 
-  std::shared_ptr<MGXS> xs;
+  std::shared_ptr<MultiGroupXS> xs;
   try
   {
-    xs = std::dynamic_pointer_cast<MGXS>(
+    xs = std::dynamic_pointer_cast<MultiGroupXS>(
       opensn::GetStackItemPtr(opensn::multigroup_xs_stack, xs_handle));
   }
   catch (const std::out_of_range& o)
@@ -344,7 +344,7 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
   const auto handle = LuaArg<int>(L, 1);
   auto file_name = LuaArg<std::string>(L, 2);
 
-  std::shared_ptr<MGXS> xs;
+  std::shared_ptr<MultiGroupXS> xs;
   try
   {
     xs = opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle);

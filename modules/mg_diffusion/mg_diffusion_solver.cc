@@ -5,7 +5,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/physics/physics_material/physics_material.h"
-#include "framework/physics/physics_material/mgxs/mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include <algorithm>
@@ -231,7 +231,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     {
       if (property->Type() == MatProperty::TRANSPORT_XSECTIONS)
       {
-        auto transp_xs = std::static_pointer_cast<MGXS>(property);
+        auto transp_xs = std::static_pointer_cast<MultiGroupXS>(property);
         matid_to_xs_map[mat_id] = transp_xs;
         found_transport_xs = true;
         if (first_material_read)

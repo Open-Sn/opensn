@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
-#include "framework/physics/physics_material/mgxs/mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include <memory>
 #include <utility>
 
@@ -65,7 +65,7 @@ public:
 
   virtual double AddSourceMoments() const;
 
-  typedef std::vector<MGXS::Precursor> PrecursorList;
+  typedef std::vector<MultiGroupXS::Precursor> PrecursorList;
   /**Adds delayed particle precursor sources.*/
   virtual double AddDelayedFission(const PrecursorList& precursors,
                                    const double& rho,

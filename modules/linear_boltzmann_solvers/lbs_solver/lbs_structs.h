@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/physics/physics_material/mgxs/mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 #include "framework/math/math.h"
 #include <functional>
@@ -258,7 +258,7 @@ private:
   int num_nodes_;
   int num_groups_;
   int num_grps_moms_;
-  const MGXS* xs_;
+  const MultiGroupXS* xs_;
   double volume_;
   const std::vector<bool> face_local_flags_;
   const std::vector<int> face_locality_;
@@ -270,7 +270,7 @@ public:
               int num_nodes,
               int num_groups,
               int num_moments,
-              const MGXS& xs_mapping,
+              const MultiGroupXS& xs_mapping,
               double volume,
               const std::vector<bool>& face_local_flags,
               const std::vector<int>& face_locality,
@@ -295,7 +295,7 @@ public:
     return phi_address_ + node * num_grps_moms_ + num_groups_ * moment + grp;
   }
 
-  const MGXS& XS() const { return *xs_; }
+  const MultiGroupXS& XS() const { return *xs_; }
 
   bool IsFaceLocal(int f) const { return face_local_flags_[f]; }
   int FaceLocality(int f) const { return face_locality_[f]; }
@@ -325,7 +325,7 @@ public:
       return 0.0;
   }
 
-  void ReassignXS(const MGXS& xs) { xs_ = &xs; }
+  void ReassignXS(const MultiGroupXS& xs) { xs_ = &xs; }
 };
 
 struct UnitCellMatrices

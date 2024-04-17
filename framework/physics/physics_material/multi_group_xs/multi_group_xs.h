@@ -9,10 +9,10 @@
 namespace opensn
 {
 
-class MGXS : public PhysicsMaterialProperty
+class MultiGroupXS : public PhysicsMaterialProperty
 {
 public:
-  MGXS()
+  MultiGroupXS()
     : PhysicsMaterialProperty(PropertyType::TRANSPORT_XSECTIONS),
       num_groups_(0),
       scattering_order_(0),
@@ -141,20 +141,20 @@ public:
   const std::vector<double>& SigmaSGtoG() const { return sigma_s_gtog_; }
 
 private:
-  size_t num_groups_;                         ///< Total number of groups
-  size_t scattering_order_;                   ///< Legendre scattering order
-  size_t num_precursors_;                     ///< Number of precursors
-  bool is_fissionable_;                       ///< Is fissionable?
-  bool adjoint_;                              ///< Can be used for adjoint calculations
-  double scaling_factor_ = 1.0;               ///< An arbitrary scaling factor
-  std::vector<std::vector<double>> e_bounds_; ///< Energy bin boundaries in MeV
-  std::vector<double> sigma_t_;               ///< Total cross section
-  std::vector<double> sigma_a_;               ///< Absorption cross section
-  std::vector<double> sigma_f_;               ///< Fission cross section
-  std::vector<double> nu_sigma_f_;            ///< Neutron production due to fission
-  std::vector<double> nu_prompt_sigma_f_;     ///< Prompt neutron production due to fission
-  std::vector<double> nu_delayed_sigma_f_;    ///< Delayed neutron production due to fission
-  std::vector<double> inv_velocity_;          ///< Inverse velocity
+  size_t num_groups_;                      ///< Total number of groups
+  size_t scattering_order_;                ///< Legendre scattering order
+  size_t num_precursors_;                  ///< Number of precursors
+  bool is_fissionable_;                    ///< Is fissionable?
+  bool adjoint_;                           ///< Can be used for adjoint calculations
+  double scaling_factor_ = 1.0;            ///< An arbitrary scaling factor
+  std::vector<double> e_bounds_;           ///< Energy bin boundaries in MeV
+  std::vector<double> sigma_t_;            ///< Total cross section
+  std::vector<double> sigma_a_;            ///< Absorption cross section
+  std::vector<double> sigma_f_;            ///< Fission cross section
+  std::vector<double> nu_sigma_f_;         ///< Neutron production due to fission
+  std::vector<double> nu_prompt_sigma_f_;  ///< Prompt neutron production due to fission
+  std::vector<double> nu_delayed_sigma_f_; ///< Delayed neutron production due to fission
+  std::vector<double> inv_velocity_;       ///< Inverse velocity
   std::vector<Precursor> precursors_;
   std::vector<SparseMatrix> transfer_matrices_; ///< Sparse scattering matrix
   std::vector<SparseMatrix> transposed_transfer_matrices_;

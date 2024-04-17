@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/physics/physics_material/mgxs/mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 
@@ -9,7 +9,7 @@ namespace opensn
 {
 
 void
-MGXS::ExportToOpenSnXSFile(const std::string& file_name, const double fission_scaling) const
+MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fission_scaling) const
 {
   log.Log() << "Exporting transport cross section to file: " << file_name;
 

@@ -46,7 +46,7 @@ int PhysicsTransportXSCreate(lua_State* L);
  * cross sections or sources.
  * \n
  * PURE_ABSORBER\n
- * Makes a simple material with no transfer matrix and \f$\sigma_t \f$ = \f$\sigma_a \f$.
+ * Makes a simple material with no transfer matrix and \f$\sigma_t = \sigma_a \f$.
  *  Expects two values: \n
  *  - int number of groups \f$G \f$,
  *  - float \f$\sigma_t \f$.

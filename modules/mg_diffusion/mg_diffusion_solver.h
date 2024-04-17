@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/mg_diffusion/mg_diffusion_bndry.h"
-#include "framework/physics/physics_material/mgxs/mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
 #include "framework/physics/solver_base/solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
@@ -105,7 +105,7 @@ public:
   void UpdateFieldFunctions();
 
 protected:
-  std::map<int, std::shared_ptr<MGXS>> matid_to_xs_map;
+  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map;
 
   std::map<int, std::shared_ptr<IsotropicMultiGrpSource>> matid_to_src_map;
 

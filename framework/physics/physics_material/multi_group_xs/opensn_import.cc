@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/physics/physics_material/mgxs/mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/logging/log.h"
 #include <numeric>
 
@@ -10,7 +10,7 @@ namespace opensn
 
 // Read xs data from an OpenSn data file
 void
-MGXS::Initialize(const std::string& file_name)
+MultiGroupXS::Initialize(const std::string& file_name)
 {
   Reset();
 
@@ -22,17 +22,16 @@ MGXS::Initialize(const std::string& file_name)
 
   // Lambda for reading group structure data.
   auto ReadGroupStructure = [](const std::string& keyword,
-                               std::vector<std::vector<double>>& destination,
+                               std::vector<double>& destination,
                                const size_t n_grps,
                                std::ifstream& file,
                                std::istringstream& line_stream,
                                size_t& line_number)
   {
-    destination.assign(n_grps, std::vector<double>(2, 0.0));
+    destination.reserve(n_grps + 1);
 
     std::string line;
-    int group;
-    double high, low;
+    double bound;
     size_t count = 0;
 
     // Read the block
@@ -42,13 +41,12 @@ MGXS::Initialize(const std::string& file_name)
     while (line != keyword + "_END")
     {
       // Get data from current line
-      line_stream >> group >> high >> low;
-      destination.at(group).at(0) = high;
-      destination.at(group).at(1) = low;
-      OpenSnLogicalErrorIf(count++ >= n_grps,
+      line_stream >> bound;
+      destination.push_back(bound);
+      OpenSnLogicalErrorIf(count++ >= n_grps + 1,
                            "Too many entries encountered when parsing group structure.\n"
                            "The expected number of entries is " +
-                             std::to_string(n_grps) + ".");
+                             std::to_string(n_grps + 1) + ".");
 
       // Go to next line
       std::getline(file, line);
