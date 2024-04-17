@@ -42,10 +42,8 @@ UnpartitionedMesh::ComputeBoundingBox()
 }
 
 void
-UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
+UnpartitionedMesh::ComputeCentroids()
 {
-  const Vector3 khat(0.0, 0.0, 1.0);
-
   log.Log0Verbose1() << "Computing cell-centroids.";
   for (auto cell : raw_cells_)
   {
@@ -56,8 +54,13 @@ UnpartitionedMesh::ComputeCentroidsAndCheckQuality()
     cell->centroid = cell->centroid / static_cast<double>(cell->vertex_ids.size());
   }
   log.Log0Verbose1() << "Done computing cell-centroids.";
+}
 
+void
+UnpartitionedMesh::CheckQuality()
+{
   log.Log0Verbose1() << "Checking cell-center-to-face orientations";
+  const Vector3 khat(0.0, 0.0, 1.0);
   size_t num_negative_volume_elements = 0;
   for (auto cell : raw_cells_)
   {

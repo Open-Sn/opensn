@@ -289,7 +289,8 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   umesh->SetDimension(3);
   umesh->SetAttributes(EXTRUDED);
 
-  umesh->ComputeCentroidsAndCheckQuality();
+  umesh->ComputeCentroids();
+  umesh->CheckQuality();
   umesh->BuildMeshConnectivity();
 
   log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh Done";

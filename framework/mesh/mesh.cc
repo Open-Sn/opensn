@@ -65,7 +65,8 @@ CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
     umesh->AddCell(cell);
   }
 
-  umesh->ComputeCentroidsAndCheckQuality();
+  umesh->ComputeCentroids();
+  umesh->CheckQuality();
   umesh->BuildMeshConnectivity();
 
   unpartitionedmesh_stack.push_back(umesh);
@@ -151,7 +152,8 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
     } // for j
   }   // for i
 
-  umesh->ComputeCentroidsAndCheckQuality();
+  umesh->ComputeCentroids();
+  umesh->CheckQuality();
   umesh->BuildMeshConnectivity();
 
   unpartitionedmesh_stack.push_back(umesh);
@@ -297,7 +299,8 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
     }   // for j
   }     // for i
 
-  umesh->ComputeCentroidsAndCheckQuality();
+  umesh->ComputeCentroids();
+  umesh->CheckQuality();
   umesh->BuildMeshConnectivity();
 
   unpartitionedmesh_stack.push_back(umesh);

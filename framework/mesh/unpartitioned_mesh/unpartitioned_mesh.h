@@ -95,7 +95,12 @@ public:
   /**
    * Compute centroids for all cells.
    */
-  void ComputeCentroidsAndCheckQuality();
+  void ComputeCentroids();
+
+  /**
+   * Check element quality
+   */
+  void CheckQuality();
 
   /**
    * Makes or gets a boundary that uniquely identifies the given name.
