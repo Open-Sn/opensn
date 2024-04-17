@@ -165,9 +165,9 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
                                          "pc_hypre_boomeramg_coarsen_type HMIS",
                                          "pc_hypre_boomeramg_interp_type ext+i"};
 
-  if (grid.Attributes() & DIMENSION_2)
+  if (grid.Dimension() == 2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
-  if (grid.Attributes() & DIMENSION_3)
+  else if (grid.Dimension() == 3)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.7");
 
   for (const auto& option : pc_options)

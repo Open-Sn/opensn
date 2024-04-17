@@ -190,6 +190,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     const auto& mesh_options = umesh.MeshOptions();
 
     WriteBinaryValue(ofile, num_parts); // int
+    WriteBinaryValue<unsigned int>(ofile, umesh.Dimension());
 
     WriteBinaryValue(ofile, static_cast<int>(umesh.Attributes())); // int
     WriteBinaryValue(ofile, mesh_options.ortho_Nx);                // size_t
@@ -313,6 +314,7 @@ SplitFileMeshGenerator::ReadSplitMesh()
                          " parts but is now being read with " +
                          std::to_string(opensn::mpi_comm.size()) + " processes.");
 
+  info_block.dimension = ReadBinaryValue<unsigned int>(ifile);
   info_block.mesh_attributes_ = ReadBinaryValue<int>(ifile);
   info_block.ortho_Nx_ = ReadBinaryValue<size_t>(ifile);
   info_block.ortho_Ny_ = ReadBinaryValue<size_t>(ifile);
@@ -404,6 +406,7 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
     grid_ptr->cells.push_back(std::move(cell));
   }
 
+  grid_ptr->SetDimension(mesh_info.dimension);
   SetGridAttributes(*grid_ptr,
                     static_cast<MeshAttributes>(mesh_info.mesh_attributes_),
                     {mesh_info.ortho_Nx_, mesh_info.ortho_Ny_, mesh_info.ortho_Nz_});

@@ -238,6 +238,7 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
     ++cell_globl_id;
   } // for raw_cell
 
+  grid_ptr->SetDimension(input_umesh->Dimension());
   SetGridAttributes(*grid_ptr,
                     input_umesh->Attributes(),
                     {input_umesh->MeshOptions().ortho_Nx,

@@ -390,11 +390,12 @@ GmshIO::FromFile(const UnpartitionedMesh::Options& options)
     cell->material_id = boundary_mapping[cell->material_id];
 
   // Always do this
-  MeshAttributes dimension = DIMENSION_2;
+  unsigned int dimension = 2;
   if (not mesh_is_2D_assumption)
-    dimension = DIMENSION_3;
+    dimension = 3;
 
-  mesh->Attributes() = dimension | UNSTRUCTURED;
+  mesh->SetDimension(dimension);
+  mesh->Attributes() = UNSTRUCTURED;
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();

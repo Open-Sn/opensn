@@ -643,23 +643,8 @@ VtkIO::FromExodus(const UnpartitionedMesh::Options& options)
     mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
 
   // Always do this
-  MeshAttributes dimension = NONE;
-  switch (max_dimension)
-  {
-    case 1:
-      dimension = DIMENSION_1;
-      break;
-    case 2:
-      dimension = DIMENSION_2;
-      break;
-    case 3:
-      dimension = DIMENSION_3;
-      break;
-    default:
-      break;
-  }
-
-  mesh->Attributes() = dimension | UNSTRUCTURED;
+  mesh->SetDimension(max_dimension);
+  mesh->Attributes() = UNSTRUCTURED;
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();
@@ -716,23 +701,8 @@ VtkIO::FromVTU(const UnpartitionedMesh::Options& options)
   SetMaterialIDsFromList(mesh, material_ids);
 
   // Always do this
-  MeshAttributes dimension = NONE;
-  switch (max_dimension)
-  {
-    case 1:
-      dimension = DIMENSION_1;
-      break;
-    case 2:
-      dimension = DIMENSION_2;
-      break;
-    case 3:
-      dimension = DIMENSION_3;
-      break;
-    default:
-      break;
-  }
-
-  mesh->Attributes() = dimension | UNSTRUCTURED;
+  mesh->SetDimension(max_dimension);
+  mesh->Attributes() = UNSTRUCTURED;
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();
@@ -786,23 +756,8 @@ VtkIO::FromPVTU(const UnpartitionedMesh::Options& options)
   SetMaterialIDsFromList(mesh, material_ids);
 
   // Always do this
-  MeshAttributes dimension = NONE;
-  switch (max_dimension)
-  {
-    case 1:
-      dimension = DIMENSION_1;
-      break;
-    case 2:
-      dimension = DIMENSION_2;
-      break;
-    case 3:
-      dimension = DIMENSION_3;
-      break;
-    default:
-      break;
-  }
-
-  mesh->Attributes() = dimension | UNSTRUCTURED;
+  mesh->SetDimension(max_dimension);
+  mesh->Attributes() = UNSTRUCTURED;
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();
@@ -874,23 +829,8 @@ VtkIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
     mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
 
   // Always do this
-  MeshAttributes dimension = NONE;
-  switch (max_dimension)
-  {
-    case 1:
-      dimension = DIMENSION_1;
-      break;
-    case 2:
-      dimension = DIMENSION_2;
-      break;
-    case 3:
-      dimension = DIMENSION_3;
-      break;
-    default:
-      break;
-  }
-
-  mesh->Attributes() = dimension | UNSTRUCTURED;
+  mesh->SetDimension(max_dimension);
+  mesh->Attributes() = UNSTRUCTURED;
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();

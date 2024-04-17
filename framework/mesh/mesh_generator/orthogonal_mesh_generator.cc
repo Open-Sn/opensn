@@ -124,7 +124,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   for (double z_coord : vertices)
     zverts.emplace_back(0.0, 0.0, z_coord);
 
-  umesh->Attributes() = DIMENSION_1 | ORTHOGONAL;
+  umesh->SetDimension(1);
+  umesh->Attributes() = ORTHOGONAL;
 
   // Create vertices
   size_t Nz = vertices.size();
@@ -191,7 +192,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
 {
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
-  umesh->Attributes() = DIMENSION_2 | ORTHOGONAL;
+  umesh->SetDimension(2);
+  umesh->Attributes() = ORTHOGONAL;
 
   // Create vertices
   const size_t Nx = vertices_1d_x.size();
@@ -314,7 +316,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
 {
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
-  umesh->Attributes() = DIMENSION_3 | ORTHOGONAL;
+  umesh->SetDimension(3);
+  umesh->Attributes() = ORTHOGONAL;
 
   // Create vertices
   size_t Nx = vertices_1d_x.size();

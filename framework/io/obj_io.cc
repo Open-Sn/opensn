@@ -333,7 +333,8 @@ ObjIO::FromFile(const UnpartitionedMesh::Options& options)
   mesh->RawCells() = block_data[main_block_id].cells;
 
   // Always do this
-  mesh->Attributes() = DIMENSION_2 | UNSTRUCTURED;
+  mesh->SetDimension(2);
+  mesh->Attributes() = UNSTRUCTURED;
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();

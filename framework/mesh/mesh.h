@@ -56,9 +56,6 @@ class VolumeMesherPredefinedUnpartitioned;
 enum MeshAttributes : int
 {
   NONE = 0,
-  DIMENSION_1 = (1 << 0),
-  DIMENSION_2 = (1 << 1),
-  DIMENSION_3 = (1 << 2),
   ORTHOGONAL = (1 << 3),
   EXTRUDED = (1 << 4),
   UNSTRUCTURED = (1 << 5)

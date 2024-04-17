@@ -28,8 +28,8 @@ CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
 
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
-
-  umesh->Attributes() = DIMENSION_1 | ORTHOGONAL;
+  umesh->SetDimension(1);
+  umesh->Attributes() = ORTHOGONAL;
 
   // Create vertices
   size_t Nz = vertices.size();
@@ -85,7 +85,8 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
-  umesh->Attributes() = DIMENSION_2 | ORTHOGONAL;
+  umesh->SetDimension(2);
+  umesh->Attributes() = ORTHOGONAL;
 
   // Create vertices
   size_t Nx = vertices_1d_x.size();
@@ -175,7 +176,8 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
-  umesh->Attributes() = DIMENSION_3 | ORTHOGONAL;
+  umesh->SetDimension(3);
+  umesh->Attributes() = ORTHOGONAL;
 
   // Create vertices
   size_t Nx = vertices_1d_x.size();

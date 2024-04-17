@@ -51,14 +51,10 @@ private:
   std::map<uint64_t, std::string> boundary_id_map_;
 
 public:
-  MeshContinuum()
-    : local_cells(local_cells_),
-      cells(local_cells_,
-            ghost_cells_,
-            global_cell_id_to_local_id_map_,
-            global_cell_id_to_nonlocal_id_map_)
-  {
-  }
+  MeshContinuum();
+
+  unsigned int Dimension() const { return dim_; }
+  void SetDimension(unsigned int dim) { dim_ = dim; }
 
   void SetGlobalVertexCount(const uint64_t count) { global_vertex_count_ = count; }
   uint64_t GetGlobalVertexCount() const { return global_vertex_count_; }
@@ -236,6 +232,9 @@ private:
     attributes = attributes | new_attribs;
     ortho_attributes = {ortho_Nis[0], ortho_Nis[1], ortho_Nis[2]};
   }
+
+  /// Spatial dimension
+  unsigned int dim_;
 };
 
 } // namespace opensn

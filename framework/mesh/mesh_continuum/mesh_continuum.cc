@@ -24,6 +24,16 @@
 namespace opensn
 {
 
+MeshContinuum::MeshContinuum()
+  : local_cells(local_cells_),
+    cells(local_cells_,
+          ghost_cells_,
+          global_cell_id_to_local_id_map_,
+          global_cell_id_to_nonlocal_id_map_),
+    dim_(0)
+{
+}
+
 std::shared_ptr<MPICommunicatorSet>
 MeshContinuum::MakeMPILocalCommunicatorSet() const
 {

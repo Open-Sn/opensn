@@ -420,15 +420,14 @@ UnpartitionedMesh::PushProxyCell(const std::string& type_str,
 
   raw_cells_.push_back(cell);
 
-  MeshAttributes dimension;
   if (type == CellType::SLAB)
-    dimension = DIMENSION_1;
+    SetDimension(1);
   if (type == CellType::POLYGON)
-    dimension = DIMENSION_2;
+    SetDimension(2);
   if (type == CellType::POLYHEDRON)
-    dimension = DIMENSION_3;
+    SetDimension(3);
 
-  attributes_ = dimension | UNSTRUCTURED;
+  attributes_ = UNSTRUCTURED;
 }
 
 void

@@ -29,6 +29,7 @@ protected:
   typedef std::pair<int, uint64_t> CellPIDGID;
   struct SplitMeshInfo
   {
+    unsigned int dimension;
     std::map<CellPIDGID, UnpartitionedMesh::LightWeightCell> cells_;
     std::map<uint64_t, Vector3> vertices_;
     std::map<uint64_t, std::string> boundary_id_map_;

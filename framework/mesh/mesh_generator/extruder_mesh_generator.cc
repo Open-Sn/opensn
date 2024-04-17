@@ -107,7 +107,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh";
   const Vector3 khat(0.0, 0.0, 1.0);
 
-  OpenSnInvalidArgumentIf(not(input_umesh->Attributes() & DIMENSION_2),
+  OpenSnInvalidArgumentIf(input_umesh->Dimension() != 2,
                           "Input mesh is not 2D. A 2D mesh is required for extrusion");
 
   const auto& template_vertices = input_umesh->Vertices();
@@ -286,7 +286,8 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
     } // for sub-layer n
   }   // for layer
 
-  umesh->SetAttributes(DIMENSION_3 | EXTRUDED);
+  umesh->SetDimension(3);
+  umesh->SetAttributes(EXTRUDED);
 
   umesh->ComputeCentroidsAndCheckQuality();
   umesh->BuildMeshConnectivity();

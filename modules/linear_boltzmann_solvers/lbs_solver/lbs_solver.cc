@@ -861,12 +861,12 @@ LBSSolver::PerformInputChecks()
   }
 
   // Determine geometry type
-  const auto grid_attribs = grid_ptr_->Attributes();
-  if (grid_attribs & DIMENSION_1)
+  const auto dim = grid_ptr_->Dimension();
+  if (dim == 1)
     options_.geometry_type = GeometryType::ONED_SLAB;
-  else if (grid_attribs & DIMENSION_2)
+  else if (dim == 2)
     options_.geometry_type = GeometryType::TWOD_CARTESIAN;
-  else if (grid_attribs & DIMENSION_3)
+  else if (dim == 3)
     options_.geometry_type = GeometryType::THREED_CARTESIAN;
   else
     OpenSnLogicalError("Cannot deduce geometry type from mesh.");

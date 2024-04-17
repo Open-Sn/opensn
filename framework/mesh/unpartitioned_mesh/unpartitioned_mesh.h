@@ -61,6 +61,9 @@ public:
   UnpartitionedMesh() = default;
   ~UnpartitionedMesh();
 
+  unsigned int Dimension() const { return dim_; }
+  void SetDimension(unsigned int dim) { dim_ = dim; }
+
   const BoundBox& BoundingBox() const { return bound_box_; }
   void ComputeBoundingBox();
 
@@ -124,6 +127,8 @@ protected:
   std::vector<LightWeightCell*> raw_boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 
+  /// Spatial mesh dimension
+  unsigned int dim_;
   MeshAttributes attributes_ = NONE;
   Options mesh_options_;
   BoundBox bound_box_;

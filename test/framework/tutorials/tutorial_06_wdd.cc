@@ -59,17 +59,7 @@ SimTest06_WDD(const InputParameters&)
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
 
-  const auto Dim1 = DIMENSION_1;
-  const auto Dim2 = DIMENSION_2;
-  const auto Dim3 = DIMENSION_3;
-
-  int dimension = 0;
-  if (grid.Attributes() & Dim1)
-    dimension = 1;
-  if (grid.Attributes() & Dim2)
-    dimension = 2;
-  if (grid.Attributes() & Dim3)
-    dimension = 3;
+  auto dimension = grid.Dimension();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = FiniteVolume::New(grid);
