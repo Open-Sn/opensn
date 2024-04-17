@@ -73,15 +73,15 @@ SplitFileMeshGenerator::Execute()
   {
     // Execute all input generators
     // Note these could be empty
-    std::unique_ptr<UnpartitionedMesh> current_umesh = nullptr;
+    std::shared_ptr<UnpartitionedMesh> current_umesh = nullptr;
     for (auto mesh_generator_ptr : inputs_)
     {
-      auto new_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(std::move(current_umesh));
-      current_umesh = std::move(new_umesh);
+      auto new_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(current_umesh);
+      current_umesh = new_umesh;
     }
 
     // Generate final umesh
-    current_umesh = GenerateUnpartitionedMesh(std::move(current_umesh));
+    current_umesh = GenerateUnpartitionedMesh(current_umesh);
 
     log.Log() << "Writing split-mesh with " << num_parts << " parts";
     const auto cell_pids = PartitionMesh(*current_umesh, num_parts);
@@ -131,8 +131,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
   OpenSnLogicalErrorIf(not root_dir_created, "Failed to create directory " + dir_path.string());
 
   const auto& vertex_subs = umesh.GetVertextCellSubscriptions();
-  const auto& raw_cells = umesh.GetRawCells();
-  const auto& raw_vertices = umesh.GetVertices();
+  const auto& raw_cells = umesh.RawCells();
+  const auto& raw_vertices = umesh.Vertices();
 
   uint64_t aux_counter = 0;
   for (int pid = 0; pid < num_parts; ++pid)
@@ -187,19 +187,19 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       log.Log() << "Writing part " << pid << " num_local_cells=" << local_cells_needed.size();
 
     // Write mesh attributes and general info
-    const auto& mesh_options = umesh.GetMeshOptions();
+    const auto& mesh_options = umesh.MeshOptions();
 
     WriteBinaryValue(ofile, num_parts); // int
 
-    WriteBinaryValue(ofile, static_cast<int>(umesh.GetMeshAttributes())); // int
-    WriteBinaryValue(ofile, mesh_options.ortho_Nx);                       // size_t
-    WriteBinaryValue(ofile, mesh_options.ortho_Ny);                       // size_t
-    WriteBinaryValue(ofile, mesh_options.ortho_Nz);                       // size_t
+    WriteBinaryValue(ofile, static_cast<int>(umesh.Attributes())); // int
+    WriteBinaryValue(ofile, mesh_options.ortho_Nx);                // size_t
+    WriteBinaryValue(ofile, mesh_options.ortho_Ny);                // size_t
+    WriteBinaryValue(ofile, mesh_options.ortho_Nz);                // size_t
 
     WriteBinaryValue(ofile, raw_vertices.size()); // size_t
 
     // Write the boundary map
-    const auto& bndry_map = mesh_options.boundary_id_map;
+    const auto& bndry_map = umesh.BoundaryIDMap();
     WriteBinaryValue(ofile, bndry_map.size()); // size_t
     for (const auto& [bid, bname] : bndry_map)
     {

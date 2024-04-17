@@ -15,17 +15,17 @@ public:
   explicit OrthogonalMeshGenerator(const InputParameters& params);
 
 protected:
-  std::unique_ptr<UnpartitionedMesh>
-  GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh) override;
+  std::shared_ptr<UnpartitionedMesh>
+  GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> input_umesh) override;
 
-  static std::unique_ptr<UnpartitionedMesh>
+  static std::shared_ptr<UnpartitionedMesh>
   CreateUnpartitioned1DOrthoMesh(const std::vector<double>& vertices);
 
-  static std::unique_ptr<UnpartitionedMesh>
+  static std::shared_ptr<UnpartitionedMesh>
   CreateUnpartitioned2DOrthoMesh(const std::vector<double>& vertices_1d_x,
                                  const std::vector<double>& vertices_1d_y);
 
-  static std::unique_ptr<UnpartitionedMesh>
+  static std::shared_ptr<UnpartitionedMesh>
   CreateUnpartitioned3DOrthoMesh(const std::vector<double>& vertices_1d_x,
                                  const std::vector<double>& vertices_1d_y,
                                  const std::vector<double>& vertices_1d_z);

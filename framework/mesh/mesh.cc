@@ -29,20 +29,20 @@ CreateUnpartitioned1DOrthoMesh(std::vector<double>& vertices)
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
-  umesh->GetMeshAttributes() = DIMENSION_1 | ORTHOGONAL;
+  umesh->Attributes() = DIMENSION_1 | ORTHOGONAL;
 
   // Create vertices
   size_t Nz = vertices.size();
 
-  umesh->GetMeshOptions().ortho_Nx = 1;
-  umesh->GetMeshOptions().ortho_Ny = 1;
-  umesh->GetMeshOptions().ortho_Nz = Nz - 1;
-  umesh->GetMeshOptions().boundary_id_map[4] = "ZMAX";
-  umesh->GetMeshOptions().boundary_id_map[5] = "ZMIN";
+  umesh->MeshOptions().ortho_Nx = 1;
+  umesh->MeshOptions().ortho_Ny = 1;
+  umesh->MeshOptions().ortho_Nz = Nz - 1;
+  umesh->AddBoundary(4, "ZMAX");
+  umesh->AddBoundary(5, "ZMIN");
 
-  umesh->GetVertices().reserve(Nz);
+  umesh->Vertices().reserve(Nz);
   for (auto& vertex : zverts)
-    umesh->GetVertices().push_back(vertex);
+    umesh->Vertices().push_back(vertex);
 
   // Create cells
   for (size_t c = 0; c < (zverts.size() - 1); ++c)
@@ -85,30 +85,30 @@ CreateUnpartitioned2DOrthoMesh(std::vector<double>& vertices_1d_x,
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
-  umesh->GetMeshAttributes() = DIMENSION_2 | ORTHOGONAL;
+  umesh->Attributes() = DIMENSION_2 | ORTHOGONAL;
 
   // Create vertices
   size_t Nx = vertices_1d_x.size();
   size_t Ny = vertices_1d_y.size();
 
-  umesh->GetMeshOptions().ortho_Nx = Nx - 1;
-  umesh->GetMeshOptions().ortho_Ny = Ny - 1;
-  umesh->GetMeshOptions().ortho_Nz = 1;
-  umesh->GetMeshOptions().boundary_id_map[0] = "XMAX";
-  umesh->GetMeshOptions().boundary_id_map[1] = "XMIN";
-  umesh->GetMeshOptions().boundary_id_map[2] = "YMAX";
-  umesh->GetMeshOptions().boundary_id_map[3] = "YMIN";
+  umesh->MeshOptions().ortho_Nx = Nx - 1;
+  umesh->MeshOptions().ortho_Ny = Ny - 1;
+  umesh->MeshOptions().ortho_Nz = 1;
+  umesh->AddBoundary(0, "XMAX");
+  umesh->AddBoundary(1, "XMIN");
+  umesh->AddBoundary(2, "YMAX");
+  umesh->AddBoundary(3, "YMIN");
 
   typedef std::vector<uint64_t> VecIDs;
   std::vector<VecIDs> vertex_ij_to_i_map(Ny, VecIDs(Nx));
-  umesh->GetVertices().reserve(Nx * Ny);
+  umesh->Vertices().reserve(Nx * Ny);
   uint64_t k = 0;
   for (size_t i = 0; i < Ny; ++i)
   {
     for (size_t j = 0; j < Nx; ++j)
     {
       vertex_ij_to_i_map[i][j] = k++;
-      umesh->GetVertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], 0.0);
+      umesh->Vertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], 0.0);
     } // for j
   }   // for i
 
@@ -175,22 +175,22 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
   // Create unpartitioned mesh
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
-  umesh->GetMeshAttributes() = DIMENSION_3 | ORTHOGONAL;
+  umesh->Attributes() = DIMENSION_3 | ORTHOGONAL;
 
   // Create vertices
   size_t Nx = vertices_1d_x.size();
   size_t Ny = vertices_1d_y.size();
   size_t Nz = vertices_1d_z.size();
 
-  umesh->GetMeshOptions().ortho_Nx = Nx - 1;
-  umesh->GetMeshOptions().ortho_Ny = Ny - 1;
-  umesh->GetMeshOptions().ortho_Nz = Nz - 1;
-  umesh->GetMeshOptions().boundary_id_map[0] = "XMAX";
-  umesh->GetMeshOptions().boundary_id_map[1] = "XMIN";
-  umesh->GetMeshOptions().boundary_id_map[2] = "YMAX";
-  umesh->GetMeshOptions().boundary_id_map[3] = "YMIN";
-  umesh->GetMeshOptions().boundary_id_map[4] = "ZMAX";
-  umesh->GetMeshOptions().boundary_id_map[5] = "ZMIN";
+  umesh->MeshOptions().ortho_Nx = Nx - 1;
+  umesh->MeshOptions().ortho_Ny = Ny - 1;
+  umesh->MeshOptions().ortho_Nz = Nz - 1;
+  umesh->AddBoundary(0, "XMAX");
+  umesh->AddBoundary(1, "XMIN");
+  umesh->AddBoundary(2, "YMAX");
+  umesh->AddBoundary(3, "YMIN");
+  umesh->AddBoundary(4, "ZMAX");
+  umesh->AddBoundary(5, "ZMIN");
 
   // i is j, and j is i, MADNESS explanation:
   // In math convention the i-index refers to the ith row
@@ -203,7 +203,7 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
   for (auto& vec : vertex_ijk_to_i_map)
     vec.resize(Nx, VecIDs(Nz));
 
-  umesh->GetVertices().reserve(Nx * Ny * Nz);
+  umesh->Vertices().reserve(Nx * Ny * Nz);
   uint64_t c = 0;
   for (size_t i = 0; i < Ny; ++i)
   {
@@ -212,7 +212,7 @@ CreateUnpartitioned3DOrthoMesh(std::vector<double>& vertices_1d_x,
       for (size_t k = 0; k < Nz; ++k)
       {
         vertex_ijk_to_i_map[i][j][k] = c++;
-        umesh->GetVertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], vertices_1d_z[k]);
+        umesh->Vertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], vertices_1d_z[k]);
       } // for k
     }   // for j
   }     // for i
