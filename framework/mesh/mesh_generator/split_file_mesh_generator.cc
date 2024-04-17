@@ -193,9 +193,10 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     WriteBinaryValue<unsigned int>(ofile, umesh.Dimension());
 
     WriteBinaryValue(ofile, static_cast<int>(umesh.Attributes())); // int
-    WriteBinaryValue(ofile, mesh_options.ortho_Nx);                // size_t
-    WriteBinaryValue(ofile, mesh_options.ortho_Ny);                // size_t
-    WriteBinaryValue(ofile, mesh_options.ortho_Nz);                // size_t
+    auto& ortho_attrs = umesh.OrthoAttributes();
+    WriteBinaryValue(ofile, ortho_attrs.Nx); // size_t
+    WriteBinaryValue(ofile, ortho_attrs.Ny); // size_t
+    WriteBinaryValue(ofile, ortho_attrs.Nz); // size_t
 
     WriteBinaryValue(ofile, raw_vertices.size()); // size_t
 
@@ -316,9 +317,9 @@ SplitFileMeshGenerator::ReadSplitMesh()
 
   info_block.dimension = ReadBinaryValue<unsigned int>(ifile);
   info_block.mesh_attributes_ = ReadBinaryValue<int>(ifile);
-  info_block.ortho_Nx_ = ReadBinaryValue<size_t>(ifile);
-  info_block.ortho_Ny_ = ReadBinaryValue<size_t>(ifile);
-  info_block.ortho_Nz_ = ReadBinaryValue<size_t>(ifile);
+  info_block.ortho_attributes.Nx = ReadBinaryValue<size_t>(ifile);
+  info_block.ortho_attributes.Ny = ReadBinaryValue<size_t>(ifile);
+  info_block.ortho_attributes.Nz = ReadBinaryValue<size_t>(ifile);
 
   info_block.num_global_vertices_ = ReadBinaryValue<size_t>(ifile);
 
@@ -407,9 +408,8 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
   }
 
   grid_ptr->SetDimension(mesh_info.dimension);
-  SetGridAttributes(*grid_ptr,
-                    static_cast<MeshAttributes>(mesh_info.mesh_attributes_),
-                    {mesh_info.ortho_Nx_, mesh_info.ortho_Ny_, mesh_info.ortho_Nz_});
+  grid_ptr->SetAttributes(static_cast<MeshAttributes>(mesh_info.mesh_attributes_));
+  grid_ptr->SetOrthoAttributes(mesh_info.ortho_attributes);
 
   grid_ptr->SetGlobalVertexCount(mesh_info.num_global_vertices_);
 

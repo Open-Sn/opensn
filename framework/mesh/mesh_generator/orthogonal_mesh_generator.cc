@@ -125,14 +125,11 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
     zverts.emplace_back(0.0, 0.0, z_coord);
 
   umesh->SetDimension(1);
-  umesh->Attributes() = ORTHOGONAL;
 
   // Create vertices
   size_t Nz = vertices.size();
 
-  umesh->MeshOptions().ortho_Nx = 1;
-  umesh->MeshOptions().ortho_Ny = 1;
-  umesh->MeshOptions().ortho_Nz = Nz - 1;
+  umesh->SetOrthoAttributes(1, 1, Nz - 1);
   umesh->AddBoundary(4, "ZMAX");
   umesh->AddBoundary(5, "ZMIN");
 
@@ -193,15 +190,12 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
   umesh->SetDimension(2);
-  umesh->Attributes() = ORTHOGONAL;
 
   // Create vertices
   const size_t Nx = vertices_1d_x.size();
   const size_t Ny = vertices_1d_y.size();
 
-  umesh->MeshOptions().ortho_Nx = Nx - 1;
-  umesh->MeshOptions().ortho_Ny = Ny - 1;
-  umesh->MeshOptions().ortho_Nz = 1;
+  umesh->SetOrthoAttributes(Nx - 1, Ny - 1, 1);
   umesh->AddBoundary(0, "XMAX");
   umesh->AddBoundary(1, "XMIN");
   umesh->AddBoundary(2, "YMAX");
@@ -317,16 +311,13 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
   umesh->SetDimension(3);
-  umesh->Attributes() = ORTHOGONAL;
 
   // Create vertices
   size_t Nx = vertices_1d_x.size();
   size_t Ny = vertices_1d_y.size();
   size_t Nz = vertices_1d_z.size();
 
-  umesh->MeshOptions().ortho_Nx = Nx - 1;
-  umesh->MeshOptions().ortho_Ny = Ny - 1;
-  umesh->MeshOptions().ortho_Nz = Nz - 1;
+  umesh->SetOrthoAttributes(Nx - 1, Ny - 1, Nz - 1);
   umesh->AddBoundary(0, "XMAX");
   umesh->AddBoundary(1, "XMIN");
   umesh->AddBoundary(2, "YMAX");

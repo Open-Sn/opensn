@@ -104,14 +104,6 @@ MeshGenerator::Execute()
 }
 
 void
-MeshGenerator::SetGridAttributes(MeshContinuum& grid,
-                                 MeshAttributes new_attribs,
-                                 std::array<size_t, 3> ortho_cells_per_dimension)
-{
-  grid.SetAttributes(new_attribs, ortho_cells_per_dimension);
-}
-
-void
 MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
 {
   const size_t num_local_cells = grid.local_cells.size();
@@ -239,11 +231,8 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
   } // for raw_cell
 
   grid_ptr->SetDimension(input_umesh->Dimension());
-  SetGridAttributes(*grid_ptr,
-                    input_umesh->Attributes(),
-                    {input_umesh->MeshOptions().ortho_Nx,
-                     input_umesh->MeshOptions().ortho_Ny,
-                     input_umesh->MeshOptions().ortho_Nz});
+  grid_ptr->SetAttributes(input_umesh->Attributes());
+  grid_ptr->SetOrthoAttributes(input_umesh->OrthoAttributes());
 
   grid_ptr->SetGlobalVertexCount(input_umesh->Vertices().size());
 

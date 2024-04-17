@@ -67,6 +67,13 @@ operator|(const MeshAttributes f1, const MeshAttributes f2)
   return static_cast<MeshAttributes>(static_cast<int>(f1) | static_cast<int>(f2));
 }
 
+struct OrthoMeshAttributes
+{
+  size_t Nx = 0;
+  size_t Ny = 0;
+  size_t Nz = 0;
+};
+
 /**
  * Obtains the current mesh from the global stack.
  */

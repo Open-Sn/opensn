@@ -34,9 +34,7 @@ protected:
     std::map<uint64_t, Vector3> vertices_;
     std::map<uint64_t, std::string> boundary_id_map_;
     int mesh_attributes_;
-    size_t ortho_Nx_;
-    size_t ortho_Ny_;
-    size_t ortho_Nz_;
+    OrthoMeshAttributes ortho_attributes;
     size_t num_global_vertices_;
   };
   SplitMeshInfo ReadSplitMesh();

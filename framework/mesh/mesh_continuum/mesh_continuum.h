@@ -38,18 +38,6 @@ public:
   LocalCellHandler local_cells;
   GlobalCellHandler cells;
 
-private:
-  MeshAttributes attributes = NONE;
-
-  struct
-  {
-    size_t Nx = 0;
-    size_t Ny = 0;
-    size_t Nz = 0;
-  } ortho_attributes;
-
-  std::map<uint64_t, std::string> boundary_id_map_;
-
 public:
   MeshContinuum();
 
@@ -187,7 +175,7 @@ public:
    */
   bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
 
-  MeshAttributes Attributes() const { return attributes; }
+  MeshAttributes Attributes() const { return attributes_; }
 
   /**
    * Gets and orthogonal mesh interface object.
@@ -224,15 +212,15 @@ public:
                                 bool sense,
                                 const std::string& boundary_name);
 
-private:
-  friend class VolumeMesher;
-  friend class MeshGenerator;
-  void SetAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis = {0, 0, 0})
-  {
-    attributes = attributes | new_attribs;
-    ortho_attributes = {ortho_Nis[0], ortho_Nis[1], ortho_Nis[2]};
-  }
+  void SetAttributes(MeshAttributes new_attribs);
 
+  void SetOrthoAttributes(const OrthoMeshAttributes& attrs);
+
+private:
+  MeshAttributes attributes_ = NONE;
+  OrthoMeshAttributes ortho_attributes_;
+
+  std::map<uint64_t, std::string> boundary_id_map_;
   /// Spatial dimension
   unsigned int dim_;
 };

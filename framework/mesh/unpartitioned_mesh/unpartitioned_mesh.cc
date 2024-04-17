@@ -190,12 +190,18 @@ UnpartitionedMesh::AddBoundary(uint64_t id, const std::string& name)
 }
 
 void
-UnpartitionedMesh::SetAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis)
+UnpartitionedMesh::SetAttributes(MeshAttributes new_attribs)
 {
   attributes_ = attributes_ | new_attribs;
-  mesh_options_.ortho_Nx = ortho_Nis[0];
-  mesh_options_.ortho_Ny = ortho_Nis[1];
-  mesh_options_.ortho_Nz = ortho_Nis[2];
+}
+
+void
+UnpartitionedMesh::SetOrthoAttributes(size_t nx, size_t ny, size_t nz)
+{
+  attributes_ = attributes_ | ORTHOGONAL;
+  ortho_attrs_.Nx = nx;
+  ortho_attrs_.Ny = ny;
+  ortho_attrs_.Nz = nz;
 }
 
 void

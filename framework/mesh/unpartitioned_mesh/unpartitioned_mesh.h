@@ -47,9 +47,6 @@ public:
     std::string material_id_fieldname = "BlockID";
     std::string boundary_id_fieldname;
     double scale = 1.0;
-    size_t ortho_Nx = 0;
-    size_t ortho_Ny = 0;
-    size_t ortho_Nz = 0;
   };
 
   struct BoundBox
@@ -110,7 +107,10 @@ public:
   const std::map<uint64_t, std::string>& BoundaryIDMap() const { return boundary_id_map_; }
   std::map<uint64_t, std::string>& BoundaryIDMap() { return boundary_id_map_; }
 
-  void SetAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis = {0, 0, 0});
+  void SetAttributes(MeshAttributes new_attribs);
+
+  void SetOrthoAttributes(size_t nx, size_t ny, size_t nz);
+  const OrthoMeshAttributes& OrthoAttributes() const { return ortho_attrs_; }
 
   /**Makes a cell from proxy information and pushes the cell to the mesh.*/
   void PushProxyCell(const std::string& type_str,
@@ -129,6 +129,7 @@ protected:
 
   /// Spatial mesh dimension
   unsigned int dim_;
+  struct OrthoMeshAttributes ortho_attrs_;
   MeshAttributes attributes_ = NONE;
   Options mesh_options_;
   BoundBox bound_box_;

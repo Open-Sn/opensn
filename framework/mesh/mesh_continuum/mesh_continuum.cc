@@ -1035,7 +1035,7 @@ MeshContinuum::GetIJKInfo() const
   if (not(this->Attributes() & MeshAttributes::ORTHOGONAL))
     throw std::logic_error(fname + " can only be run on orthogonal meshes.");
 
-  return {ortho_attributes.Nx, ortho_attributes.Ny, ortho_attributes.Nz};
+  return {ortho_attributes_.Nx, ortho_attributes_.Ny, ortho_attributes_.Nz};
 }
 
 NDArray<uint64_t>
@@ -1217,6 +1217,18 @@ MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
 
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
     grid_bndry_id_map[bndry_id] = boundary_name;
+}
+
+void
+MeshContinuum::SetAttributes(MeshAttributes new_attribs)
+{
+  attributes_ = attributes_ | new_attribs;
+}
+
+void
+MeshContinuum::SetOrthoAttributes(const OrthoMeshAttributes& attrs)
+{
+  ortho_attributes_ = attrs;
 }
 
 } // namespace opensn

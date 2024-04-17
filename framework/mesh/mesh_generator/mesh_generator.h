@@ -99,10 +99,6 @@ protected:
                                          uint64_t partition_id,
                                          const VertexListHelper& vertices);
 
-  static void SetGridAttributes(MeshContinuum& grid,
-                                MeshAttributes new_attribs,
-                                std::array<size_t, 3> ortho_cells_per_dimension);
-
   static void ComputeAndPrintStats(const MeshContinuum& grid);
 
   const double scale_;
