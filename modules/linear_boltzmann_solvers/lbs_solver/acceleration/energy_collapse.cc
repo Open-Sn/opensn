@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/acceleration.h"
-
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
-
-#include "framework/runtime.h"
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {

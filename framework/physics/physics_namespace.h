@@ -3,9 +3,6 @@
 
 #pragma once
 
-#include <string>
-#include <petscksp.h>
-
 namespace opensn
 {
 
@@ -17,12 +14,5 @@ enum class OperationType
   EXISTING = 22,
   OPENSN_XSFILE = 23
 };
-
-class FieldFunctionGridBased;
-class FieldFunctionGridBased;
-class Solver;
-
-/**Gets the string value of a converged reason.*/
-std::string GetPETScConvergedReasonstring(KSPConvergedReason reason);
 
 } // namespace opensn

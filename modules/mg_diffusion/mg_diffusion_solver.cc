@@ -2,20 +2,20 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/mg_diffusion/mg_diffusion_solver.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
-#include "framework/physics/physics_material/physics_material.h"
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
-#include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
-#include "framework/field_functions/field_function_grid_based.h"
-#include <algorithm>
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
-#include "framework/utils/timer.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "framework/materials/material_property_isotropic_mg_src.h"
+#include "framework/field_functions/field_function_grid_based.h"
+#include "framework/materials/material.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/mg_diffusion/mg_diffusion_bndry.h"
 #include "modules/mg_diffusion/tools.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
+#include "framework/runtime.h"
 #include <iomanip>
+#include <algorithm>
 
 namespace opensn
 {

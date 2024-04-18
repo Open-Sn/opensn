@@ -3,10 +3,11 @@
 
 #include "lua_material.h"
 #include "framework/lua.h"
-#include "framework/physics/physics_material/physics_material.h"
-#include "framework/physics/physics_material/material_property_scalar_value.h"
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
-#include "framework/physics/physics_material/material_property_isotropic_mg_src.h"
+#include "framework/materials/material.h"
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "framework/materials/material_property_scalar_value.h"
+#include "framework/materials/material_property_isotropic_mg_src.h"
+#include "framework/physics/physics_namespace.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
@@ -30,7 +31,7 @@ namespace
 {
 
 void
-ScalarPropertyPushTable(lua_State* L, std::shared_ptr<PhysicsMaterialProperty> property)
+ScalarPropertyPushTable(lua_State* L, std::shared_ptr<MaterialProperty> property)
 {
   lua_newtable(L);
   LuaPushTableKey(L, "is_empty", false);
@@ -54,7 +55,7 @@ MaterialPropertyPushLuaTable(lua_State* L)
 }
 
 void
-PropertyPushLuaTable(lua_State* L, std::shared_ptr<PhysicsMaterialProperty> property)
+PropertyPushLuaTable(lua_State* L, std::shared_ptr<MaterialProperty> property)
 {
   if (property->Type() == PropertyType::SCALAR_VALUE)
     ScalarPropertyPushTable(L, property);

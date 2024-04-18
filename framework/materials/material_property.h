@@ -3,22 +3,35 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include <string>
+#include <vector>
 
 namespace opensn
 {
 
-/**Base class for a material property.*/
-class MaterialProperty : public Object
+enum class PropertyType
+{
+  SCALAR_VALUE = 1,
+  TRANSPORT_XSECTIONS = 10,
+  ISOTROPIC_MG_SOURCE = 11
+};
+
+/** Base class for material properties.*/
+class MaterialProperty
 {
 private:
-  const std::string name_;
+  const PropertyType type_;
 
 public:
-  static InputParameters GetInputParameters();
-  explicit MaterialProperty(const InputParameters& params);
+  std::string property_name;
 
-  const std::string& TextName() const;
+  explicit MaterialProperty(PropertyType type) : type_(type) {}
+
+  virtual ~MaterialProperty() = default;
+
+  PropertyType Type() { return type_; }
+
+  virtual double GetScalarValue() { return 0.0; }
 };
 
 } // namespace opensn
