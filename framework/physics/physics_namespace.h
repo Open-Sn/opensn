@@ -13,7 +13,7 @@ enum class OperationType
 {
   SINGLE_VALUE = 0,
   FROM_ARRAY = 1,
-  MODEL1G = 20,
+  SIMPLE_ONE_GROUP = 20,
   EXISTING = 22,
   OPENSN_XSFILE = 23
 };

@@ -30,7 +30,7 @@ materials[1] = mat.AddMaterial("Test Material");
 mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
 num_groups = 1
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, MODEL1G, 1.0, 0.0)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1.0, 0.0)
 
 
 

@@ -286,7 +286,7 @@ MatSetProperty(lua_State* L)
         std::static_pointer_cast<MultiGroupXS>(cur_material->properties_[location_of_prop]);
 
       // Process operation
-      if (operation_index == static_cast<int>(OpType::MODEL1G))
+      if (operation_index == static_cast<int>(OpType::SIMPLE_ONE_GROUP))
       {
         if (num_args != 5)
           LuaPostArgAmountError("MatSetProperty", 5, num_args);

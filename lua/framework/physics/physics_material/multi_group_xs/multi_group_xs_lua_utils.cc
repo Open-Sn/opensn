@@ -23,7 +23,7 @@ RegisterLuaFunctionNamespace(PhysicsTransportXSExportToOpenSnFormat, xs, ExportT
 
 RegisterLuaConstantAsIs(SINGLE_VALUE, Varying(0));
 RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));
-RegisterLuaConstantAsIs(MODEL1G, Varying(20));
+RegisterLuaConstantAsIs(SIMPLE_ONE_GROUP, Varying(20));
 RegisterLuaConstantAsIs(EXISTING, Varying(22));
 RegisterLuaConstantAsIs(OPENSN_XSFILE, Varying(23));
 
@@ -155,7 +155,7 @@ PhysicsTransportXSSet(lua_State* L)
 
   // Process operation
   using OpType = OperationType;
-  if (operation_index == static_cast<int>(OpType::MODEL1G))
+  if (operation_index == static_cast<int>(OpType::SIMPLE_ONE_GROUP))
   {
     LuaCheckArgs<int, int, int, double, double>(L, fname);
 

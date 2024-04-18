@@ -33,7 +33,7 @@ materials = {}
 materials[1] = mat.AddMaterial("Test Material");
 mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, MODEL1G, sigma_t, 0.0)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, sigma_t, 0.0)
 
 -- Setup Physics
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 128)

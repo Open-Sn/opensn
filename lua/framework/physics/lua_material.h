@@ -106,8 +106,8 @@ int MatAddProperty(lua_State* L);
  * will be converted to 0 to N-1. This method can be used to set mutligroup
  * cross-sections or sources.
  * \n
- * MODEL1G\n
- * Makes a simple, 1-group material with a user-selectable amount of scattering.
+ * SIMPLE_ONE_GROUP\n
+ * Makes a simple, one-group material with a user-selectable amount of scattering.
  *  Expects two values:\n
  *  - float \f$\sigma_t \f$,
  *  - float scattering to total ratio (\f$c \f$)
