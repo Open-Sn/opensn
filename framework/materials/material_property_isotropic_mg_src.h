@@ -12,7 +12,7 @@ namespace opensn
 class IsotropicMultiGrpSource : public MaterialProperty
 {
 public:
-  std::vector<double> source_value_g_;
+  std::vector<double> source_value_g;
 
   IsotropicMultiGrpSource() : MaterialProperty(PropertyType::ISOTROPIC_MG_SOURCE) {}
 };

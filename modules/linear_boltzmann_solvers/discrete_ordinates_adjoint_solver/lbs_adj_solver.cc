@@ -128,7 +128,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
     for (const auto& group : groups_)
     {
       const auto& g = group.id_;
-      const auto& q = source->source_value_g_[g];
+      const auto& q = source->source_value_g[g];
 
       if (q > 0.0)
       {

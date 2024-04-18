@@ -4,7 +4,6 @@
 #include "framework/runtime.h"
 #include "framework/event_system/system_wide_event_publisher.h"
 #include "framework/post_processors/post_processor.h"
-#include "framework/physics/physics_namespace.h"
 #include "framework/event_system/event.h"
 #include "framework/math/math.h"
 #include "framework/object_factory.h"

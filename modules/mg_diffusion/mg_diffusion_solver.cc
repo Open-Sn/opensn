@@ -227,7 +227,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     // Extract properties
     using MatProperty = PropertyType;
     bool found_transport_xs = false;
-    for (const auto& property : current_material->properties_)
+    for (const auto& property : current_material->properties)
     {
       if (property->Type() == MatProperty::TRANSPORT_XSECTIONS)
       {
@@ -242,12 +242,12 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
       {
         auto mg_source = std::static_pointer_cast<IsotropicMultiGrpSource>(property);
 
-        if (mg_source->source_value_g_.size() < num_groups_)
+        if (mg_source->source_value_g.size() < num_groups_)
         {
           log.LogAllWarning()
             << "MG-Diff-InitializeMaterials: Isotropic Multigroup source specified "
                "in "
-            << "material \"" << current_material->name_ << "\" has fewer "
+            << "material \"" << current_material->name << "\" has fewer "
             << "energy groups than called for in the simulation. "
             << "Source will be ignored.";
         }
@@ -263,14 +263,14 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     {
       log.LogAllError() << "MG-Diff-InitializeMaterials: Found no transport cross-section property "
                            "for "
-                        << "material \"" << current_material->name_ << "\".";
+                        << "material \"" << current_material->name << "\".";
       Exit(EXIT_FAILURE);
     }
     // Check number of groups legal
     if (matid_to_xs_map[mat_id]->NumGroups() != num_groups_)
     {
       log.LogAllError() << "MG-Diff-InitializeMaterials: Found material \""
-                        << current_material->name_ << "\" has "
+                        << current_material->name << "\" has "
                         << matid_to_xs_map[mat_id]->NumGroups() << " groups and "
                         << "the simulation has " << num_groups_ << " groups. The material "
                         << "must have the same number of groups.";
@@ -281,7 +281,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
     if (matid_to_xs_map[mat_id]->ScatteringOrder() > 1)
     {
       log.Log0Warning() << "MG-Diff-InitializeMaterials: Found material \""
-                        << current_material->name_ << "\" has a scattering order of "
+                        << current_material->name << "\" has a scattering order of "
                         << matid_to_xs_map[mat_id]->ScatteringOrder() << " and"
                         << " the simulation has a scattering order of One (MG-Diff)"
                         << " The higher moments will therefore not be used.";
@@ -581,7 +581,7 @@ Solver::Assemble_A_bext()
       for (size_t qp : fe_vol_data.QuadraturePointIndices())
         entry_rhsi += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       for (uint g = 0; g < num_groups_; ++g)
-        rhs_cell[g][i] = entry_rhsi * (qext->source_value_g_[g]);
+        rhs_cell[g][i] = entry_rhsi * (qext->source_value_g[g]);
     } // for i
 
     // Deal with BC (all based on variations of Robin)

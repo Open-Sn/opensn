@@ -11,12 +11,21 @@
 namespace opensn
 {
 
+enum class OperationType
+{
+  SINGLE_VALUE = 0,
+  FROM_ARRAY = 1,
+  SIMPLE_ONE_GROUP = 20,
+  EXISTING = 22,
+  OPENSN_XSFILE = 23
+};
+
 /** Base class for materials used in physics simulations.*/
 class Material
 {
 public:
-  std::vector<std::shared_ptr<MaterialProperty>> properties_{};
-  std::string name_ = "Unnamed Material";
+  std::vector<std::shared_ptr<MaterialProperty>> properties{};
+  std::string name = "Unnamed Material";
 };
 
 } // namespace opensn
