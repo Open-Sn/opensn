@@ -35,7 +35,7 @@ The subdirectory structure is as follows:
 ###  Serial run (interactive)
 Simply type:
 ```bash 
-path_to_exec/opensn  path_to_input_file/input_filename.lua
+path_to_exec/opensn -i path_to_input_file/input_filename.lua
 ```
 where 
 - ```path_to_exec``` is the path to the directory where the executable was created and saved,
@@ -48,7 +48,7 @@ It is also possible to run in batch mode on a cluster or a supercomputer. See be
 ### Parallel run (interactive)
 In interactive mode (i.e., on your own machine), simply type
 ```bash 
-mpiexec -n N path_to_exec/opensn  path_to_input_file/input_filename.lua
+mpiexec -n N path_to_exec/opensn -i path_to_input_file/input_filename.lua
 ```
 where ```N``` is the requested number of parallel processes.
 

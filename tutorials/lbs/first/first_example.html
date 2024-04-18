@@ -16,7 +16,7 @@
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -138,7 +138,7 @@ of processes. However, to reproduce the graphics below, one needs to run with 4 
 <li><p><code class="docutils literal notranslate"><span class="pre">check_num_procs==nil</span></code> will be true when running serially without MPI</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">number_of_processes</span> <span class="pre">~=</span> <span class="pre">num_procs</span></code> will be true when the number of MPI processes requested is not equal to the preset value of <code class="docutils literal notranslate"><span class="pre">4</span></code>.</p></li>
 </ul>
-<p>To run the code, simply type: <code class="docutils literal notranslate"><span class="pre">mpiexec</span> <span class="pre">-n</span> <span class="pre">4</span> <span class="pre">path/to/opensn</span>&#160; <span class="pre">input_filename.lua</span></code></p>
+<p>To run the code, simply type: <code class="docutils literal notranslate"><span class="pre">mpiexec</span> <span class="pre">-n</span> <span class="pre">4</span> <span class="pre">path/to/opensn</span> <span class="pre">-i</span> <span class="pre">input_filename.lua</span></code></p>
 <p>For more runtime options, type <code class="docutils literal notranslate"><span class="pre">path/to/opensn</span> <span class="pre">-h</span></code> for help.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Check num_procs</span>
 <span class="n">num_procs</span> <span class="o">=</span> <span class="mi">4</span>

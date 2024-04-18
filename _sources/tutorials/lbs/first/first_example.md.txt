@@ -22,7 +22,7 @@ The lua input performs this following checks:
 + `check_num_procs==nil` will be true when running serially without MPI
 + `number_of_processes ~= num_procs` will be true when the number of MPI processes requested is not equal to the preset value of `4`.
 
-To run the code, simply type: `mpiexec -n 4 path/to/opensn  input_filename.lua`
+To run the code, simply type: `mpiexec -n 4 path/to/opensn -i input_filename.lua`
 
 For more runtime options, type `path/to/opensn -h` for help.
 
