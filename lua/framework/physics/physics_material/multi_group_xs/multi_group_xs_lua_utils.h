@@ -42,7 +42,7 @@ int PhysicsTransportXSCreate(lua_State* L);
  * to set a single constant thermal conductivity. This can be achieved with \n
  * FROM_ARRAY\n
  * Sets a property based on a Lua array indexed from 1 to N. Internally
- * will be converted to 0 to N-1. This method can be used to set mutli-group
+ * will be converted to 0 to N-1. This method can be used to set multi-group
  * cross sections or sources.
  * \n
  * MODEL1G\n
