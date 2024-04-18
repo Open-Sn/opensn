@@ -12,7 +12,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/physics/physics_material/multi_group_xs/adjoint_mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/physics/physics_material/physics_material.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/time_integrations/time_integration.h"
@@ -958,12 +958,11 @@ LBSSolver::InitializeMaterials()
     {
       if (property->Type() == PropertyType::TRANSPORT_XSECTIONS)
       {
-        // If forward mode, use the existing xs on stack.
-        // If adjoint mode, create adjoint xs.
         auto xs = std::static_pointer_cast<MultiGroupXS>(property);
-        matid_to_xs_map_[mat_id] = not options_.adjoint ? xs : std::make_shared<AdjointMGXS>(*xs);
+        xs->SetAdjointMode(options_.adjoint);
+        matid_to_xs_map_[mat_id] = xs;
         found_transport_xs = true;
-      } // transport xs
+      }
 
       if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
       {
@@ -1867,8 +1866,8 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
     }
 
     // Make xs map
-    typedef lbs::Multigroup_D_and_sigR MGXS;
-    typedef std::map<int, MGXS> MatID2MGDXSMap;
+    typedef lbs::Multigroup_D_and_sigR MultiGroupXS;
+    typedef std::map<int, MultiGroupXS> MatID2MGDXSMap;
     MatID2MGDXSMap matid_2_mgxs_map;
     for (const auto& matid_xs_pair : matid_to_xs_map_)
     {
@@ -1877,7 +1876,7 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
       const auto& tg_info = groupset.tg_acceleration_info_.map_mat_id_2_tginfo.at(mat_id);
 
       matid_2_mgxs_map.insert(
-        std::make_pair(mat_id, MGXS{{tg_info.collapsed_D}, {tg_info.collapsed_sig_a}}));
+        std::make_pair(mat_id, MultiGroupXS{{tg_info.collapsed_D}, {tg_info.collapsed_sig_a}}));
     }
 
     // Create solver

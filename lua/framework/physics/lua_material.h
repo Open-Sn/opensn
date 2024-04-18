@@ -106,20 +106,9 @@ int MatAddProperty(lua_State* L);
  * will be converted to 0 to N-1. This method can be used to set mutligroup
  * cross-sections or sources.
  * \n
- * SIMPLEXS0\n
- * Makes a simple material with no transfer matrix just \f$\sigma_t \f$. Expects
- * two values: \n
- *  - int number of groups \f$G \f$,
- *  - float \f$\sigma_t \f$.
- *
- * ####_
- *
- * SIMPLEXS1\n
- * Makes a simple material with isotropic transfer matrix (L=0)
- * and mostly down scattering but with a few of the last groups
- * subject to up-scattering. Expects three values
- * values: \n
- *  - int number of groups (\f$G \f$),
+ * SIMPLE_ONE_GROUP\n
+ * Makes a simple, one-group material with a user-selectable amount of scattering.
+ *  Expects two values:\n
  *  - float \f$\sigma_t \f$,
  *  - float scattering to total ratio (\f$c \f$)
  *

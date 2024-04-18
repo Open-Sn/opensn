@@ -1,5 +1,5 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/physics/physics_material/multi_group_xs/single_state_mgxs.h"
+#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -117,8 +117,8 @@ SimTest91_PWLD(const InputParameters&)
   opensn::log.Log() << "End ukmanagers." << std::endl;
 
   // Make XSs
-  SingleStateMGXS xs;
-  xs.MakeFromOpenSnXSFile("xs_graphite_pure.xs");
+  MultiGroupXS xs;
+  xs.Initialize("xs_graphite_pure.xs");
 
   // Initializes vectors
   std::vector<double> phi_old(num_local_phi_dofs, 0.0);
@@ -225,7 +225,7 @@ SimTest91_PWLD(const InputParameters&)
                      &cell_adj_mapping](const std::array<int64_t, 3>& ijk,
                                         const Vec3& omega,
                                         const size_t d,
-                                        const SingleStateMGXS& cell_xs)
+                                        const MultiGroupXS& cell_xs)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
     const auto& cell = grid.cells[cell_global_id];

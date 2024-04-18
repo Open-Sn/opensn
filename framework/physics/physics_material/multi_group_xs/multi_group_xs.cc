@@ -2,171 +2,421 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/utils/timer.h"
-#include <iostream>
 
 namespace opensn
 {
 
 void
-MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name,
-                                   const double fission_scaling /* = 1.0 */) const
+MultiGroupXS::Initialize(double sigma_t, double c)
 {
-  log.Log() << "Exporting transport cross section to file: " << file_name;
+  Reset();
 
-  // Lambda to print a 1D cross section
-  auto Print1DXS = [](std::ofstream& ofile,
-                      const std::string& prefix,
-                      const std::vector<double>& xs,
-                      double min_value = -1.0)
+  num_groups_ = 1;
+  sigma_t_.resize(num_groups_, sigma_t);
+  sigma_a_.resize(num_groups_, sigma_t * (1.0 - c));
+  transfer_matrices_.emplace_back(num_groups_, num_groups_);
+  auto& S = transfer_matrices_.back();
+  S.SetDiagonal(std::vector<double>(num_groups_, sigma_t * c));
+  ComputeDiffusionParameters();
+}
+
+void
+MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
+{
+  Reset();
+
+  // Pickup all xs and make sure they are valid
+  std::vector<std::shared_ptr<MultiGroupXS>> xsecs;
+  xsecs.reserve(combinations.size());
+
+  unsigned int n_grps = 0;
+  unsigned int n_precs = 0;
+  double Nf_total = 0.0; // Total density of fissile materials
+
+  // Loop over cross sections
+  for (auto& combo : combinations)
   {
-    bool proceed = false;
-    if (min_value >= 0.0)
+    // Get the cross section from the stack
+    std::shared_ptr<MultiGroupXS> xs;
+    xs = GetStackItemPtr(multigroup_xs_stack, combo.first, std::string(__FUNCTION__));
+    xsecs.push_back(xs);
+
+    // Set the scaling factor
+    SetScalingFactor(combo.second);
+
+    // Increment densities
+    if (xs->IsFissionable())
     {
-      for (auto val : xs)
-        if (val > min_value)
+      is_fissionable_ = true;
+      Nf_total += xs->ScalingFactor();
+    }
+
+    // Define and check number of groups
+    if (xsecs.size() == 1)
+      n_grps = xs->NumGroups();
+    OpenSnLogicalErrorIf(xs->NumGroups() != n_grps,
+                         "All cross sections being combined must have the same group structure.");
+
+    // Increment number of precursors
+    n_precs += num_precursors_;
+  } // for cross section
+
+  // Check that the fissile and precursor densities are greater than
+  // machine precision. If this condition is not met, the material is assumed
+  // to be either not fissile, have zero precursors, or both.
+  if (Nf_total < 1.0e-12)
+    is_fissionable_ = false;
+
+  // Check to ensure that all fissionable cross sections contain either
+  // prompt/delayed fission data or total fission data
+  if (n_precs > 0)
+    for (const auto& xs : xsecs)
+      OpenSnLogicalErrorIf(xs->IsFissionable() and xs->NumPrecursors() == 0,
+                           "If precursors are specified, all fissionable cross sections must "
+                           "specify precursors.");
+
+  // Initialize the data
+  num_groups_ = n_grps;
+  scattering_order_ = 0;
+  num_precursors_ = n_precs;
+  for (const auto& xs : xsecs)
+    scattering_order_ = std::max(scattering_order_, xs->ScatteringOrder());
+
+  // Init mandatory cross sections
+  sigma_t_.assign(n_grps, 0.0);
+  sigma_a_.assign(n_grps, 0.0);
+
+  // Init transfer matrices only if at least one exists
+  if (std::any_of(xsecs.begin(),
+                  xsecs.end(),
+                  [](const std::shared_ptr<MultiGroupXS>& x)
+                  { return not x->TransferMatrices().empty(); }))
+    transfer_matrices_.assign(scattering_order_ + 1, SparseMatrix(num_groups_, num_groups_));
+
+  // Init fission data
+  if (is_fissionable_)
+  {
+    sigma_f_.assign(n_grps, 0.0);
+    nu_sigma_f_.assign(n_grps, 0.0);
+    production_matrix_.assign(num_groups_, std::vector<double>(num_groups_, 0.0));
+
+    // Init prompt/delayed fission data
+    if (n_precs > 0)
+    {
+      nu_prompt_sigma_f_.assign(n_grps, 0.0);
+      nu_delayed_sigma_f_.assign(n_grps, 0.0);
+      precursors_.resize(n_precs);
+    }
+  }
+
+  // Combine the data
+  size_t precursor_count = 0;
+  for (size_t x = 0; x < xsecs.size(); ++x)
+  {
+    // Fraction of fissile density
+    const auto N_i = xsecs[x]->ScalingFactor();
+    const auto ff_i = xsecs[x]->IsFissionable() ? N_i / Nf_total : 0.0;
+
+    // Combine cross sections
+    const auto& sig_t = xsecs[x]->SigmaTotal();
+    const auto& sig_a = xsecs[x]->SigmaAbsorption();
+    const auto& sig_f = xsecs[x]->SigmaFission();
+    const auto& nu_p_sig_f = xsecs[x]->NuPromptSigmaF();
+    const auto& nu_d_sig_f = xsecs[x]->NuDelayedSigmaF();
+    const auto& F = xsecs[x]->ProductionMatrix();
+
+    // Here, raw cross sections are scaled by densities and spectra by
+    // fractional densities. The latter is done to preserve a unit spectra.
+    for (size_t g = 0; g < n_grps; ++g)
+    {
+      sigma_t_[g] += sig_t[g];
+      sigma_a_[g] += sig_a[g];
+
+      if (xsecs[x]->IsFissionable())
+      {
+        sigma_f_[g] += sig_f[g];
+        nu_sigma_f_[g] += sig_f[g];
+        for (size_t gp = 0; gp < num_groups_; ++gp)
+          production_matrix_[g][gp] += F[g][gp];
+
+        if (n_precs > 0)
         {
-          proceed = true;
+          nu_prompt_sigma_f_[g] += nu_p_sig_f[g];
+          nu_delayed_sigma_f_[g] += nu_d_sig_f[g];
+        }
+      }
+    } // for g
+
+    // Combine precursor data
+    // Here, all precursors across all materials are stored. The decay constants and delayed
+    // spectrum are what they are, however, some special treatment must be given to the yields.
+    // Because the yield dictates what fraction of delayed neutrons are produced from a
+    // given family, the sum over all families must yield unity. To achieve this end, all
+    // precursor yields must be scaled based on the fraction of the total density of materials
+    // with precursors they make up.
+
+    if (xsecs[x]->NumPrecursors() > 0)
+    {
+      const auto& precursors = xsecs[x]->Precursors();
+      for (size_t j = 0; j < xsecs[x]->NumPrecursors(); ++j)
+      {
+        size_t count = precursor_count + j;
+        const auto& precursor = precursors[j];
+        precursors_[count].decay_constant = precursor.decay_constant;
+        precursors_[count].fractional_yield = precursor.fractional_yield * ff_i;
+        precursors_[count].emission_spectrum = precursor.emission_spectrum;
+      } // for j
+
+      precursor_count += xsecs[x]->NumPrecursors();
+    }
+
+    // Set inverse velocity data
+    if (x == 0 and xsecs[x]->InverseVelocity().empty())
+      inv_velocity_ = xsecs[x]->InverseVelocity();
+    OpenSnLogicalErrorIf(
+      xsecs[x]->InverseVelocity() != inv_velocity_,
+      "All cross sections being combined must have the same group-wise velocities.");
+
+    // Combine transfer matrices
+
+    // This step is somewhat tricky. The cross sections aren't guaranteed
+    // to have the same sparsity patterns and therefore simply adding them
+    // together has to take the sparse matrix's protection mechanisms into
+    // account.
+
+    if (not xsecs[x]->TransferMatrices().empty())
+    {
+      for (size_t m = 0; m < xsecs[x]->ScatteringOrder() + 1; ++m)
+      {
+        auto& Sm = transfer_matrices_[m];
+        const auto& Sm_other = xsecs[x]->TransferMatrix(m);
+        for (size_t g = 0; g < num_groups_; ++g)
+        {
+          const auto& cols = Sm_other.rowI_indices_[g];
+          const auto& vals = Sm_other.rowI_values_[g];
+          for (size_t t = 0; t < cols.size(); ++t)
+            Sm.InsertAdd(g, t, vals[t]);
+        }
+      }
+    }
+  } // for cross sections
+
+  ComputeDiffusionParameters();
+}
+
+void
+MultiGroupXS::Reset()
+{
+  num_groups_ = 0;
+  scattering_order_ = 0;
+  num_precursors_ = 0;
+  is_fissionable_ = false;
+
+  sigma_t_.clear();
+  sigma_a_.clear();
+  transfer_matrices_.clear();
+
+  sigma_f_.clear();
+  nu_sigma_f_.clear();
+  nu_prompt_sigma_f_.clear();
+  nu_delayed_sigma_f_.clear();
+  production_matrix_.clear();
+  precursors_.clear();
+
+  inv_velocity_.clear();
+
+  // Diffusion quantities
+  diffusion_initialized_ = false;
+  sigma_tr_.clear();
+  diffusion_coeff_.clear();
+  sigma_r_.clear();
+  sigma_s_gtog_.clear();
+}
+
+void
+MultiGroupXS::ComputeAbsorption()
+{
+  sigma_a_.assign(num_groups_, 0.0);
+
+  // Compute for a pure absorber
+  if (transfer_matrices_.empty())
+  {
+    for (size_t g = 0; g < num_groups_; ++g)
+      sigma_a_[g] = sigma_t_[g];
+  }
+
+  // Estimate from a transfer matrix
+  else
+  {
+    log.Log0Warning() << "Estimating absorption from the transfer matrices.";
+
+    const auto& S0 = transfer_matrices_.front();
+    for (size_t g = 0; g < num_groups_; ++g)
+    {
+      // Estimate the scattering cross section
+      double sigma_s = 0.0;
+      for (size_t row = 0; row < S0.NumRows(); ++row)
+      {
+        const auto& cols = S0.rowI_indices_[row];
+        const auto& vals = S0.rowI_values_[row];
+        for (size_t t = 0; t < cols.size(); ++t)
+        {
+          if (cols[t] == g)
+          {
+            sigma_s += vals[t];
+            break;
+          }
+        }
+      }
+      sigma_a_[g] = sigma_t_[g] - sigma_s;
+
+      // TODO: Should negative absorption be allowed?
+      if (sigma_a_[g] < 0.0)
+        log.Log0Warning() << "Negative absorption cross section encountered in group " << g
+                          << " when estimating from the transfer matrices";
+    } // for g
+  }   // if scattering present
+}
+
+void
+MultiGroupXS::ComputeDiffusionParameters()
+{
+  if (diffusion_initialized_)
+    return;
+
+  // Initialize diffusion data
+  sigma_tr_.resize(num_groups_, 0.0);
+  diffusion_coeff_.resize(num_groups_, 1.0);
+  sigma_s_gtog_.resize(num_groups_, 0.0);
+  sigma_r_.resize(num_groups_, 0.0);
+
+  // Perform computations group-wise
+  const auto& S = transfer_matrices_;
+  for (size_t g = 0; g < num_groups_; ++g)
+  {
+    // Determine transport correction
+    double sigma_1 = 0.0;
+    if (S.size() > 1)
+    {
+      for (size_t gp = 0; gp < num_groups_; ++gp)
+      {
+        const auto& cols = S[1].rowI_indices_[gp];
+        const auto& vals = S[1].rowI_values_[gp];
+        for (size_t t = 0; t < cols.size(); ++t)
+          if (cols[t] == g)
+          {
+            sigma_1 += vals[t];
+            break;
+          }
+      } // for gp
+    }   // if moment 1 available
+
+    // Compute transport cross section
+    if (sigma_1 >= sigma_t_[g])
+    {
+      log.Log0Warning() << "Negative transport cross section found for "
+                        << "group " << g << " in call to " << __FUNCTION__ << ". "
+                        << "sigma_t=" << sigma_t_[g] << " sigma_1=" << sigma_1 << ". "
+                        << "Setting sigma_1=0, sigma_tr=sigma_t for this group.";
+      sigma_1 = 0.0;
+    }
+    sigma_tr_[g] = sigma_t_[g] - sigma_1;
+
+    // Compute the diffusion coefficient
+    // Cap the value for when sigma_t - sigma_1 is near zero
+    diffusion_coeff_[g] = std::fmin(1.0e12, 1.0 / 3.0 / (sigma_t_[g] - sigma_1));
+
+    // Determine within group scattering
+    if (not S.empty())
+    {
+      const auto& cols = S[0].rowI_indices_[g];
+      const auto& vals = S[0].rowI_values_[g];
+      for (size_t t = 0; t < cols.size(); ++t)
+      {
+        if (cols[t] == g)
+        {
+          sigma_s_gtog_[g] = vals[t];
           break;
         }
-
-      if (not proceed)
-        return;
+      }
     }
 
-    ofile << "\n";
-    ofile << prefix << "_BEGIN\n";
-    {
-      size_t g = 0;
-      for (auto val : xs)
-        ofile << g++ << " " << val << "\n";
-    }
-    ofile << prefix << "_END\n";
-  };
+    // Compute removal cross section
+    sigma_r_[g] = std::max(0.0, sigma_t_[g] - sigma_s_gtog_[g]);
+  } // for g
 
-  // Open the output file
-  std::ofstream ofile(file_name);
+  diffusion_initialized_ = true;
+}
 
-  // Write the header info
-  ofile << "# Exported cross section from OpenSn\n";
-  ofile << "# Date: " << Timer::GetLocalDateTimeString() << "\n";
-  ofile << "NUM_GROUPS " << NumGroups() << "\n";
-  ofile << "NUM_MOMENTS " << ScatteringOrder() + 1 << "\n";
-  if (NumPrecursors() > 0)
-    ofile << "NUM_PRECURSORS " << NumPrecursors() << "\n";
+void
+MultiGroupXS::SetScalingFactor(const double factor)
+{
+  const double m = factor / scaling_factor_;
+  scaling_factor_ = factor;
 
-  // Basic cross section data
-  Print1DXS(ofile, "SIGMA_T", SigmaTotal(), 1.0e-20);
-  Print1DXS(ofile, "SIGMA_A", SigmaAbsorption(), 1.0e-20);
-
-  // Fission data
-  if (not SigmaFission().empty())
+  // Apply to STL vector-based data
+  for (size_t g = 0; g < num_groups_; ++g)
   {
-    std::vector<double> scaled_sigma_f = SigmaFission();
-    if (fission_scaling != 1.0)
-    {
-      for (auto& val : scaled_sigma_f)
-        val *= fission_scaling;
-    }
+    sigma_t_[g] *= m;
+    sigma_a_[g] *= m;
 
-    Print1DXS(ofile, "SIGMA_F", scaled_sigma_f, 1.0e-20);
-    if (NumPrecursors() > 0)
+    if (is_fissionable_)
     {
-      // Compute prompt/delayed fission neutron yields
-      const auto& sigma_f = SigmaFission();
-      const auto& nu_prompt_sigma_f = NuPromptSigmaF();
-      const auto& nu_delayed_sigma_f = NuDelayedSigmaF();
-
-      std::vector<double> nu_prompt, nu_delayed;
-      for (size_t g = 0; g < NumGroups(); ++g)
+      sigma_f_[g] *= m;
+      nu_sigma_f_[g] *= m;
+      if (num_precursors_ > 0)
       {
-        nu_prompt.emplace_back(sigma_f[g] > 0.0 ? nu_prompt_sigma_f[g] / sigma_f[g] : 0.0);
-        nu_delayed.emplace_back(sigma_f[g] > 0.0 ? nu_delayed_sigma_f[g] / sigma_f[g] : 0.0);
+        nu_prompt_sigma_f_[g] *= m;
+        nu_delayed_sigma_f_[g] *= m;
       }
 
-      // Get decay constants and fractional yields
-      std::vector<double> lambda, gamma;
-      for (const auto& precursor : Precursors())
-      {
-        lambda.emplace_back(precursor.decay_constant);
-        gamma.emplace_back(precursor.fractional_yield);
-      }
-
-      Print1DXS(ofile, "NU_PROMPT", nu_prompt, 1.0e-20);
-      Print1DXS(ofile, "NU_DELAYED", nu_delayed, 1.0e-20);
-
-      ofile << "\nCHI_DELAYED_BEGIN\n";
-      const auto& precursors = Precursors();
-      for (size_t j = 0; j < NumPrecursors(); ++j)
-        for (size_t g = 0; g < NumGroups(); ++g)
-          ofile << "G_PRECURSOR_VAL"
-                << " " << g << " " << j << " " << precursors[j].emission_spectrum[g] << "\n";
-      ofile << "CHI_DELAYED_END\n";
-
-      Print1DXS(ofile, "PRECURSOR_DECAY_CONSTANTS", lambda, 1.0e-20);
-      Print1DXS(ofile, "PRECURSOR_FRACTIONAL_YIELDS", gamma, 1.0e-20);
-    }
-    else
-    {
-      // Compute the average total fission neutron yield
-      const auto& sigma_f = SigmaFission();
-      const auto& nu_sigma_f = NuSigmaF();
-
-      std::vector<double> nu;
-      for (size_t g = 0; g < NumGroups(); ++g)
-        nu.emplace_back(sigma_f[g] > 0.0 ? nu_sigma_f[g] / sigma_f[g] : 0.0);
-
-      Print1DXS(ofile, "NU", nu, 1.0e-20);
+      for (auto& x : production_matrix_[g])
+        x *= m;
     }
   }
 
-  // Inverse velocity data
-  if (not InverseVelocity().empty())
-    Print1DXS(ofile, "INV_VELOCITY", InverseVelocity(), 1.0e-20);
+  // Apply to transfer matrices
+  for (auto& S_ell : transfer_matrices_)
+    for (size_t g = 0; g < num_groups_; ++g)
+      for (const auto& [_, gp, sig_ell] : S_ell.Row(g))
+        sig_ell *= m;
 
-  // Transfer matrices
-  if (not TransferMatrices().empty())
+  // Reinitialize diffusion
+  diffusion_initialized_ = false;
+  ComputeDiffusionParameters();
+}
+
+void
+MultiGroupXS::TransposeTransferAndProduction()
+{
+  // Transpose transfer matrices
+  for (unsigned int ell = 0; ell <= scattering_order_; ++ell)
   {
-    ofile << "\n";
-    ofile << "TRANSFER_MOMENTS_BEGIN\n";
-    for (size_t ell = 0; ell < TransferMatrices().size(); ++ell)
+    const auto& S_ell = transfer_matrices_[ell];
+    SparseMatrix S_ell_transpose(num_groups_, num_groups_);
+    for (size_t g = 0; g < num_groups_; ++g)
     {
-      if (ell == 0)
-        ofile << "#Zeroth moment (l=0)\n";
-      else
-        ofile << "#(l=" << ell << ")\n";
+      const size_t row_len = S_ell.rowI_indices_[g].size();
+      const size_t* col_ptr = S_ell.rowI_indices_[g].data();
+      const double* val_ptr = S_ell.rowI_values_[g].data();
 
-      const auto& matrix = TransferMatrix(ell);
+      for (size_t j = 0; j < row_len; ++j)
+        S_ell_transpose.Insert(*col_ptr++, g, *val_ptr++);
+    }
+    transposed_transfer_matrices_.push_back(S_ell_transpose);
+  } // for ell
 
-      for (size_t g = 0; g < matrix.rowI_values_.size(); ++g)
-      {
-        const auto& col_indices = matrix.rowI_indices_[g];
-        const auto& col_values = matrix.rowI_values_[g];
-        for (size_t k = 0; k < col_indices.size(); ++k)
-          ofile << "M_GPRIME_G_VAL " << ell << " " << col_indices[k] << " " << g << " "
-                << col_values[k] << "\n";
-      } // for g
-
-      ofile << "\n";
-    } // for ell
-    ofile << "TRANSFER_MOMENTS_END\n";
-  } // if has transfer matrices
-
-  // Write production matrix
-  if (not ProductionMatrix().empty())
+  // Transpose production matrices
+  if (is_fissionable_)
   {
-    ofile << "\n";
-    ofile << "PRODUCTION_MATRIX_BEGIN\n";
-    for (size_t g = 0; g < NumGroups(); ++g)
-      for (size_t gp = 0; gp < NumGroups(); ++gp)
-        ofile << "G_GPRIME_VAL " << g << " " << gp << " "
-              << fission_scaling * ProductionMatrix()[g][gp] << "\n";
+    transposed_production_matrix_.clear();
+    transposed_production_matrix_.resize(num_groups_);
+    const auto& F = production_matrix_;
+    for (size_t g = 0; g < num_groups_; ++g)
+      for (size_t gp = 0; gp < num_groups_; ++gp)
+        transposed_production_matrix_[g].push_back(F[gp][g]);
   }
-  ofile.close();
-
-  log.Log0Verbose1() << "Done exporting transport cross section to file: " << file_name;
 }
 
 } // namespace opensn

@@ -121,8 +121,11 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
   }
   catch (const std::exception& exc)
   {
-    throw std::invalid_argument("Attempting to group to groupset that is not"
-                                "part of the solver.");
+    throw std::invalid_argument(
+      "An error occurred during groupset construction.\n"
+      "Please check your groupsets, cross sections, and solver parameters to ensure\n"
+      "the correct number of groups is specified and cross-section data is available\n"
+      "for all groups.");
   }
 
   master_num_grp_subsets_ = params.GetParamValue<int>("groupset_num_subsets");
