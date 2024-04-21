@@ -297,6 +297,16 @@ MatSetProperty(lua_State* L)
 
         prop->Initialize(file_name);
       }
+      else if (operation_index == static_cast<int>(OperationType::OPENMC_XSLIB))
+      {
+        if (num_args != 5)
+          LuaPostArgAmountError("MatSetProperty", 5, num_args);
+
+        const auto file_name = LuaArg<std::string>(L, 4);
+        const auto temperature = LuaArg<double>(L, 5);
+
+        prop->Initialize(file_name, temperature);
+      }
       else if (operation_index == static_cast<int>(OperationType::EXISTING))
       {
         if (num_args != 4)

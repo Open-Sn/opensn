@@ -169,18 +169,6 @@ MultiGroupXS::Initialize(const std::string& file_name)
     }
   };
 
-  // Lambda for checking for all non-negative values.
-  auto IsNonNegative = [](const std::vector<double>& vec)
-  { return not std::any_of(vec.begin(), vec.end(), [](double x) { return x < 0.0; }); };
-
-  /// Lambda for checking for all strictly positive values.
-  auto IsPositive = [](const std::vector<double>& vec)
-  { return not std::any_of(vec.begin(), vec.end(), [](double x) { return x <= 0.0; }); };
-
-  /// Lambda for checking for any non-zero values.
-  auto HasNonZero = [](const std::vector<double>& vec)
-  { return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; }); };
-
   // Read the OpenSn XS file
   // TODO: Determine whether or not to allow specification of a
   //       data block without any data. Currently, if a data block

@@ -26,6 +26,7 @@ RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));
 RegisterLuaConstantAsIs(SIMPLE_ONE_GROUP, Varying(20));
 RegisterLuaConstantAsIs(EXISTING, Varying(22));
 RegisterLuaConstantAsIs(OPENSN_XSFILE, Varying(23));
+RegisterLuaConstantAsIs(OPENMC_XSLIB, Varying(24));
 
 namespace
 {
@@ -171,6 +172,15 @@ PhysicsTransportXSSet(lua_State* L)
     auto file_name = LuaArg<std::string>(L, 3);
 
     xs->Initialize(file_name);
+  }
+  else if (operation_index == static_cast<int>(OpType::OPENMC_XSLIB))
+  {
+    LuaCheckArgs<int, int, std::string, std::string>(L, fname);
+
+    auto file_name = LuaArg<std::string>(L, 3);
+    auto temperature = LuaArg<double>(L, 4);
+
+    xs->Initialize(file_name, temperature);
   }
   else
   {

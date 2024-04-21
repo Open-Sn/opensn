@@ -115,8 +115,15 @@ int MatAddProperty(lua_State* L);
  * ####_
  *
  * OPENSN_XSFILE\n
- * Loads transport cross-sections from OpenSn cross-section files. Expects
+ * Loads transport cross sections from OpenSn cross-section files. Expects
  * to be followed by a filepath specifying the xs-file.
+ *
+ * ####_
+ *
+ * OPENMC_XSLIB\n
+ * Loads transport cross sections from OpenMC cross-section files. Expects
+ * to be followed by a string specifying the full path to the xs-file and a
+ * double representing the evaluation temperature in K.
  *
  * ####_
  *

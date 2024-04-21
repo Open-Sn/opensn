@@ -17,7 +17,8 @@ enum class OperationType
   FROM_ARRAY = 1,
   SIMPLE_ONE_GROUP = 20,
   EXISTING = 22,
-  OPENSN_XSFILE = 23
+  OPENSN_XSFILE = 23,
+  OPENMC_XSLIB = 24
 };
 
 /** Base class for materials used in physics simulations.*/

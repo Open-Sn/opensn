@@ -36,6 +36,7 @@ option(OPENSN_WITH_LUA "Build with lua support" ON)
 
 # dependencies
 find_package(MPI REQUIRED)
+find_package(HDF5 REQUIRED COMPONENTS C CXX HL)
 
 if(OPENSN_WITH_LUA)
     find_package(Lua 5.3 REQUIRED)
@@ -138,6 +139,7 @@ target_include_directories(libopensn
     ${LUA_INCLUDE_DIR}
     ${PETSC_INCLUDE_DIR}
     ${caliper_INCLUDE_DIR}
+    ${HDF5_INCLUDE_DIRS}
 )
 
 target_link_libraries(libopensn
@@ -145,6 +147,7 @@ target_link_libraries(libopensn
     ${PETSC_LIBRARY}
     ${VTK_LIBRARIES}
     caliper
+    ${HDF5_LIBRARIES}
     MPI::MPI_CXX
 )
 if(OPENSN_WITH_LUA)
