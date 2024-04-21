@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "multi_group_xs_lua_utils.h"
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
-#include "framework/physics/physics_namespace.h"
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "framework/materials/material.h"
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
 #include "framework/runtime.h"

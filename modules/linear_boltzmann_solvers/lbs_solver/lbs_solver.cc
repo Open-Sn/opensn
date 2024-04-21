@@ -12,8 +12,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
-#include "framework/physics/physics_material/physics_material.h"
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "framework/materials/material.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/time_integrations/time_integration.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -954,7 +954,7 @@ LBSSolver::InitializeMaterials()
 
     // Extract properties
     bool found_transport_xs = false;
-    for (const auto& property : current_material->properties_)
+    for (const auto& property : current_material->properties)
     {
       if (property->Type() == PropertyType::TRANSPORT_XSECTIONS)
       {
@@ -969,10 +969,10 @@ LBSSolver::InitializeMaterials()
         const auto& src = std::static_pointer_cast<IsotropicMultiGrpSource>(property);
 
         // Check for a valid source
-        if (src->source_value_g_.size() < groups_.size())
+        if (src->source_value_g.size() < groups_.size())
         {
           log.LogAllWarning() << __FUNCTION__ << ": IsotropicMultiGrpSource specified in "
-                              << "material \"" << current_material->name_ << "\" has fewer "
+                              << "material \"" << current_material->name << "\" has fewer "
                               << "energy groups than called for in the simulation. "
                               << "Source will be ignored.";
         }
@@ -986,12 +986,12 @@ LBSSolver::InitializeMaterials()
 
     // Check valid property
     OpenSnLogicalErrorIf(not found_transport_xs,
-                         "Material \"" + current_material->name_ + "\" does not contain " +
+                         "Material \"" + current_material->name + "\" does not contain " +
                            "transport cross sections.");
 
     // Check number of groups legal
     OpenSnLogicalErrorIf(matid_to_xs_map_[mat_id]->NumGroups() < groups_.size(),
-                         "Material \"" + current_material->name_ + "\" has fewer groups (" +
+                         "Material \"" + current_material->name + "\" has fewer groups (" +
                            std::to_string(matid_to_xs_map_[mat_id]->NumGroups()) + ") than " +
                            "the simulation (" + std::to_string(groups_.size()) + "). " +
                            "A material must have at least as many groups as the simulation.");
@@ -999,7 +999,7 @@ LBSSolver::InitializeMaterials()
     // Check number of moments
     if (matid_to_xs_map_[mat_id]->ScatteringOrder() < options_.scattering_order)
     {
-      log.Log0Warning() << __FUNCTION__ << ": Material \"" << current_material->name_
+      log.Log0Warning() << __FUNCTION__ << ": Material \"" << current_material->name
                         << "\" has a lower scattering order ("
                         << matid_to_xs_map_[mat_id]->ScatteringOrder() << ") "
                         << "than the simulation (" << options_.scattering_order << ").";

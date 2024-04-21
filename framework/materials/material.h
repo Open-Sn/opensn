@@ -3,20 +3,29 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/materials/material_property.h"
+
+#include <vector>
+#include <memory>
 
 namespace opensn
 {
 
-/**A generic material object used to group together multiple properties.*/
-class Material : public Object
+enum class OperationType
 {
-private:
-  std::string name_;
+  SINGLE_VALUE = 0,
+  FROM_ARRAY = 1,
+  SIMPLE_ONE_GROUP = 20,
+  EXISTING = 22,
+  OPENSN_XSFILE = 23
+};
 
+/** Base class for materials used in physics simulations.*/
+class Material
+{
 public:
-  static InputParameters GetInputParameters();
-  explicit Material(const InputParameters& params);
+  std::vector<std::shared_ptr<MaterialProperty>> properties{};
+  std::string name = "Unnamed Material";
 };
 
 } // namespace opensn

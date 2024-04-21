@@ -3,17 +3,17 @@
 
 #pragma once
 
-#include "framework/physics/physics_material/material_property_base.h"
+#include "framework/materials/material_property.h"
 #include "framework/math/sparse_matrix/math_sparse_matrix.h"
 
 namespace opensn
 {
 
-class MultiGroupXS : public PhysicsMaterialProperty
+class MultiGroupXS : public MaterialProperty
 {
 public:
   MultiGroupXS()
-    : PhysicsMaterialProperty(PropertyType::TRANSPORT_XSECTIONS),
+    : MaterialProperty(PropertyType::TRANSPORT_XSECTIONS),
       num_groups_(0),
       scattering_order_(0),
       num_precursors_(0),

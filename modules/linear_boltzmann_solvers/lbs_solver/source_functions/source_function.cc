@@ -86,7 +86,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 
         // Declare moment src
         if (P0_src and ell == 0)
-          fixed_src_moments_ = P0_src->source_value_g_.data();
+          fixed_src_moments_ = P0_src->source_value_g.data();
         else
           fixed_src_moments_ = default_zero_src_.data();
 

@@ -237,4 +237,9 @@ GhostVecLocalRaw GetGhostVectorLocalViewRead(Vec x);
  */
 void RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data);
 
+/**
+ * Gets the string value of a converged reason.
+ */
+std::string GetPETScConvergedReasonstring(KSPConvergedReason reason);
+
 } // namespace opensn

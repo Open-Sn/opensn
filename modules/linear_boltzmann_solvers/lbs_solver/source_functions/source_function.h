@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
-#include "framework/physics/physics_material/multi_group_xs/multi_group_xs.h"
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include <memory>
 #include <utility>
 

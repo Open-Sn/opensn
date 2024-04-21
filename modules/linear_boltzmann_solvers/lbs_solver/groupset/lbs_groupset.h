@@ -11,7 +11,6 @@
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
-#include "framework/physics/physics_namespace.h"
 #include "framework/utils/utils.h"
 #include "framework/object.h"
 
