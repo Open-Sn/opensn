@@ -176,17 +176,23 @@ private:
 
   void TransposeTransferAndProduction();
 
-    // Check vector for all non-negative values
+  // Check vector for all non-negative values
   bool IsNonNegative(const std::vector<double>& vec)
-  { return not std::any_of(vec.begin(), vec.end(), [](double x) { return x < 0.0; }); };
+  {
+    return not std::any_of(vec.begin(), vec.end(), [](double x) { return x < 0.0; });
+  };
 
   // Check vector for all strictly positive values
   bool IsPositive(const std::vector<double>& vec)
-  { return not std::any_of(vec.begin(), vec.end(), [](double x) { return x <= 0.0; }); };
+  {
+    return not std::any_of(vec.begin(), vec.end(), [](double x) { return x <= 0.0; });
+  };
 
   // Check vector for any non-zero values
   bool HasNonZero(const std::vector<double>& vec)
-  { return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; }); };
+  {
+    return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; });
+  };
 };
 
 } // namespace opensn

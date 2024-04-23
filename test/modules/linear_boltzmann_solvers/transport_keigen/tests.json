@@ -148,5 +148,19 @@
         "abs_tol": 1e-07
       }
     ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_openmcxs.lua",
+    "comment": "3D 172G KEigenvalue::Solver test using Power Iteration with OpenMC MGXS library",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.0510543,
+        "abs_tol": 1e-07
+      }
+    ]
   }
 ]

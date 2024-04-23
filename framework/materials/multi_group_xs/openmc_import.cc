@@ -72,8 +72,7 @@ MultiGroupXS::Initialize(const std::string& file_name, double temperature)
 
   // Total
   sigma_t_ = H5ReadDataset1D<double>(file, path + "total");
-  OpenSnLogicalErrorIf(sigma_t_.empty(),
-                       "\"total\" data block not found in " + file_name + ".");
+  OpenSnLogicalErrorIf(sigma_t_.empty(), "\"total\" data block not found in " + file_name + ".");
   OpenSnLogicalErrorIf(not IsNonNegative(sigma_t_),
                        "Only non-negative total cross section values are permitted.");
 
@@ -133,8 +132,7 @@ MultiGroupXS::Initialize(const std::string& file_name, double temperature)
 
     // Chi
     auto chi = H5ReadDataset1D<double>(file, path + "chi");
-    OpenSnLogicalErrorIf(chi.empty(),
-                         "\"chi\" data block not found in " + file_name + ".");
+    OpenSnLogicalErrorIf(chi.empty(), "\"chi\" data block not found in " + file_name + ".");
     if (not chi.empty())
     {
       OpenSnLogicalErrorIf(not HasNonZero(chi),
