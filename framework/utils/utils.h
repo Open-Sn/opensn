@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <cstdint>
 
 /**Miscellaneous utilities. These utilities should have no dependencies.*/
 namespace opensn
