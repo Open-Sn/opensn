@@ -21,7 +21,7 @@ extern "C"
 
 /**Posts a generalized error message indicating that the
  * expected amount of arguments don't match the given amount.*/
-void LuaPostArgAmountError(const std::string& func_name, int expected, int given);
+void LuaPostArgAmountError(const std::string& func_name, lua_State* L, int expected, int given);
 /**Checks if the lua variable at the stack location indicated by <arg>
  * is a nil value. Throws an error if it is.*/
 void LuaCheckNilValue(const std::string& func_name, lua_State* L, int arg);

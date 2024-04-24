@@ -281,7 +281,7 @@ MatSetProperty(lua_State* L)
       if (operation_index == static_cast<int>(OperationType::SIMPLE_ONE_GROUP))
       {
         if (num_args != 5)
-          LuaPostArgAmountError("MatSetProperty", 5, num_args);
+          LuaPostArgAmountError("MatSetProperty", L, 5, num_args);
 
         auto sigma_t = LuaArg<double>(L, 4);
         auto c = LuaArg<double>(L, 5);
@@ -291,7 +291,7 @@ MatSetProperty(lua_State* L)
       else if (operation_index == static_cast<int>(OperationType::OPENSN_XSFILE))
       {
         if (num_args != 4)
-          LuaPostArgAmountError("MatSetProperty", 4, num_args);
+          LuaPostArgAmountError("MatSetProperty", L, 4, num_args);
 
         const auto file_name = LuaArg<std::string>(L, 4);
 
@@ -300,7 +300,7 @@ MatSetProperty(lua_State* L)
       else if (operation_index == static_cast<int>(OperationType::EXISTING))
       {
         if (num_args != 4)
-          LuaPostArgAmountError("MatSetProperty", 4, num_args);
+          LuaPostArgAmountError("MatSetProperty", L, 4, num_args);
 
         auto handle = LuaArg<int>(L, 4);
 
@@ -369,7 +369,7 @@ MatSetProperty(lua_State* L)
       if (operation_index == static_cast<int>(OperationType::SINGLE_VALUE))
       {
         if (num_args != 4)
-          LuaPostArgAmountError("MatSetProperty", 4, num_args);
+          LuaPostArgAmountError("MatSetProperty", L, 4, num_args);
 
         auto value = LuaArg<double>(L, 4);
 
@@ -380,7 +380,7 @@ MatSetProperty(lua_State* L)
       else if (operation_index == static_cast<int>(OperationType::FROM_ARRAY))
       {
         if (num_args != 4)
-          LuaPostArgAmountError("MatSetProperty", 4, num_args);
+          LuaPostArgAmountError("MatSetProperty", L, 4, num_args);
         prop->source_value_g = LuaArg<std::vector<double>>(L, 4);
         opensn::log.Log0Verbose1() << "Isotropic Multigroup Source populated with "
                                    << prop->source_value_g.size() << " values";
@@ -415,7 +415,7 @@ MatGetProperty(lua_State* L)
   const std::string fname = "mat.GetProperty";
   const int num_args = lua_gettop(L);
   if (num_args != 2)
-    LuaPostArgAmountError("MatGetProperty", 2, num_args);
+    LuaPostArgAmountError("MatGetProperty", L, 2, num_args);
 
   auto material_index = LuaArg<int>(L, 1);
   int property_index = -1;
