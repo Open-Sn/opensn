@@ -1,4 +1,4 @@
-[![Development Branch Regression Tests](https://github.com/Open-Sn/openSn/actions/workflows/Regression.yaml/badge.svg)](https://github.com/Open-Sn/openSn/actions/workflows/Regression.yaml)
+[![Development Branch Regression Tests](https://github.com/Open-Sn/openSn/actions/workflows/regression.yaml/badge.svg)](https://github.com/Open-Sn/openSn/actions/workflows/regression.yaml)
 [![Nightly builds](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml/badge.svg)](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml)
 
 <p align="center">
