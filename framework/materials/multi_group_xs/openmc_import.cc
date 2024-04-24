@@ -64,7 +64,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
   temperature_ = temperature;
 
   // Scattering order
-  if (not H5ReadGroupAttribute<size_t>(file, "set1", "order", scattering_order_))
+  if (not H5ReadGroupAttribute<size_t>(file, dataset_name, "order", scattering_order_))
     throw std::runtime_error("Failure reading \"order\" from " + file_name);
 
   // Number of precursors
@@ -105,7 +105,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
   ComputeDiffusionParameters();
 
   // Is fissionable?
-  H5ReadGroupAttribute<bool>(file, "set1", "fissionable", is_fissionable_);
+  H5ReadGroupAttribute<bool>(file, dataset_name, "fissionable", is_fissionable_);
   if (is_fissionable_)
   {
     // Fission
