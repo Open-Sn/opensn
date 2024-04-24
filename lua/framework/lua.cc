@@ -14,10 +14,9 @@ static int a = 15;
 void
 LuaPostArgAmountError(const std::string& func_name, lua_State* L, int expected, int given)
 {
-  throw std::invalid_argument(LuaSourceInfo(L, func_name.c_str()) +
-		              ": Incorrect number of arguments. Expected " +
-                              std::to_string(expected) + " arguments, but " +
-                              std::to_string(given) + " provided.");
+  throw std::invalid_argument(
+    LuaSourceInfo(L, func_name.c_str()) + ": Incorrect number of arguments. Expected " +
+    std::to_string(expected) + " arguments, but " + std::to_string(given) + " provided.");
 }
 
 void
