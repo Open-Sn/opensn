@@ -150,7 +150,7 @@ PhysicsTransportXSSet(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "ERROR: Invalid cross section handle in call to " << fname << ".";
+    opensn::log.LogAllError() << "ERROR: Invalid cross-section handle in call to " << fname << ".";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -205,7 +205,7 @@ PhysicsTransportXSGet(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "ERROR: Invalid cross section handle in call to " << fname << ".";
+    opensn::log.LogAllError() << "ERROR: Invalid cross-section handle in call to " << fname << ".";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -288,7 +288,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "ERROR: Invalid cross section handle in call to " << fname << ".";
+    opensn::log.LogAllError() << "ERROR: Invalid cross-section handle in call to " << fname << ".";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -348,7 +348,7 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "ERROR: Invalid cross section handle in call to " << fname << ".";
+    opensn::log.LogAllError() << "ERROR: Invalid cross-section handle in call to " << fname << ".";
     opensn::Exit(EXIT_FAILURE);
   }
   xs->ExportToOpenSnXSFile(file_name);

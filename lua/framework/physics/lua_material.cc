@@ -130,7 +130,7 @@ MatAddProperty(lua_State* L)
     prop->property_name = provided_name;
 
     cur_material->properties.push_back(prop);
-    opensn::log.Log0Verbose1() << "Transport cross-sections added to material at index "
+    opensn::log.Log0Verbose1() << "Transport cross sections added to material at index "
                                << material_index;
 
     opensn::multigroup_xs_stack.push_back(prop);
@@ -300,7 +300,7 @@ MatSetProperty(lua_State* L)
       else if (operation_index == static_cast<int>(OperationType::OPENMC_XSLIB))
       {
         if (num_args < 5)
-          LuaPostArgAmountError("MatSetProperty", 5, num_args);
+          LuaPostArgAmountError("MatSetProperty", L, 5, num_args);
 
         const auto file_name = LuaArg<std::string>(L, 4);
         const auto temperature = LuaArg<double>(L, 5);

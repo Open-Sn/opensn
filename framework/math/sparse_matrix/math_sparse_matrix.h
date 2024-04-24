@@ -12,7 +12,7 @@ namespace opensn
  * which allows efficient matrix storage and multiplication. It is
  * not intended for solving linear systems (use PETSc for that instead).
  * It was originally developed for the transfer matrices of transport
- * cross-sections.*/
+ * cross sections.*/
 class SparseMatrix
 {
 private:

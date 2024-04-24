@@ -54,7 +54,7 @@ int PhysicsTransportXSCreate(lua_State* L);
  * ####_
  *
  * OPENSN_XSFILE\n
- * Loads transport cross sections from OpenSn cross section files. Expects
+ * Loads transport cross sections from OpenSn cross-section files. Expects
  * to be followed by a filepath specifying the xs-file.
  *
  *
@@ -102,7 +102,7 @@ int PhysicsTransportXSSet(lua_State* L);
  *                               aerated_graphite)
  * \endcode
  *
- *  \return Returns a handle to another cross section object that contains the
+ *  \return Returns a handle to another cross-section object that contains the
  *          desired combination.
  *
  * \ingroup LuaTransportXSs
@@ -110,8 +110,8 @@ int PhysicsTransportXSSet(lua_State* L);
 int PhysicsTransportXSMakeCombined(lua_State* L);
 
 /**
- * Sets a combined cross section from multiple other cross sections. This  function can be called
- * multiple times on the same cross section handle.
+ * Sets a combined cross section from multiple other cross sections. This function can be called
+ * multiple times on the same cross-section handle.
  *
  *  \param XS_handle int Handle to the cross section to be modified.
  *  \param Combinations table A lua-table with each element another table
@@ -144,7 +144,7 @@ int PhysicsTransportXSMakeCombined(lua_State* L);
 int PhysicsTransportXSSetCombined(lua_State* L);
 
 /**
- * Obtains a lua table of all the cross section values.
+ * Obtains a lua table of all the cross-section values.
  *
  * \param XS_handle int Handle to the cross section to be modified.
  *

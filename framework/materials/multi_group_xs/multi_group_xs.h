@@ -25,7 +25,7 @@ public:
   }
 
   /**
-   * Makes a simple material with a 1-group cross section set.
+   * Makes a simple material with a 1-group cross-section set.
    */
   void Initialize(double sigma_t, double c);
 
@@ -35,12 +35,12 @@ public:
   void Initialize(std::vector<std::pair<int, double>>& combinations);
 
   /**
-   * This method populates transport cross sections from an OpenSn cross section file.
+   * This method populates transport cross sections from an OpenSn cross-section file.
    */
   void Initialize(const std::string& file_name);
 
   /**
-   * This method populates transport cross sections from an OpenMC cross section file.
+   * This method populates transport cross sections from an OpenMC cross-section file.
    */
   void
   Initialize(const std::string& file_name, const std::string& dataset_name, double temperature);
@@ -64,7 +64,7 @@ public:
   void SetScalingFactor(const double factor);
 
   /**
-   * Exports the cross section information to OpenSn format.
+   * Exports the cross-section information to OpenSn format.
    *
    * \param file_name The name of the file to save the cross sections to.
    * \param fission_scaling A factor to scale fission data to. This is
@@ -177,19 +177,19 @@ private:
 
   void TransposeTransferAndProduction();
 
-  // Check vector for all non-negative values
+  /// Check vector for all non-negative values
   bool IsNonNegative(const std::vector<double>& vec)
   {
     return not std::any_of(vec.begin(), vec.end(), [](double x) { return x < 0.0; });
   };
 
-  // Check vector for all strictly positive values
+  /// Check vector for all strictly positive values
   bool IsPositive(const std::vector<double>& vec)
   {
     return not std::any_of(vec.begin(), vec.end(), [](double x) { return x <= 0.0; });
   };
 
-  // Check vector for any non-zero values
+  /// Check vector for any non-zero values
   bool HasNonZero(const std::vector<double>& vec)
   {
     return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; });

@@ -38,7 +38,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
   if (filetype != "mgxs")
     throw std::runtime_error(file_name + " is not a valid OpenMC library file");
 
-  log.Log() << "Reading OpenMC cross section file \"" << file_name << "\"\n";
+  log.Log() << "Reading OpenMC cross-section file \"" << file_name << "\"\n";
 
   // Number of groups
   if (not H5ReadAttribute<size_t>(file, "energy_groups", num_groups_))
@@ -76,7 +76,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
   // Number of precursors
   num_precursors_ = 0;
 
-  // Velocity
+  // Inverse velocity
   inv_velocity_ = H5ReadDataset1D<double>(file, path + "inverse-velocity");
   OpenSnLogicalErrorIf(not IsNonNegative(inv_velocity_),
                        "Only positive inverse velocity values are permitted.");
@@ -85,12 +85,12 @@ MultiGroupXS::Initialize(const std::string& file_name,
   sigma_t_ = H5ReadDataset1D<double>(file, path + "total");
   OpenSnLogicalErrorIf(sigma_t_.empty(), "\"total\" data block not found in " + file_name + ".");
   OpenSnLogicalErrorIf(not IsNonNegative(sigma_t_),
-                       "Only non-negative total cross section values are permitted.");
+                       "Only non-negative total cross-section values are permitted.");
 
   // Absorption
   sigma_a_ = H5ReadDataset1D<double>(file, path + "absorption");
   OpenSnLogicalErrorIf(not IsNonNegative(sigma_a_),
-                       "Only non-negative absorption cross section values are permitted.");
+                       "Only non-negative absorption cross-section values are permitted.");
 
   // Transfer
   if (H5Has(file, path + "scatter_data/scatter_matrix"))
@@ -119,7 +119,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
     OpenSnLogicalErrorIf(sigma_f_.empty(),
                          "\"fission\" data block not found in " + file_name + ".");
     OpenSnLogicalErrorIf(not IsNonNegative(sigma_f_),
-                         "Only non-negative fission cross section values are permitted.");
+                         "Only non-negative fission cross-section values are permitted.");
     if (not HasNonZero(sigma_f_))
     {
       log.Log0Warning() << "The fission cross section specified in "
@@ -133,10 +133,10 @@ MultiGroupXS::Initialize(const std::string& file_name,
                          "\"nu-fission\" data block not found in " + file_name + ".");
     OpenSnLogicalErrorIf(
       not IsNonNegative(nu_sigma_f_),
-      "Only non-negative total fission multiplication cross section values are permitted.");
+      "Only non-negative total fission multiplication cross-section values are permitted.");
     if (not HasNonZero(nu_sigma_f_))
     {
-      log.Log0Warning() << "The production cross-section specified in "
+      log.Log0Warning() << "The production cross section specified in "
                         << "\"" << file_name << "\" is uniformly zero... Clearing it.";
       nu_sigma_f_.clear();
     }

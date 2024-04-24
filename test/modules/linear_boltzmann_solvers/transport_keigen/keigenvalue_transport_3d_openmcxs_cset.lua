@@ -46,7 +46,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 materials = {}
 materials[1] = mat.AddMaterial("Fissile Material")
 mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENMC_XSLIB, "u235.h5", 294, "u235")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENMC_XSLIB, "u235.h5", 294.0, "u235")
 mesh.SetUniformMaterialID(0)
 
 --########## Solver ##########

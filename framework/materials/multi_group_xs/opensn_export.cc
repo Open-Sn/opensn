@@ -56,7 +56,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
   if (NumPrecursors() > 0)
     ofile << "NUM_PRECURSORS " << NumPrecursors() << "\n";
 
-  // Basic cross section data
+  // Basic cross-section data
   Print1DXS(ofile, "SIGMA_T", SigmaTotal(), 1.0e-20);
   Print1DXS(ofile, "SIGMA_A", SigmaAbsorption(), 1.0e-20);
 

@@ -53,7 +53,7 @@ Sets the time-stepping method. Can be "CRANK_NICHOLSON" or "BACKWARD_EULER".
 Sets the timestep callback function. [Default=Nothing]\n\n
 
 "SCALE_FISSION_XS"\n
-Sets a boolean flag to normalize the fission cross-sections by the
+Sets a boolean flag to normalize the fission cross sections by the
 k-eigenvalue. [Default=false]\n\n
 
 "NORMALIZATION_METHOD"\n

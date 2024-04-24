@@ -1036,7 +1036,7 @@ LBSSolver::InitializeMaterials()
     for (const auto& [mat_id, xs] : matid_to_xs_map_)
     {
       OpenSnLogicalErrorIf(xs->IsFissionable() and num_precursors_ == 0,
-                           "Incompatible cross section data encountered for material ID " +
+                           "Incompatible cross-section data encountered for material ID " +
                              std::to_string(mat_id) + ". When delayed neutron data is present " +
                              "for one fissionable matrial, it must be present for all fissionable "
                              "materials.");
