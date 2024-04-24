@@ -11,7 +11,9 @@ namespace opensn
 {
 
 void
-MultiGroupXS::Initialize(const std::string& file_name, double temperature)
+MultiGroupXS::Initialize(const std::string& file_name,
+                         const std::string& dataset_name,
+                         double temperature)
 {
   Reset();
 
@@ -53,9 +55,12 @@ MultiGroupXS::Initialize(const std::string& file_name, double temperature)
   // Base path
   std::stringstream ss;
   ss << std::fixed << std::setprecision(0) << temperature_ << "K";
-  std::string path = "/set1/" + ss.str() + "/";
+  std::string path = "/" + dataset_name + "/" + ss.str() + "/";
   if (!H5Has(file, path))
-    throw std::runtime_error("Could not find data for " + ss.str() + " in " + file_name);
+  {
+    throw std::runtime_error("Could not find dataset " + dataset_name + "/" + ss.str() + " in " +
+                             file_name);
+  }
   temperature_ = temperature;
 
   // Scattering order

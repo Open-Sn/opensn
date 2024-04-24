@@ -155,8 +155,7 @@ PhysicsTransportXSSet(lua_State* L)
   }
 
   // Process operation
-  using OpType = OperationType;
-  if (operation_index == static_cast<int>(OpType::SIMPLE_ONE_GROUP))
+  if (operation_index == static_cast<int>(OperationType::SIMPLE_ONE_GROUP))
   {
     LuaCheckArgs<int, int, int, double, double>(L, fname);
 
@@ -165,7 +164,7 @@ PhysicsTransportXSSet(lua_State* L)
 
     xs->Initialize(sigma_t, c);
   }
-  else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
+  else if (operation_index == static_cast<int>(OperationType::OPENSN_XSFILE))
   {
     LuaCheckArgs<int, int, std::string>(L, fname);
 
@@ -173,14 +172,13 @@ PhysicsTransportXSSet(lua_State* L)
 
     xs->Initialize(file_name);
   }
-  else if (operation_index == static_cast<int>(OpType::OPENMC_XSLIB))
+  else if (operation_index == static_cast<int>(OperationType::OPENMC_XSLIB))
   {
     LuaCheckArgs<int, int, std::string, std::string>(L, fname);
-
     auto file_name = LuaArg<std::string>(L, 3);
     auto temperature = LuaArg<double>(L, 4);
-
-    xs->Initialize(file_name, temperature);
+    const auto xs_data_name = LuaArgOptional<std::string>(L, 5, "set1");
+    xs->Initialize(file_name, xs_data_name, temperature);
   }
   else
   {

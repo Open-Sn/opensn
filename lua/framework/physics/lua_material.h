@@ -122,8 +122,9 @@ int MatAddProperty(lua_State* L);
  *
  * OPENMC_XSLIB\n
  * Loads transport cross sections from OpenMC cross-section files. Expects
- * to be followed by a string specifying the full path to the xs-file and a
- * double representing the evaluation temperature in K.
+ * to be followed by a string specifying the full path to the cross-section
+ * file, a double representing the evaluation temperature in K, and an
+ * optional string specifying the name of the cross-section dataset.
  *
  * ####_
  *

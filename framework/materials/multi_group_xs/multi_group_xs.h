@@ -42,7 +42,8 @@ public:
   /**
    * This method populates transport cross sections from an OpenMC cross section file.
    */
-  void Initialize(const std::string& file_name, double temperature);
+  void
+  Initialize(const std::string& file_name, const std::string& dataset_name, double temperature);
 
   /**
    * A struct containing data for a delayed neutron precursor.
