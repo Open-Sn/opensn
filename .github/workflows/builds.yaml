@@ -1,0 +1,44 @@
+name: Nightly builds
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch
+
+jobs:
+  build:
+    name: "${{ matrix.compiler }}"
+    runs-on: [self-hosted]
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - gcc/9.5.0
+          - gcc/10.5.0
+          - gcc/12.3.0
+          - gcc/13.2.0
+          - clang/12.0.1
+          - clang/14.0.6
+          - clang/16.0.6
+          - clang/17.0.6
+          - intel/oneAPI-2021.4
+    steps:
+      - uses: actions/checkout@v3
+      - name: build
+        shell: bash
+        run: |
+          export MODULEPATH=/scratch-local/software/modulefiles
+          module load opensn/${{ matrix.compiler }}
+          mkdir build && cd build && cmake .. && make -j && cd ..
+      - name: test
+        shell: bash
+        run: |
+          export MODULEPATH=/scratch-local/software/modulefiles
+          module load opensn/${{ matrix.compiler }}
+          test/run_tests -d test/ -j 32 -v 1 -w 3
+      - name: test tutorials
+        shell: bash
+        run: |
+          export MODULEPATH=/scratch-local/software/modulefiles
+          module load opensn/${{ matrix.compiler }}
+          test/run_tests -d tutorials -j 32 -v 1 -w 3
