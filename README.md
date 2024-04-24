@@ -1,4 +1,5 @@
 [![Development Branch Regression Tests](https://github.com/Open-Sn/openSn/actions/workflows/Regression.yaml/badge.svg)](https://github.com/Open-Sn/openSn/actions/workflows/Regression.yaml)
+[![Nightly builds](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml/badge.svg)](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml)
 
 <p align="center">
   <img src="doc/images/CoolPics/banner.png" width="700">
