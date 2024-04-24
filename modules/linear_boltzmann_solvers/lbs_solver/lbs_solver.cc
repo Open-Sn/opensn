@@ -708,6 +708,10 @@ LBSSolver::SetOptions(const InputParameters& params)
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
+
+      // If a discretization exists, initialize the boundaries.
+      if (discretization_)
+        InitializeBoundaries();
     }
 
     else if (spec.Name() == "point_sources")
@@ -718,7 +722,7 @@ LBSSolver::SetOptions(const InputParameters& params)
         point_sources_.push_back(
           GetStackItem<PointSource>(object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
 
-        // If the discretization is defined, initialization is possible
+        // If a discretization exists, the point source can be initialized.
         if (discretization_)
           point_sources_.back().Initialize(*this);
       }
@@ -732,7 +736,7 @@ LBSSolver::SetOptions(const InputParameters& params)
         distributed_sources_.push_back(GetStackItem<DistributedSource>(
           object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
 
-        // If the discretization is defined, initialization is possible
+        // If the discretization exists, the distributed source can be initialized.
         if (discretization_)
           distributed_sources_.back().Initialize(*this);
       }
