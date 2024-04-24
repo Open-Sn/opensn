@@ -215,7 +215,8 @@ H5ReadGroupAttribute<std::string>(H5::H5File file,
 {
   try
   {
-    H5::Attribute attribute = file.openAttribute(name.c_str());
+    H5::Group group = file.openGroup(group_id.c_str());
+    H5::Attribute attribute = group.openAttribute(name.c_str());
     H5::StrType stype = attribute.getStrType();
     attribute.read(stype, value);
   }

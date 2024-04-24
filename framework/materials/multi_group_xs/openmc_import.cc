@@ -67,6 +67,12 @@ MultiGroupXS::Initialize(const std::string& file_name,
   if (not H5ReadGroupAttribute<size_t>(file, dataset_name, "order", scattering_order_))
     throw std::runtime_error("Failure reading \"order\" from " + file_name);
 
+  // Scattering shape
+  std::string scatter_shape;
+  H5ReadGroupAttribute<std::string>(file, dataset_name, "scatter_shape", scatter_shape);
+  if (scatter_shape != "[G][G'][Order]")
+    throw std::runtime_error(file_name + " has an unsupported scatter shape");
+
   // Number of precursors
   num_precursors_ = 0;
 
