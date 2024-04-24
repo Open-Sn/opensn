@@ -1,105 +1,44 @@
-name: Build Tests
+name: Nightly builds
 
 on:
   schedule:
     - cron: "0 2 * * *"
-  push:
-    branches: [main]
-  workflow_dispatch:
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch
 
 jobs:
-  test_gcc:
+  build:
+    name: "${{ matrix.compiler }}"
     runs-on: [self-hosted]
-    matrix:
-      gcc: [9.5.0, 10.5.0, 12.3.0, 13.2.0]
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - gcc/9.5.0
+          - gcc/10.5.0
+          - gcc/12.3.0
+          - gcc/13.2.0
+          - clang/12.0.1
+          - clang/14.0.6
+          - clang/16.0.6
+          - clang/17.0.6
+          - intel/oneAPI-2021.4
     steps:
       - uses: actions/checkout@v3
-      - name: configure
+      - name: build
         shell: bash
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/gcc/${{ matrix.gcc }}
-          ./configure.sh
-      - name: make
-        shell: bash
-        run: |
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/gcc/${{ matrix.gcc }}
-          cmake --build build --parallel 64
+          module load opensn/${{ matrix.compiler }}
+          mkdir build && cd build && cmake .. && make -j && cd ..
       - name: test
         shell: bash
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/gcc/${{ matrix.gcc }}
+          module load opensn/${{ matrix.compiler }}
           test/run_tests -d test/ -j 32 -v 1 -w 3
       - name: test tutorials
         shell: bash
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/gcc/${{ matrix.gcc }}
-          test/run_tests -d tutorials -j 32 -v 1 -w 3
-  test_clang:
-    runs-on: [self-hosted]
-    matrix:
-      clang: [12.0.1, 14.0.6, 16.0.6, 17.0.6]
-    steps:
-      - uses: actions/checkout@v3
-      - name: configure
-        shell: bash
-        run: |
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/clang/${{ matrix.clang }}
-          ./configure.sh
-      - name: make
-        shell: bash
-        run: |
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/clang/${{ matrix.clang }}
-          cmake --build build --parallel 64
-      - name: test
-        shell: bash
-        run: |
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/clang/${{ matrix.clang }}
-          test/run_tests -d test/ -j 32 -v 1 -w 3
-      - name: test tutorials
-        shell: bash
-        run: |
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/clang/${{ matrix.clang }}
-          test/run_tests -d tutorials -j 32 -v 1 -w 3
-  test_intel:
-    runs-on: [self-hosted]
-    steps:
-      - uses: actions/checkout@v3
-      - name: configure
-        shell: bash
-        run: |
-          source /scratch-local/software/opensn/intel/oneapi/compiler/2024.1/env/vars.sh
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/intel/oneAPI-2021.4
-          ./configure.sh
-      - name: make
-        shell: bash
-        run: |
-          source /scratch-local/software/opensn/intel/oneapi/compiler/2024.1/env/vars.sh
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/intel/oneAPI-2021.4
-          cmake --build build --parallel 64
-      - name: test
-        shell: bash
-        run: |
-          source /scratch-local/software/opensn/intel/oneapi/compiler/2024.1/env/vars.sh
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/intel/oneAPI-2021.4
-          test/run_tests -d test/ -j 32 -v 1 -w 3
-      - name: test tutorials
-        shell: bash
-        run: |
-          source /scratch-local/software/opensn/intel/oneapi/compiler/2024.1/env/vars.sh
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/intel/oneAPI-2021.4
+          module load opensn/${{ matrix.compiler }}
           test/run_tests -d tutorials -j 32 -v 1 -w 3

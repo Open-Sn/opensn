@@ -14,19 +14,13 @@ jobs:
   test:
     runs-on: [self-hosted]
     steps:
-      - uses: actions/checkout@v2
-      - name: configure
+      - uses: actions/checkout@v3
+      - name: build
         shell: bash
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
           module load opensn/gcc/12.3.0
-          ./configure.sh
-      - name: make
-        shell: bash
-        run: |
-          export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/gcc/12.3.0
-          cmake --build build --parallel 64
+          mkdir build && cd build && cmake .. && make -j && cd ..
       - name: test
         shell: bash
         run: |
