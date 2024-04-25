@@ -12,11 +12,11 @@
 static int a = 15;
 
 void
-LuaPostArgAmountError(const std::string& func_name, int expected, int given)
+LuaPostArgAmountError(const std::string& func_name, lua_State* L, int expected, int given)
 {
-  throw std::invalid_argument("Incorrect amount of arguments supplied in " + func_name +
-                              " expected " + std::to_string(expected) + " arguments " + " but " +
-                              std::to_string(given) + " provided");
+  throw std::invalid_argument(
+    LuaSourceInfo(L, func_name.c_str()) + ": Incorrect number of arguments. Expected " +
+    std::to_string(expected) + " arguments, but " + std::to_string(given) + " provided.");
 }
 
 void
@@ -24,8 +24,8 @@ LuaCheckNilValue(const std::string& func_name, lua_State* L, int arg)
 {
   if (lua_isnil(L, arg))
   {
-    throw std::invalid_argument("Nil -value supplied in " + func_name + " argument " +
-                                std::to_string(arg));
+    throw std::invalid_argument(LuaSourceInfo(L, func_name.c_str()) +
+                                ": Nil value supplied for argument " + std::to_string(arg));
   }
 }
 
@@ -34,8 +34,8 @@ LuaCheckStringValue(const std::string& func_name, lua_State* L, int arg)
 {
   if (not lua_isstring(L, arg))
   {
-    throw std::invalid_argument("Non-string value supplied in " + func_name + " argument " +
-                                std::to_string(arg));
+    throw std::invalid_argument(LuaSourceInfo(L, func_name.c_str()) +
+                                ": Non-string value supplied for argument " + std::to_string(arg));
   }
 }
 
@@ -44,8 +44,8 @@ LuaCheckBoolValue(const std::string& func_name, lua_State* L, int arg)
 {
   if (not lua_isboolean(L, arg))
   {
-    throw std::invalid_argument("Non-boolean value supplied in " + func_name + " argument " +
-                                std::to_string(arg));
+    throw std::invalid_argument(LuaSourceInfo(L, func_name.c_str()) +
+                                ": Non-boolean value supplied for argument " + std::to_string(arg));
   }
 }
 
@@ -54,8 +54,8 @@ LuaCheckNumberValue(const std::string& func_name, lua_State* L, int arg)
 {
   if (not lua_isnumber(L, arg))
   {
-    throw std::invalid_argument("Non-number value supplied in " + func_name + " argument " +
-                                std::to_string(arg));
+    throw std::invalid_argument(LuaSourceInfo(L, func_name.c_str()) +
+                                ": Non-number value supplied for argument " + std::to_string(arg));
   }
 }
 
@@ -64,8 +64,8 @@ LuaCheckIntegerValue(const std::string& func_name, lua_State* L, int arg)
 {
   if (not lua_isinteger(L, arg))
   {
-    throw std::invalid_argument("Non-integer value supplied in " + func_name + " argument " +
-                                std::to_string(arg));
+    throw std::invalid_argument(LuaSourceInfo(L, func_name.c_str()) +
+                                ": Non-integer value supplied for argument " + std::to_string(arg));
   }
 }
 
@@ -74,8 +74,8 @@ LuaCheckTableValue(const std::string& func_name, lua_State* L, int arg)
 {
   if (not lua_istable(L, arg))
   {
-    throw std::invalid_argument("Non-table value supplied in " + func_name + " argument " +
-                                std::to_string(arg));
+    throw std::invalid_argument(LuaSourceInfo(L, func_name.c_str()) +
+                                ": Non-table value supplied for argument " + std::to_string(arg));
   }
 }
 

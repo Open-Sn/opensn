@@ -213,7 +213,7 @@ PhysicsTransportXSMakeCombined(lua_State* L)
 
   const int num_args = lua_gettop(L);
   if (num_args != 1)
-    LuaPostArgAmountError(fname, 1, num_args);
+    LuaPostArgAmountError(fname, L, 1, num_args);
 
   // Process table
   LuaCheckTableValue(fname, L, 1);
@@ -267,7 +267,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
 
   int num_args = lua_gettop(L);
   if (num_args < 2)
-    LuaPostArgAmountError(fname, 2, num_args);
+    LuaPostArgAmountError(fname, L, 2, num_args);
 
   // Process xs handle
   const auto xs_handle = LuaArg<int>(L, 1);
