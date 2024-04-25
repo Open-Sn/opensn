@@ -6,9 +6,7 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/io/vtk_io.h"
-#include "framework/io/obj_io.h"
-#include "framework/io/gmsh_io.h"
+#include "framework/mesh/io/mesh_io.h"
 #include "framework/utils/utils.h"
 #include <filesystem>
 
@@ -63,17 +61,17 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   log.Log() << "FromFileMeshGenerator: Generating UnpartitionedMesh";
   const std::string extension = filepath.extension();
   if (extension == ".obj")
-    return ObjIO::FromFile(options);
+    return MeshIO::FromOBJ(options);
   else if (extension == ".msh")
-    return GmshIO::FromFile(options);
+    return MeshIO::FromGmsh(options);
   else if (extension == ".e")
-    return VtkIO::FromExodus(options);
+    return MeshIO::FromExodus(options);
   else if (extension == ".vtu")
-    return VtkIO::FromVTU(options);
+    return MeshIO::FromVTU(options);
   else if (extension == ".pvtu")
-    return VtkIO::FromPVTU(options);
+    return MeshIO::FromPVTU(options);
   else if (extension == ".case")
-    return VtkIO::FromEnsightGold(options);
+    return MeshIO::FromEnsightGold(options);
   else
     OpenSnInvalidArgument("Unsupported file type \"" + extension +
                           "\". Supported types limited to"

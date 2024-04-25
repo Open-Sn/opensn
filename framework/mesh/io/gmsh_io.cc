@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/io/gmsh_io.h"
+#include "framework/mesh/io/mesh_io.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <fstream>
@@ -10,9 +10,9 @@ namespace opensn
 {
 
 std::shared_ptr<UnpartitionedMesh>
-GmshIO::FromFile(const UnpartitionedMesh::Options& options)
+MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
 {
-  const std::string fname = "GmshIO::FromFile";
+  const std::string fname = "MeshIO::FromFile";
 
   // Opening the file
   std::ifstream file;

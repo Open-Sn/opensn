@@ -5,9 +5,7 @@
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/io/vtk_io.h"
-#include "framework/io/obj_io.h"
-#include "framework/io/gmsh_io.h"
+#include "framework/mesh/io/mesh_io.h"
 #include "unpartition_mesh_lua_utils.h"
 #include "framework/console/console.h"
 
@@ -45,7 +43,7 @@ MeshUnpartitionedMeshFromVTU(lua_State* L)
   options.material_id_fieldname = field;
   options.boundary_id_fieldname = field;
 
-  auto new_object = VtkIO::FromVTU(options);
+  auto new_object = MeshIO::FromVTU(options);
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
   auto index = opensn::unpartitionedmesh_stack.size() - 1;
@@ -66,7 +64,7 @@ MeshUnpartitionedMeshFromPVTU(lua_State* L)
   options.material_id_fieldname = field;
   options.boundary_id_fieldname = field;
 
-  auto new_object = VtkIO::FromPVTU(options);
+  auto new_object = MeshIO::FromPVTU(options);
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
   auto index = opensn::unpartitionedmesh_stack.size() - 1;
@@ -86,7 +84,7 @@ MeshUnpartitionedMeshFromEnsightGold(lua_State* L)
   options.file_name = file_name;
   options.scale = scale;
 
-  auto new_object = VtkIO::FromEnsightGold(options);
+  auto new_object = MeshIO::FromEnsightGold(options);
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
   auto index = opensn::unpartitionedmesh_stack.size() - 1;
@@ -104,7 +102,7 @@ MeshUnpartitionedMeshFromWavefrontOBJ(lua_State* L)
   opensn::UnpartitionedMesh::Options options;
   options.file_name = file_name;
 
-  auto new_object = ObjIO::FromFile(options);
+  auto new_object = MeshIO::FromOBJ(options);
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
   auto index = opensn::unpartitionedmesh_stack.size() - 1;
@@ -122,7 +120,7 @@ MeshUnpartitionedMeshFromMshFormat(lua_State* L)
   opensn::UnpartitionedMesh::Options options;
   options.file_name = file_name;
 
-  auto new_object = GmshIO::FromFile(options);
+  auto new_object = MeshIO::FromGmsh(options);
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
   auto index = opensn::unpartitionedmesh_stack.size() - 1;
@@ -142,7 +140,7 @@ MeshUnpartitionedMeshFromExodusII(lua_State* L)
   options.file_name = file_name;
   options.scale = scale;
 
-  auto new_object = VtkIO::FromExodus(options);
+  auto new_object = MeshIO::FromExodus(options);
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
   auto index = opensn::unpartitionedmesh_stack.size() - 1;

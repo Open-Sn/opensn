@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/io/vtk_io.h"
+#include "framework/mesh/io/mesh_io.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
@@ -558,7 +558,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
 } // namespace
 
 std::shared_ptr<UnpartitionedMesh>
-VtkIO::FromExodus(const UnpartitionedMesh::Options& options)
+MeshIO::FromExodus(const UnpartitionedMesh::Options& options)
 {
   log.Log() << "Reading Exodus file: " << options.file_name << ".";
 
@@ -659,7 +659,7 @@ VtkIO::FromExodus(const UnpartitionedMesh::Options& options)
 }
 
 std::shared_ptr<UnpartitionedMesh>
-VtkIO::FromVTU(const UnpartitionedMesh::Options& options)
+MeshIO::FromVTU(const UnpartitionedMesh::Options& options)
 {
   log.Log() << "Reading VTU file: " << options.file_name << ".";
 
@@ -714,7 +714,7 @@ VtkIO::FromVTU(const UnpartitionedMesh::Options& options)
 }
 
 std::shared_ptr<UnpartitionedMesh>
-VtkIO::FromPVTU(const UnpartitionedMesh::Options& options)
+MeshIO::FromPVTU(const UnpartitionedMesh::Options& options)
 {
   log.Log() << "Reading PVTU file: " << options.file_name << ".";
 
@@ -769,7 +769,7 @@ VtkIO::FromPVTU(const UnpartitionedMesh::Options& options)
 }
 
 std::shared_ptr<UnpartitionedMesh>
-VtkIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
+MeshIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
 {
   log.Log() << "Reading Ensight-Gold file: " << options.file_name << ".";
 
