@@ -144,7 +144,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
         }
         catch (const std::invalid_argument& ia)
         {
-          log.Log0Warning() << "Failed converting work to number in line " << file_line
+          log.Log0Warning() << "Failed converting word to number in line " << file_line
                             << std::endl;
         }
 
@@ -200,7 +200,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
         // Catch conversion error
         catch (const std::invalid_argument& ia)
         {
-          log.Log0Warning() << "Failed to text to integer in line " << file_line << std::endl;
+          log.Log0Warning() << "Failed to convert text to integer in line " << file_line
+                            << std::endl;
         }
       } // for k
 
