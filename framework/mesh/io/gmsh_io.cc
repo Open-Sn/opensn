@@ -19,8 +19,9 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
   file.open(options.file_name);
   if (not file.is_open())
   {
-    log.LogAllError() << fname + ": Failed to open file: " << options.file_name << "\n";
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << fname + ": Failed to open file: " << options.file_name;
+    throw std::runtime_error(oss.str());
   }
 
   log.Log() << "Making Unpartitioned mesh from msh format file " << options.file_name;

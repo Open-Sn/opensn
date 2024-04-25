@@ -20,9 +20,9 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   file.open(options.file_name);
   if (not file.is_open())
   {
-    log.LogAllError() << "Failed to open file: " << options.file_name << " in call "
-                      << "to ImportFromOBJFile \n";
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << fname << ": Failed to open file: " << options.file_name;
+    throw std::runtime_error(oss.str());
   }
 
   log.Log() << "Making Unpartitioned mesh from wavefront file " << options.file_name;
