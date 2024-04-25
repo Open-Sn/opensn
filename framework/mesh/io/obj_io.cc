@@ -25,7 +25,6 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     Exit(EXIT_FAILURE);
   }
 
-  opensn::mpi_comm.barrier();
   log.Log() << "Making Unpartitioned mesh from wavefront file " << options.file_name;
 
   std::shared_ptr<UnpartitionedMesh> mesh = std::make_shared<UnpartitionedMesh>();
