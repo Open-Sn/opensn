@@ -71,7 +71,7 @@ lbs_block =
 
 lbs_options =
 {
-  boundary_conditions = { { name = "xmin", type = "reflecting"} },
+  boundary_conditions = { { name = "xmax", type = "reflecting"} },
   scattering_order = 0,
 }
 phys1 = lbs.DiscreteOrdinatesCurvilinearSolver.Create(lbs_block)
