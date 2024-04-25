@@ -157,7 +157,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
       // Build faces
       const size_t num_verts = cell->vertex_ids.size();
-      for (uint64_t v = 0; v < num_verts; ++v)
+      for (size_t v = 0; v < num_verts; ++v)
       {
         UnpartitionedMesh::LightWeightFace face;
 
