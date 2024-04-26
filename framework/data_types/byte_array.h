@@ -3,10 +3,11 @@
 
 #pragma once
 
-#include <cstddef>
 #include <vector>
 #include <stdexcept>
 #include <string>
+#include <cstring>
+#include <cstddef>
 
 namespace opensn
 {
@@ -31,9 +32,9 @@ public:
   void Write(const T& value)
   {
     const size_t num_bytes = sizeof(T);
-    const std::byte* value_byte_array = reinterpret_cast<const std::byte*>(&value);
-
-    raw_data_.insert(raw_data_.end(), value_byte_array, value_byte_array + num_bytes);
+    std::vector<std::byte> dest(num_bytes);
+    std::memcpy(dest.data(), &value, num_bytes);
+    raw_data_.insert(raw_data_.end(), dest.data(), dest.data() + num_bytes);
   }
 
   /**Uses the template type `T` to convert `sizeof(T)` number of bytes to
@@ -55,7 +56,8 @@ public:
         " m_offset: " + std::to_string(offset_) + " size: " + std::to_string(raw_data_.size()) +
         " num_bytes to read: " + std::to_string(num_bytes));
 
-    T value = *reinterpret_cast<T*>(&raw_data_[offset_]);
+    T value;
+    std::memcpy(&value, &raw_data_[offset_], num_bytes);
     offset_ += num_bytes;
 
     return value;
@@ -82,7 +84,8 @@ public:
         " address: " + std::to_string(address) + " size: " + std::to_string(raw_data_.size()) +
         " num_bytes to read: " + std::to_string(num_bytes));
 
-    T value = *reinterpret_cast<const T*>(&raw_data_[address]);
+    T value;
+    std::memcpy(&value, &raw_data_[address], num_bytes);
     if (next_address != nullptr)
       *next_address = address + num_bytes;
 
