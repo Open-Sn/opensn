@@ -46,7 +46,7 @@ int MatAddMaterial(lua_State* L);
  *  Simple scalar value property.\n\n
  *
  * TRANSPORT_XSECTIONS\n
- *  Multi-group transport cross-section supporting numerous features.\n\n
+ *  Multi-group transport cross section supporting numerous features.\n\n
  *
  * ISOTROPIC_MG_SOURCE\n
  *  Isotropic Multigroup Source.\n\n
@@ -92,7 +92,7 @@ int MatAddProperty(lua_State* L);
  *
  * ###PropertyIndex\n
  * SCALAR_VALUE         =  Basic Scalar value property.\n
- * TRANSPORT_XSECTIONS  =  Multi-group transport cross-section supporting numerous
+ * TRANSPORT_XSECTIONS  =  Multi-group transport cross section supporting numerous
  *                         features.\n
  * ISOTROPIC_MG_SOURCE = Isotropic Multigroup Source.\n
  *
@@ -104,7 +104,7 @@ int MatAddProperty(lua_State* L);
  * FROM_ARRAY\n
  * Sets a property based on a Lua array indexed from 1 to N. Internally
  * will be converted to 0 to N-1. This method can be used to set mutligroup
- * cross-sections or sources.
+ * cross sections or sources.
  * \n
  * SIMPLE_ONE_GROUP\n
  * Makes a simple, one-group material with a user-selectable amount of scattering.
@@ -115,13 +115,22 @@ int MatAddProperty(lua_State* L);
  * ####_
  *
  * OPENSN_XSFILE\n
- * Loads transport cross-sections from OpenSn cross-section files. Expects
+ * Loads transport cross sections from OpenSn cross-section files. Expects
  * to be followed by a filepath specifying the xs-file.
  *
  * ####_
  *
+ * OPENMC_XSLIB\n
+ * Loads transport cross sections from an OpenMC MGXS cross-section library.
+ * Expects to be followed by a string specifying the full path to the
+ * cross-section library, a double representing the evaluation temperature
+ * in K, and an optional string specifying the name of the cross-section
+ * dataset.
+ *
+ * ####_
+ *
  * EXISTING\n
- * Supply handle to an existing cross-section and simply swap them out.
+ * Supply handle to an existing cross section and simply swap them out.
  *
  * \code
  * mat.SetProperty(materials[1],

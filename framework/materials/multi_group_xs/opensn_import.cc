@@ -17,8 +17,8 @@ MultiGroupXS::Initialize(const std::string& file_name)
   // Open OpenSn XS file
   std::ifstream file;
   file.open(file_name);
-  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open cross section file " + file_name + ".");
-  log.Log() << "Reading OpenSn cross section file \"" << file_name << "\"\n";
+  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open cross-section file " + file_name + ".");
+  log.Log() << "Reading OpenSn cross-section file \"" << file_name << "\"\n";
 
   // Lambda for reading group structure data.
   auto ReadGroupStructure = [](const std::string& keyword,
@@ -169,18 +169,6 @@ MultiGroupXS::Initialize(const std::string& file_name)
     }
   };
 
-  // Lambda for checking for all non-negative values.
-  auto IsNonNegative = [](const std::vector<double>& vec)
-  { return not std::any_of(vec.begin(), vec.end(), [](double x) { return x < 0.0; }); };
-
-  /// Lambda for checking for all strictly positive values.
-  auto IsPositive = [](const std::vector<double>& vec)
-  { return not std::any_of(vec.begin(), vec.end(), [](double x) { return x <= 0.0; }); };
-
-  /// Lambda for checking for any non-zero values.
-  auto HasNonZero = [](const std::vector<double>& vec)
-  { return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; }); };
-
   // Read the OpenSn XS file
   // TODO: Determine whether or not to allow specification of a
   //       data block without any data. Currently, if a data block
@@ -261,28 +249,28 @@ MultiGroupXS::Initialize(const std::string& file_name)
       }
 
       //
-      // Read cross section data
+      // Read cross-section data
       //
 
       if (fw == "SIGMA_T_BEGIN")
       {
         Read1DData("SIGMA_T", sigma_t_, num_groups_, f, ls, ln);
         OpenSnLogicalErrorIf(not IsNonNegative(sigma_t_),
-                             "Only non-negative total cross section values are permitted.");
+                             "Only non-negative total cross-section values are permitted.");
       } // if sigma_t
 
       if (fw == "SIGMA_A_BEGIN")
       {
         Read1DData("SIGMA_A", sigma_a_, num_groups_, f, ls, ln);
         OpenSnLogicalErrorIf(not IsNonNegative(sigma_a_),
-                             "Only non-negative absorption cross section values are permitted.");
+                             "Only non-negative absorption cross-section values are permitted.");
       } // if sigma_a
 
       if (fw == "SIGMA_F_BEGIN")
       {
         Read1DData("SIGMA_F", sigma_f_, num_groups_, f, ls, ln);
         OpenSnLogicalErrorIf(not IsNonNegative(sigma_f_),
-                             "Only non-negative fission cross section values are permitted.");
+                             "Only non-negative fission cross-section values are permitted.");
         if (not HasNonZero(sigma_f_))
         {
           log.Log0Warning() << "The fission cross section specified in "
@@ -296,10 +284,10 @@ MultiGroupXS::Initialize(const std::string& file_name)
         Read1DData("NU_SIGMA_F", nu_sigma_f_, num_groups_, f, ls, ln);
         OpenSnLogicalErrorIf(
           not IsNonNegative(nu_sigma_f_),
-          "Only non-negative total fission multiplication cross section values are permitted.");
+          "Only non-negative total fission multiplication cross-section values are permitted.");
         if (not HasNonZero(nu_sigma_f_))
         {
-          log.Log0Warning() << "The production cross-section specified in "
+          log.Log0Warning() << "The production cross section specified in "
                             << "\"" << file_name << "\" is uniformly zero... Clearing it.";
           nu_sigma_f_.clear();
         }
@@ -514,7 +502,7 @@ MultiGroupXS::Initialize(const std::string& file_name)
 
     catch (const std::runtime_error& err)
     {
-      throw std::runtime_error("Error reading Chi cross section file "
+      throw std::runtime_error("Error reading OpenSn cross-section file "
                                "\"" +
                                file_name + "\".\n" + "Line number " + std::to_string(line_number) +
                                "\n" + err.what());
@@ -522,7 +510,7 @@ MultiGroupXS::Initialize(const std::string& file_name)
 
     catch (const std::logic_error& err)
     {
-      throw std::logic_error("Error reading Chi cross section file "
+      throw std::logic_error("Error reading OpenSn cross-section file "
                              "\"" +
                              file_name + "\".\n" + "Line number " + std::to_string(line_number) +
                              "\n" + err.what());

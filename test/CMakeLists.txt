@@ -18,6 +18,7 @@ target_link_libraries(opensn-test
     libopensnlua
     ${LUA_LIBRARIES}
     ${PETSC_LIBRARY}
+    ${HDF5_LIBRARIES}
     caliper
     MPI::MPI_CXX
 )

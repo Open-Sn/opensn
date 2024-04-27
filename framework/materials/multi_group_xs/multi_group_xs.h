@@ -25,7 +25,7 @@ public:
   }
 
   /**
-   * Makes a simple material with a 1-group cross section set.
+   * Makes a simple material with a 1-group cross-section set.
    */
   void Initialize(double sigma_t, double c);
 
@@ -35,9 +35,15 @@ public:
   void Initialize(std::vector<std::pair<int, double>>& combinations);
 
   /**
-   * This method populates a transport cross section from a OpenSn cross section file.
+   * This method populates transport cross sections from an OpenSn cross-section file.
    */
   void Initialize(const std::string& file_name);
+
+  /**
+   * This method populates transport cross sections from an OpenMC cross-section file.
+   */
+  void
+  Initialize(const std::string& file_name, const std::string& dataset_name, double temperature);
 
   /**
    * A struct containing data for a delayed neutron precursor.
@@ -58,7 +64,7 @@ public:
   void SetScalingFactor(const double factor);
 
   /**
-   * Exports the cross section information to OpenSn format.
+   * Exports the cross-section information to OpenSn format.
    *
    * \param file_name The name of the file to save the cross sections to.
    * \param fission_scaling A factor to scale fission data to. This is
@@ -141,6 +147,7 @@ private:
   bool is_fissionable_;                    ///< Is fissionable?
   bool adjoint_;                           ///< Can be used for adjoint calculations
   double scaling_factor_ = 1.0;            ///< An arbitrary scaling factor
+  double temperature_ = 294.0;             ///< Evaluation temperature
   std::vector<double> e_bounds_;           ///< Energy bin boundaries in MeV
   std::vector<double> sigma_t_;            ///< Total cross section
   std::vector<double> sigma_a_;            ///< Absorption cross section
@@ -169,6 +176,24 @@ private:
   void ComputeDiffusionParameters();
 
   void TransposeTransferAndProduction();
+
+  /// Check vector for all non-negative values
+  bool IsNonNegative(const std::vector<double>& vec)
+  {
+    return not std::any_of(vec.begin(), vec.end(), [](double x) { return x < 0.0; });
+  };
+
+  /// Check vector for all strictly positive values
+  bool IsPositive(const std::vector<double>& vec)
+  {
+    return not std::any_of(vec.begin(), vec.end(), [](double x) { return x <= 0.0; });
+  };
+
+  /// Check vector for any non-zero values
+  bool HasNonZero(const std::vector<double>& vec)
+  {
+    return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; });
+  };
 };
 
 } // namespace opensn

@@ -26,6 +26,7 @@ RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));
 RegisterLuaConstantAsIs(SIMPLE_ONE_GROUP, Varying(20));
 RegisterLuaConstantAsIs(EXISTING, Varying(22));
 RegisterLuaConstantAsIs(OPENSN_XSFILE, Varying(23));
+RegisterLuaConstantAsIs(OPENMC_XSLIB, Varying(24));
 
 namespace
 {
@@ -149,13 +150,12 @@ PhysicsTransportXSSet(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "ERROR: Invalid cross section handle in call to " << fname << ".";
+    opensn::log.LogAllError() << "ERROR: Invalid cross-section handle in call to " << fname << ".";
     opensn::Exit(EXIT_FAILURE);
   }
 
   // Process operation
-  using OpType = OperationType;
-  if (operation_index == static_cast<int>(OpType::SIMPLE_ONE_GROUP))
+  if (operation_index == static_cast<int>(OperationType::SIMPLE_ONE_GROUP))
   {
     LuaCheckArgs<int, int, int, double, double>(L, fname);
 
@@ -164,13 +164,21 @@ PhysicsTransportXSSet(lua_State* L)
 
     xs->Initialize(sigma_t, c);
   }
-  else if (operation_index == static_cast<int>(OpType::OPENSN_XSFILE))
+  else if (operation_index == static_cast<int>(OperationType::OPENSN_XSFILE))
   {
     LuaCheckArgs<int, int, std::string>(L, fname);
 
     auto file_name = LuaArg<std::string>(L, 3);
 
     xs->Initialize(file_name);
+  }
+  else if (operation_index == static_cast<int>(OperationType::OPENMC_XSLIB))
+  {
+    LuaCheckArgs<int, int, std::string, std::string>(L, fname);
+    auto file_name = LuaArg<std::string>(L, 3);
+    auto temperature = LuaArg<double>(L, 4);
+    const auto xs_data_name = LuaArgOptional<std::string>(L, 5, "set1");
+    xs->Initialize(file_name, xs_data_name, temperature);
   }
   else
   {
@@ -197,7 +205,7 @@ PhysicsTransportXSGet(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "ERROR: Invalid cross section handle in call to " << fname << ".";
+    opensn::log.LogAllError() << "ERROR: Invalid cross-section handle in call to " << fname << ".";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -280,7 +288,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "ERROR: Invalid cross section handle in call to " << fname << ".";
+    opensn::log.LogAllError() << "ERROR: Invalid cross-section handle in call to " << fname << ".";
     opensn::Exit(EXIT_FAILURE);
   }
 
@@ -340,7 +348,7 @@ PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
   }
   catch (const std::out_of_range& o)
   {
-    opensn::log.LogAllError() << "ERROR: Invalid cross section handle in call to " << fname << ".";
+    opensn::log.LogAllError() << "ERROR: Invalid cross-section handle in call to " << fname << ".";
     opensn::Exit(EXIT_FAILURE);
   }
   xs->ExportToOpenSnXSFile(file_name);
