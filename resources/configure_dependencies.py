@@ -707,7 +707,7 @@ try:
         elif pkg == 'caliper':
             major, minor, patch = ver.split('.')
             success = InstallCaliper(pkg, ver, gold_file=f"include/caliper/cali.h")
-       elif pkg == 'hdf5':
+        elif pkg == 'hdf5':
             major, minor, patch = ver.split('.')
             success = InstallHDF5(pkg, ver, gold_file=f"include/hdf5.h")
         else:
