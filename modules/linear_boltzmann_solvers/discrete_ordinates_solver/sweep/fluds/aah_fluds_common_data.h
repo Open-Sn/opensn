@@ -32,16 +32,16 @@ public:
   struct INCOMING_FACE_INFO
   {
     int slot_address = 0;
-    short* upwind_dof_mapping = nullptr;
+    std::vector<short> upwind_dof_mapping;
 
     void Setup(const std::pair<int, std::vector<short>>& input)
     {
       slot_address = input.first;
-      upwind_dof_mapping = new short[input.second.size()];
-      std::copy(input.second.begin(), input.second.end(), upwind_dof_mapping);
+      upwind_dof_mapping.resize(input.second.size());
+      std::copy(input.second.begin(), input.second.end(), upwind_dof_mapping.begin());
     }
 
-    ~INCOMING_FACE_INFO() { delete[] upwind_dof_mapping; }
+    ~INCOMING_FACE_INFO() {}
   }; // TODO: Make common
 public:
   explicit AAH_FLUDSCommonData(const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
@@ -90,24 +90,24 @@ protected:
   /// This is a vector [cell_sweep_order_index][outgoing_face_count]
   /// which holds the slot address in the local psi vector where the first
   /// face dof will store its data
-  std::vector<int*> so_cell_outb_face_slot_indices;
+  std::vector<std::vector<int>> so_cell_outb_face_slot_indices;
 
   /// This is a vector [cell_sweep_order_index][outgoing_face_count]
   /// which holds the face categorization for the face. i.e. the local
   /// psi vector that hold faces of the same category.
-  std::vector<short*> so_cell_outb_face_face_category;
+  std::vector<std::vector<short>> so_cell_outb_face_face_category;
 
   /// This is a vector [cell_sweep_order_index][incoming_face_count]
   /// which holds the face categorization for the face. i.e. the local
   /// psi vector that hold faces of the same category.
-  std::vector<short*> so_cell_inco_face_face_category;
+  std::vector<std::vector<short>> so_cell_inco_face_face_category;
 
   /// This is a vector [cell_sweep_order_index][incoming_face_count]
   /// that will hold a structure. struct.slot_address holds the slot address
   /// where this face's upwind data is stored. struct.upwind_dof_mapping is
   /// a mapping of each of this face's dofs to the upwinded face's dofs
 private:
-  std::vector<INCOMING_FACE_INFO*> so_cell_inco_face_dof_indices;
+  std::vector<std::vector<INCOMING_FACE_INFO>> so_cell_inco_face_dof_indices;
 
   /// This is a vector [non_local_outgoing_face_count]
   /// that maps a face to a dependent location and associated slot index

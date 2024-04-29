@@ -238,9 +238,10 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
   } // for f
 
-  auto raw_inco_face_face_category = new short[inco_face_face_category.size()];
-  std::copy(
-    inco_face_face_category.begin(), inco_face_face_category.end(), raw_inco_face_face_category);
+  std::vector<short> raw_inco_face_face_category(inco_face_face_category.size());
+  std::copy(inco_face_face_category.begin(),
+            inco_face_face_category.end(),
+            raw_inco_face_face_category.begin());
 
   so_cell_inco_face_face_category.push_back(raw_inco_face_face_category);
 
@@ -337,15 +338,17 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
   } // for f
 
-  auto raw_outb_face_slot_indices = new int[outb_face_slot_indices.size()];
-  std::copy(
-    outb_face_slot_indices.begin(), outb_face_slot_indices.end(), raw_outb_face_slot_indices);
+  std::vector<int> raw_outb_face_slot_indices(outb_face_slot_indices.size());
+  std::copy(outb_face_slot_indices.begin(),
+            outb_face_slot_indices.end(),
+            raw_outb_face_slot_indices.begin());
 
   so_cell_outb_face_slot_indices.push_back(raw_outb_face_slot_indices);
 
-  auto raw_outb_face_face_category = new short[outb_face_face_category.size()];
-  std::copy(
-    outb_face_face_category.begin(), outb_face_face_category.end(), raw_outb_face_face_category);
+  std::vector<short> raw_outb_face_face_category(outb_face_face_category.size());
+  std::copy(outb_face_face_category.begin(),
+            outb_face_face_category.end(),
+            raw_outb_face_face_category.begin());
 
   so_cell_outb_face_face_category.push_back(raw_outb_face_face_category);
 }
@@ -442,7 +445,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
     }   // if incident
   }     // for incindent f
 
-  auto inco_face_info_array = new INCOMING_FACE_INFO[inco_face_dof_mapping.size()];
+  std::vector<INCOMING_FACE_INFO> inco_face_info_array(inco_face_dof_mapping.size());
   for (int i = 0; i < inco_face_dof_mapping.size(); ++i)
     inco_face_info_array[i].Setup(inco_face_dof_mapping[i]);
 
