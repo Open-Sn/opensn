@@ -35,7 +35,8 @@ jobs:
             petsc==3.17.5 \
             vtk \
             lua \
-            caliper
+            caliper \
+            hdf5
           sudo pip install -r doc/requirements.txt
 
       - name: Build doco
