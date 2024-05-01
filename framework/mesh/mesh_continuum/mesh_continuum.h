@@ -208,20 +208,19 @@ public:
   GlobalCellHandler cells;
 
 private:
+  /// Spatial dimension
+  unsigned int dim_;
+  MeshAttributes attributes_;
+  OrthoMeshAttributes ortho_attributes_;
+  std::map<uint64_t, std::string> boundary_id_map_;
+
+  uint64_t global_vertex_count_;
+
   std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
   std::vector<std::unique_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
 
   std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
   std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
-
-  uint64_t global_vertex_count_ = 0;
-
-  MeshAttributes attributes_ = NONE;
-  OrthoMeshAttributes ortho_attributes_;
-
-  std::map<uint64_t, std::string> boundary_id_map_;
-  /// Spatial dimension
-  unsigned int dim_;
 };
 
 } // namespace opensn

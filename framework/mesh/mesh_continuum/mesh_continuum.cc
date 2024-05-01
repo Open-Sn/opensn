@@ -30,7 +30,9 @@ MeshContinuum::MeshContinuum()
           ghost_cells_,
           global_cell_id_to_local_id_map_,
           global_cell_id_to_nonlocal_id_map_),
-    dim_(0)
+    dim_(0),
+    attributes_(NONE),
+    global_vertex_count_(0)
 {
 }
 
