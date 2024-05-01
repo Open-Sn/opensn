@@ -201,6 +201,34 @@
     ],
     "skip": "Working on a solution - Jan"
   },
+{
+    "file": "transport_2d_triangular_P0.lua",
+    "comment": "2D LinearBSolver Test isotropic scatter with triangular quadrature",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum" : 4,
+        "gold": 0.0,
+        "abs_tol": 1.0e-6
+      }
+     ]
+   },
+   {
+    "file": "transport_2d_triangular_P0_GQ3.lua",
+    "comment": "2D LinearBSolver Test isotropic scatter with triangular quadrature method 3",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum" : 4,
+        "gold": 0.0,
+        "abs_tol": 1.0e-6
+      }
+     ]
+   },
   {
     "file": "transport_3d_1a_extruder.lua",
     "comment": "3D LinearBSolver Test - PWLD",
@@ -451,5 +479,21 @@
         "abs_tol": 1.0e-9
       }
     ]
-  }
+  },
+  {
+    "file": "transport_3d_triangular_P0.lua",
+    "comment": "3D LinearBSolver Test isotropic scatter with triangular quadrature",
+    "num_procs": 8,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum" : 4,
+        "gold": 0.0,
+        "abs_tol": 1.0e-6
+      }
+     ]
+   }
+   
 ]

@@ -143,8 +143,6 @@ TriangleQuadrature::TriangleInit()
   if (normal > 0.0)
     for (double& w : weights_)
       w *= normal / weight_sum;
-
-  //  AngularQuadrature::OptimizeForPolarSymmetry(4.0 * M_PI);
 }
 
 void
