@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
 #pragma once
 
 #ifdef MPICPP_LITE_WITH_FMT

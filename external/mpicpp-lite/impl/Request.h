@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
 #pragma once
 
 #include "mpi.h"
@@ -29,4 +32,4 @@ inline Request::Request() {}
 
 inline Request::Request(const MPI_Request & r) : request(r) {}
 
-} // namespace mpi
+} // namespace mpicpp_lite
