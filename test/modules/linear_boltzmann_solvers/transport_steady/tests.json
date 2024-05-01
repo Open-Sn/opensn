@@ -210,7 +210,7 @@
         "type": "FloatCompare",
         "key": "max-grp0(latest)",
         "wordnum" : 4,
-        "gold": 0.0,
+        "gold": 2.938333e+03,
         "abs_tol": 1.0e-6
       }
      ]
@@ -224,7 +224,7 @@
         "type": "FloatCompare",
         "key": "max-grp0(latest)",
         "wordnum" : 4,
-        "gold": 0.0,
+        "gold": 2.932038e+00,
         "abs_tol": 1.0e-6
       }
      ]
@@ -490,7 +490,7 @@
         "type": "FloatCompare",
         "key": "max-grp0(latest)",
         "wordnum" : 4,
-        "gold": 0.0,
+        "gold":  2.096991e+00,
         "abs_tol": 1.0e-6
       }
      ]
