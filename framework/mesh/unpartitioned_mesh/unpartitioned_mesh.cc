@@ -12,6 +12,10 @@
 namespace opensn
 {
 
+UnpartitionedMesh::UnpartitionedMesh() : dim_(0), attributes_(NONE)
+{
+}
+
 UnpartitionedMesh::~UnpartitionedMesh()
 {
   for (auto& cell : raw_cells_)

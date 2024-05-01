@@ -55,7 +55,7 @@ public:
   };
 
 public:
-  UnpartitionedMesh() = default;
+  UnpartitionedMesh();
   ~UnpartitionedMesh();
 
   unsigned int Dimension() const { return dim_; }
@@ -127,18 +127,18 @@ public:
   void CleanUp();
 
 protected:
+  /// Spatial mesh dimension
+  unsigned int dim_;
+  MeshAttributes attributes_;
+  OrthoMeshAttributes ortho_attrs_;
+  Options mesh_options_;
+  BoundBox bound_box_;
+  std::map<uint64_t, std::string> boundary_id_map_;
+
   std::vector<Vertex> vertices_;
   std::vector<LightWeightCell*> raw_cells_;
   std::vector<LightWeightCell*> raw_boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
-
-  /// Spatial mesh dimension
-  unsigned int dim_;
-  struct OrthoMeshAttributes ortho_attrs_;
-  MeshAttributes attributes_ = NONE;
-  Options mesh_options_;
-  BoundBox bound_box_;
-  std::map<uint64_t, std::string> boundary_id_map_;
 };
 
 } // namespace opensn
