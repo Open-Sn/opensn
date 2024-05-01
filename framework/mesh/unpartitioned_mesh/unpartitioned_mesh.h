@@ -9,17 +9,11 @@
 #include <array>
 #include <set>
 
-class vtkCell;
-class vtkUnstructuredGrid;
-template <class T>
-class vtkSmartPointer;
-
 namespace opensn
 {
 
 /**
- * This object is intented for unpartitioned meshes that still require
- * partitioning.
+ * This object is intended for unpartitioned meshes that still require partitioning.
  */
 class UnpartitionedMesh
 {
@@ -53,11 +47,6 @@ public:
     std::string material_id_fieldname = "BlockID";
     std::string boundary_id_fieldname;
     double scale = 1.0;
-    size_t ortho_Nx = 0;
-    size_t ortho_Ny = 0;
-    size_t ortho_Nz = 0;
-
-    std::map<uint64_t, std::string> boundary_id_map;
   };
 
   struct BoundBox
@@ -65,63 +54,21 @@ public:
     double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, zmin = 0.0, zmax = 0.0;
   };
 
-protected:
-  std::vector<Vertex> vertices_;
-  std::vector<LightWeightCell*> raw_cells_;
-  std::vector<LightWeightCell*> raw_boundary_cells_;
-  std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
-
-  MeshAttributes attributes_ = NONE;
-  Options mesh_options_;
-  std::shared_ptr<BoundBox> bound_box_ = nullptr;
-
-protected:
-  /**
-   * Creates a raw polyhedron cell from a vtk-polyhedron.
-   */
-  static LightWeightCell* CreateCellFromVTKPolyhedron(vtkCell* vtk_cell);
-
-  /**
-   * Creates a raw polygon cell from a vtk-polygon.
-   */
-  static LightWeightCell* CreateCellFromVTKPolygon(vtkCell* vtk_cell);
-
-  /**
-   * Creates a raw slab cell from a vtk-line.
-   */
-  static LightWeightCell* CreateCellFromVTKLine(vtkCell* vtk_cell);
-
-  /**
-   * Creates a raw point cell from a vtk-vertex.
-   */
-  static LightWeightCell* CreateCellFromVTKVertex(vtkCell* vtk_cell);
-
-  typedef vtkSmartPointer<vtkUnstructuredGrid> vtkUGridPtr;
-  typedef std::pair<vtkUGridPtr, std::string> vtkUGridPtrAndName;
-
-  /**
-   * Copies the vtk data structures to the current object's internal data.
-   */
-  void CopyUGridCellsAndPoints(vtkUnstructuredGrid& ugrid, double scale, int dimension_to_copy);
-
-  /**
-   * Set material-ids from list.
-   */
-  void SetMaterialIDsFromList(const std::vector<int>& material_ids);
-
-  /**
-   * Set boundary-ids from boundary grid_blocks.
-   */
-  void SetBoundaryIDsFromBlocks(std::vector<vtkUGridPtrAndName>& bndry_grid_blocks);
-
 public:
-  const BoundBox& GetBoundBox() const { return *bound_box_; }
+  UnpartitionedMesh();
+  ~UnpartitionedMesh();
 
-  Options& GetMeshOptions() { return mesh_options_; }
-  const Options& GetMeshOptions() const { return mesh_options_; }
+  unsigned int Dimension() const { return dim_; }
+  void SetDimension(unsigned int dim) { dim_ = dim; }
 
-  MeshAttributes& GetMeshAttributes() { return attributes_; }
-  const MeshAttributes& GetMeshAttributes() const { return attributes_; }
+  const BoundBox& BoundingBox() const { return bound_box_; }
+  void ComputeBoundingBox();
+
+  Options& MeshOptions() { return mesh_options_; }
+  const Options& MeshOptions() const { return mesh_options_; }
+
+  MeshAttributes& Attributes() { return attributes_; }
+  const MeshAttributes& Attributes() const { return attributes_; }
 
   const std::vector<std::set<uint64_t>>& GetVertextCellSubscriptions() const
   {
@@ -130,11 +77,15 @@ public:
 
   void AddCell(LightWeightCell*& cell) { raw_cells_.push_back(cell); }
   size_t GetNumberOfCells() const { return raw_cells_.size(); }
-  std::vector<LightWeightCell*>& GetRawCells() { return raw_cells_; }
-  const std::vector<LightWeightCell*>& GetRawCells() const { return raw_cells_; }
 
-  const std::vector<Vertex>& GetVertices() const { return vertices_; }
-  std::vector<Vertex>& GetVertices() { return vertices_; }
+  std::vector<LightWeightCell*>& RawCells() { return raw_cells_; }
+  const std::vector<LightWeightCell*>& RawCells() const { return raw_cells_; }
+
+  std::vector<LightWeightCell*>& RawBoundaryCells() { return raw_boundary_cells_; }
+  const std::vector<LightWeightCell*>& RawBoundaryCells() const { return raw_boundary_cells_; }
+
+  const std::vector<Vertex>& Vertices() const { return vertices_; }
+  std::vector<Vertex>& Vertices() { return vertices_; }
 
   /**
    * Establishes neighbor connectivity for the light-weight mesh.
@@ -144,45 +95,27 @@ public:
   /**
    * Compute centroids for all cells.
    */
-  void ComputeCentroidsAndCheckQuality();
+  void ComputeCentroids();
+
+  /**
+   * Check element quality
+   */
+  void CheckQuality();
 
   /**
    * Makes or gets a boundary that uniquely identifies the given name.
    */
   uint64_t MakeBoundaryID(const std::string& boundary_name);
-  void SetAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis = {0, 0, 0});
 
-  /**Reads a VTK unstructured mesh. This reader will use the following
-   * options:
-   * - `file_name`, of course.
-   * - `material_id_fieldname`, cell data for material_id.
-   */
-  void ReadFromVTU(const Options& options);
+  void AddBoundary(uint64_t id, const std::string& name);
 
-  /**Reads a VTK unstructured mesh. This reader will use the following
-   * options:
-   * - `file_name`, of course.
-   * - `material_id_fieldname`, cell data for material_id.
-   */
-  void ReadFromPVTU(const Options& options);
+  const std::map<uint64_t, std::string>& BoundaryIDMap() const { return boundary_id_map_; }
+  std::map<uint64_t, std::string>& BoundaryIDMap() { return boundary_id_map_; }
 
-  /**
-   * Reads an Ensight-Gold unstructured mesh.
-   */
-  void ReadFromEnsightGold(const Options& options);
+  void SetAttributes(MeshAttributes new_attribs);
 
-  /**
-   * Reads an unpartitioned mesh from a wavefront .obj file.
-   */
-  void ReadFromWavefrontOBJ(const Options& options);
-
-  /**
-   * Reads an unpartitioned mesh from a gmesh .msh legacy ASCII format 2 file.
-   */
-  void ReadFromMsh(const Options& options);
-
-  /**Reads an Exodus unstructured mesh.*/
-  void ReadFromExodus(const Options& options);
+  void SetOrthoAttributes(size_t nx, size_t ny, size_t nz);
+  const OrthoMeshAttributes& OrthoAttributes() const { return ortho_attrs_; }
 
   /**Makes a cell from proxy information and pushes the cell to the mesh.*/
   void PushProxyCell(const std::string& type_str,
@@ -191,23 +124,21 @@ public:
                      int cell_material_id,
                      const std::vector<std::vector<uint64_t>>& proxy_faces);
 
-  ~UnpartitionedMesh();
+  void CleanUp();
 
-  void CleanUp()
-  {
-    for (auto& cell : raw_cells_)
-      delete cell;
-    for (auto& cell : raw_boundary_cells_)
-      delete cell;
-    vertices_.clear();
-    vertices_.shrink_to_fit();
-    raw_cells_.clear();
-    raw_cells_.shrink_to_fit();
-    raw_boundary_cells_.clear();
-    raw_boundary_cells_.shrink_to_fit();
-    vertex_cell_subscriptions_.clear();
-    vertex_cell_subscriptions_.shrink_to_fit();
-  }
+protected:
+  /// Spatial mesh dimension
+  unsigned int dim_;
+  MeshAttributes attributes_;
+  OrthoMeshAttributes ortho_attrs_;
+  Options mesh_options_;
+  BoundBox bound_box_;
+  std::map<uint64_t, std::string> boundary_id_map_;
+
+  std::vector<Vertex> vertices_;
+  std::vector<LightWeightCell*> raw_cells_;
+  std::vector<LightWeightCell*> raw_boundary_cells_;
+  std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };
 
 } // namespace opensn

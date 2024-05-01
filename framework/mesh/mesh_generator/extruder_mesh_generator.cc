@@ -101,17 +101,17 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
   } // layer_block in layers_param
 }
 
-std::unique_ptr<UnpartitionedMesh>
-ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
+std::shared_ptr<UnpartitionedMesh>
+ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> input_umesh)
 {
   log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh";
   const Vector3 khat(0.0, 0.0, 1.0);
 
-  OpenSnInvalidArgumentIf(not(input_umesh->GetMeshAttributes() & DIMENSION_2),
+  OpenSnInvalidArgumentIf(input_umesh->Dimension() != 2,
                           "Input mesh is not 2D. A 2D mesh is required for extrusion");
 
-  const auto& template_vertices = input_umesh->GetVertices();
-  const auto& template_cells = input_umesh->GetRawCells();
+  const auto& template_vertices = input_umesh->Vertices();
+  const auto& template_cells = input_umesh->RawCells();
 
   const size_t num_template_vertices = template_vertices.size();
   const size_t num_template_cells = template_cells.size();
@@ -142,11 +142,11 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
                              " corrected.");
   }
 
-  auto umesh = std::make_unique<UnpartitionedMesh>();
+  auto umesh = std::make_shared<UnpartitionedMesh>();
 
   // Update boundary maps
-  auto& umesh_bndry_map = umesh->GetMeshOptions().boundary_id_map;
-  umesh_bndry_map = input_umesh->GetMeshOptions().boundary_id_map;
+  auto& umesh_bndry_map = umesh->BoundaryIDMap();
+  umesh_bndry_map = input_umesh->BoundaryIDMap();
 
   const uint64_t zmax_bndry_id = umesh->MakeBoundaryID(top_boundary_name_);
   umesh_bndry_map[zmax_bndry_id] = top_boundary_name_;
@@ -165,7 +165,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
 
   // Build vertices
   typedef Vector3 Vec3;
-  auto& extruded_vertices = umesh->GetVertices();
+  auto& extruded_vertices = umesh->Vertices();
   for (const double z_level : z_levels)
     for (const auto& template_vertex : template_vertices)
       extruded_vertices.push_back(Vec3(template_vertex.x, template_vertex.y, z_level));
@@ -278,7 +278,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
 
           new_cell.faces.push_back(std::move(new_face));
         }
-        umesh->GetRawCells().push_back(new_cell_ptr);
+        umesh->RawCells().push_back(new_cell_ptr);
 
         ++tc_counter;
       } // for template cell
@@ -286,9 +286,11 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
     } // for sub-layer n
   }   // for layer
 
-  umesh->SetAttributes(DIMENSION_3 | EXTRUDED);
+  umesh->SetDimension(3);
+  umesh->SetAttributes(EXTRUDED);
 
-  umesh->ComputeCentroidsAndCheckQuality();
+  umesh->ComputeCentroids();
+  umesh->CheckQuality();
   umesh->BuildMeshConnectivity();
 
   log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh Done";

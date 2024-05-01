@@ -66,7 +66,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(
       map_polar_level_.emplace(dir_idx, dir_set.first);
 
   //  set normal vector for symmetric boundary condition
-  const int d = (grid_.Attributes() & DIMENSION_1) ? 2 : 0;
+  const auto d = (grid_.Dimension() == 1) ? 2 : 0;
   normal_vector_boundary_ = Vector3(0.0, 0.0, 0.0);
   normal_vector_boundary_(d) = 1;
 }

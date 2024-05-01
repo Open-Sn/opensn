@@ -73,15 +73,15 @@ SplitFileMeshGenerator::Execute()
   {
     // Execute all input generators
     // Note these could be empty
-    std::unique_ptr<UnpartitionedMesh> current_umesh = nullptr;
+    std::shared_ptr<UnpartitionedMesh> current_umesh = nullptr;
     for (auto mesh_generator_ptr : inputs_)
     {
-      auto new_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(std::move(current_umesh));
-      current_umesh = std::move(new_umesh);
+      auto new_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(current_umesh);
+      current_umesh = new_umesh;
     }
 
     // Generate final umesh
-    current_umesh = GenerateUnpartitionedMesh(std::move(current_umesh));
+    current_umesh = GenerateUnpartitionedMesh(current_umesh);
 
     log.Log() << "Writing split-mesh with " << num_parts << " parts";
     const auto cell_pids = PartitionMesh(*current_umesh, num_parts);
@@ -131,8 +131,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
   OpenSnLogicalErrorIf(not root_dir_created, "Failed to create directory " + dir_path.string());
 
   const auto& vertex_subs = umesh.GetVertextCellSubscriptions();
-  const auto& raw_cells = umesh.GetRawCells();
-  const auto& raw_vertices = umesh.GetVertices();
+  const auto& raw_cells = umesh.RawCells();
+  const auto& raw_vertices = umesh.Vertices();
 
   uint64_t aux_counter = 0;
   for (int pid = 0; pid < num_parts; ++pid)
@@ -187,19 +187,21 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       log.Log() << "Writing part " << pid << " num_local_cells=" << local_cells_needed.size();
 
     // Write mesh attributes and general info
-    const auto& mesh_options = umesh.GetMeshOptions();
+    const auto& mesh_options = umesh.MeshOptions();
 
     WriteBinaryValue(ofile, num_parts); // int
+    WriteBinaryValue<unsigned int>(ofile, umesh.Dimension());
 
-    WriteBinaryValue(ofile, static_cast<int>(umesh.GetMeshAttributes())); // int
-    WriteBinaryValue(ofile, mesh_options.ortho_Nx);                       // size_t
-    WriteBinaryValue(ofile, mesh_options.ortho_Ny);                       // size_t
-    WriteBinaryValue(ofile, mesh_options.ortho_Nz);                       // size_t
+    WriteBinaryValue(ofile, static_cast<int>(umesh.Attributes())); // int
+    auto& ortho_attrs = umesh.OrthoAttributes();
+    WriteBinaryValue(ofile, ortho_attrs.Nx); // size_t
+    WriteBinaryValue(ofile, ortho_attrs.Ny); // size_t
+    WriteBinaryValue(ofile, ortho_attrs.Nz); // size_t
 
     WriteBinaryValue(ofile, raw_vertices.size()); // size_t
 
     // Write the boundary map
-    const auto& bndry_map = mesh_options.boundary_id_map;
+    const auto& bndry_map = umesh.BoundaryIDMap();
     WriteBinaryValue(ofile, bndry_map.size()); // size_t
     for (const auto& [bid, bname] : bndry_map)
     {
@@ -313,10 +315,11 @@ SplitFileMeshGenerator::ReadSplitMesh()
                          " parts but is now being read with " +
                          std::to_string(opensn::mpi_comm.size()) + " processes.");
 
+  info_block.dimension = ReadBinaryValue<unsigned int>(ifile);
   info_block.mesh_attributes_ = ReadBinaryValue<int>(ifile);
-  info_block.ortho_Nx_ = ReadBinaryValue<size_t>(ifile);
-  info_block.ortho_Ny_ = ReadBinaryValue<size_t>(ifile);
-  info_block.ortho_Nz_ = ReadBinaryValue<size_t>(ifile);
+  info_block.ortho_attributes.Nx = ReadBinaryValue<size_t>(ifile);
+  info_block.ortho_attributes.Ny = ReadBinaryValue<size_t>(ifile);
+  info_block.ortho_attributes.Nz = ReadBinaryValue<size_t>(ifile);
 
   info_block.num_global_vertices_ = ReadBinaryValue<size_t>(ifile);
 
@@ -404,9 +407,9 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
     grid_ptr->cells.push_back(std::move(cell));
   }
 
-  SetGridAttributes(*grid_ptr,
-                    static_cast<MeshAttributes>(mesh_info.mesh_attributes_),
-                    {mesh_info.ortho_Nx_, mesh_info.ortho_Ny_, mesh_info.ortho_Nz_});
+  grid_ptr->SetDimension(mesh_info.dimension);
+  grid_ptr->SetAttributes(static_cast<MeshAttributes>(mesh_info.mesh_attributes_));
+  grid_ptr->SetOrthoAttributes(mesh_info.ortho_attributes);
 
   grid_ptr->SetGlobalVertexCount(mesh_info.num_global_vertices_);
 

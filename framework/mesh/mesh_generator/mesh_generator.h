@@ -45,13 +45,11 @@ public:
 
   /**
    * Virtual method to generate the unpartitioned mesh for the next step.
-   */
-  virtual std::unique_ptr<UnpartitionedMesh>
-
-  /**
+   *
    * Default behavior here is to return the input umesh unaltered.
    */
-  GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh);
+  virtual std::shared_ptr<UnpartitionedMesh>
+  GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> input_umesh);
 
   struct VertexListHelper
   {
@@ -75,7 +73,7 @@ protected:
   /**
    * Executes the partitioner and configures the mesh as a real mesh.
    */
-  std::shared_ptr<MeshContinuum> SetupMesh(std::unique_ptr<UnpartitionedMesh> input_umesh_ptr,
+  std::shared_ptr<MeshContinuum> SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
                                            const std::vector<int64_t>& cell_pids);
 
   /**
@@ -100,10 +98,6 @@ protected:
                                          uint64_t global_id,
                                          uint64_t partition_id,
                                          const VertexListHelper& vertices);
-
-  static void SetGridAttributes(MeshContinuum& grid,
-                                MeshAttributes new_attribs,
-                                std::array<size_t, 3> ortho_cells_per_dimension);
 
   static void ComputeAndPrintStats(const MeshContinuum& grid);
 

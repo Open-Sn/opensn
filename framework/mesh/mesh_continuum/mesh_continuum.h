@@ -24,41 +24,11 @@ class MeshGenerator;
  */
 class MeshContinuum
 {
-private:
-  std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
-  std::vector<std::unique_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
-
-  std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
-  std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
-
-  uint64_t global_vertex_count_ = 0;
-
 public:
-  VertexHandler vertices;
-  LocalCellHandler local_cells;
-  GlobalCellHandler cells;
+  MeshContinuum();
 
-private:
-  MeshAttributes attributes = NONE;
-
-  struct
-  {
-    size_t Nx = 0;
-    size_t Ny = 0;
-    size_t Nz = 0;
-  } ortho_attributes;
-
-  std::map<uint64_t, std::string> boundary_id_map_;
-
-public:
-  MeshContinuum()
-    : local_cells(local_cells_),
-      cells(local_cells_,
-            ghost_cells_,
-            global_cell_id_to_local_id_map_,
-            global_cell_id_to_nonlocal_id_map_)
-  {
-  }
+  unsigned int Dimension() const { return dim_; }
+  void SetDimension(unsigned int dim) { dim_ = dim; }
 
   void SetGlobalVertexCount(const uint64_t count) { global_vertex_count_ = count; }
   uint64_t GetGlobalVertexCount() const { return global_vertex_count_; }
@@ -191,7 +161,7 @@ public:
    */
   bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
 
-  MeshAttributes Attributes() const { return attributes; }
+  MeshAttributes Attributes() const { return attributes_; }
 
   /**
    * Gets and orthogonal mesh interface object.
@@ -228,14 +198,29 @@ public:
                                 bool sense,
                                 const std::string& boundary_name);
 
+  void SetAttributes(MeshAttributes new_attribs);
+
+  void SetOrthoAttributes(const OrthoMeshAttributes& attrs);
+
+public:
+  VertexHandler vertices;
+  LocalCellHandler local_cells;
+  GlobalCellHandler cells;
+
 private:
-  friend class VolumeMesher;
-  friend class MeshGenerator;
-  void SetAttributes(MeshAttributes new_attribs, std::array<size_t, 3> ortho_Nis = {0, 0, 0})
-  {
-    attributes = attributes | new_attribs;
-    ortho_attributes = {ortho_Nis[0], ortho_Nis[1], ortho_Nis[2]};
-  }
+  /// Spatial dimension
+  unsigned int dim_;
+  MeshAttributes attributes_;
+  OrthoMeshAttributes ortho_attributes_;
+  std::map<uint64_t, std::string> boundary_id_map_;
+
+  uint64_t global_vertex_count_;
+
+  std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
+  std::vector<std::unique_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
+
+  std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
+  std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
 };
 
 } // namespace opensn

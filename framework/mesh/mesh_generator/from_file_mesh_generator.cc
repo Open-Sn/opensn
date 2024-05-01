@@ -2,14 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_generator/from_file_mesh_generator.h"
-
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
-
 #include "framework/object_factory.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
+#include "framework/mesh/io/mesh_io.h"
+#include "framework/utils/utils.h"
 #include <filesystem>
 
 namespace opensn
@@ -22,16 +20,14 @@ FromFileMeshGenerator::GetInputParameters()
 {
   InputParameters params = MeshGenerator::GetInputParameters();
 
-  params.SetGeneralDescription("Generator for loading an unpartitioned mesh"
-                               " from a file.");
+  params.SetGeneralDescription("Generator for loading an unpartitioned mesh from a file.");
   params.SetDocGroup("doc_MeshGenerators");
 
   params.AddRequiredParameter<std::string>("filename", "Path to the file.");
-  params.AddOptionalParameter(
-    "material_id_fieldname",
-    "BlockID",
-    "The name of the field storing cell block/material ids. Only really used "
-    "for .vtu, .pvtu and .e files.");
+  params.AddOptionalParameter("material_id_fieldname",
+                              "BlockID",
+                              "The name of the field storing cell block/material ids. Only really "
+                              "used for .vtu, .pvtu and .e files.");
   params.AddOptionalParameter(
     "boundary_id_fieldname", "", "The name of the field storing boundary-ids");
 
@@ -44,12 +40,10 @@ FromFileMeshGenerator::FromFileMeshGenerator(const InputParameters& params)
     material_id_fieldname_(params.GetParamValue<std::string>("material_id_fieldname")),
     boundary_id_fieldname_(params.GetParamValue<std::string>("boundary_id_fieldname"))
 {
-  const std::filesystem::path filepath(filename_);
-  const std::string extension = filepath.extension();
 }
 
-std::unique_ptr<UnpartitionedMesh>
-FromFileMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMesh> input_umesh)
+std::shared_ptr<UnpartitionedMesh>
+FromFileMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> input_umesh)
 {
   OpenSnInvalidArgumentIf(input_umesh != nullptr,
                           "FromFileMeshGenerator can not be preceded by another"
@@ -62,31 +56,26 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::unique_ptr<UnpartitionedMe
   options.boundary_id_fieldname = boundary_id_fieldname_;
 
   const std::filesystem::path filepath(filename_);
-  const std::string extension = filepath.extension();
-
-  auto umesh = std::make_unique<UnpartitionedMesh>();
+  AssertReadableFile(filename_);
 
   log.Log() << "FromFileMeshGenerator: Generating UnpartitionedMesh";
-
+  const std::string extension = filepath.extension();
   if (extension == ".obj")
-    umesh->ReadFromWavefrontOBJ(options);
+    return MeshIO::FromOBJ(options);
   else if (extension == ".msh")
-    umesh->ReadFromMsh(options);
+    return MeshIO::FromGmsh(options);
   else if (extension == ".e")
-    umesh->ReadFromExodus(options);
+    return MeshIO::FromExodus(options);
   else if (extension == ".vtu")
-    umesh->ReadFromVTU(options);
+    return MeshIO::FromVTU(options);
   else if (extension == ".pvtu")
-    umesh->ReadFromPVTU(options);
+    return MeshIO::FromPVTU(options);
   else if (extension == ".case")
-    umesh->ReadFromEnsightGold(options);
+    return MeshIO::FromEnsightGold(options);
   else
     OpenSnInvalidArgument("Unsupported file type \"" + extension +
                           "\". Supported types limited to"
                           ".obj, .msh, .e, .vtu, .pvtu, .case.");
-
-  log.Log() << "FromFileMeshGenerator: Done generating UnpartitionedMesh";
-  return umesh;
 }
 
 } // namespace opensn

@@ -29,10 +29,7 @@ SimTest93_RayTracing(const InputParameters&)
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
-  const int dimension = (grid.Attributes() & DIMENSION_1)   ? 1
-                        : (grid.Attributes() & DIMENSION_2) ? 2
-                        : (grid.Attributes() & DIMENSION_3) ? 3
-                                                            : 0;
+  const auto dimension = grid.Dimension();
 
   // Set parameters
   const size_t num_groups = 1;
