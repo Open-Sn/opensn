@@ -14,12 +14,12 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(PhysicsTransportXSCreate, xs, Create);
-RegisterLuaFunctionNamespace(PhysicsTransportXSSet, xs, Set);
-RegisterLuaFunctionNamespace(PhysicsTransportXSMakeCombined, xs, MakeCombined);
-RegisterLuaFunctionNamespace(PhysicsTransportXSSetCombined, xs, SetCombined);
-RegisterLuaFunctionNamespace(PhysicsTransportXSGet, xs, Get);
-RegisterLuaFunctionNamespace(PhysicsTransportXSExportToOpenSnFormat, xs, ExportToOpenSnFormat);
+RegisterLuaFunctionNamespace(XSCreate, xs, Create);
+RegisterLuaFunctionNamespace(XSSet, xs, Set);
+RegisterLuaFunctionNamespace(XSMakeCombined, xs, MakeCombined);
+RegisterLuaFunctionNamespace(XSSetCombined, xs, SetCombined);
+RegisterLuaFunctionNamespace(XSGet, xs, Get);
+RegisterLuaFunctionNamespace(XSExportToOpenSnFormat, xs, ExportToOpenSnFormat);
 
 RegisterLuaConstantAsIs(SINGLE_VALUE, Varying(0));
 RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));
@@ -41,6 +41,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
   LuaPushTableKey(L, "scattering_order", xs->ScatteringOrder());
   LuaPushTableKey(L, "num_precursors", xs->NumPrecursors());
   LuaPushTableKey(L, "is_fissionable", xs->IsFissionable());
+  LuaPushTableKey(L, "scaling_factor", xs->ScalingFactor());
   LuaPushTableKey(L, "sigma_t", xs->SigmaTotal());
   LuaPushTableKey(L, "sigma_a", xs->SigmaAbsorption());
   LuaPushTableKey(L, "sigma_f", xs->SigmaFission());
@@ -122,7 +123,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
 } // namespace
 
 int
-PhysicsTransportXSCreate(lua_State* L)
+XSCreate(lua_State* L)
 {
   auto xs = std::make_shared<MultiGroupXS>();
   opensn::multigroup_xs_stack.push_back(xs);
@@ -132,7 +133,7 @@ PhysicsTransportXSCreate(lua_State* L)
 }
 
 int
-PhysicsTransportXSSet(lua_State* L)
+XSSet(lua_State* L)
 {
   const std::string fname = "xs.Set";
   LuaCheckArgs<int, int>(L, fname);
@@ -157,7 +158,7 @@ PhysicsTransportXSSet(lua_State* L)
   // Process operation
   if (operation_index == static_cast<int>(OperationType::SIMPLE_ONE_GROUP))
   {
-    LuaCheckArgs<int, int, int, double, double>(L, fname);
+    LuaCheckArgs<int, int, double, double>(L, fname);
 
     const auto sigma_t = LuaArg<double>(L, 3);
     const auto c = LuaArg<double>(L, 4);
@@ -189,7 +190,7 @@ PhysicsTransportXSSet(lua_State* L)
 }
 
 int
-PhysicsTransportXSGet(lua_State* L)
+XSGet(lua_State* L)
 {
   const std::string fname = "xs.Get";
   LuaCheckArgs<int>(L, fname);
@@ -215,7 +216,7 @@ PhysicsTransportXSGet(lua_State* L)
 }
 
 int
-PhysicsTransportXSMakeCombined(lua_State* L)
+XSMakeCombined(lua_State* L)
 {
   const std::string fname = "xs.MakeCombined";
 
@@ -269,7 +270,7 @@ PhysicsTransportXSMakeCombined(lua_State* L)
 }
 
 int
-PhysicsTransportXSSetCombined(lua_State* L)
+XSSetCombined(lua_State* L)
 {
   const std::string fname = "xs.SetCombined";
 
@@ -333,7 +334,7 @@ PhysicsTransportXSSetCombined(lua_State* L)
 }
 
 int
-PhysicsTransportXSExportToOpenSnFormat(lua_State* L)
+XSExportToOpenSnFormat(lua_State* L)
 {
   const std::string fname = "xs.ExportToOpenSnFormat";
   LuaCheckArgs<int, std::string>(L, fname);

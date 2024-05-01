@@ -99,16 +99,12 @@ public:
 
   const std::vector<SparseMatrix>& TransferMatrices() const
   {
-    if (adjoint_)
-      return transposed_transfer_matrices_;
-    return transfer_matrices_;
+    return adjoint_ ? transposed_transfer_matrices_ : transfer_matrices_;
   }
 
   const SparseMatrix& TransferMatrix(unsigned int ell) const
   {
-    if (adjoint_)
-      return transposed_transfer_matrices_.at(ell);
-    return transfer_matrices_.at(ell);
+    return adjoint_ ? transposed_transfer_matrices_.at(ell) : transfer_matrices_.at(ell);
   }
 
   const std::vector<double>& SigmaFission() const { return sigma_f_; }
@@ -121,9 +117,7 @@ public:
 
   const std::vector<std::vector<double>>& ProductionMatrix() const
   {
-    if (adjoint_)
-      return transposed_production_matrix_;
-    return production_matrix_;
+    return adjoint_ ? transposed_production_matrix_ : production_matrix_;
   }
 
   const std::vector<Precursor>& Precursors() const { return precursors_; }

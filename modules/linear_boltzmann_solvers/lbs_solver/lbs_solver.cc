@@ -937,8 +937,6 @@ LBSSolver::InitializeMaterials()
     if (cell.material_id_ < 0)
       ++invalid_mat_cell_count;
   }
-
-  log.Log() << "Invalid cell materials " << invalid_mat_cell_count;
   OpenSnLogicalErrorIf(invalid_mat_cell_count > 0,
                        std::to_string(invalid_mat_cell_count) +
                          " cells encountered with an invalid material id.");
