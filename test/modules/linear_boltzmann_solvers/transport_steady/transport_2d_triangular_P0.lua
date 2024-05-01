@@ -23,7 +23,7 @@ materials[1] = mat.AddMaterial("Test Material");
 mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 num_groups = 1
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "simple_scatter.cxs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "simple_scatter.xs")
 src = {}
 for g = 1, num_groups do
     src[g] = 0.0

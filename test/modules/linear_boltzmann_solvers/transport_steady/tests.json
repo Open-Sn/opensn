@@ -205,6 +205,7 @@
     "file": "transport_2d_triangular_P0.lua",
     "comment": "2D LinearBSolver Test isotropic scatter with triangular quadrature",
     "num_procs": 1,
+    "weight_class" : "short",
     "checks": [
       {
         "type": "FloatCompare",
@@ -219,12 +220,13 @@
     "file": "transport_2d_triangular_P0_GQ3.lua",
     "comment": "2D LinearBSolver Test isotropic scatter with triangular quadrature method 3",
     "num_procs": 1,
+    "weight_class" : "short",
     "checks": [
       {
         "type": "FloatCompare",
         "key": "max-grp0(latest)",
         "wordnum" : 4,
-        "gold": 2.932038e+00,
+        "gold": 2.932038,
         "abs_tol": 1.0e-6
       }
      ]
