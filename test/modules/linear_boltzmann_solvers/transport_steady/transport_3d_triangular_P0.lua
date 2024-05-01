@@ -10,7 +10,7 @@ end
 
 nodes = {}
 N = 65
-ds = 500.0/N
+ds = 10.0/N
 for i = 0, N do
     nodes[i+1] = i*ds
 end
@@ -21,18 +21,11 @@ mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 materials = {}
 materials[1] = mat.AddMaterial("Test Material");
 mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
-mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 
 num_groups = 1
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "simple_scatter.xs")
-src={}
-for g=1,num_groups do
-    src[g] = 0.0
-end
-mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
-method = 0
-scattering_order = 1
-sn = 8
+method = 3
+sn = 4
 moments = 0
 tquad = aquad.CreateTriangleQuadrature(method,sn)
 
@@ -50,7 +43,7 @@ lbs_block =
             inner_linear_method = "gmres",
             l_abs_tol = 1.0e-8,
             l_max_its = 300,
-            gmres_restart_interval = 50,
+            gmres_restart_interval = 10,
         },
     }
 }

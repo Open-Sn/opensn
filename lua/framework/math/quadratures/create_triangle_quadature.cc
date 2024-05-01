@@ -27,8 +27,8 @@ CreateTriangleQuadrature(lua_State* L)
   if (num_args == 3)
     moments = lua_tonumber(L, 3);
 
-  if (num_args < 2)
-    LuaPostArgAmountError("CreateTriangleQuadrature", 2, num_args);
+ // if (num_args < 2)
+ //   LuaPostArgAmountError("CreateTriangleQuadrature", 2, num_args);
 
   opensn::log.Log() << "Creating Triangle Quadrature\n";
 

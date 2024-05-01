@@ -22,7 +22,7 @@ materials = {}
 materials[1] = mat.AddMaterial("Test Material");
 mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 num_groups = 1
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_Henyey_GS_p4.xs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_Henyey_GS_p4.cxs")
 
 method = 3
 scattering_order = 0
