@@ -24,20 +24,6 @@ class MeshGenerator;
  */
 class MeshContinuum
 {
-private:
-  std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
-  std::vector<std::unique_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
-
-  std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
-  std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
-
-  uint64_t global_vertex_count_ = 0;
-
-public:
-  VertexHandler vertices;
-  LocalCellHandler local_cells;
-  GlobalCellHandler cells;
-
 public:
   MeshContinuum();
 
@@ -216,7 +202,20 @@ public:
 
   void SetOrthoAttributes(const OrthoMeshAttributes& attrs);
 
+public:
+  VertexHandler vertices;
+  LocalCellHandler local_cells;
+  GlobalCellHandler cells;
+
 private:
+  std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
+  std::vector<std::unique_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
+
+  std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
+  std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
+
+  uint64_t global_vertex_count_ = 0;
+
   MeshAttributes attributes_ = NONE;
   OrthoMeshAttributes ortho_attributes_;
 
