@@ -954,4 +954,13 @@ LuaNumArgs(lua_State* L)
   return lua_gettop(L);
 }
 
+//
+
+inline void
+LuaRegisterTable(lua_State* L, const std::string& table_name)
+{
+  lua_newtable(L);
+  lua_setglobal(L, table_name.c_str());
+}
+
 } // namespace opensnlua
