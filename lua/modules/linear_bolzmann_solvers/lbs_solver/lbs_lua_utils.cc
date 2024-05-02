@@ -4,8 +4,6 @@
 #include "lbs_common_lua_functions.h"
 #include "lua/framework/lua.h"
 
-#define RegisterFunction(x) lua_register(L, #x, x)
-
 #define RegisterTable(x)                                                                           \
   lua_newtable(L);                                                                                 \
   lua_setglobal(L, #x)
