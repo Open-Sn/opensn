@@ -21,12 +21,12 @@ RegisterLuaFunctionNamespace(PhysicsTransportXSSetCombined, xs, SetCombined);
 RegisterLuaFunctionNamespace(PhysicsTransportXSGet, xs, Get);
 RegisterLuaFunctionNamespace(PhysicsTransportXSExportToOpenSnFormat, xs, ExportToOpenSnFormat);
 
-RegisterLuaConstantAsIs(SINGLE_VALUE, Varying(0));
-RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));
-RegisterLuaConstantAsIs(SIMPLE_ONE_GROUP, Varying(20));
-RegisterLuaConstantAsIs(EXISTING, Varying(22));
-RegisterLuaConstantAsIs(OPENSN_XSFILE, Varying(23));
-RegisterLuaConstantAsIs(OPENMC_XSLIB, Varying(24));
+RegisterLuaConstant(SINGLE_VALUE, Varying(0));
+RegisterLuaConstant(FROM_ARRAY, Varying(1));
+RegisterLuaConstant(SIMPLE_ONE_GROUP, Varying(20));
+RegisterLuaConstant(EXISTING, Varying(22));
+RegisterLuaConstant(OPENSN_XSFILE, Varying(23));
+RegisterLuaConstant(OPENMC_XSLIB, Varying(24));
 
 namespace
 {

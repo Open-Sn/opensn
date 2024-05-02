@@ -69,7 +69,7 @@ extern "C"
                                 __COUNTER__) =                                                     \
     opensnlua::Console::AddLuaConstantToRegistry(#namespace_name, #name_in_lua, value)
 
-#define RegisterLuaConstantAsIs(name_in_lua, value)                                                \
+#define RegisterLuaConstant(name_in_lua, value)                                                    \
   static char ConsoleJoinWordsB(unique_var_name_luaconst_##name_in_lua, __COUNTER__) =             \
     opensnlua::Console::AddLuaConstantToRegistry("", #name_in_lua, value)
 

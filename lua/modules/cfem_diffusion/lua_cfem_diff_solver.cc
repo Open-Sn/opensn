@@ -14,8 +14,8 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaConstantAsIs(MAX_ITERATIONS, Varying(1));
-RegisterLuaConstantAsIs(TOLERANCE, Varying(2));
+RegisterLuaConstant(MAX_ITERATIONS, Varying(1));
+RegisterLuaConstant(TOLERANCE, Varying(2));
 
 RegisterLuaFunctionNamespace(CFEMDiffusionSolverCreate, diffusion, CFEMSolverCreate);
 RegisterLuaFunctionNamespace(CFEMDiffusionSetBCProperty, diffusion, CFEMSetBCProperty);

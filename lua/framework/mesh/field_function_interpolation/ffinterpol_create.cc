@@ -17,10 +17,10 @@ namespace opensnlua
 {
 
 RegisterLuaFunctionNamespace(FFInterpolationCreate, fieldfunc, FFInterpolationCreate);
-RegisterLuaConstantAsIs(SLICE, Varying(1));
-RegisterLuaConstantAsIs(LINE, Varying(2));
-RegisterLuaConstantAsIs(VOLUME, Varying(3));
-RegisterLuaConstantAsIs(POINT, Varying(4));
+RegisterLuaConstant(SLICE, Varying(1));
+RegisterLuaConstant(LINE, Varying(2));
+RegisterLuaConstant(VOLUME, Varying(3));
+RegisterLuaConstant(POINT, Varying(4));
 
 int
 FFInterpolationCreate(lua_State* L)

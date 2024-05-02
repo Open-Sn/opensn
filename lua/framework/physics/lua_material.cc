@@ -22,9 +22,9 @@ RegisterLuaFunctionNamespace(MatAddProperty, mat, AddProperty);
 RegisterLuaFunctionNamespace(MatSetProperty, mat, SetProperty);
 RegisterLuaFunctionNamespace(MatGetProperty, mat, GetProperty);
 
-RegisterLuaConstantAsIs(SCALAR_VALUE, Varying(1));
-RegisterLuaConstantAsIs(TRANSPORT_XSECTIONS, Varying(10));
-RegisterLuaConstantAsIs(ISOTROPIC_MG_SOURCE, Varying(11));
+RegisterLuaConstant(SCALAR_VALUE, Varying(1));
+RegisterLuaConstant(TRANSPORT_XSECTIONS, Varying(10));
+RegisterLuaConstant(ISOTROPIC_MG_SOURCE, Varying(11));
 
 namespace
 {

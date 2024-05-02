@@ -16,11 +16,11 @@ namespace opensnlua
 
 RegisterLuaFunctionNamespace(CreateProductQuadrature, aquad, CreateProductQuadrature);
 
-RegisterLuaConstantAsIs(GAUSS_LEGENDRE, Varying(1));
-RegisterLuaConstantAsIs(GAUSS_CHEBYSHEV, Varying(2));
-RegisterLuaConstantAsIs(GAUSS_LEGENDRE_LEGENDRE, Varying(3));
-RegisterLuaConstantAsIs(GAUSS_LEGENDRE_CHEBYSHEV, Varying(4));
-RegisterLuaConstantAsIs(CUSTOM_QUADRATURE, Varying(5));
+RegisterLuaConstant(GAUSS_LEGENDRE, Varying(1));
+RegisterLuaConstant(GAUSS_CHEBYSHEV, Varying(2));
+RegisterLuaConstant(GAUSS_LEGENDRE_LEGENDRE, Varying(3));
+RegisterLuaConstant(GAUSS_LEGENDRE_CHEBYSHEV, Varying(4));
+RegisterLuaConstant(CUSTOM_QUADRATURE, Varying(5));
 
 int
 CreateProductQuadrature(lua_State* L)
