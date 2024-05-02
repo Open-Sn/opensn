@@ -10,6 +10,8 @@ target_include_directories(libopensnlua
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/external
     ${LUA_INCLUDE_DIR}
+    PUBLIC
+    ${caliper_INCLUDE_DIR}
 )
 
 target_link_libraries(libopensnlua
@@ -18,6 +20,7 @@ target_link_libraries(libopensnlua
     ${PETSC_LIBRARY}
     MPI::MPI_CXX
     libopensn
+    PUBLIC
     caliper
 )
 

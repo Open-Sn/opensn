@@ -96,7 +96,7 @@ endif()
 find_package(caliper REQUIRED)
 if(caliper_FOUND)
     message(STATUS "Found Caliper: ${caliper_DIR}")
-endif() 
+endif()
 
 # compile options
 set(OPENSN_CXX_FLAGS)
@@ -135,19 +135,18 @@ target_include_directories(libopensn
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/external
-    PUBLIC
     ${LUA_INCLUDE_DIR}
     ${PETSC_INCLUDE_DIR}
     ${caliper_INCLUDE_DIR}
     ${HDF5_INCLUDE_DIRS}
 )
-
 target_link_libraries(libopensn
     PRIVATE
     ${PETSC_LIBRARY}
     ${VTK_LIBRARIES}
     caliper
     ${HDF5_LIBRARIES}
+    ${HDF5_CXX_LIBRARIES}
     MPI::MPI_CXX
 )
 if(OPENSN_WITH_LUA)
