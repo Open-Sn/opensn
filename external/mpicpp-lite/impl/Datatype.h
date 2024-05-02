@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 David Andrs <andrsd@gmail.com>
+// SPDX-License-Identifier: MIT
+
 #pragma once
 
 #include "mpi.h"
@@ -20,7 +23,7 @@ build_mpi_datatype()
 /// @tparam T C++ data type
 /// @return `MPI_Datatype` that is used in the MPI API
 template <typename T>
-MPI_Datatype
+inline MPI_Datatype
 get_mpi_datatype()
 {
     return MPI_DATATYPE_NULL;
@@ -135,4 +138,4 @@ get_mpi_datatype<std::byte>()
 
 #endif
 
-} // namespace mpi
+} // namespace mpicpp_lite
