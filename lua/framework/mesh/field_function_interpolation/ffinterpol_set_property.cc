@@ -18,7 +18,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(FFInterpolationSetProperty, fieldfunc, SetProperty);
+RegisterLuaFunctionInNamespace(FFInterpolationSetProperty, fieldfunc, SetProperty);
 RegisterLuaConstant(PROBEPOINT, Varying(0));
 RegisterLuaConstant(SLICE_POINT, Varying(1));
 RegisterLuaConstant(SLICE_NORMAL, Varying(2));

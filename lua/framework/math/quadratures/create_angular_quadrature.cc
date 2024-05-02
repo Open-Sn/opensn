@@ -11,7 +11,7 @@
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(CreateCustomAngularQuadrature, aquad, CreateCustomAngularQuadrature);
+RegisterLuaFunctionInNamespace(CreateCustomAngularQuadrature, aquad, CreateCustomAngularQuadrature);
 
 int
 CreateCustomAngularQuadrature(lua_State* L)

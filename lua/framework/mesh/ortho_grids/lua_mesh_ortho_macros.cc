@@ -22,7 +22,7 @@ RegisterLuaConstantInNamespace(OrthoBoundaryID, YMIN, Varying(3));
 RegisterLuaConstantInNamespace(OrthoBoundaryID, ZMAX, Varying(4));
 RegisterLuaConstantInNamespace(OrthoBoundaryID, ZMIN, Varying(5));
 
-RegisterLuaFunctionNamespace(MeshSetupOrthogonalBoundaries, mesh, SetupOrthogonalBoundaries);
+RegisterLuaFunctionInNamespace(MeshSetupOrthogonalBoundaries, mesh, SetupOrthogonalBoundaries);
 
 int
 MeshSetupOrthogonalBoundaries(lua_State* L)

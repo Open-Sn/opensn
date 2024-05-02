@@ -11,7 +11,7 @@
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(FFInterpolationExportPython, fieldfunc, ExportPython);
+RegisterLuaFunctionInNamespace(FFInterpolationExportPython, fieldfunc, ExportPython);
 
 int
 FFInterpolationExportPython(lua_State* L)

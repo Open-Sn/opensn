@@ -13,8 +13,8 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(ExportFieldFunctionToVTK, fieldfunc, ExportToVTK);
-RegisterLuaFunctionNamespace(ExportMultiFieldFunctionToVTK, fieldfunc, ExportToVTKMulti);
+RegisterLuaFunctionInNamespace(ExportFieldFunctionToVTK, fieldfunc, ExportToVTK);
+RegisterLuaFunctionInNamespace(ExportMultiFieldFunctionToVTK, fieldfunc, ExportToVTKMulti);
 
 int
 ExportFieldFunctionToVTK(lua_State* L)

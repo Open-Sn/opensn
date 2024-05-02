@@ -14,7 +14,7 @@ namespace unit_tests
 {
 int ParameterBlock_Test00(lua_State* L);
 
-RegisterLuaFunctionNamespace(ParameterBlock_Test00, unit_tests, ParameterBlock_Test00);
+RegisterLuaFunctionInNamespace(ParameterBlock_Test00, unit_tests, ParameterBlock_Test00);
 
 int
 ParameterBlock_Test00(lua_State* L)

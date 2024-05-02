@@ -17,10 +17,10 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(MatAddMaterial, mat, AddMaterial);
-RegisterLuaFunctionNamespace(MatAddProperty, mat, AddProperty);
-RegisterLuaFunctionNamespace(MatSetProperty, mat, SetProperty);
-RegisterLuaFunctionNamespace(MatGetProperty, mat, GetProperty);
+RegisterLuaFunctionInNamespace(MatAddMaterial, mat, AddMaterial);
+RegisterLuaFunctionInNamespace(MatAddProperty, mat, AddProperty);
+RegisterLuaFunctionInNamespace(MatSetProperty, mat, SetProperty);
+RegisterLuaFunctionInNamespace(MatGetProperty, mat, GetProperty);
 
 RegisterLuaConstant(SCALAR_VALUE, Varying(1));
 RegisterLuaConstant(TRANSPORT_XSECTIONS, Varying(10));

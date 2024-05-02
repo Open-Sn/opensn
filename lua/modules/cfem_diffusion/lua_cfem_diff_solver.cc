@@ -17,8 +17,8 @@ namespace opensnlua
 RegisterLuaConstant(MAX_ITERATIONS, Varying(1));
 RegisterLuaConstant(TOLERANCE, Varying(2));
 
-RegisterLuaFunctionNamespace(CFEMDiffusionSolverCreate, diffusion, CFEMSolverCreate);
-RegisterLuaFunctionNamespace(CFEMDiffusionSetBCProperty, diffusion, CFEMSetBCProperty);
+RegisterLuaFunctionInNamespace(CFEMDiffusionSolverCreate, diffusion, CFEMSolverCreate);
+RegisterLuaFunctionInNamespace(CFEMDiffusionSetBCProperty, diffusion, CFEMSetBCProperty);
 
 namespace
 {

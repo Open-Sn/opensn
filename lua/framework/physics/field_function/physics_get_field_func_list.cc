@@ -14,7 +14,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(GetFieldFunctionHandleByName, fieldfunc, GetHandleByName);
+RegisterLuaFunctionInNamespace(GetFieldFunctionHandleByName, fieldfunc, GetHandleByName);
 
 int
 GetFieldFunctionHandleByName(lua_State* L)

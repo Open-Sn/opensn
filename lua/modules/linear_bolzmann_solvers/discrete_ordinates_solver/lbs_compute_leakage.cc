@@ -10,7 +10,7 @@
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(ComputeLeakage, lbs, ComputeLeakage);
+RegisterLuaFunctionInNamespace(ComputeLeakage, lbs, ComputeLeakage);
 
 int
 ComputeLeakage(lua_State* L)

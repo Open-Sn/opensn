@@ -25,7 +25,7 @@ FunctionWithoutCheck(lua_State* L)
   return LuaReturn(L);
 }
 
-RegisterLuaFunctionNamespace(FunctionWithCheck, unit_tests, FunctionWithCheck);
-RegisterLuaFunctionNamespace(FunctionWithoutCheck, unit_tests, FunctionWithoutCheck);
+RegisterLuaFunctionInNamespace(FunctionWithCheck, unit_tests, FunctionWithCheck);
+RegisterLuaFunctionInNamespace(FunctionWithoutCheck, unit_tests, FunctionWithoutCheck);
 
 } //  namespace unit_tests

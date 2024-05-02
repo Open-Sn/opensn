@@ -12,15 +12,15 @@
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(MeshSetUniformMaterialID, mesh, SetUniformMaterialID);
-RegisterLuaFunctionNamespace(MeshSetMaterialIDFromLogicalVolume,
-                             mesh,
-                             SetMaterialIDFromLogicalVolume);
-RegisterLuaFunctionNamespace(MeshSetBoundaryIDFromLogicalVolume,
-                             mesh,
-                             SetBoundaryIDFromLogicalVolume);
-RegisterLuaFunctionNamespace(MeshSetMaterialIDFromLuaFunction, mesh, SetMaterialIDFromFunction);
-RegisterLuaFunctionNamespace(MeshSetBoundaryIDFromLuaFunction, mesh, SetBoundaryIDFromFunction);
+RegisterLuaFunctionInNamespace(MeshSetUniformMaterialID, mesh, SetUniformMaterialID);
+RegisterLuaFunctionInNamespace(MeshSetMaterialIDFromLogicalVolume,
+                               mesh,
+                               SetMaterialIDFromLogicalVolume);
+RegisterLuaFunctionInNamespace(MeshSetBoundaryIDFromLogicalVolume,
+                               mesh,
+                               SetBoundaryIDFromLogicalVolume);
+RegisterLuaFunctionInNamespace(MeshSetMaterialIDFromLuaFunction, mesh, SetMaterialIDFromFunction);
+RegisterLuaFunctionInNamespace(MeshSetBoundaryIDFromLuaFunction, mesh, SetBoundaryIDFromFunction);
 
 using namespace opensn;
 

@@ -14,12 +14,12 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(PhysicsTransportXSCreate, xs, Create);
-RegisterLuaFunctionNamespace(PhysicsTransportXSSet, xs, Set);
-RegisterLuaFunctionNamespace(PhysicsTransportXSMakeCombined, xs, MakeCombined);
-RegisterLuaFunctionNamespace(PhysicsTransportXSSetCombined, xs, SetCombined);
-RegisterLuaFunctionNamespace(PhysicsTransportXSGet, xs, Get);
-RegisterLuaFunctionNamespace(PhysicsTransportXSExportToOpenSnFormat, xs, ExportToOpenSnFormat);
+RegisterLuaFunctionInNamespace(PhysicsTransportXSCreate, xs, Create);
+RegisterLuaFunctionInNamespace(PhysicsTransportXSSet, xs, Set);
+RegisterLuaFunctionInNamespace(PhysicsTransportXSMakeCombined, xs, MakeCombined);
+RegisterLuaFunctionInNamespace(PhysicsTransportXSSetCombined, xs, SetCombined);
+RegisterLuaFunctionInNamespace(PhysicsTransportXSGet, xs, Get);
+RegisterLuaFunctionInNamespace(PhysicsTransportXSExportToOpenSnFormat, xs, ExportToOpenSnFormat);
 
 RegisterLuaConstant(SINGLE_VALUE, Varying(0));
 RegisterLuaConstant(FROM_ARRAY, Varying(1));

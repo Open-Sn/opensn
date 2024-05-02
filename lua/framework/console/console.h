@@ -40,14 +40,14 @@ extern "C"
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
     opensnlua::Console::AddFunctionToRegistryGlobalNamespace(#func_name, func_name)
 
-/**Macro for registering a lua_CFunction within the Console
-* singleton.
-\param function LuaCFunction. The function to use.
-\param namespace_name NonQuotedString. May include scope resolution
-\param func_name NonQuotedString. The name of the function as it will appear in
-                 the lua console.
-*/
-#define RegisterLuaFunctionNamespace(function, namespace_name, func_name)                          \
+/**
+ * Macro for registering a `lua_CFunction` within a namespace.
+ *
+ * \param function LuaCFunction. The function to use.
+ * \param namespace_name NonQuotedString. May include scope resolution
+ * \param func_name NonQuotedString. The name of the function as it will appear in lua.
+ */
+#define RegisterLuaFunctionInNamespace(function, namespace_name, func_name)                        \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
     opensnlua::Console::AddFunctionToRegistryInNamespaceWithName(                                  \
       function, #namespace_name, #func_name)

@@ -10,9 +10,9 @@
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(MeshExportToObj, mesh, ExportToObj);
-RegisterLuaFunctionNamespace(MeshExportToVTK, mesh, ExportToVTK);
-RegisterLuaFunctionNamespace(MeshExportToExodus, mesh, ExportToExodus);
+RegisterLuaFunctionInNamespace(MeshExportToObj, mesh, ExportToObj);
+RegisterLuaFunctionInNamespace(MeshExportToVTK, mesh, ExportToVTK);
+RegisterLuaFunctionInNamespace(MeshExportToExodus, mesh, ExportToExodus);
 
 int
 MeshExportToObj(lua_State* L)

@@ -14,7 +14,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(CreateProductQuadrature, aquad, CreateProductQuadrature);
+RegisterLuaFunctionInNamespace(CreateProductQuadrature, aquad, CreateProductQuadrature);
 
 RegisterLuaConstant(GAUSS_LEGENDRE, Varying(1));
 RegisterLuaConstant(GAUSS_CHEBYSHEV, Varying(2));

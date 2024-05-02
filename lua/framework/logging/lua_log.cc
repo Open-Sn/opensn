@@ -11,8 +11,8 @@ using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionNamespace(LogSetVerbosity, log, SetVerbosity);
-RegisterLuaFunctionNamespace(LogLog, log, Log);
+RegisterLuaFunctionInNamespace(LogSetVerbosity, log, SetVerbosity);
+RegisterLuaFunctionInNamespace(LogLog, log, Log);
 
 RegisterLuaConstant(LOG_0, Varying(1));
 RegisterLuaConstant(LOG_0WARNING, Varying(2));

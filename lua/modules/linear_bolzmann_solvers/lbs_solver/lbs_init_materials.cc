@@ -12,7 +12,7 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(LBSInitializeMaterials, lbs, InitializeMaterials);
+RegisterLuaFunctionInNamespace(LBSInitializeMaterials, lbs, InitializeMaterials);
 
 int
 LBSInitializeMaterials(lua_State* L)

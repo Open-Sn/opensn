@@ -10,8 +10,8 @@
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(FFInterpolationInitialize, fieldfunc, Initialize);
-RegisterLuaFunctionNamespace(FFInterpolationExecute, fieldfunc, Execute);
+RegisterLuaFunctionInNamespace(FFInterpolationInitialize, fieldfunc, Initialize);
+RegisterLuaFunctionInNamespace(FFInterpolationExecute, fieldfunc, Execute);
 
 int
 FFInterpolationInitialize(lua_State* L)

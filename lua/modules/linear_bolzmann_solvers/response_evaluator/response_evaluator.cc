@@ -8,7 +8,7 @@
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(ClearResponseSources, lbs, ClearResponseSources);
+RegisterLuaFunctionInNamespace(ClearResponseSources, lbs, ClearResponseSources);
 
 int
 ClearResponseSources(lua_State* L)
@@ -101,7 +101,7 @@ AddResponseSources(const InputParameters& params)
   return ParameterBlock();
 }
 
-RegisterLuaFunctionNamespace(EvaluateResponse, lbs, EvaluateResponse);
+RegisterLuaFunctionInNamespace(EvaluateResponse, lbs, EvaluateResponse);
 
 int
 EvaluateResponse(lua_State* L)
