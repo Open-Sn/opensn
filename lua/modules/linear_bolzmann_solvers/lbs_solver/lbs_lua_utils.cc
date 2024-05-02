@@ -4,13 +4,6 @@
 #include "lbs_common_lua_functions.h"
 #include "lua/framework/lua.h"
 
-#define RegisterNumberValueToTable(const_name, const_value, namespace_name)                        \
-  lua_getglobal(L, #namespace_name);                                                               \
-  lua_pushstring(L, #const_name);                                                                  \
-  lua_pushnumber(L, const_value);                                                                  \
-  lua_settable(L, -3);                                                                             \
-  lua_pop(L, 1)
-
 using namespace opensn;
 
 namespace opensnlua::lbs
@@ -44,15 +37,15 @@ RegisterLuaEntities(lua_State* L)
   LuaSetGlobal(L, "USE_PRECURSORS", 12);
 
   LuaRegisterTable(L, "LBSBoundaryTypes");
-  RegisterNumberValueToTable(VACUUM, 1, LBSBoundaryTypes);
-  RegisterNumberValueToTable(INCIDENT_ISOTROPIC, 2, LBSBoundaryTypes);
-  RegisterNumberValueToTable(REFLECTING, 3, LBSBoundaryTypes);
-  RegisterNumberValueToTable(INCIDENT_ANISTROPIC_HETEROGENEOUS, 4, LBSBoundaryTypes);
+  LuaRegisterTableConstant(L, "LBSBoundaryTypes", "VACUUM", 1);
+  LuaRegisterTableConstant(L, "LBSBoundaryTypes", "INCIDENT_ISOTROPIC", 2);
+  LuaRegisterTableConstant(L, "LBSBoundaryTypes", "REFLECTING", 3);
+  LuaRegisterTableConstant(L, "LBSBoundaryTypes", "INCIDENT_ANISTROPIC_HETEROGENEOUS", 4);
 
   LuaRegisterTable(L, "LBSGroupset");
-  RegisterNumberValueToTable(ANGLE_AGG_SINGLE, 1, LBSGroupset);
-  RegisterNumberValueToTable(ANGLE_AGG_POLAR, 2, LBSGroupset);
-  RegisterNumberValueToTable(ANGLE_AGG_AZIMUTHAL, 3, LBSGroupset);
+  LuaRegisterTableConstant(L, "LBSGroupset", "ANGLE_AGG_SINGLE", 1);
+  LuaRegisterTableConstant(L, "LBSGroupset", "ANGLE_AGG_POLAR", 2);
+  LuaRegisterTableConstant(L, "LBSGroupset", "ANGLE_AGG_AZIMUTHAL", 3);
   LuaSetGlobal(L, "KRYLOV_RICHARDSON", 5);
   LuaSetGlobal(L, "KRYLOV_RICHARDSON_CYCLES", 6);
   LuaSetGlobal(L, "KRYLOV_GMRES", 7);
