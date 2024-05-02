@@ -136,10 +136,10 @@ target_include_directories(libopensn
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/external
     PUBLIC
-    ${LUA_INCLUDE_DIR}
-    ${PETSC_INCLUDE_DIR}
-    ${caliper_INCLUDE_DIR}
-    ${HDF5_INCLUDE_DIRS}
+    $<BUILD_INTERFACE:${LUA_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${HDF5_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${caliper_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
 )
 
 target_link_libraries(libopensn
