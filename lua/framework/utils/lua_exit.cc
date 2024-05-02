@@ -16,7 +16,7 @@ namespace opensnlua
  */
 int Exit(lua_State* L);
 
-RegisterLuaFunctionAsIs(Exit);
+RegisterLuaFunction(Exit);
 
 int
 Exit(lua_State* L)

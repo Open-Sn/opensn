@@ -24,16 +24,19 @@ extern "C"
 /**IDK why this is needed. Seems like counter doesnt work properly without it*/
 #define ConsoleJoinWordsB(x, y) ConsoleJoinWordsA(x, y)
 
-/**Macro for registering a lua_CFunction within the Console
- * singleton, with the function being in the global namespace. Example:
+/**
+ * Macro for registering a `lua_CFunction` within the global namespace.
+ * Example:
  * \code
- * ConsoleRegisterLuaFunction(SolverInitialize);
+ * RegisterLuaFunction(SolverInitialize);
  * \endcode
  *
- * \note Remember to include the header "console/chi_console.h".
- * The name supplied to this function cannot have scope resolution operators,
- * i.e., "::".*/
-#define RegisterLuaFunctionAsIs(func_name)                                                         \
+ * \note Remember to include the header "lua/framework/console/console.h".
+ * The name supplied to this function cannot have scope resolution operators, i.e., "::".
+ *
+ * \param func_name LuaCFunction. The function to use.
+ */
+#define RegisterLuaFunction(func_name)                                                             \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
     opensnlua::Console::AddFunctionToRegistryGlobalNamespace(#func_name, func_name)
 
@@ -48,10 +51,6 @@ extern "C"
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
     opensnlua::Console::AddFunctionToRegistryInNamespaceWithName(                                  \
       function, #namespace_name, #func_name)
-
-#define RegisterLuaFunction(function, func_name)                                                   \
-  static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
-    opensnlua::Console::AddFunctionToRegistryInNamespaceWithName(function, #func_name)
 
 #define RegisterWrapperFunctionNamespace(                                                          \
   namespace_name, name_in_lua, syntax_function, actual_function)                                   \

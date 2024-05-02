@@ -14,7 +14,7 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionAsIs(AdjointSolverMakeExpRepFromP1Moments);
+RegisterLuaFunction(AdjointSolverMakeExpRepFromP1Moments);
 
 int
 AdjointSolverMakeExpRepFromP1Moments(lua_State* L)

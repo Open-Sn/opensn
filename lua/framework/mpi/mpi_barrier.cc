@@ -10,7 +10,7 @@
 namespace opensnlua
 {
 
-RegisterLuaFunctionAsIs(MPIBarrier);
+RegisterLuaFunction(MPIBarrier);
 
 int
 MPIBarrier(lua_State* L)

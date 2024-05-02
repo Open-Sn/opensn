@@ -21,8 +21,8 @@ int MakeObject(lua_State* L);
  */
 int MakeObjectType(lua_State* L);
 
-RegisterLuaFunctionAsIs(MakeObject);
-RegisterLuaFunctionAsIs(MakeObjectType);
+RegisterLuaFunction(MakeObject);
+RegisterLuaFunction(MakeObjectType);
 
 int
 MakeObject(lua_State* L)

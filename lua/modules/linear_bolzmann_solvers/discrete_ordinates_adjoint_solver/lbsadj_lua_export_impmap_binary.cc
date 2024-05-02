@@ -14,7 +14,7 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionAsIs(AdjointSolverExportImportanceMapBinary);
+RegisterLuaFunction(AdjointSolverExportImportanceMapBinary);
 
 int
 AdjointSolverExportImportanceMapBinary(lua_State* L)
