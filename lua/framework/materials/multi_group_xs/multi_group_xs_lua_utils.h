@@ -24,7 +24,7 @@ namespace opensnlua
  *
  * \ingroup LuaTransportXSs
  */
-int PhysicsTransportXSCreate(lua_State* L);
+int XSCreate(lua_State* L);
 
 /**
  * Sets the properties of a transport cross section.
@@ -69,7 +69,7 @@ int PhysicsTransportXSCreate(lua_State* L);
  *
  * \ingroup LuaTransportXSs
  */
-int PhysicsTransportXSSet(lua_State* L);
+int XSSet(lua_State* L);
 
 /**
  * Makes a combined cross section from multiple other cross sections.
@@ -107,7 +107,7 @@ int PhysicsTransportXSSet(lua_State* L);
  *
  * \ingroup LuaTransportXSs
  */
-int PhysicsTransportXSMakeCombined(lua_State* L);
+int XSMakeCombined(lua_State* L);
 
 /**
  * Sets a combined cross section from multiple other cross sections. This function can be called
@@ -141,7 +141,7 @@ int PhysicsTransportXSMakeCombined(lua_State* L);
  *
  * \ingroup LuaTransportXSs
  */
-int PhysicsTransportXSSetCombined(lua_State* L);
+int XSSetCombined(lua_State* L);
 
 /**
  * Obtains a lua table of all the cross-section values.
@@ -159,7 +159,7 @@ int PhysicsTransportXSSetCombined(lua_State* L);
  * \endcode
  * \ingroup LuaTransportXSs
  */
-int PhysicsTransportXSGet(lua_State* L);
+int XSGet(lua_State* L);
 
 /**
  * Exports a cross section to OpenSn format.
@@ -169,6 +169,6 @@ int PhysicsTransportXSGet(lua_State* L);
  *
  * \ingroup LuaTransportXSs
  */
-int PhysicsTransportXSExportToOpenSnFormat(lua_State* L);
+int XSExportToOpenSnFormat(lua_State* L);
 
 } // namespace opensnlua

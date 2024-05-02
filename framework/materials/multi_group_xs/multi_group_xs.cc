@@ -43,7 +43,7 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
     xsecs.push_back(xs);
 
     // Set the scaling factor
-    SetScalingFactor(combo.second);
+    xs->SetScalingFactor(combo.second);
 
     // Increment densities
     if (xs->IsFissionable())
