@@ -3,131 +3,158 @@
 
 #pragma once
 
-#include "H5Cpp.h"
+#include "hdf5.h"
 #include <vector>
-#include <optional>
 
 namespace opensn
 {
 template <typename T>
-H5::DataType get_datatype();
+hid_t get_datatype();
 
 template <>
-H5::DataType
+hid_t
 get_datatype<char>()
 {
-  return H5::PredType::NATIVE_CHAR;
+  return H5T_NATIVE_CHAR;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<signed char>()
 {
-  return H5::PredType::NATIVE_SCHAR;
+  return H5T_NATIVE_SCHAR;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<unsigned char>()
 {
-  return H5::PredType::NATIVE_UCHAR;
+  return H5T_NATIVE_UCHAR;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<short>()
 {
-  return H5::PredType::NATIVE_SHORT;
+  return H5T_NATIVE_SHORT;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<unsigned short>()
 {
-  return H5::PredType::NATIVE_USHORT;
+  return H5T_NATIVE_USHORT;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<int>()
 {
-  return H5::PredType::NATIVE_INT;
+  return H5T_NATIVE_INT;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<unsigned int>()
 {
-  return H5::PredType::NATIVE_UINT;
+  return H5T_NATIVE_UINT;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<long>()
 {
-  return H5::PredType::NATIVE_LONG;
+  return H5T_NATIVE_LONG;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<unsigned long>()
 {
-  return H5::PredType::NATIVE_ULONG;
+  return H5T_NATIVE_ULONG;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<long long>()
 {
-  return H5::PredType::NATIVE_LLONG;
+  return H5T_NATIVE_LLONG;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<unsigned long long>()
 {
-  return H5::PredType::NATIVE_ULLONG;
+  return H5T_NATIVE_ULLONG;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<float>()
 {
-  return H5::PredType::NATIVE_FLOAT;
+  return H5T_NATIVE_FLOAT;
 }
 
 template <>
-H5::DataType
+hid_t
 get_datatype<double>()
 {
-  return H5::PredType::NATIVE_DOUBLE;
+  return H5T_NATIVE_DOUBLE;
 }
 
 bool
-H5Has(H5::H5File file, const std::string& name)
+H5Has(hid_t id, const std::string& name)
 {
-  return (H5Lexists(file.getId(), name.c_str(), H5P_DEFAULT) > 0);
+  return (H5Lexists(id, name.c_str(), H5P_DEFAULT) > 0);
 }
 
 template <typename T>
 std::vector<T>
-H5ReadDataset1D(H5::H5File file, const std::string& name)
+H5ReadDataset1D(hid_t id, const std::string& name)
 {
   std::vector<T> data;
 
-  try
-  {
-    H5::Exception::dontPrint();
-    H5::DataSet dataset = file.openDataSet(name.c_str());
-    H5::DataSpace dataspace = dataset.getSpace();
-    hsize_t dims[1];
-    dataspace.getSimpleExtentDims(dims, NULL);
-    data.resize(dims[0]);
-    dataset.read(data.data(), get_datatype<T>(), dataspace);
+  auto dataset = H5Dopen2(id, name.c_str(), H5P_DEFAULT);
+  if (dataset != H5I_INVALID_HID)
+  { 
+    auto dataspace = H5Dget_space(dataset);
+    if (dataspace != H5I_INVALID_HID)
+    {
+      hsize_t dims[1];
+      if (H5Sget_simple_extent_dims(dataspace, dims, NULL) == 1)
+      {
+        data.resize(dims[0]);
+        if (H5Dread(dataset, get_datatype<T>(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data.data()) < 0)
+        { 
+          data.clear();
+          data.shrink_to_fit();
+        }
+      } 
+      H5Sclose(dataspace);
+    } 
+    H5Dclose(dataset);
   }
-  catch (H5::Exception error)
+  else 
   {
-    return std::vector<T>();
+    if (H5Aexists(id, name.c_str()))
+    {
+      auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
+      if (attribute != H5I_INVALID_HID)
+      {
+        size_t size = static_cast<size_t>(H5Aget_storage_size(attribute));
+        if (size > 0)
+        {
+          size_t num_elements = size/sizeof(T);
+          data.resize(num_elements);
+          if (H5Aread(attribute, get_datatype<T>(), data.data()) < 0)
+          {
+            data.clear();
+            data.shrink_to_fit();
+          } 
+        }
+        H5Aclose(attribute);
+      }
+    }
   }
 
   return data;
@@ -135,117 +162,129 @@ H5ReadDataset1D(H5::H5File file, const std::string& name)
 
 template <typename T>
 bool
-H5ReadAttribute(H5::H5File file, const std::string& name, T& value)
+H5ReadAttribute(hid_t id, const std::string& name, T& value)
 {
-  try
+  bool retval = false; 
+
+  if (H5Aexists(id, name.c_str()))
   {
-    H5::Attribute attribute = file.openAttribute(name.c_str());
-    attribute.read(get_datatype<T>(), &value);
-  }
-  catch (H5::Exception error)
-  {
-    return false;
+    auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
+    if (attribute != H5I_INVALID_HID)
+    {
+      if (H5Aread(attribute, get_datatype<T>(), &value) >= 0)
+        retval = true;
+      H5Aclose(attribute);
+    }
   }
 
-  return true;
+  return retval;  
 }
 
 template <>
 bool
-H5ReadAttribute<std::string>(H5::H5File file, const std::string& name, std::string& value)
+H5ReadAttribute<std::string>(hid_t id, const std::string& name, std::string& value)
 {
-  try
+  bool retval = false;
+  
+  if (H5Aexists(id, name.c_str()))
   {
-    H5::Attribute attribute = file.openAttribute(name.c_str());
-    H5::StrType stype = attribute.getStrType();
-    attribute.read(stype, value);
-  }
-  catch (H5::Exception error)
-  {
-    return false;
+    auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
+    if (attribute != H5I_INVALID_HID)
+    {
+      size_t size = static_cast<size_t>(H5Aget_storage_size(attribute));
+      if (size > 0)
+      {
+        hid_t string_type = H5Tcopy(H5T_C_S1); 
+        H5Tset_size(string_type, size + 1);
+        std::vector<char> buffer(size + 1);
+        if (H5Aread(attribute, string_type, buffer.data()) >= 0)
+        {
+          value = buffer.data();
+          retval = true; 
+        } 
+      }
+      H5Aclose(attribute);
+    }
   }
 
-  return true;
+  return retval;
 }
 
 template <>
 bool
-H5ReadAttribute<bool>(H5::H5File file, const std::string& name, bool& value)
+H5ReadAttribute<bool>(hid_t id, const std::string& name, bool& value)
 {
-  try
-  {
-    H5::Attribute attribute = file.openAttribute(name.c_str());
-    attribute.read(H5::PredType::NATIVE_INT, &value);
-  }
-  catch (H5::Exception error)
-  {
-    return false;
-  }
+  bool retval = false;
 
-  return true;
+  if (H5Aexists(id, name.c_str()))
+  {
+    auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
+    if (attribute != H5I_INVALID_HID)
+    {
+      if (H5Aread(attribute, H5T_NATIVE_INT, &value) >= 0)
+        retval = true;
+      H5Aclose(attribute);
+    }
+  } 
+
+  return retval;
 }
 
 template <typename T>
 bool
-H5ReadGroupAttribute(H5::H5File file,
+H5ReadGroupAttribute(hid_t id,
                      const std::string& group_id,
                      const std::string& name,
                      T& value)
 {
-  try
+  bool retval = false;
+
+  auto group = H5Gopen2(id, group_id.c_str(), H5P_DEFAULT);
+  if (group != H5I_INVALID_HID)
   {
-    H5::Group group = file.openGroup(group_id.c_str());
-    H5::Attribute attribute = group.openAttribute(name.c_str());
-    attribute.read(get_datatype<T>(), &value);
-  }
-  catch (H5::Exception error)
-  {
-    return false;
+    retval = H5ReadAttribute<T>(group, name, value);
+    H5Gclose(group);
   }
 
-  return true;
+  return retval;
 }
 
 template <>
 bool
-H5ReadGroupAttribute<std::string>(H5::H5File file,
+H5ReadGroupAttribute<std::string>(hid_t id,
                                   const std::string& group_id,
                                   const std::string& name,
                                   std::string& value)
 {
-  try
+  bool retval = false;
+
+  auto group = H5Gopen2(id, group_id.c_str(), H5P_DEFAULT);
+  if (group != H5I_INVALID_HID)
   {
-    H5::Group group = file.openGroup(group_id.c_str());
-    H5::Attribute attribute = group.openAttribute(name.c_str());
-    H5::StrType stype = attribute.getStrType();
-    attribute.read(stype, value);
-  }
-  catch (H5::Exception error)
-  {
-    return false;
+    retval =  H5ReadAttribute<std::string>(group, name, value);
+    H5Gclose(group);
   }
 
-  return true;
+  return retval;
 }
 
 template <>
 bool
-H5ReadGroupAttribute<bool>(H5::H5File file,
+H5ReadGroupAttribute<bool>(hid_t id,
                            const std::string& group_id,
                            const std::string& name,
                            bool& value)
 {
-  try
+  bool retval = false;
+
+  auto group = H5Gopen2(id, group_id.c_str(), H5P_DEFAULT);
+  if (group != H5I_INVALID_HID)
   {
-    H5::Group group = file.openGroup(group_id.c_str());
-    H5::Attribute attribute = group.openAttribute(name.c_str());
-    attribute.read(H5::PredType::NATIVE_INT, &value);
-  }
-  catch (H5::Exception error)
-  {
-    return false;
+    retval = H5ReadAttribute<bool>(group, name, value);
+    H5Gclose(group);
   }
 
-  return true;
+  return retval;
 }
+
 } // namespace opensn
