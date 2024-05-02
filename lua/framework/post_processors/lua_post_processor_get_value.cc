@@ -14,10 +14,10 @@ namespace opensn
 InputParameters GetSyntax_PostProcessorGetValue();
 ParameterBlock PostProcessorGetValue(const InputParameters& params);
 
-RegisterWrapperFunctionNamespace(post,
-                                 GetValue,
-                                 GetSyntax_PostProcessorGetValue,
-                                 PostProcessorGetValue);
+RegisterWrapperFunctionInNamespace(post,
+                                   GetValue,
+                                   GetSyntax_PostProcessorGetValue,
+                                   PostProcessorGetValue);
 
 InputParameters
 GetSyntax_PostProcessorGetValue()

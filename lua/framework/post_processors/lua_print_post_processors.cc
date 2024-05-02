@@ -15,7 +15,7 @@ namespace opensn
 InputParameters GetSyntax_PrintPostProcessors();
 ParameterBlock PrintPostProcessors(const InputParameters& params);
 
-RegisterWrapperFunctionNamespace(post, Print, GetSyntax_PrintPostProcessors, PrintPostProcessors);
+RegisterWrapperFunctionInNamespace(post, Print, GetSyntax_PrintPostProcessors, PrintPostProcessors);
 
 InputParameters
 GetSyntax_PrintPostProcessors()

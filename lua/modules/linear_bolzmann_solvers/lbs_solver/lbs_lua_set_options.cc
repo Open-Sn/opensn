@@ -12,7 +12,7 @@
 namespace opensnlua::lbs
 {
 
-RegisterWrapperFunctionNamespace(lbs, SetOptions, GetSyntax_SetOptions, SetOptions);
+RegisterWrapperFunctionInNamespace(lbs, SetOptions, GetSyntax_SetOptions, SetOptions);
 
 opensn::InputParameters
 GetSyntax_SetOptions()

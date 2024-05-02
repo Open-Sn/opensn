@@ -52,7 +52,7 @@ extern "C"
     opensnlua::Console::AddFunctionToRegistryInNamespaceWithName(                                  \
       function, #namespace_name, #func_name)
 
-#define RegisterWrapperFunctionNamespace(                                                          \
+#define RegisterWrapperFunctionInNamespace(                                                        \
   namespace_name, name_in_lua, syntax_function, actual_function)                                   \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##name_in_lua##_, __COUNTER__) =          \
     opensnlua::Console::AddWrapperToRegistryInNamespaceWithName(                                   \

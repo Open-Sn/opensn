@@ -15,10 +15,10 @@ namespace unit_tests
 
 ParameterBlock math_Test01_WDD_IJK_Sweep(const InputParameters& params);
 
-RegisterWrapperFunctionNamespace(unit_tests,
-                                 math_Test01_WDD_IJK_Sweep,
-                                 nullptr,
-                                 math_Test01_WDD_IJK_Sweep);
+RegisterWrapperFunctionInNamespace(unit_tests,
+                                   math_Test01_WDD_IJK_Sweep,
+                                   nullptr,
+                                   math_Test01_WDD_IJK_Sweep);
 
 typedef NDArray<double> IJKArrayDbl;
 

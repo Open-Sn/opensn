@@ -10,7 +10,7 @@ namespace unit_tests
 
 ParameterBlock TestCFunction(const InputParameters&);
 
-RegisterWrapperFunctionNamespace(unit_tests, TestCFunction, nullptr, TestCFunction);
+RegisterWrapperFunctionInNamespace(unit_tests, TestCFunction, nullptr, TestCFunction);
 
 ParameterBlock
 TestCFunction(const InputParameters&)
