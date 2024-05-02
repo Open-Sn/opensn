@@ -15,12 +15,12 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaConstant(OrthoBoundaryID, XMAX, Varying(0));
-RegisterLuaConstant(OrthoBoundaryID, XMIN, Varying(1));
-RegisterLuaConstant(OrthoBoundaryID, YMAX, Varying(2));
-RegisterLuaConstant(OrthoBoundaryID, YMIN, Varying(3));
-RegisterLuaConstant(OrthoBoundaryID, ZMAX, Varying(4));
-RegisterLuaConstant(OrthoBoundaryID, ZMIN, Varying(5));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, XMAX, Varying(0));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, XMIN, Varying(1));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, YMAX, Varying(2));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, YMIN, Varying(3));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, ZMAX, Varying(4));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, ZMIN, Varying(5));
 
 RegisterLuaFunctionNamespace(MeshSetupOrthogonalBoundaries, mesh, SetupOrthogonalBoundaries);
 

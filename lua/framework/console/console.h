@@ -64,7 +64,7 @@ extern "C"
     opensnlua::Console::AddWrapperToRegistryInNamespaceWithName(                                   \
       #name_in_lua, syntax_function, actual_function)
 
-#define RegisterLuaConstant(namespace_name, name_in_lua, value)                                    \
+#define RegisterLuaConstantInNamespace(namespace_name, name_in_lua, value)                         \
   static char ConsoleJoinWordsB(unique_var_name_luaconst_##namespace_name##_##name_in_lua,         \
                                 __COUNTER__) =                                                     \
     opensnlua::Console::AddLuaConstantToRegistry(#namespace_name, #name_in_lua, value)
