@@ -188,6 +188,8 @@ MultiGroupXS::Initialize(const std::string& file_name,
     production_matrix_.clear();
     precursors_.clear();
   }
+
+  H5Fclose(file);
 }
 
 } // namespace opensn
