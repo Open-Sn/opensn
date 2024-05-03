@@ -1,0 +1,9 @@
+# Platform dependent MPI libraries
+# Intel/Cornelis OmniPath
+leak:libpsm2.so.*
+
+# Generic MPI libraries
+leak:libmpi.so.*
+
+# Dependencies
+leak:libpetsc.so.*
