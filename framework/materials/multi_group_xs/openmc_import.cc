@@ -21,16 +21,12 @@ MultiGroupXS::Initialize(const std::string& file_name,
   H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
 
   // Open file
-  try
+  hid_t file = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+  if (not file)
   {
-    H5::H5File::isHdf5(file_name.c_str());
-  }
-  catch (H5::FileIException(&err))
-  {
-    std::string err_msg = file_name + " is not an HDF5 file.\n";
+    std::string err_msg = "Unable to open " + file_name + " or it is not a valid HDF5 file.\n";
     throw std::logic_error(err_msg);
   }
-  H5::H5File file(file_name.c_str(), H5F_ACC_RDONLY);
 
   // Check file type
   std::string filetype;
@@ -192,6 +188,8 @@ MultiGroupXS::Initialize(const std::string& file_name,
     production_matrix_.clear();
     precursors_.clear();
   }
+
+  H5Fclose(file);
 }
 
 } // namespace opensn

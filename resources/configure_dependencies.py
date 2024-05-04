@@ -555,7 +555,7 @@ def InstallHDF5(pkg: str, ver: str, gold_file: str):
         MakeDirectory(build_dir)
         os.chdir(build_dir)
 
-        command = f""" cmake -DCMAKE_INSTALL_PREFIX={pkg_install_dir} -DHDF5_BUILD_CPP_LIB:BOOL=ON .."""
+        command = f""" cmake -DCMAKE_INSTALL_PREFIX={pkg_install_dir} .."""
         success, err, outstr = ExecSub(
             command, out_log=package_log_file, env_vars=env_vars
         )
