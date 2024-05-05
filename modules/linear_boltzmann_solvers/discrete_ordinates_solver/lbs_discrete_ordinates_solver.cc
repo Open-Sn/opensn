@@ -735,14 +735,14 @@ DiscreteOrdinatesSolver::ComputeBalance()
   double globl_gain = globl_balance_table.at(5);
 
   log.Log() << "Balance table:\n"
-            << std::setprecision(5) << std::scientific
-            << " Absorption rate              = " << globl_absorption << "\n"
-            << " Production rate              = " << globl_production << "\n"
-            << " In-flow rate                 = " << globl_in_flow << "\n"
-            << " Out-flow rate                = " << globl_out_flow << "\n"
-            << " Net Gain (In-flow + sources) = " << globl_gain << "\n"
-            << " Net Balance                  = " << globl_balance << "\n"
-            << " (Net Balance)/(Net Gain)     = " << globl_balance / globl_gain << "\n";
+            << std::setprecision(6) << std::scientific
+            << " Absorption rate             = " << globl_absorption << "\n"
+            << " Production rate             = " << globl_production << "\n"
+            << " In-flow rate                = " << globl_in_flow << "\n"
+            << " Out-flow rate               = " << globl_out_flow << "\n"
+            << " Gain (In-flow + Production) = " << globl_gain << "\n"
+            << " Balance (Gain - Loss)       = " << globl_balance << "\n"
+            << " Balance/Gain, in %          = " << globl_balance / globl_gain * 100. << "\n";
 
   log.Log() << "\n********** Done computing balance\n";
 
