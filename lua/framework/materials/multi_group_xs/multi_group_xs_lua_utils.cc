@@ -18,6 +18,8 @@ RegisterLuaFunctionNamespace(XSCreate, xs, Create);
 RegisterLuaFunctionNamespace(XSSet, xs, Set);
 RegisterLuaFunctionNamespace(XSMakeCombined, xs, MakeCombined);
 RegisterLuaFunctionNamespace(XSSetCombined, xs, SetCombined);
+RegisterLuaFunctionNamespace(XSMakeScaled, xs, MakeScaled);
+RegisterLuaFunctionNamespace(XSSetScalingFactor, xs, SetScalingFactor);
 RegisterLuaFunctionNamespace(XSGet, xs, Get);
 RegisterLuaFunctionNamespace(XSExportToOpenSnFormat, xs, ExportToOpenSnFormat);
 
@@ -330,6 +332,55 @@ XSSetCombined(lua_State* L)
 
   xs->Initialize(combinations);
 
+  return LuaReturn(L);
+}
+
+int
+XSMakeScaled(lua_State* L)
+{
+  const std::string fname = "xs.MakeScaled";
+  LuaCheckArgs<int, double>(L, fname);
+
+  const auto handle = LuaArg<int>(L, 1);
+  auto factor = LuaArg<double>(L, 2);
+
+  std::shared_ptr<MultiGroupXS> xs;
+  try
+  {
+    xs = opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle);
+  }
+  catch (const std::out_of_range& o)
+  {
+    OpenSnInvalidArgument("Invalid handle for cross sections in call to " + fname + ".");
+  }
+
+  auto new_xs = std::shared_ptr<MultiGroupXS>(xs);
+  new_xs->SetScalingFactor(factor);
+  opensn::multigroup_xs_stack.push_back(new_xs);
+  auto num_xs = opensn::multigroup_xs_stack.size();
+  return LuaReturn(L, num_xs - 1);
+}
+
+int
+XSSetScalingFactor(lua_State* L)
+{
+  const std::string fname = "xs.SetScalingFactor";
+  LuaCheckArgs<int, double>(L, fname);
+
+  const auto handle = LuaArg<int>(L, 1);
+  auto factor = LuaArg<double>(L, 2);
+
+  std::shared_ptr<MultiGroupXS> xs;
+  try
+  {
+    xs = opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle);
+  }
+  catch (const std::out_of_range& o)
+  {
+    OpenSnInvalidArgument("Invalid handle for cross sections in call to " + fname + ".");
+  }
+
+  xs->SetScalingFactor(factor);
   return LuaReturn(L);
 }
 

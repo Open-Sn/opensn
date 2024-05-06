@@ -144,6 +144,47 @@ int XSMakeCombined(lua_State* L);
 int XSSetCombined(lua_State* L);
 
 /**
+ * Creates cross sections by scaling other cross sections.
+ *
+ *  \param XS_handle int Handle to the cross section to be modified.
+ *  \param ScalingFactor double The scaling factor to apply.
+ *
+ *  ## _
+ *
+ * ###Example
+ * Example Lua code:
+ * \code
+ * micro_xs = xs.Create()
+ * xs.Set(micro_xs, OPENSN_XSFILE, "test/xs_graphite_pure.xs")
+ * macro_xs = xs.SetScalingFactor(micro_xs, 1.134e23)  -- Number density for 2.26 g/cc
+ * \endcode
+ *
+ * \ingroup LuaTransportXSs
+ */
+int XSMakeScaled(lua_State* L);
+
+/**
+ * Sets the scaling factor for cross sections. This routine can be called multiple times on the
+ * same handle to modify scaling factors.
+ *
+ *  \param XS_handle int Handle to the cross section to be modified.
+ *  \param ScalingFactor double The scaling factor to apply.
+ *
+ *  ## _
+ *
+ * ###Example
+ * Example Lua code:
+ * \code
+ * xs_1 = xs.Create()
+ * xs.Set(xs_1, OPENSN_XSFILE, "test/xs_graphite_pure.xs")
+ * xs.SetScalingFactor(xs_1, 1.134e23)  -- Number density for 2.26 g/cc
+ * \endcode
+ *
+ * \ingroup LuaTransportXSs
+ */
+int XSSetScalingFactor(lua_State* L);
+
+/**
  * Obtains a lua table of all the cross-section values.
  *
  * \param XS_handle int Handle to the cross section to be modified.
