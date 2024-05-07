@@ -86,6 +86,9 @@ MatAddMaterial(lua_State* L)
 int
 MatAddProperty(lua_State* L)
 {
+  opensn::log.Log0Warning() << "mat.AddProperty has been deprecated and may be removed soon. "
+                               "This functionality is now bundled within mat.SetProperty.";
+
   const std::string fname = "mat.AddProperty";
   LuaCheckArgs<int, int>(L, fname);
 
@@ -175,7 +178,7 @@ MatSetProperty(lua_State* L)
 {
   const std::string fname = "mat.SetProperty";
   const int num_args = lua_gettop(L);
-  
+
   if (num_args < 3)
     LuaPostArgAmountError(fname, L, 3, num_args);
 
@@ -184,7 +187,7 @@ MatSetProperty(lua_State* L)
   auto material = opensn::GetStackItemPtr(opensn::material_stack, material_handle, fname);
 
   // Get the material property type and its index, if applicable
-  int property_type = -1;
+  int property_type;
   int property_index = -1;
   if (lua_isnumber(L, 2))
   {
