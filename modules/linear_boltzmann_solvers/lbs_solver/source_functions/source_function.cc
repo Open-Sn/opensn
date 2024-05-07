@@ -64,7 +64,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     // Obtain xs
     const auto& xs = transport_view.XS();
 
-    std::shared_ptr<IsotropicMultiGrpSource> P0_src = nullptr;
+    std::shared_ptr<IsotropicMultiGroupSource> P0_src = nullptr;
     if (matid_to_src_map.count(cell.material_id_) > 0)
       P0_src = matid_to_src_map.at(cell.material_id_);
 

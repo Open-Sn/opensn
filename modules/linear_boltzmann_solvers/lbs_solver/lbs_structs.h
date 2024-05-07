@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/materials/material_property_isotropic_mg_src.h"
+#include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/math/math.h"
 #include <functional>
 #include <map>

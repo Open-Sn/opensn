@@ -225,7 +225,7 @@ LBSSolver::GetMatID2XSMap() const
   return matid_to_xs_map_;
 }
 
-const std::map<int, std::shared_ptr<IsotropicMultiGrpSource>>&
+const std::map<int, std::shared_ptr<IsotropicMultiGroupSource>>&
 LBSSolver::GetMatID2IsoSrcMap() const
 {
   return matid_to_src_map_;
@@ -968,12 +968,12 @@ LBSSolver::InitializeMaterials()
 
       if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
       {
-        const auto& src = std::static_pointer_cast<IsotropicMultiGrpSource>(property);
+        const auto& src = std::static_pointer_cast<IsotropicMultiGroupSource>(property);
 
         // Check for a valid source
         if (src->source_value_g.size() < groups_.size())
         {
-          log.LogAllWarning() << __FUNCTION__ << ": IsotropicMultiGrpSource specified in "
+          log.LogAllWarning() << __FUNCTION__ << ": IsotropicMultiGroupSource specified in "
                               << "material \"" << current_material->name << "\" has fewer "
                               << "energy groups than called for in the simulation. "
                               << "Source will be ignored.";
