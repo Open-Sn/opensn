@@ -1,6 +1,5 @@
 #include "framework/math/parallel_vector/parallel_stl_vector.h"
 #include "framework/math/parallel_vector/ghosted_parallel_stl_vector.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
@@ -70,13 +69,17 @@ math_Test02_ParallelVector(const InputParameters&)
     opensn::log.LogAll() << "Ghost vec make-local values: " << outstr.str();
   }
 
-  opensn::log.LogAll() << "Parallel vector norm-1: " << vec.ComputeNorm(NormType::L1_NORM);
-  opensn::log.LogAll() << "Parallel vector norm-2: " << vec.ComputeNorm(NormType::L2_NORM);
-  opensn::log.LogAll() << "Parallel vector norm-inf: " << vec.ComputeNorm(NormType::LINF_NORM);
+  opensn::log.LogAll() << "Parallel vector norm-1: " << vec.ComputeNorm(opensn::NormType::L1_NORM);
+  opensn::log.LogAll() << "Parallel vector norm-2: " << vec.ComputeNorm(opensn::NormType::L2_NORM);
+  opensn::log.LogAll() << "Parallel vector norm-inf: "
+                       << vec.ComputeNorm(opensn::NormType::LINF_NORM);
 
-  opensn::log.LogAll() << "Ghost vector norm-1: " << ghost_vec.ComputeNorm(NormType::L1_NORM);
-  opensn::log.LogAll() << "Ghost vector norm-2: " << ghost_vec.ComputeNorm(NormType::L2_NORM);
-  opensn::log.LogAll() << "Ghost vector norm-inf: " << ghost_vec.ComputeNorm(NormType::LINF_NORM);
+  opensn::log.LogAll() << "Ghost vector norm-1: "
+                       << ghost_vec.ComputeNorm(opensn::NormType::L1_NORM);
+  opensn::log.LogAll() << "Ghost vector norm-2: "
+                       << ghost_vec.ComputeNorm(opensn::NormType::L2_NORM);
+  opensn::log.LogAll() << "Ghost vector norm-inf: "
+                       << ghost_vec.ComputeNorm(opensn::NormType::LINF_NORM);
 
   opensn::log.Log() << "Testing ParallelSTLVector "
                     << "ADD_VALUE and CopyValues" << std::endl;
