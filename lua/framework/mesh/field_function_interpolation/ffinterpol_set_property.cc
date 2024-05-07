@@ -18,28 +18,28 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(FFInterpolationSetProperty, fieldfunc, SetProperty);
-RegisterLuaConstantAsIs(PROBEPOINT, Varying(0));
-RegisterLuaConstantAsIs(SLICE_POINT, Varying(1));
-RegisterLuaConstantAsIs(SLICE_NORMAL, Varying(2));
-RegisterLuaConstantAsIs(SLICE_TANGENT, Varying(3));
-RegisterLuaConstantAsIs(SLICE_BINORM, Varying(4));
-RegisterLuaConstantAsIs(OPERATION, Varying(5));
-RegisterLuaConstantAsIs(OP_SUM, Varying(10));
-RegisterLuaConstantAsIs(OP_AVG, Varying(11));
-RegisterLuaConstantAsIs(OP_MAX, Varying(12));
-RegisterLuaConstantAsIs(OP_SUM_FUNC, Varying(13));
-RegisterLuaConstantAsIs(OP_AVG_FUNC, Varying(14));
-RegisterLuaConstantAsIs(OP_MAX_FUNC, Varying(15));
-RegisterLuaConstantAsIs(LOGICAL_VOLUME, Varying(8));
+RegisterLuaFunctionInNamespace(FFInterpolationSetProperty, fieldfunc, SetProperty);
+RegisterLuaConstant(PROBEPOINT, Varying(0));
+RegisterLuaConstant(SLICE_POINT, Varying(1));
+RegisterLuaConstant(SLICE_NORMAL, Varying(2));
+RegisterLuaConstant(SLICE_TANGENT, Varying(3));
+RegisterLuaConstant(SLICE_BINORM, Varying(4));
+RegisterLuaConstant(OPERATION, Varying(5));
+RegisterLuaConstant(OP_SUM, Varying(10));
+RegisterLuaConstant(OP_AVG, Varying(11));
+RegisterLuaConstant(OP_MAX, Varying(12));
+RegisterLuaConstant(OP_SUM_FUNC, Varying(13));
+RegisterLuaConstant(OP_AVG_FUNC, Varying(14));
+RegisterLuaConstant(OP_MAX_FUNC, Varying(15));
+RegisterLuaConstant(LOGICAL_VOLUME, Varying(8));
 
-RegisterLuaConstantAsIs(ADD_FIELDFUNCTION, Varying(9));
-RegisterLuaConstantAsIs(SET_FIELDFUNCTIONS, Varying(10));
+RegisterLuaConstant(ADD_FIELDFUNCTION, Varying(9));
+RegisterLuaConstant(SET_FIELDFUNCTIONS, Varying(10));
 
-RegisterLuaConstantAsIs(LINE_FIRSTPOINT, Varying(11));
-RegisterLuaConstantAsIs(LINE_SECONDPOINT, Varying(12));
-RegisterLuaConstantAsIs(LINE_NUMBEROFPOINTS, Varying(13));
-RegisterLuaConstantAsIs(LINE_CUSTOM_ARRAY, Varying(14));
+RegisterLuaConstant(LINE_FIRSTPOINT, Varying(11));
+RegisterLuaConstant(LINE_SECONDPOINT, Varying(12));
+RegisterLuaConstant(LINE_NUMBEROFPOINTS, Varying(13));
+RegisterLuaConstant(LINE_CUSTOM_ARRAY, Varying(14));
 
 namespace
 {

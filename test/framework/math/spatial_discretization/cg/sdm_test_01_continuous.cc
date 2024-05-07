@@ -14,10 +14,10 @@ namespace unit_tests
 InputParameters math_SDM_Test01Syntax();
 ParameterBlock math_SDM_Test01_Continuous(const InputParameters& input_parameters);
 
-RegisterWrapperFunctionNamespace(unit_tests,
-                                 math_SDM_Test01_Continuous,
-                                 math_SDM_Test01Syntax,
-                                 math_SDM_Test01_Continuous);
+RegisterWrapperFunctionInNamespace(unit_tests,
+                                   math_SDM_Test01_Continuous,
+                                   math_SDM_Test01Syntax,
+                                   math_SDM_Test01_Continuous);
 
 InputParameters
 math_SDM_Test01Syntax()

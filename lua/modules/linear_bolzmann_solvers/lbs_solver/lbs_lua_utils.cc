@@ -1,21 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "lbs_common_lua_functions.h"
 #include "lua/framework/lua.h"
-
-#define RegisterFunction(x) lua_register(L, #x, x)
-
-#define RegisterTable(x)                                                                           \
-  lua_newtable(L);                                                                                 \
-  lua_setglobal(L, #x)
-
-#define RegisterNumberValueToTable(const_name, const_value, namespace_name)                        \
-  lua_getglobal(L, #namespace_name);                                                               \
-  lua_pushstring(L, #const_name);                                                                  \
-  lua_pushnumber(L, const_value);                                                                  \
-  lua_settable(L, -3);                                                                             \
-  lua_pop(L, 1)
 
 using namespace opensn;
 
@@ -49,16 +35,16 @@ RegisterLuaEntities(lua_State* L)
   LuaSetGlobal(L, "VERBOSE_OUTER_ITERATIONS", 11);
   LuaSetGlobal(L, "USE_PRECURSORS", 12);
 
-  RegisterTable(LBSBoundaryTypes);
-  RegisterNumberValueToTable(VACUUM, 1, LBSBoundaryTypes);
-  RegisterNumberValueToTable(INCIDENT_ISOTROPIC, 2, LBSBoundaryTypes);
-  RegisterNumberValueToTable(REFLECTING, 3, LBSBoundaryTypes);
-  RegisterNumberValueToTable(INCIDENT_ANISTROPIC_HETEROGENEOUS, 4, LBSBoundaryTypes);
+  LuaRegisterTable(L, "LBSBoundaryTypes");
+  LuaRegisterTableConstant(L, "LBSBoundaryTypes", "VACUUM", 1);
+  LuaRegisterTableConstant(L, "LBSBoundaryTypes", "INCIDENT_ISOTROPIC", 2);
+  LuaRegisterTableConstant(L, "LBSBoundaryTypes", "REFLECTING", 3);
+  LuaRegisterTableConstant(L, "LBSBoundaryTypes", "INCIDENT_ANISTROPIC_HETEROGENEOUS", 4);
 
-  RegisterTable(LBSGroupset);
-  RegisterNumberValueToTable(ANGLE_AGG_SINGLE, 1, LBSGroupset);
-  RegisterNumberValueToTable(ANGLE_AGG_POLAR, 2, LBSGroupset);
-  RegisterNumberValueToTable(ANGLE_AGG_AZIMUTHAL, 3, LBSGroupset);
+  LuaRegisterTable(L, "LBSGroupset");
+  LuaRegisterTableConstant(L, "LBSGroupset", "ANGLE_AGG_SINGLE", 1);
+  LuaRegisterTableConstant(L, "LBSGroupset", "ANGLE_AGG_POLAR", 2);
+  LuaRegisterTableConstant(L, "LBSGroupset", "ANGLE_AGG_AZIMUTHAL", 3);
   LuaSetGlobal(L, "KRYLOV_RICHARDSON", 5);
   LuaSetGlobal(L, "KRYLOV_RICHARDSON_CYCLES", 6);
   LuaSetGlobal(L, "KRYLOV_GMRES", 7);

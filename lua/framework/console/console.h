@@ -24,36 +24,35 @@ extern "C"
 /**IDK why this is needed. Seems like counter doesnt work properly without it*/
 #define ConsoleJoinWordsB(x, y) ConsoleJoinWordsA(x, y)
 
-/**Macro for registering a lua_CFunction within the Console
- * singleton, with the function being in the global namespace. Example:
+/**
+ * Macro for registering a `lua_CFunction` within the global namespace.
+ * Example:
  * \code
- * ConsoleRegisterLuaFunction(SolverInitialize);
+ * RegisterLuaFunction(SolverInitialize);
  * \endcode
  *
- * \note Remember to include the header "console/chi_console.h".
- * The name supplied to this function cannot have scope resolution operators,
- * i.e., "::".*/
-#define RegisterLuaFunctionAsIs(func_name)                                                         \
+ * \note Remember to include the header "lua/framework/console/console.h".
+ * The name supplied to this function cannot have scope resolution operators, i.e., "::".
+ *
+ * \param func_name LuaCFunction. The function to use.
+ */
+#define RegisterLuaFunction(func_name)                                                             \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
     opensnlua::Console::AddFunctionToRegistryGlobalNamespace(#func_name, func_name)
 
-/**Macro for registering a lua_CFunction within the Console
-* singleton.
-\param function LuaCFunction. The function to use.
-\param namespace_name NonQuotedString. May include scope resolution
-\param func_name NonQuotedString. The name of the function as it will appear in
-                 the lua console.
-*/
-#define RegisterLuaFunctionNamespace(function, namespace_name, func_name)                          \
+/**
+ * Macro for registering a `lua_CFunction` within a namespace.
+ *
+ * \param function LuaCFunction. The function to use.
+ * \param namespace_name NonQuotedString. May include scope resolution
+ * \param func_name NonQuotedString. The name of the function as it will appear in lua.
+ */
+#define RegisterLuaFunctionInNamespace(function, namespace_name, func_name)                        \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
     opensnlua::Console::AddFunctionToRegistryInNamespaceWithName(                                  \
       function, #namespace_name, #func_name)
 
-#define RegisterLuaFunction(function, func_name)                                                   \
-  static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
-    opensnlua::Console::AddFunctionToRegistryInNamespaceWithName(function, #func_name)
-
-#define RegisterWrapperFunctionNamespace(                                                          \
+#define RegisterWrapperFunctionInNamespace(                                                        \
   namespace_name, name_in_lua, syntax_function, actual_function)                                   \
   static char ConsoleJoinWordsB(unique_var_name_luacfunc_##name_in_lua##_, __COUNTER__) =          \
     opensnlua::Console::AddWrapperToRegistryInNamespaceWithName(                                   \
@@ -64,12 +63,12 @@ extern "C"
     opensnlua::Console::AddWrapperToRegistryInNamespaceWithName(                                   \
       #name_in_lua, syntax_function, actual_function)
 
-#define RegisterLuaConstant(namespace_name, name_in_lua, value)                                    \
+#define RegisterLuaConstantInNamespace(namespace_name, name_in_lua, value)                         \
   static char ConsoleJoinWordsB(unique_var_name_luaconst_##namespace_name##_##name_in_lua,         \
                                 __COUNTER__) =                                                     \
     opensnlua::Console::AddLuaConstantToRegistry(#namespace_name, #name_in_lua, value)
 
-#define RegisterLuaConstantAsIs(name_in_lua, value)                                                \
+#define RegisterLuaConstant(name_in_lua, value)                                                    \
   static char ConsoleJoinWordsB(unique_var_name_luaconst_##name_in_lua, __COUNTER__) =             \
     opensnlua::Console::AddLuaConstantToRegistry("", #name_in_lua, value)
 

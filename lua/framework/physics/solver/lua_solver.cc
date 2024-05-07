@@ -15,16 +15,16 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(SolverCreate, solver, Create);
-RegisterLuaFunctionNamespace(SolverInitialize, solver, Initialize);
-RegisterLuaFunctionNamespace(SolverExecute, solver, Execute);
-RegisterLuaFunctionNamespace(SolverStep, solver, Step);
-RegisterLuaFunctionNamespace(SolverAdvance, solver, Advance);
-RegisterLuaFunctionNamespace(SolverSetBasicOption, solver, SetBasicOption);
-RegisterLuaFunctionNamespace(SolverGetName, solver, GetName);
-RegisterLuaFunctionNamespace(SolverGetFieldFunctionList, solver, GetFieldFunctionList);
-RegisterLuaFunctionNamespace(SolverGetInfo, solver, GetInfo);
-RegisterLuaFunctionNamespace(SolverSetProperties, solver, SetProperties);
+RegisterLuaFunctionInNamespace(SolverCreate, solver, Create);
+RegisterLuaFunctionInNamespace(SolverInitialize, solver, Initialize);
+RegisterLuaFunctionInNamespace(SolverExecute, solver, Execute);
+RegisterLuaFunctionInNamespace(SolverStep, solver, Step);
+RegisterLuaFunctionInNamespace(SolverAdvance, solver, Advance);
+RegisterLuaFunctionInNamespace(SolverSetBasicOption, solver, SetBasicOption);
+RegisterLuaFunctionInNamespace(SolverGetName, solver, GetName);
+RegisterLuaFunctionInNamespace(SolverGetFieldFunctionList, solver, GetFieldFunctionList);
+RegisterLuaFunctionInNamespace(SolverGetInfo, solver, GetInfo);
+RegisterLuaFunctionInNamespace(SolverSetProperties, solver, SetProperties);
 
 int
 SolverCreate(lua_State* L)

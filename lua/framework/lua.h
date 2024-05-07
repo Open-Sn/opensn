@@ -954,4 +954,26 @@ LuaNumArgs(lua_State* L)
   return lua_gettop(L);
 }
 
+//
+
+inline void
+LuaRegisterTable(lua_State* L, const std::string& table_name)
+{
+  lua_newtable(L);
+  lua_setglobal(L, table_name.c_str());
+}
+
+inline void
+LuaRegisterTableConstant(lua_State* L,
+                         const std::string& table_name,
+                         const std::string& const_name,
+                         lua_Number value)
+{
+  lua_getglobal(L, table_name.c_str());
+  lua_pushstring(L, const_name.c_str());
+  lua_pushnumber(L, value);
+  lua_settable(L, -3);
+  lua_pop(L, 1);
+}
+
 } // namespace opensnlua

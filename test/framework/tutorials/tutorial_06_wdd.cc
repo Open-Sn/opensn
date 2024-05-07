@@ -32,7 +32,7 @@ std::vector<double> SetSource(const MeshContinuum& grid,
 /**WDD Sweep. */
 ParameterBlock SimTest06_WDD(const InputParameters&);
 
-RegisterWrapperFunctionNamespace(unit_testsB, SimTest06_WDD, nullptr, SimTest06_WDD);
+RegisterWrapperFunctionInNamespace(unit_testsB, SimTest06_WDD, nullptr, SimTest06_WDD);
 
 ParameterBlock
 SimTest06_WDD(const InputParameters&)

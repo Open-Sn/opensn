@@ -15,7 +15,7 @@ namespace unit_sim_tests
  * to Laplace's problem. */
 ParameterBlock SimTest03_PWLC(const InputParameters& params);
 
-RegisterWrapperFunctionNamespace(unit_sim_tests, SimTest03_PWLC, nullptr, SimTest03_PWLC);
+RegisterWrapperFunctionInNamespace(unit_sim_tests, SimTest03_PWLC, nullptr, SimTest03_PWLC);
 
 ParameterBlock
 SimTest03_PWLC(const InputParameters&)

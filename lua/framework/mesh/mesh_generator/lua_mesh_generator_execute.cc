@@ -16,7 +16,7 @@ namespace opensnlua
 
 int MeshGeneratorExecute(lua_State* L);
 
-RegisterLuaFunctionNamespace(MeshGeneratorExecute, mesh::MeshGenerator, Execute);
+RegisterLuaFunctionInNamespace(MeshGeneratorExecute, mesh::MeshGenerator, Execute);
 
 int
 MeshGeneratorExecute(lua_State* L)

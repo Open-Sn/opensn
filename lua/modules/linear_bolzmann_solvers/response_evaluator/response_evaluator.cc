@@ -8,7 +8,7 @@
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(ClearResponseSources, lbs, ClearResponseSources);
+RegisterLuaFunctionInNamespace(ClearResponseSources, lbs, ClearResponseSources);
 
 int
 ClearResponseSources(lua_State* L)
@@ -26,10 +26,10 @@ ClearResponseSources(lua_State* L)
   return LuaReturn(L);
 }
 
-RegisterWrapperFunctionNamespace(lbs,
-                                 AddResponseBuffers,
-                                 GetResponseBufferSyntax,
-                                 AddResponseBuffers);
+RegisterWrapperFunctionInNamespace(lbs,
+                                   AddResponseBuffers,
+                                   GetResponseBufferSyntax,
+                                   AddResponseBuffers);
 
 InputParameters
 GetResponseBufferSyntax()
@@ -63,10 +63,10 @@ AddResponseBuffers(const InputParameters& params)
   return ParameterBlock();
 }
 
-RegisterWrapperFunctionNamespace(lbs,
-                                 AddResponseSources,
-                                 GetResponseSourceSyntax,
-                                 AddResponseSources);
+RegisterWrapperFunctionInNamespace(lbs,
+                                   AddResponseSources,
+                                   GetResponseSourceSyntax,
+                                   AddResponseSources);
 
 InputParameters
 GetResponseSourceSyntax()
@@ -101,7 +101,7 @@ AddResponseSources(const InputParameters& params)
   return ParameterBlock();
 }
 
-RegisterLuaFunctionNamespace(EvaluateResponse, lbs, EvaluateResponse);
+RegisterLuaFunctionInNamespace(EvaluateResponse, lbs, EvaluateResponse);
 
 int
 EvaluateResponse(lua_State* L)

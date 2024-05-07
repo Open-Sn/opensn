@@ -13,7 +13,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(GetProductQuadrature, aquad, GetProductQuadrature);
+RegisterLuaFunctionInNamespace(GetProductQuadrature, aquad, GetProductQuadrature);
 
 struct LuaQuadData
 {

@@ -13,8 +13,8 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(FVDiffusionSolverCreate, diffusion, FVSolverCreate);
-RegisterLuaFunctionNamespace(FVDiffusionSetBCProperty, diffusion, FVSetBCProperty);
+RegisterLuaFunctionInNamespace(FVDiffusionSolverCreate, diffusion, FVSolverCreate);
+RegisterLuaFunctionInNamespace(FVDiffusionSetBCProperty, diffusion, FVSetBCProperty);
 
 namespace
 {

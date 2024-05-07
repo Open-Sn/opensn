@@ -16,7 +16,7 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(LBSSetPhiFromFieldFunction, lbs, SetPhiFromFieldFunction);
+RegisterLuaFunctionInNamespace(LBSSetPhiFromFieldFunction, lbs, SetPhiFromFieldFunction);
 
 int
 LBSSetPhiFromFieldFunction(lua_State* L)

@@ -12,7 +12,7 @@
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(LBSComputeBalance, lbs, ComputeBalance);
+RegisterLuaFunctionInNamespace(LBSComputeBalance, lbs, ComputeBalance);
 
 int
 LBSComputeBalance(lua_State* L)

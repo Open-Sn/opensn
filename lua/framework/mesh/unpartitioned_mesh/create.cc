@@ -14,20 +14,20 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromVTU, mesh, UnpartitionedMeshFromVTU);
-RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromPVTU, mesh, UnpartitionedMeshFromPVTU);
-RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromEnsightGold,
-                             mesh,
-                             UnpartitionedMeshFromEnsightGold);
-RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromWavefrontOBJ,
-                             mesh,
-                             UnpartitionedMeshFromWavefrontOBJ);
-RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromMshFormat,
-                             mesh,
-                             UnpartitionedMeshFromMshFormat);
-RegisterLuaFunctionNamespace(MeshUnpartitionedMeshFromExodusII,
-                             mesh,
-                             UnpartitionedMeshFromExodusII);
+RegisterLuaFunctionInNamespace(MeshUnpartitionedMeshFromVTU, mesh, UnpartitionedMeshFromVTU);
+RegisterLuaFunctionInNamespace(MeshUnpartitionedMeshFromPVTU, mesh, UnpartitionedMeshFromPVTU);
+RegisterLuaFunctionInNamespace(MeshUnpartitionedMeshFromEnsightGold,
+                               mesh,
+                               UnpartitionedMeshFromEnsightGold);
+RegisterLuaFunctionInNamespace(MeshUnpartitionedMeshFromWavefrontOBJ,
+                               mesh,
+                               UnpartitionedMeshFromWavefrontOBJ);
+RegisterLuaFunctionInNamespace(MeshUnpartitionedMeshFromMshFormat,
+                               mesh,
+                               UnpartitionedMeshFromMshFormat);
+RegisterLuaFunctionInNamespace(MeshUnpartitionedMeshFromExodusII,
+                               mesh,
+                               UnpartitionedMeshFromExodusII);
 
 int
 MeshUnpartitionedMeshFromVTU(lua_State* L)

@@ -17,7 +17,7 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(AddPointSource, lbs, AddPointSource);
+RegisterLuaFunctionInNamespace(AddPointSource, lbs, AddPointSource);
 int
 AddPointSource(lua_State* L)
 {
@@ -36,7 +36,7 @@ AddPointSource(lua_State* L)
   return LuaReturn(L);
 }
 
-RegisterLuaFunctionNamespace(ClearPointSources, lbs, ClearPointSources);
+RegisterLuaFunctionInNamespace(ClearPointSources, lbs, ClearPointSources);
 int
 ClearPointSources(lua_State* L)
 {
@@ -52,7 +52,7 @@ ClearPointSources(lua_State* L)
   return LuaReturn(L);
 }
 
-RegisterLuaFunctionNamespace(AddDistributedSource, lbs, AddDistributedSource);
+RegisterLuaFunctionInNamespace(AddDistributedSource, lbs, AddDistributedSource);
 int
 AddDistributedSource(lua_State* L)
 {
@@ -71,7 +71,7 @@ AddDistributedSource(lua_State* L)
   return LuaReturn(L);
 }
 
-RegisterLuaFunctionNamespace(ClearDistributedSources, lbs, ClearDistributedSources);
+RegisterLuaFunctionInNamespace(ClearDistributedSources, lbs, ClearDistributedSources);
 int
 ClearDistributedSources(lua_State* L)
 {

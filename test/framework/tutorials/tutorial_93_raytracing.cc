@@ -15,7 +15,7 @@ namespace unit_sim_tests
 
 ParameterBlock SimTest93_RayTracing(const InputParameters& params);
 
-RegisterWrapperFunctionNamespace(unit_tests, SimTest93_RayTracing, nullptr, SimTest93_RayTracing);
+RegisterWrapperFunctionInNamespace(unit_tests, SimTest93_RayTracing, nullptr, SimTest93_RayTracing);
 
 ParameterBlock
 SimTest93_RayTracing(const InputParameters&)

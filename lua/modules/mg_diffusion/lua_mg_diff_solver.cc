@@ -12,8 +12,8 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(CFEMMGDiffusionSolverCreate, diffusion, CFEMMGSolverCreate);
-RegisterLuaFunctionNamespace(CFEMMGDiffusionSetBCProperty, diffusion, CFEMMGSetBCProperty);
+RegisterLuaFunctionInNamespace(CFEMMGDiffusionSolverCreate, diffusion, CFEMMGSolverCreate);
+RegisterLuaFunctionInNamespace(CFEMMGDiffusionSetBCProperty, diffusion, CFEMMGSetBCProperty);
 
 int
 CFEMMGDiffusionSolverCreate(lua_State* L)

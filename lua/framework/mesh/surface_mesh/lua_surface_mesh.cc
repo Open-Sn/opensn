@@ -13,12 +13,14 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(MeshSurfaceMeshCreate, mesh, SurfaceMeshCreate);
-RegisterLuaFunctionNamespace(MeshComputeLoadBalancing, mesh, ComputeLoadBalancing);
-RegisterLuaFunctionNamespace(MeshSurfaceMeshImportFromOBJFile, mesh, SurfaceMeshImportFromOBJFile);
-RegisterLuaFunctionNamespace(MeshSurfaceMeshImportFromTriangleFiles,
-                             mesh,
-                             SurfaceMeshImportFromTriangleFiles);
+RegisterLuaFunctionInNamespace(MeshSurfaceMeshCreate, mesh, SurfaceMeshCreate);
+RegisterLuaFunctionInNamespace(MeshComputeLoadBalancing, mesh, ComputeLoadBalancing);
+RegisterLuaFunctionInNamespace(MeshSurfaceMeshImportFromOBJFile,
+                               mesh,
+                               SurfaceMeshImportFromOBJFile);
+RegisterLuaFunctionInNamespace(MeshSurfaceMeshImportFromTriangleFiles,
+                               mesh,
+                               SurfaceMeshImportFromTriangleFiles);
 
 int
 MeshSurfaceMeshCreate(lua_State* L)

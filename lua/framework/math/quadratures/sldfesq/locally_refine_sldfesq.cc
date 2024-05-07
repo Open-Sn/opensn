@@ -13,7 +13,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(LocallyRefineSLDFESQAngularQuadrature, aquad, LocallyRefineSLDFESQ);
+RegisterLuaFunctionInNamespace(LocallyRefineSLDFESQAngularQuadrature, aquad, LocallyRefineSLDFESQ);
 
 int
 LocallyRefineSLDFESQAngularQuadrature(lua_State* L)

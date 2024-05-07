@@ -13,9 +13,9 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(OptimizeAngularQuadratureForPolarSymmetry,
-                             aquad,
-                             OptimizeForPolarSymmetry);
+RegisterLuaFunctionInNamespace(OptimizeAngularQuadratureForPolarSymmetry,
+                               aquad,
+                               OptimizeForPolarSymmetry);
 
 int
 OptimizeAngularQuadratureForPolarSymmetry(lua_State* L)

@@ -12,7 +12,7 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(LBSComputeFissionRate, lbs, ComputeFissionRate);
+RegisterLuaFunctionInNamespace(LBSComputeFissionRate, lbs, ComputeFissionRate);
 
 int
 LBSComputeFissionRate(lua_State* L)

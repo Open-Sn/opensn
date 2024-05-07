@@ -14,21 +14,21 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(XSCreate, xs, Create);
-RegisterLuaFunctionNamespace(XSSet, xs, Set);
-RegisterLuaFunctionNamespace(XSMakeCombined, xs, MakeCombined);
-RegisterLuaFunctionNamespace(XSSetCombined, xs, SetCombined);
-RegisterLuaFunctionNamespace(XSMakeScaled, xs, MakeScaled);
-RegisterLuaFunctionNamespace(XSSetScalingFactor, xs, SetScalingFactor);
-RegisterLuaFunctionNamespace(XSGet, xs, Get);
-RegisterLuaFunctionNamespace(XSExportToOpenSnFormat, xs, ExportToOpenSnFormat);
+RegisterLuaFunctionInNamespace(XSCreate, xs, Create);
+RegisterLuaFunctionInNamespace(XSSet, xs, Set);
+RegisterLuaFunctionInNamespace(XSMakeCombined, xs, MakeCombined);
+RegisterLuaFunctionInNamespace(XSSetCombined, xs, SetCombined);
+RegisterLuaFunctionInNamespace(XSMakeScaled, xs, MakeScaled);
+RegisterLuaFunctionInNamespace(XSSetScalingFactor, xs, SetScalingFactor);
+RegisterLuaFunctionInNamespace(XSGet, xs, Get);
+RegisterLuaFunctionInNamespace(XSExportToOpenSnFormat, xs, ExportToOpenSnFormat);
 
-RegisterLuaConstantAsIs(SINGLE_VALUE, Varying(0));
-RegisterLuaConstantAsIs(FROM_ARRAY, Varying(1));
-RegisterLuaConstantAsIs(SIMPLE_ONE_GROUP, Varying(20));
-RegisterLuaConstantAsIs(EXISTING, Varying(22));
-RegisterLuaConstantAsIs(OPENSN_XSFILE, Varying(23));
-RegisterLuaConstantAsIs(OPENMC_XSLIB, Varying(24));
+RegisterLuaConstant(SINGLE_VALUE, Varying(0));
+RegisterLuaConstant(FROM_ARRAY, Varying(1));
+RegisterLuaConstant(SIMPLE_ONE_GROUP, Varying(20));
+RegisterLuaConstant(EXISTING, Varying(22));
+RegisterLuaConstant(OPENSN_XSFILE, Varying(23));
+RegisterLuaConstant(OPENMC_XSLIB, Varying(24));
 
 namespace
 {

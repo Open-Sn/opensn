@@ -22,7 +22,7 @@ namespace opensnlua
  */
 int FunctionDimAToDimBEvaluate(lua_State* L);
 
-RegisterLuaFunctionAsIs(FunctionDimAToDimBEvaluate);
+RegisterLuaFunction(FunctionDimAToDimBEvaluate);
 
 int
 FunctionDimAToDimBEvaluate(lua_State* L)

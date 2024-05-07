@@ -11,7 +11,7 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(LogVolPointSense, logvol, PointSense);
+RegisterLuaFunctionInNamespace(LogVolPointSense, logvol, PointSense);
 
 int
 LogVolPointSense(lua_State* L)

@@ -17,7 +17,7 @@ namespace opensnlua
  * collective broadcast).*/
 int ProgramTime(lua_State* L);
 
-RegisterLuaFunctionAsIs(ProgramTime);
+RegisterLuaFunction(ProgramTime);
 
 int
 ProgramTime(lua_State* L)

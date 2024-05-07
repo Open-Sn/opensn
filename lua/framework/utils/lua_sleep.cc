@@ -15,7 +15,7 @@ namespace opensnlua
  * */
 int Sleep(lua_State* L);
 
-RegisterLuaFunctionAsIs(Sleep);
+RegisterLuaFunction(Sleep);
 
 int
 Sleep(lua_State* L)

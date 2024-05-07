@@ -14,8 +14,8 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(LBSWriteGroupsetAngularFlux, lbs, WriteGroupsetAngularFlux);
-RegisterLuaFunctionNamespace(LBSReadGroupsetAngularFlux, lbs, ReadGroupsetAngularFlux);
+RegisterLuaFunctionInNamespace(LBSWriteGroupsetAngularFlux, lbs, WriteGroupsetAngularFlux);
+RegisterLuaFunctionInNamespace(LBSReadGroupsetAngularFlux, lbs, ReadGroupsetAngularFlux);
 
 int
 LBSWriteGroupsetAngularFlux(lua_State* L)

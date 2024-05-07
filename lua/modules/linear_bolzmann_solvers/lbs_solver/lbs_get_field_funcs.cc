@@ -14,7 +14,7 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(LBSGetScalarFieldFunctionList, lbs, GetScalarFieldFunctionList);
+RegisterLuaFunctionInNamespace(LBSGetScalarFieldFunctionList, lbs, GetScalarFieldFunctionList);
 
 int
 LBSGetScalarFieldFunctionList(lua_State* L)

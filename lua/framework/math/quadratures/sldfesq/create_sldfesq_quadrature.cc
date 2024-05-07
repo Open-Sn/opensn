@@ -12,7 +12,9 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(CreateSLDFESQAngularQuadrature, aquad, CreateSLDFESQAngularQuadrature);
+RegisterLuaFunctionInNamespace(CreateSLDFESQAngularQuadrature,
+                               aquad,
+                               CreateSLDFESQAngularQuadrature);
 
 int
 CreateSLDFESQAngularQuadrature(lua_State* L)

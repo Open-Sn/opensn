@@ -26,7 +26,7 @@ namespace opensnlua
 
 Console& console = Console::GetInstance();
 
-RegisterLuaFunctionNamespace(Console::LuaWrapperCall, console, LuaWrapperCall);
+RegisterLuaFunctionInNamespace(Console::LuaWrapperCall, console, LuaWrapperCall);
 
 Console&
 Console::GetInstance() noexcept

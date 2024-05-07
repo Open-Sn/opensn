@@ -15,8 +15,8 @@ using namespace opensn;
 namespace opensnlua::prk
 {
 
-RegisterLuaFunctionNamespace(PRKGetParam, prk, GetParam);
-RegisterLuaFunctionNamespace(PRKSetParam, prk, SetParam);
+RegisterLuaFunctionInNamespace(PRKGetParam, prk, GetParam);
+RegisterLuaFunctionInNamespace(PRKSetParam, prk, SetParam);
 
 int
 PRKGetParam(lua_State* L)
@@ -65,7 +65,7 @@ PRKSetParam(lua_State* L)
   return LuaReturn(L);
 }
 
-RegisterWrapperFunctionNamespace(prk, SetParam, GetSyntax_SetParam, SetParam);
+RegisterWrapperFunctionInNamespace(prk, SetParam, GetSyntax_SetParam, SetParam);
 
 InputParameters
 GetSyntax_SetParam()
@@ -111,7 +111,7 @@ SetParam(const InputParameters& params)
   return ParameterBlock(); // Return empty param block
 }
 
-RegisterWrapperFunctionNamespace(prk, GetParam, GetParamSyntax, GetParam);
+RegisterWrapperFunctionInNamespace(prk, GetParam, GetParamSyntax, GetParam);
 
 InputParameters
 GetParamSyntax()

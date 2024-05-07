@@ -11,21 +11,21 @@ using namespace opensn;
 
 namespace opensnlua
 {
-RegisterLuaFunctionNamespace(LogSetVerbosity, log, SetVerbosity);
-RegisterLuaFunctionNamespace(LogLog, log, Log);
+RegisterLuaFunctionInNamespace(LogSetVerbosity, log, SetVerbosity);
+RegisterLuaFunctionInNamespace(LogLog, log, Log);
 
-RegisterLuaConstantAsIs(LOG_0, Varying(1));
-RegisterLuaConstantAsIs(LOG_0WARNING, Varying(2));
-RegisterLuaConstantAsIs(LOG_0ERROR, Varying(3));
-RegisterLuaConstantAsIs(LOG_0VERBOSE_0, Varying(4));
-RegisterLuaConstantAsIs(LOG_0VERBOSE_1, Varying(5));
-RegisterLuaConstantAsIs(LOG_0VERBOSE_2, Varying(6));
-RegisterLuaConstantAsIs(LOG_ALL, Varying(7));
-RegisterLuaConstantAsIs(LOG_ALLWARNING, Varying(8));
-RegisterLuaConstantAsIs(LOG_ALLERROR, Varying(9));
-RegisterLuaConstantAsIs(LOG_ALLVERBOSE_0, Varying(10));
-RegisterLuaConstantAsIs(LOG_ALLVERBOSE_1, Varying(11));
-RegisterLuaConstantAsIs(LOG_ALLVERBOSE_2, Varying(12));
+RegisterLuaConstant(LOG_0, Varying(1));
+RegisterLuaConstant(LOG_0WARNING, Varying(2));
+RegisterLuaConstant(LOG_0ERROR, Varying(3));
+RegisterLuaConstant(LOG_0VERBOSE_0, Varying(4));
+RegisterLuaConstant(LOG_0VERBOSE_1, Varying(5));
+RegisterLuaConstant(LOG_0VERBOSE_2, Varying(6));
+RegisterLuaConstant(LOG_ALL, Varying(7));
+RegisterLuaConstant(LOG_ALLWARNING, Varying(8));
+RegisterLuaConstant(LOG_ALLERROR, Varying(9));
+RegisterLuaConstant(LOG_ALLVERBOSE_0, Varying(10));
+RegisterLuaConstant(LOG_ALLVERBOSE_1, Varying(11));
+RegisterLuaConstant(LOG_ALLVERBOSE_2, Varying(12));
 
 int
 LogSetVerbosity(lua_State* L)

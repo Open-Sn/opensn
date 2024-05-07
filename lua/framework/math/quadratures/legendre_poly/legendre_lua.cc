@@ -11,9 +11,9 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaFunctionNamespace(Legendre, aquad, Legendre);
-RegisterLuaFunctionNamespace(LegendreDerivative, aquad, LegendreDerivative);
-RegisterLuaFunctionNamespace(Ylm, aquad, Ylm);
+RegisterLuaFunctionInNamespace(Legendre, aquad, Legendre);
+RegisterLuaFunctionInNamespace(LegendreDerivative, aquad, LegendreDerivative);
+RegisterLuaFunctionInNamespace(Ylm, aquad, Ylm);
 
 int
 Legendre(lua_State* L)

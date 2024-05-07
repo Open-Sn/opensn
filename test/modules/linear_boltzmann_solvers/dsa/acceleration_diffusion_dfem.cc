@@ -32,10 +32,10 @@ CreateFunction(const std::string& function_name)
 
 ParameterBlock acceleration_Diffusion_DFEM(const InputParameters& params);
 
-RegisterWrapperFunctionNamespace(unit_tests,
-                                 acceleration_Diffusion_DFEM,
-                                 nullptr,
-                                 acceleration_Diffusion_DFEM);
+RegisterWrapperFunctionInNamespace(unit_tests,
+                                   acceleration_Diffusion_DFEM,
+                                   nullptr,
+                                   acceleration_Diffusion_DFEM);
 
 ParameterBlock
 acceleration_Diffusion_DFEM(const InputParameters&)

@@ -13,13 +13,13 @@ using namespace opensn;
 namespace opensnlua::lbs
 {
 
-RegisterLuaFunctionNamespace(LBSWriteFluxMoments, lbs, WriteFluxMoments);
-RegisterLuaFunctionNamespace(LBSCreateAndWriteSourceMoments, lbs, CreateAndWriteSourceMoments);
-RegisterLuaFunctionNamespace(LBSReadFluxMomentsAndMakeSourceMoments,
-                             lbs,
-                             ReadFluxMomentsAndMakeSourceMoments);
-RegisterLuaFunctionNamespace(LBSReadSourceMoments, lbs, ReadSourceMoments);
-RegisterLuaFunctionNamespace(LBSReadFluxMoments, lbs, ReadFluxMoments);
+RegisterLuaFunctionInNamespace(LBSWriteFluxMoments, lbs, WriteFluxMoments);
+RegisterLuaFunctionInNamespace(LBSCreateAndWriteSourceMoments, lbs, CreateAndWriteSourceMoments);
+RegisterLuaFunctionInNamespace(LBSReadFluxMomentsAndMakeSourceMoments,
+                               lbs,
+                               ReadFluxMomentsAndMakeSourceMoments);
+RegisterLuaFunctionInNamespace(LBSReadSourceMoments, lbs, ReadSourceMoments);
+RegisterLuaFunctionInNamespace(LBSReadFluxMoments, lbs, ReadFluxMoments);
 
 int
 LBSWriteFluxMoments(lua_State* L)
