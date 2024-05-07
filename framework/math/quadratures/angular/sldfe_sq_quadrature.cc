@@ -142,16 +142,14 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(const Matrix3x3& rot
                                                             const Vector3& translation,
                                                             int level)
 {
-  typedef std::vector<Vertex> VertList;
-
   int Ns = (level + 1); // Number of subdivisions
   int Np = Ns + 1;      // Number of diagonal points
 
   GaussLegendreQuadrature legendre(QuadratureOrder::THIRTYSECOND);
 
   // Generate xy_tilde values
-  std::vector<VertList> vertices_xy_tilde_ij;
-  vertices_xy_tilde_ij.resize(Np, VertList(Np));
+  std::vector<std::vector<Vertex>> vertices_xy_tilde_ij;
+  vertices_xy_tilde_ij.resize(Np, std::vector<Vertex>(Np));
   for (int i = 0; i < Np; ++i)
     for (int j = 0; j < Np; ++j)
       vertices_xy_tilde_ij[i][j] = Vertex(diagonal_vertices_[i].x, diagonal_vertices_[j].y, 0.0);
