@@ -92,47 +92,24 @@ MatSetProperty(lua_State* L)
   if (num_args < 3)
     LuaPostArgAmountError(fname, L, 3, num_args);
 
+  const auto material_handle = LuaArg<int>(L, 1);
+  const auto property_type = LuaArg<int>(L, 2);
+  const auto op_type = LuaArg<int>(L, 3);
+
   // Get a pointer to the material
-  auto material_handle = LuaArg<int>(L, 1);
   auto material = opensn::GetStackItemPtr(opensn::material_stack, material_handle, fname);
 
-  // Get the material property type and its index, if applicable
-  int property_type;
+  // Find the index of the material property on the material
   int property_index = -1;
-  if (lua_isnumber(L, 2))
+  for (int p = 0; p < material->properties.size(); ++p)
   {
-    property_type = LuaArg<int>(L, 2);
-    for (int p = 0; p < material->properties.size(); ++p)
+    const auto& property = material->properties.at(p);
+    if (static_cast<int>(property->Type()) == property_type)
     {
-      const auto& property = material->properties.at(p);
-      if (static_cast<int>(property->Type()) == property_type)
-      {
-        property_index = p;
-        break;
-      }
+      property_index = p;
+      break;
     }
   }
-  else
-  {
-    const auto property_name = LuaArg<std::string>(L, 2);
-    for (int p = 0; p < material->properties.size(); ++p)
-    {
-      const auto& property = material->properties.at(p);
-      if (property->property_name == property_name)
-      {
-        property_type = static_cast<int>(property->Type());
-        property_index = p;
-        break;
-      }
-    }
-    OpenSnInvalidArgumentIf(property_index == -1,
-                            "No property with name " + property_name +
-                              " found on material at index " + std::to_string(material_handle) +
-                              ".");
-  }
-
-  // Get the operation index
-  auto op_type = LuaArg<int>(L, 3);
 
   // Process property
   if (property_type == static_cast<int>(PropertyType::SCALAR_VALUE))
