@@ -60,8 +60,6 @@ mesh.SetUniformMaterialID(0)
 materials = {}
 materials[1] = mat.AddMaterial("Fissile Material")
 
-mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
-
 xs_file = "simple_fissile.xs"
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, xs_file)
 

@@ -63,10 +63,7 @@ materials[1] = mat.AddMaterial("Test Material1");
 materials[2] = mat.AddMaterial("Test Material2");
 
 -- Add cross sections
-mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.01, 0.01)
-
-mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
 mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.1 * 20, 0.8)
 
 -- Add sources

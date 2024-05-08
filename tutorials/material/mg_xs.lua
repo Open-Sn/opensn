@@ -47,8 +47,6 @@ Recall that lua indexing starts at 1.
 -- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Material_A");
-
-mat.AddProperty(materials[1],TRANSPORT_XSECTIONS)
 --[[ @doc
 
 ## Cross Sections

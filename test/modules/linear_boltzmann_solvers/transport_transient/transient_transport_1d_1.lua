@@ -37,12 +37,6 @@ materials = {}
 materials[1] = mat.AddMaterial("Test Material");
 materials[2] = mat.AddMaterial("Test Material2");
 
-mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
-mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
-
-mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
-mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
-
 -- Define microscopic cross sections
 micro_xs = xs.Create()
 xs_file = "tests/transport_transient/subcritical_1g.xs"
