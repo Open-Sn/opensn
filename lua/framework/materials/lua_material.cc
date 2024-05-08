@@ -18,7 +18,6 @@ namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(MatAddMaterial, mat, AddMaterial);
-RegisterLuaFunctionInNamespace(MatAddProperty, mat, AddProperty);
 RegisterLuaFunctionInNamespace(MatSetProperty, mat, SetProperty);
 RegisterLuaFunctionInNamespace(MatGetProperty, mat, GetProperty);
 
@@ -82,96 +81,6 @@ MatAddMaterial(lua_State* L)
                              << new_material->name << "\"";
 
   return LuaReturn(L, index);
-}
-
-int
-MatAddProperty(lua_State* L)
-{
-  opensn::log.Log0Warning() << "mat.AddProperty has been deprecated and may be removed soon. "
-                               "This functionality is now bundled within mat.SetProperty.";
-
-  const std::string fname = "mat.AddProperty";
-  LuaCheckArgs<int, int>(L, fname);
-
-  auto material_index = LuaArg<int>(L, 1);
-  auto property_index = LuaArg<int>(L, 2);
-
-  // Get reference to material
-  auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
-
-  auto provided_name = LuaArgOptional<std::string>(
-    L, 3, std::string("Property ") + std::to_string(cur_material->properties.size()));
-
-  // Process property
-  if (property_index == static_cast<int>(PropertyType::SCALAR_VALUE))
-  {
-    // Duplicates are allowed
-
-    auto prop = std::make_shared<ScalarValue>();
-
-    prop->property_name = provided_name;
-
-    cur_material->properties.push_back(prop);
-    opensn::log.Log0Verbose1() << "Scalar Value Property added to material at index "
-                               << material_index;
-  }
-  else if (property_index == static_cast<int>(PropertyType::TRANSPORT_XSECTIONS))
-  {
-    // Check for duplicate
-    for (int p = 0; p < cur_material->properties.size(); p++)
-    {
-      if (cur_material->properties[p]->Type() == PropertyType::TRANSPORT_XSECTIONS)
-      {
-        opensn::log.Log0Error() << "Material " << material_index << " \"" << cur_material->name
-                                << "\""
-                                << " already has property TRANSPORT_XSECTIONS" << std::endl;
-        opensn::Exit(EXIT_FAILURE);
-      }
-    }
-
-    auto prop = std::make_shared<MultiGroupXS>();
-
-    prop->property_name = provided_name;
-
-    cur_material->properties.push_back(prop);
-    opensn::log.Log0Verbose1() << "Transport cross sections added to material at index "
-                               << material_index;
-
-    opensn::multigroup_xs_stack.push_back(prop);
-
-    const size_t index = opensn::multigroup_xs_stack.size() - 1;
-    return LuaReturn(L, index);
-  }
-  else if (property_index == static_cast<int>(PropertyType::ISOTROPIC_MG_SOURCE))
-  {
-    // Check for duplicate
-    for (int p = 0; p < cur_material->properties.size(); p++)
-    {
-      if (cur_material->properties[p]->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
-      {
-        opensn::log.Log0Error() << "Material " << material_index << " \"" << cur_material->name
-                                << "\""
-                                << " already has property ISOTROPIC_MG_SOURCE " << property_index
-                                << std::endl;
-        opensn::Exit(EXIT_FAILURE);
-      }
-    }
-
-    auto prop = std::make_shared<IsotropicMultiGroupSource>();
-
-    prop->property_name = provided_name;
-
-    cur_material->properties.push_back(prop);
-    opensn::log.Log0Verbose1() << "Isotropic Multigroup Source added to material at index "
-                               << material_index;
-  }
-  else
-  {
-    opensn::log.Log0Error() << "Unsupported property type in call to mat.AddProperty.";
-    opensn::Exit(EXIT_FAILURE);
-  }
-
-  return LuaReturn(L);
 }
 
 int
