@@ -215,8 +215,6 @@ post-processing.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Add materials</span>
 <span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
-<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
-<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -365,9 +363,6 @@ on post-processing for more details on field functions.</p>
 <span class="c1">-- Add materials</span>
 <span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
-
-<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">)</span>
-<span class="n">mat</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">)</span>
 
 
 <span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>

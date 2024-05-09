@@ -101,8 +101,6 @@ We create a material and add two properties to it:
 -- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Material_A");
-mat.AddProperty(materials[1],TRANSPORT_XSECTIONS)
-mat.AddProperty(materials[1],ISOTROPIC_MG_SOURCE)
 ```
 
 ## Cross Sections
@@ -247,9 +245,6 @@ mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 -- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Material_A");
-
-mat.AddProperty(materials[1],TRANSPORT_XSECTIONS)
-mat.AddProperty(materials[1],ISOTROPIC_MG_SOURCE)
 
 
 mat.SetProperty(materials[1],TRANSPORT_XSECTIONS,
