@@ -95,7 +95,7 @@ int MatAddMaterial(lua_State* L);
  * ##_
  *
  * ### Example 1
- * Simple scalar valued property:
+ * Simple scalar-valued property:
  * \code
  * materials = {}
  * materials[1] = mat.AddMaterial("Test Material");

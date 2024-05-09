@@ -39,15 +39,11 @@ for imat = 1, Nmat do materials[imat] = mat.AddMaterial(mat_names[imat]) end
 total = {50., 5., 0., 1., 1.}
 c = {0., 0., 0., 0.9, 0.9}
 for imat = 1, Nmat do
-  mat.AddProperty(materials[imat], TRANSPORT_XSECTIONS)
   mat.SetProperty(materials[imat], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, total[imat], c[imat])
 end
 
 -- Create sources in 1st and 4th materials
-mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
 mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, {50.})
-
-mat.AddProperty(materials[4], ISOTROPIC_MG_SOURCE)
 mat.SetProperty(materials[4], ISOTROPIC_MG_SOURCE, FROM_ARRAY, {1.})
 
 -- Angular Quadrature
