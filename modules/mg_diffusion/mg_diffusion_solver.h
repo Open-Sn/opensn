@@ -5,7 +5,7 @@
 
 #include "modules/mg_diffusion/mg_diffusion_bndry.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/materials/material_property_isotropic_mg_src.h"
+#include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/physics/solver_base/solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/utils/timer.h"
@@ -107,7 +107,7 @@ public:
 protected:
   std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map;
 
-  std::map<int, std::shared_ptr<IsotropicMultiGrpSource>> matid_to_src_map;
+  std::map<int, std::shared_ptr<IsotropicMultiGroupSource>> matid_to_src_map;
 
   std::map<int, TwoGridCollapsedInfo> map_mat_id_2_tginfo;
   //  std::map<int, Multigroup_D_and_sigR> map_mat_id_2_tgXS;

@@ -5,7 +5,7 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/materials/material_property_isotropic_mg_src.h"
+#include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/material.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -240,7 +240,7 @@ Solver::Initialize_Materials(std::set<int>& material_ids)
       } // transport xs
       if (property->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
       {
-        auto mg_source = std::static_pointer_cast<IsotropicMultiGrpSource>(property);
+        auto mg_source = std::static_pointer_cast<IsotropicMultiGroupSource>(property);
 
         if (mg_source->source_value_g.size() < num_groups_)
         {

@@ -5,8 +5,8 @@
 #include "framework/lua.h"
 #include "framework/materials/material.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/materials/material_property_scalar_value.h"
-#include "framework/materials/material_property_isotropic_mg_src.h"
+#include "framework/materials/scalar_value.h"
+#include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
@@ -38,7 +38,8 @@ ScalarPropertyPushTable(lua_State* L, std::shared_ptr<MaterialProperty> property
 }
 
 void
-IsotropicMGSourcePropertyPushTable(lua_State* L, std::shared_ptr<IsotropicMultiGrpSource> property)
+IsotropicMGSourcePropertyPushTable(lua_State* L,
+                                   std::shared_ptr<IsotropicMultiGroupSource> property)
 {
   lua_newtable(L);
   LuaPushTableKey(L, "is_empty", false);
@@ -60,7 +61,7 @@ PropertyPushLuaTable(lua_State* L, std::shared_ptr<MaterialProperty> property)
     ScalarPropertyPushTable(L, property);
   else if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
     IsotropicMGSourcePropertyPushTable(
-      L, std::dynamic_pointer_cast<IsotropicMultiGrpSource>(property));
+      L, std::dynamic_pointer_cast<IsotropicMultiGroupSource>(property));
   else
     MaterialPropertyPushLuaTable(L);
 }
@@ -156,7 +157,7 @@ MatAddProperty(lua_State* L)
       }
     }
 
-    auto prop = std::make_shared<IsotropicMultiGrpSource>();
+    auto prop = std::make_shared<IsotropicMultiGroupSource>();
 
     prop->property_name = provided_name;
 
@@ -327,7 +328,7 @@ MatSetProperty(lua_State* L)
     // Create the property, if no location was found
     if (property_index == -1)
     {
-      auto property = std::make_shared<IsotropicMultiGrpSource>();
+      auto property = std::make_shared<IsotropicMultiGroupSource>();
       material->properties.push_back(property);
       property_index = static_cast<int>(material->properties.size()) - 1;
     }
@@ -336,7 +337,7 @@ MatSetProperty(lua_State* L)
 
     // Get the property
     auto property =
-      std::static_pointer_cast<IsotropicMultiGrpSource>(material->properties.at(property_index));
+      std::static_pointer_cast<IsotropicMultiGroupSource>(material->properties.at(property_index));
 
     // Process operation
     if (op_type == static_cast<int>(OperationType::SINGLE_VALUE))
