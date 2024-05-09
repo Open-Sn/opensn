@@ -45,11 +45,6 @@ mesh.SetUniformMaterialID(0)
 materials = {}
 materials[1] = mat.AddMaterial("Test Material");
 
-mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
-
-mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
-
-
 num_groups = 21
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "../transport_steady/xs_graphite_pure.xs")
 

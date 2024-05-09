@@ -86,6 +86,9 @@ MatAddMaterial(lua_State* L)
 int
 MatAddProperty(lua_State* L)
 {
+  opensn::log.Log0Warning() << "mat.AddProperty has been deprecated and may be removed soon. "
+                               "This functionality is now bundled within mat.SetProperty.";
+
   const std::string fname = "mat.AddProperty";
   LuaCheckArgs<int, int>(L, fname);
 
@@ -177,244 +180,190 @@ MatSetProperty(lua_State* L)
   const int num_args = lua_gettop(L);
 
   if (num_args < 3)
-  {
-    opensn::log.Log0Error() << "Invalid number of arguments when calling mat.SetProperty";
-    opensn::Exit(EXIT_FAILURE);
-  }
+    LuaPostArgAmountError(fname, L, 3, num_args);
 
-  auto material_index = LuaArg<int>(L, 1);
+  // Get a pointer to the material
+  auto material_handle = LuaArg<int>(L, 1);
+  auto material = opensn::GetStackItemPtr(opensn::material_stack, material_handle, fname);
+
+  // Get the material property type and its index, if applicable
+  int property_type;
   int property_index = -1;
-  std::string property_index_name;
   if (lua_isnumber(L, 2))
-    property_index = LuaArg<int>(L, 2);
-  else
-    property_index_name = LuaArg<std::string>(L, 2);
-
-  auto operation_index = LuaArg<int>(L, 3);
-
-  // Get reference to material
-  auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
-
-  // If user supplied name then find property index
-  if (not lua_isnumber(L, 2))
   {
-    for (auto& property : cur_material->properties)
-      if (property->property_name == property_index_name)
-        property_index = static_cast<int>(property->Type());
+    property_type = LuaArg<int>(L, 2);
+    for (int p = 0; p < material->properties.size(); ++p)
+    {
+      const auto& property = material->properties.at(p);
+      if (static_cast<int>(property->Type()) == property_type)
+      {
+        property_index = p;
+        break;
+      }
+    }
   }
+  else
+  {
+    const auto property_name = LuaArg<std::string>(L, 2);
+    for (int p = 0; p < material->properties.size(); ++p)
+    {
+      const auto& property = material->properties.at(p);
+      if (property->property_name == property_name)
+      {
+        property_type = static_cast<int>(property->Type());
+        property_index = p;
+        break;
+      }
+    }
+    OpenSnInvalidArgumentIf(property_index == -1,
+                            "No property with name " + property_name +
+                              " found on material at index " + std::to_string(material_handle) +
+                              ".");
+  }
+
+  // Get the operation index
+  auto op_type = LuaArg<int>(L, 3);
 
   // Process property
-  if (property_index == static_cast<int>(PropertyType::SCALAR_VALUE))
+  if (property_type == static_cast<int>(PropertyType::SCALAR_VALUE))
   {
-    int location_of_prop = -1;
-    // Check if the material has this property
-    if (lua_isnumber(L, 2))
+    // Create the property, if no location was found
+    if (property_index == -1)
     {
-      for (int p = 0; p < cur_material->properties.size(); p++)
-        if (cur_material->properties[p]->Type() == PropertyType::SCALAR_VALUE)
-          location_of_prop = p;
+      auto property = std::make_shared<ScalarValue>();
+      material->properties.push_back(property);
+      property_index = static_cast<int>(material->properties.size()) - 1;
+    }
+    OpenSnLogicalErrorIf(property_index < 0, "Error creating or finding ScalarValue property.");
+
+    // Get the property
+    auto property = std::static_pointer_cast<ScalarValue>(material->properties.at(property_index));
+
+    // Process operation
+    if (op_type == static_cast<int>(OperationType::SINGLE_VALUE))
+    {
+      const auto value = LuaArg<double>(L, 4);
+      property->value_ = value;
+      opensn::log.Log0Verbose1() << "Scalar value for material at index " << material_handle
+                                 << " set to " << value;
     }
     else
-    {
-      for (int p = 0; p < cur_material->properties.size(); p++)
-        if (cur_material->properties[p]->property_name == property_index_name)
-          location_of_prop = p;
-    }
-
-    // If the property is valid
-    if (location_of_prop >= 0)
-    {
-      auto prop = std::static_pointer_cast<ScalarValue>(cur_material->properties[location_of_prop]);
-
-      // Process operation
-      if (operation_index == static_cast<int>(OperationType::SINGLE_VALUE))
-      {
-        auto value = LuaArg<double>(L, 4);
-        prop->value_ = value;
-        opensn::log.Log0Verbose1()
-          << "Scalar value for material at index " << material_index << " set to " << value;
-      }
-      else
-      {
-        opensn::log.Log0Error() << "ERROR: Unsupported operation for SCALAR_VALUE." << std::endl;
-        opensn::Exit(EXIT_FAILURE);
-      }
-    }
-    else
-    {
-      opensn::log.Log0Error() << "ERROR: Material has no property SCALAR_VALUE." << std::endl;
-      opensn::Exit(EXIT_FAILURE);
-    }
+      OpenSnLogicalError("Unsupported operation for ScalarValue property.");
   } // if scalar value
-  else if (property_index == static_cast<int>(PropertyType::TRANSPORT_XSECTIONS))
+
+  else if (property_type == static_cast<int>(PropertyType::TRANSPORT_XSECTIONS))
   {
-    int location_of_prop = -1;
-    // Check if the material has this property
-    if (lua_isnumber(L, 2))
+    // Create the property, if no location was found
+    if (property_index == -1)
     {
-      for (int p = 0; p < cur_material->properties.size(); p++)
-      {
-        if (cur_material->properties[p]->Type() == PropertyType::TRANSPORT_XSECTIONS)
-        {
-          location_of_prop = p;
-        }
-      }
+      auto property = std::make_shared<MultiGroupXS>();
+      material->properties.push_back(property);
+      property_index = static_cast<int>(material->properties.size()) - 1;
     }
+    OpenSnLogicalErrorIf(property_index < 0, "Error creating or finding MultiGroupXS property.");
+
+    // Get the property
+    auto property = std::static_pointer_cast<MultiGroupXS>(material->properties.at(property_index));
+
+    // Process operation
+    if (op_type == static_cast<int>(OperationType::SIMPLE_ONE_GROUP))
+    {
+      if (num_args != 5)
+        LuaPostArgAmountError(fname, L, 5, num_args);
+
+      const auto sigma_t = LuaArg<double>(L, 4);
+      const auto c = LuaArg<double>(L, 5);
+      property->Initialize(sigma_t, c);
+      opensn::log.Log0Verbose1() << "Simple one group cross sections with sigma_t=" << sigma_t
+                                 << ", c=" << c << " set on the material at index "
+                                 << material_handle << ".";
+    }
+
+    else if (op_type == static_cast<int>(OperationType::OPENSN_XSFILE))
+    {
+      if (num_args != 4)
+        LuaPostArgAmountError(fname, L, 4, num_args);
+
+      const auto file_name = LuaArg<std::string>(L, 4);
+      property->Initialize(file_name);
+      opensn::log.Log0Verbose1() << "Cross sections from OpenSn XS file " << file_name
+                                 << " set on the material at index " << material_handle << ".";
+    }
+
+    else if (op_type == static_cast<int>(OperationType::OPENMC_XSLIB))
+    {
+      if (num_args < 5)
+        LuaPostArgAmountError(fname, L, 5, num_args);
+
+      const auto file_name = LuaArg<std::string>(L, 4);
+      const auto temperature = LuaArg<double>(L, 5);
+      const auto dataset_name = LuaArgOptional<std::string>(L, 6, "set1");
+      property->Initialize(file_name, dataset_name, temperature);
+      opensn::log.Log0Verbose1() << "Cross sections from OpenMC library " << file_name
+                                 << ", dataset " << dataset_name << ", and temperature "
+                                 << temperature << " set on the material at index "
+                                 << material_handle << ".";
+    }
+
+    else if (op_type == static_cast<int>(OperationType::EXISTING))
+    {
+      if (num_args != 4)
+        LuaPostArgAmountError(fname, L, 4, num_args);
+
+      const auto xs_handle = LuaArg<int>(L, 4);
+      material->properties.at(property_index) = std::dynamic_pointer_cast<MultiGroupXS>(
+        GetStackItemPtr(multigroup_xs_stack, xs_handle, fname));
+
+      opensn::log.Log0Verbose1() << "Cross sections at index " << xs_handle
+                                 << " set on material at index " << material_handle << ".";
+    }
+
     else
-    {
-      for (int p = 0; p < cur_material->properties.size(); p++)
-      {
-        if (cur_material->properties[p]->property_name == property_index_name)
-        {
-          location_of_prop = p;
-        }
-      }
-    }
+      OpenSnLogicalError("Unsupported operation for MultiGroupXS property.");
+  } // if transport xsections
 
-    // If the property is valid
-    if (location_of_prop >= 0)
-    {
-      auto prop =
-        std::static_pointer_cast<MultiGroupXS>(cur_material->properties[location_of_prop]);
-
-      // Process operation
-      if (operation_index == static_cast<int>(OperationType::SIMPLE_ONE_GROUP))
-      {
-        if (num_args != 5)
-          LuaPostArgAmountError("MatSetProperty", L, 5, num_args);
-
-        auto sigma_t = LuaArg<double>(L, 4);
-        auto c = LuaArg<double>(L, 5);
-
-        prop->Initialize(sigma_t, c);
-      }
-      else if (operation_index == static_cast<int>(OperationType::OPENSN_XSFILE))
-      {
-        if (num_args != 4)
-          LuaPostArgAmountError("MatSetProperty", L, 4, num_args);
-
-        const auto file_name = LuaArg<std::string>(L, 4);
-
-        prop->Initialize(file_name);
-      }
-      else if (operation_index == static_cast<int>(OperationType::OPENMC_XSLIB))
-      {
-        if (num_args < 5)
-          LuaPostArgAmountError("MatSetProperty", L, 5, num_args);
-
-        const auto file_name = LuaArg<std::string>(L, 4);
-        const auto temperature = LuaArg<double>(L, 5);
-        const auto dataset_name = LuaArgOptional<std::string>(L, 6, "set1");
-        prop->Initialize(file_name, dataset_name, temperature);
-      }
-      else if (operation_index == static_cast<int>(OperationType::EXISTING))
-      {
-        if (num_args != 4)
-          LuaPostArgAmountError("MatSetProperty", L, 4, num_args);
-
-        auto handle = LuaArg<int>(L, 4);
-
-        std::shared_ptr<MultiGroupXS> xs;
-        try
-        {
-          xs = std::dynamic_pointer_cast<MultiGroupXS>(
-            opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle, fname));
-        }
-        catch (const std::out_of_range& o)
-        {
-          opensn::log.LogAllError()
-            << "ERROR: Invalid cross-section handle in call to MatSetProperty." << std::endl;
-          opensn::Exit(EXIT_FAILURE);
-        }
-        //        auto old_prop = prop;
-        prop = xs;
-
-        cur_material->properties[location_of_prop] = prop;
-
-        //        delete old_prop; //Still debating if this should be deleted
-      }
-      else
-      {
-        opensn::log.LogAllError() << "Unsupported operation for TRANSPORT_XSECTIONS." << std::endl;
-        opensn::Exit(EXIT_FAILURE);
-      }
-    }
-    else
-    {
-      opensn::log.LogAllError() << "Material has no property TRANSPORT_XSECTIONS." << std::endl;
-      opensn::Exit(EXIT_FAILURE);
-    }
-  } // if thermal conductivity
-  else if (property_index == static_cast<int>(PropertyType::ISOTROPIC_MG_SOURCE))
+  else if (property_type == static_cast<int>(PropertyType::ISOTROPIC_MG_SOURCE))
   {
-    int location_of_prop = -1;
-    // Check if the material has this property
-    if (lua_isnumber(L, 2))
+    // Create the property, if no location was found
+    if (property_index == -1)
     {
-      for (int p = 0; p < cur_material->properties.size(); p++)
-      {
-        if (cur_material->properties[p]->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
-        {
-          location_of_prop = p;
-        }
-      }
+      auto property = std::make_shared<IsotropicMultiGrpSource>();
+      material->properties.push_back(property);
+      property_index = static_cast<int>(material->properties.size()) - 1;
+    }
+    OpenSnLogicalErrorIf(property_index < 0,
+                         "Error creating or finding IsotropicMultiGrpSource property.");
+
+    // Get the property
+    auto property =
+      std::static_pointer_cast<IsotropicMultiGrpSource>(material->properties.at(property_index));
+
+    // Process operation
+    if (op_type == static_cast<int>(OperationType::SINGLE_VALUE))
+    {
+      if (num_args != 4)
+        LuaPostArgAmountError(fname, L, 4, num_args);
+
+      const auto value = LuaArg<double>(L, 4);
+      property->source_value_g.resize(1, value);
+      opensn::log.Log0Verbose1() << "Isotropic multi-group source value for material at index "
+                                 << material_handle << " set to " << value << ".";
+    }
+    else if (op_type == static_cast<int>(OperationType::FROM_ARRAY))
+    {
+      if (num_args != 4)
+        LuaPostArgAmountError("MatSetProperty", L, 4, num_args);
+
+      property->source_value_g = LuaArg<std::vector<double>>(L, 4);
+      opensn::log.Log0Verbose1() << "Isotropic Multi-group Source populated with "
+                                 << property->source_value_g.size() << " values.";
     }
     else
-    {
-      for (int p = 0; p < cur_material->properties.size(); p++)
-      {
-        if (cur_material->properties[p]->property_name == property_index_name)
-        {
-          location_of_prop = p;
-        }
-      }
-    }
+      OpenSnInvalidArgument("Unsupported operation for IsotropicMultiGrpSource");
+  } // if isotropic multi-group source
 
-    // If the property is valid
-    if (location_of_prop >= 0)
-    {
-      auto prop = std::static_pointer_cast<IsotropicMultiGrpSource>(
-        cur_material->properties[location_of_prop]);
-
-      if (operation_index == static_cast<int>(OperationType::SINGLE_VALUE))
-      {
-        if (num_args != 4)
-          LuaPostArgAmountError("MatSetProperty", L, 4, num_args);
-
-        auto value = LuaArg<double>(L, 4);
-
-        prop->source_value_g.resize(1, value);
-        opensn::log.Log0Verbose1() << "Isotropic Multigroup Source value for material at index "
-                                   << material_index << " set to " << value;
-      }
-      else if (operation_index == static_cast<int>(OperationType::FROM_ARRAY))
-      {
-        if (num_args != 4)
-          LuaPostArgAmountError("MatSetProperty", L, 4, num_args);
-        prop->source_value_g = LuaArg<std::vector<double>>(L, 4);
-        opensn::log.Log0Verbose1() << "Isotropic Multigroup Source populated with "
-                                   << prop->source_value_g.size() << " values";
-      }
-      else
-      {
-        opensn::log.LogAllError() << "Unsupported operation for ISOTROPIC_MG_SOURCE." << std::endl;
-        opensn::Exit(EXIT_FAILURE);
-      }
-    }
-    else
-    {
-      opensn::log.LogAllError() << "Material \"" << cur_material->name
-                                << "\" has no property ISOTROPIC_MG_SOURCE." << std::endl;
-      opensn::Exit(EXIT_FAILURE);
-    }
-  }
   else
-  {
-    opensn::log.LogAllError()
-      << "Unsupported material property specified in call to MatSetProperty." << property_index
-      << std::endl;
-    opensn::Exit(EXIT_FAILURE);
-  }
+    OpenSnInvalidArgument("Unsupported material property type specified in call to " + fname + ".");
 
   return LuaReturn(L);
 }

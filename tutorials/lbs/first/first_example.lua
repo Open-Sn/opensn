@@ -99,9 +99,6 @@ We create a material and add two properties to it:
 materials = {}
 materials[1] = mat.AddMaterial("Material_A");
 
-mat.AddProperty(materials[1],TRANSPORT_XSECTIONS)
-mat.AddProperty(materials[1],ISOTROPIC_MG_SOURCE)
-
 --[[ @doc
 ## Cross Sections
 We assign the cross sections to the material by loading the file containing the cross sections. See the tutorials'

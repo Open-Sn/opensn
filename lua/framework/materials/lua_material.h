@@ -84,8 +84,8 @@ int MatAddProperty(lua_State* L);
  * Sets a material property for a given material.
  *
  * \param MaterialHandle int Index to the reference material.
- * \param PropertyIndex int Property index. Or name of property.
- * \param OperationIndex int Method used for setting the material property.
+ * \param PropertyType int Property type, or name of property.
+ * \param OperationType int Method used for setting the material property.
  * \param Information varying Varying information depending on the operation.
  *
  * ##_
@@ -143,37 +143,32 @@ int MatAddProperty(lua_State* L);
  * ##_
  *
  * ### Example 1
- * Simple temperature independent thermal conductivity:
+ * Simple scalar valued property:
  * \code
  * materials = {}
  * materials[1] = mat.AddMaterial("Test Material");
- * mat.AddProperty(materials[0],THERMAL_CONDUCTIVITY)
- * mat.SetProperty(materials[0],THERMAL_CONDUCTIVITY,SINGLE_VALUE,13.7)
+ * mat.SetProperty(materials[0], SCALAR_VALUE, SINGLE_VALUE, 13.7)
  * \endcode
  *
  * where the thermal conductivity has been set to 13.7.\n
  *
  * ### Example 2
- * Isotropic Multigroup source set from a lua table/array (12 groups):
+ * Isotropic multi-group source set from a lua table/array (12 groups):
  * \code
  * materials = {}
  * materials[1] = mat.AddMaterial("Test Material");
- *
- * mat.AddProperty(materials[1],ISOTROPIC_MG_SOURCE)
  *
  * num_groups = 12
  * src={}
  * for g=1,num_groups do
  *     src[g] = 0.0
  * end
- * mat.SetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+ * mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
  * \endcode
  *
  * ### Developer Info
  * Checklist for adding a new material property:
- *  - Make sure you followed the steps depicted in the developer info section for
- *    the MatAddProperty function.
- *  - Now under the "If user supplied name then find property index"-section
+ *  - Under the "If user supplied name then find property index"-section
  *    add the appropriate code for setting the property index.
  *  - Add an else-if block for your property similar to the others. It should be
  *    intuitive if you look at the others.

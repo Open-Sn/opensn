@@ -31,8 +31,6 @@ sigma_t = 1.0
 
 materials = {}
 materials[1] = mat.AddMaterial("Test Material");
-mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
-
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, sigma_t, 0.0)
 
 -- Setup Physics

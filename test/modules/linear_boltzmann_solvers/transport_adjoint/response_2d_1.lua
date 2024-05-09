@@ -73,13 +73,8 @@ materials[3] = mat.AddMaterial("Test Material3");
 
 -- Add cross sections to materials
 num_groups = 1
-mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.01, 0.01)
-
-mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
 mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.1 * 20, 0.8)
-
-mat.AddProperty(materials[3], TRANSPORT_XSECTIONS)
 mat.SetProperty(materials[3], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.3 * 20, 0.0)
 
 -- Create sources
@@ -91,7 +86,6 @@ for g = 1, num_groups do
         src[g] = 0.0
     end
 end
-mat.AddProperty(materials[3], ISOTROPIC_MG_SOURCE)
 mat.SetProperty(materials[3], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 -- Setup physics

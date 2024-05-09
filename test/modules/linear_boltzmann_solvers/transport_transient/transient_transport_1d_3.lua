@@ -40,11 +40,6 @@ materials = {}
 materials[1] = mat.AddMaterial("Strong fuel");
 materials[2] = mat.AddMaterial("Weak fuel");
 
-mat.AddProperty(materials[1], TRANSPORT_XSECTIONS)
-mat.AddProperty(materials[2], TRANSPORT_XSECTIONS)
-mat.AddProperty(materials[1], ISOTROPIC_MG_SOURCE)
-mat.AddProperty(materials[2], ISOTROPIC_MG_SOURCE)
-
 -- Define microscopic cross sections
 xs_strong_fuel_micro = xs.Create()
 xs.Set(xs_strong_fuel_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_k1_6_1g.xs")
