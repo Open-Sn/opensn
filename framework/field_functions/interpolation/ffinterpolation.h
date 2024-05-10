@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace opensn
 {
@@ -56,9 +57,9 @@ protected:
 
 public:
   explicit FieldFunctionInterpolation(FieldFunctionInterpolationType type)
-    : type_(type), ref_component_(0)
-  {
-  }
+    : type_(type),
+      ref_component_(0)
+  {}
 
   std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions()
   {
@@ -67,13 +68,11 @@ public:
 
   FieldFunctionInterpolationType Type() const { return type_; }
 
-  virtual void Initialize(){};
+  virtual void Initialize() {};
 
-  virtual void Execute(){};
+  virtual void Execute() {};
 
-  virtual std::string GetDefaultFileBaseName() const = 0;
-
-  virtual void ExportPython(std::string base_name) = 0;
+  virtual void Export(std::string base_name) {};
 };
 
 } // namespace opensn

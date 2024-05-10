@@ -115,7 +115,7 @@ fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 --    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, z = 1.0})
 --    fieldfunc.Initialize(slices[k])
 --    fieldfunc.Execute(slices[k])
---    fieldfunc.ExportPython(slices[k])
+--    fieldfunc.Export(slices[k])
 --end
 
 --############################################### Volume integrations

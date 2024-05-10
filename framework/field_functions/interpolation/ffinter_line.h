@@ -28,8 +28,7 @@ public:
       number_of_points_(2),
       op_value_(0.0),
       op_type_(FieldFunctionInterpolationOperation::OP_SUM)
-  {
-  }
+  {}
 
   virtual ~FieldFunctionInterpolationLine() {}
 
@@ -55,9 +54,7 @@ public:
 
   double GetOpValue() { return op_value_; }
 
-  std::string GetDefaultFileBaseName() const override { return "ZLFFI"; }
-
-  void ExportPython(std::string base_name) override;
+  void Export(std::string base_name) override;
 };
 
 } // namespace opensn

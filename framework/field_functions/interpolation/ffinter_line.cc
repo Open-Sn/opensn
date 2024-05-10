@@ -4,8 +4,8 @@
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
-#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -36,7 +36,7 @@ FieldFunctionInterpolationLine::Initialize()
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
   const auto& grid = sdm.Grid();
 
-  // Find local points
+  // Find local points and associated cells
   auto estimated_local_size = number_of_points_ / opensn::mpi_comm.size();
   local_interpolation_points_.reserve(estimated_local_size);
   local_cells_.reserve(estimated_local_size);
@@ -107,7 +107,7 @@ FieldFunctionInterpolationLine::Execute()
 }
 
 void
-FieldFunctionInterpolationLine::ExportPython(std::string base_name)
+FieldFunctionInterpolationLine::Export(std::string base_name)
 {
   // Populate local coordinate and interpolation data
   std::vector<double> local_data;
@@ -124,9 +124,10 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
   // Compute size of local coordinate and interpolation data and send to rank 0
   std::vector<int> local_data_sizes(opensn::mpi_comm.size(), 0);
   int local_size = local_data.size();
-  MPI_Gather(&local_size, 1, MPI_INT, local_data_sizes.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
+  opensn::mpi_comm.gather(local_size, local_data_sizes, 0);
+  //MPI_Gather(&local_size, 1, MPI_INT, local_data_sizes.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-  // Compute global size of coordinate and interpolation data and offsets
+  // Compute global size of coordinate and interpolation data and each location's offset
   std::vector<double> global_data;
   std::vector<int> offsets;
   int global_data_size = 0;
@@ -141,12 +142,12 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
     global_data.resize(global_data_size);
   }
 
-  // Send local data to rank 0
+  // Send all local data to rank 0
   opensn::mpi_comm.gather(local_data, global_data, local_data_sizes, offsets, 0);
 
   if (opensn::mpi_comm.rank() == 0)
   {
-    // Zip data and sort
+    // Zip data and sort data by coordinate
     std::vector<std::tuple<double, double, double, double>> values;
     values.reserve(global_data_size / 4);
     for (size_t i = 0; i < global_data_size; i += 4)
@@ -173,21 +174,19 @@ FieldFunctionInterpolationLine::ExportPython(std::string base_name)
 
     // Write sorted data to CSV file
     std::ofstream ofile;
-    std::string filename = base_name;
-    filename = filename + std::string(".csv");
+    std::string filename = base_name + "_" + ref_ff_->TextName() + std::string(".csv");
     ofile.open(filename);
     ofile << "x,y,z," << ref_ff_->TextName() << "\n";
-    for (auto v : values)
+    for (auto point_data : values)
     {
-      ofile << std::setprecision(5) << std::get<0>(v) << "," << std::get<1>(v) << ","
-            << std::get<2>(v) << "," << std::get<3>(v) << "\n";
+      auto [x, y, z, fv ] = point_data;
+      ofile << std::setprecision(5) << x << "," << y << "," << z << "," << fv << "\n";
     }
     ofile.close();
 
     log.Log() << "Exported CSV file for field func \"" << ref_ff_->TextName() << "\" to \""
-              << base_name;
+              << filename << "\"";
   }
-  opensn::mpi_comm.barrier();
 }
 
 } // namespace opensn

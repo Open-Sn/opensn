@@ -32,10 +32,8 @@ RegisterLuaConstant(OP_SUM_FUNC, Varying(13));
 RegisterLuaConstant(OP_AVG_FUNC, Varying(14));
 RegisterLuaConstant(OP_MAX_FUNC, Varying(15));
 RegisterLuaConstant(LOGICAL_VOLUME, Varying(8));
-
 RegisterLuaConstant(ADD_FIELDFUNCTION, Varying(9));
 RegisterLuaConstant(SET_FIELDFUNCTIONS, Varying(10));
-
 RegisterLuaConstant(LINE_FIRSTPOINT, Varying(11));
 RegisterLuaConstant(LINE_SECONDPOINT, Varying(12));
 RegisterLuaConstant(LINE_NUMBEROFPOINTS, Varying(13));
@@ -166,24 +164,23 @@ FFInterpolationSetProperty(lua_State* L)
     LuaCheckArgs<size_t, int, int>(L, fname);
     auto op_type = LuaArg<int>(L, 3);
 
+    int OP_SUM      = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM);
+    int OP_AVG      = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG);
+    int OP_MAX      = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX);
+    int OP_SUM_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM_FUNC);
+    int OP_AVG_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG_FUNC);
+    int OP_MAX_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX_FUNC);
+
     if (p_ffi->Type() == FieldFunctionInterpolationType::VOLUME)
     {
-      int OP_SUM = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM);
-      int OP_AVG = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG);
-      int OP_MAX = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX);
-      int OP_SUM_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM_FUNC);
-      int OP_AVG_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG_FUNC);
-      int OP_MAX_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX_FUNC);
-
-      if (op_type != OP_SUM && op_type != OP_AVG && op_type != OP_MAX && op_type != OP_SUM_FUNC &&
-          op_type != OP_AVG_FUNC && op_type != OP_MAX_FUNC)
+      if (op_type < OP_SUM or op_type > OP_MAX_FUNC)
       {
         throw std::logic_error("FFI_PROP_OPERATION used in FFInterpolationSetProperty. Unsupported "
                                "operation type. Supported types are OP_SUM, OP_AVG, OP_MAX, "
                                "OP_SUM_FUNC, OP_AVG_FUNC and OP_MAX_FUNC.");
       }
 
-      if (op_type == OP_SUM_FUNC or op_type == OP_AVG_FUNC or op_type == OP_MAX_FUNC)
+      if (op_type >= OP_SUM_FUNC)
       {
         LuaCheckArgs<size_t, int, int, std::string>(L, fname);
         const auto func_name = LuaArg<std::string>(L, 4);
@@ -198,11 +195,7 @@ FFInterpolationSetProperty(lua_State* L)
     }
     else if (p_ffi->Type() == FieldFunctionInterpolationType::LINE)
     {
-      int OP_SUM = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM);
-      int OP_AVG = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG);
-      int OP_MAX = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX);
-
-      if (op_type != OP_SUM && op_type != OP_AVG && op_type != OP_MAX)
+      if (op_type < OP_SUM && op_type > OP_MAX)
       {
         throw std::logic_error("FFI_PROP_OPERATION used in FFInterpolationSetProperty. Unsupported "
                                "operation type. Supported types are OP_SUM, OP_AVG, or OP_MAX.");

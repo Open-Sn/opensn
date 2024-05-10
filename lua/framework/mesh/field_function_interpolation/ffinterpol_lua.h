@@ -46,7 +46,6 @@ int FFInterpolationCreate(lua_State* L);
  * LINE_SECONDPOINT  = Line end point.\n
  * LINE_NUMBEROFPOINTS = Number of points to put in the line interpolator.
  *                           Minimum 2.\n
- * LINE_CUSTOM_ARRAY = Adds custom array to line interpolator.\n
  * OPERATION  =  Some interpolations support operation types. See OpTypes.\n
  * LOGICAL_VOLUME = To be followed by a handle to a logical volume to be
  *                  used by the interpolator.\n
@@ -131,8 +130,8 @@ int FFInterpolationInitialize(lua_State* L);
  */
 int FFInterpolationExecute(lua_State* L);
 
-/** Export interpolation to python line,contour plot depending on the
- * type of interpolation.
+/** Export interpolation to a file. This is only valid for
+ * line interpolators.
  *
  * \param FFIHandle int Handle to the field function interpolation.
  * \param BaseName char Base name to be used for exported files.
@@ -140,7 +139,7 @@ int FFInterpolationExecute(lua_State* L);
  * \ingroup LuaFFInterpol
  * \author Jan
  */
-int FFInterpolationExportPython(lua_State* L);
+int FFInterpolationExport(lua_State* L);
 
 /** Gets the value(s) associated with an interpolation provided the
  * interpolation type has an associated value.

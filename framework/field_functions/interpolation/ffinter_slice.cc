@@ -296,7 +296,7 @@ FieldFunctionInterpolationSlice::Execute()
 }
 
 void
-FieldFunctionInterpolationSlice::ExportPython(std::string base_name)
+FieldFunctionInterpolationSlice::Export(std::string base_name)
 {
   std::ofstream ofile;
 

@@ -79,7 +79,7 @@ fieldfunc.Initialize(cline)
 fieldfunc.Execute(cline)
 
 if (master_export == nil) then
-    fieldfunc.ExportPython(cline)
+    fieldfunc.Export(cline)
 end
 
 --############################################### Volume integrations

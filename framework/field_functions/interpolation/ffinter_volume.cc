@@ -7,8 +7,8 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {
@@ -24,14 +24,13 @@ void
 FieldFunctionInterpolationVolume::Initialize()
 {
   log.Log0Verbose1() << "Initializing volume interpolator.";
+
   // Check grid available
   if (field_functions_.empty())
-    throw std::logic_error("Unassigned field function in volume field "
-                           "function interpolator.");
+    throw std::logic_error("Unassigned field function in volume field function interpolator.");
 
   if (logical_volume_ == nullptr)
-    throw std::logic_error("Unassigned logical volume in volume field function"
-                           "interpolator.");
+    throw std::logic_error("Unassigned logical volume in volume field function interpolator.");
 
   const auto& grid = field_functions_.front()->GetSpatialDiscretization().Grid();
 
@@ -70,7 +69,7 @@ FieldFunctionInterpolationVolume::Execute()
     {
       const int64_t imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
       node_dof_values[i] = field_data[imap];
-    } // for i
+    }
 
     if (cell_local_id == cell_local_ids_inside_logvol_.front())
     {
@@ -99,16 +98,16 @@ FieldFunctionInterpolationVolume::Execute()
       local_sum += function_value * fe_vol_data.JxW(qp);
       local_max = std::fmax(ff_value, local_max);
       local_min = std::fmin(ff_value, local_min);
-    } // for qp
-  }   // for cell-id
+    }
+  }
 
   if (op_type_ == FieldFunctionInterpolationOperation::OP_SUM or
       op_type_ == FieldFunctionInterpolationOperation::OP_SUM_FUNC)
   {
     mpi_comm.all_reduce(local_sum, op_value_, mpi::op::sum<double>());
   }
-  if (op_type_ == FieldFunctionInterpolationOperation::OP_AVG or
-      op_type_ == FieldFunctionInterpolationOperation::OP_AVG_FUNC)
+  else if (op_type_ == FieldFunctionInterpolationOperation::OP_AVG or
+           op_type_ == FieldFunctionInterpolationOperation::OP_AVG_FUNC)
   {
     double local_data[] = {local_volume, local_sum};
     double global_data[] = {0.0, 0.0};
@@ -118,8 +117,8 @@ FieldFunctionInterpolationVolume::Execute()
     double global_sum = global_data[1];
     op_value_ = global_sum / global_volume;
   }
-  if (op_type_ == FieldFunctionInterpolationOperation::OP_MAX or
-      op_type_ == FieldFunctionInterpolationOperation::OP_MAX_FUNC)
+  else if (op_type_ == FieldFunctionInterpolationOperation::OP_MAX or
+           op_type_ == FieldFunctionInterpolationOperation::OP_MAX_FUNC)
   {
     mpi_comm.all_reduce(local_max, op_value_, mpi::op::max<double>());
   }

@@ -71,9 +71,7 @@ public:
    */
   void Initialize() override;
   void Execute() override;
-
-  std::string GetDefaultFileBaseName() const override { return "ZPFFI"; }
-  void ExportPython(std::string base_name) override;
+  void Export(std::string base_name) override;
 };
 
 } // namespace opensn
