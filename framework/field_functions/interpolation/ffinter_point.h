@@ -24,7 +24,8 @@ public:
       locally_owned_(false),
       owning_cell_gid_(0),
       point_value_(0.0)
-  {}
+  {
+  }
 
   virtual ~FieldFunctionInterpolationPoint() {}
 

@@ -32,7 +32,8 @@ public:
       logical_volume_(nullptr),
       op_type_(FieldFunctionInterpolationOperation::OP_SUM),
       op_value_(0.0)
-  {}
+  {
+  }
 
   virtual ~FieldFunctionInterpolationVolume() {}
 

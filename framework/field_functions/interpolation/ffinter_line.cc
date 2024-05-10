@@ -125,7 +125,6 @@ FieldFunctionInterpolationLine::Export(std::string base_name)
   std::vector<int> local_data_sizes(opensn::mpi_comm.size(), 0);
   int local_size = local_data.size();
   opensn::mpi_comm.gather(local_size, local_data_sizes, 0);
-  //MPI_Gather(&local_size, 1, MPI_INT, local_data_sizes.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   // Compute global size of coordinate and interpolation data and each location's offset
   std::vector<double> global_data;
@@ -179,8 +178,8 @@ FieldFunctionInterpolationLine::Export(std::string base_name)
     ofile << "x,y,z," << ref_ff_->TextName() << "\n";
     for (auto point_data : values)
     {
-      auto [x, y, z, fv ] = point_data;
-      ofile << std::setprecision(5) << x << "," << y << "," << z << "," << fv << "\n";
+      auto [x, y, z, fv] = point_data;
+      ofile << std::setprecision(7) << x << "," << y << "," << z << "," << fv << "\n";
     }
     ofile.close();
 

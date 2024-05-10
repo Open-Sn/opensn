@@ -64,10 +64,8 @@ FFInterpolationCreate(lua_State* L)
     return LuaReturn(L, index);
   }
   else // Fall back
-  {
-    opensn::log.LogAllError() << "Invalid FFITypeIndex used in FFInterpolationCreate.";
-    opensn::Exit(EXIT_FAILURE);
-  }
+    throw std::logic_error("Invalid FFITypeIndex used in FFInterpolationCreate.");
+
   return LuaReturn(L);
 }
 

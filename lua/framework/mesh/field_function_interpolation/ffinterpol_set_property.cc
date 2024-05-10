@@ -164,9 +164,9 @@ FFInterpolationSetProperty(lua_State* L)
     LuaCheckArgs<size_t, int, int>(L, fname);
     auto op_type = LuaArg<int>(L, 3);
 
-    int OP_SUM      = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM);
-    int OP_AVG      = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG);
-    int OP_MAX      = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX);
+    int OP_SUM = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM);
+    int OP_AVG = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG);
+    int OP_MAX = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX);
     int OP_SUM_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM_FUNC);
     int OP_AVG_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG_FUNC);
     int OP_MAX_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX_FUNC);

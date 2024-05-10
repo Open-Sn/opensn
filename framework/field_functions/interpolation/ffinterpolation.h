@@ -57,9 +57,9 @@ protected:
 
 public:
   explicit FieldFunctionInterpolation(FieldFunctionInterpolationType type)
-    : type_(type),
-      ref_component_(0)
-  {}
+    : type_(type), ref_component_(0)
+  {
+  }
 
   std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions()
   {
@@ -68,11 +68,11 @@ public:
 
   FieldFunctionInterpolationType Type() const { return type_; }
 
-  virtual void Initialize() {};
+  virtual void Initialize(){};
 
-  virtual void Execute() {};
+  virtual void Execute(){};
 
-  virtual void Export(std::string base_name) {};
+  virtual void Export(std::string base_name){};
 };
 
 } // namespace opensn

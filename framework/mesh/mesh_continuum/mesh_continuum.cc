@@ -954,19 +954,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
     const auto& v0 = grid_ref.vertices[cell.vertex_ids_[0]];
     const auto& v1 = grid_ref.vertices[cell.vertex_ids_[1]];
 
-    if (not((point.z > v0.z) and (point.z < v1.z)))
-      return false;
-
     if (((v0.z - point.z) * (v1.z - point.z)) > 0.0)
       return false;
-
-    /*const auto v01 = v1 - v0;
-    const auto v0p = point - v0;
-
-    const double v0p_dot_v01 = v0p.Dot(v01);
-
-    if (not(v0p_dot_v01 >= 0.0 and v0p_dot_v01 < v01.Norm()))
-      inside = false;*/
   } // slab
 
   else if (cell.Type() == CellType::POLYGON)

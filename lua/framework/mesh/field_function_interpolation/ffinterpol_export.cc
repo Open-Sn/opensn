@@ -20,9 +20,8 @@ FFInterpolationExport(lua_State* L)
 
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
-  auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack,
-                                       ffihandle,
-                                       "fieldfunc.Export");
+  auto p_ffi =
+    opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, "fieldfunc.Export");
   auto base_name = LuaArgOptional<std::string>(L, 2, opensn::input_path.stem());
   p_ffi->Export(base_name);
 

@@ -28,7 +28,8 @@ public:
       number_of_points_(2),
       op_value_(0.0),
       op_type_(FieldFunctionInterpolationOperation::OP_SUM)
-  {}
+  {
+  }
 
   virtual ~FieldFunctionInterpolationLine() {}
 
