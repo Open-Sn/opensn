@@ -3,12 +3,12 @@
 
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/math/vector_ghost_communicator//vector_ghost_communicator.h"
+#include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/mesh/cell/cell.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/runtime.h"
+#include "framework/mesh/cell/cell.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include <fstream>
 
 namespace opensn
@@ -18,49 +18,40 @@ void
 FieldFunctionInterpolationLine::Initialize()
 {
   log.Log0Verbose1() << "Initializing line interpolator.";
+
   // Check for empty FF-list
   if (field_functions_.empty())
-    throw std::logic_error("Unassigned field function in line "
-                           "field function interpolator.");
+    throw std::logic_error("Unassigned field function in line field function interpolator.");
 
   // Create points;
   const Vector3 vif = pf_ - pi_;
-  delta_d_ = vif.Norm() / (number_of_points_ - 1);
-
+  double delta_d = vif.Norm() / (number_of_points_ - 1);
   const auto omega = vif.Normalized();
+  std::vector<Vector3> tmp_points(number_of_points_);
+  tmp_points[0] = pi_;
+  for (int k = 1; k < number_of_points_; ++k)
+    tmp_points[k] = pi_ + omega * delta_d * k;
 
-  interpolation_points_.push_back(pi_);
-  for (int k = 1; k < (number_of_points_); k++)
-    interpolation_points_.push_back(pi_ + omega * delta_d_ * k);
+  ref_ff_ = field_functions_.front();
+  const auto& sdm = ref_ff_->GetSpatialDiscretization();
+  const auto& grid = sdm.Grid();
 
-  // Loop over contexts
-  const size_t num_ff = field_functions_.size();
-  for (size_t ff = 0; ff < num_ff; ff++)
+  // Find local points
+  auto estimated_local_size = number_of_points_ / opensn::mpi_comm.size();
+  local_interpolation_points_.reserve(estimated_local_size);
+  local_cells_.reserve(estimated_local_size);
+  for (const auto& cell : grid.local_cells)
   {
-    ff_contexts_.emplace_back();
-    auto& ff_context = ff_contexts_.back();
-
-    ff_context.ref_ff = field_functions_[ff];
-    const auto& sdm = ff_context.ref_ff->GetSpatialDiscretization();
-    const auto& grid = sdm.Grid();
-
-    ff_context.interpolation_points_ass_cell.assign(number_of_points_, 0);
-    ff_context.interpolation_points_has_ass_cell.assign(number_of_points_, false);
-
-    // Find a home for each point
-    for (const auto& cell : grid.local_cells)
+    for (int p = 0; p < number_of_points_; p++)
     {
-      for (int p = 0; p < number_of_points_; p++)
+      auto& point = tmp_points[p];
+      if (grid.CheckPointInsideCell(cell, point))
       {
-        const auto& point = interpolation_points_[p];
-        if (grid.CheckPointInsideCell(cell, point))
-        {
-          ff_context.interpolation_points_ass_cell[p] = cell.local_id_;
-          ff_context.interpolation_points_has_ass_cell[p] = true;
-        }
-      } // for point p
-    }   // for cell
-  }     // for ff
+        local_interpolation_points_.push_back(point);
+        local_cells_.push_back(cell.local_id_);
+      }
+    }
+  }
 
   log.Log0Verbose1() << "Finished initializing interpolator.";
 }
@@ -69,196 +60,134 @@ void
 FieldFunctionInterpolationLine::Execute()
 {
   log.Log0Verbose1() << "Executing line interpolator.";
-  for (int ff = 0; ff < field_functions_.size(); ff++)
+
+  const auto& sdm = ref_ff_->GetSpatialDiscretization();
+  const auto& grid = sdm.Grid();
+  const auto& uk_man = ref_ff_->GetUnknownManager();
+  const auto uid = 0;
+  const auto cid = ref_component_;
+  const auto field_data = ref_ff_->GetGhostedFieldVector();
+
+  double local_max = 0.0, local_sum = 0.0, local_avg = 0.0;
+  size_t local_size = local_interpolation_points_.size();
+  local_interpolation_values_.resize(local_size);
+  for (auto p = 0; p < local_size; ++p)
   {
-    auto& ff_ctx = ff_contexts_[ff];
-    const auto& ref_ff = *ff_ctx.ref_ff;
-    const auto& sdm = ref_ff.GetSpatialDiscretization();
-    const auto& grid = sdm.Grid();
+    auto& point = local_interpolation_points_[p];
+    auto cell_local_index = local_cells_[p];
+    const auto& cell = grid.local_cells[cell_local_index];
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const size_t num_nodes = cell_mapping.NumNodes();
 
-    const auto& uk_man = ref_ff.GetUnknownManager();
-    const auto uid = 0;
-    const auto cid = ref_component_;
-
-    const auto field_data = ref_ff.GetGhostedFieldVector();
-
-    ff_ctx.interpolation_points_values.assign(number_of_points_, 0.0);
-    for (int p = 0; p < number_of_points_; ++p)
+    std::vector<double> shape_function_vals(num_nodes, 0.0);
+    cell_mapping.ShapeValues(point, shape_function_vals);
+    double point_value = 0.0;
+    for (size_t i = 0; i < num_nodes; ++i)
     {
-      if (not ff_ctx.interpolation_points_has_ass_cell[p])
-        continue;
+      const int64_t imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
+      point_value += shape_function_vals[i] * field_data[imap];
+    }
+    local_interpolation_values_[p] = point_value;
+    local_max = std::max(point_value, local_max);
+    local_sum += point_value;
+  }
 
-      const auto cell_local_index = ff_ctx.interpolation_points_ass_cell[p];
-      const auto& cell = grid.local_cells[cell_local_index];
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.NumNodes();
-
-      std::vector<double> shape_function_vals(num_nodes, 0.0);
-      cell_mapping.ShapeValues(interpolation_points_[p], shape_function_vals);
-
-      double point_value = 0.0;
-      for (size_t i = 0; i < num_nodes; ++i)
-      {
-        const int64_t imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
-
-        point_value += shape_function_vals[i] * field_data[imap];
-      } // for node i
-      ff_ctx.interpolation_points_values[p] = point_value;
-    } // for p
-  }   // for ff
+  if (op_type_ == FieldFunctionInterpolationOperation::OP_SUM)
+    mpi_comm.all_reduce(local_sum, op_value_, mpi::op::sum<double>());
+  else if (op_type_ == FieldFunctionInterpolationOperation::OP_AVG)
+  {
+    size_t global_size = 0;
+    mpi_comm.all_reduce(local_size, global_size, mpi::op::sum<size_t>());
+    double global_sum = 0.0;
+    mpi_comm.all_reduce(local_sum, global_sum, mpi::op::sum<double>());
+    op_value_ = global_sum / static_cast<double>(global_size);
+  }
+  else if (op_type_ == FieldFunctionInterpolationOperation::OP_MAX)
+    mpi_comm.all_reduce(local_max, op_value_, mpi::op::max<double>());
 }
 
 void
 FieldFunctionInterpolationLine::ExportPython(std::string base_name)
 {
-  std::ofstream ofile;
+  // Populate local coordinate and interpolation data
+  std::vector<double> local_data;
+  local_data.reserve(4 * number_of_points_ / opensn::mpi_comm.size());
+  for (auto p = 0; p < local_interpolation_points_.size(); ++p)
+  {
+    auto& point = local_interpolation_points_[p];
+    local_data.push_back(point.x);
+    local_data.push_back(point.y);
+    local_data.push_back(point.z);
+    local_data.push_back(local_interpolation_values_[p]);
+  }
 
-  std::string fileName = base_name;
-  fileName = fileName + std::to_string(opensn::mpi_comm.rank());
-  fileName = fileName + std::string(".py");
-  ofile.open(fileName);
+  // Compute size of local coordinate and interpolation data and send to rank 0
+  std::vector<int> local_data_sizes(opensn::mpi_comm.size(), 0);
+  int local_size = local_data.size();
+  MPI_Gather(&local_size, 1, MPI_INT, local_data_sizes.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-  ofile << "import numpy as np\n"
-           "import matplotlib.pyplot as plt\n"
-        << "\n";
-
-  std::string offset;
-  std::string submod_name;
+  // Compute global size of coordinate and interpolation data and offsets
+  std::vector<double> global_data;
+  std::vector<int> offsets;
+  int global_data_size = 0;
   if (opensn::mpi_comm.rank() == 0)
   {
-    submod_name = base_name;
-    submod_name = submod_name + std::to_string(opensn::mpi_comm.rank() + 1);
-
-    if (opensn::mpi_comm.size() > 1)
+    offsets.resize(opensn::mpi_comm.size());
+    for (int i = 0; i < opensn::mpi_comm.size(); ++i)
     {
-      ofile << "import " << submod_name << "\n\n";
+      offsets[i] = global_data_size;
+      global_data_size += local_data_sizes[i];
     }
-
-    for (int ff = 0; ff < field_functions_.size(); ff++)
-    {
-      ofile << "data" << ff << "=np.zeros([" << interpolation_points_.size() << ",5])\n";
-    }
-    for (int ca = 0; ca < custom_arrays_.size(); ca++)
-    {
-      int ff = ca + field_functions_.size();
-      ofile << "data" << ff << "=np.zeros([" << interpolation_points_.size() << ",5])\n";
-    }
-
-    offset = std::string("");
-  }
-  else if (opensn::mpi_comm.size() > 1)
-  {
-
-    if (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1))
-    {
-      submod_name = base_name;
-      submod_name = submod_name + std::to_string(opensn::mpi_comm.rank() + 1);
-
-      ofile << "import " << submod_name << "\n\n";
-    }
+    global_data.resize(global_data_size);
   }
 
-  for (int ff = 0; ff < field_functions_.size(); ff++)
-  {
-    const auto& ff_ctx = ff_contexts_[ff];
-
-    if (opensn::mpi_comm.size() > 1 and opensn::mpi_comm.rank() != 0)
-    {
-      ofile << "def AddData" << ff << "(data" << ff << "):\n";
-
-      offset = std::string("  ");
-    }
-    for (int p = 0; p < interpolation_points_.size(); p++)
-    {
-      if ((not ff_ctx.interpolation_points_has_ass_cell[p]) and (opensn::mpi_comm.rank() != 0))
-      {
-        continue;
-      }
-
-      ofile << offset << "data" << ff << "[" << p << ",0] = " << interpolation_points_[p].x << "\n";
-      ofile << offset << "data" << ff << "[" << p << ",1] = " << interpolation_points_[p].y << "\n";
-      ofile << offset << "data" << ff << "[" << p << ",2] = " << interpolation_points_[p].z << "\n";
-
-      double d = delta_d_ * p;
-
-      ofile << offset << "data" << ff << "[" << p << ",3] = " << d << "\n";
-      ofile << offset << "data" << ff << "[" << p
-            << ",4] = " << ff_ctx.interpolation_points_values[p] << "\n";
-    }
-
-    ofile << offset << "done=True\n";
-    ofile << "\n\n";
-    if ((opensn::mpi_comm.size() > 1) and
-        (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1)))
-    {
-      ofile << offset << submod_name << ".AddData" << ff << "(data" << ff << ")\n";
-    }
-  }
-
-  for (int ca = 0; ca < custom_arrays_.size(); ca++)
-  {
-    int ff = ca + field_functions_.size();
-
-    if (opensn::mpi_comm.size() > 1 and opensn::mpi_comm.rank() != 0)
-    {
-      ofile << "def AddData" << ff << "(data" << ff << "):\n";
-
-      offset = std::string("  ");
-    }
-
-    std::string op("= ");
-    if (opensn::mpi_comm.rank() != 0)
-      op = std::string("+= ");
-
-    for (int p = 0; p < interpolation_points_.size(); p++)
-    {
-      ofile << offset << "data" << ff << "[" << p << ",0] = " << interpolation_points_[p].x << "\n";
-      ofile << offset << "data" << ff << "[" << p << ",1] = " << interpolation_points_[p].y << "\n";
-      ofile << offset << "data" << ff << "[" << p << ",2] = " << interpolation_points_[p].z << "\n";
-
-      double d = delta_d_ * p;
-      double value = 0.0;
-
-      if (p < custom_arrays_[ca].size())
-        value = custom_arrays_[ca][p];
-
-      ofile << offset << "data" << ff << "[" << p << ",3] = " << d << "\n";
-      ofile << offset << "data" << ff << "[" << p << ",4] " << op << value << "\n";
-    }
-    ofile << offset << "done=True\n";
-    ofile << "\n\n";
-    if ((opensn::mpi_comm.size() > 1) and
-        (opensn::mpi_comm.rank() != (opensn::mpi_comm.size() - 1)))
-    {
-      ofile << offset << submod_name << ".AddData" << ff << "(data" << ff << ")\n";
-    }
-  }
+  // Send local data to rank 0
+  opensn::mpi_comm.gather(local_data, global_data, local_data_sizes, offsets, 0);
 
   if (opensn::mpi_comm.rank() == 0)
   {
-    ofile << "plt.figure(1)\n";
-    for (int ff = 0; ff < field_functions_.size(); ff++)
+    // Zip data and sort
+    std::vector<std::tuple<double, double, double, double>> values;
+    values.reserve(global_data_size / 4);
+    for (size_t i = 0; i < global_data_size; i += 4)
     {
-      ofile << "plt.plot(data" << ff << "[:,3],data" << ff << "[:,4]"
-            << ",label=\"" << field_functions_[ff]->TextName() << "\""
-            << ")\n";
+      values.emplace_back(std::make_tuple(
+        global_data[i], global_data[i + 1], global_data[i + 2], global_data[i + 3]));
     }
-    for (int ca = 0; ca < custom_arrays_.size(); ca++)
+
+    std::stable_sort(values.begin(),
+                     values.end(),
+                     [](const std::tuple<double, double, double, double>& a,
+                        const std::tuple<double, double, double, double>& b)
+                     { return std::get<2>(a) < std::get<2>(b); });
+    std::stable_sort(values.begin(),
+                     values.end(),
+                     [](const std::tuple<double, double, double, double>& a,
+                        const std::tuple<double, double, double, double>& b)
+                     { return std::get<1>(a) < std::get<1>(b); });
+    std::stable_sort(values.begin(),
+                     values.end(),
+                     [](const std::tuple<double, double, double, double>& a,
+                        const std::tuple<double, double, double, double>& b)
+                     { return std::get<0>(a) < std::get<0>(b); });
+
+    // Write sorted data to CSV file
+    std::ofstream ofile;
+    std::string filename = base_name;
+    filename = filename + std::string(".csv");
+    ofile.open(filename);
+    ofile << "x,y,z," << ref_ff_->TextName() << "\n";
+    for (auto v : values)
     {
-      int ff = ca + field_functions_.size();
-      ofile << "plt.plot(data" << ff << "[:,3],data" << ff << "[:,4]"
-            << ",label=\"CustomArray" << ca << "\""
-            << ")\n";
+      ofile << std::setprecision(5) << std::get<0>(v) << "," << std::get<1>(v) << ","
+            << std::get<2>(v) << "," << std::get<3>(v) << "\n";
     }
-    ofile << "plt.legend()\n"
-             "plt.grid(which='major')\n";
-    ofile << "plt.show()\n";
+    ofile.close();
+
+    log.Log() << "Exported CSV file for field func \"" << ref_ff_->TextName() << "\" to \""
+              << base_name;
   }
-
-  ofile.close();
-
-  log.Log() << "Exported Python files for field func \"" << field_functions_[0]->TextName()
-            << "\" to base name \"" << base_name << "\" Successfully";
+  opensn::mpi_comm.barrier();
 }
 
 } // namespace opensn
