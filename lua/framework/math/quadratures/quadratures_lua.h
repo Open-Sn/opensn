@@ -97,6 +97,7 @@ int CreateSphericalProductQuadrature(lua_State* L);
  * \author Jan
  */
 int CreateProductQuadrature(lua_State* L);
+int CreateTriangleQuadrature(lua_State* L);
 
 /** Creates a quadrature.
  *
