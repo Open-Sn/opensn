@@ -451,5 +451,25 @@
         "abs_tol": 1.0e-9
       }
     ]
+  },
+  {
+    "file": "reed_balance.lua",
+    "comment": "1D LinearBSolver Reed problem with balance printout",
+    "num_procs": 1,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Absorption rate             =",
+        "goldvalue": 1.006178e+02,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Out-flow rate               =",
+        "goldvalue": 3.821562e-01,
+        "abs_tol": 1.0e-6
+      }
+    ]
   }
 ]
