@@ -10,6 +10,16 @@
 #include <fstream>
 #include <cstdint>
 
+#define OpenSnJoinWordsA(x, y) x##y
+/**
+ * Small utility macro for joining two words.
+ *
+ * This will expand `x` and `y` into `xy` respecting the value of `y`.
+ * For example: `OpenSnJoinWords(var, __COUNTER__)` will be expanded into `var1` (assuming the value
+ * of `__COUNTER__` is `1`.
+ */
+#define OpenSnJoinWords(x, y) OpenSnJoinWordsA(x, y)
+
 /**Miscellaneous utilities. These utilities should have no dependencies.*/
 namespace opensn
 {

@@ -6,11 +6,7 @@
 #include "framework/parameters/input_parameters.h"
 #include "framework/object.h"
 #include "framework/logging/log_exceptions.h"
-
-/**Small utility macro for joining two words.*/
-#define OpenSnObjectFactoryJoinWordsA(x, y) x##y
-/**IDK why this is needed. Seems like counter doesnt work properly without it*/
-#define OpenSnObjectFactoryJoinWordsB(x, y) OpenSnObjectFactoryJoinWordsA(x, y)
+#include "framework/utils/utils.h"
 
 /**Macro for registering an object within the ObjectFactory singleton.
  * \param namespace_name Name of the namespace within which the object is.
@@ -21,13 +17,11 @@
  * \endcode
  * \note Remember to include the header "framework/object_factory.h".*/
 #define OpenSnRegisterObjectInNamespace(namespace_name, object_name)                               \
-  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
-                                            __COUNTER__) =                                         \
+  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
     opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#namespace_name, #object_name)
 
 #define OpenSnRegisterObject(object_name)                                                          \
-  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
-                                            __COUNTER__) =                                         \
+  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
     opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#object_name)
 
 /**Macro for registering an object (parameters only) within the
@@ -41,14 +35,12 @@
  *
  * \note Remember to include the header "framework/object_factory.h"*/
 #define OpenSnRegisterObjectParametersOnlyInNamespace(namespace_name, object_name)                 \
-  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
-                                            __COUNTER__) =                                         \
+  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
     opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name,             \
                                                                       #object_name)
 
 #define OpenSnRegisterObjectParametersOnly(object_name)                                            \
-  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_object_##object_name##_,               \
-                                            __COUNTER__) =                                         \
+  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
     opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#object_name)
 
 /**Macro for registering a pure input parameters block within the
@@ -63,11 +55,11 @@
  *
  * \note Remember to include the header "framework/object_factory.h"*/
 #define OpenSnRegisterSyntaxBlockInNamespace(namespace_name, block_name, syntax_function)          \
-  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) = \
+  static char OpenSnJoinWords(unique_var_name_syntax_##block_name##_, __COUNTER__) =               \
     opensn::ObjectFactory::AddSyntaxBlockToRegistry(#namespace_name, #block_name, syntax_function)
 
 #define OpenSnRegisterSyntaxBlock(block_name, syntax_function)                                     \
-  static char OpenSnObjectFactoryJoinWordsB(unique_var_name_syntax_##block_name##_, __COUNTER__) = \
+  static char OpenSnJoinWords(unique_var_name_syntax_##block_name##_, __COUNTER__) =               \
     opensn::ObjectFactory::AddSyntaxBlockToRegistry(#block_name, syntax_function)
 
 namespace opensn

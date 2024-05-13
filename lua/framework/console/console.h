@@ -13,16 +13,11 @@ extern "C"
 #include "framework/parameters/parameter_block.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/logging/log_exceptions.h"
-
+#include "framework/utils/utils.h"
 #include <vector>
 #include <string>
 #include <map>
 #include <stack>
-
-/**Small utility macro for joining two words.*/
-#define ConsoleJoinWordsA(x, y) x##y
-/**IDK why this is needed. Seems like counter doesnt work properly without it*/
-#define ConsoleJoinWordsB(x, y) ConsoleJoinWordsA(x, y)
 
 /**
  * Macro for registering a `lua_CFunction` within the global namespace.
@@ -37,7 +32,7 @@ extern "C"
  * \param func_name LuaCFunction. The function to use.
  */
 #define RegisterLuaFunction(func_name)                                                             \
-  static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
+  static char OpenSnJoinWords(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =              \
     opensnlua::Console::AddFunctionToRegistryGlobalNamespace(#func_name, func_name)
 
 /**
@@ -48,28 +43,28 @@ extern "C"
  * \param func_name NonQuotedString. The name of the function as it will appear in lua.
  */
 #define RegisterLuaFunctionInNamespace(function, namespace_name, func_name)                        \
-  static char ConsoleJoinWordsB(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =            \
+  static char OpenSnJoinWords(unique_var_name_luacfunc_##func_name##_, __COUNTER__) =              \
     opensnlua::Console::AddFunctionToRegistryInNamespaceWithName(                                  \
       function, #namespace_name, #func_name)
 
 #define RegisterWrapperFunctionInNamespace(                                                        \
   namespace_name, name_in_lua, syntax_function, actual_function)                                   \
-  static char ConsoleJoinWordsB(unique_var_name_luacfunc_##name_in_lua##_, __COUNTER__) =          \
+  static char OpenSnJoinWords(unique_var_name_luacfunc_##name_in_lua##_, __COUNTER__) =            \
     opensnlua::Console::AddWrapperToRegistryInNamespaceWithName(                                   \
       #namespace_name, #name_in_lua, syntax_function, actual_function)
 
 #define RegisterWrapperFunction(name_in_lua, syntax_function, actual_function)                     \
-  static char ConsoleJoinWordsB(unique_var_name_luacfunc_##name_in_lua##_, __COUNTER__) =          \
+  static char OpenSnJoinWords(unique_var_name_luacfunc_##name_in_lua##_, __COUNTER__) =            \
     opensnlua::Console::AddWrapperToRegistryInNamespaceWithName(                                   \
       #name_in_lua, syntax_function, actual_function)
 
 #define RegisterLuaConstantInNamespace(namespace_name, name_in_lua, value)                         \
-  static char ConsoleJoinWordsB(unique_var_name_luaconst_##namespace_name##_##name_in_lua,         \
-                                __COUNTER__) =                                                     \
+  static char OpenSnJoinWords(unique_var_name_luaconst_##namespace_name##_##name_in_lua,           \
+                              __COUNTER__) =                                                       \
     opensnlua::Console::AddLuaConstantToRegistry(#namespace_name, #name_in_lua, value)
 
 #define RegisterLuaConstant(name_in_lua, value)                                                    \
-  static char ConsoleJoinWordsB(unique_var_name_luaconst_##name_in_lua, __COUNTER__) =             \
+  static char OpenSnJoinWords(unique_var_name_luaconst_##name_in_lua, __COUNTER__) =               \
     opensnlua::Console::AddLuaConstantToRegistry("", #name_in_lua, value)
 
 namespace opensn
