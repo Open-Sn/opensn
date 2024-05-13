@@ -157,12 +157,11 @@ to avoid issues).</p>
 </section>
 <section id="material-ids">
 <h2>Material IDs<a class="headerlink" href="#material-ids" title="Link to this heading"></a></h2>
-<p>We create a right parallelepiped logical volume that contains the entire mesh and we assign a 0 for material ID
-to all cells found inside the logical volume. Logical volumes are quite powerful, see subsequent tutorials on
-post-processing.</p>
+<p>When using the in-house <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>, no material IDs are assigned. The user needs to
+assign material IDs to all cells. Here, we have a homogeneous domain, so we assign a material ID
+with value 0 for each cell in the spatial domain.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Set Material IDs</span>
-<span class="n">vol0</span> <span class="o">=</span> <span class="n">logvol</span><span class="p">.</span><span class="n">RPPLogicalVolume</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">infx</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">true</span><span class="p">})</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">SetMaterialIDFromLogicalVolume</span><span class="p">(</span><span class="n">vol0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -225,8 +224,7 @@ post-processing.</p>
 
 
 <span class="c1">-- Set Material IDs</span>
-<span class="n">vol0</span> <span class="o">=</span> <span class="n">logvol</span><span class="p">.</span><span class="n">RPPLogicalVolume</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">infx</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">true</span><span class="p">})</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">SetMaterialIDFromLogicalVolume</span><span class="p">(</span><span class="n">vol0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 
 <span class="c1">-- Exporting the mesh</span>

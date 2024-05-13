@@ -49,14 +49,13 @@ mesh.MeshGenerator.Execute(meshgen)
 ```
 
 ## Material IDs
-We create a right parallelepiped logical volume that contains the entire mesh and we assign a 0 for material ID
-to all cells found inside the logical volume. Logical volumes are quite powerful, see subsequent tutorials on
-post-processing.
+When using the in-house `OrthogonalMeshGenerator`, no material IDs are assigned. The user needs to
+assign material IDs to all cells. Here, we have a homogeneous domain, so we assign a material ID
+with value 0 for each cell in the spatial domain.
 
 ```lua
 -- Set Material IDs
-vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-mesh.SetMaterialIDFromLogicalVolume(vol0,0)
+mesh.SetUniformMaterialID(0)
 ```
 
 ## Export the mesh
@@ -119,8 +118,7 @@ mesh.MeshGenerator.Execute(meshgen)
 
 
 -- Set Material IDs
-vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-mesh.SetMaterialIDFromLogicalVolume(vol0,0)
+mesh.SetUniformMaterialID(0)
 
 
 -- Exporting the mesh
