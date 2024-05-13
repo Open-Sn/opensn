@@ -22,4 +22,4 @@ end
 
 mesh.SetMaterialIDFromFunction("mat_id")
 
-mesh.ExportToVTK("new_mat_ids")
+mesh.ExportToPVTU("new_mat_ids")

@@ -44,4 +44,4 @@ meshgen = mesh.MeshGenerator.Create
 })
 mesh.MeshGenerator.Execute(meshgen)
 
-mesh.ExportToVTK("Triangle_1542_mesh_only")
+mesh.ExportToPVTU("Triangle_1542_mesh_only")

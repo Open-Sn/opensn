@@ -12,7 +12,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes,nodes} })
 mesh.MeshGenerator.Execute(meshgen1)
 
-mesh.ExportToVTK("ZMeshPhase1")
+mesh.ExportToPVTU("ZMeshPhase1")
 
 mesh.SetUniformMaterialID(0)
 
@@ -28,7 +28,7 @@ end
 
 mesh.SetMaterialIDFromFunction("MatIDFunction1")
 
-mesh.ExportToVTK("ZMeshPhase2")
+mesh.ExportToPVTU("ZMeshPhase2")
 
 --Setting left, right, top and bottom boundaries
 -- left = 0
@@ -62,4 +62,4 @@ end
 
 mesh.SetBoundaryIDFromFunction("BndryIDFunction1")
 
-mesh.ExportToVTK("ZMeshPhase3")
+mesh.ExportToPVTU("ZMeshPhase3")

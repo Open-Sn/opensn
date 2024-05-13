@@ -11,12 +11,6 @@
 #include "framework/utils/timer.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include <vtkUnstructuredGrid.h>
-#include <vtkMultiBlockDataSet.h>
-#include <vtkInformation.h>
-#include <vtkModelMetadata.h>
-#include <vtkPointData.h>
-#include <vtkCellData.h>
 #include <algorithm>
 #include <set>
 
@@ -115,21 +109,6 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   log.Log0Verbose1() << "Done building communicators.";
 
   return std::make_shared<MPICommunicatorSet>(communicators, location_groups, world_group);
-}
-
-void
-MeshContinuum::ExportCellsToVTK(const std::string& file_base_name) const
-{
-  log.Log() << "Exporting mesh to VTK files with base " << file_base_name;
-
-  const auto& grid = *this;
-
-  auto ugrid = PrepareVtkUnstructuredGrid(grid, false);
-
-  WritePVTUFiles(ugrid, file_base_name);
-
-  log.Log() << "Done exporting mesh to VTK.";
-  opensn::mpi_comm.barrier();
 }
 
 std::vector<uint64_t>

@@ -14,9 +14,9 @@ namespace opensnlua
 int MeshExportToOBJ(lua_State* L);
 
 /**
- * Exports the mesh to vtu format.
+ * Exports the mesh to PVTU format.
  */
-int MeshExportToVTK(lua_State* L);
+int MeshExportToPVTU(lua_State* L);
 
 /**
  * Exports the mesh to ExodusII format.

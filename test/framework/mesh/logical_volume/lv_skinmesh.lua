@@ -35,4 +35,4 @@ lv_skinmesh = logvol.SurfaceMeshLogicalVolume.Create({surface_mesh_handle=surfme
 mesh.SetMaterialIDFromLogicalVolume(lv_skinmesh, 15)
 
 -- export to vtk
-mesh.ExportToVTK("lv_skinmesh_out")
+mesh.ExportToPVTU("lv_skinmesh_out")

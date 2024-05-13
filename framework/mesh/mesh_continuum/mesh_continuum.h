@@ -58,11 +58,6 @@ public:
   }
 
   /**
-   * Exports just the mesh to VTK format.
-   */
-  void ExportCellsToVTK(const std::string& file_base_name) const;
-
-  /**
    * Populates a face histogram.
    *
    * \param master_tolerance Multiple histograms will only be attempted

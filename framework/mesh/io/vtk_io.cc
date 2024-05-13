@@ -6,6 +6,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
+#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include <vtkCell.h>
 #include <vtkPolygon.h>
 #include <vtkLine.h>
@@ -1308,6 +1309,20 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
   log.Log() << "Num side sets:  " << em->GetNumberOfSideSets();
   log.Log() << "Dimension    :  " << em->GetDimension();
   log.Log() << "Done exporting mesh to ExodusII.";
+
+  opensn::mpi_comm.barrier();
+}
+
+void
+MeshIO::ToPVTU(const std::shared_ptr<MeshContinuum>& grid, const std::string& file_base_name)
+{
+  log.Log() << "Exporting mesh to VTK files with base " << file_base_name;
+
+  auto ugrid = PrepareVtkUnstructuredGrid(*grid, false);
+
+  WritePVTUFiles(ugrid, file_base_name);
+
+  log.Log() << "Done exporting mesh to VTK.";
 
   opensn::mpi_comm.barrier();
 }

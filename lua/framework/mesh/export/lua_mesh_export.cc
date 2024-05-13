@@ -12,7 +12,7 @@ namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(MeshExportToOBJ, mesh, ExportToOBJ);
-RegisterLuaFunctionInNamespace(MeshExportToVTK, mesh, ExportToVTK);
+RegisterLuaFunctionInNamespace(MeshExportToPVTU, mesh, ExportToPVTU);
 RegisterLuaFunctionInNamespace(MeshExportToExodusII, mesh, ExportToExodusII);
 
 int
@@ -31,15 +31,15 @@ MeshExportToOBJ(lua_State* L)
 }
 
 int
-MeshExportToVTK(lua_State* L)
+MeshExportToPVTU(lua_State* L)
 {
-  const std::string fname = "mesh.ExportToVTK";
+  const std::string fname = "mesh.ExportToPVTU";
   LuaCheckArgs<std::string>(L, fname);
 
   const auto file_name = LuaArg<std::string>(L, 1);
 
   auto grid = opensn::GetCurrentMesh();
-  grid->ExportCellsToVTK(file_name);
+  opensn::MeshIO::ToPVTU(grid, file_name);
 
   return LuaReturn(L);
 }

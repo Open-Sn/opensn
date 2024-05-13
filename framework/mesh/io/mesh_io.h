@@ -44,6 +44,14 @@ public:
                          const std::string& file_name,
                          bool write_node_sets = true,
                          bool write_side_sets = true);
+
+  /**
+   * Write grid cells into PVTU format.
+   *
+   * \param grid Grid to be stored
+   * \param file_base_name Base name of the output file
+   */
+  static void ToPVTU(const std::shared_ptr<MeshContinuum>& grid, const std::string& file_base_name);
 };
 
 } // namespace opensn

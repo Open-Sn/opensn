@@ -47,4 +47,4 @@ mesh.SetMaterialIDFromLogicalVolume(lv3, 1)
 mesh.SetMaterialIDFromLogicalVolume(lv1, 5)
 
 -- export to vtk
-mesh.ExportToVTK("lv_boolean_test1")
+mesh.ExportToPVTU("lv_boolean_test1")
