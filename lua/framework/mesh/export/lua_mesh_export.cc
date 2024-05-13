@@ -4,27 +4,28 @@
 #include "framework/lua.h"
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/io/mesh_io.h"
 #include "lua/framework/mesh/export/lua_mesh_export.h"
 #include "lua/framework/console/console.h"
 
 namespace opensnlua
 {
 
-RegisterLuaFunctionInNamespace(MeshExportToObj, mesh, ExportToObj);
+RegisterLuaFunctionInNamespace(MeshExportToOBJ, mesh, ExportToOBJ);
 RegisterLuaFunctionInNamespace(MeshExportToVTK, mesh, ExportToVTK);
 RegisterLuaFunctionInNamespace(MeshExportToExodus, mesh, ExportToExodus);
 
 int
-MeshExportToObj(lua_State* L)
+MeshExportToOBJ(lua_State* L)
 {
-  const std::string fname = "mesh.ExportToObj";
+  const std::string fname = "mesh.ExportToOBJ";
   LuaCheckArgs<int>(L, fname);
 
   const auto file_name = LuaArg<std::string>(L, 1);
   bool per_material = LuaArgOptional<bool>(L, 2, false);
 
   auto grid = opensn::GetCurrentMesh();
-  grid->ExportCellsToObj(file_name.c_str(), per_material);
+  opensn::MeshIO::ToOBJ(grid, file_name.c_str(), per_material);
 
   return LuaReturn(L);
 }

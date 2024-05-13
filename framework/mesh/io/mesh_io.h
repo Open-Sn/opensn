@@ -19,6 +19,17 @@ public:
   FromEnsightGold(const UnpartitionedMesh::Options& options);
   static std::shared_ptr<UnpartitionedMesh> FromOBJ(const UnpartitionedMesh::Options& options);
   static std::shared_ptr<UnpartitionedMesh> FromGmsh(const UnpartitionedMesh::Options& options);
+
+  /**
+   * Write grid cells into an OBJ file
+   *
+   * \param grid Grid to be stored
+   * \param file_name Name of the output file
+   * \param per_material Create one file per material
+   */
+  static void ToOBJ(const std::shared_ptr<MeshContinuum>& grid,
+                    const char* file_name,
+                    bool per_material = false);
 };
 
 } // namespace opensn

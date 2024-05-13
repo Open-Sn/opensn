@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/io/mesh_io.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
@@ -842,6 +843,185 @@ MeshIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
   log.Log() << "Done reading Ensight-Gold file: " << options.file_name << ".";
 
   return mesh;
+}
+
+void
+MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name, bool per_material)
+{
+  if (not per_material)
+  {
+    FILE* of = fopen(file_name, "w");
+
+    if (of == nullptr)
+      throw std::logic_error("Could not open file '" + std::string(file_name) + "' for writing.");
+
+    // Develop list of faces and nodes
+    std::set<int> nodes_set;
+    std::vector<CellFace> faces_to_export;
+    for (auto& cell : grid->local_cells)
+    {
+      if (cell.Type() == CellType::POLYHEDRON)
+      {
+        for (auto& face : cell.faces_)
+        {
+          if (not face.has_neighbor_)
+          {
+            faces_to_export.push_back(face);
+
+            for (int vid : face.vertex_ids_)
+              nodes_set.insert(vid);
+          } // if boundary
+        }   // for face
+      }     // if polyhedron
+    }       // for local cell
+
+    // Write header
+    fprintf(of, "# Exported mesh file from Extrusion script\n");
+    std::string str_file_name(file_name);
+    std::string file_base_name = str_file_name.substr(0, str_file_name.find('.'));
+    fprintf(of, "o %s\n", file_base_name.c_str());
+
+    // Develop node mapping and write them
+    std::vector<int> node_mapping(grid->GetGlobalVertexCount(), -1);
+
+    int node_counter = 0;
+    for (auto node : nodes_set)
+    {
+      node_counter++;
+      int node_g_index = node;
+      node_mapping[node_g_index] = node_counter;
+
+      Vertex cur_v = grid->vertices[node_g_index];
+
+      fprintf(of, "v %9.6f %9.6f %9.6f\n", cur_v.x, cur_v.y, cur_v.z);
+    }
+
+    // Write face normals
+    for (const auto& face : faces_to_export)
+    {
+      fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
+    }
+
+    // Write faces
+    int normal_counter = 0;
+    for (const auto& face : faces_to_export)
+    {
+      normal_counter++;
+      fprintf(of, "f");
+
+      for (auto v_g_index : face.vertex_ids_)
+        fprintf(of, " %d//%d", node_mapping[v_g_index], normal_counter);
+
+      fprintf(of, "\n");
+    }
+
+    fclose(of);
+
+    log.Log() << "Exported Volume mesh to " << str_file_name;
+  } // Whole mesh
+  // PER MATERIAL
+  else
+  {
+    // Get base name
+    std::string str_file_name(file_name);
+    std::string file_base_name = str_file_name.substr(0, str_file_name.find('.'));
+
+    if (material_stack.empty())
+    {
+      log.Log0Warning()
+        << "MeshIO::ToOBJ: No mesh will be exported because there are no physics materials present";
+    }
+
+    for (int mat = 0; mat < material_stack.size(); mat++)
+    {
+      std::string mat_base_name = file_base_name + std::string("_m") + std::to_string(mat);
+      std::string mat_file_name = mat_base_name + std::string(".obj");
+      FILE* of = fopen(mat_file_name.c_str(), "w");
+
+      if (of == nullptr)
+        throw std::logic_error("Could not open file '" + mat_file_name + "' for writing.");
+
+      // Develop list of faces and nodes
+      std::set<int> nodes_set;
+      std::vector<CellFace> faces_to_export;
+      for (const auto& cell : grid->local_cells)
+      {
+        if (cell.Type() == CellType::POLYHEDRON)
+        {
+          if (cell.material_id_ != mat)
+            continue;
+
+          for (const auto& face : cell.faces_)
+          {
+            int adjcell_glob_index = face.neighbor_id_;
+
+            if (adjcell_glob_index < 0)
+            {
+              faces_to_export.push_back(face);
+
+              for (auto vid : face.vertex_ids_)
+                nodes_set.insert(vid);
+            } // if boundary
+            else
+            {
+              auto& adj_cell = grid->cells[adjcell_glob_index];
+
+              if (adj_cell.material_id_ != mat)
+              {
+                faces_to_export.push_back(face);
+
+                for (auto vid : face.vertex_ids_)
+                  nodes_set.insert(vid);
+              } // if material mismatch
+            }   // if neighbor cell
+          }     // for face
+        }       // if polyhedron
+      }         // for local cell
+
+      // Write header
+      fprintf(of, "# Exported mesh file from Extrusion script\n");
+      fprintf(of, "o %s\n", mat_base_name.c_str());
+
+      // Develop node mapping and write them
+      std::vector<int> node_mapping(grid->GetGlobalVertexCount(), -1);
+
+      int node_counter = 0;
+      for (auto node : nodes_set)
+      {
+        node_counter++;
+        int node_g_index = node;
+        node_mapping[node_g_index] = node_counter;
+
+        Vertex cur_v = grid->vertices[node_g_index];
+
+        fprintf(of, "v %9.6f %9.6f %9.6f\n", cur_v.x, cur_v.y, cur_v.z);
+      }
+
+      // Write face normals
+      for (const auto& face : faces_to_export)
+      {
+        fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
+      }
+
+      // Write faces
+      int normal_counter = 0;
+      for (const auto& face : faces_to_export)
+      {
+        normal_counter++;
+        fprintf(of, "f");
+
+        for (auto v_g_index : face.vertex_ids_)
+          fprintf(of, " %d//%d", node_mapping[v_g_index], normal_counter);
+
+        fprintf(of, "\n");
+      }
+
+      fclose(of);
+
+      log.Log() << "Exported Material Volume mesh to " << mat_file_name;
+    } // for mat
+  }   // if per material
+  opensn::mpi_comm.barrier();
 }
 
 } // namespace opensn

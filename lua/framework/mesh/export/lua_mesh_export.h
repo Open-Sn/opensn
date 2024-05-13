@@ -11,7 +11,7 @@ namespace opensnlua
 /**
  * Exports the mesh to a wavefront OBJ format.
  */
-int MeshExportToObj(lua_State* L);
+int MeshExportToOBJ(lua_State* L);
 
 /**
  * Exports the mesh to vtu format.
