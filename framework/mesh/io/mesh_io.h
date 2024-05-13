@@ -12,7 +12,7 @@ namespace opensn
 class MeshIO
 {
 public:
-  static std::shared_ptr<UnpartitionedMesh> FromExodus(const UnpartitionedMesh::Options& options);
+  static std::shared_ptr<UnpartitionedMesh> FromExodusII(const UnpartitionedMesh::Options& options);
   static std::shared_ptr<UnpartitionedMesh> FromVTU(const UnpartitionedMesh::Options& options);
   static std::shared_ptr<UnpartitionedMesh> FromPVTU(const UnpartitionedMesh::Options& options);
   static std::shared_ptr<UnpartitionedMesh>

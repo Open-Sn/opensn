@@ -65,7 +65,7 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   else if (extension == ".msh")
     return MeshIO::FromGmsh(options);
   else if (extension == ".e")
-    return MeshIO::FromExodus(options);
+    return MeshIO::FromExodusII(options);
   else if (extension == ".vtu")
     return MeshIO::FromVTU(options);
   else if (extension == ".pvtu")

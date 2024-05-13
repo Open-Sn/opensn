@@ -140,7 +140,7 @@ MeshUnpartitionedMeshFromExodusII(lua_State* L)
   options.file_name = file_name;
   options.scale = scale;
 
-  auto new_object = MeshIO::FromExodus(options);
+  auto new_object = MeshIO::FromExodusII(options);
   opensn::unpartitionedmesh_stack.emplace_back(new_object);
 
   auto index = opensn::unpartitionedmesh_stack.size() - 1;

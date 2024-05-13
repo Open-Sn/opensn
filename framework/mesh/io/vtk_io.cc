@@ -562,9 +562,9 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
 } // namespace
 
 std::shared_ptr<UnpartitionedMesh>
-MeshIO::FromExodus(const UnpartitionedMesh::Options& options)
+MeshIO::FromExodusII(const UnpartitionedMesh::Options& options)
 {
-  log.Log() << "Reading Exodus file: " << options.file_name << ".";
+  log.Log() << "Reading ExodusII file: " << options.file_name << ".";
 
   std::shared_ptr<UnpartitionedMesh> mesh = std::make_shared<UnpartitionedMesh>();
 
@@ -657,7 +657,7 @@ MeshIO::FromExodus(const UnpartitionedMesh::Options& options)
   // Set boundary ids
   SetBoundaryIDsFromBlocks(mesh, bndry_grid_blocks);
 
-  log.Log() << "Done reading Exodus file: " << options.file_name << ".";
+  log.Log() << "Done reading ExodusII file: " << options.file_name << ".";
 
   return mesh;
 }
