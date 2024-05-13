@@ -19,8 +19,8 @@ int MeshExportToOBJ(lua_State* L);
 int MeshExportToVTK(lua_State* L);
 
 /**
- * Exports the mesh to exodus format.
+ * Exports the mesh to ExodusII format.
  */
-int MeshExportToExodus(lua_State* L);
+int MeshExportToExodusII(lua_State* L);
 
 } // namespace opensnlua

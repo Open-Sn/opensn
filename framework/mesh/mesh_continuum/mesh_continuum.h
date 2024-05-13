@@ -63,13 +63,6 @@ public:
   void ExportCellsToVTK(const std::string& file_base_name) const;
 
   /**
-   * Exports just the portion of the mesh to ExodusII format.
-   */
-  void ExportCellsToExodus(const std::string& file_base_name,
-                           bool suppress_node_sets = false,
-                           bool suppress_side_sets = false) const;
-
-  /**
    * Populates a face histogram.
    *
    * \param master_tolerance Multiple histograms will only be attempted

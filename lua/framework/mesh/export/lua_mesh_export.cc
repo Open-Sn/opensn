@@ -13,7 +13,7 @@ namespace opensnlua
 
 RegisterLuaFunctionInNamespace(MeshExportToOBJ, mesh, ExportToOBJ);
 RegisterLuaFunctionInNamespace(MeshExportToVTK, mesh, ExportToVTK);
-RegisterLuaFunctionInNamespace(MeshExportToExodus, mesh, ExportToExodus);
+RegisterLuaFunctionInNamespace(MeshExportToExodusII, mesh, ExportToExodusII);
 
 int
 MeshExportToOBJ(lua_State* L)
@@ -45,17 +45,17 @@ MeshExportToVTK(lua_State* L)
 }
 
 int
-MeshExportToExodus(lua_State* L)
+MeshExportToExodusII(lua_State* L)
 {
-  const std::string fname = "mesh.ExportToExodus";
+  const std::string fname = "mesh.ExportToExodusII";
   LuaCheckArgs<std::string>(L, fname);
 
   const auto file_name = LuaArg<std::string>(L, 1);
-  bool suppress_nodesets = LuaArgOptional<bool>(L, 2, false);
-  bool suppress_sidesets = LuaArgOptional<bool>(L, 3, false);
+  bool write_node_sets = LuaArgOptional<bool>(L, 2, true);
+  bool write_side_sets = LuaArgOptional<bool>(L, 3, true);
 
   auto grid = opensn::GetCurrentMesh();
-  grid->ExportCellsToExodus(file_name, suppress_nodesets, suppress_sidesets);
+  opensn::MeshIO::ToExodusII(grid, file_name, write_node_sets, write_side_sets);
 
   return LuaReturn(L);
 }

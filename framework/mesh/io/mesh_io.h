@@ -30,6 +30,20 @@ public:
   static void ToOBJ(const std::shared_ptr<MeshContinuum>& grid,
                     const char* file_name,
                     bool per_material = false);
+
+  /**
+   * Write grid cells into an ExodusII file
+   *
+   * \param grid Grid to be stored
+   * \param file_name Name of the output file
+   * \param per_material Create one file per material
+   * \param write_node_sets Write node sets into the file
+   * \param write_side_sets Write side sets into the file
+   */
+  static void ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
+                         const std::string& file_name,
+                         bool write_node_sets = true,
+                         bool write_side_sets = true);
 };
 
 } // namespace opensn
