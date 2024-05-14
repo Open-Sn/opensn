@@ -31,4 +31,4 @@ end
 mesh.SetMaterialIDFromFunction("MatIDFunction1")
 
 -- export to vtk
-mesh.ExportToVTK("lv_lua_func_out")
+mesh.ExportToPVTU("lv_lua_func_out")

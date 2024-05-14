@@ -4,57 +4,58 @@
 #include "framework/lua.h"
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/io/mesh_io.h"
 #include "lua/framework/mesh/export/lua_mesh_export.h"
 #include "lua/framework/console/console.h"
 
 namespace opensnlua
 {
 
-RegisterLuaFunctionInNamespace(MeshExportToObj, mesh, ExportToObj);
-RegisterLuaFunctionInNamespace(MeshExportToVTK, mesh, ExportToVTK);
-RegisterLuaFunctionInNamespace(MeshExportToExodus, mesh, ExportToExodus);
+RegisterLuaFunctionInNamespace(MeshExportToOBJ, mesh, ExportToOBJ);
+RegisterLuaFunctionInNamespace(MeshExportToPVTU, mesh, ExportToPVTU);
+RegisterLuaFunctionInNamespace(MeshExportToExodusII, mesh, ExportToExodusII);
 
 int
-MeshExportToObj(lua_State* L)
+MeshExportToOBJ(lua_State* L)
 {
-  const std::string fname = "mesh.ExportToObj";
+  const std::string fname = "mesh.ExportToOBJ";
   LuaCheckArgs<int>(L, fname);
 
   const auto file_name = LuaArg<std::string>(L, 1);
   bool per_material = LuaArgOptional<bool>(L, 2, false);
 
   auto grid = opensn::GetCurrentMesh();
-  grid->ExportCellsToObj(file_name.c_str(), per_material);
+  opensn::MeshIO::ToOBJ(grid, file_name.c_str(), per_material);
 
   return LuaReturn(L);
 }
 
 int
-MeshExportToVTK(lua_State* L)
+MeshExportToPVTU(lua_State* L)
 {
-  const std::string fname = "mesh.ExportToVTK";
+  const std::string fname = "mesh.ExportToPVTU";
   LuaCheckArgs<std::string>(L, fname);
 
   const auto file_name = LuaArg<std::string>(L, 1);
 
   auto grid = opensn::GetCurrentMesh();
-  grid->ExportCellsToVTK(file_name);
+  opensn::MeshIO::ToPVTU(grid, file_name);
 
   return LuaReturn(L);
 }
 
 int
-MeshExportToExodus(lua_State* L)
+MeshExportToExodusII(lua_State* L)
 {
-  const std::string fname = "mesh.ExportToExodus";
+  const std::string fname = "mesh.ExportToExodusII";
   LuaCheckArgs<std::string>(L, fname);
 
   const auto file_name = LuaArg<std::string>(L, 1);
-  bool suppress_nodesets = LuaArgOptional<bool>(L, 2, false);
-  bool suppress_sidesets = LuaArgOptional<bool>(L, 3, false);
+  bool write_node_sets = LuaArgOptional<bool>(L, 2, true);
+  bool write_side_sets = LuaArgOptional<bool>(L, 3, true);
 
   auto grid = opensn::GetCurrentMesh();
-  grid->ExportCellsToExodus(file_name, suppress_nodesets, suppress_sidesets);
+  opensn::MeshIO::ToExodusII(grid, file_name, write_node_sets, write_side_sets);
 
   return LuaReturn(L);
 }

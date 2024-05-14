@@ -40,7 +40,7 @@ The resulting mesh partition is shown below
 ![below](images/ortho_3D_KBA.png)
 --]]
 -- Exporting the mesh
-mesh.ExportToVTK("ortho_3D_KBA")
+mesh.ExportToPVTU("ortho_3D_KBA")
 
 --[[ @doc
 ## Mesh (again) and Parmetis partition
@@ -64,4 +64,4 @@ Note that now, both partitioners are not giving the same result. The Parmetis pa
 ![below](images/ortho_3D_Parmetis.png)
 --]]
 -- Exporting the mesh
-mesh.ExportToVTK("ortho_3D_Parmetis")
+mesh.ExportToPVTU("ortho_3D_Parmetis")

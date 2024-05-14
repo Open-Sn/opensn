@@ -21,4 +21,4 @@ lv2 = logvol.RCCLogicalVolume.Create({r = 1.3,
                                         vx=1.0, vy=1.0, vz=3.0})
 mesh.SetMaterialIDFromLogicalVolume(lv2, 2)
 
-mesh.ExportToVTK("lv_rcc_test1")
+mesh.ExportToPVTU("lv_rcc_test1")

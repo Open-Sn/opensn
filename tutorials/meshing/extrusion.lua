@@ -31,4 +31,4 @@ meshgen = mesh.ExtruderMeshGenerator.Create
 })
 mesh.MeshGenerator.Execute(meshgen)
 
-mesh.ExportToVTK("Extruded_mesh_only")
+mesh.ExportToPVTU("Extruded_mesh_only")

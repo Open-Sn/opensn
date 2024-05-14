@@ -21,4 +21,4 @@ meshgen = mesh.MeshGenerator.Create
 })
 mesh.MeshGenerator.Execute(meshgen)
 
-mesh.ExportToVTK("Read_3D_mesh_only")
+mesh.ExportToPVTU("Read_3D_mesh_only")

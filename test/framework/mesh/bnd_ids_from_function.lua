@@ -45,4 +45,4 @@ end
 
 mesh.SetBoundaryIDFromFunction("bnd_id")
 
-mesh.ExportToVTK("new_bnd_ids")
+mesh.ExportToPVTU("new_bnd_ids")

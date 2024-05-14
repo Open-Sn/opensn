@@ -57,24 +57,6 @@ public:
     vertices.Clear();
   }
 
-  /**Export cells to python.
-   *
-   * \todo Export Cells to OBJ needs polygon support.
-   */
-  void ExportCellsToObj(const char* fileName, bool per_material = false, int options = 0) const;
-
-  /**
-   * Exports just the mesh to VTK format.
-   */
-  void ExportCellsToVTK(const std::string& file_base_name) const;
-
-  /**
-   * Exports just the portion of the mesh to ExodusII format.
-   */
-  void ExportCellsToExodus(const std::string& file_base_name,
-                           bool suppress_node_sets = false,
-                           bool suppress_side_sets = false) const;
-
   /**
    * Populates a face histogram.
    *
