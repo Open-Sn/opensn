@@ -46,7 +46,6 @@ enum class FieldFunctionInterpolationProperty : int
   CUSTOM_ARRAY = 14,
 };
 
-// ###################################################################
 /** Base class for field-function interpolation objects.*/
 class FieldFunctionInterpolation
 {
@@ -72,7 +71,9 @@ public:
 
   virtual void Execute(){};
 
-  virtual void Export(std::string base_name){};
+  virtual void ExportToCSV(std::string base_name){};
+
+  virtual void ExportToPython(std::string base_name){};
 };
 
 } // namespace opensn

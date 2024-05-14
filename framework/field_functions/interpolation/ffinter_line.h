@@ -55,7 +55,7 @@ public:
 
   double GetOpValue() { return op_value_; }
 
-  void Export(std::string base_name) override;
+  void ExportToCSV(std::string base_name) override;
 };
 
 } // namespace opensn

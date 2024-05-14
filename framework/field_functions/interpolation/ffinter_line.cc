@@ -107,7 +107,7 @@ FieldFunctionInterpolationLine::Execute()
 }
 
 void
-FieldFunctionInterpolationLine::Export(std::string base_name)
+FieldFunctionInterpolationLine::ExportToCSV(std::string base_name)
 {
   // Populate local coordinate and interpolation data
   std::vector<double> local_data;

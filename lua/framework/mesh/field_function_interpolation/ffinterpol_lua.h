@@ -130,16 +130,25 @@ int FFInterpolationInitialize(lua_State* L);
  */
 int FFInterpolationExecute(lua_State* L);
 
-/** Export interpolation to a file. This is only valid for
+/** Export interpolation to a CSV file. This is only valid for
  * line interpolators.
  *
  * \param FFIHandle int Handle to the field function interpolation.
  * \param BaseName char Base name to be used for exported files.
  *
  * \ingroup LuaFFInterpol
- * \author Jan
  */
-int FFInterpolationExport(lua_State* L);
+int FFInterpolationExportToCSV(lua_State* L);
+
+/** Export interpolation to a Python file. This is only valid for
+ * slice interpolators.
+ *
+ * \param FFIHandle int Handle to the field function interpolation.
+ * \param BaseName char Base name to be used for exported files.
+ *
+ * \ingroup LuaFFInterpol
+ */
+int FFInterpolationExportToPython(lua_State* L);
 
 /** Gets the value(s) associated with an interpolation provided the
  * interpolation type has an associated value.

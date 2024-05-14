@@ -71,7 +71,7 @@ public:
    */
   void Initialize() override;
   void Execute() override;
-  void Export(std::string base_name) override;
+  void ExportToPython(std::string base_name) override;
 };
 
 } // namespace opensn
