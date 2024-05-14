@@ -31,7 +31,7 @@ meshgen = mesh.MeshGenerator.Create
   partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
 })
 mesh.MeshGenerator.Execute(meshgen)
-mesh.ExportToVTK("c5g7_mesh_only")
+mesh.ExportToPVTU("c5g7_mesh_only")
 ```
 
 ___
@@ -53,5 +53,5 @@ meshgen = mesh.MeshGenerator.Create
 })
 mesh.MeshGenerator.Execute(meshgen)
 
-mesh.ExportToVTK("c5g7_mesh_only")
+mesh.ExportToPVTU("c5g7_mesh_only")
 ```

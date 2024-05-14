@@ -143,7 +143,7 @@ partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=
 <p>The resulting mesh partition is shown below
 <img alt="below" src="../../_images/ortho_3D_KBA.png" /></p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Exporting the mesh</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="s2">&quot;ortho_3D_KBA&quot;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_3D_KBA&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -167,7 +167,7 @@ partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=
 <p>Note that now, both partitioners are not giving the same result. The Parmetis partition is shown below
 <img alt="below" src="../../_images/ortho_3D_Parmetis.png" /></p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Exporting the mesh</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="s2">&quot;ortho_3D_Parmetis&quot;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_3D_Parmetis&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -202,7 +202,7 @@ partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=
 
 
 <span class="c1">-- Exporting the mesh</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="s2">&quot;ortho_3D_KBA&quot;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_3D_KBA&quot;</span><span class="p">)</span>
 
 
 <span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
@@ -219,7 +219,7 @@ partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=
 
 
 <span class="c1">-- Exporting the mesh</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="s2">&quot;ortho_3D_Parmetis&quot;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_3D_Parmetis&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

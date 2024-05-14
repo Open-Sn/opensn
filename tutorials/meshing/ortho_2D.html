@@ -170,7 +170,7 @@ with value 0 for each cell in the spatial domain.</p>
 <p>We export to vtu format. The resulting mesh partition is shown below
 <img alt="below" src="../../_images/ortho_2D_KBA.png" /></p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Exporting the mesh</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="s2">&quot;ortho_2D_KBA&quot;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_2D_KBA&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -191,7 +191,7 @@ with value 0 for each cell in the spatial domain.</p>
 <p>On such a simple regular mesh, both partitioners are giving the same result. The Parmetis partition is shown below
 <img alt="below" src="../../_images/ortho_2D_Parmetis.png" /></p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Exporting the mesh</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="s2">&quot;ortho_2D_Parmetis&quot;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_2D_Parmetis&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -228,7 +228,7 @@ with value 0 for each cell in the spatial domain.</p>
 
 
 <span class="c1">-- Exporting the mesh</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="s2">&quot;ortho_2D_KBA&quot;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_2D_KBA&quot;</span><span class="p">)</span>
 
 
 <span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
@@ -241,7 +241,7 @@ with value 0 for each cell in the spatial domain.</p>
 
 
 <span class="c1">-- Exporting the mesh</span>
-<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="s2">&quot;ortho_2D_Parmetis&quot;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_2D_Parmetis&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

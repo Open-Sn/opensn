@@ -37,7 +37,7 @@ The resulting mesh partition is shown below
 
 ```lua
 -- Exporting the mesh
-mesh.ExportToVTK("ortho_3D_KBA")
+mesh.ExportToPVTU("ortho_3D_KBA")
 ```
 
 ## Mesh (again) and Parmetis partition
@@ -61,7 +61,7 @@ Note that now, both partitioners are not giving the same result. The Parmetis pa
 
 ```lua
 -- Exporting the mesh
-mesh.ExportToVTK("ortho_3D_Parmetis")
+mesh.ExportToPVTU("ortho_3D_Parmetis")
 ```
 
 ___
@@ -96,7 +96,7 @@ mesh.SetUniformMaterialID(0)
 
 
 -- Exporting the mesh
-mesh.ExportToVTK("ortho_3D_KBA")
+mesh.ExportToPVTU("ortho_3D_KBA")
 
 
 meshgen = mesh.OrthogonalMeshGenerator.Create
@@ -113,5 +113,5 @@ mesh.SetMaterialIDFromLogicalVolume(vol0,0)
 
 
 -- Exporting the mesh
-mesh.ExportToVTK("ortho_3D_Parmetis")
+mesh.ExportToPVTU("ortho_3D_Parmetis")
 ```
