@@ -79,7 +79,7 @@ fieldfunc.Initialize(cline)
 fieldfunc.Execute(cline)
 
 if (master_export == nil) then
-    fieldfunc.Export(cline)
+    fieldfunc.ExportToCSV(cline)
 end
 
 --############################################### Volume integrations

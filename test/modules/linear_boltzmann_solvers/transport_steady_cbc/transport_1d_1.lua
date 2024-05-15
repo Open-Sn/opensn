@@ -154,7 +154,7 @@ log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if (master_export == nil) then
-  fieldfunc.Export(cline)
+  fieldfunc.ExportToCSV(cline)
 end
 
 --############################################### Plots
