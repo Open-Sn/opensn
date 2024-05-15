@@ -37,15 +37,8 @@ FFInterpolationGetValue(lua_State* L)
   else if (p_ffi->Type() == FieldFunctionInterpolationType::LINE)
   {
     auto& cur_ffi_line = dynamic_cast<opensn::FieldFunctionInterpolationLine&>(*p_ffi);
-
-    std::vector<std::vector<double>> vals;
-    vals.resize(cur_ffi_line.GetFieldFunctions().size());
-    for (int ff = 0; ff < cur_ffi_line.GetFieldFunctions().size(); ff++)
-    {
-      const auto& ff_ctx = cur_ffi_line.GetFFContexts()[ff];
-      vals[ff] = ff_ctx.interpolation_points_values;
-    }
-    return LuaReturn(L, vals);
+    double value = cur_ffi_line.GetOpValue();
+    return LuaReturn(L, value);
   }
   else if (p_ffi->Type() == FieldFunctionInterpolationType::VOLUME)
   {

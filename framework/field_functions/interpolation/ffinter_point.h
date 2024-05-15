@@ -14,14 +14,16 @@ class FieldFunctionInterpolationPoint : public FieldFunctionInterpolation
 {
 protected:
   Vector3 point_of_interest_;
-
-  bool locally_owned_ = false;
-  uint64_t owning_cell_gid_ = 0;
-  double point_value_ = 0.0;
+  bool locally_owned_;
+  uint64_t owning_cell_gid_;
+  double point_value_;
 
 public:
   FieldFunctionInterpolationPoint()
-    : FieldFunctionInterpolation(FieldFunctionInterpolationType::POINT)
+    : FieldFunctionInterpolation(FieldFunctionInterpolationType::POINT),
+      locally_owned_(false),
+      owning_cell_gid_(0),
+      point_value_(0.0)
   {
   }
 
@@ -30,12 +32,10 @@ public:
   Vector3& GetPointOfInterest() { return point_of_interest_; }
 
   void Initialize() override;
+
   void Execute() override;
+
   /**Gets the value of the field function evaluation at the point.*/
   double GetPointValue() const;
-
-public:
-  std::string GetDefaultFileBaseName() const override { return ""; }
-  void ExportPython(std::string base_name) override{};
 };
 } // namespace opensn

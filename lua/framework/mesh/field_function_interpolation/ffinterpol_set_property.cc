@@ -32,10 +32,8 @@ RegisterLuaConstant(OP_SUM_FUNC, Varying(13));
 RegisterLuaConstant(OP_AVG_FUNC, Varying(14));
 RegisterLuaConstant(OP_MAX_FUNC, Varying(15));
 RegisterLuaConstant(LOGICAL_VOLUME, Varying(8));
-
 RegisterLuaConstant(ADD_FIELDFUNCTION, Varying(9));
 RegisterLuaConstant(SET_FIELDFUNCTIONS, Varying(10));
-
 RegisterLuaConstant(LINE_FIRSTPOINT, Varying(11));
 RegisterLuaConstant(LINE_SECONDPOINT, Varying(12));
 RegisterLuaConstant(LINE_NUMBEROFPOINTS, Varying(13));
@@ -95,7 +93,6 @@ FFInterpolationSetProperty(lua_State* L)
     auto ffhandle = LuaArg<size_t>(L, 3);
     auto cur_ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ffhandle, fname);
     auto cur_ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(cur_ff_base);
-
     p_ffi->GetFieldFunctions().push_back(cur_ff);
   }
   else if (property == FieldFunctionInterpolationProperty::SET_FIELD_FUNCTIONS)
@@ -106,7 +103,6 @@ FFInterpolationSetProperty(lua_State* L)
       const auto ffhandle = static_cast<int>(handle_d);
       auto cur_ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ffhandle, fname);
       auto cur_ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(cur_ff_base);
-
       p_ffi->GetFieldFunctions().push_back(cur_ff);
     } // for handle
   }
@@ -140,99 +136,100 @@ FFInterpolationSetProperty(lua_State* L)
     LuaCheckArgs<size_t, int, Vector3>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-    cur_ffi_line.GetInitialPoint() = LuaArg<Vector3>(L, 3);
+    cur_ffi_line.SetInitialPoint(LuaArg<Vector3>(L, 3));
   }
   else if (property == FieldFunctionInterpolationProperty::SECONDPOINT)
   {
     LuaCheckArgs<size_t, int, Vector3>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-    cur_ffi_line.GetFinalPoint() = LuaArg<Vector3>(L, 3);
+    cur_ffi_line.SetFinalPoint(LuaArg<Vector3>(L, 3));
   }
   else if (property == FieldFunctionInterpolationProperty::NUMBEROFPOINTS)
   {
     LuaCheckArgs<size_t, int, int>(L, fname);
 
     auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-
     auto num_points = LuaArg<int>(L, 3);
-
     if (num_points < 2)
     {
-      opensn::log.LogAllError() << "Line property FFI_LINE_NUMBEROFPOINTS"
-                                << " used in FFInterpolationSetProperty. Number of points must"
-                                << " be greater than or equal to 2.";
-      opensn::Exit(EXIT_FAILURE);
+      throw std::logic_error("Line property FFI_LINE_NUMBEROFPOINTS used in "
+                             "FFInterpolationSetProperty. Number of points must be greater than or "
+                             "equal to 2.");
     }
-    cur_ffi_line.GetNumberOfPoints() = num_points;
-  }
-  else if (property == FieldFunctionInterpolationProperty::CUSTOM_ARRAY)
-  {
-    LuaCheckArgs<size_t, int, std::vector<double>>(L, fname);
-
-    auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
-    auto new_array = LuaArg<std::vector<double>>(L, 3);
-    cur_ffi_line.GetCustomArrays().push_back(new_array);
+    cur_ffi_line.SetNumberOfPoints(num_points);
   }
   else if (property == FieldFunctionInterpolationProperty::OPERATION)
   {
     LuaCheckArgs<size_t, int, int>(L, fname);
-
-    if (p_ffi->Type() != FieldFunctionInterpolationType::VOLUME)
-      throw std::logic_error("Volume property FFI_PROP_OPERATION"
-                             " used in FFInterpolationSetProperty can only be used with "
-                             "Volume type interpolations.");
-
-    auto& cur_ffi_volume = dynamic_cast<FieldFunctionInterpolationVolume&>(*p_ffi);
-
     auto op_type = LuaArg<int>(L, 3);
 
     int OP_SUM = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM);
-    int OP_MAX_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX_FUNC);
+    int OP_AVG = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG);
+    int OP_MAX = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX);
     int OP_SUM_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_SUM_FUNC);
+    int OP_AVG_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_AVG_FUNC);
+    int OP_MAX_FUNC = static_cast<int>(FieldFunctionInterpolationOperation::OP_MAX_FUNC);
 
-    if (not((op_type >= OP_SUM) and (op_type <= OP_MAX_FUNC)))
+    if (p_ffi->Type() == FieldFunctionInterpolationType::VOLUME)
     {
-      opensn::log.LogAllError() << "Volume property FFI_PROP_OPERATION"
-                                << " used in FFInterpolationSetProperty. Unsupported OPERATON."
-                                << " Supported types are OP_AVG and OP_SUM. " << op_type;
-      opensn::Exit(EXIT_FAILURE);
-    }
+      if (op_type < OP_SUM or op_type > OP_MAX_FUNC)
+      {
+        throw std::logic_error("FFI_PROP_OPERATION used in FFInterpolationSetProperty. Unsupported "
+                               "operation type. Supported types are OP_SUM, OP_AVG, OP_MAX, "
+                               "OP_SUM_FUNC, OP_AVG_FUNC and OP_MAX_FUNC.");
+      }
 
-    if ((op_type >= OP_SUM_FUNC) and (op_type <= OP_MAX_FUNC))
+      if (op_type >= OP_SUM_FUNC)
+      {
+        LuaCheckArgs<size_t, int, int, std::string>(L, fname);
+        const auto func_name = LuaArg<std::string>(L, 4);
+        auto operation_function = CreateFunction(func_name);
+        opensn::function_stack.push_back(operation_function);
+        auto& cur_ffi_volume = dynamic_cast<FieldFunctionInterpolationVolume&>(*p_ffi);
+        cur_ffi_volume.SetOperationFunction(operation_function);
+      }
+
+      auto& cur_ffi_volume = dynamic_cast<FieldFunctionInterpolationVolume&>(*p_ffi);
+      cur_ffi_volume.GetOperationType() = static_cast<FieldFunctionInterpolationOperation>(op_type);
+    }
+    else if (p_ffi->Type() == FieldFunctionInterpolationType::LINE)
     {
-      LuaCheckArgs<size_t, int, int, std::string>(L, fname);
-      const auto func_name = LuaArg<std::string>(L, 4);
-      auto operation_function = CreateFunction(func_name);
-      opensn::function_stack.push_back(operation_function);
-      cur_ffi_volume.SetOperationFunction(operation_function);
-    }
+      if (op_type < OP_SUM && op_type > OP_MAX)
+      {
+        throw std::logic_error("FFI_PROP_OPERATION used in FFInterpolationSetProperty. Unsupported "
+                               "operation type. Supported types are OP_SUM, OP_AVG, or OP_MAX.");
+      }
 
-    cur_ffi_volume.GetOperationType() = static_cast<FieldFunctionInterpolationOperation>(op_type);
+      auto& cur_ffi_line = dynamic_cast<FieldFunctionInterpolationLine&>(*p_ffi);
+      cur_ffi_line.SetOperationType(static_cast<FieldFunctionInterpolationOperation>(op_type));
+    }
+    else
+    {
+      throw std::logic_error("FFI_PROP_OPERATION used in FFInterpolationSetProperty can only be "
+                             "used with volume or line interpolations.");
+    }
   }
   else if (property == FieldFunctionInterpolationProperty::LOGICAL_VOLUME)
   {
     LuaCheckArgs<size_t, int, int>(L, fname);
 
     auto logvol_hndle = LuaArg<int>(L, 3);
-
     auto p_logical_volume = std::dynamic_pointer_cast<LogicalVolume>(
       opensn::GetStackItemPtr(opensn::object_stack, logvol_hndle, fname));
 
     if (p_ffi->Type() != FieldFunctionInterpolationType::VOLUME)
-      throw std::logic_error("Volume property FFI_PROP_LOGICAL_VOLUME"
-                             " used in FFInterpolationSetProperty can only be used with "
-                             "Volume type interpolations.");
+    {
+      throw std::logic_error("Volume property FFI_PROP_LOGICAL_VOLUME use in "
+                             "FFInterpolationSetProperty can only be used with volume type "
+                             "interpolations.");
+    }
 
     auto& cur_ffi_volume = dynamic_cast<FieldFunctionInterpolationVolume&>(*p_ffi);
-
     cur_ffi_volume.GetLogicalVolume() = p_logical_volume;
   }
-  else // Fall back
-  {
-    opensn::log.LogAllError() << "Invalid PropertyIndex used in FFInterpolationSetProperty.";
-    opensn::Exit(EXIT_FAILURE);
-  }
+  else
+    throw std::logic_error("Invalid PropertyIndex used in FFInterpolationSetProperty.");
 
   return LuaReturn(L);
 }

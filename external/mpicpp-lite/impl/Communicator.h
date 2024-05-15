@@ -264,6 +264,24 @@ public:
     template <typename T>
     void gather(const T * in_values, int n, std::vector<T> & out_values, int root) const;
 
+    /// Gather together values from a group of processes
+    ///
+    /// @tparam T C++ datatype
+    /// @param in_values[in] Values to send
+    /// @param out_values[out] Buffer to receive the data
+    /// @param out_counts[in] Integer array (of length group size) containing the number of elements
+    ///        that are to be received from each process
+    /// @param out_offsets[in] Integer array (of length group size). Entry `i` specifies the
+    ///        displacement (relative to out_values) at which to place the incoming data from
+    ///        process `i`
+    /// @param root Rank of receiving process
+    template <typename T>
+    void gather(const std::vector<T> & in_values,
+                std::vector<T> & out_values,
+                const std::vector<int> & out_counts,
+                const std::vector<int> & out_offsets,
+                int root) const;
+
     /// Gathers data from all tasks and distribute the combined data to all tasks
     ///
     /// @tparam T C++ type of the data
@@ -809,6 +827,31 @@ Communicator::gather(const T * in_values, int n, std::vector<T> & out_values, in
     if (rank() == root)
         out_values.resize(size() * (std::size_t) n);
     gather(in_values, n, out_values.data(), root);
+}
+
+template <typename T>
+inline void
+Communicator::gather(const std::vector<T> & in_values,
+                     std::vector<T> & out_values,
+                     const std::vector<int> & out_counts,
+                     const std::vector<int> & out_offsets,
+                     int root) const
+{
+    assert(out_counts.size() == size());
+    assert(out_offsets.size() == size());
+    int n_out_vals = 0;
+    for (std::size_t i = 0; i < out_counts.size(); i++)
+        n_out_vals += out_counts[i];
+    out_values.resize(n_out_vals);
+    MPI_CHECK_SELF(MPI_Gatherv(in_values.data(),
+                               in_values.size(),
+                               get_mpi_datatype<T>(),
+                               out_values.data(),
+                               out_counts.data(),
+                               out_offsets.data(),
+                               get_mpi_datatype<T>(),
+                               root,
+                               this->comm));
 }
 
 template <typename T>

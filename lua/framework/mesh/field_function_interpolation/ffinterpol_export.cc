@@ -2,32 +2,48 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/lua.h"
-#include "framework/field_functions/interpolation/ffinterpolation.h"
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
 #include "ffinterpol_lua.h"
+#include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/console/console.h"
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
 
 namespace opensnlua
 {
 
-RegisterLuaFunctionInNamespace(FFInterpolationExportPython, fieldfunc, ExportPython);
+RegisterLuaFunctionInNamespace(FFInterpolationExportToCSV, fieldfunc, ExportToCSV);
+RegisterLuaFunctionInNamespace(FFInterpolationExportToPython, fieldfunc, ExportToPython);
 
 int
-FFInterpolationExportPython(lua_State* L)
+FFInterpolationExportToCSV(lua_State* L)
 {
-  const std::string fname = "fieldfunc.ExportPython";
-  LuaCheckArgs<int>(L, fname);
-
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
+  auto p_ffi = opensn::GetStackItemPtr(
+    opensn::field_func_interpolation_stack, ffihandle, "fieldfunc.ExportToCSV");
+  if (p_ffi->Type() != opensn::FieldFunctionInterpolationType::LINE)
+    opensn::log.Log0Warning() << "ExportToCSV is only supported for LINE interpolators.";
 
-  auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
+  LuaCheckArgs<int>(L, "fieldfunc.ExportToCSV");
+  auto base_name = LuaArgOptional<std::string>(L, 2, opensn::input_path.stem());
+  p_ffi->ExportToCSV(base_name);
 
-  auto base_name =
-    LuaArgOptional<std::string>(L, 2, p_ffi->GetDefaultFileBaseName() + std::to_string(ffihandle));
+  return LuaReturn(L);
+}
 
-  p_ffi->ExportPython(base_name);
+int
+FFInterpolationExportToPython(lua_State* L)
+{
+  // Get handle to field function
+  const auto ffihandle = LuaArg<size_t>(L, 1);
+  auto p_ffi = opensn::GetStackItemPtr(
+    opensn::field_func_interpolation_stack, ffihandle, "fieldfunc.ExportToPython");
+  if (p_ffi->Type() != opensn::FieldFunctionInterpolationType::SLICE)
+    opensn::log.Log0Warning() << "ExportToPython is only supported for SLICEinterpolators.";
+
+  LuaCheckArgs<int>(L, "fieldfunc.ExportToPython");
+  auto base_name = LuaArgOptional<std::string>(L, 2, opensn::input_path.stem());
+  p_ffi->ExportToPython(base_name);
 
   return LuaReturn(L);
 }
