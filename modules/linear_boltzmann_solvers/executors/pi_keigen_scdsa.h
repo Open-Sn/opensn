@@ -13,16 +13,15 @@ class VectorGhostCommunicator;
 namespace lbs
 {
 
-class XXPowerIterationKEigenSCDSA : public XXPowerIterationKEigen
+class PowerIterationKEigenSCDSA : public PowerIterationKEigen
 {
-protected:
+private:
   int accel_pi_max_its_;
   double accel_pi_k_tol_;
   bool accel_pi_verbose_;
   std::shared_ptr<DiffusionSolver> diffusion_solver_ = nullptr;
 
   const std::string diffusion_solver_sdm_;
-
   std::shared_ptr<SpatialDiscretization> continuous_sdm_ptr_ = nullptr;
   bool requires_ghosts_ = false;
   struct GhostInfo
@@ -39,9 +38,11 @@ protected:
 
 public:
   static InputParameters GetInputParameters();
-  explicit XXPowerIterationKEigenSCDSA(const InputParameters& params);
+
+  explicit PowerIterationKEigenSCDSA(const InputParameters& params);
 
   void Initialize() override;
+
   void Execute() override;
 
   /**
@@ -71,7 +72,7 @@ public:
                             const SpatialDiscretization& pwld_sdm,
                             const SpatialDiscretization& pwlc_sdm,
                             const UnknownManager& uk_man,
-                            const XXPowerIterationKEigenSCDSA::GhostInfo& ghost_info);
+                            const PowerIterationKEigenSCDSA::GhostInfo& ghost_info);
 };
 
 } // namespace lbs

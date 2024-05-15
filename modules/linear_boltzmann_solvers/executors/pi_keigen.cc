@@ -15,42 +15,34 @@ namespace opensn
 namespace lbs
 {
 
-OpenSnRegisterObjectInNamespace(lbs, XXPowerIterationKEigen);
+OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigen);
 
 InputParameters
-XXPowerIterationKEigen::GetInputParameters()
+PowerIterationKEigen::GetInputParameters()
 {
   InputParameters params = opensn::Solver::GetInputParameters();
 
-  params.SetGeneralDescription("Generalized implementation of a k-Eigenvalue solver using Power "
-                               "Iteration.");
+  params.SetGeneralDescription("Implementation of a k-Eigenvalue solver using Power Iteration");
   params.SetDocGroup("LBSExecutors");
-
-  params.ChangeExistingParamToOptional("name", "XXPowerIterationKEigen");
-
+  params.ChangeExistingParamToOptional("name", "PowerIterationKEigen");
   params.AddRequiredParameter<size_t>("lbs_solver_handle", "Handle to an existing lbs solver");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
   params.AddOptionalParameter("k_tol", 1.0e-10, "Tolerance on the k-eigenvalue");
   params.AddOptionalParameter(
-    "reset_solution",
-    true,
-    "Flag, if set to true will initialize the phi-solution to all 1's before "
-    "executing");
-
-  params.AddOptionalParameter(
-    "reinit_phi_1", true, "If true, reinitializes scalar phi fluxes to 1");
+    "reset_solution", true, "If set to true will initialize the flux moments to 1.0");
+  params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
 
   return params;
 }
 
-XXPowerIterationKEigen::XXPowerIterationKEigen(const InputParameters& params)
+PowerIterationKEigen::PowerIterationKEigen(const InputParameters& params)
   : opensn::Solver(params),
     lbs_solver_(
       GetStackItem<LBSSolver>(object_stack, params.GetParamValue<size_t>("lbs_solver_handle"))),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
+    k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
-    reinit_phi_1_(params.GetParamValue<bool>("reinit_phi_1")),
-
+    reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
     q_moments_local_(lbs_solver_.QMomentsLocal()),
     phi_old_local_(lbs_solver_.PhiOldLocal()),
     phi_new_local_(lbs_solver_.PhiNewLocal()),
@@ -60,7 +52,7 @@ XXPowerIterationKEigen::XXPowerIterationKEigen(const InputParameters& params)
 }
 
 void
-XXPowerIterationKEigen::Initialize()
+PowerIterationKEigen::Initialize()
 {
   lbs_solver_.Initialize();
 
@@ -83,14 +75,14 @@ XXPowerIterationKEigen::Initialize()
   front_wgs_solver_ = lbs_solver_.GetWGSSolvers().at(front_gs_.id_);
   front_wgs_context_ = std::dynamic_pointer_cast<lbs::WGSContext>(front_wgs_solver_->GetContext());
 
-  OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failure");
+  OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
 
-  if (reinit_phi_1_)
+  if (reset_phi0_)
     lbs_solver_.SetPhiVectorScalarValues(phi_old_local_, 1.0);
 }
 
 void
-XXPowerIterationKEigen::Execute()
+PowerIterationKEigen::Execute()
 {
   double F_prev = 1.0;
   k_eff_ = 1.0;
@@ -162,10 +154,11 @@ XXPowerIterationKEigen::Execute()
 }
 
 void
-XXPowerIterationKEigen::SetLBSFissionSource(const VecDbl& input, const bool additive)
+PowerIterationKEigen::SetLBSFissionSource(const std::vector<double>& input, const bool additive)
 {
   if (not additive)
     Set(q_moments_local_, 0.0);
+
   active_set_source_function_(front_gs_,
                               q_moments_local_,
                               input,
@@ -174,15 +167,17 @@ XXPowerIterationKEigen::SetLBSFissionSource(const VecDbl& input, const bool addi
 }
 
 void
-XXPowerIterationKEigen::SetLBSScatterSource(const VecDbl& input,
-                                            const bool additive,
-                                            const bool suppress_wg_scat)
+PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
+                                          const bool additive,
+                                          const bool suppress_wg_scat)
 {
   if (not additive)
     Set(q_moments_local_, 0.0);
+
   SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
   if (suppress_wg_scat)
     source_flags |= SUPPRESS_WG_SCATTER;
+
   active_set_source_function_(
     front_gs_, q_moments_local_, input, lbs_solver_.DensitiesLocal(), source_flags);
 }
