@@ -99,8 +99,8 @@ lbs_options =
 {
   boundary_conditions =
   {
-   {name = "xmin",type = "reflecting"},
-   {name = "ymin",type = "reflecting"},
+   {name = "xmax",type = "reflecting"},
+   {name = "ymax",type = "reflecting"},
   },
   scattering_order = 1,
 }

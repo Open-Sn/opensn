@@ -30,8 +30,8 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create
     },
     options =
     {
-        boundary_conditions = { { name = "xmin", type = "reflecting"},
-                                { name = "ymin", type = "reflecting"} },
+        boundary_conditions = { { name = "xmax", type = "reflecting"},
+                                { name = "ymax", type = "reflecting"} },
         scattering_order = 1,
 
         verbose_inner_iterations = true,

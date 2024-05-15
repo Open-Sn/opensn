@@ -34,10 +34,10 @@ namespace lbs
 {
 
 std::map<std::string, uint64_t> LBSSolver::supported_boundary_names = {
-  {"xmax", 0}, {"xmin", 1}, {"ymax", 2}, {"ymin", 3}, {"zmax", 4}, {"zmin", 5}};
+  {"xmin", 0}, {"xmax", 1}, {"ymin", 2}, {"ymax", 3}, {"zmin", 4}, {"zmax", 5}};
 
 std::map<uint64_t, std::string> LBSSolver::supported_boundary_ids = {
-  {0, "xmax"}, {1, "xmin"}, {2, "ymax"}, {3, "ymin"}, {4, "zmax"}, {5, "zmin"}};
+  {0, "xmin"}, {1, "xmax"}, {2, "ymin"}, {3, "ymax"}, {4, "zmin"}, {5, "zmax"}};
 
 // OpenSnRegisterObject(lbs, LBSSolver); Should not be constructible
 

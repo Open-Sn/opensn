@@ -117,7 +117,7 @@ lbs_options =
   boundary_conditions =
   {
     {
-      name = "xmin",
+      name = "xmax",
       type = "incident_anisotropic_heterogeneous",
       function_name = "luaBoundaryFunctionA"
     }
