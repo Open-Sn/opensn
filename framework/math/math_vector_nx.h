@@ -114,7 +114,7 @@ struct VectorNX
     return *this;
   }
 
-  /**Component-wise shift by scalar-value.
+  /**Component-wise shift by scalar value.
    * \f$ \vec{w} = \vec{x} + \alpha \f$*/
   VectorNX Shifted(const NumberFormat value) const
   {
@@ -125,7 +125,7 @@ struct VectorNX
     return newVector;
   }
 
-  /**In-place component-wise shift by scalar-value.
+  /**In-place component-wise shift by scalar value.
    * \f$ \vec{x} = \vec{x} + \alpha \f$*/
   VectorNX& Shift(const NumberFormat value)
   {

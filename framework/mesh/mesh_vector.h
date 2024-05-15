@@ -172,7 +172,7 @@ struct Vector3
     return newVector;
   }
 
-  /**In-place component-wise shift by scalar-value.
+  /**In-place component-wise shift by scalar value.
    * \f$ \vec{x} = \vec{x} + \alpha \f$*/
   Vector3& Shift(const double value)
   {

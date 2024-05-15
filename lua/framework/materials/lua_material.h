@@ -33,58 +33,10 @@ namespace opensnlua
 int MatAddMaterial(lua_State* L);
 
 /**
- * Adds a material property to a material.
- *
- * \param MaterialHandle int Index to the reference material.
- * \param PropertyIndex int Property index.
- *
- * ##_
- *
- * ###PropertyIndex\n
- *
- * SCALAR_VALUE\n
- *  Simple scalar value property.\n\n
- *
- * TRANSPORT_XSECTIONS\n
- *  Multi-group transport cross section supporting numerous features.\n\n
- *
- * ISOTROPIC_MG_SOURCE\n
- *  Isotropic Multigroup Source.\n\n
- *
- * ### Developer Info
- * Checklist for adding a new material property:
- *  - Create your property class in its own header file. i.e.
- *    "physics/PhysicsMaterial/property_xx_myproperty.h"
- *  - Add the property to the physics namespace
- *    ("physics/chi_physics_namespace.h"). Make sure to derive from the base
- *    class.
- *  - Go define the integer to be associated with your new property in
- *    chi_physicsmaterial.h
- *  - Include the header file for your property in this file (i.e. at the top).
- *  - Add this property integer in the lua register (ChiLua/chi_lua_register.h).
- *    For testing you can just use the integer value but eventually you'd want
- *    to supply an easier way for users to enter it.
- *  - Add another else-if for your property. Just have a look at how the others
- *    were done, it should be intuitive enough.
- *
- * ##_
- *
- * ### Example\n
- * Example lua code:
- * \code
- * mat.AddProperty(materials[i],TRANSPORT_XSECTIONS)
- * \endcode
- *
- * \ingroup LuaPhysicsMaterials
- * \author Jan
- */
-int MatAddProperty(lua_State* L);
-
-/**
  * Sets a material property for a given material.
  *
  * \param MaterialHandle int Index to the reference material.
- * \param PropertyType int Property type, or name of property.
+ * \param PropertyType int Property type.
  * \param OperationType int Method used for setting the material property.
  * \param Information varying Varying information depending on the operation.
  *
@@ -143,7 +95,7 @@ int MatAddProperty(lua_State* L);
  * ##_
  *
  * ### Example 1
- * Simple scalar valued property:
+ * Simple scalar-valued property:
  * \code
  * materials = {}
  * materials[1] = mat.AddMaterial("Test Material");
