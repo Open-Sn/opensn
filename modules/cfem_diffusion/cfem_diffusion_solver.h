@@ -37,6 +37,7 @@ public:
   void SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
 
   void SetOptions(const InputParameters& params);
+  void SetBoundaryOptions(const InputParameters& params);
 
   void Initialize() override;
 
@@ -76,6 +77,7 @@ private:
 public:
   static InputParameters GetInputParameters();
   static InputParameters OptionsBlock();
+  static InputParameters BoundaryOptionsBlock();
 };
 
 } // namespace diffusion

@@ -18,6 +18,10 @@ namespace diffusion
 {
 
 OpenSnRegisterObjectInNamespace(diffusion, CFEMSolver);
+OpenSnRegisterSyntaxBlockInNamespace(diffusion, OptionsBlock, CFEMSolver::OptionsBlock);
+OpenSnRegisterSyntaxBlockInNamespace(diffusion,
+                                     BoundaryOptionsBlock,
+                                     CFEMSolver::BoundaryOptionsBlock);
 
 CFEMSolver::CFEMSolver(const std::string& name)
   : opensn::Solver(name, {{"max_iters", static_cast<int64_t>(500)}, {"residual_tolerance", 1.0e-2}})
@@ -37,6 +41,21 @@ InputParameters
 CFEMSolver::OptionsBlock()
 {
   InputParameters params;
+  params.AddOptionalParameterArray(
+    "boundary_conditions", {}, "An array contain tables for each boundary specification.");
+  params.LinkParameterToBlock("boundary_conditions", "CFEMSolver::BoundaryOptionsBlock");
+  return params;
+}
+
+InputParameters
+CFEMSolver::BoundaryOptionsBlock()
+{
+  InputParameters params;
+  params.SetGeneralDescription("Set options for boundary conditions");
+  params.AddRequiredParameter<std::string>("boundary",
+                                           "Boundary to apply the boundary condition to.");
+  params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
+  params.AddOptionalParameterArray<double>("coeffs", {}, "Coefficients.");
   return params;
 }
 
@@ -75,6 +94,92 @@ CFEMSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> fun
 void
 CFEMSolver::SetOptions(const InputParameters& params)
 {
+  const auto& user_params = params.ParametersAtAssignment();
+
+  for (size_t p = 0; p < user_params.NumParameters(); ++p)
+  {
+    const auto& spec = user_params.GetParam(p);
+    if (spec.Name() == "boundary_conditions")
+    {
+      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+      for (size_t b = 0; b < spec.NumParameters(); ++b)
+      {
+        auto bndry_params = BoundaryOptionsBlock();
+        bndry_params.AssignParameters(spec.GetParam(b));
+        SetBoundaryOptions(bndry_params);
+      }
+    }
+  }
+}
+
+void
+CFEMSolver::SetBoundaryOptions(const InputParameters& params)
+{
+  const std::string fname = "CFEMSolver::SetBoundaryOptions";
+
+  const auto& user_params = params.ParametersAtAssignment();
+  const auto boundary = user_params.GetParamValue<std::string>("boundary");
+  const auto bc_type = user_params.GetParamValue<std::string>("type");
+  const auto bc_type_lc = LowerCase(bc_type);
+
+  if (bc_type_lc == "reflecting")
+  {
+    opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Reflecting;
+    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Reflecting.";
+  }
+  else if (bc_type_lc == "dirichlet")
+  {
+    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    if (coeffs.size() < 1)
+      throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
+    auto boundary_value = coeffs[0];
+    opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Dirichlet;
+    bndry_info.second = {boundary_value};
+    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Dirichlet with value "
+                      << boundary_value;
+  }
+  else if (bc_type_lc == "neumann")
+  {
+    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    if (coeffs.size() < 1)
+      throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
+    auto f_value = coeffs[0];
+    opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    bndry_info.second = {0.0, 1.0, f_value};
+    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Neumann with D grad(u) dot n = ("
+                      << f_value << ") ";
+  }
+  else if (bc_type_lc == "vacuum")
+  {
+    opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    bndry_info.second = {0.25, 0.5, 0.0};
+    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Vacuum.";
+  }
+  else if (bc_type_lc == "robin")
+  {
+    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    if (coeffs.size() < 3)
+      throw std::invalid_argument("Expecting three values in the 'coeffs' parameter.");
+    auto a_value = coeffs[0];
+    auto b_value = coeffs[1];
+    auto f_value = coeffs[2];
+    opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    bndry_info.second = {a_value, b_value, f_value};
+    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Robin with a,b,f = (" << a_value << ","
+                      << b_value << "," << f_value << ") ";
+  }
+  else
+    throw std::invalid_argument(fname + ": Unsupported boundary type '" + bc_type + "'.");
 }
 
 void
@@ -161,7 +266,7 @@ CFEMSolver::Initialize()
     {
       boundaries_.insert(
         std::make_pair(bndry_id, Boundary{BoundaryType::Dirichlet, {0.0, 0.0, 0.0}}));
-      log.Log0Verbose1() << "No boundary preference found for boundary index " << bndry_name
+      log.Log0Verbose1() << "No boundary preference found for boundary index " << bndry_id
                          << "Dirichlet boundary added with zero boundary value.";
     }
   } // for bndry

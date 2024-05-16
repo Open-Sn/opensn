@@ -100,8 +100,8 @@ CFEMDiffusionSetBCProperty(lua_State* L)
       bndry_info.second = {boundary_value};
       solver.boundary_preferences.insert(std::make_pair(bound_name, bndry_info));
 
-      opensn::log.Log() << "Boundary " << bound_name << " set as "
-                        << "Dirichlet with value " << boundary_value;
+      opensn::log.Log() << "Boundary " << bound_name << " set as Dirichlet with value "
+                        << boundary_value;
     }
     else if (type_name == "neumann")
     {
@@ -112,8 +112,8 @@ CFEMDiffusionSetBCProperty(lua_State* L)
       bndry_info.second = {0.0, 1.0, f_value};
       solver.boundary_preferences.insert(std::make_pair(bound_name, bndry_info));
 
-      opensn::log.Log() << "Boundary " << bound_name << " set as "
-                        << "Neumann with D grad(u) dot n = (" << f_value << ") ";
+      opensn::log.Log() << "Boundary " << bound_name << " set as Neumann with D grad(u) dot n = ("
+                        << f_value << ") ";
     }
     else if (type_name == "vacuum")
     {
@@ -122,8 +122,7 @@ CFEMDiffusionSetBCProperty(lua_State* L)
       bndry_info.second = {0.25, 0.5, 0.0};
       solver.boundary_preferences.insert(std::make_pair(bound_name, bndry_info));
 
-      opensn::log.Log() << "Boundary " << bound_name << " set as "
-                        << "Vacuum.";
+      opensn::log.Log() << "Boundary " << bound_name << " set as Vacuum.";
     }
     else if (type_name == "robin")
     {
@@ -136,9 +135,8 @@ CFEMDiffusionSetBCProperty(lua_State* L)
       bndry_info.second = {a_value, b_value, f_value};
       solver.boundary_preferences.insert(std::make_pair(bound_name, bndry_info));
 
-      opensn::log.Log() << "Boundary " << bound_name << " set as "
-                        << "Robin with a,b,f = (" << a_value << "," << b_value << "," << f_value
-                        << ") ";
+      opensn::log.Log() << "Boundary " << bound_name << " set as Robin with a,b,f = (" << a_value
+                        << "," << b_value << "," << f_value << ") ";
     }
     else
     {
