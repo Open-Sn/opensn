@@ -15,53 +15,52 @@ namespace lbs
 OpenSnRegisterObjectParametersOnlyInNamespace(lbs, LBSGroupset);
 
 InputParameters
-lbs::LBSGroupset::GetInputParameters()
+LBSGroupset::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("Input Parameters for groupsets.");
   params.SetDocGroup("LuaLBSGroupsets");
 
+  // Groupsets
   params.AddRequiredParameterArray("groups_from_to",
-                                   "The first and last group id this groupset operates on."
-                                   " e.g. A 4 group problem <TT>groups_from_to= {0, 3}</TT>");
+                                   "The first and last group id this groupset operates on, e.g. A "
+                                   "4 group problem <TT>groups_from_to= {0, 3}</TT>");
+  params.AddOptionalParameter(
+    "groupset_num_subsets",
+    1,
+    "The number of subsets to apply to the set of groups in this set. "
+    "This is useful for increasing pipeline size for parallel simulations");
 
+  // Anglesets
   params.AddRequiredParameter<size_t>("angular_quadrature_handle",
                                       "A handle to an angular quadrature");
   params.AddOptionalParameter(
     "angle_aggregation_type", "polar", "The angle aggregation method to use during sweeping");
-
   params.AddOptionalParameter("angle_aggregation_num_subsets",
                               1,
-                              "The number of subsets to apply to sets of "
-                              "angles that have been aggregated. This is useful for increasing "
-                              "pipeline size for parallel simulations");
+                              "The number of subsets to apply to sets of angles that have been "
+                              "aggregated. This is useful for increasing pipeline size for "
+                              "parallel simulations");
 
-  params.AddOptionalParameter(
-    "groupset_num_subsets",
-    1,
-    "The number of subsets to apply to the set of groups in this set. This is "
-    "useful for increasing pipeline size for parallel simulations");
-
+  // Iterative method
   params.AddOptionalParameter(
     "inner_linear_method", "richardson", "The iterative method to use for inner linear solves");
-
   params.AddOptionalParameter(
     "l_abs_tol", 1.0e-6, "Inner linear solver residual absolute tolerance");
   params.AddOptionalParameter("l_max_its", 200, "Inner linear solver maximum iterations");
   params.AddOptionalParameter("gmres_restart_interval",
                               30,
-                              "If this inner linear solver is gmres, sets the"
-                              " number of iterations before a restart occurs.");
-
+                              "If this inner linear solver is gmres, sets the number of "
+                              "iterations before a restart occurs.");
   params.AddOptionalParameter(
     "allow_cycles", true, "Flag indicating whether cycles are to be allowed or not");
 
   // WG DSA options
   params.AddOptionalParameter("apply_wgdsa",
                               false,
-                              "Flag to turn on within-group Diffusion "
-                              "Synthetic Acceleration for this groupset");
+                              "Flag to turn on within-group Diffusion Synthetic Acceleration for "
+                              "this groupset");
   params.AddOptionalParameter(
     "wgdsa_l_abs_tol", 1.0e-4, "Within-group DSA linear absolute tolerance");
   params.AddOptionalParameter("wgdsa_l_max_its", 30, "Within-group DSA linear maximum iterations");
@@ -81,14 +80,10 @@ lbs::LBSGroupset::GetInputParameters()
   // Constraints
   params.ConstrainParameterRange("angle_aggregation_type",
                                  AllowableRangeList::New({"polar", "single", "azimuthal"}));
-
   params.ConstrainParameterRange("angle_aggregation_num_subsets", AllowableRangeLowLimit::New(1));
-
   params.ConstrainParameterRange("groupset_num_subsets", AllowableRangeLowLimit::New(1));
-
   params.ConstrainParameterRange("inner_linear_method",
                                  AllowableRangeList::New({"richardson", "gmres", "bicgstab"}));
-
   params.ConstrainParameterRange("l_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("l_max_its", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("gmres_restart_interval", AllowableRangeLowLimit::New(1));
@@ -96,11 +91,50 @@ lbs::LBSGroupset::GetInputParameters()
   return params;
 }
 
-lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
-                              const int id,
-                              const LBSSolver& lbs_solver)
-  : Object(params), id_(id)
+// The functionality provided by Init() should really be accomplished via the member initializer
+// list. But, delegating constructors won't work here, and repeating the initialization is worse,
+// in my opinion, than an init method.
+void
+LBSGroupset::Init(int id)
 {
+  id_ = id;
+  quadrature_ = nullptr;
+  angle_agg_ = nullptr;
+  master_num_grp_subsets_ = 1;
+  master_num_ang_subsets_ = 1;
+  iterative_method_ = IterativeMethod::CLASSICRICHARDSON;
+  angleagg_method_ = AngleAggregationType::POLAR;
+  residual_tolerance_ = 1.0e-6;
+  max_iterations_ = 200;
+  gmres_restart_intvl_ = 30;
+  allow_cycles_ = false;
+  apply_wgdsa_ = false;
+  apply_tgdsa_ = false;
+  wgdsa_max_iters_ = 30;
+  tgdsa_max_iters_ = 30;
+  wgdsa_tol_ = 1.0e-4;
+  tgdsa_tol_ = 1.0e-4;
+  wgdsa_verbose_ = false;
+  tgdsa_verbose_ = false;
+  wgdsa_solver_ = nullptr;
+  tgdsa_solver_ = nullptr;
+}
+
+LBSGroupset::LBSGroupset()
+{
+  Init(-1);
+};
+
+LBSGroupset::LBSGroupset(int id)
+{
+  Init(id);
+}
+
+LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSSolver& lbs_solver)
+  : Object(params)
+{
+  Init(id);
+
   const std::string fname = __FUNCTION__;
 
   // Add groups
@@ -117,7 +151,7 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
     for (size_t g = from; g <= to; ++g)
     {
       groups_.push_back(lbs_solver.Groups().at(g));
-    } // for g
+    }
   }
   catch (const std::exception& exc)
   {
@@ -176,8 +210,7 @@ lbs::LBSGroupset::LBSGroupset(const InputParameters& params,
 }
 
 void
-lbs::LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order,
-                                       lbs::GeometryType geometry_type)
+LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order, lbs::GeometryType geometry_type)
 {
   if (geometry_type == lbs::GeometryType::ONED_SLAB or
       geometry_type == lbs::GeometryType::ONED_CYLINDRICAL or
@@ -197,8 +230,7 @@ lbs::LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order,
 }
 
 void
-lbs::LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order,
-                                       lbs::GeometryType geometry_type)
+LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order, lbs::GeometryType geometry_type)
 {
   if (geometry_type == lbs::GeometryType::ONED_SLAB or
       geometry_type == lbs::GeometryType::ONED_CYLINDRICAL or
@@ -218,7 +250,7 @@ lbs::LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order,
 }
 
 void
-lbs::LBSGroupset::BuildSubsets()
+LBSGroupset::BuildSubsets()
 {
   grp_subset_infos_ = MakeSubSets(groups_.size(), master_num_grp_subsets_);
   {

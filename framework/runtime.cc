@@ -64,13 +64,12 @@ Finalize()
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
   mesh_stack.clear();
   surface_mesh_stack.clear();
-  object_stack.clear();
   field_func_interpolation_stack.clear();
   unpartitionedmesh_stack.clear();
-  object_stack.clear();
   material_stack.clear();
   multigroup_xs_stack.clear();
   function_stack.clear();
+  object_stack.clear();
 
   CALI_MARK_END(opensn::name.c_str());
 }

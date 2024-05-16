@@ -71,16 +71,16 @@ DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const InputParameters& params)
 DiscreteOrdinatesSolver::~DiscreteOrdinatesSolver()
 {
   CALI_CXX_MARK_FUNCTION;
+
   for (auto& groupset : groupsets_)
   {
     CleanUpWGDSA(groupset);
     CleanUpTGDSA(groupset);
 
     // Reset sweep orderings
-    groupset.angle_agg_->angle_set_groups.clear();
+    if (groupset.angle_agg_ != nullptr)
+      groupset.angle_agg_->angle_set_groups.clear();
   }
-
-  opensn::mpi_comm.barrier();
 }
 
 std::pair<size_t, size_t>
