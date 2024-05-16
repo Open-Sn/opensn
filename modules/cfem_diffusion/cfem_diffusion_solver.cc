@@ -3,6 +3,7 @@
 
 #include "modules/cfem_diffusion/cfem_diffusion_solver.h"
 #include "framework/runtime.h"
+#include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/math/functions/scalar_spatial_material_function.h"
@@ -13,15 +14,40 @@
 
 namespace opensn
 {
-namespace cfem_diffusion
+namespace diffusion
 {
 
-Solver::Solver(const std::string& name)
-  : opensn::Solver(name, {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
+OpenSnRegisterObjectInNamespace(diffusion, CFEMSolver);
+
+CFEMSolver::CFEMSolver(const std::string& name)
+  : opensn::Solver(name, {{"max_iters", static_cast<int64_t>(500)}, {"residual_tolerance", 1.0e-2}})
 {
 }
 
-Solver::~Solver()
+InputParameters
+CFEMSolver::GetInputParameters()
+{
+  InputParameters params = Solver::GetInputParameters();
+  params.AddOptionalParameter<double>("residual_tolerance", 1.0e-2, "Solver relative tolerance");
+  params.AddOptionalParameter<int>("max_iters", 500, "Solver relative tolerance");
+  return params;
+}
+
+InputParameters
+CFEMSolver::OptionsBlock()
+{
+  InputParameters params;
+  return params;
+}
+
+CFEMSolver::CFEMSolver(const InputParameters& params) : opensn::Solver(params)
+{
+  basic_options_.AddOption("residual_tolerance",
+                           params.GetParamValue<double>("residual_tolerance"));
+  basic_options_.AddOption<int64_t>("max_iters", params.GetParamValue<int>("max_iters"));
+}
+
+CFEMSolver::~CFEMSolver()
 {
   VecDestroy(&x_);
   VecDestroy(&b_);
@@ -29,27 +55,32 @@ Solver::~Solver()
 }
 
 void
-Solver::SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+CFEMSolver::SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
 {
   d_coef_function_ = function;
 }
 
 void
-Solver::SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+CFEMSolver::SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
 {
   q_ext_function_ = function;
 }
 
 void
-Solver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+CFEMSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
 {
   sigma_a_function_ = function;
 }
 
 void
-Solver::Initialize()
+CFEMSolver::SetOptions(const InputParameters& params)
 {
-  const std::string fname = "Solver::Initialize";
+}
+
+void
+CFEMSolver::Initialize()
+{
+  const std::string fname = "CFEMSolver::Initialize";
   log.Log() << "\n"
             << program_timer.GetTimeString() << " " << TextName()
             << ": Initializing CFEM Diffusion solver ";
@@ -73,9 +104,9 @@ Solver::Initialize()
                              " does not have a name-assignment.");
 
     const auto& bndry_name = grid_boundary_id_map.at(bndry_id);
-    if (boundary_preferences_.find(bndry_name) != boundary_preferences_.end())
+    if (boundary_preferences.find(bndry_name) != boundary_preferences.end())
     {
-      BoundaryInfo bndry_info = boundary_preferences_.at(bndry_name);
+      BoundaryInfo bndry_info = boundary_preferences.at(bndry_name);
       auto& bndry_vals = bndry_info.second;
       switch (bndry_info.first)
       {
@@ -177,7 +208,7 @@ Solver::Initialize()
 }
 
 void
-Solver::Execute()
+CFEMSolver::Execute()
 {
   log.Log() << "\nExecuting CFEM Diffusion solver";
 
@@ -353,12 +384,12 @@ Solver::Execute()
 }
 
 void
-Solver::UpdateFieldFunctions()
+CFEMSolver::UpdateFieldFunctions()
 {
   auto& ff = *field_functions_.front();
 
   ff.UpdateFieldVector(x_);
 }
 
-} // namespace cfem_diffusion
+} // namespace diffusion
 } // namespace opensn

@@ -49,7 +49,7 @@ CFEMDiffusionSolverCreate(lua_State* L)
   auto sigma_a_function = CreateFunction("Sigma_a");
   opensn::function_stack.push_back(sigma_a_function);
 
-  auto new_solver = std::make_shared<opensn::cfem_diffusion::Solver>(solver_name);
+  auto new_solver = std::make_shared<opensn::diffusion::CFEMSolver>(solver_name);
   new_solver->SetDCoefFunction(d_coef_function);
   new_solver->SetQExtFunction(q_ext_function);
   new_solver->SetSigmaAFunction(sigma_a_function);
@@ -71,7 +71,7 @@ CFEMDiffusionSetBCProperty(lua_State* L)
   const auto solver_index = LuaArg<size_t>(L, 1);
 
   auto& solver =
-    opensn::GetStackItem<opensn::cfem_diffusion::Solver>(opensn::object_stack, solver_index, fname);
+    opensn::GetStackItem<opensn::diffusion::CFEMSolver>(opensn::object_stack, solver_index, fname);
 
   // Get property index
   const auto property_name = LuaArg<std::string>(L, 2);
@@ -83,10 +83,10 @@ CFEMDiffusionSetBCProperty(lua_State* L)
     const auto type_name = LuaArg<std::string>(L, 4);
     if (type_name == "reflecting")
     {
-      opensn::cfem_diffusion::Solver::BoundaryInfo bndry_info;
-      bndry_info.first = opensn::cfem_diffusion::BoundaryType::Reflecting;
+      opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+      bndry_info.first = opensn::diffusion::BoundaryType::Reflecting;
 
-      solver.boundary_preferences_.insert(std::make_pair(bound_name, bndry_info));
+      solver.boundary_preferences.insert(std::make_pair(bound_name, bndry_info));
 
       opensn::log.Log() << "Boundary " << bound_name << " set as "
                         << "Reflecting.";
@@ -95,10 +95,10 @@ CFEMDiffusionSetBCProperty(lua_State* L)
     {
       auto boundary_value = LuaArg<double>(L, 5);
 
-      opensn::cfem_diffusion::Solver::BoundaryInfo bndry_info;
-      bndry_info.first = opensn::cfem_diffusion::BoundaryType::Dirichlet;
+      opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+      bndry_info.first = opensn::diffusion::BoundaryType::Dirichlet;
       bndry_info.second = {boundary_value};
-      solver.boundary_preferences_.insert(std::make_pair(bound_name, bndry_info));
+      solver.boundary_preferences.insert(std::make_pair(bound_name, bndry_info));
 
       opensn::log.Log() << "Boundary " << bound_name << " set as "
                         << "Dirichlet with value " << boundary_value;
@@ -107,20 +107,20 @@ CFEMDiffusionSetBCProperty(lua_State* L)
     {
       auto f_value = LuaArg<double>(L, 5);
 
-      opensn::cfem_diffusion::Solver::BoundaryInfo bndry_info;
-      bndry_info.first = opensn::cfem_diffusion::BoundaryType::Robin;
+      opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+      bndry_info.first = opensn::diffusion::BoundaryType::Robin;
       bndry_info.second = {0.0, 1.0, f_value};
-      solver.boundary_preferences_.insert(std::make_pair(bound_name, bndry_info));
+      solver.boundary_preferences.insert(std::make_pair(bound_name, bndry_info));
 
       opensn::log.Log() << "Boundary " << bound_name << " set as "
                         << "Neumann with D grad(u) dot n = (" << f_value << ") ";
     }
     else if (type_name == "vacuum")
     {
-      opensn::cfem_diffusion::Solver::BoundaryInfo bndry_info;
-      bndry_info.first = opensn::cfem_diffusion::BoundaryType::Robin;
+      opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+      bndry_info.first = opensn::diffusion::BoundaryType::Robin;
       bndry_info.second = {0.25, 0.5, 0.0};
-      solver.boundary_preferences_.insert(std::make_pair(bound_name, bndry_info));
+      solver.boundary_preferences.insert(std::make_pair(bound_name, bndry_info));
 
       opensn::log.Log() << "Boundary " << bound_name << " set as "
                         << "Vacuum.";
@@ -131,10 +131,10 @@ CFEMDiffusionSetBCProperty(lua_State* L)
       auto b_value = LuaArg<double>(L, 6);
       auto f_value = LuaArg<double>(L, 7);
 
-      opensn::cfem_diffusion::Solver::BoundaryInfo bndry_info;
-      bndry_info.first = opensn::cfem_diffusion::BoundaryType::Robin;
+      opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
+      bndry_info.first = opensn::diffusion::BoundaryType::Robin;
       bndry_info.second = {a_value, b_value, f_value};
-      solver.boundary_preferences_.insert(std::make_pair(bound_name, bndry_info));
+      solver.boundary_preferences.insert(std::make_pair(bound_name, bndry_info));
 
       opensn::log.Log() << "Boundary " << bound_name << " set as "
                         << "Robin with a,b,f = (" << a_value << "," << b_value << "," << f_value
@@ -153,5 +153,50 @@ CFEMDiffusionSetBCProperty(lua_State* L)
   }
   return LuaReturn(L);
 }
+
+opensn::InputParameters
+GetSyntax_SetOptions()
+{
+  opensn::InputParameters params;
+  params.SetGeneralDescription("Set options from a large list of parameters");
+  params.AddRequiredParameter<size_t>("arg0", "Handle to a `diffusion::CFEMSolver` object.");
+  params.AddRequiredParameterBlock("arg1", "Block of parameters for `diffusion::OptionsBlock`");
+  params.LinkParameterToBlock("arg1", "diffusion::OptionsBlock");
+  return params;
+}
+
+opensn::ParameterBlock
+SetOptions(const opensn::InputParameters& params)
+{
+  const std::string fname = __FUNCTION__;
+
+  params.RequireParameter("arg0");
+  params.RequireParameter("arg1");
+
+  auto d_coef_function = CreateFunction("D_coef");
+  opensn::function_stack.push_back(d_coef_function);
+
+  auto q_ext_function = CreateFunction("Q_ext");
+  opensn::function_stack.push_back(q_ext_function);
+
+  auto sigma_a_function = CreateFunction("Sigma_a");
+  opensn::function_stack.push_back(sigma_a_function);
+
+  const size_t handle = params.GetParamValue<size_t>("arg0");
+  auto& solver =
+    opensn::GetStackItem<opensn::diffusion::CFEMSolver>(opensn::object_stack, handle, fname);
+  solver.SetDCoefFunction(d_coef_function);
+  solver.SetQExtFunction(q_ext_function);
+  solver.SetSigmaAFunction(sigma_a_function);
+
+  auto options_params = opensn::diffusion::CFEMSolver::OptionsBlock();
+  options_params.AssignParameters(params.GetParam("arg1"));
+
+  solver.SetOptions(options_params);
+
+  return opensn::ParameterBlock();
+}
+
+RegisterWrapperFunctionInNamespace(diffusion, SetOptions, GetSyntax_SetOptions, SetOptions);
 
 } // namespace opensnlua
