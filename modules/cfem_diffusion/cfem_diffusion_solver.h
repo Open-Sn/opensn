@@ -48,12 +48,10 @@ public:
    */
   void UpdateFieldFunctions();
 
-public:
+private:
   typedef std::pair<opensn::diffusion::BoundaryType, std::vector<double>> BoundaryInfo;
   typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
-  BoundaryPreferences boundary_preferences;
 
-private:
   std::shared_ptr<MeshContinuum> grid_ptr_ = nullptr;
 
   std::shared_ptr<SpatialDiscretization> sdm_ptr_ = nullptr;
@@ -69,6 +67,8 @@ private:
   Mat A_ = nullptr;
 
   std::map<uint64_t, Boundary> boundaries_;
+
+  BoundaryPreferences boundary_preferences_;
 
   std::shared_ptr<ScalarSpatialMaterialFunction> d_coef_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> sigma_a_function_;

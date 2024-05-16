@@ -126,7 +126,7 @@ CFEMSolver::SetBoundaryOptions(const InputParameters& params)
   {
     opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
     bndry_info.first = opensn::diffusion::BoundaryType::Reflecting;
-    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Reflecting.";
   }
   else if (bc_type_lc == "dirichlet")
@@ -138,7 +138,7 @@ CFEMSolver::SetBoundaryOptions(const InputParameters& params)
     opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
     bndry_info.first = opensn::diffusion::BoundaryType::Dirichlet;
     bndry_info.second = {boundary_value};
-    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Dirichlet with value "
                       << boundary_value;
   }
@@ -151,7 +151,7 @@ CFEMSolver::SetBoundaryOptions(const InputParameters& params)
     opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
     bndry_info.first = opensn::diffusion::BoundaryType::Robin;
     bndry_info.second = {0.0, 1.0, f_value};
-    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Neumann with D grad(u) dot n = ("
                       << f_value << ") ";
   }
@@ -160,7 +160,7 @@ CFEMSolver::SetBoundaryOptions(const InputParameters& params)
     opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
     bndry_info.first = opensn::diffusion::BoundaryType::Robin;
     bndry_info.second = {0.25, 0.5, 0.0};
-    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Vacuum.";
   }
   else if (bc_type_lc == "robin")
@@ -174,7 +174,7 @@ CFEMSolver::SetBoundaryOptions(const InputParameters& params)
     opensn::diffusion::CFEMSolver::BoundaryInfo bndry_info;
     bndry_info.first = opensn::diffusion::BoundaryType::Robin;
     bndry_info.second = {a_value, b_value, f_value};
-    boundary_preferences.insert(std::make_pair(boundary, bndry_info));
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Robin with a,b,f = (" << a_value << ","
                       << b_value << "," << f_value << ") ";
   }
@@ -209,9 +209,9 @@ CFEMSolver::Initialize()
                              " does not have a name-assignment.");
 
     const auto& bndry_name = grid_boundary_id_map.at(bndry_id);
-    if (boundary_preferences.find(bndry_name) != boundary_preferences.end())
+    if (boundary_preferences_.find(bndry_name) != boundary_preferences_.end())
     {
-      BoundaryInfo bndry_info = boundary_preferences.at(bndry_name);
+      BoundaryInfo bndry_info = boundary_preferences_.at(bndry_name);
       auto& bndry_vals = bndry_info.second;
       switch (bndry_info.first)
       {
