@@ -1,17 +1,15 @@
--- Final k-eigenvalue    :         1.1925596 (265)
+--- Final k-eigenvalue    :         1.1925596 (265)
+
 dofile("mesh/gmesh_coarse.lua")
-
---os.exit()
-
 dofile("materials/materials.lua")
 
---############################################### Setup Physics
---========== ProdQuad
+-- Setup Physics
+
+-- Angular quadrature
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,2, 2)
---pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,1, 1)
 aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
 
-
+-- Solver
 phys1 = lbs.DiscreteOrdinatesSolver.Create
 ({
     num_groups = num_groups,
@@ -33,20 +31,17 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create
         boundary_conditions = { { name = "xmax", type = "reflecting"},
                                 { name = "ymax", type = "reflecting"} },
         scattering_order = 1,
-
         verbose_inner_iterations = true,
         verbose_outer_iterations = true,
-
         power_field_function_on = true,
         power_default_kappa = 1.0,
-        -- power_normalization = -1.0, --Disabled
-        power_normalization = 1.0, --Disabled
+        power_normalization = 1.0,
         save_angular_flux = true
     },
-    sweep_type = "CBC"
+    sweep_type = "AAH"
 })
 
---############################################### Initialize and Execute Solver
+-- Execute Solver
 if (k_method == "pi") then
     k_solver = lbs.PowerIterationKEigen.Create
     ({
@@ -65,9 +60,6 @@ elseif (k_method == "pi_scdsa") then
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
     })
-    LBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
-    LBSGroupsetSetMaxIterations(phys1, 0, 1)
-
     solver.Initialize(k_solver)
     solver.Execute(k_solver)
 elseif (k_method == "pi_scdsa_pwlc") then
@@ -80,9 +72,6 @@ elseif (k_method == "pi_scdsa_pwlc") then
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
     })
-    LBSGroupsetSetIterativeMethod(phys1, 0, KRYLOV_RICHARDSON_CYCLES)
-    LBSGroupsetSetMaxIterations(phys1, 0, 1)
-
     solver.Initialize(k_solver)
     solver.Execute(k_solver)
 elseif (k_method == "jfnk") then
@@ -100,7 +89,7 @@ elseif (k_method == "jfnk") then
 else
     log.Log(LOG_0ERROR, "k_method must be specified. \"pi\", "..
       "\"pi_scdsa\", \"pi_scdsa_pwlc\" or \"jfnk\"");
-    os.exit(1)
+    return
 end
 
 if (master_export == nil) then
