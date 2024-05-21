@@ -130,12 +130,14 @@ class TestSlot:
 
         opensn_elapsed_time_sec = 0.0
         if os.path.exists(output_filename):
-          for line in open(output_filename, 'r'):
-            found = re.search("Elapsed execution time:", line)
-            if found:
-              values_slice = re.split(r'[,:]', line.strip())
-              opensn_elapsed_time_sec = float(values_slice[1])*3600 + float(values_slice[2])*60 + float(values_slice[3])
-              break
+            for line in open(output_filename, 'r'):
+                found = re.search("Elapsed execution time:", line)
+                if found:
+                    values_slice = re.split(r'[,:]', line.strip())
+                    opensn_elapsed_time_sec = (float(values_slice[1]) * 3600
+                                               + float(values_slice[2]) * 60
+                                               + float(values_slice[3]))
+                    break
 
         time_taken_message = " {:.1f}s".format(opensn_elapsed_time_sec)
 

@@ -42,12 +42,12 @@ tests/BigTests/*/solutions/
 # All exodus files
 /*.e
 
-resources/Dependencies/\.DS_Store
+resources/Dependencies/.DS_Store
 
-resources/\.DS_Store
+resources/.DS_Store
 
 # python files
-\.DS_Store
+.DS_Store
 ._.DS_Store
 *.pyc
 *.pmesh

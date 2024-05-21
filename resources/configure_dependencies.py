@@ -3,9 +3,11 @@ This is a utility script for the download and installation of OpenSn
 dependencies.
 
 NOTES:
-- If you see errors in building fblaslapack, try using a  different BLAS/LAPACK. For example, on MacOSX, the Apple
-  supplied ones are known to work (so you would just remove the option --download-fblaslapack=1)
-- If you have set CC, CXX and FC in your environment, make sure they are CC=mpicc, CXX=mpicxx and FC=mpifort.
+- If you see errors in building fblaslapack, try using a  different BLAS/LAPACK. For example, on
+  MacOSX, the Apple-supplied ones are known to work (so you would just remove the option
+  --download-fblaslapack=1)
+- If you have set CC, CXX and FC in your environment, make sure they are CC=mpicc, CXX=mpicxx, and
+  FC=mpifort.
 
 NOTES for building on MacOS:
 - you may need to `export MACOSX_DEPLOYMENT_TARGET=10.15` in your environment
@@ -20,10 +22,8 @@ import textwrap
 from typing import Optional, TextIO
 
 if sys.version_info.major < 3:
-    raise Exception("Python version detected to be " +
-                    str(sys.version_info.major) + "." +
-                    str(sys.version_info.minor) +
-                    " but is required to >= 3")
+    raise Exception("Python version detected to be " + str(sys.version_info.major) + "."
+                    + str(sys.version_info.minor) + " but is required to >= 3")
 
 
 class TextColors:
@@ -48,8 +48,8 @@ Run the dependency builder.
 ''')
 
 parser = argparse.ArgumentParser(
-    description="This is a utility script for the download and installation" +
-                "of OpenSn dependencies.",
+    description="This is a utility script for the download and installation of OpenSn "
+                + "dependencies.",
     epilog=arguments_help
 )
 
@@ -96,10 +96,10 @@ package_info = {
     "caliper": [
         "2.10.0",
         "https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz"
-     ],
+    ],
     "hdf5": [
         "1.14.3",
-        "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/CMake-hdf5-1.14.3.tar.gz"
+        "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/CMake-hdf5-1.14.3.tar.gz"  # noqa
     ]
 }
 
@@ -146,16 +146,15 @@ def CheckExecutableExists(thingname: str, thing: str):
 # Downloads a package using curl
 def DownloadPackage(url, pkg, ver):
     pkgdir = f"{install_dir}/downloads"
-    log_file.write(f"Downloading {pkg.upper()} {ver} to \"{pkgdir}\" " +
-                   f"with command: curl {url}")
-    download_cmd = f"curl"
+    log_file.write(f"Downloading {pkg.upper()} {ver} to \"{pkgdir}\" "
+                   + f"with command: curl {url}")
+    download_cmd = "curl"
     output_cmd = f"-L --output {pkg}-{ver}.tar.gz"
 
     pkgdir_relative = os.path.relpath(pkgdir)
 
-    print(f"Downloading {pkg.upper()} {ver} to \"{pkgdir_relative}\" " +
-          f"with command:\n{download_cmd} {url} {output_cmd}", end="",
-          flush=True)
+    print(f"Downloading {pkg.upper()} {ver} to \"{pkgdir_relative}\" "
+          + f"with command:\n{download_cmd} {url} {output_cmd}", end="", flush=True)
 
     already_there = False
     if not os.path.exists(f"{install_dir}/downloads/{pkg}-{ver}.tar.gz"):
@@ -168,8 +167,9 @@ def DownloadPackage(url, pkg, ver):
         already_there = True
 
     if os.path.exists(f"{install_dir}/downloads/{pkg}-{ver}.tar.gz"):
-        there = f"Already downloaded" if already_there else ""
-        print(f" {TextColors.OKGREEN}Success{TextColors.ENDC} {TextColors.OKCYAN}{there}{TextColors.ENDC}")
+        there = "Already downloaded" if already_there else ""
+        print(f" {TextColors.OKGREEN}Success{TextColors.ENDC} "
+              + f"{TextColors.OKCYAN}{there}{TextColors.ENDC}")
         log_file.write(f" Success {there}\n")
         return True
     else:
@@ -239,7 +239,7 @@ def InstallLuaPackage(pkg: str,
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to build {pkg}");
+            raise RuntimeError(f"Failed to build {pkg}")
 
         command = f"make install INSTALL_TOP={pkg_install_dir}"
         success, err, outstr = ExecSub(
@@ -249,7 +249,7 @@ def InstallLuaPackage(pkg: str,
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to install {pkg}");
+            raise RuntimeError(f"Failed to install {pkg}")
 
         package_log_file.close()
     else:
@@ -324,7 +324,8 @@ PETSC_DIR={install_dir}/src/{pkg}-{ver}"""
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to configure {pkg}. See {package_log_filename} for details.");
+            raise RuntimeError(
+                f"Failed to configure {pkg}. See {package_log_filename} for details.")
 
         command = f"{make_command} all -j{argv.jobs}"
         success, err, outstr = ExecSub(
@@ -334,7 +335,7 @@ PETSC_DIR={install_dir}/src/{pkg}-{ver}"""
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to build {pkg}");
+            raise RuntimeError(f"Failed to build {pkg}")
 
         command = f"{make_command} install"
         success, err, outstr = ExecSub(
@@ -344,7 +345,7 @@ PETSC_DIR={install_dir}/src/{pkg}-{ver}"""
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to install {pkg}");
+            raise RuntimeError(f"Failed to install {pkg}")
 
         package_log_file.close()
     else:
@@ -409,7 +410,7 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to configure {pkg}");
+            raise RuntimeError(f"Failed to configure {pkg}")
 
         command = f"{make_command} -j{argv.jobs}"
         success, err, outstr = ExecSub(
@@ -419,7 +420,7 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to build {pkg}");
+            raise RuntimeError(f"Failed to build {pkg}")
 
         command = f"{make_command} install"
         success, err, outstr = ExecSub(
@@ -429,7 +430,7 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to install {pkg}");
+            raise RuntimeError(f"Failed to install {pkg}")
 
         package_log_file.close()
     else:
@@ -443,7 +444,7 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
         return False
 
 
-# Install Caliper 
+# Install Caliper
 def InstallCaliper(pkg: str, ver: str, gold_file: str):
     package_log_filename = f"{install_dir}/logs/{pkg}_log.txt"
     pkg_install_dir = f"{install_dir}"
@@ -488,7 +489,7 @@ def InstallCaliper(pkg: str, ver: str, gold_file: str):
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to configure {pkg}");
+            raise RuntimeError(f"Failed to configure {pkg}")
 
         command = f"{make_command} -j{argv.jobs}"
         success, err, outstr = ExecSub(
@@ -498,7 +499,7 @@ def InstallCaliper(pkg: str, ver: str, gold_file: str):
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to build {pkg}");
+            raise RuntimeError(f"Failed to build {pkg}")
 
         command = f"{make_command} install"
         success, err, outstr = ExecSub(
@@ -508,7 +509,7 @@ def InstallCaliper(pkg: str, ver: str, gold_file: str):
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to install {pkg}");
+            raise RuntimeError(f"Failed to install {pkg}")
 
         package_log_file.close()
     else:
@@ -563,7 +564,7 @@ def InstallHDF5(pkg: str, ver: str, gold_file: str):
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to configure {pkg}");
+            raise RuntimeError(f"Failed to configure {pkg}")
 
         command = f"{make_command} -j{argv.jobs}"
         success, err, outstr = ExecSub(
@@ -573,7 +574,7 @@ def InstallHDF5(pkg: str, ver: str, gold_file: str):
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to build {pkg}");
+            raise RuntimeError(f"Failed to build {pkg}")
 
         command = f"{make_command} install"
         success, err, outstr = ExecSub(
@@ -583,7 +584,7 @@ def InstallHDF5(pkg: str, ver: str, gold_file: str):
             print(command, err)
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to install {pkg}");
+            raise RuntimeError(f"Failed to install {pkg}")
 
         package_log_file.close()
     else:
@@ -636,8 +637,7 @@ try:
     log_file.write("Checking for curl: ")
     if shutil.which("curl") is None:
         log_file.write("curl not found. ")
-        raise Exception("Missing Curl utility. " +
-                        "Unable to download dependencies.")
+        raise Exception("Missing Curl utility. Unable to download dependencies.")
     else:
         log_file.write("curl found\n")
 
@@ -670,11 +670,9 @@ try:
         for pkg in dl_errors:
             log_file.write(pkg + " ")
         log_file.write("\n")
-        print(error_beg +
-              f"Failed to download {len(dl_errors)} package(s)\n" +
-              "Check that the url exists or that the platform you are on actually " +
-              "actually allows it. You could also try to manually download these " +
-              "packages from the url's below:\n")
+        print(error_beg + f"Failed to download {len(dl_errors)} package(s)\n"
+              + "Check that the url exists or that the platform you are on actually allows it. You "
+              + "could also try to manually download these packages from the URLs below:\n")
         for pkg in dl_errors:
             print(f"{pkg:9s}= {package_info[pkg][URL]}")
         print(error_end)
@@ -706,10 +704,10 @@ try:
             success = InstallVTK(pkg, ver, gold_file=f"include/vtk-{major}.{minor}")
         elif pkg == 'caliper':
             major, minor, patch = ver.split('.')
-            success = InstallCaliper(pkg, ver, gold_file=f"include/caliper/cali.h")
+            success = InstallCaliper(pkg, ver, gold_file="include/caliper/cali.h")
         elif pkg == 'hdf5':
             major, minor, patch = ver.split('.')
-            success = InstallHDF5(pkg, ver, gold_file=f"include/hdf5.h")
+            success = InstallHDF5(pkg, ver, gold_file="include/hdf5.h")
         else:
             print(f"No build rules for {pkg}")
 
@@ -722,11 +720,10 @@ try:
         for pkg in install_errors:
             log_file.write(pkg + " ")
         log_file.write("\n")
-        print(error_beg +
-              f"Failed to install {len(install_errors)} package(s)\n"
-              "Check the package's associated log file, i.e., "
-              "PACKAGE/package_log.txt for information as to why the install "
-              "failed. You could also try to manually install these packages")
+        print(error_beg + f"Failed to install {len(install_errors)} package(s)\n"
+                          "Check the package's associated log file, i.e., "
+                          "PACKAGE/package_log.txt for information as to why the install "
+                          "failed. You could also try to manually install these packages")
         print(error_end)
         exit(1)
 
@@ -750,15 +747,14 @@ try:
     log_file.close()
 
     print("\n########## OpenSn dependency install complete ##########")
-    print("\nWhen opening OpenSn in an IDE, the following environment variables" +
-          " need to be set:\n")
+    print("\nWhen opening OpenSn in an IDE, the following environment variables need to be set:\n")
 
     print(f'CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"')
     print(f'PETSC_DIR={petsc_dir}')
     print()
-    print(TextColors.WARNING +
-          "When compiling OpenSn, in a terminal, the following environment "
-          "variables need to be set:\n" + TextColors.ENDC)
+    print(TextColors.WARNING
+          + "When compiling OpenSn, in a terminal, the following environment variables need to be "
+          + "set:\n" + TextColors.ENDC)
 
     print(f'export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:"{install_dir}"')
     print(f'export PETSC_DIR="{petsc_dir}"')
@@ -768,11 +764,8 @@ try:
         print(f'export LD_LIBRARY_PATH="{vtk_dir}/lib64":$LD_LIBRARY_PATH')
 
     print()
-    print(f"To set these terminal environment variables automatically, execute:")
+    print("To set these terminal environment variables automatically, execute:")
     print(f"    $ source {env_script_name}\n")
 
-except RuntimeError as e:
-    print(f"{TextColors.RED}{e}{TextColors.ENDC}")
-
-except e:
+except Exception as e:
     print(f"{TextColors.RED}{e}{TextColors.ENDC}")

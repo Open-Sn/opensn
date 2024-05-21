@@ -22,10 +22,9 @@ class Check:
         return self.annotations
 
 
-# ===================================================================
 class KeyValuePairCheck(Check):
-    """Given a string key, checks the floating point value of the word
-       immediately following the key"""
+    """Given a string key, checks the floating point value of the word immediately following the
+    key"""
 
     def __init__(self, params: dict, message_prefix: str):
         super().__init__()
@@ -95,13 +94,12 @@ class KeyValuePairCheck(Check):
 
                     try:
                         value = float(words[0])
-                    except Exception as e:
+                    except Exception:
                         self.annotations.append("Python error")
                         if verbose:
-                            warnings.warn('Failed to convert word "'
-                                          + words[0] + '" to float\n' +
-                                          'post key: ' + postkey + "\n" +
-                                          'words' + words.__str__())
+                            warnings.warn('Failed to convert word "' + words[0] + '" to float\n'
+                                          + 'post key: ' + postkey + "\n"
+                                          + 'words' + words.__str__())
 
                         return False
 
@@ -112,7 +110,7 @@ class KeyValuePairCheck(Check):
                         print("Check failed : " + self.__str__() + "\n" + line)
 
             if verbose:
-                print('Check failed : key, "' + self.key + '",not found ')
+                print('Check failed : key, "' + self.key + '", not found ')
 
             file.close()
         except FileNotFoundError as e:
@@ -188,10 +186,9 @@ class StrCompareCheck(Check):
                     words = re.split(r'\s+|,+|=+', line.rstrip())
 
                     if len(words) <= self.wordnum:
-                        warnings.warn("word count: " + str(len(words)) +
-                                      "\nline: " +
-                                      line.rstrip() +
-                                      "\nwords: " + words.__str__())
+                        warnings.warn("word count: " + str(len(words)) + "\n"
+                                      + "line: " + line.rstrip() + "\n"
+                                      + "words: " + words.__str__())
                         raise ValueError(f"Required word {self.wordnum} does not exist")
 
                     value = words[self.wordnum]
@@ -200,12 +197,13 @@ class StrCompareCheck(Check):
                         file.close()
                         return True
                     elif verbose:
-                        warnings.warn("Check failed : " + self.__str__() + "\n" +
-                                      line + "\n" + words.__str__())
+                        warnings.warn("Check failed : " + self.__str__() + "\n"
+                                      + line + "\n"
+                                      + words.__str__())
 
             if verbose:
-                warnings.warn('Check failed : key, "' + self.key +
-                              '",not found ' + str(self.wordnum))
+                warnings.warn('Check failed : key, "' + self.key + '", not found '
+                              + str(self.wordnum))
 
             file.close()
         except FileNotFoundError as e:
@@ -297,35 +295,36 @@ class FloatCompareCheck(Check):
                     words = re.split(r'\s+|,+|=+', line.rstrip())
 
                     if len(words) <= self.wordnum:
-                        warnings.warn("word count: " + str(len(words)) +
-                                      "\nline: " +
-                                      line + "\n" +
-                                      "\nwords: " + words.__str__())
+                        warnings.warn("word count: " + str(len(words)) + "\n"
+                                      + "line: " + line + "\n"
+                                      + "\n"
+                                      + "words: " + words.__str__())
                         raise ValueError(f"Required word {self.wordnum} does not exist")
 
                     value = 0.0
                     try:
                         value = float(words[self.wordnum])
-                    except Exception as e:
+                    except Exception:
                         self.annotations.append("Python error")
-                        warnings.warn("    Check failed :\n" +
-                                      "    Check = " + self.__str__() + "\n" +
-                                      "    line = " + line +
-                                      "    words = " + words.__str__() + "\n" +
-                                      "    info = Failed to convert word " +
-                                      str(self.wordnum) + " to float.")
+                        warnings.warn("    Check failed :\n"
+                                      + "    Check = " + self.__str__() + "\n"
+                                      + "    line = " + line
+                                      + "    words = " + words.__str__() + "\n"
+                                      + "    info = Failed to convert word "
+                                      + str(self.wordnum) + " to float.")
                         return False
 
                     if abs(value - self.gold) <= self.abs_tol + self.rel_tol * self.gold:
                         file.close()
                         return True
                     elif verbose:
-                        warnings.warn("Check failed : " + self.__str__() + "\n" +
-                                      line + "\n" + words.__str__())
+                        warnings.warn("Check failed : " + self.__str__() + "\n"
+                                      + line + "\n"
+                                      + words.__str__())
 
             if verbose:
-                warnings.warn('Check failed : key, "' + self.key +
-                              '",not found ' + str(self.wordnum))
+                warnings.warn('Check failed : key, "' + self.key + '", not found '
+                              + str(self.wordnum))
 
             file.close()
         except FileNotFoundError as e:
@@ -334,7 +333,6 @@ class FloatCompareCheck(Check):
             self.annotations.append("Python error")
             if verbose:
                 print(str(e))
-
 
         return False
 
@@ -399,35 +397,36 @@ class IntCompareCheck(Check):
                     words = re.split(r'\s+|,+|=+', line.rstrip())
 
                     if len(words) <= self.wordnum:
-                        warnings.warn("word count: " + str(len(words)) +
-                                      "\nline: " +
-                                      line + "\n" +
-                                      "\nwords: " + words.__str__())
+                        warnings.warn("word count: " + str(len(words)) + "\n"
+                                      + "line: " + line + "\n"
+                                      + "\n"
+                                      + "words: " + words.__str__())
                         raise ValueError(f"Required word {self.wordnum} does not exist")
 
                     value = 0.0
                     try:
                         value = int(words[self.wordnum])
-                    except Exception as e:
+                    except Exception:
                         self.annotations.append("Python error")
-                        warnings.warn("    Check failed :\n" +
-                                      "    Check = " + self.__str__() + "\n" +
-                                      "    line = " + line +
-                                      "    words = " + words.__str__() + "\n" +
-                                      "    info = Failed to convert word " +
-                                      str(self.wordnum) + " to int.")
+                        warnings.warn("    Check failed :\n"
+                                      + "    Check = " + self.__str__() + "\n"
+                                      + "    line = " + line
+                                      + "    words = " + words.__str__() + "\n"
+                                      + "    info = Failed to convert word "
+                                      + str(self.wordnum) + " to int.")
                         return False
 
                     if value == self.gold:
                         file.close()
                         return True
                     elif verbose:
-                        warnings.warn("Check failed : " + self.__str__() + "\n" +
-                                      line + "\n" + words.__str__())
+                        warnings.warn("Check failed : " + self.__str__() + "\n"
+                                      + line + "\n"
+                                      + words.__str__())
 
             if verbose:
-                warnings.warn('Check failed : key, "' + self.key +
-                              '",not found, wordnum = ' + str(self.wordnum))
+                warnings.warn('Check failed : key, "' + self.key + '", not found, wordnum = '
+                              + str(self.wordnum))
 
             file.close()
         except FileNotFoundError as e:
@@ -465,8 +464,7 @@ class ErrorCodeCheck(Check):
                 return True
 
             if verbose:
-                warnings.warn('Check failed : error_code, ' +
-                              f'{self.error_code} vs {errorcode}')
+                warnings.warn(f'Check failed: error_code, {self.error_code} vs {errorcode}')
 
         except Exception as e:
             self.annotations.append("Python error")
@@ -507,8 +505,7 @@ class GoldFileCheck(Check):
         try:
             outfiledir = pathlib.Path(os.path.dirname(filename) + "/")
             if self.candidate_filename != "":
-                filename = str(outfiledir.parent.absolute()) + "/" + \
-                           self.candidate_filename
+                filename = str(outfiledir.parent.absolute()) + "/" + self.candidate_filename
             golddir = str(outfiledir.parent.absolute()) + "/gold/"
 
             goldfilename = os.path.splitext(os.path.basename(filename))[0] + ".gold"
@@ -517,8 +514,8 @@ class GoldFileCheck(Check):
 
             if not os.path.isfile(golddir + goldfilename):
                 if verbose:
-                    warnings.warn(f'Gold file {goldfilename} does not exist at \n' +
-                                  f'{golddir + goldfilename}')
+                    warnings.warn(f'Gold file {goldfilename} does not exist at \n'
+                                  + f'{golddir + goldfilename}')
                 self.annotations.append("Gold file missing")
                 return False
 
@@ -526,14 +523,14 @@ class GoldFileCheck(Check):
 
             if len(lines_a) == 0:
                 if verbose:
-                    print(f"no lines to compare in {filename}. " +
-                          f"Maybe {self.scope_keyword}_BEGIN/_END was not found?")
+                    print(f"no lines to compare in {filename}. "
+                          + f"Maybe {self.scope_keyword}_BEGIN/_END was not found?")
                 return False
 
             if len(lines_b) == 0:
                 if verbose:
-                    print(f"no lines to compare in {golddir + goldfilename}. " +
-                          f"Maybe {self.scope_keyword}_BEGIN/_END was not found?")
+                    print(f"no lines to compare in {golddir + goldfilename}. "
+                          + f"Maybe {self.scope_keyword}_BEGIN/_END was not found?")
                 return False
 
             if self.check_numlines == 0:
@@ -542,14 +539,15 @@ class GoldFileCheck(Check):
                                                  fromfile=filename,
                                                  tofile=golddir + goldfilename,
                                                  n=0  # Removes context
-                                                ))
+                                                 ))
             else:
-                diff = list(difflib.unified_diff(lines_a[self.skiplines_top:self.skiplines_top+self.check_numlines],
-                                                 lines_b[self.skiplines_top:self.skiplines_top+self.check_numlines],
-                                                 fromfile=filename,
-                                                 tofile=golddir + goldfilename,
-                                                 n=0  # Removes context
-                                                ))
+                diff = list(difflib.unified_diff(
+                    lines_a[self.skiplines_top:self.skiplines_top + self.check_numlines],
+                    lines_b[self.skiplines_top:self.skiplines_top + self.check_numlines],
+                    fromfile=filename,
+                    tofile=golddir + goldfilename,
+                    n=0  # Removes context
+                ))
 
             if len(diff) == 0:
                 return True
