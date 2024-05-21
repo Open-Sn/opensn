@@ -443,7 +443,7 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
         return False
 
 
-# Install Caliper 
+# Install Caliper
 def InstallCaliper(pkg: str, ver: str, gold_file: str):
     package_log_filename = f"{install_dir}/logs/{pkg}_log.txt"
     pkg_install_dir = f"{install_dir}"
@@ -771,8 +771,5 @@ try:
     print(f"To set these terminal environment variables automatically, execute:")
     print(f"    $ source {env_script_name}\n")
 
-except RuntimeError as e:
-    print(f"{TextColors.RED}{e}{TextColors.ENDC}")
-
-except e:
+except Exception as e:
     print(f"{TextColors.RED}{e}{TextColors.ENDC}")
