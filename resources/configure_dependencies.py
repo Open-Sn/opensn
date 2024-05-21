@@ -399,6 +399,7 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
 -DVTK_GROUP_ENABLE_Imaging=DONT_WANT \\
 -DVTK_GROUP_ENABLE_Web=DONT_WANT \\
 -DVTK_GROUP_ENABLE_Qt=DONT_WANT \\
+-DVTK_MODULE_USE_EXTERNAL_VTK_hdf5=ON \\
 -DCMAKE_BUILD_TYPE=Release \\
 ../
 """
