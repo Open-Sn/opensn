@@ -80,7 +80,8 @@ def parse(src):
 parser = argparse.ArgumentParser(prog='lua2md')
 parser.add_argument('lua_filename')
 parser.add_argument('md_filename')
-parser.add_argument('-d', '--root-directory', dest='root_directory', default=None, help='root directory')
+parser.add_argument('-d', '--root-directory', dest='root_directory', default=None,
+                    help='root directory')
 args = parser.parse_args()
 
 with open(args.lua_filename, "r") as f:

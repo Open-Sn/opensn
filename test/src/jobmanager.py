@@ -4,14 +4,11 @@ import warnings
 from . import checks
 import shutil
 import time
-
 from . import test_slot
 
 
-# ========================================================= class definition
 class TestConfiguration:
-    """Data structure to hold all the necessary info to define a test and
-       it's checks"""
+    """Data structure to hold all the necessary info to define a test and its checks"""
 
     def __init__(self, file_dir: str,
                  filename: str,
@@ -41,13 +38,12 @@ class TestConfiguration:
         for check_params in checks_params:
             check_num += 1
             if not isinstance(check_params, dict):
-                warnings.warn(message_prefix + f'Check number {check_num} ' +
-                              'is not a dictionary')
+                warnings.warn(message_prefix + f'Check number {check_num} ' + 'is not a dictionary')
                 continue
 
             if "type" not in check_params:
-                warnings.warn(message_prefix + f'Check number {check_num} ' +
-                              'requires "type" field')
+                warnings.warn(
+                    message_prefix + f'Check number {check_num} ' + 'requires "type" field')
                 continue
 
             if check_params["type"] == "KeyValuePair":
@@ -125,9 +121,8 @@ class TestConfiguration:
         return output
 
     def CheckDependencies(self, tests):
-        """Loops through a test coonfiguration and checks whether a
-           dependency has executed"""
-        if self.dependency == None:
+        """Loops through a test configuration and checks whether a dependency has executed"""
+        if self.dependency is None:
             return True
         for test in tests:
             if test.filename == self.dependency:
@@ -137,7 +132,7 @@ class TestConfiguration:
         return False
 
 
-# ========================================================= Parse JSON configs
+# Parse JSON configs
 def ParseTestConfiguration(file_path: str):
     """Parses a JSON configuration at the path specified"""
     test_objects = {}
@@ -194,9 +189,9 @@ def ParseTestConfiguration(file_path: str):
                 input_weight_class = test_block["weight_class"]
                 allowable_list = ["short", "intermediate", "long"]
                 if input_weight_class not in allowable_list:
-                    warnings.warn(message_prefix + '"weight_class" field, with ' +
-                                  f'value "{input_weight_class}" must be in the ' +
-                                  'list: ' + allowable_list.__str__())
+                    warnings.warn(message_prefix + '"weight_class" field, with '
+                                  + f'value "{input_weight_class}" must be in the '
+                                  + 'list: ' + allowable_list.__str__())
                     continue
                 weight_class = input_weight_class
             else:
@@ -309,7 +304,8 @@ def ConfigureTests(test_hierarchy: dict, argv):
                     obj = sub_test_objs[specific_test_dependency]
                     test_objects.append(obj)
                 else:
-                    warnings.warn("Specified dependency '" + specific_test_dependency + "' does not exist.")
+                    warnings.warn(
+                        "Specified dependency '" + specific_test_dependency + "' does not exist.")
 
         # If the out directory exists then we clear it
         if os.path.isdir(testdir + "out/"):
@@ -355,8 +351,8 @@ def RunTests(tests: list, argv):
             if binary_weights[k] == '1':
                 weight_classes_allowed.append(weight_class_map[k])
     else:
-        warnings.warn('Illegal value "' + str(argv.weights) + '" supplied ' +
-                      'for argument -w, --weights')
+        warnings.warn('Illegal value "' + str(argv.weights) + '" supplied '
+                      + 'for argument -w, --weights')
 
     print("Executing tests with class in: " + weight_classes_allowed.__str__())
 
@@ -401,8 +397,7 @@ def RunTests(tests: list, argv):
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
 
-    print("Done executing tests with class in: " +
-          weight_classes_allowed.__str__())
+    print("Done executing tests with class in: " + weight_classes_allowed.__str__())
 
     num_skipped_tests = 0
     for test in tests:

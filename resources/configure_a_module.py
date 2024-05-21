@@ -29,8 +29,8 @@ print("in folder \"" + mod_path + "\"")
 # =============================================== Create folder structure
 dirs = mod_path.split("/")
 incremental_dir = "./"
-for dur in dirs:
-    incremental_dir += "/" + dur
+for dir in dirs:
+    incremental_dir += "/" + dir
     if not os.path.exists(incremental_dir):
         os.mkdir(incremental_dir)
 
@@ -46,19 +46,19 @@ if not os.path.exists(mod_path + "/modules/" + mod_name):
 if not os.path.exists(mod_path + "/test"):
     os.mkdir(mod_path + "/test")
 
-# =============================================== Copy files
-shutil.copyfile(chi_tech_root+"/configure.sh", mod_path+"/configure.sh")
-st = os.stat(mod_path+"/configure.sh")
-os.chmod(mod_path+"/configure.sh", st.st_mode | stat.S_IEXEC)
+# Copy files
+shutil.copyfile(chi_tech_root + "/configure.sh", mod_path + "/configure.sh")
+st = os.stat(mod_path + "/configure.sh")
+os.chmod(mod_path + "/configure.sh", st.st_mode | stat.S_IEXEC)
 
-# =============================================== Create files
+# Create files
 # test.lua
-test_dot_lua = open(mod_path+"/test/test.lua", "w")
+test_dot_lua = open(mod_path + "/test/test.lua", "w")
 test_dot_lua.write("chiLog(LOG_0, \"Hello World!\")\n")
 test_dot_lua.close()
 
 # main.cc
-main_dot_cc = open(mod_path+"/main.cc", "w")
+main_dot_cc = open(mod_path + "/main.cc", "w")
 main_dot_cc.write('''\
 #include "chi_runtime.h"
 
@@ -72,7 +72,7 @@ main_dot_cc.write('''\
 int main(int argc, char* argv[])
 {
   Chi::Initialize(argc,argv, MPI_COMM_WORLD);
-  
+
   int error_code;
   if (Chi::run_time::sim_option_interactive_)
     error_code = Chi::RunInteractive(argc, argv);
@@ -87,12 +87,13 @@ int main(int argc, char* argv[])
 main_dot_cc.close()
 
 # CMakeLists.txt
-cml_dot_txt = open(mod_path+"/CMakeLists.txt", "w")
+cml_dot_txt = open(mod_path + "/CMakeLists.txt", "w")
 cml_dot_txt.write('''\
 cmake_minimum_required(VERSION 3.12)
-\n''' +
-f"set(TARGET {mod_name})\n" +
-f"project({mod_name} LANGUAGES CXX)" + '''
+\n'''
+                  + f"set(TARGET {mod_name})\n"
+                  + f"project({mod_name} LANGUAGES CXX)"
+                  + '''
 
 #------------------------------------------------ DEPENDENCIES
 if (NOT DEFINED CHI_TECH_DIR)
@@ -125,7 +126,7 @@ file(WRITE ${PROJECT_SOURCE_DIR}/Makefile "subsystem:\n" "\t$(MAKE) -C chi_build
 cml_dot_txt.close()
 
 # ===================================== Add a .gitignore
-gitignore = open(mod_path+"/.gitignore", "w")
+gitignore = open(mod_path + "/.gitignore", "w")
 gitignore.write('''\
 .git
 cmake-build-debug/
@@ -163,7 +164,7 @@ test/modules/LinearBoltzmannSolvers/DSA/SimTest_92b_DSA_PWLC_0.vtu
 /*.e
 
 # python files
-\.DS_Store
+.DS_Store
 ._.DS_Store
 *.pyc
 *.pmesh
@@ -180,4 +181,4 @@ doc/generated_files
 ''')
 
 # ===================================== Copy clangformat
-shutil.copyfile(chi_tech_root+"/.clang-format", mod_path+"/.clang-format")
+shutil.copyfile(chi_tech_root + "/.clang-format", mod_path + "/.clang-format")
