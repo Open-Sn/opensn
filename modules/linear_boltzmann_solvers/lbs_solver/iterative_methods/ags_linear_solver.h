@@ -32,24 +32,35 @@ public:
       verbose_(verbose)
   {
   }
+
   ~AGSLinearSolver() override;
 
   int GroupSpanFirstID() const { return groupspan_first_id_; }
+
   int GroupSpanLastID() const { return groupspan_last_id_; }
+
   bool IsVerbose() const { return verbose_; }
+
   void SetVerbosity(bool verbose_y_n) { verbose_ = verbose_y_n; }
+
   void Solve() override;
 
 protected:
   void SetSystemSize() override;
+
   void SetSystem() override;
+
   void SetPreconditioner() override;
+
   void SetRHS() override;
+
   void SetInitialGuess() override;
 
-  int groupspan_first_id_ = 0;
-  int groupspan_last_id_ = 0;
-  bool verbose_ = false;
+  int groupspan_first_id_;
+
+  int groupspan_last_id_;
+
+  bool verbose_;
 };
 
 } // namespace lbs

@@ -3,10 +3,10 @@
 
 #include "ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/math/linear_solver/linear_matrix_action_Ax.h"
-#include "framework/runtime.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <petscksp.h>
 #include <iomanip>
@@ -62,7 +62,6 @@ AGSLinearSolver::SetPreconditioner()
   CALI_CXX_MARK_SCOPE("AGSLinearSolver::SetPreconditioner");
 
   auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
-
   ags_context_ptr->SetPreconditioner(ksp_);
 }
 
@@ -98,7 +97,6 @@ AGSLinearSolver::Solve()
 
   for (int iter = 0; iter < tolerance_options_.maximum_iterations; ++iter)
   {
-
     lbs_solver.SetGroupScopedPETScVecFromPrimarySTLvector(gid_i, gid_f, x_old, phi);
 
     for (auto& solver : ags_context_ptr->sub_solvers_list_)
@@ -106,6 +104,10 @@ AGSLinearSolver::Solve()
       solver->Setup();
       solver->Solve();
     }
+
+    // Write restart data if needed
+    if (lbs_solver.Options().enable_ags_restart_write)
+      lbs_solver.WriteRestartData();
 
     lbs_solver.SetGroupScopedPETScVecFromPrimarySTLvector(gid_i, gid_f, x_, phi);
 

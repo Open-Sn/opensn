@@ -2,13 +2,15 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
-#include "framework/object_factory.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
 #include "framework/logging/log_exceptions.h"
+#include "framework/logging/log.h"
 #include "framework/utils/timer.h"
+#include "framework/utils/hdf_utils.h"
+#include "framework/object_factory.h"
+#include "framework/runtime.h"
 #include <iomanip>
+#include "sys/stat.h"
 
 namespace opensn
 {
@@ -47,8 +49,10 @@ PowerIterationKEigen::PowerIterationKEigen(const InputParameters& params)
     phi_old_local_(lbs_solver_.PhiOldLocal()),
     phi_new_local_(lbs_solver_.PhiNewLocal()),
     groupsets_(lbs_solver_.Groupsets()),
-    front_gs_(groupsets_.front())
+    front_gs_(groupsets_.front()),
+    k_eff_(1.0)
 {
+  lbs_solver_.Options().enable_ags_restart_write = false;
 }
 
 void
@@ -77,7 +81,7 @@ PowerIterationKEigen::Initialize()
 
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
 
-  if (reset_phi0_)
+  if (reset_phi0_ && (not lbs_solver_.Options().read_restart_data))
     lbs_solver_.SetPhiVectorScalarValues(phi_old_local_, 1.0);
 }
 
@@ -85,9 +89,13 @@ void
 PowerIterationKEigen::Execute()
 {
   double F_prev = 1.0;
+
   k_eff_ = 1.0;
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
+
+  if (lbs_solver_.Options().read_restart_data)
+    ReadRestartData(F_prev);
 
   // Start power iterations
   int nit = 0;
@@ -129,6 +137,8 @@ PowerIterationKEigen::Execute()
 
       log.Log() << k_iter_info.str();
     }
+
+    WriteRestartData(F_prev);
 
     if (converged)
       break;
@@ -180,6 +190,116 @@ PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
 
   active_set_source_function_(
     front_gs_, q_moments_local_, input, lbs_solver_.DensitiesLocal(), source_flags);
+}
+
+void
+XXPowerIterationKEigen::WriteRestartData(double Fprev)
+{
+  auto& write_interval = lbs_solver_.Options().write_restart_interval;
+  if (write_interval == 0)
+    return;
+
+  auto& last_restart_time = lbs_solver_.LastRestartTime();
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  size_t now_seconds = std::chrono::duration_cast<std::chrono::seconds>(now).count();
+  if ((now_seconds - last_restart_time) < write_interval)
+    return;
+
+  std::string folder_name = lbs_solver_.Options().write_restart_folder_name;
+  std::string file_base = lbs_solver_.Options().write_restart_file_base;
+  std::string file_name =
+    folder_name + "/" + file_base + std::to_string(opensn::mpi_comm.rank()) + ".r";
+
+  // Make sure folder exists
+  struct stat st
+  {
+  };
+  if (opensn::mpi_comm.rank() == 0)
+    if (stat(folder_name.c_str(), &st) != 0)
+      if ((mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0) and (errno != EEXIST))
+        throw std::runtime_error("Failed to create restart directory " + folder_name);
+
+  opensn::mpi_comm.barrier();
+
+  // Disable internal HDF error reporting
+  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
+
+  // Create files. This step might fail for specific locations and can create messy output if we
+  // print it all. We also need to consolidate errors to determine if the process as whole
+  // succeeded.
+  bool location_succeeded = true;
+
+  // Open and read file
+  hid_t file = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  if (not file)
+  {
+    log.LogAllError() << "Failed to create restart file " << file_name;
+    location_succeeded = false;
+  }
+  else
+  {
+    location_succeeded = H5WriteDataset1D<double>(file, "phi_old", lbs_solver_.PhiOldLocal()) and
+                         H5CreateAttribute<double>(file, "keff", k_eff_) and
+                         H5CreateAttribute<double>(file, "Fprev", Fprev);
+    H5Fclose(file);
+  }
+
+  // Check success status
+  bool global_succeeded = true;
+  mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
+
+  // Write status message
+  if (global_succeeded)
+  {
+    log.Log() << "Successfully wrote restart data " << folder_name + "/" + file_base + "X.r";
+    last_restart_time = now_seconds;
+  }
+  else
+    log.Log0Error() << "Failed to write restart data " << folder_name + "/" + file_base + "X.r";
+}
+
+void
+XXPowerIterationKEigen::ReadRestartData(double& Fprev)
+{
+  auto& phi_old_local = lbs_solver_.PhiOldLocal();
+  std::string folder_name = lbs_solver_.Options().write_restart_folder_name;
+  std::string file_base = lbs_solver_.Options().write_restart_file_base;
+  std::string file_name =
+    folder_name + "/" + file_base + std::to_string(opensn::mpi_comm.rank()) + ".r";
+
+  // Open files. This step might fail for specific locations and can create messy output if print it
+  // all. We also need to consolidate errors to determine if the process as whole succeeded.
+  bool location_succeeded = true;
+
+  // Disable internal HDF error reporting
+  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
+
+  // Open file
+  hid_t file = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+  if (not file)
+    std::invalid_argument(file_name + " could not be found or is not a valid HDF5 file.");
+  else
+  {
+    phi_old_local.clear();
+    phi_old_local = H5ReadDataset1D<double>(file, "phi_old");
+    location_succeeded = (not phi_old_local.empty()) and
+                         H5ReadAttribute<double>(file, "keff", k_eff_) and
+                         H5ReadAttribute<double>(file, "Fprev", Fprev);
+    H5Fclose(file);
+  }
+
+  // Check success status
+  bool global_succeeded = true;
+  mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
+
+  // Write status message
+  if (global_succeeded)
+    log.Log() << "Successfully read restart data " << folder_name << "/" << file_base << "X.r";
+  else
+  {
+    throw std::invalid_argument("Failed to read restart data " + folder_name + "/" + file_base +
+                                "X.r");
+  }
 }
 
 } // namespace lbs

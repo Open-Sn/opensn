@@ -13,13 +13,13 @@
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/physics/solver_base/solver.h"
 #include <petscksp.h>
+#include <chrono>
 
 namespace opensn
 {
 
 class MPICommunicatorSet;
 class GridFaceHistogram;
-
 class TimeIntegration;
 
 namespace lbs
@@ -33,25 +33,17 @@ class LBSSolver : public opensn::Solver
 {
 public:
   explicit LBSSolver(const std::string& text_name);
+
   /**
    * Input parameters based construction.
    */
   explicit LBSSolver(const InputParameters& params);
 
   LBSSolver(const LBSSolver&) = delete;
+
   LBSSolver& operator=(const LBSSolver&) = delete;
 
   virtual ~LBSSolver() = default;
-
-  /**
-   * Returns the time at which the last restart was written.
-   */
-  double LastRestartWrite() const;
-
-  /**
-   * Returns a reference to the time at which the last restart was written.
-   */
-  double& LastRestartWrite();
 
   /**
    * Returns a reference to the solver options.
@@ -64,8 +56,11 @@ public:
   const lbs::Options& Options() const;
 
   static InputParameters OptionsBlock();
+
   static InputParameters BoundaryOptionsBlock();
+
   void SetOptions(const InputParameters& params);
+
   void SetBoundaryOptions(const InputParameters& params);
 
   /**
@@ -95,6 +90,7 @@ public:
    * list size. If >= 0 the id will be set to the id specified.
    */
   void AddGroup(int id);
+
   const std::vector<LBSGroup>& Groups() const;
 
   /**
@@ -102,7 +98,9 @@ public:
    * derived from the list size.
    */
   void AddGroupset();
+
   std::vector<LBSGroupset>& Groupsets();
+
   const std::vector<LBSGroupset>& Groupsets() const;
 
   /**
@@ -134,6 +132,8 @@ public:
    * Constant accessor to the list of distributed sources.
    */
   const std::vector<DistributedSource>& DistributedSources() const;
+
+  size_t& LastRestartTime();
 
   /**
    * Returns a reference to the map of material ids to XSs.
@@ -243,12 +243,12 @@ public:
   /**
    * Read/write access to newest updated angular flux vector.
    */
-  std::vector<VecDbl>& PsiNewLocal();
+  std::vector<std::vector<double>>& PsiNewLocal();
 
   /**
    * Read access to newest updated angular flux vector.
    */
-  const std::vector<VecDbl>& PsiNewLocal() const;
+  const std::vector<std::vector<double>>& PsiNewLocal() const;
 
   /**
    * Read/write access to the cell-wise densities.
@@ -298,6 +298,7 @@ public:
 
   /**Initializes the Within-Group DSA solver. */
   void InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);
+
   /**Creates a vector from a lbs primary stl vector where only the
    * scalar moments are mapped to the DOFs needed by WGDSA.*/
   std::vector<double> WGSCopyOnlyPhi0(const LBSGroupset& groupset,
@@ -336,12 +337,12 @@ public:
   /**
    * Writes phi_old to restart file.
    */
-  void WriteRestartData(const std::string& folder_name, const std::string& file_base) const;
+  void WriteRestartData();
 
   /**
    * Read phi_old from restart file.
    */
-  void ReadRestartData(const std::string& folder_name, const std::string& file_base);
+  void ReadRestartData();
 
   /**
    * Writes a full angular flux vector to file.
@@ -419,10 +420,12 @@ public:
    * Sets a value to the zeroth (scalar) moment of the vector.
    */
   virtual void SetPhiVectorScalarValues(std::vector<double>& phi_vector, double value);
+
   /**
    * Scales a flux moment vector. For sweep methods the delayed angular fluxes will also be scaled.
    */
   virtual void ScalePhiVector(PhiSTLOption which_phi, double value);
+
   /**
    * Assembles a vector for a given groupset from a source vector.
    */
@@ -498,6 +501,7 @@ protected:
   void PrintSimHeader();
 
   virtual void InitializeSpatialDiscretization();
+
   void ComputeUnitIntegrals();
 
   /**
@@ -519,14 +523,16 @@ protected:
 
   /**Initializes transport related boundaries. */
   void InitializeBoundaries();
+
   virtual void InitializeSolverSchemes();
+
   virtual void InitializeWGSSolvers(){};
+
   /**Initializes the Within-Group DSA solver. */
   void InitTGDSA(LBSGroupset& groupset);
 
-  double last_restart_write_ = 0.0;
-
   lbs::Options options_;
+  size_t last_restart_time_ = 0;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
   size_t num_precursors_ = 0;
@@ -581,6 +587,7 @@ protected:
 
   /**Cleans up memory consuming items. */
   static void CleanUpWGDSA(LBSGroupset& groupset);
+
   /**Cleans up memory consuming items. */
   static void CleanUpTGDSA(LBSGroupset& groupset);
 
