@@ -28,37 +28,37 @@ class LBSGroupset : public Object
 public:
   int id_;
   std::vector<LBSGroup> groups_;
-  std::shared_ptr<AngularQuadrature> quadrature_ = nullptr;
+  std::shared_ptr<AngularQuadrature> quadrature_;
   std::shared_ptr<AngleAggregation> angle_agg_;
   UniqueSOGroupings unique_so_groupings_;
   DirIDToSOMap dir_id_to_so_map_;
 
-  int master_num_grp_subsets_ = 1;
-  int master_num_ang_subsets_ = 1;
+  int master_num_grp_subsets_;
+  int master_num_ang_subsets_;
 
   std::vector<SubSetInfo> grp_subset_infos_;
 
-  IterativeMethod iterative_method_ = IterativeMethod::CLASSICRICHARDSON;
-  AngleAggregationType angleagg_method_ = AngleAggregationType::POLAR;
-  double residual_tolerance_ = 1.0e-6;
-  int max_iterations_ = 200;
-  int gmres_restart_intvl_ = 30;
+  IterativeMethod iterative_method_;
+  AngleAggregationType angleagg_method_;
+  double residual_tolerance_;
+  int max_iterations_;
+  int gmres_restart_intvl_;
 
-  bool allow_cycles_ = false;
+  bool allow_cycles_;
 
-  bool apply_wgdsa_ = false;
-  bool apply_tgdsa_ = false;
-  int wgdsa_max_iters_ = 30;
-  int tgdsa_max_iters_ = 30;
-  double wgdsa_tol_ = 1.0e-4;
-  double tgdsa_tol_ = 1.0e-4;
-  bool wgdsa_verbose_ = false;
-  bool tgdsa_verbose_ = false;
+  bool apply_wgdsa_;
+  bool apply_tgdsa_;
+  int wgdsa_max_iters_;
+  int tgdsa_max_iters_;
+  double wgdsa_tol_;
+  double tgdsa_tol_;
+  bool wgdsa_verbose_;
+  bool tgdsa_verbose_;
   std::string wgdsa_string_;
   std::string tgdsa_string_;
 
-  std::shared_ptr<DiffusionMIPSolver> wgdsa_solver_;
-  std::shared_ptr<DiffusionMIPSolver> tgdsa_solver_;
+  std::shared_ptr<DiffusionMIPSolver> wgdsa_solver_ = nullptr;
+  std::shared_ptr<DiffusionMIPSolver> tgdsa_solver_ = nullptr;
 
   struct TwoGridAccelerationInfo
   {
@@ -68,23 +68,30 @@ public:
 
   UnknownManager psi_uk_man_;
 
-  // lbs_groupset.cc
+public:
   static InputParameters GetInputParameters();
+
   /**Input parameters based constructor.*/
   explicit LBSGroupset(const InputParameters& params, int id, const LBSSolver& lbs_solver);
-  LBSGroupset() : LBSGroupset(-1){};
-  explicit LBSGroupset(int id) : id_(id) {}
+
+  explicit LBSGroupset(int id);
+
+  LBSGroupset();
 
   /**Computes the discrete to moment operator.*/
   void BuildDiscMomOperator(unsigned int scattering_order, GeometryType geometry_type);
+
   /**Computes the moment to discrete operator.*/
   void BuildMomDiscOperator(unsigned int scattering_order, GeometryType geometry_type);
+
   /**Constructs the groupset subsets.*/
   void BuildSubsets();
 
-public:
   /**Constructs the groupset subsets.*/
   void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
+
+private:
+  void Init(int id);
 };
 
 } // namespace lbs
