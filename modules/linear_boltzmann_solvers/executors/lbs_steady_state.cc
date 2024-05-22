@@ -18,13 +18,10 @@ SteadyStateSolver::GetInputParameters()
 {
   InputParameters params = opensn::Solver::GetInputParameters();
 
-  params.SetGeneralDescription(
-    "Generalized implementation of a steady state solver. This solver calls"
-    " the Across-Groupset (AGS) solver for the lbs-data block.");
+  params.SetGeneralDescription("Implementation of a steady state solver. This solver calls the "
+                               "across-groupset (AGS) solver.");
   params.SetDocGroup("LBSExecutors");
-
   params.ChangeExistingParamToOptional("name", "SteadyStateSolver");
-
   params.AddRequiredParameter<size_t>("lbs_solver_handle", "Handle to an existing lbs solver");
 
   return params;

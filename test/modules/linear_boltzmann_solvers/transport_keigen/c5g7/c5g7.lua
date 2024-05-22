@@ -48,7 +48,7 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create
 
 --############################################### Initialize and Execute Solver
 if (k_method == "pi") then
-    k_solver = lbs.XXPowerIterationKEigen.Create
+    k_solver = lbs.PowerIterationKEigen.Create
     ({
         lbs_solver_handle = phys1,
         k_tol = 1.0e-8

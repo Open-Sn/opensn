@@ -42,7 +42,7 @@ lbs_block =
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 
-k_solver0 = lbs.XXNonLinearKEigen.Create({ lbs_solver_handle = phys1, })
+k_solver0 = lbs.NonLinearKEigen.Create({ lbs_solver_handle = phys1, })
 solver.Initialize(k_solver0)
 solver.Execute(k_solver0)
 

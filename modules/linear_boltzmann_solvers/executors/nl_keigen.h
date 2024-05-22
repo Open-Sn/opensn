@@ -14,21 +14,23 @@ namespace opensn
 namespace lbs
 {
 
-class XXNonLinearKEigen : public opensn::Solver
+class NonLinearKEigen : public opensn::Solver
 {
-protected:
+private:
   LBSSolver& lbs_solver_;
   std::shared_ptr<NLKEigenAGSContext> nl_context_;
   NLKEigenvalueAGSSolver nl_solver_;
 
-  bool reinit_phi_1_;
-  int num_free_power_its_;
+  bool reset_phi0_;
+  int num_initial_power_its_;
 
 public:
   static InputParameters GetInputParameters();
-  explicit XXNonLinearKEigen(const InputParameters& params);
+
+  explicit NonLinearKEigen(const InputParameters& params);
 
   void Initialize() override;
+
   void Execute() override;
 };
 
