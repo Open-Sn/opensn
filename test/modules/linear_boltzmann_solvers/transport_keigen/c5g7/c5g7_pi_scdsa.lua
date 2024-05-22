@@ -55,7 +55,7 @@ elseif (k_method == "pi_scdsa") then
     ({
         lbs_solver_handle = phys1,
         diff_accel_sdm = "pwld",
-        accel_pi_verbose = true,
+        accel_pi_verbose = false,
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,

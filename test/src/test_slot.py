@@ -31,7 +31,7 @@ class TestSlot:
         cmd += "--lua master_export=false "
         for arg in test.args:
             if arg.find("\"") >= 0:
-                cmd += "'" + arg + "' "
+                cmd += "--lua " + "'" + arg + "' "
             else:
                 cmd += arg + " "
         self.command = cmd
