@@ -49,8 +49,7 @@ PowerIterationKEigen::PowerIterationKEigen(const InputParameters& params)
     phi_old_local_(lbs_solver_.PhiOldLocal()),
     phi_new_local_(lbs_solver_.PhiNewLocal()),
     groupsets_(lbs_solver_.Groupsets()),
-    front_gs_(groupsets_.front()),
-    k_eff_(1.0)
+    front_gs_(groupsets_.front())
 {
   lbs_solver_.Options().enable_ags_restart_write = false;
 }
@@ -144,6 +143,8 @@ PowerIterationKEigen::Execute()
       break;
   } // for k iterations
 
+  WriteRestartData(F_prev, true);
+
   // Print summary
   log.Log() << "\n";
   log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
@@ -193,49 +194,29 @@ PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
 }
 
 void
-XXPowerIterationKEigen::WriteRestartData(double Fprev)
+PowerIterationKEigen::WriteRestartData(double Fprev, bool force)
 {
-  auto& write_interval = lbs_solver_.Options().write_restart_interval;
-  if (write_interval == 0)
+  // Check if restarts are enabled
+  auto write_restart_time_interval = lbs_solver_.Options().write_restart_time_interval;
+  if (write_restart_time_interval == 0)
     return;
 
-  auto& last_restart_time = lbs_solver_.LastRestartTime();
+  // Check if enough time has elapsed since the last restart write
+  auto& last_restart_write_time = lbs_solver_.GetLastRestartWriteTime();
   auto now = std::chrono::system_clock::now().time_since_epoch();
-  size_t now_seconds = std::chrono::duration_cast<std::chrono::seconds>(now).count();
-  if ((now_seconds - last_restart_time) < write_interval)
+  size_t now_secs = std::chrono::duration_cast<std::chrono::seconds>(now).count();
+  if (((now_secs - last_restart_write_time) < write_restart_time_interval) and not force)
     return;
+    
+  std::string fbase = lbs_solver_.Options().write_restart_directory_name + "/" +
+                      lbs_solver_.Options().write_restart_file_stem;
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank())+ ".r";
 
-  std::string folder_name = lbs_solver_.Options().write_restart_folder_name;
-  std::string file_base = lbs_solver_.Options().write_restart_file_base;
-  std::string file_name =
-    folder_name + "/" + file_base + std::to_string(opensn::mpi_comm.rank()) + ".r";
-
-  // Make sure folder exists
-  struct stat st
-  {
-  };
-  if (opensn::mpi_comm.rank() == 0)
-    if (stat(folder_name.c_str(), &st) != 0)
-      if ((mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0) and (errno != EEXIST))
-        throw std::runtime_error("Failed to create restart directory " + folder_name);
-
-  opensn::mpi_comm.barrier();
-
-  // Disable internal HDF error reporting
-  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
-
-  // Create files. This step might fail for specific locations and can create messy output if we
-  // print it all. We also need to consolidate errors to determine if the process as whole
-  // succeeded.
+  // Write data
   bool location_succeeded = true;
-
-  // Open and read file
-  hid_t file = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  hid_t file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   if (not file)
-  {
-    log.LogAllError() << "Failed to create restart file " << file_name;
     location_succeeded = false;
-  }
   else
   {
     location_succeeded = H5WriteDataset1D<double>(file, "phi_old", lbs_solver_.PhiOldLocal()) and
@@ -244,42 +225,31 @@ XXPowerIterationKEigen::WriteRestartData(double Fprev)
     H5Fclose(file);
   }
 
-  // Check success status
   bool global_succeeded = true;
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
-
-  // Write status message
   if (global_succeeded)
   {
-    log.Log() << "Successfully wrote restart data " << folder_name + "/" + file_base + "X.r";
-    last_restart_time = now_seconds;
+    log.Log() << "Successfully wrote restart data to " << fbase << "X.r";
+    last_restart_write_time = now_secs;
   }
   else
-    log.Log0Error() << "Failed to write restart data " << folder_name + "/" + file_base + "X.r";
+    log.Log0Error() << "Failed to write restart data to " << fbase << "X.r";
 }
 
 void
-XXPowerIterationKEigen::ReadRestartData(double& Fprev)
+PowerIterationKEigen::ReadRestartData(double& Fprev)
 {
-  auto& phi_old_local = lbs_solver_.PhiOldLocal();
-  std::string folder_name = lbs_solver_.Options().write_restart_folder_name;
-  std::string file_base = lbs_solver_.Options().write_restart_file_base;
-  std::string file_name =
-    folder_name + "/" + file_base + std::to_string(opensn::mpi_comm.rank()) + ".r";
+  std::string fbase = lbs_solver_.Options().write_restart_directory_name + "/" +
+                      lbs_solver_.Options().write_restart_file_stem;
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank())+ ".r";
 
-  // Open files. This step might fail for specific locations and can create messy output if print it
-  // all. We also need to consolidate errors to determine if the process as whole succeeded.
   bool location_succeeded = true;
-
-  // Disable internal HDF error reporting
-  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
-
-  // Open file
-  hid_t file = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+  hid_t file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   if (not file)
-    std::invalid_argument(file_name + " could not be found or is not a valid HDF5 file.");
+    location_succeeded = false;
   else
   {
+    auto& phi_old_local = lbs_solver_.PhiOldLocal();
     phi_old_local.clear();
     phi_old_local = H5ReadDataset1D<double>(file, "phi_old");
     location_succeeded = (not phi_old_local.empty()) and
@@ -288,18 +258,12 @@ XXPowerIterationKEigen::ReadRestartData(double& Fprev)
     H5Fclose(file);
   }
 
-  // Check success status
   bool global_succeeded = true;
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
-
-  // Write status message
   if (global_succeeded)
-    log.Log() << "Successfully read restart data " << folder_name << "/" << file_base << "X.r";
-  else
-  {
-    throw std::invalid_argument("Failed to read restart data " + folder_name + "/" + file_base +
-                                "X.r");
-  }
+    log.Log() << "Successfully read restart data from " << fbase << "X.r";
+  else  
+    throw std::invalid_argument("Failed to read restart data from " + fbase + "X.r");
 }
 
 } // namespace lbs

@@ -17,9 +17,6 @@ MultiGroupXS::Initialize(const std::string& file_name,
 {
   Reset();
 
-  // Disable internal HDF error reporting
-  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
-
   // Open file
   hid_t file = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   if (not file)

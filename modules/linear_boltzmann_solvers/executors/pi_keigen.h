@@ -55,7 +55,7 @@ protected:
                            bool additive,
                            bool suppress_wg_scat = false);
 
-  void WriteRestartData(double Fprev);
+  void WriteRestartData(double Fprev, bool force = false);
 
   void ReadRestartData(double& Fprev);
 };

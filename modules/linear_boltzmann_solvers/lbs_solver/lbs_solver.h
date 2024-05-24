@@ -334,10 +334,15 @@ public:
                                       const std::vector<double>& delta_phi_local,
                                       std::vector<double>& ref_phi_new);
 
+  size_t& GetLastRestartWriteTime()
+  {
+    return last_restart_write_time_;
+  }
+
   /**
    * Writes phi_old to restart file.
    */
-  void WriteRestartData();
+  void WriteRestartData(bool force = false);
 
   /**
    * Read phi_old from restart file.
@@ -532,7 +537,7 @@ protected:
   void InitTGDSA(LBSGroupset& groupset);
 
   lbs::Options options_;
-  size_t last_restart_time_ = 0;
+  size_t last_restart_write_time_ = 0;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
   size_t num_precursors_ = 0;
@@ -590,6 +595,9 @@ protected:
 
   /**Cleans up memory consuming items. */
   static void CleanUpTGDSA(LBSGroupset& groupset);
+
+private:
+  void PrepareForRestarts();
 
 public:
   static std::map<std::string, uint64_t> supported_boundary_names;

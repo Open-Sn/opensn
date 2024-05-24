@@ -105,10 +105,6 @@ AGSLinearSolver::Solve()
       solver->Solve();
     }
 
-    // Write restart data if needed
-    if (lbs_solver.Options().enable_ags_restart_write)
-      lbs_solver.WriteRestartData();
-
     lbs_solver.SetGroupScopedPETScVecFromPrimarySTLvector(gid_i, gid_f, x_, phi);
 
     VecAXPY(x_old, -1.0, x_);
@@ -124,9 +120,17 @@ AGSLinearSolver::Solve()
 
     lbs_solver.QMomentsLocal() = saved_qmoms; // Restore qmoms
 
+    // Write restart data
+    if (lbs_solver.Options().enable_ags_restart_write)
+      lbs_solver.WriteRestartData();
+
     if (error_norm < tolerance_options_.residual_absolute)
       break;
   } // for iteration
+
+  // Write restart data
+  if (lbs_solver.Options().enable_ags_restart_write)
+    lbs_solver.WriteRestartData(true);
 
   VecDestroy(&x_old);
 }

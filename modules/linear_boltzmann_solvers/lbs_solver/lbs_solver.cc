@@ -377,7 +377,7 @@ LBSSolver::GetWGSSolvers()
 size_t&
 LBSSolver::LastRestartTime()
 {
-  return last_restart_time_;
+  return last_restart_write_time_;
 }
 
 WGSContext&
@@ -432,82 +432,62 @@ LBSSolver::OptionsBlock()
 
   params.SetGeneralDescription("Set options from a large list of parameters");
   params.SetDocGroup("LBSUtilities");
-
   params.AddOptionalParameter("spatial_discretization",
                               "pwld",
                               "What spatial discretization to use. Currently only `\"pwld\"` "
                               "is supported");
-
   params.AddOptionalParameter(
     "scattering_order", 1, "Defines the level of harmonic expansion for the scattering source.");
-
   params.AddOptionalParameter("max_mpi_message_size",
                               32768,
                               "The maximum MPI message size used during sweep initialization.");
-
   params.AddOptionalParameter(
     "read_restart_data", false, "Flag indicating whether restart data is to be read.");
-
-  params.AddOptionalParameter("read_restart_folder_name",
+  params.AddOptionalParameter("read_restart_directory_name",
                               opensn::input_path.stem().string() + "_restart",
-                              "Folder name to use when reading restart data.");
-
-  params.AddOptionalParameter("read_restart_file_base",
+                              "Directory name to use when reading restart data.");
+  params.AddOptionalParameter("read_restart_file_stem",
                               opensn::input_path.stem().string(),
-                              "File base name to use when reading restart data.");
-
-  params.AddOptionalParameter("write_restart_folder_name",
+                              "File stem to use when reading restart data.");
+  params.AddOptionalParameter("write_restart_directory_name",
                               opensn::input_path.stem().string() + "_restart",
-                              "Folder name to use when writing restart data.");
-
+                              "Directory name to use when writing restart data.");
   params.AddOptionalParameter(
-    "write_restart_file_base", "restart", "File base name to use when writing restart data.");
-
-  params.AddOptionalParameter("write_restart_interval",
+    "write_restart_file_stem", "restart", "File stem to use when writing restart data.");
+  params.AddOptionalParameter("write_restart_time_interval",
                               60,
                               "Time interval in seconds at which restart data is to be written.");
-  params.ConstrainParameterRange("write_restart_interval", AllowableRangeLowLimit::New(60));
-
+  params.ConstrainParameterRange("write_restart_time_interval", AllowableRangeLowLimit::New(60));
   params.AddOptionalParameter(
     "use_precursors", false, "Flag for using delayed neutron precursors.");
-
   params.AddOptionalParameter("use_source_moments",
                               false,
                               "Flag for ignoring fixed sources and selectively using source "
                               "moments obtained elsewhere.");
-
   params.AddOptionalParameter(
     "save_angular_flux", false, "Flag indicating whether angular fluxes are to be stored or not.");
-
   params.AddOptionalParameter(
     "adjoint", false, "Flag for toggling whether the solver is in adjoint mode.");
-
   params.AddOptionalParameter(
     "verbose_inner_iterations", true, "Flag to control verbosity of inner iterations.");
-
   params.AddOptionalParameter(
     "verbose_outer_iterations", true, "Flag to control verbosity of across-groupset iterations.");
-
   params.AddOptionalParameter(
     "verbose_ags_iterations", false, "Flag to control verbosity of across-groupset iterations.");
-
   params.AddOptionalParameter("power_field_function_on",
                               false,
                               "Flag to control the creation of the power generation field "
                               "function. If set to `true` then a field function will be created "
                               "with the general name <solver_name>_power_generation`.");
-
   params.AddOptionalParameter("power_default_kappa",
                               3.20435e-11,
                               "Default `kappa` value (Energy released per fission) to use for "
                               "power generation when cross sections do not have `kappa` values. "
                               "Default: 3.20435e-11 Joule (corresponding to 200 MeV per fission).");
-
   params.AddOptionalParameter("power_normalization",
                               -1.0,
                               "Power normalization factor to use. Supply a negative or zero number "
                               "to turn this off.");
-
   params.AddOptionalParameter("field_function_prefix_option",
                               "prefix",
                               "Prefix option on field function names. Default: `\"prefix\"`. Can "
@@ -516,7 +496,6 @@ LBSSolver::OptionsBlock()
                               "parameter is not set, flux field functions will be exported as "
                               "`phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit group number "
                               "and `YYY` is the zero padded 3 digit moment.");
-
   params.AddOptionalParameter("field_function_prefix",
                               "",
                               "Prefix to use on all field functions. Default: `\"\"`. By default "
@@ -524,30 +503,21 @@ LBSSolver::OptionsBlock()
                               "as `prefix_phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit "
                               "group number and `YYY` is the zero padded 3 digit moment. The "
                               "underscore after \"prefix\" is added automatically.");
-
   params.AddOptionalParameterArray(
     "boundary_conditions", {}, "An array containing tables for each boundary specification.");
-
   params.LinkParameterToBlock("boundary_conditions", "lbs::BoundaryOptionsBlock");
-
   params.AddOptionalParameter("clear_boundary_conditions",
                               false,
                               "Clears all boundary conditions. If no additional boundary "
                               "conditions are supplied, this results in all boundaries being "
                               "vacuum.");
-
   params.AddOptionalParameterArray("point_sources", {}, "An array of handles to point sources.");
-
   params.AddOptionalParameter("clear_point_sources", false, "Clears all point sources.");
-
   params.AddOptionalParameterArray(
     "distributed_sources", {}, "An array of handles to distributed sources.");
-
   params.AddOptionalParameter(
     "clear_distributed_sources", false, "Clears all distributed sources.");
-
   params.ConstrainParameterRange("spatial_discretization", AllowableRangeList::New({"pwld"}));
-
   params.ConstrainParameterRange("field_function_prefix_option",
                                  AllowableRangeList::New({"prefix", "solver_name"}));
 
@@ -561,17 +531,13 @@ LBSSolver::BoundaryOptionsBlock()
 
   params.SetGeneralDescription("Set options for boundary conditions. See \\ref LBSBCs");
   params.SetDocGroup("LBSUtilities");
-
   params.AddRequiredParameter<std::string>("name",
                                            "Boundary name that identifies the specific boundary");
-
   params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
-
   params.AddOptionalParameterArray<double>("group_strength",
                                            {},
                                            "Required only if `type` is `\"isotropic\"`. An array "
                                            "of isotropic strength per group");
-
   params.AddOptionalParameter("function_name",
                               "",
                               "Text name of the lua function to be called for this boundary "
@@ -662,20 +628,33 @@ LBSSolver::SetOptions(const InputParameters& params)
     else if (spec.Name() == "read_restart_data")
       options_.read_restart_data = spec.GetValue<bool>();
 
-    else if (spec.Name() == "read_restart_folder_name")
-      options_.read_restart_folder_name = spec.GetValue<std::string>();
+    else if (spec.Name() == "read_restart_directory_name")
+      options_.read_restart_directory_name = spec.GetValue<std::string>();
 
-    else if (spec.Name() == "read_restart_file_base")
-      options_.read_restart_file_base = spec.GetValue<std::string>();
+    else if (spec.Name() == "read_restart_file_stem")
+      options_.read_restart_file_stem = spec.GetValue<std::string>();
 
-    else if (spec.Name() == "write_restart_folder_name")
-      options_.write_restart_folder_name = spec.GetValue<std::string>();
+    else if (spec.Name() == "write_restart_directory_name")
+      options_.write_restart_directory_name = spec.GetValue<std::string>();
 
-    else if (spec.Name() == "write_restart_file_base")
-      options_.write_restart_file_base = spec.GetValue<std::string>();
+    else if (spec.Name() == "write_restart_file_stem")
+      options_.write_restart_file_stem = spec.GetValue<std::string>();
 
-    else if (spec.Name() == "write_restart_interval")
-      options_.write_restart_interval = spec.GetValue<int>();
+    else if (spec.Name() == "write_restart_time_interval")
+    {
+      options_.write_restart_time_interval = spec.GetValue<int>();
+      if (not std::filesystem::is_directory(options_.write_restart_directory_name))
+      {
+        if (opensn::mpi_comm.rank() == 0)
+          std::filesystem::create_directory(options_.write_restart_directory_name);
+        opensn::mpi_comm.barrier();
+        if (not std::filesystem::is_directory(options_.write_restart_directory_name))
+        {
+          throw std::runtime_error(
+            "Failed to create restart directory " + options_.write_restart_directory_name);
+        }
+      }
+    }
 
     else if (spec.Name() == "use_precursors")
       options_.use_precursors = spec.GetValue<bool>();
@@ -829,10 +808,6 @@ LBSSolver::Initialize()
   // Initialize distributed sources
   for (auto& distributed_source : distributed_sources_)
     distributed_source.Initialize(*this);
-
-  auto now = std::chrono::system_clock::now().time_since_epoch();
-  size_t now_seconds = std::chrono::duration_cast<std::chrono::seconds>(now).count();
-  last_restart_time_ = now_seconds;
 }
 
 void
@@ -2010,67 +1985,44 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
 }
 
 void
-LBSSolver::WriteRestartData()
+LBSSolver::WriteRestartData(bool force)
 {
-  if (options_.write_restart_interval == 0)
-    return;
-
   CALI_CXX_MARK_SCOPE("LBSSolver::WriteRestartData");
 
-  auto now = std::chrono::system_clock::now().time_since_epoch();
-  size_t now_seconds = std::chrono::duration_cast<std::chrono::seconds>(now).count();
-  if ((now_seconds - last_restart_time_) < options_.write_restart_interval)
+  // Check if restarts are enabled
+  if (options_.write_restart_time_interval == 0)
     return;
 
-  std::string folder_name = options_.write_restart_folder_name;
-  std::string file_base = options_.write_restart_file_base;
-  std::string file_name =
-    folder_name + "/" + file_base + std::to_string(opensn::mpi_comm.rank()) + ".r";
+  // Check if enough time has elapsed since the last restart write
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  size_t now_secs = std::chrono::duration_cast<std::chrono::seconds>(now).count();
+  if (((now_secs - last_restart_write_time_) < options_.write_restart_time_interval) and not force)
+    return;
 
-  // Make sure folder exists
-  struct stat st
-  {
-  };
-  if (opensn::mpi_comm.rank() == 0)
-    if (stat(folder_name.c_str(), &st) != 0)
-      if ((mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0) and (errno != EEXIST))
-        throw std::runtime_error("Failed to create restart directory " + folder_name);
-
-  opensn::mpi_comm.barrier();
-
-  // Disable internal HDF error reporting
-  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
-
-  // Create files. This step might fail for specific locations and can create quite a messy output
-  // if we print it all. We also need to consolidate the error to determine if the process as whole
-  // succeeded.
+  std::string fbase = options_.write_restart_directory_name + "/" +
+                      options_.write_restart_file_stem;
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".r";
+  
+  // Wfrite data
   bool location_succeeded = true;
-
-  // Open file
-  hid_t file = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-  if (not file)
-  {
-    log.LogAllError() << "Failed to create restart file: " << file_name;
-    location_succeeded = false;
-  }
-  else
+  auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  if (file)
   {
     location_succeeded = H5WriteDataset1D<double>(file, "phi_old", phi_old_local_);
     H5Fclose(file);
   }
-
-  // Check success status
+  else
+    location_succeeded = false;
+   
   bool global_succeeded = true;
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
-
-  // Write status message
   if (global_succeeded)
   {
-    log.Log() << "Successfully wrote restart data " << folder_name + "/" + file_base + "X.r";
-    last_restart_time_ = now_seconds;
+    log.Log() << "Successfully wrote restart data to " << fbase << "X.r";
+    last_restart_write_time_ = now_secs;
   }
   else
-    log.Log0Error() << "Failed to write restart data " << folder_name + "/" + file_base + "X.r";
+     log.Log0Error() << "Failed to write restart data to " << fbase << "X.r";
 }
 
 void
@@ -2078,42 +2030,27 @@ LBSSolver::ReadRestartData()
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::ReadRestartData");
 
-  std::string folder_name = options_.write_restart_folder_name;
-  std::string file_base = options_.write_restart_file_base;
-  std::string file_name =
-    folder_name + "/" + file_base + std::to_string(opensn::mpi_comm.rank()) + ".r";
+  std::string fbase = options_.read_restart_directory_name + "/" + options_.read_restart_file_stem; 
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".r";
 
-  // Open files. This step might fail for specific locations and can create messy output if print it
-  // all. We also need to consolidate errors to determine if the process as whole succeeded.
   bool location_succeeded = true;
-
-  // Disable internal HDF error reporting
-  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
-
-  // Open file
-  hid_t file = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-  if (not file)
-    std::invalid_argument(file_name + " could not be found or is not a valid HDF5 file.");
-  else
+  auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+  if (file)
   {
     phi_old_local_.clear();
     phi_old_local_ = H5ReadDataset1D<double>(file, "phi_old");
     location_succeeded = not phi_old_local_.empty();
     H5Fclose(file);
   }
+  else
+    location_succeeded = false;
 
-  // Check success status
   bool global_succeeded = true;
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
-
-  // Write status message
   if (global_succeeded)
-    log.Log() << "Successfully read restart data " << folder_name << "/" << file_base << "X.r";
+    log.Log() << "Successfully read restart data from " << fbase + "X.r";
   else
-  {
-    throw std::invalid_argument("Failed to read restart data " + folder_name + "/" + file_base +
-                                "X.r");
-  }
+    throw std::logic_error("Failed to read restart data from " + fbase + "X.r");
 }
 
 void

@@ -11,7 +11,9 @@
 #include "framework/utils/timer.h"
 #include "config.h"
 #include "caliper/cali.h"
+#include "hdf5.h"
 #include <iostream>
+
 
 namespace opensn
 {
@@ -54,6 +56,9 @@ Initialize()
   CALI_MARK_BEGIN(opensn::name.c_str());
 
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
+
+  // Disable internal HDF error reporting
+  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
 
   return 0;
 }

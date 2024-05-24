@@ -214,14 +214,14 @@ struct Options
   int max_mpi_message_size = 32768;
 
   bool read_restart_data = false;
-  std::string read_restart_folder_name = opensn::input_path.stem().string() + "_restart";
-  std::string read_restart_file_base = opensn::input_path.stem().string();
+  std::string read_restart_directory_name = opensn::input_path.stem().string() + "_restart";
+  std::string read_restart_file_stem = opensn::input_path.stem().string();
 
-  std::string write_restart_folder_name = opensn::input_path.stem().string() + "_restart";
-  std::string write_restart_file_base = opensn::input_path.stem().string();
-  size_t write_restart_interval = 0;
+  size_t write_restart_time_interval = 0;
+  std::string write_restart_directory_name = opensn::input_path.stem().string() + "_restart";
+  std::string write_restart_file_stem = opensn::input_path.stem().string();
+
   bool enable_ags_restart_write = true;
-  bool restarting = false;
 
   bool use_precursors = false;
   bool use_src_moments = false;
