@@ -239,8 +239,8 @@ PowerIterationKEigen::WriteRestartData(double Fprev, bool force)
 void
 PowerIterationKEigen::ReadRestartData(double& Fprev)
 {
-  std::string fbase = lbs_solver_.Options().write_restart_directory_name + "/" +
-                      lbs_solver_.Options().write_restart_file_stem;
+  std::string fbase = lbs_solver_.Options().read_restart_directory_name + "/" +
+                      lbs_solver_.Options().read_restart_file_stem;
   std::string fname = fbase + std::to_string(opensn::mpi_comm.rank())+ ".r";
 
   bool location_succeeded = true;
