@@ -334,15 +334,16 @@ public:
                                       const std::vector<double>& delta_phi_local,
                                       std::vector<double>& ref_phi_new);
 
-  size_t& GetLastRestartWriteTime()
-  {
-    return last_restart_write_time_;
-  }
+  bool RestartsEnabled() { return options_.write_restart_time_interval > 0; }
+
+  bool TriggerRestartDump();
+
+  void UpdateLastRestartWriteTime();
 
   /**
    * Writes phi_old to restart file.
    */
-  void WriteRestartData(bool force = false);
+  void WriteRestartData();
 
   /**
    * Read phi_old from restart file.

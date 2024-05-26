@@ -14,7 +14,6 @@
 #include "hdf5.h"
 #include <iostream>
 
-
 namespace opensn
 {
 

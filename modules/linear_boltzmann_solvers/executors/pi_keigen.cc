@@ -44,6 +44,7 @@ PowerIterationKEigen::PowerIterationKEigen(const InputParameters& params)
     max_iters_(params.GetParamValue<size_t>("max_iters")),
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
+    F_prev_(1.0),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
     q_moments_local_(lbs_solver_.QMomentsLocal()),
     phi_old_local_(lbs_solver_.PhiOldLocal()),
@@ -80,21 +81,18 @@ PowerIterationKEigen::Initialize()
 
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
 
-  if (reset_phi0_ && (not lbs_solver_.Options().read_restart_data))
+  if (reset_phi0_ and lbs_solver_.Options().read_restart_path.empty())
     lbs_solver_.SetPhiVectorScalarValues(phi_old_local_, 1.0);
 }
 
 void
 PowerIterationKEigen::Execute()
 {
-  double F_prev = 1.0;
-
-  k_eff_ = 1.0;
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
 
-  if (lbs_solver_.Options().read_restart_data)
-    ReadRestartData(F_prev);
+  if (not lbs_solver_.Options().read_restart_path.empty())
+    ReadRestartData();
 
   // Start power iterations
   int nit = 0;
@@ -111,13 +109,13 @@ PowerIterationKEigen::Execute()
 
     // Recompute k-eigenvalue
     double F_new = lbs_solver_.ComputeFissionProduction(phi_new_local_);
-    k_eff_ = F_new / F_prev * k_eff_;
+    k_eff_ = F_new / F_prev_ * k_eff_;
     double reactivity = (k_eff_ - 1.0) / k_eff_;
 
     // Check convergence, bookkeeping
     k_eff_change = fabs(k_eff_ - k_eff_prev) / k_eff_;
     k_eff_prev = k_eff_;
-    F_prev = F_new;
+    F_prev_ = F_new;
     nit += 1;
 
     if (k_eff_change < std::max(k_tolerance_, 1.0e-12))
@@ -137,13 +135,17 @@ PowerIterationKEigen::Execute()
       log.Log() << k_iter_info.str();
     }
 
-    WriteRestartData(F_prev);
+    if (lbs_solver_.RestartsEnabled() and lbs_solver_.TriggerRestartDump())
+      WriteRestartData();
 
     if (converged)
       break;
   } // for k iterations
 
-  WriteRestartData(F_prev, true);
+  // If restarts are enabled, always write a restart dump upon convergence or
+  // when we reach the iteration limit
+  if (lbs_solver_.RestartsEnabled())
+    WriteRestartData();
 
   // Print summary
   log.Log() << "\n";
@@ -194,23 +196,10 @@ PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
 }
 
 void
-PowerIterationKEigen::WriteRestartData(double Fprev, bool force)
+PowerIterationKEigen::WriteRestartData()
 {
-  // Check if restarts are enabled
-  auto write_restart_time_interval = lbs_solver_.Options().write_restart_time_interval;
-  if (write_restart_time_interval == 0)
-    return;
-
-  // Check if enough time has elapsed since the last restart write
-  auto& last_restart_write_time = lbs_solver_.GetLastRestartWriteTime();
-  auto now = std::chrono::system_clock::now().time_since_epoch();
-  size_t now_secs = std::chrono::duration_cast<std::chrono::seconds>(now).count();
-  if (((now_secs - last_restart_write_time) < write_restart_time_interval) and not force)
-    return;
-    
-  std::string fbase = lbs_solver_.Options().write_restart_directory_name + "/" +
-                      lbs_solver_.Options().write_restart_file_stem;
-  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank())+ ".r";
+  std::string fbase = lbs_solver_.Options().write_restart_path.string();
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
 
   // Write data
   bool location_succeeded = true;
@@ -221,7 +210,7 @@ PowerIterationKEigen::WriteRestartData(double Fprev, bool force)
   {
     location_succeeded = H5WriteDataset1D<double>(file, "phi_old", lbs_solver_.PhiOldLocal()) and
                          H5CreateAttribute<double>(file, "keff", k_eff_) and
-                         H5CreateAttribute<double>(file, "Fprev", Fprev);
+                         H5CreateAttribute<double>(file, "Fprev", F_prev_);
     H5Fclose(file);
   }
 
@@ -229,19 +218,18 @@ PowerIterationKEigen::WriteRestartData(double Fprev, bool force)
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
   if (global_succeeded)
   {
-    log.Log() << "Successfully wrote restart data to " << fbase << "X.r";
-    last_restart_write_time = now_secs;
+    log.Log() << "Successfully wrote restart data to " << fbase << "X.restart.h5";
+    lbs_solver_.UpdateLastRestartWriteTime();
   }
   else
-    log.Log0Error() << "Failed to write restart data to " << fbase << "X.r";
+    log.Log0Error() << "Failed to write restart data to " << fbase << "X.restart.h5";
 }
 
 void
-PowerIterationKEigen::ReadRestartData(double& Fprev)
+PowerIterationKEigen::ReadRestartData()
 {
-  std::string fbase = lbs_solver_.Options().read_restart_directory_name + "/" +
-                      lbs_solver_.Options().read_restart_file_stem;
-  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank())+ ".r";
+  std::string fbase = lbs_solver_.Options().read_restart_path.string();
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
 
   bool location_succeeded = true;
   hid_t file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -254,16 +242,16 @@ PowerIterationKEigen::ReadRestartData(double& Fprev)
     phi_old_local = H5ReadDataset1D<double>(file, "phi_old");
     location_succeeded = (not phi_old_local.empty()) and
                          H5ReadAttribute<double>(file, "keff", k_eff_) and
-                         H5ReadAttribute<double>(file, "Fprev", Fprev);
+                         H5ReadAttribute<double>(file, "Fprev", F_prev_);
     H5Fclose(file);
   }
 
   bool global_succeeded = true;
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
   if (global_succeeded)
-    log.Log() << "Successfully read restart data from " << fbase << "X.r";
-  else  
-    throw std::invalid_argument("Failed to read restart data from " + fbase + "X.r");
+    log.Log() << "Successfully read restart data from " << fbase << "X.restart.h5";
+  else
+    throw std::invalid_argument("Failed to read restart data from " + fbase + "X.restart.h5");
 }
 
 } // namespace lbs

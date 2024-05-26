@@ -442,22 +442,12 @@ LBSSolver::OptionsBlock()
                               32768,
                               "The maximum MPI message size used during sweep initialization.");
   params.AddOptionalParameter(
-    "read_restart_data", false, "Flag indicating whether restart data is to be read.");
-  params.AddOptionalParameter("read_restart_directory_name",
-                              opensn::input_path.stem().string() + "_restart",
-                              "Directory name to use when reading restart data.");
-  params.AddOptionalParameter("read_restart_file_stem",
-                              opensn::input_path.stem().string(),
-                              "File stem to use when reading restart data.");
-  params.AddOptionalParameter("write_restart_directory_name",
-                              opensn::input_path.stem().string() + "_restart",
-                              "Directory name to use when writing restart data.");
+    "read_restart_path", "", "Full path for reading restart dumps including file stem.");
   params.AddOptionalParameter(
-    "write_restart_file_stem", "restart", "File stem to use when writing restart data.");
+    "write_restart_path", "", "Full path for writing restart dumps including file stem.");
   params.AddOptionalParameter("write_restart_time_interval",
-                              60,
+                              0,
                               "Time interval in seconds at which restart data is to be written.");
-  params.ConstrainParameterRange("write_restart_time_interval", AllowableRangeLowLimit::New(60));
   params.AddOptionalParameter(
     "use_precursors", false, "Flag for using delayed neutron precursors.");
   params.AddOptionalParameter("use_source_moments",
@@ -536,7 +526,7 @@ LBSSolver::BoundaryOptionsBlock()
   params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
   params.AddOptionalParameterArray<double>("group_strength",
                                            {},
-                                           "Required only if `type` is `\"isotropic\"`. An array "
+                                           "Required only if \"type\" is \"isotropic\". An array "
                                            "of isotropic strength per group");
   params.AddOptionalParameter("function_name",
                               "",
@@ -625,36 +615,14 @@ LBSSolver::SetOptions(const InputParameters& params)
     else if (spec.Name() == "max_mpi_message_size")
       options_.max_mpi_message_size = spec.GetValue<int>();
 
-    else if (spec.Name() == "read_restart_data")
-      options_.read_restart_data = spec.GetValue<bool>();
-
-    else if (spec.Name() == "read_restart_directory_name")
-      options_.read_restart_directory_name = spec.GetValue<std::string>();
-
-    else if (spec.Name() == "read_restart_file_stem")
-      options_.read_restart_file_stem = spec.GetValue<std::string>();
-
-    else if (spec.Name() == "write_restart_directory_name")
-      options_.write_restart_directory_name = spec.GetValue<std::string>();
-
-    else if (spec.Name() == "write_restart_file_stem")
-      options_.write_restart_file_stem = spec.GetValue<std::string>();
+    else if (spec.Name() == "read_restart_path")
+      options_.read_restart_path = spec.GetValue<std::string>();
 
     else if (spec.Name() == "write_restart_time_interval")
-    {
       options_.write_restart_time_interval = spec.GetValue<int>();
-      if (not std::filesystem::is_directory(options_.write_restart_directory_name))
-      {
-        if (opensn::mpi_comm.rank() == 0)
-          std::filesystem::create_directory(options_.write_restart_directory_name);
-        opensn::mpi_comm.barrier();
-        if (not std::filesystem::is_directory(options_.write_restart_directory_name))
-        {
-          throw std::runtime_error(
-            "Failed to create restart directory " + options_.write_restart_directory_name);
-        }
-      }
-    }
+
+    else if (spec.Name() == "write_restart_path")
+      options_.write_restart_path = spec.GetValue<std::string>();
 
     else if (spec.Name() == "use_precursors")
       options_.use_precursors = spec.GetValue<bool>();
@@ -734,6 +702,16 @@ LBSSolver::SetOptions(const InputParameters& params)
       }
     }
   } // for p
+
+  if (options_.write_restart_time_interval > 0)
+  {
+    auto dir = options_.write_restart_path.parent_path();
+    if (opensn::mpi_comm.rank() == 0)
+      std::filesystem::create_directory(dir);
+    opensn::mpi_comm.barrier();
+    if (not std::filesystem::is_directory(dir))
+      throw std::runtime_error("Failed to create restart directory " + dir.string());
+  }
 }
 
 void
@@ -837,6 +815,7 @@ LBSSolver::PerformInputChecks()
     }
     ++grpset_counter;
   }
+
   if (options_.sd_type == SpatialDiscretizationType::UNDEFINED)
   {
     log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No discretization_ method set.";
@@ -1294,7 +1273,7 @@ LBSSolver::InitializeParrays()
   }
 
   // Read Restart data
-  if (options_.read_restart_data)
+  if (not options_.read_restart_path.empty())
     ReadRestartData();
   opensn::mpi_comm.barrier();
 
@@ -1984,26 +1963,34 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   }   // for cell
 }
 
+bool
+LBSSolver::TriggerRestartDump()
+{
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  size_t now_secs = std::chrono::duration_cast<std::chrono::seconds>(now).count();
+
+  if ((now_secs - last_restart_write_time_) < options_.write_restart_time_interval)
+    return false;
+
+  return true;
+}
+
 void
-LBSSolver::WriteRestartData(bool force)
+LBSSolver::UpdateLastRestartWriteTime()
+{
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  last_restart_write_time_ = std::chrono::duration_cast<std::chrono::seconds>(now).count();
+}
+
+void
+LBSSolver::WriteRestartData()
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::WriteRestartData");
 
-  // Check if restarts are enabled
-  if (options_.write_restart_time_interval == 0)
-    return;
+  std::string fbase = options_.write_restart_path.string();
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
 
-  // Check if enough time has elapsed since the last restart write
-  auto now = std::chrono::system_clock::now().time_since_epoch();
-  size_t now_secs = std::chrono::duration_cast<std::chrono::seconds>(now).count();
-  if (((now_secs - last_restart_write_time_) < options_.write_restart_time_interval) and not force)
-    return;
-
-  std::string fbase = options_.write_restart_directory_name + "/" +
-                      options_.write_restart_file_stem;
-  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".r";
-  
-  // Wfrite data
+  // Write data
   bool location_succeeded = true;
   auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   if (file)
@@ -2013,16 +2000,16 @@ LBSSolver::WriteRestartData(bool force)
   }
   else
     location_succeeded = false;
-   
+
   bool global_succeeded = true;
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
   if (global_succeeded)
   {
-    log.Log() << "Successfully wrote restart data to " << fbase << "X.r";
-    last_restart_write_time_ = now_secs;
+    log.Log() << "Successfully wrote restart data to " << fbase << "X.restart.h5";
+    UpdateLastRestartWriteTime();
   }
   else
-     log.Log0Error() << "Failed to write restart data to " << fbase << "X.r";
+    log.Log0Error() << "Failed to write restart data to " << fbase << "X.restart.h5";
 }
 
 void
@@ -2030,8 +2017,8 @@ LBSSolver::ReadRestartData()
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::ReadRestartData");
 
-  std::string fbase = options_.read_restart_directory_name + "/" + options_.read_restart_file_stem; 
-  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".r";
+  std::string fbase = options_.read_restart_path.string();
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
 
   bool location_succeeded = true;
   auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -2048,9 +2035,9 @@ LBSSolver::ReadRestartData()
   bool global_succeeded = true;
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
   if (global_succeeded)
-    log.Log() << "Successfully read restart data from " << fbase + "X.r";
+    log.Log() << "Successfully read restart data from " << fbase + "X.restart.h5";
   else
-    throw std::logic_error("Failed to read restart data from " + fbase + "X.r");
+    throw std::logic_error("Failed to read restart data from " + fbase + "X.restart.h5");
 }
 
 void

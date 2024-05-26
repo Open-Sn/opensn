@@ -121,16 +121,20 @@ AGSLinearSolver::Solve()
     lbs_solver.QMomentsLocal() = saved_qmoms; // Restore qmoms
 
     // Write restart data
-    if (lbs_solver.Options().enable_ags_restart_write)
+    if (lbs_solver.RestartsEnabled() and lbs_solver.TriggerRestartDump() and
+        lbs_solver.Options().enable_ags_restart_write)
+    {
       lbs_solver.WriteRestartData();
+    }
 
     if (error_norm < tolerance_options_.residual_absolute)
       break;
   } // for iteration
 
-  // Write restart data
-  if (lbs_solver.Options().enable_ags_restart_write)
-    lbs_solver.WriteRestartData(true);
+  // If restarts are enabled, always write a restart dump upon convergence or
+  // when we reach the iteration limit
+  if (lbs_solver.RestartsEnabled() && lbs_solver.Options().enable_ags_restart_write)
+    lbs_solver.WriteRestartData();
 
   VecDestroy(&x_old);
 }

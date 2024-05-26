@@ -19,6 +19,7 @@ protected:
   size_t max_iters_;
   double k_eff_;
   double k_tolerance_;
+  double F_prev_;
   bool reset_phi0_;
 
   std::vector<double>& q_moments_local_;
@@ -55,9 +56,9 @@ protected:
                            bool additive,
                            bool suppress_wg_scat = false);
 
-  void WriteRestartData(double Fprev, bool force = false);
+  void WriteRestartData();
 
-  void ReadRestartData(double& Fprev);
+  void ReadRestartData();
 };
 
 } // namespace lbs

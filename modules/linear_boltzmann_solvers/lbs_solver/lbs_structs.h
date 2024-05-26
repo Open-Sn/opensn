@@ -14,11 +14,10 @@ namespace opensn
 namespace lbs
 {
 
-typedef std::vector<size_t> DirIDs; ///< Direction-IDs
-typedef std::vector<DirIDs> UniqueSOGroupings;
-typedef std::map<size_t, size_t> DirIDToSOMap;
-// typedef std::vector<Vector3> VecVec3;
-typedef std::vector<std::vector<Vector3>> MatVec3;
+using DirIDs = std::vector<size_t>; ///< Direction-IDs
+using UniqueSOGroupings = std::vector<DirIDs>;
+using DirIDToSOMap = std::map<size_t, size_t>;
+using MatVec3 = std::vector<std::vector<Vector3>>;
 
 enum class SolverType
 {
@@ -213,13 +212,11 @@ struct Options
   unsigned int scattering_order = 1;
   int max_mpi_message_size = 32768;
 
-  bool read_restart_data = false;
-  std::string read_restart_directory_name = opensn::input_path.stem().string() + "_restart";
-  std::string read_restart_file_stem = opensn::input_path.stem().string();
-
+  std::filesystem::path read_restart_path;
+  std::filesystem::path write_restart_path =
+    opensn::input_path.replace_extension("restart").string() + "/" +
+    opensn::input_path.stem().string();
   size_t write_restart_time_interval = 0;
-  std::string write_restart_directory_name = opensn::input_path.stem().string() + "_restart";
-  std::string write_restart_file_stem = opensn::input_path.stem().string();
 
   bool enable_ags_restart_write = true;
 
