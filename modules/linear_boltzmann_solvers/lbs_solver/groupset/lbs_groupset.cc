@@ -188,6 +188,7 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
   else if (inner_linear_method == "bicgstab")
     iterative_method_ = IterativeMethod::KRYLOV_BICGSTAB;
 
+  gmres_restart_intvl_ = params.GetParamValue<int>("gmres_restart_interval");
   allow_cycles_ = params.GetParamValue<bool>("allow_cycles");
   residual_tolerance_ = params.GetParamValue<double>("l_abs_tol");
   max_iterations_ = params.GetParamValue<int>("l_max_its");
