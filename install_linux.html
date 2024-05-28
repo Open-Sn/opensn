@@ -195,18 +195,19 @@ tar<span class="w"> </span>-zxf<span class="w"> </span>VTK-9.3.0.tar.gz
 <span class="nb">cd</span><span class="w"> </span>VTK-9.3.0
 mkdir<span class="w"> </span>build
 <span class="nb">cd</span><span class="w"> </span>build
-cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DBUILD_SHARED_LIBS:BOOL<span class="o">=</span>ON<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DVTK_Group_MPI:BOOL<span class="o">=</span>ON<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DVTK_GROUP_ENABLE_Qt<span class="o">=</span>NO<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DVTK_GROUP_ENABLE_Rendering<span class="o">=</span>NO<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DVTK_GROUP_ENABLE_Imaging<span class="o">=</span>NO<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DVTK_GROUP_ENABLE_StandAlone<span class="o">=</span>WANT<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DVTK_GROUP_ENABLE_Web<span class="o">=</span>NO<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DVTK_BUILD_TESTING:BOOL<span class="o">=</span>OFF<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
--DCMAKE_CXX_FLAGS<span class="o">=</span>-std<span class="o">=</span>c++11<span class="w">  </span>+<span class="w"> </span><span class="se">\</span>
-<span class="w"> </span>../
+cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w"> </span><span class="se">\</span>
+-DBUILD_SHARED_LIBS:BOOL<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+-DVTK_Group_MPI:BOOL<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+-DVTK_GROUP_ENABLE_Qt<span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
+-DVTK_GROUP_ENABLE_Rendering<span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
+-DVTK_GROUP_ENABLE_Imaging<span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
+-DVTK_GROUP_ENABLE_StandAlone<span class="o">=</span>WANT<span class="w"> </span><span class="se">\</span>
+-DVTK_GROUP_ENABLE_Web<span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
+-DVTK_MODULE_USE_EXTERNAL_VTK_hdf5<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+-DVTK_BUILD_TESTING:BOOL<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
+-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span><span class="se">\</span>
+-DCMAKE_CXX_FLAGS<span class="o">=</span>-std<span class="o">=</span>c++11<span class="w"> </span><span class="se">\</span>
+../
 </pre></div>
 </div>
 <p>After <code class="docutils literal notranslate"><span class="pre">cmake</span></code> has completed configuring the build, run:</p>
