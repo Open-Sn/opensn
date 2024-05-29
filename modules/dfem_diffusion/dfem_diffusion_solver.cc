@@ -3,25 +3,69 @@
 
 #include "modules/dfem_diffusion/dfem_diffusion_solver.h"
 #include "framework/runtime.h"
+#include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "modules/dfem_diffusion/dfem_diffusion_bndry.h"
+#include "modules/common/diffusion_bndry.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/functions/scalar_spatial_material_function.h"
 
 namespace opensn
 {
-namespace dfem_diffusion
+namespace diffusion
 {
 
-Solver::Solver(const std::string& name)
+OpenSnRegisterObjectInNamespace(diffusion, DFEMSolver);
+OpenSnRegisterSyntaxBlockInNamespace(diffusion,
+                                     DFEMBoundaryOptionsBlock,
+                                     DFEMSolver::BoundaryOptionsBlock);
+
+DFEMSolver::DFEMSolver(const std::string& name)
   : opensn::Solver(name, {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}})
 {
 }
 
-Solver::~Solver()
+InputParameters
+DFEMSolver::GetInputParameters()
+{
+  InputParameters params = Solver::GetInputParameters();
+  params.AddOptionalParameter<double>("residual_tolerance", 1.0e-2, "Solver relative tolerance");
+  params.AddOptionalParameter<int>("max_iters", 500, "Solver relative tolerance");
+  return params;
+}
+
+InputParameters
+DFEMSolver::OptionsBlock()
+{
+  InputParameters params;
+  params.AddOptionalParameterArray(
+    "boundary_conditions", {}, "An array contain tables for each boundary specification.");
+  params.LinkParameterToBlock("boundary_conditions", "DFEMSolver::BoundaryOptionsBlock");
+  return params;
+}
+
+InputParameters
+DFEMSolver::BoundaryOptionsBlock()
+{
+  InputParameters params;
+  params.SetGeneralDescription("Set options for boundary conditions");
+  params.AddRequiredParameter<std::string>("boundary",
+                                           "Boundary to apply the boundary condition to.");
+  params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
+  params.AddOptionalParameterArray<double>("coeffs", {}, "Coefficients.");
+  return params;
+}
+
+DFEMSolver::DFEMSolver(const InputParameters& params) : opensn::Solver(params)
+{
+  basic_options_.AddOption("residual_tolerance",
+                           params.GetParamValue<double>("residual_tolerance"));
+  basic_options_.AddOption<int64_t>("max_iters", params.GetParamValue<int>("max_iters"));
+}
+
+DFEMSolver::~DFEMSolver()
 {
   VecDestroy(&x_);
   VecDestroy(&b_);
@@ -29,27 +73,118 @@ Solver::~Solver()
 }
 
 void
-Solver::SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+DFEMSolver::SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
 {
   d_coef_function_ = function;
 }
 
 void
-Solver::SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+DFEMSolver::SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
 {
   q_ext_function_ = function;
 }
 
 void
-Solver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+DFEMSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
 {
   sigma_a_function_ = function;
 }
 
 void
-Solver::Initialize()
+DFEMSolver::SetOptions(const InputParameters& params)
 {
-  const std::string fname = "Solver::Initialize";
+  const auto& user_params = params.ParametersAtAssignment();
+
+  for (size_t p = 0; p < user_params.NumParameters(); ++p)
+  {
+    const auto& spec = user_params.GetParam(p);
+    if (spec.Name() == "boundary_conditions")
+    {
+      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+      for (size_t b = 0; b < spec.NumParameters(); ++b)
+      {
+        auto bndry_params = BoundaryOptionsBlock();
+        bndry_params.AssignParameters(spec.GetParam(b));
+        SetBoundaryOptions(bndry_params);
+      }
+    }
+  }
+}
+
+void
+DFEMSolver::SetBoundaryOptions(const InputParameters& params)
+{
+  const std::string fname = "DFEMSolver::SetBoundaryOptions";
+
+  const auto& user_params = params.ParametersAtAssignment();
+  const auto boundary = user_params.GetParamValue<std::string>("boundary");
+  const auto bc_type = user_params.GetParamValue<std::string>("type");
+  const auto bc_type_lc = LowerCase(bc_type);
+
+  if (bc_type_lc == "reflecting")
+  {
+    opensn::diffusion::DFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Reflecting;
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Reflecting.";
+  }
+  else if (bc_type_lc == "dirichlet")
+  {
+    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    if (coeffs.size() < 1)
+      throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
+    auto boundary_value = coeffs[0];
+    opensn::diffusion::DFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Dirichlet;
+    bndry_info.second = {boundary_value};
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Dirichlet with value "
+                      << boundary_value;
+  }
+  else if (bc_type_lc == "neumann")
+  {
+    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    if (coeffs.size() < 1)
+      throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
+    auto f_value = coeffs[0];
+    opensn::diffusion::DFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    bndry_info.second = {0.0, 1.0, f_value};
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Neumann with D grad(u) dot n = ("
+                      << f_value << ") ";
+  }
+  else if (bc_type_lc == "vacuum")
+  {
+    opensn::diffusion::DFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    bndry_info.second = {0.25, 0.5, 0.0};
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Vacuum.";
+  }
+  else if (bc_type_lc == "robin")
+  {
+    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    if (coeffs.size() < 3)
+      throw std::invalid_argument("Expecting three values in the 'coeffs' parameter.");
+    auto a_value = coeffs[0];
+    auto b_value = coeffs[1];
+    auto f_value = coeffs[2];
+    opensn::diffusion::DFEMSolver::BoundaryInfo bndry_info;
+    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    bndry_info.second = {a_value, b_value, f_value};
+    boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
+    opensn::log.Log() << "Boundary " << boundary << " set as Robin with a,b,f = (" << a_value << ","
+                      << b_value << "," << f_value << ") ";
+  }
+  else
+    throw std::invalid_argument(fname + ": Unsupported boundary type '" + bc_type + "'.");
+}
+
+void
+DFEMSolver::Initialize()
+{
+  const std::string fname = "DFEMSolver::Initialize";
   log.Log() << "\n"
             << program_timer.GetTimeString() << " " << TextName()
             << ": Initializing DFEM Diffusion solver ";
@@ -178,7 +313,7 @@ Solver::Initialize()
 }
 
 void
-Solver::Execute()
+DFEMSolver::Execute()
 {
   log.Log() << "\nExecuting DFEM IP Diffusion solver";
 
@@ -511,7 +646,7 @@ Solver::Execute()
 }
 
 double
-Solver::HPerpendicular(const Cell& cell, unsigned int f)
+DFEMSolver::HPerpendicular(const Cell& cell, unsigned int f)
 {
   const auto& sdm = *sdm_ptr_;
 
@@ -572,21 +707,21 @@ Solver::HPerpendicular(const Cell& cell, unsigned int f)
       hp = 6 * volume / surface_area;
   } // Polyhedron
   else
-    throw std::logic_error("Solver::HPerpendicular: "
-                           "Unsupported cell type in call to HPerpendicular");
+    throw std::logic_error(
+      "DFEMSolver::HPerpendicular: Unsupported cell type in call to HPerpendicular");
 
   return hp;
 }
 
 int
-Solver::MapFaceNodeDisc(const Cell& cur_cell,
-                        const Cell& adj_cell,
-                        const std::vector<Vector3>& cc_node_locs,
-                        const std::vector<Vector3>& ac_node_locs,
-                        size_t ccf,
-                        size_t acf,
-                        size_t ccfi,
-                        double epsilon)
+DFEMSolver::MapFaceNodeDisc(const Cell& cur_cell,
+                            const Cell& adj_cell,
+                            const std::vector<Vector3>& cc_node_locs,
+                            const std::vector<Vector3>& ac_node_locs,
+                            size_t ccf,
+                            size_t acf,
+                            size_t ccfi,
+                            double epsilon)
 {
   const auto& sdm = *sdm_ptr_;
 
@@ -605,15 +740,15 @@ Solver::MapFaceNodeDisc(const Cell& cur_cell,
       return j;
   }
 
-  throw std::logic_error("Solver::MapFaceNodeDisc: Mapping failure.");
+  throw std::logic_error("DFEMSolver::MapFaceNodeDisc: Mapping failure.");
 }
 
 void
-Solver::UpdateFieldFunctions()
+DFEMSolver::UpdateFieldFunctions()
 {
   auto& ff = *field_functions_.front();
   ff.UpdateFieldVector(x_);
 }
 
-} // namespace dfem_diffusion
+} // namespace diffusion
 } // namespace opensn

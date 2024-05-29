@@ -40,30 +40,48 @@ w_vol = logvol.RPPLogicalVolume.Create({xmin=-1000.0,xmax=-0.99999, infy=true, i
 n_vol = logvol.RPPLogicalVolume.Create({ymin=0.99999,ymax=1000.0  , infx=true, infz=true})
 s_vol = logvol.RPPLogicalVolume.Create({ymin=-1000.0,ymax=-0.99999, infx=true, infz=true})
 
-e_bndry = 0
-w_bndry = 1
-n_bndry = 2
-s_bndry = 3
+e_bndry = "0"
+w_bndry = "1"
+n_bndry = "2"
+s_bndry = "3"
 
 mesh.SetBoundaryIDFromLogicalVolume(e_vol,e_bndry)
 mesh.SetBoundaryIDFromLogicalVolume(w_vol,w_bndry)
 mesh.SetBoundaryIDFromLogicalVolume(n_vol,n_bndry)
 mesh.SetBoundaryIDFromLogicalVolume(s_vol,s_bndry)
 
---############################################### Add material properties
---#### DFEM solver
-phys1 = diffusion.DFEMSolverCreate()
+diff_options = {
+  boundary_conditions = {
+    {
+      boundary = e_bndry,
+      type = "robin",
+      coeffs = { 0.25, 0.5, 0.0 }
+    },
+    {
+      boundary = n_bndry,
+      type = "reflecting"
+    },
+    {
+      boundary = s_bndry,
+      type = "reflecting"
+    },
+    {
+      boundary = w_bndry,
+      type = "robin",
+      coeffs = { 0.25, 0.5, 0.1 }
+    }
+  }
+}
 
-solver.SetBasicOption(phys1, "residual_tolerance", 1E-8)
-
-diffusion.DFEMSetBCProperty(phys1, "boundary_type", e_bndry, "robin", 0.25, 0.5, 0.0)
-diffusion.DFEMSetBCProperty(phys1, "boundary_type", n_bndry, "reflecting")
-diffusion.DFEMSetBCProperty(phys1, "boundary_type", s_bndry, "reflecting")
-diffusion.DFEMSetBCProperty(phys1, "boundary_type", w_bndry, "robin", 0.25, 0.5, 0.1)
+-- DFEM solver
+phys1 = diffusion.DFEMSolver.Create({
+  name = "DFEMSolver",
+  residual_tolerance = 1e-8
+})
+diffusion.SetOptions(phys1, diff_options)
 
 solver.Initialize(phys1)
 solver.Execute(phys1)
-
 
 --############################################### Get field functions
 fflist,count = solver.GetFieldFunctionList(phys1)

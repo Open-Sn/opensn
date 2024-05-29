@@ -8,6 +8,6 @@
 namespace opensnlua
 {
 
-opensn::ParameterBlock DFEMSetOptions(const opensn::InputParameters& params);
+opensn::ParameterBlock CFEMSetOptions(const opensn::InputParameters& params);
 
 }

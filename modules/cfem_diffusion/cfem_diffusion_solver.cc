@@ -8,7 +8,7 @@
 #include "framework/utils/timer.h"
 #include "framework/math/functions/scalar_spatial_material_function.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "modules/cfem_diffusion/cfem_diffusion_bndry.h"
+#include "modules/common/diffusion_bndry.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 
@@ -18,9 +18,8 @@ namespace diffusion
 {
 
 OpenSnRegisterObjectInNamespace(diffusion, CFEMSolver);
-OpenSnRegisterSyntaxBlockInNamespace(diffusion, OptionsBlock, CFEMSolver::OptionsBlock);
 OpenSnRegisterSyntaxBlockInNamespace(diffusion,
-                                     BoundaryOptionsBlock,
+                                     CFEMBoundaryOptionsBlock,
                                      CFEMSolver::BoundaryOptionsBlock);
 
 CFEMSolver::CFEMSolver(const std::string& name)
