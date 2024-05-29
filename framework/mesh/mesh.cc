@@ -12,6 +12,9 @@ namespace opensn
 std::shared_ptr<MeshContinuum>
 GetCurrentMesh()
 {
+  if (mesh_stack.empty())
+    throw std::logic_error(
+      "Empty mesh stack. Ensure that \"mesh.MeshGenerator.Execute\" is called in the input.");
   return mesh_stack.back();
 }
 
