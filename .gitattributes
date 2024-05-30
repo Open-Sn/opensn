@@ -1,3 +1,5 @@
 *.py linguist-generated
 *.css linguist-generated
 *.html linguist-generated 
+*.xs linguist-detectable=false
+external/** linguist-vendored
