@@ -5,7 +5,6 @@
 #include "framework/object_factory.h"
 #include "lua/framework/lua.h"
 #include "lua/framework/console/console.h"
-#include "cfem_diffusion/lua_cfem_diff_solver.h"
 #include "dfem_diffusion/lua_dfem_diff_solver.h"
 #include "fv_diffusion/lua_fv_diff_solver.h"
 #include "mg_diffusion/lua_mg_diff_solver.h"

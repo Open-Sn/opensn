@@ -18,16 +18,40 @@ class MeshContinuum;
 class SpatialDiscretization;
 class ScalarSpatialMaterialFunction;
 
-namespace cfem_diffusion
+namespace diffusion
 {
 
 /**
  * CFEM diffusion solver
  *
  */
-class Solver : public opensn::Solver
+class CFEMSolver : public opensn::Solver
 {
 public:
+  explicit CFEMSolver(const std::string& name);
+  explicit CFEMSolver(const InputParameters& params);
+  ~CFEMSolver() override;
+
+  void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
+  void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
+  void SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
+
+  void SetOptions(const InputParameters& params);
+  void SetBoundaryOptions(const InputParameters& params);
+
+  void Initialize() override;
+
+  void Execute() override;
+
+  /**
+   * Updates the field functions with the latest data.
+   */
+  void UpdateFieldFunctions();
+
+private:
+  typedef std::pair<opensn::diffusion::BoundaryType, std::vector<double>> BoundaryInfo;
+  typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
+
   std::shared_ptr<MeshContinuum> grid_ptr_ = nullptr;
 
   std::shared_ptr<SpatialDiscretization> sdm_ptr_ = nullptr;
@@ -42,32 +66,19 @@ public:
   /// linear system matrix
   Mat A_ = nullptr;
 
-  typedef std::pair<opensn::cfem_diffusion::BoundaryType, std::vector<double>> BoundaryInfo;
-  typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
-  BoundaryPreferences boundary_preferences_;
   std::map<uint64_t, Boundary> boundaries_;
 
-  explicit Solver(const std::string& name);
-  ~Solver() override;
+  BoundaryPreferences boundary_preferences_;
 
-  void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-  void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-  void SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-
-  void Initialize() override;
-
-  void Execute() override;
-
-  /**
-   * Updates the field functions with the latest data.
-   */
-  void UpdateFieldFunctions();
-
-private:
   std::shared_ptr<ScalarSpatialMaterialFunction> d_coef_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> sigma_a_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> q_ext_function_;
+
+public:
+  static InputParameters GetInputParameters();
+  static InputParameters OptionsBlock();
+  static InputParameters BoundaryOptionsBlock();
 };
 
-} // namespace cfem_diffusion
+} // namespace diffusion
 } // namespace opensn

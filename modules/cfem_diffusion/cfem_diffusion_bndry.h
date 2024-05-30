@@ -7,7 +7,7 @@
 
 namespace opensn
 {
-namespace cfem_diffusion
+namespace diffusion
 {
 class Boundary;
 
@@ -29,7 +29,7 @@ public:
   std::array<double, 3> values_ = {0.0, 0.0, 0.0};
 };
 
-} // namespace cfem_diffusion
+} // namespace diffusion
 } // namespace opensn
 
 // //###################################################################
