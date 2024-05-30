@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "function_lua_dimA_to_dimB.h"
+#include "lua_dim_a_to_dim_b.h"
 
 #include "framework/console/console.h"
 #include "framework/logging/log_exceptions.h"

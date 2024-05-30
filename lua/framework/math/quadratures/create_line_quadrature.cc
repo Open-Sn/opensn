@@ -8,7 +8,7 @@
 
 #include "framework/object_factory.h"
 
-#include "quadratures_lua.h"
+#include "quadratures.h"
 #include "framework/console/console.h"
 
 using namespace opensn;

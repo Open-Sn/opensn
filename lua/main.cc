@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "mpicpp-lite/mpicpp-lite.h"
-#include "modules/modules_lua.h"
+#include "modules/modules.h"
 #include "lua/framework/lua_app.h"
 
 namespace mpi = mpicpp_lite;

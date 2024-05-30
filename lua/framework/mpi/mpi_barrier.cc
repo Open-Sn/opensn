@@ -4,7 +4,7 @@
 #include "framework/lua.h"
 
 #include "framework/runtime.h"
-#include "mpi_lua.h"
+#include "mpi_barrier.h"
 #include "framework/console/console.h"
 
 namespace opensnlua

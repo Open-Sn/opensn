@@ -5,7 +5,7 @@
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/console/console.h"
 #include "framework/runtime.h"
-#include "sldfe_lua.h"
+#include "sldfe.h"
 
 using namespace opensn;
 

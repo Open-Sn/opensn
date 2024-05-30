@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/lua.h"
-#include "ffinterpol_lua.h"
+#include "ffinterpol.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/console/console.h"
 #include "framework/logging/log.h"

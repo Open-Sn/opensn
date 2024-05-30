@@ -4,7 +4,7 @@
 #include "framework/lua.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/runtime.h"
-#include "ffinterpol_lua.h"
+#include "ffinterpol.h"
 #include "framework/console/console.h"
 
 namespace opensnlua

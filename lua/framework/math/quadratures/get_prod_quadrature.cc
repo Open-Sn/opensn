@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/lua.h"
-#include "quadratures_lua.h"
+#include "quadratures.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/logging/log.h"
 #include "framework/console/console.h"

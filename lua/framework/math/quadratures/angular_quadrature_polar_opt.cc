@@ -6,7 +6,7 @@
 #include "framework/console/console.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "quadratures_lua.h"
+#include "quadratures.h"
 
 using namespace opensn;
 

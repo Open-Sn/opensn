@@ -10,7 +10,7 @@
 #include "lua/framework/math/functions/lua_scalar_material_function.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "ffinterpol_lua.h"
+#include "ffinterpol.h"
 #include "framework/console/console.h"
 
 using namespace opensn;
