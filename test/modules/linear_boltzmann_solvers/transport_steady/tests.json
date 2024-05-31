@@ -471,5 +471,18 @@
         "abs_tol": 1.0e-6
       }
     ]
+  },
+  {
+    "file": "transport_3d_2_unstructured_restart.lua",
+    "comment": "3D Unstructured problem with restart",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 5.88996,
+        "abs_tol": 0.0001
+      }
+    ]
   }
 ]

@@ -3,10 +3,10 @@
 
 #include "ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/math/linear_solver/linear_matrix_action_Ax.h"
-#include "framework/runtime.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <petscksp.h>
 #include <iomanip>
@@ -62,7 +62,6 @@ AGSLinearSolver::SetPreconditioner()
   CALI_CXX_MARK_SCOPE("AGSLinearSolver::SetPreconditioner");
 
   auto ags_context_ptr = std::dynamic_pointer_cast<AGSContext>(context_ptr_);
-
   ags_context_ptr->SetPreconditioner(ksp_);
 }
 
@@ -98,7 +97,6 @@ AGSLinearSolver::Solve()
 
   for (int iter = 0; iter < tolerance_options_.maximum_iterations; ++iter)
   {
-
     lbs_solver.SetGroupScopedPETScVecFromPrimarySTLvector(gid_i, gid_f, x_old, phi);
 
     for (auto& solver : ags_context_ptr->sub_solvers_list_)
@@ -122,9 +120,21 @@ AGSLinearSolver::Solve()
 
     lbs_solver.QMomentsLocal() = saved_qmoms; // Restore qmoms
 
+    // Write restart data
+    if (lbs_solver.RestartsEnabled() and lbs_solver.TriggerRestartDump() and
+        lbs_solver.Options().enable_ags_restart_write)
+    {
+      lbs_solver.WriteRestartData();
+    }
+
     if (error_norm < tolerance_options_.residual_absolute)
       break;
   } // for iteration
+
+  // If restarts are enabled, always write a restart dump upon convergence or
+  // when we reach the iteration limit
+  if (lbs_solver.RestartsEnabled() && lbs_solver.Options().enable_ags_restart_write)
+    lbs_solver.WriteRestartData();
 
   VecDestroy(&x_old);
 }

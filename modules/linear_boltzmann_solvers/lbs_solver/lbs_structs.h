@@ -14,14 +14,10 @@ namespace opensn
 namespace lbs
 {
 
-typedef std::vector<size_t> DirIDs; ///< Direction-IDs
-typedef std::vector<DirIDs> UniqueSOGroupings;
-typedef std::map<size_t, size_t> DirIDToSOMap;
-
-typedef std::vector<double> VecDbl;
-typedef std::vector<VecDbl> MatDbl;
-typedef std::vector<Vector3> VecVec3;
-typedef std::vector<VecVec3> MatVec3;
+using DirIDs = std::vector<size_t>; ///< Direction-IDs
+using UniqueSOGroupings = std::vector<DirIDs>;
+using DirIDToSOMap = std::map<size_t, size_t>;
+using MatVec3 = std::vector<std::vector<Vector3>>;
 
 enum class SolverType
 {
@@ -199,6 +195,8 @@ enum class PhiSTLOption
 };
 
 class LBSGroupset;
+class AGSSchemeEntry;
+
 typedef std::function<void(const LBSGroupset& groupset,
                            std::vector<double>& q,
                            const std::vector<double>& phi,
@@ -206,26 +204,21 @@ typedef std::function<void(const LBSGroupset& groupset,
                            const SourceFlags source_flags)>
   SetSourceFunction;
 
-class AGSSchemeEntry;
-
 /**Struct for storing LBS options.*/
 struct Options
 {
-  typedef SpatialDiscretizationType SDMType;
-
   GeometryType geometry_type = GeometryType::NO_GEOMETRY_SET;
-  SDMType sd_type = SDMType::PIECEWISE_LINEAR_DISCONTINUOUS;
+  SpatialDiscretizationType sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
   unsigned int scattering_order = 1;
   int max_mpi_message_size = 32768;
 
-  bool read_restart_data = false;
-  std::string read_restart_folder_name = std::string("YRestart");
-  std::string read_restart_file_base = std::string("restart");
+  std::filesystem::path read_restart_path;
+  std::filesystem::path write_restart_path =
+    opensn::input_path.replace_extension("restart").string() + "/" +
+    opensn::input_path.stem().string();
+  size_t write_restart_time_interval = 0;
 
-  bool write_restart_data = false;
-  std::string write_restart_folder_name = std::string("YRestart");
-  std::string write_restart_file_base = std::string("restart");
-  double write_restart_interval = 30.0;
+  bool enable_ags_restart_write = true;
 
   bool use_precursors = false;
   bool use_src_moments = false;
@@ -298,7 +291,9 @@ public:
   const MultiGroupXS& XS() const { return *xs_; }
 
   bool IsFaceLocal(int f) const { return face_local_flags_[f]; }
+
   int FaceLocality(int f) const { return face_locality_[f]; }
+
   const Cell* FaceNeighbor(int f) const { return neighbor_cell_ptrs_[f]; }
 
   int NumNodes() const { return num_nodes_; }
@@ -306,11 +301,13 @@ public:
   double Volume() const { return volume_; }
 
   void ZeroOutflow() { outflow_.assign(outflow_.size(), 0.0); }
+
   void ZeroOutflow(int g)
   {
     if (g < outflow_.size())
       outflow_[g] = 0.0;
   }
+
   void AddOutflow(int g, double intS_mu_psi)
   {
     if (g < outflow_.size())
@@ -330,14 +327,14 @@ public:
 
 struct UnitCellMatrices
 {
-  MatDbl intV_gradshapeI_gradshapeJ;
-  MatVec3 intV_shapeI_gradshapeJ;
-  MatDbl intV_shapeI_shapeJ;
-  VecDbl intV_shapeI;
+  std::vector<std::vector<double>> intV_gradshapeI_gradshapeJ;
+  std::vector<std::vector<Vector3>> intV_shapeI_gradshapeJ;
+  std::vector<std::vector<double>> intV_shapeI_shapeJ;
+  std::vector<double> intV_shapeI;
 
-  std::vector<MatDbl> intS_shapeI_shapeJ;
-  std::vector<MatVec3> intS_shapeI_gradshapeJ;
-  std::vector<VecDbl> intS_shapeI;
+  std::vector<std::vector<std::vector<double>>> intS_shapeI_shapeJ;
+  std::vector<std::vector<std::vector<Vector3>>> intS_shapeI_gradshapeJ;
+  std::vector<std::vector<double>> intS_shapeI;
 };
 
 enum class AGSSchemeEntryType
@@ -366,6 +363,7 @@ public:
   }
 
   AGSSchemeEntryType Type() const { return type_; }
+
   int GroupsetID() const { return groupset_id_; }
 
   std::vector<AGSSchemeEntry>& SchemeEntries() { return scheme_entries_; }

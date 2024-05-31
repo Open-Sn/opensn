@@ -176,5 +176,20 @@
         "abs_tol": 1e-05
       }
     ]
+  },
+  {
+    "file": "c5g7_restart.lua",
+    "outfileprefix": "c5g7_restart",
+    "comment": "2D C5G7 with PI and restarts",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 1.192559,
+        "abs_tol": 1.0e-4
+      }
+    ]
   }
 ]

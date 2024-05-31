@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/reflecting_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/vacuum_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/isotropic_boundary.h"
@@ -11,15 +12,15 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/materials/material.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/time_integrations/time_integration.h"
 #include "framework/field_functions/field_function_grid_based.h"
+#include "framework/materials/material.h"
 #include "framework/logging/log.h"
-#include "framework/runtime.h"
+#include "framework/utils/hdf_utils.h"
 #include "framework/object_factory.h"
+#include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
 #include <iomanip>
@@ -38,8 +39,6 @@ std::map<std::string, uint64_t> LBSSolver::supported_boundary_names = {
 
 std::map<uint64_t, std::string> LBSSolver::supported_boundary_ids = {
   {0, "xmin"}, {1, "xmax"}, {2, "ymin"}, {3, "ymax"}, {4, "zmin"}, {5, "zmax"}};
-
-// OpenSnRegisterObject(lbs, LBSSolver); Should not be constructible
 
 OpenSnRegisterSyntaxBlockInNamespace(lbs, OptionsBlock, LBSSolver::OptionsBlock);
 
@@ -90,7 +89,7 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
     gs_input_params.AssignParameters(groupset_params);
 
     groupsets_.emplace_back(gs_input_params, gs, *this);
-  } // for gs
+  }
 
   // Options
   if (params.ParametersAtAssignment().Has("options"))
@@ -100,18 +99,6 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
 
     this->SetOptions(options_params);
   }
-}
-
-double
-LBSSolver::LastRestartWrite() const
-{
-  return last_restart_write_;
-}
-
-double&
-LBSSolver::LastRestartWrite()
-{
-  return last_restart_write_;
 }
 
 Options&
@@ -339,13 +326,13 @@ LBSSolver::PrecursorsNewLocal() const
   return phi_new_local_;
 }
 
-std::vector<VecDbl>&
+std::vector<std::vector<double>>&
 LBSSolver::PsiNewLocal()
 {
   return psi_new_local_;
 }
 
-const std::vector<VecDbl>&
+const std::vector<std::vector<double>>&
 LBSSolver::PsiNewLocal() const
 {
   return psi_new_local_;
@@ -387,15 +374,18 @@ LBSSolver::GetWGSSolvers()
   return wgs_solvers_;
 }
 
+size_t&
+LBSSolver::LastRestartTime()
+{
+  return last_restart_write_time_;
+}
+
 WGSContext&
 LBSSolver::GetWGSContext(int groupset_id)
 {
   auto& wgs_solver = wgs_solvers_[groupset_id];
   auto& raw_context = wgs_solver->GetContext();
-
-  typedef WGSContext LBSWGSContext;
-  auto wgs_context_ptr = std::dynamic_pointer_cast<LBSWGSContext>(raw_context);
-
+  auto wgs_context_ptr = std::dynamic_pointer_cast<WGSContext>(raw_context);
   OpenSnLogicalErrorIf(not wgs_context_ptr, "Failed to cast WGSContext");
   return *wgs_context_ptr;
 }
@@ -442,7 +432,6 @@ LBSSolver::OptionsBlock()
 
   params.SetGeneralDescription("Set options from a large list of parameters");
   params.SetDocGroup("LBSUtilities");
-
   params.AddOptionalParameter("spatial_discretization",
                               "pwld",
                               "What spatial discretization to use. Currently only `\"pwld\"` "
@@ -450,31 +439,21 @@ LBSSolver::OptionsBlock()
   params.AddOptionalParameter(
     "scattering_order", 1, "Defines the level of harmonic expansion for the scattering source.");
   params.AddOptionalParameter("max_mpi_message_size",
-                              32'768,
+                              32768,
                               "The maximum MPI message size used during sweep initialization.");
   params.AddOptionalParameter(
-    "read_restart_data", false, "Flag indicating whether restart data is to be read.");
+    "read_restart_path", "", "Full path for reading restart dumps including file stem.");
   params.AddOptionalParameter(
-    "read_restart_folder_name", "YRestart", "Folder name to use when reading restart data.");
-  params.AddOptionalParameter(
-    "read_restart_file_base", "restart", "File base name to use when reading restart data.");
-  params.AddOptionalParameter(
-    "write_restart_data", false, "Flag indicating whether restart data is to be written.");
-  params.AddOptionalParameter(
-    "write_restart_folder_name", "YRestart", "Folder name to use when writing restart data.");
-  params.AddOptionalParameter(
-    "write_restart_file_base", "restart", "File base name to use when writing restart data.");
-  params.AddOptionalParameter(
-    "write_restart_interval",
-    30.0,
-    "Interval at which restart data is to be written. Currently not implemented.");
+    "write_restart_path", "", "Full path for writing restart dumps including file stem.");
+  params.AddOptionalParameter("write_restart_time_interval",
+                              0,
+                              "Time interval in seconds at which restart data is to be written.");
   params.AddOptionalParameter(
     "use_precursors", false, "Flag for using delayed neutron precursors.");
-  params.AddOptionalParameter(
-    "use_source_moments",
-    false,
-    "Flag for ignoring fixed sources and selectively using source moments "
-    "obtained elsewhere.");
+  params.AddOptionalParameter("use_source_moments",
+                              false,
+                              "Flag for ignoring fixed sources and selectively using source "
+                              "moments obtained elsewhere.");
   params.AddOptionalParameter(
     "save_angular_flux", false, "Flag indicating whether angular fluxes are to be stored or not.");
   params.AddOptionalParameter(
@@ -485,59 +464,49 @@ LBSSolver::OptionsBlock()
     "verbose_outer_iterations", true, "Flag to control verbosity of across-groupset iterations.");
   params.AddOptionalParameter(
     "verbose_ags_iterations", false, "Flag to control verbosity of across-groupset iterations.");
-  params.AddOptionalParameter(
-    "power_field_function_on",
-    false,
-    "Flag to control the creation of the power generation field function. If set "
-    "to `true` then a field function will be created with the general name "
-    "`<solver_name>_power_generation`.");
-  params.AddOptionalParameter(
-    "power_default_kappa",
-    3.20435e-11,
-    "Default `kappa` value (Energy released per fission) to use for power "
-    "generation when cross sections do not have `kappa` values. Default: "
-    "3.20435e-11 Joule (corresponding to 200 MeV per fission).");
-  params.AddOptionalParameter(
-    "power_normalization",
-    -1.0,
-    "Power normalization factor to use. Supply a negative or zero number to turn "
-    "this off.");
-  params.AddOptionalParameter(
-    "field_function_prefix_option",
-    "prefix",
-    "Prefix option on field function names. Default: `\"prefix\"`. Can be "
-    "`\"prefix\"` or "
-    "`\"solver_name\"`. "
-    "By default this option is `\"prefix\"` which means it uses the designated "
-    "\"prefix\" (another option), however, that is defaulted to nothing. "
-    "Therefore, default behavior is to export flux moment fields functions as "
-    "`phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit group number and "
-    "similarly for `YYY`.");
-  params.AddOptionalParameter(
-    "field_function_prefix",
-    "",
-    "Prefix to use on all field functions. Default: `\"\"`. "
-    "By default this option is empty but if specified then flux moments will "
-    "exported as `prefix_phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit "
-    "group number and similarly for `YYY`. The underscore after \"prefix\" is "
-    "added automatically.");
+  params.AddOptionalParameter("power_field_function_on",
+                              false,
+                              "Flag to control the creation of the power generation field "
+                              "function. If set to `true` then a field function will be created "
+                              "with the general name <solver_name>_power_generation`.");
+  params.AddOptionalParameter("power_default_kappa",
+                              3.20435e-11,
+                              "Default `kappa` value (Energy released per fission) to use for "
+                              "power generation when cross sections do not have `kappa` values. "
+                              "Default: 3.20435e-11 Joule (corresponding to 200 MeV per fission).");
+  params.AddOptionalParameter("power_normalization",
+                              -1.0,
+                              "Power normalization factor to use. Supply a negative or zero number "
+                              "to turn this off.");
+  params.AddOptionalParameter("field_function_prefix_option",
+                              "prefix",
+                              "Prefix option on field function names. Default: `\"prefix\"`. Can "
+                              "be `\"prefix\"` or `\"solver_name\"`. By default this option uses "
+                              "the value of the `field_function_prefix` parameter. If this "
+                              "parameter is not set, flux field functions will be exported as "
+                              "`phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit group number "
+                              "and `YYY` is the zero padded 3 digit moment.");
+  params.AddOptionalParameter("field_function_prefix",
+                              "",
+                              "Prefix to use on all field functions. Default: `\"\"`. By default "
+                              "this option is empty. Ff specified, flux moments will be exported "
+                              "as `prefix_phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit "
+                              "group number and `YYY` is the zero padded 3 digit moment. The "
+                              "underscore after \"prefix\" is added automatically.");
   params.AddOptionalParameterArray(
-    "boundary_conditions", {}, "An array contain tables for each boundary specification.");
+    "boundary_conditions", {}, "An array containing tables for each boundary specification.");
   params.LinkParameterToBlock("boundary_conditions", "lbs::BoundaryOptionsBlock");
-  params.AddOptionalParameter(
-    "clear_boundary_conditions",
-    false,
-    "A flag to clear all existing boundary conditions. If no additional boundary conditions "
-    "are supplied, this results in all boundaries being vacuum.");
+  params.AddOptionalParameter("clear_boundary_conditions",
+                              false,
+                              "Clears all boundary conditions. If no additional boundary "
+                              "conditions are supplied, this results in all boundaries being "
+                              "vacuum.");
+  params.AddOptionalParameterArray("point_sources", {}, "An array of handles to point sources.");
+  params.AddOptionalParameter("clear_point_sources", false, "Clears all point sources.");
   params.AddOptionalParameterArray(
-    "point_sources", {}, "An array containing handles to point sources.");
+    "distributed_sources", {}, "An array of handles to distributed sources.");
   params.AddOptionalParameter(
-    "clear_point_sources", false, "A flag to clear all point sources from the solver.");
-  params.AddOptionalParameterArray(
-    "distributed_sources", {}, "An array containing handles to distributed sources.");
-  params.AddOptionalParameter(
-    "clear_distributed_sources", false, "A flag to clear existing distributed sources.");
-
+    "clear_distributed_sources", false, "Clears all distributed sources.");
   params.ConstrainParameterRange("spatial_discretization", AllowableRangeList::New({"pwld"}));
   params.ConstrainParameterRange("field_function_prefix_option",
                                  AllowableRangeList::New({"prefix", "solver_name"}));
@@ -552,25 +521,19 @@ LBSSolver::BoundaryOptionsBlock()
 
   params.SetGeneralDescription("Set options for boundary conditions. See \\ref LBSBCs");
   params.SetDocGroup("LBSUtilities");
-
   params.AddRequiredParameter<std::string>("name",
                                            "Boundary name that identifies the specific boundary");
   params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
-
   params.AddOptionalParameterArray<double>("group_strength",
                                            {},
-                                           "Required only if `type` is `\"isotropic\"`. "
-                                           "An array of isotropic strength per group");
-
-  params.AddOptionalParameter(
-    "function_name",
-    "",
-    "Text name of the lua function to be called for this boundary condition."
-    "For more on this boundary condition type.");
-
+                                           "Required only if \"type\" is \"isotropic\". An array "
+                                           "of isotropic strength per group");
+  params.AddOptionalParameter("function_name",
+                              "",
+                              "Text name of the lua function to be called for this boundary "
+                              "condition.");
   params.ConstrainParameterRange(
     "name", AllowableRangeList::New({"xmin", "xmax", "ymin", "ymax", "zmin", "zmax"}));
-
   params.ConstrainParameterRange(
     "type", AllowableRangeList::New({"vacuum", "isotropic", "reflecting", "arbitrary"}));
 
@@ -584,14 +547,23 @@ LBSSolver::SetOptions(const InputParameters& params)
 
   // Handle order sensitive options
   if (user_params.Has("clear_boundary_conditions"))
+  {
     if (user_params.GetParamValue<bool>("clear_boundary_conditions"))
       boundary_preferences_.clear();
+  }
+
   if (user_params.Has("clear_point_sources"))
+  {
     if (user_params.GetParamValue<bool>("clear_point_sources"))
       point_sources_.clear();
+  }
+
   if (user_params.Has("clear_distributed_sources"))
+  {
     if (user_params.GetParamValue<bool>("clear_distributed_sources"))
       distributed_sources_.clear();
+  }
+
   if (user_params.Has("adjoint"))
   {
     const bool adjoint = user_params.GetParamValue<bool>("adjoint");
@@ -643,26 +615,14 @@ LBSSolver::SetOptions(const InputParameters& params)
     else if (spec.Name() == "max_mpi_message_size")
       options_.max_mpi_message_size = spec.GetValue<int>();
 
-    else if (spec.Name() == "read_restart_data")
-      options_.read_restart_data = spec.GetValue<bool>();
+    else if (spec.Name() == "read_restart_path")
+      options_.read_restart_path = spec.GetValue<std::string>();
 
-    else if (spec.Name() == "read_restart_folder_name")
-      options_.read_restart_folder_name = spec.GetValue<std::string>();
+    else if (spec.Name() == "write_restart_time_interval")
+      options_.write_restart_time_interval = spec.GetValue<int>();
 
-    else if (spec.Name() == "read_restart_file_base")
-      options_.read_restart_file_base = spec.GetValue<std::string>();
-
-    else if (spec.Name() == "write_restart_data")
-      options_.write_restart_data = spec.GetValue<bool>();
-
-    else if (spec.Name() == "write_restart_folder_name")
-      options_.write_restart_folder_name = spec.GetValue<std::string>();
-
-    else if (spec.Name() == "write_restart_file_base")
-      options_.write_restart_file_base = spec.GetValue<std::string>();
-
-    else if (spec.Name() == "write_restart_interval")
-      options_.write_restart_interval = spec.GetValue<double>();
+    else if (spec.Name() == "write_restart_path")
+      options_.write_restart_path = spec.GetValue<std::string>();
 
     else if (spec.Name() == "use_precursors")
       options_.use_precursors = spec.GetValue<bool>();
@@ -742,6 +702,16 @@ LBSSolver::SetOptions(const InputParameters& params)
       }
     }
   } // for p
+
+  if (options_.write_restart_time_interval > 0)
+  {
+    auto dir = options_.write_restart_path.parent_path();
+    if (opensn::mpi_comm.rank() == 0)
+      std::filesystem::create_directory(dir);
+    opensn::mpi_comm.barrier();
+    if (not std::filesystem::is_directory(dir))
+      throw std::runtime_error("Failed to create restart directory " + dir.string());
+  }
 }
 
 void
@@ -771,8 +741,8 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
     case BoundaryType::ISOTROPIC:
     {
       OpenSnInvalidArgumentIf(not user_params.Has("group_strength"),
-                              "Boundary conditions with type=\"isotropic\" "
-                              "require parameter \"group_strength\"");
+                              "Boundary conditions with type=\"isotropic\" require parameter "
+                              "\"group_strength\"");
 
       user_params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
       const auto group_strength = user_params.GetParamVectorValue<double>("group_strength");
@@ -782,8 +752,8 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
     case BoundaryType::ARBITRARY:
     {
       OpenSnInvalidArgumentIf(not user_params.Has("function_name"),
-                              "Boundary conditions with type=\"arbitrary\" "
-                              "require parameter \"function_name\".");
+                              "Boundary conditions with type=\"arbitrary\" require parameter "
+                              "\"function_name\".");
 
       const auto bndry_function_name = user_params.GetParamValue<std::string>("function_name");
       boundary_preferences_[bid] = {type, {}, bndry_function_name};
@@ -797,17 +767,17 @@ LBSSolver::Initialize()
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::Initialize");
 
-  PerformInputChecks(); // a assigns num_groups and grid
-  PrintSimHeader();     // b
+  PerformInputChecks(); // assigns num_groups and grid
+  PrintSimHeader();
 
   mpi_comm.barrier();
 
-  InitializeMaterials();             // c
-  InitializeSpatialDiscretization(); // d
-  InitializeGroupsets();             // e
-  ComputeNumberOfMoments();          // f
-  InitializeParrays();               // g
-  InitializeBoundaries();            // h
+  InitializeMaterials();
+  InitializeSpatialDiscretization();
+  InitializeGroupsets();
+  ComputeNumberOfMoments();
+  InitializeParrays();
+  InitializeBoundaries();
 
   // Initialize point sources
   for (auto& point_source : point_sources_)
@@ -845,6 +815,7 @@ LBSSolver::PerformInputChecks()
     }
     ++grpset_counter;
   }
+
   if (options_.sd_type == SpatialDiscretizationType::UNDEFINED)
   {
     log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No discretization_ method set.";
@@ -892,7 +863,7 @@ LBSSolver::PrintSimHeader()
       char buf_pol[20];
 
       outstr << "\n***** Groupset " << groupset.id_ << " *****\n"
-             << "Groups: ";
+             << "Groups:\n";
       int counter = 0;
       for (auto group : groupset.groups_)
       {
@@ -904,10 +875,9 @@ LBSSolver::PrintSimHeader()
           counter = 0;
           outstr << "\n";
         }
-
-      } // for g
+      }
       log.Log() << outstr.str() << "\n" << std::endl;
-    } // for gs
+    }
   }
 }
 
@@ -946,8 +916,7 @@ LBSSolver::InitializeMaterials()
   matid_to_xs_map_.clear();
   matid_to_src_map_.clear();
 
-  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Process materials found
-
+  // Process materials
   for (const int& mat_id : unique_material_ids)
   {
     materials_list << "Material id " << mat_id;
@@ -1011,9 +980,7 @@ LBSSolver::InitializeMaterials()
                    << "\n";
   } // for material id
 
-  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Initialize precursor
-  //                                                   properties
-
+  // Initialize precursor properties
   num_precursors_ = 0;
   max_precursors_per_material_ = 0;
   for (const auto& mat_id_xs : matid_to_xs_map_)
@@ -1105,14 +1072,16 @@ LBSSolver::ComputeUnitIntegrals()
     const size_t cell_num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    MatDbl IntV_gradshapeI_gradshapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
-    MatVec3 IntV_shapeI_gradshapeJ(cell_num_nodes, VecVec3(cell_num_nodes));
-    MatDbl IntV_shapeI_shapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
-    VecDbl IntV_shapeI(cell_num_nodes);
-
-    std::vector<MatDbl> IntS_shapeI_shapeJ(cell_num_faces);
-    std::vector<MatVec3> IntS_shapeI_gradshapeJ(cell_num_faces);
-    std::vector<VecDbl> IntS_shapeI(cell_num_faces);
+    std::vector<std::vector<double>> IntV_gradshapeI_gradshapeJ(
+      cell_num_nodes, std::vector<double>(cell_num_nodes));
+    std::vector<std::vector<Vector3>> IntV_shapeI_gradshapeJ(cell_num_nodes,
+                                                             std::vector<Vector3>(cell_num_nodes));
+    std::vector<std::vector<double>> IntV_shapeI_shapeJ(cell_num_nodes,
+                                                        std::vector<double>(cell_num_nodes));
+    std::vector<double> IntV_shapeI(cell_num_nodes);
+    std::vector<std::vector<std::vector<double>>> IntS_shapeI_shapeJ(cell_num_faces);
+    std::vector<std::vector<std::vector<Vector3>>> IntS_shapeI_gradshapeJ(cell_num_faces);
+    std::vector<std::vector<double>> IntS_shapeI(cell_num_faces);
 
     // Volume integrals
     for (unsigned int i = 0; i < cell_num_nodes; ++i)
@@ -1147,9 +1116,9 @@ LBSSolver::ComputeUnitIntegrals()
     for (size_t f = 0; f < cell_num_faces; ++f)
     {
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
-      IntS_shapeI_shapeJ[f].resize(cell_num_nodes, VecDbl(cell_num_nodes));
+      IntS_shapeI_shapeJ[f].resize(cell_num_nodes, std::vector<double>(cell_num_nodes));
       IntS_shapeI[f].resize(cell_num_nodes);
-      IntS_shapeI_gradshapeJ[f].resize(cell_num_nodes, VecVec3(cell_num_nodes));
+      IntS_shapeI_gradshapeJ[f].resize(cell_num_nodes, std::vector<Vector3>(cell_num_nodes));
 
       for (unsigned int i = 0; i < cell_num_nodes; ++i)
       {
@@ -1304,8 +1273,8 @@ LBSSolver::InitializeParrays()
   }
 
   // Read Restart data
-  if (options_.read_restart_data)
-    ReadRestartData(options_.read_restart_folder_name, options_.read_restart_file_base);
+  if (not options_.read_restart_path.empty())
+    ReadRestartData();
   opensn::mpi_comm.barrier();
 
   // Initialize transport views
@@ -1565,15 +1534,14 @@ LBSSolver::InitializeBoundaries()
       {
         // Locally check all faces, that subscribe to this boundary,
         // have the same normal
-        typedef Vector3 Vec3;
         const double EPSILON = 1.0e-12;
-        std::unique_ptr<Vec3> n_ptr = nullptr;
+        std::unique_ptr<Vector3> n_ptr = nullptr;
         for (const auto& cell : grid_ptr_->local_cells)
           for (const auto& face : cell.faces_)
             if (not face.has_neighbor_ and face.neighbor_id_ == bid)
             {
               if (not n_ptr)
-                n_ptr = std::make_unique<Vec3>(face.normal_);
+                n_ptr = std::make_unique<Vector3>(face.normal_);
               if (std::fabs(face.normal_.Dot(*n_ptr) - 1.0) > EPSILON)
                 throw std::logic_error(fname +
                                        ": Not all face normals are, within tolerance, locally the "
@@ -1582,7 +1550,7 @@ LBSSolver::InitializeBoundaries()
 
         // Now check globally
         const int local_has_bid = n_ptr != nullptr ? 1 : 0;
-        const Vec3 local_normal = local_has_bid ? *n_ptr : Vec3(0.0, 0.0, 0.0);
+        const Vector3 local_normal = local_has_bid ? *n_ptr : Vector3(0.0, 0.0, 0.0);
 
         std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
         std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3, 0.0);
@@ -1591,14 +1559,14 @@ LBSSolver::InitializeBoundaries()
         std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
         mpi_comm.all_gather(lnv.data(), 3, locJ_n_val.data(), 3);
 
-        Vec3 global_normal;
+        Vector3 global_normal;
         for (int j = 0; j < opensn::mpi_comm.size(); ++j)
         {
           if (locJ_has_bid[j])
           {
             int offset = 3 * j;
             const double* n = &locJ_n_val[offset];
-            const Vec3 locJ_normal(n[0], n[1], n[2]);
+            const Vector3 locJ_normal(n[0], n[1], n[2]);
 
             if (local_has_bid)
               if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
@@ -1622,7 +1590,7 @@ LBSSolver::InitializeSolverSchemes()
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::InitializeSolverSchemes");
 
-  log.Log() << "Initializing Solver schemes";
+  log.Log() << "Initializing solver...";
 
   InitializeWGSSolvers();
 
@@ -1995,141 +1963,81 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   }   // for cell
 }
 
-void
-LBSSolver::WriteRestartData(const std::string& folder_name, const std::string& file_base) const
+bool
+LBSSolver::TriggerRestartDump()
 {
-  CALI_CXX_MARK_SCOPE("LBSSolver::WriteRestartData");
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  size_t now_secs = std::chrono::duration_cast<std::chrono::seconds>(now).count();
 
-  typedef struct stat Stat;
-  Stat st;
+  if ((now_secs - last_restart_write_time_) < options_.write_restart_time_interval)
+    return false;
 
-  // Make sure folder exists
-  if (opensn::mpi_comm.rank() == 0)
-  {
-    if (stat(folder_name.c_str(), &st) != 0) // if not exist, make it
-      if ((mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0) and (errno != EEXIST))
-      {
-        log.Log0Warning() << "Failed to create restart directory: " << folder_name;
-        return;
-      }
-  }
-
-  opensn::mpi_comm.barrier();
-
-  // Create files
-  // This step might fail for specific locations and
-  // can create quite a messy output if we print it all.
-  // We also need to consolidate the error to determine if
-  // the process as whole succeeded.
-  bool location_succeeded = true;
-  char location_cstr[20];
-  snprintf(location_cstr, 20, "%d.r", opensn::mpi_comm.rank());
-
-  std::string file_name = folder_name + std::string("/") + file_base + std::string(location_cstr);
-
-  std::ofstream ofile;
-  ofile.open(file_name, std::ios::out | std::ios::binary | std::ios::trunc);
-
-  if (not ofile.is_open())
-  {
-    log.LogAllError() << "Failed to create restart file: " << file_name;
-    ofile.close();
-    location_succeeded = false;
-  }
-  else
-  {
-    size_t phi_old_size = phi_old_local_.size();
-    ofile.write((char*)&phi_old_size, sizeof(size_t));
-    for (auto val : phi_old_local_)
-      ofile.write((char*)&val, sizeof(double));
-
-    ofile.close();
-  }
-
-  // Wait for all processes then check success status
-  opensn::mpi_comm.barrier();
-  bool global_succeeded = true;
-  mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
-
-  // Write status message
-  if (global_succeeded)
-    log.Log() << "Successfully wrote restart data: "
-              << folder_name + std::string("/") + file_base + std::string("X.r");
-  else
-    log.Log0Error() << "Failed to write restart data: "
-                    << folder_name + std::string("/") + file_base + std::string("X.r");
+  return true;
 }
 
 void
-LBSSolver::ReadRestartData(const std::string& folder_name, const std::string& file_base)
+LBSSolver::UpdateLastRestartWriteTime()
+{
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  last_restart_write_time_ = std::chrono::duration_cast<std::chrono::seconds>(now).count();
+}
+
+void
+LBSSolver::WriteRestartData()
+{
+  CALI_CXX_MARK_SCOPE("LBSSolver::WriteRestartData");
+
+  std::string fbase = options_.write_restart_path.string();
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
+
+  // Write data
+  bool location_succeeded = true;
+  auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  if (file)
+  {
+    location_succeeded = H5WriteDataset1D<double>(file, "phi_old", phi_old_local_);
+    H5Fclose(file);
+  }
+  else
+    location_succeeded = false;
+
+  bool global_succeeded = true;
+  mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
+  if (global_succeeded)
+  {
+    log.Log() << "Successfully wrote restart data to " << fbase << "X.restart.h5";
+    UpdateLastRestartWriteTime();
+  }
+  else
+    log.Log0Error() << "Failed to write restart data to " << fbase << "X.restart.h5";
+}
+
+void
+LBSSolver::ReadRestartData()
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::ReadRestartData");
 
-  opensn::mpi_comm.barrier();
+  std::string fbase = options_.read_restart_path.string();
+  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
 
-  // Open files
-  // This step might fail for specific locations and
-  // can create quite a messy output if we print it all.
-  // We also need to consolidate the error to determine if
-  // the process as whole succeeded.
   bool location_succeeded = true;
-  char location_cstr[20];
-  snprintf(location_cstr, 20, "%d.r", opensn::mpi_comm.rank());
-
-  std::string file_name = folder_name + std::string("/") + file_base + std::string(location_cstr);
-
-  std::ifstream ifile;
-  ifile.open(file_name, std::ios::in | std::ios::binary);
-
-  if (not ifile.is_open())
+  auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+  if (file)
   {
-    ifile.close();
-    location_succeeded = false;
+    phi_old_local_.clear();
+    phi_old_local_ = H5ReadDataset1D<double>(file, "phi_old");
+    location_succeeded = not phi_old_local_.empty();
+    H5Fclose(file);
   }
   else
-  {
-    size_t number_of_unknowns;
-    ifile.read((char*)&number_of_unknowns, sizeof(size_t));
+    location_succeeded = false;
 
-    if (number_of_unknowns != phi_old_local_.size())
-    {
-      location_succeeded = false;
-      ifile.close();
-    }
-    else
-    {
-      std::vector<double> temp_phi_old(phi_old_local_.size(), 0.0);
-
-      size_t v = 0;
-      while (not ifile.eof())
-      {
-        ifile.read((char*)&temp_phi_old[v], sizeof(double));
-        ++v;
-      }
-
-      if (v != (number_of_unknowns + 1))
-      {
-        location_succeeded = false;
-        ifile.close();
-      }
-      else
-        phi_old_local_ = std::move(temp_phi_old);
-
-      ifile.close();
-    }
-  }
-
-  // Wait for all processes then check success status
-  opensn::mpi_comm.barrier();
   bool global_succeeded = true;
   mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
-
-  // Write status message
   if (global_succeeded)
-    log.Log() << "Successfully read restart data";
+    log.Log() << "Successfully read restart data from " << fbase + "X.restart.h5";
   else
-    log.Log0Error() << "Failed to read restart data: "
-                    << folder_name + std::string("/") + file_base + std::string("X.r");
+    throw std::logic_error("Failed to read restart data from " + fbase + "X.restart.h5");
 }
 
 void
@@ -2747,38 +2655,8 @@ LBSSolver::UpdateFieldFunctions()
     auto& ff_ptr = field_functions_.at(ff_index);
     ff_ptr->UpdateFieldVector(data_vector_local);
   }
-  // for (size_t g = 0; g < groups_.size(); ++g)
-  //{
-  //   for (size_t m = 0; m < num_moments_; ++m)
-  //   {
-  //     std::vector<double> data_vector_local(local_node_count_, 0.0);
-  //
-  //     for (const auto& cell : grid_ptr_->local_cells)
-  //     {
-  //       const auto& cell_mapping = sdm.GetCellMapping(cell);
-  //       const size_t num_nodes = cell_mapping.NumNodes();
-  //
-  //       for (size_t i = 0; i < num_nodes; ++i)
-  //       {
-  //         const int64_t imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-  //         const int64_t imapB = sdm.MapDOFLocal(cell, i);
-  //
-  //         data_vector_local[imapB] = phi_old_local_[imapA];
-  //       } // for node
-  //     }   // for cell
-  //
-  //     OpenSnLogicalErrorIf(phi_field_functions_local_map_.count({g, m}) == 0,
-  //                       "Update error for phi based field functions");
-  //
-  //     const size_t ff_index = phi_field_functions_local_map_.at({g, m});
-  //
-  //     auto& ff_ptr = field_functions_.at(ff_index);
-  //     ff_ptr->UpdateFieldVector(data_vector_local);
-  //   } // for m
-  // }   // for g
 
   // Update power generation
-  //                                         if enabled
   if (options_.power_field_function_on)
   {
     std::vector<double> data_vector_local(local_node_count_, 0.0);
@@ -3024,10 +2902,8 @@ LBSSolver::SetPhiVectorScalarValues(std::vector<double>& phi_vector, double valu
 
   const size_t first_grp = groups_.front().id_;
   const size_t final_grp = groups_.back().id_;
-
   const auto& sdm = *discretization_;
 
-  typedef const int64_t cint64_t;
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -3035,14 +2911,14 @@ LBSSolver::SetPhiVectorScalarValues(std::vector<double>& phi_vector, double valu
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      cint64_t dof_map = sdm.MapDOFLocal(cell, i, flux_moments_uk_man_, 0, 0);
+      const int64_t dof_map = sdm.MapDOFLocal(cell, i, flux_moments_uk_man_, 0, 0);
 
       double* phi = &phi_vector[dof_map];
 
       for (size_t g = first_grp; g <= final_grp; ++g)
         phi[g] = value;
-    } // for node i
-  }   // for cell
+    }
+  }
 }
 
 void

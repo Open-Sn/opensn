@@ -1,4 +1,4 @@
-# Exported cross section from ChiTech
+# Exported cross section from OpenSn
 # Date: 2021-06-02 18:07:53
 NUM_GROUPS 168
 NUM_MOMENTS 4
