@@ -5,7 +5,7 @@
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/io/mesh_io.h"
-#include "lua/framework/mesh/export/lua_mesh_export.h"
+#include "lua/framework/mesh/export/mesh_export.h"
 #include "lua/framework/console/console.h"
 
 namespace opensnlua

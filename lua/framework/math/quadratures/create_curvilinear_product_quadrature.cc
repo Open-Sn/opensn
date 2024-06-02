@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/lua.h"
-#include "quadratures_lua.h"
+#include "quadratures.h"
 #include "framework/math/quadratures/gausschebyshev_quadrature.h"
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/quadratures/angular/cylindrical_quadrature.h"

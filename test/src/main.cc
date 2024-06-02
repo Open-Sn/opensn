@@ -1,5 +1,5 @@
 #include "mpicpp-lite/mpicpp-lite.h"
-#include "lua/modules/modules_lua.h"
+#include "lua/modules/modules.h"
 #include "lua/framework/lua_app.h"
 
 namespace mpi = mpicpp_lite;

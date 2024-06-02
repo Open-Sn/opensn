@@ -5,7 +5,7 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "field_functions_lua.h"
+#include "field_functions.h"
 #include "framework/console/console.h"
 
 using namespace opensn;

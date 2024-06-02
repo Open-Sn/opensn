@@ -7,7 +7,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "lua_mesh_ortho_macros.h"
+#include "mesh_ortho_macros.h"
 #include "framework/console/console.h"
 
 using namespace opensn;
