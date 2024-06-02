@@ -19,12 +19,12 @@ RegisterLuaEntities(lua_State* L)
   LuaSetGlobal(L, "SERIAL", 1);
   LuaSetGlobal(L, "FROM_SURFACE", 2);
   LuaSetGlobal(L, "BOUNDARY_CONDITION", 3);
-  LuaSetGlobal(L, "XMAX", 31);
-  LuaSetGlobal(L, "XMIN", 32);
-  LuaSetGlobal(L, "YMAX", 33);
-  LuaSetGlobal(L, "YMIN", 34);
-  LuaSetGlobal(L, "ZMAX", 35);
-  LuaSetGlobal(L, "ZMIN", 36);
+  LuaSetGlobal(L, "XMIN", 31);
+  LuaSetGlobal(L, "XMAX", 32);
+  LuaSetGlobal(L, "YMIN", 33);
+  LuaSetGlobal(L, "YMAX", 34);
+  LuaSetGlobal(L, "ZMIN", 35);
+  LuaSetGlobal(L, "ZMAX", 36);
   LuaSetGlobal(L, "SCATTERING_ORDER", 4);
   LuaSetGlobal(L, "MAX_MPI_MESSAGE_SIZE", 5);
   LuaSetGlobal(L, "READ_RESTART_DATA", 6);

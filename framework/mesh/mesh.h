@@ -61,6 +61,16 @@ enum MeshAttributes : int
   UNSTRUCTURED = (1 << 5)
 };
 
+enum BoundaryID : int
+{
+  XMIN = 0,
+  XMAX = 1,
+  YMIN = 2,
+  YMAX = 3,
+  ZMIN = 4,
+  ZMAX = 5
+};
+
 inline MeshAttributes
 operator|(const MeshAttributes f1, const MeshAttributes f2)
 {

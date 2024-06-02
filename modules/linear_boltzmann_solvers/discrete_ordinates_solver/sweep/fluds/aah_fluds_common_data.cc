@@ -221,18 +221,18 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       {
         const Vector3& face_norm = face.normal_;
 
-        if (face_norm.Dot(ihat) > 0.999)
-          location_boundary_dependency_set.insert(0);
-        else if (face_norm.Dot(ihat) < -0.999)
-          location_boundary_dependency_set.insert(1);
-        else if (face_norm.Dot(jhat) > 0.999)
-          location_boundary_dependency_set.insert(2);
+        if (face_norm.Dot(ihat) < -0.999)
+          location_boundary_dependency_set.insert(XMIN);
+        else if (face_norm.Dot(ihat) > 0.999)
+          location_boundary_dependency_set.insert(XMAX);
         else if (face_norm.Dot(jhat) < -0.999)
-          location_boundary_dependency_set.insert(3);
-        else if (face_norm.Dot(khat) > 0.999)
-          location_boundary_dependency_set.insert(4);
+          location_boundary_dependency_set.insert(YMIN);
+        else if (face_norm.Dot(jhat) > 0.999)
+          location_boundary_dependency_set.insert(YMAX);
         else if (face_norm.Dot(khat) < -0.999)
-          location_boundary_dependency_set.insert(5);
+          location_boundary_dependency_set.insert(ZMIN);
+        else if (face_norm.Dot(khat) > 0.999)
+          location_boundary_dependency_set.insert(ZMAX);
       }
     } // if incident
 

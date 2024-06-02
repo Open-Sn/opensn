@@ -96,7 +96,7 @@ lbs_options =
   boundary_conditions =
   {
     {
-      name = "xmax",
+      name = "xmin",
       type = "isotropic",
       group_strength = bsrc
     }

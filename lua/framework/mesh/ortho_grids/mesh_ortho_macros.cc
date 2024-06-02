@@ -15,12 +15,12 @@ using namespace opensn;
 namespace opensnlua
 {
 
-RegisterLuaConstantInNamespace(OrthoBoundaryID, XMAX, Varying(0));
-RegisterLuaConstantInNamespace(OrthoBoundaryID, XMIN, Varying(1));
-RegisterLuaConstantInNamespace(OrthoBoundaryID, YMAX, Varying(2));
-RegisterLuaConstantInNamespace(OrthoBoundaryID, YMIN, Varying(3));
-RegisterLuaConstantInNamespace(OrthoBoundaryID, ZMAX, Varying(4));
-RegisterLuaConstantInNamespace(OrthoBoundaryID, ZMIN, Varying(5));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, XMIN, Varying(static_cast<int>(XMIN)));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, XMAX, Varying(static_cast<int>(XMAX)));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, YMIN, Varying(static_cast<int>(YMIN)));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, YMAX, Varying(static_cast<int>(YMAX)));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, ZMIN, Varying(static_cast<int>(ZMIN)));
+RegisterLuaConstantInNamespace(OrthoBoundaryID, ZMAX, Varying(static_cast<int>(ZMAX)));
 
 RegisterLuaFunctionInNamespace(MeshSetupOrthogonalBoundaries, mesh, SetupOrthogonalBoundaries);
 
@@ -36,31 +36,35 @@ MeshSetupOrthogonalBoundaries(lua_State* L)
   const Vector3 khat(0.0, 0.0, 1.0);
 
   for (auto& cell : vol_cont->local_cells)
+  {
     for (auto& face : cell.faces_)
+    {
       if (not face.has_neighbor_)
       {
         Vector3& n = face.normal_;
 
         std::string boundary_name;
-        if (n.Dot(ihat) > 0.999)
-          boundary_name = "XMAX";
-        else if (n.Dot(ihat) < -0.999)
+        if (n.Dot(ihat) < -0.999)
           boundary_name = "XMIN";
-        else if (n.Dot(jhat) > 0.999)
-          boundary_name = "YMAX";
+        else if (n.Dot(ihat) > 0.999)
+          boundary_name = "XMAX";
         else if (n.Dot(jhat) < -0.999)
           boundary_name = "YMIN";
-        else if (n.Dot(khat) > 0.999)
-          boundary_name = "ZMAX";
+        else if (n.Dot(jhat) > 0.999)
+          boundary_name = "YMAX";
         else if (n.Dot(khat) < -0.999)
           boundary_name = "ZMIN";
+        else if (n.Dot(khat) > 0.999)
+          boundary_name = "ZMAX";
 
         uint64_t bndry_id = vol_cont->MakeBoundaryID(boundary_name);
 
         face.neighbor_id_ = bndry_id;
 
         vol_cont->GetBoundaryIDMap()[bndry_id] = boundary_name;
-      } // if bndry
+      }
+    }
+  }
 
   opensn::mpi_comm.barrier();
   opensn::log.Log() << program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
