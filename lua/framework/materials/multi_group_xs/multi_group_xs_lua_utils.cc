@@ -5,7 +5,7 @@
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/materials/material.h"
 #include "framework/logging/log.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include "framework/runtime.h"
 #include <iostream>
 

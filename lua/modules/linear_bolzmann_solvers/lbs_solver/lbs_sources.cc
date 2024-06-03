@@ -3,9 +3,9 @@
 
 #include "lua/modules/linear_bolzmann_solvers/lbs_solver/lbs_lua_utils.h"
 #include "framework/runtime.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include "framework/logging/log.h"
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "lua/framework/math/functions/lua_spatial_material_function.h"

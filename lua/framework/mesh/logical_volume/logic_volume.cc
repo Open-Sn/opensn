@@ -4,7 +4,7 @@
 #include "lua/framework/mesh/logical_volume/logic_volume.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/runtime.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

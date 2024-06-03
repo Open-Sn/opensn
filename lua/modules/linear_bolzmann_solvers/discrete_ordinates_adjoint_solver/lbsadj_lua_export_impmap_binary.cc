@@ -4,7 +4,7 @@
 #include "lua/modules/linear_bolzmann_solvers/discrete_ordinates_adjoint_solver/lbsadj_lua_utils.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_adjoint_solver/lbs_adj_solver.h"
 #include "framework/runtime.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

@@ -6,7 +6,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 #include "lua/framework/console/console.h"
 
 using namespace opensn;

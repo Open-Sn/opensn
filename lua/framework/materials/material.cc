@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/materials/material.h"
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 #include "framework/materials/material.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/materials/scalar_value.h"
 #include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include <iostream>
 
 using namespace opensn;

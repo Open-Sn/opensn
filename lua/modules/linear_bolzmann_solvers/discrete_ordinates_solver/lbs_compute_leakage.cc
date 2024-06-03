@@ -3,7 +3,7 @@
 
 #include "lua/modules/linear_bolzmann_solvers/discrete_ordinates_solver/lbs_do_lua_utils.h"
 #include "framework/runtime.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 

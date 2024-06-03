@@ -3,7 +3,7 @@
 
 #include "lua/modules/dfem_diffusion/dfem_diff_solver.h"
 #include "modules/dfem_diffusion/dfem_diffusion_solver.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "lua/framework/math/functions/lua_scalar_spatial_material_function.h"

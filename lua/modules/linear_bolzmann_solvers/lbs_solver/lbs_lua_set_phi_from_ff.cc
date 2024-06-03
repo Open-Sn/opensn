@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/modules/linear_bolzmann_solvers/lbs_solver/lbs_lua_utils.h"
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

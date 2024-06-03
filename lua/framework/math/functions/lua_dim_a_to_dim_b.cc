@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/math/functions/lua_dim_a_to_dim_b.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include "framework/logging/log_exceptions.h"
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 
 #include "framework/object_factory.h"
 
