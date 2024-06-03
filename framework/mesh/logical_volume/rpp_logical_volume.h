@@ -13,12 +13,12 @@ class RPPLogicalVolume : public LogicalVolume
 {
   enum CornerName
   {
-    XMAX = 0,
-    XMIN = 1,
-    YMAX = 2,
-    YMIN = 3,
-    ZMAX = 4,
-    ZMIN = 5
+    XMIN = 0,
+    XMAX = 1,
+    YMIN = 2,
+    YMAX = 3,
+    ZMIN = 4,
+    ZMAX = 5
   };
 
 public:

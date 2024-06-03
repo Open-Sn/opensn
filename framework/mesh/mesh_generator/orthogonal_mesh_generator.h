@@ -11,16 +11,6 @@ namespace opensn
 class OrthogonalMeshGenerator : public MeshGenerator
 {
 public:
-  enum BoundaryID
-  {
-    XMIN = 0,
-    XMAX = 1,
-    YMIN = 2,
-    YMAX = 3,
-    ZMIN = 4,
-    ZMAX = 5
-  };
-
   static InputParameters GetInputParameters();
   explicit OrthogonalMeshGenerator(const InputParameters& params);
 

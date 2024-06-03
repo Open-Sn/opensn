@@ -35,10 +35,10 @@ namespace lbs
 {
 
 std::map<std::string, uint64_t> LBSSolver::supported_boundary_names = {
-  {"xmin", 0}, {"xmax", 1}, {"ymin", 2}, {"ymax", 3}, {"zmin", 4}, {"zmax", 5}};
+  {"xmin", XMIN}, {"xmax", XMAX}, {"ymin", YMIN}, {"ymax", YMAX}, {"zmin", ZMIN}, {"zmax", ZMAX}};
 
 std::map<uint64_t, std::string> LBSSolver::supported_boundary_ids = {
-  {0, "xmin"}, {1, "xmax"}, {2, "ymin"}, {3, "ymax"}, {4, "zmin"}, {5, "zmax"}};
+  {XMIN, "xmin"}, {XMAX, "xmax"}, {YMIN, "ymin"}, {YMAX, "ymax"}, {ZMIN, "zmin"}, {ZMAX, "zmax"}};
 
 OpenSnRegisterSyntaxBlockInNamespace(lbs, OptionsBlock, LBSSolver::OptionsBlock);
 
@@ -1323,18 +1323,18 @@ LBSSolver::InitializeParrays()
         Vector3& n = face.normal_;
 
         int boundary_id = -1;
-        if (n.Dot(ihat) > 0.999)
-          boundary_id = 0;
-        else if (n.Dot(ihat) < -0.999)
-          boundary_id = 1;
-        else if (n.Dot(jhat) > 0.999)
-          boundary_id = 2;
+        if (n.Dot(ihat) < -0.999)
+          boundary_id = XMIN;
+        else if (n.Dot(ihat) > 0.999)
+          boundary_id = XMAX;
         else if (n.Dot(jhat) < -0.999)
-          boundary_id = 3;
-        else if (n.Dot(khat) > 0.999)
-          boundary_id = 4;
+          boundary_id = YMIN;
+        else if (n.Dot(jhat) > 0.999)
+          boundary_id = YMAX;
         else if (n.Dot(khat) < -0.999)
-          boundary_id = 5;
+          boundary_id = ZMIN;
+        else if (n.Dot(khat) > 0.999)
+          boundary_id = ZMAX;
 
         if (boundary_id >= 0)
           face.neighbor_id_ = boundary_id;

@@ -76,7 +76,7 @@ lbs_block =
 
 lbs_options =
 {
-  boundary_conditions = { { name = "xmax", type = "reflecting"} },
+  boundary_conditions = { { name = "xmin", type = "reflecting"} },
   scattering_order = 0,
 }
 

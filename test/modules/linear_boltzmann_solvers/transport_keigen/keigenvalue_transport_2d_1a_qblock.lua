@@ -25,8 +25,8 @@ lbs_block =
   },
   options =
   {
-    boundary_conditions = { { name = "xmax", type = "reflecting"},
-                            { name = "ymax", type = "reflecting"} },
+    boundary_conditions = { { name = "xmin", type = "reflecting"},
+                            { name = "ymin", type = "reflecting"} },
     scattering_order = 2,
 
     use_precursors = false,
