@@ -6,7 +6,7 @@
 #include "framework/console/console.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "sldfe.h"
+#include "lua/framework/math/quadratures/sldfesq/sldfe.h"
 
 using namespace opensn;
 

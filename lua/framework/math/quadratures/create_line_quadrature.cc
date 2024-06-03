@@ -2,13 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/lua.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include "framework/object_factory.h"
-
-#include "quadratures.h"
+#include "lua/framework/math/quadratures/quadratures.h"
 #include "framework/console/console.h"
 
 using namespace opensn;

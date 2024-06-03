@@ -1,15 +1,12 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "point_source.h"
-
-#include <numeric>
-
+#include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include <numeric>
 
 namespace opensn
 {

@@ -1,7 +1,5 @@
-#include "params_test_01.h"
-
+#include "test/framework/parameters/params_test_01.h"
 #include "framework/object_factory.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

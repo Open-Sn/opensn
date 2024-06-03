@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "response_evaluator.h"
+#include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/distributed_source/distributed_source.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"

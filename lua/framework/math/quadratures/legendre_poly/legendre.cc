@@ -4,7 +4,7 @@
 #include "framework/lua.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/console/console.h"
-#include "legendre.h"
+#include "lua/framework/math/quadratures/legendre_poly/legendre.h"
 
 using namespace opensn;
 

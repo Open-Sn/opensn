@@ -6,7 +6,7 @@
 #include "framework/logging/log.h"
 #include "framework/console/console.h"
 #include "framework/runtime.h"
-#include "quadratures.h"
+#include "lua/framework/math/quadratures/quadratures.h"
 
 namespace opensnlua
 {

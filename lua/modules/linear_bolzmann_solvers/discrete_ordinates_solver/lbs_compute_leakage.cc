@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "lbs_do_lua_utils.h"
+#include "lua/modules/linear_bolzmann_solvers/discrete_ordinates_solver/lbs_do_lua_utils.h"
 #include "framework/runtime.h"
 #include "framework/console/console.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
