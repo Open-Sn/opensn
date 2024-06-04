@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "multi_group_xs_lua_utils.h"
+#include "lua/framework//materials/multi_group_xs/multi_group_xs_lua_utils.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/materials/material.h"
 #include "framework/logging/log.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include "framework/runtime.h"
 #include <iostream>
 

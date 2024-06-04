@@ -8,7 +8,7 @@ namespace opensn
 class InputParameters;
 }
 
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 
 namespace opensnlua
 {

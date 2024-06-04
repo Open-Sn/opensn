@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mesh/io/mesh_io.h"
-#include "unpartition_mesh_lua_utils.h"
-#include "framework/console/console.h"
+#include "lua/framework/mesh/unpartitioned_mesh/unpartition_mesh_lua_utils.h"
+#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

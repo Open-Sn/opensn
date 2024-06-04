@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/runtime.h"
-#include "ffinterpol.h"
-#include "framework/console/console.h"
+#include "lua/framework/mesh/field_function_interpolation/ffinterpol.h"
+#include "lua/framework/console/console.h"
 
 namespace opensnlua
 {

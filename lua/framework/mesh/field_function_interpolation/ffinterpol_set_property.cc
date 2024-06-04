@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/field_functions/interpolation/ffinter_point.h"
 #include "framework/field_functions/interpolation/ffinter_slice.h"
@@ -10,8 +10,8 @@
 #include "lua/framework/math/functions/lua_scalar_material_function.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "ffinterpol.h"
-#include "framework/console/console.h"
+#include "lua/framework/mesh/field_function_interpolation/ffinterpol.h"
+#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

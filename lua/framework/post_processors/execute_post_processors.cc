@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/post_processors/post_processor.h"
-
-#include "framework/console/console.h"
-
+#include "lua/framework/console/console.h"
 #include "framework/event_system/event.h"
 
 namespace opensn

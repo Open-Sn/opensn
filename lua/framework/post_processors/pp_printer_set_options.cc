@@ -5,10 +5,8 @@
 
 #include "framework/parameters/input_parameters.h"
 #include "framework/utils/utils.h"
-
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 #include "framework/object_factory.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

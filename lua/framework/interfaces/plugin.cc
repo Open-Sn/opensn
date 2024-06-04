@@ -1,14 +1,12 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/interfaces/plugin.h"
-
+#include "lua/framework/interfaces/plugin.h"
 #include "framework/object_factory.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
-#include "framework/console/console.h"
+#include "lua/framework/console/console.h"
 
 #include <dlfcn.h>
 

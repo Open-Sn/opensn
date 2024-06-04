@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "lbs_common_lua_functions.h"
+#include "lua/modules/linear_bolzmann_solvers/lbs_solver/lbs_common_lua_functions.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/runtime.h"
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 #include "lua/framework/console/console.h"
 
 using namespace opensn;

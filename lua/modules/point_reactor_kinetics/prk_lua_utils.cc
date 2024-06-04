@@ -1,12 +1,10 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/lua.h"
-#include "framework/console/console.h"
-
+#include "lua/framework/lua.h"
+#include "lua/framework/console/console.h"
 #include "modules/point_reactor_kinetics/point_reactor_kinetics.h"
-#include "prk_lua_utils.h"
-
+#include "lua/modules/point_reactor_kinetics/prk_lua_utils.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

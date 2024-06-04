@@ -4,8 +4,7 @@
 #pragma once
 
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
-
-#include "framework/lua.h"
+#include "lua/framework/lua.h"
 
 namespace opensnlua
 {
