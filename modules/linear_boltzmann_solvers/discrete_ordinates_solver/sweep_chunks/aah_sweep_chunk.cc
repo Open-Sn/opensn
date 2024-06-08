@@ -255,7 +255,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
 
-          if (is_boundary_face and not is_reflecting_boundary_face)
+          if (is_boundary_face)
           {
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
               cell_transport_view.AddOutflow(gs_gi + gsg,
