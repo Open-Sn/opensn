@@ -129,8 +129,7 @@ PowerIterationKEigenSMM::Initialize()
       throw std::logic_error("Only vacuum and reflective boundaries are valid for "
                              "k-eigenvalue problems.");
 
-  const auto bcs = TranslateBCs(lbs_solver_.SweepBoundaries(),
-                                /*vacuum_bcs_are_dirichlet=*/false);
+  const auto bcs = TranslateBCs(lbs_solver_.SweepBoundaries(), false);
 
   // Create the diffusion materials
   const auto xs_map = PackGroupsetXS(
@@ -196,7 +195,7 @@ PowerIterationKEigenSMM::Execute()
   while (nit < max_iters_)
   {
     // Compute the transport 1/k fission source
-    SetLBSFissionSource(phi_ell, /*additive=*/false);
+    SetLBSFissionSource(phi_ell, false);
     Scale(q_moments_local_, 1.0 / k_eff_);
 
     // Solve some transport inners
@@ -238,7 +237,7 @@ PowerIterationKEigenSMM::Execute()
         // add in the second moment correction, and solve the system
         auto b = AssembleDiffusionRHS(Sf + Ss);
         diffusion_solver_->AddToRHS(b + correction);
-        diffusion_solver_->Solve(phi0, /*use_initial_guess=*/true);
+        diffusion_solver_->Solve(phi0, true);
 
         // Bump the new solution to old
         phi0_old = phi0;
