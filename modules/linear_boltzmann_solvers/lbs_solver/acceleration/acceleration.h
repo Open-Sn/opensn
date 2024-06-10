@@ -71,7 +71,7 @@ TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyColl
  * methods.*/
 std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
-             bool vaccum_bcs_are_dirichlet = true);
+             bool vacuum_bcs_are_dirichlet = true);
 
 /**Makes a packaged set of XSs, suitable for diffusion, for a particular
  * set of groups.*/
