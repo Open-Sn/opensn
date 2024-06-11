@@ -130,7 +130,7 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
   // Print summary
   log.Log() << "\n"
             << "        Final k-eigenvalue    :        " << std::fixed << std::setw(10)
-            << std::setprecision(7) << k_eff << " (num_TrOps:" << number_of_func_evals << ")"
+            << std::setprecision(7) << k_eff << " (Number of Sweeps:" << number_of_func_evals << ")"
             << "\n";
 }
 

@@ -281,7 +281,7 @@ PowerIterationKEigenSCDSA::Execute()
   log.Log() << "\n";
   log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
   log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
-            << " (num_TrOps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
+            << " (Number of Sweeps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
             << "\n";
 
   if (lbs_solver_.Options().use_precursors)
