@@ -36,6 +36,7 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                                        std::map<uint64_t, BoundaryCondition> bcs,
                                        MatID2XSMap map_mat_id_2_xs,
                                        const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                                       const bool suppress_bcs,
                                        const bool verbose)
   : DiffusionSolver(std::move(text_name),
                     sdm,
@@ -43,15 +44,12 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                     std::move(bcs),
                     std::move(map_mat_id_2_xs),
                     unit_cell_matrices,
-                    verbose,
-                    false)
+                    false,
+                    suppress_bcs,
+                    verbose)
 {
-  using SDM_TYPE = SpatialDiscretizationType;
-  const auto& PWLD = SDM_TYPE ::PIECEWISE_LINEAR_DISCONTINUOUS;
-
-  if (sdm_.Type() != PWLD)
-    throw std::logic_error("lbs::acceleration::DiffusionMIPSolver: can only be"
-                           " used with PWLD.");
+  if (sdm_.Type() != SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS)
+    throw std::logic_error("lbs::acceleration::DiffusionMIPSolver can only be used with PWLD.");
 }
 
 void
@@ -463,7 +461,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        if (not face.has_neighbor_)
+        if (not face.has_neighbor_ and not suppress_bcs_)
         {
           BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0)
@@ -945,7 +943,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        if (not face.has_neighbor_)
+        if (not face.has_neighbor_ and not suppress_bcs_)
         {
           BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0)
@@ -1095,7 +1093,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        if (not face.has_neighbor_)
+        if (not face.has_neighbor_ and not suppress_bcs_)
         {
           BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0)

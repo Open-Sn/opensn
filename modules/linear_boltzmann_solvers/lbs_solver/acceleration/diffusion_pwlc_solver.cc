@@ -21,22 +21,20 @@ DiffusionPWLCSolver::DiffusionPWLCSolver(std::string text_name,
                                          std::map<uint64_t, BoundaryCondition> bcs,
                                          MatID2XSMap map_mat_id_2_xs,
                                          const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                                         bool verbose)
+                                         const bool suppress_bcs,
+                                         const bool verbose)
   : DiffusionSolver(std::move(text_name),
                     sdm,
                     uk_man,
                     std::move(bcs),
                     std::move(map_mat_id_2_xs),
                     unit_cell_matrices,
-                    verbose,
-                    true)
+                    suppress_bcs,
+                    true,
+                    verbose)
 {
-  using SDM_TYPE = SpatialDiscretizationType;
-  const auto& PWLC = SDM_TYPE ::PIECEWISE_LINEAR_CONTINUOUS;
-
-  if (sdm_.Type() != PWLC)
-    throw std::logic_error("lbs::acceleration::DiffusionPWLCSolver: can only be"
-                           " used with PWLC.");
+  if (sdm_.Type() != SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS)
+    throw std::logic_error("lbs::acceleration::DiffusionPWLCSolver can only be used with PWLC.");
 }
 
 void
@@ -69,7 +67,6 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
-    const auto& intV_shapeI = unit_cell_matrices.intV_shapeI;
 
     const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
 
@@ -79,7 +76,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor_ and not suppress_bcs_)
       {
         BoundaryCondition bc;
         if (bcs_.count(face.neighbor_id_) > 0)
@@ -141,7 +138,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
-        if (not face.has_neighbor_)
+        if (not face.has_neighbor_ and not suppress_bcs_)
         {
           BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0)
@@ -278,7 +275,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor_ and suppress_bcs_)
       {
         BoundaryCondition bc;
         if (bcs_.count(face.neighbor_id_) > 0)
@@ -335,7 +332,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
-        if (not face.has_neighbor_)
+        if (not face.has_neighbor_ and suppress_bcs_)
         {
           BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0)
@@ -422,7 +419,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor_ and not suppress_bcs_)
       {
         BoundaryCondition bc;
         if (bcs_.count(face.neighbor_id_) > 0)
@@ -465,7 +462,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
-        if (not face.has_neighbor_)
+        if (not face.has_neighbor_ and not suppress_bcs_)
         {
           BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id_) > 0)

@@ -143,8 +143,14 @@ acceleration_Diffusion_CFEM(const InputParameters&)
   } // for cell
 
   // Make solver
-  lbs::DiffusionPWLCSolver solver(
-    "SimTest92b_DSA_PWLC", sdm, OneDofPerNode, bcs, matid_2_xs_map, unit_cell_matrices, true);
+  lbs::DiffusionPWLCSolver solver("SimTest92b_DSA_PWLC",
+                                  sdm,
+                                  OneDofPerNode,
+                                  bcs,
+                                  matid_2_xs_map,
+                                  unit_cell_matrices,
+                                  false,
+                                  true);
   // TODO: For this to work, add MMS support into `lbs/acceleration/DiffusionSolver`
   // solver.options.ref_solution_lua_function = "MMS_phi";
   // solver.options.source_lua_function = "MMS_q";

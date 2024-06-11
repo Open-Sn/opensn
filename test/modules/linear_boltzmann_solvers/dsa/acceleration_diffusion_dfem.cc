@@ -161,7 +161,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
 
   // Make solver
   lbs::DiffusionMIPSolver solver(
-    "SimTest92_DSA", sdm, OneDofPerNode, bcs, matid_2_xs_map, unit_cell_matrices, true);
+    "SimTest92_DSA", sdm, OneDofPerNode, bcs, matid_2_xs_map, unit_cell_matrices, false, true);
   solver.options.verbose = true;
   solver.options.residual_tolerance = 1.0e-10;
   solver.options.perform_symmetry_check = true;

@@ -98,12 +98,12 @@ PowerIterationKEigenSMM::Initialize()
   const auto num_groups = lbs_solver_.NumGroups();
   const auto num_gs_groups = front_gs_.groups_.size();
 
-  // Specialized unit cell matrices
+  // Specialized SMM data
   dimension_ = lbs_solver_.Grid().Dimension();
   ComputeAuxiliaryUnitCellMatrices();
+  ComputeBoundaryFactors();
 
   // Create PWLC structure, if needed
-
   if (diffusion_sdm_name_ == "pwlc")
   {
     pwlc_ptr_ = PieceWiseLinearContinuous::New(grid);
@@ -146,6 +146,7 @@ PowerIterationKEigenSMM::Initialize()
                                                        bcs,
                                                        xs_map,
                                                        lbs_solver_.GetUnitCellMatrices(),
+                                                       true,
                                                        diffusion_verbose_);
   }
   else
@@ -156,6 +157,7 @@ PowerIterationKEigenSMM::Initialize()
                                                         bcs,
                                                         xs_map,
                                                         lbs_solver_.GetUnitCellMatrices(),
+                                                        true,
                                                         diffusion_verbose_);
   }
 
@@ -178,6 +180,7 @@ PowerIterationKEigenSMM::Initialize()
     tmp.assign(pwld.GetNumLocalDOFs(diff_uk_man), 0.0);
   else
     tmp.assign(pwlc_ptr_->GetNumLocalAndGhostDOFs(diff_uk_man), 0.0);
+  AssembleDiffusionBCs();
   diff_solver->AssembleAand_b(tmp);
   log.Log() << "Done assembling diffusion system.";
 }
@@ -318,7 +321,6 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
   const auto& grid = lbs_solver_.Grid();
   const auto& pwld = lbs_solver_.SpatialDiscretization();
   const auto& transport_views = lbs_solver_.GetCellTransportViews();
-  const auto num_groupsets = lbs_solver_.Groupsets().size();
 
   // Create a local tensor vector, set it to zero
   auto local_tensors = tensors_->MakeLocalVector();
@@ -329,10 +331,8 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
   for (const auto& groupset : lbs_solver_.Groupsets())
   {
     const auto& psi_uk_man = groupset.psi_uk_man_;
-    const auto& quadrature = groupset.quadrature_;
-    const auto num_gs_angles = quadrature->omegas_.size();
-    const auto wt_sum =
-      std::accumulate(quadrature->weights_.begin(), quadrature->weights_.end(), 0.0);
+    const auto& quad = groupset.quadrature_;
+    const auto num_gs_dirs = quad->omegas_.size();
 
     const auto first_grp = groupset.groups_.front().id_;
     const auto num_gs_groups = groupset.groups_.size();
@@ -354,13 +354,13 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
           const auto dof_map = pwld.MapDOFLocal(cell, i, tensor_uk_man_, g, 0);
           double* T = &local_tensors[dof_map];
 
-          // Perform the quadrature integration
-          for (int n = 0; n < num_gs_angles; ++n)
+          // Perform the quad integration
+          for (int d = 0; d < num_gs_dirs; ++d)
           {
-            const auto& omega = quadrature->omegas_[n];
-            const auto& wt = quadrature->weights_[n];
+            const auto& omega = quad->omegas_[d];
+            const auto& wt = quad->weights_[d];
 
-            const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, n, gsg);
+            const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);
             const auto coeff = wt * psi[gs][psi_dof];
 
             for (int k = 0; k < dimension_; ++k)
@@ -374,7 +374,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
                 T[k * dimension_ + l] += coeff * omega[dim_idx_k] * omega[dim_idx_l];
               }
             }
-          } // for angle n
+          } // for direction d
         }   // for groupset group gsg
       }     // for node i
 
@@ -389,56 +389,34 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
           {
             const auto i = cell_mapping.MapFaceNode(f, fi);
             const auto imap = pwld.MapDOFLocal(cell, i);
+            const auto bfac = bndry_factors_[imap][gs];
 
-            // Compute the diffusion boundary factor. This is simply the
-            // computation of the quadrature of \Omega \cdot \hat{n} divided
-            // by the sum of the quadrature weights. In most cases, this should
-            // be equivalent to half.
-            if (bndry_factors_.count(imap) == 0)
-            {
-              bndry_factors_[imap].resize(num_groupsets, 0.0);
-
-              double val = 0.0;
-              for (int n = 0; n < num_gs_angles; ++n)
-                val +=
-                  quadrature->weights_[n] * std::fabs(quadrature->omegas_[n].Dot(face.normal_));
-              bndry_factors_[imap][gs] = val / wt_sum;
-            }
-            //            const auto& bfac = bndry_factors_[imap][gs];
-
-            // Initialize corrections, if not done already
+            // Reset boundary closures
             betas_[imap].assign(lbs_solver_.NumGroups(), 0.0);
             auto& beta = betas_[imap];
 
-            // Compute the boundary corrections
+            // Compute the boundary closure
             for (int gsg = 0; gsg < num_gs_groups; ++gsg)
             {
               const auto g = first_grp + gsg;
 
               // Perform the quadrature integration
-              for (int n = 0; n < num_gs_angles; ++n)
+              for (int d = 0; d < num_gs_dirs; ++d)
               {
-                const auto& wt = quadrature->weights_[n];
-                const auto& omega = quadrature->omegas_[n];
+                const auto& wt = quad->weights_[d];
+                const auto& omega = quad->omegas_[d];
                 const auto mu = std::fabs(omega.Dot(face.normal_));
 
-                const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, n, gsg);
-
-                //                beta[g] += wt * (mu - bfac) * psi[gs][psi_dof];
-                beta[g] += wt * (mu - 0.5) * psi[gs][psi_dof];
-
-              } // for angle n
+                const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);
+                beta[g] += wt * (mu - bfac) * psi[gs][psi_dof];
+              } // for direction n
             }   // for groupset group gsg
           }     // for face node fi
         }
-
         ++f;
-
       } // for face
     }   // for cell
-
     ++gs;
-
   } // for groupset
 
   // Set the ghosted tensor vector with the local tensors, then
@@ -636,7 +614,9 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
       // Boundary face terms
       if (not face.has_neighbor_)
       {
-        auto bc = diffusion_solver_->BCS().at(face.neighbor_id_);
+        BoundaryCondition bc;
+        if (diffusion_solver_->BCS().count(face.neighbor_id_) == 1)
+          bc = diffusion_solver_->BCS().at(face.neighbor_id_);
 
         // Contribute the boundary closure term to the diffusion source term.
         // This term is the sum of the integrated incident and outgoing
@@ -661,9 +641,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
               {
                 const auto j = cell_mapping.MapFaceNode(f, fj);
                 const auto jmap = pwld.MapDOFLocal(cell, j);
-
                 val += betas_.at(jmap)[g] * face_M[i][j];
-
               } // for face node fj
 
               output.SetValue(imap, -val, VecOpType::ADD_VALUE);
@@ -677,6 +655,78 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
 
   output.Assemble();
   return output.MakeLocalVector();
+}
+
+void
+PowerIterationKEigenSMM::AssembleDiffusionBCs() const
+{
+  const auto& grid = lbs_solver_.Grid();
+  const auto& pwld = lbs_solver_.SpatialDiscretization();
+  const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
+
+  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+
+  const auto num_gs_groups = front_gs_.groups_.size();
+
+  // Loop over cells
+  std::vector<int64_t> rows;
+  std::vector<int64_t> cols;
+  std::vector<double> vals;
+  for (const auto& cell : grid.local_cells)
+  {
+    const auto& cell_mapping = pwld.GetCellMapping(cell);
+    const auto& fe_values = unit_cell_matrices[cell.local_id_];
+
+    // Loop over faces
+    int f = 0;
+    for (const auto& face : cell.faces_)
+    {
+      if (not face.has_neighbor_)
+      {
+        BoundaryCondition bc;
+        if (diffusion_solver_->BCS().count(face.neighbor_id_))
+          bc = diffusion_solver_->BCS().at(face.neighbor_id_);
+
+        if (bc.type == BCType::ROBIN)
+        {
+          // skip reflective bcs
+          if (std::fabs(bc.values[0]) < 1.0e-12)
+            continue;
+
+          const auto& face_M = fe_values.intS_shapeI_shapeJ[f];
+
+          const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+          for (int fi = 0; fi < num_face_nodes; ++fi)
+          {
+            const auto i = cell_mapping.MapFaceNode(f, fi);
+            const auto imap = diff_sd.MapDOF(cell, i, diff_uk_man, 0, 0);
+
+            for (int fj = 0; fj < num_face_nodes; ++fj)
+            {
+              const auto j = cell_mapping.MapFaceNode(f, fj);
+              const auto jmap = diff_sd.MapDOF(cell, j, diff_uk_man, 0, 0);
+              const auto bfac = bndry_factors_.at(pwld.MapDOFLocal(cell, j))[0];
+
+              for (int gsg = 0; gsg < num_gs_groups; ++gsg)
+              {
+                // This will not work if extended to multiple groupsets because in
+                // the current paradigm, one diffusion solver per groupset would be
+                // required.
+                rows.push_back(imap + gsg);
+                cols.push_back(jmap + gsg);
+                vals.push_back(bfac * face_M[i][j]);
+              }
+            } // for face node fj
+          }   // for face node fi
+        }     // if Robin boundary
+      }       // if boundary face
+      ++f;
+    } // for face
+  }   // for cell
+
+  // Add the contributions to the diffusion solver matrix
+  diffusion_solver_->AddToMatrix(rows, cols, vals);
 }
 
 std::vector<double>
@@ -839,6 +889,53 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
   opensn::mpi_comm.barrier();
   if (accel_pi_verbose_)
     log.Log() << "Second moment method cell matrices computed.";
+}
+
+void
+PowerIterationKEigenSMM::ComputeBoundaryFactors()
+{
+  const auto& grid = lbs_solver_.Grid();
+  const auto& pwld = lbs_solver_.SpatialDiscretization();
+  const auto num_groupsets = lbs_solver_.Groupsets().size();
+
+  // Loop over groupsets
+  int gs = 0;
+  for (const auto& groupset : lbs_solver_.Groupsets())
+  {
+    const auto& quad = groupset.quadrature_;
+    const auto num_gs_dirs = quad->omegas_.size();
+    const auto wt_sum = std::accumulate(quad->weights_.begin(), quad->weights_.end(), 0.0);
+
+    // Loop over cells
+    for (const auto& cell : grid.local_cells)
+    {
+      const auto& cell_mapping = pwld.GetCellMapping(cell);
+
+      // Loop over faces
+      int f = 0;
+      for (const auto& face : cell.faces_)
+      {
+        const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+        for (int fi = 0; fi < num_face_nodes; ++fi)
+        {
+          const auto i = cell_mapping.MapFaceNode(f, fi);
+          const auto imap = pwld.MapDOFLocal(cell, i);
+
+          if (bndry_factors_.count(imap) == 0)
+            bndry_factors_[imap].resize(num_groupsets, 0.0);
+
+          // Compute the diffusion boundary factor, or the quadrature integral of
+          // |\Omega \cdot \hat{n}| divided by the sum of the quadrature weights.
+          double val = 0.0;
+          for (int d = 0; d < num_gs_dirs; ++d)
+            val += quad->weights_[d] * std::fabs(quad->omegas_[d].Dot(face.normal_));
+          bndry_factors_[imap][gs] = val / wt_sum;
+        }
+        ++f;
+      } // for face
+    }   // for cell
+    ++gs;
+  } // for groupset
 }
 
 void

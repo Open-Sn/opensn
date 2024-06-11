@@ -101,7 +101,8 @@ PowerIterationKEigenSCDSA::Initialize()
                                                              bcs,
                                                              matid_2_mgxs_map,
                                                              unit_cell_matrices,
-                                                             true); // verbosity
+                                                             false,
+                                                             true);
   }
   else
   {
@@ -112,7 +113,8 @@ PowerIterationKEigenSCDSA::Initialize()
                                                               bcs,
                                                               matid_2_mgxs_map,
                                                               unit_cell_matrices,
-                                                              true); // verbosity
+                                                              false,
+                                                              true);
     requires_ghosts_ = true;
     lbs_pwld_ghost_info_ =
       MakePWLDVecGhostCommInfo(lbs_solver_.SpatialDiscretization(), lbs_solver_.UnknownManager());

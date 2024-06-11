@@ -19,8 +19,9 @@ DiffusionSolver::DiffusionSolver(std::string text_name,
                                  std::map<uint64_t, BoundaryCondition> bcs,
                                  MatID2XSMap map_mat_id_2_xs,
                                  const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                                 const bool verbose,
-                                 const bool requires_ghosts)
+                                 const bool suppress_bcs,
+                                 const bool requires_ghosts,
+                                 const bool verbose)
   : text_name_(std::move(text_name)),
     grid_(sdm.Grid()),
     sdm_(sdm),
@@ -33,7 +34,8 @@ DiffusionSolver::DiffusionSolver(std::string text_name,
     A_(nullptr),
     rhs_(nullptr),
     ksp_(nullptr),
-    requires_ghosts_(requires_ghosts)
+    requires_ghosts_(requires_ghosts),
+    suppress_bcs_(suppress_bcs)
 {
   options.verbose = verbose;
 }
@@ -87,6 +89,20 @@ DiffusionSolver::AddToRHS(const std::vector<double>& values)
   for (size_t i = 0; i < num_local_dofs; ++i)
     rhs_ptr[i] += values[i];
   VecRestoreArray(rhs_, &rhs_ptr);
+}
+
+void
+DiffusionSolver::AddToMatrix(const std::vector<int64_t>& rows,
+                             const std::vector<int64_t>& cols,
+                             const std::vector<double>& vals)
+{
+  if (rows.size() != cols.size() or rows.size() != vals.size())
+    throw std::invalid_argument("The number of row entries, column entries, and value "
+                                "entries do not agree.");
+  for (int i = 0; i < vals.size(); ++i)
+    MatSetValue(A_, rows[i], cols[i], vals[i], ADD_VALUES);
+  MatAssemblyBegin(A_, MAT_FLUSH_ASSEMBLY);
+  MatAssemblyEnd(A_, MAT_FLUSH_ASSEMBLY);
 }
 
 void

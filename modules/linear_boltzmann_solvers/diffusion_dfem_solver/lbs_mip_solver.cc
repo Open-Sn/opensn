@@ -131,7 +131,8 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
                                                        bcs,
                                                        matid_2_mgxs_map,
                                                        unit_cell_matrices_,
-                                                       true); // verbosity
+                                                       false,
+                                                       true);
 
     solver->options.residual_tolerance = groupset.wgdsa_tol_;
     solver->options.max_iters = groupset.wgdsa_max_iters_;

@@ -32,16 +32,16 @@ public:
   void Execute() override;
 
 protected:
-  void ComputeAuxiliaryUnitCellMatrices();
-
   void ComputeClosures(const std::vector<std::vector<double>>& psi);
   std::vector<double> ComputeSourceCorrection() const;
 
+  void AssembleDiffusionBCs() const;
+  std::vector<double> AssembleDiffusionRHS(const std::vector<double>& q0) const;
   std::vector<double> SetNodalDiffusionFissionSource(const std::vector<double>& phi0) const;
-
   std::vector<double> SetNodalDiffusionScatterSource(const std::vector<double>& phi0) const;
 
-  std::vector<double> AssembleDiffusionRHS(const std::vector<double>& q0) const;
+  void ComputeAuxiliaryUnitCellMatrices();
+  void ComputeBoundaryFactors();
 
   /**
    * Transfer a transport flux moments vector to a diffusion vector.
