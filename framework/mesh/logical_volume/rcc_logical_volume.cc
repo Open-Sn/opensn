@@ -43,15 +43,13 @@ RCCLogicalVolume::RCCLogicalVolume(const InputParameters& params)
 bool
 RCCLogicalVolume::Inside(const Vector3& point) const
 {
-  typedef Vector3 Vec3;
+  const auto& pr = point;                   // reference point
+  const Vector3 p0(x0_, y0_, z0_);          // cylinder root
+  const Vector3 cyl_dir_vec(vx_, vy_, vz_); // cylinder direction vector
+  const Vector3 k_hat(0.0, 0.0, 1.0);       // k_hat
 
-  const auto& pr = point;                // reference point
-  const Vec3 p0(x0_, y0_, z0_);          // cylinder root
-  const Vec3 cyl_dir_vec(vx_, vy_, vz_); // cylinder direction vector
-  const Vec3 k_hat(0.0, 0.0, 1.0);       // k_hat
-
-  const Vec3 p0r = pr - p0;
-  const Vec3 cyl_unit_dir = cyl_dir_vec.Normalized(); // aka cud
+  const Vector3 p0r = pr - p0;
+  const Vector3 cyl_unit_dir = cyl_dir_vec.Normalized(); // aka cud
   const double cyl_length = cyl_dir_vec.Norm();
 
   // Check if point is within normal extents
@@ -63,12 +61,12 @@ RCCLogicalVolume::Inside(const Vector3& point) const
   // This rotation matrix must be such that,
   // when a coordinate system is rotated with it,
   // the new normal vector points along the
-  Vec3 binorm;
-  Vec3 tangent;
+  Vector3 binorm;
+  Vector3 tangent;
   if (std::abs(cyl_dir_vec.Dot(k_hat) / cyl_dir_vec.Norm()) > (1.0 - 1.0e-12))
   {
-    binorm = Vec3(0.0, 1.0, 0.0);
-    tangent = Vec3(1.0, 0.0, 0.0);
+    binorm = Vector3(0.0, 1.0, 0.0);
+    tangent = Vector3(1.0, 0.0, 0.0);
   }
   else
   {
@@ -79,7 +77,7 @@ RCCLogicalVolume::Inside(const Vector3& point) const
   }
 
   // Project p0r onto the binorm and tangent
-  const Vec3 p0r_projected(p0r.Dot(tangent), p0r.Dot(binorm), 0.0);
+  const Vector3 p0r_projected(p0r.Dot(tangent), p0r.Dot(binorm), 0.0);
 
   // Determine if point is within cylinder
   if (p0r_projected.NormSquare() <= r_ * r_)

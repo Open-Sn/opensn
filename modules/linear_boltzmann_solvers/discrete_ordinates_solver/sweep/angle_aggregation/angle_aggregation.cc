@@ -111,11 +111,10 @@ AngleAggregation::InitializeReflectingBCs()
                                          std::vector<bool>(num_group_subsets_, false));
 
       // Determine reflected angle and check that it is within the quadrature
-      typedef Vector3 Vec3;
       for (int n = 0; n < tot_num_angles; ++n)
       {
-        const Vec3& omega_n = quadrature_->omegas_[n];
-        Vec3 omega_reflected;
+        const Vector3& omega_n = quadrature_->omegas_[n];
+        Vector3 omega_reflected;
 
         switch (rbndry.CoordType())
         {
@@ -130,11 +129,11 @@ AngleAggregation::InitializeReflectingBCs()
             // right derive their normal from omega_n
             else if (normal.Dot(ihat) > 0.999999)
             {
-              Vec3 normal_star;
+              Vector3 normal_star;
               if (omega_n.Dot(normal) > 0.0)
-                normal_star = Vec3(omega_n.x, 0.0, omega_n.z).Normalized();
+                normal_star = Vector3(omega_n.x, 0.0, omega_n.z).Normalized();
               else
-                normal_star = Vec3(-omega_n.x, 0.0, -omega_n.y).Normalized();
+                normal_star = Vector3(-omega_n.x, 0.0, -omega_n.y).Normalized();
 
               omega_reflected = omega_n - 2.0 * normal_star * omega_n.Dot(normal_star);
             }

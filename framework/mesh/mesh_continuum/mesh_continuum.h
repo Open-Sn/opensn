@@ -157,7 +157,7 @@ public:
 
   /**
    * Determines the bounding box size of each cell and returns it as
-   * a list of 3-component vectors, one Vec3 for each cell.
+   * a list of 3-component vectors, one Vector3 for each cell.
    */
   std::vector<Vector3> MakeCellOrthoSizes() const;
 
