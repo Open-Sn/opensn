@@ -1,4 +1,4 @@
-# Installing on Linux Machines
+# Install on Linux Machines
 
 The following instructions were tested on Ubuntu 22.04.4 LTS. Other Linux
 distributions might require some minor tweaking.
@@ -212,7 +212,7 @@ directory and run `cmake` to generate the build files and `make` to compile
     $ mkdir build
     $ cd build
     $ cmake ..
-    $ make -j
+    $ make -j<N>
 ```
 
 To configure **OpenSn** for building the documentation, in addition to the
@@ -222,7 +222,7 @@ To configure **OpenSn** for building the documentation, in addition to the
     $ mkdir build
     $ cd build
     $ cmake -DOPENSN_WITH_DOCS=ON ..
-    $ make -j
+    $ make -j<N>
 ```
 
 For more information on building the documentation, see **Step 10** below.

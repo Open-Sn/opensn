@@ -90,7 +90,7 @@ git clone https://github.com/<username>/opensn.git /path/to/opensn
 ## Step 4 - Set Up the Environment
 
 **Important:** XCode 15's linker breaks a number of things in the name of
-progress. It may be necssary to modify `configure_dependencies.py`
+progress. It may be necessary to modify `configure_dependencies.py`
 to use PETSc 3.20.x. It may also require that you add the line
 `link_libraries("-ld_classic")` to the OpenSn `CMakeLists.txt`
 file.
