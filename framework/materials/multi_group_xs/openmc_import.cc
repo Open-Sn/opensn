@@ -81,11 +81,13 @@ MultiGroupXS::Initialize(const std::string& file_name,
                        "Only non-negative total cross-section values are permitted.");
 
   // Absorption
-  sigma_a_ = H5ReadDataset1D<double>(file, path + "absorption");
-  OpenSnLogicalErrorIf(not IsNonNegative(sigma_a_),
-                       "Only non-negative absorption cross-section values are permitted.");
+  // We do not read OpenMC absorption values (even when available) but prefer to re-compute them
+  // using the total XS and the transfer matrix XS that were just read in order to avoid issues due
+  // to small statistical noise
 
   // Transfer
+  // Note that the scatter matrices in OpenMC are stored as the transposed version of what OpenSn
+  // uses.
   if (H5Has(file, path + "scatter_data/scatter_matrix"))
   {
     transfer_matrices_.assign(scattering_order_ + 1, SparseMatrix(num_groups_, num_groups_));
@@ -93,10 +95,10 @@ MultiGroupXS::Initialize(const std::string& file_name,
     auto g_min = H5ReadDataset1D<int>(file, path + "scatter_data/g_min");
     auto g_max = H5ReadDataset1D<int>(file, path + "scatter_data/g_max");
     int fidx = 0;
-    for (int g = 0; g < num_groups_; ++g)
-      for (int gp = g_min[g]; gp <= g_max[g]; ++gp)
+    for (int gp = 0; gp < num_groups_; ++gp)
+      for (int g = g_min[gp]; g <= g_max[gp]; ++g)
         for (int n = 0; n < scattering_order_ + 1; ++n, ++fidx)
-          transfer_matrices_.at(n).Insert(g, gp - 1, flat_scatter_matrix[fidx]);
+          transfer_matrices_.at(n).Insert(g - 1, gp, flat_scatter_matrix[fidx]);
   }
 
   if (sigma_a_.empty())
@@ -158,9 +160,9 @@ MultiGroupXS::Initialize(const std::string& file_name,
     if (production_matrix_.empty())
     {
       production_matrix_.resize(num_groups_, std::vector<double>(num_groups_));
-      for (size_t g = 0; g < num_groups_; ++g)
-        for (size_t gp = 0; gp < num_groups_; ++gp)
-          production_matrix_[g][gp] = chi[gp] * nu_sigma_f_[g];
+      for (size_t gp = 0; gp < num_groups_; ++gp)
+        for (size_t g = 0; g < num_groups_; ++g)
+          production_matrix_[g][gp] = chi[g] * nu_sigma_f_[gp];
 
       OpenSnLogicalErrorIf(
         not IsNonNegative(nu),

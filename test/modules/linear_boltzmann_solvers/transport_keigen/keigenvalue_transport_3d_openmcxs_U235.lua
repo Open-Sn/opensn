@@ -1,5 +1,5 @@
 -- 3D 172G KEigenvalue::Solver test using power iteration and OpenMC MGXS library
--- Test: Final k-eigenvalue: 1.5030447
+-- Test: Final k-eigenvalue: 2.2800213
 num_procs = 4 
 
 --########## Mesh ##########
@@ -45,7 +45,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 materials = {}
 materials[1] = mat.AddMaterial("Fissile Material")
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENMC_XSLIB, "uo2.h5", 294.0)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENMC_XSLIB, "u235.h5", 294.0, "u235")
 mesh.SetUniformMaterialID(0)
 
 --########## Solver ##########

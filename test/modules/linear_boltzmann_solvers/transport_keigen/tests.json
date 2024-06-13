@@ -150,7 +150,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_3d_openmcxs.lua",
+    "file": "keigenvalue_transport_3d_openmcxs_UO2.lua",
     "comment": "3D 172G KEigenvalue::Solver test using Power Iteration with OpenMC MGXS library",
     "num_procs": 4,
     "checks": [
@@ -158,13 +158,13 @@
         "type": "FloatCompare",
         "key": "Final k-eigenvalue",
         "wordnum": 4,
-        "gold": 1.5030447,
+        "gold": 1.5029618,
         "abs_tol": 1e-05
       }
     ]
   },
   {
-    "file": "keigenvalue_transport_3d_openmcxs_cset.lua",
+    "file": "keigenvalue_transport_3d_openmcxs_U235.lua",
     "comment": "3D 172G KEigenvalue::Solver test using Power Iteration with OpenMC MGXS library",
     "num_procs": 4,
     "checks": [
@@ -172,7 +172,7 @@
         "type": "FloatCompare",
         "key": "Final k-eigenvalue",
         "wordnum": 4,
-        "gold": 2.2800216,
+        "gold": 2.2800213,
         "abs_tol": 1e-05
       }
     ]
