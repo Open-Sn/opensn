@@ -39,7 +39,7 @@ Energy Discretization
   .. math:: \phi^{g}_{\ell,m}(\vec{r},t) = \int_{E_g}^{E_{g-1}} dE \, \phi_{\ell,m}(\vec{r},E,t) \,.
 
   Adequately energy-averaged multigroup cross sections must be supplied
-  to OpenSn. See the Theory section xxx on multigroup cross sections for
+  to OpenSn. See the Theory section on multigroup cross sections for
   additional details.
 | In the remainder of this theory manual, we focus on the steady-state
   linear Boltzmann equation, for brevity:
@@ -80,11 +80,11 @@ Energy Discretization
   of the external source and the upscattering and downscattering
   contributions to the current group :math:`g`.
 
-Angle Discretization (the :math:`S_n` method)
+Angle Discretization (the Sn method)
 ---------------------------------------------
 
 | The :math:`S_n` discrete-ordinate method
-  [carlson1958solution], [carlson1961mechanical], [lee1961discrete], [lathrop1964discrete], [carlson1965transport], [carlson1971], [gelbard1969solution]
+  :cite:t:`carlson1958solution`, :cite:t:`carlson1961mechanical`, :cite:t:`lee1961discrete`, :cite:t:`lathrop1964discrete`, :cite:t:`carlson1965transport`, :cite:t:`carlson1971`, :cite:t:`gelbard1969solution`
   is a collocation in angle approach, where a set of fixed (*discrete*)
   directions :math:`\vec{\Omega}_d` are chosen. In order to evaluate
   angular integrals to compute the flux moments :math:`\phi_{\ell,m}`,
@@ -153,7 +153,18 @@ OpenSn, we have:
    angles and :math:`N_{\text{azimuthal}}` is the number of azimuthal
    angles **in one quadrant**.
 
-   |image| |image1|
+   .. figure:: images/P8GLC.png
+      :scale: 70%
+      :align: center
+
+      Product Gauss-Legendre-Chebyshev quadrature (:math:`N_{\text{polar}}=N_{\text{azimuthal}}=4`)
+
+   .. figure:: images/T8GLC.png
+      :scale: 70%
+      :align: center
+
+      Product Gauss-Legendre-Chebyshev quadrature (:math:`N_{\text{polar}}=N_{\text{azimuthal}}=6`)
+
 
 #. the Triangle Gauss-Legendre-Chebyshev quadrature is similar to the
    Product Gauss-Legendre-Chebyshev quadrature. However, the number of
@@ -166,16 +177,15 @@ OpenSn, we have:
 
    .. math:: \frac{N_{\text{polar}} (N_{\text{polar}}+1)}{2}
 
-   .. figure:: T8GLC.png
-      :alt: Triangular Gauss-Legendre-Chebyshev quadrature
-      (:math:`N_{\text{polar}}=4`)
-      :name: fig:TGLC
+   .. figure:: images/T8GLC.png
+      :scale: 70%
+      :align: center
 
-      Triangular Gauss-Legendre-Chebyshev quadrature
-      (:math:`N_{\text{polar}}=4`)
+      Triangular Gauss-Legendre-Chebyshev quadrature (:math:`N_{\text{polar}}=4`)
+
 
 #. the LDFE (linear discontinuous finite-element in angle
-   [adamslau2017]) quadrature, using spherical
+   :cite:t:`adamslau2017`) quadrature, using spherical
    quadrilaterals. The LDFE quadrature divides one octant of the unit
    sphere into spherical quadrilaterals. The quadrature directions are
    then the 4 Gauss-Legendre points per quadrilateral and the weights
@@ -183,21 +193,31 @@ OpenSn, we have:
    quadrilateral can be easily subdivided into 4 smaller quadrilaterals,
    hence yielding a locally refined angular quadrature.
 
-   |image2| |image3|
+   .. figure:: images/SLDFESQBasen2.png
+      :scale: 20%
+      :align: center
+
+      Example of uniform LDFE angular quadrature
+
+   .. figure:: images/SLDFESQr.png
+      :scale: 20%
+      :align: center
+
+      Example of locally refined LDFE angular quadrature
 
 #. The user has has the option of supplying their own quadrature rule.
 
 | For charged-particle transport, not yet covered in OpenSn, Galerkin
   variants of the traditional quadrature rules must be employed
-  [morel1989hybrid], [ragusagalerkin2011].
+  :cite:t:`morel1989hybrid`, :cite:t:`ragusagalerkin2011`.
 | Note that any discrete-ordinate :math:`S_n` method can produce “**ray
   effects**” due to angular discretization errors
-  [lathrop1968ray], [lathrop1971remedies], [morel_rayeffects], [miller1977ray].
+  :cite:t:`lathrop1968ray`, :cite:t:`lathrop1971remedies`, :cite:t:`morel_rayeffects`, :cite:t:`miller1977ray`.
   These errors are most pronounced in situations with low scattering
   materials, low density materials, and in presence of small localized
   sources, ... An uncollided-flux approach is often employed to mitigate
-  ray effects. See Section XXX for details on the uncollided-flux
-  approach.
+  ray effects. See the section on the uncollided-flux approach for
+  additional details .
 
 Spatial Discretization
 ----------------------
@@ -206,7 +226,7 @@ Spatial Discretization
   Method (DGFEM) applied to the linear Boltzmann equation on meshes made
   of arbitrary polyhedra in 3D and arbitrary polygons in 2D. For
   references on DGFEM applied to transport, please consult
-  [reed1973triangularmesh], [lesaint1974finite], [hill1975onetran], [reed1973triplet], [seed1977trident], [seed1978trident], [adams2001dfem], [wareing2001discontinuous], [morel2005s], [wang2009convergence], [wang2009high], [wang2009adaptive], [wang2011standard], [ragusa2010two].
+  :cite:t:`reed1973triangularmesh`, :cite:t:`lesaint1974finite`, :cite:t:`hill1975onetran`, :cite:t:`reed1973triplet`, :cite:t:`seed1977trident`, :cite:t:`seed1978trident`, :cite:t:`adams2001dfem`, :cite:t:`wareing2001discontinuous`, :cite:t:`morel2005s`, :cite:t:`wang2009convergence`, :cite:t:`wang2009high`, :cite:t:`wang2009adaptive`, :cite:t:`wang2011standard`, :cite:t:`ragusa2010two`.
 | For a given energy group (:math:`g` index omitted for brevity) and for
   a given angular direction :math:`d`, the transport equation is
 
@@ -279,9 +299,9 @@ Spatial Discretization
   **task-directed graph** (TDG) for direction :math:`\vec{\Omega}_d`,
   the global system can be solved cell-by-cell, by traversing the TDG.
 
-.. figure:: sweeps_example.PNG
+.. figure:: images/sweeps_example.png
    :alt: Example of a transport sweep sequence
-   :name: fig:sweep_example
+   :align: center
 
    Example of a transport sweep sequence
 
@@ -291,7 +311,7 @@ Spatial Discretization
   causing the cycle. The angular flux contributions to those faces are
   lagged and iterated upon until convergence.
 | Piece-Wise Linear (PWL) basis functions on arbitrary polyhedra
-  [PWLD_stone_adams], [bailey2008phd], [bailey2008piecewise], [warsa_CFEM_DFEM], [ragusa2015_pwld_diffusion]:
+  :cite:t:`PWLD_stone_adams`, :cite:t:`bailey2008phd`, :cite:t:`bailey2008piecewise`, :cite:t:`warsa_CFEM_DFEM`, :cite:t:`ragusa2015_pwld_diffusion`:
   PWL basis functions are defined such that they are equal to one on a
   single vertex and zero on all other vertices. Their construction is
   achieved by splitting each polyhedron into several tetrahedra.
@@ -326,22 +346,34 @@ Spatial Discretization
 
   .. math:: b_j(\vec{r}) = t_j(\vec{r}) + \frac{1}{N_f}\sum_{f @ j} t_f(\vec{r}) + \frac{1}{N_v}t_c(\vec{r})
 
-  It is easy to check that :math:`b_j(\vec{r})` is equal to one on
-  vertex :math:`j` of the polyhedron and zero on all its other vertices.
+  where :math:`f @ j` denotes a face containing vertex :math:`j`. It is
+  easy to check that :math:`b_j(\vec{r})` is equal to one on vertex
+  :math:`j` of the polyhedron and zero on all its other vertices.
 
-.. figure:: PWL_pentagon.png
-   :alt: PWL basis functions in 2D for an arbitrary pentagon
-   :name: fig:PWL_2D
+.. figure:: images/PWL_pentagon.png
+    :scale: 80%
+    :align: center
 
-   PWL basis functions in 2D for an arbitrary pentagon
+    PWL basis functions in 2D for an arbitrary pentagon
 
-|image4| |image5|
+.. figure:: images/PWL_degen_pentagon1.png
+    :scale: 80%
+    :align: center
 
-.. figure:: ThreeDTetrahedral.png
-   :alt: Identification of PWL basis functions in 3D
-   :name: fig:PWL_3D
+    A PWL basis function in 2D for a degenerated square (pentagon).
 
-   Identification of PWL basis functions in 3D
+.. figure:: images/PWL_degen_pentagon2.png
+    :scale: 80%
+    :align: center
+
+    Another PWL basis function in 2D for a degenerated square (pentagon).
+
+
+.. figure:: images/ThreeDTetrahedral.png
+    :scale: 35%
+    :align: center
+
+    Identification of PWL basis functions in 3D
 
 The various local matrices appearing in the local DGFEM systems are
 built using the PWL basis functions. Their integrals are computed using
@@ -355,206 +387,44 @@ on the mesh (total number of polyhedral cells, total number of faces)
 and not on the number of energy groups used nor the number of directions
 employed.
 
-Temporal Discretization
------------------------
 
-Time marching and neutron kinetics. Likely not in v1.0. When this is
-done, maybe we will make a v2.0.
+References
+----------
+    
+.. bibliography::
+   :style: unsrtalpha
+   :filter: False
 
-
-
-.. [bailey2008piecewise]
-Teresa S Bailey, Marvin L Adams, Jae H Chang, and James S Warsa.
- A piecewise linear discontinuous finite element spatial
-  discretization of the transport equation in 2d cylindrical geometry.
- In {\em Proc. International Conference on Mathematics and
-  Computational Methods \& Reactor Physics}, pages 3--7, 2008.
-
-.. [wareing2001discontinuous]
-Todd A Wareing, John M McGhee, Jim E Morel, and Shawn D Pautz.
- Discontinuous finite element :math:`s_n` methods on three-dimensional
-  unstructured grids.
- *Nuclear Science and Engineering*, 138(3):256--268, 2001.
-
-.. [miller1977ray]
-WF Miller Jr and Wm H Reed.
- Ray-effect mitigation methods for two-dimensional neutron transport
-  theory.
- *Nuclear Science and Engineering*, 62(3):391--411, 1977.
-
-.. [adams2001dfem]
-Marvin L Adams.
- Discontinuous finite element transport solutions in thick diffusive
-  problems.
- *Nuclear Science and Engineering*, 137(3):298--333, 2001.
-
-.. [lathrop1964discrete]
-Kaye D Lathrop and Bengt G Carlson.
- Discrete ordinates angular quadrature of the neutron transport
-  equation.
- Technical report, Los Alamos Scientific Lab., N. Mex., 1964.
-
-.. [hill1975onetran]
-TR Hill.
- Onetran: a discrete ordinates finite element code for the solution of
-  the one-dimensional multigroup transport equation (la-5990-ms).
- Technical report, Los Alamos Scientific Lab., N. Mex.(USA), 1975.
-
-.. [reed1973triplet]
-Wm H Reed, TR Hill, FW Brinkley, and KD Lathrop.
- Triplet: A two-dimensional, multigroup, triangular mesh, planar
-  geometry, explicit transport code.
- Technical report, Los Alamos Scientific Lab., N. Mex.(USA), 1973.
-
-.. [wang2009convergence]
-Yaqi Wang and Jean C Ragusa.
- On the convergence of dgfem applied to the discrete ordinates
-  transport equation for structured and unstructured triangular meshes.
- *Nuclear Science and Engineering*, 163(1):56--72, 2009.
-
-.. [PWLD_stone_adams]
-Hiromi G Stone and Marvin L Adams.
- A piecewise linear finite element basis with application to particle
-  transport.
- In {\em Proc. ANS Topical Meeting Nuclear Mathematical and
-  Computational Sciences Meeting}, 2003.
-
-.. [morel1989hybrid]
-Jim E Morel.
- A hybrid collocation-galerkin-sn method for solving the boltzmann
-  transport equation.
- *Nuclear Science and Engineering*, 101(1):72--87, 1989.
-
-.. [morel2005s]
-Jim E Morel and James S Warsa.
- An :math:`s_n` spatial discretization scheme for tetrahedral meshes.
- *Nuclear Science and Engineering*, 151(2):157--166, 2005.
-
-.. [ragusagalerkin2011]
-Richard Sanchez and Jean Ragusa.
- On the construction of galerkin angular quadratures.
- *Nuclear Science and Engineering*, 169(2):133--154, 2011.
-
-.. [lathrop1968ray]
-K D Lathrop.
- Ray effects in discrete ordinates equations.
- *Nuclear Science and Engineering*, 32(3):357--369, 1968.
-
-.. [warsa_CFEM_DFEM]
-James Warsa.
- A continuous finite element-base, discontinuous finite element method
-  for :math:`s_n` transport.
- *Nuclear Science and Engineering*, 160:385--400, 2008.
-
-.. [morel_rayeffects]
-J.E. Morel, T.A. Wareing, R.B. Lowrie, and D.K. Parsons.
- Analysis of ray-effect mitigation techniques.
- *Nuclear Science and Engineering*, 144:1--22, 2003.
-
-.. [adamslau2017]
-Cheuk Y. Lau and Marvin L. Adams.
- Discrete ordinates quadratures based on linear and quadratic
-  discontinuous finite elements over spherical quadrilaterals.
- *Nuclear Science and Engineering*, 185(1):36--52, 2017.
-
-.. [bailey2008phd]
-Teresa S Bailey.
- {\em The piecewise linear discontinuous finite element method applied
-  to the RZ and XYZ transport equations}.
- PhD thesis, Texas A\&M University, 2008.
-
-.. [reed1973triangularmesh]
-Wm H Reed and TR Hill.
- Triangular mesh methods for the neutron transport equation.
- *Los Alamos Report LA-UR-73-479*, 1973.
-
-.. [carlson1971]
-BG Carlson.
- On a more precise definition of discrete ordinates methods.
- In *Proceedings of the Second Conference on Transport Theory*,
-  pages 348--390. U.S. Atomic Energy Commission, 1971.
-
-.. [seed1977trident]
-TJ Seed, WF Miller Jr, and FW Brinkley Jr.
- Trident: a two-dimensional, multigroup, triangular mesh discrete
-  ordinates, explicit neutron transport code.
- Technical report, Los Alamos Scientific Lab., NM (USA), 1977.
-
-.. [wang2009adaptive]
-Yaqi Wang.
- {\em Adaptive mesh refinement solution techniques for the multigroup
-  :math:`S_N` transport equation using a higher-order discontinuous finite element
-  method}.
- PhD thesis, Texas A\&M University, 2009.
-
-.. [wang2009high]
-Yaqi Wang and Jean C Ragusa.
- A high-order discontinuous galerkin method for the :math:`s_n` transport
-  equations on 2d unstructured triangular meshes.
- *Annals of Nuclear Energy*, 36(7):931--939, 2009.
-
-.. [ragusa2015_pwld_diffusion]
-Jean C. Ragusa.
- Discontinuous finite element solution of the radiation diffusion
-  equation on arbitrary polygonal meshes and locally adapted quadrilateral
-  grids.
- *Journal of Computational Physics*, 280:195--213, 2015.
-
-.. [gelbard1969solution]
-EM Gelbard, James A Davis, and LA Hageman.
- Solution of the discrete ordinate equations in one and two
-  dimensions.
- *Transport Theory*, 1:129--158, 1969.
-
-.. [carlson1961mechanical]
-Bengt G Carlson and Clarence E Lee.
- *Mechanical quadrature and the transport equation*, volume 2573.
- Los Alamos Scientific Laboratory of the University of California,
-  1961.
-
-.. [lathrop1971remedies]
-KD Lathrop.
- Remedies for ray effects.
- *Nuclear Science and Engineering*, 45(3):255--268, 1971.
-
-.. [wang2011standard]
-Yaqi Wang and Jean C Ragusa.
- Standard and goal-oriented adaptive mesh refinement applied to
-  radiation transport on 2d unstructured triangular meshes.
- *Journal of Computational Physics*, 230(3):763--788, 2011.
-
-.. [lesaint1974finite]
-P Lesaint and PA Raviart.
- On a finite element method for solving the neutron transport
-  equation.
- {\em Mathematical Aspects of Finite Elements in Partial Differential
-  Equations}, (33):89--123, 1974.
-
-.. [seed1978trident]
-TJ Seed, WF Miller, and GE Bosler.
- Trident: A new triangular mesh discrete ordinates code.
- In *ANS Meeting*, pages 157--167, 1978.
-
-.. [ragusa2010two]
-Yaqi Wang and Jean C Ragusa.
- A two-mesh adaptive mesh refinement technique for :math:`s_n`
-  neutral-particle transport using a higher-order dgfem.
- *Journal of Computational and Applied Mathematics*,
-  233(12):3178--3188, 2010.
-
-.. [carlson1958solution]
-BG Carlson and GI Bell.
- Solution of the transport equation by the sn method.
- Technical report, Los Alamos Scientific Lab., N. Mex., 1958.
-
-.. [lee1961discrete]
-Clarence E Lee.
- The discrete :math:`s_n` approximation to transport theory.
- Technical report, Los Alamos Scientific Lab., N. Mex., 1961.
-
-.. [carlson1965transport]
-Bengt G Carlson and Kaye D Lathrop.
- *Transport theory: the method of discrete ordinates*.
- Los Alamos Scientific Laboratory of the University of California,
-  1965.
-
+   PWLD_stone_adams
+   adams2001dfem
+   adamslau2017
+   bailey2008phd
+   bailey2008piecewise
+   carlson1958solution
+   carlson1961mechanical
+   carlson1965transport
+   carlson1971
+   gelbard1969solution
+   hill1975onetran
+   lathrop1964discrete
+   lathrop1968ray
+   lathrop1971remedies
+   lee1961discrete
+   lesaint1974finite
+   miller1977ray
+   morel1989hybrid
+   morel2005s
+   morel_rayeffects
+   ragusa2010two
+   ragusa2015_pwld_diffusion
+   ragusagalerkin2011
+   reed1973triangularmesh
+   reed1973triplet
+   seed1977trident
+   seed1978trident
+   wang2009adaptive
+   wang2009convergence
+   wang2009high
+   wang2011standard
+   wareing2001discontinuous
+   warsa_CFEM_DFEM

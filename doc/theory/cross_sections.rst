@@ -117,5 +117,3 @@ In summary, the mandatory cross-section inputs are:
 
    #. production by fission cross section :math:`\nu\sigma_f^{g}`.
 
-
-

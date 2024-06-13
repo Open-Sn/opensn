@@ -122,12 +122,3 @@ where
   :math:`Q^{\dagger}_{\text{ext}}=\sigma_{\text{det}}` and the adjoint
   boundary source should be :math:`\Psi^{\dagger}_{\text{out}} =0`
   (vacuum).
-
-.. |image| image:: P8GLC.png
-.. |image1| image:: P12GLC.png
-.. |image2| image:: SLDFESQBasen2.png
-.. |image3| image:: SLDFESQr.png
-.. |image4| image:: PWL_degen_pentagon1.png
-.. |image5| image:: PWL_degen_pentagon2.png
-
-

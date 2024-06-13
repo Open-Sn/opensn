@@ -49,33 +49,10 @@ most prominent features of OpenSn include:
    --------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    getting_started
    theory/index
-
-
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Tutorials
-
-   tutorials/meshing/index
-   tutorials/material/index
-   tutorials/lbs/index
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Developer's Corner
-
+   tutorials/index
    coding_standard.md
    workflow.md
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Older Tutorials
-
-   tutorials/old/index

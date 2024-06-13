@@ -3,13 +3,13 @@ Iterative Solution Algorithms
 
 The Adams-Larsen review paper is a good reference for fast iterative
 schemes for discrete-ordinates particle transport calculations
-[ref::adams_larsen_iter_methods].
+:cite:t:`adams_larsen_iter_methods`.
 
 Multigroup Solution Process: Background
 ---------------------------------------
 
 The transport equation needs to be solved for each group :math:`g`
-(:math:`1 le g \le G`). In operator notation, this is written as
+(:math:`1 \le g \le G`). In operator notation, this is written as
 
 .. math:: L_g \Psi_g = M \Sigma_{g\to g}\Phi_{g}  + \sum_{g'<g} M \Sigma_{g'\to g}\Phi_{g'} + \sum_{g'>g} M \Sigma_{g'\to g}\Phi_{g'} + Q_{\text{ext},g } \,.
 
@@ -57,7 +57,7 @@ Source Iteration:
 ~~~~~~~~~~~~~~~~~
 
 In the Source Iteration (SI) method
-[ref::adams_larsen_iter_methods], the flux moments are
+:cite:t:`adams_larsen_iter_methods`, the flux moments are
 lagged at iteration :math:`i` to yield the following iterative strategy
 
 .. math::
@@ -96,14 +96,14 @@ or
 
 .. math:: \left(I - D L^{-1} M\Sigma \right) \Phi = L^{-1} Q \,.
 
-This linear system is of the typical “:math:`Ax=b`”form where
+This linear system is of the typical “:math:`Ax=b`” form where
 :math:`b=L^{-1} Q` and requires one transport sweep on the source term
 and the global matrix :math:`A=I - D L^{-1} M\Sigma` is not formed but
 only its action is required. Each action of :math:`A` requires one
 transport sweep to evaluate the action of :math:`L^{-1}`. Krylov
 subspace methods, such as GMRes, can be employed in a matrix-free
 fashion to solve such a system
-[saad1986gmres], [saad2003iterative], [pattonapplication], [guthrie1999gmres], [oliveira1998preconditioned], [warsa2004krylov], [fichtl2009krylov].
+:cite:t:`saad1986gmres`, :cite:t:`saad2003iterative`, :cite:t:`pattonapplication`, :cite:t:`guthrie1999gmres`, :cite:t:`oliveira1998preconditioned`, :cite:t:`warsa2004krylov`, :cite:t:`fichtl2009krylov`.
 
 Within-group Acceleration
 -------------------------
@@ -112,7 +112,7 @@ In optically thick regions with a significant amount of scattering, the
 Source Iteration process can be slow. From spectral error analyses, the
 slowest-decaying error modes are diffusive modes. Hence, the idea to
 accelerate the SI procedure with a low-order synthetic accelerator
-[ref::adams_larsen_iter_methods], [morel1982synthetic_anisotropic], [larsen_DSA_1984].
+:cite:t:`adams_larsen_iter_methods`, :cite:t:`morel1982synthetic_anisotropic`, :cite:t:`larsen_DSA_1984`.
 
 We proceed by presenting an iteration of SI, solved using a transport
 sweep:
@@ -149,7 +149,7 @@ discretization with the original transport problem. In OpenSn, the
 operator :math:`A` is a diffusion operator. The resulting Diffusion
 Synthetic Acceleration (DSA) equations are discretized with DGFEM as
 well, using the Modified Interior Penalty (MIP) formalism
-[ref::DSA_wang_ragusa], [ragusaturcksinMIP_PWL2014].
+:cite:t:`DSA_wang_ragusa`, :cite:t:`ragusaturcksinMIP_PWL2014`.
 
 Thermal Upscattering Acceleration
 ---------------------------------
@@ -159,7 +159,7 @@ absorption (e.g., graphite or heavy water), the thermal iterations can
 converge very slowly, and acceleration is required. This acceleration
 process will be applied over all thermal groups at once and is based on
 the two-grid (TG) methods by Adams and Morel
-[adams1993two], [ragusa_hanus_TG_2020]. Akin to the
+:cite:t:`adams1993two`, :cite:t:`ragusa_hanus_TG_2020`. Akin to the
 spatial multigrid techniques, the TG method consists of two energy
 grids: a fine grid (corresponding to the thermal group structure) and a
 coarse grid (a single macro-group over the entire thermal range). Adams
@@ -208,7 +208,7 @@ consists of iterations on the fission production term,
        \text{Update the eigenvalue:}         & k^{\text{(o+1)}}_\text{eff} =  k^{\text{(o)}}_\text{eff}\frac{\|S_f^{\text{(o+1)}}\|}{\|S_f^{\text{(o)}}\|}
    \end{cases}
 
-where o denotes the outer Power Iteration index (also known as the outer
+where :math:`o` denotes the outer Power Iteration index (also known as the outer
 iteration index). At each PI, a fixed source problem has to be solved.
 This fixed-source problem also requires inner iterations (within-group
 Source Iterations, possibly thermal iterations, as well as accelerations
@@ -221,7 +221,7 @@ Acceleration of Power Iterations
 
 | Power Iterations can be slow to converge when the dominance ratio
   (ratio of the largest eigenvalue to the second largest eigenvalue) is
-  close to 1 [reed1971effectiveness]. To remedy this,
+  close to 1 :cite:t:`reed1971effectiveness`. To remedy this,
   acceleration of Power Iterations is necessary. To do so, the
   second-moment method, a linearization of the variable Eddington-tensor
   method, is employed in OpenSn. For efficiency’s sake, a smaller number
@@ -237,7 +237,7 @@ Acceleration of Power Iterations
   employed to solve for the approximation of the scalar error
   :math:`\delta \Phi = \Phi - \Phi^{\text{(o+1/2)}}`. At this stage,
   this description gives rise to the Adams-Barbu method
-  [adams_barbu_eig_2023] if the diffusion is chosen as
+  :cite:t:`adams_barbu_eig_2023` if the diffusion is chosen as
   the low-order operator. Note that an eigenvalue problem that contains
   an inhomogeneous source term needs to be solved. Then, the flux update
   would be given by
@@ -247,7 +247,7 @@ Acceleration of Power Iterations
   terms of the flux update :math:`\Phi^{\text{(o+1)}}`. When the
   low-order operator is chosen to be the second-moment method, a
   linearization of the variable Eddington-tensor method
-  [morel_smm_2024], the scheme implemented in OpenSn
+  :cite:t:`morel_smm_2024`, the scheme implemented in OpenSn
   is obtained:
 
   .. math:: (A - \Sigma_0) \vartheta + \frac{1}{\lambda}F\vartheta + R(\Psi^{\text{(o+1/2)}}) \,,
@@ -276,13 +276,11 @@ Acceleration of Power Iterations
 Uncollided-flux Treatment
 -------------------------
 
-likely not in v1.0, as it is not ready
-
 In streaming regions (low-density material), in regions with low amount
 of scattering, and with localized small sources, the :math:`S_n` method
 will exhibit ray effects (angular discretization error). These ray
 effects can be mitigated by splitting the angular flux into uncollided
-and collided components [hanuvs2019uncollided]:
+and collided components :cite:t:`hanuvs2019uncollided`:
 
 .. math:: \Psi = \Psi^u + \Psi^c \,.
 
@@ -319,113 +317,28 @@ Notes:
    source in this problem.
 
 
+References
+----------
+    
+.. bibliography::
+   :style: unsrtalpha
+   :filter: False
 
-.. [morel_smm_2024]
-James Tutt Connor Woodsford and Jim E. Morel.
- A variant of the second-moment method for k-eigenvalue calculations.
- *Nuclear Science and Engineering*, 0(0):1--9, 2024.
-
-.. [ragusaturcksinMIP_PWL2014]
-Bruno Turcksin and Jean C. Ragusa.
- Discontinuous diffusion synthetic acceleration for sn transport on 2d
-  arbitrary polygonal meshes.
- *Journal of Computational Physics*, 274:356--369, 2014.
-
-.. [hanuvs2019uncollided]
-Milan Hanu{\v{s}}, Logan H Harbour, Jean C Ragusa, Michael P Adams, and
-  Marvin L Adams.
- Uncollided flux techniques for arbitrary finite element meshes.
- *Journal of Computational Physics*, 398:108848, 2019.
-
-.. [fichtl2009krylov]
-Erin D Fichtl, James S Warsa, and Anil K Prinja.
- Krylov iterative methods and synthetic acceleration for transport in
-  binary statistical media.
- *Journal of Computational Physics*, 228(22):8413--8426, 2009.
-
-.. [reed1971effectiveness]
-Wm H Reed.
- The effectiveness of acceleration techniques for iterative methods in
-  transport theory.
- *Nuclear Science and Engineering*, 45(3):245, 1971.
-
-.. [ragusa_hanus_TG_2020]
-Milan Hanus and Jean C. Ragusa.
- Thermal upscattering acceleration schemes for parallel transport
-  sweeps.
- *Nuclear Science and Engineering*, 194(10):873--893, 2020.
-
-.. [ref::DSA_wang_ragusa]
-Yaqi Wang and Jean Ragusa.
- Diffusion synthetic acceleration for high-order discontinuous finite
-  element :math:`s_n` transport schemes and application to locally refined
-  unstructured meshes.
- *Nuclear Science and Engineering*, 166:145--166, 2010.
-
-.. [pattonapplication]
-BW Patton and JP Holloway.
- Application of krylov subspace methods to the slab geometry transport
-  equation.
- In *ANS Topical Meeting on Radiation Protection and Shielding*,
-  volume 1, page 384, 1996.
-
-.. [saad2003iterative]
-Yousef Saad.
- *Iterative methods for sparse linear systems*.
- Siam, 2003.
-
-.. [oliveira1998preconditioned]
-Suely Oliveira and Yuanhua Deng.
- Preconditioned krylov subspace methods for transport equations.
- *Progress in Nuclear Energy*, 33(1):155--174, 1998.
-
-.. [saad1986gmres]
-Youcef Saad and Martin H Schultz.
- Gmres: A generalized minimal residual algorithm for solving
-  nonsymmetric linear systems.
- *SIAM Journal on scientific and statistical computing*,
-  7(3):856--869, 1986.
-
-.. [larsen_DSA_1984]
-Edward W. Larsen.
- Diffusion-synthetic acceleration methods for discrete-ordinates
-  problems.
- *Transport Theory and Statistical Physics*, 13(1-2):107--126,
-  1984.
-
-.. [ref::adams_larsen_iter_methods]
-ML Adams and EW Larsen.
- Fast iterative methods for discrete-ordinates particle transport
-  calculations.
- *Progress in Nuclear Energy*, 40(1):3--159, 2002.
-
-.. [morel1982synthetic_anisotropic]
-JE Morel.
- A synthetic acceleration method for discrete ordinates calculations
-  with highly anisotropic scattering.
- *Nuclear Science and Engineering*, 82:34--46, 1982.
-
-.. [adams1993two]
-BT Adams and JE Morel.
- A two-grid acceleration scheme for the multigroup :math:`s_n` equations
-  with neutron upscattering.
- *Nuclear Science and Engineering*, 115(3):253--264, 1993.
-
-.. [warsa2004krylov]
-James S Warsa, Todd A Wareing, and Jim E Morel.
- Krylov iterative methods and the degraded effectiveness of diffusion
-  synthetic acceleration for multidimensional :math:`s_n` calculations in problems
-  with material discontinuities.
- *Nuclear Science and Engineering*, 147(3):218--248, 2004.
-
-.. [guthrie1999gmres]
-Brian Guthrie, James P Holloway, and Bruce W Patton.
- Gmres as a multi-step transport sweep accelerator.
- *Transport Theory and Statistical Physics*, 28(1):83--102, 1999.
-
-.. [adams_barbu_eig_2023]
-Anthony P. Barbu and Marvin L. Adams.
- Convergence properties of a linear diffusion-acceleration method for
-  k-eigenvalue transport problems.
- *Nuclear Science and Engineering*, 197(4):517--533, 2023.
-
+   DSA_wang_ragusa
+   adams1993two
+   adams_barbu_eig_2023
+   adams_larsen_iter_methods
+   fichtl2009krylov
+   guthrie1999gmres
+   hanuvs2019uncollided
+   larsen_DSA_1984
+   morel1982synthetic_anisotropic
+   morel_smm_2024
+   oliveira1998preconditioned
+   pattonapplication
+   ragusa_hanus_TG_2020
+   ragusaturcksinMIP_PWL2014
+   reed1971effectiveness
+   saad1986gmres
+   saad2003iterative
+   warsa2004krylov

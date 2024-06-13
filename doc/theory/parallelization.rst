@@ -20,7 +20,7 @@ Sweep performance is profoundly affected by the choices made for
 aggregation, partitioning, and scheduling. The interplay of the three
 components is complex and nuanced, and the reader is referred to the
 recommended references for more detailed discussions,
-[mathis2000general], [ref::KBA], [baker1998s], [bailey2009analysis], [pautz2002algorithm], [zeyao2004parallel], [hanebutte1992massively], [brown1999performing], [brown2000performing], [adams2013provably], [ref::eff_sweeps], [vermaak2021massively].
+:cite:t:`mathis2000general`, :cite:t:`KBA`, :cite:t:`baker1998s`, :cite:t:`bailey2009analysis`, :cite:t:`pautz2002algorithm`, :cite:t:`zeyao2004parallel`, :cite:t:`hanebutte1992massively`, :cite:t:`brown1999performing`, :cite:t:`brown2000performing`, :cite:t:`adams2013provably`, :cite:t:`eff_sweeps`, :cite:t:`vermaak2021massively`.
 The content below is only intended to be a very brief introduction to
 the basic concepts.
 
@@ -30,8 +30,8 @@ Aggregation
 In the previous definitions of the multigroup iterative algorithms, the
 description of the solution techniques were given on a group-by-group
 basis. Likewise, the solution of a single-group problem problem was
-given direction-by -direction. At the level of a given group :math:`g`,
-for a given direction :math:`d`, a full- domain transport sweep is
+given direction-by-direction. At the level of a given group :math:`g`,
+for a given direction :math:`d`, a full-domain transport sweep is
 performed where the mesh is swept cell-by-cell, solving for the angular
 flux :math:`\psi^g_{d,K}` in each cell :math:`K`. A prototypical
 algorithm following those descriptions is given in Algorithm 1 and shows
@@ -48,9 +48,10 @@ The optimal ordering of loops is problem-dependent, and, while we could
 introduce separate compute kernels for each ordering, a better solution
 is to extend our sweep algorithm to support sets of groups and angles.
 
-.. container:: algorithm
+.. figure:: images/algo1.png
+   :scale: 50%
+   :align: center
 
-   | ``/* Loop over all groups */``
 
 Group-sets
 ~~~~~~~~~~
@@ -60,7 +61,10 @@ flexibility to support different loop orderings without requiring
 multiple compute kernels. Algorithm 2 extends Algorithm 1 to support
 group-sets.
 
-.. container:: algorithm
+.. figure:: images/algo2.png
+   :scale: 50%
+   :align: center
+
 
 If each group is its own group-set, our solution algorithm is similar to
 Algorithm 1 and is optimal for problems with downscattering only. If all
@@ -80,7 +84,10 @@ to cache common geometric quantities for cell solves and to optimize our
 sweep-plane data structures for cache efficiency. Algorithm 3 extends
 our group-set algorithm to include angle-sets.
 
-.. container:: algorithm
+.. figure:: images/algo3.png
+   :scale: 50%
+   :align: center
+
 
 Partitioning and Scheduling
 ---------------------------
@@ -91,8 +98,9 @@ This 4x4 mesh has been decomposed among four processors, with each
 processor being assigned a column of four cells. This columnar
 decomposition is the type of partitioning produced by the KBA algorithm.
 
-.. figure:: ProcMesh.png
-   :alt: Partitioned, 4x4, XY, Rectangular Mesh
+.. figure:: images/ProcMesh.png
+   :scale: 50%
+   :align: center
 
    Partitioned, 4x4, XY, Rectangular Mesh
 
@@ -114,89 +122,29 @@ efficiency. In the case where multiple angle-sets can be solved
 simultaneously, a scheduling algorithm is required to tell the processor
 the order in which to execute the available tasks.
 
-.. figure:: ProcGraph.png
-   :alt: Task Dependency Graph for Direction :math:`\vec{\Omega}`.
+.. figure:: images/ProcGraph.png
+   :scale: 50%
+   :align: center
 
    Task Dependency Graph for Direction :math:`\vec{\Omega}`.
 
 
+References
+----------
+    
+.. bibliography::
+   :style: unsrtalpha
+   :filter: False
 
-.. [ref::eff_sweeps]
-William Daryl Hawkins, Timmie Smith, Michael P Adams, Lawrence Rauchwerger,
-  Nancy M Amato, and Marvin L Adams.
- Efficient massively parallel transport sweeps.
- In *Transactions of the American Nuclear Society*, volume 107,
-  pages 477--481, 2012.
-
-.. [pautz2002algorithm]
-Shawn D Pautz.
- An algorithm for parallel :math:`s_n` sweeps on unstructured meshes.
- *Nuclear Science and Engineering*, 140(2):111--136, 2002.
-
-.. [ref::KBA]
-Kenneth R Koch, Randal S Baker, and Raymond E Alcouffe.
- Solution of the first-order form of three-dimensional discrete
-  ordinates equations on a massively parallel machine.
- In *Transactions of the American Nuclear Society*, volume 65,
-  pages 198--199, 1992.
-
-.. [hanebutte1992massively]
-UR Hanebutte and EE Lewis.
- A massively parallel discrete ordinates response matrix method for
-  neutron transport.
- *Nuclear Science and Engineering*, 111(1), 1992.
-
-.. [mathis2000general]
-Mark M Mathis, Nancy M Amato, and Marvin L Adams.
- A general performance model for parallel sweeps on orthogonal grids
-  for particle transport calculations.
- In {\em Proceedings of the 14th international conference on
-  Supercomputing}, pages 255--263. ACM, 2000.
-
-.. [vermaak2021massively]
-Jan IC Vermaak, Jean C Ragusa, Marvin L Adams, and Jim E Morel.
- Massively parallel transport sweeps on meshes with cyclic
-  dependencies.
- *Journal of Computational Physics*, 425:109892, 2021.
-
-\end{thebibliography}
-
-.. [brown2000performing]
-PN Brown, B Chang, UR Hanebutte, and CS Woodward.
- The quest for a high performance boltzmann transport solver.
- In {\em International conference on applications of high-performance
-  computing in engineering n o}, volume 6, 2000.
-
-.. [adams2013provably]
-Michael P Adams, Marvin L Adams, W Daryl Hawkins, Timmie Smith, Lawrence
-  Rauchwerger, Nancy M Amato, Teresa S Bailey, and Robert D Falgout.
- Provably optimal parallel transport sweeps on regular grids.
- In {\em Proc. International Conference on Mathematics and
-  Computational Methods Applied to Nuclear Science \& Engineering, Idaho},
-  2013.
-
-.. [zeyao2004parallel]
-Mo Zeyao and Fu Lianxiang.
- Parallel flux sweep algorithm for neutron transport on unstructured
-  grid.
- *The Journal of Supercomputing*, 30(1):5--17, 2004.
-
-.. [baker1998s]
-Randal S Baker and Kenneth R Koch.
- An :math:`s_n` algorithm for the massively parallel cm-200 computer.
- *Nuclear Science and Engineering*, 128(3), 1998.
-
-.. [bailey2009analysis]
-Teresa S Bailey and Robert D Falgout.
- Analysis of massively parallel discrete-ordinates transport sweep
-  algorithms with collisions.
- In {\em International Conference on Mathematics, Computational
-  Methods \& Reactor Physics, Saratoga Springs, NY}, 2009.
-
-.. [brown1999performing]
-Peter N Brown, Britton Chang, Milo R Dorr, Ulf R Hanebutte, and Carol S
-  Woodward.
- Performing three-dimensional neutral particle transport calculations
-  on tera scale computers.
- In *High Performance Computing*, volume 99, pages 11--15, 1999.
-
+   KBA
+   adams2013provably
+   bailey2009analysis
+   baker1998s
+   brown1999performing
+   brown2000performing
+   eff_sweeps
+   hanebutte1992massively
+   mathis2000general
+   pautz2002algorithm
+   vermaak2021massively
+   zeyao2004parallel

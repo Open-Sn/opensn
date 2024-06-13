@@ -47,5 +47,3 @@ moments:
        \phi^g_{1,1}(\vec{r},t)  \\
    \end{bmatrix}
 
-
-

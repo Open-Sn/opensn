@@ -2,12 +2,12 @@ Background on the Linear Boltzmann Equation
 ===========================================
 
 The following textbooks are a good source of information on transport
-theory [duderstadt1979transport], computational
-methods for transport [lewis1984computational], and
+theory :cite:t:`duderstadt1979transport`, computational
+methods for transport :cite:t:`lewis1984computational`, and
 nuclear reactor theory
-[bell1979nuclear], [duderstadt1976nuclear]. For review
+:cite:t:`bell1979nuclear`, :cite:t:`duderstadt1976nuclear`. For a review
 article on transport approximations, consult
-[sanchez1982review], [azmy2010nuclear]
+:cite:t:`sanchez1982review`, :cite:t:`azmy2010nuclear`.
 
 Definitions
 -----------
@@ -114,9 +114,7 @@ and the delayed neutron operator is
 .. math:: S_{d,i} = \frac{\chi_{d,i}(E)}{4\pi} C_i(\vec{r},t) \,,
 
 where :math:`C_i`, the neutron precursor concentration in delayed group
-:math:`i`, satisfies its own conservation law (see the Theory section
-dealing with Kinetics for additional details will likely not have TD in
-v1.0).
+:math:`i`, satisfies its own conservation law.
 
 Boundary Conditions
 -------------------
@@ -295,34 +293,16 @@ with
 :math:`\mu=\vec{\Omega}\cdot \vec{e}_z`
 
 
+References
+----------
+    
+.. bibliography::
+   :style: unsrtalpha
+   :filter: False
 
-.. [duderstadt1976nuclear]
-James J Duderstadt and Louis J Hamilton.
- *Nuclear reactor analysis*.
- Wiley, 1976.
-
-.. [lewis1984computational]
-Elmer Eugene Lewis and Warren F Miller.
- *Computational methods of neutron transport*.
- John Wiley and Sons, Inc., New York, NY, 1984.
-
-.. [sanchez1982review]
-R Sanchez and Norman J McCormick.
- Review of neutron transport approximations.
- *Nuclear Science and Engineering*, 80(4), 1982.
-
-.. [bell1979nuclear]
-George I Bell and Samuel Glasstone.
- *Nuclear reactor theory*.
- RE Krieger Publishing Company, 1979.
-
-.. [azmy2010nuclear]
-Y. Azmy and E. Sartori.
- *Nuclear Computational Science: A Century in Review*.
- Springer Netherlands, 2010.
-
-.. [duderstadt1979transport]
-James J Duderstadt and William Russell Martin.
- *Transport theory*.
- John Wiley \& Sons, 1979.
-
+   azmy2010nuclear
+   bell1979nuclear
+   duderstadt1976nuclear
+   duderstadt1979transport
+   lewis1984computational
+   sanchez1982review
