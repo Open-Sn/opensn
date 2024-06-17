@@ -1,4 +1,4 @@
---- Final k-eigenvalue    :         1.1925596 (265)
+--- Final k-eigenvalue    :         1.192709
 
 dofile("mesh/gmesh_coarse.lua")
 dofile("materials/materials.lua")
