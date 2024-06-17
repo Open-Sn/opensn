@@ -1042,7 +1042,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
     {
       // Check geometry types
       const auto grid_attribs = grid.Attributes();
-      if (not(grid_attribs & ORTHOGONAL or grid.Dimension() == 2 or grid_attribs & EXTRUDED))
+      if (not(grid_attribs == ORTHOGONAL or grid.Dimension() == 2 or grid_attribs == EXTRUDED))
         throw std::logic_error(
           fname + ": The simulation is using polar angle aggregation for which only certain "
                   "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED.");

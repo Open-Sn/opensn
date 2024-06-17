@@ -483,7 +483,7 @@ std::array<size_t, 3>
 MeshContinuum::GetIJKInfo() const
 {
   const std::string fname = "GetIJKInfo";
-  if (not(this->Attributes() & MeshAttributes::ORTHOGONAL))
+  if (this->Attributes() != MeshAttributes::ORTHOGONAL)
     throw std::logic_error(fname + " can only be run on orthogonal meshes.");
 
   return {ortho_attributes_.Nx, ortho_attributes_.Ny, ortho_attributes_.Nz};
@@ -493,7 +493,7 @@ NDArray<uint64_t>
 MeshContinuum::MakeIJKToGlobalIDMapping() const
 {
   const std::string fname = "MakeIJKToGlobalIDMapping";
-  if (not(this->Attributes() & MeshAttributes::ORTHOGONAL))
+  if (this->Attributes() != MeshAttributes::ORTHOGONAL)
     throw std::logic_error(fname + " can only be run on orthogonal meshes.");
 
   const auto ijk_info = this->GetIJKInfo();
@@ -673,7 +673,7 @@ MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
 void
 MeshContinuum::SetAttributes(MeshAttributes new_attribs)
 {
-  attributes_ = attributes_ | new_attribs;
+  attributes_ = new_attribs;
 }
 
 void

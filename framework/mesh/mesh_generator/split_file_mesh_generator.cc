@@ -316,7 +316,7 @@ SplitFileMeshGenerator::ReadSplitMesh()
                          std::to_string(opensn::mpi_comm.size()) + " processes.");
 
   info_block.dimension = ReadBinaryValue<unsigned int>(ifile);
-  info_block.mesh_attributes_ = ReadBinaryValue<int>(ifile);
+  info_block.mesh_attributes = static_cast<MeshAttributes>(ReadBinaryValue<int>(ifile));
   info_block.ortho_attributes.Nx = ReadBinaryValue<size_t>(ifile);
   info_block.ortho_attributes.Ny = ReadBinaryValue<size_t>(ifile);
   info_block.ortho_attributes.Nz = ReadBinaryValue<size_t>(ifile);
@@ -408,7 +408,7 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
   }
 
   grid_ptr->SetDimension(mesh_info.dimension);
-  grid_ptr->SetAttributes(static_cast<MeshAttributes>(mesh_info.mesh_attributes_));
+  grid_ptr->SetAttributes(mesh_info.mesh_attributes);
   grid_ptr->SetOrthoAttributes(mesh_info.ortho_attributes);
 
   grid_ptr->SetGlobalVertexCount(mesh_info.num_global_vertices_);
