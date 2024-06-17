@@ -33,7 +33,8 @@ protected:
     std::map<CellPIDGID, UnpartitionedMesh::LightWeightCell> cells;
     std::map<uint64_t, Vector3> vertices;
     std::map<uint64_t, std::string> boundary_id_map;
-    MeshAttributes mesh_attributes;
+    MeshType mesh_type;
+    bool extruded;
     OrthoMeshAttributes ortho_attributes;
     size_t num_global_vertices;
   };

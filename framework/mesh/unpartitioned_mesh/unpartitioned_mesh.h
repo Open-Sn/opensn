@@ -67,8 +67,11 @@ public:
   void SetMeshOptions(const Options& opts) { mesh_options_ = opts; }
   const Options& MeshOptions() const { return mesh_options_; }
 
-  void SetAttributes(MeshAttributes attrs) { attributes_ = attrs; }
-  const MeshAttributes& Attributes() const { return attributes_; }
+  void SetType(MeshType type) { mesh_type_ = type; }
+  const MeshType& Type() const { return mesh_type_; }
+
+  void SetExtruded(bool extruded) { extruded_ = extruded; }
+  bool Extruded() const { return extruded_; }
 
   const std::vector<std::set<uint64_t>>& GetVertextCellSubscriptions() const
   {
@@ -127,7 +130,8 @@ public:
 protected:
   /// Spatial mesh dimension
   unsigned int dim_;
-  MeshAttributes attributes_;
+  MeshType mesh_type_;
+  bool extruded_;
   OrthoMeshAttributes ortho_attrs_;
   Options mesh_options_;
   BoundBox bound_box_;

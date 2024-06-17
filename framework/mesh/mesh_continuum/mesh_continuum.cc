@@ -24,7 +24,8 @@ MeshContinuum::MeshContinuum()
           global_cell_id_to_local_id_map_,
           global_cell_id_to_nonlocal_id_map_),
     dim_(0),
-    attributes_(NONE),
+    mesh_type_(UNSTRUCTURED),
+    extruded_(false),
     global_vertex_count_(0)
 {
 }
@@ -483,7 +484,7 @@ std::array<size_t, 3>
 MeshContinuum::GetIJKInfo() const
 {
   const std::string fname = "GetIJKInfo";
-  if (this->Attributes() != MeshAttributes::ORTHOGONAL)
+  if (Type() != MeshType::ORTHOGONAL)
     throw std::logic_error(fname + " can only be run on orthogonal meshes.");
 
   return {ortho_attributes_.Nx, ortho_attributes_.Ny, ortho_attributes_.Nz};
@@ -493,7 +494,7 @@ NDArray<uint64_t>
 MeshContinuum::MakeIJKToGlobalIDMapping() const
 {
   const std::string fname = "MakeIJKToGlobalIDMapping";
-  if (this->Attributes() != MeshAttributes::ORTHOGONAL)
+  if (Type() != MeshType::ORTHOGONAL)
     throw std::logic_error(fname + " can only be run on orthogonal meshes.");
 
   const auto ijk_info = this->GetIJKInfo();
@@ -668,18 +669,6 @@ MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
 
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
     grid_bndry_id_map[bndry_id] = boundary_name;
-}
-
-void
-MeshContinuum::SetAttributes(MeshAttributes new_attribs)
-{
-  attributes_ = new_attribs;
-}
-
-void
-MeshContinuum::SetOrthoAttributes(const OrthoMeshAttributes& attrs)
-{
-  ortho_attributes_ = attrs;
 }
 
 } // namespace opensn

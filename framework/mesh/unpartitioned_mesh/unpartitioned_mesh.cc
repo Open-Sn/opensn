@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-UnpartitionedMesh::UnpartitionedMesh() : dim_(0), attributes_(NONE)
+UnpartitionedMesh::UnpartitionedMesh() : dim_(0), mesh_type_(UNSTRUCTURED), extruded_(false)
 {
 }
 
@@ -199,7 +199,7 @@ UnpartitionedMesh::AddBoundary(uint64_t id, const std::string& name)
 void
 UnpartitionedMesh::SetOrthoAttributes(size_t nx, size_t ny, size_t nz)
 {
-  attributes_ = ORTHOGONAL;
+  mesh_type_ = ORTHOGONAL;
   ortho_attrs_.Nx = nx;
   ortho_attrs_.Ny = ny;
   ortho_attrs_.Nz = nz;
@@ -434,7 +434,7 @@ UnpartitionedMesh::PushProxyCell(const std::string& type_str,
   if (type == CellType::POLYHEDRON)
     SetDimension(3);
 
-  attributes_ = UNSTRUCTURED;
+  mesh_type_ = UNSTRUCTURED;
 }
 
 void

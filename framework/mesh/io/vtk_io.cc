@@ -648,7 +648,7 @@ MeshIO::FromExodusII(const UnpartitionedMesh::Options& options)
 
   // Always do this
   mesh->SetDimension(max_dimension);
-  mesh->SetAttributes(UNSTRUCTURED);
+  mesh->SetType(UNSTRUCTURED);
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();
@@ -706,7 +706,7 @@ MeshIO::FromVTU(const UnpartitionedMesh::Options& options)
 
   // Always do this
   mesh->SetDimension(max_dimension);
-  mesh->SetAttributes(UNSTRUCTURED);
+  mesh->SetType(UNSTRUCTURED);
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();
@@ -761,7 +761,7 @@ MeshIO::FromPVTU(const UnpartitionedMesh::Options& options)
 
   // Always do this
   mesh->SetDimension(max_dimension);
-  mesh->SetAttributes(UNSTRUCTURED);
+  mesh->SetType(UNSTRUCTURED);
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();
@@ -834,7 +834,7 @@ MeshIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
 
   // Always do this
   mesh->SetDimension(max_dimension);
-  mesh->SetAttributes(UNSTRUCTURED);
+  mesh->SetType(UNSTRUCTURED);
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();

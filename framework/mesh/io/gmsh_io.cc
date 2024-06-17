@@ -396,7 +396,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
     dimension = 3;
 
   mesh->SetDimension(dimension);
-  mesh->SetAttributes(UNSTRUCTURED);
+  mesh->SetType(UNSTRUCTURED);
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();

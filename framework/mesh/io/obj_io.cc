@@ -334,7 +334,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
   // Always do this
   mesh->SetDimension(2);
-  mesh->SetAttributes(UNSTRUCTURED);
+  mesh->SetType(UNSTRUCTURED);
 
   mesh->ComputeCentroids();
   mesh->CheckQuality();

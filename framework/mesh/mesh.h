@@ -53,11 +53,9 @@ class VolumeMesher;
 class VolumeMesherExtruder;
 class VolumeMesherPredefinedUnpartitioned;
 
-enum MeshAttributes : int
+enum MeshType : int
 {
-  NONE,
   ORTHOGONAL,
-  EXTRUDED,
   UNSTRUCTURED
 };
 
