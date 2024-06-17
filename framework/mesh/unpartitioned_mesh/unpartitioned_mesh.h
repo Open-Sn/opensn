@@ -64,10 +64,10 @@ public:
   const BoundBox& BoundingBox() const { return bound_box_; }
   void ComputeBoundingBox();
 
-  Options& MeshOptions() { return mesh_options_; }
+  void SetMeshOptions(const Options& opts) { mesh_options_ = opts; }
   const Options& MeshOptions() const { return mesh_options_; }
 
-  MeshAttributes& Attributes() { return attributes_; }
+  void SetAttributes(MeshAttributes attrs) { attributes_ = attrs; }
   const MeshAttributes& Attributes() const { return attributes_; }
 
   const std::vector<std::set<uint64_t>>& GetVertextCellSubscriptions() const
@@ -111,8 +111,6 @@ public:
 
   const std::map<uint64_t, std::string>& BoundaryIDMap() const { return boundary_id_map_; }
   std::map<uint64_t, std::string>& BoundaryIDMap() { return boundary_id_map_; }
-
-  void SetAttributes(MeshAttributes new_attribs);
 
   void SetOrthoAttributes(size_t nx, size_t ny, size_t nz);
   const OrthoMeshAttributes& OrthoAttributes() const { return ortho_attrs_; }

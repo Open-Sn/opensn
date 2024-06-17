@@ -197,12 +197,6 @@ UnpartitionedMesh::AddBoundary(uint64_t id, const std::string& name)
 }
 
 void
-UnpartitionedMesh::SetAttributes(MeshAttributes new_attribs)
-{
-  attributes_ = new_attribs;
-}
-
-void
 UnpartitionedMesh::SetOrthoAttributes(size_t nx, size_t ny, size_t nz)
 {
   attributes_ = ORTHOGONAL;
