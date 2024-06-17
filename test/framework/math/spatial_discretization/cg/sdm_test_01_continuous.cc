@@ -91,8 +91,8 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
 
     const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
 
-    MatDbl Acell(num_nodes, VecDbl(num_nodes, 0.0));
-    VecDbl cell_rhs(num_nodes, 0.0);
+    MatDbl Acell(num_nodes, std::vector<double>(num_nodes, 0.0));
+    std::vector<double> cell_rhs(num_nodes, 0.0);
 
     // Assemble continuous kernels
     {

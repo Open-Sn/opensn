@@ -51,7 +51,7 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
     }
 
     /**Function evaluation at vector-x.*/
-    VecDbl F(const VecDbl& x) const override
+    std::vector<double> F(const std::vector<double>& x) const override
     {
       assert(x.size() == 2);
       const double a = x[0];
@@ -64,7 +64,7 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
               (FOUR_PI / b / b) * exp(a) * (b * cosh(b) - sinh(b)) - size_J};
     }
     /**Jacobian evaluation at vector-x.*/
-    MatDbl J(const VecDbl& x) const override
+    MatDbl J(const std::vector<double>& x) const override
     {
       assert(x.size() == 2);
       const double a = x[0];

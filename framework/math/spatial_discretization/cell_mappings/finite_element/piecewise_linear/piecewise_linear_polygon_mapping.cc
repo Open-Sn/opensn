@@ -320,9 +320,9 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
   // Declare necessary vars
   std::vector<unsigned int> V_quadrature_point_indices;
   VecVec3 V_qpoints_xyz;
-  std::vector<VecDbl> V_shape_value;
+  std::vector<std::vector<double>> V_shape_value;
   std::vector<VecVec3> V_shape_grad;
-  VecDbl V_JxW;
+  std::vector<double> V_JxW;
   size_t V_num_nodes;
 
   // Init volumetric quadrature
@@ -334,7 +334,7 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
   V_shape_grad.reserve(num_nodes_);
   for (size_t i = 0; i < num_nodes_; i++)
   {
-    VecDbl node_shape_value;
+    std::vector<double> node_shape_value;
     VecVec3 node_shape_grad;
 
     node_shape_value.reserve(ttl_num_vol_qpoints);
@@ -390,9 +390,9 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
   // Declare necessary vars
   std::vector<unsigned int> F_quadrature_point_indices;
   VecVec3 F_qpoints_xyz;
-  std::vector<VecDbl> F_shape_value;
+  std::vector<std::vector<double>> F_shape_value;
   std::vector<VecVec3> F_shape_grad;
-  VecDbl F_JxW;
+  std::vector<double> F_JxW;
   VecVec3 F_normals;
   size_t F_num_nodes;
 
@@ -410,7 +410,7 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
   F_shape_grad.reserve(num_nodes_);
   for (size_t i = 0; i < num_nodes_; i++)
   {
-    VecDbl node_shape_value;
+    std::vector<double> node_shape_value;
     VecVec3 node_shape_grad;
 
     node_shape_value.reserve(ttl_num_face_qpoints);

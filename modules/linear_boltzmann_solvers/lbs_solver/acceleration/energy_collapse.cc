@@ -26,14 +26,14 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
 
   const auto& isotropic_transfer_matrix = xs.TransferMatrix(0);
 
-  MatDbl S(num_groups, VecDbl(num_groups, 0.0));
+  MatDbl S(num_groups, std::vector<double>(num_groups, 0.0));
   for (int g = 0; g < num_groups; g++)
     for (const auto& [row_g, gprime, sigma] : isotropic_transfer_matrix.Row(g))
       S[g][gprime] = sigma;
 
   // Compiling the A and B matrices for different methods
-  MatDbl A(num_groups, VecDbl(num_groups, 0.0));
-  MatDbl B(num_groups, VecDbl(num_groups, 0.0));
+  MatDbl A(num_groups, std::vector<double>(num_groups, 0.0));
+  MatDbl B(num_groups, std::vector<double>(num_groups, 0.0));
   for (int g = 0; g < num_groups; g++)
   {
     if (scheme == EnergyCollapseScheme::JFULL)
@@ -65,7 +65,7 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
 
   MatDbl Ainv = Inverse(A);
   MatDbl C = MatMul(Ainv, B);
-  VecDbl E(num_groups, 1.0);
+  std::vector<double> E(num_groups, 1.0);
 
   double collapsed_D = 0.0;
   double collapsed_sig_a = 0.0;

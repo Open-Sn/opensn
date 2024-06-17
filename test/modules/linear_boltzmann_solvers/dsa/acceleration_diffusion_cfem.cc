@@ -73,13 +73,13 @@ acceleration_Diffusion_CFEM(const InputParameters&)
     const size_t cell_num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    MatDbl IntV_gradshapeI_gradshapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
-    MatDbl IntV_shapeI_shapeJ(cell_num_nodes, VecDbl(cell_num_nodes));
-    VecDbl IntV_shapeI(cell_num_nodes);
+    MatDbl IntV_gradshapeI_gradshapeJ(cell_num_nodes, std::vector<double>(cell_num_nodes));
+    MatDbl IntV_shapeI_shapeJ(cell_num_nodes, std::vector<double>(cell_num_nodes));
+    std::vector<double> IntV_shapeI(cell_num_nodes);
 
     std::vector<MatDbl> IntS_shapeI_shapeJ(cell_num_faces);
     std::vector<MatVec3> IntS_shapeI_gradshapeJ(cell_num_faces);
-    std::vector<VecDbl> IntS_shapeI(cell_num_faces);
+    std::vector<std::vector<double>> IntS_shapeI(cell_num_faces);
 
     // Volume integrals
     for (unsigned int i = 0; i < cell_num_nodes; ++i)
@@ -108,7 +108,7 @@ acceleration_Diffusion_CFEM(const InputParameters&)
     for (size_t f = 0; f < cell_num_faces; ++f)
     {
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
-      IntS_shapeI_shapeJ[f].resize(cell_num_nodes, VecDbl(cell_num_nodes));
+      IntS_shapeI_shapeJ[f].resize(cell_num_nodes, std::vector<double>(cell_num_nodes));
       IntS_shapeI[f].resize(cell_num_nodes);
       IntS_shapeI_gradshapeJ[f].resize(cell_num_nodes, VecVec3(cell_num_nodes));
 

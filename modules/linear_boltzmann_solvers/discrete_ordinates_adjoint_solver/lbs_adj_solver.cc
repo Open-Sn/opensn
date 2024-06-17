@@ -232,7 +232,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
       for (int i = 0; i < num_nodes; ++i)
       {
         // Get multigroup p1_moments
-        MGVec4 p1_moments(set_group_numbers.size(), VecDbl{0.0, 0.0, 0.0, 0.0});
+        MGVec4 p1_moments(set_group_numbers.size(), std::vector<double>{0.0, 0.0, 0.0, 0.0});
         for (int m = 0; m < std::max(static_cast<int>(num_moments_), 4); ++m)
         {
           const auto& ell = m_to_ell_em_map[m].ell;
@@ -259,7 +259,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
       // Determine nodal average p1_moments
       for (int g : set_group_numbers)
       {
-        VectorN<4> cell_p1_avg(VecDbl{0.0, 0.0, 0.0, 0.0});
+        VectorN<4> cell_p1_avg(std::vector<double>{0.0, 0.0, 0.0, 0.0});
 
         double volume_total = 0.0;
         for (int i = 0; i < num_nodes; ++i)

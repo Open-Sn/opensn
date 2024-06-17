@@ -16,15 +16,15 @@ class NonLinearFunction
 {
 public:
   /**Function evaluation at vector-x.*/
-  virtual VecDbl F(const VecDbl& x) const
+  virtual std::vector<double> F(const std::vector<double>& x) const
   {
-    VecDbl result(x.size(), 0.0);
+    std::vector<double> result(x.size(), 0.0);
     return result;
   }
   /**Jacobian evaluation at vector-x.*/
-  virtual MatDbl J(const VecDbl& x) const
+  virtual MatDbl J(const std::vector<double>& x) const
   {
-    MatDbl result(x.size(), VecDbl(x.size(), 0.0));
+    MatDbl result(x.size(), std::vector<double>(x.size(), 0.0));
     return result;
   }
 
@@ -32,10 +32,10 @@ public:
 };
 
 /**Newton iteration.*/
-VecDbl NewtonIteration(const NonLinearFunction& non_linear_function,
-                       const VecDbl& x_0,
-                       unsigned int max_iters,
-                       double epsilon,
-                       bool verbose = false);
+std::vector<double> NewtonIteration(const NonLinearFunction& non_linear_function,
+                                    const std::vector<double>& x_0,
+                                    unsigned int max_iters,
+                                    double epsilon,
+                                    bool verbose = false);
 
 } // namespace opensn

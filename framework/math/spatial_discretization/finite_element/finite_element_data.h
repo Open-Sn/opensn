@@ -13,9 +13,9 @@ class VolumetricFiniteElementData
 public:
   VolumetricFiniteElementData(std::vector<unsigned int> quadrature_point_indices,
                               std::vector<Vector3> qpoints_xyz,
-                              std::vector<VecDbl> shape_value,
+                              std::vector<std::vector<double>> shape_value,
                               std::vector<std::vector<Vector3>> shape_grad,
-                              VecDbl JxW,
+                              std::vector<double> JxW,
                               std::vector<std::vector<int>> face_dof_mappings,
                               size_t num_nodes)
     : quadrature_point_indices_(std::move(quadrature_point_indices)),
@@ -38,7 +38,7 @@ public:
 
   const std::vector<Vector3>& QPointsXYZ() const;
 
-  const std::vector<VecDbl>& ShapeValues() const;
+  const std::vector<std::vector<double>>& ShapeValues() const;
 
   const std::vector<std::vector<Vector3>>& ShapeGradValues() const;
 
@@ -53,9 +53,9 @@ public:
 private:
   std::vector<unsigned int> quadrature_point_indices_; ///< qp index only
   std::vector<Vector3> qpoints_xyz_;                   ///< qp index only
-  std::vector<VecDbl> shape_value_;                    ///< Node i, then qp
+  std::vector<std::vector<double>> shape_value_;       ///< Node i, then qp
   std::vector<std::vector<Vector3>> shape_grad_;       ///< Node i, then qp
-  VecDbl JxW_;                                         ///< qp index only
+  std::vector<double> JxW_;                            ///< qp index only
   std::vector<std::vector<int>> face_dof_mappings_;    ///< Face f,then fi
   size_t num_nodes_;
 };
@@ -66,9 +66,9 @@ class SurfaceFiniteElementData : public VolumetricFiniteElementData
 public:
   SurfaceFiniteElementData(std::vector<unsigned int> quadrature_point_indices,
                            std::vector<Vector3> qpoints_xyz,
-                           std::vector<VecDbl> shape_value,
+                           std::vector<std::vector<double>> shape_value,
                            std::vector<std::vector<Vector3>> shape_grad,
-                           VecDbl JxW,
+                           std::vector<double> JxW,
                            std::vector<Vector3> normals,
                            std::vector<std::vector<int>> face_dof_mappings,
                            size_t num_nodes)

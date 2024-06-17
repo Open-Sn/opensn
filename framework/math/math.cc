@@ -94,7 +94,7 @@ Transpose(const MatDbl& A)
   if (AR)
     AC = A[0].size();
 
-  MatDbl T(AC, VecDbl(AR));
+  MatDbl T(AC, std::vector<double>(AR));
   for (size_t i = 0; i < AR; i++)
     for (size_t j = 0; j < AC; j++)
       T[j][i] = A[i][j];
@@ -139,7 +139,7 @@ MatMul(const MatDbl& A, const double c)
   if (R)
     C = A[0].size();
 
-  MatDbl B(R, VecDbl(C, 0.));
+  MatDbl B(R, std::vector<double>(C, 0.));
 
   for (size_t i = 0; i < R; i++)
     for (size_t j = 0; j < C; j++)
@@ -148,8 +148,8 @@ MatMul(const MatDbl& A, const double c)
   return B;
 }
 
-VecDbl
-MatMul(const MatDbl& A, const VecDbl& x)
+std::vector<double>
+MatMul(const MatDbl& A, const std::vector<double>& x)
 {
   size_t R = A.size();
   size_t C = x.size();
@@ -157,7 +157,7 @@ MatMul(const MatDbl& A, const VecDbl& x)
   assert(R > 0);
   assert(C == A[0].size());
 
-  VecDbl b(R, 0.0);
+  std::vector<double> b(R, 0.0);
 
   for (size_t i = 0; i < R; i++)
   {
@@ -184,7 +184,7 @@ MatMul(const MatDbl& A, const MatDbl& B)
   size_t CC = BC;
   size_t Cs = AC;
 
-  MatDbl C(CR, VecDbl(CC, 0.));
+  MatDbl C(CR, std::vector<double>(CC, 0.));
 
   for (size_t i = 0; i < CR; i++)
     for (size_t j = 0; j < CC; j++)
@@ -209,7 +209,7 @@ MatAdd(const MatDbl& A, const MatDbl& B)
   assert(AC != 0 and BC != 0);
   assert(AC == BC);
 
-  MatDbl C(AR, VecDbl(AC, 0.0));
+  MatDbl C(AR, std::vector<double>(AC, 0.0));
 
   for (size_t i = 0; i < AR; i++)
     for (size_t j = 0; j < AC; j++)
@@ -233,7 +233,7 @@ MatSubtract(const MatDbl& A, const MatDbl& B)
   assert(AC != 0 and BC != 0);
   assert(AC == BC);
 
-  MatDbl C(AR, VecDbl(AC, 0.0));
+  MatDbl C(AR, std::vector<double>(AC, 0.0));
 
   for (size_t i = 0; i < AR; i++)
     for (size_t j = 0; j < AC; j++)
@@ -297,7 +297,7 @@ SubMatrix(const size_t r, const size_t c, const MatDbl& A)
 
   assert((r >= 0) and (r < R) and (c >= 0) and (c < C));
 
-  MatDbl B(R - 1, VecDbl(C - 1));
+  MatDbl B(R - 1, std::vector<double>(C - 1));
   for (size_t i = 0, ii = 0; i < R; ++i)
   {
     if (i != r)
@@ -317,7 +317,7 @@ SubMatrix(const size_t r, const size_t c, const MatDbl& A)
 }
 
 void
-GaussElimination(MatDbl& A, VecDbl& b, int n)
+GaussElimination(MatDbl& A, std::vector<double>& b, int n)
 {
   // Forward elimination
   for (int i = 0; i < n - 1; ++i)
@@ -509,16 +509,16 @@ Inverse(const MatDbl& A)
 }
 
 double
-PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
+PowerIteration(const MatDbl& A, std::vector<double>& e_vec, int max_it, double tol)
 {
   // Local Variables
   unsigned int n = A.size();
   int it_counter = 0;
-  VecDbl y(n, 1.0);
+  std::vector<double> y(n, 1.0);
   double lambda0 = 0.0;
 
   // Perform initial iteration outside of loop
-  VecDbl Ay = MatMul(A, y);
+  std::vector<double> Ay = MatMul(A, y);
   double lambda = Dot(y, Ay);
   y = VecMul(Ay, 1.0 / Vec2Norm(Ay));
   if (lambda < 0.0)
@@ -555,7 +555,7 @@ PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it, double tol)
 }
 
 void
-PrintVector(const VecDbl& x)
+PrintVector(const std::vector<double>& x)
 {
   for (auto& xi : x)
     std::cout << xi << ' ';
@@ -563,21 +563,21 @@ PrintVector(const VecDbl& x)
 }
 
 void
-Scale(VecDbl& x, const double& val)
+Scale(std::vector<double>& x, const double& val)
 {
   for (double& xi : x)
     xi *= val;
 }
 
 void
-Set(VecDbl& x, const double& val)
+Set(std::vector<double>& x, const double& val)
 {
   for (double& xi : x)
     xi = val;
 }
 
 double
-Dot(const VecDbl& x, const VecDbl& y)
+Dot(const std::vector<double>& x, const std::vector<double>& y)
 {
   // Error Checks
   assert(x.size() > 0);
@@ -593,11 +593,11 @@ Dot(const VecDbl& x, const VecDbl& y)
   return val;
 }
 
-VecDbl
-VecMul(const VecDbl& x, const double& val)
+std::vector<double>
+VecMul(const std::vector<double>& x, const double& val)
 {
   size_t n = x.size();
-  VecDbl y(n);
+  std::vector<double> y(n);
 
   for (size_t i = 0; i != n; ++i)
     y[i] = val * x[i];
@@ -606,7 +606,7 @@ VecMul(const VecDbl& x, const double& val)
 }
 
 double
-Vec1Norm(const VecDbl& x)
+Vec1Norm(const std::vector<double>& x)
 {
   // Local Variables
   size_t n = x.size();
@@ -619,7 +619,7 @@ Vec1Norm(const VecDbl& x)
 }
 
 double
-Vec2Norm(const VecDbl& x)
+Vec2Norm(const std::vector<double>& x)
 {
   // Local Variables
   size_t n = x.size();
@@ -632,7 +632,7 @@ Vec2Norm(const VecDbl& x)
 }
 
 double
-VecInfinityNorm(const VecDbl& x)
+VecInfinityNorm(const std::vector<double>& x)
 {
   // Local Variables
   size_t n = x.size();
@@ -645,7 +645,7 @@ VecInfinityNorm(const VecDbl& x)
 }
 
 double
-VecPNorm(const VecDbl& x, const double& p)
+VecPNorm(const std::vector<double>& x, const double& p)
 {
   // Local Variables
   size_t n = x.size();
@@ -657,11 +657,11 @@ VecPNorm(const VecDbl& x, const double& p)
   return std::pow(val, 1.0 / p);
 }
 
-VecDbl
-operator+(const VecDbl& a, const VecDbl& b)
+std::vector<double>
+operator+(const std::vector<double>& a, const std::vector<double>& b)
 {
   assert(a.size() == b.size());
-  VecDbl result(a.size(), 0.0);
+  std::vector<double> result(a.size(), 0.0);
 
   for (size_t i = 0; i < a.size(); ++i)
     result[i] = a[i] + b[i];
@@ -669,11 +669,11 @@ operator+(const VecDbl& a, const VecDbl& b)
   return result;
 }
 
-VecDbl
-operator-(const VecDbl& a, const VecDbl& b)
+std::vector<double>
+operator-(const std::vector<double>& a, const std::vector<double>& b)
 {
   assert(a.size() == b.size());
-  VecDbl result(a.size(), 0.0);
+  std::vector<double> result(a.size(), 0.0);
 
   for (size_t i = 0; i < a.size(); ++i)
     result[i] = a[i] - b[i];

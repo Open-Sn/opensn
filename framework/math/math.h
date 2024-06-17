@@ -9,8 +9,7 @@
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include <memory>
 
-typedef std::vector<double> VecDbl;
-typedef std::vector<VecDbl> MatDbl;
+typedef std::vector<std::vector<double>> MatDbl;
 
 namespace opensn
 {
@@ -101,22 +100,22 @@ std::pair<double, double> OmegaToPhiThetaSafe(const Vector3& omega);
 /**
  * Prints the Vector.
  */
-void PrintVector(const VecDbl& x);
+void PrintVector(const std::vector<double>& x);
 
 /**
  * Scales a vector in place by constant.
  */
-void Scale(VecDbl& x, const double& val);
+void Scale(std::vector<double>& x, const double& val);
 
 /**
  * Sets a constant value to a vector.
  */
-void Set(VecDbl& x, const double& val);
+void Set(std::vector<double>& x, const double& val);
 
 /**
  * Multiplies the vector with a constant and returns result.
  */
-VecDbl VecMul(const VecDbl& x, const double& val);
+std::vector<double> VecMul(const std::vector<double>& x, const double& val);
 
 /**
  * Returns the 1-norm. Also known as the Taxicab or Manhattan norm.
@@ -126,7 +125,7 @@ VecDbl VecMul(const VecDbl& x, const double& val);
  * \f]
  *
  */
-double Vec1Norm(const VecDbl& x);
+double Vec1Norm(const std::vector<double>& x);
 
 /**
  * Returns the 2-norm. Also known as the Euclidian or Frobenius norm.
@@ -136,7 +135,7 @@ double Vec1Norm(const VecDbl& x);
  * \f]
  *
  */
-double Vec2Norm(const VecDbl& x);
+double Vec2Norm(const std::vector<double>& x);
 
 /** Returns the infinity-norm.
  *
@@ -145,7 +144,7 @@ double Vec2Norm(const VecDbl& x);
  * \ldots,\left|x_{n}\right|\right) \f]
  *
  */
-double VecInfinityNorm(const VecDbl& x);
+double VecInfinityNorm(const std::vector<double>& x);
 
 /**
  * Returns the p-norm.
@@ -155,7 +154,7 @@ double VecInfinityNorm(const VecDbl& x);
  * \f]
  *
  */
-double VecPNorm(const VecDbl& x, const double& p);
+double VecPNorm(const std::vector<double>& x, const double& p);
 
 /** Computes the dot product of two vectors.
  *
@@ -163,17 +162,17 @@ double VecPNorm(const VecDbl& x, const double& p);
  * \mathrm{a} \cdot \mathrm{b}=\sum_{i=1}^{n} a_{i} b_{i}
  * \f]
  */
-double Dot(const VecDbl& x, const VecDbl& y);
+double Dot(const std::vector<double>& x, const std::vector<double>& y);
 
 /**
  * Adds two vectors component-wise.
  */
-VecDbl operator+(const VecDbl& a, const VecDbl& b);
+std::vector<double> operator+(const std::vector<double>& a, const std::vector<double>& b);
 
 /**
  * Subtracts two vectors component-wise.
  */
-VecDbl operator-(const VecDbl& a, const VecDbl& b);
+std::vector<double> operator-(const std::vector<double>& a, const std::vector<double>& b);
 
 /**
  * Prints the contents of a matrix.
@@ -213,7 +212,7 @@ MatDbl MatMul(const MatDbl& A, const double c);
 /**
  * Multiply matrix with a vector and return resulting vector
  */
-VecDbl MatMul(const MatDbl& A, const VecDbl& x);
+std::vector<double> MatMul(const MatDbl& A, const std::vector<double>& x);
 
 /**
  * Mutliply two matrices and return result.
@@ -243,7 +242,7 @@ MatDbl SubMatrix(const size_t r, const size_t c, const MatDbl& A);
 /**
  * Gauss Elimination without pivoting.
  */
-void GaussElimination(MatDbl& A, VecDbl& b, int n);
+void GaussElimination(MatDbl& A, std::vector<double>& b, int n);
 
 /**
  * Computes the inverse of a matrix using Gauss-Elimination with pivoting.
@@ -259,6 +258,9 @@ MatDbl Inverse(const MatDbl& A);
  * Performs power iteration to obtain the fundamental eigen mode. The eigen-value of the fundamental
  * mode is return whilst the eigen-vector is return via reference.
  */
-double PowerIteration(const MatDbl& A, VecDbl& e_vec, int max_it = 2000, double tol = 1.0e-13);
+double PowerIteration(const MatDbl& A,
+                      std::vector<double>& e_vec,
+                      int max_it = 2000,
+                      double tol = 1.0e-13);
 
 } // namespace opensn

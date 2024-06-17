@@ -38,7 +38,7 @@ VolumetricFiniteElementData::QPointsXYZ() const
   return qpoints_xyz_;
 }
 
-const std::vector<VecDbl>&
+const std::vector<std::vector<double>>&
 VolumetricFiniteElementData::ShapeValues() const
 {
   return shape_value_;

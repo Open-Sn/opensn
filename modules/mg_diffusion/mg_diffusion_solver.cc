@@ -352,7 +352,7 @@ Solver::Compute_TwoGrid_Params()
     const auto& diffusion_coeff = mat_id_xs.second->DiffusionCoefficient();
 
     // put P0 transfer matrix in nicer form
-    MatDbl S(num_groups_, VecDbl(num_groups_, 0.0));
+    MatDbl S(num_groups_, std::vector<double>(num_groups_, 0.0));
     for (unsigned int g = 0; g < num_groups_; ++g)
       for (const auto& [row_g, gprime, sigma] : isotropic_transfer_matrix.Row(g))
         S[g][gprime] = sigma;
@@ -361,8 +361,8 @@ Solver::Compute_TwoGrid_Params()
     // original matrix = diag(total) - scattering
     // so L+D = diag(removal) - tril(scattering)
     // and U = -triu(scattering)
-    MatDbl A(num_groups_, VecDbl(num_groups_, 0.0));
-    MatDbl B(num_groups_, VecDbl(num_groups_, 0.0));
+    MatDbl A(num_groups_, std::vector<double>(num_groups_, 0.0));
+    MatDbl B(num_groups_, std::vector<double>(num_groups_, 0.0));
     for (unsigned int g = 0; g < num_groups_; ++g)
     {
       A[g][g] = sigma_t[g] - S[g][g];
@@ -375,7 +375,7 @@ Solver::Compute_TwoGrid_Params()
     // finally, obtain the iteration matrix
     MatDbl C_ = MatMul(Ainv, B);
     // Perform power iteration
-    VecDbl E(num_groups_, 1.0);
+    std::vector<double> E(num_groups_, 1.0);
     double rho = PowerIteration(C_, E, 10000, 1.0e-12);
 
     // Compute two-grid diffusion quantities
@@ -547,7 +547,7 @@ Solver::Assemble_A_bext()
       collapsed_sig_a = xstg.collapsed_sig_a;
     }
 
-    std::vector<VecDbl> rhs_cell;
+    std::vector<std::vector<double>> rhs_cell;
     rhs_cell.resize(num_groups_);
     for (uint g = 0; g < num_groups_; ++g)
       rhs_cell[g].resize(num_nodes, 0.0);
@@ -555,7 +555,7 @@ Solver::Assemble_A_bext()
     std::vector<MatDbl> Acell;
     Acell.resize(num_groups_ + i_two_grid);
     for (uint g = 0; g < num_groups_ + i_two_grid; ++g)
-      Acell[g].resize(num_nodes, VecDbl(num_nodes, 0.0));
+      Acell[g].resize(num_nodes, std::vector<double>(num_nodes, 0.0));
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
