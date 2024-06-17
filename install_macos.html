@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compiling on MacOS &mdash; OpenSn  documentation</title>
+  <title>Install on MacOS &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -46,18 +46,19 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="install_linux.html">Installing on Linux Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_linux.html">Install on Linux Machines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_linux_easy.html">Easy Install on Linux Machines</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Compiling on MacOS</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Install on MacOS</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#step-1-install-gcc">Step 1 - Install GCC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-2-install-mpich">Step 2 - Install MPICH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-3-install-petsc">Step 3 - Install PETSc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-4-install-the-visualization-tool-kit">Step 4 - Install the Visualization Tool Kit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-5-install-lua">Step 5 - Install Lua</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-6-install-caliper">Step 6 - Install Caliper</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-7-configure-and-build-opensn">Step 7 - Configure and Build OpenSn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-8-run-regression-tests">Step 8 - Run Regression Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-9-opensn-documentation">Step 9 - OpenSn Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-7-clone-opensn">Step 7 - Clone OpenSn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-8-configure-and-build-opensn">Step 8 - Configure and Build OpenSn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-9-run-regression-tests">Step 9 - Run Regression Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-10-opensn-documentation">Step 10 - OpenSn Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install_macos_easy.html">Easy Install on MacOS</a></li>
@@ -91,7 +92,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Compiling on MacOS</li>
+      <li class="breadcrumb-item active">Install on MacOS</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -100,8 +101,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="compiling-on-macos">
-<h1>Compiling on MacOS<a class="headerlink" href="#compiling-on-macos" title="Link to this heading"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="install-on-macos">
+<h1>Install on MacOS<a class="headerlink" href="#install-on-macos" title="Link to this heading"></a></h1>
 <p>The following instructions assume that all the prerequisite software packages
 will be installed by hand.  These packages may also be installed via Homebrew
 or MacPorts.</p>
@@ -303,8 +304,8 @@ After<span class="w"> </span>a<span class="w"> </span>successful<span class="w">
 </pre></div>
 </div>
 </section>
-<section id="step-7-configure-and-build-opensn">
-<h2>Step 7 - Configure and Build OpenSn<a class="headerlink" href="#step-7-configure-and-build-opensn" title="Link to this heading"></a></h2>
+<section id="step-7-clone-opensn">
+<h2>Step 7 - Clone OpenSn<a class="headerlink" href="#step-7-clone-opensn" title="Link to this heading"></a></h2>
 <p>Note:  If you want to contribute to OpenSn, it is strongly recommended
 to first fork the OpenSn repository into your own Git account and then to
 clone your fork.</p>
@@ -316,6 +317,9 @@ clone your fork.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;username&gt;/opensn.git<span class="w"> </span>/path/to/opensn
 </pre></div>
 </div>
+</section>
+<section id="step-8-configure-and-build-opensn">
+<h2>Step 8 - Configure and Build OpenSn<a class="headerlink" href="#step-8-configure-and-build-opensn" title="Link to this heading"></a></h2>
 <p>OpenSn is configured within a build directory with</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/opensn
 mkdir<span class="w"> </span>build
@@ -324,8 +328,16 @@ cmake<span class="w"> </span>..
 </pre></div>
 </div>
 <p>This will configure the project for building it.
-In general, the build directory will be within the source tree.
-OpenSn can then be built within the build directory via</p>
+To configure with support for building the documentation use</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/opensn
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-DOPENSN_WITH_DOCS<span class="o">=</span>ON<span class="w"> </span>..
+</pre></div>
+</div>
+<p>In general, the build directory will be within the source tree.
+Once configuration is complete, OpenSn can then be built within
+the build directory via</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j&lt;N&gt;
 </pre></div>
 </div>
@@ -333,33 +345,33 @@ OpenSn can then be built within the build directory via</p>
 of new files, etc. When this occurs, clear the <code class="docutils literal notranslate"><span class="pre">build</span></code> directory and repeat
 the configuration process above.</p>
 </section>
-<section id="step-8-run-regression-tests">
-<h2>Step 8 - Run Regression Tests<a class="headerlink" href="#step-8-run-regression-tests" title="Link to this heading"></a></h2>
+<section id="step-9-run-regression-tests">
+<h2>Step 9 - Run Regression Tests<a class="headerlink" href="#step-9-run-regression-tests" title="Link to this heading"></a></h2>
 <p>To check if the code compiled correctly execute the test scripts:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/opensn
 test/run_tests<span class="w"> </span>-j&lt;N&gt;
 </pre></div>
 </div>
 </section>
-<section id="step-9-opensn-documentation">
-<h2>Step 9 - OpenSn Documentation<a class="headerlink" href="#step-9-opensn-documentation" title="Link to this heading"></a></h2>
-<p>The documentation can be found <a class="reference external" href="https://xxx.io">online</a>, or
-generated locally. To generate the documentation locally, first make sure
-doxygen and LaTeX are installed:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>doxygen<span class="w"> </span>texlive
+<section id="step-10-opensn-documentation">
+<h2>Step 10 - OpenSn Documentation<a class="headerlink" href="#step-10-opensn-documentation" title="Link to this heading"></a></h2>
+<p>If you configured the OpenSn build environment with support for building the
+documentation (see <strong>Step 8</strong>), these instructions will help you install the
+necessary tools and build the documentation.</p>
+<p>To generate the documentation from your local working copy of OpenSn, you need
+to use <code class="docutils literal notranslate"><span class="pre">pip3</span></code> to install the required Python packages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>breathe<span class="w"> </span>myst-parser<span class="w"> </span>sphinx_rtd_theme
 </pre></div>
 </div>
-<p>The documentation is contained in the <code class="docutils literal notranslate"><span class="pre">doc</span></code> directory of the OpenSn source
-tree and can be generated with</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./YReGenerateDocumentation.sh
+<p>Then, from your <code class="docutils literal notranslate"><span class="pre">build</span></code> directory, you can run the command <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">doc</span></code> to generate
+the documentation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>build
+make<span class="w"> </span>doc
 </pre></div>
 </div>
-<p>from within the <code class="docutils literal notranslate"><span class="pre">doc</span></code> directory. Once finished, the generated documentation
-can be viewed with</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>doc/HTMLdocs/html/index.html
-</pre></div>
-</div>
-<p>in a web browser.</p>
+<p>Once the build process has completed, you can view the generated documentation by
+opening
+<code class="docutils literal notranslate"><span class="pre">opensn/build/doc/index.html</span></code> in your favorite web browser.</p>
 </section>
 </section>
 

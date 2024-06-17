@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installing on Linux Machines &mdash; OpenSn  documentation</title>
+  <title>Install on Linux Machines &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -46,7 +46,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installing on Linux Machines</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Install on Linux Machines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#step-1-install-development-tools">Step 1 - Install Development Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-2-install-petsc">Step 2 - Install PETSc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-3-install-the-visualization-tool-kit-vtk">Step 3 - Install the Visualization Tool Kit (VTK)</a></li>
@@ -60,7 +60,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install_linux_easy.html">Easy Install on Linux Machines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_macos.html">Compiling on MacOS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_macos.html">Install on MacOS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_macos_easy.html">Easy Install on MacOS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
@@ -92,7 +92,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Installing on Linux Machines</li>
+      <li class="breadcrumb-item active">Install on Linux Machines</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -101,8 +101,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="installing-on-linux-machines">
-<h1>Installing on Linux Machines<a class="headerlink" href="#installing-on-linux-machines" title="Link to this heading"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="install-on-linux-machines">
+<h1>Install on Linux Machines<a class="headerlink" href="#install-on-linux-machines" title="Link to this heading"></a></h1>
 <p>The following instructions were tested on Ubuntu 22.04.4 LTS. Other Linux
 distributions might require some minor tweaking.</p>
 <p>Some portions of these instructions require the use of <code class="docutils literal notranslate"><span class="pre">sudo</span></code>. If you do not
@@ -282,7 +282,7 @@ directory and run <code class="docutils literal notranslate"><span class="pre">c
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>mkdir<span class="w"> </span>build
 <span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
 <span class="w">    </span>$<span class="w"> </span>cmake<span class="w"> </span>..
-<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j
+<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j&lt;N&gt;
 </pre></div>
 </div>
 <p>To configure <strong>OpenSn</strong> for building the documentation, in addition to the
@@ -290,7 +290,7 @@ directory and run <code class="docutils literal notranslate"><span class="pre">c
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>mkdir<span class="w"> </span>build
 <span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
 <span class="w">    </span>$<span class="w"> </span>cmake<span class="w"> </span>-DOPENSN_WITH_DOCS<span class="o">=</span>ON<span class="w"> </span>..
-<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j
+<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j&lt;N&gt;
 </pre></div>
 </div>
 <p>For more information on building the documentation, see <strong>Step 10</strong> below.</p>

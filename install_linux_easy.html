@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Compiling on MacOS" href="install_macos.html" />
-    <link rel="prev" title="Installing on Linux Machines" href="install_linux.html" /> 
+    <link rel="next" title="Install on MacOS" href="install_macos.html" />
+    <link rel="prev" title="Install on Linux Machines" href="install_linux.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,7 +46,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="install_linux.html">Installing on Linux Machines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_linux.html">Install on Linux Machines</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Easy Install on Linux Machines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#step-1-install-development-tools">Step 1 - Install Development Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#step-2-clone-opensn">Step 2 - Clone OpenSn</a></li>
@@ -57,7 +57,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#step-7-build-the-opensn-documentation">Step 7 - Build the OpenSn Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="install_macos.html">Compiling on MacOS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install_macos.html">Install on MacOS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install_macos_easy.html">Easy Install on MacOS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
@@ -184,7 +184,7 @@ directory and run <code class="docutils literal notranslate"><span class="pre">c
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>mkdir<span class="w"> </span>build
 <span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
 <span class="w">    </span>$<span class="w"> </span>cmake<span class="w"> </span>..
-<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j
+<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j&lt;N&gt;
 </pre></div>
 </div>
 <p>To configure <strong>OpenSn</strong> for building the documentation, in addition to the
@@ -192,7 +192,7 @@ directory and run <code class="docutils literal notranslate"><span class="pre">c
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>mkdir<span class="w"> </span>build
 <span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
 <span class="w">    </span>$<span class="w"> </span>cmake<span class="w"> </span>-DOPENSN_WITH_DOCS<span class="o">=</span>ON<span class="w"> </span>..
-<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j
+<span class="w">    </span>$<span class="w"> </span>make<span class="w"> </span>-j&lt;N&gt;
 </pre></div>
 </div>
 <p>For more information on building the documentation, see <strong>Step 7</strong> below.</p>
@@ -227,8 +227,8 @@ opening <code class="docutils literal notranslate"><span class="pre">opensn/buil
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="install_linux.html" class="btn btn-neutral float-left" title="Installing on Linux Machines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="install_macos.html" class="btn btn-neutral float-right" title="Compiling on MacOS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="install_linux.html" class="btn btn-neutral float-left" title="Install on Linux Machines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="install_macos.html" class="btn btn-neutral float-right" title="Install on MacOS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
