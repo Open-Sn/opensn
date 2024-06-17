@@ -1,4 +1,4 @@
-# Compiling on MacOS
+# Install on MacOS
 
 The following instructions assume that all the prerequisite software packages
 will be installed by hand.  These packages may also be installed via Homebrew
@@ -210,7 +210,7 @@ export CALIPER_DIR="/path/to/caliper/install"
 export CMAKE_PREFIX_PATH="${CALIPER_DIR}:${CMAKE_PREFIX_PATH}"
 ```
 
-## Step 7 - Configure and Build OpenSn
+## Step 7 - Clone OpenSn
 
 Note:  If you want to contribute to OpenSn, it is strongly recommended
 to first fork the OpenSn repository into your own Git account and then to
@@ -224,6 +224,9 @@ or
 ```shell
 git clone https://github.com/<username>/opensn.git /path/to/opensn
 ```
+
+## Step 8 - Configure and Build OpenSn
+
 OpenSn is configured within a build directory with
 ```shell
 cd /path/to/opensn
@@ -232,8 +235,16 @@ cd build
 cmake ..
 ```
 This will configure the project for building it.
+To configure with support for building the documentation use
+```shell
+cd /path/to/opensn
+mkdir build
+cd build
+cmake -DOPENSN_WITH_DOCS=ON ..
+```
 In general, the build directory will be within the source tree.
-OpenSn can then be built within the build directory via
+Once configuration is complete, OpenSn can then be built within
+the build directory via
 ```shell
 make -j<N>
 ```
@@ -242,7 +253,7 @@ Note: OpenSn may need to be reconfigured with dependency changes, the addition
 of new files, etc. When this occurs, clear the `build` directory and repeat
 the configuration process above.
 
-## Step 8 - Run Regression Tests
+## Step 9 - Run Regression Tests
 
 To check if the code compiled correctly execute the test scripts:
 ```shell
@@ -250,23 +261,25 @@ cd /path/to/opensn
 test/run_tests -j<N>
 ```
 
-## Step 9 - OpenSn Documentation
+## Step 10 - OpenSn Documentation
 
-The documentation can be found [online](https://xxx.io), or
-generated locally. To generate the documentation locally, first make sure
-doxygen and LaTeX are installed:
-```shell
-sudo apt-get install doxygen texlive
+If you configured the OpenSn build environment with support for building the
+documentation (see **Step 8**), these instructions will help you install the
+necessary tools and build the documentation.
+
+To generate the documentation from your local working copy of OpenSn, you need
+to use `pip3` to install the required Python packages:
+```bash
+pip3 install breathe myst-parser sphinx_rtd_theme
 ```
 
-The documentation is contained in the `doc` directory of the OpenSn source
-tree and can be generated with
-```shell
-./YReGenerateDocumentation.sh
+Then, from your `build` directory, you can run the command `make doc` to generate
+the documentation:
+```bash
+cd build
+make doc
 ```
-from within the `doc` directory. Once finished, the generated documentation
-can be viewed with
-```shell
-doc/HTMLdocs/html/index.html
-```
-in a web browser.
+
+Once the build process has completed, you can view the generated documentation by
+opening
+`opensn/build/doc/index.html` in your favorite web browser.

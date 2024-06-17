@@ -99,7 +99,7 @@ directory and run `cmake` to generate the build files and `make` to compile
     $ mkdir build
     $ cd build
     $ cmake ..
-    $ make -j
+    $ make -j<N>
 ```
 
 To configure **OpenSn** for building the documentation, in addition to the 
@@ -109,7 +109,7 @@ To configure **OpenSn** for building the documentation, in addition to the
     $ mkdir build
     $ cd build
     $ cmake -DOPENSN_WITH_DOCS=ON ..
-    $ make -j
+    $ make -j<N>
 ```
 
 For more information on building the documentation, see **Step 7** below.
