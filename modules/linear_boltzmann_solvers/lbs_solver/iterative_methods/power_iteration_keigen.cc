@@ -108,7 +108,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   log.Log() << "\n";
   log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
   log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
-            << " (num_TrOps:" << frons_wgs_context->counter_applications_of_inv_op_ << ")"
+            << " (Number of Sweeps:" << frons_wgs_context->counter_applications_of_inv_op_ << ")"
             << "\n";
   log.Log() << "\n";
 }

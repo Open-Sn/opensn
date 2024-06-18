@@ -4,8 +4,10 @@
     "outfileprefix": "c5g7_pi",
     "comment": "2D C5G7 with PI",
     "num_procs": 32,
-    "args": ["k_method=\"pi\""],
-    "weight_class" : "long",
+    "args": [
+      "k_method=\"pi\""
+    ],
+    "weight_class": "long",
     "checks": [
       {
         "type": "FloatCompare",
@@ -19,10 +21,12 @@
   {
     "file": "c5g7_pi_scdsa.lua",
     "outfileprefix": "c5g7_pi_scdsa",
-    "comment": "2D C5G7 with PI and SCDSA accleration",
+    "comment": "2D C5G7 with PI and SCDSA acceleration",
     "num_procs": 32,
-    "args": ["k_method=\"pi_scdsa\""],
-    "weight_class" : "long",
+    "args": [
+      "k_method=\"pi_scdsa\""
+    ],
+    "weight_class": "long",
     "checks": [
       {
         "type": "FloatCompare",
@@ -34,12 +38,33 @@
     ]
   },
   {
+    "file": "c5g7_pi_smm.lua",
+    "outfileprefix": "c5g7_pi_smm",
+    "comment": "2D C5G7 with PI and SMM acceleration",
+    "num_procs": 32,
+    "args": [
+      "k_method=\"pi_smm\""
+    ],
+    "weight_class": "long",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 1.192709,
+        "abs_tol": 1.0e-4
+      }
+    ]
+  },
+  {
     "file": "c5g7_jfnk.lua",
     "outfileprefix": "c5g7_jfnk",
     "comment": "2D C5G7 with JFNK",
     "num_procs": 32,
-    "args": ["k_method=\"jfnk\""],
-    "weight_class" : "long",
+    "args": [
+      "k_method=\"jfnk\""
+    ],
+    "weight_class": "long",
     "checks": [
       {
         "type": "FloatCompare",

@@ -46,6 +46,7 @@ protected:
   KSP ksp_ = nullptr;
 
   const bool requires_ghosts_;
+  const bool suppress_bcs_;
 
 public:
   struct Options
@@ -65,8 +66,9 @@ public:
                   std::map<uint64_t, BoundaryCondition> bcs,
                   MatID2XSMap map_mat_id_2_xs,
                   const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                  bool verbose,
-                  bool requires_ghosts);
+                  bool requires_ghosts,
+                  bool suppress_bcs,
+                  bool verbose);
 
   /**
    * Returns the assigned text name.
@@ -111,6 +113,13 @@ public:
    * Adds to the right-hand side without applying spatial discretization.
    */
   void AddToRHS(const std::vector<double>& values);
+
+  /**
+   * Adds to the entries into the matrix without applying spatial discretization.
+   */
+  void AddToMatrix(const std::vector<int64_t>& rows,
+                   const std::vector<int64_t>& cols,
+                   const std::vector<double>& vals);
 
   /**
    * Solves the system and stores the local solution in the vector provide.

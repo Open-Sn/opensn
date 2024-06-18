@@ -1641,7 +1641,8 @@ lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
                                                        bcs,
                                                        matid_2_mgxs_map,
                                                        unit_cell_matrices_,
-                                                       true); // verbosity
+                                                       false,
+                                                       true);
     ParameterBlock block;
 
     solver->options.residual_tolerance = groupset.wgdsa_tol_;
@@ -1858,7 +1859,8 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
                                                        bcs,
                                                        matid_2_mgxs_map,
                                                        unit_cell_matrices_,
-                                                       true); // verbosity
+                                                       false,
+                                                       true);
 
     solver->options.residual_tolerance = groupset.tgdsa_tol_;
     solver->options.max_iters = groupset.tgdsa_max_iters_;
