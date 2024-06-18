@@ -36,8 +36,13 @@ mesh.MeshGenerator.Execute(meshgen1)
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
 
-vol1 = logvol.RPPLogicalVolume.Create({ xmin = -0.5 / 8, xmax = 0.5 / 8, ymin = -0.5 / 8, ymax = 0.5
-  / 8, infz = true })
+vol1 = logvol.RPPLogicalVolume.Create({
+  xmin = -0.5 / 8,
+  xmax = 0.5 / 8,
+  ymin = -0.5 / 8,
+  ymax = 0.5 / 8,
+  infz = true,
+})
 mesh.SetMaterialIDFromLogicalVolume(vol1, 1)
 
 --############################################### Add materials

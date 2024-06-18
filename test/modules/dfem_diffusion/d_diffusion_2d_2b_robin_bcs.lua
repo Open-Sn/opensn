@@ -57,28 +57,28 @@ diff_options = {
     {
       boundary = e_bndry,
       type = "robin",
-      coeffs = { 0.25, 0.5, 0.0 }
+      coeffs = { 0.25, 0.5, 0.0 },
     },
     {
       boundary = n_bndry,
-      type = "reflecting"
+      type = "reflecting",
     },
     {
       boundary = s_bndry,
-      type = "reflecting"
+      type = "reflecting",
     },
     {
       boundary = w_bndry,
       type = "robin",
-      coeffs = { 0.25, 0.5, 0.1 }
-    }
-  }
+      coeffs = { 0.25, 0.5, 0.1 },
+    },
+  },
 }
 
 -- DFEM solver
 phys1 = diffusion.DFEMSolver.Create({
   name = "DFEMSolver",
-  residual_tolerance = 1e-8
+  residual_tolerance = 1e-8,
 })
 diffusion.SetOptions(phys1, diff_options)
 

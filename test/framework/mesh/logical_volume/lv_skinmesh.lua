@@ -20,8 +20,14 @@ vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 mesh.SetMaterialIDFromLogicalVolume(vol0, 10)
 
 -- create a logical volume as an analytical RPP
-vol1 =
-  logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = 0.8, ymax = 1.5, zmin = -1.5, zmax = 0.5 })
+vol1 = logvol.RPPLogicalVolume.Create({
+  xmin = -0.5,
+  xmax = 0.5,
+  ymin = 0.8,
+  ymax = 1.5,
+  zmin = -1.5,
+  zmax = 0.5,
+})
 -- assign mat ID 11 to lv of RPP
 mesh.SetMaterialIDFromLogicalVolume(vol1, 11)
 

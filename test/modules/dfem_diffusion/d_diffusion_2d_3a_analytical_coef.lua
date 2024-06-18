@@ -49,30 +49,30 @@ diff_options = {
     {
       boundary = e_bndry,
       type = "dirichlet",
-      coeffs = { 0.0 }
+      coeffs = { 0.0 },
     },
     {
       boundary = n_bndry,
       type = "dirichlet",
-      coeffs = { 0.0 }
+      coeffs = { 0.0 },
     },
     {
       boundary = s_bndry,
       type = "dirichlet",
-      coeffs = { 0.0 }
+      coeffs = { 0.0 },
     },
     {
       boundary = w_bndry,
       type = "dirichlet",
-      coeffs = { 0.0 }
-    }
-  }
+      coeffs = { 0.0 },
+    },
+  },
 }
 
 -- DFEM solver
 phys1 = diffusion.DFEMSolver.Create({
   name = "DFEMSolver",
-  residual_tolerance = 1e-8
+  residual_tolerance = 1e-8,
 })
 diffusion.SetOptions(phys1, diff_options)
 
