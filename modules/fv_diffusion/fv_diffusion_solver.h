@@ -5,54 +5,36 @@
 
 #include "framework/physics/solver_base/solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-
-#include "modules/fv_diffusion/fv_diffusion_bndry.h"
 #include "framework/utils/timer.h"
 #include "framework/mesh/mesh.h"
-
+#include "modules/common/diffusion_bndry.h"
 #include <map>
 
-// forward declaration
 namespace opensn
 {
 class MeshContinuum;
 class SpatialDiscretization;
 class ScalarSpatialMaterialFunction;
 
-namespace fv_diffusion
+namespace diffusion
 {
 
-/** FV diffusion solver
- *
+/**
+ * FV diffusion solver
  */
-class Solver : public opensn::Solver
+class FVSolver : public opensn::Solver
 {
 public:
-  std::shared_ptr<MeshContinuum> grid_ptr_ = nullptr;
-
-  std::shared_ptr<SpatialDiscretization> sdm_ptr_ = nullptr;
-
-  size_t num_local_dofs_ = 0;
-  size_t num_globl_dofs_ = 0;
-
-  /// approx solution
-  Vec x_ = nullptr;
-  /// RHS
-  Vec b_ = nullptr;
-  /// linear system matrix
-  Mat A_ = nullptr;
-
-  typedef std::pair<opensn::fv_diffusion::BoundaryType, std::vector<double>> BoundaryInfo;
-  typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
-  BoundaryPreferences boundary_preferences_;
-  std::map<uint64_t, Boundary> boundaries_;
-
-  explicit Solver(const std::string& name);
-  ~Solver() override;
+  explicit FVSolver(const std::string& name);
+  explicit FVSolver(const InputParameters& params);
+  ~FVSolver() override;
 
   void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
   void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
   void SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
+
+  void SetOptions(const InputParameters& params);
+  void SetBoundaryOptions(const InputParameters& params);
 
   // void Initialize() override;
   void Initialize() override;
@@ -62,10 +44,36 @@ public:
   void UpdateFieldFunctions();
 
 private:
+  typedef std::pair<opensn::diffusion::BoundaryType, std::vector<double>> BoundaryInfo;
+  typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
+
+  std::shared_ptr<MeshContinuum> grid_ptr_;
+
+  std::shared_ptr<SpatialDiscretization> sdm_ptr_;
+
+  size_t num_local_dofs_;
+  size_t num_global_dofs_;
+
+  /// approx solution
+  Vec x_;
+  /// RHS
+  Vec b_;
+  /// linear system matrix
+  Mat A_;
+
+  std::map<uint64_t, Boundary> boundaries_;
+
+  BoundaryPreferences boundary_preferences_;
+
   std::shared_ptr<ScalarSpatialMaterialFunction> d_coef_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> sigma_a_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> q_ext_function_;
+
+public:
+  static InputParameters GetInputParameters();
+  static InputParameters OptionsBlock();
+  static InputParameters BoundaryOptionsBlock();
 };
 
-} // namespace fv_diffusion
+} // namespace diffusion
 } // namespace opensn
