@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/mg_diffusion/mg_diffusion_solver.h"
+#include "modules/diffusion/mg_diffusion_solver.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"

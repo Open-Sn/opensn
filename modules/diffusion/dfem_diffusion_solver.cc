@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/dfem_diffusion/dfem_diffusion_solver.h"
+#include "modules/diffusion/dfem_diffusion_solver.h"
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "modules/common/diffusion_bndry.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/functions/scalar_spatial_material_function.h"

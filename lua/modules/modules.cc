@@ -5,10 +5,6 @@
 #include "framework/object_factory.h"
 #include "lua/framework/lua.h"
 #include "lua/framework/console/console.h"
-#include "cfem_diffusion/cfem_diff_solver.h"
-#include "dfem_diffusion/dfem_diff_solver.h"
-#include "fv_diffusion/fv_diff_solver.h"
-#include "mg_diffusion/mg_diff_solver.h"
 #include "linear_bolzmann_solvers/lbs_solver/lbs_lua_utils.h"
 #include "config.h"
 

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/common/diffusion_bndry.h"
+#include "modules/diffusion/boundary.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/physics/solver_base/solver.h"
@@ -30,15 +30,6 @@ struct TwoGridCollapsedInfo
   double collapsed_D = 0.0;
   double collapsed_sig_a = 0.0;
   std::vector<double> spectrum;
-};
-
-/** Multigroup diffusion boundary */
-class MGBoundary
-{
-public:
-  BoundaryType type_ = BoundaryType::Vacuum;
-
-  std::array<std::vector<double>, 3> mg_values_;
 };
 
 // struct Multigroup_D_and_sigR
