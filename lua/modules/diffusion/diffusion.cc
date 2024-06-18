@@ -10,6 +10,8 @@
 #include "lua/modules/dfem_diffusion/dfem_diff_solver.h"
 #include "modules/fv_diffusion/fv_diffusion_solver.h"
 #include "lua/modules/fv_diffusion/fv_diff_solver.h"
+#include "modules/mg_diffusion/mg_diffusion_solver.h"
+#include "lua/modules/mg_diffusion/mg_diff_solver.h"
 
 namespace opensnlua
 {
@@ -47,6 +49,8 @@ SetOptions(const opensn::InputParameters& params)
     return DFEMSetOptions(params);
   else if (dynamic_cast<opensn::diffusion::FVSolver*>(&solver))
     return FVSetOptions(params);
+  else if (dynamic_cast<opensn::diffusion::MGSolver*>(&solver))
+    return CFEMMGSetOptions(params);
   else
     throw std::runtime_error("Unknown solver type");
 }
