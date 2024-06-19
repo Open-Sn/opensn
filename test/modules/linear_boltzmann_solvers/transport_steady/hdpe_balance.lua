@@ -1,4 +1,4 @@
--- Infinite 1-group problem
+-- Infinite 172-group problem
 -- Create Mesh
 nodes={}
 N=2
@@ -19,16 +19,10 @@ mesh.SetUniformMaterialID(0)
 materials = {}
 materials[1] = mat.AddMaterial('HDPE') 
 
-num_groups=1
+num_groups=172
 
 -- Add cross sections to materials
-if num_groups == 172 then
-  mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENMC_XSLIB, "../../MGXS_Generation/detector/mgxs_det/mgxs_detector.h5", 294.0, "hdpe")
-else
-  total = {1.}
-  c     = {0.9}
-  mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, total[1], c[1])
-end
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENMC_XSLIB, "HDPE.h5", 294.0)
 
 src={}
 for g=1,num_groups do
@@ -73,6 +67,3 @@ solver.Execute(ss_solver)
 
 -- compute particle balance
 lbs.ComputeBalance(phys)
-
-
-

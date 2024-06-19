@@ -610,9 +610,10 @@ DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ZeroOutflowBalanceVars");
 
-  for (auto& cell_transport_view : cell_transport_views_)
-    for (auto& group : groupset.groups_)
-      cell_transport_view.ZeroOutflow(group.id_);
+  for (const auto& cell : grid_ptr_->local_cells)
+    for (int f = 0; f < cell.faces_.size(); ++f)
+      for (auto& group : groupset.groups_)
+        cell_transport_views_[cell.local_id_].ZeroOutflow(f, group.id_);
 }
 
 void
@@ -621,11 +622,9 @@ DiscreteOrdinatesSolver::ComputeBalance()
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ComputeBalance");
 
   opensn::mpi_comm.barrier();
-  log.Log() << "\n********** Computing balance\n";
 
   // Get material source
-  // This is done using the SetSource routine
-  // because it allows a lot of flexibility.
+  // This is done using the SetSource routine because it allows a lot of flexibility.
   auto mat_src = phi_old_local_;
   mat_src.assign(mat_src.size(), 0.0);
   for (auto& groupset : groupsets_)
@@ -654,55 +653,67 @@ DiscreteOrdinatesSolver::ComputeBalance()
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
     const auto& IntS_shapeI = fe_intgrl_values.intS_shapeI;
 
-    // Inflow
-    // This is essentially an integration over
-    // all faces, all angles, and all groups.
-    // Only the cosines that are negative are
-    // added to the integral.
+    // Inflow: This is essentially an integration over all faces, all angles, and all groups. For
+    // non-reflective boundaries, only the cosines that are negative are added to the inflow
+    // integral. For reflective boundaries, it is expected that, upon convergence, inflow = outflow
+    // (within numerical tolerances set by the user).
     for (int f = 0; f < cell.faces_.size(); ++f)
     {
       const auto& face = cell.faces_[f];
 
-      for (const auto& groupset : groupsets_)
+      if (not face.has_neighbor_) // Boundary face
       {
-        for (int n = 0; n < groupset.quadrature_->omegas_.size(); ++n)
+        const auto& bndry = sweep_boundaries_[face.neighbor_id_];
+
+        if (bndry->IsReflecting())
         {
-          const auto& omega = groupset.quadrature_->omegas_[n];
-          const double wt = groupset.quadrature_->weights_[n];
-          const double mu = omega.Dot(face.normal_);
-
-          if (mu < 0.0 and (not face.has_neighbor_)) // mu<0 and bndry
+          for (int g = 0; g < num_groups_; ++g)
+            local_in_flow += transport_view.GetOutflow(f, g);
+        }
+        else
+        {
+          for (const auto& groupset : groupsets_)
           {
-            const auto& bndry = sweep_boundaries_[face.neighbor_id_];
-            for (int fi = 0; fi < face.vertex_ids_.size(); ++fi)
+            for (int n = 0; n < groupset.quadrature_->omegas_.size(); ++n)
             {
-              const int i = cell_mapping.MapFaceNode(f, fi);
-              const auto& IntFi_shapeI = IntS_shapeI[f][i];
+              const auto& omega = groupset.quadrature_->omegas_[n];
+              const double wt = groupset.quadrature_->weights_[n];
+              const double mu = omega.Dot(face.normal_);
 
-              for (const auto& group : groupset.groups_)
+              if (mu < 0.0)
               {
-                const int g = group.id_;
-                const double psi = *bndry->PsiIncoming(cell.local_id_, f, fi, n, g, 0);
-                local_in_flow -= mu * wt * psi * IntFi_shapeI;
-              } // for g
-            }   // for fi
-          }     // if bndry
-        }       // for n
-      }         // for groupset
-    }           // for f
+                for (int fi = 0; fi < face.vertex_ids_.size(); ++fi)
+                {
+                  const int i = cell_mapping.MapFaceNode(f, fi);
+                  const auto& IntFi_shapeI = IntS_shapeI[f][i];
 
-    // Outflow
-    // The group-wise outflow was determined
-    // during a solve so here we just
-    // consolidate it.
-    for (int g = 0; g < num_groups_; ++g)
-      local_out_flow += transport_view.GetOutflow(g);
+                  for (const auto& group : groupset.groups_)
+                  {
+                    const int g = group.id_;
+                    const double psi = *bndry->PsiIncoming(cell.local_id_, f, fi, n, g, 0);
+                    local_in_flow -= mu * wt * psi * IntFi_shapeI;
+                  } // for group
+                }   // for fi
+              }     // if mu < 0
+            }       // for n
+          }         // for groupset
+        }           // if reflecting boundary
+      }             // if boundary
+    }               // for f
 
-    // Absorption and Src
-    // Isotropic flux based absorption and source
+    // Outflow: The group-wise outflow was determined during a solve so we just accumulate it here.
+    for (int f = 0; f < cell.faces_.size(); ++f)
+    {
+      const auto& face = cell.faces_[f];
+      for (int g = 0; g < num_groups_; ++g)
+        local_out_flow += transport_view.GetOutflow(f, g);
+    }
+
+    // Absorption and sources
     const auto& xs = transport_view.XS();
     const auto& sigma_a = xs.SigmaAbsorption();
     for (int i = 0; i < num_nodes; ++i)
+    {
       for (int g = 0; g < num_groups_; ++g)
       {
         size_t imap = transport_view.MapDOF(i, 0, g);
@@ -712,21 +723,21 @@ DiscreteOrdinatesSolver::ComputeBalance()
         local_absorption += sigma_a[g] * phi_0g * IntV_shapeI[i];
         local_production += q_0g * IntV_shapeI[i];
       } // for g
-  }     // for cell
+    }   // for i
 
-  // Consolidate local balances
+  } // for cell
+
+  // Compute local balance
   double local_balance = local_production + local_in_flow - local_absorption - local_out_flow;
   double local_gain = local_production + local_in_flow;
-
   std::vector<double> local_balance_table = {
     local_absorption, local_production, local_in_flow, local_out_flow, local_balance, local_gain};
   size_t table_size = local_balance_table.size();
 
+  // Compute global balance
   std::vector<double> globl_balance_table(table_size, 0.0);
-
   mpi_comm.all_reduce(
     local_balance_table.data(), table_size, globl_balance_table.data(), mpi::op::sum<double>());
-
   double globl_absorption = globl_balance_table.at(0);
   double globl_production = globl_balance_table.at(1);
   double globl_in_flow = globl_balance_table.at(2);
@@ -743,8 +754,6 @@ DiscreteOrdinatesSolver::ComputeBalance()
             << " Gain (In-flow + Production) = " << globl_gain << "\n"
             << " Balance (Gain - Loss)       = " << globl_balance << "\n"
             << " Balance/Gain, in %          = " << globl_balance / globl_gain * 100. << "\n";
-
-  log.Log() << "\n********** Done computing balance\n";
 
   opensn::mpi_comm.barrier();
 }

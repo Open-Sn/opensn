@@ -300,8 +300,8 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
         if (is_boundary_face)
         {
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-            cell_transport_view_->AddOutflow(gs_gi_ + gsg,
-                                             wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
+            cell_transport_view_->AddOutflow(
+              f, gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
         }
 
         double* psi = nullptr;

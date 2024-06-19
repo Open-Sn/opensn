@@ -256,13 +256,14 @@ private:
   const std::vector<bool> face_local_flags_;
   const std::vector<int> face_locality_;
   const std::vector<const Cell*> neighbor_cell_ptrs_;
-  std::vector<double> outflow_;
+  std::vector<std::vector<double>> outflow_;
 
 public:
   CellLBSView(size_t phi_address,
               int num_nodes,
               int num_groups,
               int num_moments,
+              int num_faces,
               const MultiGroupXS& xs_mapping,
               double volume,
               const std::vector<bool>& face_local_flags,
@@ -280,7 +281,7 @@ public:
       neighbor_cell_ptrs_(neighbor_cell_ptrs)
   {
     if (cell_on_boundary)
-      outflow_.resize(num_groups_, 0.0);
+      outflow_.resize(num_faces);
   }
 
   size_t MapDOF(int node, int moment, int grp) const
@@ -300,26 +301,28 @@ public:
 
   double Volume() const { return volume_; }
 
-  void ZeroOutflow() { outflow_.assign(outflow_.size(), 0.0); }
-
-  void ZeroOutflow(int g)
+  void ZeroOutflow(int f, int g)
   {
-    if (g < outflow_.size())
-      outflow_[g] = 0.0;
+    if (f < outflow_.size() and g < outflow_[f].size())
+      outflow_[f][g] = 0.0;
   }
 
-  void AddOutflow(int g, double intS_mu_psi)
+  void AddOutflow(int f, int g, double intS_mu_psi)
   {
-    if (g < outflow_.size())
-      outflow_[g] += intS_mu_psi;
+    if (f < outflow_.size())
+    {
+      if (outflow_[f].empty())
+        outflow_[f].resize(num_groups_, 0.0);
+      if (g < outflow_[f].size())
+        outflow_[f][g] += intS_mu_psi;
+    }
   }
 
-  double GetOutflow(int g) const
+  double GetOutflow(int f, int g) const
   {
-    if (g < outflow_.size())
-      return outflow_[g];
-    else
-      return 0.0;
+    if (f < outflow_.size() and g < outflow_[f].size())
+      return outflow_[f][g];
+    return 0.0;
   }
 
   void ReassignXS(const MultiGroupXS& xs) { xs_ = &xs; }
