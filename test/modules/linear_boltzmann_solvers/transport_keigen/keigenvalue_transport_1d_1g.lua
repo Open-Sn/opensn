@@ -6,11 +6,15 @@ num_procs = 4
 --       variable=[[argument]]
 
 --############################################### Check num_procs
-if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
-                       "Expected "..tostring(num_procs)..
-                       ". Pass check_num_procs=false to override if possible.")
-    os.exit(false)
+if check_num_procs == nil and number_of_processes ~= num_procs then
+  log.Log(
+    LOG_0ERROR,
+    "Incorrect amount of processors. "
+      .. "Expected "
+      .. tostring(num_procs)
+      .. ". Pass check_num_procs=false to override if possible."
+  )
+  os.exit(false)
 end
 
 MPIBarrier()
@@ -20,24 +24,41 @@ MPIBarrier()
 -- ##################################################
 
 -- Mesh variables
-if (L == nil) then L = 100.0 end
-if (n_cells == nil) then n_cells = 50 end
+if L == nil then
+  L = 100.0
+end
+if n_cells == nil then
+  n_cells = 50
+end
 
 -- Transport angle information
-if (n_angles == nil) then n_angles = 16 end
-if (scat_order == nil) then scat_order = 0 end
+if n_angles == nil then
+  n_angles = 16
+end
+if scat_order == nil then
+  scat_order = 0
+end
 
 -- k-eigenvalue iteration parameters
-if (kes_max_iterations == nil) then kes_max_iterations = 5000 end
-if (kes_tolerance == nil) then kes_tolerance = 1e-8 end
+if kes_max_iterations == nil then
+  kes_max_iterations = 5000
+end
+if kes_tolerance == nil then
+  kes_tolerance = 1e-8
+end
 
 -- Source iteration parameters
-if (si_max_iterations == nil) then si_max_iterations = 500 end
-if (si_tolerance == nil) then si_tolerance = 1e-8 end
+if si_max_iterations == nil then
+  si_max_iterations = 500
+end
+if si_tolerance == nil then
+  si_tolerance = 1e-8
+end
 
 -- Delayed neutrons
-if (use_precursors == nil) then use_precursors = true end
-
+if use_precursors == nil then
+  use_precursors = true
+end
 
 -- ##################################################
 -- ##### Run problem #####
@@ -45,12 +66,12 @@ if (use_precursors == nil) then use_precursors = true end
 
 --############################################### Setup mesh
 nodes = {}
-dx = L/n_cells
-for i=0,n_cells do
-  nodes[i+1] = i*dx
+dx = L / n_cells
+for i = 0, n_cells do
+  nodes[i + 1] = i * dx
 end
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes} })
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
@@ -65,26 +86,23 @@ mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, xs_file)
 
 --############################################### Setup Physics
 num_groups = 1
-lbs_block =
-{
+lbs_block = {
   num_groups = num_groups,
-  groupsets =
-  {
+  groupsets = {
     {
-      groups_from_to = {0, num_groups-1},
-      angular_quadrature_handle = aquad.CreateProductQuadrature(GAUSS_LEGENDRE,n_angles),
+      groups_from_to = { 0, num_groups - 1 },
+      angular_quadrature_handle = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, n_angles),
       inner_linear_method = "gmres",
       l_max_its = si_max_iterations,
       l_abs_tol = si_tolerance,
-    }
-  }
+    },
+  },
 }
 
-lbs_options =
-{
+lbs_options = {
   scattering_order = scat_order,
 
-  use_precursors = use_precursors ,
+  use_precursors = use_precursors,
 
   verbose_inner_iterations = false,
   verbose_outer_iterations = true,
@@ -93,11 +111,10 @@ lbs_options =
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 lbs.SetOptions(phys, lbs_options)
 
-k_solver0 = lbs.NonLinearKEigen.Create
-({
+k_solver0 = lbs.NonLinearKEigen.Create({
   lbs_solver_handle = phys,
   nl_max_its = kes_max_iterations,
-  nl_abs_tol = kes_tolerance
+  nl_abs_tol = kes_tolerance,
 })
 solver.Initialize(k_solver0)
 solver.Execute(k_solver0)

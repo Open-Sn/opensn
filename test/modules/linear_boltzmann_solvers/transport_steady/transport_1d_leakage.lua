@@ -5,11 +5,15 @@
 
 -- Check num_procs
 num_procs = 3
-if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    log.Log(LOG_0ERROR, "Incorrect amount of processors. " ..
-        "Expected " .. tostring(num_procs) ..
-        ". Pass check_num_procs=false to override if possible.")
-    os.exit(false)
+if check_num_procs == nil and number_of_processes ~= num_procs then
+  log.Log(
+    LOG_0ERROR,
+    "Incorrect amount of processors. "
+      .. "Expected "
+      .. tostring(num_procs)
+      .. ". Pass check_num_procs=false to override if possible."
+  )
+  os.exit(false)
 end
 
 -- Setup mesh
@@ -17,8 +21,8 @@ N = 100
 L = 1.0
 nodes = {}
 for i = 1, (N + 1) do
-    k = i - 1
-    nodes[i] = (i - 1) * L / N
+  k = i - 1
+  nodes[i] = (i - 1) * L / N
 end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
@@ -30,43 +34,43 @@ num_groups = 1
 sigma_t = 1.0
 
 materials = {}
-materials[1] = mat.AddMaterial("Test Material");
+materials[1] = mat.AddMaterial("Test Material")
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, sigma_t, 0.0)
 
 -- Setup Physics
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 128)
 lbs_block = {
-    num_groups = num_groups,
-    groupsets = {
-        {
-            groups_from_to = { 0, num_groups - 1 },
-            angular_quadrature_handle = pquad,
-            angle_aggregation_num_subsets = 1,
-            groupset_num_subsets = 1,
-            inner_linear_method = "gmres",
-            l_abs_tol = 1.0e-6,
-            l_max_its = 300,
-            gmres_restart_interval = 100,
-        }
-    }
+  num_groups = num_groups,
+  groupsets = {
+    {
+      groups_from_to = { 0, num_groups - 1 },
+      angular_quadrature_handle = pquad,
+      angle_aggregation_num_subsets = 1,
+      groupset_num_subsets = 1,
+      inner_linear_method = "gmres",
+      l_abs_tol = 1.0e-6,
+      l_max_its = 300,
+      gmres_restart_interval = 100,
+    },
+  },
 }
 
 bsrc = {}
 for g = 1, num_groups do
-    bsrc[g] = 0.0
+  bsrc[g] = 0.0
 end
 bsrc[1] = 1.0
 
 lbs_options = {
-    boundary_conditions = {
-        {
-            name = "zmin",
-            type = "isotropic",
-            group_strength = bsrc
-        }
+  boundary_conditions = {
+    {
+      name = "zmin",
+      type = "isotropic",
+      group_strength = bsrc,
     },
-    scattering_order = 0,
-    save_angular_flux =  true
+  },
+  scattering_order = 0,
+  save_angular_flux = true,
 }
 
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
@@ -81,5 +85,5 @@ solver.Execute(ss_solver)
 -- Compute the leakage
 leakage = lbs.ComputeLeakage(phys)
 for k, v in pairs(leakage) do
-    log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
+  log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
 end

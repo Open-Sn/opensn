@@ -4,53 +4,53 @@
 -- and   WGS groups [63-167] Iteration    59 Residual 5.96296e-07 CONVERGED
 num_procs = 4
 
-
-
-
-
 --############################################### Check num_procs
-if (check_num_procs==nil and number_of_processes ~= num_procs) then
-  log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
-    "Expected "..tostring(num_procs)..
-    ". Pass check_num_procs=false to override if possible.")
+if check_num_procs == nil and number_of_processes ~= num_procs then
+  log.Log(
+    LOG_0ERROR,
+    "Incorrect amount of processors. "
+      .. "Expected "
+      .. tostring(num_procs)
+      .. ". Pass check_num_procs=false to override if possible."
+  )
   os.exit(false)
 end
 
 --############################################### Setup mesh
-nodes={}
-N=20
-L=100
+nodes = {}
+N = 20
+L = 100
 --N=10
 --L=200e6
-xmin = -L/2
+xmin = -L / 2
 --xmin = 0.0
-dx = L/N
-for i=1,(N+1) do
-  k=i-1
-  nodes[i] = xmin + k*dx
+dx = L / N
+for i = 1, (N + 1) do
+  k = i - 1
+  nodes[i] = xmin + k * dx
 end
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 mesh.SetUniformMaterialID(0)
 
-vol1 = logvol.RPPLogicalVolume.Create
-({ xmin=-10.0,xmax=10.0,ymin=-10.0,ymax=10.0, infz=true })
-mesh.SetMaterialIDFromLogicalVolume(vol1,1)
+vol1 =
+  logvol.RPPLogicalVolume.Create({ xmin = -10.0, xmax = 10.0, ymin = -10.0, ymax = 10.0, infz = true })
+mesh.SetMaterialIDFromLogicalVolume(vol1, 1)
 
 --############################################### Add materials
 materials = {}
-materials[1] = mat.AddMaterial("Test Material");
-materials[2] = mat.AddMaterial("Test Material2");
+materials[1] = mat.AddMaterial("Test Material")
+materials[2] = mat.AddMaterial("Test Material2")
 
 num_groups = 168
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_graphite_pure.xs")
 mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_air50RH.xs")
 
-src={}
-for g=1,num_groups do
+src = {}
+for g = 1, num_groups do
   src[g] = 0.0
 end
 src[1] = 1.0
@@ -60,15 +60,13 @@ mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2, false)
-aquad.OptimizeForPolarSymmetry(pquad0, 4.0*math.pi)
+aquad.OptimizeForPolarSymmetry(pquad0, 4.0 * math.pi)
 
-lbs_block =
-{
+lbs_block = {
   num_groups = num_groups,
-  groupsets =
-  {
+  groupsets = {
     {
-      groups_from_to = {0, 62},
+      groups_from_to = { 0, 62 },
       angular_quadrature_handle = pquad0,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 1,
@@ -80,7 +78,7 @@ lbs_block =
       wgdsa_l_abs_tol = 1.0e-2,
     },
     {
-      groups_from_to = {63, num_groups-1},
+      groups_from_to = { 63, num_groups - 1 },
       angular_quadrature_handle = pquad0,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 1,
@@ -92,11 +90,10 @@ lbs_block =
       apply_tgdsa = true,
       wgdsa_l_abs_tol = 1.0e-2,
     },
-  }
+  },
 }
 
-lbs_options =
-{
+lbs_options = {
   scattering_order = 1,
 }
 
@@ -104,17 +101,17 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 lbs.SetOptions(phys1, lbs_options)
 
 --############################################### Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys1 })
 
 solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
 --############################################### Get field functions
-fflist,count = lbs.GetScalarFieldFunctionList(phys1)
+fflist, count = lbs.GetScalarFieldFunctionList(phys1)
 
 --############################################### Exports
-if (master_export == nil) then
-  fieldfunc.ExportToVTKMulti(fflist,"ZPhi")
+if master_export == nil then
+  fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
 end
 
 --############################################### Plots

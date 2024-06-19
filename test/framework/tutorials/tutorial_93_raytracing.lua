@@ -1,17 +1,19 @@
 --############################################### Setup mesh
-if (nmesh==nil) then nmesh = 11 end
-
-nodes={}
-N=nmesh
-L=11.0
-xmin = -L/2
-dx = L/N
-for i=1,(N+1) do
-    k=i-1
-    nodes[i] = xmin + k*dx
+if nmesh == nil then
+  nmesh = 11
 end
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+nodes = {}
+N = nmesh
+L = 11.0
+xmin = -L / 2
+dx = L / N
+for i = 1, (N + 1) do
+  k = i - 1
+  nodes[i] = xmin + k * dx
+end
+
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
@@ -21,16 +23,13 @@ mesh.SetupOrthogonalBoundaries()
 
 unit_tests.SimTest93_RayTracing()
 
-
 --###############################################
 --############################################### Add materials
 materials = {}
-materials[1] = mat.AddMaterial("Test Material");
+materials[1] = mat.AddMaterial("Test Material")
 
 num_groups = 1
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1.0, 0.0)
-
-
 
 ----############################################### Setup Physics
 --solver_name = "LBS"
@@ -76,57 +75,52 @@ mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1.0, 0.0)
 --solver.Initialize(phys1)
 --solver.Execute(phys1)
 
-
-
-
 --############################################### Add point source
-src={}
-for g=1,num_groups do
-    src[g] = 0.0
+src = {}
+for g = 1, num_groups do
+  src[g] = 0.0
 end
 src[1] = 1.0
 pt_src = lbs.PointSource.Create({
-    location = { 0.0, 0.0, 0.0 },
-    strength = src
+  location = { 0.0, 0.0, 0.0 },
+  strength = src,
 })
 
 --############################################### Setup Physics
 solver_name = "LBS"
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,12*2*4, 12*4)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
-lbs_block =
-{
-    name = solver_name,
-    num_groups = num_groups,
-    groupsets =
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12 * 2 * 4, 12 * 4)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
+lbs_block = {
+  name = solver_name,
+  num_groups = num_groups,
+  groupsets = {
     {
-        {
-            groups_from_to = {0, num_groups-1},
-            angular_quadrature_handle = pquad,
-            inner_linear_method = "richardson",
-            l_abs_tol = 1.0e-6,
-            l_max_its = 0,
-        }
+      groups_from_to = { 0, num_groups - 1 },
+      angular_quadrature_handle = pquad,
+      inner_linear_method = "richardson",
+      l_abs_tol = 1.0e-6,
+      l_max_its = 0,
     },
-    options = {
-        scattering_order = 0,
-        point_sources = { pt_src },
-        field_function_prefix = solver_name
-    }
+  },
+  options = {
+    scattering_order = 0,
+    point_sources = { pt_src },
+    field_function_prefix = solver_name,
+  },
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 --############################################### Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys1 })
 
 solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
 ff_m0 = lbs.GetScalarFieldFunctionList(phys1)
 
-fieldfunc.ExportToVTKMulti({ff_m0[1]},"SimTest_93_LBS_"..solver_name)
+fieldfunc.ExportToVTKMulti({ ff_m0[1] }, "SimTest_93_LBS_" .. solver_name)
 MPIBarrier()
-if (location_id == 0) then
-    os.execute("rm SimTest_93*")
+if location_id == 0 then
+  os.execute("rm SimTest_93*")
 end

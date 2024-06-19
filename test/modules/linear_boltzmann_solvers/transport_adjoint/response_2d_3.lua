@@ -16,11 +16,15 @@
 num_procs = 4
 
 -- Check num_procs
-if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    log.Log(LOG_0ERROR, "Incorrect amount of processors. " ..
-            "Expected " .. tostring(num_procs) ..
-            ". Pass check_num_procs=false to override if possible.")
-    os.exit(false)
+if check_num_procs == nil and number_of_processes ~= num_procs then
+  log.Log(
+    LOG_0ERROR,
+    "Incorrect amount of processors. "
+      .. "Expected "
+      .. tostring(num_procs)
+      .. ". Pass check_num_procs=false to override if possible."
+  )
+  os.exit(false)
 end
 
 -- Create mesh
@@ -30,7 +34,7 @@ ds = L / N
 
 nodes = {}
 for i = 0, N do
-    nodes[i + 1] = i * ds
+  nodes[i + 1] = i * ds
 end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 mesh.MeshGenerator.Execute(meshgen)
@@ -38,38 +42,36 @@ mesh.MeshGenerator.Execute(meshgen)
 -- Set material IDs
 mesh.SetUniformMaterialID(0)
 
-vol1a = logvol.RPPLogicalVolume.Create(
-        {
-            infx = true,
-            ymin = 0.0, ymax = 0.8 * L,
-            infz = true
-        }
-)
+vol1a = logvol.RPPLogicalVolume.Create({
+  infx = true,
+  ymin = 0.0,
+  ymax = 0.8 * L,
+  infz = true,
+})
 
 mesh.SetMaterialIDFromLogicalVolume(vol1a, 1)
 
-vol0 = logvol.RPPLogicalVolume.Create(
-        {
-            xmin = 2.5 - 0.166666, xmax = 2.5 + 0.166666,
-            infy = true,
-            infz = true
-        }
-)
+vol0 = logvol.RPPLogicalVolume.Create({
+  xmin = 2.5 - 0.166666,
+  xmax = 2.5 + 0.166666,
+  infy = true,
+  infz = true,
+})
 mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
 
-vol1b = logvol.RPPLogicalVolume.Create(
-        {
-            xmin = -1 + 2.5, xmax = 1 + 2.5,
-            ymin = 0.9 * L, ymax = L,
-            infz = true
-        }
-)
+vol1b = logvol.RPPLogicalVolume.Create({
+  xmin = -1 + 2.5,
+  xmax = 1 + 2.5,
+  ymin = 0.9 * L,
+  ymax = L,
+  infz = true,
+})
 mesh.SetMaterialIDFromLogicalVolume(vol1b, 1)
 
 -- Create materials
 materials = {}
-materials[1] = mat.AddMaterial("Test Material1");
-materials[2] = mat.AddMaterial("Test Material2");
+materials[1] = mat.AddMaterial("Test Material1")
+materials[2] = mat.AddMaterial("Test Material2")
 
 -- Add cross sections to materials
 num_groups = 10
@@ -79,11 +81,11 @@ mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "response_2d_3
 -- Create sources
 src = {}
 for g = 1, num_groups do
-    if g == 1 then
-        src[g] = 1.0
-    else
-        src[g] = 0.0
-    end
+  if g == 1 then
+    src[g] = 1.0
+  else
+    src[g] = 0.0
+  end
 end
 
 loc = { 1.25 - 0.5 * ds, 1.5 * ds, 0.0 }
@@ -94,21 +96,21 @@ pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
 aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
-    num_groups = num_groups,
-    groupsets = {
-        {
-            groups_from_to = { 0, num_groups - 1 },
-            angular_quadrature_handle = pquad,
-            inner_linear_method = "gmres",
-            l_abs_tol = 1.0e-6,
-            l_max_its = 500,
-            gmres_restart_interval = 100,
-        }
+  num_groups = num_groups,
+  groupsets = {
+    {
+      groups_from_to = { 0, num_groups - 1 },
+      angular_quadrature_handle = pquad,
+      inner_linear_method = "gmres",
+      l_abs_tol = 1.0e-6,
+      l_max_its = 500,
+      gmres_restart_interval = 100,
     },
-    options = {
-        scattering_order = 0,
-        point_sources = { pt_src }
-    }
+  },
+  options = {
+    scattering_order = 0,
+    point_sources = { pt_src },
+  },
 }
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
@@ -119,57 +121,56 @@ solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
 -- Define QoI region
-qoi_vol = logvol.RPPLogicalVolume.Create(
-        {
-            xmin = 0.5, xmax = 0.8333,
-            ymin = 4.16666, ymax = 4.33333,
-            infz = true
-        }
-)
+qoi_vol = logvol.RPPLogicalVolume.Create({
+  xmin = 0.5,
+  xmax = 0.8333,
+  ymin = 4.16666,
+  ymax = 4.33333,
+  infz = true,
+})
 
 -- Compute QoI
 fwd_qois = {}
 fwd_qoi_sum = 0.0
 for g = 0, num_groups - 1 do
-    ff = fieldfunc.GetHandleByName(
-            "phi_g" .. string.format("%03d", g) .. "_m" .. string.format("%02d", 0))
-    ffi = fieldfunc.FFInterpolationCreate(VOLUME)
-    fieldfunc.SetProperty(ffi, OPERATION, OP_SUM)
-    fieldfunc.SetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
-    fieldfunc.SetProperty(ffi, ADD_FIELDFUNCTION, ff)
+  ff = fieldfunc.GetHandleByName(
+    "phi_g" .. string.format("%03d", g) .. "_m" .. string.format("%02d", 0)
+  )
+  ffi = fieldfunc.FFInterpolationCreate(VOLUME)
+  fieldfunc.SetProperty(ffi, OPERATION, OP_SUM)
+  fieldfunc.SetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
+  fieldfunc.SetProperty(ffi, ADD_FIELDFUNCTION, ff)
 
-    fieldfunc.Initialize(ffi)
-    fieldfunc.Execute(ffi)
-    fwd_qois[g + 1] = fieldfunc.GetValue(ffi)
+  fieldfunc.Initialize(ffi)
+  fieldfunc.Execute(ffi)
+  fwd_qois[g + 1] = fieldfunc.GetValue(ffi)
 
-    fwd_qoi_sum = fwd_qoi_sum + fwd_qois[g + 1]
+  fwd_qoi_sum = fwd_qoi_sum + fwd_qois[g + 1]
 end
 
 -- Create adjoint source
 function ResponseFunction(xyz, mat_id)
-    response = {}
-    for g = 1, num_groups do
-        if g == 6 then
-            response[g] = 1.0
-        else
-            response[g] = 0.0
-        end
+  response = {}
+  for g = 1, num_groups do
+    if g == 6 then
+      response[g] = 1.0
+    else
+      response[g] = 0.0
     end
-    return response
+  end
+  return response
 end
 response_func = opensn.LuaSpatialMaterialFunction.Create({ lua_function_name = "ResponseFunction" })
 
-adjoint_source = lbs.DistributedSource.Create(
-        {
-            logical_volume_handle = qoi_vol,
-            function_handle = response_func
-        }
-)
+adjoint_source = lbs.DistributedSource.Create({
+  logical_volume_handle = qoi_vol,
+  function_handle = response_func,
+})
 
 -- Switch to adjoint mode
 adjoint_options = {
-    adjoint = true,
-    distributed_sources = { adjoint_source }
+  adjoint = true,
+  distributed_sources = { adjoint_source },
 }
 lbs.SetOptions(phys, adjoint_options)
 
@@ -181,11 +182,11 @@ lbs.WriteFluxMoments(phys, "adjoint_2d_3")
 buffers = { { name = "buff", file_prefixes = { flux_moments = "adjoint_2d_3" } } }
 pt_sources = { pt_src }
 response_options = {
-    lbs_solver_handle = phys,
-    options = {
-        buffers = buffers,
-        sources = { point = pt_sources }
-    }
+  lbs_solver_handle = phys,
+  options = {
+    buffers = buffers,
+    sources = { point = pt_sources },
+  },
 }
 evaluator = lbs.ResponseEvaluator.Create(response_options)
 
@@ -194,14 +195,14 @@ response = lbs.EvaluateResponse(evaluator, "buff")
 
 -- Print results
 for g = 1, num_groups do
-    pref = "QoI Value[" .. tostring(g - 1) .. "]"
-    log.Log(LOG_0, string.format(pref .. "= %.5e", fwd_qois[g]))
+  pref = "QoI Value[" .. tostring(g - 1) .. "]"
+  log.Log(LOG_0, string.format(pref .. "= %.5e", fwd_qois[g]))
 end
 log.Log(LOG_0, string.format("sum(QoI Values)= %.5e", fwd_qoi_sum))
 log.Log(LOG_0, string.format("Inner Product=%.5e", response))
 
 -- Cleanup
 MPIBarrier()
-if (location_id == 0) then
-    os.execute("rm adjoint_2d_3*")
+if location_id == 0 then
+  os.execute("rm adjoint_2d_3*")
 end
