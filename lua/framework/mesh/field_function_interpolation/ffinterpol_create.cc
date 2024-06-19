@@ -3,7 +3,6 @@
 
 #include "lua/framework/lua.h"
 #include "framework/field_functions/interpolation/ffinter_point.h"
-#include "framework/field_functions/interpolation/ffinter_slice.h"
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/field_functions/interpolation/ffinter_volume.h"
 #include "framework/runtime.h"
@@ -36,15 +35,6 @@ FFInterpolationCreate(lua_State* L)
     opensn::log.LogAllVerbose2() << "Created point Field Function Interpolation";
     return LuaReturn(L, index);
   }
-  else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::SLICE))
-  {
-    auto new_ffi = new FieldFunctionInterpolationSlice;
-
-    opensn::field_func_interpolation_stack.emplace_back(new_ffi);
-    const size_t index = opensn::field_func_interpolation_stack.size() - 1;
-    opensn::log.LogAllVerbose2() << "Created slice Field Function Interpolation";
-    return LuaReturn(L, index);
-  }
   else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::LINE))
   {
     auto new_ffi = new FieldFunctionInterpolationLine;
@@ -65,8 +55,6 @@ FFInterpolationCreate(lua_State* L)
   }
   else // Fall back
     throw std::logic_error("Invalid FFITypeIndex used in FFInterpolationCreate.");
-
-  return LuaReturn(L);
 }
 
 } // namespace opensnlua

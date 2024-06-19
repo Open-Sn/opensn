@@ -32,7 +32,6 @@ class Cell;
 
 // Field function interpolation
 class FieldFunctionInterpolation;
-class FieldFunctionInterpolationSlice;
 class FieldFunctionInterpolationLine;
 class FieldFunctionInterpolationVolume;
 

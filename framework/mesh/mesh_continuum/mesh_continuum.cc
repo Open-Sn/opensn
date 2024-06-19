@@ -61,31 +61,18 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
   {
     int locI_num_connections = static_cast<int>(local_connections.size());
-
-    // If chi::mpi.location_id == locI then this call will
-    // act like a send instead of receive. Otherwise
-    // It receives the count.
     mpi_comm.broadcast(locI_num_connections, locI);
 
     if (opensn::mpi_comm.rank() != locI)
-    {
       global_graph[locI].resize(locI_num_connections, -1);
-    }
     else
-    {
       std::copy(
         local_connections.begin(), local_connections.end(), std::back_inserter(global_graph[locI]));
-    }
   }
 
   // Broadcast local connections
   for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
-  {
-    // If chi::mpi.location_id == locI then this call will
-    // act like a send instead of receive. Otherwise
-    // It receives the count.
     mpi_comm.broadcast(global_graph[locI].data(), global_graph[locI].size(), locI);
-  }
 
   log.Log0Verbose1() << "Done communicating local connections.";
 
@@ -238,14 +225,8 @@ MeshContinuum::GetCellDimension(const Cell& cell)
       return 0;
     case CellType::SLAB:
       return 1;
-    case CellType::TRIANGLE:
-    case CellType::QUADRILATERAL:
     case CellType::POLYGON:
       return 2;
-    case CellType::TETRAHEDRON:
-    case CellType::HEXAHEDRON:
-    case CellType::WEDGE:
-    case CellType::PYRAMID:
     case CellType::POLYHEDRON:
       return 3;
     default:

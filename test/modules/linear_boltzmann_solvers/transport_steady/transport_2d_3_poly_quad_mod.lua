@@ -116,14 +116,6 @@ solver.Execute(ss_solver)
 --############################################### Get field functions
 fflist,count = lbs.GetScalarFieldFunctionList(phys1)
 
---############################################### Slice plot
-slice2 = fieldfunc.FFInterpolationCreate(SLICE)
-fieldfunc.SetProperty(slice2,SLICE_POINT,{x = 0.0, y = 0.0, z = 0.025})
-fieldfunc.SetProperty(slice2,ADD_FIELDFUNCTION,fflist[1])
-
-fieldfunc.Initialize(slice2)
-fieldfunc.Execute(slice2)
-
 --############################################### Volume integrations
 vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
 
@@ -151,13 +143,3 @@ fieldfunc.Execute(curffi)
 maxval = fieldfunc.GetValue(curffi)
 
 log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
-
---############################################### Exports
-if master_export == nil then
-  fieldfunc.ExportToPython(slice2)
-end
-
---############################################### Plots
-if (location_id == 0 and master_export == nil) then
-  local handle = io.popen("python ZPFFI00.py")
-end
