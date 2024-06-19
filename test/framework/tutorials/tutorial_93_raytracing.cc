@@ -328,7 +328,7 @@ SimTest93_RayTracing(const InputParameters&)
   ff_list[0]->UpdateFieldVector(m0_phi);
 
   // Update field function
-  FieldFunctionGridBased::FFList const_ff_list;
+  std::vector<std::shared_ptr<const FieldFunctionGridBased>> const_ff_list;
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
   FieldFunctionGridBased::ExportMultipleToVTK("SimTest_93", const_ff_list);

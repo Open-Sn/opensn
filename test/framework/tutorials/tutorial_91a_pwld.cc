@@ -517,7 +517,7 @@ SimTest91_PWLD(const InputParameters&)
   ff_list[3]->UpdateFieldVector(mz_phi);
 
   // Update field function
-  FieldFunctionGridBased::FFList const_ff_list;
+  std::vector<std::shared_ptr<const FieldFunctionGridBased>> const_ff_list;
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
   FieldFunctionGridBased::ExportMultipleToVTK("SimTest_91a_PWLD", const_ff_list);

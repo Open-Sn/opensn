@@ -12,21 +12,17 @@ FieldFunction::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
-  params.AddRequiredParameter<std::string>("name",
-                                           "Named to be associated with this field function");
-
+  params.AddRequiredParameter<std::string>("name", "The field function name.");
   params.AddOptionalParameter(
     "unknown_type", "Scalar", "The type of the variable for this field function");
-
   params.AddOptionalParameter("num_components",
                               1,
                               "The number of components to attach to the variable. "
-                              "Only effective when \"type\" is VectorN.");
+                              "This is only valid for VectorN unknowns.");
 
   // Constrain values
   params.ConstrainParameterRange(
     "unknown_type", AllowableRangeList::New({"Scalar", "Vector2", "Vector3", "VectorN"}));
-
   params.ConstrainParameterRange("num_components", AllowableRangeLowLimit::New(1));
 
   return params;
@@ -34,7 +30,7 @@ FieldFunction::GetInputParameters()
 
 FieldFunction::FieldFunction(const InputParameters& params)
   : Object(params),
-    text_name_(params.GetParamValue<std::string>("name")),
+    name_(params.GetParamValue<std::string>("name")),
     unknown_(
       (params.GetParamValue<std::string>("unknown_type") == "Scalar") ? Unknown(UnknownType::SCALAR)
       : (params.GetParamValue<std::string>("unknown_type") == "Vector2")
@@ -48,8 +44,8 @@ FieldFunction::FieldFunction(const InputParameters& params)
 {
 }
 
-FieldFunction::FieldFunction(const std::string& text_name, Unknown unknown)
-  : text_name_(text_name), unknown_(std::move(unknown)), unknown_manager_({unknown_})
+FieldFunction::FieldFunction(std::string name, Unknown unknown)
+  : name_(std::move(name)), unknown_(std::move(unknown)), unknown_manager_({unknown_})
 {
 }
 
