@@ -25,19 +25,10 @@ CreateFunction(const std::string& function_name)
   return std::make_shared<LuaScalarSpatialMaterialFunction>(params);
 }
 
-opensn::InputParameters
-GetSyntax_SetOptions()
-{
-  opensn::InputParameters params;
-  params.SetGeneralDescription("Set options from a large list of parameters");
-  params.AddRequiredParameter<size_t>("arg0", "Handle to a `diffusion::CFEMSolver` object.");
-  params.AddRequiredParameterBlock("arg1", "Block of parameters for `diffusion::OptionsBlock`");
-  params.LinkParameterToBlock("arg1", "diffusion::OptionsBlock");
-  return params;
-}
+} // namespace
 
 opensn::ParameterBlock
-SetOptions(const opensn::InputParameters& params)
+CFEMSetOptions(const opensn::InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
 
@@ -67,9 +58,5 @@ SetOptions(const opensn::InputParameters& params)
 
   return opensn::ParameterBlock();
 }
-
-} // namespace
-
-RegisterWrapperFunctionInNamespace(diffusion, SetOptions, GetSyntax_SetOptions, SetOptions);
 
 } // namespace opensnlua
