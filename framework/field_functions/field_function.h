@@ -15,7 +15,7 @@ class FieldFunction : public Object
 {
 private:
   std::string text_name_;
-  opensn::Unknown unknown_;
+  Unknown unknown_;
   UnknownManager unknown_manager_;
 
 public:
@@ -34,7 +34,7 @@ public:
   /**Returns the text name of the field function.*/
   const std::string& TextName() const { return text_name_; }
   /**Returns a reference to the unknown structure.*/
-  const opensn::Unknown& Unknown() const { return unknown_; }
+  const Unknown& GetUnknown() const { return unknown_; }
   /**Returns a reference to the unknown manager that can be used in
    * spatial discretizations.*/
   const UnknownManager& GetUnknownManager() const { return unknown_manager_; }
