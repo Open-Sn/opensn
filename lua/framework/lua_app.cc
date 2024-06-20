@@ -114,6 +114,7 @@ LuaApp::ProcessArguments(int argc, char** argv)
 
     auto result = options.parse(argc, argv);
 
+    // Note that the order of evaluation of the command-line options is important!
     if (result.count("help"))
     {
       if (opensn::mpi_comm.rank() == 0)
@@ -128,6 +129,12 @@ LuaApp::ProcessArguments(int argc, char** argv)
       return 1;
     }
 
+    if (result.count("verbose"))
+    {
+      int verbosity = result["verbose"].as<int>();
+      opensn::log.SetVerbosity(verbosity);
+    }
+
     if (result.count("allow-petsc-error-handler"))
       allow_petsc_error_handler_ = true;
 
@@ -139,12 +146,6 @@ LuaApp::ProcessArguments(int argc, char** argv)
       ObjectFactory::GetInstance().DumpRegister();
       console.DumpRegister();
       return 1;
-    }
-
-    if (result.count("verbose"))
-    {
-      int verbosity = result["verbose"].as<int>();
-      opensn::log.SetVerbosity(verbosity);
     }
 
     if (result.count("caliper"))
