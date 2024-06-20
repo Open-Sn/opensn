@@ -515,5 +515,43 @@
         "abs_tol": 1.0e-6
       }
     ]
+  },
+  {
+    "file": "1g_infinite_pure_absorber_balance_gmres.lua",
+    "comment": "Infinite, 1g, pure absorber, with balance using GMRES",
+    "num_procs": 3,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   In-flow rate                =",
+        "goldvalue": 1.553633e+02,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Out-flow rate               =",
+        "goldvalue": 1.553633e+02,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "1g_infinite_pure_absorber_balance_richardson.lua",
+    "comment": "Infinite, 1g, pure absorber, with balance using Richardson",
+    "num_procs": 3,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   In-flow rate                =",
+        "goldvalue": 1.553633e+02,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Out-flow rate               =",
+        "goldvalue": 1.553633e+02,
+        "abs_tol": 1.0e-6
+      }
+    ]
   }
 ]
