@@ -143,7 +143,13 @@ public:
    */
   bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
 
-  MeshAttributes Attributes() const { return attributes_; }
+  MeshType Type() const { return mesh_type_; }
+
+  void SetType(MeshType type) { mesh_type_ = type; }
+
+  bool Extruded() const { return extruded_; }
+
+  void SetExtruded(bool extruded) { extruded_ = extruded; }
 
   /**
    * Gets and orthogonal mesh interface object.
@@ -180,9 +186,7 @@ public:
                                 bool sense,
                                 const std::string& boundary_name);
 
-  void SetAttributes(MeshAttributes new_attribs);
-
-  void SetOrthoAttributes(const OrthoMeshAttributes& attrs);
+  void SetOrthoAttributes(const OrthoMeshAttributes& attrs) { ortho_attributes_ = attrs; }
 
 public:
   VertexHandler vertices;
@@ -192,7 +196,8 @@ public:
 private:
   /// Spatial dimension
   unsigned int dim_;
-  MeshAttributes attributes_;
+  MeshType mesh_type_;
+  bool extruded_;
   OrthoMeshAttributes ortho_attributes_;
   std::map<uint64_t, std::string> boundary_id_map_;
 

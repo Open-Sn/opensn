@@ -64,11 +64,14 @@ public:
   const BoundBox& BoundingBox() const { return bound_box_; }
   void ComputeBoundingBox();
 
-  Options& MeshOptions() { return mesh_options_; }
+  void SetMeshOptions(const Options& opts) { mesh_options_ = opts; }
   const Options& MeshOptions() const { return mesh_options_; }
 
-  MeshAttributes& Attributes() { return attributes_; }
-  const MeshAttributes& Attributes() const { return attributes_; }
+  void SetType(MeshType type) { mesh_type_ = type; }
+  const MeshType& Type() const { return mesh_type_; }
+
+  void SetExtruded(bool extruded) { extruded_ = extruded; }
+  bool Extruded() const { return extruded_; }
 
   const std::vector<std::set<uint64_t>>& GetVertextCellSubscriptions() const
   {
@@ -112,8 +115,6 @@ public:
   const std::map<uint64_t, std::string>& BoundaryIDMap() const { return boundary_id_map_; }
   std::map<uint64_t, std::string>& BoundaryIDMap() { return boundary_id_map_; }
 
-  void SetAttributes(MeshAttributes new_attribs);
-
   void SetOrthoAttributes(size_t nx, size_t ny, size_t nz);
   const OrthoMeshAttributes& OrthoAttributes() const { return ortho_attrs_; }
 
@@ -129,7 +130,8 @@ public:
 protected:
   /// Spatial mesh dimension
   unsigned int dim_;
-  MeshAttributes attributes_;
+  MeshType mesh_type_;
+  bool extruded_;
   OrthoMeshAttributes ortho_attrs_;
   Options mesh_options_;
   BoundBox bound_box_;

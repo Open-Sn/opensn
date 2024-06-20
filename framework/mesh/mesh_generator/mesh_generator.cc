@@ -234,7 +234,8 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
   } // for raw_cell
 
   grid_ptr->SetDimension(input_umesh->Dimension());
-  grid_ptr->SetAttributes(input_umesh->Attributes());
+  grid_ptr->SetType(input_umesh->Type());
+  grid_ptr->SetExtruded(input_umesh->Extruded());
   grid_ptr->SetOrthoAttributes(input_umesh->OrthoAttributes());
 
   grid_ptr->SetGlobalVertexCount(input_umesh->Vertices().size());

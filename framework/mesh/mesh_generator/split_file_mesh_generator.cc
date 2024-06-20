@@ -192,7 +192,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     WriteBinaryValue(ofile, num_parts); // int
     WriteBinaryValue<unsigned int>(ofile, umesh.Dimension());
 
-    WriteBinaryValue(ofile, static_cast<int>(umesh.Attributes())); // int
+    WriteBinaryValue(ofile, static_cast<int>(umesh.Type()));
+    WriteBinaryValue(ofile, umesh.Extruded());
     auto& ortho_attrs = umesh.OrthoAttributes();
     WriteBinaryValue(ofile, ortho_attrs.Nx); // size_t
     WriteBinaryValue(ofile, ortho_attrs.Ny); // size_t
@@ -300,8 +301,8 @@ SplitFileMeshGenerator::ReadSplitMesh()
     dir_path.string() + "/" + file_prefix_ + "_" + std::to_string(pid) + ".cmesh";
 
   SplitMeshInfo info_block;
-  auto& cells = info_block.cells_;
-  auto& vertices = info_block.vertices_;
+  auto& cells = info_block.cells;
+  auto& vertices = info_block.vertices;
   std::ifstream ifile(file_path, std::ios_base::binary | std::ios_base::in);
 
   OpenSnLogicalErrorIf(not ifile.is_open(), "Failed to open " + file_path.string());
@@ -316,12 +317,13 @@ SplitFileMeshGenerator::ReadSplitMesh()
                          std::to_string(opensn::mpi_comm.size()) + " processes.");
 
   info_block.dimension = ReadBinaryValue<unsigned int>(ifile);
-  info_block.mesh_attributes_ = ReadBinaryValue<int>(ifile);
+  info_block.mesh_type = static_cast<MeshType>(ReadBinaryValue<int>(ifile));
+  info_block.extruded = ReadBinaryValue<bool>(ifile);
   info_block.ortho_attributes.Nx = ReadBinaryValue<size_t>(ifile);
   info_block.ortho_attributes.Ny = ReadBinaryValue<size_t>(ifile);
   info_block.ortho_attributes.Nz = ReadBinaryValue<size_t>(ifile);
 
-  info_block.num_global_vertices_ = ReadBinaryValue<size_t>(ifile);
+  info_block.num_global_vertices = ReadBinaryValue<size_t>(ifile);
 
   // Read boundary map
   const size_t num_bndries = ReadBinaryValue<size_t>(ifile);
@@ -332,7 +334,7 @@ SplitFileMeshGenerator::ReadSplitMesh()
     std::string bname(num_chars, ' ');
     ifile.read(bname.data(), static_cast<int>(num_chars));
 
-    info_block.boundary_id_map_.insert(std::make_pair(bid, bname));
+    info_block.boundary_id_map.insert(std::make_pair(bid, bname));
   }
 
   // Write how many cells and vertices in file
@@ -391,10 +393,10 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 {
   auto grid_ptr = MeshContinuum::New();
 
-  grid_ptr->GetBoundaryIDMap() = mesh_info.boundary_id_map_;
+  grid_ptr->GetBoundaryIDMap() = mesh_info.boundary_id_map;
 
-  auto& cells = mesh_info.cells_;
-  auto& vertices = mesh_info.vertices_;
+  auto& cells = mesh_info.cells;
+  auto& vertices = mesh_info.vertices;
 
   for (const auto& [vid, vertex] : vertices)
     grid_ptr->vertices.Insert(vid, vertex);
@@ -408,10 +410,11 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
   }
 
   grid_ptr->SetDimension(mesh_info.dimension);
-  grid_ptr->SetAttributes(static_cast<MeshAttributes>(mesh_info.mesh_attributes_));
+  grid_ptr->SetType(mesh_info.mesh_type);
+  grid_ptr->SetExtruded(mesh_info.extruded);
   grid_ptr->SetOrthoAttributes(mesh_info.ortho_attributes);
 
-  grid_ptr->SetGlobalVertexCount(mesh_info.num_global_vertices_);
+  grid_ptr->SetGlobalVertexCount(mesh_info.num_global_vertices);
 
   ComputeAndPrintStats(*grid_ptr);
 

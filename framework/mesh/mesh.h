@@ -53,12 +53,10 @@ class VolumeMesher;
 class VolumeMesherExtruder;
 class VolumeMesherPredefinedUnpartitioned;
 
-enum MeshAttributes : int
+enum MeshType : int
 {
-  NONE = 0,
-  ORTHOGONAL = (1 << 3),
-  EXTRUDED = (1 << 4),
-  UNSTRUCTURED = (1 << 5)
+  ORTHOGONAL,
+  UNSTRUCTURED
 };
 
 enum BoundaryID : int
@@ -70,12 +68,6 @@ enum BoundaryID : int
   ZMIN = 4,
   ZMAX = 5
 };
-
-inline MeshAttributes
-operator|(const MeshAttributes f1, const MeshAttributes f2)
-{
-  return static_cast<MeshAttributes>(static_cast<int>(f1) | static_cast<int>(f2));
-}
 
 struct OrthoMeshAttributes
 {

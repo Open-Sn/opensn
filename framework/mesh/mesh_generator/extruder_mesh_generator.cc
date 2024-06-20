@@ -286,7 +286,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   }   // for layer
 
   umesh->SetDimension(3);
-  umesh->SetAttributes(EXTRUDED);
+  umesh->SetExtruded(true);
 
   umesh->ComputeCentroids();
   umesh->CheckQuality();

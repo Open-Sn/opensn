@@ -30,12 +30,13 @@ protected:
   struct SplitMeshInfo
   {
     unsigned int dimension;
-    std::map<CellPIDGID, UnpartitionedMesh::LightWeightCell> cells_;
-    std::map<uint64_t, Vector3> vertices_;
-    std::map<uint64_t, std::string> boundary_id_map_;
-    int mesh_attributes_;
+    std::map<CellPIDGID, UnpartitionedMesh::LightWeightCell> cells;
+    std::map<uint64_t, Vector3> vertices;
+    std::map<uint64_t, std::string> boundary_id_map;
+    MeshType mesh_type;
+    bool extruded;
     OrthoMeshAttributes ortho_attributes;
-    size_t num_global_vertices_;
+    size_t num_global_vertices;
   };
   SplitMeshInfo ReadSplitMesh();
 
