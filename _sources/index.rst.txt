@@ -28,6 +28,7 @@ Welcome to the OpenSn documentation.
    :caption: Developer's Corner
 
    coding_standard.md
+   workflow.md
 
 .. toctree::
    :maxdepth: 1
