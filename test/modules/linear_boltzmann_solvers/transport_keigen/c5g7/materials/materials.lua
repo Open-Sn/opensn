@@ -1,8 +1,8 @@
 --############################################### Create cross sections
 xss = {}
 
-for m=0,6 do
-    xss[tostring(m)] = xs.Create()
+for m = 0, 6 do
+  xss[tostring(m)] = xs.Create()
 end
 
 -- GMesh mesh
@@ -17,12 +17,12 @@ xs.Set(xss["6"], OPENSN_XSFILE, "materials/XS_fission_chamber.xs")
 water_xs = xs.Get(xss["0"])
 
 num_groups = water_xs["num_groups"]
-log.Log(LOG_0,"Num groups: "..tostring(num_groups))
+log.Log(LOG_0, "Num groups: " .. tostring(num_groups))
 
 --############################################### Create materials
 materials = {}
-for m=0,6 do
-    key = tostring(m)
-    materials[key] = mat.AddMaterial("Material_"..key)
-    mat.SetProperty(materials[key], TRANSPORT_XSECTIONS, EXISTING, xss[key])
+for m = 0, 6 do
+  key = tostring(m)
+  materials[key] = mat.AddMaterial("Material_" .. key)
+  mat.SetProperty(materials[key], TRANSPORT_XSECTIONS, EXISTING, xss[key])
 end

@@ -1,25 +1,24 @@
 --############################################### Setup mesh
-nodes={}
-N=25
-L=2.0
-xmin = -L/2
-dx = L/N
-for i=1,(N+1) do
-    k=i-1
-    nodes[i] = xmin + k*dx
+nodes = {}
+N = 25
+L = 2.0
+xmin = -L / 2
+dx = L / N
+for i = 1, (N + 1) do
+  k = i - 1
+  nodes[i] = xmin + k * dx
 end
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes,nodes} })
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 mesh.SetUniformMaterialID(0)
 
-
-unit_tests.SimTest91_PWLD();
+unit_tests.SimTest91_PWLD()
 MPIBarrier()
-if (location_id == 0) then
-    os.execute("rm SimTest_91*")
+if location_id == 0 then
+  os.execute("rm SimTest_91*")
 end
 
 --[0]  Iteration     0   1.000e+00

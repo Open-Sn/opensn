@@ -98,7 +98,7 @@ lbs_options = {
   save_angular_flux = true,
   --write_restart_time_interval = 60,
   --write_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
-  read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured"
+  read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)

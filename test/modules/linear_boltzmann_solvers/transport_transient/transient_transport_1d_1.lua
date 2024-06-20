@@ -3,16 +3,16 @@
 -- Test:
 num_procs = 2
 
-
-
-
-
 --############################################### Check num_procs
-if (check_num_procs == nil and number_of_processes ~= num_procs) then
-    log.Log(LOG_0ERROR, "Incorrect amount of processors. " ..
-        "Expected " .. tostring(num_procs) ..
-        ". Pass check_num_procs=false to override if possible.")
-    os.exit(false)
+if check_num_procs == nil and number_of_processes ~= num_procs then
+  log.Log(
+    LOG_0ERROR,
+    "Incorrect amount of processors. "
+      .. "Expected "
+      .. tostring(num_procs)
+      .. ". Pass check_num_procs=false to override if possible."
+  )
+  os.exit(false)
 end
 
 --############################################### Setup mesh
@@ -22,8 +22,8 @@ L = 100.0
 xmin = 0.0
 dx = L / N
 for i = 1, (N + 1) do
-    k = i - 1
-    nodes[i] = xmin + k * dx
+  k = i - 1
+  nodes[i] = xmin + k * dx
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
@@ -34,8 +34,8 @@ mesh.SetUniformMaterialID(0)
 
 --############################################### Add materials
 materials = {}
-materials[1] = mat.AddMaterial("Test Material");
-materials[2] = mat.AddMaterial("Test Material2");
+materials[1] = mat.AddMaterial("Test Material")
+materials[2] = mat.AddMaterial("Test Material2")
 
 -- Define microscopic cross sections
 micro_xs = xs.Create()
@@ -52,7 +52,7 @@ mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, macro_xs)
 
 src = {}
 for g = 1, num_groups do
-    src[g] = 0.0
+  src[g] = 0.0
 end
 --src[1] = 1.0
 mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
@@ -64,7 +64,7 @@ phys1 = LBSCreateTransientSolver()
 --========== Groups
 grp = {}
 for g = 1, num_groups do
-    grp[g] = LBSCreateGroup(phys1)
+  grp[g] = LBSCreateGroup(phys1)
 end
 
 --========== ProdQuad
@@ -105,7 +105,6 @@ LBSSetProperty(phys1, USE_PRECURSORS, true)
 LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, false)
 LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 
-
 --############################################### Initialize and Execute Solver
 solver.Initialize(phys1)
 
@@ -113,7 +112,7 @@ LBTSSetProperty(phys1, "TIMESTEP", 1e-1)
 LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
 LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
-phys1name = solver.GetName(phys1);
+phys1name = solver.GetName(phys1)
 
 --for k=1,2 do
 --    --LBTSSetProperty(phys1, "INHIBIT_ADVANCE", true)
@@ -129,14 +128,24 @@ phys1name = solver.GetName(phys1);
 time = 0.0
 time_stop = 20.0
 k = 0
-while (time < time_stop) do
-    k = k + 1
-    solver.Step(phys1)
-    FRf = lbs.ComputeFissionRate(phys1, "NEW")
-    FRi = lbs.ComputeFissionRate(phys1, "OLD")
-    dt = LBTSGetProperty(phys1, "TIMESTEP")
-    time = LBTSGetProperty(phys1, "TIME")
-    period = dt / math.log(FRf / FRi)
-    log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
-                                 phys1name, k, time, dt, period, FRf))
+while time < time_stop do
+  k = k + 1
+  solver.Step(phys1)
+  FRf = lbs.ComputeFissionRate(phys1, "NEW")
+  FRi = lbs.ComputeFissionRate(phys1, "OLD")
+  dt = LBTSGetProperty(phys1, "TIMESTEP")
+  time = LBTSGetProperty(phys1, "TIME")
+  period = dt / math.log(FRf / FRi)
+  log.Log(
+    LOG_0,
+    string.format(
+      "%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
+      phys1name,
+      k,
+      time,
+      dt,
+      period,
+      FRf
+    )
+  )
 end

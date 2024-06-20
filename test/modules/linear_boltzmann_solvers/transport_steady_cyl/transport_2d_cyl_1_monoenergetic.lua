@@ -5,37 +5,43 @@
 num_procs = 4
 --Structured mesh
 
-
-
-
 --############################################### Check num_procs
-if (check_num_procs==nil and number_of_processes ~= num_procs) then
-    log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
-                      "Expected "..tostring(num_procs)..
-                      ". Pass check_num_procs=false to override if possible.")
-    os.exit(false)
+if check_num_procs == nil and number_of_processes ~= num_procs then
+  log.Log(
+    LOG_0ERROR,
+    "Incorrect amount of processors. "
+      .. "Expected "
+      .. tostring(num_procs)
+      .. ". Pass check_num_procs=false to override if possible."
+  )
+  os.exit(false)
 end
 
 --############################################### Setup mesh
 dim = 2
-length = {1.0, 2.0, }
-ncells = {50, 100, }
+length = { 1.0, 2.0 }
+ncells = { 50, 100 }
 nodes = {}
 for d = 1, dim do
-  delta = length[d]/ncells[d]
+  delta = length[d] / ncells[d]
   nodes[d] = {}
   for i = 0, ncells[d] do
-    nodes[d][i+1] = i*delta
+    nodes[d][i + 1] = i * delta
   end
 end
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = {nodes[1],nodes[2]} })
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes[1], nodes[2] } })
 mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
-vol0 = logvol.RPPLogicalVolume.Create
-({ xmin=0.0,xmax=length[1],ymin=0.0,ymax=length[2], infz=true })
-mesh.SetMaterialIDFromLogicalVolume(vol0,0)
+vol0 = logvol.RPPLogicalVolume.Create({
+  xmin = 0.0,
+  xmax = length[1],
+  ymin = 0.0,
+  ymax = length[2],
+  infz = true,
+})
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
 
 --############################################### Add materials
 ngrp = 1
@@ -43,44 +49,40 @@ sigmat = 25.0
 ratioc = 0.1
 source = sigmat * (1 - ratioc)
 
-material0 = mat.AddMaterial("Material_0");
+material0 = mat.AddMaterial("Material_0")
 mat.SetProperty(material0, TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, sigmat, ratioc)
 mat.SetProperty(material0, ISOTROPIC_MG_SOURCE, SINGLE_VALUE, source)
 
 --############################################### Setup Physics
 pquad0 = aquad.CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
 
-lbs_block =
-{
+lbs_block = {
   coord_system = 2,
   num_groups = ngrp,
-  groupsets =
-  {
+  groupsets = {
     {
-      groups_from_to = {0, ngrp-1},
+      groups_from_to = { 0, ngrp - 1 },
       angular_quadrature_handle = pquad0,
       angle_aggregation_type = "azimuthal",
       inner_linear_method = "gmres",
       l_max_its = 100,
       l_abs_tol = 1.0e-12,
-    }
-  }
+    },
+  },
 }
 
-lbs_options =
-{
-  boundary_conditions = { { name = "xmin", type = "reflecting"} },
+lbs_options = {
+  boundary_conditions = { { name = "xmin", type = "reflecting" } },
   scattering_order = 0,
 }
 phys1 = lbs.DiscreteOrdinatesCurvilinearSolver.Create(lbs_block)
 lbs.SetOptions(phys1, lbs_options)
 
 --############################################### Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys1})
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys1 })
 
 solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
-
 
 --phys0 = LBSCurvilinearCreateSolver(LBSCurvilinear.CYLINDRICAL)
 --
