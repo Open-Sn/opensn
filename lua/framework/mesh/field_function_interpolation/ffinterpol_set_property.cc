@@ -4,7 +4,6 @@
 #include "lua/framework/lua.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/field_functions/interpolation/ffinter_point.h"
-#include "framework/field_functions/interpolation/ffinter_slice.h"
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/field_functions/interpolation/ffinter_volume.h"
 #include "lua/framework/math/functions/lua_scalar_material_function.h"
@@ -110,26 +109,6 @@ FFInterpolationSetProperty(lua_State* L)
   {
     auto& cur_ffi = dynamic_cast<FieldFunctionInterpolationPoint&>(*p_ffi);
     cur_ffi.GetPointOfInterest() = LuaArg<Vector3>(L, 3);
-  }
-  else if (property == FieldFunctionInterpolationProperty::SLICEPOINT)
-  {
-    auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-    cur_ffi_slice.GetPlanePoint() = LuaArg<Vector3>(L, 3);
-  }
-  else if (property == FieldFunctionInterpolationProperty::SLICENORMAL)
-  {
-    auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-    cur_ffi_slice.GetNormal() = LuaArg<Vector3>(L, 3).Normalized();
-  }
-  else if (property == FieldFunctionInterpolationProperty::SLICETANGENT)
-  {
-    auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-    cur_ffi_slice.GetTangent() = LuaArg<Vector3>(L, 3).Normalized();
-  }
-  else if (property == FieldFunctionInterpolationProperty::SLICEBINORM)
-  {
-    auto& cur_ffi_slice = dynamic_cast<FieldFunctionInterpolationSlice&>(*p_ffi);
-    cur_ffi_slice.GetBiNorm() = LuaArg<Vector3>(L, 3).Normalized();
   }
   else if (property == FieldFunctionInterpolationProperty::FIRSTPOINT)
   {
