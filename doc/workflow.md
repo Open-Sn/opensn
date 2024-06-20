@@ -147,7 +147,7 @@ $ git branch -d <branch name>
 
 ## Fixing your branch
 
-The easiest way how to fix your branch is by using fixup commits (see [fun with autosquash](https://technosorcery.net/blog/2010/02/fun-with-the-upcoming-1-7-release-of-git-rebase-interactive-autosquash/)).
+The easiest way how to fix your branch is by using fixup commits (see [fun with autosquash](https://technosorcery.net/blog/2010/02/fun-with-the-upcoming-1-7-release-of-git-rebase---interactive---autosquash/)).
 
 1. Go patch by patch and fix the code according to the reviewer comments.
 2. Stage your changes. Typically `git add -u` will do.
