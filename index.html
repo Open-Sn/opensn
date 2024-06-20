@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenSn &mdash; OpenSn  documentation</title>
+  <title>The OpenSn Discrete-Ordinates Code &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -18,10 +18,12 @@
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Install on Linux Machines" href="install_linux.html" /> 
+    <link rel="next" title="Quick Install Guide" href="getting_started.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,27 +45,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="install_linux.html">Install on Linux Machines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_linux_easy.html">Easy Install on Linux Machines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_macos.html">Install on MacOS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install_macos_easy.html">Easy Install on MacOS</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/meshing/index.html">Meshing and Partitioning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/material/index.html">Material and Source Definitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/lbs/index.html">Linear Boltzmann Solver</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Developer's Corner</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="coding_standard.html">Coding Standard</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coding_standard.html">Coding Standards</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Developer Workflow</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Older Tutorials</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/old/index.html">Basic Tutorials</a></li>
 </ul>
 
         </div>
@@ -80,7 +67,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">OpenSn</li>
+      <li class="breadcrumb-item active">The OpenSn Discrete-Ordinates Code</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -89,16 +76,89 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="opensn">
-<h1>OpenSn<a class="headerlink" href="#opensn" title="Link to this heading"></a></h1>
-<p>Welcome to the OpenSn documentation.</p>
-<div class="toctree-wrapper compound">
+  <section id="the-opensn-discrete-ordinates-code">
+<h1>The OpenSn Discrete-Ordinates Code<a class="headerlink" href="#the-opensn-discrete-ordinates-code" title="Link to this heading"></a></h1>
+<p>OpenSn is an open-source, massively parallel, radiation transport code
+designed to solve the discrete-ordinates Boltzmann transport equation
+for neutral particles in a deterministic manner. OpenSn tackles a
+variety of problems, including steady-state and dynamical
+source-driven scenarios, as well as eigenvalue (criticality) problems.</p>
+<p>Written in modern C++, OpenSn features a Lua interface, making it
+versatile and accessible. From a simple laptop to a supercomputer,
+OpenSn can be compiled and executed across a wide range of computing
+platforms.</p>
+<p>OpenSn aggregates decades of research and development in numerical
+methods and parallel algorithms applied to radiation transport. The
+most prominent features of OpenSn include:</p>
+<ul class="simple">
+<li><p>A robust spatial finite-element method that is fully compatible with
+arbitrary polyhedral cells and adaptively refined grids.</p></li>
+<li><p>Standard angular quadratures, as well as locally refined
+finite-element angular quadrature rules for the angular variable.
+Note that uncollided-flux treatment techniques to mitigate ray effects
+typically found in angular collocation methods will become available
+at a later date.</p></li>
+<li><p>The traditional multigroup approximation applied to the energy
+variable. It is worth noting that multi-particle (e.g.,
+neutron+gamma) problems can be seamlessly handled.</p></li>
+<li><p>Advanced iterative solution algorithms are employed to efficiently
+solve the resulting system of equations, including transport-sweep
+preconditioning with various synthetic accelerators.</p></li>
+<li><p>Execution of massively parallel simulations on arbitrarily
+partitioned computational domains, utilizing efficient data
+aggregation and workflows to maximize performance. The code scales
+efficiently on a large number of MPI ranks, supporting up to 100,000+
+processes.</p></li>
+</ul>
+<div class="tip admonition">
+<p class="admonition-title">Recommended publication for citing</p>
+<p>Auhtors, “<a class="reference external" href="https://doi.org/">OpenSn: title</a>,”
+<em>journal</em>, <strong>volume</strong>, page–page (year).</p>
 </div>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Link to this heading"></a></h2>
+</section>
 <div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Quick Install Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install_linux.html">1. Install on Linux Machines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_linux_easy.html">2. Easy Install on Linux Machines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_macos.html">3. Install on MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_macos_easy.html">4. Easy Install on MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="theory/background.html">1. Background on the Linear Boltzmann Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/discretization.html">2. Phase-space Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/cross_sections.html">3. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/iterative.html">5. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/parallelization.html">6. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/adjoint.html">7. Adjoint Flux Formalism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/meshing/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/material/index.html">2. Material and Source Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/lbs/index.html">3. Linear Boltzmann Solver</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="coding_standard.html">Coding Standards</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="coding_standard.html#file-names">File names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coding_standard.html#c-conventions">C++ conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coding_standard.html#command-line-parameters">Command-line parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coding_standard.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Developer Workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="workflow.html#create-a-branch">Create a Branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflow.html#create-a-commit">Create a Commit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflow.html#sending-a-pull-request">Sending a Pull Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflow.html#fixing-your-branch">Fixing your branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflow.html#updating-your-branch">Updating Your Branch</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </section>
 
@@ -106,7 +166,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="install_linux.html" class="btn btn-neutral float-right" title="Install on Linux Machines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Quick Install Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

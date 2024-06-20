@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5. Iterative Solution Algorithms &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. Parallel Sweeps" href="parallelization.html" />
+    <link rel="prev" title="4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates" href="outcome.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5. Iterative Solution Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#multigroup-solution-process-background">5.1. Multigroup Solution Process: Background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#source-iteration-and-krylov-solvers">5.2. Source Iteration and Krylov Solvers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#source-iteration">5.2.1. Source Iteration:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#krylov-subspace-method">5.2.2. Krylov Subspace Method:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#within-group-acceleration">5.3. Within-group Acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#thermal-upscattering-acceleration">5.4. Thermal Upscattering Acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#power-iterations">5.5. Power Iterations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acceleration-of-power-iterations">5.6. Acceleration of Power Iterations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uncollided-flux-treatment">5.7. Uncollided-flux Treatment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">5.8. References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Developer Workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5. </span>Iterative Solution Algorithms</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="iterative-solution-algorithms">
+<h1><span class="section-number">5. </span>Iterative Solution Algorithms<a class="headerlink" href="#iterative-solution-algorithms" title="Link to this heading"></a></h1>
+<p>The Adams-Larsen review paper is a good reference for fast iterative
+schemes for discrete-ordinates particle transport calculations
+<span id="id1">Adams and Larsen [<a class="reference internal" href="#id50" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>.</p>
+<section id="multigroup-solution-process-background">
+<h2><span class="section-number">5.1. </span>Multigroup Solution Process: Background<a class="headerlink" href="#multigroup-solution-process-background" title="Link to this heading"></a></h2>
+<p>The transport equation needs to be solved for each group <span class="math notranslate nohighlight">\(g\)</span>
+(<span class="math notranslate nohighlight">\(1 \le g \le G\)</span>). In operator notation, this is written as</p>
+<div class="math notranslate nohighlight">
+\[L_g \Psi_g = M \Sigma_{g\to g}\Phi_{g}  + \sum_{g'&lt;g} M \Sigma_{g'\to g}\Phi_{g'} + \sum_{g'&gt;g} M \Sigma_{g'\to g}\Phi_{g'} + Q_{\text{ext},g } \,.\]</div>
+<div class="line-block">
+<div class="line">For fast groups, there is no upscattering and the transfer operator
+<span class="math notranslate nohighlight">\(\Sigma_{g'\to g}\)</span> is lower triangular and one simply solves</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[L_g \Psi_g =  M \Sigma_{g\to g}\Phi_{g} +  Q_g \,,\]</div>
+<p>where the source term <span class="math notranslate nohighlight">\(Q_g\)</span></p>
+<div class="math notranslate nohighlight">
+\[Q_g = \sum_{g'&lt;g} M \Sigma_{g'\to g}\Phi_{g'} + Q_{\text{ext},g}\]</div>
+<p>is already known from downscattering from higher groups and from the
+external source definition.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">For thermal groups, upscattering can become significant and thermal
+iterations (iteration index th) are required</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[L_g \Psi^{\text{(th+1)}}_g =  M \Sigma_{g\to g}\Phi^{\text{(th+1)}}_{g} +  Q^{\text{(th)}}_g\]</div>
+<p>where the source term <span class="math notranslate nohighlight">\(Q^{\text{(th)}}_g\)</span> contains fully known
+contributions from the external source and downscattered particles,
+while the upscattering contributions have been lagged at the previous
+thermal iteration:</p>
+<div class="math notranslate nohighlight">
+\[Q_g = \sum_{g'&lt;g} M \Sigma_{g'\to g}\Phi_{g'} +  \sum_{g'&gt;g} M \Sigma_{g'\to g}\Phi^{\text{(th)}}_{g'} + Q_{\text{ext},g} \,.\]</div>
+</div></blockquote>
+</section>
+<section id="source-iteration-and-krylov-solvers">
+<h2><span class="section-number">5.2. </span>Source Iteration and Krylov Solvers<a class="headerlink" href="#source-iteration-and-krylov-solvers" title="Link to this heading"></a></h2>
+<p>For each group, scattering within-group must also be resolved. Omitting
+the group indexing for brevity, the within-group problem can be stated
+as follows</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+    \text{Perform a transport sweep: } &amp;\Psi =  L^{-1} \left( M\Sigma \Phi  + Q \right)  \\
+    \text{Update the flux moments:   }&amp;\Phi = D \Psi
+\end{cases}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(Q\)</span> contains the external, downscattering, and upscattering
+contributions).</p>
+<section id="source-iteration">
+<h3><span class="section-number">5.2.1. </span>Source Iteration:<a class="headerlink" href="#source-iteration" title="Link to this heading"></a></h3>
+<p>In the Source Iteration (SI) method
+<span id="id2">Adams and Larsen [<a class="reference internal" href="#id50" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, the flux moments are
+lagged at iteration <span class="math notranslate nohighlight">\(i\)</span> to yield the following iterative strategy</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+    \Psi^{(i+1)} =  L^{-1} \left( M\Sigma \Phi^{(i)}  + Q \right)   \\
+    \Phi^{(i+1)} = D \Psi^{(i+1)}
+\end{cases}\end{split}\]</div>
+<p>SI therefore requires the action of <span class="math notranslate nohighlight">\(L^{-1}\)</span>, known as a transport
+sweep. SI is known to converge slowly (i.e., requires many iterations)
+in configurations that have a large amount of scattering (i.e., when the
+scattering ratio is close to 1) and that are not leakage-dominated
+(i.e., when the domain is several mean-free-path thick).</p>
+<p>Convergence checks are performed using differences in successive
+iterates <span class="math notranslate nohighlight">\(\Phi^{(i+1)}\)</span> and <span class="math notranslate nohighlight">\(\Phi^{(i)}\)</span>, using L-2 norm or
+pointwise relative error. To avoid false convergence, a factor of
+1-spectral radius is typically added</p>
+<div class="math notranslate nohighlight">
+\[\frac{\| \Phi^{(i+1)} - \Phi^{(i)} \|}{\|\Phi^{(i+1)}\|} \le (1-\varrho) \texttt{tol} \,,\]</div>
+<p>with <code class="docutils literal notranslate"><span class="pre">tol</span></code> the user-supplied tolerance and where the spectral radius
+is estimated as</p>
+<div class="math notranslate nohighlight">
+\[\varrho = \frac{\| \Phi^{(i+1)} - \Phi^{(i)} \|}{\| \Phi^{(i)} - \Phi^{(i-1)} \|} \,.\]</div>
+</section>
+<section id="krylov-subspace-method">
+<h3><span class="section-number">5.2.2. </span>Krylov Subspace Method:<a class="headerlink" href="#krylov-subspace-method" title="Link to this heading"></a></h3>
+<p>The original problem can be recast as</p>
+<div class="math notranslate nohighlight">
+\[\Phi = D L^{-1} \left(M\Sigma \Phi  + Q_{\text{ext}}\right)\]</div>
+<p>or</p>
+<div class="math notranslate nohighlight">
+\[\left(I - D L^{-1} M\Sigma \right) \Phi = L^{-1} Q \,.\]</div>
+<p>This linear system is of the typical “<span class="math notranslate nohighlight">\(Ax=b\)</span>” form where
+<span class="math notranslate nohighlight">\(b=L^{-1} Q\)</span> and requires one transport sweep on the source term
+and the global matrix <span class="math notranslate nohighlight">\(A=I - D L^{-1} M\Sigma\)</span> is not formed but
+only its action is required. Each action of <span class="math notranslate nohighlight">\(A\)</span> requires one
+transport sweep to evaluate the action of <span class="math notranslate nohighlight">\(L^{-1}\)</span>. Krylov
+subspace methods, such as GMRes, can be employed in a matrix-free
+fashion to solve such a system
+<span id="id3">Saad and Schultz [<a class="reference internal" href="#id248" title="Youcef Saad and Martin H Schultz. Gmres: a generalized minimal residual algorithm for solving nonsymmetric linear systems. SIAM Journal on scientific and statistical computing, 7(3):856–869, 1986.">SS86</a>]</span>, <span id="id4">Saad [<a class="reference internal" href="#id247" title="Yousef Saad. Iterative methods for sparse linear systems. Siam, 2003.">Saa03</a>]</span>, <span id="id5">Patton and Holloway [<a class="reference internal" href="#id70" title="BW Patton and JP Holloway. Application of krylov subspace methods to the slab geometry transport equation. In ANS Topical Meeting on Radiation Protection and Shielding, volume 1, 384. 1996.">PH96</a>]</span>, <span id="id6">Guthrie <em>et al.</em> [<a class="reference internal" href="#id71" title="Brian Guthrie, James P Holloway, and Bruce W Patton. Gmres as a multi-step transport sweep accelerator. Transport Theory and Statistical Physics, 28(1):83–102, 1999.">GHP99</a>]</span>, <span id="id7">Oliveira and Deng [<a class="reference internal" href="#id72" title="Suely Oliveira and Yuanhua Deng. Preconditioned krylov subspace methods for transport equations. Progress in Nuclear Energy, 33(1):155–174, 1998.">OD98</a>]</span>, <span id="id8">Warsa <em>et al.</em> [<a class="reference internal" href="#id169" title="James S Warsa, Todd A Wareing, and Jim E Morel. Krylov iterative methods and the degraded effectiveness of diffusion synthetic acceleration for multidimensional $s_n$ calculations in problems with material discontinuities. Nuclear Science and Engineering, 147(3):218–248, 2004.">WWM04</a>]</span>, <span id="id9">Fichtl <em>et al.</em> [<a class="reference internal" href="#id74" title="Erin D Fichtl, James S Warsa, and Anil K Prinja. Krylov iterative methods and synthetic acceleration for transport in binary statistical media. Journal of Computational Physics, 228(22):8413–8426, 2009.">FWP09</a>]</span>.</p>
+</section>
+</section>
+<section id="within-group-acceleration">
+<h2><span class="section-number">5.3. </span>Within-group Acceleration<a class="headerlink" href="#within-group-acceleration" title="Link to this heading"></a></h2>
+<p>In optically thick regions with a significant amount of scattering, the
+Source Iteration process can be slow. From spectral error analyses, the
+slowest-decaying error modes are diffusive modes. Hence, the idea to
+accelerate the SI procedure with a low-order synthetic accelerator
+<span id="id10">Adams and Larsen [<a class="reference internal" href="#id50" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, <span id="id11">Morel [<a class="reference internal" href="#id153" title="JE Morel. A synthetic acceleration method for discrete ordinates calculations with highly anisotropic scattering. Nuclear Science and Engineering, 82:34–46, 1982.">Mor82</a>]</span>, <span id="id12">Larsen [<a class="reference internal" href="#id160" title="Edward W. Larsen. Diffusion-synthetic acceleration methods for discrete-ordinates problems. Transport Theory and Statistical Physics, 13(1-2):107–126, 1984. URL: https://doi.org/10.1080/00411458408211656, doi:10.1080/00411458408211656.">Lar84</a>]</span>.</p>
+<p>We proceed by presenting an iteration of SI, solved using a transport
+sweep:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+    \Psi^{(i+1/2)} =  L^{-1} \left( M\Sigma \Phi^{(i)}  + Q \right)  \\
+    \Phi^{(i+1/2)} = D \Psi^{(i+1/2)}
+\end{cases}\end{split}\]</div>
+<p>The equation satisfied by the angular error <span class="math notranslate nohighlight">\(\varepsilon\)</span> and the
+moment error <span class="math notranslate nohighlight">\(e\)</span>, defined as the difference between the exact
+solution and the current iteration
+<span class="math notranslate nohighlight">\(\varepsilon^{(i+1/2)}=\psi-\Psi^{(i+1/2)}\)</span> and
+<span class="math notranslate nohighlight">\(e^{(i+1/2)}=\Phi- \Phi^{(i+1/2)}\)</span>, is</p>
+<div class="math notranslate nohighlight">
+\[L \varepsilon^{(i+1/2)} = M \Sigma (\Phi- \Phi^{(i)} ) = M \Sigma e^{(i)} + M \Sigma (\Phi^{(i+1/2)} - \Phi^{(i)} ) \,.\]</div>
+<p>The idea of synthetic acceleration is to replace the transport equation
+for the error by a low-order (often diffusion) approximation:</p>
+<div class="math notranslate nohighlight">
+\[A \delta \Phi = M \Sigma (\Phi^{(i+1/2)} - \Phi^{(i)} ) \,,\]</div>
+<p>where <span class="math notranslate nohighlight">\(A\)</span> is a low-order operator and <span class="math notranslate nohighlight">\(\delta \Phi\)</span> is the
+corrective term (no longer the true error) to be added to the latest
+values of the flux moments:</p>
+<div class="math notranslate nohighlight">
+\[\Phi^{(i+1)} = \Phi^{(i+1/2)} + \delta \Phi \,,\]</div>
+<p>before proceeding to the next Source Iteration. A synthetic accelerator
+must present some level of consistency in terms of spatial
+discretization with the original transport problem. In OpenSn, the
+operator <span class="math notranslate nohighlight">\(A\)</span> is a diffusion operator. The resulting Diffusion
+Synthetic Acceleration (DSA) equations are discretized with DGFEM as
+well, using the Modified Interior Penalty (MIP) formalism
+<span id="id13">Wang and Ragusa [<a class="reference internal" href="#id159" title="Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. Nuclear Science and Engineering, 166:145-166, 2010.">WR10</a>]</span>, <span id="id14">Turcksin and Ragusa [<a class="reference internal" href="#id130" title="Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. Journal of Computational Physics, 274:356-369, 2014. URL: https://www.sciencedirect.com/science/article/pii/S0021999114004100, doi:https://doi.org/10.1016/j.jcp.2014.05.044.">TR14</a>]</span>.</p>
+</section>
+<section id="thermal-upscattering-acceleration">
+<h2><span class="section-number">5.4. </span>Thermal Upscattering Acceleration<a class="headerlink" href="#thermal-upscattering-acceleration" title="Link to this heading"></a></h2>
+<p>In low-leakage configurations containing materials with low neutron
+absorption (e.g., graphite or heavy water), the thermal iterations can
+converge very slowly, and acceleration is required. This acceleration
+process will be applied over all thermal groups at once and is based on
+the two-grid (TG) methods by Adams and Morel
+<span id="id15">Adams and Morel [<a class="reference internal" href="#id162" title="BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. Nuclear Science and Engineering, 115(3):253–264, 1993.">AM93</a>]</span>, <span id="id16">Hanus and Ragusa [<a class="reference internal" href="#id163" title="Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. Nuclear Science and Engineering, 194(10):873–893, 2020. URL: https://doi.org/10.1080/00295639.2020.1767436, doi:10.1080/00295639.2020.1767436.">HR20</a>]</span>. Akin to the
+spatial multigrid techniques, the TG method consists of two energy
+grids: a fine grid (corresponding to the thermal group structure) and a
+coarse grid (a single macro-group over the entire thermal range). Adams
+and Morel realized that the most slowly converging modes of the thermal
+iterative scheme have weak spatial, angular, and energy variation, and
+hence, a single spatial diffusion solve on the coarse energy grid
+combined with an infinite medium energy spectrum should provide a good
+estimate for accelerating a previous transport iterate. The TG method
+consists of the following steps:</p>
+<ol class="arabic">
+<li><p>A loop over all thermal groups to obtain a new multigroup flux
+iterate: <span class="math notranslate nohighlight">\(\phi^{\text{(th+1/2)}}_g\)</span>. The within-group transport
+problem may be fully or partially converged and within-group
+acceleration may be applied. This is the standard process of one
+thermal iteration</p></li>
+<li><p>The TG acceleration is applied</p>
+<ol class="arabic">
+<li><p>by performing a macro-group diffusion solve (with appropriately
+thermally-averaged properties) for the spatial shape of the
+corrective term <span class="math notranslate nohighlight">\(\delta \phi\)</span></p></li>
+<li><p>by adding the corrective term with spectral weight to obtain an
+accelerated multigroup flux iterate</p>
+<div class="math notranslate nohighlight">
+\[\phi^{\text{(th+1)}}_g = \phi^{\text{(th+1/2)}}_g + \xi_g \delta \phi \,,\]</div>
+<p>where the spectral amplitude <span class="math notranslate nohighlight">\(\xi_g\)</span> is obtained from an
+infinite medium calculation for each distinct material type.</p>
+</li>
+</ol>
+</li>
+</ol>
+</section>
+<section id="power-iterations">
+<h2><span class="section-number">5.5. </span>Power Iterations<a class="headerlink" href="#power-iterations" title="Link to this heading"></a></h2>
+<p>For eigenvalue problems, the problem has the following form:</p>
+<div class="math notranslate nohighlight">
+\[L\Psi = M\Sigma\Phi + \frac{1}{k_\text{eff}}MF\Phi\]</div>
+<p>To solve this system of equation, the Power Iteration (PI) method
+consists of iterations on the fission production term,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+    \text{Given a fission source, solve:} &amp; L\Psi^{\text{(o+1)}} = M\Sigma\Phi^{\text{(o+1)}} + \frac{1}{k^{\text{(o)}}_\text{eff}} M S_f^{\text{(o)}} \\
+    \text{Update the fission source:}     &amp; S_f^{\text{(o+1)}} = F \Phi^{\text{(o+1)}} \\
+    \text{Update the eigenvalue:}         &amp; k^{\text{(o+1)}}_\text{eff} =  k^{\text{(o)}}_\text{eff}\frac{\|S_f^{\text{(o+1)}}\|}{\|S_f^{\text{(o)}}\|}
+\end{cases}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(o\)</span> denotes the outer Power Iteration index (also known as the outer
+iteration index). At each PI, a fixed source problem has to be solved.
+This fixed-source problem also requires inner iterations (within-group
+Source Iterations, possibly thermal iterations, as well as accelerations
+for each of these iterative schemes):</p>
+<div class="math notranslate nohighlight">
+\[L\Psi^{\text{(o+1,$i$+1)}} = M\Sigma\Phi^{\text{(o+1,$i$)}} + \frac{1}{k^{\text{(o)}}_\text{eff}} M S_f^{\text{(o)}} \,.\]</div>
+</section>
+<section id="acceleration-of-power-iterations">
+<h2><span class="section-number">5.6. </span>Acceleration of Power Iterations<a class="headerlink" href="#acceleration-of-power-iterations" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line">Power Iterations can be slow to converge when the dominance ratio
+(ratio of the largest eigenvalue to the second largest eigenvalue) is
+close to 1 <span id="id17">Reed [<a class="reference internal" href="#id145" title="Wm H Reed. The effectiveness of acceleration techniques for iterative methods in transport theory. Nuclear Science and Engineering, 45(3):245, 1971.">Ree71</a>]</span>. To remedy this,
+acceleration of Power Iterations is necessary. To do so, the
+second-moment method, a linearization of the variable Eddington-tensor
+method, is employed in OpenSn. For efficiency’s sake, a smaller number
+(often a single) inner iteration is perform. Thus, the PI acceleration
+starts by performing a standard transport sweep</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\Psi^{\text{(o+1/2)}} = L^{-1} \left ( M\Sigma\Phi^{\text{(o)}} + \frac{1}{k^{\text{(o)}}_\text{eff}} M S_f^{\text{(o)}} \right) \,.\]</div>
+<p>Similar to other synthetic acceleration methods, a transport equation
+for the angular error <span class="math notranslate nohighlight">\(\Psi-\Psi^{\text{(o+1/2)}}\)</span> is derived,
+with the variable without any superscript denoting the exact answer.
+However, a low-order approximation to the transport equation is
+employed to solve for the approximation of the scalar error
+<span class="math notranslate nohighlight">\(\delta \Phi = \Phi - \Phi^{\text{(o+1/2)}}\)</span>. At this stage,
+this description gives rise to the Adams-Barbu method
+<span id="id18">Barbu and Adams [<a class="reference internal" href="#id165" title="Anthony P. Barbu and Marvin L. Adams. Convergence properties of a linear diffusion-acceleration method for k-eigenvalue transport problems. Nuclear Science and Engineering, 197(4):517–533, 2023. URL: https://doi.org/10.1080/00295639.2022.2123205, doi:10.1080/00295639.2022.2123205.">BA23</a>]</span> if the diffusion is chosen as
+the low-order operator. Note that an eigenvalue problem that contains
+an inhomogeneous source term needs to be solved. Then, the flux update
+would be given by
+<span class="math notranslate nohighlight">\(\Phi^{\text{(o+1)}} = \Phi^{\text{(o+1/2)}} + \delta\Phi\)</span>.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">Rather than solving the low-order equations for the corrective term
+<span class="math notranslate nohighlight">\(\delta\Phi\)</span>, one can recast the low-order equations directly in
+terms of the flux update <span class="math notranslate nohighlight">\(\Phi^{\text{(o+1)}}\)</span>. When the
+low-order operator is chosen to be the second-moment method, a
+linearization of the variable Eddington-tensor method
+<span id="id19">Connor Woodsford and Morel [<a class="reference internal" href="#id166" title="James Tutt Connor Woodsford and Jim E. Morel. A variant of the second-moment method for k-eigenvalue calculations. Nuclear Science and Engineering, 0(0):1–9, 2024. URL: https://doi.org/10.1080/00295639.2024.2303107, doi:10.1080/00295639.2024.2303107.">CWM24</a>]</span>, the scheme implemented in OpenSn
+is obtained:</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[(A - \Sigma_0) \vartheta + \frac{1}{\lambda}F\vartheta + R(\Psi^{\text{(o+1/2)}}) \,,\]</div>
+<p>with <span class="math notranslate nohighlight">\(A\)</span> a diffusion operator, <span class="math notranslate nohighlight">\(\Sigma_0\)</span> a scattering
+operator, <span class="math notranslate nohighlight">\(F\)</span> the fission operator, and <span class="math notranslate nohighlight">\(R\)</span> the residual
+due to the unconverged transport-sweep step. This inhomogeneous
+eigenvalue problem is currently solved using a standard Power
+Iteration (index <span class="math notranslate nohighlight">\(m\)</span>).</p>
+<div class="math notranslate nohighlight">
+\[(A-\Sigma_0) \vartheta^{(m+1)} = \frac{1}{\lambda^{(m)}}F\vartheta^{(m)} + R(\Psi^{\text{(o+1/2)}}) \,.\]</div>
+<p>Upon convergence of the eigenproblem for the second-moment method, one
+sets</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+k^{\text{(o+1)}}      &amp; \leftarrow \lambda \\
+\Phi^{\text{(o+1)}}   &amp; \leftarrow \vartheta
+\end{aligned}\end{split}\]</div>
+<p>and one proceeds with a new outer iteration in transport, until
+convergence of the transport problem.</p>
+</div></blockquote>
+</section>
+<section id="uncollided-flux-treatment">
+<h2><span class="section-number">5.7. </span>Uncollided-flux Treatment<a class="headerlink" href="#uncollided-flux-treatment" title="Link to this heading"></a></h2>
+<p>In streaming regions (low-density material), in regions with low amount
+of scattering, and with localized small sources, the <span class="math notranslate nohighlight">\(S_n\)</span> method
+will exhibit ray effects (angular discretization error). These ray
+effects can be mitigated by splitting the angular flux into uncollided
+and collided components <span id="id20">Hanus <em>et al.</em> [<a class="reference internal" href="#id167" title="Milan Hanus, Logan H Harbour, Jean C Ragusa, Michael P Adams, and Marvin L Adams. Uncollided flux techniques for arbitrary finite element meshes. Journal of Computational Physics, 398:108848, 2019.">HHR+19</a>]</span>:</p>
+<div class="math notranslate nohighlight">
+\[\Psi = \Psi^u + \Psi^c \,.\]</div>
+<p>Then, the original transport problem
+<span class="math notranslate nohighlight">\(L\Psi = M\Sigma \Phi + Q_{\text{ext}}\)</span> can be split into</p>
+<ol class="arabic">
+<li><p>The uncollided problem:</p>
+<div class="math notranslate nohighlight">
+\[L\Psi^u =  Q_{\text{ext}}\]</div>
+<p>For this uncollided transport solve, one can compute the uncollided
+flux moments <span class="math notranslate nohighlight">\(D\Psi^u\)</span> and the first-collision scattering
+source moments</p>
+<div class="math notranslate nohighlight">
+\[Q_{\text{fc}} =  M\Sigma \Phi^u\]</div>
+</li>
+<li><p>The collided problem:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+        L\Psi^c &amp; = M\Sigma \Phi^c  + Q_{\text{fc}} \\
+        \Phi^c  &amp; = D \Psi^c
+    \end{cases}\end{split}\]</div>
+</li>
+</ol>
+<p>Notes:</p>
+<ol class="arabic simple">
+<li><p>The inversion of the <span class="math notranslate nohighlight">\(L\)</span> operator in the uncollided problem can
+be done using ray tracing, thus mitigating ray effects.</p></li>
+<li><p>The collided problem is quite similar to a standard <span class="math notranslate nohighlight">\(S_n\)</span> so
+the solution techniques described early apply straightforwardly. The
+first-collision scattering source plays the role of the external
+source in this problem.</p></li>
+</ol>
+</section>
+<section id="references">
+<h2><span class="section-number">5.8. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<div class="docutils container" id="id21">
+<div role="list" class="citation-list">
+<div class="citation" id="id50" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AL02<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id10">3</a>)</span>
+<p>ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. <em>Progress in Nuclear Energy</em>, 40(1):3–159, 2002.</p>
+</div>
+<div class="citation" id="id248" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">SS86</a><span class="fn-bracket">]</span></span>
+<p>Youcef Saad and Martin H Schultz. Gmres: a generalized minimal residual algorithm for solving nonsymmetric linear systems. <em>SIAM Journal on scientific and statistical computing</em>, 7(3):856–869, 1986.</p>
+</div>
+<div class="citation" id="id247" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">Saa03</a><span class="fn-bracket">]</span></span>
+<p>Yousef Saad. <em>Iterative methods for sparse linear systems</em>. Siam, 2003.</p>
+</div>
+<div class="citation" id="id70" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">PH96</a><span class="fn-bracket">]</span></span>
+<p>BW Patton and JP Holloway. Application of krylov subspace methods to the slab geometry transport equation. In <em>ANS Topical Meeting on Radiation Protection and Shielding</em>, volume 1, 384. 1996.</p>
+</div>
+<div class="citation" id="id71" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">GHP99</a><span class="fn-bracket">]</span></span>
+<p>Brian Guthrie, James P Holloway, and Bruce W Patton. Gmres as a multi-step transport sweep accelerator. <em>Transport Theory and Statistical Physics</em>, 28(1):83–102, 1999.</p>
+</div>
+<div class="citation" id="id72" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">OD98</a><span class="fn-bracket">]</span></span>
+<p>Suely Oliveira and Yuanhua Deng. Preconditioned krylov subspace methods for transport equations. <em>Progress in Nuclear Energy</em>, 33(1):155–174, 1998.</p>
+</div>
+<div class="citation" id="id169" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">WWM04</a><span class="fn-bracket">]</span></span>
+<p>James S Warsa, Todd A Wareing, and Jim E Morel. Krylov iterative methods and the degraded effectiveness of diffusion synthetic acceleration for multidimensional $s_n$ calculations in problems with material discontinuities. <em>Nuclear Science and Engineering</em>, 147(3):218–248, 2004.</p>
+</div>
+<div class="citation" id="id74" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">FWP09</a><span class="fn-bracket">]</span></span>
+<p>Erin D Fichtl, James S Warsa, and Anil K Prinja. Krylov iterative methods and synthetic acceleration for transport in binary statistical media. <em>Journal of Computational Physics</em>, 228(22):8413–8426, 2009.</p>
+</div>
+<div class="citation" id="id153" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">Mor82</a><span class="fn-bracket">]</span></span>
+<p>JE Morel. A synthetic acceleration method for discrete ordinates calculations with highly anisotropic scattering. <em>Nuclear Science and Engineering</em>, 82:34–46, 1982.</p>
+</div>
+<div class="citation" id="id160" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">Lar84</a><span class="fn-bracket">]</span></span>
+<p>Edward W. Larsen. Diffusion-synthetic acceleration methods for discrete-ordinates problems. <em>Transport Theory and Statistical Physics</em>, 13(1-2):107–126, 1984. URL: <a class="reference external" href="https://doi.org/10.1080/00411458408211656">https://doi.org/10.1080/00411458408211656</a>, <a class="reference external" href="https://doi.org/10.1080/00411458408211656">doi:10.1080/00411458408211656</a>.</p>
+</div>
+<div class="citation" id="id159" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">WR10</a><span class="fn-bracket">]</span></span>
+<p>Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. <em>Nuclear Science and Engineering</em>, 166:145–166, 2010.</p>
+</div>
+<div class="citation" id="id130" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">TR14</a><span class="fn-bracket">]</span></span>
+<p>Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. <em>Journal of Computational Physics</em>, 274:356–369, 2014. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0021999114004100">https://www.sciencedirect.com/science/article/pii/S0021999114004100</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.jcp.2014.05.044">doi:https://doi.org/10.1016/j.jcp.2014.05.044</a>.</p>
+</div>
+<div class="citation" id="id162" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">AM93</a><span class="fn-bracket">]</span></span>
+<p>BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. <em>Nuclear Science and Engineering</em>, 115(3):253–264, 1993.</p>
+</div>
+<div class="citation" id="id163" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">HR20</a><span class="fn-bracket">]</span></span>
+<p>Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. <em>Nuclear Science and Engineering</em>, 194(10):873–893, 2020. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2020.1767436">https://doi.org/10.1080/00295639.2020.1767436</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2020.1767436">doi:10.1080/00295639.2020.1767436</a>.</p>
+</div>
+<div class="citation" id="id145" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id17">Ree71</a><span class="fn-bracket">]</span></span>
+<p>Wm H Reed. The effectiveness of acceleration techniques for iterative methods in transport theory. <em>Nuclear Science and Engineering</em>, 45(3):245, 1971.</p>
+</div>
+<div class="citation" id="id165" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id18">BA23</a><span class="fn-bracket">]</span></span>
+<p>Anthony P. Barbu and Marvin L. Adams. Convergence properties of a linear diffusion-acceleration method for k-eigenvalue transport problems. <em>Nuclear Science and Engineering</em>, 197(4):517–533, 2023. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2022.2123205">https://doi.org/10.1080/00295639.2022.2123205</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2022.2123205">doi:10.1080/00295639.2022.2123205</a>.</p>
+</div>
+<div class="citation" id="id166" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">CWM24</a><span class="fn-bracket">]</span></span>
+<p>James Tutt Connor Woodsford and Jim E. Morel. A variant of the second-moment method for k-eigenvalue calculations. <em>Nuclear Science and Engineering</em>, 0(0):1–9, 2024. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2024.2303107">https://doi.org/10.1080/00295639.2024.2303107</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2024.2303107">doi:10.1080/00295639.2024.2303107</a>.</p>
+</div>
+<div class="citation" id="id167" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">HHR+19</a><span class="fn-bracket">]</span></span>
+<p>Milan Hanus, Logan H Harbour, Jean C Ragusa, Michael P Adams, and Marvin L Adams. Uncollided flux techniques for arbitrary finite element meshes. <em>Journal of Computational Physics</em>, 398:108848, 2019.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="outcome.html" class="btn btn-neutral float-left" title="4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="parallelization.html" class="btn btn-neutral float-right" title="6. Parallel Sweeps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6. Parallel Sweeps &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. Adjoint Flux Formalism" href="adjoint.html" />
+    <link rel="prev" title="5. Iterative Solution Algorithms" href="iterative.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">6. Parallel Sweeps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">6.1. Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aggregation">6.2. Aggregation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#group-sets">6.2.1. Group-sets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#angle-sets">6.2.2. Angle-sets</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#partitioning-and-scheduling">6.3. Partitioning and Scheduling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">6.4. References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Developer Workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">6. </span>Parallel Sweeps</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="parallel-sweeps">
+<h1><span class="section-number">6. </span>Parallel Sweeps<a class="headerlink" href="#parallel-sweeps" title="Link to this heading"></a></h1>
+<section id="introduction">
+<h2><span class="section-number">6.1. </span>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p>A parallel sweep algorithm is comprised of the following three
+components:</p>
+<ul class="simple">
+<li><p><strong>Aggregation</strong> - The grouping of cells, angles, and groups into
+tasks. Note that in OpenSn, due to the arbitrary nature of the grid,
+we don’t aggregate cells.</p></li>
+<li><p><strong>Partitioning</strong> - The division of the mesh among processors.</p></li>
+<li><p><strong>Scheduling</strong> - The execution of available tasks in a specified
+order by each processor.</p></li>
+</ul>
+<p>Sweep performance is profoundly affected by the choices made for
+aggregation, partitioning, and scheduling. The interplay of the three
+components is complex and nuanced, and the reader is referred to the
+recommended references for more detailed discussions,
+<span id="id1">Mathis <em>et al.</em> [<a class="reference internal" href="#id97" title="Mark M Mathis, Nancy M Amato, and Marvin L Adams. A general performance model for parallel sweeps on orthogonal grids for particle transport calculations. In Proceedings of the 14th international conference on Supercomputing, 255–263. ACM, 2000.">MAA00</a>]</span>, <span id="id2">Koch <em>et al.</em> [<a class="reference internal" href="#id100" title="Kenneth R Koch, Randal S Baker, and Raymond E Alcouffe. Solution of the first-order form of three-dimensional discrete ordinates equations on a massively parallel machine. In Transactions of the American Nuclear Society, volume 65, 198-199. 1992.">KBA92</a>]</span>, <span id="id3">Baker and Koch [<a class="reference internal" href="#id101" title="Randal S Baker and Kenneth R Koch. An $s_n$ algorithm for the massively parallel cm-200 computer. Nuclear Science and Engineering, 1998.">BK98</a>]</span>, <span id="id4">Bailey and Falgout [<a class="reference internal" href="#id103" title="Teresa S Bailey and Robert D Falgout. Analysis of massively parallel discrete-ordinates transport sweep algorithms with collisions. In International Conference on Mathematics, Computational Methods &amp; Reactor Physics, Saratoga Springs, NY. 2009.">BF09</a>]</span>, <span id="id5">Pautz [<a class="reference internal" href="#id108" title="Shawn D Pautz. An algorithm for parallel $s_n$ sweeps on unstructured meshes. Nuclear Science and Engineering, 140(2):111–136, 2002.">Pau02</a>]</span>, <span id="id6">Zeyao and Lianxiang [<a class="reference internal" href="#id110" title="Mo Zeyao and Fu Lianxiang. Parallel flux sweep algorithm for neutron transport on unstructured grid. The Journal of Supercomputing, 30(1):5–17, 2004.">ZL04</a>]</span>, <span id="id7">Hanebutte and Lewis [<a class="reference internal" href="#id111" title="UR Hanebutte and EE Lewis. A massively parallel discrete ordinates response matrix method for neutron transport. Nuclear Science and Engineering, 1992.">HL92</a>]</span>, <span id="id8">Brown <em>et al.</em> [<a class="reference internal" href="#id113" title="Peter N Brown, Britton Chang, Milo R Dorr, Ulf R Hanebutte, and Carol S Woodward. Performing three-dimensional neutral particle transport calculations on tera scale computers. In High Performance Computing, volume 99, 11–15. 1999.">BCD+99</a>]</span>, <span id="id9">Brown <em>et al.</em> [<a class="reference internal" href="#id114" title="PN Brown, B Chang, UR Hanebutte, and CS Woodward. The quest for a high performance boltzmann transport solver. In International conference on applications of high-performance computing in engineering n o, volume 6. 2000.">BCHW00</a>]</span>, <span id="id10">Adams <em>et al.</em> [<a class="reference internal" href="#id98" title="Michael P Adams, Marvin L Adams, W Daryl Hawkins, Timmie Smith, Lawrence Rauchwerger, Nancy M Amato, Teresa S Bailey, and Robert D Falgout. Provably optimal parallel transport sweeps on regular grids. In Proc. International Conference on Mathematics and Computational Methods Applied to Nuclear Science &amp; Engineering, Idaho. 2013.">AAH+13</a>]</span>, <span id="id11">Hawkins <em>et al.</em> [<a class="reference internal" href="#id99" title="William Daryl Hawkins, Timmie Smith, Michael P Adams, Lawrence Rauchwerger, Nancy M Amato, and Marvin L Adams. Efficient massively parallel transport sweeps. In Transactions of the American Nuclear Society, volume 107, 477-481. 2012.">HSA+12</a>]</span>, <span id="id12">Vermaak <em>et al.</em> [<a class="reference internal" href="#id121" title="Jan IC Vermaak, Jean C Ragusa, Marvin L Adams, and Jim E Morel. Massively parallel transport sweeps on meshes with cyclic dependencies. Journal of Computational Physics, 425:109892, 2021.">VRAM21</a>]</span>.
+The content below is only intended to be a very brief introduction to
+the basic concepts.</p>
+</section>
+<section id="aggregation">
+<h2><span class="section-number">6.2. </span>Aggregation<a class="headerlink" href="#aggregation" title="Link to this heading"></a></h2>
+<p>In the previous definitions of the multigroup iterative algorithms, the
+description of the solution techniques were given on a group-by-group
+basis. Likewise, the solution of a single-group problem problem was
+given direction-by-direction. At the level of a given group <span class="math notranslate nohighlight">\(g\)</span>,
+for a given direction <span class="math notranslate nohighlight">\(d\)</span>, a full-domain transport sweep is
+performed where the mesh is swept cell-by-cell, solving for the angular
+flux <span class="math notranslate nohighlight">\(\psi^g_{d,K}\)</span> in each cell <span class="math notranslate nohighlight">\(K\)</span>. A prototypical
+algorithm following those descriptions is given in Algorithm 1 and shows
+one potential ordering of the three phase-space loops. Each loop
+ordering affects code performance in different ways. For example, having
+the group loop as the outermost loop has the advantage that only one
+pass through the loop is needed for problems with downscattering only.
+However, it also leads to a significant number of repeated geometry
+calculations when sweeping an arbitrary grid. If we swap the group and
+cell loops so that the group loop is now the innermost loop, we no
+longer get immediate convergence in problems with downscattering only,
+but we can re-use geometry information for each group and cell solve.
+The optimal ordering of loops is problem-dependent, and, while we could
+introduce separate compute kernels for each ordering, a better solution
+is to extend our sweep algorithm to support sets of groups and angles.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/algo1.png"><img alt="../_images/algo1.png" src="../_images/algo1.png" style="width: 793.0px; height: 402.0px;" /></a>
+</figure>
+<section id="group-sets">
+<h3><span class="section-number">6.2.1. </span>Group-sets<a class="headerlink" href="#group-sets" title="Link to this heading"></a></h3>
+<p>A group-set is a collection of one or more groups and gives us the
+flexibility to support different loop orderings without requiring
+multiple compute kernels. Algorithm 2 extends Algorithm 1 to support
+group-sets.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/algo2.png"><img alt="../_images/algo2.png" src="../_images/algo2.png" style="width: 744.0px; height: 515.0px;" /></a>
+</figure>
+<p>If each group is its own group-set, our solution algorithm is similar to
+Algorithm 1 and is optimal for problems with downscattering only. If all
+of the groups are contained in a single group-set, the group loop is now
+the innermost loop, and we can solve all of the groups for each cell
+concurrently. This greatly increases our flop count and amortizes the
+cost of querying upwind flux values and other cell-specific quantities.</p>
+</section>
+<section id="angle-sets">
+<h3><span class="section-number">6.2.2. </span>Angle-sets<a class="headerlink" href="#angle-sets" title="Link to this heading"></a></h3>
+<p>Similar to group-sets, angle-sets allow us to group angles together that
+share similar sweep orderings (they have similar task-directed graphs).
+With angle-sets, it is possible to solve for multiple angular-flux
+quantities concurrently on each spatial cell. Angle-sets also allow us
+to cache common geometric quantities for cell solves and to optimize our
+sweep-plane data structures for cache efficiency. Algorithm 3 extends
+our group-set algorithm to include angle-sets.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/algo3.png"><img alt="../_images/algo3.png" src="../_images/algo3.png" style="width: 758.0px; height: 594.0px;" /></a>
+</figure>
+</section>
+</section>
+<section id="partitioning-and-scheduling">
+<h2><span class="section-number">6.3. </span>Partitioning and Scheduling<a class="headerlink" href="#partitioning-and-scheduling" title="Link to this heading"></a></h2>
+<p>Partitioning is the process of dividing the spatial domain among
+processes. For example, consider the simple 2D mesh shown in Figure 1.
+This 4x4 mesh has been decomposed among four processors, with each
+processor being assigned a column of four cells. This columnar
+decomposition is the type of partitioning produced by the KBA algorithm.</p>
+<figure class="align-center" id="id314">
+<a class="reference internal image-reference" href="../_images/ProcMesh.png"><img alt="../_images/ProcMesh.png" src="../_images/ProcMesh.png" style="width: 671.0px; height: 623.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">Partitioned, 4x4, XY, Rectangular Mesh</span><a class="headerlink" href="#id314" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Now, consider the direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span> incident on the
+bottom-left corner of the mesh. The sweep ordering for this quadrature
+direction is represented by the task-dependency graph shown in Figure 2.
+As the graph illustrates, a cell on a given level of the graph cannot be
+solved until its upstream neighbors on the previous level of the graph
+have been solved. The graph is processed stage by stage, with each
+processor solving its “ready” cells at each stage and communicating
+outgoing angular fluxes to its downstream neighbors. As a processor
+finishes its tasks for one direction in an angle-set, it begins
+executing its tasks for the next direction until all angles in the
+angle-set have been processed. Once a processor has finished with one
+angle-set/group-set combination, it can start solving the next available
+angle-set/group-set. This pipelining of tasks is important to keep each
+processor working for as long as possible and to maintain parallel
+efficiency. In the case where multiple angle-sets can be solved
+simultaneously, a scheduling algorithm is required to tell the processor
+the order in which to execute the available tasks.</p>
+<figure class="align-center" id="id315">
+<a class="reference internal image-reference" href="../_images/ProcGraph.png"><img alt="../_images/ProcGraph.png" src="../_images/ProcGraph.png" style="width: 630.0px; height: 873.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">Task Dependency Graph for Direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>.</span><a class="headerlink" href="#id315" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="references">
+<h2><span class="section-number">6.4. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<div class="docutils container" id="id13">
+<div role="list" class="citation-list">
+<div class="citation" id="id97" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">MAA00</a><span class="fn-bracket">]</span></span>
+<p>Mark M Mathis, Nancy M Amato, and Marvin L Adams. A general performance model for parallel sweeps on orthogonal grids for particle transport calculations. In <em>Proceedings of the 14th international conference on Supercomputing</em>, 255–263. ACM, 2000.</p>
+</div>
+<div class="citation" id="id100" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">KBA92</a><span class="fn-bracket">]</span></span>
+<p>Kenneth R Koch, Randal S Baker, and Raymond E Alcouffe. Solution of the first-order form of three-dimensional discrete ordinates equations on a massively parallel machine. In <em>Transactions of the American Nuclear Society</em>, volume 65, 198–199. 1992.</p>
+</div>
+<div class="citation" id="id101" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">BK98</a><span class="fn-bracket">]</span></span>
+<p>Randal S Baker and Kenneth R Koch. An $s_n$ algorithm for the massively parallel cm-200 computer. <em>Nuclear Science and Engineering</em>, 1998.</p>
+</div>
+<div class="citation" id="id103" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">BF09</a><span class="fn-bracket">]</span></span>
+<p>Teresa S Bailey and Robert D Falgout. Analysis of massively parallel discrete-ordinates transport sweep algorithms with collisions. In <em>International Conference on Mathematics, Computational Methods &amp; Reactor Physics, Saratoga Springs, NY</em>. 2009.</p>
+</div>
+<div class="citation" id="id108" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">Pau02</a><span class="fn-bracket">]</span></span>
+<p>Shawn D Pautz. An algorithm for parallel $s_n$ sweeps on unstructured meshes. <em>Nuclear Science and Engineering</em>, 140(2):111–136, 2002.</p>
+</div>
+<div class="citation" id="id110" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">ZL04</a><span class="fn-bracket">]</span></span>
+<p>Mo Zeyao and Fu Lianxiang. Parallel flux sweep algorithm for neutron transport on unstructured grid. <em>The Journal of Supercomputing</em>, 30(1):5–17, 2004.</p>
+</div>
+<div class="citation" id="id111" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">HL92</a><span class="fn-bracket">]</span></span>
+<p>UR Hanebutte and EE Lewis. A massively parallel discrete ordinates response matrix method for neutron transport. <em>Nuclear Science and Engineering</em>, 1992.</p>
+</div>
+<div class="citation" id="id113" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">BCD+99</a><span class="fn-bracket">]</span></span>
+<p>Peter N Brown, Britton Chang, Milo R Dorr, Ulf R Hanebutte, and Carol S Woodward. Performing three-dimensional neutral particle transport calculations on tera scale computers. In <em>High Performance Computing</em>, volume 99, 11–15. 1999.</p>
+</div>
+<div class="citation" id="id114" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">BCHW00</a><span class="fn-bracket">]</span></span>
+<p>PN Brown, B Chang, UR Hanebutte, and CS Woodward. The quest for a high performance boltzmann transport solver. In <em>International conference on applications of high-performance computing in engineering n o</em>, volume 6. 2000.</p>
+</div>
+<div class="citation" id="id98" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">AAH+13</a><span class="fn-bracket">]</span></span>
+<p>Michael P Adams, Marvin L Adams, W Daryl Hawkins, Timmie Smith, Lawrence Rauchwerger, Nancy M Amato, Teresa S Bailey, and Robert D Falgout. Provably optimal parallel transport sweeps on regular grids. In <em>Proc. International Conference on Mathematics and Computational Methods Applied to Nuclear Science &amp; Engineering, Idaho</em>. 2013.</p>
+</div>
+<div class="citation" id="id99" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">HSA+12</a><span class="fn-bracket">]</span></span>
+<p>William Daryl Hawkins, Timmie Smith, Michael P Adams, Lawrence Rauchwerger, Nancy M Amato, and Marvin L Adams. Efficient massively parallel transport sweeps. In <em>Transactions of the American Nuclear Society</em>, volume 107, 477–481. 2012.</p>
+</div>
+<div class="citation" id="id121" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">VRAM21</a><span class="fn-bracket">]</span></span>
+<p>Jan IC Vermaak, Jean C Ragusa, Marvin L Adams, and Jim E Morel. Massively parallel transport sweeps on meshes with cyclic dependencies. <em>Journal of Computational Physics</em>, 425:109892, 2021.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="iterative.html" class="btn btn-neutral float-left" title="5. Iterative Solution Algorithms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="adjoint.html" class="btn btn-neutral float-right" title="7. Adjoint Flux Formalism" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

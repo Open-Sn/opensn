@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Phase-space Discretization &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Multigroup Cross-Section Data" href="cross_sections.html" />
+    <link rel="prev" title="1. Background on the Linear Boltzmann Equation" href="background.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2. Phase-space Discretization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#energy-discretization">2.1. Energy Discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#angle-discretization-the-sn-method">2.2. Angle Discretization (the Sn method)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spatial-discretization">2.3. Spatial Discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">2.4. References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Developer Workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">2. </span>Phase-space Discretization</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="phase-space-discretization">
+<h1><span class="section-number">2. </span>Phase-space Discretization<a class="headerlink" href="#phase-space-discretization" title="Link to this heading"></a></h1>
+<section id="energy-discretization">
+<h2><span class="section-number">2.1. </span>Energy Discretization<a class="headerlink" href="#energy-discretization" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line">The energy interval <span class="math notranslate nohighlight">\(\mathcal{E}=[0,E_{\text{max}}]\)</span> is
+subdivided into energy groups <span class="math notranslate nohighlight">\([E_g,E_{g-1}]\)</span>
+(<span class="math notranslate nohighlight">\(1 \le g \le G\)</span>), where <span class="math notranslate nohighlight">\(G\)</span> is the total number of groups
+and with the convention that <span class="math notranslate nohighlight">\(E_g &lt; E_{g-1}\)</span> so faster energy
+groups have smaller indices.</div>
+<div class="line">Integration in energy of the energy-continuous linear Boltzmann
+equation over each group <span class="math notranslate nohighlight">\(g\)</span> yields <span class="math notranslate nohighlight">\(G\)</span> equations that are
+coupled through the angle-energy distribution/scattering term:</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\begin{gathered}
+\frac{1}{v^g} \frac{\partial \psi^g(\vec{r},\vec{\Omega},t)}{\partial t}
++ \vec{\Omega} \cdot \vec{\nabla} \psi^g(\vec{r},\vec{\Omega},t)
++ \sigma_t^g(\vec{r},t)\psi^g(\vec{r},\vec{\Omega},t)
+\\=
+\sum_{g'=1}^{g'=G} \sum_{\ell=0}^{L_{\text{max}}} \sum_{m=-\ell}^{m=\ell} \, \frac{2\ell+1}{4\pi}\sigma^{g'\to g}_{s,\ell}(\vec{r},t) Y_{\ell,m}(\vec{\Omega}) \phi^{g'}_{\ell,m}(\vec{r},t)
++
+Q^g_{\text{ext}}(\vec{r},\vec{\Omega},t)
+\end{gathered}\end{split}\]</div>
+<p>for all <span class="math notranslate nohighlight">\(1\le g \le G\)</span>. The multigroup energy discretization can
+be thought of as a finite-volume discretization in energy. When
+fission is present, the above equation is amended to account for the
+additional fission production term.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">The multigroup fluxes are the energy-dependent fluxes integrated over
+the energy group. For example,</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\psi^g(\vec{r},\vec{\Omega},t) = \int_{E_g}^{E_{g-1}} dE \,\psi(\vec{r},\vec{\Omega},E,t) \,,\]</div>
+<p>and likewise for flux moments</p>
+<div class="math notranslate nohighlight">
+\[\phi^{g}_{\ell,m}(\vec{r},t) = \int_{E_g}^{E_{g-1}} dE \, \phi_{\ell,m}(\vec{r},E,t) \,.\]</div>
+<p>Adequately energy-averaged multigroup cross sections must be supplied
+to OpenSn. See the Theory section on multigroup cross sections for
+additional details.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">In the remainder of this theory manual, we focus on the steady-state
+linear Boltzmann equation, for brevity:</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\begin{gathered}
+\vec{\Omega} \cdot \vec{\nabla} \psi^g(\vec{r},\vec{\Omega})
++ \sigma_t^g(\vec{r})\psi^g(\vec{r},\vec{\Omega}) \\=
+\sum_{g'=1}^{g'=G}
+%\sum_{\ell=0}^{L_{\text{max}}} \sum_{m=-\ell}^{m=\ell}
+\sum_{\ell,m} \, \frac{2\ell+1}{4\pi}\sigma^{g'\to g}_{s,\ell}(\vec{r}) Y_{\ell,m}(\vec{\Omega}) \phi^{g'}_{\ell,m}(\vec{r})
++
+Q^g_{\text{ext}}(\vec{r},\vec{\Omega}) \\ \qquad 1\le g \le G \,.
+\end{gathered}\end{split}\]</div>
+<p>The summation on indices <span class="math notranslate nohighlight">\(\ell\)</span> and <span class="math notranslate nohighlight">\(m\)</span> is to be
+understood as a double summation. The summation on <span class="math notranslate nohighlight">\(\ell\)</span> goes
+from 0 to <span class="math notranslate nohighlight">\(L_\text{max}\)</span>. The summation in <span class="math notranslate nohighlight">\(m\)</span> depends on
+the dimensionality of the problem. In 1D, there is no summation on
+<span class="math notranslate nohighlight">\(m\)</span> (equivalent to setting <span class="math notranslate nohighlight">\(m=0\)</span>), in 2D, the summation on
+<span class="math notranslate nohighlight">\(m\)</span> is from 0 to <span class="math notranslate nohighlight">\(\ell\)</span> and in 3D, the summation on
+<span class="math notranslate nohighlight">\(m\)</span> is from <span class="math notranslate nohighlight">\(-\ell\)</span> to <span class="math notranslate nohighlight">\(\ell\)</span>.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">We will further consider a single one of the above <span class="math notranslate nohighlight">\(G\)</span>
+equations, written without the group superscript <span class="math notranslate nohighlight">\(g\)</span> for
+conciseness:</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\vec{\Omega} \cdot \vec{\nabla} \psi(\vec{r},\vec{\Omega})
++ \sigma_t(\vec{r})\psi(\vec{r},\vec{\Omega})=
+%\sum_{\ell=0}^{L_{\text{max}}} \sum_{m=-\ell}^{m=\ell}
+\sum_{\ell,m} \, \frac{2\ell+1}{4\pi}\sigma_{s,\ell}(\vec{r}) Y_{\ell,m}(\vec{\Omega}) \phi_{\ell,m}(\vec{r})
++
+Q(\vec{r},\vec{\Omega})  \,,\]</div>
+<p>where the source term <span class="math notranslate nohighlight">\(Q(\vec{r},\vec{\Omega})\)</span> is now the sum
+of the external source and the upscattering and downscattering
+contributions to the current group <span class="math notranslate nohighlight">\(g\)</span>.</p>
+</div></blockquote>
+</section>
+<section id="angle-discretization-the-sn-method">
+<h2><span class="section-number">2.2. </span>Angle Discretization (the Sn method)<a class="headerlink" href="#angle-discretization-the-sn-method" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line">The <span class="math notranslate nohighlight">\(S_n\)</span> discrete-ordinate method
+<span id="id1">Carlson and Bell [<a class="reference internal" href="#id47" title="BG Carlson and GI Bell. Solution of the transport equation by the sn method. Technical Report, Los Alamos Scientific Lab., N. Mex., 1958.">CB58</a>]</span>, <span id="id2">Carlson and Lee [<a class="reference internal" href="#id48" title="Bengt G Carlson and Clarence E Lee. Mechanical quadrature and the transport equation. Volume 2573. Los Alamos Scientific Laboratory of the University of California, 1961.">CL61</a>]</span>, <span id="id3">Lee [<a class="reference internal" href="#id49" title="Clarence E Lee. The discrete $s_n$ approximation to transport theory. Technical Report, Los Alamos Scientific Lab., N. Mex., 1961.">Lee61</a>]</span>, <span id="id4">Lathrop and Carlson [<a class="reference internal" href="#id50" title="Kaye D Lathrop and Bengt G Carlson. Discrete ordinates angular quadrature of the neutron transport equation. Technical Report, Los Alamos Scientific Lab., N. Mex., 1964.">LC64</a>]</span>, <span id="id5">Carlson and Lathrop [<a class="reference internal" href="#id53" title="Bengt G Carlson and Kaye D Lathrop. Transport theory: the method of discrete ordinates. Los Alamos Scientific Laboratory of the University of California, 1965.">CL65</a>]</span>, <span id="id6">Carlson [<a class="reference internal" href="#id81" title="BG Carlson. On a more precise definition of discrete ordinates methods. In Proceedings of the Second Conference on Transport Theory, 348-390. U.S. Atomic Energy Commission, 1971.">Car71</a>]</span>, <span id="id7">Gelbard <em>et al.</em> [<a class="reference internal" href="#id96" title="EM Gelbard, James A Davis, and LA Hageman. Solution of the discrete ordinate equations in one and two dimensions. Transport Theory, 1:129–158, 1969.">GDH69</a>]</span>
+is a collocation in angle approach, where a set of fixed (<em>discrete</em>)
+directions <span class="math notranslate nohighlight">\(\vec{\Omega}_d\)</span> are chosen. In order to evaluate
+angular integrals to compute the flux moments <span class="math notranslate nohighlight">\(\phi_{\ell,m}\)</span>,
+weights <span class="math notranslate nohighlight">\(\omega_d\)</span> associated with each discrete direction are
+also defined. It is therefore customary to discuss the <span class="math notranslate nohighlight">\(S_n\)</span>
+method using the notion of angular quadratures.</div>
+<div class="line">Given an angular quadrature rule with <span class="math notranslate nohighlight">\(N_{\text{dir}}\)</span>
+directions and weights</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\left( \vec{\Omega}_d, \omega_d \right) \qquad \text{with } 1 \le d \le N_{\text{dir}}\]</div>
+<p>the one-group transport equation (REF above) devolves into a set of
+<span class="math notranslate nohighlight">\(N_{\text{dir}}\)</span> coupled equations, with the coupling occurring
+through the scattering (redistribution in angle) term:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gathered}
+\vec{\Omega}_d \cdot \vec{\nabla} \psi_d(\vec{r})
++ \sigma_t(\vec{r})\psi_d(\vec{r})=
+\sum_{\ell,m}\, \frac{2\ell+1}{4\pi}\sigma_{s,\ell}(\vec{r}) Y_{\ell,m}(\vec{\Omega}_d) \phi_{\ell,m}(\vec{r})
++
+Q_d(\vec{r})  \\ \qquad \text{for } 1 \le d \le N_{\text{dir}}\,,
+\end{gathered}\end{split}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\psi_d(\vec{r})  \equiv \psi(\vec{r},\vec{\Omega}_d)\)</span> and
+<span class="math notranslate nohighlight">\(Q_d(\vec{r})  \equiv Q(\vec{r},\vec{\Omega}_d)\)</span>.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">In order to evaluate flux moments, we use the quadrature rule:</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\phi_{\ell,m}(\vec{r}) \simeq \sum_{d=1}^{N_{\text{dir}}} \omega_d Y_{\ell,m}(\vec{\Omega}_d) \psi_d(\vec{r}) \,.\]</div>
+</div></blockquote>
+<p>We can now define the entries in the <span class="math notranslate nohighlight">\(M\)</span> and <span class="math notranslate nohighlight">\(D\)</span> matrices
+introduced earlier:</p>
+<ul>
+<li><p>the discrete-to-moment matrix:</p>
+<div class="math notranslate nohighlight">
+\[M_{k,d} = \omega_d Y_{\ell,m}(\vec{\Omega}_d)\]</div>
+<p>where <span class="math notranslate nohighlight">\(k\)</span> is a single index encoding the pair <span class="math notranslate nohighlight">\((\ell,m)\)</span>.
+The dimensions of <span class="math notranslate nohighlight">\(M\)</span> are:
+<span class="math notranslate nohighlight">\(N_{\text{mom}} \times N_{\text{dir}}\)</span>.</p>
+</li>
+<li><p>the moment-to-discrete matrix:</p>
+<div class="math notranslate nohighlight">
+\[D_{d,k} = \frac{2\ell+1}{4\pi} Y_{\ell,m}(\vec{\Omega}_d)\]</div>
+<p>The dimensions of <span class="math notranslate nohighlight">\(D\)</span> are:
+<span class="math notranslate nohighlight">\(N_{\text{dir}} \times N_{\text{mom}}\)</span>.</p>
+</li>
+</ul>
+<p>Traditional quadrature rules include the Level-Symmetric quadrature, the
+Equal-Weight quadrature, and Gauss-Legendre-Chebyshev quadratures. In
+OpenSn, we have:</p>
+<ol class="arabic">
+<li><p>the Product Gauss-Legendre-Chebyshev quadrature, which is the tensor
+product of a Gauss-Legendre quadrature in polar angle <span class="math notranslate nohighlight">\(\mu\)</span> and
+a Gauss-Chebyshev quadrature in azimuthal angle <span class="math notranslate nohighlight">\(\varphi\)</span>. When
+the number of discrete positive polar angles is equal to the number
+of discrete azimuthal angles in one quadrant, the Product
+Gauss-Legendre-Chebyshev quadrature is said to the square; otherwise
+it is said to be rectangular. The number of directions in one octant
+of the unit sphere is</p>
+<div class="math notranslate nohighlight">
+\[N_{\text{polar}} \times N_{\text{azimuthal}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(N_{\text{polar}}\)</span> is the number of <strong>positive</strong> polar
+angles and <span class="math notranslate nohighlight">\(N_{\text{azimuthal}}\)</span> is the number of azimuthal
+angles <strong>in one quadrant</strong>.</p>
+<figure class="align-center" id="id335">
+<a class="reference internal image-reference" href="../_images/P8GLC.png"><img alt="../_images/P8GLC.png" src="../_images/P8GLC.png" style="width: 392.0px; height: 294.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">Product Gauss-Legendre-Chebyshev quadrature (<span class="math notranslate nohighlight">\(N_{\text{polar}}=N_{\text{azimuthal}}=4\)</span>)</span><a class="headerlink" href="#id335" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id336">
+<a class="reference internal image-reference" href="../_images/T8GLC.png"><img alt="../_images/T8GLC.png" src="../_images/T8GLC.png" style="width: 392.0px; height: 294.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">Product Gauss-Legendre-Chebyshev quadrature (<span class="math notranslate nohighlight">\(N_{\text{polar}}=N_{\text{azimuthal}}=6\)</span>)</span><a class="headerlink" href="#id336" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</li>
+<li><p>the Triangle Gauss-Legendre-Chebyshev quadrature is similar to the
+Product Gauss-Legendre-Chebyshev quadrature. However, the number of
+azimuthal angles per quadrant depends on the polar level: at the most
+equatorial polar level, the number of azimuthal angles per quadrant
+is <span class="math notranslate nohighlight">\(N_{\text{polar}}\)</span>; at each successive polar level, the
+number of azimuthal angles per quadrant is one less to finally reach
+one azimuthal angle per quadrant at the polar level closest to the
+pole. The number of directions in one octant of the unit sphere is</p>
+<div class="math notranslate nohighlight">
+\[\frac{N_{\text{polar}} (N_{\text{polar}}+1)}{2}\]</div>
+<figure class="align-center" id="id337">
+<a class="reference internal image-reference" href="../_images/T8GLC.png"><img alt="../_images/T8GLC.png" src="../_images/T8GLC.png" style="width: 392.0px; height: 294.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">Triangular Gauss-Legendre-Chebyshev quadrature (<span class="math notranslate nohighlight">\(N_{\text{polar}}=4\)</span>)</span><a class="headerlink" href="#id337" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</li>
+<li><p>the LDFE (linear discontinuous finite-element in angle
+<span id="id8">Lau and Adams [<a class="reference internal" href="#id60" title="Cheuk Y. Lau and Marvin L. Adams. Discrete ordinates quadratures based on linear and quadratic discontinuous finite elements over spherical quadrilaterals. Nuclear Science and Engineering, 185(1):36–52, 2017. URL: https://doi.org/10.13182/NSE16-28, doi:10.13182/NSE16-28.">LA17</a>]</span>) quadrature, using spherical
+quadrilaterals. The LDFE quadrature divides one octant of the unit
+sphere into spherical quadrilaterals. The quadrature directions are
+then the 4 Gauss-Legendre points per quadrilateral and the weights
+are computed to obtain 4-th order accuracy. Note that the
+quadrilateral can be easily subdivided into 4 smaller quadrilaterals,
+hence yielding a locally refined angular quadrature.</p>
+<figure class="align-center" id="id338">
+<a class="reference internal image-reference" href="../_images/SLDFESQBasen2.png"><img alt="../_images/SLDFESQBasen2.png" src="../_images/SLDFESQBasen2.png" style="width: 366.8px; height: 309.6px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of uniform LDFE angular quadrature</span><a class="headerlink" href="#id338" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id339">
+<a class="reference internal image-reference" href="../_images/SLDFESQr.png"><img alt="../_images/SLDFESQr.png" src="../_images/SLDFESQr.png" style="width: 368.8px; height: 306.8px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of locally refined LDFE angular quadrature</span><a class="headerlink" href="#id339" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</li>
+<li><p>The user has has the option of supplying their own quadrature rule.</p></li>
+</ol>
+<div class="line-block">
+<div class="line">For charged-particle transport, not yet covered in OpenSn, Galerkin
+variants of the traditional quadrature rules must be employed
+<span id="id9">Morel [<a class="reference internal" href="#id59" title="Jim E Morel. A hybrid collocation-galerkin-sn method for solving the boltzmann transport equation. Nuclear Science and Engineering, 101(1):72–87, 1989.">Mor89</a>]</span>, <span id="id10">Sanchez and Ragusa [<a class="reference internal" href="#id58" title="Richard Sanchez and Jean Ragusa. On the construction of galerkin angular quadratures. Nuclear Science and Engineering, 169(2):133–154, 2011. URL: https://doi.org/10.13182/NSE10-31, doi:10.13182/NSE10-31.">SR11</a>]</span>.</div>
+<div class="line">Note that any discrete-ordinate <span class="math notranslate nohighlight">\(S_n\)</span> method can produce “<strong>ray
+effects</strong>” due to angular discretization errors
+<span id="id11">Lathrop [<a class="reference internal" href="#id54" title="K D Lathrop. Ray effects in discrete ordinates equations. Nuclear Science and Engineering, 32(3):357-369, 1968.">Lat68</a>]</span>, <span id="id12">Lathrop [<a class="reference internal" href="#id55" title="KD Lathrop. Remedies for ray effects. Nuclear Science and Engineering, 45(3):255–268, 1971.">Lat71</a>]</span>, <span id="id13">Morel <em>et al.</em> [<a class="reference internal" href="#id56" title="J.E. Morel, T.A. Wareing, R.B. Lowrie, and D.K. Parsons. Analysis of ray-effect mitigation techniques. Nuclear Science and Engineering, 144:1-22, 2003.">MWLP03</a>]</span>, <span id="id14">Miller Jr and Reed [<a class="reference internal" href="#id57" title="WF Miller Jr and Wm H Reed. Ray-effect mitigation methods for two-dimensional neutron transport theory. Nuclear Science and Engineering, 62(3):391–411, 1977.">MJR77</a>]</span>.
+These errors are most pronounced in situations with low scattering
+materials, low density materials, and in presence of small localized
+sources, … An uncollided-flux approach is often employed to mitigate
+ray effects. See the section on the uncollided-flux approach for
+additional details .</div>
+</div>
+</section>
+<section id="spatial-discretization">
+<h2><span class="section-number">2.3. </span>Spatial Discretization<a class="headerlink" href="#spatial-discretization" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line">In this section, we describe the Discontinuous Galerkin Finite Element
+Method (DGFEM) applied to the linear Boltzmann equation on meshes made
+of arbitrary polyhedra in 3D and arbitrary polygons in 2D. For
+references on DGFEM applied to transport, please consult
+<span id="id15">Reed and Hill [<a class="reference internal" href="#id61" title="Wm H Reed and TR Hill. Triangular mesh methods for the neutron transport equation. Los Alamos Report LA-UR-73-479, 1973.">RH73</a>]</span>, <span id="id16">Lesaint and Raviart [<a class="reference internal" href="#id62" title="P Lesaint and PA Raviart. On a finite element method for solving the neutron transport equation. Mathematical Aspects of Finite Elements in Partial Differential Equations, pages 89–123, 1974.">LR74</a>]</span>, <span id="id17">Hill [<a class="reference internal" href="#id103" title="TR Hill. Onetran: a discrete ordinates finite element code for the solution of the one-dimensional multigroup transport equation (la-5990-ms). Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1975.">Hil75</a>]</span>, <span id="id18">Reed <em>et al.</em> [<a class="reference internal" href="#id104" title="Wm H Reed, TR Hill, FW Brinkley, and KD Lathrop. Triplet: a two-dimensional, multigroup, triangular mesh, planar geometry, explicit transport code. Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1973.">RHBL73</a>]</span>, <span id="id19">Seed <em>et al.</em> [<a class="reference internal" href="#id105" title="TJ Seed, WF Miller Jr, and FW Brinkley Jr. Trident: a two-dimensional, multigroup, triangular mesh discrete ordinates, explicit neutron transport code. Technical Report, Los Alamos Scientific Lab., NM (USA), 1977.">SMJBJ77</a>]</span>, <span id="id20">Seed <em>et al.</em> [<a class="reference internal" href="#id106" title="TJ Seed, WF Miller, and GE Bosler. Trident: a new triangular mesh discrete ordinates code. In ANS Meeting, 157–167. 1978.">SMB78</a>]</span>, <span id="id21">Adams [<a class="reference internal" href="#id65" title="Marvin L Adams. Discontinuous finite element transport solutions in thick diffusive problems. Nuclear Science and Engineering, 137(3):298–333, 2001.">Ada01</a>]</span>, <span id="id22">Wareing <em>et al.</em> [<a class="reference internal" href="#id126" title="Todd A Wareing, John M McGhee, Jim E Morel, and Shawn D Pautz. Discontinuous finite element $s_n$ methods on three-dimensional unstructured grids. Nuclear Science and Engineering, 138(3):256–268, 2001.">WMMP01</a>]</span>, <span id="id23">Morel and Warsa [<a class="reference internal" href="#id127" title="Jim E Morel and James S Warsa. An $s_n$ spatial discretization scheme for tetrahedral meshes. Nuclear Science and Engineering, 151(2):157–166, 2005.">MW05</a>]</span>, <span id="id24">Wang and Ragusa [<a class="reference internal" href="#id72" title="Yaqi Wang and Jean C Ragusa. On the convergence of dgfem applied to the discrete ordinates transport equation for structured and unstructured triangular meshes. Nuclear Science and Engineering, 163(1):56–72, 2009.">WR09a</a>]</span>, <span id="id25">Wang and Ragusa [<a class="reference internal" href="#id73" title="Yaqi Wang and Jean C Ragusa. A high-order discontinuous galerkin method for the $s_n$ transport equations on 2d unstructured triangular meshes. Annals of Nuclear Energy, 36(7):931–939, 2009.">WR09b</a>]</span>, <span id="id26">Wang [<a class="reference internal" href="#id171" title="Yaqi Wang. Adaptive mesh refinement solution techniques for the multigroup $S_N$ transport equation using a higher-order discontinuous finite element method. PhD thesis, Texas A&amp;M University, 2009.">Wan09</a>]</span>, <span id="id27">Wang and Ragusa [<a class="reference internal" href="#id312" title="Yaqi Wang and Jean C Ragusa. Standard and goal-oriented adaptive mesh refinement applied to radiation transport on 2d unstructured triangular meshes. Journal of Computational Physics, 230(3):763–788, 2011.">WR11</a>]</span>, <span id="id28">Wang and Ragusa [<a class="reference internal" href="#id313" title="Yaqi Wang and Jean C Ragusa. A two-mesh adaptive mesh refinement technique for $s_n$ neutral-particle transport using a higher-order dgfem. Journal of Computational and Applied Mathematics, 233(12):3178–3188, 2010.">WR10</a>]</span>.</div>
+<div class="line">For a given energy group (<span class="math notranslate nohighlight">\(g\)</span> index omitted for brevity) and for
+a given angular direction <span class="math notranslate nohighlight">\(d\)</span>, the transport equation is</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\vec{\Omega}_d \cdot \vec{\nabla} \psi_d(\vec{r})
++ \sigma_t(\vec{r})\psi_d(\vec{r})=
+\sum_{\ell,m} \, \frac{2\ell+1}{4\pi}\sigma_{s,\ell}(\vec{r}) Y_{\ell,m}(\vec{\Omega}_d) \phi_{\ell,m}(\vec{r})
++
+Q_d(\vec{r})
+\equiv q_d(\vec{r}) \,,\]</div>
+<p>where the total source term <span class="math notranslate nohighlight">\(q_d\)</span> includes all source terms
+(within-group scattering, external, and inscattering from other
+groups).</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">A mesh <span class="math notranslate nohighlight">\(T_{h}\)</span> is used to discretize the domain
+<span class="math notranslate nohighlight">\(\mathcal{D}\)</span> into arbitrary elements <span class="math notranslate nohighlight">\(K\)</span>, such that the
+union of the all elements fully covers <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>, i.e.,
+<span class="math notranslate nohighlight">\(\bigcup\nolimits_{K\in T_{h}} K =\mathcal{D}.\)</span> We assume that
+the boundary of <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> consists of planar faces.</div>
+<div class="line">For the purpose of writing the bilinear form of the DGFEM formulation,
+we now introduce the volume and surface inner products on any element
+<span class="math notranslate nohighlight">\(K\)</span> and its boundary <span class="math notranslate nohighlight">\(\partial K\)</span>, respectively,</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+(f,g)_{K} &amp;=&amp; \int_{K} d^{3}r \, f(\vec{r}) g(\vec{r}), \\
+(f,g)_{\partial K} &amp;=&amp; \int_{\partial K} d^{2}r \, | \vec{\Omega} \cdot \vec{n}(\vec{r}) | f(\vec{r}) g(\vec{r}).
+\end{aligned}\end{split}\]</div>
+<p>In the case of 3D geometries, these products are to be understood as
+volume and surface integrals.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">The DGFEM applied to the transport equation is obtained by multiplying
+it by a (discontinuous) test function <span class="math notranslate nohighlight">\(b_{i}\)</span> and integrating
+the result over each element, i.e.,</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;&amp;\sum\limits_{K\in T_{h}}\left\{ -(\vec{\Omega }_d\cdot \vec{\nabla }b_{i}\,,\,\psi_d )_{K}
++ (b_{i}\,,\,\sigma_t \psi_d )_{K}+(\psi_d^{+} \, , \,b_{i}^{+})_{\partial K^{+}} \right\}   \notag \\
+&amp;&amp;\qquad=\ \sum\limits_{K\in T_{h}}\left\{ (q_d\,,\,b_{i})_{K} +(\psi_d ^{-}\, ,\,b_{i}^{+})_{\partial K^{-}}\right\} \,,
+\label{eq:DGFEM-v1}
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\partial K^{-}\)</span> is the inflow boundary for cell <span class="math notranslate nohighlight">\(K\)</span>
+(<span class="math notranslate nohighlight">\(\partial K^{-}=\{x\in
+\partial K\)</span> such that <span class="math notranslate nohighlight">\(\vec{\Omega }\cdot \vec{n}&lt;0\}\)</span>),
+<span class="math notranslate nohighlight">\(\partial K^{+}\)</span> is the outflow boundary for cell <span class="math notranslate nohighlight">\(K\)</span>
+(<span class="math notranslate nohighlight">\(\partial K^{+}=\{x\in \partial K\)</span> such that
+<span class="math notranslate nohighlight">\(\vec{\Omega }\cdot  \vec{n}&gt;0\}\)</span>), <span class="math notranslate nohighlight">\(f^{+}\)</span> denotes the
+restriction of any function <span class="math notranslate nohighlight">\(f\)</span> taken from within element
+<span class="math notranslate nohighlight">\(K\)</span> and <span class="math notranslate nohighlight">\(f^{-}\)</span> represents the restriction of <span class="math notranslate nohighlight">\(f\)</span>
+taken from the neighboring element of <span class="math notranslate nohighlight">\(K\)</span>.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">The left-hand-side integrals contain the angular flux unknowns for
+each element <span class="math notranslate nohighlight">\(K\)</span>, whereas the right-hand-side integrals contain
+the radiation contribution to cell <span class="math notranslate nohighlight">\(K\)</span>, from both (i) the
+volumetric source contribution <span class="math notranslate nohighlight">\(q\)</span> but also (ii) the inflow
+radiation from the incoming cell boundaries. The latter term uses the
+upwind flux <span class="math notranslate nohighlight">\(\psi_d ^{-}\)</span>, i.e., the angular flux from the
+neighboring upwind elements. When an element lies on the domain
+boundary <span class="math notranslate nohighlight">\(\Gamma\)</span>, the incoming contribution is supplied by
+boundary conditions.</div>
+<div class="line"><strong>Transport sweeps and task-directed graphs</strong> It is important to note
+that, with a DGFEM discretization, the small linear system associated
+with cell <span class="math notranslate nohighlight">\(K\)</span> can be solved for the angular flux <span class="math notranslate nohighlight">\(\psi_d\)</span>
+in cell <span class="math notranslate nohighlight">\(K\)</span> as soon as the upwind contributions are known. This
+means that, given a proper ordering of the elements <span class="math notranslate nohighlight">\(K\)</span> in a
+<strong>task-directed graph</strong> (TDG) for direction <span class="math notranslate nohighlight">\(\vec{\Omega}_d\)</span>,
+the global system can be solved cell-by-cell, by traversing the TDG.</div>
+</div>
+<figure class="align-center" id="id340">
+<img alt="Example of a transport sweep sequence" src="../_images/sweeps_example.png" />
+<figcaption>
+<p><span class="caption-text">Example of a transport sweep sequence</span><a class="headerlink" href="#id340" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="line-block">
+<div class="line">It is possible that the TDG presents some cycles on unstructured
+grids. In this case, cycles are broken based on the smallest values of
+<span class="math notranslate nohighlight">\(| \vec{\Omega} \cdot \vec{n}(\vec{r}) |\)</span> for the incoming faces
+causing the cycle. The angular flux contributions to those faces are
+lagged and iterated upon until convergence.</div>
+<div class="line">Piece-Wise Linear (PWL) basis functions on arbitrary polyhedra
+<span id="id29">Stone and Adams [<a class="reference internal" href="#id194" title="Hiromi G Stone and Marvin L Adams. A piecewise linear finite element basis with application to particle transport. In Proc. ANS Topical Meeting Nuclear Mathematical and Computational Sciences Meeting. 2003.">SA03</a>]</span>, <span id="id30">Bailey [<a class="reference internal" href="#id196" title="Teresa S Bailey. The piecewise linear discontinuous finite element method applied to the RZ and XYZ transport equations. PhD thesis, Texas A&amp;M University, 2008.">Bai08</a>]</span>, <span id="id31">Bailey <em>et al.</em> [<a class="reference internal" href="#id197" title="Teresa S Bailey, Marvin L Adams, Jae H Chang, and James S Warsa. A piecewise linear discontinuous finite element spatial discretization of the transport equation in 2d cylindrical geometry. In Proc. International Conference on Mathematics and Computational Methods &amp; Reactor Physics, 3–7. 2008.">BACW08</a>]</span>, <span id="id32">Warsa [<a class="reference internal" href="#id64" title="James Warsa. A continuous finite element-base, discontinuous finite element method for $s_n$ transport. Nuclear Science and Engineering, 160:385-400, 2008.">War08</a>]</span>, <span id="id33">Ragusa [<a class="reference internal" href="#id102" title="Jean C. Ragusa. Discontinuous finite element solution of the radiation diffusion equation on arbitrary polygonal meshes and locally adapted quadrilateral grids. Journal of Computational Physics, 280:195-213, 2015. URL: https://www.sciencedirect.com/science/article/pii/S0021999114006494, doi:https://doi.org/10.1016/j.jcp.2014.09.013.">Rag15</a>]</span>:
+PWL basis functions are defined such that they are equal to one on a
+single vertex and zero on all other vertices. Their construction is
+achieved by splitting each polyhedron into several tetrahedra.
+However, note that the number of unknowns associated with a given
+polyhedron is always equal to its number of vertices, and not to the
+number of vertices in the underlying tetrahedra. The tetrahedra are
+constructed by taking two neighboring vertices of the polyhedron, the
+face centroid of a face of the polyhedron containing the two chosen
+vertices, and the polyhedron centroid.</div>
+</div>
+<div class="line-block">
+<div class="line">On each tetrahedron, standard linear finite element basis functions
+are defined, as <span class="math notranslate nohighlight">\(t_j(\vec{r})\)</span> where <span class="math notranslate nohighlight">\(j\)</span> is any vertex of
+the polyhedron: <span class="math notranslate nohighlight">\(t_j(\vec{r})\)</span> equals 1 at the <span class="math notranslate nohighlight">\(j\)</span>-th
+vertex of the polyhedron and decreases linearly to zero on all other
+vertices connected to vertex <span class="math notranslate nohighlight">\(j\)</span> by an edge. We also define an
+interior function <span class="math notranslate nohighlight">\(t_c(\vec{r})\)</span> that is unity at the polyhedron
+centroid and zero at each face midpoint and polyhedron cell vertex.
+The polyhedron centroid is defined as</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\vec{r}_c = \frac{1}{N_v} \sum_{j=1}^{N_v} \vec{r}_j\]</div>
+<p>with <span class="math notranslate nohighlight">\(N_v\)</span> the number of cell vertices of the polyhedron.
+Finally we define face functions <span class="math notranslate nohighlight">\(t_f(\vec{r})\)</span> that are unity
+at the face centroid and zero at the polyhedron’s centroid and at each
+of the face’s vertices. A face centroid is defined as</p>
+<div class="math notranslate nohighlight">
+\[\vec{r}_f = \frac{1}{N_f} \sum_{j=1}^{N_f} \vec{r}_j\]</div>
+<p>with <span class="math notranslate nohighlight">\(N_f\)</span> the number of face vertices for face <span class="math notranslate nohighlight">\(f\)</span> of the
+polyhedron.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">Then, the PWL basis function associated with vertex <span class="math notranslate nohighlight">\(j\)</span> is:</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[b_j(\vec{r}) = t_j(\vec{r}) + \frac{1}{N_f}\sum_{f &#64; j} t_f(\vec{r}) + \frac{1}{N_v}t_c(\vec{r})\]</div>
+<p>where <span class="math notranslate nohighlight">\(f &#64; j\)</span> denotes a face containing vertex <span class="math notranslate nohighlight">\(j\)</span>. It is
+easy to check that <span class="math notranslate nohighlight">\(b_j(\vec{r})\)</span> is equal to one on vertex
+<span class="math notranslate nohighlight">\(j\)</span> of the polyhedron and zero on all its other vertices.</p>
+</div></blockquote>
+<figure class="align-center" id="id341">
+<a class="reference internal image-reference" href="../_images/PWL_pentagon.png"><img alt="../_images/PWL_pentagon.png" src="../_images/PWL_pentagon.png" style="width: 512.0px; height: 384.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">PWL basis functions in 2D for an arbitrary pentagon</span><a class="headerlink" href="#id341" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id342">
+<a class="reference internal image-reference" href="../_images/PWL_degen_pentagon1.png"><img alt="../_images/PWL_degen_pentagon1.png" src="../_images/PWL_degen_pentagon1.png" style="width: 512.0px; height: 384.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">A PWL basis function in 2D for a degenerated square (pentagon).</span><a class="headerlink" href="#id342" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id343">
+<a class="reference internal image-reference" href="../_images/PWL_degen_pentagon2.png"><img alt="../_images/PWL_degen_pentagon2.png" src="../_images/PWL_degen_pentagon2.png" style="width: 512.0px; height: 384.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">Another PWL basis function in 2D for a degenerated square (pentagon).</span><a class="headerlink" href="#id343" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id344">
+<a class="reference internal image-reference" href="../_images/ThreeDTetrahedral.png"><img alt="../_images/ThreeDTetrahedral.png" src="../_images/ThreeDTetrahedral.png" style="width: 882.0px; height: 378.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">Identification of PWL basis functions in 3D</span><a class="headerlink" href="#id344" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The various local matrices appearing in the local DGFEM systems are
+built using the PWL basis functions. Their integrals are computed using
+a spatial numerical quadrature per tetrahedron mapped on to the
+reference tetrahedron. These matrices are computed only once and then
+stored. The volumetric and surface leakage matrices are computed and
+stored before applying the angular direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span> and
+the mass matrices are computed and stored before applying the
+cross-section values. Hence, the number of matrices stored only depends
+on the mesh (total number of polyhedral cells, total number of faces)
+and not on the number of energy groups used nor the number of directions
+employed.</p>
+</section>
+<section id="references">
+<h2><span class="section-number">2.4. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<div class="docutils container" id="id34">
+<div role="list" class="citation-list">
+<div class="citation" id="id47" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">CB58</a><span class="fn-bracket">]</span></span>
+<p>BG Carlson and GI Bell. Solution of the transport equation by the sn method. Technical Report, Los Alamos Scientific Lab., N. Mex., 1958.</p>
+</div>
+<div class="citation" id="id48" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">CL61</a><span class="fn-bracket">]</span></span>
+<p>Bengt G Carlson and Clarence E Lee. <em>Mechanical quadrature and the transport equation</em>. Volume 2573. Los Alamos Scientific Laboratory of the University of California, 1961.</p>
+</div>
+<div class="citation" id="id49" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">Lee61</a><span class="fn-bracket">]</span></span>
+<p>Clarence E Lee. The discrete $s_n$ approximation to transport theory. Technical Report, Los Alamos Scientific Lab., N. Mex., 1961.</p>
+</div>
+<div class="citation" id="id50" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">LC64</a><span class="fn-bracket">]</span></span>
+<p>Kaye D Lathrop and Bengt G Carlson. Discrete ordinates angular quadrature of the neutron transport equation. Technical Report, Los Alamos Scientific Lab., N. Mex., 1964.</p>
+</div>
+<div class="citation" id="id53" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">CL65</a><span class="fn-bracket">]</span></span>
+<p>Bengt G Carlson and Kaye D Lathrop. <em>Transport theory: the method of discrete ordinates</em>. Los Alamos Scientific Laboratory of the University of California, 1965.</p>
+</div>
+<div class="citation" id="id81" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">Car71</a><span class="fn-bracket">]</span></span>
+<p>BG Carlson. On a more precise definition of discrete ordinates methods. In <em>Proceedings of the Second Conference on Transport Theory</em>, 348–390. U.S. Atomic Energy Commission, 1971.</p>
+</div>
+<div class="citation" id="id96" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">GDH69</a><span class="fn-bracket">]</span></span>
+<p>EM Gelbard, James A Davis, and LA Hageman. Solution of the discrete ordinate equations in one and two dimensions. <em>Transport Theory</em>, 1:129–158, 1969.</p>
+</div>
+<div class="citation" id="id60" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">LA17</a><span class="fn-bracket">]</span></span>
+<p>Cheuk Y. Lau and Marvin L. Adams. Discrete ordinates quadratures based on linear and quadratic discontinuous finite elements over spherical quadrilaterals. <em>Nuclear Science and Engineering</em>, 185(1):36–52, 2017. URL: <a class="reference external" href="https://doi.org/10.13182/NSE16-28">https://doi.org/10.13182/NSE16-28</a>, <a class="reference external" href="https://doi.org/10.13182/NSE16-28">doi:10.13182/NSE16-28</a>.</p>
+</div>
+<div class="citation" id="id59" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">Mor89</a><span class="fn-bracket">]</span></span>
+<p>Jim E Morel. A hybrid collocation-galerkin-sn method for solving the boltzmann transport equation. <em>Nuclear Science and Engineering</em>, 101(1):72–87, 1989.</p>
+</div>
+<div class="citation" id="id58" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">SR11</a><span class="fn-bracket">]</span></span>
+<p>Richard Sanchez and Jean Ragusa. On the construction of galerkin angular quadratures. <em>Nuclear Science and Engineering</em>, 169(2):133–154, 2011. URL: <a class="reference external" href="https://doi.org/10.13182/NSE10-31">https://doi.org/10.13182/NSE10-31</a>, <a class="reference external" href="https://doi.org/10.13182/NSE10-31">doi:10.13182/NSE10-31</a>.</p>
+</div>
+<div class="citation" id="id54" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">Lat68</a><span class="fn-bracket">]</span></span>
+<p>K D Lathrop. Ray effects in discrete ordinates equations. <em>Nuclear Science and Engineering</em>, 32(3):357–369, 1968.</p>
+</div>
+<div class="citation" id="id55" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">Lat71</a><span class="fn-bracket">]</span></span>
+<p>KD Lathrop. Remedies for ray effects. <em>Nuclear Science and Engineering</em>, 45(3):255–268, 1971.</p>
+</div>
+<div class="citation" id="id56" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">MWLP03</a><span class="fn-bracket">]</span></span>
+<p>J.E. Morel, T.A. Wareing, R.B. Lowrie, and D.K. Parsons. Analysis of ray-effect mitigation techniques. <em>Nuclear Science and Engineering</em>, 144:1–22, 2003.</p>
+</div>
+<div class="citation" id="id57" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">MJR77</a><span class="fn-bracket">]</span></span>
+<p>WF Miller Jr and Wm H Reed. Ray-effect mitigation methods for two-dimensional neutron transport theory. <em>Nuclear Science and Engineering</em>, 62(3):391–411, 1977.</p>
+</div>
+<div class="citation" id="id61" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">RH73</a><span class="fn-bracket">]</span></span>
+<p>Wm H Reed and TR Hill. Triangular mesh methods for the neutron transport equation. <em>Los Alamos Report LA-UR-73-479</em>, 1973.</p>
+</div>
+<div class="citation" id="id62" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">LR74</a><span class="fn-bracket">]</span></span>
+<p>P Lesaint and PA Raviart. On a finite element method for solving the neutron transport equation. <em>Mathematical Aspects of Finite Elements in Partial Differential Equations</em>, pages 89–123, 1974.</p>
+</div>
+<div class="citation" id="id103" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id17">Hil75</a><span class="fn-bracket">]</span></span>
+<p>TR Hill. Onetran: a discrete ordinates finite element code for the solution of the one-dimensional multigroup transport equation (la-5990-ms). Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1975.</p>
+</div>
+<div class="citation" id="id104" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id18">RHBL73</a><span class="fn-bracket">]</span></span>
+<p>Wm H Reed, TR Hill, FW Brinkley, and KD Lathrop. Triplet: a two-dimensional, multigroup, triangular mesh, planar geometry, explicit transport code. Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1973.</p>
+</div>
+<div class="citation" id="id105" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">SMJBJ77</a><span class="fn-bracket">]</span></span>
+<p>TJ Seed, WF Miller Jr, and FW Brinkley Jr. Trident: a two-dimensional, multigroup, triangular mesh discrete ordinates, explicit neutron transport code. Technical Report, Los Alamos Scientific Lab., NM (USA), 1977.</p>
+</div>
+<div class="citation" id="id106" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">SMB78</a><span class="fn-bracket">]</span></span>
+<p>TJ Seed, WF Miller, and GE Bosler. Trident: a new triangular mesh discrete ordinates code. In <em>ANS Meeting</em>, 157–167. 1978.</p>
+</div>
+<div class="citation" id="id65" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">Ada01</a><span class="fn-bracket">]</span></span>
+<p>Marvin L Adams. Discontinuous finite element transport solutions in thick diffusive problems. <em>Nuclear Science and Engineering</em>, 137(3):298–333, 2001.</p>
+</div>
+<div class="citation" id="id126" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id22">WMMP01</a><span class="fn-bracket">]</span></span>
+<p>Todd A Wareing, John M McGhee, Jim E Morel, and Shawn D Pautz. Discontinuous finite element $s_n$ methods on three-dimensional unstructured grids. <em>Nuclear Science and Engineering</em>, 138(3):256–268, 2001.</p>
+</div>
+<div class="citation" id="id127" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id23">MW05</a><span class="fn-bracket">]</span></span>
+<p>Jim E Morel and James S Warsa. An $s_n$ spatial discretization scheme for tetrahedral meshes. <em>Nuclear Science and Engineering</em>, 151(2):157–166, 2005.</p>
+</div>
+<div class="citation" id="id72" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id24">WR09a</a><span class="fn-bracket">]</span></span>
+<p>Yaqi Wang and Jean C Ragusa. On the convergence of dgfem applied to the discrete ordinates transport equation for structured and unstructured triangular meshes. <em>Nuclear Science and Engineering</em>, 163(1):56–72, 2009.</p>
+</div>
+<div class="citation" id="id73" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id25">WR09b</a><span class="fn-bracket">]</span></span>
+<p>Yaqi Wang and Jean C Ragusa. A high-order discontinuous galerkin method for the $s_n$ transport equations on 2d unstructured triangular meshes. <em>Annals of Nuclear Energy</em>, 36(7):931–939, 2009.</p>
+</div>
+<div class="citation" id="id171" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id26">Wan09</a><span class="fn-bracket">]</span></span>
+<p>Yaqi Wang. <em>Adaptive mesh refinement solution techniques for the multigroup $S_N$ transport equation using a higher-order discontinuous finite element method</em>. PhD thesis, Texas A&amp;M University, 2009.</p>
+</div>
+<div class="citation" id="id312" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id27">WR11</a><span class="fn-bracket">]</span></span>
+<p>Yaqi Wang and Jean C Ragusa. Standard and goal-oriented adaptive mesh refinement applied to radiation transport on 2d unstructured triangular meshes. <em>Journal of Computational Physics</em>, 230(3):763–788, 2011.</p>
+</div>
+<div class="citation" id="id313" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id28">WR10</a><span class="fn-bracket">]</span></span>
+<p>Yaqi Wang and Jean C Ragusa. A two-mesh adaptive mesh refinement technique for $s_n$ neutral-particle transport using a higher-order dgfem. <em>Journal of Computational and Applied Mathematics</em>, 233(12):3178–3188, 2010.</p>
+</div>
+<div class="citation" id="id194" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id29">SA03</a><span class="fn-bracket">]</span></span>
+<p>Hiromi G Stone and Marvin L Adams. A piecewise linear finite element basis with application to particle transport. In <em>Proc. ANS Topical Meeting Nuclear Mathematical and Computational Sciences Meeting</em>. 2003.</p>
+</div>
+<div class="citation" id="id196" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id30">Bai08</a><span class="fn-bracket">]</span></span>
+<p>Teresa S Bailey. <em>The piecewise linear discontinuous finite element method applied to the RZ and XYZ transport equations</em>. PhD thesis, Texas A&amp;M University, 2008.</p>
+</div>
+<div class="citation" id="id197" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id31">BACW08</a><span class="fn-bracket">]</span></span>
+<p>Teresa S Bailey, Marvin L Adams, Jae H Chang, and James S Warsa. A piecewise linear discontinuous finite element spatial discretization of the transport equation in 2d cylindrical geometry. In <em>Proc. International Conference on Mathematics and Computational Methods &amp; Reactor Physics</em>, 3–7. 2008.</p>
+</div>
+<div class="citation" id="id64" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id32">War08</a><span class="fn-bracket">]</span></span>
+<p>James Warsa. A continuous finite element-base, discontinuous finite element method for $s_n$ transport. <em>Nuclear Science and Engineering</em>, 160:385–400, 2008.</p>
+</div>
+<div class="citation" id="id102" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id33">Rag15</a><span class="fn-bracket">]</span></span>
+<p>Jean C. Ragusa. Discontinuous finite element solution of the radiation diffusion equation on arbitrary polygonal meshes and locally adapted quadrilateral grids. <em>Journal of Computational Physics</em>, 280:195–213, 2015. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0021999114006494">https://www.sciencedirect.com/science/article/pii/S0021999114006494</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.jcp.2014.09.013">doi:https://doi.org/10.1016/j.jcp.2014.09.013</a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="background.html" class="btn btn-neutral float-left" title="1. Background on the Linear Boltzmann Equation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cross_sections.html" class="btn btn-neutral float-right" title="3. Multigroup Cross-Section Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

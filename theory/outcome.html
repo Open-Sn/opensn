@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5. Iterative Solution Algorithms" href="iterative.html" />
+    <link rel="prev" title="3. Multigroup Cross-Section Data" href="cross_sections.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Developer Workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4. </span>Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="outcome-of-a-simulation-particle-distribution-reaction-rates-and-leakage-rates">
+<h1><span class="section-number">4. </span>Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates<a class="headerlink" href="#outcome-of-a-simulation-particle-distribution-reaction-rates-and-leakage-rates" title="Link to this heading"></a></h1>
+<div class="line-block">
+<div class="line">Deterministic approaches for solving the linear Boltzmann equation
+yield the global solution in every spatial cell and in every energy
+group once the iterative processes have been converged. This means
+that the behavior of particles in space/energy/time is the main output
+of a transport solve.</div>
+<div class="line">Hence, reaction rates for any reaction type can be obtained as a
+simply post-processing step using the computed flux moments,
+<span class="math notranslate nohighlight">\(\phi_{\ell,m}\)</span>) . For example, the reaction rate for a certain
+reaction, over a spatial region of interest (RoI
+<span class="math notranslate nohighlight">\(\subset\mathcal{D}\)</span>), for a subset of the energy groups
+<span class="math notranslate nohighlight">\(\mathbb{G} \subset \mathcal{E}\)</span></div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\text{RR}_\text{type} =  \sum_{g \in \mathbb{G}} \int_\text{RoI} d^3r \, \sigma^g_{\text{type}}(\vec{r},t) \phi^g_{0,0}(\vec{r},t)\]</div>
+<p>The reaction type can be one of the types used during the simulation
+(e.g., total) or a type present in the multigroup cross-section
+library and used only at the post processing stage (e.g., heating).</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">On the boundary of the domain, OpenSn also computes the half-range
+angular currents</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[j^{\pm,g}(\vec{r},t) = \int_{\vec{\Omega} \cdot \vec{n}(\vec{r}) \gtrless 0} d\Omega \, |\vec{\Omega} \cdot \vec{n}(\vec{r})| \psi^g(\vec{r},\vec{\Omega},t)\]</div>
+<p>With this quantity, one can compute partial leakage rates
+<span class="math notranslate nohighlight">\(\mathcal{L}^\pm\)</span> on a portion of the domain’s boundary (the
+boundary of interest, BoI <span class="math notranslate nohighlight">\(\subset\partial\mathcal{D}\)</span>), for a
+subset of the energy groups <span class="math notranslate nohighlight">\(\mathbb{G} \subset \mathcal{E}\)</span></p>
+<div class="math notranslate nohighlight">
+\[\mathcal{L}^\pm = \sum_{g \in \mathbb{G}} \int_\text{BoI} d^2r \, j^{\pm,g}(\vec{r},t)\]</div>
+</div></blockquote>
+<p>For net leakage rates across a surface of interest (SoI), that is, in
+the interior of the domain, we simply use the three first-order flux
+moments:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{bmatrix}
+    \mathcal{L}_x \\ \mathcal{L}_y \\ \mathcal{L}_z
+\end{bmatrix}
+=
+ \sum_{g \in \mathbb{G}} \int_\text{SoI} d^2r \,
+\begin{bmatrix}
+    \phi^g_{1,-1}(\vec{r},t) \\
+    \phi^g_{1,0}(\vec{r},t)  \\
+    \phi^g_{1,1}(\vec{r},t)  \\
+\end{bmatrix}\end{split}\]</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cross_sections.html" class="btn btn-neutral float-left" title="3. Multigroup Cross-Section Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="iterative.html" class="btn btn-neutral float-right" title="5. Iterative Solution Algorithms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

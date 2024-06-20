@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3. Multigroup Cross-Section Data &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates" href="outcome.html" />
+    <link rel="prev" title="2. Phase-space Discretization" href="discretization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Developer Workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3. </span>Multigroup Cross-Section Data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multigroup-cross-section-data">
+<h1><span class="section-number">3. </span>Multigroup Cross-Section Data<a class="headerlink" href="#multigroup-cross-section-data" title="Link to this heading"></a></h1>
+<div class="line-block">
+<div class="line">We describe the multigroup data needed to perform an OpenSn
+calculation (solve and post-processing).</div>
+</div>
+<dl>
+<dt>Total cross section:</dt><dd><p>The total cross section, <span class="math notranslate nohighlight">\(\sigma_t^g\)</span>, includes all interaction
+processes in group <span class="math notranslate nohighlight">\(g\)</span>. It is given by</p>
+<div class="math notranslate nohighlight">
+\[\sigma_t^g = \sigma_{s,0}^g + \sigma_{\text{n,c}}^g + \sigma_{f}^g  + \sum_{\text{x}=2,3,\ldots}\sigma_{\text{n,xn}}^g \,,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma_{s,0}^g\)</span> is the (elastic + inelastic) isotropic
+scattering cross section, <span class="math notranslate nohighlight">\(\sigma_{\text{n,c}}^g\)</span> includes all
+capture processes (e.g., (n,<span class="math notranslate nohighlight">\(\gamma\)</span>), (n,p),
+(n,<span class="math notranslate nohighlight">\(\alpha\)</span>), (n,d), (n,t), …), <span class="math notranslate nohighlight">\(\sigma_{f}^g\)</span> is the
+fission cross section, and <span class="math notranslate nohighlight">\(\sigma_{\text{n,xn}}^g\)</span> denotes the
+(n,2n), (n,3n) …processes (without multiplicity). The multigroup
+total cross section is a vector of length <span class="math notranslate nohighlight">\(G\)</span> and is a
+mandatory input of OpenSn.</p>
+</dd>
+<dt>Transfer matrix:</dt><dd><div class="line-block">
+<div class="line">The transfer matrix contains transfers from (elastic + inelastic)
+scattering, as well as transfers with multiplicity such as from
+(n,xn) reactions (with x<span class="math notranslate nohighlight">\(=2,3,4,\ldots\)</span>)</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\vartheta\sigma_{\ell}^{g'\to g} = \sigma_{s,\ell}^{g'\to g} +  \sum_{\text{x}=2,3,\ldots} f_\text{x}\sigma_{\text{(n,xn)},\ell}^{g'\to g}  =  \sum_{\text{x}=1,2,3,\ldots} f_\text{x}\sigma_{\text{(n,xn)},\ell}^{g'\to g}  \ ,\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_\text{x} = \text{x}\)</span> with x<span class="math notranslate nohighlight">\(=1,2,3,4,\ldots\)</span>
+hence denoting scattering by (n,1n); <span class="math notranslate nohighlight">\(\vartheta^{g'\to g}\)</span>
+denotes the effective multiplicity and <span class="math notranslate nohighlight">\(\ell\)</span> is the
+anisotropy expansion order. The effective multiplicity is</p>
+<div class="math notranslate nohighlight">
+\[\vartheta^{g'\to g} = \frac{ \sum_{\text{x}=1,2,3,\ldots} f_\text{x}\sigma_{\text{(n,xn)},0}^{g'\to g}}{ \sum_{\text{x}=1,2,3,\ldots} \sigma_{\text{(n,xn)},0}^{g'\to g}}\]</div>
+<p>Of course, when (n,xn) reactions are ignored (x<span class="math notranslate nohighlight">\(\, \ge 2\)</span>),
+we have <span class="math notranslate nohighlight">\(\vartheta^{g'\to g}=1\)</span> and
+<span class="math notranslate nohighlight">\(\sigma_{\ell}^{g'\to g} = \sigma_{s,\ell}^{g'\to g}\)</span>.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">The multigroup transfer matrix is a mandatory input of OpenSn. The
+transfer matrix a sparse array of dimension
+<span class="math notranslate nohighlight">\(G \times G \times L_{\text{max}}\)</span>, whose sparsity pattern
+for each anisotropy order is dictated by the physics and the chosen
+energy group structure.</div>
+</div>
+</dd>
+<dt>Reduced absorption cross section:</dt><dd><p>This cross section is computed using the total cross section and the
+transfer matrix. It is not user-supplied but plays a role in the
+conservation statement. In order to account for multiplicity in the
+transfer matrix, the standard definition of the absorption cross
+section is amended as</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{\text{red.}a}^g  = \sigma_{t}^g  -  \sum_{g'} \vartheta^{g\to g'}\sigma_{s,0}^{g\to g'}\]</div>
+<p>The total cross section is the sum of absorptive processes (denoted
+by (n,0n)), and transfers to all groups from scattering (n,1n)
+reactions and other reactions with multiplicity greater than one,
+such as (n,2n), (n,3n) reactions, and so forth:</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{t}^g = \sigma_{\text{(n,0n)}}^{g} +  \sum_{\text{x}=1,2,3,\ldots} \sum_{g'} \sigma_{\text{(n,xn)},0}^{g\to g'}\]</div>
+<p>If one wants to define the total cross section using the transfer
+matrix with multiplicity, we take the above formula and add and
+subtract the transfer matrix with multiplicity:</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{t}^g = \sigma_{\text{(n,0n)}}^{g} +  \sum_{\text{x}=1,2,3,\ldots} \sum_{g'} \sigma_{\text{(n,xn)},0}^{g\to g'}
+     -  \sum_{\text{x}=1,2,3,\ldots} f_\text{x} \sum_{g'} \sigma_{\text{(n,xn)},0}^{g\to g'}
+     +  \sum_{\text{x}=1,2,3,\ldots} f_\text{x} \sum_{g'} \sigma_{\text{(n,xn)},0}^{g\to g'}\]</div>
+<p>After some algebra, we obtain</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{t}^g = \underbrace{\sigma_{\text{(n,0n)}}^{g} +  \sum_{\text{x}=2,3,\ldots} \sum_{g'} (1- f_\text{x}) \sigma_{\text{(n,xn)},0}^{g\to g'} }_{ \sigma_{\text{red.}a}^g }
+     +   \sum_{g'} \underbrace{ \sum_{\text{x}=1,2,3,\ldots} f_\text{x} \sigma_{\text{(n,xn)},0}^{g\to g'} }_{\vartheta^{g\to g'}\sigma_{s,0}^{g\to g'} }\]</div>
+<p>which leads to the definition of the reduced absorption cross
+section, given previously. Note that this cross section is not
+mandatory in OpenSn. It is computed using the total cross section and
+the transfer matrix and is used in conservation (balance) statements.</p>
+</dd>
+<dt>Fission production:</dt><dd><div class="line-block">
+<div class="line">Production by fission requires the given of the fission spectrum
+<span class="math notranslate nohighlight">\(\chi^g\)</span> and the production by fission cross section
+<span class="math notranslate nohighlight">\(\nu\sigma_f^{g'}\)</span>. The production by fission term is then</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[S_f^g = \frac{\chi^g}{4\pi} \sum_{g'} \nu\sigma_f^{g'} \phi_{0,0}^{g'}\]</div>
+<p>The multigroup fission spectrum and production by fission cross
+section cross section are vectors of length <span class="math notranslate nohighlight">\(G\)</span> and are a
+mandatory input of OpenSn when fissionable materials are present.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">Note that, for relatively high neutron energies, the spectrum of
+fission neutrons is dependent on initial energy. In such a
+situation, a fission production matrix should be employed</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[S_f^g = \frac{1}{4\pi} \sum_{g'} \nu\sigma_f^{g' \to g} \phi_{0,0}^{g'}\]</div>
+<p>However, this is not yet employed in the current version of OpenSn</p>
+</div></blockquote>
+</dd>
+<dt>Other cross sections:</dt><dd><p>Other multigroup cross sections can be supplied in order to compute
+post-processing values. Examples include <span class="math notranslate nohighlight">\(\kappa \sigma_f^{g}\)</span>
+to compute fission power and heating cross sections (for dose
+calculations).</p>
+</dd>
+</dl>
+<p>In summary, the mandatory cross-section inputs are:</p>
+<ol class="arabic simple">
+<li><p>total cross section, <span class="math notranslate nohighlight">\(\sigma_t^g\)</span>, and</p></li>
+<li><p>transfer matrix (possibly with multiplicity)
+<span class="math notranslate nohighlight">\(\vartheta\sigma^{g \to g'}_\ell\)</span>,</p></li>
+<li><p>when fissionable materials are present:</p>
+<ol class="arabic simple">
+<li><p>fission spectrum <span class="math notranslate nohighlight">\(\chi^g\)</span>, and</p></li>
+<li><p>production by fission cross section <span class="math notranslate nohighlight">\(\nu\sigma_f^{g}\)</span>.</p></li>
+</ol>
+</li>
+</ol>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="discretization.html" class="btn btn-neutral float-left" title="2. Phase-space Discretization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="outcome.html" class="btn btn-neutral float-right" title="4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

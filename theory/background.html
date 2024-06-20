@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1. Background on the Linear Boltzmann Equation &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. Phase-space Discretization" href="discretization.html" />
+    <link rel="prev" title="Theory Manual" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">1. Background on the Linear Boltzmann Equation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#definitions">1.1. Definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-linear-boltzmann-equation">1.2. The Linear Boltzmann Equation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#boundary-conditions">1.3. Boundary Conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initial-conditions">1.4. Initial Conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#expansion-of-the-angle-redistribution-term">1.5. Expansion of the Angle Redistribution Term</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#short-summary-of-transport-equations-solved-in-opensn">1.6. Short summary of Transport Equations Solved in OpenSn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#streaming-term-in-cartesian-and-curvilinear-coordinate-systems">1.7. Streaming Term in Cartesian and Curvilinear Coordinate Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">1.8. References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Developer Workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">1. </span>Background on the Linear Boltzmann Equation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="background-on-the-linear-boltzmann-equation">
+<h1><span class="section-number">1. </span>Background on the Linear Boltzmann Equation<a class="headerlink" href="#background-on-the-linear-boltzmann-equation" title="Link to this heading"></a></h1>
+<p>The following textbooks are a good source of information on transport
+theory <span id="id1">Duderstadt and Martin [<a class="reference internal" href="#id10" title="James J Duderstadt and William Russell Martin. Transport theory. John Wiley &amp; Sons, 1979.">DM79</a>]</span>, computational
+methods for transport <span id="id2">Lewis and Miller [<a class="reference internal" href="#id14" title="Elmer Eugene Lewis and Warren F Miller. Computational methods of neutron transport. John Wiley and Sons, Inc., New York, NY, 1984. ISBN 0-89448-452-4.">LM84</a>]</span>, and
+nuclear reactor theory
+<span id="id3">Bell and Glasstone [<a class="reference internal" href="#id13" title="George I Bell and Samuel Glasstone. Nuclear reactor theory. RE Krieger Publishing Company, 1979. ISBN 978-0-442-20684-0.">BG79</a>]</span>, <span id="id4">Duderstadt and Hamilton [<a class="reference internal" href="#id15" title="James J Duderstadt and Louis J Hamilton. Nuclear reactor analysis. Wiley, 1976.">DH76</a>]</span>. For a review
+article on transport approximations, consult
+<span id="id5">Sanchez and McCormick [<a class="reference internal" href="#id67" title="R Sanchez and Norman J McCormick. Review of neutron transport approximations. Nuclear Science and Engineering, 1982.">SM82</a>]</span>, <span id="id6">Azmy and Sartori [<a class="reference internal" href="#id18" title="Y. Azmy and E. Sartori. Nuclear Computational Science: A Century in Review. Springer Netherlands, 2010. ISBN 9789048134113. URL: https://books.google.com/books?id=4imnyVPQ-0AC.">AS10</a>]</span>.</p>
+<section id="definitions">
+<h2><span class="section-number">1.1. </span>Definitions<a class="headerlink" href="#definitions" title="Link to this heading"></a></h2>
+<p>In radiation transport, particles are described by their position in
+space and by their momentum vector. This leads to a six-dimensional
+phase-space. This increased dimensionality is what makes radiation
+transport problems computationally expensive.</p>
+<p>The six-dimensional phase-space is often described in terms of the
+particle’s position <span class="math notranslate nohighlight">\(\vec{r}\)</span>, the particle’s direction of flight
+using the unit direction vector <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>, and the particle’s
+energy <span class="math notranslate nohighlight">\(E\)</span>. Hence, to describe the time-dependent distribution of
+particles in phase-space, we introduce their phase-space density as:</p>
+<div class="math notranslate nohighlight">
+\[n(\vec{r},\vec{\Omega},E,t) \,.\]</div>
+<p>It is customary to introduce the following quantities:</p>
+<ul>
+<li><p>The angular flux <span class="math notranslate nohighlight">\(\psi\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\psi(\vec{r},\vec{\Omega},E,t) = v(E) \, n(\vec{r},\vec{\Omega},E,t) \,,\]</div>
+<p>where <span class="math notranslate nohighlight">\(v(E)\)</span> is the magnitude of the particle’s velocity.</p>
+</li>
+<li><p>The angular current <span class="math notranslate nohighlight">\(\vec{j}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\vec{j}(\vec{r},\vec{\Omega},E,t) = \vec{\Omega} \, \psi(\vec{r},\vec{\Omega},E,t) \,.\]</div>
+</li>
+</ul>
+<p>The unit direction vector in <span class="math notranslate nohighlight">\(xyz\)</span> in Cartesian coordinate system
+is</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\vec{\Omega} =
+\begin{bmatrix}
+\sin{\theta} \cos{\varphi} \\
+\sin{\theta} \sin{\varphi} \\
+\cos{\theta}  \\
+\end{bmatrix}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta\)</span> is the polar angle and <span class="math notranslate nohighlight">\(\varphi\)</span> the
+azimuthal angle. We often use <span class="math notranslate nohighlight">\(\mu = \cos{\theta}\)</span>.</p>
+</section>
+<section id="the-linear-boltzmann-equation">
+<h2><span class="section-number">1.2. </span>The Linear Boltzmann Equation<a class="headerlink" href="#the-linear-boltzmann-equation" title="Link to this heading"></a></h2>
+<p>The linear Boltzmann transport equation for neutral particles is a
+conservation statement over the phase-space, stating that the rate of
+change of the particle’s density is equal to gain terms minus loss
+terms. It is typically written as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gathered}
+\frac{1}{v(E)} \frac{\partial \psi(\vec{r},\vec{\Omega},E,t)}{\partial t}
+= \\
+\int dE' \int_{4\pi}d\Omega' \, \sigma_s(\vec{r},\vec{\Omega}'\to \vec{\Omega},E'\to E,t)\psi(\vec{r},\vec{\Omega}',E',t)
++
+Q_{\text{ext}}(\vec{r},\vec{\Omega},E,t)
+\\
+- \vec{\Omega} \cdot \vec{\nabla} \psi(\vec{r},\vec{\Omega},E,t)
+- \sigma_t(\vec{r},E,t)\psi(\vec{r},\vec{\Omega},E,t)
+\end{gathered}\end{split}\]</div>
+<p>for <span class="math notranslate nohighlight">\(\vec{r} \in \mathcal{D}\)</span> (the spatial domain),
+<span class="math notranslate nohighlight">\(E\in\mathcal{E}=[0,E_{\text{max}}]\)</span> (the energy range), and
+<span class="math notranslate nohighlight">\(\vec{\Omega}\in \mathcal{S}^2\)</span> (the unit sphere).</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(Q_{\text{ext}}\)</span> represents the external source rate density,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma_t(\vec{r},E,t)\)</span> is the total interaction cross section,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma_s(\vec{r},\vec{\Omega}'\to \vec{\Omega},E'\to E,t)\)</span> is
+the double differential scattering cross section; note that
+additional energy-angle redistribution events can be modeled, such as
+<span class="math notranslate nohighlight">\((\text{n},\text{xn})\)</span> neutron interactions; finally, note that
+for isotropic materials (which is an assumption we make), the angular
+distribution of the outgoing particles only depends on the cosine of
+the incoming and outgoing directions,
+<span class="math notranslate nohighlight">\(\mu_0=\vec{\Omega}'\cdot \vec{\Omega}\)</span>, so we will replace
+<span class="math notranslate nohighlight">\(\sigma_s(\vec{r},\vec{\Omega}'\to \vec{\Omega},E'\to E,t)\)</span>
+with
+<span class="math notranslate nohighlight">\(\sigma_s(\vec{r},\vec{\Omega}'\cdot \vec{\Omega},E'\to E,t)\)</span>.</p></li>
+</ul>
+<p>In succinct operator notation, the above equation can be re-written as</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{v} \frac{\partial \Psi}{\partial t} = H\Psi  + Q_{\text{ext}} - L\Psi \,,\]</div>
+<p>where <span class="math notranslate nohighlight">\(L\)</span> is the streaming + interaction operator and <span class="math notranslate nohighlight">\(H\)</span> is
+the collision operator.</p>
+<p>If fission interactions and delayed neutron production are to be
+included, the above equation is amended as follows</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{v} \frac{\partial \Psi}{\partial t} = H\Psi  +P_p\Psi + Q_{\text{ext}} + \sum_i S_{d,i} - L\Psi \,,\]</div>
+<p>where the prompt fission operator is</p>
+<div class="math notranslate nohighlight">
+\[P_p\Psi = \frac{\chi_p(E)}{4\pi} \int dE \int_{4\pi}d\Omega' \, \nu_p\sigma_f(\vec{r},E'\to E,t)\psi(\vec{r},\vec{\Omega}',E',t) \,,\]</div>
+<p>and the delayed neutron operator is</p>
+<div class="math notranslate nohighlight">
+\[S_{d,i} = \frac{\chi_{d,i}(E)}{4\pi} C_i(\vec{r},t) \,,\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_i\)</span>, the neutron precursor concentration in delayed group
+<span class="math notranslate nohighlight">\(i\)</span>, satisfies its own conservation law.</p>
+</section>
+<section id="boundary-conditions">
+<h2><span class="section-number">1.3. </span>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading"></a></h2>
+<div class="line-block">
+<div class="line">Boundary conditions are usually supplied either as a known incoming
+flux (including a zero function for vacuum boundaries) or as an albedo
+condition. We denote by <span class="math notranslate nohighlight">\(\Gamma\)</span> the boundary of the spatial
+domain <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> (that is,
+<span class="math notranslate nohighlight">\(\Gamma = \partial \mathcal{D}\)</span>).</div>
+<div class="line">The following types of boundary conditions are employed:</div>
+</div>
+<ul>
+<li><p>The imposed-flux conditions can be expressed as</p>
+<div class="math notranslate nohighlight">
+\[\psi(\vec{r},\vec{\Omega},E,t) = \psi_{\text{inc}}(\vec{r},\vec{\Omega},E,t) \qquad \forall \vec{r} \in \Gamma^-\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\Gamma^- = \big\{ \vec{r} \in \Gamma  \text{ such that } \vec{\Omega}\cdot\vec{n}(\vec{r}) &lt; 0 \big\}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\vec{n}(\vec{r})\)</span> the outward pointing unit normal vector
+at position <span class="math notranslate nohighlight">\(\vec{r}\)</span>.</p>
+</li>
+<li><p>The albedo condition can be expressed as</p>
+<div class="math notranslate nohighlight">
+\[\psi(\vec{r},\vec{\Omega},E,t) = \mathcal{A}(\vec{r},\vec{\Omega}'\to\vec{\Omega},E'\to E,t) \psi(\vec{r},\vec{\Omega}',E',t)\]</div>
+<p>with</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathcal{A}(\vec{r},\vec{\Omega}'\to\vec{\Omega},E'\to E,t)\)</span>
+the albedo operator, and</p></li>
+<li><p><span class="math notranslate nohighlight">\(\vec{\Omega}'\cdot \vec{n}(\vec{r}) &gt;0\)</span> (outgoing
+direction) and the incoming direction is
+<span class="math notranslate nohighlight">\(\vec{\Omega}=\vec{\Omega}'-2\left(\vec{\Omega}\cdot\vec{n}(\vec{r})\right) \vec{n}(\vec{r})\)</span>.</p></li>
+</ul>
+</li>
+</ul>
+<p>For <span class="math notranslate nohighlight">\(k\)</span>-eigenvalue problems, the boundary conditions usually
+devolve to a zero-incoming flux (<span class="math notranslate nohighlight">\(\psi_{\text{inc}}=0\)</span>) or a unity
+albedo (i.e., symmetry line, with <span class="math notranslate nohighlight">\(\mathcal{A}=1\)</span>).</p>
+</section>
+<section id="initial-conditions">
+<h2><span class="section-number">1.4. </span>Initial Conditions<a class="headerlink" href="#initial-conditions" title="Link to this heading"></a></h2>
+<p>For time-dependent problems, initial conditions are supplied as</p>
+<div class="math notranslate nohighlight">
+\[\psi(\vec{r},\vec{\Omega},E,t=0) = f_0(\vec{r},\vec{\Omega},E) \qquad \forall \vec{r}\in \mathcal{D},\ \forall E \in \mathcal{E}, \ \forall\vec{\Omega}\in \mathcal{S}^2\]</div>
+</section>
+<section id="expansion-of-the-angle-redistribution-term">
+<h2><span class="section-number">1.5. </span>Expansion of the Angle Redistribution Term<a class="headerlink" href="#expansion-of-the-angle-redistribution-term" title="Link to this heading"></a></h2>
+<p>The angle redistribution term</p>
+<div class="math notranslate nohighlight">
+\[\int_{4\pi}d\Omega' \, \sigma_s(\vec{r},\vec{\Omega}'\cdot \vec{\Omega},E'\to E,t)\psi(\vec{r},\vec{\Omega}',E',t)\]</div>
+<p>can be expanded in angle on the unit sphere <span class="math notranslate nohighlight">\(\mathcal{S}^2\)</span> using
+(real-valued) spherical harmonic functions to yield</p>
+<div class="math notranslate nohighlight">
+\[\sum_{\ell=0}^{L_{\text{max}}} \sum_{m=-\ell}^{m=\ell} \, \frac{2\ell+1}{4\pi}\sigma_{s,\ell}(\vec{r},E'\to E,t) Y_{\ell,m}(\vec{\Omega}) \phi_{\ell,m}(\vec{r},E',t)\]</div>
+<p>where</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(L_{\text{max}}\)</span> is the highest order of scattering anisotropy
+retrained in the cross section expansion (usually, a user-supplied
+value)</p></li>
+<li><p>the Legendre moments of the scattering cross section are defined as</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{s,\ell}(\vec{r},E'\to E,t)
+    =
+    2\pi \int_{-1}^1 d\mu_0 \, \sigma_s(\vec{r},\mu_0,E'\to E,t) P_\ell(\mu_0)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu_0=\vec{\Omega}'\cdot \vec{\Omega}\)</span> and
+<span class="math notranslate nohighlight">\(P_\ell(\mu)\)</span> is the Legendre polynomial of degree
+<span class="math notranslate nohighlight">\(\ell\)</span>.</p>
+</li>
+<li><p>the moment of the angular flux are defined as</p>
+<div class="math notranslate nohighlight">
+\[\phi_{\ell,m}(\vec{r},E,t)
+    =
+    \int_{4\pi} d\Omega \, Y_{\ell,m}(\vec{\Omega})\psi(\vec{r},\vec{\Omega},E,t)\]</div>
+</li>
+<li><p>the real-valued spherical harmonics are</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Y_{\ell,m}(\vec{\Omega}) =
+    \begin{cases}
+        (-1)^m \sqrt(2)\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
+    &amp; \text{if } m &lt; 0 \\
+    \\
+        \sqrt{ \frac{(2\ell + 1)}{4\pi}} P_{\ell}^{m}(\cos\theta) &amp; \text{if } m = 0 \\ \\
+    (-1)^m \sqrt(2)\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
+    &amp; \text{if } m &gt; 0 \\
+    \end{cases}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(P^m_\ell(\mu)\)</span> is the associated Legendre function of
+degree <span class="math notranslate nohighlight">\(\ell\)</span> and of order <span class="math notranslate nohighlight">\(m\)</span>.</p>
+</li>
+</ul>
+<p>In operator notation, the steady-state, source-driven problem
+<span class="math notranslate nohighlight">\(L\Psi = H\Psi + Q_{\text{ext}}\)</span> can now be re-written as</p>
+<div class="math notranslate nohighlight">
+\[L\Psi = M\Sigma \Phi  + Q_{\text{ext}} \qquad \text{with } \Phi = D \Psi\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\Phi\)</span> are the flux moments,</p></li>
+<li><p><span class="math notranslate nohighlight">\(D\)</span> is the discrete-to-moment operator and denotes the angular
+integration of the angular flux to yield the flux moment
+(<span class="math notranslate nohighlight">\(\Phi = D \Psi\)</span>). The term <em>discrete</em> stems from the fact that
+the integration is performed using a quadrature rule, hence at
+<em>discrete</em> directions for the angular flux,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Sigma\)</span> denotes the matrix containing the Legendre moments of
+the scattering cross section, and</p></li>
+<li><p><span class="math notranslate nohighlight">\(M\)</span> denotes the moment-to-discrete operator, which takes the
+source moments (<span class="math notranslate nohighlight">\(\Sigma \Phi\)</span>) and evaluates that term in
+direction.</p></li>
+</ul>
+<p>If we denote by <span class="math notranslate nohighlight">\(N_{\text{mom}}\)</span> the maximum number of flux
+moments, we have</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+N_{\text{mom}} &amp;= L_{\text{max}}+1 &amp;\text{in 1D,}  \\
+N_{\text{mom}} &amp;= \frac{(L_{\text{max}}+1)(L_{\text{max}}+2)}{2} &amp;\text{in 2D,} \\
+N_{\text{mom}} &amp;= (L_{\text{max}}+1)^2 &amp;\text{in 3D.}
+\end{aligned}\end{split}\]</div>
+<p>With the introduction of the moment-to-discrete operator, we can also
+update the fission production operator</p>
+<div class="math notranslate nohighlight">
+\[\text{from}\quad P\Psi \quad\text{to}\quad M F \Phi\]</div>
+<p>where, hereafter, <span class="math notranslate nohighlight">\(F\)</span> will denote the fission operator acting on
+flux moments.</p>
+</section>
+<section id="short-summary-of-transport-equations-solved-in-opensn">
+<h2><span class="section-number">1.6. </span>Short summary of Transport Equations Solved in OpenSn<a class="headerlink" href="#short-summary-of-transport-equations-solved-in-opensn" title="Link to this heading"></a></h2>
+<ul>
+<li><p>Time-dependent transport problem:</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{v} \frac{\partial \Psi}{\partial t} = M \Sigma \Phi + MF_p\Phi + Q_{\text{ext}} + \sum_i S_{d,i} - L\Psi \,,\]</div>
+</li>
+<li><p>Steady-state, subcritical, source-driven transport problem:</p>
+<div class="math notranslate nohighlight">
+\[L\Psi = M \Sigma \Phi + M F \Phi + Q_{\text{ext}} \,,\]</div>
+<p>where <span class="math notranslate nohighlight">\(P\)</span> is the total (prompt+delayed) fission production
+operator.</p>
+</li>
+<li><p><span class="math notranslate nohighlight">\(k\)</span>-eigenvalue transport problem:</p>
+<div class="math notranslate nohighlight">
+\[L\Psi = M \Sigma \Phi + \frac{1}{k_{\text{eff}}} M F \Phi\]</div>
+</li>
+</ul>
+</section>
+<section id="streaming-term-in-cartesian-and-curvilinear-coordinate-systems">
+<h2><span class="section-number">1.7. </span>Streaming Term in Cartesian and Curvilinear Coordinate Systems<a class="headerlink" href="#streaming-term-in-cartesian-and-curvilinear-coordinate-systems" title="Link to this heading"></a></h2>
+<p>In <span class="math notranslate nohighlight">\(xyz\)</span> coordinates, the streaming term is given by</p>
+<div class="math notranslate nohighlight">
+\[\vec{\Omega}\cdot \vec{\nabla}\psi = \Omega_x \partial_x\psi + \Omega_y \partial_y\psi + \Omega_z \partial_z\psi\]</div>
+<p>In <span class="math notranslate nohighlight">\(r\theta z\)</span> cylindrical coordinates, the streaming term is
+given by</p>
+<div class="math notranslate nohighlight">
+\[\vec{\Omega}\cdot \vec{\nabla} = \frac{\xi}{r} \partial_r(r\psi) - \frac{1}{r}\partial_\varphi (\eta\psi) + \mu \partial_z\psi\]</div>
+<p>with
+<span class="math notranslate nohighlight">\(\xi=\vec{\Omega} \cdot \vec{e}_r=\sqrt{1-\mu^2}\cos{\varphi}\)</span>,
+<span class="math notranslate nohighlight">\(\eta=\vec{\Omega} \cdot \vec{e}_\theta=\sqrt{1-\mu^2}\sin{\varphi}\)</span>,
+<span class="math notranslate nohighlight">\(\mu=\vec{\Omega}\cdot \vec{e}_z\)</span></p>
+</section>
+<section id="references">
+<h2><span class="section-number">1.8. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<div class="docutils container" id="id7">
+<div role="list" class="citation-list">
+<div class="citation" id="id10" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">DM79</a><span class="fn-bracket">]</span></span>
+<p>James J Duderstadt and William Russell Martin. <em>Transport theory</em>. John Wiley &amp; Sons, 1979.</p>
+</div>
+<div class="citation" id="id14" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">LM84</a><span class="fn-bracket">]</span></span>
+<p>Elmer Eugene Lewis and Warren F Miller. <em>Computational methods of neutron transport</em>. John Wiley and Sons, Inc., New York, NY, 1984. ISBN 0-89448-452-4.</p>
+</div>
+<div class="citation" id="id13" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">BG79</a><span class="fn-bracket">]</span></span>
+<p>George I Bell and Samuel Glasstone. <em>Nuclear reactor theory</em>. RE Krieger Publishing Company, 1979. ISBN 978-0-442-20684-0.</p>
+</div>
+<div class="citation" id="id15" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">DH76</a><span class="fn-bracket">]</span></span>
+<p>James J Duderstadt and Louis J Hamilton. <em>Nuclear reactor analysis</em>. Wiley, 1976.</p>
+</div>
+<div class="citation" id="id67" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">SM82</a><span class="fn-bracket">]</span></span>
+<p>R Sanchez and Norman J McCormick. Review of neutron transport approximations. <em>Nuclear Science and Engineering</em>, 1982.</p>
+</div>
+<div class="citation" id="id18" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">AS10</a><span class="fn-bracket">]</span></span>
+<p>Y. Azmy and E. Sartori. <em>Nuclear Computational Science: A Century in Review</em>. Springer Netherlands, 2010. ISBN 9789048134113. URL: <a class="reference external" href="https://books.google.com/books?id=4imnyVPQ-0AC">https://books.google.com/books?id=4imnyVPQ-0AC</a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Theory Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="discretization.html" class="btn btn-neutral float-right" title="2. Phase-space Discretization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

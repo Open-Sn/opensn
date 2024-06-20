@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7. Adjoint Flux Formalism &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorials" href="../tutorials/index.html" />
+    <link rel="prev" title="6. Parallel Sweeps" href="parallelization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7. Adjoint Flux Formalism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Developer Workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">7. </span>Adjoint Flux Formalism</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="adjoint-flux-formalism">
+<h1><span class="section-number">7. </span>Adjoint Flux Formalism<a class="headerlink" href="#adjoint-flux-formalism" title="Link to this heading"></a></h1>
+<ol class="arabic simple">
+<li><p>duality and inner product</p></li>
+<li><p>adjoint in Sn</p></li>
+</ol>
+<p>The multigroup, adjoint transport equation is given by</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{gathered}
+-\frac{1}{v_g}\frac{\partial \psi^{\dagger,g}(\vec{r},\vec{\Omega},t) }{\partial t} - \vec{\Omega} \cdot \vec{\nabla} \psi^{\dagger,g}(\vec{r},\vec{\Omega},t)
++ \sigma_t^g(\vec{r},t)\psi^{\dagger,g}(\vec{r},\vec{\Omega},t) \\=
+\sum_{g'=1}^{g'=G}
+%\sum_{\ell=0}^{L_{\text{max}}} \sum_{m=-\ell}^{m=\ell}
+\sum_{\ell,m} \, \frac{2\ell+1}{4\pi}\sigma^{g\to g'}_{s,\ell}(\vec{r}) Y_{\ell,m}(\vec{\Omega},t) \phi^{\dagger,g}_{\ell,m}(\vec{r},t)
++
+Q^{\dagger,g}_{\text{ext}}(\vec{r},\vec{\Omega},t) \\ \qquad 1\le g \le G \,.
+\end{gathered}\end{split}\]</div>
+<p>Note that:</p>
+<ol class="arabic simple">
+<li><p>streaming is reversed, the streaming term now has a <span class="math notranslate nohighlight">\(-\)</span> sign,</p></li>
+<li><p>time is reversed, the temporal derivative term now has a <span class="math notranslate nohighlight">\(-\)</span>
+sign,</p></li>
+<li><p>the energy transfer in the scattering term has been reserved (now
+they are from <span class="math notranslate nohighlight">\(g\)</span> to <span class="math notranslate nohighlight">\(g'\)</span>),</p></li>
+<li><p>a similar reversal of the energy transfer in the fission term is
+required when fission is included,</p></li>
+<li><p>an external adjoint source is present.</p></li>
+</ol>
+<p>Adjoint boundary conditions of Dirichlet type are now supplied either as
+a known outgoing adjoint flux</p>
+<div class="math notranslate nohighlight">
+\[\psi^{\dagger,g}(\vec{r},\vec{\Omega},t) = \psi^{\dagger,g}_{\text{out}}(\vec{r},\vec{\Omega},t) \qquad \forall \vec{r} \in \Gamma^+\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\Gamma^+ = \big\{ \vec{r} \in \Gamma  \text{ such that } \vec{\Omega}\cdot\vec{n}(\vec{r}) &gt; 0 \big\} \,.\]</div>
+<div class="line-block">
+<div class="line">Adjoint final conditions are supplied in time:</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\psi^{\dagger,g}(\vec{r},\vec{\Omega},t=T) = h^g_T(\vec{r},\vec{\Omega},g) \qquad \forall \vec{r}\in \mathcal{D},\ \forall g \in [1,G], \ \forall\vec{\Omega}\in \mathcal{S}^2\]</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line">Multigroup <span class="math notranslate nohighlight">\(S_n\)</span> codes can be used to perform adjoint
+calculations. One need only adjust the calculation as follows:</div>
+</div>
+<ol class="arabic simple">
+<li><p>Transpose the multigroup transfer cross sections.</p></li>
+<li><p>Interpret the <span class="math notranslate nohighlight">\(S_n\)</span> flux solution in direction
+<span class="math notranslate nohighlight">\(\vec{\Omega}\)</span> as the adjoint flux in direction
+<span class="math notranslate nohighlight">\(-\vec{\Omega}\)</span>.</p></li>
+<li><p>Interpret the S<span class="math notranslate nohighlight">\(_n\)</span> source in direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>
+as the adjoint source evaluated in direction <span class="math notranslate nohighlight">\(-\vec{\Omega}\)</span>.
+The user is responsible for doing this.</p></li>
+</ol>
+<div class="line-block">
+<div class="line">Finally, it is important for the user to recognize that because the
+multigroup inner product is the dot product, the adjoint multigroup
+source for group <span class="math notranslate nohighlight">\(g\)</span> represents the analytic adjoint flux
+averaged over group <span class="math notranslate nohighlight">\(g\)</span> rather than integrated over group
+<span class="math notranslate nohighlight">\(g\)</span>. As a consequence, the multigroup adjoint flux for group
+<span class="math notranslate nohighlight">\(g\)</span> represents analytic adjoint flux averaged over group
+<span class="math notranslate nohighlight">\(g\)</span> rather than integrated over group <span class="math notranslate nohighlight">\(g\)</span>.</div>
+<div class="line">The adjoint flux is useful for computing:</div>
+</div>
+<ul class="simple">
+<li><p>quantities of interest,</p></li>
+<li><p>first-order sensitivity in quantities of interest,</p></li>
+<li><p>an importance map.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><strong>Duality statement:</strong></div>
+<div class="line">We introduce the following inner products in the volume
+<span class="math notranslate nohighlight">\(\mathcal{D}\)</span> and the boundary
+<span class="math notranslate nohighlight">\(\Gamma=\partial\mathcal{D}\)</span> of the spatial domain. <span class="math notranslate nohighlight">\(f\)</span>
+and <span class="math notranslate nohighlight">\(g\)</span> are multigroup-valued functions.</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[(f,h) = \sum_g \int_0^T dt \int_{\mathcal{D}} d^3r  \int_{\mathcal{S}^2} d\Omega \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)\]</div>
+<div class="math notranslate nohighlight">
+\[\langle f,h\rangle_\pm = \sum_g \int_0^T dt  \int_{\Gamma} d^2r \int_{\vec{\Omega}\cdot \vec{n}(\vec{r}) \gtrless 0} d\Omega  \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)\]</div>
+<div class="math notranslate nohighlight">
+\[\left\{ f,h\right\}_\tau = \sum_g  \int_{\mathcal{D}} d^3r  \int_{\mathcal{S}^2} d\Omega \, f^g(\vec{r},\vec{\Omega},\tau)  h^g(\vec{r},\vec{\Omega},\tau)\]</div>
+<p>Note that in the notation <span class="math notranslate nohighlight">\((\Psi,\Psi^{\dagger})\)</span>, the entries
+in <span class="math notranslate nohighlight">\(\Psi\)</span> are the standard, multigroup forward fluxes
+(energy-dependent flux integrated over a group bin), while the entries
+in <span class="math notranslate nohighlight">\(\Psi^{\dagger}\)</span> are the standard multigroup adjoint fluxes
+that, as previously noted, are actually group-averaged values of the
+energy-dependent adjoint flux.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">Given a forward transport problem with volumetric source
+<span class="math notranslate nohighlight">\(Q^{g}_{\text{ext}}\)</span>, a boundary source
+<span class="math notranslate nohighlight">\(\psi^{g}_{\text{inc}}\)</span>, and an initial condition <span class="math notranslate nohighlight">\(f_0\)</span>,
+there is an adjoint problem with volumetric source
+<span class="math notranslate nohighlight">\(Q^{\dagger,g}_{\text{ext}}\)</span>, boundary source
+<span class="math notranslate nohighlight">\(\psi^{\dagger,g}_{\text{out}}\)</span>, and final condition <span class="math notranslate nohighlight">\(h_T\)</span>
+such that the following duality principle or duality conservation
+statement holds</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\left( \Psi, Q^{\dagger}_{\text{ext}} \right) + \langle \Psi, \Psi^{\dagger}_{\text{out}} \rangle + \left\{ \Psi, h \right\}_T
+=
+\left( \Psi^{\dagger}, Q_{\text{ext}} \right) + \langle \Psi^{\dagger}, \Psi_{\text{inc}} \rangle + \left\{ \Psi^{\dagger}, f \right\}_0\]</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><em>Example of a quantity of interest (QoI).</em></div>
+<div class="line">Suppose one wants to compute the reaction rate in a detector (detector
+cross section <span class="math notranslate nohighlight">\(\sigma_{\text{det}}\)</span>) due to a source
+<span class="math notranslate nohighlight">\(Q_{\text{ext}}\)</span>. Suppose the boundary of the problem is a
+vacuum. The problem is steady state. The QoI is given by:</div>
+</div>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\text{QoI} = \left( \Psi, \sigma_{\text{det}} \right) \,.\]</div>
+<p>Using the duality principle, the QoI can also be computed as</p>
+<div class="math notranslate nohighlight">
+\[\text{QoI} = \left( \Psi^{\dagger}, Q_{\text{ext}} \right) \,.\]</div>
+<p>Hence, it is clear that the adjoint volumetric source should be
+<span class="math notranslate nohighlight">\(Q^{\dagger}_{\text{ext}}=\sigma_{\text{det}}\)</span> and the adjoint
+boundary source should be <span class="math notranslate nohighlight">\(\Psi^{\dagger}_{\text{out}} =0\)</span>
+(vacuum).</p>
+</div></blockquote>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="parallelization.html" class="btn btn-neutral float-left" title="6. Parallel Sweeps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tutorials/index.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>A First Example &mdash; OpenSn  documentation</title>
+  <title>3.1. A First Example &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Coding Standard" href="../../../coding_standard.html" />
-    <link rel="prev" title="Linear Boltzmann Solver" href="../index.html" /> 
+    <link rel="next" title="Coding Standards" href="../../../coding_standard.html" />
+    <link rel="prev" title="3. Linear Boltzmann Solver" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,51 +44,32 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../install_linux.html">Install on Linux Machines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../install_linux_easy.html">Easy Install on Linux Machines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../install_macos.html">Install on MacOS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../install_macos_easy.html">Easy Install on MacOS</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../meshing/index.html">Meshing and Partitioning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../material/index.html">Material and Source Definitions</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Linear Boltzmann Solver</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">A First Example</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#check-the-number-of-processes">Check the number of processes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mesh">Mesh</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#list-of-nodes">List of nodes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#orthogonal-mesh-generation">Orthogonal Mesh Generation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#material-ids">Material IDs</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#materials">Materials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cross-sections">Cross Sections</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#volumetric-source">Volumetric Source</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#angular-quadrature">Angular Quadrature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#linear-boltzmann-solver">Linear Boltzmann Solver</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#options-for-the-linear-boltzmann-solver-lbs">Options for the Linear Boltzmann Solver (LBS)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#putting-the-linear-boltzmann-solver-together">Putting the Linear Boltzmann Solver Together</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#post-processing-via-field-functions">Post-Processing via Field Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#possible-extensions">Possible Extensions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-complete-input-is-below">The complete input is below:</a></li>
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../meshing/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../material/index.html">2. Material and Source Definitions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">3. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.1. A First Example</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#check-the-number-of-processes">3.1.1. Check the number of processes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mesh">3.1.2. Mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#materials">3.1.3. Materials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cross-sections">3.1.4. Cross Sections</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#volumetric-source">3.1.5. Volumetric Source</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#angular-quadrature">3.1.6. Angular Quadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linear-boltzmann-solver">3.1.7. Linear Boltzmann Solver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#post-processing-via-field-functions">3.1.8. Post-Processing via Field Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#possible-extensions">3.1.9. Possible Extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-complete-input-is-below">3.1.10. The complete input is below:</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer's Corner</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../coding_standard.html">Coding Standard</a></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../coding_standard.html">Coding Standards</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../workflow.html">Developer Workflow</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Older Tutorials</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../old/index.html">Basic Tutorials</a></li>
 </ul>
 
         </div>
@@ -105,8 +86,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Linear Boltzmann Solver</a></li>
-      <li class="breadcrumb-item active">A First Example</li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">3. </span>Linear Boltzmann Solver</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.1. </span>A First Example</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -116,7 +98,7 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="a-first-example">
-<h1>A First Example<a class="headerlink" href="#a-first-example" title="Link to this heading"></a></h1>
+<h1><span class="section-number">3.1. </span>A First Example<a class="headerlink" href="#a-first-example" title="Link to this heading"></a></h1>
 <p>This is a complete simulation transport example. Each aspect of the simulation process is kept to a minimum:</p>
 <ul class="simple">
 <li><p>We use an orthogonal 2D grid;</p></li>
@@ -131,7 +113,7 @@
 In what follows, we enforce that this first example be run with 4 MPI processes.</p>
 <hr class="docutils" />
 <section id="check-the-number-of-processes">
-<h2>Check the number of processes<a class="headerlink" href="#check-the-number-of-processes" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.1. </span>Check the number of processes<a class="headerlink" href="#check-the-number-of-processes" title="Link to this heading"></a></h2>
 <p>This portion of the lua input is not mandatory. The user is free to delete it and run the code with a different number
 of processes. However, to reproduce the graphics below, one needs to run with 4 MPI ranks.</p>
 <p>The lua input performs this following checks:</p>
@@ -153,10 +135,10 @@ of processes. However, to reproduce the graphics below, one needs to run with 4 
 </div>
 </section>
 <section id="mesh">
-<h2>Mesh<a class="headerlink" href="#mesh" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.2. </span>Mesh<a class="headerlink" href="#mesh" title="Link to this heading"></a></h2>
 <p>Here, we will use the in-house orthogonal mesh generator for a simple Cartesian grid.</p>
 <section id="list-of-nodes">
-<h3>List of nodes<a class="headerlink" href="#list-of-nodes" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.1.2.1. </span>List of nodes<a class="headerlink" href="#list-of-nodes" title="Link to this heading"></a></h3>
 <p>We first create a lua table for the list of nodes. The nodes will be spread from -1 to +1.
 Be mindful that lua indexing starts at 1.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the mesh</span>
@@ -173,7 +155,7 @@ Be mindful that lua indexing starts at 1.</p>
 </div>
 </section>
 <section id="orthogonal-mesh-generation">
-<h3>Orthogonal Mesh Generation<a class="headerlink" href="#orthogonal-mesh-generation" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.1.2.2. </span>Orthogonal Mesh Generation<a class="headerlink" href="#orthogonal-mesh-generation" title="Link to this heading"></a></h3>
 <p>We use the <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code> and pass the list of nodes per dimension. Here, we pass 2 times the same list of
 nodes to create a 2D geometry with square cells. Thus, we create a square domain, of side length 2, centered on the origin (0,0).</p>
 <p>We also partition the 2D mesh into 2x2 subdomains using <code class="docutils literal notranslate"><span class="pre">KBAGraphPartitioner</span></code>. Since we want the split the x-axis in 2,
@@ -195,7 +177,7 @@ cell center is located with respect to the various xcuts, ycuts, and zcuts (a fu
 </div>
 </section>
 <section id="material-ids">
-<h3>Material IDs<a class="headerlink" href="#material-ids" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.1.2.3. </span>Material IDs<a class="headerlink" href="#material-ids" title="Link to this heading"></a></h3>
 <p>When using the in-house <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>, no material IDs are assigned. The user needs to
 assign material IDs to all cells. Here, we have a homogeneous domain, so we assign a material ID
 with value 0 for each cell in the spatial domain.</p>
@@ -206,7 +188,7 @@ with value 0 for each cell in the spatial domain.</p>
 </section>
 </section>
 <section id="materials">
-<h2>Materials<a class="headerlink" href="#materials" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.3. </span>Materials<a class="headerlink" href="#materials" title="Link to this heading"></a></h2>
 <p>We create a material and add two properties to it:</p>
 <ul class="simple">
 <li><p>TRANSPORT_XSECTIONS for the transport cross sections, and</p></li>
@@ -219,7 +201,7 @@ with value 0 for each cell in the spatial domain.</p>
 </div>
 </section>
 <section id="cross-sections">
-<h2>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.4. </span>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h2>
 <p>We assign the cross sections to the material by loading the file containing the cross sections. See the tutorials’
 section on materials for more details on cross sections.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
@@ -228,7 +210,7 @@ section on materials for more details on cross sections.</p>
 </div>
 </section>
 <section id="volumetric-source">
-<h2>Volumetric Source<a class="headerlink" href="#volumetric-source" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.5. </span>Volumetric Source<a class="headerlink" href="#volumetric-source" title="Link to this heading"></a></h2>
 <p>We create a lua table containing the volumetric multigroup source and assign it to the material by passing that array.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">num_groups</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">src</span><span class="o">=</span><span class="p">{}</span>
@@ -240,7 +222,7 @@ section on materials for more details on cross sections.</p>
 </div>
 </section>
 <section id="angular-quadrature">
-<h2>Angular Quadrature<a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.6. </span>Angular Quadrature<a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h2>
 <p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the number of <strong>positive</strong> polar cosines
 (here <code class="docutils literal notranslate"><span class="pre">npolar</span> <span class="pre">=</span> <span class="pre">2</span></code>) and the number of azimuthal subdivisions in <strong>one quadrant</strong> (<code class="docutils literal notranslate"><span class="pre">nazimu</span> <span class="pre">=</span> <span class="pre">1</span></code>).
 This creates a 3D angular quadrature.</p>
@@ -254,9 +236,9 @@ This creates a 3D angular quadrature.</p>
 </div>
 </section>
 <section id="linear-boltzmann-solver">
-<h2>Linear Boltzmann Solver<a class="headerlink" href="#linear-boltzmann-solver" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.7. </span>Linear Boltzmann Solver<a class="headerlink" href="#linear-boltzmann-solver" title="Link to this heading"></a></h2>
 <section id="options-for-the-linear-boltzmann-solver-lbs">
-<h3>Options for the Linear Boltzmann Solver (LBS)<a class="headerlink" href="#options-for-the-linear-boltzmann-solver-lbs" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.1.7.1. </span>Options for the Linear Boltzmann Solver (LBS)<a class="headerlink" href="#options-for-the-linear-boltzmann-solver-lbs" title="Link to this heading"></a></h3>
 <p>In the LBS block, we provide</p>
 <ul class="simple">
 <li><p>the number of energy groups,</p></li>
@@ -284,7 +266,7 @@ tolerances, and other solver options.</p></li>
 </div>
 </section>
 <section id="putting-the-linear-boltzmann-solver-together">
-<h3>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#putting-the-linear-boltzmann-solver-together" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.1.7.2. </span>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#putting-the-linear-boltzmann-solver-together" title="Link to this heading"></a></h3>
 <p>We then create the physics solver, initialize it, and execute it.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">DiscreteOrdinatesSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">lbs_block</span><span class="p">)</span>
 <span class="c1">-- Initialize and Execute Solver</span>
@@ -296,7 +278,7 @@ tolerances, and other solver options.</p></li>
 </section>
 </section>
 <section id="post-processing-via-field-functions">
-<h2>Post-Processing via Field Functions<a class="headerlink" href="#post-processing-via-field-functions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.8. </span>Post-Processing via Field Functions<a class="headerlink" href="#post-processing-via-field-functions" title="Link to this heading"></a></h2>
 <p>We extract the scalar flux (i.e., the first entry in the field function list; recall that lua
 indexing starts at 1) and export it to a VTK file whose name is supplied by the user. See the tutorials’ section
 on post-processing for more details on field functions.</p>
@@ -310,7 +292,7 @@ on post-processing for more details on field functions.</p>
 </div>
 </section>
 <section id="possible-extensions">
-<h2>Possible Extensions<a class="headerlink" href="#possible-extensions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.9. </span>Possible Extensions<a class="headerlink" href="#possible-extensions" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>Change the number of MPI processes (you may want to delete the safeguard at the top of the input file to run with any number of MPI ranks);</p></li>
 <li><p>Change the spatial resolution by increasing or decreasing the number of cells;</p></li>
@@ -319,7 +301,7 @@ on post-processing for more details on field functions.</p>
 </section>
 <hr class="docutils" />
 <section id="the-complete-input-is-below">
-<h2>The complete input is below:<a class="headerlink" href="#the-complete-input-is-below" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.10. </span>The complete input is below:<a class="headerlink" href="#the-complete-input-is-below" title="Link to this heading"></a></h2>
 <p>You can copy/paste the text below or look in the file named <code class="docutils literal notranslate"><span class="pre">tutorials/lbs/first/first_example.lua</span></code>:</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Check num_procs</span>
 <span class="n">num_procs</span> <span class="o">=</span> <span class="mi">4</span>
@@ -424,8 +406,8 @@ on post-processing for more details on field functions.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="Linear Boltzmann Solver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../../coding_standard.html" class="btn btn-neutral float-right" title="Coding Standard" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="3. Linear Boltzmann Solver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../../coding_standard.html" class="btn btn-neutral float-right" title="Coding Standards" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
