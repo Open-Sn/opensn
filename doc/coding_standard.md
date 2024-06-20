@@ -1,4 +1,4 @@
-# Coding Standard
+# Coding Standards
 
 
 This page describes the coding standard of OpenSn.

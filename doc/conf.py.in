@@ -18,10 +18,14 @@ html_show_sourcelink = False
 
 extensions = [
     'breathe',
+    'sphinxcontrib.bibtex',
     'myst_parser'
 ]
 breathe_projects = {"opensn": "@PROJECT_BINARY_DIR@/doc/xml/"}
 breathe_default_project = "opensn"
+
+bibtex_bibfiles = ['@PROJECT_SOURCE_DIR@/doc/references.bib']
+bibtex_reference_style = 'label'
 
 myst_enable_extensions = [
     "attrs_inline",
