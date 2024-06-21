@@ -10,24 +10,26 @@ partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=
 
 --]]
 -- Setup the mesh
-nodes={}
-n_cells=10
-length=2.
-xmin = -length/2.
-dx = length/n_cells
-for i=1,(n_cells+1) do
-    k=i-1
-    nodes[i] = xmin + k*dx
+nodes = {}
+n_cells = 10
+length = 2.
+xmin = -length / 2.
+dx = length / n_cells
+for i = 1, (n_cells + 1) do
+  k = i - 1
+  nodes[i] = xmin + k * dx
 end
 
-meshgen = mesh.OrthogonalMeshGenerator.Create
-({
-  node_sets = {nodes,nodes,nodes},
-  partitioner = mesh.KBAGraphPartitioner.Create
-  ({
-    nx = 2, ny=2, nz=2,
-    xcuts = {0.}, ycuts = {0.}, zcuts = {0.}
-  })
+meshgen = mesh.OrthogonalMeshGenerator.Create({
+  node_sets = { nodes, nodes, nodes },
+  partitioner = mesh.KBAGraphPartitioner.Create({
+    nx = 2,
+    ny = 2,
+    nz = 2,
+    xcuts = { 0. },
+    ycuts = { 0. },
+    zcuts = { 0. },
+  }),
 })
 mesh.MeshGenerator.Execute(meshgen)
 
@@ -46,17 +48,15 @@ mesh.ExportToPVTU("ortho_3D_KBA")
 ## Mesh (again) and Parmetis partition
 A simple orthogonal 3D mesh with Parmetis partitioner.
 --]]
-meshgen = mesh.OrthogonalMeshGenerator.Create
-({
-  node_sets = {nodes,nodes,nodes},
-  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
-
+meshgen = mesh.OrthogonalMeshGenerator.Create({
+  node_sets = { nodes, nodes, nodes },
+  partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
 mesh.MeshGenerator.Execute(meshgen)
 
 -- Set Material IDs
-vol0 = logvol.RPPLogicalVolume.Create({infx=true, infy=true, infz=true})
-mesh.SetMaterialIDFromLogicalVolume(vol0,0)
+vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
 
 --[[ @doc
 ## Export the mesh

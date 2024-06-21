@@ -19,6 +19,18 @@ jobs:
           check-path: .
           exclude-regex: '(.\/doc\/|.\/resources\/|.\/tutorials\/|.\/external\/)'
 
+  check-lua:
+    name: Check Lua formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: 0.20.0
+          args: --check -f ${{ github.workspace }}/.stylua.toml ${{ github.workspace }}
+
   check-spdx-tags:
     name: check spdx tags
     defaults:

@@ -30,10 +30,14 @@ For more runtime options, type `path/to/opensn -h` for help.
 --]]
 -- Check num_procs
 num_procs = 4
-if (check_num_procs==nil and number_of_processes ~= num_procs) then
-  Log(LOG_0ERROR,"Incorrect amount of processors. " ..
-    "Expected "..tostring(num_procs)..
-    ". Pass check_num_procs=false to override if possible.")
+if check_num_procs == nil and number_of_processes ~= num_procs then
+  Log(
+    LOG_0ERROR,
+    "Incorrect amount of processors. "
+      .. "Expected "
+      .. tostring(num_procs)
+      .. ". Pass check_num_procs=false to override if possible."
+  )
   os.exit(false)
 end
 
@@ -45,14 +49,14 @@ We first create a lua table for the list of nodes. The nodes will be spread from
 Be mindful that lua indexing starts at 1.
 --]]
 -- Setup the mesh
-nodes={}
-n_cells=10
-length=2.
-xmin = -length/2.
-dx = length/n_cells
-for i=1,(n_cells+1) do
-    k=i-1
-    nodes[i] = xmin + k*dx
+nodes = {}
+n_cells = 10
+length = 2.
+xmin = -length / 2.
+dx = length / n_cells
+for i = 1, (n_cells + 1) do
+  k = i - 1
+  nodes[i] = xmin + k * dx
 end
 --[[ @doc
 ### Orthogonal Mesh Generation
@@ -67,14 +71,14 @@ The resulting mesh and partition is shown below:
 
 ![Mesh_Partition](images/first_example_mesh_partition.png)
 --]]
-meshgen = mesh.OrthogonalMeshGenerator.Create
-({
-  node_sets = {nodes,nodes},
-  partitioner = mesh.KBAGraphPartitioner.Create
-  ({
-    nx = 2, ny=2,
-    xcuts = {0.0}, ycuts = {0.0},
-  })
+meshgen = mesh.OrthogonalMeshGenerator.Create({
+  node_sets = { nodes, nodes },
+  partitioner = mesh.KBAGraphPartitioner.Create({
+    nx = 2,
+    ny = 2,
+    xcuts = { 0.0 },
+    ycuts = { 0.0 },
+  }),
 })
 
 mesh.MeshGenerator.Execute(meshgen)
@@ -88,7 +92,6 @@ with value 0 for each cell in the spatial domain.
 -- Set Material IDs
 mesh.SetUniformMaterialID(0)
 
-
 --[[ @doc
 ## Materials
 We create a material and add two properties to it:
@@ -97,26 +100,25 @@ We create a material and add two properties to it:
 --]]
 -- Add materials
 materials = {}
-materials[1] = mat.AddMaterial("Material_A");
+materials[1] = mat.AddMaterial("Material_A")
 
 --[[ @doc
 ## Cross Sections
 We assign the cross sections to the material by loading the file containing the cross sections. See the tutorials'
 section on materials for more details on cross sections.
 --]]
-mat.SetProperty(materials[1],TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,"xs_1g_MatA.xs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_1g_MatA.xs")
 
 --[[ @doc
 ## Volumetric Source
 We create a lua table containing the volumetric multigroup source and assign it to the material by passing that array.
 --]]
 num_groups = 1
-src={}
-for g=1,num_groups do
+src = {}
+for g = 1, num_groups do
   src[g] = 1.0
 end
-mat.SetProperty(materials[1],ISOTROPIC_MG_SOURCE,FROM_ARRAY,src)
+mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --[[ @doc
 ## Angular Quadrature
@@ -129,8 +131,8 @@ We finish by optimizing the quadrature to only use the positive hemisphere for 2
 -- Setup the Angular Quadrature
 nazimu = 1
 npolar = 2
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV,nazimu,npolar)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, nazimu, npolar)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 --[[ @doc
 ## Linear Boltzmann Solver
@@ -141,21 +143,19 @@ In the LBS block, we provide
 tolerances, and other solver options.
 --]]
 -- Setup LBS parameters
-lbs_block =
-{
+lbs_block = {
   num_groups = num_groups,
-  groupsets =
-  {
+  groupsets = {
     {
-      groups_from_to = {0, 0},
+      groups_from_to = { 0, 0 },
       angular_quadrature_handle = pquad,
       angle_aggregation_num_subsets = 1,
       inner_linear_method = "gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 300,
       gmres_restart_interval = 30,
-    }
-  }
+    },
+  },
 }
 --[[ @doc
 ### Putting the Linear Boltzmann Solver Together
@@ -164,7 +164,7 @@ We then create the physics solver, initialize it, and execute it.
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 -- Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({lbs_solver_handle = phys})
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
 
 solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
@@ -180,9 +180,9 @@ The resulting scalar flux is shown below:
 ![Scalar_flux](images/first_example_scalar_flux.png)
 --]]
 -- Retrieve field functions and export them
-fflist,count = lbs.GetScalarFieldFunctionList(phys)
+fflist, count = lbs.GetScalarFieldFunctionList(phys)
 vtk_basename = "first_example"
-fieldfunc.ExportToVTK(fflist[1],vtk_basename)
+fieldfunc.ExportToVTK(fflist[1], vtk_basename)
 
 --[[ @doc
 ## Possible Extensions
