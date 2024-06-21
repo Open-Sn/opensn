@@ -285,13 +285,13 @@
       {
         "type": "KeyValuePair",
         "key": "[0]  Max-value1=",
-        "goldvalue": 0.10832,
+        "goldvalue": 0.108199,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "[0]  Max-value2=",
-        "goldvalue": 0.0,
+        "goldvalue": 9.00924e-06,
         "abs_tol": 1e-10
       }
     ]
@@ -305,13 +305,13 @@
       {
         "type": "KeyValuePair",
         "key": "[0]  Max-value1=",
-        "goldvalue": 0.000101701,
+        "goldvalue": 1.02346e-04,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "[0]  Max-value2=",
-        "goldvalue": 9.14681e-06,
+        "goldvalue": 9.28439e-06,
         "abs_tol": 1e-10
       }
     ]

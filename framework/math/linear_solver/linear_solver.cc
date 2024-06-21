@@ -82,7 +82,14 @@ LinearSolver::Setup()
   PreSetupCallback();
 
   KSPCreate(opensn::mpi_comm, &ksp_);
-  KSPSetType(ksp_, iterative_method_.c_str());
+
+  // In OpenSn the PETSc version of Richardson iteration is referred to as krylov_richardson to
+  // distinguish it from classic Richardson. At this point, we need to convert from
+  // krylov_richardson to the correct PETSc algorithm name.
+  if (iterative_method_ == "krylov_richardson")
+    KSPSetType(ksp_, "richardson");
+  else
+    KSPSetType(ksp_, iterative_method_.c_str());
 
   ApplyToleranceOptions();
 

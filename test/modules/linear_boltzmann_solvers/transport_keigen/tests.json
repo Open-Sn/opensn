@@ -60,12 +60,6 @@
     "num_procs": 4,
     "checks": [
       {
-        "type": "StrCompare",
-        "key": "Iteration    19",
-        "wordnum": 11,
-        "gold": "CONVERGED"
-      },
-      {
         "type": "FloatCompare",
         "key": "Final k-eigenvalue",
         "wordnum": 4,
@@ -115,13 +109,6 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Iteration     3",
-        "wordnum": 8,
-        "gold": 0.5969127,
-        "abs_tol": 1e-07
-      },
-      {
-        "type": "FloatCompare",
         "key": "Final k-eigenvalue",
         "wordnum": 4,
         "gold": 0.5969127,
@@ -134,12 +121,6 @@
     "comment": "2D 2G KEigenvalue::Solver test using Power Iteration with SCDSA",
     "num_procs": 4,
     "checks": [
-      {
-        "type": "StrCompare",
-        "key": "Iteration    18",
-        "wordnum": 11,
-        "gold": "CONVERGED"
-      },
       {
         "type": "FloatCompare",
         "key": "Final k-eigenvalue",

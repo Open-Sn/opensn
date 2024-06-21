@@ -14,7 +14,7 @@ lbs_block = {
     {
       groups_from_to = { 0, num_groups - 1 },
       angular_quadrature_handle = pquad,
-      inner_linear_method = "richardson",
+      inner_linear_method = "krylov_richardson",
       l_max_its = 1,
       gmres_restart_interval = 50,
       l_abs_tol = 1.0e-10,

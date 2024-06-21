@@ -1603,7 +1603,7 @@ LBSSolver::InitializeSolverSchemes()
     auto ags_context = std::make_shared<AGSContext>(*this, wgs_solvers_);
 
     auto ags_solver = std::make_shared<AGSLinearSolver>(
-      "richardson", ags_context, groupsets_.front().id_, groupsets_.back().id_);
+      "krylov_richardson", ags_context, groupsets_.front().id_, groupsets_.back().id_);
     ags_solver->ToleranceOptions().maximum_iterations = 1;
     ags_solver->SetVerbosity(options_.verbose_ags_iterations);
 
