@@ -46,12 +46,11 @@ Recall that lua indexing starts at 1.
 --]]
 -- Add materials
 materials = {}
-materials[1] = mat.AddMaterial("Material_A");
+materials[1] = mat.AddMaterial("Material_A")
 --[[ @doc
 
 ## Cross Sections
 
 We assign the cross sections to the material by loading the file containing the cross sections.
 --]]
-mat.SetProperty(materials[1],TRANSPORT_XSECTIONS,
-        OPENSN_XSFILE,"xs_1g_MatA.xs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_1g_MatA.xs")
