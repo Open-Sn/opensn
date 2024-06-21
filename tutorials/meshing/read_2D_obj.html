@@ -119,16 +119,13 @@ Finally, we export the mesh to a VTU file.</p>
 <p>FYI, had we chosen the KBA partitioner, the partition would have been:</p>
 <p><img alt="Mesh_Partition" src="../../_images/Triangle_1542_partition_KBA.png" /></p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the mesh</span>
-<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-<span class="p">({</span>
-  <span class="n">inputs</span> <span class="o">=</span>
-  <span class="p">{</span>
-    <span class="n">mesh</span><span class="p">.</span><span class="n">FromFileMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-    <span class="p">({</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;./tri_2mat_bc_1542.obj&quot;</span>
+<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+  <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">mesh</span><span class="p">.</span><span class="n">FromFileMeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+      <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;./tri_2mat_bc_1542.obj&quot;</span><span class="p">,</span>
     <span class="p">}),</span>
   <span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">PETScGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;parmetis&quot;</span><span class="p">})</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">PETScGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span> <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;parmetis&quot;</span> <span class="p">}),</span>
 <span class="p">})</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">meshgen</span><span class="p">)</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;Triangle_1542_mesh_only&quot;</span><span class="p">)</span>
@@ -140,16 +137,13 @@ Finally, we export the mesh to a VTU file.</p>
 <h2><span class="section-number">1.4.3. </span>The complete input is below:<a class="headerlink" href="#the-complete-input-is-below" title="Link to this heading"></a></h2>
 <p>You can copy/paste the text below or look in the file named <code class="docutils literal notranslate"><span class="pre">tutorials/meshing/read_2D_obj.lua</span></code>:</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the mesh</span>
-<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-<span class="p">({</span>
-  <span class="n">inputs</span> <span class="o">=</span>
-  <span class="p">{</span>
-    <span class="n">mesh</span><span class="p">.</span><span class="n">FromFileMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-    <span class="p">({</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;./tri_2mat_bc_1542.obj&quot;</span>
+<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+  <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">mesh</span><span class="p">.</span><span class="n">FromFileMeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+      <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;./tri_2mat_bc_1542.obj&quot;</span><span class="p">,</span>
     <span class="p">}),</span>
   <span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">PETScGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;parmetis&quot;</span><span class="p">})</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">PETScGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span> <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;parmetis&quot;</span> <span class="p">}),</span>
 <span class="p">})</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">meshgen</span><span class="p">)</span>
 

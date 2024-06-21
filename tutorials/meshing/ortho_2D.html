@@ -108,14 +108,14 @@
 <p>We first create a lua table for the list of nodes. The nodes will be spread from -L/2 to +L/2.
 Be mindful that lua indexing starts at 1.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the mesh</span>
-<span class="n">nodes</span><span class="o">=</span><span class="p">{}</span>
-<span class="n">n_cells</span><span class="o">=</span><span class="mi">10</span>
-<span class="n">length</span><span class="o">=</span><span class="mf">2.</span>
-<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">length</span><span class="o">/</span><span class="mf">2.</span>
-<span class="n">dx</span> <span class="o">=</span> <span class="n">length</span><span class="o">/</span><span class="n">n_cells</span>
-<span class="kr">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,(</span><span class="n">n_cells</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="n">k</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
-    <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span> <span class="o">+</span> <span class="n">k</span><span class="o">*</span><span class="n">dx</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">n_cells</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">length</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">length</span> <span class="o">/</span> <span class="mf">2.</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">length</span> <span class="o">/</span> <span class="n">n_cells</span>
+<span class="kr">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">n_cells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">do</span>
+  <span class="n">k</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">dx</span>
 <span class="kr">end</span>
 </pre></div>
 </div>
@@ -134,14 +134,14 @@ centered on the origin (0,0).</p>
 at x=0 by filling the xcuts array. Likewise for ycuts (y=0). The cell assignment to a partition is done based
 on where the cell center is located with respect to the various xcuts, ycuts, and zcuts (a fuzzy logic is applied
 to avoid issues).</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-<span class="p">({</span>
-  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span>
-  <span class="p">({</span>
-    <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.</span><span class="p">},</span> <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.</span><span class="p">}</span>
-  <span class="p">})</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span> <span class="p">},</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">0.</span> <span class="p">},</span>
+    <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">0.</span> <span class="p">},</span>
+  <span class="p">}),</span>
 <span class="p">})</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">meshgen</span><span class="p">)</span>
 </pre></div>
@@ -169,10 +169,9 @@ with value 0 for each cell in the spatial domain.</p>
 <section id="mesh-again-and-parmetis-partition">
 <h2><span class="section-number">1.2.5. </span>Mesh (again) and Parmetis partition<a class="headerlink" href="#mesh-again-and-parmetis-partition" title="Link to this heading"></a></h2>
 <p>Now, we use the Parmetis partitioner.</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-<span class="p">({</span>
-  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">PETScGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;parmetis&quot;</span><span class="p">})</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span> <span class="p">},</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">PETScGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span> <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;parmetis&quot;</span> <span class="p">}),</span>
 <span class="p">})</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">meshgen</span><span class="p">)</span>
 </pre></div>
@@ -192,25 +191,25 @@ with value 0 for each cell in the spatial domain.</p>
 <h2><span class="section-number">1.2.7. </span>The complete input is below:<a class="headerlink" href="#the-complete-input-is-below" title="Link to this heading"></a></h2>
 <p>You can copy/paste the text below or look in the file named <code class="docutils literal notranslate"><span class="pre">tutorials/meshing/ortho_2D.lua</span></code>:</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the mesh</span>
-<span class="n">nodes</span><span class="o">=</span><span class="p">{}</span>
-<span class="n">n_cells</span><span class="o">=</span><span class="mi">10</span>
-<span class="n">length</span><span class="o">=</span><span class="mf">2.</span>
-<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">length</span><span class="o">/</span><span class="mf">2.</span>
-<span class="n">dx</span> <span class="o">=</span> <span class="n">length</span><span class="o">/</span><span class="n">n_cells</span>
-<span class="kr">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,(</span><span class="n">n_cells</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="n">k</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
-    <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span> <span class="o">+</span> <span class="n">k</span><span class="o">*</span><span class="n">dx</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">n_cells</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">length</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">length</span> <span class="o">/</span> <span class="mf">2.</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">length</span> <span class="o">/</span> <span class="n">n_cells</span>
+<span class="kr">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">n_cells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">do</span>
+  <span class="n">k</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">dx</span>
 <span class="kr">end</span>
 
 
-<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-<span class="p">({</span>
-  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span>
-  <span class="p">({</span>
-    <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.</span><span class="p">},</span> <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.</span><span class="p">}</span>
-  <span class="p">})</span>
+<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span> <span class="p">},</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">0.</span> <span class="p">},</span>
+    <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">0.</span> <span class="p">},</span>
+  <span class="p">}),</span>
 <span class="p">})</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">meshgen</span><span class="p">)</span>
 
@@ -223,11 +222,9 @@ with value 0 for each cell in the spatial domain.</p>
 <span class="n">mesh</span><span class="p">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_2D_KBA&quot;</span><span class="p">)</span>
 
 
-<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-<span class="p">({</span>
-  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">PETScGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;parmetis&quot;</span><span class="p">})</span>
-
+<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span> <span class="p">},</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">PETScGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span> <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;parmetis&quot;</span> <span class="p">}),</span>
 <span class="p">})</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">meshgen</span><span class="p">)</span>
 

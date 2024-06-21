@@ -16,17 +16,14 @@ The resulting mesh and partition is shown below:
 
 ```lua
 -- Setup the mesh
-meshgen = mesh.ExtruderMeshGenerator.Create
-({
-  inputs =
-  {
-    mesh.FromFileMeshGenerator.Create
-    ({
-        filename="./tri_2mat_bc_1542.obj"
+meshgen = mesh.ExtruderMeshGenerator.Create({
+  inputs = {
+    mesh.FromFileMeshGenerator.Create({
+      filename = "./tri_2mat_bc_1542.obj",
     }),
   },
-  layers = {{z=1.1, n=2}, {z=2.1, n=3}},
-  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
+  layers = { { z = 1.1, n = 2 }, { z = 2.1, n = 3 } },
+  partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
 mesh.MeshGenerator.Execute(meshgen)
 mesh.ExportToPVTU("Extruded_mesh_only")
@@ -38,17 +35,14 @@ You can copy/paste the text below or look in the file named ```tutorials/meshing
 ```lua
 
 -- Setup the mesh
-meshgen = mesh.ExtruderMeshGenerator.Create
-({
-  inputs =
-  {
-    mesh.FromFileMeshGenerator.Create
-    ({
-        filename="./tri_2mat_bc_1542.obj"
+meshgen = mesh.ExtruderMeshGenerator.Create({
+  inputs = {
+    mesh.FromFileMeshGenerator.Create({
+      filename = "./tri_2mat_bc_1542.obj",
     }),
   },
-  layers = {{z=1.1, n=2}, {z=2.1, n=3}},
-  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
+  layers = { { z = 1.1, n = 2 }, { z = 2.1, n = 3 } },
+  partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
 mesh.MeshGenerator.Execute(meshgen)
 

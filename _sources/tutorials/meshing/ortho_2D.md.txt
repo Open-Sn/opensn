@@ -8,14 +8,14 @@ Be mindful that lua indexing starts at 1.
 
 ```lua
 -- Setup the mesh
-nodes={}
-n_cells=10
-length=2.
-xmin = -length/2.
-dx = length/n_cells
-for i=1,(n_cells+1) do
-    k=i-1
-    nodes[i] = xmin + k*dx
+nodes = {}
+n_cells = 10
+length = 2.
+xmin = -length / 2.
+dx = length / n_cells
+for i = 1, (n_cells + 1) do
+  k = i - 1
+  nodes[i] = xmin + k * dx
 end
 ```
 
@@ -36,14 +36,14 @@ on where the cell center is located with respect to the various xcuts, ycuts, an
 to avoid issues).
 
 ```lua
-meshgen = mesh.OrthogonalMeshGenerator.Create
-({
-  node_sets = {nodes,nodes},
-  partitioner = mesh.KBAGraphPartitioner.Create
-  ({
-    nx = 2, ny=2,
-    xcuts = {0.}, ycuts = {0.}
-  })
+meshgen = mesh.OrthogonalMeshGenerator.Create({
+  node_sets = { nodes, nodes },
+  partitioner = mesh.KBAGraphPartitioner.Create({
+    nx = 2,
+    ny = 2,
+    xcuts = { 0. },
+    ycuts = { 0. },
+  }),
 })
 mesh.MeshGenerator.Execute(meshgen)
 ```
@@ -71,10 +71,9 @@ mesh.ExportToPVTU("ortho_2D_KBA")
 Now, we use the Parmetis partitioner.
 
 ```lua
-meshgen = mesh.OrthogonalMeshGenerator.Create
-({
-  node_sets = {nodes,nodes},
-  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
+meshgen = mesh.OrthogonalMeshGenerator.Create({
+  node_sets = { nodes, nodes },
+  partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
 mesh.MeshGenerator.Execute(meshgen)
 ```
@@ -94,25 +93,25 @@ You can copy/paste the text below or look in the file named ```tutorials/meshing
 ```lua
 
 -- Setup the mesh
-nodes={}
-n_cells=10
-length=2.
-xmin = -length/2.
-dx = length/n_cells
-for i=1,(n_cells+1) do
-    k=i-1
-    nodes[i] = xmin + k*dx
+nodes = {}
+n_cells = 10
+length = 2.
+xmin = -length / 2.
+dx = length / n_cells
+for i = 1, (n_cells + 1) do
+  k = i - 1
+  nodes[i] = xmin + k * dx
 end
 
 
-meshgen = mesh.OrthogonalMeshGenerator.Create
-({
-  node_sets = {nodes,nodes},
-  partitioner = mesh.KBAGraphPartitioner.Create
-  ({
-    nx = 2, ny=2,
-    xcuts = {0.}, ycuts = {0.}
-  })
+meshgen = mesh.OrthogonalMeshGenerator.Create({
+  node_sets = { nodes, nodes },
+  partitioner = mesh.KBAGraphPartitioner.Create({
+    nx = 2,
+    ny = 2,
+    xcuts = { 0. },
+    ycuts = { 0. },
+  }),
 })
 mesh.MeshGenerator.Execute(meshgen)
 
@@ -125,11 +124,9 @@ mesh.SetUniformMaterialID(0)
 mesh.ExportToPVTU("ortho_2D_KBA")
 
 
-meshgen = mesh.OrthogonalMeshGenerator.Create
-({
-  node_sets = {nodes,nodes},
-  partitioner = mesh.PETScGraphPartitioner.Create({type="parmetis"})
-
+meshgen = mesh.OrthogonalMeshGenerator.Create({
+  node_sets = { nodes, nodes },
+  partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
 mesh.MeshGenerator.Execute(meshgen)
 

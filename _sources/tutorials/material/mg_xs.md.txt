@@ -46,7 +46,7 @@ Recall that lua indexing starts at 1.
 ```lua
 -- Add materials
 materials = {}
-materials[1] = mat.AddMaterial("Material_A");
+materials[1] = mat.AddMaterial("Material_A")
 ```
 
 ## Cross Sections
@@ -54,8 +54,7 @@ materials[1] = mat.AddMaterial("Material_A");
 We assign the cross sections to the material by loading the file containing the cross sections.
 
 ```lua
-mat.SetProperty(materials[1],TRANSPORT_XSECTIONS,
-        OPENSN_XSFILE,"xs_1g_MatA.xs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_1g_MatA.xs")
 ```
 
 ___
@@ -65,8 +64,7 @@ You can copy/paste the text below or look in the file named ```tutorials/materia
 
 -- Add materials
 materials = {}
-materials[1] = mat.AddMaterial("Material_A");
+materials[1] = mat.AddMaterial("Material_A")
 
-mat.SetProperty(materials[1],TRANSPORT_XSECTIONS,
-        OPENSN_XSFILE,"xs_1g_MatA.xs")
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_1g_MatA.xs")
 ```

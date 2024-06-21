@@ -125,10 +125,14 @@ of processes. However, to reproduce the graphics below, one needs to run with 4 
 <p>For more runtime options, type <code class="docutils literal notranslate"><span class="pre">path/to/opensn</span> <span class="pre">-h</span></code> for help.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Check num_procs</span>
 <span class="n">num_procs</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="kr">if</span> <span class="p">(</span><span class="n">check_num_procs</span><span class="o">==</span><span class="kc">nil</span> <span class="ow">and</span> <span class="n">number_of_processes</span> <span class="o">~=</span> <span class="n">num_procs</span><span class="p">)</span> <span class="kr">then</span>
-  <span class="n">Log</span><span class="p">(</span><span class="n">LOG_0ERROR</span><span class="p">,</span><span class="s2">&quot;Incorrect amount of processors. &quot;</span> <span class="o">..</span>
-    <span class="s2">&quot;Expected &quot;</span><span class="o">..</span><span class="nb">tostring</span><span class="p">(</span><span class="n">num_procs</span><span class="p">)</span><span class="o">..</span>
-    <span class="s2">&quot;. Pass check_num_procs=false to override if possible.&quot;</span><span class="p">)</span>
+<span class="kr">if</span> <span class="n">check_num_procs</span> <span class="o">==</span> <span class="kc">nil</span> <span class="ow">and</span> <span class="n">number_of_processes</span> <span class="o">~=</span> <span class="n">num_procs</span> <span class="kr">then</span>
+  <span class="n">Log</span><span class="p">(</span>
+    <span class="n">LOG_0ERROR</span><span class="p">,</span>
+    <span class="s2">&quot;Incorrect amount of processors. &quot;</span>
+      <span class="o">..</span> <span class="s2">&quot;Expected &quot;</span>
+      <span class="o">..</span> <span class="nb">tostring</span><span class="p">(</span><span class="n">num_procs</span><span class="p">)</span>
+      <span class="o">..</span> <span class="s2">&quot;. Pass check_num_procs=false to override if possible.&quot;</span>
+  <span class="p">)</span>
   <span class="nb">os.exit</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
 <span class="kr">end</span>
 </pre></div>
@@ -142,14 +146,14 @@ of processes. However, to reproduce the graphics below, one needs to run with 4 
 <p>We first create a lua table for the list of nodes. The nodes will be spread from -1 to +1.
 Be mindful that lua indexing starts at 1.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the mesh</span>
-<span class="n">nodes</span><span class="o">=</span><span class="p">{}</span>
-<span class="n">n_cells</span><span class="o">=</span><span class="mi">10</span>
-<span class="n">length</span><span class="o">=</span><span class="mf">2.</span>
-<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">length</span><span class="o">/</span><span class="mf">2.</span>
-<span class="n">dx</span> <span class="o">=</span> <span class="n">length</span><span class="o">/</span><span class="n">n_cells</span>
-<span class="kr">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,(</span><span class="n">n_cells</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="n">k</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
-    <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span> <span class="o">+</span> <span class="n">k</span><span class="o">*</span><span class="n">dx</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">n_cells</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">length</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">length</span> <span class="o">/</span> <span class="mf">2.</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">length</span> <span class="o">/</span> <span class="n">n_cells</span>
+<span class="kr">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">n_cells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">do</span>
+  <span class="n">k</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">dx</span>
 <span class="kr">end</span>
 </pre></div>
 </div>
@@ -163,14 +167,14 @@ we give only 1 value in the xcuts array (x=0). Likewise for ycuts (y=0). The ass
 cell center is located with respect to the various xcuts, ycuts, and zcuts (a fuzzy logic is applied to avoid issues).</p>
 <p>The resulting mesh and partition is shown below:</p>
 <p><img alt="Mesh_Partition" src="../../../_images/first_example_mesh_partition.png" /></p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-<span class="p">({</span>
-  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span>
-  <span class="p">({</span>
-    <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">},</span> <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">},</span>
-  <span class="p">})</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span> <span class="p">},</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">0.0</span> <span class="p">},</span>
+    <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">0.0</span> <span class="p">},</span>
+  <span class="p">}),</span>
 <span class="p">})</span>
 <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">meshgen</span><span class="p">)</span>
 </pre></div>
@@ -196,7 +200,7 @@ with value 0 for each cell in the spatial domain.</p>
 </ul>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Add materials</span>
 <span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
+<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -204,8 +208,7 @@ with value 0 for each cell in the spatial domain.</p>
 <h2><span class="section-number">3.1.4. </span>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h2>
 <p>We assign the cross sections to the material by loading the file containing the cross sections. See the tutorials’
 section on materials for more details on cross sections.</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
-  <span class="n">OPENSN_XSFILE</span><span class="p">,</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span> <span class="n">OPENSN_XSFILE</span><span class="p">,</span> <span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -213,11 +216,11 @@ section on materials for more details on cross sections.</p>
 <h2><span class="section-number">3.1.5. </span>Volumetric Source<a class="headerlink" href="#volumetric-source" title="Link to this heading"></a></h2>
 <p>We create a lua table containing the volumetric multigroup source and assign it to the material by passing that array.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">num_groups</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">src</span><span class="o">=</span><span class="p">{}</span>
-<span class="kr">for</span> <span class="n">g</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">num_groups</span> <span class="kr">do</span>
+<span class="n">src</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="kr">for</span> <span class="n">g</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_groups</span> <span class="kr">do</span>
   <span class="n">src</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="kr">end</span>
-<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">,</span><span class="n">FROM_ARRAY</span><span class="p">,</span><span class="n">src</span><span class="p">)</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">,</span> <span class="n">FROM_ARRAY</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -230,8 +233,8 @@ This creates a 3D angular quadrature.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the Angular Quadrature</span>
 <span class="n">nazimu</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">npolar</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">pquad</span> <span class="o">=</span> <span class="n">aquad</span><span class="p">.</span><span class="n">CreateProductQuadrature</span><span class="p">(</span><span class="n">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span><span class="n">nazimu</span><span class="p">,</span><span class="n">npolar</span><span class="p">)</span>
-<span class="n">aquad</span><span class="p">.</span><span class="n">OptimizeForPolarSymmetry</span><span class="p">(</span><span class="n">pquad</span><span class="p">,</span> <span class="mf">4.0</span><span class="o">*</span><span class="nb">math.pi</span><span class="p">)</span>
+<span class="n">pquad</span> <span class="o">=</span> <span class="n">aquad</span><span class="p">.</span><span class="n">CreateProductQuadrature</span><span class="p">(</span><span class="n">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span> <span class="n">nazimu</span><span class="p">,</span> <span class="n">npolar</span><span class="p">)</span>
+<span class="n">aquad</span><span class="p">.</span><span class="n">OptimizeForPolarSymmetry</span><span class="p">(</span><span class="n">pquad</span><span class="p">,</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="nb">math.pi</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -246,21 +249,19 @@ This creates a 3D angular quadrature.</p>
 tolerances, and other solver options.</p></li>
 </ul>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup LBS parameters</span>
-<span class="n">lbs_block</span> <span class="o">=</span>
-<span class="p">{</span>
+<span class="n">lbs_block</span> <span class="o">=</span> <span class="p">{</span>
   <span class="n">num_groups</span> <span class="o">=</span> <span class="n">num_groups</span><span class="p">,</span>
-  <span class="n">groupsets</span> <span class="o">=</span>
-  <span class="p">{</span>
+  <span class="n">groupsets</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">{</span>
-      <span class="n">groups_from_to</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span>
+      <span class="n">groups_from_to</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">},</span>
       <span class="n">angular_quadrature_handle</span> <span class="o">=</span> <span class="n">pquad</span><span class="p">,</span>
       <span class="n">angle_aggregation_num_subsets</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
       <span class="n">inner_linear_method</span> <span class="o">=</span> <span class="s2">&quot;gmres&quot;</span><span class="p">,</span>
       <span class="n">l_abs_tol</span> <span class="o">=</span> <span class="mf">1.0e-6</span><span class="p">,</span>
       <span class="n">l_max_its</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
       <span class="n">gmres_restart_interval</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -270,7 +271,7 @@ tolerances, and other solver options.</p></li>
 <p>We then create the physics solver, initialize it, and execute it.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">DiscreteOrdinatesSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">lbs_block</span><span class="p">)</span>
 <span class="c1">-- Initialize and Execute Solver</span>
-<span class="n">ss_solver</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">SteadyStateSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">lbs_solver_handle</span> <span class="o">=</span> <span class="n">phys</span><span class="p">})</span>
+<span class="n">ss_solver</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">SteadyStateSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span> <span class="n">lbs_solver_handle</span> <span class="o">=</span> <span class="n">phys</span> <span class="p">})</span>
 <span class="n">solver</span><span class="p">.</span><span class="n">Initialize</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
 <span class="n">solver</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
 </pre></div>
@@ -285,9 +286,9 @@ on post-processing for more details on field functions.</p>
 <p>The resulting scalar flux is shown below:</p>
 <p><img alt="Scalar_flux" src="../../../_images/first_example_scalar_flux.png" /></p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Retrieve field functions and export them</span>
-<span class="n">fflist</span><span class="p">,</span><span class="n">count</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">fflist</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
 <span class="n">vtk_basename</span> <span class="o">=</span> <span class="s2">&quot;first_example&quot;</span>
-<span class="n">fieldfunc</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">vtk_basename</span><span class="p">)</span>
+<span class="n">fieldfunc</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">vtk_basename</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -305,33 +306,37 @@ on post-processing for more details on field functions.</p>
 <p>You can copy/paste the text below or look in the file named <code class="docutils literal notranslate"><span class="pre">tutorials/lbs/first/first_example.lua</span></code>:</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Check num_procs</span>
 <span class="n">num_procs</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="kr">if</span> <span class="p">(</span><span class="n">check_num_procs</span><span class="o">==</span><span class="kc">nil</span> <span class="ow">and</span> <span class="n">number_of_processes</span> <span class="o">~=</span> <span class="n">num_procs</span><span class="p">)</span> <span class="kr">then</span>
-  <span class="n">Log</span><span class="p">(</span><span class="n">LOG_0ERROR</span><span class="p">,</span><span class="s2">&quot;Incorrect amount of processors. &quot;</span> <span class="o">..</span>
-    <span class="s2">&quot;Expected &quot;</span><span class="o">..</span><span class="nb">tostring</span><span class="p">(</span><span class="n">num_procs</span><span class="p">)</span><span class="o">..</span>
-    <span class="s2">&quot;. Pass check_num_procs=false to override if possible.&quot;</span><span class="p">)</span>
+<span class="kr">if</span> <span class="n">check_num_procs</span> <span class="o">==</span> <span class="kc">nil</span> <span class="ow">and</span> <span class="n">number_of_processes</span> <span class="o">~=</span> <span class="n">num_procs</span> <span class="kr">then</span>
+  <span class="n">Log</span><span class="p">(</span>
+    <span class="n">LOG_0ERROR</span><span class="p">,</span>
+    <span class="s2">&quot;Incorrect amount of processors. &quot;</span>
+      <span class="o">..</span> <span class="s2">&quot;Expected &quot;</span>
+      <span class="o">..</span> <span class="nb">tostring</span><span class="p">(</span><span class="n">num_procs</span><span class="p">)</span>
+      <span class="o">..</span> <span class="s2">&quot;. Pass check_num_procs=false to override if possible.&quot;</span>
+  <span class="p">)</span>
   <span class="nb">os.exit</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
 <span class="kr">end</span>
 
 
 <span class="c1">-- Setup the mesh</span>
-<span class="n">nodes</span><span class="o">=</span><span class="p">{}</span>
-<span class="n">n_cells</span><span class="o">=</span><span class="mi">10</span>
-<span class="n">length</span><span class="o">=</span><span class="mf">2.</span>
-<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">length</span><span class="o">/</span><span class="mf">2.</span>
-<span class="n">dx</span> <span class="o">=</span> <span class="n">length</span><span class="o">/</span><span class="n">n_cells</span>
-<span class="kr">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,(</span><span class="n">n_cells</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="kr">do</span>
-    <span class="n">k</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
-    <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span> <span class="o">+</span> <span class="n">k</span><span class="o">*</span><span class="n">dx</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">n_cells</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">length</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">length</span> <span class="o">/</span> <span class="mf">2.</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">length</span> <span class="o">/</span> <span class="n">n_cells</span>
+<span class="kr">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">n_cells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">do</span>
+  <span class="n">k</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">dx</span>
 <span class="kr">end</span>
 
-<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span>
-<span class="p">({</span>
-  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">,</span><span class="n">nodes</span><span class="p">},</span>
-  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span>
-  <span class="p">({</span>
-    <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">},</span> <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">},</span>
-  <span class="p">})</span>
+<span class="n">meshgen</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">OrthogonalMeshGenerator</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+  <span class="n">node_sets</span> <span class="o">=</span> <span class="p">{</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span> <span class="p">},</span>
+  <span class="n">partitioner</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">.</span><span class="n">KBAGraphPartitioner</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">xcuts</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">0.0</span> <span class="p">},</span>
+    <span class="n">ycuts</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">0.0</span> <span class="p">},</span>
+  <span class="p">}),</span>
 <span class="p">})</span>
 
 <span class="n">mesh</span><span class="p">.</span><span class="n">MeshGenerator</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">meshgen</span><span class="p">)</span>
@@ -341,62 +346,58 @@ on post-processing for more details on field functions.</p>
 <span class="n">mesh</span><span class="p">.</span><span class="n">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 
-
 <span class="c1">-- Add materials</span>
 <span class="n">materials</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">);</span>
+<span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">.</span><span class="n">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">)</span>
 
 
-<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span>
-  <span class="n">OPENSN_XSFILE</span><span class="p">,</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">TRANSPORT_XSECTIONS</span><span class="p">,</span> <span class="n">OPENSN_XSFILE</span><span class="p">,</span> <span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
 
 
 <span class="n">num_groups</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">src</span><span class="o">=</span><span class="p">{}</span>
-<span class="kr">for</span> <span class="n">g</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">num_groups</span> <span class="kr">do</span>
+<span class="n">src</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="kr">for</span> <span class="n">g</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_groups</span> <span class="kr">do</span>
   <span class="n">src</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="kr">end</span>
-<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">,</span><span class="n">FROM_ARRAY</span><span class="p">,</span><span class="n">src</span><span class="p">)</span>
+<span class="n">mat</span><span class="p">.</span><span class="n">SetProperty</span><span class="p">(</span><span class="n">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ISOTROPIC_MG_SOURCE</span><span class="p">,</span> <span class="n">FROM_ARRAY</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
 
 
 <span class="c1">-- Setup the Angular Quadrature</span>
 <span class="n">nazimu</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">npolar</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">pquad</span> <span class="o">=</span> <span class="n">aquad</span><span class="p">.</span><span class="n">CreateProductQuadrature</span><span class="p">(</span><span class="n">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span><span class="n">nazimu</span><span class="p">,</span><span class="n">npolar</span><span class="p">)</span>
-<span class="n">aquad</span><span class="p">.</span><span class="n">OptimizeForPolarSymmetry</span><span class="p">(</span><span class="n">pquad</span><span class="p">,</span> <span class="mf">4.0</span><span class="o">*</span><span class="nb">math.pi</span><span class="p">)</span>
+<span class="n">pquad</span> <span class="o">=</span> <span class="n">aquad</span><span class="p">.</span><span class="n">CreateProductQuadrature</span><span class="p">(</span><span class="n">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span> <span class="n">nazimu</span><span class="p">,</span> <span class="n">npolar</span><span class="p">)</span>
+<span class="n">aquad</span><span class="p">.</span><span class="n">OptimizeForPolarSymmetry</span><span class="p">(</span><span class="n">pquad</span><span class="p">,</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="nb">math.pi</span><span class="p">)</span>
 
 
 <span class="c1">-- Setup LBS parameters</span>
-<span class="n">lbs_block</span> <span class="o">=</span>
-<span class="p">{</span>
+<span class="n">lbs_block</span> <span class="o">=</span> <span class="p">{</span>
   <span class="n">num_groups</span> <span class="o">=</span> <span class="n">num_groups</span><span class="p">,</span>
-  <span class="n">groupsets</span> <span class="o">=</span>
-  <span class="p">{</span>
+  <span class="n">groupsets</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">{</span>
-      <span class="n">groups_from_to</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span>
+      <span class="n">groups_from_to</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">},</span>
       <span class="n">angular_quadrature_handle</span> <span class="o">=</span> <span class="n">pquad</span><span class="p">,</span>
       <span class="n">angle_aggregation_num_subsets</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
       <span class="n">inner_linear_method</span> <span class="o">=</span> <span class="s2">&quot;gmres&quot;</span><span class="p">,</span>
       <span class="n">l_abs_tol</span> <span class="o">=</span> <span class="mf">1.0e-6</span><span class="p">,</span>
       <span class="n">l_max_its</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
       <span class="n">gmres_restart_interval</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
 <span class="p">}</span>
 
 <span class="n">phys</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">DiscreteOrdinatesSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">lbs_block</span><span class="p">)</span>
 
 <span class="c1">-- Initialize and Execute Solver</span>
-<span class="n">ss_solver</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">SteadyStateSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span><span class="n">lbs_solver_handle</span> <span class="o">=</span> <span class="n">phys</span><span class="p">})</span>
+<span class="n">ss_solver</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">SteadyStateSolver</span><span class="p">.</span><span class="n">Create</span><span class="p">({</span> <span class="n">lbs_solver_handle</span> <span class="o">=</span> <span class="n">phys</span> <span class="p">})</span>
 
 <span class="n">solver</span><span class="p">.</span><span class="n">Initialize</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
 <span class="n">solver</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">ss_solver</span><span class="p">)</span>
 
 
 <span class="c1">-- Retrieve field functions and export them</span>
-<span class="n">fflist</span><span class="p">,</span><span class="n">count</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">fflist</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">lbs</span><span class="p">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
 <span class="n">vtk_basename</span> <span class="o">=</span> <span class="s2">&quot;first_example&quot;</span>
-<span class="n">fieldfunc</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">vtk_basename</span><span class="p">)</span>
+<span class="n">fieldfunc</span><span class="p">.</span><span class="n">ExportToVTK</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">vtk_basename</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
