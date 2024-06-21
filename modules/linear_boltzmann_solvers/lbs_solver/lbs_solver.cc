@@ -1361,6 +1361,7 @@ LBSSolver::InitializeParrays()
                                        num_nodes,
                                        num_grps,
                                        num_moments_,
+                                       num_faces,
                                        *matid_to_xs_map_[mat_id],
                                        cell_volume,
                                        face_local_flags,
