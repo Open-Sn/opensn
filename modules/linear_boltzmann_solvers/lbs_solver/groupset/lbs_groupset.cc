@@ -44,8 +44,9 @@ LBSGroupset::GetInputParameters()
                               "parallel simulations");
 
   // Iterative method
-  params.AddOptionalParameter(
-    "inner_linear_method", "richardson", "The iterative method to use for inner linear solves");
+  params.AddOptionalParameter("inner_linear_method",
+                              "krylov_richardson",
+                              "The iterative method to use for inner linear solves");
   params.AddOptionalParameter(
     "l_abs_tol", 1.0e-6, "Inner linear solver residual absolute tolerance");
   params.AddOptionalParameter("l_max_its", 200, "Inner linear solver maximum iterations");
@@ -82,8 +83,8 @@ LBSGroupset::GetInputParameters()
                                  AllowableRangeList::New({"polar", "single", "azimuthal"}));
   params.ConstrainParameterRange("angle_aggregation_num_subsets", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("groupset_num_subsets", AllowableRangeLowLimit::New(1));
-  params.ConstrainParameterRange("inner_linear_method",
-                                 AllowableRangeList::New({"richardson", "gmres", "bicgstab"}));
+  params.ConstrainParameterRange(
+    "inner_linear_method", AllowableRangeList::New({"krylov_richardson", "gmres", "bicgstab"}));
   params.ConstrainParameterRange("l_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("l_max_its", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("gmres_restart_interval", AllowableRangeLowLimit::New(1));
@@ -102,7 +103,7 @@ LBSGroupset::Init(int id)
   angle_agg_ = nullptr;
   master_num_grp_subsets_ = 1;
   master_num_ang_subsets_ = 1;
-  iterative_method_ = IterativeMethod::CLASSICRICHARDSON;
+  iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
   angleagg_method_ = AngleAggregationType::POLAR;
   residual_tolerance_ = 1.0e-6;
   max_iterations_ = 200;
@@ -181,7 +182,7 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
 
   // Inner solver
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
-  if (inner_linear_method == "richardson")
+  if (inner_linear_method == "krylov_richardson")
     iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
   else if (inner_linear_method == "gmres")
     iterative_method_ = IterativeMethod::KRYLOV_GMRES;

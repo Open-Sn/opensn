@@ -170,7 +170,7 @@ WGSLinearSolver::SetRHS()
   saved_q_moments_local_ = lbs_solver.QMomentsLocal();
 
   const bool single_richardson =
-    iterative_method_ == "richardson" and tolerance_options_.maximum_iterations == 1;
+    iterative_method_ == "krylov_richardson" and tolerance_options_.maximum_iterations == 1;
 
   if (not single_richardson)
   {

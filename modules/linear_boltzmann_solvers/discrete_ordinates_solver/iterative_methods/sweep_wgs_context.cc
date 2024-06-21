@@ -150,22 +150,19 @@ SweepWGSContext::PostSolveCallback()
 {
   CALI_CXX_MARK_SCOPE("SweepWGSContext::PostSolveCallback");
 
-  // Perform final sweep with converged phi and delayed psi dofs
-  if (groupset_.iterative_method_ != IterativeMethod::KRYLOV_RICHARDSON)
+  // Perform final sweep with converged phi and delayed psi dofs. This step is necessary for
+  // Krylov methods to recover the actual solution (this includes all of the PETSc methods
+  // currently used in OpenSn). This step will not be necessary for classic Richardson.
   {
     lbs_ss_solver_.ZeroOutflowBalanceVars(groupset_);
-
     const auto scope = lhs_src_scope_ | rhs_src_scope_;
-
     set_source_function_(groupset_,
                          lbs_solver_.QMomentsLocal(),
                          lbs_solver_.PhiOldLocal(),
                          lbs_solver_.DensitiesLocal(),
                          scope);
     sweep_scheduler_.SetDestinationPhi(lbs_solver_.PhiNewLocal());
-
     ApplyInverseTransportOperator(scope);
-
     lbs_solver_.GSScopedCopyPrimarySTLvectors(
       groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
   }

@@ -97,7 +97,7 @@ lbs_block = {
     {
       groups_from_to = { 0, num_groups - 1 },
       angular_quadrature_handle = pquad,
-      inner_linear_method = "richardson",
+      inner_linear_method = "krylov_richardson",
       l_abs_tol = 1.0e-6,
       l_max_its = 0,
     },
