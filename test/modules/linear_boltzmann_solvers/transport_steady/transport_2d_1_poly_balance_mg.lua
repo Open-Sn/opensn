@@ -1,6 +1,4 @@
--- 2D Transport test with Vacuum and Incident-isotropic BC.
--- SDM: PWLD
--- Test: Max-value=0.50758 and 2.52527e-04
+-- 2D Transport test. Vacuum and Isotropic BC. Balance.
 num_procs = 4
 
 --############################################### Check num_procs
@@ -27,7 +25,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 
 --############################################### Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(SetMaterialIDFromLogicalVolumevol0, 0)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
 vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = 0.0, infy = true, infz = true })
 mesh.SetMaterialIDFromLogicalVolume(vol1, 1)
 
@@ -50,15 +48,15 @@ mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 --############################################### Setup Physics
 fac = 1
-pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4 * fac, 3 * fac)
-aquad.OptimizeForPolarSymmetry(pquad0, 4.0 * math.pi)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4 * fac, 3 * fac)
+aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
   num_groups = num_groups,
   groupsets = {
     {
       groups_from_to = { 0, 62 },
-      angular_quadrature_handle = pquad0,
+      angular_quadrature_handle = pquad,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 1,
       inner_linear_method = "gmres",
@@ -68,7 +66,7 @@ lbs_block = {
     },
     {
       groups_from_to = { 63, num_groups - 1 },
-      angular_quadrature_handle = pquad0,
+      angular_quadrature_handle = pquad,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 1,
       inner_linear_method = "gmres",
@@ -109,14 +107,6 @@ lbs.ComputeBalance(phys1)
 --############################################### Get field functions
 fflist, count = lbs.GetScalarFieldFunctionList(phys1)
 
---############################################### Slice plot
-slice2 = fieldfunc.FFInterpolationCreate(SLICE)
-fieldfunc.SetProperty(slice2, SLICE_POINT, { x = 0.0, y = 0.0, z = 0.025 })
-fieldfunc.SetProperty(slice2, ADD_FIELDFUNCTION, fflist[1])
-
-fieldfunc.Initialize(slice2)
-fieldfunc.Execute(slice2)
-
 --############################################### Volume integrations
 ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
@@ -145,11 +135,5 @@ log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if master_export == nil then
-  fieldfunc.ExportToPython(slice2)
   ExportFieldFunctionToVTKG(fflist[1], "ZPhi3D", "Phi")
-end
-
---############################################### Plots
-if location_id == 0 and master_export == nil then
-  local handle = io.popen("python ZPFFI00.py")
 end

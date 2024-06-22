@@ -1,15 +1,17 @@
--- 2D Transport test with Vacuum and Incident-isotropic BC.
--- SDM: PWLD
--- Test: Max-value=0.50758 and 2.52527e-04
-num_procs = 4
+-- 2D Transport test. Pure scatterer. Balance
+num_procs = 1
 
 --############################################### Check num_procs
--- if (check_num_procs==nil and number_of_processes ~= num_procs) then
---     log.Log(LOG_0ERROR,"Incorrect amount of processors. " ..
---                       "Expected "..tostring(num_procs)..
---                       ". Pass check_num_procs=false to override if possible.")
---     os.exit(false)
--- end
+if check_num_procs == nil and number_of_processes ~= num_procs then
+  log.Log(
+    LOG_0ERROR,
+    "Incorrect amount of processors. "
+      .. "Expected "
+      .. tostring(num_procs)
+      .. ". Pass check_num_procs=false to override if possible."
+  )
+  os.exit(false)
+end
 
 --############################################### Setup mesh
 nodes = {}
@@ -37,18 +39,8 @@ materials[1] = mat.AddMaterial("Test Material")
 materials[2] = mat.AddMaterial("Test Material2")
 
 num_groups = 1
-mat.SetProperty(
-  materials[1],
-  TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,
-  "tests/transport_steady/simple_scatter.xs"
-)
-mat.SetProperty(
-  materials[2],
-  TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,
-  "tests/transport_steady/simple_scatter.xs"
-)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1.0, 1.0)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1.0, 1.0)
 
 src = {}
 for g = 1, num_groups do
@@ -68,7 +60,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, 0 },
-      angular_quadrature_handle = pquad0,
+      angular_quadrature_handle = pquad,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 1,
       inner_linear_method = "gmres",
@@ -78,11 +70,6 @@ lbs_block = {
     },
   },
 }
-bsrc = {}
-for g = 1, num_groups do
-  bsrc[g] = 0.0
-end
-bsrc[1] = 1.0 / 4.0 / math.pi
 
 lbs_options = {
   scattering_order = 0,
@@ -100,14 +87,6 @@ lbs.ComputeBalance(phys1)
 
 --############################################### Get field functions
 fflist, count = lbs.GetScalarFieldFunctionList(phys1)
-
---############################################### Slice plot
-slice2 = fieldfunc.FFInterpolationCreate(SLICE)
-fieldfunc.SetProperty(slice2, SLICE_POINT, { x = 0.0, y = 0.0, z = 0.025 })
-fieldfunc.SetProperty(slice2, ADD_FIELDFUNCTION, fflist[1])
-
-fieldfunc.Initialize(slice2)
-fieldfunc.Execute(slice2)
 
 --############################################### Volume integrations
 ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
@@ -127,7 +106,7 @@ ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
 fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
 fieldfunc.SetProperty(curffi, LOGICAL_VOLUME, vol0)
-fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[160])
+fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
 
 fieldfunc.Initialize(curffi)
 fieldfunc.Execute(curffi)
@@ -137,11 +116,5 @@ log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if master_export == nil then
-  fieldfunc.ExportToPython(slice2)
   ExportFieldFunctionToVTKG(fflist[1], "ZPhi3D", "Phi")
-end
-
---############################################### Plots
-if location_id == 0 and master_export == nil then
-  local handle = io.popen("python ZPFFI00.py")
 end
