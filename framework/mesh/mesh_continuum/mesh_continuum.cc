@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/mesh/mesh_continuum/grid_face_histogram.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
@@ -650,6 +651,90 @@ MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
 
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
     grid_bndry_id_map[bndry_id] = boundary_name;
+}
+
+void
+MeshContinuum::ComputeVolumePerMaterialID() const
+{
+  auto grid_ptr = GetCurrentMesh();
+  const auto& grid = *grid_ptr;
+  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(grid);
+  const auto& sdm = *sdm_ptr;
+
+  // Create a map to hold local volume with local material as key
+  std::map<int, double> material_volumes;
+  for (auto& cell : local_cells)
+  {
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const double volume = cell_mapping.CellVolume();
+    material_volumes[cell.material_id_] += volume;
+  }
+
+  // Collect all local material IDs
+  std::set<int> unique_material_ids;
+  for (const auto& pair : material_volumes)
+    unique_material_ids.insert(pair.first);
+  // convert set to vector
+  std::vector<int> local_material_ids(unique_material_ids.begin(), unique_material_ids.end());
+  int local_size = local_material_ids.size();
+
+  // Initialize vector to hold sizes from all processes
+  std::vector<int> all_sizes(mpi_comm.size());
+  // Gather all local material ID sizes from all processes
+  mpi_comm.all_gather(local_size, all_sizes);
+
+  // Compute the displacement and total size
+  std::vector<int> displs(mpi_comm.size(), 0); // Initialize displacement vector
+  int total_size = 0;
+  for (int i = 0; i < mpi_comm.size(); ++i)
+  {
+    displs[i] = total_size;
+    total_size += all_sizes[i];
+  }
+
+  // Initialize vector to hold all material IDs from all processes
+  std::vector<int> all_material_ids(total_size);
+  // Gather all material IDs at root
+  mpi_comm.all_gather(local_material_ids, all_material_ids, all_sizes, displs);
+
+  // Create a union of all unique material IDs
+  std::set<int> global_unique_material_ids(all_material_ids.begin(), all_material_ids.end());
+
+  // Create vectors for the global reduction
+  std::vector<int> global_material_ids(global_unique_material_ids.begin(),
+                                       global_unique_material_ids.end());
+  std::vector<double> local_volumes(global_material_ids.size(), 0.0);
+  std::vector<double> global_volumes(global_material_ids.size(), 0.0);
+
+  // Fill local volumes vector based on the local material volumes
+  // and perform the reduction one material at a time
+  for (size_t i = 0; i < global_material_ids.size(); ++i)
+  {
+    if (material_volumes.find(global_material_ids[i]) != material_volumes.end())
+    {
+      local_volumes[i] = material_volumes[global_material_ids[i]];
+    }
+    double loc_vol = local_volumes[i];
+    double glo_vol;
+    mpi_comm.all_reduce(loc_vol, glo_vol, mpi::op::sum<double>());
+    global_volumes[i] = glo_vol;
+  }
+
+  // Combine results into a map on each process
+  std::map<int, double> global_material_volumes;
+  for (size_t i = 0; i < global_material_ids.size(); ++i)
+  {
+    global_material_volumes[global_material_ids[i]] = global_volumes[i];
+  }
+
+  // Output the volumes per material_id on the root process
+  if (opensn::mpi_comm.rank() == 0)
+  {
+    for (const auto& pair : global_material_volumes)
+      log.Log() << "Material ID: " << pair.first << std::setprecision(12)
+                << " Volume: " << pair.second << std::endl;
+    log.Log() << std::endl;
+  }
 }
 
 } // namespace opensn
