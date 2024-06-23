@@ -5,7 +5,7 @@
 #include "framework/event_system/event.h"
 #include "framework/event_system/system_wide_event_publisher.h"
 
-#include "framework/physics/solver_base/solver.h"
+#include "framework/physics/solver.h"
 #include "framework/physics/time_steppers/time_stepper.h"
 
 namespace opensn

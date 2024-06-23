@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/physics/solver_base/solver.h"
+#include "solver.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

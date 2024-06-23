@@ -5,7 +5,7 @@
 
 #include "framework/object_factory.h"
 
-#include "framework/physics/solver_base/solver.h"
+#include "framework/physics/solver.h"
 #include "framework/physics/time_steppers/time_stepper.h"
 #include "framework/event_system/event.h"
 
