@@ -2,17 +2,17 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/diffusion/mg_diffusion_solver.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include "framework/materials/material.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/materials/material.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/logging/log.h"
-#include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
 #include <iomanip>
 #include <algorithm>
 
