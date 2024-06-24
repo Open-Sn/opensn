@@ -36,7 +36,7 @@ private:
   int subdiv_factor_;
   int final_res_;
   std::vector<double>& ref_cdf_;
-  std::vector<SubIntvl*> sub_intvls_;
+  std::vector<std::shared_ptr<SubIntvl>> sub_intvls_;
 
 public:
   /** constructor.*/
