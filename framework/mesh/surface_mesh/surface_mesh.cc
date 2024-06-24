@@ -1632,7 +1632,7 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
 
     auto new_surface = std::make_shared<SurfaceMesh>();
 
-    std::vector<int*> vertex_mapping;
+    std::vector<std::vector<int>> vertex_mapping;
 
     for (cur_face = (*outer_patch)->begin(); cur_face != (*outer_patch)->end(); cur_face++)
     {
@@ -1646,9 +1646,8 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
 
         // Check if vertex already there
         bool already_there = false;
-        int* already_there_mapping;
-        std::vector<int*>::iterator cur_map;
-        for (cur_map = vertex_mapping.begin(); cur_map != vertex_mapping.end(); cur_map++)
+        std::vector<int> already_there_mapping;
+        for (auto cur_map = vertex_mapping.begin(); cur_map != vertex_mapping.end(); cur_map++)
         {
           if ((*cur_map)[0] == vi)
           {
@@ -1667,7 +1666,7 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
         {
           // Copy vertex
           Vertex v = this->vertices_.at(vi);
-          int* newMapping = new int[2];
+          std::vector<int> newMapping(2);
           newMapping[0] = vi;
           newMapping[1] = new_surface->vertices_.size();
 
