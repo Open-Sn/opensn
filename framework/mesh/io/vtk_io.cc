@@ -305,7 +305,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
   if (has_global_ids)
   {
     std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>> cells(total_cell_count);
-    std::vector<Vector3*> vertices(total_point_count, nullptr);
+    std::vector<std::shared_ptr<Vector3>> vertices(total_point_count);
 
     auto cell_gids_ptr = ugrid.GetCellData()->GetGlobalIds();
     auto pnts_gids_ptr = ugrid.GetPointData()->GetGlobalIds();
@@ -379,7 +379,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       auto point = ugrid.GetPoint(static_cast<vtkIdType>(p));
       const vtkIdType point_gid = pnts_gids->GetValue(p) + pid_offset;
 
-      auto vertex = new Vector3(point[0], point[1], point[2]);
+      auto vertex = std::make_shared<Vector3>(point[0], point[1], point[2]);
 
       *vertex *= scale;
 
