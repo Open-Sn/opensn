@@ -57,7 +57,7 @@ struct CDFSampler::SubIntvl
   std::vector<double>& ref_cdf;
   bool inhibited;
 
-  std::vector<SubIntvl*> sub_intvls;
+  std::vector<std::shared_ptr<SubIntvl>> sub_intvls;
 
   std::string offset;
 

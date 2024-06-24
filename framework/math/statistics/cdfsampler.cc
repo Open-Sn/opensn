@@ -33,7 +33,7 @@ CDFSampler::SubIntvl::SubIntvl(std::string offset,
 
     if (intvl_size < final_res)
     {
-      sub_intvls.push_back(new SubIntvl(
+      sub_intvls.push_back(std::make_shared<SubIntvl>(
         offset + std::string("  "), ibin, fbin, ref_cdf, subdiv_factor, final_res, true));
     }
     else
@@ -52,8 +52,8 @@ CDFSampler::SubIntvl::SubIntvl(std::string offset,
         //          << "Sub-interval " << beg
         //          << " " << end;
 
-        sub_intvls[i] =
-          new SubIntvl(offset + std::string("  "), beg, end, ref_cdf, subdiv_factor, final_res);
+        sub_intvls[i] = std::make_shared<SubIntvl>(
+          offset + std::string("  "), beg, end, ref_cdf, subdiv_factor, final_res);
       }
     }
   }
