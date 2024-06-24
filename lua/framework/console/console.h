@@ -163,7 +163,7 @@ private:
 public:
   /**
    * Adds a lua_CFunction to the registry. The registry of functions gets parsed into the lua
-   * console when `chi::Initialize` is called. This particular function will strip the namespace
+   * console when `opensn::Initialize` is called. This particular function will strip the namespace
    * from the the parameter `raw_name_in_lua` and cause the function to be registered in the
    * global namespace of the lua console.
    */
@@ -172,7 +172,7 @@ public:
 
   /**
    * Adds a lua_CFunction to the registry. The registry of functions gets parsed into the lua
-   * console when `chi::Initialize` is called. The full path of the function will be derived from
+   * console when `opensn::Initialize` is called. The full path of the function will be derived from
    * `namespace_name` + "::" + `function_name`.
    */
   static char AddFunctionToRegistryInNamespaceWithName(lua_CFunction function_ptr,

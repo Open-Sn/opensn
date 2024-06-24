@@ -9,8 +9,8 @@
 void
 lbs::DiscOrdTransientSolver::StepPrecursors()
 {
-  const auto& BackwardEuler = chi_math::SteppingMethod::IMPLICIT_EULER;
-  const auto& CrankNicolson = chi_math::SteppingMethod::CRANK_NICOLSON;
+  const auto& BackwardEuler = opensn::SteppingMethod::IMPLICIT_EULER;
+  const auto& CrankNicolson = opensn::SteppingMethod::CRANK_NICOLSON;
 
   double theta;
   if (method == BackwardEuler) theta = 1.0;

@@ -33,7 +33,7 @@ LBTSAdvanceTimeData(lua_State* L)
   const int solver_handle = lua_tointeger(L, 1);
 
   auto& solver =
-    chi::GetStackItem<lbs::DiscOrdTransientSolver>(chi::object_stack, solver_handle, fname);
+    opensn::GetStackItem<lbs::DiscOrdTransientSolver>(opensn::object_stack, solver_handle, fname);
 
   solver.Advance();
 

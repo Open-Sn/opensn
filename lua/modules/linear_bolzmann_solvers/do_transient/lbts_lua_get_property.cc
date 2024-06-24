@@ -4,8 +4,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_transient_solver/lbts_transient_solver.h"
 
 #if 0
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 #define PropertyArgCntErr(prop_name)                                                               \
   throw std::logic_error(fname + ": Insufficient amount of arguments, " +                          \
@@ -49,7 +49,7 @@ LBTSGetProperty(lua_State* L)
   const int solver_handle = lua_tointeger(L, 1);
 
   auto& solver =
-    chi::GetStackItem<lbs::DiscOrdTransientSolver>(chi::object_stack, solver_handle, fname);
+    opensn::GetStackItem<lbs::DiscOrdTransientSolver>(opensn::object_stack, solver_handle, fname);
 
   // Get the property
   LuaCheckStringValue(fname, L, 2);

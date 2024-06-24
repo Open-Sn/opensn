@@ -207,7 +207,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
   const std::string& file_base_name,
   const std::vector<std::shared_ptr<const FieldFunctionGridBased>>& ff_list)
 {
-  const std::string fname = "chi_physics::FieldFunction::ExportMultipleToVTK";
+  const std::string fname = "FieldFunctionGridBased::ExportMultipleToVTK";
   log.Log() << "Exporting field functions to VTK with file base \"" << file_base_name << "\"";
 
   if (ff_list.empty())

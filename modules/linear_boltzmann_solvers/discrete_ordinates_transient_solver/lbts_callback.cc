@@ -3,8 +3,8 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_transient_solver/lbts_transient_solver.h"
 #if 0
-#include "framework/chi_runtime.h"
-#include "framework/console/chi_console.h"
+#include "framework/runtime.h"
+#include "framework/console/console.h"
 
 /**Provides a callback interface to lua after each timestep. Users,
  * can setup all sorts of controls like adaptive timestepping and
@@ -16,7 +16,7 @@ lbs::DiscOrdTransientSolver::PostStepCallBackFunction() const
 
   if (transient_options_.console_call_back_function.empty()) return;
 
-  auto& L = chi::console.GetConsoleState();
+  auto& L = opensn::console.GetConsoleState();
   const auto& lua_func_name = transient_options_.console_call_back_function;
 
   // Load lua function

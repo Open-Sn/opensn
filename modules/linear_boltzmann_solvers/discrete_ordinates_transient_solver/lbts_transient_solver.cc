@@ -7,8 +7,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/SourceFunctions/transient_source_function.h"
 #include "modules/linear_boltzmann_solvers/B_DO_Solver/IterativeMethods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_linear_solver.h"
-#include "framework/chi_runtime.h"
-#include "framework/logging/chi_log.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
 
 namespace lbs
 {
@@ -16,7 +16,7 @@ namespace lbs
 DiscOrdTransientSolver::DiscOrdTransientSolver(const std::string& in_text_name)
   : DiscOrdKEigenvalueSolver(in_text_name)
 {
-  chi::log.Log() << TextName() << " created.";
+  opensn::log.Log() << TextName() << " created.";
 }
 
 DiscOrdTransientSolver::~DiscOrdTransientSolver()
@@ -26,7 +26,7 @@ DiscOrdTransientSolver::~DiscOrdTransientSolver()
 void
 DiscOrdTransientSolver::Initialize()
 {
-  chi::log.Log() << "Initializing " << TextName() << ".";
+  opensn::log.Log() << "Initializing " << TextName() << ".";
   options_.save_angular_flux = true;
   DiscOrdKEigenvalueSolver::Initialize();
   DiscOrdKEigenvalueSolver::Execute();
@@ -36,7 +36,7 @@ DiscOrdTransientSolver::Initialize()
     const double FR = ComputeFissionRate(phi_new_local_);
     char buff[200];
     snprintf(buff, 200, " Initial Fission Rate FR=%12.6g", FR);
-    chi::log.Log() << TextName() << buff;
+    opensn::log.Log() << TextName() << buff;
   }
 
   // Compute auxiliary vectors
@@ -54,7 +54,7 @@ DiscOrdTransientSolver::Initialize()
              " Beta=%.2f [pcm] reactivity=%.3f [$]",
              beta * 1e5,
              (1.0 - 1.0 / GetKeff()) / beta);
-    chi::log.Log() << TextName() << buff;
+    opensn::log.Log() << TextName() << buff;
   }
 
   // Initialize source func
@@ -68,7 +68,7 @@ DiscOrdTransientSolver::Initialize()
 void
 DiscOrdTransientSolver::Execute()
 {
-  chi::log.Log() << "Executing " << TextName() << ".";
+  opensn::log.Log() << "Executing " << TextName() << ".";
 
   const int max_num_steps = transient_options_.max_time_steps;
   const double max_time = transient_options_.t_final;
@@ -90,14 +90,14 @@ DiscOrdTransientSolver::Execute()
 
   UpdateFieldFunctions();
 
-  chi::log.Log() << "Done Executing " << TextName() << ".";
+  opensn::log.Log() << "Done Executing " << TextName() << ".";
 }
 
 void
 DiscOrdTransientSolver::Step()
 {
   if (transient_options_.verbosity_level >= 2)
-    chi::log.Log() << TextName() << " Stepping with dt " << dt_;
+    opensn::log.Log() << TextName() << " Stepping with dt " << dt_;
 
   phi_old_local_ = phi_prev_local_;
 
@@ -125,8 +125,8 @@ DiscOrdTransientSolver::Step()
 
   // Compute t^{n+1} value
   {
-    const auto& BackwardEuler = chi_math::SteppingMethod::IMPLICIT_EULER;
-    const auto& CrankNicolson = chi_math::SteppingMethod::CRANK_NICOLSON;
+    const auto& BackwardEuler = opensn::SteppingMethod::IMPLICIT_EULER;
+    const auto& CrankNicolson = opensn::SteppingMethod::CRANK_NICOLSON;
 
     double theta;
     if (method == BackwardEuler) theta = 1.0;
@@ -151,7 +151,7 @@ DiscOrdTransientSolver::Step()
   {
     char buff[200];
     snprintf(buff, 200, " dt=%.1e time=%10.4g FR=%12.6g", dt_, time_ + dt_, FR_new);
-    chi::log.Log() << TextName() << buff;
+    opensn::log.Log() << TextName() << buff;
   }
 
   UpdateFieldFunctions();

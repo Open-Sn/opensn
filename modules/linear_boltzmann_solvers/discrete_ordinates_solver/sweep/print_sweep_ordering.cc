@@ -19,8 +19,8 @@ PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continu
   //  double polar = sweep_order->polar;
   //  double azimuthal = sweep_order->azimuthal;
   //
-  //  chi_mesh::MeshHandler* cur_handler = GetCurrentHandler();
-  //  chi_mesh::VolumeMesher* mesher     = cur_handler->volume_mesher;
+  //  opensn::MeshHandler* cur_handler = GetCurrentHandler();
+  //  opensn::VolumeMesher* mesher     = cur_handler->volume_mesher;
   //
   //  // Making
   //  containers std::vector<int> rank_of_cell; for (int c=0;

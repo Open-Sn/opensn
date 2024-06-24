@@ -70,6 +70,6 @@
 [0]  Max-value2=1.76764e-17
 [0]
 [0]  Final program time 00:00:11
-[0]  2023-07-18 21:24:38 ChiTech finished execution of Transport2D_1.lua
+[0]  2023-07-18 21:24:38 OpenSn finished execution of Transport2D_1.lua
 [0]  SPDS and FLUDS reset complete.            Process memory = 778 MB
 [0]

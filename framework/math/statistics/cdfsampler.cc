@@ -47,11 +47,6 @@ CDFSampler::SubIntvl::SubIntvl(std::string offset,
         if (i == (subdiv_factor - 1))
           end = fbin;
 
-        //        chi::log.Log()
-        //          << offset
-        //          << "Sub-interval " << beg
-        //          << " " << end;
-
         sub_intvls[i] =
           new SubIntvl(offset + std::string("  "), beg, end, ref_cdf, subdiv_factor, final_res);
       }
@@ -82,10 +77,6 @@ CDFSampler::CDFSampler(std::vector<double>& cdf, int subdiv_factor, int final_re
     this->final_res_ = 100;
   }
 
-  //  chi::log.Log()
-  //    << "Factors: " << this->subdiv_factor
-  //    << " " << this->final_res;
-
   // Sub-dividing the interval
   size_t cdf_size = cdf.size();
   size_t intvl_size = ceil(cdf_size / (double)this->subdiv_factor_);
@@ -103,10 +94,6 @@ CDFSampler::CDFSampler(std::vector<double>& cdf, int subdiv_factor, int final_re
 
       if (i == (this->subdiv_factor_ - 1))
         end = cdf_size - 1;
-
-      //      chi::log.Log()
-      //        << "Sub-interval " << beg
-      //        << " " << end;
 
       sub_intvls_[i] =
         new SubIntvl(std::string("  "), beg, end, ref_cdf_, this->subdiv_factor_, this->final_res_);
@@ -138,10 +125,6 @@ CDFSampler::Sample(double x)
         break;
     }
 
-    // Sample range
-    //    chi::log.Log()
-    //      << "Sampling " << x
-    //      << " in range " << range.first << "-" << range.second;
     for (int k = range.first; k <= range.second; k++)
     {
       if (k == 0)
@@ -229,9 +212,6 @@ SampleCDF(double x, std::vector<double> cdf_bin)
   if ((indB - indA) <= fine_limit)
     refine_limit_reached = true;
 
-  //  chi::log.Log() << "************ new prob x=" << x
-  //   << " " << indA << " " << indB << " " << indC;
-  //  refine_limit_reached = true;
   // Recursively refine
   int refine_count = 0;
   while (not refine_limit_reached)
@@ -256,11 +236,6 @@ SampleCDF(double x, std::vector<double> cdf_bin)
       indB = indA + std::ceil(intvl_size / 2.0) - 1;
     }
 
-    //    chi::log.Log()
-    //      << refine_count << " "
-    //      << "newA=" << indA
-    //      << "newB=" << indB
-    //      << "newC=" << indC;
     refine_count++;
 
     if (intvl_size <= fine_limit)
@@ -270,9 +245,6 @@ SampleCDF(double x, std::vector<double> cdf_bin)
       lookup_f = indC;
     }
   }
-
-  //  chi::log.Log()
-  //    << "Final lookup range=" << lookup_i << "-" << lookup_f << " " << x;
 
   // Perform final lookup
   int ret_val = -1;
@@ -308,9 +280,6 @@ SampleCDF(double x, std::vector<double> cdf_bin)
                       << " i=" << lookup_i << " f=" << lookup_f << " x=" << x;
     Exit(EXIT_FAILURE);
   }
-
-  //  chi::log.Log() << ret_val;
-  //  usleep(100000);
 
   return ret_val;
 }

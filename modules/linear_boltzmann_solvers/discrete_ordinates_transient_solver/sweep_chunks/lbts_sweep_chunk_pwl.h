@@ -17,11 +17,11 @@ namespace lbs
 {
 //###################################################################
 /**Sweep chunk for cartesian PWLD discretization Theta-scheme timestepping.*/
-class SweepChunkPWLTransientTheta : public chi_mesh::sweep_management::SweepChunk
+class SweepChunkPWLTransientTheta : public opensn::lbs::SweepChunk
 {
 protected:
   const std::shared_ptr<MeshContinuum> grid_view_;
-  chi_math::SpatialDiscretization& grid_fe_view_;
+  opensn::SpatialDiscretization& grid_fe_view_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
   std::vector<lbs::CellLBSView>& grid_transport_view_;
   const std::vector<double>& q_moments_;
@@ -46,7 +46,7 @@ public:
   std::vector<std::vector<double>> b_;
 
   SweepChunkPWLTransientTheta(std::shared_ptr<MeshContinuum> grid_ptr,
-                              chi_math::SpatialDiscretization& discretization,
+                              opensn::SpatialDiscretization& discretization,
                               const std::vector<UnitCellMatrices>& unit_cell_matrices,
                               std::vector<lbs::CellLBSView>& cell_transport_views,
                               std::vector<double>& destination_phi,
@@ -60,12 +60,12 @@ public:
                               int num_moments,
                               int max_num_cell_dofs);
 
-  void Sweep(chi_mesh::sweep_management::AngleSet* angle_set) override;
+  void Sweep(opensn::sweep_management::AngleSet* angle_set) override;
 
   struct Upwinder
   {
-    chi_mesh::sweep_management::FLUDS& fluds;
-    chi_mesh::sweep_management::AngleSet* angle_set;
+    opensn::lbs::FLUDS& fluds;
+    opensn::lbs::AngleSet* angle_set;
     size_t spls_index;
     size_t angle_set_index;
     int in_face_counter;

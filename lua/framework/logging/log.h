@@ -63,7 +63,7 @@ int LogLog(lua_State* L);
  *
  * \param event_name string Required. Name of the event.
  * \param event_operation_name string Required. What kind of operation to be
- *                            applied. See `chi::Logger::EventOperation`
+ *                            applied. See `opensn::Logger::EventOperation`
  *
  * \ingroup LuaLogging
  * \return double The processed value.
