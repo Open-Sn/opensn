@@ -261,19 +261,20 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
     auto& raw_boundary_cells = mesh->RawBoundaryCells();
     auto& raw_cells = mesh->RawCells();
     // Make the cell on either the volume or the boundary
-    UnpartitionedMesh::LightWeightCell* raw_cell = nullptr;
+    std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
     if (mesh_is_2D_assumption)
     {
       if (IsElementType1D(elem_type))
       {
-        raw_cell = new UnpartitionedMesh::LightWeightCell(CellType::SLAB, CellType::SLAB);
+        raw_cell =
+          std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, CellType::SLAB);
         raw_boundary_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
       else if (IsElementType2D(elem_type))
       {
-        raw_cell = new UnpartitionedMesh::LightWeightCell(CellType::POLYGON,
-                                                          CellTypeFromMSHTypeID(elem_type));
+        raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
+          CellType::POLYGON, CellTypeFromMSHTypeID(elem_type));
         raw_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_cells.";
       }
@@ -282,15 +283,15 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
     {
       if (IsElementType2D(elem_type))
       {
-        raw_cell = new UnpartitionedMesh::LightWeightCell(CellType::POLYGON,
-                                                          CellTypeFromMSHTypeID(elem_type));
+        raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
+          CellType::POLYGON, CellTypeFromMSHTypeID(elem_type));
         raw_boundary_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
       else if (IsElementType3D(elem_type))
       {
-        raw_cell = new UnpartitionedMesh::LightWeightCell(CellType::POLYHEDRON,
-                                                          CellTypeFromMSHTypeID(elem_type));
+        raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
+          CellType::POLYHEDRON, CellTypeFromMSHTypeID(elem_type));
         raw_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_cells.";
       }

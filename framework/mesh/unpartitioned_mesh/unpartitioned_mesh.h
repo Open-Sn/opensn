@@ -78,14 +78,17 @@ public:
     return vertex_cell_subscriptions_;
   }
 
-  void AddCell(LightWeightCell*& cell) { raw_cells_.push_back(cell); }
+  void AddCell(std::shared_ptr<LightWeightCell> cell) { raw_cells_.push_back(cell); }
   size_t GetNumberOfCells() const { return raw_cells_.size(); }
 
-  std::vector<LightWeightCell*>& RawCells() { return raw_cells_; }
-  const std::vector<LightWeightCell*>& RawCells() const { return raw_cells_; }
+  std::vector<std::shared_ptr<LightWeightCell>>& RawCells() { return raw_cells_; }
+  const std::vector<std::shared_ptr<LightWeightCell>>& RawCells() const { return raw_cells_; }
 
-  std::vector<LightWeightCell*>& RawBoundaryCells() { return raw_boundary_cells_; }
-  const std::vector<LightWeightCell*>& RawBoundaryCells() const { return raw_boundary_cells_; }
+  std::vector<std::shared_ptr<LightWeightCell>>& RawBoundaryCells() { return raw_boundary_cells_; }
+  const std::vector<std::shared_ptr<LightWeightCell>>& RawBoundaryCells() const
+  {
+    return raw_boundary_cells_;
+  }
 
   const std::vector<Vertex>& Vertices() const { return vertices_; }
   std::vector<Vertex>& Vertices() { return vertices_; }
@@ -138,8 +141,8 @@ protected:
   std::map<uint64_t, std::string> boundary_id_map_;
 
   std::vector<Vertex> vertices_;
-  std::vector<LightWeightCell*> raw_cells_;
-  std::vector<LightWeightCell*> raw_boundary_cells_;
+  std::vector<std::shared_ptr<LightWeightCell>> raw_cells_;
+  std::vector<std::shared_ptr<LightWeightCell>> raw_boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };
 

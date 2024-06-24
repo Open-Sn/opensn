@@ -18,10 +18,6 @@ UnpartitionedMesh::UnpartitionedMesh() : dim_(0), mesh_type_(UNSTRUCTURED), extr
 
 UnpartitionedMesh::~UnpartitionedMesh()
 {
-  for (auto& cell : raw_cells_)
-    delete cell;
-  for (auto& cell : raw_boundary_cells_)
-    delete cell;
   log.Log0Verbose1() << "Unpartitioned Mesh destructor called";
 }
 
@@ -301,7 +297,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
   // Establish boundary connectivity
   // Make list of internal cells on the boundary
-  std::vector<LightWeightCell*> internal_cells_on_boundary;
+  std::vector<std::shared_ptr<LightWeightCell>> internal_cells_on_boundary;
   for (auto& cell : raw_cells_)
   {
     bool cell_on_boundary = false;
@@ -405,7 +401,7 @@ UnpartitionedMesh::PushProxyCell(const std::string& type_str,
   else
     throw std::logic_error(fname + ": Unsupported cell secondary type.");
 
-  auto cell = new LightWeightCell(type, sub_type);
+  auto cell = std::make_shared<LightWeightCell>(type, sub_type);
 
   cell->material_id = cell_material_id;
 
@@ -440,10 +436,6 @@ UnpartitionedMesh::PushProxyCell(const std::string& type_str,
 void
 UnpartitionedMesh::CleanUp()
 {
-  for (auto& cell : raw_cells_)
-    delete cell;
-  for (auto& cell : raw_boundary_cells_)
-    delete cell;
   vertices_.clear();
   vertices_.shrink_to_fit();
   raw_cells_.clear();
