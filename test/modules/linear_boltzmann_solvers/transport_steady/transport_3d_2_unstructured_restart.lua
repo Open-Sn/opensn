@@ -46,18 +46,8 @@ materials[1] = mat.AddMaterial("Test Material")
 materials[2] = mat.AddMaterial("Test Material2")
 
 num_groups = 1
-mat.SetProperty(
-  materials[1],
-  TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,
-  "simple_scatter_sigt1000_sigs999.9.xs"
-)
-mat.SetProperty(
-  materials[2],
-  TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,
-  "simple_scatter_sigt1000_sigs999.9.xs"
-)
+mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1000.0, 0.9999)
+mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1000.0, 0.9999)
 
 src = {}
 for g = 1, num_groups do
