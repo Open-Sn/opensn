@@ -553,5 +553,78 @@
         "abs_tol": 1.0e-6
       }
     ]
+  },
+  {
+    "file": "transport_1d_4_dsa_ortho_inf.lua",
+    "comment": "1D LinearBSolver test of a block of graphite mimicking an infinite medium. DSA and TG",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    22",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    22",
+        "wordnum": 8,
+        "gold": 9.6079e-08,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 8,
+        "gold": 4.73732e-07,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_1_poly_balance.lua",
+    "comment": "2D Transport test. Pure scatterer. Balance.",
+    "num_procs": 1,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Production rate             =",
+        "goldvalue": 1.250000e+01,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Out-flow rate               =",
+        "goldvalue": 1.250000e+01,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_1_poly_balance_mg.lua",
+    "comment": "2D Transport test. Vacuum and Isotropic BC. Balance.\n",
+    "num_procs": 4,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Absorption rate             =",
+        "goldvalue": 3.245024e-01,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Out-flow rate               =",
+        "goldvalue": 1.343473e+01,
+        "abs_tol": 1.0e-6
+      }
+    ]
   }
 ]
