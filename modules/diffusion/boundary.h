@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <vector>
 #include <array>
 
 namespace opensn
@@ -27,6 +28,15 @@ public:
   BoundaryType type_ = BoundaryType::Dirichlet;
 
   std::array<double, 3> values_ = {0.0, 0.0, 0.0};
+};
+
+/** Multigroup diffusion boundary */
+class MGBoundary
+{
+public:
+  BoundaryType type_ = BoundaryType::Vacuum;
+
+  std::array<std::vector<double>, 3> mg_values_;
 };
 
 } // namespace diffusion
