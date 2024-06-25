@@ -31,7 +31,7 @@ namespace opensn
 namespace
 {
 
-UnpartitionedMesh::LightWeightCell*
+std::shared_ptr<UnpartitionedMesh::LightWeightCell>
 CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolyhedron";
@@ -60,7 +60,8 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
     default:
       throw std::logic_error(fname + ": Unsupported 3D cell type encountered.");
   }
-  auto polyh_cell = new UnpartitionedMesh::LightWeightCell(CellType::POLYHEDRON, sub_type);
+  auto polyh_cell =
+    std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON, sub_type);
 
   auto num_cpoints = vtk_cell->GetNumberOfPoints();
   auto num_cfaces = vtk_cell->GetNumberOfFaces();
@@ -158,7 +159,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
   return polyh_cell;
 }
 
-UnpartitionedMesh::LightWeightCell*
+std::shared_ptr<UnpartitionedMesh::LightWeightCell>
 CreateCellFromVTKPolygon(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
@@ -180,7 +181,8 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
       throw std::logic_error(fname + ": Unsupported 2D cell type encountered.");
   }
 
-  auto poly_cell = new UnpartitionedMesh::LightWeightCell(CellType::POLYGON, sub_type);
+  auto poly_cell =
+    std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON, sub_type);
 
   auto num_cpoints = vtk_cell->GetNumberOfPoints();
   auto num_cfaces = num_cpoints;
@@ -211,7 +213,7 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
   return poly_cell;
 }
 
-UnpartitionedMesh::LightWeightCell*
+std::shared_ptr<UnpartitionedMesh::LightWeightCell>
 CreateCellFromVTKLine(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
@@ -226,7 +228,7 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
       throw std::logic_error(fname + ": Unsupported 1D cell type encountered.");
   }
 
-  auto slab_cell = new UnpartitionedMesh::LightWeightCell(CellType::SLAB, sub_type);
+  auto slab_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, sub_type);
 
   auto vtk_line = vtkLine::SafeDownCast(vtk_cell);
   auto num_cpoints = vtk_line->GetNumberOfPoints();
@@ -256,10 +258,11 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
   return slab_cell;
 }
 
-UnpartitionedMesh::LightWeightCell*
+std::shared_ptr<UnpartitionedMesh::LightWeightCell>
 CreateCellFromVTKVertex(vtkCell* vtk_cell)
 {
-  auto point_cell = new UnpartitionedMesh::LightWeightCell(CellType::GHOST, CellType::POINT);
+  auto point_cell =
+    std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::GHOST, CellType::POINT);
 
   auto vtk_vertex = vtkVertex::SafeDownCast(vtk_cell);
   auto num_cpoints = vtk_vertex->GetNumberOfPoints();
@@ -301,8 +304,8 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 
   if (has_global_ids)
   {
-    std::vector<UnpartitionedMesh::LightWeightCell*> cells(total_cell_count, nullptr);
-    std::vector<Vector3*> vertices(total_point_count, nullptr);
+    std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>> cells(total_cell_count);
+    std::vector<std::shared_ptr<Vector3>> vertices(total_point_count);
 
     auto cell_gids_ptr = ugrid.GetCellData()->GetGlobalIds();
     auto pnts_gids_ptr = ugrid.GetPointData()->GetGlobalIds();
@@ -343,7 +346,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       if (vtk_celldim != dimension_to_copy)
         continue;
 
-      UnpartitionedMesh::LightWeightCell* raw_cell;
+      std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
       if (vtk_celldim == 3)
         raw_cell = CreateCellFromVTKPolyhedron(vtk_cell);
       else if (vtk_celldim == 2)
@@ -376,7 +379,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       auto point = ugrid.GetPoint(static_cast<vtkIdType>(p));
       const vtkIdType point_gid = pnts_gids->GetValue(p) + pid_offset;
 
-      auto vertex = new Vector3(point[0], point[1], point[2]);
+      auto vertex = std::make_shared<Vector3>(point[0], point[1], point[2]);
 
       *vertex *= scale;
 

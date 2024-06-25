@@ -141,7 +141,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   const size_t max_cz = zverts.size() - 2;
   for (size_t c = 0; c < (zverts.size() - 1); ++c)
   {
-    auto cell = new UnpartitionedMesh::LightWeightCell(CellType::SLAB, CellType::SLAB);
+    auto cell =
+      std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, CellType::SLAB);
 
     cell->vertex_ids = {c, c + 1};
 
@@ -231,8 +232,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   {
     for (size_t j = 0; j < (Nx - 1); ++j)
     {
-      auto cell =
-        new UnpartitionedMesh::LightWeightCell(CellType::POLYGON, CellType::QUADRILATERAL);
+      auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON,
+                                                                       CellType::QUADRILATERAL);
 
       // vertex ids:   face ids:
       //                 2
@@ -371,8 +372,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
     {
       for (size_t k = 0; k < (Nz - 1); ++k)
       {
-        auto cell =
-          new UnpartitionedMesh::LightWeightCell(CellType::POLYHEDRON, CellType::HEXAHEDRON);
+        auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON,
+                                                                         CellType::HEXAHEDRON);
 
         cell->vertex_ids = std::vector<uint64_t>{vmap[i][j][k],
                                                  vmap[i][j + 1][k],

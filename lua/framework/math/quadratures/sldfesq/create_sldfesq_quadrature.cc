@@ -23,13 +23,10 @@ CreateSLDFESQAngularQuadrature(lua_State* L)
 
   auto init_refinement_level = LuaArg<int>(L, 1);
 
-  auto sldfesq = new SimplifiedLDFESQ::Quadrature;
+  auto sldfesq = std::make_shared<SimplifiedLDFESQ::Quadrature>();
   sldfesq->GenerateInitialRefinement(init_refinement_level);
 
-  std::shared_ptr<AngularQuadrature> new_ang_quad =
-    std::shared_ptr<SimplifiedLDFESQ::Quadrature>(sldfesq);
-
-  opensn::angular_quadrature_stack.push_back(new_ang_quad);
+  opensn::angular_quadrature_stack.push_back(sldfesq);
   const size_t index = opensn::angular_quadrature_stack.size() - 1;
   return LuaReturn(L, index);
 }

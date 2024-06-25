@@ -93,7 +93,7 @@ struct Face
 struct PolyFace
 {
   std::vector<int> v_indices;
-  std::vector<int*> edges;
+  std::vector<std::vector<int>> edges;
   int face_indices[3];
 
   Normal geometric_normal;
@@ -102,12 +102,6 @@ struct PolyFace
   bool invalidated;
 
   PolyFace() { invalidated = false; }
-
-  ~PolyFace()
-  {
-    for (auto edge : edges)
-      delete[] edge;
-  }
 };
 
 } // namespace opensn

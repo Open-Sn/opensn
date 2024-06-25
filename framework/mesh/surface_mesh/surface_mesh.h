@@ -30,7 +30,7 @@ protected:
   std::vector<Normal> normals_;
   std::vector<Face> faces_;
   std::vector<Edge> lines_;
-  std::vector<PolyFace*> poly_faces_; ///< Polygonal faces
+  std::vector<std::shared_ptr<PolyFace>> poly_faces_; ///< Polygonal faces
 
   std::vector<int> physical_region_map_;
 
@@ -39,7 +39,7 @@ public:
 
   const std::vector<Face>& GetTriangles() const { return faces_; }
 
-  const std::vector<PolyFace*>& GetPolygons() const { return poly_faces_; }
+  const std::vector<std::shared_ptr<PolyFace>>& GetPolygons() const { return poly_faces_; }
 
   SurfaceMesh();
   ~SurfaceMesh();
@@ -85,8 +85,8 @@ public:
    *
    * This code will create a 2x2 mesh with \f$ \vec{x} \in [0,2]^2 \f$.
    */
-  static SurfaceMesh* CreateFromDivisions(std::vector<double>& vertices_1d_x,
-                                          std::vector<double>& vertices_1d_y);
+  static std::shared_ptr<SurfaceMesh> CreateFromDivisions(std::vector<double>& vertices_1d_x,
+                                                          std::vector<double>& vertices_1d_y);
 
   /**
    * Runs over the faces of the surfacemesh and determines
@@ -102,7 +102,7 @@ public:
   /**
    * Splits the surface by patch.
    */
-  void SplitByPatch(std::vector<SurfaceMesh*>& patches);
+  void SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches);
 
   /**
    * Extract open edges to wavefront obj format.

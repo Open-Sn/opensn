@@ -227,9 +227,6 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
       grid_ptr->cells.push_back(std::move(cell));
     }
 
-    delete raw_cell;
-    raw_cell = nullptr;
-
     ++cell_globl_id;
   } // for raw_cell
 

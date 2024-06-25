@@ -25,7 +25,7 @@ RegisterLuaFunctionInNamespace(MeshSurfaceMeshImportFromTriangleFiles,
 int
 MeshSurfaceMeshCreate(lua_State* L)
 {
-  auto new_mesh = new SurfaceMesh;
+  auto new_mesh = std::make_shared<SurfaceMesh>();
 
   opensn::object_stack.emplace_back(new_mesh);
 

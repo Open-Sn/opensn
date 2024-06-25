@@ -19,8 +19,8 @@ class NDArray
 {
 private:
   size_t rank_;
-  size_t* dimensions_;
-  size_t* strides_;
+  std::vector<size_t> dimensions_;
+  std::vector<size_t> strides_;
   size_t size_;
   T* base_;
 
@@ -47,29 +47,23 @@ public:
    */
   template <typename D>
   explicit NDArray(const std::vector<D>& dims)
-    : rank_(0), dimensions_(nullptr), strides_(nullptr), size_(0), base_(nullptr)
+    : rank_(dims.size()), dimensions_(rank_), strides_(rank_), size_(0), base_(nullptr)
   {
     static_assert(std::is_integral<D>::value,
                   "NDArray dims argument must have vector of integral types.");
-    const size_t N = dims.size();
-
-    rank_ = N;
-
-    strides_ = new size_t[N];
-    dimensions_ = new size_t[N];
 
     // Populate dimensions
-    for (size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < rank_; ++i)
       dimensions_[i] = dims[i];
 
     // Populate strides and size
     size_ = 1;
-    for (size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < rank_; ++i)
     {
       assert(dimensions_[i] > 0);
       size_ *= dimensions_[i];
       strides_[i] = 1;
-      for (size_t j = i + 1; j < N; ++j)
+      for (size_t j = i + 1; j < rank_; ++j)
         strides_[i] *= dimensions_[j];
     }
 
@@ -89,15 +83,10 @@ public:
    */
   template <typename D, size_t N>
   explicit NDArray(const std::array<D, N>& dims)
-    : rank_(0), dimensions_(nullptr), strides_(nullptr), size_(0), base_(nullptr)
+    : rank_(N), dimensions_(N), strides_(N), size_(0), base_(nullptr)
   {
     static_assert(std::is_integral<D>::value,
                   "NDArray dims argument must have array of integral types.");
-    rank_ = N;
-
-    strides_ = new size_t[N];
-    dimensions_ = new size_t[N];
-
     // Populate dimensions
     for (size_t i = 0; i < N; ++i)
       dimensions_[i] = dims[i];
@@ -129,17 +118,10 @@ public:
    */
   template <typename D>
   NDArray(const std::initializer_list<D>& dims)
-    : rank_(0), dimensions_(nullptr), strides_(nullptr), size_(0), base_(nullptr)
+    : rank_(dims.size()), dimensions_(rank_), strides_(rank_), size_(0), base_(nullptr)
   {
     static_assert(std::is_integral<D>::value,
                   "NDArray dims argument must have vector of integral types.");
-    const size_t N = dims.size();
-
-    rank_ = N;
-
-    strides_ = new size_t[N];
-    dimensions_ = new size_t[N];
-
     // Populate dimensions
     {
       size_t i = 0;
@@ -147,19 +129,19 @@ public:
       {
         dimensions_[i] = val;
         ++i;
-        if (i >= N)
+        if (i >= rank_)
           break;
       }
     }
 
     // Populate strides and size
     size_ = 1;
-    for (size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < rank_; ++i)
     {
       assert(dimensions_[i] > 0);
       size_ *= dimensions_[i];
       strides_[i] = 1;
-      for (size_t j = i + 1; j < N; ++j)
+      for (size_t j = i + 1; j < rank_; ++j)
         strides_[i] *= dimensions_[j];
     }
 
@@ -180,29 +162,22 @@ public:
    */
   template <typename D>
   explicit NDArray(const std::vector<D>& dims, T value)
-    : rank_(0), dimensions_(nullptr), strides_(nullptr), size_(0), base_(nullptr)
+    : rank_(dims.size()), dimensions_(rank_), strides_(rank_), size_(0), base_(nullptr)
   {
     static_assert(std::is_integral<D>::value,
                   "NDArray dims argument must have vector of integral types.");
-    const size_t N = dims.size();
-
-    rank_ = N;
-
-    strides_ = new size_t[N];
-    dimensions_ = new size_t[N];
-
     // Populate dimensions
-    for (size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < rank_; ++i)
       dimensions_[i] = dims[i];
 
     // Populate strides and size
     size_ = 1;
-    for (size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < rank_; ++i)
     {
       assert(dimensions_[i] > 0);
       size_ *= dimensions_[i];
       strides_[i] = 1;
-      for (size_t j = i + 1; j < N; ++j)
+      for (size_t j = i + 1; j < rank_; ++j)
         strides_[i] *= dimensions_[j];
     }
 
@@ -223,15 +198,10 @@ public:
    */
   template <typename D, size_t N>
   explicit NDArray(const std::array<D, N>& dims, T value)
-    : rank_(0), dimensions_(nullptr), strides_(nullptr), size_(0), base_(nullptr)
+    : rank_(N), dimensions_(N), strides_(N), size_(0), base_(nullptr)
   {
     static_assert(std::is_integral<D>::value,
                   "NDArray dims argument must have vector of integral types.");
-    rank_ = N;
-
-    strides_ = new size_t[N];
-    dimensions_ = new size_t[N];
-
     // Populate dimensions
     for (size_t i = 0; i < N; ++i)
       dimensions_[i] = dims[i];
@@ -265,17 +235,10 @@ public:
    */
   template <typename D>
   NDArray(const std::initializer_list<D>& dims, T value)
-    : rank_(0), dimensions_(nullptr), strides_(nullptr), size_(0), base_(nullptr)
+    : rank_(dims.size()), dimensions_(rank_), strides_(rank_), size_(0), base_(nullptr)
   {
     static_assert(std::is_integral<D>::value,
                   "NDArray dims argument must have vector of integral types.");
-    const size_t N = dims.size();
-
-    rank_ = N;
-
-    strides_ = new size_t[N];
-    dimensions_ = new size_t[N];
-
     // Populate dimensions
     {
       size_t i = 0;
@@ -283,19 +246,19 @@ public:
       {
         dimensions_[i] = val;
         ++i;
-        if (i >= N)
+        if (i >= rank_)
           break;
       }
     }
 
     // Populate strides and size
     size_ = 1;
-    for (size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < rank_; ++i)
     {
       assert(dimensions_[i] > 0);
       size_ *= dimensions_[i];
       strides_[i] = 1;
-      for (size_t j = i + 1; j < N; ++j)
+      for (size_t j = i + 1; j < rank_; ++j)
         strides_[i] *= dimensions_[j];
     }
 
@@ -310,25 +273,21 @@ public:
    *  This constructor creates an empty array and initializes the reference
    * count to one.
    */
-  NDArray() : rank_(0), dimensions_(nullptr), strides_(nullptr), size_(0), base_(nullptr) {}
+  NDArray() : rank_(0), dimensions_(), strides_(), size_(0), base_(nullptr) {}
 
   /** Copy construct from another array.
    *  \param other The array to copy.
    */
   NDArray(NDArray<T> const& other)
     : rank_(other.rank_),
-      dimensions_(nullptr),
-      strides_(nullptr),
+      dimensions_(other.rank_),
+      strides_(other.rank_),
       size_(other.size_),
       base_(nullptr)
   {
-
-    const size_t N = rank_;
-    strides_ = new size_t[N];
-    dimensions_ = new size_t[N];
     base_ = new T[size_];
 
-    for (size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < rank_; ++i)
     {
       dimensions_[i] = other.dimensions_[i];
       strides_[i] = other.strides_[i];
@@ -428,10 +387,8 @@ public:
     static_assert(std::is_integral<D>::value,
                   "NDArray dims argument must have vector of integral types.");
 
-    delete[] dimensions_;
-    dimensions_ = nullptr;
-    delete[] strides_;
-    strides_ = nullptr;
+    dimensions_.clear();
+    strides_.clear();
     delete[] base_;
     base_ = nullptr;
 
@@ -453,10 +410,8 @@ public:
     static_assert(std::is_integral<D>::value,
                   "NDArray dims argument must have vector of integral types.");
 
-    delete[] dimensions_;
-    dimensions_ = nullptr;
-    delete[] strides_;
-    strides_ = nullptr;
+    dimensions_.clear();
+    strides_.clear();
     delete[] base_;
     base_ = nullptr;
 
@@ -478,10 +433,8 @@ public:
     static_assert(std::is_integral<D>::value,
                   "NDArray dims argument must have vector of integral types.");
 
-    delete[] dimensions_;
-    dimensions_ = nullptr;
-    delete[] strides_;
-    strides_ = nullptr;
+    dimensions_.clear();
+    strides_.clear();
     delete[] base_;
     base_ = nullptr;
 
@@ -598,10 +551,6 @@ public:
    */
   ~NDArray()
   {
-    delete[] dimensions_;
-    dimensions_ = nullptr;
-    delete[] strides_;
-    strides_ = nullptr;
     delete[] base_;
     base_ = nullptr;
   }
