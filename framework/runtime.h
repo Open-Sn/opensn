@@ -17,7 +17,7 @@ namespace mpi = mpicpp_lite;
 namespace opensn
 {
 
-const std::string name = "OpenSn";
+static const std::string program = "OpenSn";
 
 class MeshContinuum;
 class SurfaceMesh;

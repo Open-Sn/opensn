@@ -47,10 +47,10 @@ LuaApp::Run(int argc, char** argv)
 {
   if (opensn::mpi_comm.rank() == 0)
   {
-    std::cout << opensn::name << " version " << GetVersionStr() << "\n"
-              << Timer::GetLocalDateTimeString() << " Running " << opensn::name << " with "
+    std::cout << opensn::program << " version " << GetVersionStr() << "\n"
+              << Timer::GetLocalDateTimeString() << " Running " << opensn::program << " with "
               << opensn::mpi_comm.size() << " processes.\n"
-              << opensn::name << " number of arguments supplied: " << argc - 1 << "\n"
+              << opensn::program << " number of arguments supplied: " << argc - 1 << "\n"
               << std::endl;
   }
 
@@ -76,8 +76,8 @@ LuaApp::Run(int argc, char** argv)
     {
       std::cout << "\n"
                 << "Elapsed execution time: " << program_timer.GetTimeString() << "\n"
-                << Timer::GetLocalDateTimeString() << " " << opensn::name << " finished execution."
-                << std::endl;
+                << Timer::GetLocalDateTimeString() << " " << opensn::program
+                << " finished execution." << std::endl;
     }
   }
 
@@ -93,7 +93,7 @@ LuaApp::ProcessArguments(int argc, char** argv)
 {
   try
   {
-    cxxopts::Options options(LowerCase(opensn::name), "");
+    cxxopts::Options options(LowerCase(opensn::program), "");
 
     /* clang-format off */
     options.add_options("User")
