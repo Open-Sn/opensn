@@ -49,9 +49,11 @@ public:
   size_t NumGlobalSubsribers() const { return num_global_subscribers_; }
 
   const std::vector<uint64_t>& GetSubscribers() const { return subscribers_; }
-  const std::shared_ptr<LogicalVolume>& GetLogicalVolume() const { return logvol_; }
+  std::shared_ptr<LogicalVolume> GetLogicalVolume() const { return logvol_; }
+  const std::vector<int>& GetBlockIDs() const { return block_ids_; }
 
 private:
+  std::vector<int> block_ids_;
   const std::shared_ptr<LogicalVolume> logvol_;
   const std::shared_ptr<SpatialMaterialFunction> function_;
 
