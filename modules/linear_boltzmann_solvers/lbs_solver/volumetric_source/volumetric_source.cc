@@ -31,6 +31,10 @@ VolumetricSource::GetInputParameters()
     "block_ids",
     std::vector<int>(),
     "An array of block IDs the volumetric source is present within.");
+  params.AddOptionalParameterArray("group_strength",
+                                   std::vector<double>(),
+                                   "An array of multi-group source strength values. Note that this "
+                                   "is only used when a function is not provided.");
   params.AddOptionalParameter(
     "logical_volume_handle",
     SIZE_T_INVALID,
@@ -49,6 +53,7 @@ VolumetricSource::VolumetricSource(const InputParameters& params)
               ? GetStackItemPtrAsType<LogicalVolume>(
                   object_stack, params.GetParamValue<size_t>("logical_volume_handle"))
               : nullptr),
+    strength_(params.GetParamVectorValue<double>("group_strength")),
     function_(params.ParametersAtAssignment().Has("function_handle")
                 ? GetStackItemPtrAsType<SpatialMaterialFunction>(
                     object_stack, params.GetParamValue<size_t>("function_handle"))
@@ -57,14 +62,25 @@ VolumetricSource::VolumetricSource(const InputParameters& params)
   if (not logvol_ and block_ids_.empty())
     throw std::invalid_argument("A volumetric source must be defined with a logical volume, "
                                 "block IDs, or both. Neither were specified.");
+  if (function_ and not strength_.empty())
+    throw std::invalid_argument(
+      "If a function is provided, the source strength should not be set.");
+  if (not function_ and strength_.empty())
+    throw std::invalid_argument("Either a function or the source strength must be provided.");
 }
 
 void
 lbs::VolumetricSource::Initialize(const LBSSolver& lbs_solver)
 {
-  subscribers_.clear();
+  // Set the source strength vector
+  if (not function_ and not strength_.empty())
+    if (strength_.size() != lbs_solver.NumGroups())
+      throw std::invalid_argument("The number of groups in the source strength vector must "
+                                  "match the number of groups in the solver the source is "
+                                  "attached to.");
 
-  // Subscribers from logical volume only
+  // Set cell subscribers based on logical volumes, block IDs, or both
+  subscribers_.clear();
   if (logvol_ and block_ids_.empty())
   {
     std::set<int> blk_ids;
@@ -75,9 +91,13 @@ lbs::VolumetricSource::Initialize(const LBSSolver& lbs_solver)
         subscribers_.push_back(cell.local_id_);
       }
   }
-
-  // Subscribers from logical volume and block IDs
-  else if (logvol_ and not block_ids_.empty())
+  else if (not logvol_ and not block_ids_.empty())
+  {
+    for (const auto& cell : lbs_solver.Grid().local_cells)
+      if (std::find(block_ids_.begin(), block_ids_.end(), cell.material_id_) != block_ids_.end())
+        subscribers_.push_back(cell.local_id_);
+  }
+  else
   {
     for (const auto& cell : lbs_solver.Grid().local_cells)
       if (logvol_->Inside(cell.centroid_) and
@@ -85,33 +105,23 @@ lbs::VolumetricSource::Initialize(const LBSSolver& lbs_solver)
         subscribers_.push_back(cell.local_id_);
   }
 
-  // Subscribers from block IDs only.
-  else
-  {
-    for (const auto& cell : lbs_solver.Grid().local_cells)
-      if (std::find(block_ids_.begin(), block_ids_.end(), cell.material_id_) != block_ids_.end())
-        subscribers_.push_back(cell.local_id_);
-  }
-
   num_local_subsribers_ = subscribers_.size();
   mpi_comm.all_reduce(num_local_subsribers_, num_global_subscribers_, mpi::op::sum<size_t>());
 
-  log.LogAll() << "Distributed source has " << num_local_subsribers_
+  log.LogAll() << "Volumetric source has " << num_local_subsribers_
                << " subscribing cells on processor " << opensn::mpi_comm.rank() << ".";
-  log.Log() << "Distributed source has " << num_global_subscribers_ << " total subscribing cells.";
+  log.Log() << "Volumetric source has " << num_global_subscribers_ << " total subscribing cells.";
 }
 
 std::vector<double>
 lbs::VolumetricSource::operator()(const Cell& cell, const Vector3& xyz, const int num_groups) const
 {
-  std::vector<double> src;
   if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id_) == 0)
-    src.assign(num_groups, 0.0);
+    return std::vector<double>(num_groups, 0.0);
   else if (not function_)
-    src.assign(num_groups, 1.0);
+    return strength_;
   else
-    src = function_->Evaluate(xyz, cell.material_id_, num_groups);
-  return src;
+    return function_->Evaluate(xyz, cell.material_id_, num_groups);
 }
 
 } // namespace opensn::lbs
