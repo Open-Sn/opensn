@@ -162,7 +162,7 @@ function ResponseFunction(xyz, mat_id)
 end
 response_func = opensn.LuaSpatialMaterialFunction.Create({ lua_function_name = "ResponseFunction" })
 
-adjoint_source = lbs.DistributedSource.Create({
+adjoint_source = lbs.VolumetricSource.Create({
   logical_volume_handle = qoi_vol,
   function_handle = response_func,
 })
@@ -170,7 +170,7 @@ adjoint_source = lbs.DistributedSource.Create({
 -- Switch to adjoint mode
 adjoint_options = {
   adjoint = true,
-  distributed_sources = { adjoint_source },
+  volumetric_sources = { adjoint_source },
 }
 lbs.SetOptions(phys, adjoint_options)
 

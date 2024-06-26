@@ -141,12 +141,12 @@ fieldfunc.Execute(ffi)
 fwd_qoi = fieldfunc.GetValue(ffi)
 
 -- Create adjoint source
-adjoint_source = lbs.DistributedSource.Create({ logical_volume_handle = qoi_vol })
+adjoint_source = lbs.VolumetricSource.Create({ logical_volume_handle = qoi_vol })
 
 -- Switch to adjoint mode
 adjoint_options = {
   adjoint = true,
-  distributed_sources = { adjoint_source },
+  volumetric_sources = { adjoint_source },
 }
 lbs.SetOptions(phys, adjoint_options)
 

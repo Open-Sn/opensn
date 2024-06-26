@@ -64,7 +64,7 @@ private:
 
   using MaterialSources = std::map<int, std::vector<double>>;
   using PointSources = std::vector<PointSource>;
-  using DistributedSources = std::vector<DistributedSource>;
+  using VolumetricSources = std::vector<VolumetricSource>;
   using BoundarySources = std::map<uint64_t, BoundaryPreference>;
 
 public:
@@ -104,10 +104,10 @@ private:
    * is included in the evaluation. The incident fluxes are obtained within the EvaluateResponse
    * routine.
    */
-  std::vector<double> EvaluateBoundaryCondition(const uint64_t boundary_id,
+  std::vector<double> EvaluateBoundaryCondition(uint64_t boundary_id,
                                                 const Vector3& node,
                                                 const LBSGroupset& groupset,
-                                                const double time = 0.0) const;
+                                                double time = 0.0) const;
 
 private:
   LBSSolver& lbs_solver_;
@@ -116,7 +116,7 @@ private:
 
   MaterialSources material_sources_;
   PointSources point_sources_;
-  DistributedSources distributed_sources_;
+  VolumetricSources volumetric_sources_;
   BoundarySources boundary_sources_;
 
 public:
