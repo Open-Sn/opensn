@@ -27,9 +27,14 @@ VolumetricSource::GetInputParameters()
   params.SetClassName("Volumetric Source");
   params.SetDocGroup("LBSUtilities");
 
-  params.AddRequiredParameter<size_t>("logical_volume_handle",
-                                      "Handle to the logical volume the distributed source is "
-                                      "defined within.");
+  params.AddOptionalParameterArray(
+    "block_ids",
+    std::vector<int>(),
+    "An array of block IDs the volumetric source is present within.");
+  params.AddOptionalParameter(
+    "logical_volume_handle",
+    SIZE_T_INVALID,
+    "Handle to the logical volume the volumetric source is defined within.");
   params.AddOptionalParameter(
     "function_handle",
     SIZE_T_INVALID,
@@ -38,23 +43,55 @@ VolumetricSource::GetInputParameters()
   return params;
 }
 
-DistributedSource::DistributedSource(const InputParameters& params)
-  : logical_volume_ptr_(GetStackItemPtrAsType<opensn::LogicalVolume>(
-      object_stack, params.GetParamValue<size_t>("logical_volume_handle"))),
+VolumetricSource::VolumetricSource(const InputParameters& params)
+  : block_ids_(params.GetParamVectorValue<int>("block_ids")),
+    logvol_(params.ParametersAtAssignment().Has("logical_volume_handle")
+              ? GetStackItemPtrAsType<LogicalVolume>(
+                  object_stack, params.GetParamValue<size_t>("logical_volume_handle"))
+              : nullptr),
     function_(params.ParametersAtAssignment().Has("function_handle")
-                ? GetStackItemPtrAsType<opensn::SpatialMaterialFunction>(
+                ? GetStackItemPtrAsType<SpatialMaterialFunction>(
                     object_stack, params.GetParamValue<size_t>("function_handle"))
                 : nullptr)
 {
+  if (not logvol_ and block_ids_.empty())
+    throw std::invalid_argument("A volumetric source must be defined with a logical volume, "
+                                "block IDs, or both. Neither were specified.");
 }
 
 void
-lbs::DistributedSource::Initialize(const LBSSolver& lbs_solver)
+lbs::VolumetricSource::Initialize(const LBSSolver& lbs_solver)
 {
   subscribers_.clear();
-  for (const auto& cell : lbs_solver.Grid().local_cells)
-    if (logical_volume_ptr_->Inside(cell.centroid_))
-      subscribers_.push_back(cell.local_id_);
+
+  // Subscribers from logical volume only
+  if (logvol_ and block_ids_.empty())
+  {
+    std::set<int> blk_ids;
+    for (const auto& cell : lbs_solver.Grid().local_cells)
+      if (logvol_->Inside(cell.centroid_))
+      {
+        blk_ids.insert(cell.material_id_);
+        subscribers_.push_back(cell.local_id_);
+      }
+  }
+
+  // Subscribers from logical volume and block IDs
+  else if (logvol_ and not block_ids_.empty())
+  {
+    for (const auto& cell : lbs_solver.Grid().local_cells)
+      if (logvol_->Inside(cell.centroid_) and
+          std::find(block_ids_.begin(), block_ids_.end(), cell.material_id_) != block_ids_.end())
+        subscribers_.push_back(cell.local_id_);
+  }
+
+  // Subscribers from block IDs only.
+  else
+  {
+    for (const auto& cell : lbs_solver.Grid().local_cells)
+      if (std::find(block_ids_.begin(), block_ids_.end(), cell.material_id_) != block_ids_.end())
+        subscribers_.push_back(cell.local_id_);
+  }
 
   num_local_subsribers_ = subscribers_.size();
   mpi_comm.all_reduce(num_local_subsribers_, num_global_subscribers_, mpi::op::sum<size_t>());
