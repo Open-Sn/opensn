@@ -55,6 +55,8 @@ public:
 private:
   std::vector<int> block_ids_;
   const std::shared_ptr<LogicalVolume> logvol_;
+
+  std::vector<double> strength_;
   const std::shared_ptr<SpatialMaterialFunction> function_;
 
   size_t num_local_subsribers_ = 0;
