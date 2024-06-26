@@ -165,7 +165,7 @@ FVDiffusionSolver::Initialize()
 {
   const std::string fname = "FVSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << TextName()
+            << program_timer.GetTimeString() << " " << Name()
             << ": Initializing FV Diffusion solver ";
 
   // Get grid
@@ -381,7 +381,7 @@ FVDiffusionSolver::Execute()
   log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A_,
-                                  TextName(),
+                                  Name(),
                                   KSPCG,
                                   PCGAMG,
                                   0.0,
