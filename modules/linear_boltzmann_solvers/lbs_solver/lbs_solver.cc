@@ -189,21 +189,21 @@ LBSSolver::PointSources() const
 }
 
 void
-LBSSolver::AddDistributedSource(DistributedSource&& distributed_source)
+LBSSolver::AddVolumetricSource(VolumetricSource&& volumetric_source)
 {
-  distributed_sources_.push_back(std::move(distributed_source));
+  volumetric_sources_.push_back(std::move(volumetric_source));
 }
 
 void
-LBSSolver::ClearDistributedSources()
+LBSSolver::ClearVolumetricSources()
 {
-  distributed_sources_.clear();
+  volumetric_sources_.clear();
 }
 
-const std::vector<DistributedSource>&
-LBSSolver::DistributedSources() const
+const std::vector<VolumetricSource>&
+LBSSolver::VolumetricSources() const
 {
-  return distributed_sources_;
+  return volumetric_sources_;
 }
 
 const std::map<int, std::shared_ptr<MultiGroupXS>>&
@@ -504,9 +504,8 @@ LBSSolver::OptionsBlock()
   params.AddOptionalParameterArray("point_sources", {}, "An array of handles to point sources.");
   params.AddOptionalParameter("clear_point_sources", false, "Clears all point sources.");
   params.AddOptionalParameterArray(
-    "distributed_sources", {}, "An array of handles to distributed sources.");
-  params.AddOptionalParameter(
-    "clear_distributed_sources", false, "Clears all distributed sources.");
+    "volumetric_sources", {}, "An array of handles to volumetric sources.");
+  params.AddOptionalParameter("clear_volumetric_sources", false, "Clears all volumetric sources.");
   params.ConstrainParameterRange("spatial_discretization", AllowableRangeList::New({"pwld"}));
   params.ConstrainParameterRange("field_function_prefix_option",
                                  AllowableRangeList::New({"prefix", "solver_name"}));
@@ -558,10 +557,10 @@ LBSSolver::SetOptions(const InputParameters& params)
       point_sources_.clear();
   }
 
-  if (user_params.Has("clear_distributed_sources"))
+  if (user_params.Has("clear_volumetric_sources"))
   {
-    if (user_params.GetParamValue<bool>("clear_distributed_sources"))
-      distributed_sources_.clear();
+    if (user_params.GetParamValue<bool>("clear_volumetric_sources"))
+      volumetric_sources_.clear();
   }
 
   if (user_params.Has("adjoint"))
@@ -584,7 +583,7 @@ LBSSolver::SetOptions(const InputParameters& params)
         // Forward and adjoint sources are fundamentally different, so any existing sources
         // should be cleared and reset through options upon changing modes.
         point_sources_.clear();
-        distributed_sources_.clear();
+        volumetric_sources_.clear();
         boundary_preferences_.clear();
 
         // Set all solutions to zero.
@@ -688,17 +687,17 @@ LBSSolver::SetOptions(const InputParameters& params)
       }
     }
 
-    else if (spec.Name() == "distributed_sources")
+    else if (spec.Name() == "volumetric_sources")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (const auto& sub_param : spec)
       {
-        distributed_sources_.push_back(GetStackItem<DistributedSource>(
-          object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
+        volumetric_sources_.push_back(
+          GetStackItem<VolumetricSource>(object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
 
-        // If the discretization exists, the distributed source can be initialized.
+        // If the discretization exists, the volumetric source can be initialized.
         if (discretization_)
-          distributed_sources_.back().Initialize(*this);
+          volumetric_sources_.back().Initialize(*this);
       }
     }
   } // for p
@@ -783,9 +782,9 @@ LBSSolver::Initialize()
   for (auto& point_source : point_sources_)
     point_source.Initialize(*this);
 
-  // Initialize distributed sources
-  for (auto& distributed_source : distributed_sources_)
-    distributed_source.Initialize(*this);
+  // Initialize volumetric sources
+  for (auto& volumetric_source : volumetric_sources_)
+    volumetric_source.Initialize(*this);
 }
 
 void

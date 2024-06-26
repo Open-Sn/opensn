@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_solver/distributed_source/distributed_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -13,18 +13,18 @@
 namespace opensn::lbs
 {
 
-OpenSnRegisterObjectInNamespace(lbs, DistributedSource);
+OpenSnRegisterObjectInNamespace(lbs, VolumetricSource);
 
 InputParameters
-DistributedSource::GetInputParameters()
+VolumetricSource::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("General implementation of an arbitrary multi-group "
-                               "distributed source. A distributed source is given by a "
+                               "volumetric source. A volumetric source is given by a "
                                "logical volume and a Lua function handle. Currently, only "
-                               "isotropic distributed sources are allowed.");
-  params.SetClassName("Distributed Source");
+                               "isotropic volumetric sources are allowed.");
+  params.SetClassName("Volumetric Source");
   params.SetDocGroup("LBSUtilities");
 
   params.AddRequiredParameter<size_t>("logical_volume_handle",
@@ -33,7 +33,7 @@ DistributedSource::GetInputParameters()
   params.AddOptionalParameter(
     "function_handle",
     SIZE_T_INVALID,
-    "Handle to a ResponseFunction object to be used to define the source.");
+    "Handle to a SpatialMaterialFunction object to be used to define the source.");
 
   return params;
 }
@@ -65,14 +65,16 @@ lbs::DistributedSource::Initialize(const LBSSolver& lbs_solver)
 }
 
 std::vector<double>
-lbs::DistributedSource::operator()(const Cell& cell, const Vector3& xyz, const int num_groups) const
+lbs::VolumetricSource::operator()(const Cell& cell, const Vector3& xyz, const int num_groups) const
 {
+  std::vector<double> src;
   if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id_) == 0)
-    return std::vector<double>(num_groups, 0.0);
+    src.assign(num_groups, 0.0);
   else if (not function_)
-    return std::vector<double>(num_groups, 1.0);
+    src.assign(num_groups, 1.0);
   else
-    return function_->Evaluate(xyz, cell.material_id_, num_groups);
+    src = function_->Evaluate(xyz, cell.material_id_, num_groups);
+  return src;
 }
 
 } // namespace opensn::lbs
