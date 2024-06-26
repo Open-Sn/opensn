@@ -61,7 +61,7 @@ PRKSolver::PRKSolver(const InputParameters& params)
     time_integration_(params.GetParamValue<std::string>("time_integration")),
     num_precursors_(lambdas_.size())
 {
-  log.Log() << "Created solver " << TextName();
+  log.Log() << "Created solver " << Name();
   {
     std::stringstream outstr;
     outstr << "lambdas = ";
@@ -83,9 +83,9 @@ PRKSolver::Initialize()
 {
   // Check size
   if (lambdas_.size() != betas_.size())
-    throw std::logic_error(TextName() + ": Number of precursors cannot be "
-                                        "deduced from precursor data because "
-                                        "the data lists are of different size.");
+    throw std::logic_error(Name() + ": Number of precursors cannot be "
+                                    "deduced from precursor data because "
+                                    "the data lists are of different size.");
 
   beta_ = std::accumulate(betas_.begin(), betas_.end(), 0.0);
 
@@ -151,7 +151,7 @@ PRKSolver::Execute()
 void
 PRKSolver::Step()
 {
-  log.Log() << "Solver \"" + TextName() + "\" " + timestepper_->StringTimeInfo();
+  log.Log() << "Solver \"" + Name() + "\" " + timestepper_->StringTimeInfo();
 
   const double dt = timestepper_->TimeStepSize();
 
@@ -220,7 +220,7 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
   {
     ParameterBlock block;
 
-    block.AddParameter("name", TextName());
+    block.AddParameter("name", Name());
     block.AddParameter("time_integration", time_integration_);
     block.AddParameter("rho", rho_);
     block.AddParameter("max_timesteps", timestepper_->MaxTimeSteps());

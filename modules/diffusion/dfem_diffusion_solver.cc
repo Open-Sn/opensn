@@ -167,7 +167,7 @@ DFEMDiffusionSolver::Initialize()
 {
   const std::string fname = "DFEMSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << TextName()
+            << program_timer.GetTimeString() << " " << Name()
             << ": Initializing DFEM Diffusion solver ";
 
   // Get grid
@@ -593,7 +593,7 @@ DFEMDiffusionSolver::Execute()
   log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A_,
-                                  TextName(),
+                                  Name(),
                                   KSPCG,
                                   PCGAMG,
                                   0.0,
