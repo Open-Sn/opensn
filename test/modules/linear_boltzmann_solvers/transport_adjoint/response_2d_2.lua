@@ -58,8 +58,6 @@ vol1b = logvol.RPPLogicalVolume.Create({
 mesh.SetMaterialIDFromLogicalVolume(vol1b, 1)
 
 -- Add materials
-num_groups = 1
-
 materials = {}
 materials[1] = mat.AddMaterial("Test Material1")
 materials[2] = mat.AddMaterial("Test Material2")
@@ -69,27 +67,18 @@ mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.01, 0.01)
 mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.1 * 20, 0.8)
 
 -- Add sources
-src = {}
-for g = 1, num_groups do
-  if g == 1 then
-    src[g] = 1.0
-  else
-    src[g] = 0.0
-  end
-end
-
 loc = { 1.25 - 0.5 * ds, 1.5 * ds, 0.0 }
-pt_src = lbs.PointSource.Create({ location = loc, strength = src })
+pt_src = lbs.PointSource.Create({ location = loc, strength = { 1.0 } })
 
 -- Setup physics
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)
 aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
-  num_groups = num_groups,
+  num_groups = 1,
   groupsets = {
     {
-      groups_from_to = { 0, num_groups - 1 },
+      groups_from_to = { 0, 0 },
       angular_quadrature_handle = pquad,
       inner_linear_method = "gmres",
       l_abs_tol = 1.0e-6,
@@ -135,12 +124,12 @@ fieldfunc.Execute(ffi)
 fwd_qoi = fieldfunc.GetValue(ffi)
 
 -- Create adjoint source
-adjoint_source = lbs.DistributedSource.Create({ logical_volume_handle = qoi_vol })
+adj_src = lbs.VolumetricSource.Create({ logical_volume_handle = qoi_vol, group_strength = { 1.0 } })
 
 -- Switch to adjoint mode
 adjoint_options = {
   adjoint = true,
-  distributed_sources = { adjoint_source },
+  volumetric_sources = { adj_src },
 }
 lbs.SetOptions(phys, adjoint_options)
 

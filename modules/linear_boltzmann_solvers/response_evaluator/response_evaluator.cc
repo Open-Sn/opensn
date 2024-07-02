@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/distributed_source/distributed_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
@@ -91,7 +91,7 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
     {
       material_sources_.clear();
       point_sources_.clear();
-      distributed_sources_.clear();
+      volumetric_sources_.clear();
       boundary_sources_.clear();
     }
 
@@ -209,9 +209,9 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& params)
     const auto& user_dsrc_params = params.GetParam("distributed");
     for (int p = 0; p < user_dsrc_params.NumParameters(); ++p)
     {
-      distributed_sources_.push_back(GetStackItem<DistributedSource>(
+      volumetric_sources_.push_back(GetStackItem<VolumetricSource>(
         object_stack, user_dsrc_params.GetParam(p).GetValue<size_t>(), __FUNCTION__));
-      distributed_sources_.back().Initialize(lbs_solver_);
+      volumetric_sources_.back().Initialize(lbs_solver_);
     }
   }
 
@@ -292,7 +292,7 @@ ResponseEvaluator::ClearForwardSources()
 {
   material_sources_.clear();
   point_sources_.clear();
-  distributed_sources_.clear();
+  volumetric_sources_.clear();
   boundary_sources_.clear();
 }
 
@@ -309,7 +309,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   OpenSnLogicalErrorIf(not point_sources_.empty() and phi_dagger.empty(),
                        "If point sources are set, adjoint flux moments "
                        "must be available for response evaluation.");
-  OpenSnLogicalErrorIf(not distributed_sources_.empty() and phi_dagger.empty(),
+  OpenSnLogicalErrorIf(not volumetric_sources_.empty() and phi_dagger.empty(),
                        "if distributed sources are set, adjoint flux moments "
                        "must be available for response evaluation.");
   OpenSnLogicalErrorIf(not boundary_sources_.empty() and psi_dagger.empty(),
@@ -424,8 +424,8 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
     }   // for subscriber
 
   // Distributed sources
-  for (const auto& distributed_source : distributed_sources_)
-    for (const uint64_t local_id : distributed_source.Subscribers())
+  for (const auto& distributed_source : volumetric_sources_)
+    for (const uint64_t local_id : distributed_source.GetSubscribers())
     {
       const auto& cell = grid.local_cells[local_id];
       const auto& transport_view = transport_views[cell.local_id_];

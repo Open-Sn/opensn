@@ -220,10 +220,10 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 }
 
 void
-SourceFunction::AddDistributedSources(const LBSGroupset& groupset,
-                                      std::vector<double>& q,
-                                      const std::vector<double>&,
-                                      const SourceFlags source_flags)
+SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
+                                     std::vector<double>& q,
+                                     const std::vector<double>& phi,
+                                     const SourceFlags source_flags)
 {
   const bool apply_fixed_src = source_flags & APPLY_FIXED_SOURCES;
 
@@ -235,12 +235,12 @@ SourceFunction::AddDistributedSources(const LBSGroupset& groupset,
   const auto gs_i = groupset.groups_.front().id_;
   const auto gs_f = groupset.groups_.back().id_;
 
-  // Go through each distributed source, and its subscribing cells
+  // Go through each volumetric source, and its subscribing cells
   if (not lbs_solver_.Options().use_src_moments and apply_fixed_src)
   {
-    for (const auto& distributed_source : lbs_solver_.DistributedSources())
+    for (const auto& volumetric_source : lbs_solver_.VolumetricSources())
     {
-      for (const auto local_id : distributed_source.Subscribers())
+      for (const auto local_id : volumetric_source.GetSubscribers())
       {
         const auto& cell = grid.local_cells[local_id];
         const auto& transport_view = cell_transport_views[local_id];
@@ -251,7 +251,7 @@ SourceFunction::AddDistributedSources(const LBSGroupset& groupset,
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
           // Compute group-wise values for this node
-          const auto src = distributed_source(cell, nodes[i], num_groups);
+          const auto src = volumetric_source(cell, nodes[i], num_groups);
 
           // Contribute to the source moments
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
