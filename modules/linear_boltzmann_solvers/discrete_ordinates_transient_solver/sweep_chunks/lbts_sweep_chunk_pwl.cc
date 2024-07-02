@@ -3,16 +3,16 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_transient_solver/sweep_chunks/lbts_sweep_chunk_pwl.h"
 #if 0
-#include "framework/chi_runtime.h"
+#include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 
-#include "framework/logging/chi_log.h"
+#include "framework/logging/log.h"
 
 //###################################################################
 /**Constructor.*/
 lbs::SweepChunkPWLTransientTheta::SweepChunkPWLTransientTheta(
   std::shared_ptr<MeshContinuum> grid_ptr,
-  chi_math::SpatialDiscretization& discretization,
+  opensn::SpatialDiscretization& discretization,
   const std::vector<UnitCellMatrices>& unit_cell_matrices,
   std::vector<lbs::CellLBSView>& cell_transport_views,
   std::vector<double>& destination_phi,
@@ -79,7 +79,7 @@ lbs::SweepChunkPWLTransientTheta::Upwinder::GetDownwindPsi(int fi,
 //###################################################################
 /**Actual sweep function*/
 void
-lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* angle_set)
+lbs::SweepChunkPWLTransientTheta::Sweep(opensn::lbs::AngleSet* angle_set)
 {
   if (not a_and_b_initialized_)
   {
@@ -261,7 +261,7 @@ lbs::SweepChunkPWLTransientTheta::Sweep(chi_mesh::sweep_management::AngleSet* an
         } // for i
 
         // Solve system
-        chi_math::GaussElimination(Atemp_, b_[gsg], num_nodes);
+        opensn::GaussElimination(Atemp_, b_[gsg], num_nodes);
       }
 
       // Accumulate flux

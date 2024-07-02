@@ -76,7 +76,7 @@ CellMapping::MapFaceNode(size_t face_index, size_t face_node_index) const
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range("chi_math::CellMapping::MapFaceNode: "
+    throw std::out_of_range("CellMapping::MapFaceNode: "
                             "Either face_index or face_node_index is out of range");
   }
 }
@@ -165,7 +165,7 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
       break;
     }
     default:
-      throw std::logic_error("chi_math::CellMapping::ComputeCellVolume: "
+      throw std::logic_error("CellMapping::ComputeCellVolume: "
                              "Unsupported cell type.");
   }
 }

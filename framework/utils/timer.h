@@ -37,7 +37,7 @@ public:
  *
  * \note To specify different times `std::chrono` allows
  * you to change the unit with, e.g.,
- * `chi::Sleep(std::chrono::milliseconds(100))` sleeps for 100 milliseconds,
+ * `opensn::Sleep(std::chrono::milliseconds(100))` sleeps for 100 milliseconds,
  * `std::Sleep(std::chrono::seconds(1))` sleeps for 1 second.*/
 void Sleep(std::chrono::duration<double> time);
 

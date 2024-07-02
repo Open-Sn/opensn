@@ -403,15 +403,6 @@ Solver::Compute_TwoGrid_Params()
       outstr << xi << '\n';
     log.Log0Verbose1() << outstr.str(); // jcr verbose1
 
-    //    std::stringstream outstr2;
-    //    for (auto &xi: diffusion_coeff)
-    //      outstr2 << xi << '\n';
-    //    chi::log.Log0Verbose0() << outstr2.str();  // jcr verbose1
-    //
-    //    std::cout << "collapsed = " << collapsed_sig_a
-    //    <<", "<< collapsed_D << std::endl;
-    //    chi::Exit(12345);
-
     const auto mat_id = mat_id_xs.first;
     map_mat_id_2_tginfo.insert(
       std::make_pair(mat_id, TwoGridCollapsedInfo{collapsed_D, collapsed_sig_a, spectrum}));
@@ -916,8 +907,6 @@ Solver::Assemble_RHS_TwoGrid(const int64_t verbose)
 
   VecAssemblyBegin(b_);
   VecAssemblyEnd(b_);
-  //  VecView(b, PETSC_VIEWER_STDERR_WORLD);
-  //  chi::Exit(1234);
 }
 
 void

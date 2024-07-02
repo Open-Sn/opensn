@@ -71,7 +71,7 @@ VectorGhostCommunicator::MakeCachedParallelData()
   // sending to other processors. If each processor sends each
   // other process the global ids it needs to receive, then each
   // process will know what other processes need from it. The
-  // MPI utility MapAllToAll in Chi-Tech accomplishes this task,
+  // MPI utility MapAllToAll in OpenSn accomplishes this task,
   // returning a mapping of processes to the global ids that this
   // process needs to send.
   std::map<int, std::vector<int64_t>> send_map = MapAllToAll(recv_map, comm_);

@@ -116,7 +116,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   //  nl_context_ptr->kresid_func_context_.k_eff =
   //    production_new / production_old * mu_k;
 
-  //  chi::log.Log() << Phi0FissionProdL2Norm(delta_phi) << " " << lambda;
+  //  opensn::log.Log() << Phi0FissionProdL2Norm(delta_phi) << " " << lambda;
 
   nl_context_ptr->kresid_func_context_.k_eff = lambda;
 

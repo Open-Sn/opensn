@@ -5,7 +5,7 @@
 
 #if 0
 #include "modules/linear_boltzmann_solvers/Cc_DO_KEigenvalue/lbkes_k_eigenvalue_solver.h"
-#include "framework/math/chi_math_time_stepping.h"
+#include "framework/math/math_time_stepping.h"
 
 namespace lbs
 {
@@ -17,7 +17,7 @@ namespace lbs
 class DiscOrdTransientSolver : public DiscOrdKEigenvalueSolver
 {
 public:
-  chi_math::SteppingMethod method = chi_math::SteppingMethod::CRANK_NICOLSON;
+  opensn::SteppingMethod method = opensn::SteppingMethod::CRANK_NICOLSON;
 
   /// Options for initial condition normalization
   enum class NormalizationMethod

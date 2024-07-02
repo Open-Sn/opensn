@@ -3,7 +3,6 @@ cmake-build-debug/
 cmake-build-debug
 .idea
 bin
-chi_build
 build*/
 doc/documentation
 doc/HTMLdocs
@@ -56,17 +55,11 @@ __pycache__
 
 *-private.sh
 
-# Dependency directory
-chi-dependencies/
-
 #Documentation
 doc/generated_files
 
 #visual studio code files
 .vscode/
-
-#Unit test outputs
-ChiTech/UnitTests/Output
 
 test/**/out/
 tutorials/**/out/

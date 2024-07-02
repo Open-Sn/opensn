@@ -183,7 +183,7 @@ Solver::GetInfoWithPreCheck(const ParameterBlock& params) const
 {
   if (not params.Has("name"))
   {
-    log.LogAllWarning() << "chi_physics::Solver::GetInfo called without "
+    log.LogAllWarning() << "Solver::GetInfo called without "
                            "\"name\" in the parameter list";
     return ParameterBlock{};
   }

@@ -301,7 +301,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   const bool is_home = (opensn::mpi_comm.rank() == 0);
 
   // Build header
-  std::string header_info = "Chi-Tech LinearBoltzmann: Importance map file\n"
+  std::string header_info = "OpenSn LinearBoltzmann: Importance map file\n"
                             "Header size: 500 bytes\n"
                             "Structure(type-info):\n"
                             "uint64_t num_global_cells\n"
