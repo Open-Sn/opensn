@@ -81,12 +81,9 @@ mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "response_2d_3
 -- Create sources
 src = {}
 for g = 1, num_groups do
-  if g == 1 then
-    src[g] = 1.0
-  else
-    src[g] = 0.0
-  end
+  src[g] = 0.0
 end
+src[1] = 1.0
 
 loc = { 1.25 - 0.5 * ds, 1.5 * ds, 0.0 }
 pt_src = lbs.PointSource.Create({ location = loc, strength = src })
