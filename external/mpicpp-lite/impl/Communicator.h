@@ -413,6 +413,16 @@ public:
     ///
     /// @tparam T C++ type of the data
     /// @tparam Op Type of the reduce operation
+    /// @param in_values Values to send
+    /// @param out_values Receiving variable
+    /// @param op Reduce operation
+    template <typename T, typename Op>
+    void all_reduce(const std::vector<T> & in_values, std::vector<T> & out_values, Op op) const;
+
+    /// Combine values from all processes and distributes the result back to all processes
+    ///
+    /// @tparam T C++ type of the data
+    /// @tparam Op Type of the reduce operation
     /// @param in_value Values to send
     /// @param out_value Receiving variable
     /// @param op Reduce operation
@@ -996,6 +1006,14 @@ Communicator::all_reduce(const T * in_values, int n, T * out_values, Op) const
                                  mpicpp_lite::get_mpi_datatype<T>(),
                                  op,
                                  this->comm));
+}
+
+template <typename T, typename Op>
+inline void
+Communicator::all_reduce(const std::vector<T> & in_values, std::vector<T> & out_values, Op op) const
+{
+    assert(in_values.size() == out_values.size());
+    all_reduce(in_values.data(), in_values.size(), out_values.data(), op);
 }
 
 template <typename T, typename Op>
