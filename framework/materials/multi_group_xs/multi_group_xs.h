@@ -107,6 +107,8 @@ public:
     return adjoint_ ? transposed_transfer_matrices_.at(ell) : transfer_matrices_.at(ell);
   }
 
+  const std::vector<double>& Chi() const { return chi_; }
+
   const std::vector<double>& SigmaFission() const { return sigma_f_; }
 
   const std::vector<double>& NuSigmaF() const { return nu_sigma_f_; }
@@ -147,6 +149,7 @@ private:
   std::vector<double> sigma_a_;            ///< Absorption cross section
   std::vector<double> sigma_f_;            ///< Fission cross section
   std::vector<double> nu_sigma_f_;         ///< Neutron production due to fission
+  std::vector<double> chi_;                ///< Neutron fission spectrum
   std::vector<double> nu_prompt_sigma_f_;  ///< Prompt neutron production due to fission
   std::vector<double> nu_delayed_sigma_f_; ///< Delayed neutron production due to fission
   std::vector<double> inv_velocity_;       ///< Inverse velocity

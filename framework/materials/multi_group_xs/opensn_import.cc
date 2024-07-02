@@ -179,7 +179,7 @@ MultiGroupXS::Initialize(const std::string& file_name)
   std::vector<double> fractional_yields;
   std::vector<std::vector<double>> emission_spectra;
   std::vector<double> nu, nu_prompt, nu_delayed, beta;
-  std::vector<double> chi, chi_prompt;
+  std::vector<double> chi_prompt;
 
   std::string word, line;
   size_t line_number = 0;
@@ -387,16 +387,17 @@ MultiGroupXS::Initialize(const std::string& file_name)
 
       if (fw == "CHI_BEGIN")
       {
-        Read1DData("CHI", chi, num_groups_, f, ls, ln);
+        Read1DData("CHI", chi_, num_groups_, f, ls, ln);
         OpenSnLogicalErrorIf(
-          not HasNonZero(chi),
+          not HasNonZero(chi_),
           "The steady-state fission spectrum must have at least one non-zero value.");
-        OpenSnLogicalErrorIf(not IsNonNegative(chi),
+        OpenSnLogicalErrorIf(not IsNonNegative(chi_),
                              "The steady-state fission spectrum must be non-negative.");
 
         // Normalizing
-        const auto sum = std::accumulate(chi.begin(), chi.end(), 0.0);
-        std::transform(chi.begin(), chi.end(), chi.begin(), [sum](double& x) { return x / sum; });
+        const auto sum = std::accumulate(chi_.begin(), chi_.end(), 0.0);
+        std::transform(
+          chi_.begin(), chi_.end(), chi_.begin(), [sum](double& x) { return x / sum; });
       } // if chi
 
       if (fw == "CHI_PROMPT_BEGIN")
@@ -552,15 +553,15 @@ MultiGroupXS::Initialize(const std::string& file_name)
                            "fission neutron yield should be specified.");
 
       // Check for fission spectrum data
-      OpenSnLogicalErrorIf(chi.empty() and chi_prompt.empty(),
+      OpenSnLogicalErrorIf(chi_.empty() and chi_prompt.empty(),
                            "Either the steady-state or prompt fission spectrum must be specified "
                            "for fissionable materials.");
-      OpenSnLogicalErrorIf(not chi.empty() and not chi_prompt.empty(),
+      OpenSnLogicalErrorIf(not chi_.empty() and not chi_prompt.empty(),
                            "Ambiguous fission spectrum data. Only one of the steady-state and "
                            "prompt fission spectrum should be specified.");
 
       // Check for compatibility
-      if ((not nu.empty() and chi.empty()) or (nu.empty() and not chi.empty()) or
+      if ((not nu.empty() and chi_.empty()) or (nu.empty() and not chi_.empty()) or
           (not nu_prompt.empty() and chi_prompt.empty()) or
           (nu_prompt.empty() and not chi_prompt.empty()))
         OpenSnLogicalError(
@@ -641,7 +642,7 @@ MultiGroupXS::Initialize(const std::string& file_name)
       }
 
       // Compute production matrix
-      const auto fis_spec = not chi_prompt.empty() ? chi_prompt : chi;
+      const auto fis_spec = not chi_prompt.empty() ? chi_prompt : chi_;
       const auto nu_sigma_f = not nu_prompt.empty() ? nu_prompt_sigma_f_ : nu_sigma_f_;
 
       production_matrix_.resize(num_groups_);

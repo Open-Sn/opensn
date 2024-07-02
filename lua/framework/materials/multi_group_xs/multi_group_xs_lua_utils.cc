@@ -47,6 +47,7 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
   LuaPushTableKey(L, "sigma_t", xs->SigmaTotal());
   LuaPushTableKey(L, "sigma_a", xs->SigmaAbsorption());
   LuaPushTableKey(L, "sigma_f", xs->SigmaFission());
+  LuaPushTableKey(L, "chi", xs->Chi());
   LuaPushTableKey(L, "nu_sigma_f", xs->NuSigmaF());
   LuaPushTableKey(L, "nu_prompt_sigma_f", xs->NuPromptSigmaF());
   LuaPushTableKey(L, "nu_delayed_sigma_f", xs->NuDelayedSigmaF());
