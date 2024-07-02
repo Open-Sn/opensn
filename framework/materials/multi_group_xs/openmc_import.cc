@@ -137,18 +137,15 @@ MultiGroupXS::Initialize(const std::string& file_name,
     }
 
     // Chi
-    auto chi = H5ReadDataset1D<double>(file, path + "chi");
-    OpenSnLogicalErrorIf(chi.empty(), "\"chi\" data block not found in " + file_name + ".");
-    if (not chi.empty())
-    {
-      OpenSnLogicalErrorIf(not HasNonZero(chi),
-                           "Steady-state fission spectrum must have at least one non-zero value.");
-      OpenSnLogicalErrorIf(not IsNonNegative(chi),
-                           "Steady-state fission spectrum must be non-negative.");
-      // Normalizing
-      const auto sum = std::accumulate(chi.begin(), chi.end(), 0.0);
-      std::transform(chi.begin(), chi.end(), chi.begin(), [sum](double& x) { return x / sum; });
-    }
+    chi_ = H5ReadDataset1D<double>(file, path + "chi");
+    OpenSnLogicalErrorIf(chi_.empty(), "\"chi\" data block not found in " + file_name + ".");
+    OpenSnLogicalErrorIf(not HasNonZero(chi_),
+                         "Steady-state fission spectrum must have at least one non-zero value.");
+    OpenSnLogicalErrorIf(not IsNonNegative(chi_),
+                         "Steady-state fission spectrum must be non-negative.");
+    // Normalizing
+    const auto sum = std::accumulate(chi_.begin(), chi_.end(), 0.0);
+    std::transform(chi_.begin(), chi_.end(), chi_.begin(), [sum](double& x) { return x / sum; });
 
     // Nu (computed)
     auto nu = nu_sigma_f_;
@@ -162,7 +159,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
       production_matrix_.resize(num_groups_, std::vector<double>(num_groups_));
       for (size_t gp = 0; gp < num_groups_; ++gp)
         for (size_t g = 0; g < num_groups_; ++g)
-          production_matrix_[g][gp] = chi[g] * nu_sigma_f_[gp];
+          production_matrix_[g][gp] = chi_[g] * nu_sigma_f_[gp];
 
       OpenSnLogicalErrorIf(
         not IsNonNegative(nu),

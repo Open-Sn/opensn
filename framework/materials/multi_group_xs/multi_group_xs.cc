@@ -98,6 +98,7 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
   if (is_fissionable_)
   {
     sigma_f_.assign(n_grps, 0.0);
+    chi_.assign(n_grps, 0.0);
     nu_sigma_f_.assign(n_grps, 0.0);
     production_matrix_.assign(num_groups_, std::vector<double>(num_groups_, 0.0));
 
@@ -121,6 +122,7 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
     // Combine cross sections
     const auto& sig_t = xsecs[x]->SigmaTotal();
     const auto& sig_a = xsecs[x]->SigmaAbsorption();
+    const auto& chi = xsecs[x]->Chi();
     const auto& sig_f = xsecs[x]->SigmaFission();
     const auto& nu_p_sig_f = xsecs[x]->NuPromptSigmaF();
     const auto& nu_d_sig_f = xsecs[x]->NuDelayedSigmaF();
@@ -136,6 +138,7 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
       if (xsecs[x]->IsFissionable())
       {
         sigma_f_[g] += sig_f[g];
+        chi_[g] += ff_i * chi[g];
         nu_sigma_f_[g] += sig_f[g];
         for (size_t gp = 0; gp < num_groups_; ++gp)
           production_matrix_[g][gp] += F[g][gp];
@@ -218,6 +221,7 @@ MultiGroupXS::Reset()
   transfer_matrices_.clear();
 
   sigma_f_.clear();
+  chi_.clear();
   nu_sigma_f_.clear();
   nu_prompt_sigma_f_.clear();
   nu_delayed_sigma_f_.clear();
