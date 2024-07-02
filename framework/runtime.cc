@@ -52,7 +52,7 @@ Initialize()
     cali_mgr.start();
   }
 
-  CALI_MARK_BEGIN(opensn::name.c_str());
+  CALI_MARK_BEGIN(opensn::program.c_str());
 
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
@@ -75,7 +75,7 @@ Finalize()
   function_stack.clear();
   object_stack.clear();
 
-  CALI_MARK_END(opensn::name.c_str());
+  CALI_MARK_END(opensn::program.c_str());
 }
 
 void
