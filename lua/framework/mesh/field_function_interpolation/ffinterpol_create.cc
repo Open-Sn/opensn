@@ -28,7 +28,7 @@ FFInterpolationCreate(lua_State* L)
   auto ffitype = LuaArg<int>(L, 1);
   if (ffitype == static_cast<int>(FieldFunctionInterpolationType::POINT))
   {
-    auto new_ffi = new FieldFunctionInterpolationPoint;
+    auto new_ffi = std::make_shared<FieldFunctionInterpolationPoint>();
 
     opensn::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::field_func_interpolation_stack.size() - 1;
@@ -37,7 +37,7 @@ FFInterpolationCreate(lua_State* L)
   }
   else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::LINE))
   {
-    auto new_ffi = new FieldFunctionInterpolationLine;
+    auto new_ffi = std::make_shared<FieldFunctionInterpolationLine>();
 
     opensn::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::field_func_interpolation_stack.size() - 1;
@@ -46,7 +46,7 @@ FFInterpolationCreate(lua_State* L)
   }
   else if (ffitype == static_cast<int>(FieldFunctionInterpolationType::VOLUME))
   {
-    auto new_ffi = new FieldFunctionInterpolationVolume;
+    auto new_ffi = std::make_shared<FieldFunctionInterpolationVolume>();
 
     opensn::field_func_interpolation_stack.emplace_back(new_ffi);
     const size_t index = opensn::field_func_interpolation_stack.size() - 1;

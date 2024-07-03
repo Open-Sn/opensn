@@ -33,7 +33,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   struct BlockData
   {
     std::string name;
-    std::vector<UnpartitionedMesh::LightWeightCell*> cells;
+    std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>> cells;
     std::vector<Edge> edges;
   };
 
@@ -116,7 +116,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       else if (number_of_verts == 4)
         sub_type = CellType::QUADRILATERAL;
 
-      auto cell = new UnpartitionedMesh::LightWeightCell(CellType::POLYGON, sub_type);
+      auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON, sub_type);
       cell->material_id = material_id;
 
       // Populate vertex-ids

@@ -193,8 +193,8 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
         }
 
         // Create new cell
-        auto new_cell_ptr =
-          new UnpartitionedMesh::LightWeightCell(CellType::POLYHEDRON, extruded_subtype);
+        auto new_cell_ptr = std::make_shared<UnpartitionedMesh::LightWeightCell>(
+          CellType::POLYHEDRON, extruded_subtype);
         auto& new_cell = *new_cell_ptr;
 
         new_cell.material_id = template_cell->material_id;
