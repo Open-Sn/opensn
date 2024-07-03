@@ -2,7 +2,7 @@
 -- Also tests the .csv output and manual printing
 
 -- Example Point-Reactor Kinetics solver
-phys0 = prk.TransientSolver.Create({ initial_source = 0.0 })
+phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
 pp0 = post.SolverInfoPostProcessor.Create({
   name = "neutron_population",

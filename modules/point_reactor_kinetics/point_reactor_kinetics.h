@@ -10,12 +10,11 @@
 
 namespace opensn
 {
-namespace prk
-{
-/**General transient solver for point kinetics.
 
-* */
-class TransientSolver : public opensn::Solver
+/**
+ * General transient solver for point kinetics.
+ */
+class PRKSolver : public opensn::Solver
 {
 private:
   std::vector<double> lambdas_;
@@ -35,7 +34,7 @@ public:
   /**Sets input parameters.*/
   static InputParameters GetInputParameters();
   /**Constructor.*/
-  explicit TransientSolver(const InputParameters& params);
+  explicit PRKSolver(const InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
@@ -66,7 +65,7 @@ public:
    * \section Properties Properties that can be set
    * The following properties can be set via the lua call
    * `SolverSetProperties`
-   * \copydoc prk::TransientSolver::SetProperties
+   * \copydoc PRKSolver::SetProperties
    *
    * PRK Transient solver settable properties:
    * - `rho`, The current reactivity
@@ -80,5 +79,4 @@ public:
   void SetRho(double value);
 };
 
-} // namespace prk
 } // namespace opensn
