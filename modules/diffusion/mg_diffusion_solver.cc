@@ -18,13 +18,21 @@
 
 namespace opensn
 {
-namespace diffusion
-{
 
-OpenSnRegisterObjectInNamespace(diffusion, MGSolver);
+MGDiffusionSolver::MGBoundary::MGBoundary() : type(BoundaryType::Vacuum)
+{
+}
+
+MGDiffusionSolver::MGBoundary::MGBoundary(BoundaryType type,
+                                          const std::array<std::vector<double>, 3>& mg_values)
+  : type(type), mg_values(mg_values)
+{
+}
+
+OpenSnRegisterObjectAliasInNamespace(diffusion, MGSolver, MGDiffusionSolver);
 OpenSnRegisterSyntaxBlockInNamespace(diffusion,
                                      MGBoundaryOptionsBlock,
-                                     MGSolver::BoundaryOptionsBlock);
+                                     MGDiffusionSolver::BoundaryOptionsBlock);
 
 PetscErrorCode
 MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
@@ -62,7 +70,7 @@ MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
   return 0;
 }
 
-MGSolver::MGSolver(const std::string& name)
+MGDiffusionSolver::MGDiffusionSolver(const std::string& name)
   : opensn::Solver(name,
                    {{"max_inner_iters", int64_t(500)},
                     {"residual_tolerance", 1.0e-2},
@@ -81,7 +89,7 @@ MGSolver::MGSolver(const std::string& name)
 }
 
 InputParameters
-MGSolver::GetInputParameters()
+MGDiffusionSolver::GetInputParameters()
 {
   InputParameters params = Solver::GetInputParameters();
   params.AddOptionalParameter<int>("max_inner_iters", 500, "Maximum number of inner iterations");
@@ -95,7 +103,7 @@ MGSolver::GetInputParameters()
 }
 
 InputParameters
-MGSolver::OptionsBlock()
+MGDiffusionSolver::OptionsBlock()
 {
   InputParameters params;
   params.AddOptionalParameterArray(
@@ -105,7 +113,7 @@ MGSolver::OptionsBlock()
 }
 
 InputParameters
-MGSolver::BoundaryOptionsBlock()
+MGDiffusionSolver::BoundaryOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("Set options for boundary conditions");
@@ -118,7 +126,7 @@ MGSolver::BoundaryOptionsBlock()
   return params;
 }
 
-MGSolver::MGSolver(const InputParameters& params)
+MGDiffusionSolver::MGDiffusionSolver(const InputParameters& params)
   : opensn::Solver(params),
     num_groups_(0),
     last_fast_group_(0),
@@ -140,7 +148,7 @@ MGSolver::MGSolver(const InputParameters& params)
   basic_options_.AddOption<bool>("do_two_grid", params.GetParamValue<bool>("do_two_grid"));
 }
 
-MGSolver::~MGSolver()
+MGDiffusionSolver::~MGDiffusionSolver()
 {
   for (uint g = 0; g < num_groups_; ++g)
   {
@@ -165,7 +173,7 @@ MGSolver::~MGSolver()
 }
 
 void
-MGSolver::SetOptions(const InputParameters& params)
+MGDiffusionSolver::SetOptions(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
 
@@ -186,7 +194,7 @@ MGSolver::SetOptions(const InputParameters& params)
 }
 
 void
-MGSolver::SetBoundaryOptions(const InputParameters& params)
+MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
 {
   const std::string fname = "MGSolver::SetBoundaryOptions";
 
@@ -197,8 +205,8 @@ MGSolver::SetBoundaryOptions(const InputParameters& params)
 
   if (bc_type_lc == "reflecting")
   {
-    opensn::diffusion::MGSolver::BoundaryInfo bndry_info;
-    bndry_info.first = opensn::diffusion::BoundaryType::Reflecting;
+    BoundaryInfo bndry_info;
+    bndry_info.first = BoundaryType::Reflecting;
     boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Reflecting.";
   }
@@ -215,8 +223,8 @@ MGSolver::SetBoundaryOptions(const InputParameters& params)
       throw std::invalid_argument("Expecting " + std::to_string(num_groups_) +
                                   " values in the 'f' parameter.");
 
-    opensn::diffusion::MGSolver::BoundaryInfo bndry_info;
-    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    BoundaryInfo bndry_info;
+    bndry_info.first = BoundaryType::Robin;
     bndry_info.second = {a_values, b_values, f_values};
     boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary
@@ -229,8 +237,8 @@ MGSolver::SetBoundaryOptions(const InputParameters& params)
     std::vector<double> b_values(1, 0.5);
     std::vector<double> f_values(1, 0.0);
 
-    opensn::diffusion::MGSolver::BoundaryInfo bndry_info;
-    bndry_info.first = opensn::diffusion::BoundaryType::Vacuum;
+    BoundaryInfo bndry_info;
+    bndry_info.first = BoundaryType::Vacuum;
     bndry_info.second = {a_values, b_values, f_values};
     boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Vacuum.";
@@ -244,8 +252,8 @@ MGSolver::SetBoundaryOptions(const InputParameters& params)
 
     auto b_values = user_params.GetParamVectorValue<double>("b");
     auto f_values = user_params.GetParamVectorValue<double>("f");
-    opensn::diffusion::MGSolver::BoundaryInfo bndry_info;
-    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    BoundaryInfo bndry_info;
+    bndry_info.first = BoundaryType::Robin;
     bndry_info.second = {a_values, b_values, f_values};
     boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Robin";
@@ -255,7 +263,7 @@ MGSolver::SetBoundaryOptions(const InputParameters& params)
 }
 
 void
-MGSolver::Initialize()
+MGDiffusionSolver::Initialize()
 {
   log.Log() << "\n"
             << program_timer.GetTimeString() << " " << TextName()
@@ -394,7 +402,7 @@ MGSolver::Initialize()
 }
 
 void
-MGSolver::InitializeMaterials(std::set<int>& material_ids)
+MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
 {
   log.Log0Verbose1() << "Initializing Materials";
 
@@ -537,7 +545,7 @@ MGSolver::InitializeMaterials(std::set<int>& material_ids)
 }
 
 void
-MGSolver::ComputeTwoGridParams()
+MGDiffusionSolver::ComputeTwoGridParams()
 {
   // loop over all materials
   for (const auto& mat_id_xs : matid_to_xs_map)
@@ -608,7 +616,7 @@ MGSolver::ComputeTwoGridParams()
 }
 
 void
-MGSolver::ComputeTwoGridVolumeFractions()
+MGDiffusionSolver::ComputeTwoGridVolumeFractions()
 {
   const auto& grid = *grid_ptr_;
   const auto& sdm = *sdm_ptr_;
@@ -639,7 +647,7 @@ MGSolver::ComputeTwoGridVolumeFractions()
 }
 
 void
-MGSolver::SetBCs(const std::vector<uint64_t>& globl_unique_bndry_ids)
+MGDiffusionSolver::SetBCs(const std::vector<uint64_t>& globl_unique_bndry_ids)
 {
   const std::string fname = "MGSolver::SetBCs";
   log.Log0Verbose1() << "Setting Boundary Conditions";
@@ -667,7 +675,7 @@ MGSolver::SetBCs(const std::vector<uint64_t>& globl_unique_bndry_ids)
       {
         case BoundaryType::Reflecting:
         {
-          boundaries_.insert(std::make_pair(bndry_id, MGBoundary{BoundaryType::Reflecting}));
+          boundaries_.insert(std::make_pair(bndry_id, MGBoundary(BoundaryType::Reflecting, {})));
           log.Log() << "Boundary " << bndry_name << " set to reflecting.";
           break;
         }
@@ -676,7 +684,7 @@ MGSolver::SetBCs(const std::vector<uint64_t>& globl_unique_bndry_ids)
           if (bndry_vals.size() != 3)
             throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
                                    " Robin needs 3 values in bndry vals.");
-          boundaries_.insert(std::make_pair(bndry_id, MGBoundary{BoundaryType::Robin, bndry_vals}));
+          boundaries_.insert(std::make_pair(bndry_id, MGBoundary(BoundaryType::Robin, bndry_vals)));
           log.Log() << "Boundary " << bndry_name << " set to robin.";
           break;
         }
@@ -686,7 +694,7 @@ MGSolver::SetBCs(const std::vector<uint64_t>& globl_unique_bndry_ids)
           std::vector<double> b_values(num_groups_, 0.5);
           std::vector<double> f_values(num_groups_, 0.0);
           boundaries_.insert(std::make_pair(
-            bndry_id, MGBoundary{BoundaryType::Robin, {a_values, b_values, f_values}}));
+            bndry_id, MGBoundary(BoundaryType::Robin, {a_values, b_values, f_values})));
           log.Log() << "Boundary " << bndry_name << " set to vacuum.";
           break;
         }
@@ -717,7 +725,7 @@ MGSolver::SetBCs(const std::vector<uint64_t>& globl_unique_bndry_ids)
 }
 
 void
-MGSolver::AssembleAbext()
+MGDiffusionSolver::AssembleAbext()
 {
   const auto& grid = *grid_ptr_;
   const auto& sdm = *sdm_ptr_;
@@ -794,14 +802,14 @@ MGSolver::AssembleAbext()
 
       // Robin boundary
       //   for two-grid, it is homogenous Robin
-      if (bndry.type_ == BoundaryType::Robin)
+      if (bndry.type == BoundaryType::Robin)
       {
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
         const size_t num_face_nodes = face.vertex_ids_.size();
 
-        auto& aval = bndry.mg_values_[0];
-        auto& bval = bndry.mg_values_[1];
-        auto& fval = bndry.mg_values_[2];
+        auto& aval = bndry.mg_values[0];
+        auto& bval = bndry.mg_values[1];
+        auto& fval = bndry.mg_values[2];
         if (do_two_grid_)
         {
           aval.push_back(0.25);
@@ -894,7 +902,7 @@ MGSolver::AssembleAbext()
 }
 
 void
-MGSolver::Execute()
+MGDiffusionSolver::Execute()
 {
   log.Log() << "\nExecuting CFEM Multigroup Diffusion solver";
 
@@ -987,7 +995,7 @@ MGSolver::Execute()
 }
 
 void
-MGSolver::AssembleRhs(unsigned int g, int64_t iverbose)
+MGDiffusionSolver::AssembleRhs(unsigned int g, int64_t iverbose)
 {
   if (iverbose > 2)
     log.Log() << "\nAssembling RHS for group " + std::to_string(g);
@@ -1042,7 +1050,7 @@ MGSolver::AssembleRhs(unsigned int g, int64_t iverbose)
 }
 
 void
-MGSolver::SolveOneGroupProblem(const unsigned int g, const int64_t verbose)
+MGDiffusionSolver::SolveOneGroupProblem(const unsigned int g, const int64_t verbose)
 {
   if (verbose > 1)
     log.Log() << "Solving group: " << g;
@@ -1058,7 +1066,7 @@ MGSolver::SolveOneGroupProblem(const unsigned int g, const int64_t verbose)
 }
 
 void
-MGSolver::AssembleRhsTwoGrid(int64_t iverbose)
+MGDiffusionSolver::AssembleRhsTwoGrid(int64_t iverbose)
 {
   if (iverbose > 2)
     log.Log() << "\nAssembling RHS for two-grid ";
@@ -1116,7 +1124,7 @@ MGSolver::AssembleRhsTwoGrid(int64_t iverbose)
 }
 
 void
-MGSolver::UpdateFluxWithTwoGrid(int64_t iverbose)
+MGDiffusionSolver::UpdateFluxWithTwoGrid(int64_t iverbose)
 {
   if (iverbose > 2)
     log.Log() << "\nUpdating Thermal fluxes from two-grid";
@@ -1159,7 +1167,7 @@ MGSolver::UpdateFluxWithTwoGrid(int64_t iverbose)
 }
 
 void
-MGSolver::UpdateFieldFunctions()
+MGDiffusionSolver::UpdateFieldFunctions()
 {
   const auto& OneDOFPerNode = sdm_ptr_->UNITARY_UNKNOWN_MANAGER;
   for (int g = 0; g < num_groups_; ++g)
@@ -1172,5 +1180,4 @@ MGSolver::UpdateFieldFunctions()
   } // for g
 }
 
-} // namespace diffusion
 } // namespace opensn

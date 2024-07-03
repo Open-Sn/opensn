@@ -3,13 +3,12 @@
 
 #pragma once
 
+#include "framework/mesh/mesh.h"
 #include "framework/physics/solver_base/solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-#include "modules/diffusion/boundary.h"
+#include "modules/diffusion/diffusion_solver.h"
 #include "framework/utils/timer.h"
 #include <map>
-
-#include "framework/mesh/mesh.h"
 
 namespace opensn
 {
@@ -17,19 +16,15 @@ class MeshContinuum;
 class SpatialDiscretization;
 class ScalarSpatialMaterialFunction;
 
-namespace diffusion
-{
-
 /**
  * CFEM diffusion solver
- *
  */
-class CFEMSolver : public opensn::Solver
+class CFEMDiffusionSolver : public DiffusionSolverBase
 {
 public:
-  explicit CFEMSolver(const std::string& name);
-  explicit CFEMSolver(const InputParameters& params);
-  ~CFEMSolver() override;
+  explicit CFEMDiffusionSolver(const std::string& name);
+  explicit CFEMDiffusionSolver(const InputParameters& params);
+  ~CFEMDiffusionSolver() override;
 
   void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
   void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
@@ -42,33 +37,7 @@ public:
 
   void Execute() override;
 
-  /**
-   * Updates the field functions with the latest data.
-   */
-  void UpdateFieldFunctions();
-
 private:
-  typedef std::pair<opensn::diffusion::BoundaryType, std::vector<double>> BoundaryInfo;
-  typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
-
-  std::shared_ptr<MeshContinuum> grid_ptr_ = nullptr;
-
-  std::shared_ptr<SpatialDiscretization> sdm_ptr_ = nullptr;
-
-  size_t num_local_dofs_ = 0;
-  size_t num_globl_dofs_ = 0;
-
-  /// approx solution
-  Vec x_ = nullptr;
-  /// RHS
-  Vec b_ = nullptr;
-  /// linear system matrix
-  Mat A_ = nullptr;
-
-  std::map<uint64_t, Boundary> boundaries_;
-
-  BoundaryPreferences boundary_preferences_;
-
   std::shared_ptr<ScalarSpatialMaterialFunction> d_coef_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> sigma_a_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> q_ext_function_;
@@ -79,5 +48,4 @@ public:
   static InputParameters BoundaryOptionsBlock();
 };
 
-} // namespace diffusion
 } // namespace opensn

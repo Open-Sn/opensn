@@ -8,9 +8,6 @@
 
 namespace opensn
 {
-namespace diffusion
-{
-class Boundary;
 
 enum class BoundaryType : int
 {
@@ -21,25 +18,6 @@ enum class BoundaryType : int
   Vacuum = 5
 };
 
-/**Parent class for diffusion boundaries*/
-class Boundary
-{
-public:
-  BoundaryType type_ = BoundaryType::Dirichlet;
-
-  std::array<double, 3> values_ = {0.0, 0.0, 0.0};
-};
-
-/** Multigroup diffusion boundary */
-class MGBoundary
-{
-public:
-  BoundaryType type_ = BoundaryType::Vacuum;
-
-  std::array<std::vector<double>, 3> mg_values_;
-};
-
-} // namespace diffusion
 } // namespace opensn
 
 // //###################################################################

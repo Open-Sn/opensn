@@ -24,6 +24,20 @@
   static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
     opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#object_name)
 
+/**
+ * Macro for registering an object alias within the ObjectFactory
+ *
+ * \param namespace_name Name of the LUA namespace
+ * \param lua_object Name of the LUA object
+ * \param object_name C++ class name to register.
+ *
+ * \note This will register a C++ class `object_name` such that it will show up as
+ * `namespace_name.alias` in the LUA space
+ */
+#define OpenSnRegisterObjectAliasInNamespace(namespace_name, alias, object_name)                   \
+  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
+    opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#namespace_name, #object_name)
+
 /**Macro for registering an object (parameters only) within the
  * ObjectFactory singleton.
  * \param namespace_name Name of the namespace within which the object is.

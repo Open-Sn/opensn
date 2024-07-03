@@ -50,12 +50,12 @@ CFEMSetOptions(const opensn::InputParameters& params)
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
   auto& solver =
-    opensn::GetStackItem<opensn::diffusion::CFEMSolver>(opensn::object_stack, handle, fname);
+    opensn::GetStackItem<opensn::CFEMDiffusionSolver>(opensn::object_stack, handle, fname);
   solver.SetDCoefFunction(d_coef_function);
   solver.SetQExtFunction(q_ext_function);
   solver.SetSigmaAFunction(sigma_a_function);
 
-  auto options_params = opensn::diffusion::CFEMSolver::OptionsBlock();
+  auto options_params = opensn::CFEMDiffusionSolver::OptionsBlock();
   options_params.AssignParameters(params.GetParam("arg1"));
 
   solver.SetOptions(options_params);
@@ -84,12 +84,12 @@ DFEMSetOptions(const opensn::InputParameters& params)
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
   auto& solver =
-    opensn::GetStackItem<opensn::diffusion::DFEMSolver>(opensn::object_stack, handle, fname);
+    opensn::GetStackItem<opensn::DFEMDiffusionSolver>(opensn::object_stack, handle, fname);
   solver.SetDCoefFunction(d_coef_function);
   solver.SetQExtFunction(q_ext_function);
   solver.SetSigmaAFunction(sigma_a_function);
 
-  auto options_params = opensn::diffusion::DFEMSolver::OptionsBlock();
+  auto options_params = opensn::DFEMDiffusionSolver::OptionsBlock();
   options_params.AssignParameters(params.GetParam("arg1"));
 
   solver.SetOptions(options_params);
@@ -118,12 +118,12 @@ FVSetOptions(const opensn::InputParameters& params)
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
   auto& solver =
-    opensn::GetStackItem<opensn::diffusion::FVSolver>(opensn::object_stack, handle, fname);
+    opensn::GetStackItem<opensn::FVDiffusionSolver>(opensn::object_stack, handle, fname);
   solver.SetDCoefFunction(d_coef_function);
   solver.SetQExtFunction(q_ext_function);
   solver.SetSigmaAFunction(sigma_a_function);
 
-  auto options_params = opensn::diffusion::FVSolver::OptionsBlock();
+  auto options_params = opensn::FVDiffusionSolver::OptionsBlock();
   options_params.AssignParameters(params.GetParam("arg1"));
 
   solver.SetOptions(options_params);
@@ -143,9 +143,9 @@ CFEMMGSetOptions(const opensn::InputParameters& params)
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
   auto& solver =
-    opensn::GetStackItem<opensn::diffusion::MGSolver>(opensn::object_stack, handle, fname);
+    opensn::GetStackItem<opensn::MGDiffusionSolver>(opensn::object_stack, handle, fname);
 
-  auto options_params = opensn::diffusion::MGSolver::OptionsBlock();
+  auto options_params = opensn::MGDiffusionSolver::OptionsBlock();
   options_params.AssignParameters(params.GetParam("arg1"));
 
   solver.SetOptions(options_params);
@@ -163,9 +163,9 @@ GetSyntax_SetOptions()
 {
   opensn::InputParameters params;
   params.SetGeneralDescription("Set options from a large list of parameters");
-  params.AddRequiredParameter<size_t>("arg0", "Handle to a `diffusion::CFEMSolver` object.");
-  params.AddRequiredParameterBlock("arg1", "Block of parameters for `diffusion::OptionsBlock`");
-  params.LinkParameterToBlock("arg1", "diffusion::OptionsBlock");
+  params.AddRequiredParameter<size_t>("arg0", "Handle to a `CFEMSolver` object.");
+  params.AddRequiredParameterBlock("arg1", "Block of parameters for `OptionsBlock`");
+  params.LinkParameterToBlock("arg1", "OptionsBlock");
   return params;
 }
 
@@ -182,13 +182,13 @@ SetOptions(const opensn::InputParameters& params)
 
   // FIXME: dispatch to the right solver until there is a common diffusion solver class,
   // FIXME: then this will be taken care of by polymorphism
-  if (dynamic_cast<opensn::diffusion::CFEMSolver*>(&solver))
+  if (dynamic_cast<opensn::CFEMDiffusionSolver*>(&solver))
     return CFEMSetOptions(params);
-  else if (dynamic_cast<opensn::diffusion::DFEMSolver*>(&solver))
+  else if (dynamic_cast<opensn::DFEMDiffusionSolver*>(&solver))
     return DFEMSetOptions(params);
-  else if (dynamic_cast<opensn::diffusion::FVSolver*>(&solver))
+  else if (dynamic_cast<opensn::FVDiffusionSolver*>(&solver))
     return FVSetOptions(params);
-  else if (dynamic_cast<opensn::diffusion::MGSolver*>(&solver))
+  else if (dynamic_cast<opensn::MGDiffusionSolver*>(&solver))
     return CFEMMGSetOptions(params);
   else
     throw std::runtime_error("Unknown solver type");
