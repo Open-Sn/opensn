@@ -16,11 +16,6 @@
 
 using namespace opensn;
 
-namespace opensn::lua_utils
-{
-int MakeObject(lua_State* L);
-}
-
 namespace opensnlua
 {
 
