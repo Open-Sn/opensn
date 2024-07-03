@@ -13,8 +13,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class SweepChunk;
 
@@ -117,5 +115,4 @@ public:
   virtual ~AngleSet() = default;
 };
 
-} // namespace lbs
 } // namespace opensn

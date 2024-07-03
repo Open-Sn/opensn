@@ -51,7 +51,7 @@ LoadRegisteredLuaItems()
 void
 RegisterLuaEntities(lua_State* L)
 {
-  opensnlua::lbs::RegisterLuaEntities(L);
+  RegisterLuaEntitiesLBS(L);
 }
 
 } // namespace opensnlua

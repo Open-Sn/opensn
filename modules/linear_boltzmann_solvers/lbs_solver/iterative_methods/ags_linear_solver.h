@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
 class AGSLinearSolver : public LinearSolver
@@ -63,5 +61,4 @@ protected:
   bool verbose_;
 };
 
-} // namespace lbs
 } // namespace opensn

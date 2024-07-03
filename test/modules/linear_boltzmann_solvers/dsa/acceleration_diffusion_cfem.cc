@@ -23,7 +23,7 @@ RegisterWrapperFunctionInNamespace(unit_tests,
 ParameterBlock
 acceleration_Diffusion_CFEM(const InputParameters&)
 {
-  typedef std::map<int, lbs::Multigroup_D_and_sigR> MatID2XSMap;
+  typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
   opensn::log.Log() << "SimTest92_DSA";
 
   // Get grid
@@ -45,22 +45,22 @@ acceleration_Diffusion_CFEM(const InputParameters&)
   opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
   // Make Boundary conditions
-  typedef lbs::BoundaryCondition BC;
+  typedef BoundaryCondition BC;
   std::map<uint64_t, BC> bcs;
-  // bcs[0] = {lbs::BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[1] = {lbs::BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[2] = {lbs::BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[3] = {lbs::BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[4] = {lbs::BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[5] = {lbs::BCType::DIRICHLET,{1.0,0,0}};
-  bcs[0] = {lbs::BCType::ROBIN, {0.25, 0.5, 0}}, bcs[1] = {lbs::BCType::ROBIN, {0.25, 0.5, 0}},
-  bcs[2] = {lbs::BCType::ROBIN, {0.25, 0.5, 0}}, bcs[3] = {lbs::BCType::ROBIN, {0.25, 0.5, 0}},
-  bcs[4] = {lbs::BCType::ROBIN, {0.25, 0.5, 0}}, bcs[5] = {lbs::BCType::ROBIN, {0.25, 0.5, 0}};
+  // bcs[0] = {BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[1] = {BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[2] = {BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[3] = {BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[4] = {BCType::DIRICHLET,{1.0,0,0}},
+  // bcs[5] = {BCType::DIRICHLET,{1.0,0,0}};
+  bcs[0] = {BCType::ROBIN, {0.25, 0.5, 0}}, bcs[1] = {BCType::ROBIN, {0.25, 0.5, 0}},
+  bcs[2] = {BCType::ROBIN, {0.25, 0.5, 0}}, bcs[3] = {BCType::ROBIN, {0.25, 0.5, 0}},
+  bcs[4] = {BCType::ROBIN, {0.25, 0.5, 0}}, bcs[5] = {BCType::ROBIN, {0.25, 0.5, 0}};
 
   MatID2XSMap matid_2_xs_map;
-  matid_2_xs_map.insert(std::make_pair(0, lbs::Multigroup_D_and_sigR{{1.0}, {0.0}}));
+  matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
-  std::vector<lbs::UnitCellMatrices> unit_cell_matrices;
+  std::vector<UnitCellMatrices> unit_cell_matrices;
   unit_cell_matrices.resize(grid.local_cells.size());
 
   // Build unit integrals
@@ -132,25 +132,25 @@ acceleration_Diffusion_CFEM(const InputParameters&)
       }   // for i
     }     // for f
 
-    unit_cell_matrices[cell.local_id_] = lbs::UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
-                                                               {},
-                                                               IntV_shapeI_shapeJ,
-                                                               IntV_shapeI,
+    unit_cell_matrices[cell.local_id_] = UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
+                                                          {},
+                                                          IntV_shapeI_shapeJ,
+                                                          IntV_shapeI,
 
-                                                               IntS_shapeI_shapeJ,
-                                                               IntS_shapeI_gradshapeJ,
-                                                               IntS_shapeI};
+                                                          IntS_shapeI_shapeJ,
+                                                          IntS_shapeI_gradshapeJ,
+                                                          IntS_shapeI};
   } // for cell
 
   // Make solver
-  lbs::DiffusionPWLCSolver solver("SimTest92b_DSA_PWLC",
-                                  sdm,
-                                  OneDofPerNode,
-                                  bcs,
-                                  matid_2_xs_map,
-                                  unit_cell_matrices,
-                                  false,
-                                  true);
+  DiffusionPWLCSolver solver("SimTest92b_DSA_PWLC",
+                             sdm,
+                             OneDofPerNode,
+                             bcs,
+                             matid_2_xs_map,
+                             unit_cell_matrices,
+                             false,
+                             true);
   // TODO: For this to work, add MMS support into `lbs/acceleration/DiffusionSolver`
   // solver.options.ref_solution_lua_function = "MMS_phi";
   // solver.options.source_lua_function = "MMS_q";

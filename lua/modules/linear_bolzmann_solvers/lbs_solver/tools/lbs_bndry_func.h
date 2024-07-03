@@ -9,10 +9,8 @@
 
 namespace opensnlua
 {
-namespace lbs
-{
 
-class BoundaryFunctionToLua : public opensn::lbs::BoundaryFunction
+class BoundaryFunctionToLua : public opensn::BoundaryFunction
 {
 private:
   const std::string m_lua_function_name;
@@ -37,5 +35,4 @@ public:
            double time) override;
 };
 
-} // namespace lbs
 } // namespace opensnlua

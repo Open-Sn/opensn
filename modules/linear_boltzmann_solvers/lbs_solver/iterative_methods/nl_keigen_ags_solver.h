@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class NLKEigenvalueAGSSolver : public NonLinearSolver
 {
@@ -35,5 +33,4 @@ protected:
   void PostSolveCallback() override;
 };
 
-} // namespace lbs
 } // namespace opensn

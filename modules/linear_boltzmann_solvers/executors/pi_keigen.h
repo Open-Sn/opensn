@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class PowerIterationKEigen : public opensn::Solver
 {
@@ -28,11 +26,11 @@ protected:
 
   std::vector<LBSGroupset>& groupsets_;
   std::shared_ptr<AGSLinearSolver> primary_ags_solver_;
-  lbs::SetSourceFunction active_set_source_function_;
+  SetSourceFunction active_set_source_function_;
 
   LBSGroupset& front_gs_;
   std::shared_ptr<LinearSolver> front_wgs_solver_;
-  std::shared_ptr<lbs::WGSContext> front_wgs_context_;
+  std::shared_ptr<WGSContext> front_wgs_context_;
 
 public:
   static InputParameters GetInputParameters();
@@ -61,5 +59,4 @@ protected:
   void ReadRestartData();
 };
 
-} // namespace lbs
 } // namespace opensn

@@ -15,7 +15,7 @@
 #include <utility>
 #include <fstream>
 
-namespace opensn::lbs
+namespace opensn
 {
 
 OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesAdjointSolver);
@@ -36,17 +36,17 @@ DiscreteOrdinatesAdjointSolver::GetInputParameters()
 }
 
 DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const InputParameters& params)
-  : lbs::DiscreteOrdinatesSolver(params)
+  : DiscreteOrdinatesSolver(params)
 {
-  log.Log0Warning() << "The lbs::DiscreteOrdinatesAdjointSolver is deprecated and may be "
+  log.Log0Warning() << "The DiscreteOrdinatesAdjointSolver is deprecated and may be "
                        "removed in the future.\n"
-                    << "Please use the adjoint option with lbs::LBSSolver for obtaining "
-                       "adjoint solutions and lbs::ResponseEvaluator for folding it against "
+                    << "Please use the adjoint option with LBSSolver for obtaining "
+                       "adjoint solutions and ResponseEvaluator for folding it against "
                        "forward sources.";
 }
 
 DiscreteOrdinatesAdjointSolver::DiscreteOrdinatesAdjointSolver(const std::string& solver_name)
-  : lbs::DiscreteOrdinatesSolver(solver_name)
+  : DiscreteOrdinatesSolver(solver_name)
 {
 }
 
@@ -379,4 +379,4 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   opensn::mpi_comm.barrier();
 }
 
-} // namespace opensn::lbs
+} // namespace opensn

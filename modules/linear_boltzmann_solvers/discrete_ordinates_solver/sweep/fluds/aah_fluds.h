@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**Implementation of the Adams-Adams-Hawkins Flux data structure.*/
 class AAH_FLUDS : public FLUDS
@@ -88,5 +86,4 @@ public:
   std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsiOld() override;
 };
 
-} // namespace lbs
 } // namespace opensn

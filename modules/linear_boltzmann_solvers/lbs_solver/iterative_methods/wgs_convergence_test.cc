@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**Customized convergence test.*/
 PetscErrorCode
@@ -77,5 +75,4 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
   return KSP_CONVERGED_ITERATING;
 }
 
-} // namespace lbs
 } // namespace opensn

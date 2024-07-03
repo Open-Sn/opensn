@@ -10,8 +10,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 DiffusionSolver::DiffusionSolver(std::string text_name,
                                  const opensn::SpatialDiscretization& sdm,
@@ -182,7 +180,7 @@ DiffusionSolver::Initialize()
 void
 DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 {
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
+  const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
   Vec x;
   VecDuplicate(rhs_, &x);
   VecSet(x, 0.0);
@@ -254,7 +252,7 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 void
 DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 {
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::Solve";
+  const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
   Vec x;
   VecDuplicate(rhs_, &x);
   VecSet(x, 0.0);
@@ -312,5 +310,4 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
   VecDestroy(&x);
 }
 
-} // namespace lbs
 } // namespace opensn

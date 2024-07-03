@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /** A neutral particle transport solver in point-symmetric and axial-symmetric
  *  curvilinear coordinates. */
@@ -43,5 +41,4 @@ private:
   std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset) override;
 };
 
-} // namespace lbs
 } // namespace opensn

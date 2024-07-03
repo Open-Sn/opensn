@@ -7,8 +7,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 WGSContext::WGSContext(LBSSolver& lbs_solver,
                        LBSGroupset& groupset,
@@ -36,7 +34,7 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   MatShellGetContext(matrix, &gs_context_ptr);
 
   // Shorten some names
-  lbs::LBSSolver& lbs_solver = gs_context_ptr->lbs_solver_;
+  LBSSolver& lbs_solver = gs_context_ptr->lbs_solver_;
   LBSGroupset& groupset = gs_context_ptr->groupset_;
 
   // Copy krylov action_vector into local
@@ -69,5 +67,4 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   return 0;
 }
 
-} // namespace lbs
 } // namespace opensn

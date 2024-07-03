@@ -13,7 +13,7 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(AddPointSource, lbs, AddPointSource);
@@ -26,12 +26,12 @@ AddPointSource(lua_State* L)
   // Process solver handle
   const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
   // Process point source handle
   auto pt_src_handle = LuaArg<int>(L, 2);
-  lbs_solver.AddPointSource(std::move(opensn::GetStackItem<opensn::lbs::PointSource>(
-    opensn::object_stack, pt_src_handle, __FUNCTION__)));
+  lbs_solver.AddPointSource(std::move(
+    opensn::GetStackItem<opensn::PointSource>(opensn::object_stack, pt_src_handle, __FUNCTION__)));
   return LuaReturn(L);
 }
 
@@ -44,7 +44,7 @@ ClearPointSources(lua_State* L)
 
   const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
   lbs_solver.ClearPointSources();
   opensn::log.Log() << "Cleared all point sources.";
@@ -60,11 +60,11 @@ AddVolumetricSource(lua_State* L)
 
   const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(object_stack, solver_handle, __FUNCTION__);
+    opensn::GetStackItem<opensn::LBSSolver>(object_stack, solver_handle, __FUNCTION__);
 
   const auto src_handle = LuaArg<int>(L, 2);
   lbs_solver.AddVolumetricSource(std::move(
-    opensn::GetStackItem<opensn::lbs::VolumetricSource>(object_stack, src_handle, __FUNCTION__)));
+    opensn::GetStackItem<opensn::VolumetricSource>(object_stack, src_handle, __FUNCTION__)));
 
   opensn::log.Log() << lbs_solver.TextName() << ": Added volumetric source.";
   return LuaReturn(L);
@@ -80,11 +80,11 @@ ClearVolumetricSources(lua_State* L)
   // Process solver handle
   const auto solver_handle = LuaArg<int>(L, 1);
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
   lbs_solver.ClearVolumetricSources();
   opensn::log.Log() << "Cleared all volumetric sources.";
   return LuaReturn(L);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

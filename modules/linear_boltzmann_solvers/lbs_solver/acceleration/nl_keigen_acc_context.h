@@ -13,8 +13,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 struct NLKEigenDiffContext : public NonLinearSolverContext
 {
@@ -67,5 +65,4 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
   ~NLKEigenDiffContext() override = default;
 };
 
-} // namespace lbs
 } // namespace opensn

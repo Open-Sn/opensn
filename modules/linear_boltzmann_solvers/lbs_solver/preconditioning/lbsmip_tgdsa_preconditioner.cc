@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 int
 MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
@@ -44,5 +42,4 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   return 0;
 }
 
-} // namespace lbs
 } // namespace opensn

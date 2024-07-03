@@ -8,7 +8,7 @@
 //###################################################################
 /**Sets up the sweek chunk for the given discretization method.*/
 std::shared_ptr<SweepChunk>
-lbs::DiscOrdTransientSolver::SetTransientSweepChunk(LBSGroupset& groupset)
+DiscOrdTransientSolver::SetTransientSweepChunk(LBSGroupset& groupset)
 {
   double theta;
   if (method == opensn::SteppingMethod::IMPLICIT_EULER) theta = 1.0;

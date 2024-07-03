@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 PetscErrorCode
 KEigenSNESMonitor(SNES, PetscInt iter, PetscReal rnorm, void* ctx)
@@ -50,5 +48,4 @@ KEigenKSPMonitor(KSP ksp, PetscInt iter, PetscReal rnorm, void* ctx)
   return 0;
 }
 
-} // namespace lbs
 } // namespace opensn

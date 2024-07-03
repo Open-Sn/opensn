@@ -7,8 +7,7 @@
 
 namespace opensn
 {
-namespace lbs
-{
+
 class DiffusionDFEMSolver;
 
 struct MIPWGSContext2 : public WGSContext
@@ -33,5 +32,4 @@ struct MIPWGSContext2 : public WGSContext
   void PostSolveCallback() override;
 };
 
-} // namespace lbs
 } // namespace opensn

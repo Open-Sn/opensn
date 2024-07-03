@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
                                AngleAggregation& angle_agg,
@@ -361,5 +359,4 @@ SweepScheduler::SetBoundarySourceActiveFlag(bool flag_value)
   sweep_chunk_.SetBoundarySourceActiveFlag(flag_value);
 }
 
-} // namespace lbs
 } // namespace opensn

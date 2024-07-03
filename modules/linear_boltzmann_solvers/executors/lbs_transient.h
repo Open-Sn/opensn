@@ -9,9 +9,6 @@ namespace opensn
 {
 class TimeIntegration;
 
-namespace lbs
-{
-
 class TransientSolver : public opensn::Solver
 {
 protected:
@@ -28,5 +25,4 @@ public:
   void Advance() override;
 };
 
-} // namespace lbs
 } // namespace opensn

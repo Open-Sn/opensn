@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data)
   : FLUDS(num_groups, num_angles, common_data.GetSPDS()), common_data_(common_data)
@@ -286,5 +284,4 @@ AAH_FLUDS::DelayedPrelocIOutgoingPsiOld()
   return delayed_prelocI_outgoing_psi_old_;
 }
 
-} // namespace lbs
 } // namespace opensn

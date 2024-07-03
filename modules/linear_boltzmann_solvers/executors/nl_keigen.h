@@ -11,8 +11,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class NonLinearKEigen : public opensn::Solver
 {
@@ -34,5 +32,4 @@ public:
   void Execute() override;
 };
 
-} // namespace lbs
 } // namespace opensn

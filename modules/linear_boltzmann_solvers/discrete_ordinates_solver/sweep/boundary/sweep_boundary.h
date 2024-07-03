@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**
  * Base class for sweep related boundaries.
@@ -102,5 +100,4 @@ public:
   virtual ~BoundaryFunction() = default;
 };
 
-} // namespace lbs
 } // namespace opensn

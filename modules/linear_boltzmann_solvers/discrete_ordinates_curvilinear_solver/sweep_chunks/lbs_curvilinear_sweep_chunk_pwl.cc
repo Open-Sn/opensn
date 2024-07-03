@@ -10,23 +10,20 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
-SweepChunkPwlrz::SweepChunkPwlrz(
-  const MeshContinuum& grid,
-  const SpatialDiscretization& discretization_primary,
-  const std::vector<lbs::UnitCellMatrices>& unit_cell_matrices,
-  const std::vector<lbs::UnitCellMatrices>& secondary_unit_cell_matrices,
-  std::vector<lbs::CellLBSView>& cell_transport_views,
-  const std::vector<double>& densities,
-  std::vector<double>& destination_phi,
-  std::vector<double>& destination_psi,
-  const std::vector<double>& source_moments,
-  lbs::LBSGroupset& groupset,
-  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
-  int num_moments,
-  int max_num_cell_dofs)
+SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
+                                 const SpatialDiscretization& discretization_primary,
+                                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                                 const std::vector<UnitCellMatrices>& secondary_unit_cell_matrices,
+                                 std::vector<CellLBSView>& cell_transport_views,
+                                 const std::vector<double>& densities,
+                                 std::vector<double>& destination_phi,
+                                 std::vector<double>& destination_psi,
+                                 const std::vector<double>& source_moments,
+                                 LBSGroupset& groupset,
+                                 const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+                                 int num_moments,
+                                 int max_num_cell_dofs)
   : SweepChunk(destination_phi,
                destination_psi,
                grid,
@@ -375,5 +372,4 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
   }   // for cell
 }
 
-} // namespace lbs
 } // namespace opensn

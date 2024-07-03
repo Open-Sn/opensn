@@ -13,10 +13,6 @@ namespace opensn
 {
 
 class MPICommunicatorSet;
-
-namespace lbs
-{
-
 class FLUDS;
 
 /**
@@ -117,5 +113,4 @@ public:
   void Reset();
 };
 
-} // namespace lbs
 } // namespace opensn

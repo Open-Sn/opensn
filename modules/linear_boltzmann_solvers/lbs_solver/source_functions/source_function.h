@@ -10,8 +10,7 @@
 
 namespace opensn
 {
-namespace lbs
-{
+
 class LBSSolver;
 class LBSGroupset;
 
@@ -94,5 +93,4 @@ public:
                             SourceFlags source_flags);
 };
 
-} // namespace lbs
 } // namespace opensn

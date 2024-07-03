@@ -7,8 +7,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class DiffusionDFEMSolver : public LBSSolver
 {
@@ -25,5 +23,4 @@ public:
   static InputParameters GetInputParameters();
 };
 
-} // namespace lbs
 } // namespace opensn

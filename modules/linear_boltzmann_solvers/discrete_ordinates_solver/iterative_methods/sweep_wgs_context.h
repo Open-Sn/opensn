@@ -10,8 +10,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 struct SweepWGSContext : public WGSContext
 {
@@ -40,5 +38,4 @@ struct SweepWGSContext : public WGSContext
   void PostSolveCallback() override;
 };
 
-} // namespace lbs
 } // namespace opensn

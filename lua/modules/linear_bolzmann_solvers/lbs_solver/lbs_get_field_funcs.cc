@@ -25,7 +25,7 @@ LBSGetScalarFieldFunctionList(lua_State* L)
   // Get pointer to solver
   const auto solver_handle = LuaArg<size_t>(L, 1);
   const auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   /**Lambda for matching a field function smart pointer to one on
    * the runtime stack.*/

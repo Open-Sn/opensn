@@ -8,13 +8,11 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 TwoGridCollapsedInfo
 MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
 {
-  const std::string fname = "lbs::acceleration::MakeTwoGridCollapsedInfo";
+  const std::string fname = "acceleration::MakeTwoGridCollapsedInfo";
 
   const size_t num_groups = xs.NumGroups();
   const auto& sigma_t = xs.SigmaTotal();
@@ -102,5 +100,4 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
   return {collapsed_D, collapsed_sig_a, spectrum};
 }
 
-} // namespace lbs
 } // namespace opensn

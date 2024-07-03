@@ -10,11 +10,11 @@
 
 //###################################################################
 /**Constructor.*/
-lbs::SweepChunkPWLTransientTheta::SweepChunkPWLTransientTheta(
+SweepChunkPWLTransientTheta::SweepChunkPWLTransientTheta(
   std::shared_ptr<MeshContinuum> grid_ptr,
   opensn::SpatialDiscretization& discretization,
   const std::vector<UnitCellMatrices>& unit_cell_matrices,
-  std::vector<lbs::CellLBSView>& cell_transport_views,
+  std::vector<CellLBSView>& cell_transport_views,
   std::vector<double>& destination_phi,
   std::vector<double>& destination_psi,
   const std::vector<double>& psi_prev_ref,
@@ -45,7 +45,7 @@ lbs::SweepChunkPWLTransientTheta::SweepChunkPWLTransientTheta(
 }
 
 const double*
-lbs::SweepChunkPWLTransientTheta::Upwinder::GetUpwindPsi(int fj, bool local, bool boundary) const
+SweepChunkPWLTransientTheta::Upwinder::GetUpwindPsi(int fj, bool local, bool boundary) const
 {
   const double* psi;
   if (local) psi = fluds.UpwindPsi(spls_index, in_face_counter, fj, 0, angle_set_index);
@@ -58,7 +58,7 @@ lbs::SweepChunkPWLTransientTheta::Upwinder::GetUpwindPsi(int fj, bool local, boo
 }
 
 double*
-lbs::SweepChunkPWLTransientTheta::Upwinder::GetDownwindPsi(int fi,
+SweepChunkPWLTransientTheta::Upwinder::GetDownwindPsi(int fi,
                                                            bool local,
                                                            bool boundary,
                                                            bool reflecting_bndry) const
@@ -79,7 +79,7 @@ lbs::SweepChunkPWLTransientTheta::Upwinder::GetDownwindPsi(int fi,
 //###################################################################
 /**Actual sweep function*/
 void
-lbs::SweepChunkPWLTransientTheta::Sweep(opensn::lbs::AngleSet* angle_set)
+SweepChunkPWLTransientTheta::Sweep(opensn::AngleSet* angle_set)
 {
   if (not a_and_b_initialized_)
   {

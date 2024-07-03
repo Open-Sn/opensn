@@ -13,8 +13,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 void
 AGSLinearSolver::SetSystemSize()
@@ -144,5 +142,4 @@ AGSLinearSolver::~AGSLinearSolver()
   MatDestroy(&A_);
 }
 
-} // namespace lbs
 } // namespace opensn

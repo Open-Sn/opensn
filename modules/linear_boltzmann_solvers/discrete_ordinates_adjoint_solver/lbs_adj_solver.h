@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**
  * An adjoint discrete ordinates solver.
@@ -59,5 +57,4 @@ public:
   static InputParameters GetInputParameters();
 };
 
-} // namespace lbs
 } // namespace opensn

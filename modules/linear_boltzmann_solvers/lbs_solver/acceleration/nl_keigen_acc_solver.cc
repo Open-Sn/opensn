@@ -16,8 +16,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 namespace
 {
@@ -40,14 +38,13 @@ NLKEigenDiffSolver::SetMonitor()
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   if (nl_context_ptr->verbosity_level_ >= 1)
-    SNESMonitorSet(
-      nl_solver_, &lbs::KEigenSNESMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
+    SNESMonitorSet(nl_solver_, &KEigenSNESMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
 
   if (nl_context_ptr->verbosity_level_ >= 2)
   {
     KSP ksp;
     SNESGetKSP(nl_solver_, &ksp);
-    KSPMonitorSet(ksp, &lbs::KEigenKSPMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
+    KSPMonitorSet(ksp, &KEigenKSPMonitor, &nl_context_ptr->kresid_func_context_, nullptr);
   }
 }
 
@@ -128,5 +125,4 @@ NLKEigenDiffSolver::PostSolveCallback()
               << "\n";
 }
 
-} // namespace lbs
 } // namespace opensn

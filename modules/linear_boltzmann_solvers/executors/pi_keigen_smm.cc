@@ -17,8 +17,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSMM);
 
@@ -1215,5 +1213,4 @@ PowerIterationKEigenSMM::MapAssociatedFaceNode(const Vector3& node,
   throw std::logic_error("Associated neighbor node not found.");
 }
 
-} // namespace lbs
 } // namespace opensn

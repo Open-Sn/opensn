@@ -5,8 +5,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 FLUDSCommonData::FLUDSCommonData(const SPDS& spds,
                                  const std::vector<CellFaceNodalMapping>& grid_nodal_mappings)
@@ -26,5 +24,4 @@ FLUDSCommonData::GetFaceNodalMapping(uint64_t cell_local_id, unsigned int face_i
   return grid_nodal_mappings_[cell_local_id][face_id];
 }
 
-} // namespace lbs
 } // namespace opensn

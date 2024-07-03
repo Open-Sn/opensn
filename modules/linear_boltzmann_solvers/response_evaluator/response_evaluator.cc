@@ -13,8 +13,6 @@ namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, ResponseEvaluator);
 
@@ -30,7 +28,7 @@ ResponseEvaluator::GetInputParameters()
   params.AddRequiredParameter<size_t>("lbs_solver_handle", "A handle to an existing LBS solver.");
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "The specification of adjoint buffers and forward to use.");
-  params.LinkParameterToBlock("options", "lbs::response::OptionsBlock");
+  params.LinkParameterToBlock("options", "response::OptionsBlock");
 
   return params;
 }
@@ -59,12 +57,12 @@ ResponseEvaluator::OptionsBlock()
 
   params.AddOptionalParameterArray(
     "buffers", {}, "An array of tables containing adjoint buffer specifications.");
-  params.LinkParameterToBlock("buffers", "lbs::response::BufferOptionsBlock");
+  params.LinkParameterToBlock("buffers", "response::BufferOptionsBlock");
 
   params.AddOptionalParameter("clear_sources", false, "A flag to clear existing sources.");
   params.AddOptionalParameterBlock(
     "sources", ParameterBlock(), "An array of tables containing source specification information.");
-  params.LinkParameterToBlock("sources", "lbs::response::SourceOptionsBlock");
+  params.LinkParameterToBlock("sources", "response::SourceOptionsBlock");
 
   return params;
 }
@@ -159,7 +157,7 @@ ResponseEvaluator::SourceOptionsBlock()
 
   params.AddOptionalParameterArray(
     "material", {}, "An array of tables containing material source specifications.");
-  params.LinkParameterToBlock("material", "lbs::response::MaterialSourceOptionsBlock");
+  params.LinkParameterToBlock("material", "response::MaterialSourceOptionsBlock");
 
   params.AddOptionalParameterArray(
     "point", {}, "An array of tables containing point source handles.");
@@ -169,7 +167,7 @@ ResponseEvaluator::SourceOptionsBlock()
 
   params.AddOptionalParameterArray(
     "boundary", {}, "An array of tables containing boundary source specifications.");
-  params.LinkParameterToBlock("boundary", "lbs::BoundaryOptionsBlock");
+  params.LinkParameterToBlock("boundary", "BoundaryOptionsBlock");
 
   return params;
 }
@@ -470,5 +468,4 @@ ResponseEvaluator::EvaluateBoundaryCondition(const uint64_t boundary_id,
   OpenSnLogicalError("Unexpected behavior. Unsupported boundary condition encountered.");
 }
 
-} // namespace lbs
 } // namespace opensn

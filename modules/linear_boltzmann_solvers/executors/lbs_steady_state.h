@@ -7,8 +7,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class SteadyStateSolver : public opensn::Solver
 {
@@ -24,5 +22,4 @@ public:
   void Execute() override;
 };
 
-} // namespace lbs
 } // namespace opensn

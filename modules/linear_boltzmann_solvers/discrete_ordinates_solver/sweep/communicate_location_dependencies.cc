@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 void
 CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
@@ -43,5 +41,4 @@ CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
   }
 }
 
-} // namespace lbs
 } // namespace opensn

@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**Contains multiple levels*/
 class SPDS
@@ -72,5 +70,4 @@ protected:
   void PrintedGhostedGraph() const;
 };
 
-} // namespace lbs
 } // namespace opensn

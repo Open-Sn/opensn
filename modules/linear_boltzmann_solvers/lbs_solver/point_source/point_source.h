@@ -10,8 +10,7 @@
 
 namespace opensn
 {
-namespace lbs
-{
+
 class LBSSolver;
 
 /**
@@ -70,5 +69,4 @@ private:
   size_t num_global_subscribers_ = 0;
 };
 
-} // namespace lbs
 } // namespace opensn

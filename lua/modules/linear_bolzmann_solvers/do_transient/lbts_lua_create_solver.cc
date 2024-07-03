@@ -5,7 +5,7 @@
 #include "framework/runtime.h"
 
 #if 0
-namespace lbs::lbts_lua_utils
+namespace lbts_lua_utils
 {
 
 //###################################################################
@@ -28,7 +28,7 @@ LBSCreateTransientSolver(lua_State* L)
     solver_name = lua_tostring(L, 1);
   }
 
-  auto new_solver = std::make_shared<lbs::DiscOrdTransientSolver>(solver_name);
+  auto new_solver = std::make_shared<DiscOrdTransientSolver>(solver_name);
 
   opensn::object_stack.push_back(new_solver);
 
@@ -36,5 +36,5 @@ LBSCreateTransientSolver(lua_State* L)
   return 1;
 }
 
-} // namespace lbs::lbts_lua_utils
+} // namespace lbts_lua_utils
 #endif

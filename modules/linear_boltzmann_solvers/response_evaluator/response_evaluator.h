@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**
  * A class used for evaluating responses by folding sources against adjoint solutions.
@@ -124,5 +122,4 @@ public:
   static InputParameters GetInputParameters();
 };
 
-} // namespace lbs
 } // namespace opensn

@@ -32,7 +32,7 @@ LBSWriteFluxMoments(lua_State* L)
 
   // Get pointer to solver
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   lbs_solver.WriteFluxMoments(lbs_solver.PhiOldLocal(), file_base);
 
@@ -50,7 +50,7 @@ LBSCreateAndWriteSourceMoments(lua_State* L)
 
   // Get pointer to solver
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   auto source_moments = lbs_solver.MakeSourceMomentsFromPhi();
   lbs_solver.WriteFluxMoments(source_moments, file_base);
@@ -70,7 +70,7 @@ LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L)
 
   // Get pointer to solver
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.ExtSrcMomentsLocal(), single_file_flag);
 
@@ -95,7 +95,7 @@ LBSReadSourceMoments(lua_State* L)
 
   // Get pointer to solver
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.ExtSrcMomentsLocal(), single_file_flag);
 
@@ -114,7 +114,7 @@ LBSReadFluxMoments(lua_State* L)
 
   // Get pointer to solver
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   lbs_solver.ReadFluxMoments(file_base, lbs_solver.PhiOldLocal(), single_file_flag);
 

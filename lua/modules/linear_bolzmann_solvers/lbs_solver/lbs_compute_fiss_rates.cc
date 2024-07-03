@@ -23,7 +23,7 @@ LBSComputeFissionRate(lua_State* L)
   // Get pointer to solver
   const auto solver_handle = LuaArg<size_t>(L, 1);
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   const auto nature = LuaArg<std::string>(L, 2);
   const auto& phi = nature == "OLD" ? lbs_solver.PhiOldLocal() : lbs_solver.PhiNewLocal();

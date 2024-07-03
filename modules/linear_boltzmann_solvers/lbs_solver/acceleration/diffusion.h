@@ -13,9 +13,6 @@ class MeshContinuum;
 class Cell;
 struct Vector3;
 class SpatialDiscretization;
-
-namespace lbs
-{
 struct UnitCellMatrices;
 struct Multigroup_D_and_sigR;
 
@@ -140,5 +137,4 @@ public:
   void Solve(Vec petsc_solution, bool use_initial_guess = false);
 };
 
-} // namespace lbs
 } // namespace opensn

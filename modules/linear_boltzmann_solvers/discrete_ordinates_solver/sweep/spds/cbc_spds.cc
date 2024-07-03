@@ -11,8 +11,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 CBC_SPDS::CBC_SPDS(const Vector3& omega,
                    const MeshContinuum& grid,
@@ -143,5 +141,4 @@ CBC_SPDS::TaskList() const
   return task_list_;
 }
 
-} // namespace lbs
 } // namespace opensn

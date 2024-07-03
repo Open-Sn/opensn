@@ -6,16 +6,8 @@
 #include "lua/framework/lua.h"
 #include "framework/parameters/input_parameters.h"
 
-namespace lbs
+namespace opensnlua
 {
-class LBSSolver;
-}
-
-namespace opensnlua::lbs
-{
-
-opensn::InputParameters GetSyntax_SetOptions();
-opensn::ParameterBlock SetOptions(const opensn::InputParameters& params);
 
 int LBSSetOptions(lua_State* L);
 
@@ -91,5 +83,6 @@ int AddVolumetricSource(lua_State* L);
  */
 int ClearVolumetricSources(lua_State* L);
 
-void RegisterLuaEntities(lua_State* L);
-} // namespace opensnlua::lbs
+void RegisterLuaEntitiesLBS(lua_State* L);
+
+} // namespace opensnlua

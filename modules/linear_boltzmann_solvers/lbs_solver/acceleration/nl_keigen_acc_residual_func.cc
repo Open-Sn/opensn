@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 PetscErrorCode
 NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
@@ -123,5 +121,4 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   return 0;
 }
 
-} // namespace lbs
 } // namespace opensn

@@ -13,8 +13,7 @@
 
 namespace opensn
 {
-namespace lbs
-{
+
 class LBSSolver;
 
 struct NLKEigenAGSContext : public NonLinearSolverContext
@@ -32,5 +31,4 @@ struct NLKEigenAGSContext : public NonLinearSolverContext
   ~NLKEigenAGSContext() override = default;
 };
 
-} // namespace lbs
 } // namespace opensn

@@ -10,9 +10,6 @@ namespace opensn
 {
 class VectorGhostCommunicator;
 
-namespace lbs
-{
-
 class PowerIterationKEigenSCDSA : public PowerIterationKEigen
 {
 private:
@@ -75,5 +72,4 @@ public:
                             const PowerIterationKEigenSCDSA::GhostInfo& ghost_info);
 };
 
-} // namespace lbs
 } // namespace opensn

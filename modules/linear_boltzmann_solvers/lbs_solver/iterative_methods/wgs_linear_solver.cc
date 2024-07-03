@@ -16,8 +16,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 WGSLinearSolver::WGSLinearSolver(std::shared_ptr<WGSContext> gs_context_ptr)
   : LinearSolver(IterativeMethodPETScName(gs_context_ptr->groupset_.iterative_method_),
@@ -267,5 +265,4 @@ WGSLinearSolver::PostSolveCallback()
   gs_context_ptr->PostSolveCallback();
 }
 
-} // namespace lbs
 } // namespace opensn

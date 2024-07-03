@@ -13,9 +13,6 @@ namespace opensn
 class SweepBoundary;
 class MultiGroupXS;
 
-namespace lbs
-{
-
 /**Boundary condition type. We essentially only support two
  * types: Dirichlet and Reflecting, the latter is covered under
  * the ROBIN-type boundary condition.*/
@@ -80,5 +77,4 @@ PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_m
                int first_grp_index,
                int last_group_index);
 
-} // namespace lbs
 } // namespace opensn

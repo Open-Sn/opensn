@@ -11,7 +11,7 @@
   throw std::logic_error(fname + ": Insufficient amount of arguments, " +                          \
                          std::to_string(num_args) + ", for property " + prop_name)
 
-namespace lbs::lbts_lua_utils
+namespace lbts_lua_utils
 {
 
 //###################################################################
@@ -33,12 +33,12 @@ LBTSAdvanceTimeData(lua_State* L)
   const int solver_handle = lua_tointeger(L, 1);
 
   auto& solver =
-    opensn::GetStackItem<lbs::DiscOrdTransientSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<DiscOrdTransientSolver>(opensn::object_stack, solver_handle, fname);
 
   solver.Advance();
 
   return 0;
 }
 
-} // namespace lbs::lbts_lua_utils
+} // namespace lbts_lua_utils
 #endif

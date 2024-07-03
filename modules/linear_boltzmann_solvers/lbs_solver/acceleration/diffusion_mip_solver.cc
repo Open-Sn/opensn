@@ -15,8 +15,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 void
 DiffusionMIPSolver::SetSourceFunction(std::shared_ptr<ScalarSpatialFunction> function)
@@ -49,13 +47,13 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                     verbose)
 {
   if (sdm_.Type() != SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS)
-    throw std::logic_error("lbs::acceleration::DiffusionMIPSolver can only be used with PWLD.");
+    throw std::logic_error("acceleration::DiffusionMIPSolver can only be used with PWLD.");
 }
 
 void
 DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 {
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
+  const std::string fname = "acceleration::DiffusionMIPSolver::"
                             "AssembleAand_b_wQpoints";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
@@ -397,7 +395,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 void
 DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 {
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
+  const std::string fname = "acceleration::DiffusionMIPSolver::"
                             "AssembleAand_b_wQpoints";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
@@ -593,7 +591,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 void
 DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 {
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
+  const std::string fname = "acceleration::DiffusionMIPSolver::"
                             "AssembleAand_b";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
@@ -887,7 +885,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 void
 DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 {
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
+  const std::string fname = "acceleration::DiffusionMIPSolver::"
                             "Assemble_b";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
@@ -1034,7 +1032,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 void
 DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 {
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
+  const std::string fname = "acceleration::DiffusionMIPSolver::"
                             "Assemble_b";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
@@ -1243,7 +1241,7 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
       hp = 6 * volume / surface_area;
   } // Polyhedron
   else
-    throw std::logic_error("lbs::acceleration::DiffusionMIPSolver::HPerpendicular: "
+    throw std::logic_error("acceleration::DiffusionMIPSolver::HPerpendicular: "
                            "Unsupported cell type in call to HPerpendicular");
 
   return hp;
@@ -1274,9 +1272,7 @@ DiffusionMIPSolver::MapFaceNodeDisc(const Cell& cur_cell,
       return j;
   }
 
-  throw std::logic_error(
-    "lbs::acceleration::DiffusionMIPSolver::MapFaceNodeDisc: Mapping failure.");
+  throw std::logic_error("acceleration::DiffusionMIPSolver::MapFaceNodeDisc: Mapping failure.");
 }
 
-} // namespace lbs
 } // namespace opensn

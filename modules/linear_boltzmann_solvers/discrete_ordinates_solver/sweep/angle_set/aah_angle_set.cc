@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 AAH_AngleSet::AAH_AngleSet(size_t id,
                            size_t num_groups,
@@ -147,5 +145,4 @@ AAH_AngleSet::PsiReflected(uint64_t boundary_id,
   return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num, gs_ss_begin);
 }
 
-} // namespace lbs
 } // namespace opensn

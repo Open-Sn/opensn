@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class SweepChunk;
 
@@ -138,5 +136,4 @@ public:
   void SetBoundarySourceActiveFlag(bool flag_value);
 };
 
-} // namespace lbs
 } // namespace opensn

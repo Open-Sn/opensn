@@ -11,8 +11,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 int
 SPDS::MapLocJToPrelocI(int locJ) const
@@ -254,5 +252,4 @@ SPDS::PrintedGhostedGraph() const
   } // for p
 }
 
-} // namespace lbs
 } // namespace opensn

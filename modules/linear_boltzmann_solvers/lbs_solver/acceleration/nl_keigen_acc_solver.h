@@ -11,8 +11,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class NLKEigenDiffSolver : public NonLinearSolver
 {
@@ -37,5 +35,4 @@ protected:
   void PostSolveCallback() override;
 };
 
-} // namespace lbs
 } // namespace opensn

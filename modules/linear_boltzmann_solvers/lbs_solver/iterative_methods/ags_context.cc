@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 std::pair<int64_t, int64_t>
 AGSContext::SystemSize()
@@ -49,5 +47,4 @@ AGSContext::MatrixAction(Mat& matrix, Vec& vector, Vec& action)
   return 0;
 }
 
-} // namespace lbs
 } // namespace opensn

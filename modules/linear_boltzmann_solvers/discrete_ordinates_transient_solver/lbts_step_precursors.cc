@@ -7,7 +7,7 @@
 //###################################################################
 /**Performs a timestep of the precursors.*/
 void
-lbs::DiscOrdTransientSolver::StepPrecursors()
+DiscOrdTransientSolver::StepPrecursors()
 {
   const auto& BackwardEuler = opensn::SteppingMethod::IMPLICIT_EULER;
   const auto& CrankNicolson = opensn::SteppingMethod::CRANK_NICOLSON;

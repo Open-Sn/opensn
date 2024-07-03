@@ -28,8 +28,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesSolver);
 
@@ -1015,7 +1013,7 @@ std::pair<UniqueSOGroupings, DirIDToSOMap>
 DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
                                                    const AngularQuadrature& quadrature,
                                                    const AngleAggregationType agg_type,
-                                                   const lbs::GeometryType lbs_geo_type)
+                                                   const GeometryType lbs_geo_type)
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::AssociateSOsAndDirections");
 
@@ -1326,5 +1324,4 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
     OpenSnLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");
 }
 
-} // namespace lbs
 } // namespace opensn

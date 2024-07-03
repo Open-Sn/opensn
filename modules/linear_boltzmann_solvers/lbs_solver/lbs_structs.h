@@ -11,8 +11,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 using DirIDs = std::vector<size_t>; ///< Direction-IDs
 using UniqueSOGroupings = std::vector<DirIDs>;
@@ -205,7 +203,7 @@ typedef std::function<void(const LBSGroupset& groupset,
   SetSourceFunction;
 
 /**Struct for storing LBS options.*/
-struct Options
+struct LBSOptions
 {
   GeometryType geometry_type = GeometryType::NO_GEOMETRY_SET;
   SpatialDiscretizationType sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
@@ -238,7 +236,7 @@ struct Options
   std::string field_function_prefix_option = "prefix";
   std::string field_function_prefix; // Default is empty
 
-  Options() = default;
+  LBSOptions() = default;
 
   std::vector<AGSSchemeEntry> ags_scheme;
 };
@@ -372,5 +370,4 @@ public:
   std::vector<AGSSchemeEntry>& SchemeEntries() { return scheme_entries_; }
 };
 
-} // namespace lbs
 } // namespace opensn

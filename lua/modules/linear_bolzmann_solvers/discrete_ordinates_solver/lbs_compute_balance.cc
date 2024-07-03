@@ -19,7 +19,7 @@ LBSComputeBalance(lua_State* L)
 
   // Get pointer to solver
   const auto solver_handle = LuaArg<size_t>(L, 1);
-  auto& lbs_solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesSolver>(
+  auto& lbs_solver = opensn::GetStackItem<opensn::DiscreteOrdinatesSolver>(
     opensn::object_stack, solver_handle, fname);
 
   lbs_solver.ComputeBalance();

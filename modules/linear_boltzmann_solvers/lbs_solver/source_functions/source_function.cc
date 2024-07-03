@@ -10,8 +10,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 SourceFunction::SourceFunction(const LBSSolver& lbs_solver) : lbs_solver_(lbs_solver)
 {
@@ -263,5 +261,4 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
   }
 }
 
-} // namespace lbs
 } // namespace opensn

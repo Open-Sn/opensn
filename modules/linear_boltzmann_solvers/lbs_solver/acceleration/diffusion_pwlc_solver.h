@@ -7,8 +7,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class DiffusionPWLCSolver : public DiffusionSolver
 {
@@ -41,5 +39,4 @@ public:
   void Assemble_b(Vec petsc_q_vector) override;
 };
 
-} // namespace lbs
 } // namespace opensn

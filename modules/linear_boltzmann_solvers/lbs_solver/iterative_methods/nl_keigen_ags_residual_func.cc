@@ -9,13 +9,11 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 PetscErrorCode
 NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
-  const std::string fname = "lbs::SNESKResidualFunction";
+  const std::string fname = "SNESKResidualFunction";
   auto& function_context = *((KResidualFunctionContext*)ctx);
 
   NLKEigenAGSContext* nl_context_ptr;
@@ -33,8 +31,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     groupset_ids.push_back(groupset.id_);
 
   // Disassemble phi vector
-  lbs_solver.SetPrimarySTLvectorFromMultiGSPETScVecFrom(
-    groupset_ids, phi, lbs::PhiSTLOption::PHI_OLD);
+  lbs_solver.SetPrimarySTLvectorFromMultiGSPETScVecFrom(groupset_ids, phi, PhiSTLOption::PHI_OLD);
 
   // Compute 1/k F phi
   Set(q_moments_local, 0.0);
@@ -43,7 +40,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
                                q_moments_local,
                                phi_old_local,
                                densities_local,
-                               lbs::APPLY_AGS_FISSION_SOURCES | lbs::APPLY_WGS_FISSION_SOURCES);
+                               APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 
   const double k_eff = lbs_solver.ComputeFissionProduction(phi_old_local);
   Scale(q_moments_local, 1.0 / k_eff);
@@ -52,10 +49,10 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   for (auto& groupset : lbs_solver.Groupsets())
   {
     auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
-    const bool supress_wgs = wgs_context.lhs_src_scope_ & lbs::SUPPRESS_WG_SCATTER;
-    SourceFlags source_flags = lbs::APPLY_AGS_SCATTER_SOURCES | lbs::APPLY_WGS_SCATTER_SOURCES;
+    const bool supress_wgs = wgs_context.lhs_src_scope_ & SUPPRESS_WG_SCATTER;
+    SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
     if (supress_wgs)
-      source_flags |= lbs::SUPPRESS_WG_SCATTER;
+      source_flags |= SUPPRESS_WG_SCATTER;
     active_set_source_function(
       groupset, q_moments_local, phi_old_local, densities_local, source_flags);
   }
@@ -65,13 +62,13 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   for (auto& groupset : lbs_solver.Groupsets())
   {
     auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
-    wgs_context.ApplyInverseTransportOperator(lbs::SourceFlags());
+    wgs_context.ApplyInverseTransportOperator(SourceFlags());
   }
 
   // Reassemble PETSc vector
   // We use r as a proxy for delta-phi here since
   // we are anycase going to subtract phi from it.
-  lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(groupset_ids, r, lbs::PhiSTLOption::PHI_NEW);
+  lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(groupset_ids, r, PhiSTLOption::PHI_NEW);
 
   VecAXPY(r, -1.0, phi);
 
@@ -82,7 +79,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
                                      "single groupset simulations.");
 
     auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
-    lbs::WGDSA_TGDSA_PreConditionerMult2(wgs_context, r, r);
+    WGDSA_TGDSA_PreConditionerMult2(wgs_context, r, r);
   }
 
   // Assign k to the context so monitors can work
@@ -91,5 +88,4 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   return 0;
 }
 
-} // namespace lbs
 } // namespace opensn

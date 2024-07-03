@@ -29,10 +29,10 @@ LBSWriteGroupsetAngularFlux(lua_State* L)
 
   // Get pointer to solver
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
-  opensn::lbs::LBSGroupset* groupset = nullptr;
+  opensn::LBSGroupset* groupset = nullptr;
   try
   {
     groupset = &lbs_solver.Groupsets().at(grpset_index);
@@ -62,10 +62,10 @@ LBSReadGroupsetAngularFlux(lua_State* L)
 
   // Get pointer to solver
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   // Obtain pointer to groupset
-  opensn::lbs::LBSGroupset* groupset = nullptr;
+  opensn::LBSGroupset* groupset = nullptr;
   try
   {
     groupset = &lbs_solver.Groupsets().at(grpset_index);
