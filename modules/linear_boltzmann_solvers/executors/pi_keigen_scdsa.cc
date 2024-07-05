@@ -70,6 +70,9 @@ PowerIterationKEigenSCDSA::PowerIterationKEigenSCDSA(const InputParameters& para
     diff_accel_diffusion_petsc_options_(
       params.GetParamValue<std::string>("diff_accel_diffusion_petsc_options"))
 {
+  if (lbs_solver_.Groupsets().size() != 1)
+    throw std::logic_error("The SCDSA k-eigenvalue executor is only implemented for "
+                           "problems with a single groupset.");
 }
 
 void

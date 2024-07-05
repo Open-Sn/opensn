@@ -148,12 +148,19 @@ PowerIterationKEigen::Execute()
     WriteRestartData();
 
   // Print summary
+  int total_num_sweeps = 0;
+  for (auto& wgs_solver : lbs_solver_.GetWGSSolvers())
+  {
+    auto context = wgs_solver->GetContext();
+    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
+    total_num_sweeps += wgs_context->counter_applications_of_inv_op_;
+  }
+
   log.Log() << "\n";
   log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
   log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
-            << " (Number of Sweeps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
-            << "\n";
-  log.Log() << "\n";
+            << " (Total number of sweeps:" << total_num_sweeps << ")"
+            << "\n\n";
 
   if (lbs_solver_.Options().use_precursors)
   {
@@ -172,11 +179,14 @@ PowerIterationKEigen::SetLBSFissionSource(const std::vector<double>& input, cons
   if (not additive)
     Set(q_moments_local_, 0.0);
 
-  active_set_source_function_(front_gs_,
-                              q_moments_local_,
-                              input,
-                              lbs_solver_.DensitiesLocal(),
-                              APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+  for (auto& groupset : groupsets_)
+  {
+    active_set_source_function_(groupset,
+                                q_moments_local_,
+                                input,
+                                lbs_solver_.DensitiesLocal(),
+                                APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+  }
 }
 
 void
@@ -191,8 +201,11 @@ PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
   if (suppress_wg_scat)
     source_flags |= SUPPRESS_WG_SCATTER;
 
-  active_set_source_function_(
-    front_gs_, q_moments_local_, input, lbs_solver_.DensitiesLocal(), source_flags);
+  for (auto& groupset : groupsets_)
+  {
+    active_set_source_function_(
+      groupset, q_moments_local_, input, lbs_solver_.DensitiesLocal(), source_flags);
+  }
 }
 
 void

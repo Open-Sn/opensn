@@ -876,8 +876,8 @@ LBSSolver::PrintSimHeader()
           outstr << "\n";
         }
       }
-      log.Log() << outstr.str() << "\n" << std::endl;
     }
+    log.Log() << outstr.str() << "\n" << std::endl;
   }
 }
 
