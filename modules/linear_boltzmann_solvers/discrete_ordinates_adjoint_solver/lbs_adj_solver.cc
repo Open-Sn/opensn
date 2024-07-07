@@ -76,8 +76,7 @@ DiscreteOrdinatesAdjointSolver::Initialize()
 void
 DiscreteOrdinatesAdjointSolver::Execute()
 {
-  primary_ags_solver_->Setup();
-  primary_ags_solver_->Solve();
+  ags_solver_->Solve();
 
   // Apply post-processing
   log.Log() << "LBAdjointSolver: post-processing.";

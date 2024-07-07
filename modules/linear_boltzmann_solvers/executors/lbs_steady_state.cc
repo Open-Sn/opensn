@@ -45,9 +45,7 @@ SteadyStateSolver::Execute()
 {
   CALI_CXX_MARK_SCOPE("SteadyStateSolver::Execute");
 
-  auto& ags_solver = *lbs_solver_.GetPrimaryAGSSolver();
-
-  ags_solver.Setup();
+  auto& ags_solver = *lbs_solver_.GetAGSSolver();
   ags_solver.Solve();
 
   if (lbs_solver_.Options().use_precursors)

@@ -153,8 +153,7 @@ PowerIterationKEigenSCDSA::Execute()
   /**Lambda for the creation of scattering sources but the input vector is only the zeroth moment*/
   auto SetLBSScatterSourcePhi0 = [this, &phi_temp](const std::vector<double>& input,
                                                    const bool additive,
-                                                   const bool suppress_wg_scat = false)
-  {
+                                                   const bool suppress_wg_scat = false) {
     ProjectBackPhi0(front_gs_, input, phi_temp);
     SetLBSScatterSource(phi_temp, additive, suppress_wg_scat);
   };
@@ -176,8 +175,7 @@ PowerIterationKEigenSCDSA::Execute()
     auto Sf0_ell = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
     // This solves the inners for transport
-    primary_ags_solver_->Setup();
-    primary_ags_solver_->Solve();
+    ags_solver_->Solve();
 
     // lph_i = l + 1/2,i
     auto phi0_lph_i = CopyOnlyPhi0(front_gs_, phi_new_local_);

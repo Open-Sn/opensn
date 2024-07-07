@@ -200,8 +200,7 @@ PowerIterationKEigenSMM::Execute()
     Scale(q_moments_local_, 1.0 / k_eff_);
 
     // Solve some transport inners
-    primary_ags_solver_->Setup();
-    primary_ags_solver_->Solve();
+    ags_solver_->Solve();
 
     std::vector<double> phi0;
     TransferTransportToDiffusion(phi_new_local_, phi0);

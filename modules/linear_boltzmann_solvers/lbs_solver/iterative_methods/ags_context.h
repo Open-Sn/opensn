@@ -17,18 +17,12 @@ class LBSSolver;
 struct AGSContext : public LinearSolverContext
 {
   LBSSolver& lbs_solver_;
-  std::vector<std::shared_ptr<LinearSolver>> sub_solvers_list_;
+  std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
 
-  AGSContext(LBSSolver& lbs_solver, std::vector<std::shared_ptr<LinearSolver>> sub_solvers_list)
-    : lbs_solver_(lbs_solver), sub_solvers_list_(std::move(sub_solvers_list))
+  AGSContext(LBSSolver& lbs_solver, std::vector<std::shared_ptr<LinearSolver>> wgs_solvers)
+    : lbs_solver_(lbs_solver), wgs_solvers_(std::move(wgs_solvers))
   {
   }
-
-  std::pair<int64_t, int64_t> SystemSize();
-
-  virtual void SetPreconditioner(KSP& solver);
-
-  int MatrixAction(Mat& matrix, Vec& vector, Vec& action) override;
 };
 
 } // namespace opensn

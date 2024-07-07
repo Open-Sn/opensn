@@ -10,55 +10,38 @@ namespace opensn
 {
 
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
-class AGSLinearSolver : public LinearSolver
+class AGSLinearSolver
 {
+private:
+  std::shared_ptr<LinearSolverContext> context_ptr_;
+  int maximum_iterations_;
+  double tolerance_;
+  bool verbose_;
+
 public:
   /**Constructor.
-   * \param iterative_method string Across Groupset iterative method.
    * \param ags_context_ptr Pointer Pointer to the context to use.
-   * \param groupspan_first_id int First group index.
-   * \param groupspan_last_id int Last group index.
    * \param verbose bool Flag to enable verbose output.*/
-  AGSLinearSolver(std::string iterative_method,
-                  std::shared_ptr<AGSContext> ags_context_ptr,
-                  int groupspan_first_id,
-                  int groupspan_last_id,
-                  bool verbose = true)
-    : LinearSolver(std::move(iterative_method), ags_context_ptr),
-      groupspan_first_id_(groupspan_first_id),
-      groupspan_last_id_(groupspan_last_id),
-      verbose_(verbose)
+  AGSLinearSolver(std::shared_ptr<AGSContext> ags_context_ptr)
+    : context_ptr_(ags_context_ptr), maximum_iterations_(1), tolerance_(1.0e-6), verbose_(false)
   {
   }
 
-  ~AGSLinearSolver() override;
+  ~AGSLinearSolver() {}
 
-  int GroupSpanFirstID() const { return groupspan_first_id_; }
-
-  int GroupSpanLastID() const { return groupspan_last_id_; }
+  void Solve();
 
   bool IsVerbose() const { return verbose_; }
 
-  void SetVerbosity(bool verbose_y_n) { verbose_ = verbose_y_n; }
+  void SetVerbosity(bool verbose) { verbose_ = verbose; }
 
-  void Solve() override;
+  double GetTolerance() { return tolerance_; }
 
-protected:
-  void SetSystemSize() override;
+  void SetTolerance(double tolerance) { tolerance_ = tolerance; }
 
-  void SetSystem() override;
+  int GetMaximumIterations() { return maximum_iterations_; }
 
-  void SetPreconditioner() override;
-
-  void SetRHS() override;
-
-  void SetInitialGuess() override;
-
-  int groupspan_first_id_;
-
-  int groupspan_last_id_;
-
-  bool verbose_;
+  void SetMaximumIterations(int maximum_iterations) { maximum_iterations_ = maximum_iterations; }
 };
 
 } // namespace opensn

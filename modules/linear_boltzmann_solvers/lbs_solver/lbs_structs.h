@@ -193,7 +193,6 @@ enum class PhiSTLOption
 };
 
 class LBSGroupset;
-class AGSSchemeEntry;
 
 typedef std::function<void(const LBSGroupset& groupset,
                            std::vector<double>& q,
@@ -228,6 +227,8 @@ struct LBSOptions
   bool verbose_inner_iterations = true;
   bool verbose_ags_iterations = false;
   bool verbose_outer_iterations = true;
+  int maximum_ags_iterations = 1;
+  double ags_tolerance = 1.0e-6;
 
   bool power_field_function_on = false;
   double power_default_kappa = 3.20435e-11; // 200MeV to Joule
@@ -237,8 +238,6 @@ struct LBSOptions
   std::string field_function_prefix; // Default is empty
 
   LBSOptions() = default;
-
-  std::vector<AGSSchemeEntry> ags_scheme;
 };
 
 /**Transport view of a cell*/
@@ -336,38 +335,6 @@ struct UnitCellMatrices
   std::vector<std::vector<std::vector<double>>> intS_shapeI_shapeJ;
   std::vector<std::vector<std::vector<Vector3>>> intS_shapeI_gradshapeJ;
   std::vector<std::vector<double>> intS_shapeI;
-};
-
-enum class AGSSchemeEntryType
-{
-  GROUPSET_ID = 1,
-  SCHEME = 2
-};
-
-class AGSSchemeEntry
-{
-private:
-  const AGSSchemeEntryType type_;
-  const int groupset_id_ = 0;
-  const std::string scheme_name_;
-  std::vector<AGSSchemeEntry> scheme_entries_;
-
-public:
-  explicit AGSSchemeEntry(int groupset_id)
-    : type_(AGSSchemeEntryType::GROUPSET_ID), groupset_id_(groupset_id)
-  {
-  }
-
-  explicit AGSSchemeEntry(const std::string& scheme)
-    : type_(AGSSchemeEntryType::SCHEME), scheme_name_(scheme)
-  {
-  }
-
-  AGSSchemeEntryType Type() const { return type_; }
-
-  int GroupsetID() const { return groupset_id_; }
-
-  std::vector<AGSSchemeEntry>& SchemeEntries() { return scheme_entries_; }
 };
 
 } // namespace opensn
