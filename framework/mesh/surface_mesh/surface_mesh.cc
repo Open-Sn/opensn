@@ -274,11 +274,8 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
   // Reading every line and determining size
   std::string file_line;
   std::string delimiter = " ";
-  int counter = 0;
   while (std::getline(file, file_line))
   {
-    counter++;
-
     // Get the first word
     size_t beg_of_word = file_line.find_first_not_of(delimiter);
     size_t end_of_word = file_line.find(delimiter, beg_of_word - beg_of_word);

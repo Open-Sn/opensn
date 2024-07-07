@@ -614,10 +614,8 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
   // segment lengths from the strip defined by v0 to vc.
   if (cell.Type() == CellType::POLYGON)
   {
-    int f = -1;
     for (auto& face : cell.faces_) // edges
     {
-      f++;
       const auto& v0 = grid.vertices[face.vertex_ids_[0]];
       const auto& vc = cell.centroid_;
 
@@ -640,10 +638,8 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
   {
     auto& vcc = cell.centroid_;
 
-    int f = -1;
     for (auto& face : cell.faces_)
     {
-      f++;
       auto& vfc = face.centroid_;
 
       // Face center to vertex segments

@@ -160,7 +160,6 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 
   // Loop till done
   bool finished = false;
-  size_t scheduled_angleset = 0;
   while (not finished)
   {
     finished = true;
@@ -193,8 +192,6 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
         std::stringstream message_f;
         message_f << "Angleset " << angleset->GetID() << " finished on location "
                   << opensn::mpi_comm.rank();
-
-        scheduled_angleset++; // Schedule the next angleset
       }
 
       if (status != AngleSetStatus::FINISHED)
