@@ -85,9 +85,14 @@ package_info = {
         "5.4.6",
         "https://www.lua.org/ftp/lua-5.4.6.tar.gz"
     ],
+    "hdf5": [
+        "1.14.3",
+        "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/\
+CMake-hdf5-1.14.3.tar.gz"
+    ],
     "petsc": [
-        "3.17.0",
-        "https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz"
+        "3.20.6",
+        "https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-3.20.6.tar.gz"
     ],
     "vtk": [
         "9.3.0",
@@ -96,10 +101,6 @@ package_info = {
     "caliper": [
         "2.10.0",
         "https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz"
-    ],
-    "hdf5": [
-        "1.14.3",
-        "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/CMake-hdf5-1.14.3.tar.gz"  # noqa
     ]
 }
 
@@ -299,6 +300,7 @@ def InstallPETSc(pkg: str, ver: str, gold_file: str):
 --with-debugging=0 \\
 --with-pic=1 \\
 --with-shared-libraries=1 \\
+--download-bison=1 \\
 --download-fblaslapack=1 \\
 --download-metis=1 \\
 --download-parmetis=1 \\
@@ -307,12 +309,10 @@ def InstallPETSc(pkg: str, ver: str, gold_file: str):
 --with-cxx-dialect=C++11 \\
 --with-64-bit-indices \\
 CC=$CC CXX=$CXX FC=$FC \\
-CFLAGS="-fopenmp" \\
-CXXFLAGS="-fopenmp" \\
-FFLAGS="-fopenmp -fallow-argument-mismatch" \\
-FCFLAGS="-fopenmp -fallow-argument-mismatch" \\
-F90FLAGS="-fopenmp -fallow-argument-mismatch" \\
-F77FLAGS="-fopenmp -fallow-argument-mismatch" \\
+FFLAGS="-fallow-argument-mismatch" \\
+FCFLAGS="-fallow-argument-mismatch" \\
+F90FLAGS="-fallow-argument-mismatch" \\
+F77FLAGS="-fallow-argument-mismatch" \\
 COPTFLAGS="-O3" \\
 CXXOPTFLAGS="-O3" \\
 FOPTFLAGS="-O3 -fallow-argument-mismatch" \\
