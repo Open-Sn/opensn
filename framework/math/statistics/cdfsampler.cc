@@ -213,7 +213,6 @@ SampleCDF(double x, std::vector<double> cdf_bin)
     refine_limit_reached = true;
 
   // Recursively refine
-  int refine_count = 0;
   while (not refine_limit_reached)
   {
     int intvl_size = 0;
@@ -235,8 +234,6 @@ SampleCDF(double x, std::vector<double> cdf_bin)
       indA = indB;
       indB = indA + std::ceil(intvl_size / 2.0) - 1;
     }
-
-    refine_count++;
 
     if (intvl_size <= fine_limit)
     {

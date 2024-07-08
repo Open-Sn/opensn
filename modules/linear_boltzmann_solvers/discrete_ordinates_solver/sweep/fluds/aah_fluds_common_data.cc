@@ -395,8 +395,6 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
   auto& cell_nodal_mapping = grid_nodal_mappings_[cell.local_id_];
   std::vector<std::pair<int, std::vector<short>>> inco_face_dof_mapping;
 
-  short incoming_face_count = -1;
-
   // Loop over faces but process only incident faces
   for (short f = 0; f < cell.faces_.size(); f++)
   {
@@ -408,7 +406,6 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
     {
       if (face.IsNeighborLocal(grid))
       {
-        incoming_face_count++;
         // Find associated face for dof mapping
         int ass_face = cell_nodal_mapping[f].associated_face_;
 
@@ -653,7 +650,6 @@ AAH_FLUDSCommonData::DeSerializeCellInfo(std::vector<CompactCellView>& cell_view
   int last_cell = -1;
   int c = -1; // cell counter
   int f = -1;
-  int v = -1;
   while (k < face_indices->size())
   {
     int entry = (*face_indices)[k];
@@ -669,7 +665,6 @@ AAH_FLUDSCommonData::DeSerializeCellInfo(std::vector<CompactCellView>& cell_view
         cell_views[c].second.emplace_back();
         f = 0;
 
-        v = 0;
         last_cell = -entry;
 
         cell_views[c].second[f].first = (*face_indices)[k + 1];
@@ -679,7 +674,6 @@ AAH_FLUDSCommonData::DeSerializeCellInfo(std::vector<CompactCellView>& cell_view
       {
         cell_views[c].second.emplace_back();
         f++;
-        v = 0;
 
         cell_views[c].second[f].first = (*face_indices)[k + 1];
         k++;
@@ -689,7 +683,6 @@ AAH_FLUDSCommonData::DeSerializeCellInfo(std::vector<CompactCellView>& cell_view
     else
     {
       cell_views[c].second[f].second.push_back(entry);
-      v++;
     }
     k++;
   } // while k

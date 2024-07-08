@@ -21,13 +21,9 @@ EventPublisher::EventPublisher(const std::string& name) : publisher_name_(name)
 void
 EventPublisher::PublishEvent(const Event& event)
 {
-  size_t subs = 0;
   for (auto& subscriber_wptr : subscribers_)
     if (auto subscriber_sptr = subscriber_wptr.lock())
-    {
       subscriber_sptr->ReceiveEventUpdate(event);
-      ++subs;
-    }
   if (log.GetVerbosity() >= 1)
     log.Log0Verbose1() << publisher_name_ << " published event name \"" << event.Name() << "\"";
 }
