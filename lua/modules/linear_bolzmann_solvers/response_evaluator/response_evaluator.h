@@ -11,7 +11,7 @@ class InputParameters;
 class ParameterBlock;
 } // namespace opensn
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 using namespace opensn;
@@ -31,4 +31,4 @@ ParameterBlock AddResponseSources(const InputParameters& params);
 
 int EvaluateResponse(lua_State* L);
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

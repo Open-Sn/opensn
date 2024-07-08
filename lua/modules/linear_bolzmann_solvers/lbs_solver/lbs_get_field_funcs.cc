@@ -11,7 +11,7 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(LBSGetScalarFieldFunctionList, lbs, GetScalarFieldFunctionList);
@@ -75,4 +75,4 @@ LBSGetScalarFieldFunctionList(lua_State* L)
   return LuaReturn(L, ff_handles, ff_handles.size());
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

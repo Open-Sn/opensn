@@ -9,7 +9,7 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(LBSComputeFissionRate, lbs, ComputeFissionRate);
@@ -32,4 +32,4 @@ LBSComputeFissionRate(lua_State* L)
   return LuaReturn(L, fission_rate);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

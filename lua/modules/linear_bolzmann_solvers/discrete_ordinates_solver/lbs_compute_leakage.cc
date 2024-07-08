@@ -7,7 +7,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(ComputeLeakage, lbs, ComputeLeakage);
@@ -50,4 +50,4 @@ ComputeLeakage(lua_State* L)
   return LuaReturn(L, ret_val);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

@@ -5,7 +5,7 @@
 
 #include "lua/framework/lua.h"
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 /**
@@ -34,4 +34,4 @@ int LBSComputeBalance(lua_State* L);
  */
 int ComputeLeakage(lua_State* L);
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

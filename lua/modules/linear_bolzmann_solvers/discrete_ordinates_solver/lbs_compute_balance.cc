@@ -6,7 +6,7 @@
 #include "lua/framework/console/console.h"
 #include "framework/runtime.h"
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(LBSComputeBalance, lbs, ComputeBalance);
@@ -27,4 +27,4 @@ LBSComputeBalance(lua_State* L)
   return LuaReturn(L);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

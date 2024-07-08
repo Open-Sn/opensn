@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "lua/framework/console/console.h"
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(ClearResponseSources, lbs, ClearResponseSources);
@@ -120,4 +120,4 @@ EvaluateResponse(lua_State* L)
   return LuaReturn(L, val);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

@@ -8,7 +8,7 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunction(AdjointSolverExportImportanceMapBinary);
@@ -30,4 +30,4 @@ AdjointSolverExportImportanceMapBinary(lua_State* L)
   return LuaReturn(L);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

@@ -7,7 +7,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 namespace
@@ -51,4 +51,4 @@ SetOptions(const opensn::InputParameters& params)
 
 RegisterWrapperFunctionInNamespace(lbs, SetOptions, GetSyntax_SetOptions, SetOptions);
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

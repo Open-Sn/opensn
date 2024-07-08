@@ -8,7 +8,7 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunction(AdjointSolverMakeExpRepFromP1Moments);
@@ -29,4 +29,4 @@ AdjointSolverMakeExpRepFromP1Moments(lua_State* L)
 
   return LuaReturn(L, solution[0], solution[1]);
 }
-} // namespace opensnlua::lbs
+} // namespace opensnlua
